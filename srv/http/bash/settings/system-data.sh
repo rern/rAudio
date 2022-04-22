@@ -185,19 +185,15 @@ data+='
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
-
-if rfkill | grep -q bluetooth; then
-	btlist=$( bluetoothctl paired-devices \
-				| sed 's/Device //; s/\(.*:..\) \(.*\)/,["\2","\1"]/' \
-				| sort )
+bluetooth=$( systemctl -q is-active bluetooth && echo true )
+if [[ $bluetooth == true ]] && rfkill | grep -q bluetooth; then
 	data+='
 , "bluetooth"        : '$( systemctl -q is-active bluetooth && echo true )'
 , "bluetoothconf"    : [
 	  '$( bluetoothctl show 2> /dev/null | grep -q 'Discoverable: yes' && echo true )'
 	, '$( exists $dirsystem/btformat )'
 ]
-, "btconnected"      : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
-, "btlist"           : '$( $dirbash/settings/networks-data.sh list )
+, "btconnected"      : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
