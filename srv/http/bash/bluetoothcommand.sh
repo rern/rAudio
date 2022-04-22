@@ -16,15 +16,6 @@ if [[ $action == disconnect || $action == remove ]]; then
 	done
 fi
 if [[ $action == connect || $action == pair ]]; then # pair / connect
-	if [[ $sink == true ]]; then
-		systemctl stop bluezdbus
-		systemctl start bluealsa
-	else
-		systemctl stop bluealsa
-		systemctl start bluezdbus
-	fi
-	systemctl restart bluetooth
-	sleep 2
 	bluetoothctl trust $mac &> /dev/null
 	bluetoothctl pair $mac &> /dev/null
 	bluetoothctl connect $mac &> /dev/null
@@ -40,16 +31,13 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		pushstream btclient true
 	else
 		pushstreamNotify "$name" 'Not found.' $icon
-		systemctl stop bluealsa bluezdbus
 		exit
 		
 	fi
 elif [[ $action == disconnect ]]; then
 	pushstream btclient false
-	if [[ -e $dirshm/power ]]; then
-		pushstreamNotify "$name" 'Disconnected' $icon
-		systemctl stop bluealsa bluezdbus
-	fi
+	[[ ! -e $dirshm/power ]] && pushstreamNotify "$name" 'Disconnected' $icon
 fi
+sleep 2
 data=$( $dirbash/settings/networks-data.sh )
 pushstream refresh "$data"

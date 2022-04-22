@@ -38,7 +38,7 @@ if [[ $1 ]]; then
 			;;
 		btclient ) # receiver from mpd-conf.sh
 			listBluetooth
-			curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+			pushstream bluetooth "$listbt"
 			;;
 		1 ) # sender: 1 = connect - from bluezdbus.py
 			[[ -e $dirshm/btsender ]] && exit
@@ -51,7 +51,7 @@ if [[ $1 ]]; then
 				echo $btsender > $dirshm/btsender
 				pushstreamNotify "$btsender" Ready bluetooth
 				listBluetooth
-				curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+				pushstream bluetooth "$listbt"
 			fi
 			;;
 		* ) # sender: 0 = disconnect - from bluezdbus.py
@@ -64,7 +64,7 @@ if [[ $1 ]]; then
 				bluetoothctl info &> /dev/null && sleep 1 || break
 			done
 			listBluetooth
-			curl -s -X POST http://127.0.0.1/pub?id=bluetooth -d "$listbt"
+			pushstream bluetooth "$listbt"
 			sleep 3
 			rm -f $dirshm/{bluetoothdest,btsender}
 			;;

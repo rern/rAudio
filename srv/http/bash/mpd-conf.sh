@@ -27,11 +27,10 @@ restartMPD() {
 }
 
 if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
-	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit
+	(( $( bluetoothctl info 2> /dev/null | grep 'Connected: yes\|Audio Sink' | wc -l ) < 2 )) && notsink=1
+	[[ $notsink || -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit
 	
 	pushstream btclient true
-	systemctl stop bluezdbus
-	systemctl start bluealsa
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
@@ -52,8 +51,6 @@ elif [[ $1 == btoff ]]; then
 	
 	pushstream btclient false
 	$dirbash/cmd.sh mpcplayback$'\n'stop
-	systemctl stop bluealsa
-	systemctl start bluezdbus
 	btmixer=$( cat $dirshm/btclient | sed 's/ - A2DP$//' )
 	[[ ! $btmixer ]] && btmixer=Bluetooth
 	pushstreamNotify "$btmixer" Disconnected btclient

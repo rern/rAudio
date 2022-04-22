@@ -24,7 +24,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( exists $dirshm/btclient )
+	btclient=$( bluetoothctl info &> /dev/null | grep -q 'Audio Sink' && echo true )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
@@ -42,7 +42,7 @@ else
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
-	if [[ -e $dirshm/nosound && ! -e $dirshm/btclient ]]; then
+	if [[ -e $dirshm/nosound && ! $btclient ]]; then
 		volume=false
 	else
 		ccv=$( $dirbash/cmd.sh volumecontrolget )
