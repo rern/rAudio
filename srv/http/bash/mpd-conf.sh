@@ -30,18 +30,21 @@ if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.p
 	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit
 	
 	pushstream btclient true
+	pushstreamNotifyBlink Bluetooth 'Search mixers ...' btclient
 	systemctl stop bluezdbus
 	systemctl start bluealsa
 	for i in {1..5}; do # wait for list available
 		sleep 1
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btaplay ]] && break
+		[[ $btmixer ]] && break
 	done
-	if [[ ! $btmixer && ! -e $dirshm/startup ]]; then
-		pushstreamNotify Bluetooth 'BlueALSA mixers not found.' bluetooth
-		$dirbash/bluetoothconnect.sh disconnect
+	if [[ ! $btmixer ]]; then
+		[[ ! -e $dirshm/startup ]] && pushstreamNotify Bluetooth 'Mixers not found.' bluetooth
+		sleep 2
+		$dirbash/bluetoothcommand.sh disconnect 
 		exit
 	fi
+	
 	btmixer=$( echo "$btmixer" \
 				| grep ' - A2DP' \
 				| cut -d"'" -f2 )
@@ -62,8 +65,9 @@ elif [[ $1 == btoff ]]; then
 	$dirbash/cmd.sh mpcplayback$'\n'stop
 	systemctl stop bluealsa
 	systemctl start bluezdbus
-	btmixer=$( cat $dirshm/btclient )
-	pushstreamNotify "${btmixer/ - A2DP}" Disconnected bluetooth
+	btmixer=$( cat $dirshm/btclient | sed 's/ - A2DP$//' )
+	[[ ! $btmixer ]] && btmixer=Bluetooth
+	pushstreamNotify "$btmixer" Disconnected btclient
 	rm -f $dirshm/btclient
 	$dirbash/settings/networks-data.sh btclient
 	systemctl stop bluetoothbutton

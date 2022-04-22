@@ -94,19 +94,20 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		notify( list.name, 'Connect ...', 'bluetooth', -1 );
-		bash( '/srv/http/bash/bluetoothconnect.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
+		var icon = list.sink ? 'btclient blink' : 'bluetooth blink'
+		notify( list.name, 'Connect ...', icon, -1 );
+		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
 		return
 	}
 	
 	var name = G.li.data( 'ssid' );
-	notify( name, 'Connect ...', 'wifi' );
+	notify( name, 'Connect ...', 'wifi blink' );
 	bash( [ 'profileconnect', name ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bash( '/srv/http/bash/bluetoothconnect.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
+		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
 		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
@@ -148,7 +149,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( '/srv/http/bash/bluetoothconnect.sh remove '+ list.mac )
+				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac )
 			}
 		} );
 		return

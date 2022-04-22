@@ -119,13 +119,10 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
-	if ( $( '#bannerIcon i' ).hasClass( 'bluetooth' ) ) {
-		var delay = 3000;
-	} else {
-		var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
-	}
+	var delay = page !== 'networks' && $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	setTimeout( bannerHide, delay );
+	clearTimeout( G.timeoutbanner );
+	G.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {

@@ -15,11 +15,11 @@ listBluetooth() {
 				[[ $mac == Device ]] && continue
 				
 				info=$( bluetoothctl info $mac )
-				alias=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+				name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 				connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 				sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 				listbt+=',{
-	  "name"      : "'${alias//\"/\\\"}'"
+	  "name"      : "'${name//\"/\\\"}'"
 	, "mac"       : "'$mac'"
 	, "sink"      : '$sink'
 	, "connected" : '$connected'

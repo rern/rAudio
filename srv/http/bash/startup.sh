@@ -98,15 +98,6 @@ fi
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # after all sources connected
-if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
-	echo rescan > $dirmpd/updating
-	mpc -q rescan
-elif [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
-fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
@@ -148,14 +139,16 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-if [[ -e $dirsystem/btreconnect ]]; then
-	sleep 15
-	mac=$( cat $dirsystem/btreconnect )
-	name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-	pushstreamNotify "$name" 'Connect ...' bluetooth
-	bluetoothctl info $mac | grep -q 'UUID: Audio Sink' && sink=true
-	$dirbash/bluetoothconnect.sh connect $mac $sink "$name"
+[[ -e $dirsystem/btreconnect ]] && $dirbash/bluetoothcommand.sh reconnect
+
+if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
+	echo rescan > $dirmpd/updating
+	mpc -q rescan
+elif [[ -e $dirmpd/updating ]]; then
+	path=$( cat $dirmpd/updating )
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
+	$dirbash/cmd-list.sh &> dev/null &
 fi
 
 rm -f $dirshm/startup
-
