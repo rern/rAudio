@@ -175,45 +175,16 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-		var content = `\
-<table>
-	<tr><td><label><input type="checkbox">Discoverable <gr>by senders</gr></label></td></tr>
-	<tr><td><label><input type="checkbox">Sampling 16bit 44.1kHz <gr>to receivers</gr></label></td></tr>
-	<tr id="trreconnect"><td><label><input id="reconnect" type="checkbox">Reconnect on boot: <gr>(if powered on)</gr></label></td></tr>
-`;
-	if ( G.btlist.length ) {
-		G.btlist.forEach( function( device ) {
-			content += '<tr class="list"><td style="text-align: center"><label><input type="radio" name="reconnect" value="'+ device.mac +'">'
-						+'<i class="fa fa-'+ ( device.sink ? 'btclient' : 'bluetooth' ) +'"></i>'+ device.name +'</label></td></tr>';
-		} );
-	}
-	content += '</table>';
-	if ( ! G.bluetoothconf[ 3 ] ) G.bluetoothconf[ 3 ] = G.btlist[ 0 ].mac;
+	if ( infoPlayerActive( $( this ) ) ) return
+	
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
-		, content      : content
+		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : G.bluetoothconf
 		, checkchanged : ( G.bluetooth ? 1 : 0 )
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
-		}
-		, beforeshow   : function() {
-			var W = 0;
-			$( '.list label' ).each( function() {
-				var lW = $( this ).width()
-				if ( lW > W ) W = lW;
-			} );
-			$( '.list label' ).css( {
-				  display      : 'inline-block'
-				, width        : W +'px'
-				, 'text-align' : 'left'
-			} );
-			$( '#trreconnect' ).toggleClass( 'hide', G.btlist.length === 0 );
-			$( '.list' ).toggleClass( 'hide', !G.bluetoothconf[ 2 ] );
-			$( '#reconnect' ).click( function() {
-				$( '.list' ).toggleClass( 'hide', !$( this ).prop( 'checked' ) );
-			} );
 		}
 		, ok           : function() {
 			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );

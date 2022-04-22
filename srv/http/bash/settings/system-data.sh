@@ -187,14 +187,6 @@ data+='
 , "vuledconf"        : '$vuledconf
 
 if rfkill | grep -q bluetooth; then
-	readarray -t lines <<< $( bluetoothctl paired-devices | cut -d' ' -f2,3- )
-	if [[ $lines ]]; then
-		for line in ${lines[@]}; do
-			mac=${line/ *}
-			name=${line#* }
-			sink=$( bluetoothctl info $mac | grep -q 'UUID: Audio Sink' && echo true || echo false )
-		done
-	fi
 	btlist=$( bluetoothctl paired-devices \
 				| sed 's/Device //; s/\(.*:..\) \(.*\)/,["\2","\1"]/' \
 				| sort )
@@ -203,8 +195,6 @@ if rfkill | grep -q bluetooth; then
 , "bluetoothconf"    : [
 	  '$( bluetoothctl show 2> /dev/null | grep -q 'Discoverable: yes' && echo true )'
 	, '$( exists $dirsystem/btformat )'
-	, '$( exists $dirsystem/btreconnect )'
-	, "'$( cat $dirsystem/btreconnect 2> /dev/null )'"
 ]
 , "btconnected"      : '$( [[ -e $dirshm/btclient || $( cat $dirshm/player ) == bluetooth ]] && echo true )'
 , "btlist"           : '$( $dirbash/settings/networks-data.sh list )

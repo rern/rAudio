@@ -44,7 +44,7 @@ if [[ $1 ]]; then
 			[[ -e $dirshm/btsender ]] && exit
 			
 			for i in {1..5}; do
-				btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Name: ' | sed 's/.*Name: //' )
+				btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Alias: ' | sed 's/.*Alias: //' )
 				[[ ! $btsender ]] && sleep 1 || break
 			done
 			if [[ $btsender ]]; then

@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-touch $dirshm/startup
-
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
@@ -139,8 +137,6 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-[[ -e $dirsystem/btreconnect ]] && $dirbash/bluetoothcommand.sh reconnect
-
 if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
 	echo rescan > $dirmpd/updating
 	mpc -q rescan
@@ -150,5 +146,3 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
-
-rm -f $dirshm/startup
