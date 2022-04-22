@@ -38,6 +38,10 @@ def property_changed( interface, changed, invalidated, path ):
                 os.system( "/srv/http/bash/cmd.sh playerstart$'\n'bluetooth" )
             os.system( '/srv/http/bash/status-push.sh' )
 
+def set_trusted( path ):
+    props = dbus.Interface( bus.get_object( BUS_NAME, path ), dbus.PROPERTIES_IFACE )
+    props.Set( DEVICE_IFACE, 'Trusted', True )
+    
 class Agent( dbus.service.Object ):
     @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )
     def AuthorizeService( self, device, uuid ):
@@ -45,6 +49,7 @@ class Agent( dbus.service.Object ):
 
     @dbus.service.method( AGENT_INTERFACE, in_signature='o', out_signature='' )
     def RequestAuthorization( self, device ):
+        set_trusted( device )
         return
 
 if __name__ == '__main__':

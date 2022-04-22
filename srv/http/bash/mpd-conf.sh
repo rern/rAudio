@@ -51,7 +51,7 @@ elif [[ $1 == btoff ]]; then
 	
 	pushstream btclient false
 	$dirbash/cmd.sh mpcplayback$'\n'stop
-	btmixer=$( cat $dirshm/btclient | sed 's/ - A2DP$//' )
+	btmixer=$( cat $dirshm/btclient 2> /dev/null | sed 's/ - A2DP$//' )
 	[[ ! $btmixer ]] && btmixer=Bluetooth
 	pushstreamNotify "$btmixer" Disconnected btclient
 	rm -f $dirshm/btclient
