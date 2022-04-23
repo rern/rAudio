@@ -10,8 +10,8 @@ Audio player for
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
-- Based on Arch Linux Arm
-- Metadata Tag Editor (`*.cue` included)
+- Based on Arch Linux Arm - `mpd` `nginx`
+- Metadata Tag Editor - `kid3-cli`
 - Album mode with coverarts
 - File mode with thumbnail icons
 - Coverarts and bookmarks - add, replace and remove
@@ -22,8 +22,8 @@ Audio player for
 - VU meter as coverart (for remote screen)
 - Live display update across multiple clients
 - Wi-Fi connection can be pre-configured for headless mode.
-- Access point mode when no router available.
-- File sharing
+- Access point - `hostapd`
+- File sharing - `samba`
 - USB DAC plug ang play
 - Easy update and extra features with Addons
 - Supported GPIO devices
@@ -36,18 +36,18 @@ Audio player for
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
-	- AirPlay
+	- AirPlay - `shairport-sync`
 	- Bluetooth audio receiver
-	- Snapcast - Multiroom audio client
-	- Spotify Connect
-	- UPnP
+	- SnapClient - `snapcast` Multiroom audio client
+	- Spotify Connect - `spotifyd`
+	- UPnP - `upmpdcli`
 - Streamers
 	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- Snapcast - Multiroom audio server
+	- SnapSever - `snapcast` Multiroom audio server
 - Digital Signal Processors
-	- CamillaDSP
-	- Alsaequal - Graphic equalizer
+	- DSP - `camilladsp`
+	- Equalizer - `alsaequal`
 - Support boot from USB drive without SD card
 - USB drive
 	- Plug and play
@@ -61,7 +61,7 @@ Audio player for
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- [**Release i20220317**](https://github.com/rern/rAudio-1/releases/tag/i20220317)
+- [**Release i20220415**](https://github.com/rern/rAudio-1/releases/tag/i20220415)
 - BeagleBone Black - Need DIY: [rAudio-1 running on BeagleBone Black](https://github.com/rern/rAudio-1/discussions/299)
 
 ### DIY Image file
@@ -75,7 +75,9 @@ Audio player for
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
 	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
-	- `CHOOSE STORAGE` > select SD card > `WRITE`
+	- `CHOOSE STORAGE` > select SD card
+	- Do not set anything in `Advance options`
+	- `WRITE`
 	- Verify is optional.
 	- Boot from USB drive without SD card
 		- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B

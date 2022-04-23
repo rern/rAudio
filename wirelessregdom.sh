@@ -12,6 +12,6 @@ for k in ${codes[@]}; do
 	list+=$'\n'$( grep $k <<< "$iso3166" )
 done
 
-echo { '"00": "00 - Allowed worldwide"', $( echo "$list" | sort -k2 ) } | jq . > /srv/http/settings/regdomcodes.json
+echo { '"00": "00 - (Allowed worldwide)"', $( echo "$list" | sort -k2 ) } | jq . > /srv/http/settings/regdomcodes.json
 
 echo Updated: /srv/http/settings/regdomcodes.json

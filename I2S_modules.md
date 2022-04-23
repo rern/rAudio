@@ -6,6 +6,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Adafruit MAX98357
 - Adafruit UDA1334A
 - Allo Boss DAC
+- Allo Boss2 DAC
 - Allo DigiOne
 - Allo DigiOne Signature
 - Allo Katana DAC
