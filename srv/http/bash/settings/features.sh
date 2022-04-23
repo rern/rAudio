@@ -6,11 +6,11 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/features-data.sh )
+	data=$( $dirbash/settings/features-data.sh )
 	pushstream refresh "$data"
 }
 pushRefreshNetworks() {
-	data=$( $dirbash/networks-data.sh )
+	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
 }
 featureSet() {
@@ -358,7 +358,7 @@ spotifytoken )
 	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
-	spotifyredirect=$( grep ^spotifyredirect $dirbash/features-data.sh | cut -d= -f2 )
+	spotifyredirect=$( grep ^spotifyredirect $dirbash/settings/features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \

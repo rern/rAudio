@@ -27,7 +27,7 @@ fi
 
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
-	$dirbash/system.sh datarestore
+	$dirbash/settings/system.sh datarestore
 	reboot=1
 fi
 
@@ -52,6 +52,7 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
+touch $dirshm/status
 
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
@@ -92,19 +93,9 @@ fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
-# mpd.service started by this script
-$dirbash/mpd-conf.sh
+$dirbash/mpd-conf.sh # mpd.service started by this script
 
 # after all sources connected
-if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
-	echo rescan > $dirmpd/updating
-	mpc -q rescan
-elif [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
-fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
@@ -112,7 +103,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/system.sh soundprofile
+[[ -e $dirsystem/soundprofile ]] && $dirbash/settings/system.sh soundprofile
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
@@ -120,7 +111,7 @@ if [[ $connected ]]; then
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
 elif [[ ! -e $dirsystem/wlannoap ]]; then
 	modprobe brcmfmac &> /dev/null 
-	systemctl -q is-enabled hostapd || $dirbash/features.sh hostapdset
+	systemctl -q is-enabled hostapd || $dirbash/settings/features.sh hostapdset
 	systemctl -q disable hostapd
 fi
 
@@ -144,4 +135,14 @@ file=/sys/class/backlight/rpi_backlight/brightness
 if [[ -e $file ]]; then
 	chmod 666 $file
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
+fi
+
+if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
+	echo rescan > $dirmpd/updating
+	mpc -q rescan
+elif [[ -e $dirmpd/updating ]]; then
+	path=$( cat $dirmpd/updating )
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
+	$dirbash/cmd-list.sh &> dev/null &
 fi

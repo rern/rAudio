@@ -314,7 +314,6 @@ function psMpdPlayer( data ) {
 		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
-		var playlistlength = G.status.playlistlength;
 		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
@@ -345,18 +344,21 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
-	var $elupdate = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
-	$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
-	if ( typeof data === 'number' ) {
-		G.status.updating_db = true;
-	} else {
-		G.status.updating_db = false;
-		$( '#li-count' ).html( data.song.toLocaleString() );
+	G.status.updating_db = data === 1;
+	if ( G.status.updating_db ) {
+		setButtonUpdating();
+		return
+	}
+	
+	clearTimeout( G.debounce );
+	G.debounce = setTimeout( function() {
 		G.status.counts = data;
-		$.each( data, function( key, val ) {
-			$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
-		} );
+		renderLibraryCounts();
+		setButtonUpdating();
+		banner( 'Library Update', 'Done', 'library' );
 		if ( G.library ) {
+			if ( !G.librarylist ) return
+			
 			if ( G.mode === 'webradio' ) {
 				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
 			} else {
@@ -372,12 +374,7 @@ function psMpdUpdate( data ) {
 		} else if ( G.playlist && !G.savedlist ) {
 			$( '#playlist' ).click();
 		}
-		setTimeout( function() {
-			$( '#library, #button-library' ).removeClass( 'blink' );
-			banner( 'Library Update', 'Done', 'library' );
-		}, 2000 );
-	}
-	setButtonUpdating();
+	}, 3000 );
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
@@ -470,7 +467,7 @@ function psRelays( response ) {
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
-				bash( '/srv/http/bash/relays.sh' );
+				bash( '/srv/http/bash/settings/relays.sh' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {

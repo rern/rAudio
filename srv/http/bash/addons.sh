@@ -102,10 +102,8 @@ getinstallzip() {
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
-	chown -R http:http /srv/http/{assets,bash,settings}
-	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/* /usr/local/bin/* 2> /dev/null
-	chmod 777 $dirdata/tmp
-	
+	chmod 777 $dirbash/cmd.sh
+	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
 installstart() { # $1-'u'=update

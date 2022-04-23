@@ -32,7 +32,7 @@ data+='
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
-, "hostapdconf"      : '$( $dirbash/features.sh hostapdget )'
+, "hostapdconf"      : '$( $dirbash/settings/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='

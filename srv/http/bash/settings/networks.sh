@@ -7,7 +7,7 @@ readarray -t args <<< "$1"
 
 pushRefresh() {
 	sleep 2
-	data=$( $dirbash/networks-data.sh )
+	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
 }
 netctlSwitch() {
@@ -42,27 +42,6 @@ $( timeout 1 avahi-browse -arp \
 	| grep -v 127.0.0.1 \
 	| sed 's/;/ : /' \
 	| sort -u )"
-	;;
-btpair )
-	mac=${args[1]}
-	bluetoothctl disconnect &> /dev/null
-	bluetoothctl trust $mac
-	bluetoothctl pair $mac
-	bluetoothctl connect $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: no' && sleep 1 || break
-	done
-	pushRefresh
-	[[ ! -e $dirshm/btclient ]] && $dirbash/mpd-conf.sh bton
-	;;
-btremove )
-	mac=${args[1]}
-	bluetoothctl disconnect $mac
-	bluetoothctl remove $mac
-	for i in {1..10}; do
-		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
-	done
-	pushRefresh
 	;;
 connect )
 	data=${args[1]}

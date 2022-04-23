@@ -164,7 +164,6 @@ function contextmenuLibrary( $li, $target ) {
 	G.list = {};
 	G.list.li = $li; // for contextmenu
 	G.list.licover = $li.hasClass( 'licover' );
-//	G.list.album = $( '.licover .lialbum' ).text();
 	G.list.singletrack = !G.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
@@ -191,10 +190,10 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	
 	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].includes( G.mode );
-	$( '.replace' ).next().addBack().toggleClass( 'hide', !G.status.playlistlength );
-	$( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
+	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', !G.status.pllength );
+	$menu.find( '.replace' ).next().toggleClass( 'hide', !G.status.pllength );
+	$menu.find( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', G.list.licover && !filemode && G.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
@@ -400,9 +399,9 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.playlistlength ? 'disable' : 'enable' );
+	if ( time ) $( '#time' ).roundSlider( G.status.stream || G.status.player !== 'mpd' || !G.status.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
-	$( '#time-band' ).toggleClass( 'disabled', !G.status.playlistlength || G.status.player !== 'mpd' || G.status.stream );
+	$( '#time-band' ).toggleClass( 'disabled', !G.status.pllength || G.status.player !== 'mpd' || G.status.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', G.status.stream || ![ 'mpd', 'upnp' ].includes( G.status.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
@@ -424,7 +423,7 @@ function displaySave( keys ) {
 	keys.forEach( function( k, i ) {
 		display[ k ] = values[ i ];
 	} );
-	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( function( item ) {
+	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( function( item ) {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
@@ -581,7 +580,7 @@ function hideGuide() {
 	if ( G.guide ) {
 		G.guide = 0;
 		var barsvisible = $( '#bar-top' ).is( ':visible' );
-		$( '#coverTR' ).toggleClass( 'empty', !G.status.playlistlength && !barsvisible && G.status.player === 'mpd' );
+		$( '#coverTR' ).toggleClass( 'empty', !G.status.pllength && !barsvisible && G.status.player === 'mpd' );
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
 		if ( !barsvisible ) $( '#bar-bottom' ).addClass( 'transparent' );
@@ -923,7 +922,7 @@ function playlistFilter() {
 	}
 }
 function plRemove( $li ) {
-	if ( G.status.playlistlength === 1 ) {
+	if ( G.status.pllength === 1 ) {
 		bash( [ 'plremove' ] );
 	} else {
 		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
@@ -945,7 +944,7 @@ function plRemove( $li ) {
 		}
 		var i = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
-			if ( i < G.status.playlistlength ) {
+			if ( i < G.status.pllength ) {
 				var activenext = i;
 				$li.next().addClass( 'active' );
 			} else {
@@ -997,9 +996,19 @@ function renderLibrary() {
 	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
-	$( '#li-count' ).html( G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' );
+	renderLibraryCounts();
+}
+function renderLibraryCounts() {
+	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
+	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
-		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
+		var $gr = $( '#mode-'+ key ).find( 'gr' );
+		$gr.addClass( 'hide' );
+		if ( val ) {
+			$gr
+				.text( val.toLocaleString() )
+				.removeClass( 'hide' );
+		}
 	} );
 }
 function renderLibraryList( data ) {
@@ -1090,7 +1099,7 @@ function renderPlayback() {
 	G.status.volumemute !== 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
 	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
 	clearInterval( G.intBlinkDot );
-	if ( !G.status.playlistlength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
+	if ( !G.status.pllength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
 		return
 	}
@@ -1151,7 +1160,7 @@ function renderPlayback() {
 function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.savedplaylist = 0;
-	G.status.playlistlength = data.playlistlength;
+	G.status.pllength = data.pllength;
 	G.status.elapsed = data.elapsed;
 	G.status.song = data.song;
 	$( '#pl-search-close' ).click();
@@ -1172,7 +1181,7 @@ function renderPlaylist( data ) {
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>&emsp;'+ data.counthtml );
 	$( '#button-pl-save, #button-pl-clear, #button-pl-search' ).removeClass( 'disabled' );
-	$( '#button-pl-shuffle' ).toggleClass( 'disabled', G.status.playlistlength < 2 );
+	$( '#button-pl-shuffle' ).toggleClass( 'disabled', G.status.pllength < 2 );
 	$( '#button-pl-consume' ).toggleClass( 'bl', G.status.consume );
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
@@ -1263,8 +1272,8 @@ function setBlinkDot() {
 function setButtonControl() {
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
-		var noprevnext = G.status.playlistlength < 2 || !mpd_upnp;
-		$( '#playback-controls' ).toggleClass( 'hide', G.status.playlistlength === 0 && mpd_upnp );
+		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
+		$( '#playback-controls' ).toggleClass( 'hide', G.status.pllength === 0 && mpd_upnp );
 		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
 		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
@@ -1485,7 +1494,7 @@ function setPlaylistInfoWidth() {
 function setPlaylistScroll() {
 	clearIntervalAll();
 	if ( !G.playlist || G.savedlist || G.savedplaylist
-		|| !G.status.playlistlength || G.sortable
+		|| !G.status.pllength || G.sortable
 		|| $( '.pl-remove' ).length
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
@@ -1496,7 +1505,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	if ( G.status.playlistlength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
+	if ( G.status.pllength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
 		var top = 0;
 	} else {
 		var top = $liactive.offset().top - litop - ( 49 * 3 );

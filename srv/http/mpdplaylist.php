@@ -204,7 +204,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 	$song = exec( "{ echo status; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
 								| awk '/^song:/ {print \$NF}'" );
-	return [ 'html' => $html, 'counthtml' => $counthtml, 'playlistlength' => $count, 'song' => $song ];
+	return [ 'html' => $html, 'counthtml' => $counthtml, 'pllength' => $count, 'song' => $song ];
 }
 function playlist() { // current playlist
 	global $headers;

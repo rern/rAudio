@@ -11,7 +11,7 @@ camillaStart() {
 	fi
 }
 pushRefresh() {
-	data=$( /srv/http/bash/features-data.sh )
+	data=$( /srv/http/bash/settings/features-data.sh )
 	curl -s -X POST http://127.0.0.1/pub?id=refresh -d "$data"
 }
 

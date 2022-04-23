@@ -8,7 +8,7 @@ pushstreamPlaylist() {
 }
 restartMPD() {
 	systemctl restart mpd
-	data=$( $dirbash/player-data.sh )
+	data=$( $dirbash/settings/player-data.sh )
 	pushstream refresh "$data"
 }
 

@@ -76,7 +76,7 @@ $( '#refresh' ).click( function( e ) {
 	} else {
 		$this.addClass( 'blink' );
 		G.intCputime = setInterval( function() {
-			bash( '/srv/http/bash/system-data.sh status', function( status ) {
+			bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
 				$.each( status, function( key, val ) {
 					G[ key ] = val;
 				} );
@@ -175,8 +175,6 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {
-	if ( infoPlayerActive( $( this ) ) ) return
-	
 	info( {
 		  icon         : 'bluetooth'
 		, title        : 'Bluetooth'
@@ -346,8 +344,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
 		, buttoncolor   : [ '', orange ]
 		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( "/srv/http/bash/system.sh lcdchar$'\n'logo" ) }
-			, function() { bash( "/srv/http/bash/system.sh lcdchar$'\n'off" ) }
+			  function() { bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'logo" ) }
+			, function() { bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'off" ) }
 		]
 		, buttonnoreset : 1
 		, ok            : function() {
@@ -953,6 +951,9 @@ ${ htmlname }
 	} );
 }
 function renderPage() {
+	$( '#codehddinfo' )
+		.empty()
+		.addClass( 'hide' );
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
@@ -1000,7 +1001,7 @@ function renderPage() {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', G.camilladsp );
+	$( '#bluetooth' ).toggleClass( 'disabled', G.camilladsp || G.bluetoothactive );
 	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );

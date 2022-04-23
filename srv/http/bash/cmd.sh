@@ -183,7 +183,7 @@ urldecode() { # for webradio url to filename
 volumeGet() {
 	if [[ -e $dirshm/btclient ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
 			[[ $volume ]] && break
 			sleep 1
 		done
@@ -224,7 +224,7 @@ volumeSetAt() {
 	control=$3
 	btclient=$( cat $dirshm/btclient 2> /dev/null )
 	if [[ $btclient ]]; then
-		amixer -MqD bluealsa sset "$btclient" $target%
+		amixer -MqD bluealsa sset "$btclient" $target% 2> /dev/null
 		echo $target > "$dirsystem/btvolume-$btclient"
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
@@ -489,6 +489,12 @@ coverfileslimit )
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
+dirpermissions )
+	chmod -R 755 /srv/http
+	chown -R http:http /srv/http
+	chown -R mpd:audio $dirplaylists /mnt/MPD
+	chown mpd:audio $dirmpd/mpd.db
+	;;
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
@@ -667,6 +673,7 @@ mpcplayback )
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
+	pushstream state '{"state":"'$command'"}'
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -677,7 +684,7 @@ mpcprevnext )
 		state=${args[4]}
 		elapsed=${args[5]}
 	else
-		status=( $( $dirbash/status.sh | jq -r .song,.playlistlength,.state,.elapsed ) )
+		status=( $( $dirbash/status.sh | jq -r .song,.pllength,.state,.elapsed ) )
 		current=${status[0]}
 		length=${status[1]}
 		state=${status[2]}
@@ -966,7 +973,9 @@ plsimilar )
 	;;
 power )
 	action=${args[1]}
+	touch $dirshm/power
 	mpc -q stop
+	pushstream btclient false
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
@@ -976,7 +985,7 @@ power )
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
-		$dirbash/relays.sh
+		$dirbash/settings/relays.sh
 		sleep 2
 	fi
 	if [[ $action == reboot ]]; then
@@ -1173,7 +1182,7 @@ volumesave )
 volumeupdown )
 	updn=${args[1]}
 	if [[ -e $dirshm/btclient ]]; then
-		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn
+		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn 2> /dev/null
 	else
 		card=${args[2]}
 		control=${args[3]}

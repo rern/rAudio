@@ -1,5 +1,6 @@
 function addReplace( cmd, command, title, msg ) {
 	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
+	console.log(command);
 	bash( command, function() {
 		if ( !G.display.playbackswitch ) return
 		
@@ -84,7 +85,7 @@ function playlistLoad( path, play, replace ) {
 		, replace : replace
 	}, function( data ) {
 		G.local = 0;
-		G.status.playlistlength = +data;
+		G.status.pllength = +data;
 		G.savedlist = 0;
 		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
 	} );
@@ -710,7 +711,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} else { // saved playlist
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
-				if ( replace && G.display.plclear && G.status.playlistlength ) {
+				if ( replace && G.display.plclear && G.status.pllength ) {
 					infoReplace( function() {
 						playlistLoad( path, play, replace );
 					} );
@@ -737,7 +738,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		, replace     : mpccmd.concat(  'replace' )
 		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
 	}
-	cmd = cmd.replace( /album|albumartist|artist|composer|conductor|date|genre/, '' );
+	cmd = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
 	var command = contextCommand[ cmd ];
 	if ( cmd === 'add' ) {
 		var title = 'Add to Playlist';

@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbconnect"
+ACTION=="remove", SUBSYSTEM=="block", ENV{ID_FS_TYPE}=="ntfs", ENV{ID_FS_TYPE}="ntfs3", RUN+="/srv/http/bash/settings/system.sh usbremove"

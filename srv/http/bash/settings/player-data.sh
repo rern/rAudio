@@ -19,7 +19,7 @@ data='
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true )'
-, "btaplayname"      : "'$( amixer -D bluealsa scontrols 2> /dev/null | cut -d"'" -f2 )'"
+, "btaplayname"      : "'$( cat $dirshm/btclient 2> /dev/null )'"
 , "buffer"           : '$( grep -q '^audio_buffer_size' /etc/mpd.conf && echo true )'
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true )'
@@ -36,6 +36,8 @@ data='
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true )'
 , "soxrconf"         : '$soxrconf'
+, "state"            : "'$( grep ^state $dirshm/status | cut -d'"' -f2 )'"
+, "stateplayer"      : "'$( cat $dirshm/player )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data"

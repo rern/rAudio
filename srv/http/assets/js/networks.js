@@ -50,6 +50,7 @@ $( '#lanadd' ).click( function() {
 } );
 $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	G.li = $( this );
+	G.liindex = G.li.index();
 	G.list = G.li.parent().prop( 'id' );
 	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
@@ -63,6 +64,9 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .forget' ).removeClass( 'hide' );
+		var list = G.listbt[ G.liindex ];
+//		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -88,17 +92,32 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
+	if ( G.listbt ) {
+		var list = G.listbt[ G.liindex ];
+		var icon = list.sink ? 'btclient blink' : 'bluetooth blink'
+		notify( list.name, 'Connect ...', icon, -1 );
+		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
+		return
+	}
+	
 	var name = G.li.data( 'ssid' );
-	notify( name, 'Connect ...', 'wifi' );
-	bash( [ 'profileconnect', name ] )
+	notify( name, 'Connect ...', 'wifi blink' );
+	bash( [ 'profileconnect', name ] );
 } );
 $( '.disconnect' ).click( function() {
-	var list = G.listwl[ G.li.index() ];
+	if ( G.listbt ) {
+		var list = G.listbt[ G.liindex ];
+		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
+		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
+		return
+	}
+	
+	var list = G.listwl[ G.liindex ];
 	var name = list.ssid;
 	var icon = 'wifi';
 	if ( G.ipeth ) {
 		notify( name, 'Disconnect ...', icon );
-		bash( [ 'disconnect' ] )
+		bash( [ 'disconnect' ] );
 		return
 	}
 	
@@ -130,7 +149,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( [ 'btremove', mac ] );
+				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac )
 			}
 		} );
 		return
@@ -222,7 +241,7 @@ $( '#setting-accesspoint' ).click( function() {
 
 function connectBluetooth( list ) {
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bash( [ 'btpair', list.mac ], function( data ) {
+	bash( [ 'btconnect', list.mac, 'pair' ], function( data ) {
 		bannerHide();
 		if ( data != -1 ) {
 			$( '.back' ).click();
@@ -396,7 +415,8 @@ function renderBluetooth() {
 				G.btconnected = list.name;
 				$( '#divbt heading' ).addClass( 'status' );
 			}
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'"><i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
+			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
+					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
@@ -481,7 +501,7 @@ function renderQR() {
 	}
 }
 function scanBluetooth() {
-	bash( '/srv/http/bash/networks-scanbt.sh', function( data ) {
+	bash( '/srv/http/bash/settings/networks-scanbt.sh', function( data ) {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt = '';
@@ -498,7 +518,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( '/srv/http/bash/networks-scanwlan.sh', function( data ) {
+	bash( '/srv/http/bash/settings/networks-scanwlan.sh', function( data ) {
 		if ( data ) {
 			var signals = '';
 			data.forEach( function( list, i, obj ) {

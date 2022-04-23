@@ -29,7 +29,7 @@ def property_changed( interface, changed, invalidated, path ):
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
         elif name == 'Connected':
-            os.system( '/srv/http/bash/networks-data.sh bt' )
+            os.system( '/srv/http/bash/settings/networks-data.sh '+ str( value ) )
         elif name == 'Position' or name == 'Track':
             os.system( '/srv/http/bash/status-push.sh' )
         elif name == 'Status':

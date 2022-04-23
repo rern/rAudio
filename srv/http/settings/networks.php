@@ -8,14 +8,20 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
-	<div class="help-block hide">rAudio as sender:
- • Receiver device - Turn on discovery mode
- • rAudio - Search and connect receiver device
- • Power on / off already paired devices - Connect / disconnect automatically.
-rAudio as receiver:
- • rAudio - Settings > Bluetooth setting - enable Discoverable by senders
- • Sender device - Search and connect rAudio (No authorization required.)
- • To forget/remove - Do it both on rAudio and sender device otherwise re-pairing might failed.
+	<div class="help-block hide"><wh>rAudio as sender:</wh>
+ • Pairing:
+ &emsp; - On receiver device - Turn on pairing/discovery mode
+ &emsp; - On rAudio - Search and select the receiver device to pair
+ &emsp; - Once paired successfully, the receiver device must be powered off.
+ • Connecting:
+ &emsp; - On receiver devices - Power on/off to connect/disconnect
+<wh>rAudio as receiver:</wh>
+ • Pairing:
+ &emsp; - On rAudio - Settings > Bluetooth setting - enable Discoverable by senders
+ &emsp; - On sender device - Search and select rAudio to pair
+ &emsp; - To forget/remove from the list - Do it both on rAudio and sender device
+ • Connecting:
+ &emsp; - On sender devices - Select rAudio to connect/disconnect
 </div>
 </div>
 <div id="divwl" class="section">

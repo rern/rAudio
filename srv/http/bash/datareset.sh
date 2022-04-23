@@ -114,7 +114,7 @@ coeff_dir: "$dircamilladsp/coeffs"
 default_config: "$dircamilladsp/configs/default_config.yml"
 active_config: "$dircamilladsp/configs/active_config.yml"
 update_symlink: true
-on_set_active_config: "/srv/http/bash/features.sh camilladspasound"
+on_set_active_config: "/srv/http/bash/settings/features.sh camilladspasound"
 on_get_active_config: null
 supported_capture_types: null
 supported_playback_types: null
@@ -123,41 +123,43 @@ fi
 # display
 cat << EOF > $dirsystem/display
 {
-	"album": true,
-	"albumartist": true,
-	"albumbyartist": false,
-	"artist": true,
-	"audiocdplclear": false,
-	"backonleft": false,
-	"bars": true,
-	"barsalways": false,
-	"buttons": true,
-	"composer": true,
-	"conductor": true,
-	"count": true,
-	"cover": true,
-	"covervu": false,
-	"date": true,
-	"fixedcover": true,
-	"genre": true,
-	"hidecover": false,
-	"label": true,
-	"latest": true,
-	"nas": true,
-	"noswipe": false,
-	"playbackswitch": true,
-	"playlists": true,
-	"plclear": true,
-	"plsimilar": true,
-	"radioelapsed": false,
-	"sd": true,
-	"tapaddplay": false,
-	"tapreplaceplay": false,
-	"time": true,
-	"usb": true,
-	"volume": true,
-	"vumeter": false,
-	"webradio": true
+  "album": true,
+  "albumartist": true,
+  "albumbyartist": false,
+  "artist": true,
+  "audiocdplclear": false,
+  "backonleft": false,
+  "bars": true,
+  "barsalways": false,
+  "buttons": true,
+  "camilladsp": false,
+  "composer": true,
+  "conductor": true,
+  "count": true,
+  "cover": true,
+  "covervu": false,
+  "date": true,
+  "fixedcover": true,
+  "genre": true,
+  "hidecover": false,
+  "label": true,
+  "latest": true,
+  "multiraudio": false,
+  "nas": true,
+  "noswipe": false,
+  "playbackswitch": true,
+  "playlists": true,
+  "plclear": true,
+  "plsimilar": true,
+  "radioelapsed": false,
+  "sd": true,
+  "tapaddplay": false,
+  "tapreplaceplay": false,
+  "time": true,
+  "usb": true,
+  "volume": true,
+  "vumeter": false,
+  "webradio": true
 }
 EOF
 # localbrowser
@@ -209,11 +211,8 @@ curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.ta
 # services
 systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
 
-# set permissions and ownership
-chown -R http:http /srv/http
-chown -R mpd:audio $dirmpd $dirplaylists /mnt/MPD
-chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
-chmod 777 $dirdata/tmp
+# set ownership and permissions
+$dirbash/cmd.sh dirpermissions
 
 # symlink /mnt for coverart files
 ln -sf /mnt /srv/http/

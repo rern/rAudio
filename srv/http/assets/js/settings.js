@@ -6,7 +6,7 @@ function bash( command, callback, json ) {
 			var filesh = 'cmd';
 			command.shift();
 		} else {
-			var filesh = page;
+			var filesh = 'settings/'+ page;
 		}
 		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
@@ -17,7 +17,7 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
-var dirbash = '/srv/http/bash/';
+var dirbash = '/srv/http/bash/settings/';
 var playersh = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
 var systemsh = dirbash +'system.sh ';
@@ -119,8 +119,10 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
+	var delay = page !== 'networks' && $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	setTimeout( bannerHide, 3000 );
+	clearTimeout( G.timeoutbanner );
+	G.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
@@ -190,7 +192,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
+var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'state', 'volume', 'volumebt', 'wifi' ];
 streams.forEach( function( stream ) {
 	pushstream.addChannel( stream );
 } );
@@ -210,6 +212,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
+		case 'state':     psState( data );     break;
 		case 'volume':    psVolume( data );    break;
 		case 'volumebt':  psVolumeBt( data );  break;
 		case 'wifi':      psWifi( data );      break;
@@ -248,6 +251,9 @@ function psRefresh( data ) {
 		setSwitch();
 		renderPage();
 	}
+}
+function psState( data ) {
+	if ( page === 'player' ) playbackState( data.state );
 }
 function psReload() {
 	if ( localhost ) location.reload();
@@ -434,6 +440,8 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
+	if ( id === 'novolume' ) return
+	
 	var $this = $( this );
 	var checked = $this.prop( 'checked' );
 	var label = $this.data( 'label' );

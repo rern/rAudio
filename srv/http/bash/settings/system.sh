@@ -13,7 +13,7 @@ pushReboot() {
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
-	data=$( $dirbash/system-data.sh )
+	data=$( $dirbash/settings/system-data.sh )
 	pushstream refresh "$data"
 }
 I2Cset() {
@@ -74,6 +74,7 @@ bluetooth )
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
+	systemctl stop bluealsa bluezdbus
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
 	pushRefresh
 	;;
@@ -93,23 +94,11 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
+	! systemctl -q is-active bluetooth && systemctl enable --now bluetooth
+	bluetoothctl discoverable $yesno &
+	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	if ! systemctl -q is-active bluetooth; then
-		systemctl enable --now bluetooth
-		sleep 3
-		btshow=$( timeout 1 bluetoothctl list )
-		if [[ ! $btshow || $btshow == 'No default controller available' ]]; then
-			reboot=1
-			pushReboot Bluetooth bluetooth
-		else
-			mpdrestart=1
-		fi
-	fi
-	if [[ ! $reboot ]]; then
-		bluetoothctl discoverable $yesno &
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
-		[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
-	fi
+	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
 	pushRefresh
 	;;
 databackup )
@@ -777,10 +766,17 @@ unmount )
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit # is-active mpd - suppress on startup
 	
-	[[ ${args[0]} == usbconnect ]] && action=Connected || action=Removed.
-	pushstreamNotify 'USB Drive' $action usbdrive
+	if [[ ${args[0]} == usbconnect ]]; then
+		action=Ready
+		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
+		[[ ! $name ]] && name='USB Drive'
+	else
+		action=Removed
+		name='USB Drive'
+	fi
+	pushstreamNotify "$name" $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate
+	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
@@ -809,7 +805,7 @@ vuledset )
 	pushRefresh
 	;;
 wlandisable )
-	systemctl -q is-active hostapd && $dirbash/features.sh hostapddisable
+	systemctl -q is-active hostapd && $dirbash/settings/features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

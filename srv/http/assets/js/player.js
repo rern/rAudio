@@ -5,6 +5,13 @@ var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
+
+$( '#playback' ).click( function() {
+	if ( !$( this ).hasClass( 'disabled' ) ) {
+		var cmd = G.stateplayer === 'mpd' ? 'mpcplayback' : 'playerstop';
+		bash( '/srv/http/bash/cmd.sh '+ cmd );
+	}
+} );
 $( '#setting-btclient' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
 		var voldb = voldb.split( ' ' );
@@ -13,7 +20,7 @@ $( '#setting-btclient' ).click( function() {
 		info( {
 			  icon          : 'volume'
 			, title         : 'Bluetooth Volume'
-			, message       : G.btaplayname
+			, message       : G.btaplayname.replace( / - A2DP$/, '' )
 			, rangevalue    : vol
 			, footer        : db +' dB'
 			, beforeshow    : function() {
@@ -350,6 +357,7 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function renderPage() {
+	playbackState( G.state );
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
@@ -369,7 +377,8 @@ function renderPage() {
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
 			$( '#divbtclient' ).removeClass( 'hide' );
-			$( '#btaplayname' ).html( '<option>'+ G.btaplayname +'</option>' );
+			$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+			$( '#setting-btclient' ).removeClass( 'hide' );
 		} else {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
 			$( '#divbtclient' ).addClass( 'hide' );
@@ -413,4 +422,10 @@ function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
+}
+function playbackState( state ) {
+	$( '#playback' )
+		.removeAttr( 'class' )
+		.toggleClass( 'disabled', G.stateplayer !== 'mpd' && G.state !== 'play' )
+		.addClass( 'fa fa-'+ ( state === 'play' ? 'pause' : 'play' ) );
 }

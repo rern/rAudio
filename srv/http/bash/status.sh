@@ -24,7 +24,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( exists $dirshm/btclient )
+	btclient=$( systemctl -q is-active bluetooth && bluetoothctl info &> /dev/null | grep -q 'Audio Sink' && echo true )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
@@ -42,7 +42,7 @@ else
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
-	if [[ -e $dirshm/nosound && ! -e $dirshm/btclient ]]; then
+	if [[ -e $dirshm/nosound && ! $btclient ]]; then
 		volume=false
 	else
 		ccv=$( $dirbash/cmd.sh volumecontrolget )
@@ -211,16 +211,16 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ ! $playlistlength ]] && playlistlength=$( mpc playlist | wc -l )
+[[ ! $pllength ]] && pllength=$( mpc playlist | wc -l )
 status=$( echo "$status" | grep -v '^, "file"' )
 ########
 status+='
-, "file"           : "'$file'"
-, "playlistlength" : '$playlistlength'
-, "song"           : '$song'
-, "state"          : "'$state'"
-, "timestamp"      : '$( date +%s%3N )
-if (( $playlistlength  == 0 )); then
+, "file"      : "'$file'"
+, "pllength"  : '$pllength'
+, "song"      : '$song'
+, "state"     : "'$state'"
+, "timestamp" : '$( date +%s%3N )
+if (( $pllength  == 0 )); then
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
@@ -350,7 +350,7 @@ $radiosampling" > $dirshm/radio
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 	if [[ $id ]]; then
-		sampling="$(( song + 1 ))/$playlistlength &bull; $radiosampling"
+		sampling="$(( song + 1 ))/$pllength &bull; $radiosampling"
 		elapsedGet
 ########
 		status+='
@@ -475,7 +475,7 @@ else
 fi
 
 ########
-pos="$(( song + 1 ))/$playlistlength"
+pos="$(( song + 1 ))/$pllength"
 sampling="$pos &bull; $sampling"
 status+='
 , "ext"      : "'$ext'"

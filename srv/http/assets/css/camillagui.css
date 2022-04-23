@@ -39,12 +39,15 @@
 	--button-background-color: var( --cg );
 	--error-field-background-color: #bb2828 !important;
 	--border-radius: 3px;
+	--gain-color: hsl( 200 100% 45% );
+	--phase-color: hsl( 0 40% 55% );
 }
 body {
 	padding-top: 40px;
-	background: #000000;
 	font-family: Lato;
+	font-size: 16px;
 	color: var( --cw );
+	background: #000000;
 }
 #root {
 	max-width: 700px;
@@ -54,8 +57,8 @@ body {
 .head {
 	position: fixed;
 	top: 0;
-	height: 40px;
 	width: 100%;
+	height: 40px;
 	line-height: 40px;
 	background: var( --cga );
 	box-shadow: 0px 4px 10px #000000;
@@ -65,10 +68,10 @@ body {
 	float: left;
 	width: 40px;
 	height: 40px;
-	background: var( --cm );
 	font-size: 24px;
 	line-height: 38px;
 	text-align: center;
+	background: var( --cm );
 }
 .head span {
 	margin-left: 15px;
@@ -93,14 +96,14 @@ body {
 	text-shadow: -1px 0 2px #000000;
 }
 #divhelp {
-	text-align: right;
 	max-width: 700px;
 	margin: auto;
 	padding: 20px 0;
+	text-align: right;
 }
 #divhelp a {
-	text-decoration: none;
 	color: var( --cg60 );
+	text-decoration: none;
 }
 #divhelp i {
 	color: var( --cg60 );
@@ -128,9 +131,9 @@ body {
 	padding: 5px 0;
 }
 .configapp:after {
+	display: block;
 	content: '';
 	clear: both;
-	display: block;
 }
 .box {
 	max-width: 100vw;
@@ -138,16 +141,13 @@ body {
 	padding: 10px;
 	border: 1px solid var( --cg );
 }
-.horizontally-spaced-content {
-	letter-spacing: 2px;
-}
 legend {
 	font-size: 18px;
-	padding: 0;
+	letter-spacing: 2px;
 }
 legend label {
-	letter-spacing: 0;
 	font-size: 16px;
+	letter-spacing: 0;
 }
 .two-column-grid {
 	width: fit-content;
@@ -304,12 +304,18 @@ section.tabpanel {
 	margin: auto;
 	padding: 15px 10px 0 10px;
 }
+section.tabpanel .smallbutton {
+	margin-top: -20px;
+}
 section.tabpanel .box {
 	position: relative;
 	max-width: calc( 100vw - 50px );
 	margin-bottom: 20px;
 	padding: 10px 0;
 	border: none;
+}
+section.tabpanel legend {
+	padding: 0;
 }
 section.tabpanel legend .horizontally-spaced-content {
 	width: 270px;
@@ -321,19 +327,30 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	font-weight: 300;
 	letter-spacing: 0;
 }
+section.tabpanel .box:nth-last-of-type(3) legend {
+	margin-bottom: 10px;
+}
 section.tabpanel .box:nth-last-of-type(3) legend .horizontally-spaced-content {
 	height: 24px;
 }
-section.tabpanel .smallbutton {
-	margin-top: -20px;
-}
 /* vu + volume bar  */
 section.tabpanel .split-20-80 {
-	grid-template-columns: 13% 85%;
-	text-align: right;
+	grid-template-columns: 14% 85%;
+	column-gap: 0;
+	line-height: 15px;
 }
-section.tabpanel .split-20-80:first-of-type {
-	margin-top: 10px !important;
+.split-20-80 div:first-child {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: right;
+	padding-right: 5px;
+	background: #000000;
+	z-index: 1;
+}
+section.tabpanel .split-20-80 svg {
+	position: relative;
+	margin: 0 -1px 0 -3px;
 }
 .rc-progress-line-path {
 	stroke-width: 2;
@@ -343,12 +360,13 @@ section.tabpanel .split-20-80:first-of-type {
 	stroke-width: 2;
 	stroke: var( --cg );
 }
+
 section.tabpanel .box:nth-of-type(3) div:not([class]) {
-	font-family: Inconsolata;
 	width: fit-content !important;
 	min-width: 250px;
-	line-height: 26px;
 	padding: 0 10px;
+	font-family: Inconsolata;
+	line-height: 26px;
 	background: var( --cga );
 }
 section.tabpanel .box:nth-of-type(3) .two-column-grid {
@@ -366,8 +384,8 @@ section:first-of-type .button-with-text {
 	width: 70px !important;
 	height: 34px;
 	margin: 0 5px;
-	line-height: 34px;
 	font-size: 14px;
+	line-height: 34px;
 	text-align: center;
 }
 section:first-of-type .button-with-text:nth-of-type( 2 ) {
@@ -376,7 +394,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 .config-status {
 	position: absolute;
 	top: -31px;
-	right: 0;
+	right: -4px;
 }
 /* config ----------------------------------------------------------------- */
 .configtabs {
@@ -400,6 +418,7 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	background: #000000;
 	box-shadow: 0px 4px 10px #000000;
 	border: none;
+	z-index: 1;
 }
 .react-tabs__tab {
 	position: static;
@@ -459,6 +478,13 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	width: 36px !important;
 }
 /* Pipeline ----------------------------- */
+#react-tabs-7 legend {
+	margin-bottom: 5px;
+	padding-left: 0;
+}
+#react-tabs-7 legend label {
+	margin-left: -4px;
+}
 #react-tabs-7 select {
 	width: 170px !important;
 }
@@ -466,11 +492,11 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	width: 50px !important;
 }
 #react-tabs-7 .dropTargetParent > div > div:not(.horizontally-spaced-content) {
-    position: absolute;
-    top: 9px;
-    left: 35px;
+	position: absolute;
+	top: 9px;
+	left: 35px;
 	letter-spacing: normal;
-    color: var( --cw ) !important;
+	color: var( --cw ) !important;
 }
 #react-tabs-7 .pipeline-channel {
 	width: 100%;
@@ -478,6 +504,9 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 	line-height: 26px;
 	letter-spacing: 2px;
 	background: var( --cga );
+}
+#react-tabs-7 .box > div > .horizontally-spaced-content:last-of-type {
+	margin-top: 10px;
 }
 /* Files -------------------------------- */
 #react-tabs-9 .button-with-text {
@@ -496,6 +525,31 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 #react-tabs-9 input[type=text] {
 	width: 100% !important;
 	font-family: Inconsolata;
+}
+/* popup --------------------------------- */
+.popup-overlay {
+	background: rgba( 0, 0, 0, .85 );
+}
+.popup-content {
+	min-width: 720px;
+	border: none !important;
+	border-radius: 6px !important;
+	background-color: var( --cgd ) !important;
+	box-shadow: 0px 0px 5px var( --cgl );
+}
+.popup-content div:not([class]) {
+	float: right;
+	text-align: center !important;
+	color: transparent;
+}
+.popup-content div:not([class]):after {
+	content: '\f51A';
+	position: absolute;
+	right: 0;
+	width: 40px;
+	font-family: rern;
+	font-size: 30px;
+	color: var( --cm );
 }
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 719px) {
@@ -528,6 +582,10 @@ section:first-of-type .button-with-text:nth-of-type( 2 ) {
 		top: 40px;
 		background: #000;
 		padding-top: 10px;
+	}
+	.popup-content {
+		width: 100% !important;
+		min-width: 100%;
 	}
 }
 @media (max-width: 490px) {

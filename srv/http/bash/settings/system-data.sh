@@ -185,7 +185,6 @@ data+='
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
-
 if rfkill | grep -q bluetooth; then
 	bluetooth=$( systemctl -q is-active bluetooth && echo true )
 	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
@@ -195,7 +194,7 @@ if rfkill | grep -q bluetooth; then
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
+, "bluetoothactive"  : '$( [[ -e $dirshm/btclient || -e $dirshm/bluetoothdest ]] && echo true )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
