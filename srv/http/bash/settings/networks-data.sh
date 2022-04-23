@@ -48,7 +48,7 @@ if [[ $1 ]]; then
 				[[ ! $btsender ]] && sleep 1 || break
 			done
 			if [[ $btsender ]]; then
-				bluetoothctl trust
+				bluetoothctl trust # fix: for bluealsa-aplay (not yet trusted from bluezdbus.py)
 				echo $btsender > $dirshm/btsender
 				pushstreamNotify "$btsender" Ready bluetooth
 				listBluetooth
