@@ -1,6 +1,0 @@
-[Unit]
-Description=Dbus for Bluetooth audio receiver
-BindsTo=bluealsa-aplay.service
-
-[Service]
-ExecStart=/srv/http/bash/bluezdbus.py
