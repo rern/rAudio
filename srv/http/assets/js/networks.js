@@ -15,21 +15,7 @@ $( '#btscan' ).click( function() {
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
 	var list = G.listbtscan[ $( this ).index() ];
-	if ( list.connected ) return
-	
-	if ( G.btconnected ) {
-			var quit = 0;
-			info( {
-				  icon    : 'bluetooth'
-				, title   : 'Bluetooth'
-				, message : 'Disconnect <wh>'+ G.btconnected +'</wh> ?'
-				, ok      : function() {
-					connectBluetooth( list );
-				}
-			} );
-	} else {
-		connectBluetooth( list );
-	}
+	if ( !list.connected ) connectBluetooth( list );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : infoWiFi();
@@ -406,15 +392,11 @@ function infoWiFi( values ) {
 	} );
 }
 function renderBluetooth() {
-	G.btconnected = false;
+	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
+	if ( ! G.btconnected ) $( '#codebluetooth' ).addClass( 'hide' );
 	var htmlbt = '';
-	$( '#divbt heading' ).removeClass( 'status' );
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) {
-				G.btconnected = list.name;
-				$( '#divbt heading' ).addClass( 'status' );
-			}
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
 					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
