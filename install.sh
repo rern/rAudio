@@ -8,15 +8,6 @@ if modinfo ntfs3 &> /dev/null; then
 	modprobe ntfs3
 fi
 
-if systemctl -q is-enabled bluetooth; then
-	bluetoothenabled=1
-	systemctl disable bluetooth
-fi
-
-# 20220415
-v=$( pacman -Q bluez-alsa 2> /dev/null | cut -d. -f4 | tr -d r )
-[[ $v ]] && (( $v < 106 )) && pacman -Sy --needed --noconfirm bluez-alsa
-
 file=/srv/http/data/shm/wlan
 if [[ ! -e $file ]]; then
 	wlandev=$( ip -br link \
@@ -62,7 +53,6 @@ chmod 777 /srv/http/bash/cmd.sh
 udevadm control --reload-rules
 udevadm trigger
 systemctl daemon-reload
-[[ $bluetoothenabled ]] && systemctl enable --now bluetooth
 
 systemctl restart mpd
 
