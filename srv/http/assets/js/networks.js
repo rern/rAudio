@@ -392,11 +392,11 @@ function infoWiFi( values ) {
 	} );
 }
 function renderBluetooth() {
-	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
-	if ( ! G.btconnected ) $( '#codebluetooth' ).addClass( 'hide' );
+	G.btconnected = false;
 	var htmlbt = '';
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
+			if ( list.connected ) G.btconnected = true;
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
 					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
@@ -406,6 +406,8 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
+	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
+	if ( ! G.btconnected ) $( '#codebluetooth' ).addClass( 'hide' );
 }
 function renderPage() {
 	if ( G.activebt ) {
