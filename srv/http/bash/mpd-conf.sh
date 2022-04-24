@@ -26,51 +26,11 @@ restartMPD() {
 	( sleep 2 && systemctl try-restart snapclient ) &> /dev/null &
 }
 
-if [[ $1 == bton ]]; then # connected by bluetooth receiver (sender: bluezdbus.py)
-	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit # skip: sender and on reboot
-	
-	if (( $( bluetoothctl info 2> /dev/null | grep 'Connected: yes\|Audio Sink' | wc -l ) < 2 )); then # skip: non-audio
-		name=$( bluetoothctl info 2> /dev/null | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-		[[ ! $name ]] && name=Bluetooth
-		echo $name > $dirshm/btdevice
-		pushstreamNotify "$name" Ready bluetooth
-		exit
-	fi
-	
-	pushstream btclient true
-	for i in {1..5}; do # wait for list available
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
-	done
-	btmixer=$( echo "$btmixer" \
-				| grep ' - A2DP' \
-				| cut -d"'" -f2 )
-	pushstreamNotify "${btmixer/ - A2DP}" Ready bluetooth
-	echo $btmixer > $dirshm/btclient
+if [[ -e $dirshm/btclient ]]; then
+	btmixer=$( cat $dirshm/btclient )
 	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
 	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
-	$dirbash/settings/networks-data.sh btclient
 	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
-	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
-elif [[ $1 == btoff ]]; then
-	[[ -e $dirshm/bluetoothdest || -e $dirshm/power ]] && exit # skip: sender and on reboot
-	
-	if [[ -e $dirshm/brdevice ]]; then # skip: non-audio
-		name=$( cat $dirshm/btdevice 2> /dev/null || echo Bluetooth )
-		pushstreamNotify "$name" Ready bluetooth
-		exit
-	fi
-	
-	pushstream btclient false
-	$dirbash/cmd.sh mpcplayback$'\n'stop
-	btmixer=$( cat $dirshm/btclient 2> /dev/null | sed 's/ - A2DP$//' )
-	[[ ! $btmixer ]] && btmixer=Bluetooth
-	pushstreamNotify "$btmixer" Disconnected btclient
-	rm -f $dirshm/btclient
-	$dirbash/settings/networks-data.sh btclient
-	systemctl stop bluetoothbutton
-	[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":true}'
 fi
 
 . $dirbash/mpd-devices.sh

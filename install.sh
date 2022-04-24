@@ -2,6 +2,10 @@
 
 alias=r1
 
+# 20220425
+# /etc/udev/rules.d/bluetooth.rules
+echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
+
 # 20220422 - with /etc/*
 if modinfo ntfs3 &> /dev/null; then
 	pacman -R --noconfirm ntfs-3g 2> /dev/null
@@ -53,6 +57,9 @@ chmod 777 /srv/http/bash/cmd.sh
 udevadm control --reload-rules
 udevadm trigger
 systemctl daemon-reload
+
+# 20220425
+systemctl try-restart bluetooth
 
 systemctl restart mpd
 

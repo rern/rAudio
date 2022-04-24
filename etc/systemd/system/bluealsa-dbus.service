@@ -1,0 +1,7 @@
+[Unit]
+Description=Dbus for Bluetooth audio as receiver
+After=bluetooth.service
+Requires=bluetooth.service
+
+[Service]
+ExecStart=/srv/http/bash/bluealsa-dbus.py

@@ -74,8 +74,8 @@ bluetooth )
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
-	systemctl stop bluealsa bluezdbus
-	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
+	pkill bluetooth
+	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh
 	pushRefresh
 	;;
 bluetoothstatus )

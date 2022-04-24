@@ -820,7 +820,6 @@ playerstart )
 	echo $newplayer > $dirshm/player
 	case $player in
 		airplay )   restart=shairport-sync;;
-		bluetooth ) restart=bluezdbus;;
 		mpd|upnp )  restart=mpd;;
 		spotify )   restart=spotifyd;;
 	esac
@@ -841,7 +840,7 @@ playerstop )
 			rm -f $dirshm/airplay/start
 			;;
 		bluetooth )
-			service=bluezdbus
+			service=bluetooth
 			;;
 		snapcast )
 			service=snapclient

@@ -80,9 +80,8 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		var icon = list.sink ? 'btclient blink' : 'bluetooth blink'
-		notify( list.name, 'Connect ...', icon, -1 );
-		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
+		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btclient', -1 );
+		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
 		return
 	}
 	
@@ -93,7 +92,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
+		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
 		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
@@ -129,13 +128,13 @@ $( '.forget' ).click( function() {
 		var name = list.name;
 		var mac = list.mac;
 		info( {
-			  icon    : 'bluetooth'
+			  icon    : list.sink ? 'bluetooth' : 'btclient'
 			, title   : name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac )
+				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac +' '+ list.sink +' "'+ name +'"' )
 			}
 		} );
 		return
@@ -398,7 +397,7 @@ function renderBluetooth() {
 		G.listbt.forEach( function( list ) {
 			if ( list.connected ) G.btconnected = true;
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
-					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
+					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );

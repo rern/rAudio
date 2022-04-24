@@ -19,13 +19,15 @@ listBluetooth() {
 				connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
 				sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
 				listbt+=',{
-	  "name"      : "'${name//\"/\\\"}'"
-	, "mac"       : "'$mac'"
-	, "sink"      : '$sink'
-	, "connected" : '$connected'
-	}'
+  "name"      : "'${name//\"/\\\"}'"
+, "mac"       : "'$mac'"
+, "sink"      : '$sink'
+, "connected" : '$connected'
+}'
 			done
 			listbt="[ ${listbt:1} ]"
+		else
+			listbt=false
 		fi
 	fi
 }
@@ -37,25 +39,23 @@ if [[ $1 ]]; then
 			echo $listbt
 			;;
 		btclient ) # receiver from mpd-conf.sh
+			sleep 2
 			listBluetooth
 			pushstream bluetooth "$listbt"
 			;;
-		1 ) # sender: 1 = connect - from bluezdbus.py
+		1 ) # sender: 1 = connect - from bluealsa-dbus.py
 			[[ -e $dirshm/btsender ]] && exit
 			
 			for i in {1..5}; do
-				btsender=$( bluetoothctl info 2> /dev/null | grep '^\s*Alias: ' | sed 's/.*Alias: //' )
-				[[ ! $btsender ]] && sleep 1 || break
+				bluetoothctl info &> /dev/null && break || sleep 1
 			done
-			if [[ $btsender ]]; then
-				bluetoothctl trust # fix: for bluealsa-aplay (not yet trusted from bluezdbus.py)
-				echo $btsender > $dirshm/btsender
-				pushstreamNotify "$btsender" Ready bluetooth
-				listBluetooth
-				pushstream bluetooth "$listbt"
-			fi
+			btsender=$( bluetoothctl info | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+			echo $btsender > $dirshm/btsender
+			pushstreamNotify "$btsender" Ready bluetooth
+			listBluetooth
+			pushstream bluetooth "$listbt"
 			;;
-		* ) # sender: 0 = disconnect - from bluezdbus.py
+		* ) # sender: 0 = disconnect - from bluealsa-dbus.py
 			[[ ! -e $dirshm/btsender ]] && exit
 			
 			btsender=$( cat $dirshm/btsender )
