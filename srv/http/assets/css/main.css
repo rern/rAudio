@@ -272,6 +272,7 @@ i.map.disabled, .map.disabled i {
 /* ---------------------- bar-bottom ----------------------*/
 #bar-bottom {
 	font-size: 28px;
+	line-height: 40px;
 	color: var( --cw );
 }
 #bar-bottom i {
