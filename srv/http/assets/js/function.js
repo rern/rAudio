@@ -978,7 +978,6 @@ function renderLibrary() {
 		var name = this.id.replace( 'mode-', '' );
 		$( this ).parent().toggleClass( 'hide', !G.display[ name ] );
 	} );
-	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	if ( G.display.label ) {
 		$( '#lib-mode-list a.label' ).show();
 		$( '.mode' ).removeClass( 'nolabel' );
@@ -1002,14 +1001,9 @@ function renderLibraryCounts() {
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
-		var $gr = $( '#mode-'+ key ).find( 'gr' );
-		$gr.addClass( 'hide' );
-		if ( val ) {
-			$gr
-				.text( val.toLocaleString() )
-				.removeClass( 'hide' );
-		}
+		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 	} );
+	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
