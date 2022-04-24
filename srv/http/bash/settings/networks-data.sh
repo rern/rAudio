@@ -39,7 +39,6 @@ if [[ $1 ]]; then
 			echo $listbt
 			;;
 		btclient ) # receiver from mpd-conf.sh
-			sleep 2
 			listBluetooth
 			pushstream bluetooth "$listbt"
 			;;

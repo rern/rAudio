@@ -17,20 +17,20 @@ if [[ $action == bton ]]; then
 		action=connect
 	fi
 elif [[ $action == btoff ]]; then
+	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender && ! -e $dirshm/btdevice ]] && exit # debounce
+	
 	if [[ -e $dirshm/btdevice ]]; then
 		pushstreamNotify "$( cat $dirshm/btdevice )" Disconnected bluetooth
 		rm $dirshm/btdevice
 		exit
 	fi
 	
-	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender ]] && exit # debounce
-	
 	pushstream btclient false
 	if [[ -e $dirshm/btsender ]]; then
 		pushstreamNotify "$( cat $dirshm/btsender )" Disconnected btclient
 		rm $dirshm/btsender
 		exit
-	else
+	elif [[ -e $dirshm/btclient ]]; then
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		mpdbt=off
 		pushstreamNotify "$( cat $dirshm/btclient )" Disconnected bluetooth
@@ -53,6 +53,9 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 	if [[ $action == pair ]]; then
 		bluetoothctl trust $mac
 		bluetoothctl pair $mac
+		for i in {1..5}; do
+			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && break || sleep 1
+		done
 	fi
 	bluetoothctl info | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..10}; do
@@ -87,9 +90,15 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == disconnect ]]; then
 		done=Disconnected
+		for i in {1..5}; do
+			bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+		done
 	else
 		done=Removed
 		bluetoothctl remove $mac &> /dev/null
+		for i in {1..5}; do
+			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
+		done
 	fi
 	pushstreamNotify "$name" $done $icon
 	$dirbash/settings/networks-data.sh btclient
