@@ -490,9 +490,10 @@ coverfileslimit )
 	done
 	;;
 dirpermissions )
-	chmod -R 755 /srv/http
-	chown -R http:http /srv/http
-	chown -R mpd:audio $dirplaylists /mnt/MPD
+	chmod 755 /srv/http/*
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -Rh http:http /srv/http
+	chown -Rh mpd:audio $dirplaylists /mnt/MPD
 	chown mpd:audio $dirmpd/mpd.db
 	;;
 displaysave )
