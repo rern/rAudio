@@ -4,6 +4,7 @@ alias=r1
 
 # 20220425
 # /etc/udev/rules.d/bluetooth.rules
+rm -f /etc/systemd/system/bluealsa-aplay.service
 echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 
 # 20220422 - with /etc/*

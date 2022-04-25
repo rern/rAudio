@@ -44,11 +44,18 @@ $( timeout 1 avahi-browse -arp \
 	| sort -u )"
 	;;
 bluetoothinfo )
-	echo '<bll># bluealsa-aplay -l</bll>'
-	bluealsa-aplay -l
-	echo
-	echo '<bll># bluetoothctl info</bll>'
-	bluetoothctl info
+	info=$( bluetoothctl info )
+	if echo "$info" | grep -q 'Audio Source'; then
+		data="\
+<bll># bluealsa-aplay -l</bll>
+$( bluealsa-aplay -l )
+"
+	fi
+	echo "\
+$data
+<bll># bluetoothctl info</bll>
+$info
+"
 	;;
 connect )
 	data=${args[1]}
