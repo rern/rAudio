@@ -34,11 +34,7 @@ listBluetooth() {
 
 if [[ $1 ]]; then
 	case $1 in
-		list )
-			listBluetooth
-			echo $listbt
-			;;
-		btclient ) # receiver from mpd-conf.sh
+		btlistpush ) # from bluetoothcommand.sh
 			listBluetooth
 			pushstream bluetooth "$listbt"
 			;;

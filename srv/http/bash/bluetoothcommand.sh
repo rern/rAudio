@@ -2,9 +2,32 @@
 
 . /srv/http/bash/common.sh
 
-action=$1 # connect, disconnect, pair, remove
+if [[ $1 == btoff ]]; then # by udev rules
+	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender && ! -e $dirshm/btdevice ]] && exit # debounce
+	
+	if [[ -e $dirshm/btdevice ]]; then
+		pushstreamNotify "$( cat $dirshm/btdevice )" Disconnected bluetooth
+		rm $dirshm/btdevice
+		exit
+	fi
+	
+	if [[ -e $dirshm/btsender ]]; then
+		pushstreamNotify "$( cat $dirshm/btsender )" Disconnected btclient
+		rm $dirshm/btsender
+	elif [[ -e $dirshm/btclient ]]; then
+		pushstream btclient false
+		$dirbash/cmd.sh mpcplayback$'\n'stop
+		pushstreamNotify "$( cat $dirshm/btclient | sed 's/ - A2DP$//' )" Disconnected bluetooth
+		rm $dirshm/btclient
+		systemctl stop bluetoothbutton
+		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
+		$dirbash/mpd-conf.sh
+	fi
+	$dirbash/settings/networks-data.sh btlistpush
+	exit
+fi
 
-if [[ $action == bton ]]; then
+if [[ $1 == bton ]]; then # by udev rules
 	info=$( bluetoothctl info )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	[[ ! $name ]] && name=Bluetooth
@@ -16,30 +39,8 @@ if [[ $action == bton ]]; then
 	else
 		action=connect
 	fi
-elif [[ $action == btoff ]]; then
-	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender && ! -e $dirshm/btdevice ]] && exit # debounce
-	
-	if [[ -e $dirshm/btdevice ]]; then
-		pushstreamNotify "$( cat $dirshm/btdevice )" Disconnected bluetooth
-		rm $dirshm/btdevice
-		exit
-	fi
-	
-	pushstream btclient false
-	if [[ -e $dirshm/btsender ]]; then
-		pushstreamNotify "$( cat $dirshm/btsender )" Disconnected btclient
-		rm $dirshm/btsender
-		exit
-	elif [[ -e $dirshm/btclient ]]; then
-		$dirbash/cmd.sh mpcplayback$'\n'stop
-		mpdbt=off
-		pushstreamNotify "$( cat $dirshm/btclient | sed 's/ - A2DP$//' )" Disconnected bluetooth
-		rm $dirshm/btclient
-		systemctl stop bluetoothbutton
-		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
-		$dirbash/mpd-conf.sh
-	fi
 else
+	action=$1 # connect, disconnect, pair, remove
 	mac=$2
 	sink=$3
 	name=$4
@@ -91,18 +92,15 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		if [[ $sender ]]; then
 			echo $name > $dirshm/btsender
 		else
-			pushstream btclient true
 			mpdconf=1
 		fi
-		$dirbash/settings/networks-data.sh btclient
+		$dirbash/settings/networks-data.sh btlistpush
 	else
-		pushstream btclient false
 		pushstreamNotify "$name" 'Connect failed.' bluetooth
 		exit
 		
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then
-	pushstream btclient false
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == disconnect ]]; then
 		done=Disconnected
@@ -117,7 +115,7 @@ elif [[ $action == disconnect || $action == remove ]]; then
 		done
 	fi
 	pushstreamNotify "$name" $done $icon
-	$dirbash/settings/networks-data.sh btclient
+	$dirbash/settings/networks-data.sh btlistpush
 fi
 
 [[ ! $mpdconf ]] && exit
@@ -136,4 +134,5 @@ btmixer=$( echo "$btmixer" \
 			| grep ' - A2DP' \
 			| cut -d"'" -f2 )
 echo $btmixer > $dirshm/btclient
+pushstream btclient true
 $dirbash/mpd-conf.sh
