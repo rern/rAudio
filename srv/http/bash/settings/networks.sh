@@ -43,6 +43,13 @@ $( timeout 1 avahi-browse -arp \
 	| sed 's/;/ : /' \
 	| sort -u )"
 	;;
+bluetoothinfo )
+	echo '<bll># bluealsa-aplay -l</bll>'
+	bluealsa-aplay -l
+	echo
+	echo '<bll># bluetoothctl info</bll>'
+	bluetoothctl info
+	;;
 connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
@@ -139,6 +146,13 @@ $( iwconfig $wlandev | awk NF )"
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
 	;;
+iwlist )
+	echo '<bll># iw reg get</bll>'
+	iw reg get
+	echo
+	echo '<bll># iw list</bll>'
+	iw list
+	;;
 profileconnect )
 	wlandev=$( cat $dirshm/wlan )
 	if systemctl -q is-active hostapd; then
@@ -168,6 +182,10 @@ profileremove )
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
+	;;
+rfkilllist )
+	echo '<bll># rfkill</bll>'
+	rfkill
 	;;
 	
 esac

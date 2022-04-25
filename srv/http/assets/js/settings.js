@@ -22,20 +22,20 @@ var playersh = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
 var systemsh = dirbash +'system.sh ';
 var cmd = {
-	  albumignore  : 'cat /srv/http/data/mpd/albumignore'
+	  albumignore  : playersh +'albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : "echo '<bll># bluetoothctl info</bll>'; bluetoothctl info"
+	, bluetooth    : networkssh +'bluetoothinfo'
 	, bluetoothctl : systemsh +'bluetoothstatus'
-	, iw           : "echo '<bll># iw reg get</bll>'; iw reg get; echo '<bll># iw list</bll>';  iw list"
+	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
-	, rfkill       : "echo '<bll># rfkill</bll>'; rfkill"
+	, rfkill       : networkssh +'rfkilllist'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
-	, timedatectl  : "echo '<bll># timedatectl</bll>'; timedatectl"
+	, timedatectl  : systemsh +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
 var services = [ 'camilladsp', 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];

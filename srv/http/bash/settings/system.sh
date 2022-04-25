@@ -749,6 +749,10 @@ $(  i2cdetect -y $dev )"
 	fi
 	echo "$config"
 	;;
+timedate )
+	echo '<bll># timedatectl</bll>'
+	timedatectl
+	;;
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
