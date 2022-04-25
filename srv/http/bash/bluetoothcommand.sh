@@ -75,6 +75,7 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		elif echo "$info" | grep -q 'UUID: Audio Source'; then # sender
 			echo $name > $dirshm/btsender
 		else # receiver
+			echo $name > $dirshm/btclient
 			pushstream btclient true
 			mpdbt=on
 		fi
