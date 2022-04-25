@@ -15,7 +15,21 @@ $( '#btscan' ).click( function() {
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
 	var list = G.listbtscan[ $( this ).index() ];
-	if ( !list.connected ) connectBluetooth( list );
+	if ( list.connected ) return
+	
+	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
+	bash( '/srv/http/bash/bluetoothcommand.sh pair '+ list.mac +' '+ list.sink +' "'+ list.name +'"', function( data ) {
+		bannerHide();
+		if ( data != -1 ) {
+			$( '.back' ).click();
+		} else {
+			info( {
+				  icon      : 'bluetooth'
+				, title     : 'Bluetooth'
+				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
+			} );
+		}
+	} );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : infoWiFi();
@@ -224,21 +238,6 @@ $( '#setting-accesspoint' ).click( function() {
 
 } );
 
-function connectBluetooth( list ) {
-	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bash( [ 'btconnect', list.mac, 'pair' ], function( data ) {
-		bannerHide();
-		if ( data != -1 ) {
-			$( '.back' ).click();
-		} else {
-			info( {
-				  icon      : 'bluetooth'
-				, title     : 'Bluetooth'
-				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
-			} );
-		}
-	} );
-}
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
