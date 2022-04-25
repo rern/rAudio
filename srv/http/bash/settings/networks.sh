@@ -47,8 +47,8 @@ bluetoothinfo )
 	info=$( bluetoothctl info )
 	if echo "$info" | grep -q 'UUID: Audio'; then
 		data="\
-<bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L )
+<bll># bluealsa-aplay -l</bll>
+$( bluealsa-aplay -l )
 "
 	fi
 	echo "\

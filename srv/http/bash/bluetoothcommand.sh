@@ -46,10 +46,11 @@ else
 	[[ ! $name ]] && name=Bluetooth
 fi
 
+[[ $sink == true ]] && icon=bluetooth || icon=btclient
+
 if [[ $action == connect || $action == pair ]]; then # pair / connect
 	info=$( bluetoothctl info )
 	if [[ $action == pair ]]; then
-		pair=1
 		bluetoothctl trust $mac
 		bluetoothctl pair $mac
 		for i in {1..5}; do
@@ -58,7 +59,7 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 	fi
 	bluetoothctl info | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..10}; do
-		if bluetoothctl info $mac 2> /dev/null | grep -q 'UUID: '; then
+		if bluetoothctl info 2> /dev/null | grep -q 'UUID: '; then
 			uuid=1
 			break
 		else
@@ -66,30 +67,14 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		fi
 	done
 	if [[ $uuid ]]; then
-		info=$( bluetoothctl info )
-		echo "$info" | grep -q 'UUID: Audio' && audiodevice=1
-		echo "$info" | grep -q 'UUID: Audio Source' && sender=1
-		[[ $sender ]] && icon=btclient || icon=bluetooth
-		if [[ $pair && $audiodevice ]]; then
-			for i in {1..5}; do
-				mixer=$( bluealsa-aplay -L )
-				[[ ! $mixer ]] && sleep 1 || break
-			done
-			if [[ ! $mixer ]]; then
-				pushstreamNotify "$name" 'Paired successfully.' $icon
-				sleep 3
-				[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
-				pushstreamNotify "$name" "$msg - to start streaming." $icon 10
-				exit
-			fi
-		fi
-		
 		pushstreamNotify "$name" Ready $icon
-		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
-		
-		if [[ $sender ]]; then
+		info=$( bluetoothctl info )
+		if ! echo "$info" | grep -q 'UUID: Audio'; then # non-audio
+			echo $name > $dirshm/btdevice
+			exit
+		elif echo "$info" | grep -q 'UUID: Audio Source'; then # sender
 			echo $name > $dirshm/btsender
-		else
+		else # receiver
 			echo $name > $dirshm/btclient
 			pushstream btclient true
 			mpdconf=1
@@ -97,7 +82,7 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		$dirbash/settings/networks-data.sh btclient
 	else
 		pushstream btclient false
-		pushstreamNotify "$name" 'Connect failed.' bluetooth
+		pushstreamNotify "$name" 'Connect failed.' $icon
 		exit
 		
 	fi
