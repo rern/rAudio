@@ -77,7 +77,7 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		else # receiver
 			echo $name > $dirshm/btclient
 			pushstream btclient true
-			mpdbt=on
+			mpdconf=1
 		fi
 		$dirbash/settings/networks-data.sh btclient
 	else
@@ -105,17 +105,20 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	$dirbash/settings/networks-data.sh btclient
 fi
 
-if [[ $action == bton ]]; then
-	for i in {1..5}; do # wait for list available
-		sleep 1
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && break
-	done
-	if [[ $btmixer ]]; then
-		btmixer=$( echo "$btmixer" \
-					| grep ' - A2DP' \
-					| cut -d"'" -f2 )
-		echo $btmixer > $dirshm/btclient
-		$dirbash/mpd-conf.sh
-	fi
+[[ ! $mpdconf ]] && exit
+
+for i in {1..5}; do # wait for list available
+	sleep 1
+	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+	[[ $btmixer ]] && break
+done
+if [[ ! $btmixer ]]; then
+	pushstreamNotify "$name" 'No mixers found.' $icon
+	exit
 fi
+
+btmixer=$( echo "$btmixer" \
+			| grep ' - A2DP' \
+			| cut -d"'" -f2 )
+echo $btmixer > $dirshm/btclient
+$dirbash/mpd-conf.sh
