@@ -74,7 +74,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( 'body' ).click( function( e ) {
-	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) {
+	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length && !$( e.target ).hasClass( 'status' ) ) {
 		$( '#menu, pre.status' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	}
