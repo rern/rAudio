@@ -17,19 +17,19 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	var list = G.listbtscan[ $( this ).index() ];
 	if ( list.connected ) return
 	
-	if ( G.btconnected ) {
-			var quit = 0;
+	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
+	bash( '/srv/http/bash/bluetoothcommand.sh pair '+ list.mac +' '+ list.sink +' "'+ list.name +'"', function( data ) {
+		bannerHide();
+		if ( data != -1 ) {
+			$( '.back' ).click();
+		} else {
 			info( {
-				  icon    : 'bluetooth'
-				, title   : 'Bluetooth'
-				, message : 'Disconnect <wh>'+ G.btconnected +'</wh> ?'
-				, ok      : function() {
-					connectBluetooth( list );
-				}
+				  icon      : 'bluetooth'
+				, title     : 'Bluetooth'
+				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
 			} );
-	} else {
-		connectBluetooth( list );
-	}
+		}
+	} );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : infoWiFi();
@@ -94,9 +94,8 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		var icon = list.sink ? 'btclient blink' : 'bluetooth blink'
-		notify( list.name, 'Connect ...', icon, -1 );
-		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' '+ list.name )
+		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btclient', -1 );
+		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
 		return
 	}
 	
@@ -107,7 +106,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' '+ list.name )
+		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
 		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
@@ -143,13 +142,13 @@ $( '.forget' ).click( function() {
 		var name = list.name;
 		var mac = list.mac;
 		info( {
-			  icon    : 'bluetooth'
+			  icon    : list.sink ? 'bluetooth' : 'btclient'
 			, title   : name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac )
+				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac +' '+ list.sink +' "'+ name +'"' )
 			}
 		} );
 		return
@@ -239,21 +238,6 @@ $( '#setting-accesspoint' ).click( function() {
 
 } );
 
-function connectBluetooth( list ) {
-	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bash( [ 'btconnect', list.mac, 'pair' ], function( data ) {
-		bannerHide();
-		if ( data != -1 ) {
-			$( '.back' ).click();
-		} else {
-			info( {
-				  icon      : 'bluetooth'
-				, title     : 'Bluetooth'
-				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
-			} );
-		}
-	} );
-}
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
@@ -408,15 +392,11 @@ function infoWiFi( values ) {
 function renderBluetooth() {
 	G.btconnected = false;
 	var htmlbt = '';
-	$( '#divbt heading' ).removeClass( 'status' );
 	if ( G.listbt ) {
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) {
-				G.btconnected = list.name;
-				$( '#divbt heading' ).addClass( 'status' );
-			}
+			if ( list.connected ) G.btconnected = true;
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
-					 +'<i class="fa fa-'+ ( list.sink ? 'btclient' : 'bluetooth' ) +'"></i>';
+					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
@@ -424,6 +404,8 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
+	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
+	if ( ! G.btconnected ) $( '#codebluetooth' ).addClass( 'hide' );
 }
 function renderPage() {
 	if ( G.activebt ) {

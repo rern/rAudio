@@ -36,6 +36,9 @@ autoupdate )
 	fi
 	restartMPD
 	;;
+albumignore )
+	cat /srv/http/data/mpd/albumignore
+	;;
 bufferdisable )
 	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
 	restartMPD

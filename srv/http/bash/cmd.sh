@@ -490,9 +490,11 @@ coverfileslimit )
 	done
 	;;
 dirpermissions )
-	chmod -R 755 /srv/http
-	chown -R http:http /srv/http
-	chown -R mpd:audio $dirplaylists /mnt/MPD
+	chmod 755 /srv/http/* {,/srv/http}/mnt{,/MPD} {,/srv/http}/mnt/MPD/{NAS,SD,USB}
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown http:http /srv/http/* {,/srv/http}/mnt{,/MPD} {,/srv/http}/mnt/MPD/{NAS,SD,USB}
+	chown -Rh http:http /srv/http/{assets,bash,data,settings}
+	chown -Rh mpd:audio $dirplaylists
 	chown mpd:audio $dirmpd/mpd.db
 	;;
 displaysave )
@@ -820,7 +822,6 @@ playerstart )
 	echo $newplayer > $dirshm/player
 	case $player in
 		airplay )   restart=shairport-sync;;
-		bluetooth ) restart=bluezdbus;;
 		mpd|upnp )  restart=mpd;;
 		spotify )   restart=spotifyd;;
 	esac
@@ -841,7 +842,7 @@ playerstop )
 			rm -f $dirshm/airplay/start
 			;;
 		bluetooth )
-			service=bluezdbus
+			service=bluetooth
 			;;
 		snapcast )
 			service=snapclient

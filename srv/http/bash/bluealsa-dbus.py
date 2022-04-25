@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# RPi as renderer - bluezdbus.service > this:
+# RPi as renderer - bluealsa-dbus.service > this:
 #   - start: set Player dest file
 #   - connect/disconnect: networks-data.sh bt
 #   - status: dbus emits events and data
@@ -12,7 +12,6 @@ import dbus.service
 import dbus.mainloop.glib
 from gi.repository import GLib
 import os
-import time
 
 AGENT_INTERFACE = 'org.bluez.Agent1'
 path = '/test/autoagent'
@@ -38,32 +37,13 @@ def property_changed( interface, changed, invalidated, path ):
                 os.system( "/srv/http/bash/cmd.sh playerstart$'\n'bluetooth" )
             os.system( '/srv/http/bash/status-push.sh' )
 
-class Agent( dbus.service.Object ):
-    @dbus.service.method( AGENT_INTERFACE, in_signature='os', out_signature='' )
-    def AuthorizeService( self, device, uuid ):
-        return
-
-    @dbus.service.method( AGENT_INTERFACE, in_signature='o', out_signature='' )
-    def RequestAuthorization( self, device ):
-        return
-
 if __name__ == '__main__':
     dbus.mainloop.glib.DBusGMainLoop( set_as_default=True )
-
     bus = dbus.SystemBus()
-    
     bus.add_signal_receiver( property_changed, bus_name='org.bluez',
-            dbus_interface='org.freedesktop.DBus.Properties',
-            signal_name='PropertiesChanged',
-            path_keyword='path' )
-            
-    Agent( bus, path )
-    
+                             dbus_interface='org.freedesktop.DBus.Properties',
+                             signal_name='PropertiesChanged',
+                             path_keyword='path' )
     mainloop = GLib.MainLoop()
-
-    obj = bus.get_object( 'org.bluez', '/org/bluez' );
-    manager = dbus.Interface( obj, 'org.bluez.AgentManager1' )
-    manager.RegisterAgent( path, 'NoInputNoOutput' )
-    manager.RequestDefaultAgent( path )
-
+    obj = bus.get_object( 'org.bluez', '/org/bluez' )
     mainloop.run()

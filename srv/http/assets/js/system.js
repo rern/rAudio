@@ -833,11 +833,10 @@ $( '.listtitle' ).click( function() {
 } );
 $( '.list' ).on( 'click', 'bl', function() {
 	var pkg = $( this ).text();
-	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluez-alsa', 'cava', 'hfsprogs'
+	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluealsa', 'cava', 'hfsprogs'
 		, 'matchbox-window-manager', 'nginx-mainline-pushstream'
 		, 'plymouth-lite-rbp-git', 'python-rpi-gpio', 'python-rplcd', 'python-smbus2'
 		, 'raspberrypi-stop-initramfs', 'snapcast', 'upmpdcli', 'xf86-video-fbturbo-git' ].includes( pkg ) ) {
-		if ( pkg === 'bluez-alsa' ) pkg = 'bluez-alsa-git';
 		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
 	} else {
 		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );

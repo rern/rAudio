@@ -74,8 +74,9 @@ bluetooth )
 	;;
 bluetoothdisable )
 	systemctl disable --now bluetooth
-	systemctl stop bluealsa bluezdbus
-	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh btoff
+	pkill bluetooth
+	rm -f $dirshm/{btclient,btdevice,btsender}
+	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -748,6 +749,10 @@ $raspberrypiconf"
 $(  i2cdetect -y $dev )"
 	fi
 	echo "$config"
+	;;
+timedate )
+	echo '<bll># timedatectl</bll>'
+	timedatectl
 	;;
 timezone )
 	timezone=${args[1]}
