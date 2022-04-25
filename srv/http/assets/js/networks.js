@@ -44,6 +44,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
+	$( 'pre.status' ).addClass( 'hide' );
 	var $menu = $( '#menu' );
 	if ( !$menu.hasClass( 'hide' ) ) {
 		$menu.addClass( 'hide' );
@@ -55,7 +56,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
 //		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
+//		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -242,7 +243,7 @@ $( '#setting-accesspoint' ).click( function() {
 } );
 
 function bluetoothcommand( cmd, list ) {
-	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.sink +' "'+ list.name +'"' );
+	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' "'+ list.name +'"' );
 }
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );

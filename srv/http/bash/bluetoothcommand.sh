@@ -32,7 +32,6 @@ if [[ $1 == bton ]]; then # by udev rules
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	[[ ! $name ]] && name=Bluetooth
 	mac=$( echo "$info" | grep ^Device | cut -d' ' -f2 )
-	sink=false
 	if echo "$info" | grep -q 'Trusted: no'; then
 		bluetoothctl agent NoInputNoOutput
 		action=pair
@@ -42,8 +41,7 @@ if [[ $1 == bton ]]; then # by udev rules
 else
 	action=$1 # connect, disconnect, pair, remove
 	mac=$2
-	sink=$3
-	name=$4
+	name=$3
 	[[ ! $name ]] && name=Bluetooth
 fi
 
@@ -87,13 +85,6 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		pushstreamNotify "$name" Ready $icon
 		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
 		
-		macnew=$( bluetoothctl info | grep ^Device | cut -d' ' -f2 )
-		readarray -t macs <<< $( bluetoothctl paired-devices | cut -d' ' -f2 | grep -v $macnew )
-		if [[ $macs ]]; then
-			for mac in "${macs[@]}"; do
-				bluetoothctl info $mac | grep -q 'UUID: Audio' && bluetoothctl disconnect $mac &> /dev/null
-			done
-		fi
 		rm -f $dirshm/{btclient,btsender}
 		if [[ $sender ]]; then
 			echo $name > $dirshm/btsender
