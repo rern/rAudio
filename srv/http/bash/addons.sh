@@ -97,12 +97,10 @@ getinstallzip() {
 		| grep -v '/$' \
 		| sed 's|^|/|' \
 		| sort -V
-	rm -rf /srv/http/assets
 	bsdtar xf $installfile --strip 1 -C $tmpdir
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
-	chmod 777 $dirbash/cmd.sh
 	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
