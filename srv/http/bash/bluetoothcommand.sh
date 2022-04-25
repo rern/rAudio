@@ -33,7 +33,7 @@ elif [[ $action == btoff ]]; then
 	elif [[ -e $dirshm/btclient ]]; then
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		mpdbt=off
-		pushstreamNotify "$( cat $dirshm/btclient )" Disconnected bluetooth
+		pushstreamNotify "$( cat $dirshm/btclient | sed 's/ - A2DP$//' )" Disconnected bluetooth
 		rm $dirshm/btclient
 		systemctl stop bluetoothbutton
 		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
@@ -87,10 +87,10 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		pushstreamNotify "$name" Ready $icon
 		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
 		
+		rm -f $dirshm/{btclient,btsender}
 		if [[ $sender ]]; then
 			echo $name > $dirshm/btsender
 		else
-			echo $name > $dirshm/btclient
 			pushstream btclient true
 			mpdconf=1
 		fi

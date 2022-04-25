@@ -18,18 +18,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	if ( list.connected ) return
 	
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bash( '/srv/http/bash/bluetoothcommand.sh pair '+ list.mac +' '+ list.sink +' "'+ list.name +'"', function( data ) {
-		bannerHide();
-		if ( data != -1 ) {
-			$( '.back' ).click();
-		} else {
-			info( {
-				  icon      : 'bluetooth'
-				, title     : 'Bluetooth'
-				, message   : 'Pair <wh>'+ list.name +'</wh> failed'
-			} );
-		}
-	} );
+	bluetoothcommand( 'pair', list );
 } );
 $( '#wladd' ).click( function() {
 	'ssid' in G ? infoAccesspoint() : infoWiFi();
@@ -95,7 +84,7 @@ $( '.connect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btclient', -1 );
-		bash( '/srv/http/bash/bluetoothcommand.sh connect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
+		bluetoothcommand( 'connect', list );
 		return
 	}
 	
@@ -106,7 +95,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bash( '/srv/http/bash/bluetoothcommand.sh disconnect '+ list.mac +' '+ list.sink +' "'+ list.name +'"' )
+		bluetoothcommand( 'disconnect', list );
 		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
@@ -148,7 +137,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( name, 'Forget ...', 'bluetooth' );
-				bash( '/srv/http/bash/bluetoothcommand.sh remove '+ list.mac +' '+ list.sink +' "'+ name +'"' )
+				bluetoothcommand( 'remove', list );
 			}
 		} );
 		return
@@ -238,6 +227,9 @@ $( '#setting-accesspoint' ).click( function() {
 
 } );
 
+function bluetoothcommand( cmd, list ) {
+	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.sink +' "'+ list.name +'"' );
+}
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;

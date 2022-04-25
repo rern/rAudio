@@ -24,7 +24,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( systemctl -q is-active bluetooth && bluetoothctl info &> /dev/null | grep -q 'Audio Sink' && echo true )
+	btclient=$( exists $dirshm/btclient )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
