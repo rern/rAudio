@@ -44,7 +44,8 @@ $( timeout 1 avahi-browse -arp \
 	| sort -u )"
 	;;
 bluetoothinfo )
-	info=$( bluetoothctl info )
+	mac=${args[1]}
+	info=$( bluetoothctl info $mac )
 	if echo "$info" | grep -q 'UUID: Audio'; then
 		data="\
 <bll># bluealsa-aplay -L</bll>
@@ -53,7 +54,7 @@ $( bluealsa-aplay -L )
 	fi
 	echo "\
 $data
-<bll># bluetoothctl info</bll>
+<bll># bluetoothctl info $mac</bll>
 $info
 "
 	;;

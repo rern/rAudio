@@ -25,7 +25,6 @@ var cmd = {
 	  albumignore  : playersh +'albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : networkssh +'bluetoothinfo'
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'

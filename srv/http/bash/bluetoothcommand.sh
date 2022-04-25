@@ -54,7 +54,7 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		bluetoothctl trust $mac
 		bluetoothctl pair $mac
 		for i in {1..5}; do
-			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && break || sleep 1
+			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 		done
 	fi
 	bluetoothctl info | grep -q 'Connected: no' && bluetoothctl connect $mac
@@ -77,10 +77,9 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 				[[ ! $mixer ]] && sleep 1 || break
 			done
 			if [[ ! $mixer ]]; then
-				pushstreamNotify "$name" 'Paired successfully.' $icon
-				sleep 3
 				[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
-				pushstreamNotify "$name" "$msg - to start streaming." $icon 10
+				pushstreamNotify "$name" "Paired successfully.<br>$msg - to start streaming." $icon 10000
+				$dirbash/settings/networks-data.sh btlistpush
 				exit
 			fi
 		fi
@@ -88,6 +87,13 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 		pushstreamNotify "$name" Ready $icon
 		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
 		
+		macnew=$( bluetoothctl info | grep ^Device | cut -d' ' -f2 )
+		readarray -t macs <<< $( bluetoothctl paired-devices | cut -d' ' -f2 | grep -v $macnew )
+		if [[ $macs ]]; then
+			for mac in "${macs[@]}"; do
+				bluetoothctl info $mac | grep -q 'UUID: Audio' && bluetoothctl disconnect $mac &> /dev/null
+			done
+		fi
 		rm -f $dirshm/{btclient,btsender}
 		if [[ $sender ]]; then
 			echo $name > $dirshm/btsender

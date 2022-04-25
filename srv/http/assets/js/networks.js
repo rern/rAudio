@@ -52,7 +52,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
-		$( '#menu .forget' ).removeClass( 'hide' );
+		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
 //		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
@@ -75,7 +75,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 } );
 $( 'body' ).click( function( e ) {
 	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) {
-		$( '#menu' ).addClass( 'hide' );
+		$( '#menu, pre.status' ).addClass( 'hide' );
 		$( 'li' ).removeClass( 'active' );
 	}
 } );
@@ -155,6 +155,20 @@ $( '.forget' ).click( function() {
 			notify( ssid, 'Forget ...', 'wifi' );
 			bash( [ 'profileremove', ssid, connected ] );
 		}
+	} );
+} );
+$( '.info' ).click( function() {
+	var $code = $( '#codebluetooth' );
+	if ( !$code.hasClass( 'hide' ) ) {
+		$code.addClass( 'hide' );
+		return
+	}
+	
+	var list = G.listbt[ G.li.index() ]
+	bash( [ 'bluetoothinfo', list.mac ], function( data ) {
+		$code
+			.html( data )
+			.removeClass( 'hide' );
 	} );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
@@ -396,8 +410,6 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
-	$( '#divbt heading' ).toggleClass( 'status', G.btconnected );
-	if ( ! G.btconnected ) $( '#codebluetooth' ).addClass( 'hide' );
 }
 function renderPage() {
 	if ( G.activebt ) {

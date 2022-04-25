@@ -47,6 +47,13 @@ if [[ $1 ]]; then
 			btsender=$( bluetoothctl info | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			echo $btsender > $dirshm/btsender
 			pushstreamNotify "$btsender" Ready bluetooth
+			macnew=$( bluetoothctl info | grep ^Device | cut -d' ' -f2 )
+			readarray -t macs <<< $( bluetoothctl paired-devices | cut -d' ' -f2 | grep -v $macnew )
+			if [[ $macs ]]; then
+				for mac in "${macs[@]}"; do
+					bluetoothctl info $mac | grep -q 'UUID: Audio' && bluetoothctl disconnect $mac &> /dev/null
+				done
+			fi
 			listBluetooth
 			pushstream bluetooth "$listbt"
 			;;

@@ -3,11 +3,11 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan' => 'search wh' ]
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
+	<pre id="codebluetooth" class="status hide"></pre>
 	<div class="help-block hide"><wh>rAudio as sender:</wh>
  • Pairing:
  &emsp; - On receiver device - Turn on pairing/discovery mode
@@ -113,4 +113,5 @@ htmlHead( [ //////////////////////////////////
 <a class="disconnect"><i class="fa fa-times"></i>Disconnect</a>
 <a class="edit"><i class="fa fa-edit-circle"></i>Edit</a>
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
+<a class="info"><i class="fa fa-info-circle"></i>Info</a>
 </div>
