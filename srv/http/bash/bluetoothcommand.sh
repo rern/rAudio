@@ -12,7 +12,6 @@ if [[ $udev == btoff ]]; then
 		
 		name=$( cat $file | sed 's/ - A2DP$//' )
 		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
-		echo $name $mac
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
 			[[ $type == btsender ]] && icon=btclient || icon=bluetooth
 			pushstreamNotify "$name" Disconnected $icon
@@ -31,11 +30,22 @@ if [[ $udev == btoff ]]; then
 fi
 
 if [[ $udev == bton ]]; then
-	info=$( bluetoothctl info )
-	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-	[[ ! $name ]] && name=Bluetooth
-	mac=$( echo "$info" | grep ^Device | cut -d' ' -f2 )
-	if echo "$info" | grep -q 'Paired: no'; then
+	macs=$( bluetoothctl paired-devices | cut -d' ' -f2 )
+	for mac in ${macs[@]}; do
+		info=$( bluetoothctl info $mac )
+		if echo "$info" | grep -q 'Connected: yes'; then
+			if echo "$info" | grep -q 'UUID: Audio Sink'; then
+				type=btclient
+			elif echo "$info" | grep -q 'UUID: Audio Source'; then
+				type=btsender
+			else
+				type=btdevice
+			fi
+			[[ ! -e $dirshm/$type ]] && break
+			#! grep -q "$name" $dirshm/$type &> /dev/null && break
+		fi
+	done
+	if bluetoothctl info $mac | grep -q 'Paired: no'; then
 		bluetoothctl agent NoInputNoOutput
 		action=pair
 	else
@@ -49,7 +59,7 @@ else
 fi
 
 if [[ $action == connect || $action == pair ]]; then
-	info=$( bluetoothctl info )
+	info=$( bluetoothctl info $mac )
 	if [[ $action == pair ]]; then
 		pair=1
 		bluetoothctl trust $mac
@@ -58,7 +68,7 @@ if [[ $action == connect || $action == pair ]]; then
 			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 		done
 	fi
-	bluetoothctl info | grep -q 'Connected: no' && bluetoothctl connect $mac
+	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..10}; do
 		if bluetoothctl info $mac 2> /dev/null | grep -q 'UUID: '; then
 			uuid=1
@@ -68,9 +78,10 @@ if [[ $action == connect || $action == pair ]]; then
 		fi
 	done
 	if [[ $uuid ]]; then
-		info=$( bluetoothctl info )
+		info=$( bluetoothctl info $mac )
 		echo "$info" | grep -q 'UUID: Audio' && audiodevice=1
 		echo "$info" | grep -q 'UUID: Audio Source' && sender=1
+		name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 		[[ $sender ]] && icon=btclient || icon=bluetooth
 		if [[ $pair && $audiodevice ]]; then
 			for i in {1..5}; do
@@ -133,6 +144,7 @@ fi
 
 btmixer=$( echo "$btmixer" \
 			| grep ' - A2DP' \
+			| grep "$name" \
 			| cut -d"'" -f2 )
 ##### receiver
 echo $btmixer > $dirshm/btclient
