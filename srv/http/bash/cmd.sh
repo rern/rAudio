@@ -865,7 +865,7 @@ playerstop )
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $service != snapclient ]] && systemctl restart $service
+	[[ $service && $service != snapclient ]] && systemctl restart $service
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
