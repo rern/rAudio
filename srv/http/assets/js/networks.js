@@ -397,6 +397,7 @@ function infoWiFi( values ) {
 	} );
 }
 function renderBluetooth() {
+	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '.back' ).click();
 	G.btconnected = false;
 	var htmlbt = '';
 	if ( G.listbt ) {
@@ -453,7 +454,7 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-	renderQR();
+	if ( !$( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
 	showContent();
 }
 function qr( msg ) {

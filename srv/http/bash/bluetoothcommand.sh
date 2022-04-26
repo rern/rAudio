@@ -2,7 +2,9 @@
 
 . /srv/http/bash/common.sh
 
-if [[ $1 == btoff ]]; then # by udev rules
+udev=$1
+
+if [[ $udev == btoff ]]; then
 	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender && ! -e $dirshm/btdevice ]] && exit # debounce
 	
 	if [[ -e $dirshm/btdevice ]]; then
@@ -27,12 +29,13 @@ if [[ $1 == btoff ]]; then # by udev rules
 	exit
 fi
 
-if [[ $1 == bton ]]; then # by udev rules
+if [[ $udev == bton ]]; then
 	info=$( bluetoothctl info )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	[[ ! $name ]] && name=Bluetooth
 	mac=$( echo "$info" | grep ^Device | cut -d' ' -f2 )
-	if echo "$info" | grep -q 'Trusted: no'; then
+	sink=false
+	if echo "$info" | grep -q 'Paired: no'; then
 		bluetoothctl agent NoInputNoOutput
 		action=pair
 	else
@@ -41,7 +44,8 @@ if [[ $1 == bton ]]; then # by udev rules
 else
 	action=$1 # connect, disconnect, pair, remove
 	mac=$2
-	name=$3
+	sink=$3
+	name=$4
 	[[ ! $name ]] && name=Bluetooth
 fi
 
@@ -76,17 +80,19 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 			done
 			if [[ ! $mixer ]]; then
 				[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
-				pushstreamNotify "$name" "Paired successfully.<br>$msg - to start streaming." $icon 10000
+				pushstreamNotify "$name" "Paired successfully.<br>$msg - to start streaming." $icon -1
 				$dirbash/settings/networks-data.sh btlistpush
 				exit
 			fi
 		fi
 		
 		pushstreamNotify "$name" Ready $icon
+##### non-audio
 		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
 		
 		rm -f $dirshm/{btclient,btsender}
 		if [[ $sender ]]; then
+##### sender
 			echo $name > $dirshm/btsender
 		else
 			mpdconf=1
@@ -130,6 +136,7 @@ fi
 btmixer=$( echo "$btmixer" \
 			| grep ' - A2DP' \
 			| cut -d"'" -f2 )
+##### receiver
 echo $btmixer > $dirshm/btclient
 pushstream btclient true
 $dirbash/mpd-conf.sh

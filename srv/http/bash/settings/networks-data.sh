@@ -3,72 +3,34 @@
 . /srv/http/bash/common.sh
 
 # bluetooth
-listBluetooth() {
-	if systemctl -q is-active bluetooth; then
-		readarray -t lines <<< $( bluetoothctl paired-devices \
-									| cut -d' ' -f2,3- \
-									| awk NF \
-									| sort -k2 -fh )
-		if [[ $lines ]]; then
-			for line in "${lines[@]}"; do
-				mac=${line/ *}
-				[[ $mac == Device ]] && continue
-				
-				info=$( bluetoothctl info $mac )
-				name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-				connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-				sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
-				listbt+=',{
-  "name"      : "'${name//\"/\\\"}'"
+if systemctl -q is-active bluetooth; then
+	readarray -t lines <<< $( bluetoothctl paired-devices \
+								| cut -d' ' -f2,3- \
+								| awk NF \
+								| sort -k2 -fh )
+	if [[ $lines ]]; then
+		for line in "${lines[@]}"; do
+			mac=${line/ *}
+			[[ $mac == Device ]] && continue
+			
+			info=$( bluetoothctl info $mac )
+			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
+			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
+			listbt+=',{
+"name"      : "'${name//\"/\\\"}'"
 , "mac"       : "'$mac'"
 , "sink"      : '$sink'
 , "connected" : '$connected'
 }'
-			done
-			listbt="[ ${listbt:1} ]"
-		else
-			listbt=false
-		fi
+		done
+		listbt="[ ${listbt:1} ]"
+	else
+		listbt=false
 	fi
-}
-
-if [[ $1 ]]; then
-	case $1 in
-		btlistpush ) # from bluetoothcommand.sh
-			listBluetooth
-			pushstream bluetooth "$listbt"
-			;;
-		1 ) # sender: 1 = connect - from bluealsa-dbus.py
-			[[ -e $dirshm/btsender ]] && exit
-			
-			for i in {1..5}; do
-				bluetoothctl info &> /dev/null && break || sleep 1
-			done
-			btsender=$( bluetoothctl info | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-			echo $btsender > $dirshm/btsender
-			pushstreamNotify "$btsender" Ready bluetooth
-			listBluetooth
-			pushstream bluetooth "$listbt"
-			;;
-		* ) # sender: 0 = disconnect - from bluealsa-dbus.py
-			[[ ! -e $dirshm/btsender ]] && exit
-			
-			btsender=$( cat $dirshm/btsender )
-			rm -f $dirshm/btsender
-			pushstreamNotify "$btsender" Disconnected bluetooth
-			for i in {1..5}; do
-				bluetoothctl info &> /dev/null && sleep 1 || break
-			done
-			listBluetooth
-			pushstream bluetooth "$listbt"
-			sleep 3
-			rm -f $dirshm/{bluetoothdest,btsender}
-			;;
-	esac
-	exit
 fi
 
-listBluetooth
+[[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ $ipeth ]]; then
