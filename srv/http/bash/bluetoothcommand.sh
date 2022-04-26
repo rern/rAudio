@@ -5,22 +5,19 @@
 udev=$1
 
 if [[ $udev == btoff ]]; then
-	[[ ! -e $dirshm/btclient && ! -e $dirshm/btsender && ! -e $dirshm/btdevice ]] && exit # debounce
-	
-	if [[ -e $dirshm/btdevice ]]; then
-		pushstreamNotify "$( cat $dirshm/btdevice )" Disconnected bluetooth
-		rm $dirshm/btdevice
-		exit
-	fi
-	
-	if [[ -e $dirshm/btsender ]]; then
-		pushstreamNotify "$( cat $dirshm/btsender )" Disconnected btclient
-		rm $dirshm/btsender
-	elif [[ -e $dirshm/btclient ]]; then
+	[[ -e $dirshm/btclient ]] && mpdconf=1
+	for type in btevice btclient btsender; do
+		name=$( cat $dirshm/$type | sed 's/ - A2DP$//' )
+		mac=$( bluetoothctl paired-devices | grep -q "$name" | cut -d' ' -f2 )
+		if bluetoothctl info $mac | grep -q 'Connected: no'; then
+			[[ $type == btsender ]] && icon=btclient || icon=bluetooth
+			pushstreamNotify "$name" Disconnected $icon
+			rm $dirshm/$type
+		fi
+	done
+	if [[ $mpdconf ]]; then
 		pushstream btclient false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
-		pushstreamNotify "$( cat $dirshm/btclient | sed 's/ - A2DP$//' )" Disconnected bluetooth
-		rm $dirshm/btclient
 		systemctl stop bluetoothbutton
 		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 		$dirbash/mpd-conf.sh
@@ -34,7 +31,6 @@ if [[ $udev == bton ]]; then
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	[[ ! $name ]] && name=Bluetooth
 	mac=$( echo "$info" | grep ^Device | cut -d' ' -f2 )
-	sink=false
 	if echo "$info" | grep -q 'Paired: no'; then
 		bluetoothctl agent NoInputNoOutput
 		action=pair
@@ -42,14 +38,13 @@ if [[ $udev == bton ]]; then
 		action=connect
 	fi
 else
-	action=$1 # connect, disconnect, pair, remove
+	action=$1 # pair, remove (bugs: connect, disconnect)
 	mac=$2
-	sink=$3
-	name=$4
+	name=$3
 	[[ ! $name ]] && name=Bluetooth
 fi
 
-if [[ $action == connect || $action == pair ]]; then # pair / connect
+if [[ $action == connect || $action == pair ]]; then
 	info=$( bluetoothctl info )
 	if [[ $action == pair ]]; then
 		pair=1
@@ -90,7 +85,6 @@ if [[ $action == connect || $action == pair ]]; then # pair / connect
 ##### non-audio
 		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
 		
-		rm -f $dirshm/{btclient,btsender}
 		if [[ $sender ]]; then
 ##### sender
 			echo $name > $dirshm/btsender

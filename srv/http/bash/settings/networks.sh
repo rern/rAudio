@@ -49,7 +49,7 @@ bluetoothinfo )
 	if (( $( echo "$info" | grep 'Connected: yes\|UUID: Audio' | wc -l ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L )
+$( bluealsa-aplay -L | grep -A2 $mac )
 "
 	fi
 	data+="\
