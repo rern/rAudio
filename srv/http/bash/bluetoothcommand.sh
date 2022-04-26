@@ -139,4 +139,5 @@ btmixer=$( echo "$btmixer" \
 ##### receiver
 echo $btmixer > $dirshm/btclient
 pushstream btclient true
+$dirbash/cmd.sh playerstop
 $dirbash/mpd-conf.sh
