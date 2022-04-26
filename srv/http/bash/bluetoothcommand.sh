@@ -6,13 +6,17 @@ udev=$1
 
 if [[ $udev == btoff ]]; then
 	[[ -e $dirshm/btclient ]] && mpdconf=1
-	for type in btevice btclient btsender; do
-		name=$( cat $dirshm/$type | sed 's/ - A2DP$//' )
-		mac=$( bluetoothctl paired-devices | grep -q "$name" | cut -d' ' -f2 )
+	for type in btdevice btclient btsender; do
+		file=$dirshm/$type
+		[[ ! -e $file ]] && continue
+		
+		name=$( cat $file | sed 's/ - A2DP$//' )
+		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
+		echo $name $mac
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
 			[[ $type == btsender ]] && icon=btclient || icon=bluetooth
 			pushstreamNotify "$name" Disconnected $icon
-			rm $dirshm/$type
+			rm $file
 		fi
 	done
 	if [[ $mpdconf ]]; then
