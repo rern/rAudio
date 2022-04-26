@@ -845,7 +845,7 @@ playerstop )
 			rm -f $dirshm/airplay/start
 			;;
 		bluetooth )
-			service=bluetooth
+			rm -f $dirshm/bluetoothdest
 			;;
 		snapcast )
 			service=snapclient
