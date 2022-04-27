@@ -495,10 +495,11 @@ dirpermissions )
 	chmod -R 755 /srv/http/{assets,bash,data,settings} # exclude mnt
 	
 	chown http:http $list
-	chown -Rh http:http /srv/http/*/
+	chown -h http:http /srv/http/mnt
+	chown -Rh http:http /srv/http/{assets,bash,data,settings}
 	
-	chown -Rh mpd:audio /srv/http/data/{mpd,playlists}
-	chown mpd:audio /srv/http/data/mpd/mpd.db 2> /dev/null
+	chown -Rh mpd:audio $dirplaylists
+	chown mpd:audio $dirmpd/mpd.db 2> /dev/null
 	;;
 displaysave )
 	data=${args[1]}
