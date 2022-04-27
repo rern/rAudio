@@ -2,7 +2,7 @@
 
 alias=r1
 
-# 20220425
+# 20220428
 # /etc/udev/rules.d/bluetooth.rules
 rm -f /etc/systemd/system/bluealsa-aplay.service
 
@@ -10,8 +10,13 @@ echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profil
 
 # 20220422 - with /etc/*
 if modinfo ntfs3 &> /dev/null; then
-	pacman -R --noconfirm ntfs-3g 2> /dev/null
-	modprobe ntfs3
+	if pacman -Q ntfs-3g &> /dev/null; then
+		pacman -R --noconfirm ntfs-3g 2> /dev/null
+		modprobe ntfs3
+		echo ntfs3 > /etc/modules-load.d/ntfs3.conf
+	fi
+else
+	rm -f /etc/modules-load.d/ntfs3.conf
 fi
 
 file=/srv/http/data/shm/wlan
@@ -47,9 +52,6 @@ installstart "$1"
 getinstallzip
 
 # 20220422
-if ! modinfo ntfs3 &> /dev/null; then
-	rm -f /etc/modules-load.d/ntfs3.conf /etc/udev/rules.d/ntfs3.rules
-fi
 if [[ -e /srv/http/bash/features.sh ]]; then
 	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
