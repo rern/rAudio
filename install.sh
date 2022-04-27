@@ -59,12 +59,12 @@ fi
 
 chmod +x /srv/http/bash/cmd.sh
 /srv/http/bash/cmd.sh dirpermissions
+
 udevadm control --reload-rules
 udevadm trigger
+
 systemctl daemon-reload
-
 systemctl try-restart bluetooth
-
 systemctl restart mpd
 
 installfinish
