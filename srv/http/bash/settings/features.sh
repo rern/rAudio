@@ -70,7 +70,7 @@ camilladsp )
 			exit
 		fi
 		
-		echo snd-loop > /etc/modules-load.d/loopback.conf
+		echo snd-aloop > /etc/modules-load.d/loopback.conf
 	else
 		systemctl stop camilladsp
 		rmmod snd-aloop &> /dev/null

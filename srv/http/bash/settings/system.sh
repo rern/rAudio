@@ -190,7 +190,7 @@ datarestore )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
 	if systemctl -q is-enabled camilladsp; then
 		modprobe snd-aloop
-		echo snd-loop > /etc/modules-load.d/loopback.conf
+		echo snd-aloop > /etc/modules-load.d/loopback.conf
 	fi
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
 	if [[ -e $dirsystem/mirror ]]; then
