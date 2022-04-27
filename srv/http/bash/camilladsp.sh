@@ -5,7 +5,7 @@ camillaStart() {
 	sleep 1
 	if pgrep -x camilladsp &> /dev/null; then
 		pkill -x camilladsp &> /dev/null
-		systemctl restart camilladsp
+		systemctl enable --now camilladsp
 		pushRefresh
 		exit
 	fi
