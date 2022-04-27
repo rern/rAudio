@@ -492,10 +492,9 @@ coverfileslimit )
 dirpermissions )
 	list='/srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/'
 	chmod 755 $list
-	chmod -R 755 /srv/http/{assets,bash,data,settings} # exclude mnt
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	
 	chown http:http $list
-	chown -h http:http /srv/http/mnt
 	chown -Rh http:http /srv/http/{assets,bash,data,settings}
 	
 	chown -Rh mpd:audio $dirplaylists
