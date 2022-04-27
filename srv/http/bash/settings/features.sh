@@ -63,6 +63,10 @@ autoplayset )
 	;;
 camilladsp )
 	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
+		modprobe snd-aloop
+		$dirbash/camilladsp.sh
+		! systemctl -q is-active camilladsp && exit
+		
 		touch $dirsystem/camilladsp
 	else
 		systemctl stop camilladsp

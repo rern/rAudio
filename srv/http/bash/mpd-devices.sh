@@ -13,8 +13,6 @@
 dirshm=/srv/http/data/shm
 dirsystem=/srv/http/data/system
 
-[[ -e $dirsystem/camilladsp ]] && modprobe snd-aloop
-
 aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btclient ]] && i=0 || i=-1
