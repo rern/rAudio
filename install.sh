@@ -5,6 +5,7 @@ alias=r1
 # 20220425
 # /etc/udev/rules.d/bluetooth.rules
 rm -f /etc/systemd/system/bluealsa-aplay.service
+
 echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 
 # 20220422 - with /etc/*
@@ -53,7 +54,7 @@ if [[ -e /srv/http/bash/features.sh ]]; then
 	echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
 fi
-chmod 777 /srv/http/bash/cmd.sh
+
 /srv/http/bash/cmd.sh dirpermissions
 udevadm control --reload-rules
 udevadm trigger
@@ -61,9 +62,16 @@ systemctl daemon-reload
 
 # 20220425
 if [[ -e $dirsystem/camilladsp ]]; then
-	echo snd-aloop > /etc/modules-load.d/loopback.conf
-	systemctl enable camilladsp
 	rm $dirsystem/camilladsp
+	echo'
+[Install]\
+WantedBy=multi-user.target
+' >> /etc/systemd/system/camilladsp.service
+	mv /{etc,lib}/systemd/system/camilladsp.service
+	mv /{etc,lib}/systemd/system/camillagui.service
+	echo snd-aloop > /etc/modules-load.d/loopback.conf
+	systemctl daemon-reload
+	systemctl enable camilladsp
 fi
 systemctl try-restart bluetooth
 
