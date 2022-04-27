@@ -14,7 +14,7 @@ data+='
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladsp"       : '$( systemctl -q is-active camilladsp && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'

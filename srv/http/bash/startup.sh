@@ -93,8 +93,6 @@ fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
-[[ -e $dirsystem/camilladsp ]] && modprobe snd-aloop && systemctl start camilladsp
-
 $dirbash/mpd-conf.sh # mpd.service started by this script
 
 # after all sources connected

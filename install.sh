@@ -4,6 +4,10 @@ alias=r1
 
 # 20220425
 # /etc/udev/rules.d/bluetooth.rules
+if [[ -e $dirsystem/camilladsp ]]; then
+	systemctl enable camilladsp
+	rm $dirsystem/camilladsp
+fi
 rm -f /etc/systemd/system/bluealsa-aplay.service
 echo 'PATH+=:/srv/http/bash:/srv/http/bash/settings:/opt/vc/bin' > /root/.profile
 

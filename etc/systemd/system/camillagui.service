@@ -1,0 +1,6 @@
+[Unit]
+Description=CamillaDSP GUI
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /srv/http/settings/camillagui/main.py

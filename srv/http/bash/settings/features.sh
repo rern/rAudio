@@ -65,13 +65,16 @@ camilladsp )
 	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
 		modprobe snd-aloop
 		$dirbash/camilladsp.sh
-		! systemctl -q is-active camilladsp && exit
+		if ! systemctl -q is-active camilladsp; then
+			rmmod snd-aloop &> /dev/null
+			exit
+		fi
 		
-		touch $dirsystem/camilladsp
+		echo snd-loop > /etc/modules-load.d/loopback.conf
 	else
 		systemctl stop camilladsp
-		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
+		rm -f /etc/modules-load.d/loopback.conf
 		pushRefresh
 	fi
 	$dirbash/mpd-conf.sh

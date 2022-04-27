@@ -152,7 +152,7 @@ fi
 data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladsp"       : '$( systemctl -q is-active camilladsp && echo true )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
 , "hostname"         : "'$( hostname )'"
