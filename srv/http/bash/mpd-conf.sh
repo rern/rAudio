@@ -12,7 +12,6 @@
 
 restartMPD() {
 	systemctl restart mpd
-	[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -52,7 +51,8 @@ if [[ $i != -1 ]]; then # $i - current card number
 	name           "CamillaDSP"
 	device         "'$hw'"
 	type           "alsa"
-	auto_resample  "no"'
+	auto_resample  "no"
+	mixer_type     "none"'
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btclient ]] && mixertype=software
@@ -269,6 +269,9 @@ fi
 
 echo "$asound" > /etc/asound.conf
 alsactl nrestore &> /dev/null # notify changes to running daemons
+
+[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
+
 
 [[ $preset ]] && $dirbash/cmd.sh "equalizer
 preset
