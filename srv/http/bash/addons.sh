@@ -101,6 +101,7 @@ getinstallzip() {
 	rm $installfile $tmpdir/* &> /dev/null
 	cp -rp $tmpdir/* /
 	rm -r $tmpdir
+	chmod +x $dirbash/cmd.sh
 	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 }
