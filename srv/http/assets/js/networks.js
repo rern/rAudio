@@ -494,11 +494,7 @@ function scanBluetooth() {
 			G.listbtscan = data;
 			var htmlbt = '';
 			data.forEach( function( list ) {
-				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i>';
-				if ( list.connected ) htmlbt += '<grn>•&ensp;</grn>';
-				htmlbt += '<a class="liname wh">'+ list.name +'</a>';
-				if ( list.paired && !list.connected ) htmlbt += '&ensp;<i class="fa fa-save-circle wh"></i>';
-				htmlbt += '</li>';
+				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i><a class="liname wh">'+ list.name +'</a></li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
 		}

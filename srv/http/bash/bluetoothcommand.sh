@@ -5,7 +5,7 @@
 udev=$1
 
 if [[ $udev == btoff ]]; then
-	[[ -e $dirshm/btclient ]] && mpdconf=1
+	sleep 2
 	for type in btdevice btclient btsender; do
 		file=$dirshm/$type
 		[[ ! -e $file ]] && continue
@@ -13,9 +13,11 @@ if [[ $udev == btoff ]]; then
 		name=$( cat $file | sed 's/ - A2DP$//' )
 		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
+			[[ $type == btclient ]] && mpdconf=1
 			[[ $type == btsender ]] && icon=btclient || icon=bluetooth
 			pushstreamNotify "$name" Disconnected $icon
 			rm $file
+			break
 		fi
 	done
 	if [[ $mpdconf ]]; then
@@ -30,11 +32,14 @@ if [[ $udev == btoff ]]; then
 fi
 
 if [[ $udev == bton ]]; then
+	sleep 2
 	macs=$( bluetoothctl paired-devices | cut -d' ' -f2 )
 	for mac in ${macs[@]}; do
 		info=$( bluetoothctl info $mac )
 		if echo "$info" | grep -q 'Connected: yes'; then
 			if echo "$info" | grep -q 'UUID: Audio Sink'; then
+				systemctl -q is-active startup && exit # suppress on startup
+				
 				type=btclient
 			elif echo "$info" | grep -q 'UUID: Audio Source'; then
 				type=btsender
@@ -77,41 +82,54 @@ if [[ $action == connect || $action == pair ]]; then
 			sleep 1
 		fi
 	done
-	if [[ $uuid ]]; then
-		info=$( bluetoothctl info $mac )
-		echo "$info" | grep -q 'UUID: Audio' && audiodevice=1
-		echo "$info" | grep -q 'UUID: Audio Source' && sender=1
-		name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-		[[ $sender ]] && icon=btclient || icon=bluetooth
-		if [[ $pair && $audiodevice ]]; then
-			for i in {1..5}; do
-				mixer=$( bluealsa-aplay -L )
-				[[ ! $mixer ]] && sleep 1 || break
-			done
-			if [[ ! $mixer ]]; then
-				[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
-				pushstreamNotify "$name" "Paired successfully.<br>$msg - to start streaming." $icon -1
-				$dirbash/settings/networks-data.sh btlistpush
-				exit
-			fi
+	[[ ! $uuid ]] && pushstreamNotify "$name" 'Connect failed.' bluetooth && exit
+	
+	info=$( bluetoothctl info $mac )
+	echo "$info" | grep -q 'UUID: Audio' && audiodevice=1
+	echo "$info" | grep -q 'UUID: Audio Source' && sender=1
+	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+	[[ $sender ]] && icon=btclient || icon=bluetooth
+	if [[ $audiodevice ]]; then
+		for i in {1..5}; do
+			mixer=$( bluealsa-aplay -L )
+			[[ ! $mixer ]] && sleep 1 || break
+		done
+		if [[ ! $mixer ]]; then # pair from rAudio as receiver - mixers not initialized
+			[[ $sender ]] && msg='disconnect > connect' || msg='power off > on'
+			pushstreamNotify "$name" "Mixers not ready. Try <wh>$msg</wh> again." $icon -1
+			exit
 		fi
-		
-		pushstreamNotify "$name" Ready $icon
-##### non-audio
-		[[ ! $audiodevice ]] && echo $name > $dirshm/btdevice && exit
-		
-		if [[ $sender ]]; then
-##### sender
-			echo $name > $dirshm/btsender
-		else
-			mpdconf=1
-		fi
-		$dirbash/settings/networks-data.sh btlistpush
-	else
-		pushstreamNotify "$name" 'Connect failed.' bluetooth
-		exit
-		
 	fi
+	
+	pushstreamNotify "$name" Ready $icon
+	if [[ ! $audiodevice ]]; then
+##### non-audio
+		echo $name > $dirshm/btdevice
+	elif [[ $sender ]]; then
+##### sender
+		echo $name > $dirshm/btsender
+	else
+		for i in {1..5}; do # wait for list available
+			sleep 1
+			btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+			[[ $btmixer ]] && break
+		done
+		if [[ ! $btmixer ]]; then
+			pushstreamNotify "$name" 'Mixers not ready. Try <wh>power off > on</wh> again.' $icon
+			exit
+		fi
+
+		btmixer=$( echo "$btmixer" \
+					| grep ' - A2DP' \
+					| grep "$name" \
+					| cut -d"'" -f2 )
+##### receiver
+		echo $btmixer > $dirshm/btclient
+		pushstream btclient true
+		$dirbash/cmd.sh playerstop
+		$dirbash/mpd-conf.sh
+	fi
+	$dirbash/settings/networks-data.sh btlistpush
 elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == disconnect ]]; then
@@ -129,25 +147,3 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	pushstreamNotify "$name" $done $icon
 	$dirbash/settings/networks-data.sh btlistpush
 fi
-
-[[ ! $mpdconf ]] && exit
-
-for i in {1..5}; do # wait for list available
-	sleep 1
-	btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-	[[ $btmixer ]] && break
-done
-if [[ ! $btmixer ]]; then
-	pushstreamNotify "$name" 'No mixers found.' $icon
-	exit
-fi
-
-btmixer=$( echo "$btmixer" \
-			| grep ' - A2DP' \
-			| grep "$name" \
-			| cut -d"'" -f2 )
-##### receiver
-echo $btmixer > $dirshm/btclient
-pushstream btclient true
-$dirbash/cmd.sh playerstop
-$dirbash/mpd-conf.sh
