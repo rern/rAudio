@@ -44,7 +44,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	name=${Aname[i]}
 	if systemctl -q is-active camilladsp; then
 		camilladsp=1
-		cardloopback=$( cat $dirshm/asoundloopback )
+		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------<
 		output+='
