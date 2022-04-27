@@ -12,6 +12,7 @@
 
 restartMPD() {
 	systemctl restart mpd
+	[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
 	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
 		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 	fi
@@ -42,7 +43,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
-	if systemctl -q is-active camilladsp; then
+	if [[ -e $dirsystem/camilladsp ]]; then
 		camilladsp=1
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1

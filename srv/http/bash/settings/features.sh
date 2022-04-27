@@ -62,19 +62,12 @@ autoplayset )
 	pushRefresh
 	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
-		modprobe snd-aloop
-		$dirbash/camilladsp.sh
-		if ! systemctl -q is-active camilladsp; then
-			rmmod snd-aloop &> /dev/null
-			exit
-		fi
-		
-		echo snd-aloop > /etc/modules-load.d/loopback.conf
+	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh (+ modprobe in mpd-devices.sh)
+		touch $dirsystem/camilladsp
 	else
 		systemctl stop camilladsp
+		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
-		rm -f /etc/modules-load.d/loopback.conf
 		pushRefresh
 	fi
 	$dirbash/mpd-conf.sh

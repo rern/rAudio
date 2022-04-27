@@ -60,19 +60,6 @@ udevadm control --reload-rules
 udevadm trigger
 systemctl daemon-reload
 
-# 20220425
-if [[ -e $dirsystem/camilladsp ]]; then
-	rm $dirsystem/camilladsp
-	echo'
-[Install]\
-WantedBy=multi-user.target
-' >> /etc/systemd/system/camilladsp.service
-	mv /{etc,lib}/systemd/system/camilladsp.service
-	mv /{etc,lib}/systemd/system/camillagui.service
-	echo snd-aloop > /etc/modules-load.d/loopback.conf
-	systemctl daemon-reload
-	systemctl enable camilladsp
-fi
 systemctl try-restart bluetooth
 
 systemctl restart mpd
