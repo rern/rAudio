@@ -21,7 +21,7 @@ for dev in "${devices[@]}"; do
         name=${dev/^*}
         mac=${dev/*^}
         data+=',{
-  "name"      : "'${name//\"/\\\"}'"
+  "name"      : "'$name'"
 , "mac"       : "'$mac'"
 }'
 done
