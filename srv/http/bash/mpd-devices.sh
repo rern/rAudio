@@ -10,10 +10,8 @@
 #    - from file if manually set
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
 
-[[ -e $dirsystem/camilladsp ]] && modprobe snd-aloop
+### included by mpd-conf.sh, player-data.sh
 
 aplay=$( aplay -l 2> /dev/null \
 			| grep '^card' \

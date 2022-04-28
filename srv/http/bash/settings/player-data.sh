@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-
 . $dirbash/mpd-devices.sh
 
 active=$( mpc &> /dev/null && echo true )

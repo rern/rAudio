@@ -9,31 +9,10 @@
 # - dop           - if set
 
 . /srv/http/bash/common.sh
-
-restartMPD() {
-	systemctl restart mpd
-	if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
-		mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
-	fi
-	pushstream mpdplayer "$( $dirbash/status.sh )"
-	pushstream refresh "$( $dirbash/settings/player-data.sh )"
-	systemctl try-restart rotaryencoder
-	if [[ -e $dirmpd/updating ]]; then
-		path=$( cat $dirmpd/updating )
-		[[ $path == rescan ]] && mpc rescan || mpc update "$path"
-	fi
-	( sleep 2 && systemctl try-restart snapclient ) &> /dev/null &
-}
-
-if [[ -e $dirshm/btclient ]]; then
-	btmixer=$( cat $dirshm/btclient )
-	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
-	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
-fi
-
 . $dirbash/mpd-devices.sh
+. $dirbash/mpd-asound.sh
 
+# outputs -----------------------------------------------------------------------------
 output= # reset var from mpd-devices.sh
 if [[ $i != -1 ]]; then # $i - current card number
 	aplayname=${Aaplayname[i]}
@@ -42,8 +21,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
-	if [[ -e $dirsystem/camilladsp ]]; then
-		camilladsp=1
+	if [[ $camilladsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------<
@@ -68,7 +46,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 		# no mac address needed - bluealsa already includes mac of latest connected device
 #---------------<
 		output+='
-	name           "'$btalias'"
+	name           "'$btmixer'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
@@ -174,7 +152,7 @@ $global
 $output
 $btoutput" > /etc/mpd.conf
 
-# usbdac.rules
+# usbdac.rules -------------------------------------------------------------------------
 if [[ $1 == add || $1 == remove ]]; then
 	$dirbash/cmd.sh playerstop
 	if [[ ! $name ]]; then
@@ -186,107 +164,24 @@ if [[ $1 == add || $1 == remove ]]; then
 	pushstream display '{"volumenone":'$volumenone'}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
-[[ ! $Acard && ! $btmixer ]] && restartMPD && exit
 
-########
-asound="\
-defaults.pcm.card $i
-defaults.ctl.card $i"
-#-------
-if [[ $btmixer ]]; then
-########
-	asound+='
-pcm.bluealsa {
-	type plug
-	slave.pcm {
-		type bluealsa
-		device 00:00:00:00:00:00
-		profile "a2dp"
-	}
-}'
-#-------
+### mpd start ##########################################################################
+systemctl restart mpd
+
+if [[ -e $dirmpd/updating ]]; then
+	path=$( cat $dirmpd/updating )
+	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-
-if [[ -e $dirsystem/equalizer ]]; then
-	filepresets=$dirsystem/equalizer.presets
-	if [[ $btmixer ]]; then
-		slavepcm=bluealsa
-		filepresets+="-$btalias"
-	else
-		slavepcm='"plughw:'$i',0"'
-	fi
-	preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
-########
-	asound+='
-pcm.!default {
-	type plug
-	slave.pcm plugequal
-}
-ctl.equal {
-	type equal
-}
-pcm.plugequal {
-	type equal
-	slave.pcm '$slavepcm'
-}'
-#-------
+if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
+	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
+pushstream mpdplayer "$( $dirbash/status.sh )"
+pushstream refresh "$( $dirbash/settings/player-data.sh )"
+( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
-if [[ $camilladsp ]]; then
-	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	rate=$( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' )
-########
-	asound+='
-pcm.!default { 
-	type plug 
-	slave.pcm camilladsp
-}
-pcm.camilladsp {
-	slave {
-		pcm {
-			type     hw
-			card     Loopback
-			device   0
-			channels '$channels'
-			format   '$format'
-			rate     '$rate'
-		}
-	}
-}
-ctl.!default {
-	type hw
-	card Loopback
-}
-ctl.camilladsp {
-	type hw
-	card Loopback
-}'
-#-------
-	
-fi
+[[ ! $Acard && ! $btmixer ]] && exit
 
-echo "$asound" > /etc/asound.conf
-alsactl nrestore &> /dev/null # notify changes to running daemons
-
-[[ $camilladsp ]] && $dirbash/camilladsp.sh &> /dev/null &
-
-
-[[ $preset ]] && $dirbash/cmd.sh "equalizer
-preset
-$preset"
-
-wm5102card=$( aplay -l \
-				| grep snd_rpi_wsp \
-				| cut -c 6 )
-if [[ $wm5102card ]]; then
-	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	$dirbash/mpd-wm5102.sh $wm5102card $output
-fi
-
-restartMPD
-
+# renderers -----------------------------------------------------------------------------
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
