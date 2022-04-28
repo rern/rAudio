@@ -9,6 +9,11 @@ if [[ -e $dirsystem/soxr.conf ]]; then
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi
+if grep -q '^file=""' $dirshm/status; then
+	state=false
+else
+	state=$( grep ^state $dirshm/status | cut -d= -f2 )
+fi
 
 data='
   "page"             : "player"
@@ -35,7 +40,7 @@ data='
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true )'
 , "soxrconf"         : '$soxrconf'
-, "state"            : "'$( grep ^state $dirshm/status | cut -d'"' -f2 )'"
+, "state"            : '$state'
 , "stateplayer"      : "'$( cat $dirshm/player )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 

@@ -357,7 +357,10 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function renderPage() {
-	playbackState( G.state );
+	$( '#playback' )
+		.removeAttr( 'class' )
+		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
+		.toggleClass( 'disabled', !G.state || ( G.stateplayer !== 'mpd' && G.state !== 'play' ) );
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
@@ -423,10 +426,4 @@ function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
-}
-function playbackState( state ) {
-	$( '#playback' )
-		.removeAttr( 'class' )
-		.toggleClass( 'disabled', G.stateplayer !== 'mpd' && G.state !== 'play' )
-		.addClass( 'fa fa-'+ ( state === 'play' ? 'pause' : 'play' ) );
 }
