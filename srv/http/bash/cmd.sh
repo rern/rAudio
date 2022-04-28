@@ -498,7 +498,7 @@ dirpermissions )
 	chown -Rh http:http /srv/http/{assets,bash,data,settings}
 	
 	chown -Rh mpd:audio $dirplaylists
-	chown mpd:audio $dirmpd/mpd.db 2> /dev/null
+	chown mpd:audio $dirmpd $dirmpd/mpd.db 2> /dev/null
 	;;
 displaysave )
 	data=${args[1]}
