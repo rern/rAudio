@@ -495,10 +495,8 @@ dirpermissions )
 	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	
 	chown http:http $list
-	chown -Rh http:http /srv/http/{assets,bash,data,settings}
-	
-	chown -Rh mpd:audio $dirplaylists
-	chown mpd:audio $dirmpd $dirmpd/mpd.db 2> /dev/null
+	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
 	;;
 displaysave )
 	data=${args[1]}
