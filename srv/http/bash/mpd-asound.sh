@@ -94,8 +94,7 @@ $preset"
 
 if [[ -e $dirsystem/camilladsp ]]; then
 	card=$( cat $dirshm/asoundcard )
-	lineplayback=$( sed -n '/playback:/,/device:/=' $camilladspyml | tail -1 )
-	sed -i "$lineplayback s/\(device: hw:\).*/\1$card,0/" $camilladspyml
+	sed -i "/playback:/,/device:/ s/\(device: hw:\).*/\1$card,0/" $camilladspyml
 	camilladsp $camilladspyml &> /dev/null &
 	sleep 1
 	if pgrep -x camilladsp &> /dev/null; then
