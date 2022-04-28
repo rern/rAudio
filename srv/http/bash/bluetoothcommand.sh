@@ -131,6 +131,7 @@ if [[ $action == connect || $action == pair ]]; then
 	fi
 	$dirbash/settings/networks-data.sh btlistpush
 elif [[ $action == disconnect || $action == remove ]]; then
+	bluetoothctl info $mac | grep -q 'UUID: Audio Source' && icon=btclient || icon=bluetooth
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == disconnect ]]; then
 		done=Disconnected
