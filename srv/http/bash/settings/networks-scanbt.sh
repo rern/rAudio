@@ -15,14 +15,12 @@ devices=$( listBt devices )
 [[ ! $devices ]] && exit
 
 paired=$( listBt paired-devices )
-[[ $paired ]] && lines=$( diff <( echo "$paired" ) <( echo "$devices" ) | grep '^>' | cut -c 3- )
-[[ ! $lines ]] && exit
-
-readarray -t lines <<< $( echo "$lines" )
-for line in "${lines[@]}"; do
-	name=${line/^*}
-	mac=${line#*^}
-	data+=',{
+[[ $paired ]] && devices=$( diff <( echo "$paired" ) <( echo "$devices" ) | grep '^>' | cut -c 3- )
+readarray -t devices <<< $( echo "$devices" )
+for dev in "${devices[@]}"; do
+        name=${dev/^*}
+        mac=${dev/*^}
+        data+=',{
   "name"      : "'${name//\"/\\\"}'"
 , "mac"       : "'$mac'"
 }'
