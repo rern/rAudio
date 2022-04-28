@@ -10,12 +10,12 @@
 #    - from file if manually set
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
-dirshm=/srv/http/data/shm
-dirsystem=/srv/http/data/system
 
-[[ -e $dirsystem/camilladsp ]] && modprobe snd-aloop
+### included by mpd-conf.sh, player-data.sh
 
-aplay=$( aplay -l 2> /dev/null | grep '^card' )
+aplay=$( aplay -l 2> /dev/null \
+			| grep '^card' \
+			| grep -v 'Loopback' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btclient ]] && i=0 || i=-1
 	devices=false
@@ -53,11 +53,7 @@ for line in "${lines[@]}"; do
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	if [[ $aplayname == Loopback ]]; then
-		echo $card > $dirshm/asoundloopback
-	elif [[ $aplayname == wsp || $aplayname == RPi-Cirrus ]]; then
-		aplayname=rpi-cirrus-wm5102
-	fi
+	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
 	if [[ $aplayname == $audioaplayname ]]; then
 		name=$( cat $dirsystem/audio-output )
 	else

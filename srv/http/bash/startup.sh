@@ -52,6 +52,7 @@ fi
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
+chown -R http:http $dirshm
 touch $dirshm/status
 
 

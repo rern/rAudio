@@ -30,7 +30,7 @@ $body = [
 	[
 			  'label'       => 'Bluetooth'
 			, 'sublabel'    => 'bluetoothctl'
-			, 'icon'        => 'btclient'
+			, 'icon'        => 'bluetooth'
 			, 'id'          => 'btclient'
 			, 'status'      => 'bluetooth'
 			, 'input'       => '<select id="btaplayname"></select>'

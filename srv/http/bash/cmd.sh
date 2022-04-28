@@ -492,13 +492,13 @@ coverfileslimit )
 dirpermissions )
 	list='/srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/'
 	chmod 755 $list
-	chmod -R 755 /srv/http/{assets,bash,data,settings} # exclude mnt
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	
 	chown http:http $list
-	chown -Rh http:http /srv/http/*/
+	chown -Rh http:http /srv/http/{assets,bash,data,settings}
 	
-	chown -Rh mpd:audio /srv/http/data/{mpd,playlists}
-	chown mpd:audio /srv/http/data/mpd/mpd.db 2> /dev/null
+	chown -Rh mpd:audio $dirplaylists
+	chown mpd:audio $dirmpd/mpd.db 2> /dev/null
 	;;
 displaysave )
 	data=${args[1]}
@@ -845,7 +845,7 @@ playerstop )
 			rm -f $dirshm/airplay/start
 			;;
 		bluetooth )
-			service=bluetooth
+			rm -f $dirshm/bluetoothdest
 			;;
 		snapcast )
 			service=snapclient
@@ -865,7 +865,7 @@ playerstop )
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $service != snapclient ]] && systemctl restart $service
+	[[ $service && $service != snapclient ]] && systemctl restart $service
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;

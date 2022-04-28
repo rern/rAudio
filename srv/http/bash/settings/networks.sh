@@ -44,18 +44,19 @@ $( timeout 1 avahi-browse -arp \
 	| sort -u )"
 	;;
 bluetoothinfo )
-	info=$( bluetoothctl info )
-	if echo "$info" | grep -q 'Audio Source'; then
+	mac=${args[1]}
+	info=$( bluetoothctl info $mac )
+	if (( $( echo "$info" | grep 'Connected: yes\|UUID: Audio' | wc -l ) == 2 )); then
 		data="\
-<bll># bluealsa-aplay -l</bll>
-$( bluealsa-aplay -l )
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $mac )
 "
 	fi
-	echo "\
-$data
-<bll># bluetoothctl info</bll>
+	data+="\
+<bll># bluetoothctl info $mac</bll>
 $info
 "
+	echo "$data"
 	;;
 connect )
 	data=${args[1]}

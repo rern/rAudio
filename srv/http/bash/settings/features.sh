@@ -62,7 +62,7 @@ autoplayset )
 	pushRefresh
 	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh
+	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh (+ modprobe in mpd-devices.sh)
 		touch $dirsystem/camilladsp
 	else
 		systemctl stop camilladsp

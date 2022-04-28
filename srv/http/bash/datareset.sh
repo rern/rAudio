@@ -47,6 +47,9 @@ fi
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
+ln -sf /mnt /srv/http/
+chown -h http:http $dirdata /srv/http/mnt
+
 # addons - new/restore
 if [[ $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
@@ -213,9 +216,6 @@ systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spoti
 
 # set ownership and permissions
 $dirbash/cmd.sh dirpermissions
-
-# symlink /mnt for coverart files
-ln -sf /mnt /srv/http/
 
 [[ $version ]] && exit
 

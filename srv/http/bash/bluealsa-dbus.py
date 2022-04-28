@@ -19,7 +19,7 @@ path = '/test/autoagent'
 def property_changed( interface, changed, invalidated, path ):
     for name, value in changed.items():
         # Player    : /org/bluez/hci0/dev_XX_XX_XX_XX_XX_XX/playerX (sink not emit this data)
-        # Connected : 1 | 0                                         (1 emitted after Player)
+        # Connected : 1 | 0                                         (use udev rules instead)
         # Position  : elapsed
         # State     : active | idle | pending
         # Status    : paused | playing | stopped
@@ -27,8 +27,6 @@ def property_changed( interface, changed, invalidated, path ):
         # Type      : dest playerX
         if name == 'Player':
             with open( '/srv/http/data/shm/bluetoothdest', 'w' ) as f: f.write( value )
-        elif name == 'Connected':
-            os.system( '/srv/http/bash/settings/networks-data.sh '+ str( value ) )
         elif name == 'Position' or name == 'Track':
             os.system( '/srv/http/bash/status-push.sh' )
         elif name == 'Status':

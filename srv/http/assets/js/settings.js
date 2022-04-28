@@ -25,7 +25,6 @@ var cmd = {
 	  albumignore  : playersh +'albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : networkssh +'bluetoothinfo'
 	, bluetoothctl : systemsh +'bluetoothstatus'
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
@@ -140,9 +139,11 @@ function setSwitch() {
 function showContent() {
 	resetLocal();
 	if ( $( 'select' ).length ) selectricRender();
-	$( 'pre.status' ).each( function( el ) {
-		if ( !$( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
-	} );
+	if ( page !== 'networks' ) {
+		$( 'pre.status' ).each( function( el ) {
+			if ( !$( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
+		} );
+	}
 	if ( $( '#data' ).hasClass( 'hide' ) ) { // page data
 		setTimeout( function() {
 			loaderHide();

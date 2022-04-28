@@ -1,6 +1,5 @@
 function addReplace( cmd, command, title, msg ) {
 	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
-	console.log(command);
 	bash( command, function() {
 		if ( !G.display.playbackswitch ) return
 		
