@@ -14,14 +14,14 @@ htmlHead( [ //////////////////////////////////
  &emsp; - On rAudio - Search and select the receiver device to pair
  &emsp; - Once paired successfully, the receiver device must be powered off.
  • Connecting:
- &emsp; - On receiver devices - Power on/off to connect/disconnect
+ &emsp; - On receiver devices - Power on / off : connect / disconnect
 <wh>rAudio as receiver:</wh>
  • Pairing:
  &emsp; - On rAudio - Settings > Bluetooth setting - enable Discoverable by senders
  &emsp; - On sender device - Search and select rAudio to pair
  &emsp; - To forget/remove from the list - Do it both on rAudio and sender device
  • Connecting:
- &emsp; - On sender devices - Select rAudio to connect/disconnect
+ &emsp; - On sender devices - Select rAudio > connect / disconnect
 </div>
 </div>
 <div id="divwl" class="section">
