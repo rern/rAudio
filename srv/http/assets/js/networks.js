@@ -84,7 +84,7 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btclient', -1 );
+		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btsender', -1 );
 		bluetoothcommand( 'connect', list );
 		return
 	}
@@ -132,7 +132,7 @@ $( '.forget' ).click( function() {
 		var name = list.name;
 		var mac = list.mac;
 		info( {
-			  icon    : list.sink ? 'bluetooth' : 'btclient'
+			  icon    : list.sink ? 'bluetooth' : 'btsender'
 			, title   : name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
@@ -404,7 +404,7 @@ function renderBluetooth() {
 		G.listbt.forEach( function( list ) {
 			if ( list.connected ) G.btconnected = true;
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
-					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
+					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btsender' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );

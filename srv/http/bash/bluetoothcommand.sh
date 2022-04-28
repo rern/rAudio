@@ -14,7 +14,7 @@ if [[ $udev == btoff ]]; then
 		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
 			[[ $type == btclient ]] && mpdconf=1
-			[[ $type == btsender ]] && icon=btclient || icon=bluetooth
+			[[ $type == btsender ]] && icon=btsender || icon=bluetooth
 			pushstreamNotify "$name" Disconnected $icon
 			rm $file
 			break
@@ -88,15 +88,15 @@ if [[ $action == connect || $action == pair ]]; then
 	echo "$info" | grep -q 'UUID: Audio' && audiodevice=1
 	echo "$info" | grep -q 'UUID: Audio Source' && sender=1
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-	[[ $sender ]] && icon=btclient || icon=bluetooth
+	[[ $sender ]] && icon=btsender || icon=bluetooth
 	if [[ $audiodevice ]]; then
 		for i in {1..5}; do
 			mixer=$( bluealsa-aplay -L )
 			[[ ! $mixer ]] && sleep 1 || break
 		done
 		if [[ ! $mixer ]]; then # pair from rAudio as receiver - mixers not initialized
-			[[ $sender ]] && msg='disconnect > connect' || msg='power off > on'
-			pushstreamNotify "$name" "Mixers not ready. Try <wh>$msg</wh> again." $icon -1
+			[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
+			pushstreamNotify "$name" "Paired successfully. <wh>$msg</wh> again." $icon -1
 			exit
 		fi
 	fi
@@ -131,7 +131,7 @@ if [[ $action == connect || $action == pair ]]; then
 	fi
 	$dirbash/settings/networks-data.sh btlistpush
 elif [[ $action == disconnect || $action == remove ]]; then
-	bluetoothctl info $mac | grep -q 'UUID: Audio Source' && icon=btclient || icon=bluetooth
+	bluetoothctl info $mac | grep -q 'UUID: Audio Source' && icon=btsender || icon=bluetooth
 	bluetoothctl disconnect &> /dev/null
 	if [[ $action == disconnect ]]; then
 		done=Disconnected

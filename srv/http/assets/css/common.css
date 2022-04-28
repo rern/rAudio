@@ -119,6 +119,7 @@ input::-moz-focus-inner {
 .fa-bookmark::before { content: '\f550' }
 .fa-bluetooth::before { content: '\f595' }
 .fa-btclient::before { content: '\f596' }
+.fa-btsender::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
 .fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg60 ); }
 .fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
