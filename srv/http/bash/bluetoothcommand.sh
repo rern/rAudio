@@ -144,6 +144,6 @@ elif [[ $action == disconnect || $action == remove ]]; then
 			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
 		done
 	fi
-	pushstreamNotify "$name" $done $icon
+	pushstreamNotify "$name" $done bluetooth
 	$dirbash/settings/networks-data.sh btlistpush
 fi
