@@ -5,6 +5,10 @@
 udev=$1
 icon=bluetooth
 
+bluetoothList() {
+	$dirbash/settings/networks-data.sh btlistpush
+}
+
 if [[ $udev == btoff ]]; then
 	pushstreamNotify Bluetooth Disconnected $icon
 	sleep 2
@@ -29,7 +33,7 @@ if [[ $udev == btoff ]]; then
 		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 		$dirbash/mpd-conf.sh
 	fi
-	$dirbash/settings/networks-data.sh btlistpush
+	bluetoothList
 	exit
 fi
 
@@ -87,6 +91,7 @@ if [[ $action == connect || $action == pair ]]; then
 	info=$( bluetoothctl info $mac )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	if ! echo "$info" | grep -q 'UUID: Audio'; then
+		[[ $action == pair ]] && bluetoothList
 		pushstreamNotify "$name" Ready $icon
 ##### non-audio
 		echo $name > $dirshm/btdevice
@@ -99,9 +104,14 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 	if [[ ! $btmixer ]]; then # pair from rAudio as receiver - mixers not initialized
-		[[ $action == pair ]] && msg1='Paired successfully.' || msg1='Mixer device not ready.'
+		if [[ $action == pair ]]; then
+			bluetoothList
+			msg1='Paired successfully.'
+		else
+			msg1='Mixer device not ready.'
+		fi
 		[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
-		pushstreamNotify "$name" "$msg1<br><wh>$msg2</wh> again." $icon 1000
+		pushstreamNotify "$name" "$msg1<br><wh>$msg2</wh> again." $icon 10000
 		exit
 	fi
 	
@@ -119,7 +129,6 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirbash/mpd-conf.sh
 	fi
-	$dirbash/settings/networks-data.sh btlistpush
 elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl info $mac | grep -q 'UUID: Audio Source' && icon=btsender
 	bluetoothctl disconnect $mac &> /dev/null
@@ -136,5 +145,5 @@ elif [[ $action == disconnect || $action == remove ]]; then
 		done
 	fi
 	pushstreamNotify "$name" $msg $icon
-	$dirbash/settings/networks-data.sh btlistpush
 fi
+bluetoothList
