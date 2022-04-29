@@ -33,7 +33,6 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
-// banner -----------------------------------------------------------------------------
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide"></div>
 <div id="banner" class="hide"></div>

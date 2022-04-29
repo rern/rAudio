@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+[[ -e $dirshm/reconnect ]] && exit
+
 udev=$1
 icon=bluetooth
 
@@ -104,14 +106,15 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 	if [[ ! $btmixer ]]; then # pair from rAudio as receiver - mixers not initialized
-		if [[ $action == pair ]]; then
-			bluetoothList
-			msg1='Paired successfully.'
-		else
-			msg1='Mixer device not ready.'
-		fi
-		[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
-		pushstreamNotify "$name" "$msg1<br><wh>$msg2</wh> again." $icon 10000
+		touch $dirshm/reconnect
+		bluetoothList
+		(
+			sleep 3
+			[[ $btsender ]] && msg='Disconnect > connect' || msg='Power off > on'
+			pushstreamNotify "$name" "Device not ready<br><wh>$msg again</wh>" $icon -1
+			sleep 3
+			rm $dirshm/reconnect
+		) &> /dev/null &
 		exit
 	fi
 	
@@ -140,6 +143,7 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	else
 		msg=Removed
 		bluetoothctl remove $mac &> /dev/null
+		rm -f $dirshm/btreceiver
 		for i in {1..5}; do
 			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
 		done
