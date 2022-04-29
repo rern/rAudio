@@ -47,8 +47,6 @@ if [[ $udev == bton ]]; then
 		info=$( bluetoothctl info $mac )
 		if echo "$info" | grep -q 'Connected: yes'; then
 			if echo "$info" | grep -q 'UUID: Audio Sink'; then
-				systemctl -q is-active startup && exit # suppress on startup
-				
 				type=btreceiver
 			elif echo "$info" | grep -q 'UUID: Audio Source'; then
 				type=btsender
@@ -105,13 +103,12 @@ if [[ $action == connect || $action == pair ]]; then
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
-	if [[ ! $btmixer ]]; then # pair from rAudio as receiver - mixers not initialized
+	if [[ ! $btmixer && ! $btsender ]]; then # pair from rAudio as receiver - mixers not initialized
 		touch $dirshm/reconnect
 		bluetoothList
 		(
 			sleep 3
-			[[ $btsender ]] && msg='Disconnect > connect' || msg='Power off > on'
-			pushstreamNotify "$name" "Device not ready<br><wh>$msg again</wh>" $icon -1
+			pushstreamNotify "$name" "Device not ready<br><wh>Power off > on again</wh>" $icon -1
 			sleep 3
 			rm $dirshm/reconnect
 		) &> /dev/null &

@@ -57,6 +57,7 @@ if [[ -e /srv/http/bash/features.sh ]]; then
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
 fi
 
+# 20220428
 chmod +x /srv/http/bash/cmd.sh
 /srv/http/bash/cmd.sh dirpermissions
 
