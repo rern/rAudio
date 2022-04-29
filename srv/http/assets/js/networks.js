@@ -397,6 +397,7 @@ function infoWiFi( values ) {
 	} );
 }
 function renderBluetooth() {
+	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	G.btconnected = false;
 	var htmlbt = '';
 	if ( G.listbt ) {
