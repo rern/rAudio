@@ -24,7 +24,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btclient=$( exists $dirshm/btclient )
+	btreceiver=$( exists $dirshm/btreceiver )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
 	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
@@ -42,7 +42,7 @@ else
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
-	if [[ -e $dirshm/nosound && ! $btclient ]]; then
+	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
 		ccv=$( $dirbash/cmd.sh volumecontrolget )
@@ -56,7 +56,7 @@ else
 ########
 	status='
   "player"       : "'$player'"
-, "btclient"     : '$btclient'
+, "btreceiver"   : '$btreceiver'
 , "card"         : '$card'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
@@ -79,7 +79,7 @@ if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btclient || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
 	fi
 	display=$( head -n -1 $dirsystem/display )
 	display+='

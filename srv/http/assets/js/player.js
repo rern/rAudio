@@ -12,7 +12,7 @@ $( '#playback' ).click( function() {
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
-$( '#setting-btclient' ).click( function() {
+$( '#setting-btreceiver' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
 		var voldb = voldb.split( ' ' );
 		var vol = voldb[ 0 ];
@@ -379,12 +379,12 @@ function renderPage() {
 		} );
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
-			$( '#divbtclient' ).removeClass( 'hide' );
+			$( '#divbtreceiver' ).removeClass( 'hide' );
 			$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-			$( '#setting-btclient' ).removeClass( 'hide' );
+			$( '#setting-btreceiver' ).removeClass( 'hide' );
 		} else {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
-			$( '#divbtclient' ).addClass( 'hide' );
+			$( '#divbtreceiver' ).addClass( 'hide' );
 			$( '#audiooutput' )
 				.html( htmldevices )
 				.val( G.asoundcard );

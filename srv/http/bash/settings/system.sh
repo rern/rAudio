@@ -75,7 +75,7 @@ bluetooth )
 bluetoothdisable )
 	systemctl disable --now bluetooth
 	pkill bluetooth
-	rm -f $dirshm/{btclient,btdevice,btsender}
+	rm -f $dirshm/{btdevice,btreceiver,btsender}
 	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh
 	pushRefresh
 	;;

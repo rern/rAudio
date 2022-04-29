@@ -33,7 +33,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	mixer_type     "none"'
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
-		[[ -e $dirshm/btclient ]] && mixertype=software
+		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------<
 		output+='
 	name           "ALSAEqual"
@@ -172,7 +172,7 @@ if [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
+if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
 	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
 pushstream mpdplayer "$( $dirbash/status.sh )"

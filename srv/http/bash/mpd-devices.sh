@@ -17,7 +17,7 @@ aplay=$( aplay -l 2> /dev/null \
 			| grep '^card' \
 			| grep -v 'Loopback' )
 if [[ ! $aplay ]]; then
-	[[ -e $dirshm/btclient ]] && i=0 || i=-1
+	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
 	devices=false
 	touch $dirshm/nosound
 	return

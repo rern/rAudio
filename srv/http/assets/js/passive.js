@@ -89,7 +89,7 @@ var pushstream = new PushStream( {
 	, timeout                               : 5000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
-var streams = [ 'airplay', 'bookmark', 'btclient', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
 	'notify', 'option', 'order', 'playlist', 'playlists', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
@@ -113,35 +113,35 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch( channel ) {
-		case 'airplay':   psAirplay( data );   break;
-		case 'bookmark':  psBookmark( data );  break;
-		case 'btclient':  psBtClient( data );  break;
-		case 'coverart':  psCoverart( data );  break;
-		case 'display':   psDisplay( data );   break;
-		case 'equalizer': psEqualizer( data ); break;
-		case 'relays':    psRelays( data );    break;
-		case 'mpdplayer': psMpdPlayer( data ); break;
-		case 'mpdradio':  psMpdRadio( data );  break;
-		case 'mpdupdate': psMpdUpdate( data ); break;
-		case 'notify':    psNotify( data );    break;
-		case 'option':    psOption( data );    break;
-		case 'order':     psOrder( data );     break;
-		case 'playlist':  psPlaylist( data );  break;
-		case 'playlists': psPlaylists( data ); break;
-		case 'reload':    location.href = '/'; break;
-		case 'restore':   psRestore( data );   break;
-		case 'volume':    psVolume( data );    break;
-		case 'vumeter':   psVUmeter( data );   break;
-		case 'webradio':  psWebradio( data );  break;
+		case 'airplay':    psAirplay( data );    break;
+		case 'bookmark':   psBookmark( data );   break;
+		case 'btreceiver': psBtReceiver( data ); break;
+		case 'coverart':   psCoverart( data );   break;
+		case 'display':    psDisplay( data );    break;
+		case 'equalizer':  psEqualizer( data );  break;
+		case 'relays':     psRelays( data );     break;
+		case 'mpdplayer':  psMpdPlayer( data );  break;
+		case 'mpdradio':   psMpdRadio( data );   break;
+		case 'mpdupdate':  psMpdUpdate( data );  break;
+		case 'notify':     psNotify( data );     break;
+		case 'option':     psOption( data );     break;
+		case 'order':      psOrder( data );      break;
+		case 'playlist':   psPlaylist( data );   break;
+		case 'playlists':  psPlaylists( data );  break;
+		case 'reload':     location.href = '/';  break;
+		case 'restore':    psRestore( data );    break;
+		case 'volume':     psVolume( data );     break;
+		case 'vumeter':    psVUmeter( data );    break;
+		case 'webradio':   psWebradio( data );   break;
 	}
 }
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( G.playback ) renderPlayback();
 }
-function psBtClient( connected ) {
+function psBtReceiver( connected ) {
 	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !connected );
+	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
 	if ( 'html' in data ) {

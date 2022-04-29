@@ -1283,7 +1283,7 @@ function setButtonOptions() {
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $( '#time-knob' ).is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'i';
-	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
+	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !G.status.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', !G.status.stoptimer );
 	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', !G.display.snapclientactive );

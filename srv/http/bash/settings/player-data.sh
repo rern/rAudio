@@ -23,7 +23,7 @@ data='
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( grep -q '^auto_update.*yes' /etc/mpd.conf && echo true )'
-, "btaplayname"      : "'$( cat $dirshm/btclient 2> /dev/null )'"
+, "btaplayname"      : "'$( cat $dirshm/btreceiver 2> /dev/null )'"
 , "buffer"           : '$( grep -q '^audio_buffer_size' /etc/mpd.conf && echo true )'
 , "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
 , "bufferoutput"     : '$( grep -q '^max_output_buffer_size' /etc/mpd.conf && echo true )'

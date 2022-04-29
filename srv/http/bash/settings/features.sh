@@ -129,7 +129,7 @@ localbrowserdisable )
 	systemctl enable --now getty@tty1
 	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
-	[[ -e $dirshm/btclient ]] && systemctl start bluetoothbutton
+	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	pushRefresh
 	;;
 localbrowserset )

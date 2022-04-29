@@ -6,14 +6,14 @@ udev=$1
 
 if [[ $udev == btoff ]]; then
 	sleep 2
-	for type in btdevice btclient btsender; do
+	for type in btdevice btreceiver btsender; do
 		file=$dirshm/$type
 		[[ ! -e $file ]] && continue
 		
 		name=$( cat $file | sed 's/ - A2DP$//' )
 		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
-			[[ $type == btclient ]] && mpdconf=1
+			[[ $type == btreceiver ]] && mpdconf=1
 			[[ $type == btsender ]] && icon=btsender || icon=bluetooth
 			pushstreamNotify "$name" Disconnected $icon
 			rm $file
@@ -21,7 +21,7 @@ if [[ $udev == btoff ]]; then
 		fi
 	done
 	if [[ $mpdconf ]]; then
-		pushstream btclient false
+		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		systemctl stop bluetoothbutton
 		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
@@ -40,7 +40,7 @@ if [[ $udev == bton ]]; then
 			if echo "$info" | grep -q 'UUID: Audio Sink'; then
 				systemctl -q is-active startup && exit # suppress on startup
 				
-				type=btclient
+				type=btreceiver
 			elif echo "$info" | grep -q 'UUID: Audio Source'; then
 				type=btsender
 			else
@@ -124,8 +124,8 @@ if [[ $action == connect || $action == pair ]]; then
 					| grep "$name" \
 					| cut -d"'" -f2 )
 ##### receiver
-		echo $btmixer > $dirshm/btclient
-		pushstream btclient true
+		echo $btmixer > $dirshm/btreceiver
+		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirbash/mpd-conf.sh
 	fi

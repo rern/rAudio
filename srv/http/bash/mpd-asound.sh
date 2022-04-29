@@ -40,8 +40,8 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
-	if [[ -e $dirshm/btclient ]]; then
-		btmixer=$( cat $dirshm/btclient )
+	if [[ -e $dirshm/btreceiver ]]; then
+		btmixer=$( cat $dirshm/btreceiver )
 ########
 		asound+='
 pcm.bluealsa {
