@@ -115,8 +115,13 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	fi
 	[[ $camilladsp ]] && systemctl start camilladsp || systemctl stop camilladsp
 	pushstream refresh "$( $dirbash/settings/features-data.sh )"
-elif [[ $btmixer ]]; then
-	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
-	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
+else
+	if [[ $btmixer ]]; then
+		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
+		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		systemctl -q is-active localbrowser && action=stop || action=start
+		systemctl $action bluetoothbutton
+	else
+		systemctl stop bluetoothbutton
+	fi
 fi

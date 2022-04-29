@@ -254,7 +254,10 @@ function psRefresh( data ) {
 	}
 }
 function psState( data ) {
-	if ( page === 'player' ) playbackState( data.state );
+	if ( page === 'player' ) {
+		G.state = data.state;
+		playbackIcon();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();

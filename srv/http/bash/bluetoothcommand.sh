@@ -96,7 +96,7 @@ if [[ $action == connect || $action == pair ]]; then
 		done
 		if [[ ! $mixer ]]; then # pair from rAudio as receiver - mixers not initialized
 			[[ $sender ]] && msg='Disconnect > connect' || msg='Power off > on'
-			pushstreamNotify "$name" "Paired successfully. <wh>$msg</wh> again." $icon -1
+			pushstreamNotify "$name" "Paired successfully.<br><wh>$msg</wh> again." $icon -1
 			exit
 		fi
 	fi

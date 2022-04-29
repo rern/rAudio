@@ -356,11 +356,14 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function renderPage() {
+function playbackIcon() {
 	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
 		.toggleClass( 'disabled', !G.state || ( G.stateplayer !== 'mpd' && G.state !== 'play' ) );
+}
+function renderPage() {
+	playbackIcon();
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
