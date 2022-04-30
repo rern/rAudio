@@ -2,7 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/reconnect ]] && exit
+if [[ -e $dirshm/pair ]]; then
+	sleep 6
+	rm -f $dirshm/pair
+	exit
+fi
 
 udev=$1
 icon=bluetooth
@@ -11,13 +15,10 @@ bluetoothList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
 bluetoothReconnect() {
-	touch $dirshm/reconnect
 	(
 		sleep 6
-		[[ $2 ]] && msg='Disconnect > connect' || msg='Power off > on'
+		[[ $2 ]] && msg='Connect' || msg='Power off > on'
 		pushstreamNotify "$name" "$1<br><wh>$msg again</wh>" $icon -1
-		sleep 6
-		rm $dirshm/reconnect
 	) &> /dev/null &
 	
 	bluetoothctl disconnect $mac
@@ -71,8 +72,9 @@ if [[ $udev == bton ]]; then
 		fi
 	done
 	if bluetoothctl info $mac | grep -q 'Paired: no'; then
-		bluetoothctl agent NoInputNoOutput
 		action=pair
+		touch $dirshm/pair
+		bluetoothctl agent NoInputNoOutput
 	else
 		action=connect
 	fi
@@ -126,7 +128,7 @@ if [[ $action == connect || $action == pair ]]; then
 	
 	echo "$info" | grep -q 'UUID: Audio Source' && icon=btsender && btsender=1
 	for i in {1..5}; do
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 	[[ ! $btmixer ]] && bluetoothReconnect 'Mixer device not ready' $btsender && exit
@@ -136,9 +138,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		echo $name > $dirshm/btsender
 	else
-		btmixer=$( echo "$btmixer" \
-					| grep "$name - A2DP" \
-					| cut -d"'" -f2 )
+		btmixer=$( echo "$btmixer" | cut -d"'" -f2 )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		pushstream btreceiver true
