@@ -398,19 +398,17 @@ function infoWiFi( values ) {
 }
 function renderBluetooth() {
 	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
-	G.btconnected = false;
 	var htmlbt = '';
-	if ( G.listbt ) {
+	if ( typeof G.listbt === 'boolean' ) {
+		if ( !G.listbt ) $( '#listbt' ).empty();
+	} else {
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) G.btconnected = true;
 			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
 					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btsender' ) +'"></i>';
 			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
 			htmlbt += list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
-	} else {
-		$( '#listbt' ).empty();
 	}
 }
 function renderPage() {

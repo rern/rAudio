@@ -30,6 +30,9 @@ if systemctl -q is-active bluetooth; then
 	fi
 fi
 
+echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
+pushstream bluetooth $connected
+
 [[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )

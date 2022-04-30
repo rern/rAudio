@@ -224,6 +224,7 @@ function psBluetooth( data ) {
 		G.listbt = data;
 		renderBluetooth();
 	}
+	if ( typeof data === 'boolean' && page === 'system' ) $( '#bluetooth' ).toggleClass( 'disabled', data );
 }
 function psNotify( data ) {
 	G.bannerhold = data.hold || 0;
