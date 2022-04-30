@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/reconnect ]] && exit
-
 udev=$1
 icon=bluetooth
 
@@ -103,17 +101,11 @@ if [[ $action == connect || $action == pair ]]; then
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
-	if [[ ! $btmixer && ! $btsender ]]; then # pair from rAudio as receiver - mixers not initialized
-		touch $dirshm/reconnect
+	if [[ ! $btmixer ]]; then # pair - mixers not initialized
+		[[ $action == pair ]] && msg1='Paired successfully' || msg1='Mixer device not ready'
+		[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
 		bluetoothList
-		(
-			sleep 3
-			[[ $action == pair ]] && msg1='Paired successfully' || msg1='Mixer device not ready'
-			[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
-			pushstreamNotify "$name" "$msg1<br><wh>$msg2 again</wh>" $icon -1
-			sleep 3
-			rm $dirshm/reconnect
-		) &> /dev/null &
+		( sleep 3; pushstreamNotify "$name" "$msg1<br><wh>$msg2 again</wh>" $icon -1 ) &> /dev/null &
 		exit
 	fi
 	
