@@ -108,7 +108,7 @@ if [[ $action == connect || $action == pair ]]; then
 		bluetoothList
 		(
 			sleep 3
-			[[ $action ==pair ]] && msg1='Paired successfully' || msg1='Mixer device not ready'
+			[[ $action == pair ]] && msg1='Paired successfully' || msg1='Mixer device not ready'
 			[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
 			pushstreamNotify "$name" "$msg1<br><wh>$msg2 again</wh>" $icon -1
 			sleep 3
@@ -132,7 +132,7 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/mpd-conf.sh
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then
-	bluetoothctl info $mac | grep -q 'UUID: Audio Source' && icon=btsender
+	info=$( bluetoothctl info $mac )
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		msg=Disconnected
@@ -142,11 +142,20 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	else
 		msg=Removed
 		bluetoothctl remove $mac &> /dev/null
-		rm -f $dirshm/btreceiver
 		for i in {1..5}; do
 			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
 		done
+		if ! echo "$info" | grep -q 'UUID: Audio'; then
+			rm -f $dirshm/btdevice
+		elif echo "$info" | grep -q 'UUID: Audio Source'; then
+			icon=btsender
+			rm -f $dirshm/btsender
+		else
+			rm -f $dirshm/btreceiver
+		fi
 	fi
 	pushstreamNotify "$name" $msg $icon
 fi
+
+[[ $action == pair ]] && sleep 2
 bluetoothList
