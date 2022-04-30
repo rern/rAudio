@@ -108,8 +108,9 @@ if [[ $action == connect || $action == pair ]]; then
 		bluetoothList
 		(
 			sleep 3
-			[[ $action ==pair ]] && msg='Device not ready' || msg='Paired successfully'
-			pushstreamNotify "$name" "$msg<br><wh>Power off > on again</wh>" $icon -1
+			[[ $action ==pair ]] && msg1='Paired successfully' || msg1='Mixer device not ready'
+			[[ $btsender ]] && msg2='Disconnect > connect' || msg2='Power off > on'
+			pushstreamNotify "$name" "$msg1<br><wh>$msg2 again</wh>" $icon -1
 			sleep 3
 			rm $dirshm/reconnect
 		) &> /dev/null &
