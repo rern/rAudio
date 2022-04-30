@@ -220,11 +220,12 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	if ( page === 'networks' ) {
+	if ( 'connected' in data ) {
+		if ( page === 'system' ) $( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+	} else if ( page === 'networks' ) {
 		G.listbt = data;
 		renderBluetooth();
 	}
-	if ( typeof data === 'boolean' && page === 'system' ) $( '#bluetooth' ).toggleClass( 'disabled', data );
 }
 function psNotify( data ) {
 	G.bannerhold = data.hold || 0;

@@ -31,7 +31,7 @@ if systemctl -q is-active bluetooth; then
 fi
 
 echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
-pushstream bluetooth $connected
+pushstream bluetooth '{"connected":'$connected'}'
 
 [[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
 
