@@ -25,22 +25,24 @@ if [[ $udev == btoff ]]; then
 #-------------------------------------------------------------------------------
 	pushstreamNotify Bluetooth 'Disconnect ...' 'bluetooth blink'
 	sleep 2
-	for type in btdevice btreceiver btsender; do
-		file=$dirshm/$type
-		[[ ! -e $file ]] && continue
-		
-		name=$( cat $file | sed 's/ - A2DP$//' )
-		mac=$( bluetoothctl paired-devices | grep "$name" | cut -d' ' -f2 )
+	readarray -t lines <<< $( cat $dirshm/btconnected )
+	for line in "${lines[@]}"; do
+		mac=${line/ *}
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
-			[[ $type == btreceiver ]] && mpdconf=1
-			[[ $type == btsender ]] && icon=btsender && $dirbash/cmd.sh playerstop
-#-------------------------------------------------------------------------------
-			pushstreamNotify "$name" Disconnected $icon
-			rm $file
+			type=$( echo $line | cut -d' ' -f2 )
+			name=$( echo $line | cut -d' ' -f3- )
 			break
 		fi
 	done
-	if [[ $mpdconf ]]; then
+	sed -i "/^$mac/ d" $dirshm/btconnected
+	if [[ $type == btsender ]]; then
+		icon=btsender
+		$dirbash/cmd.sh playerstop
+	fi
+	pushstreamNotify "$name" Disconnected $icon
+	rm $dirshm/$type
+	if [[ $type == btreceiver ]]; then
+		rm $dirshm/btreceiver
 		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		$dirbash/mpd-conf.sh
@@ -53,7 +55,12 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 #-------------------------------------------------------------------------------
 	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
 	sleep 2
-	mac=$( ls -1t /var/lib/bluetooth/*/ | grep -v 'cache\|settings' | head -1 )
+	macs=$( bluetoothctl devices | cut -d' ' -f2 )
+	for mac in ${macs[@]}; do
+		if bluetoothctl info $mac | grep -q 'Connected: yes'; then
+			! grep -q $mac $dirshm/btconnected &> /dev/null && break
+		fi
+	done
 	if bluetoothctl info $mac | grep -q 'Paired: yes'; then
 		action=connect
 	else # paired by sender - not yet trusted
@@ -90,6 +97,7 @@ if [[ $action == connect || $action == pair ]]; then
 		pushstreamNotify "$name" Ready $icon
 ##### non-audio
 		echo $name > $dirshm/btdevice
+		echo $mac btdevice $name >> $dirshm/btconnected
 		exit
 	fi
 	
@@ -105,10 +113,12 @@ if [[ $action == connect || $action == pair ]]; then
 	if [[ $btsender ]]; then
 ##### sender
 		echo $name > $dirshm/btsender
+		echo $mac btsender $name >> $dirshm/btconnected
 	else
 		btmixer=$( echo "$btmixer" | cut -d"'" -f2 )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
+		echo $mac btreceiver $name >> $dirshm/btconnected
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirbash/mpd-conf.sh
