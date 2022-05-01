@@ -378,11 +378,7 @@ function psMpdUpdate( data ) {
 }
 function psNotify( data ) {
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( 'power' in data ) {
-		if ( data.power === 'off' ) {
-			$( '#loader' ).addClass( 'splash' );
-			setTimeout( bannerHide, 10000 );
-		}
+	if ( data.title === 'power' ) {
 		switchPage( 'playback' );
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd

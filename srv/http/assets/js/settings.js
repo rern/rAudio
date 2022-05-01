@@ -244,13 +244,7 @@ function psNotify( data ) {
 	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( 'power' in data ) {
-		if ( data.power === 'off' ) {
-			$( '#loader' ).addClass( 'splash' );
-			setTimeout( bannerHide, 10000 );
-		}
-		loader();
-	}
+	if ( data.title === 'power' ) loader();
 }
 function psPlayer( data ) {
 	var player_id = {

@@ -991,9 +991,9 @@ power )
 		sleep 2
 	fi
 	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink Power 'Reboot ...' reboot reboot
+		pushstreamNotifyBlink Power 'Reboot ...' reboot
 	else
-		pushstreamNotifyBlink Power 'Off ...' power off
+		pushstreamNotify Power 'Off ...' 'power blink' 10000
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then

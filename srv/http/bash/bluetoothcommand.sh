@@ -13,17 +13,15 @@ icon=bluetooth
 
 bannerReconnect() {
 #-----
-	pushstreamNotify "$name" "$1<br><wh>Power on > off / Reconnect again</wh>" $icon -1
+	pushstreamNotify "$name" "$1<br><wh>Power on > off / Reconnect again</wh>" $icon 10000
 	bluetoothctl disconnect $mac
 	pushstreamList
 }
 disconnectRemove() {
-	line=$1
-	type=$( echo $line | cut -d' ' -f2 )
-	name=$( echo $line | cut -d' ' -f3- )
+	[[ $1 ]] && msg=$1 || msg=Disconnected
 	[[ $type == btsender ]] && icon=btsender
 #-----
-	pushstreamNotify "$name" Disconnected $icon
+	pushstreamNotify "$name" $msg $icon
 	if [[ $type == btsender ]]; then
 		$dirbash/cmd.sh playerstop
 	elif [[ $type == btreceiver ]]; then
@@ -40,14 +38,16 @@ pushstreamList() {
 
 if [[ $udev == btoff ]]; then
 #-----
-	pushstreamNotify Bluetooth 'Disconnect ...' 'bluetooth blink'
+	pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q 'Connected: no' && break
 	done
-	disconnectRemove "$line"
+	type=$( echo $line | cut -d' ' -f2 )
+	name=$( echo $line | cut -d' ' -f3- )
+	disconnectRemove
 	pushstreamList
 	exit
 fi
@@ -122,20 +122,26 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/mpd-conf.sh
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then
+	info=$( bluetoothctl info $mac )
+	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+	if echo "$info" | grep -q 'UUID: Audio Source'; then
+		type=btsender
+	elif echo "$info" | grep -q 'UUID: Audio Sink'; then
+		type=btreceiver
+	fi
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
-		msg=Disconnected
 		for i in {1..5}; do
 			bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
 		done
+		disconnectRemove
 	else
-		msg=Removed
 		bluetoothctl remove $mac &> /dev/null
 		for i in {1..5}; do
 			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
 		done
+		disconnectRemove Removed
 	fi
-	disconnectRemove "$( grep ^$mac $dirshm/btconnected )"
 fi
 
 pushstreamList
