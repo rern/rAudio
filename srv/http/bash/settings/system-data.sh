@@ -194,7 +194,7 @@ if rfkill | grep -q bluetooth; then
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( ls $dirshm/bt* &> /dev/null && echo true )'
+, "bluetoothactive"  : '$( exists $dirshm/btconnected )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]'
 fi
 if [[ -e $dirshm/onboardwlan ]]; then

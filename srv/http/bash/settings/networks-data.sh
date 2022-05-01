@@ -16,11 +16,11 @@ if systemctl -q is-active bluetooth; then
 			info=$( bluetoothctl info $mac )
 			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
+			source=$( echo "$info" | grep -q 'UUID: Audio Source' && echo true || echo false )
 			listbt+=',{
-"name"      : "'${name//\"/\\\"}'"
+  "name"      : "'$name'"
 , "mac"       : "'$mac'"
-, "sink"      : '$sink'
+, "source"    : '$sink'
 , "connected" : '$connected'
 }'
 		done

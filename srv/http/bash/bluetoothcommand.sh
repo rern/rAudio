@@ -123,7 +123,6 @@ if [[ $action == connect || $action == pair ]]; then
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then
 	info=$( bluetoothctl info $mac )
-	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 	if echo "$info" | grep -q 'UUID: Audio Source'; then
 		type=btsender
 	elif echo "$info" | grep -q 'UUID: Audio Sink'; then
