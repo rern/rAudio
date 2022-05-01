@@ -40,7 +40,6 @@ if [[ $udev == btoff ]]; then
 		$dirbash/cmd.sh playerstop
 	fi
 	pushstreamNotify "$name" Disconnected $icon
-	rm $dirshm/$type
 	if [[ $type == btreceiver ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
@@ -96,7 +95,6 @@ if [[ $action == connect || $action == pair ]]; then
 #-------------------------------------------------------------------------------
 		pushstreamNotify "$name" Ready $icon
 ##### non-audio
-		echo $name > $dirshm/btdevice
 		echo $mac btdevice $name >> $dirshm/btconnected
 		exit
 	fi
@@ -112,7 +110,6 @@ if [[ $action == connect || $action == pair ]]; then
 	pushstreamNotify "$name" Ready $icon
 	if [[ $btsender ]]; then
 ##### sender
-		echo $name > $dirshm/btsender
 		echo $mac btsender $name >> $dirshm/btconnected
 	else
 		btmixer=$( echo "$btmixer" | cut -d"'" -f2 )

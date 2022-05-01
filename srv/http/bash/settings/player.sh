@@ -127,7 +127,8 @@ Simple mixer control 'HPOUT2 Digital',0
 Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0"
 	fi
-	[[ -e $dirshm/btreceiver || -e $dirshm/btsender ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
+	mixers=$( bluealsa-aplay -L )
+	[[ $mixers ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$mixers
 	devices+=$'\n\n<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
 	echo "$devices"
 	;;
