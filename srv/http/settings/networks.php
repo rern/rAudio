@@ -12,7 +12,6 @@ htmlHead( [ //////////////////////////////////
  • Pairing:
  &emsp; - On receiver device - Turn on <code>pairing</code> / <code>discovery</code> mode
  &emsp; - On rAudio - Search and select the receiver device to pair
- &emsp; - Once paired, reconnect again. (1st time only)
 • Connecting:
  &emsp; - On receiver devices - <code>power on</code> / <code>power off</code> : <code>connect</code> / <code>disconnect</code>
  • Device buttons:
@@ -21,7 +20,6 @@ htmlHead( [ //////////////////////////////////
  • Pairing:
  &emsp; - On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
  &emsp; - On sender device - Search and select rAudio to pair
- &emsp; - Once paired, reconnect again. (1st time only)
  &emsp; - To remove from the list - <code>Forget</code> both on rAudio and sender device
  • Connecting:
  &emsp; - On sender devices - Select rAudio > <code>connect</code> / <code>disconnect</code>
