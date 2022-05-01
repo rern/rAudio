@@ -398,6 +398,9 @@ function infoWiFi( values ) {
 }
 function renderBluetooth() {
 	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
+	$( '#codebluetooth' )
+		.addClass( 'hide' )
+		.empty();
 	if ( G.listbt ) {
 		var htmlbt = '';
 		G.listbt.forEach( function( list ) {
