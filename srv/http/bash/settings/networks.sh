@@ -52,10 +52,9 @@ bluetoothinfo )
 $( bluealsa-aplay -L | grep -A2 $mac )
 "
 	fi
-	data+="\
+	data+="
 <bll># bluetoothctl info $mac</bll>
-$info
-"
+$info"
 	echo "$data"
 	;;
 connect )

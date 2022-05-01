@@ -114,22 +114,33 @@ customset )
 	fi
 	;;
 devices )
-	devices+=$'<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n<bll># amixer scontrols</bll>\n'
+	devices="\
+<bll># aplay -l | grep ^card</bll>
+$( aplay -l | grep ^card )
+
+<bll># amixer scontrols</bll>"
 	card=$( cat $dirshm/asoundcard )
 	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
-		devices+=$( amixer -c $card scontrols )
+		devices+="
+$( amixer -c $card scontrols )
+"
 	else
 		devices+="\
 Simple mixer control 'HPOUT1 Digital',0
 Simple mixer control 'HPOUT2 Digital',0
 Simple mixer control 'SPDIF Out',0
-Simple mixer control 'Speaker Digital',0"
+Simple mixer control 'Speaker Digital',0
+"
 	fi
 	mixers=$( bluealsa-aplay -L )
-	[[ $mixers ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$mixers
-	devices+=$'\n\n<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
+	[[ $mixers ]] && devices+="
+<bll># bluealsa-aplay -L</bll>
+$mixers
+"
+	devices+="
+<bll># cat /etc/asound.conf</bll>
+$( cat /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )

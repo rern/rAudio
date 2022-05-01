@@ -11,47 +11,49 @@
 udev=$1
 icon=bluetooth
 
-pushstreamList() {
-	$dirbash/settings/networks-data.sh btlistpush
-}
 bannerReconnect() {
-#-------------------------------------------------------------------------------
+#-----
 	pushstreamNotify "$name" "$1<br><wh>Power on > off / Reconnect again</wh>" $icon -1
 	bluetoothctl disconnect $mac
 	pushstreamList
 }
-
-if [[ $udev == btoff ]]; then
-#-------------------------------------------------------------------------------
-	pushstreamNotify Bluetooth 'Disconnect ...' 'bluetooth blink'
-	sleep 2
-	readarray -t lines <<< $( cat $dirshm/btconnected )
-	for line in "${lines[@]}"; do
-		mac=${line/ *}
-		if bluetoothctl info $mac | grep -q 'Connected: no'; then
-			type=$( echo $line | cut -d' ' -f2 )
-			name=$( echo $line | cut -d' ' -f3- )
-			break
-		fi
-	done
-	sed -i "/^$mac/ d" $dirshm/btconnected
-	if [[ $type == btsender ]]; then
-		icon=btsender
-		$dirbash/cmd.sh playerstop
-	fi
+disconnectRemove() {
+	line=$1
+	type=$( echo $line | cut -d' ' -f2 )
+	name=$( echo $line | cut -d' ' -f3- )
+	[[ $type == btsender ]] && icon=btsender
+#-----
 	pushstreamNotify "$name" Disconnected $icon
-	if [[ $type == btreceiver ]]; then
+	if [[ $type == btsender ]]; then
+		$dirbash/cmd.sh playerstop
+	elif [[ $type == btreceiver ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		$dirbash/mpd-conf.sh
 	fi
+	sed -i "/^$mac/ d" $dirshm/btconnected
+}
+pushstreamList() {
+	$dirbash/settings/networks-data.sh btlistpush
+}
+
+if [[ $udev == btoff ]]; then
+#-----
+	pushstreamNotify Bluetooth 'Disconnect ...' 'bluetooth blink'
+	sleep 2
+	readarray -t lines <<< $( cat $dirshm/btconnected )
+	for line in "${lines[@]}"; do
+		mac=${line/ *}
+		bluetoothctl info $mac | grep -q 'Connected: no' && break
+	done
+	disconnectRemove "$line"
 	pushstreamList
 	exit
 fi
 
 if [[ $udev == bton ]]; then # connect from paired device / paired by sender > udev
-#-------------------------------------------------------------------------------
+#-----
 	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
 	sleep 2
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
@@ -81,18 +83,17 @@ if [[ $action == connect || $action == pair ]]; then
 	done
 	info=$( bluetoothctl info $mac )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-#-------------------------------------------------------------------------------
-	[[ ! $name ]] && exit
+	[[ ! $name ]] && exit # power on unpaired receiver
 	
-#-------------------------------------------------------------------------------
+#-----
 	echo "$info" | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
-#-------------------------------------------------------------------------------
+#-----
 	[[ $action != connect ]] && bannerReconnect 'Paired successfully' && exit
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	if ! echo "$info" | grep -q 'UUID: Audio'; then
-#-------------------------------------------------------------------------------
+#-----
 		pushstreamNotify "$name" Ready $icon
 ##### non-audio
 		echo $mac btdevice $name >> $dirshm/btconnected
@@ -106,7 +107,7 @@ if [[ $action == connect || $action == pair ]]; then
 	done
 	[[ ! $btmixer ]] && bannerReconnect 'Device not ready' && exit
 	
-#-------------------------------------------------------------------------------
+#-----
 	pushstreamNotify "$name" Ready $icon
 	if [[ $btsender ]]; then
 ##### sender
@@ -121,7 +122,6 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/mpd-conf.sh
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then
-	info=$( bluetoothctl info $mac )
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		msg=Disconnected
@@ -134,17 +134,8 @@ elif [[ $action == disconnect || $action == remove ]]; then
 		for i in {1..5}; do
 			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
 		done
-		if ! echo "$info" | grep -q 'UUID: Audio'; then
-			rm -f $dirshm/btdevice
-		elif echo "$info" | grep -q 'UUID: Audio Source'; then
-			icon=btsender
-			rm -f $dirshm/btsender
-		else
-			rm -f $dirshm/btreceiver
-		fi
 	fi
-#-------------------------------------------------------------------------------
-	pushstreamNotify "$name" $msg $icon
+	disconnectRemove "$( grep ^$mac $dirshm/btconnected )"
 fi
 
 pushstreamList
