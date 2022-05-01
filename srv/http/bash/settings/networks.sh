@@ -50,9 +50,10 @@ bluetoothinfo )
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
+
 "
 	fi
-	data+="
+	data+="\
 <bll># bluetoothctl info $mac</bll>
 $info"
 	echo "$data"
