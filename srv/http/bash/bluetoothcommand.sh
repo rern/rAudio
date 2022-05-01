@@ -10,24 +10,20 @@
 
 udev=$1
 icon=bluetooth
-udevservices='systemd-udevd systemd-udevd-kernel.socket systemd-udevd-control.socket'
 
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
 bannerReconnect() {
-	bluetoothctl disconnect $mac
-	for i in {1..5}; do
-		bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
-	done
-	pushstreamList
 #-------------------------------------------------------------------------------
 	pushstreamNotify "$name" "$1<br><wh>Power on > off / Reconnect again</wh>" $icon -1
-	systemctl start $udevservices
+	bluetoothctl disconnect $mac
+	pushstreamList
 }
 
 if [[ $udev == btoff ]]; then
-	pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
+#-------------------------------------------------------------------------------
+	pushstreamNotify Bluetooth 'Disconnect ...' 'bluetooth blink'
 	sleep 2
 	for type in btdevice btreceiver btsender; do
 		file=$dirshm/$type
@@ -38,6 +34,7 @@ if [[ $udev == btoff ]]; then
 		if bluetoothctl info $mac | grep -q 'Connected: no'; then
 			[[ $type == btreceiver ]] && mpdconf=1
 			[[ $type == btsender ]] && icon=btsender && $dirbash/cmd.sh playerstop
+#-------------------------------------------------------------------------------
 			pushstreamNotify "$name" Disconnected $icon
 			rm $file
 			break
@@ -54,15 +51,17 @@ if [[ $udev == btoff ]]; then
 	exit
 fi
 
-if [[ $udev == bton ]]; then
+if [[ $udev == bton ]]; then # connect from paired device / paired by sender > udev
+#-------------------------------------------------------------------------------
 	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
 	sleep 2
 	mac=$( ls -1t /var/lib/bluetooth/*/ | grep -v 'cache\|settings' | head -1 )
-	if bluetoothctl info $mac | grep -q 'Trusted: no'; then # paired by sender - not yet trusted
+	if bluetoothctl info $mac | grep -q 'Paired: yes'; then
+		action=connect
+	else # paired by sender - not yet trusted
+		sleep 2
 		action=pair
 		bluetoothctl agent NoInputNoOutput
-	else
-		action=connect
 	fi
 else
 	action=$1
@@ -72,38 +71,24 @@ fi
 
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac
-	if [[ $action == pair ]]; then
-		systemctl stop $udevservices
-		bluetoothctl pair $mac
-		for i in {1..5}; do
-			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
-		done
-		info=$( bluetoothctl info $mac )
-		name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-		if echo "$info" | grep -q 'Paired: yes'; then
-			bannerReconnect 'Paired successfully.'
-		else
-#-------------------------------------------------------------------------------
-			pushstreamNotify "$name" 'Pair failed.' bluetooth
-		fi
-		exit
-	fi
-	
-	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
+	bluetoothctl pair $mac
 	for i in {1..5}; do
-		if bluetoothctl info $mac 2> /dev/null | grep -q 'UUID: '; then
-			uuid=1
-			break
-		else
-			sleep 1
-		fi
+		bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 	done
-#-------------------------------------------------------------------------------
-	[[ ! $uuid ]] && pushstreamNotify "$name" 'Connect failed.' bluetooth && exit
-	
 	info=$( bluetoothctl info $mac )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+#-------------------------------------------------------------------------------
+	[[ ! $name ]] && exit
+	
+#-------------------------------------------------------------------------------
+	echo "$info" | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
+	
+#-------------------------------------------------------------------------------
+	[[ $action != connect ]] && bannerReconnect 'Paired successfully' && exit
+	
+	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	if ! echo "$info" | grep -q 'UUID: Audio'; then
+#-------------------------------------------------------------------------------
 		pushstreamNotify "$name" Ready $icon
 ##### non-audio
 		echo $name > $dirshm/btdevice
@@ -115,8 +100,9 @@ if [[ $action == connect || $action == pair ]]; then
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
-	[[ ! $btmixer ]] && bannerReconnect 'Mixer device not ready' && exit
+	[[ ! $btmixer ]] && bannerReconnect 'Device not ready' && exit
 	
+#-------------------------------------------------------------------------------
 	pushstreamNotify "$name" Ready $icon
 	if [[ $btsender ]]; then
 ##### sender
@@ -152,6 +138,7 @@ elif [[ $action == disconnect || $action == remove ]]; then
 			rm -f $dirshm/btreceiver
 		fi
 	fi
+#-------------------------------------------------------------------------------
 	pushstreamNotify "$name" $msg $icon
 fi
 

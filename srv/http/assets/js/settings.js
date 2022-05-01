@@ -118,10 +118,12 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
-	var delay = page !== 'networks' && $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
+	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( G.timeoutbanner );
-	G.timeoutbanner = setTimeout( bannerHide, delay );
+	if ( page !== 'networks' ) {
+		clearTimeout( G.timeoutbanner );
+		G.timeoutbanner = setTimeout( bannerHide, delay );
+	}
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
@@ -220,7 +222,14 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	if ( 'connected' in data ) {
+	if ( !data ) {
+		if ( page === 'networks' ) {
+			G.listbt = data;
+			renderBluetooth();
+		} else if ( page === 'system' ) {
+			$( '#bluetooth' ).removeClass( 'disabled' );
+		}
+	} else if ( 'connected' in data ) {
 		if ( page === 'system' ) $( '#bluetooth' ).toggleClass( 'disabled', data.connected );
 	} else if ( page === 'networks' ) {
 		G.listbt = data;
@@ -228,6 +237,11 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
+	if ( !$( '#banner' ).hasClass( 'hide' ) ) {
+		var msg = $( '#bannerMessage' ).text().slice( 0, 6 );
+		if ( msg === 'Paired' || msg === 'Device' ) return
+	}
+	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( 'power' in data ) {
