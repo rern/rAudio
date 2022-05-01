@@ -43,8 +43,6 @@ if [[ $udev == btoff ]]; then
 	if [[ $mpdconf ]]; then
 		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
-		systemctl stop bluetoothbutton
-		[[ -e $dirshm/nosound ]] && pushstream display '{"volumenone":false}'
 		$dirbash/mpd-conf.sh
 	fi
 	pushstreamList
