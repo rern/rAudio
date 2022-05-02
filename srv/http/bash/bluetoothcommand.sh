@@ -59,7 +59,7 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	for mac in ${macs[@]}; do
 		if bluetoothctl info $mac | grep -q 'Connected: yes'; then
-			! grep -q $mac $dirshm/btconnected &> /dev/null && break
+			grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
 		fi
 	done
 	! bluetoothctl info $mac | grep -q '^\s*Alias:' && exit # powered on unpaired receiver
