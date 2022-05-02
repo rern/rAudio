@@ -2,6 +2,13 @@
 
 alias=r1
 
+# 20220505
+dir=/srv/http/shareddata
+if [[ -e $dir ]]; then
+	chown -h http:http $dir/*/
+	chown -h mpd:audio $dir $dir/{mpd,playlist} $dir/mpd/mpd.db $dir/playlists/*
+fi
+
 # 20220428
 # /etc/udev/rules.d/bluetooth.rules
 rm -f /etc/systemd/system/bluealsa-aplay.service
