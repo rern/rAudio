@@ -62,9 +62,6 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 	done
 	! bluetoothctl info $mac | grep -q '^\s*Alias:' && exit # powered on unpaired receiver
 	
-	for i in {1..5}; do
-		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break 
-	done
 	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
@@ -94,6 +91,9 @@ if [[ $action == connect || $action == pair ]]; then
 	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
+	for i in {1..5}; do
+		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break 
+	done
 	type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
 	[[ $type == Source ]] && icon=btsender
 	if [[ ! $type ]]; then
