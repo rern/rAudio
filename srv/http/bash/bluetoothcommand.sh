@@ -61,7 +61,15 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 		fi
 	done
 	 # unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on 
-	if ! grep -q $mac <<< $( bluetoothctl paired-devices ); then
+	if grep -q $mac <<< $( bluetoothctl paired-devices ); then
+		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
+			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+			bluetoothctl disconnect $mac
+#-----X
+			pushstreamNotify "$name" 'Disconnected - DSP is currently enabled.' bluetooth
+			exit
+		fi
+	else
 		for i in {1..5}; do
 			! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 		done
