@@ -12,16 +12,14 @@ udev=$1
 icon=bluetooth
 
 bannerReconnect() {
-#-----
 	bluetoothctl disconnect $mac
 	pushstreamList
 	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 10000
 }
 disconnectRemove() {
+	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
 	[[ $type == Source ]] && icon=btsender
-#-----
-	pushstreamNotify "$name" $msg $icon
 	if [[ $type == Source ]]; then
 		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
@@ -30,7 +28,7 @@ disconnectRemove() {
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		$dirbash/mpd-conf.sh
 	fi
-	sed -i "/^$mac/ d" $dirshm/btconnected
+	pushstreamNotify "$name" $msg $icon
 }
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
@@ -89,10 +87,10 @@ if [[ $action == connect || $action == pair ]]; then
 	done
 	info=$( bluetoothctl info $mac )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-#-----
+#-----X
 	echo "$info" | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
-#-----
+#-----X
 	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
@@ -101,7 +99,7 @@ if [[ $action == connect || $action == pair ]]; then
 	if [[ ! $type ]]; then
 ##### non-audio
 		echo $mac Device $name >> $dirshm/btconnected
-#-----
+#-----X
 		pushstreamNotify "$name" Ready $icon
 		exit
 	fi
@@ -110,6 +108,7 @@ if [[ $action == connect || $action == pair ]]; then
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
+#-----X
 	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready' && exit
 	
 #-----
