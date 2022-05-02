@@ -114,7 +114,15 @@ customset )
 	fi
 	;;
 devices )
-	devices="\
+	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
+					| grep -B1 pvolume \
+					| head -1 )
+	[[ $bluealsa ]] && devices="\
+<bll># amixer -D bluealsa scontrols</bll>
+$bluealsa
+
+"
+	devices+="\
 <bll># aplay -l | grep ^card</bll>
 $( aplay -l | grep ^card )
 
@@ -135,13 +143,6 @@ Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0
 "
 	fi
-	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
-					| grep -B1 pvolume \
-					| head -1 )
-	[[ $bluealsa ]] && devices+="
-<bll># amixer -D bluealsa scontrols</bll>
-$bluealsa
-"
 	devices+="
 <bll># cat /etc/asound.conf</bll>
 $( cat /etc/asound.conf )"
