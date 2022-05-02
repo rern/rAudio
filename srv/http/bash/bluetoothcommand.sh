@@ -28,6 +28,7 @@ disconnectRemove() {
 		$dirbash/mpd-conf.sh
 	fi
 	pushstreamNotify "$name" $msg $icon
+	pushstreamList
 }
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
@@ -46,7 +47,6 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 		type=$( echo $line | cut -d' ' -f2 )
 		name=$( echo $line | cut -d' ' -f3- )
 		disconnectRemove
-		pushstreamList
 	fi
 	exit
 fi
@@ -133,6 +133,7 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirbash/mpd-conf.sh
 	fi
+	pushstreamList
 elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
@@ -148,5 +149,3 @@ elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
 		disconnectRemove Removed
 	fi
 fi
-
-pushstreamList

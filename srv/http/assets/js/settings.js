@@ -230,7 +230,11 @@ function psBluetooth( data ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
 		}
 	} else if ( 'connected' in data ) {
-		if ( page === 'system' ) $( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+		if ( page === 'features' ) {
+			$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+		} else if ( page === 'system' ) {
+			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+		}
 	} else if ( page === 'networks' ) {
 		G.listbt = data;
 		renderBluetooth();

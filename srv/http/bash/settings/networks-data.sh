@@ -31,8 +31,9 @@ if systemctl -q is-active bluetooth; then
 	fi
 fi
 
+echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=false
 echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
-pushstream bluetooth '{"connected":'$connected'}'
+pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
 [[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
 
