@@ -1,10 +1,9 @@
 #!/bin/bash
 
-# Pair: on connected - Trust > Pair > get device type > (pair audio devices - mixer not yet ready)
-#                                                       - Audio: Disconnect > notify reconnect
-#                                                       - Non-audio: notify
+# Pair: on connected - Trust > Pair > get device type > Disconnect > notify reconnect
+#   - pair audio devices - mixer not yet ready)
 # Connect: Trust > connect > get device type > notify
-# Disconnect / Remove: Disconnect > get device type > notify
+# Disconnect / Remove: Disconnect > notify
 
 . /srv/http/bash/common.sh
 
@@ -33,9 +32,8 @@ disconnectRemove() {
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
-
-if [[ $udev == btoff ]]; then
-#-----
+#---------------------------------------------------------------------------------------------
+if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -43,6 +41,7 @@ if [[ $udev == btoff ]]; then
 		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
 	done
 	if [[ $mac ]]; then
+#-----
 		pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
 		type=$( echo $line | cut -d' ' -f2 )
 		name=$( echo $line | cut -d' ' -f3- )
@@ -52,20 +51,26 @@ if [[ $udev == btoff ]]; then
 	exit
 fi
 
-if [[ $udev == bton ]]; then # connect from paired device / paired by sender > udev
-#-----
+if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device;
 	sleep 2
+	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	for mac in ${macs[@]}; do
 		if bluetoothctl info $mac | grep -q 'Connected: yes'; then
 			grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
 		fi
 	done
-	if ! grep -q $mac <<< $( bluetoothctl paired-devices ) && ! bluetoothctl info $mac | grep -q 'UUID: Audio Source'; then
-		exit # unpaired sender only
+	 # unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on 
+	if ! grep -q $mac <<< $( bluetoothctl paired-devices ); then
+		for i in {1..5}; do
+			! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
+		done
+#-----X
+		bluetoothctl info $mac | grep -q 'UUID: Audio Source' && msg='Pair ...' || exit
 	fi
 	
-	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
+#-----
+	pushstreamNotifyBlink Bluetooth $msg bluetooth
 	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
@@ -73,13 +78,13 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 		action=pair
 		bluetoothctl agent NoInputNoOutput
 	fi
-else # from rAudio
+else # >>>> rAudio: 1. pair to receiver; 2. remove paired device
 	action=$1
 	mac=$2
 	type=$3
 	name=$4
 fi
-
+#---------------------------------------------------------------------------------------------
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
@@ -95,7 +100,7 @@ if [[ $action == connect || $action == pair ]]; then
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
-		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break 
+		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
 	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
 	[[ $type == Source ]] && icon=btsender
