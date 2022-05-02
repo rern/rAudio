@@ -14,7 +14,7 @@ icon=bluetooth
 bannerReconnect() {
 	bluetoothctl disconnect $mac
 	pushstreamList
-	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 10000
+	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 15000
 }
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
@@ -36,7 +36,6 @@ pushstreamList() {
 
 if [[ $udev == btoff ]]; then
 #-----
-	pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -44,6 +43,7 @@ if [[ $udev == btoff ]]; then
 		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
 	done
 	if [[ $mac ]]; then
+		pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
 		type=$( echo $line | cut -d' ' -f2 )
 		name=$( echo $line | cut -d' ' -f3- )
 		disconnectRemove
@@ -54,7 +54,6 @@ fi
 
 if [[ $udev == bton ]]; then # connect from paired device / paired by sender > udev
 #-----
-	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
 	sleep 2
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	for mac in ${macs[@]}; do
@@ -62,8 +61,11 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 			grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
 		fi
 	done
-	! bluetoothctl info $mac | grep -q '^\s*Alias:' && exit # powered on unpaired receiver
+	if ! grep -q $mac <<< $( bluetoothctl paired-devices ) && ! bluetoothctl info $mac | grep -q 'UUID: Audio Source'; then
+		exit # unpaired sender only
+	fi
 	
+	pushstreamNotifyBlink Bluetooth 'Connect ...' bluetooth
 	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
@@ -84,10 +86,9 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 	done
-	info=$( bluetoothctl info $mac )
-	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+	name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 #-----X
-	echo "$info" | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
+	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
 #-----X
 	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
@@ -96,7 +97,7 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break 
 	done
-	type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
 	[[ $type == Source ]] && icon=btsender
 	if [[ ! $type ]]; then
 ##### non-audio
