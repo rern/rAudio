@@ -120,7 +120,9 @@ $( aplay -l | grep ^card )
 
 <bll># amixer scontrols</bll>"
 	card=$( cat $dirshm/asoundcard )
-	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
+	aplayname=$( aplay -l \
+					| grep "^card $card" \
+					| awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
 		devices+="
 $( amixer -c $card scontrols )
@@ -133,10 +135,12 @@ Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0
 "
 	fi
-	mixers=$( bluealsa-aplay -L )
-	[[ $mixers ]] && devices+="
-<bll># bluealsa-aplay -L</bll>
-$mixers
+	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
+					| grep -B1 pvolume \
+					| head -1 )
+	[[ $bluealsa ]] && devices+="
+<bll># amixer -D bluealsa scontrols</bll>
+$bluealsa
 "
 	devices+="
 <bll># cat /etc/asound.conf</bll>
