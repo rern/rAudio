@@ -131,10 +131,10 @@ HTML
 Control:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-equalizer"></i>
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
- • New: adjust ➤ <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
- • Existing: adjust ➤ <i class="fa fa-save"></i>
- • Adjust without <i class="fa fa-save"></i> will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i> ➤ <code>NAME</code> ➤ <i class="fa fa-save"></i>
+ • New: Adjust > <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
+ • Existing: Adjust > <i class="fa fa-save"></i>Save
+ • Adjust without <i class="fa fa-save"></i>Save will be listed as <code>(unnamed)</code>
+ • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
  • If distortions occurred, lower all bands collectively and increase volume to fix distortions
 HTML
 	]
