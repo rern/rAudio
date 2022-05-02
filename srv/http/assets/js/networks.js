@@ -156,18 +156,13 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	var $code = $( '#codebluetooth' );
-	if ( !$code.hasClass( 'hide' ) ) {
-		$code.addClass( 'hide' );
+	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+		$( '#codebluetooth' ).addClass( 'hide' );
 		return
 	}
 	
 	var list = G.listbt[ G.li.index() ]
-	bash( [ 'bluetoothinfo', list.mac ], function( data ) {
-		$code
-			.html( data )
-			.removeClass( 'hide' );
-	} );
+	renderBluetoothInfo( list.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
@@ -395,9 +390,6 @@ function infoWiFi( values ) {
 }
 function renderBluetooth() {
 	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
-	$( '#codebluetooth' )
-		.addClass( 'hide' )
-		.empty();
 	if ( G.listbt ) {
 		var htmlbt = '';
 		G.listbt.forEach( function( list ) {
@@ -408,6 +400,18 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
+	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+		var mac = $( '#codebluetooth' ).data( 'mac' );
+		renderBluetoothInfo( mac );
+	}
+}
+function renderBluetoothInfo( mac ) {
+	bash( [ 'bluetoothinfo', mac ], function( data ) {
+		$( '#codebluetooth' )
+			.html( data )
+			.data( 'mac', mac )
+			.removeClass( 'hide' );
+	} );
 }
 function renderPage() {
 	if ( G.activebt ) {
