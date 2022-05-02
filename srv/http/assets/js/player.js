@@ -8,7 +8,7 @@ Beware of too high volume from speakers.`;
 
 $( '#playback' ).click( function() {
 	if ( !$( this ).hasClass( 'disabled' ) ) {
-		var cmd = G.stateplayer === 'mpd' ? 'mpcplayback' : 'playerstop';
+		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
@@ -360,7 +360,7 @@ function playbackIcon() {
 	$( '#playback' )
 		.removeAttr( 'class' )
 		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
-		.toggleClass( 'disabled', !G.state || ( G.stateplayer !== 'mpd' && G.state !== 'play' ) );
+		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
 }
 function renderPage() {
 	playbackIcon();

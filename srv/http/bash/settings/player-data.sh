@@ -9,11 +9,8 @@ if [[ -e $dirsystem/soxr.conf ]]; then
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi
-if grep -q '^file=""' $dirshm/status; then
-	state=false
-else
-	state=$( grep ^state $dirshm/status | cut -d= -f2 )
-fi
+state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
+[[ ! $state ]] && state=stop
 
 data='
   "page"             : "player"
@@ -36,12 +33,12 @@ data='
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true )'
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
+, "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
 , "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
 , "soxr"             : '$( sed -n '/^resampler/,/}/ p' /etc/mpd.conf | grep -q 'quality.*custom' && echo true )'
 , "soxrconf"         : '$soxrconf'
-, "state"            : '$state'
-, "stateplayer"      : "'$( cat $dirshm/player )'"
+, "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data"
