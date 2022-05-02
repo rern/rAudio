@@ -13,18 +13,18 @@ icon=bluetooth
 
 bannerReconnect() {
 #-----
-	pushstreamNotify "$name" "$1<br><wh>Power on > off / Reconnect again</wh>" $icon 10000
 	bluetoothctl disconnect $mac
 	pushstreamList
+	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 10000
 }
 disconnectRemove() {
 	[[ $1 ]] && msg=$1 || msg=Disconnected
-	[[ $type == btsender ]] && icon=btsender
+	[[ $type == Source ]] && icon=btsender
 #-----
 	pushstreamNotify "$name" $msg $icon
-	if [[ $type == btsender ]]; then
+	if [[ $type == Source ]]; then
 		$dirbash/cmd.sh playerstop
-	elif [[ $type == btreceiver ]]; then
+	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
@@ -62,17 +62,23 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 			! grep -q $mac $dirshm/btconnected &> /dev/null && break
 		fi
 	done
-	if bluetoothctl info $mac | grep -q 'Paired: yes'; then
+	! bluetoothctl info $mac | grep -q '^\s*Alias:' && exit # powered on unpaired receiver
+	
+	for i in {1..5}; do
+		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break 
+	done
+	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
-	else # paired by sender - not yet trusted
+	else
 		sleep 2
 		action=pair
 		bluetoothctl agent NoInputNoOutput
 	fi
-else
+else # from rAudio
 	action=$1
 	mac=$2
 	name=$3
+	type=$4
 fi
 
 if [[ $action == connect || $action == pair ]]; then
@@ -83,51 +89,45 @@ if [[ $action == connect || $action == pair ]]; then
 	done
 	info=$( bluetoothctl info $mac )
 	name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-	[[ ! $name ]] && exit # power on unpaired receiver
-	
 #-----
 	echo "$info" | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
 #-----
-	[[ $action != connect ]] && bannerReconnect 'Paired successfully' && exit
+	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
-	if ! echo "$info" | grep -q 'UUID: Audio'; then
+	type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+	[[ $type == Source ]] && icon=btsender
+	if [[ ! $type ]]; then
+##### non-audio
+		echo $mac Device $name >> $dirshm/btconnected
 #-----
 		pushstreamNotify "$name" Ready $icon
-##### non-audio
-		echo $mac btdevice $name >> $dirshm/btconnected
 		exit
 	fi
 	
-	echo "$info" | grep -q 'UUID: Audio Source' && icon=btsender && btsender=1
 	for i in {1..5}; do
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
-	[[ ! $btmixer ]] && bannerReconnect 'Device not ready' && exit
+	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready' && exit
 	
 #-----
 	pushstreamNotify "$name" Ready $icon
-	if [[ $btsender ]]; then
+	if [[ $type == Source ]]; then
 ##### sender
-		echo $mac btsender $name >> $dirshm/btconnected
+		echo $mac Source $name >> $dirshm/btconnected
 	else
 		btmixer=$( echo "$btmixer" | cut -d"'" -f2 )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
-		echo $mac btreceiver $name >> $dirshm/btconnected
+		echo $mac Sink $name >> $dirshm/btconnected
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirbash/mpd-conf.sh
 	fi
-elif [[ $action == disconnect || $action == remove ]]; then
+elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
 	info=$( bluetoothctl info $mac )
-	if echo "$info" | grep -q 'UUID: Audio Source'; then
-		type=btsender
-	elif echo "$info" | grep -q 'UUID: Audio Sink'; then
-		type=btreceiver
-	fi
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do

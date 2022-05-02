@@ -237,10 +237,7 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
-	if ( !$( '#banner' ).hasClass( 'hide' ) ) {
-		var msg = $( '#bannerMessage' ).text().slice( 0, 6 );
-		if ( msg === 'Paired' || msg === 'Device' ) return
-	}
+	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) ) return
 	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );

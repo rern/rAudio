@@ -84,7 +84,7 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		notify( list.name, 'Connect ...', list.source ? 'btsender' : 'bluetooth', -1 );
+		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
 		return
 	}
@@ -96,8 +96,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bluetoothcommand( 'disconnect', list );
-		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
+		bluetoothcommand( 'disconnect', list.mac, list.name, list.type );
 		return
 	}
 	
@@ -129,16 +128,14 @@ $( '.forget' ).click( function() {
 	var connectedlan = '';
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.li.index() ]
-		var name = list.name;
-		var mac = list.mac;
 		info( {
-			  icon    : list.source ? 'btsender' : 'bluetooth'
-			, title   : name
+			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
+			, title   : list.name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( name, 'Forget ...', 'bluetooth' );
-				bluetoothcommand( 'remove', list );
+				notify( list.name, 'Forget ...', 'bluetooth' );
+				bluetoothcommand( 'remove', list.mac, list.name, list.type );
 			}
 		} );
 		return
@@ -404,10 +401,8 @@ function renderBluetooth() {
 	if ( G.listbt ) {
 		var htmlbt = '';
 		G.listbt.forEach( function( list ) {
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-connected="'+ list.connected +'">'
-					 +'<i class="fa fa-'+ ( list.source ? 'btsender' : 'bluetooth' ) +'"></i>';
-			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
-			htmlbt += list.name +'</li>';
+			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
+			htmlbt += '<li class="bt"><i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
 	} else {
