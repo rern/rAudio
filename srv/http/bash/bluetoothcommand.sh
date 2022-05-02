@@ -77,8 +77,8 @@ if [[ $udev == bton ]]; then # connect from paired device / paired by sender > u
 else # from rAudio
 	action=$1
 	mac=$2
-	name=$3
-	type=$4
+	type=$3
+	name=$4
 fi
 
 if [[ $action == connect || $action == pair ]]; then
@@ -127,7 +127,6 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/mpd-conf.sh
 	fi
 elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
-	info=$( bluetoothctl info $mac )
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do

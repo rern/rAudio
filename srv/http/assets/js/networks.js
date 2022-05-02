@@ -96,7 +96,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		bluetoothcommand( 'disconnect', list.mac, list.name, list.type );
+		bluetoothcommand( 'disconnect', list );
 		return
 	}
 	
@@ -135,7 +135,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( list.name, 'Forget ...', 'bluetooth' );
-				bluetoothcommand( 'remove', list.mac, list.name, list.type );
+				bluetoothcommand( 'remove', list );
 			}
 		} );
 		return
@@ -240,7 +240,7 @@ $( '#setting-accesspoint' ).click( function() {
 } );
 
 function bluetoothcommand( cmd, list ) {
-	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' "'+ list.name +'"' );
+	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.type +' "'+ list.name +'"' );
 }
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
