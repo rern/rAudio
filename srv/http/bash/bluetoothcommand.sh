@@ -66,7 +66,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			bluetoothctl disconnect $mac
 #-----X
-			pushstreamNotify "$name" 'Disconnected - DSP is currently enabled.' bluetooth
+			pushstreamNotify "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' bluetooth 6000
 			exit
 		fi
 	else
