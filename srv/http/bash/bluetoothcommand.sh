@@ -41,12 +41,14 @@ if [[ $udev == btoff ]]; then
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
 		mac=${line/ *}
-		bluetoothctl info $mac | grep -q 'Connected: no' && break
+		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
 	done
-	type=$( echo $line | cut -d' ' -f2 )
-	name=$( echo $line | cut -d' ' -f3- )
-	disconnectRemove
-	pushstreamList
+	if [[ $mac ]]; then
+		type=$( echo $line | cut -d' ' -f2 )
+		name=$( echo $line | cut -d' ' -f3- )
+		disconnectRemove
+		pushstreamList
+	fi
 	exit
 fi
 

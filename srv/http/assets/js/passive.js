@@ -377,7 +377,7 @@ function psMpdUpdate( data ) {
 	}, 3000 );
 }
 function psNotify( data ) {
-	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) ) return
+	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
 	
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( data.title === 'power' ) {

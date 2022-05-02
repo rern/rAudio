@@ -237,7 +237,7 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
-	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) ) return
+	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
 	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
