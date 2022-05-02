@@ -108,6 +108,7 @@ data='
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
 , "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
+, "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
 , "listbt"     : '$listbt'

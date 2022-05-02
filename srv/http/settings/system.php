@@ -77,7 +77,7 @@ CPU temperature:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
-	, 'button' => [ 'addnas' => 'plus-circle wh' ]
+	, 'button' => [ 'addnas' => 'plus-circle' ]
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>

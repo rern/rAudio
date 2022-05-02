@@ -3,7 +3,7 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'button' => [ 'btscan' => 'search wh' ]
+	, 'button' => [ 'btscan' => 'search' ]
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
@@ -31,7 +31,7 @@ htmlHead( [ //////////////////////////////////
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
 	, 'status'  => 'wlan'
-	, 'button'  => [ 'wladd' => 'plus-circle wh', 'wlscan' => 'search wh' ]
+	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>

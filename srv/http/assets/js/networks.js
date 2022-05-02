@@ -9,6 +9,15 @@ $( '.back' ).click( function() {
 	refreshData();
 } );
 $( '#btscan' ).click( function() {
+	if ( $( this ).hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'bluetooth'
+			, title   : 'Bluetooth'
+			, message : '<wh>DSP</wh> is currently enabled.'
+		} );
+		return
+	}
+	
 	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
@@ -414,6 +423,7 @@ function renderBluetoothInfo( mac ) {
 	} );
 }
 function renderPage() {
+	$( '#btscan' ).toggleClass( 'disabled', G.camilladsp );
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );

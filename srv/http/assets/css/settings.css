@@ -173,6 +173,10 @@ heading i.fa-help {
 	width: 40px;
 	font-size: 20px;
 }
+heading .fa-plus-circle,
+heading .fa-search {
+	color: var( --cw );
+}
 heading .disabled {
 	color: var( --cg );
 }
