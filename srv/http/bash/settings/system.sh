@@ -683,8 +683,8 @@ shareddata )
 			ln -s $mountpoint/$dir $dirdata
 		done
 		ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' >> $mountpoint/iplist
-		chown -R http:http $mountpoint $dirdata
-		chown mpd:audio $mountpoint/mpd $dirmpd
+		chown -h http:http $mountpoint/*/
+		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
 		pushRefresh
 		[[ $copydata == false ]] && systemctl restart mpd
 	else
