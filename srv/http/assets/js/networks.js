@@ -171,7 +171,7 @@ $( '.info' ).click( function() {
 	}
 	
 	var list = G.listbt[ G.li.index() ]
-	renderBluetoothInfo( list.mac );
+	infoBluetooth( list.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
@@ -339,6 +339,20 @@ function infoAccesspoint() {
 		, message : 'Access Point must be disabled.'
 	} );
 }
+function infoBluetooth( mac ) {
+	bash( [ 'bluetoothinfo', mac ], function( data ) {
+		if ( !data ) {
+			$( '#codebluetooth' )
+				.empty()
+				.addClass( 'hide' );
+		} else {
+			$( '#codebluetooth' )
+				.html( data )
+				.data( 'mac', mac )
+				.removeClass( 'hide' );
+		}
+	} );
+}
 function infoWiFi( values ) {
 	if ( values ) {
 		var add = false;
@@ -411,16 +425,8 @@ function renderBluetooth() {
 	}
 	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		var mac = $( '#codebluetooth' ).data( 'mac' );
-		renderBluetoothInfo( mac );
+		infoBluetooth( mac );
 	}
-}
-function renderBluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac ], function( data ) {
-		$( '#codebluetooth' )
-			.html( data )
-			.data( 'mac', mac )
-			.removeClass( 'hide' );
-	} );
 }
 function renderPage() {
 	$( '#btscan' ).toggleClass( 'disabled', G.camilladsp );

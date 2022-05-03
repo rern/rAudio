@@ -46,6 +46,8 @@ $( timeout 1 avahi-browse -arp \
 bluetoothinfo )
 	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
+	echo "$info" | grep -q 'not available' && exit
+	
 	if (( $( echo "$info" | grep 'Connected: yes\|UUID: Audio' | wc -l ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>

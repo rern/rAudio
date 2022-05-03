@@ -114,6 +114,7 @@ config_dir: "$dircamilladsp/configs"
 coeff_dir: "$dircamilladsp/coeffs"
 default_config: "$dircamilladsp/configs/default_config.yml"
 active_config: "$dircamilladsp/configs/active_config.yml"
+log_file: "/var/log/camilladsp.log"
 update_symlink: true
 on_set_active_config: "/srv/http/bash/settings/features.sh camilladspasound"
 on_get_active_config: null
