@@ -3,6 +3,8 @@
 alias=r1
 
 # 20220505
+[[ ! -e /srv/http/data/system/asoundcard ]] && cp /srv/http/data/{shm,system}/asoundcard
+
 dir=/srv/http/shareddata
 if [[ -e $dir ]]; then
 	chown -h http:http $dir/*/
