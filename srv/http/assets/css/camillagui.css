@@ -498,6 +498,9 @@ label.setting select:first-child {
 	width: 125px !important;
 	margin-left: 23px;
 }
+.react-tabs__tab-panel:nth-of-type( 2 ) .button[data-tip*="Delete"] {
+	margin-top: auto;
+}
 /* Mixers ------------------------------- */
 .react-tabs__tab-panel:nth-of-type( 3 ) div[style*='display: flex; justify-content: space-evenly;'] {
 	margin: 10px 0;
