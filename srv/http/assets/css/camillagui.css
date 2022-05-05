@@ -612,28 +612,8 @@ textarea:focus-visible {
 	text-align: center !important;
 	color: transparent;
 }
-/*.popup-content div:nth-child( 2 ):not([class]):after {
-	content: '\f51A';
-	position: absolute;
-	right: 0;
-	width: 40px;
-	font-family: rern;
-	font-size: 30px;
-	color: var( --cm );
-}*/
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 719px) {
-	.react-tabs__tab-list li:first-child {
-		left: 0;
-		top: -40px;
-		width: 100%;
-		height: 42px;
-		background: #000000;
-		padding-top: 7px;
-	}
-	.configapp {
-		padding: 22px 0;
-	}
 	#divhelp { margin: 0 20px }
 	section.tabpanel {
 		position: relative;
@@ -644,9 +624,11 @@ textarea:focus-visible {
 	}
 	section.tabpanel legend .horizontally-spaced-content {
 		width: 380px;
+		padding-top: 15px;
 	}
 	section.tabpanel .split-20-80 {
 		margin-left: 55px;
+		width: 270px;
 	}
 	.configtabs .tabpanel {
 		width: 400px !important;
@@ -655,7 +637,6 @@ textarea:focus-visible {
 	.configapp > :last-child {
 		float: none;
 		margin: 0 auto !important;
-		padding-top: 40px;
 	}
 	.react-tabs__tab-list {
 		position: sticky;
@@ -666,11 +647,6 @@ textarea:focus-visible {
 	.popup-content {
 		width: 100% !important;
 		min-width: 100%;
-	}
-	section.tabpanel .split-20-80:before,
-	section.tabpanel .split-20-80 div:after,
-	section.tabpanel .split-20-80:after {
-		left: 90px;
 	}
 }
 @media (max-width: 490px) {
@@ -690,13 +666,6 @@ textarea:focus-visible {
 		max-width: calc( 100vw - 180px ) !important;
 	}
 }
-/*@media (max-width: 430px) {
-	section.tabpanel .split-20-80:before,
-	section.tabpanel .split-20-80 div:after,
-	section.tabpanel .split-20-80:after {
-		left: calc( ( 100vw - 270px ) * 90px );
-	}
-}*/
 /* ---------------------------------------------------------------------------- */
 .button:hover {
 	background-color: var( --cga ) !important;
