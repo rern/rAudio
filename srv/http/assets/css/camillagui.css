@@ -362,6 +362,13 @@ section .horizontally-spaced-content:first-of-type div:first-child {
 	font-weight: 300;
 	letter-spacing: 0;
 }
+section.tabpanel .box:last-of-type div:not([class]):first-of-type {
+	width: 250px !important;
+	padding: 0 10px;
+	font-family: Inconsolata;
+	line-height: 26px;
+	background: var( --cga );
+}
 section.tabpanel .box:last-of-type div:not([class]):nth-of-type( 3 ) {
 	padding-top: 10px;
 	text-align: left !important;
