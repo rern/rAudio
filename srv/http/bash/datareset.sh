@@ -122,6 +122,13 @@ supported_capture_types: null
 supported_playback_types: null
 EOF
 fi
+	if [[ $( camilladsp -V ) == CamillaDSP 0.6.3 ]]; then
+		sed -i '/capture:/ a\
+    avoid_blocking_read: false\
+    retry_on_error: false
+' $dircamilladsp/configs/default_config.yml
+		sed -i '/log_file/ d' /srv/http/settings/camillagui/config/camillagui.yml
+	fi
 # display
 cat << EOF > $dirsystem/display
 {

@@ -198,7 +198,7 @@ volumeGet() {
 	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( cat $dirshm/asoundcard )
+		card=$( cat $dirsystem/asoundcard )
 		if [[ ! -e $dirshm/amixercontrol ]]; then
 			volume=100
 		else

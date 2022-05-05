@@ -21,11 +21,7 @@ restartMPD() {
 case ${args[0]} in
 
 audiooutput )
-	aplayname=${args[1]}
-	card=${args[2]}
-	output=${args[3]}
-	mixer=${args[4]}
-	sed -i "s/.$/$card/" /etc/asound.conf
+	echo ${args[1]} > $dirsystem/asoundcard
 	restartMPD
 	;;
 autoupdate )
@@ -127,7 +123,7 @@ $bluealsa
 $( aplay -l | grep ^card )
 
 <bll># amixer scontrols</bll>"
-	card=$( cat $dirshm/asoundcard )
+	card=$( cat $dirsystem/asoundcard )
 	aplayname=$( aplay -l \
 					| grep "^card $card" \
 					| awk -F'[][]' '{print $2}' )

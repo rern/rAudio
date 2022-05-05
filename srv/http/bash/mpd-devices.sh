@@ -119,13 +119,17 @@ for line in "${lines[@]}"; do
 	Aname+=( "$name" )
 done
 
-i=$( aplay -l 2> /dev/null \
-			| grep ^card \
-			| grep -v Loopback \
-			| cut -d: -f1 \
-			| tail -c 2 )
-[[ ! $i ]] && i=0
-echo $i > $dirshm/asoundcard
+if [[ -e $dirsystem/asoundcard ]]; then
+	i=$( cat $dirsystem/asoundcard )
+else
+	i=$( aplay -l 2> /dev/null \
+				| grep ^card \
+				| grep -v Loopback \
+				| cut -d: -f1 \
+				| tail -c 2 )
+	[[ ! $i ]] && i=0
+	echo $i > $dirsystem/asoundcard
+fi
 getControls $i
 if [[ $controls ]]; then
 	echo "$controls" \

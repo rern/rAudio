@@ -93,7 +93,7 @@ preset
 $preset"
 
 if [[ -e $dirsystem/camilladsp ]]; then
-	card=$( cat $dirshm/asoundcard )
+	card=$( cat $dirsystem/asoundcard )
 	sed -i "/playback:/,/device:/ s/\(device: hw:\).*/\1$card,0/" $camilladspyml
 	camilladsp $camilladspyml &> /dev/null &
 	sleep 1

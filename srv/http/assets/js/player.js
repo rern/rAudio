@@ -41,10 +41,8 @@ $( '#setting-btreceiver' ).click( function() {
 	} );
 } );
 $( '#audiooutput' ).change( function() {
-	var card = $( this ).val();
-	var dev = G.devices[ card ];
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
+	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	var hwmixer = $( this ).val();
