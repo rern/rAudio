@@ -8,6 +8,7 @@ defaults.pcm.card $i
 defaults.ctl.card $i
 "
 if [[ -e $dirsystem/camilladsp ]]; then
+	dsp=1
 	modprobe snd-aloop
 	camilladspyml=$dirdata/camilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
@@ -88,34 +89,13 @@ if [[ $wm5102card ]]; then
 	$dirbash/mpd-wm5102.sh $wm5102card $output
 fi
 
-[[ $preset ]] && $dirbash/cmd.sh "equalizer
-preset
-$preset"
-
-if [[ -e $dirsystem/camilladsp ]]; then
-	card=$( cat $dirsystem/asoundcard )
-	sed -i "/playback:/,/device:/ s/\(device: hw:\).*/\1$card,0/" $camilladspyml
-	camilladsp $camilladspyml &> /dev/null &
-	sleep 1
-	if pgrep -x camilladsp &> /dev/null; then
-		pkill -x camilladsp
-		camilladsp=1
-	else
-		lineformat=$( sed -n '/playback:/,/format:/=' $camilladspyml | tail -1 )
-		for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-			sed -i "$lineformat s/\(format: \).*/\1$format/" $camilladspyml
-			camilladsp $camilladspyml &> /dev/null &
-			sleep 1
-			if pgrep -x camilladsp &> /dev/null; then
-				pkill -x camilladsp
-				camilladsp=1
-				break
-			fi
-		done
-	fi
-	[[ $camilladsp ]] && systemctl start camilladsp || systemctl stop camilladsp
-	pushstream refresh "$( $dirbash/settings/features-data.sh )"
+if [[ $dsp ]]; then
+	$dirbash/camillasetformat.sh
 else
+	[[ $preset ]] && $dirbash/cmd.sh "equalizer
+	preset
+	$preset"
+
 	if [[ $btmixer ]]; then
 		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
 		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null

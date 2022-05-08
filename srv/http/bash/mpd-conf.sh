@@ -23,7 +23,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------<
@@ -157,15 +157,7 @@ $btoutput" > /etc/mpd.conf
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
-	if [[ $usbdac == remove ]]; then
-		if [[ ! ${Aname[i]} ]]; then
-			name='(No sound device)'
-			volumenone=true
-		else
-			volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
-		fi
-		pushstream display '{"volumenone":'$volumenone'}'
-	fi
+	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 
@@ -190,7 +182,7 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		conf+='
 	output_device = "hw:'$cardloopback',0";'
 	elif [[ $btmixer ]]; then
@@ -211,7 +203,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		device='sysdefault:CARD=Loopback'
 	elif [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
@@ -229,7 +221,7 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 device = "'$device'"'
-	if [[ ! $camilladsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
+	if [[ ! $dsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
 control = "hw:'$i'"
