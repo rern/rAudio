@@ -376,7 +376,7 @@ function renderPage() {
 		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {
-			if ( this.name !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
+			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
