@@ -28,7 +28,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 		hw=hw:$cardloopback,1
 #---------------<
 		output+='
-	name           "CamillaDSP"
+	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
