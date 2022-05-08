@@ -98,10 +98,13 @@ body {
 	text-shadow: -1px 0 2px #000000;
 }
 #divhelp {
-	max-width: 700px;
+	position: sticky;
+	top: 40px;
+	max-width: 720px;
 	margin: auto;
-	padding: 20px 0;
+	padding: 20px;
 	text-align: right;
+	background: #000000;
 }
 #divhelp a {
 	color: var( --cg60 );
