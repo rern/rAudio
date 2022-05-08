@@ -14,8 +14,7 @@
 ### included by mpd-conf.sh, player-data.sh
 
 aplay=$( aplay -l 2> /dev/null \
-			| grep '^card' \
-			| grep -v 'Loopback' )
+			| grep '^card' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
 	devices=false
@@ -30,7 +29,7 @@ getControls() {
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
 				| sed 's/--/\n/g' )
-	[[ ! $amixer ]] && return
+	[[ ! $amixer ]] && controls= && return
 	
 	controls=$( echo "$amixer" \
 					| grep 'volume.*pswitch\|Master.*volume' \
@@ -46,88 +45,103 @@ rm -f $dirshm/nosound
 
 audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
 
-readarray -t lines <<< "$aplay"
-for line in "${lines[@]}"; do
+cards=$( echo "$aplay" \
+			| cut -d: -f1 \
+			| sort -u \
+			| sed 's/card //' )
+for card in $cards; do
+	line=$( echo "$aplay" | sed -n "/^card $card/ p" )
 	hw=$( echo $line | sed 's/card \(.*\):.*device \(.*\):.*/hw:\1,\2/' )
 	card=${hw:3:1}
 	device=${hw: -1}
 	aplayname=$( echo $line \
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
-	[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
-	if [[ $aplayname == $audioaplayname ]]; then
-		name=$( cat $dirsystem/audio-output )
+	if [[ $aplayname == Loopback ]]; then
+		device=; dop=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
+		devices+=',{
+  "aplayname"    : "'$aplayname'"
+, "card"         : '$card'
+}'
 	else
-		name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
-	fi
-	mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
-	getControls $card
-	if [[ ! $controls ]]; then
-		mixerdevices=['"( not available )"']
-		mixers=0
-	else
-		readarray -t controls <<< $( echo "$controls" | sort -u )
-		mixerdevices=
-		for control in "${controls[@]}"; do
-			mixerdevices+=',"'$control'"'
-		done
-		mixerdevices=[${mixerdevices:1}]
-		mixers=${#controls[@]}
-	fi
-	
-	mixermanual=false
-	hwmixerfile=$dirsystem/hwmixer-$aplayname
-	if [[ -e $hwmixerfile ]]; then # manual
-		mixermanual=true
-		hwmixer=$( cat "$hwmixerfile" )
-	elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
-		mixers=4
-		hwmixer='HPOUT2 Digital'
-		mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
-	else
-		if [[ $mixers == 0 ]]; then
-			[[ $mixertype == hardware ]] && mixertype=none
-			hwmixer='( not available )'
+		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
+		if [[ $aplayname == $audioaplayname ]]; then
+			name=$( cat $dirsystem/audio-output )
 		else
-			hwmixer=${controls[0]}
+			name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
 		fi
+		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
+		getControls $card
+		if [[ ! $controls ]]; then
+			mixerdevices=['"( not available )"']
+			mixers=0
+		else
+			readarray -t controls <<< $( echo "$controls" | sort -u )
+			mixerdevices=
+			for control in "${controls[@]}"; do
+				mixerdevices+=',"'$control'"'
+			done
+			mixerdevices=[${mixerdevices:1}]
+			mixers=${#controls[@]}
+		fi
+		
+		mixermanual=false
+		hwmixerfile=$dirsystem/hwmixer-$aplayname
+		if [[ -e $hwmixerfile ]]; then # manual
+			mixermanual=true
+			hwmixer=$( cat "$hwmixerfile" )
+		elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+			mixers=4
+			hwmixer='HPOUT2 Digital'
+			mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'
+		else
+			if [[ $mixers == 0 ]]; then
+				[[ $mixertype == hardware ]] && mixertype=none
+				hwmixer='( not available )'
+			else
+				hwmixer=${controls[0]}
+			fi
+		fi
+		[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
+		devices+=',{
+  "aplayname"    : "'$aplayname'"
+, "card"         : '$card'
+, "device"       : '$device'
+, "dop"          : '$dop'
+, "hw"           : "'$hw'"
+, "hwmixer"      : "'$hwmixer'"
+, "mixers"       : '$mixers'
+, "mixerdevices" : '$mixerdevices'
+, "mixermanual"  : '$mixermanual'
+, "mixertype"    : "'$mixertype'"
+, "name"         : "'$name'"
+}'
 	fi
-	[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
-	
-	devices+=',{
-		  "aplayname"    : "'$aplayname'"
-		, "card"         : '$card'
-		, "device"       : '$device'
-		, "dop"          : '$dop'
-		, "hw"           : "'$hw'"
-		, "hwmixer"      : "'$hwmixer'"
-		, "mixers"       : '$mixers'
-		, "mixerdevices" : '$mixerdevices'
-		, "mixermanual"  : '$mixermanual'
-		, "mixertype"    : "'$mixertype'"
-		, "name"         : "'$name'"
-	}'
-	Aaplayname+=( "$aplayname" )
-	Acard+=( "$card" )
-	Adevice+=( "$device" )
-	Adop+=( "$dop" )
-	Ahw+=( "$hw" )
-	Ahwmixer+=( "$hwmixer" )
-	Amixers+=( "$mixers" )
-	Amixermanual+=( "$mixermanual" )
-	Amixertype+=( "$mixertype" )
-	Aname+=( "$name" )
+	Aaplayname[card]=$aplayname
+	Acard[card]=$card
+	Adevice[card]=$device
+	Adop[card]=$dop
+	Ahw[card]=$hw
+	Ahwmixer[card]=$hwmixer
+	Amixers[card]=$mixers
+	Amixermanual[card]=$mixermanual
+	Amixertype[card]=$mixertype
+	Aname[card]=$name
 done
 
-if [[ -e $dirsystem/asoundcard ]]; then
+if [[ $usbdac ]]; then
+	i=$card
+	echo $i > $dirsystem/asoundcard
+	echo $hwmixer > $dirshm/amixercontrol
+elif [[ -e $dirsystem/asoundcard ]]; then
 	i=$( cat $dirsystem/asoundcard )
 else
 	i=$( aplay -l 2> /dev/null \
 				| grep ^card \
 				| grep -v Loopback \
+				| head -1 \
 				| cut -d: -f1 \
-				| tail -c 2 )
-	[[ ! $i ]] && i=0
+				| cut -d' ' -f2 )
 	echo $i > $dirsystem/asoundcard
 fi
 getControls $i

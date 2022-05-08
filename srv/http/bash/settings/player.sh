@@ -120,7 +120,7 @@ $bluealsa
 "
 	devices+="\
 <bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card )
+$( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
 
 <bll># amixer scontrols</bll>"
 	card=$( cat $dirsystem/asoundcard )

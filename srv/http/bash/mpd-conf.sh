@@ -8,6 +8,8 @@
 # - mixer_device  - card index
 # - dop           - if set
 
+usbdac=$1
+
 . /srv/http/bash/common.sh
 . $dirbash/mpd-devices.sh
 . $dirbash/mpd-asound.sh
@@ -153,15 +155,17 @@ $output
 $btoutput" > /etc/mpd.conf
 
 # usbdac.rules -------------------------------------------------------------------------
-if [[ $1 == add || $1 == remove ]]; then
+if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
-	if [[ ! $name ]]; then
-		name='(No sound device)'
-		volumenone=true
-	else
-		volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
+	if [[ $usbdac == remove ]]; then
+		if [[ ! $name ]]; then
+			name='(No sound device)'
+			volumenone=true
+		else
+			volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
+		fi
+		pushstream display '{"volumenone":'$volumenone'}'
 	fi
-	pushstream display '{"volumenone":'$volumenone'}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 
