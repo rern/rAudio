@@ -27,9 +27,9 @@ else
 	done
 fi
 if [[ $formatok ]]; then
-	[[ $format ]] && pushstreamNotify CamillaDSP "Format set: $format" camilladsp
+	[[ $format ]] && pushstreamNotify CamillaDSP "Playback format: <wh>$format</wh>" camilladsp
 	sleep 1
 	systemctl start camilladsp
 else
-	pushstreamNotify CamillaDSP "<wh>Playback sample format</wh> setting required." camilladsp 10000
+	pushstreamNotify CamillaDSP "Playback format: <wh>Setting required</wh>" camilladsp 10000
 fi
