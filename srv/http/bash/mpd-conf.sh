@@ -158,7 +158,7 @@ $btoutput" > /etc/mpd.conf
 if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
 	if [[ $usbdac == remove ]]; then
-		if [[ ! $name ]]; then
+		if [[ ! ${Aname[i]} ]]; then
 			name='(No sound device)'
 			volumenone=true
 		else

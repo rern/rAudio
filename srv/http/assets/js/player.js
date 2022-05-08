@@ -390,9 +390,11 @@ function renderPage() {
 				.html( htmldevices )
 				.val( G.asoundcard );
 			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-			device.mixerdevices.forEach( function( mixer ) {
-				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-			} );
+			if ( device.mixerdevices.length ) {
+				device.mixerdevices.forEach( function( mixer ) {
+					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+				} );
+			}
 			$( '#hwmixer' )
 				.html( htmlhwmixer )
 				.val( device.hwmixer );

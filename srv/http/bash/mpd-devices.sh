@@ -129,10 +129,13 @@ for card in $cards; do
 	Aname[card]=$name
 done
 
-if [[ $usbdac ]]; then
+if [[ $usbdac == add ]]; then
 	i=$card
+	[[ -e $dirsystem/asoundcard ]] && mv $dirsystem/asoundcard{,.backup}
 	echo $i > $dirsystem/asoundcard
-	echo $hwmixer > $dirshm/amixercontrol
+elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
+	i=$( cat $dirsystem/asoundcard.backup )
+	mv $dirsystem/asoundcard{.backup,}
 elif [[ -e $dirsystem/asoundcard ]]; then
 	i=$( cat $dirsystem/asoundcard )
 else
@@ -144,6 +147,8 @@ else
 				| cut -d' ' -f2 )
 	echo $i > $dirsystem/asoundcard
 fi
+echo Ahwmixer[i] > $dirshm/amixercontrol
+
 getControls $i
 if [[ $controls ]]; then
 	echo "$controls" \
