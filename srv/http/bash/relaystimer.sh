@@ -7,7 +7,7 @@ timer=$( cat $timerfile )
 i=$timer
 while sleep 60; do
 	playing=
-	if [[ -e $dirsystem/camilladsp ]]; then
+	if  aplay -l | grep -q Loopback; then
 		grep -q '^state=.play' $dirshm/status && playing=1
 	elif grep -q RUNNING /proc/asound/card*/pcm*p/sub*/status; then # state: RUNNING
 		playing=1
@@ -16,7 +16,7 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( cat $timerfile )
-		(( $i == 1 )) && /srv/http/bash/settings/relays.sh && exit
+		(( $i == 1 )) && $dirbash/settings/relays.sh && exit
 		
 		(( i-- ))
 		echo $i > $timerfile
