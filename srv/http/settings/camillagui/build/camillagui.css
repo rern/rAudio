@@ -1,0 +1,799 @@
+@font-face {
+	font-family: rern;
+	src: url( './static/assets/fonts/rern.woff2' ) format( 'woff2' );
+	font-display: block;
+	font-style: normal;
+	font-weight: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( './static/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: Lato;
+	src: url( './static/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight: 300;
+	font-style: normal;
+}
+@font-face {
+	font-family: Inconsolata;
+	src: url('./static/assets/fonts/Inconsolata.woff2') format('woff2');
+	font-weight: normal;
+	font-style: normal;
+}
+code,
+textarea,
+.config-status,
+.db-label,
+.files div:not([class]) .button-with-text,
+.files input[type=text],
+.quick-config-switch .button,
+#camilladsp pre,
+#compactview .two-column-grid,
+#fileconfig {
+	font-family: Inconsolata;
+}
+
+.fa {
+	display: inline-block;
+	font-family: rern;
+	font-style: normal;
+}
+.fa-camilladsp::before { content: '\f59D'; position: absolute; color: var( --cg75 ); }
+.fa-camilladsp::after { content: '\f59C'; position: relative; }
+.fa-gears::before { content: '\f50A' }
+.fa-help::before { content: '\f560' }
+.fa-info-circle::before { content: '\f561' }
+.fa-power::before { content: '\f520' }
+.fa-times::before { content: '\f51A' }
+
+.css-variables {
+	--background-color: var( --cg );
+	--button-add-icon-color: #46c846;
+	--button-background-color: var( --cg );
+	--error-field-background-color: #bb2828 !important;
+	--border-radius: 3px;
+	--gain-color: hsl( 200 100% 45% );
+	--phase-color: hsl( 0 40% 55% );
+	--success-text-color: var( --cml );
+	--red: #bb2828;
+}
+body {
+	padding-top: 40px;
+	font-family: Lato;
+	font-size: 16px;
+	color: var( --cw );
+	background: #000000;
+}
+#root {
+	max-width: 700px;
+	margin: auto;
+}
+
+/* head + help ------------------------------------------------------------------ */
+.head {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 10;
+}
+.head .page-icon {
+	float: left;
+	width: 40px;
+	height: 40px;
+	font-size: 24px;
+	line-height: 38px;
+	text-align: center;
+	background: var( --cm );
+}
+.head span {
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#help {
+	float: right;
+	margin-right: 5px;
+	font-size: 24px;
+	color: var( --cg60 );
+}
+#close {
+	float: right;
+	font-size: 30px;
+	color: var( --cm );
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	text-shadow: -1px 0 2px #000000;
+}
+#divhelp {
+	position: sticky;
+	top: 40px;
+	max-width: 720px;
+	margin: auto;
+	padding: 20px;
+	text-align: right;
+	background: #000000;
+}
+#divhelp a {
+	color: var( --cg60 );
+	text-decoration: none;
+}
+#divhelp i {
+	color: var( --cg60 );
+}
+#divhelp i {
+	margin: 0 2px
+}
+#logo {
+	float: left;
+}
+#logo img {
+	width: 145px;
+	margin-bottom: 5px;
+}
+#version {
+	font-size: 12px;
+	text-align: left;
+	color: var( --cg60 );
+}
+/* common --------------------------------------------------------------------- */
+/* main container */
+.configapp {
+	display: block;
+	padding: 5px 0;
+}
+.configapp::after {
+	display: block;
+	content: '';
+	clear: both;
+}
+.box {
+	margin: 5px 0;
+	padding: 10px;
+	border: 1px solid var( --cg );
+}
+legend {
+	width: fit-content;
+	font-size: 18px;
+	letter-spacing: 2px;
+}
+legend label {
+	font-size: 16px;
+	letter-spacing: 0;
+}
+.two-column-grid {
+	width: fit-content;
+	margin: auto;
+}
+.setting,
+.alignRight {
+	color: var( --cg60 );
+}
+hr {
+	border: none;
+}
+code {
+	padding: 0px 5px;
+	border-radius: 3px;
+	color: var( --cg75 );
+	white-space: pre;
+	background: var( --cga );
+}
+/* ---------------------------------------------------------------------------- */
+input,
+select {
+	margin: 4px 0;
+	padding: 0 5px !important;
+	font-family: Lato;
+	font-size: 16px;
+	border: solid 1px var( --cgl ) !important;
+	color: var( --cw ) !important;
+}
+input[type=text] {
+	width: 150px !important;
+}
+input[data-tip='Mixer name, must be unique'] {
+	width: 150px !important;
+}
+select {
+	width: 100% !important;
+	max-width: 175px;
+	padding: 0 !important;
+}
+input[type=number] {
+	width: 70px !important;
+}
+input[type=checkbox] {
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	margin: 4px 0 !important;
+	vertical-align: -12px;
+	border: none;
+	border-radius: 3px;
+	background-color: var(--cg) !important;
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+}
+input:checked {
+	background-color: var( --cm ) !important;
+}
+input[type=text]:focus {
+	outline: solid 2px var( --cg60 );
+}
+input[type=range] {
+	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--track: linear-gradient( 90deg, transparent 10px, var( --cg ) 10px, var( --cg ) calc( 100% - 10px ), transparent 10px );
+	--trackborder : 1px solid var( --cgd );
+	display: block;
+	width: 270px !important;
+	height: 4px;
+	margin: 30px auto !important;
+	padding: 0 9px !important;
+	background-color: var( --cga ) !important;
+	-webkit-appearance: none;
+}
+@supports (-moz-appearance:none) {
+	input[type=range] { padding: 0 !important } 
+}
+input[type=range]::-webkit-slider-thumb {
+	height: 36px;
+	width: 36px;
+	margin-top: -18px;
+	border: none;
+	border-radius: 3px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	-webkit-appearance: none;
+	box-shadow: -2px 2px 4px #000000;
+}
+input[type=range]::-moz-range-thumb {
+	height: 36px;
+	width: 36px;
+	border: none;
+	border-radius: 3px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
+}
+input[type=range]::-webkit-slider-runnable-track {
+	width: 100%;
+	margin: -10px;
+	height: 4px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+	background: var( --track );
+}
+input[type=range]::-moz-range-track {
+	width: 100%;
+	height: 2px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+input[type=range]:disabled::-webkit-slider-thumb {
+	background-color: var( --cmd );
+}
+input[type=range]:disabled::-moz-range-thumb {
+	background-color: var( --cmd );
+}
+
+/* ---------------------------------------------------------------------------- */
+.button {
+	border: none;
+	background-color: var( --cg ) !important;
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	text-shadow: -1px 1px 2px #000000;
+	width:36px;
+	height: 36px;
+}
+.highlighted-button,
+.highlighted-button:active {
+	background-color: var( --cm ) !important;
+}
+.button svg {
+	-webkit-filter: drop-shadow( -1px 1px 2px #000000 );
+	filter: drop-shadow( -1px 1px 2px #000000 );
+}
+.smallbutton {
+	width: 36px !important;
+	height: 36px !important;
+}
+.smallbutton svg {
+	width: 36px !important;
+}
+.button-with-text {
+	padding: 0px 10px;
+	font-size: 16px;
+}
+#volume .button {
+	margin-top: -20px;
+}
+#button-mute,
+#button-undo {
+	border-right: 1px solid var( --cga );
+	margin-right: 0 !important;
+	border-radius: 3px 0 0 3px;
+	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+}
+#button-dim,
+#button-redo {
+	border-radius: 0 3px 3px 0;
+	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+}
+/* compact view */
+::marker {
+	color: transparent;
+}
+.tab-buttons {
+	position: absolute;
+	left: -290px;
+	width: 270px;
+	height: 36px;
+	background: none;
+}
+#button-compactview {
+	float: none !important;
+}
+#compactview .smallbutton {
+	margin-top: -20px;
+}
+#button-undo,
+#button-redo {
+	float: right;
+}
+.tab-buttons svg {
+	height: 24px !important;
+	width: 24px !important;
+}
+/* compact page ------------------------------------------------------------ */
+.react-tabs__tab--disabled {
+	color: var( --cw );
+}
+.quick-config-switch .button {
+	display: block;
+	width: 200px;
+	margin: 5px auto;
+	line-height: 36px;
+	text-align: center;
+}
+#compactview {
+	width: 370px;
+	margin-top: -2px !important;
+	padding: 0 10px;
+}
+#compactview legend {
+	padding-left: 5px;
+}
+#compactview .two-column-grid {
+	display: block;
+	color: var( --cg60 );
+}
+#volume {
+	margin-top: 28px;
+}
+#diveqhelp {
+	padding-top: 10px;
+	font-size: 16px;
+	letter-spacing: 0;
+	color: var( --cg60 );
+}
+/* Compact view button ------------------- */
+#compactview .box,
+#mainpanel .box {
+	position: relative;
+	max-width: calc( 100vw - 50px );
+	margin-bottom: 20px;
+	padding: 10px 0;
+	border: none;
+}
+#compactview #volume {
+	margin-top: 19px;
+}
+#mainpanel legend {
+	padding: 0;
+}
+#compactview legend .horizontally-spaced-content {
+	width: 360px;
+	border-bottom: 1px solid var( --cg );
+}
+#mainpanel legend .horizontally-spaced-content {
+	width: 270px;
+	border-bottom: 1px solid var( --cg );
+}
+.db-label {
+	width: 100% !important;
+	min-width: 110px;
+	font-size: 16px;
+	font-weight: 300;
+	letter-spacing: 0;
+}
+#equalizer .db-label {
+	width: 4ch !important;
+	min-width: auto;
+}
+.bass.db-label {
+	margin-left: 20px;
+}
+/* volume + status ------------------------------------------------------------ */
+#mainpanel {
+	position: fixed;
+	display: block;
+	float: left;
+	width: 270px !important;
+	margin: auto;
+	padding: 35px 10px 0 10px;
+}
+#mainpanel .split-20-80 {
+	margin: 10px 0;
+	grid-template-columns: 12% 88%;
+	column-gap: 0;
+}
+#volume .label {
+	text-align: right;
+}
+#volume .label {
+	display: flex;
+	height: 100%;
+	background: #000000;
+	outline: 3px solid #000000;
+	z-index: 1;
+	justify-content: right;
+	align-items: center;
+	padding-right: 3px;
+}
+.split-20-80>* {
+	height: 42px;
+}
+path.rc-progress-line-trail {
+	stroke: var( --cg );
+}
+#log,
+#eqhelp {
+	position: absolute;
+	top: -34px;
+	left: 110px;
+	width: 36px !important;
+	font-size: 22px;
+	line-height: 36px;
+	text-align: center;
+	background: none !important;
+	color: var( --cg60 );;
+	text-shadow: none;
+}
+#eqhelp {
+	left: auto !important;
+	right: 0;
+}
+#log:hover {
+	background: none !important;
+}
+#camilladsp pre {
+	margin: 0px 0;
+	padding: 5px;
+	background: var( --cga );
+}
+#fileconfig {
+	width: 100% !important;
+	line-height: 27px;
+	background: var( --cga );
+}
+#applyauto {
+	color: var( --cg60 );
+}
+#applyauto input {
+	float: left;
+	margin: -3px 6px 0 0 !important;
+}
+/* Fetch and Apply button */
+#config .two-column-grid {
+	display: block;
+	margin-top: 15px;
+	text-align: center;
+}
+#config .button-with-text {
+	display: inline-block;
+	width: 70px !important;
+	height: 34px;
+	margin: 0 5px;
+	font-size: 14px;
+	line-height: 34px;
+	text-align: center;
+}
+#button-apply {
+	background-color: var( --cm ) !important;
+}
+.config-status {
+	position: absolute;
+	top: -31px;
+	right: -4px;
+}
+.versions {
+	display: none;
+}
+/* Panels ----------------------------------------------------------------- */
+.configtabs {
+	display: block;
+	width: 410px;
+	max-width: 100vw;
+	margin-left: 300px !important;
+	padding: 0;
+}
+.configtabs .tabpanel {
+	width: 400px !important;
+	min-height: calc( 100vh - 140px );
+	padding: 50px 5px 40px 5px;
+	background: var( --cgd );
+}
+.react-tabs__tab-list {
+	position: fixed;
+	width: 410px;
+	margin-top: -6px;
+	padding-top: 10px;
+	background: #000000;
+	box-shadow: 0px 4px 10px #000000;
+	border: none;
+	z-index: 1;
+}
+.react-tabs__tab {
+	position: static;
+	width: calc( 100% / 5 - 1px );
+	padding: 0;
+	line-height: 36px;
+	text-align: center;
+	text-shadow: -1px 1px 2px #000000;
+	background: var( --cga);
+	border: none;
+	border-radius: 5px 5px 0 0;
+	border-right: 1px solid #000000;
+}
+.tab-files {
+	width: calc( 100% / 5 );
+	border: none;
+}
+.react-tabs__tab-list .react-tabs__tab--selected {
+	background: var( --cgl );
+}
+.react-tabs__tab-list span {
+	display: none;
+}
+/* Devices ------------------------------ */
+.devices .setting-label {
+	width: 50%;
+	min-width: 160px;
+}
+.devices input:not[type=checkbox] {
+	width: 100% !important;
+	max-width: 150px;
+}
+.devices select {
+	width: 100% !important;
+	max-width: 170px;
+}
+/* Filters ------------------------------- */
+label.setting[style*="text-align"] {
+	text-align: left !important;
+}
+label.setting select:first-child {
+	width: 125px !important;
+	margin-left: 23px;
+}
+.filters .button[data-tip*="Delete"] {
+	margin-top: auto;
+}
+/* Mixers ------------------------------- */
+.mixers div[style*='display: flex; justify-content: space-evenly;'] {
+	margin: 10px 0;
+	padding: 0 25px 0 15px;
+	background: var( --cga );
+}
+.mixers select {
+	max-width: 200px;
+}
+.mixers legend .setting-label {
+	min-width: 35px;
+}
+.mixers .horizontally-spaced-content legend .setting-label {
+	min-width: 130px;
+}
+.mixers .setting-label {
+	letter-spacing: 0;
+}
+.mixers .box .box input {
+	width: 60px !important;
+}
+.mixers .horizontally-spaced-content div svg {
+	width: 36px !important;
+}
+/* Pipeline ----------------------------- */
+.pipeline legend {
+	margin-bottom: 5px;
+	padding-left: 0;
+}
+.pipeline legend label {
+	margin-left: -4px;
+}
+.pipeline select {
+	width: 170px !important;
+}
+.pipeline input[type=number] {
+	width: 50px !important;
+}
+.pipeline .dropTargetParent > div > div:not(.horizontally-spaced-content) {
+	position: absolute;
+	top: 9px;
+	left: 35px;
+	letter-spacing: normal;
+	color: var( --cw ) !important;
+}
+.pipeline .pipeline-channel {
+	width: 100%;
+	margin: 10px auto;
+	line-height: 26px;
+	letter-spacing: 2px;
+	background: var( --cga );
+}
+.pipeline .controls {
+	margin-top: 10px;
+}
+/* Files -------------------------------- */
+.files .button-with-text {
+	width: 100% !important;
+	height: 36px;
+}
+.files div:not([class]) {
+	max-width: 215px !important;
+}
+.files div:not([class]) .button-with-text {
+	display: block;
+	line-height: 36px;
+	text-align: center;
+}
+.files input[type=text] {
+	width: 100% !important;
+}
+/* popup --------------------------------- */
+#popup-root h3 {
+	font-size: 18px;
+	font-weight: normal;
+}
+textarea {
+	padding: 5px;
+	border: none;
+	background: var( --cgd );
+	font-size: 15px;
+	color: var( --cw );
+}
+textarea:focus-visible {
+	outline: none;
+}
+.popup-overlay {
+	background: rgba( 0, 0, 0, .85 );
+}
+.popup-content {
+	padding: 0;
+	border: none !important;
+	border-radius: 6px !important;
+	background-color: var( --cgd ) !important;
+	box-shadow: 0px 0px 5px var( --cgl );
+}
+.popup-content div:not([class]) {
+	float: right;
+	text-align: center !important;
+	color: transparent;
+}
+/* ---------------------------------------------------------------------------- */
+@media (max-width: 719px) {
+	#help,
+	#divhelp {
+		display: none !important;
+	}
+	.tab-buttons {
+		left: 0;
+		top: -40px;
+		width: 100%;
+		height: 42px;
+		background: #000000;
+		padding-top: 7px;
+	}
+	.tab-buttons::after {
+		content: '';
+		position: fixed;
+		top: 40px;
+		width: 400px;
+		height: 45px;
+		background: #000000;
+		box-shadow: 0px 4px 5px #000000;
+		z-index: -1;
+	}
+	#button-compactview {
+		position: fixed;
+		top: 48px;
+	}
+	#divhelp {
+		margin: 0 20px;
+	}
+	#mainpanel {
+		position: relative;
+		float: none;
+		min-width: 360px !important;
+		margin: auto;
+		padding-top: 35px;
+	}
+	#mainpanel legend .horizontally-spaced-content {
+		width: 360px;
+	}
+	#mainpanel .split-20-80 {
+		width: 270px;
+		margin: 0 auto;
+	}
+	.configtabs .tabpanel {
+		width: 360px !important;
+		padding: 15px 5px 5px 5px;
+	}
+	.configtabs {
+		float: none;
+		width: 370px;
+		margin: 0 auto !important;
+		padding-top: 40px;
+	}
+	.react-tabs__tab-list {
+		position: sticky;
+		top: 80px;
+		width: 370px;
+		padding-top: 10px;
+		background: #000;
+	}
+	.popup-content {
+		width: 100% !important;
+		min-width: 100%;
+	}
+	label.setting select:first-child {
+		width: 107px !important;
+	}
+	.mixers .box .box input {
+		width: 50px !important;
+	}
+	.files div:not([class]) {
+		max-width: 180px !important;
+	}
+}
+@media (max-width: 490px) {
+	.head span {
+		margin-left: 10px;
+		letter-spacing: calc( 100vw / 30 - 1px );
+	}
+}
+/* ---------------------------------------------------------------------------- */
+.button:hover {
+	background-color: var( --cga ) !important;
+	border: none;
+}
+.highlighted-button:hover,
+#button-apply:hover {
+	background-color: var( --cma ) !important;
+}
+.head i,
+#divhelp i,
+#log,
+#logo,
+input[type=range] {
+	cursor: pointer;
+}
+

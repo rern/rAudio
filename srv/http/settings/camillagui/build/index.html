@@ -6,10 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<link rel="icon" href="./static/assets/img/icon.png">
 	<link rel="stylesheet" href="./css-variables.css">
-	<link rel="stylesheet" href="./static/css/2.css">
 	<link rel="stylesheet" href="./static/css/main.css">
 	<link rel="stylesheet" href="./static/assets/css/colors.css">
-	<link rel="stylesheet" href="./static/assets/css/camillagui.css">
+	<link rel="stylesheet" href="./camillagui.css">
 </head>
 <body class="css-variables">
 
@@ -34,64 +33,8 @@
 
 <div id="root" style="display: none"></div>
 
-<script>
-fetch( '/api/status' )
-	.then( response => response.json() )
-	.then( status => {
-		document.getElementById( 'version' ).innerHTML = `\
-    CamillaDSP ${ status.cdsp_version }
-<br>pyCamillaDSP ${ status.py_cdsp_version }
-<br>Backend ${ status.backend_version }
-`;
-} );
-
-if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) {
-	document.getElementById( 'help' ).remove();
-	document.getElementById( 'divhelp' ).remove();
-}
-document.getElementById( 'help' ).onclick = () => {
-	var divhelp = document.getElementById( 'divhelp' );
-	divhelp.style.display = divhelp.style.display === 'none' ? 'block' : 'none';
-}
-document.getElementById( 'close' ).onclick = () => {
-	var hostname = location.hostname;
-	var http = new XMLHttpRequest();
-	http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
-	http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
-	http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
-	location.href = 'http://' + hostname;
-}
-document.getElementById( 'logo' ).onclick = () => {
-	document.getElementById( 'logohref' ).click();
-}
-
-cacheBusting = () => {
-	setTimeout( () => {
-		var buttons = document.getElementsByClassName( 'button-with-text' );
-		if ( !buttons.length ) {
-			cacheBusting();
-			return
-		}
-		
-		var hash = '?v='+ Date.now();
-		document.querySelectorAll( 'link[rel="stylesheet"]' ).forEach( ( link ) => {
-			link.href = link.href + hash;
-		} );
-		document.querySelectorAll( 'script[src]' ).forEach( ( script ) => {
-			script.src = script.attributes.src.textContent + hash;
-		} );
-		
-		document.getElementById( 'root' ).style.display = '';
-	}, 300 );
-}
-cacheBusting();
-
-</script>
-<script>
-!function(e){function r(r){for(var n,l,i=r[0],a=r[1],f=r[2],p=0,s=[];p<i.length;p++)l=i[p],Object.prototype.hasOwnProperty.call(o,l)&&o[l]&&s.push(o[l][0]),o[l]=0;for(n in a)Object.prototype.hasOwnProperty.call(a,n)&&(e[n]=a[n]);for(c&&c(r);s.length;)s.shift()();return u.push.apply(u,f||[]),t()}function t(){for(var e,r=0;r<u.length;r++){for(var t=u[r],n=!0,i=1;i<t.length;i++){var a=t[i];0!==o[a]&&(n=!1)}n&&(u.splice(r--,1),e=l(l.s=t[0]))}return e}var n={},o={1:0},u=[];function l(r){if(n[r])return n[r].exports;var t=n[r]={i:r,l:!1,exports:{}};return e[r].call(t.exports,t,t.exports,l),t.l=!0,t.exports}l.m=e,l.c=n,l.d=function(e,r,t){l.o(e,r)||Object.defineProperty(e,r,{enumerable:!0,get:t})},l.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},l.t=function(e,r){if(1&r&&(e=l(e)),8&r)return e;if(4&r&&"object"==typeof e&&e&&e.__esModule)return e;var t=Object.create(null);if(l.r(t),Object.defineProperty(t,"default",{enumerable:!0,value:e}),2&r&&"string"!=typeof e)for(var n in e)l.d(t,n,function(r){return e[r]}.bind(null,n));return t},l.n=function(e){var r=e&&e.__esModule?function(){return e.default}:function(){return e};return l.d(r,"a",r),r},l.o=function(e,r){return Object.prototype.hasOwnProperty.call(e,r)},l.p="./";var i=this.webpackJsonpcamillagui=this.webpackJsonpcamillagui||[],a=i.push.bind(i);i.push=r,i=i.slice();for(var f=0;f<i.length;f++)r(i[f]);var c=a;t()}([])
-</script>
-<script src="./static/js/2.js"></script>
 <script src="./static/js/main.js"></script>
+<script src="./camillagui.js"></script>
 
 </body>
 </html>
