@@ -30,7 +30,7 @@ if [[ $formatok ]]; then
 	[[ $format ]] && pushstreamNotify CamillaDSP "Playback format: <wh>$format</wh>" camilladsp
 	sleep 1
 	systemctl start camilladsp
-	$dirbash/camillagain.py set
+	$dirbash/settings/camilladsp-gain.py set
 else
 	pushstreamNotify CamillaDSP "Playback format: <wh>Setting required</wh>" camilladsp 10000
 fi

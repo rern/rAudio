@@ -768,7 +768,7 @@ $( '#restore' ).click( function() {
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
 			if ( infoVal() === 'reset' ) {
-				bash( '/srv/http/bash/datareset.sh', bannerHide );
+				bash( '/srv/http/bash/settings/system-datareset.sh', bannerHide );
 			} else {
 				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 				var formData = new FormData();

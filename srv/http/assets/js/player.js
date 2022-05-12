@@ -1,6 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var setmpdconf = '/srv/http/bash/mpd-conf.sh';
+var setmpdconf = '/srv/http/bash/settings/player-conf.sh';
 var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).

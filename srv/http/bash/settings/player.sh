@@ -15,7 +15,7 @@ volumeBtGet() {
 		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 }
 restartMPD() {
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 }
 
 case ${args[0]} in
@@ -216,8 +216,6 @@ mpdignorelist )
 	readarray -t files < $file
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>
-
-
 "
 	for file in "${files[@]}"; do
 		list+="\

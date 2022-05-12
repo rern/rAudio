@@ -165,7 +165,7 @@ $Album" &> /dev/null &
 }
 snapclientStop() {
 	systemctl stop snapclient
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/serverip
@@ -514,7 +514,7 @@ displaysave )
 		rm -f $dirsystem/vumeter
 		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
 	fi
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -990,7 +990,7 @@ power )
 		$dirbash/settings/relays.sh
 		sleep 2
 	fi
-	systemctl -q is-active camilladsp && $dirbash/camillagain.py
+	systemctl -q is-active camilladsp && $dirbash/settings/camilladsp-gain.py
 	if [[ $action == reboot ]]; then
 		pushstreamNotifyBlink Power 'Reboot ...' reboot
 	else

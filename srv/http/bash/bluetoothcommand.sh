@@ -25,7 +25,7 @@ disconnectRemove() {
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
 		$dirbash/cmd.sh mpcplayback$'\n'stop
-		$dirbash/mpd-conf.sh
+		$dirbash/settings/player-conf.sh
 	fi
 	pushstreamNotify "$name" $msg $icon
 	pushstreamList
@@ -139,7 +139,7 @@ if [[ $action == connect || $action == pair ]]; then
 		echo $mac Sink $name >> $dirshm/btconnected
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
-		$dirbash/mpd-conf.sh
+		$dirbash/settings/player-conf.sh
 	fi
 	pushstreamList
 elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only

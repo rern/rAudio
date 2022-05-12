@@ -48,7 +48,7 @@ autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	[[ $feature == streaming ]] && $dirbash/mpd-conf.sh
+	[[ $feature == streaming ]] && $dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 autoplaydisable )
@@ -62,16 +62,16 @@ autoplayset )
 	pushRefresh
 	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh (+ modprobe in mpd-devices.sh)
+	if [[ ${args[1]} == true ]]; then # start with player-conf.sh (+ modprobe in player-devices.sh)
 		touch $dirsystem/camilladsp
 	else
-		$dirbash/camillagain.py
+		$dirbash/settings/camilladsp-gain.py
 		systemctl stop camilladsp
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 		pushRefresh
 	fi
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 camilladspasound )
@@ -348,7 +348,7 @@ snapserver )
 	else
 		systemctl disable --now snapserver
 	fi
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 spotifyddisable )

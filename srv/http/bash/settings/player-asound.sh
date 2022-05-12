@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### includedby < mpd-conf.sh
+### includedby < player-conf.sh
 
 ########
 asound="\
@@ -86,11 +86,11 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	$dirbash/mpd-wm5102.sh $wm5102card $output
+	$dirbash/settings/player-wm5102.sh $wm5102card $output
 fi
 
 if [[ $dsp ]]; then
-	$dirbash/camillasetformat.sh
+	$dirbash/settings/camilladsp-setformat.sh
 else
 	[[ $preset ]] && $dirbash/cmd.sh "equalizer
 	preset

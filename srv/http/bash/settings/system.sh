@@ -76,7 +76,7 @@ bluetoothdisable )
 	systemctl disable --now bluetooth
 	pkill bluetooth
 	rm -f $dirshm/{btdevice,btreceiver,btsender}
-	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/mpd-conf.sh
+	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -99,7 +99,7 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/mpd-conf.sh bton
+	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
 	pushRefresh
 	;;
 databackup )
@@ -503,7 +503,7 @@ mount )
 mpdoleddisable )
 	rm $dirsystem/mpdoled
 	I2Cset
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 mpdoledset )
@@ -801,14 +801,14 @@ vuleddisable )
 	if [[ -e $dirsystem/vumeter ]]; then
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	else
-		$dirbash/mpd-conf.sh
+		$dirbash/settings/player-conf.sh
 	fi
 	pushRefresh
 	;;
 vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/mpd-conf.sh
+	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/settings/player-conf.sh
 	kill -9 $( pgrep cava ) &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh

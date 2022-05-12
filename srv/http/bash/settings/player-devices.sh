@@ -11,7 +11,7 @@
 #    - set as hardware if mixer device available
 #    - if nothing, set as software
 
-### included by mpd-conf.sh, player-data.sh
+### included by player-conf.sh, player-data.sh
 
 aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ ! $aplay ]]; then

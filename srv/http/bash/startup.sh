@@ -94,7 +94,7 @@ fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
-$dirbash/mpd-conf.sh # mpd.service started by this script
+$dirbash/settings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected
 

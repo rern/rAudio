@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # remove all output the reinstate each output:
-# - get devices data from 'mpd-devices.sh'
+# - get devices data from 'playerdevices.sh'
 # - assign common paramters
 # - mixer_type    - from file if manually set | hardware if hwmixer | software
 # - mixer_control - from file if manually set | hwmixer | null
@@ -11,11 +11,11 @@
 usbdac=$1
 
 . /srv/http/bash/common.sh
-. $dirbash/mpd-devices.sh
-. $dirbash/mpd-asound.sh
+. $dirbash/player-devices.sh
+. $dirbash/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
-output= # reset var from mpd-devices.sh
+output= # reset var from player-devices.sh
 if [[ $i != -1 ]]; then # $i - current card number
 	aplayname=${Aaplayname[i]}
 	dop=${Adop[i]}
