@@ -78,7 +78,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 	fi
 	
 #-----
-	pushstreamNotifyBlink Bluetooth $msg bluetooth
+	pushstreamNotifyBlink Bluetooth "$msg" bluetooth
 	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
