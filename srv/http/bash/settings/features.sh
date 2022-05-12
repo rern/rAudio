@@ -65,12 +65,14 @@ camilladsp )
 	if [[ ${args[1]} == true ]]; then # start with mpd-conf.sh (+ modprobe in mpd-devices.sh)
 		touch $dirsystem/camilladsp
 	else
+		$dirbash/camillagain.py
 		systemctl stop camilladsp
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 		pushRefresh
 	fi
 	$dirbash/mpd-conf.sh
+	pushRefresh
 	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml

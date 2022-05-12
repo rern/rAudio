@@ -990,6 +990,7 @@ power )
 		$dirbash/settings/relays.sh
 		sleep 2
 	fi
+	systemctl -q is-active camilladsp && $dirbash/camillagain.py
 	if [[ $action == reboot ]]; then
 		pushstreamNotifyBlink Power 'Reboot ...' reboot
 	else
