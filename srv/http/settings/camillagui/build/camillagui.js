@@ -34,10 +34,10 @@ cacheBusting = () => {
 		}
 		
 		var hash = '?v='+ Date.now();
-		document.querySelectorAll( 'link[rel="stylesheet"]' ).forEach( ( link ) => {
+		document.querySelectorAll( 'link' ).forEach( ( link ) => {
 			link.href = link.href + hash;
 		} );
-		document.querySelectorAll( 'script[src]' ).forEach( ( script ) => {
+		document.querySelectorAll( 'script' ).forEach( ( script ) => {
 			script.src = script.attributes.src.textContent + hash;
 		} );
 		setTimeout( () => {
