@@ -31,7 +31,6 @@ textarea,
 .files input[type=text],
 .quick-config-switch .button,
 #camilladsp pre,
-#compactview .two-column-grid,
 #fileconfig {
 	font-family: Inconsolata;
 }
@@ -57,7 +56,6 @@ textarea,
 	--border-radius: 3px;
 	--gain-color: hsl( 200 100% 45% );
 	--phase-color: hsl( 0 40% 55% );
-	--success-text-color: var( --cml );
 	--red: #bb2828;
 }
 body {
@@ -324,78 +322,18 @@ input[type=range]:disabled::-moz-range-thumb {
 	margin-top: -20px;
 }
 #button-mute,
-#button-undo {
+#button-dim {
 	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
 	border-radius: 3px 0 0 3px;
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
-#button-dim,
-#button-redo {
+#button-dim {
 	border-radius: 0 3px 3px 0;
 	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
-/* compact view */
-::marker {
-	color: transparent;
-}
-.tab-buttons {
-	position: absolute;
-	left: -290px;
-	width: 270px;
-	height: 36px;
-	background: none;
-}
-#button-compactview {
-	float: none !important;
-}
-#compactview .smallbutton {
-	margin-top: -20px;
-}
-#button-undo,
-#button-redo {
-	float: right;
-}
-.tab-buttons svg {
-	height: 24px !important;
-	width: 24px !important;
-}
-/* compact page ------------------------------------------------------------ */
-.react-tabs__tab--disabled {
-	color: var( --cw );
-}
-.quick-config-switch .button {
-	display: block;
-	width: 200px;
-	margin: 5px auto;
-	line-height: 36px;
-	text-align: center;
-}
-#compactview {
-	width: 370px;
-	margin-top: -2px !important;
-	padding: 0 10px;
-}
-#compactview legend {
-	padding-left: 5px;
-}
-#compactview .two-column-grid {
-	display: block;
-	color: var( --cg60 );
-}
-#volume {
-	margin-top: 28px;
-}
-#diveqhelp {
-	padding-top: 10px;
-	font-size: 16px;
-	letter-spacing: 0;
-	color: var( --cg60 );
-}
-/* Compact view button ------------------- */
-#compactview .box,
 #mainpanel .box {
 	position: relative;
 	max-width: calc( 100vw - 50px );
@@ -403,15 +341,8 @@ input[type=range]:disabled::-moz-range-thumb {
 	padding: 10px 0;
 	border: none;
 }
-#compactview #volume {
-	margin-top: 19px;
-}
 #mainpanel legend {
 	padding: 0;
-}
-#compactview legend .horizontally-spaced-content {
-	width: 360px;
-	border-bottom: 1px solid var( --cg );
 }
 #mainpanel legend .horizontally-spaced-content {
 	width: 270px;
@@ -422,14 +353,8 @@ input[type=range]:disabled::-moz-range-thumb {
 	min-width: 110px;
 	font-size: 16px;
 	font-weight: 300;
+	text-align: right;
 	letter-spacing: 0;
-}
-#equalizer .db-label {
-	width: 4ch !important;
-	min-width: auto;
-}
-.bass.db-label {
-	margin-left: 20px;
 }
 /* volume + status ------------------------------------------------------------ */
 #mainpanel {
@@ -438,7 +363,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	float: left;
 	width: 270px !important;
 	margin: auto;
-	padding: 35px 10px 0 10px;
+	padding: 16px 10px 0 10px;
 }
 #mainpanel .split-20-80 {
 	margin: 10px 0;
@@ -459,30 +384,15 @@ input[type=range]:disabled::-moz-range-thumb {
 	padding-right: 3px;
 }
 .split-20-80>* {
-	height: 42px;
+	height: 17px;
 }
-path.rc-progress-line-trail {
-	stroke: var( --cg );
-}
-#log,
-#eqhelp {
+.rc-progress-line {
 	position: absolute;
-	top: -34px;
-	left: 110px;
-	width: 36px !important;
-	font-size: 22px;
-	line-height: 36px;
-	text-align: center;
-	background: none !important;
-	color: var( --cg60 );;
-	text-shadow: none;
-}
-#eqhelp {
-	left: auto !important;
 	right: 0;
+	width: 237px;
 }
-#log:hover {
-	background: none !important;
+.rc-progress-line:last-child {
+	margin-top: 10px;
 }
 #camilladsp pre {
 	margin: 0px 0;
@@ -721,10 +631,6 @@ textarea:focus-visible {
 		background: #000000;
 		box-shadow: 0px 4px 5px #000000;
 		z-index: -1;
-	}
-	#button-compactview {
-		position: fixed;
-		top: 48px;
 	}
 	#divhelp {
 		margin: 0 20px;
