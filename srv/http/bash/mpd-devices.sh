@@ -13,8 +13,7 @@
 
 ### included by mpd-conf.sh, player-data.sh
 
-aplay=$( aplay -l 2> /dev/null \
-			| grep '^card' )
+aplay=$( aplay -l 2> /dev/null | grep '^card' )
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
 	devices=false
@@ -130,23 +129,18 @@ for card in $cards; do
 done
 
 if [[ $usbdac == add ]]; then
-	i=$card
 	[[ -e $dirsystem/asoundcard ]] && mv $dirsystem/asoundcard{,.backup}
-	echo $i > $dirsystem/asoundcard
+	echo $card > $dirsystem/asoundcard
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
-	i=$( cat $dirsystem/asoundcard.backup )
 	mv $dirsystem/asoundcard{.backup,}
 elif [[ -e $dirsystem/asoundcard ]]; then
-	i=$( cat $dirsystem/asoundcard )
+	asoundcard=$( cat $dirsystem/asoundcard )
+	! echo "$aplay" | grep -v Loopback | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
 else
-	i=$( aplay -l 2> /dev/null \
-				| grep ^card \
-				| grep -v Loopback \
-				| head -1 \
-				| cut -d: -f1 \
-				| cut -d' ' -f2 )
-	echo $i > $dirsystem/asoundcard
+	echo ${Acard[0]} > $dirsystem/asoundcard
 fi
+i=$( cat $dirsystem/asoundcard )
+
 echo Ahwmixer[i] > $dirshm/amixercontrol
 
 getControls $i
