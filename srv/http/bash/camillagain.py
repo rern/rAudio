@@ -1,13 +1,19 @@
 #!/usr/bin/python
 
+from camilladsp import CamillaConnection
+import os.path
+import sys
 
-from websocket import create_connection
-import json
-import os
+cdsp = CamillaConnection( '127.0.0.1', 1234 )
+cdsp.connect()
 
-ws = create_connection( 'ws://127.0.0.1:1234' )
-ws.send( json.dumps( 'GetVolume' ) )
-datajson = json.loads( ws.recv() )
-gain = str( datajson[ 'GetVolume' ][ 'value' ] )
-os.system( 'sed -i "s/--gain=.*/--gain='+ gain +'/" /etc/systemd/system/camilladsp.service.d/override.conf' )
-os.system( 'systemctl daemon-reload' )
+file = '/srv/http/data/system/camillagain'
+if len( sys.argv ) > 1: # set
+    if os.path.exists( file ):
+        with open( file, 'r' ) as f: gain = f.read()
+    else:
+        gain = 0
+    cdsp.set_volume( float( gain ) )
+else: # save
+    gain = cdsp.get_volume()
+    with open( file, 'w' ) as f: f.write( str( gain ) )
