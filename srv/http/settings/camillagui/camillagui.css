@@ -322,12 +322,17 @@ input[type=range]:disabled::-moz-range-thumb {
 	margin-top: -20px;
 }
 #button-mute,
-#button-undo {
+#button-dim {
 	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
 	border-radius: 3px 0 0 3px;
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+}
+#button-dim {
+	border-radius: 0 3px 3px 0;
+	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 #mainpanel .box {
 	position: relative;
