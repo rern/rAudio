@@ -380,7 +380,7 @@ function psNotify( data ) {
 	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
 	
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.title === 'power' ) {
+	if ( data.title === 'Power' ) {
 		switchPage( 'playback' );
 		loader();
 	} else if ( data.text === 'Change track ...' ) { // audiocd
