@@ -24,12 +24,6 @@ document.getElementById( 'close' ).onclick = () => {
 	http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
 	location.href = 'http://' + hostname;
 }
-document.body.addEventListener( 'click', function( e ) {
-	if( e.target.id === 'eqhelp' ) {
-		var diveqhelp = document.getElementById( 'diveqhelp' );
-		diveqhelp.style.display = diveqhelp.style.display === 'none' ? '' : 'none';
-	}
-});
 
 cacheBusting = () => {
 	setTimeout( () => {
