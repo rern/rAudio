@@ -1086,6 +1086,8 @@ function renderLibraryList( data ) {
 	} );
 }
 function renderPlayback() {
+	if ( ! G.status.state ) return // suppress on reboot
+	
 	local();
 	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
@@ -1264,8 +1266,6 @@ function setBlinkDot() {
 	}
 }
 function setButtonControl() {
-	if ( !G.status.state ) return // suppress error on reboot
-	
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
@@ -1275,7 +1275,7 @@ function setButtonControl() {
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream && G.status.player !== 'upnp' );
 		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ G.status.state ).addClass( 'active' );
+		if ( G.status.state ) $( '#'+ G.status.state ).addClass( 'active' ); // suppress on reboot
 	}
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
