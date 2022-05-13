@@ -16,12 +16,13 @@ if systemctl -q is-active bluetooth; then
 			info=$( bluetoothctl info $mac )
 			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			sink=$( echo "$info" | grep -q 'UUID: Audio Sink' && echo true || echo false )
+			type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+			[[ ! $type ]] && type=Device
 			listbt+=',{
-"name"      : "'${name//\"/\\\"}'"
+  "name"      : "'$name'"
 , "mac"       : "'$mac'"
-, "sink"      : '$sink'
 , "connected" : '$connected'
+, "type"      : "'$type'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"
@@ -29,6 +30,10 @@ if systemctl -q is-active bluetooth; then
 		listbt=false
 	fi
 fi
+
+echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=false
+echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
+pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
 [[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
 
@@ -104,6 +109,7 @@ data='
 , "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
 , "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
+, "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
 , "listbt"     : '$listbt'

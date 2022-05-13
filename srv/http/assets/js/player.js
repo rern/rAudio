@@ -1,6 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var setmpdconf = '/srv/http/bash/mpd-conf.sh';
+var setmpdconf = '/srv/http/bash/settings/player-conf.sh';
 var warning = `\
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
 Signal will be set to original level (0dB).
@@ -8,11 +8,11 @@ Beware of too high volume from speakers.`;
 
 $( '#playback' ).click( function() {
 	if ( !$( this ).hasClass( 'disabled' ) ) {
-		var cmd = G.stateplayer === 'mpd' ? 'mpcplayback' : 'playerstop';
+		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
-$( '#setting-btclient' ).click( function() {
+$( '#setting-btreceiver' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
 		var voldb = voldb.split( ' ' );
 		var vol = voldb[ 0 ];
@@ -41,10 +41,8 @@ $( '#setting-btclient' ).click( function() {
 	} );
 } );
 $( '#audiooutput' ).change( function() {
-	var card = $( this ).val();
-	var dev = G.devices[ card ];
 	notify( 'Audio Output Device', 'Change ...', 'mpd' );
-	bash( [ 'audiooutput', dev.aplayname, card, dev.name, dev.hwmixer ] );
+	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	var hwmixer = $( this ).val();
@@ -356,8 +354,14 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function playbackIcon() {
+	$( '#playback' )
+		.removeAttr( 'class' )
+		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
+		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
+}
 function renderPage() {
-	playbackState( G.state );
+	playbackIcon();
 	var htmlstatus =  G.version +'<br>'
 	if ( G.counts ) {
 		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
@@ -372,23 +376,25 @@ function renderPage() {
 		device = G.devices[ G.asoundcard ];
 		var htmldevices = '';
 		$.each( G.devices, function() {
-			htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
+			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
 		} );
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
-			$( '#divbtclient' ).removeClass( 'hide' );
+			$( '#divbtreceiver' ).removeClass( 'hide' );
 			$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-			$( '#setting-btclient' ).removeClass( 'hide' );
+			$( '#setting-btreceiver' ).removeClass( 'hide' );
 		} else {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
-			$( '#divbtclient' ).addClass( 'hide' );
+			$( '#divbtreceiver' ).addClass( 'hide' );
 			$( '#audiooutput' )
 				.html( htmldevices )
 				.val( G.asoundcard );
 			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-			device.mixerdevices.forEach( function( mixer ) {
-				htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-			} );
+			if ( 'mixerdevices' in device ) {
+				device.mixerdevices.forEach( function( mixer ) {
+					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
+				} );
+			}
 			$( '#hwmixer' )
 				.html( htmlhwmixer )
 				.val( device.hwmixer );
@@ -423,10 +429,4 @@ function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
 	notify( 'Mixer Control', 'Change ...', 'mpd' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
-}
-function playbackState( state ) {
-	$( '#playback' )
-		.removeAttr( 'class' )
-		.toggleClass( 'disabled', G.stateplayer !== 'mpd' && G.state !== 'play' )
-		.addClass( 'fa fa-'+ ( state === 'play' ? 'pause' : 'play' ) );
 }

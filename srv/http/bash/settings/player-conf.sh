@@ -1,19 +1,21 @@
 #!/bin/bash
 
 # remove all output the reinstate each output:
-# - get devices data from 'mpd-devices.sh'
+# - get devices data from 'playerdevices.sh'
 # - assign common paramters
 # - mixer_type    - from file if manually set | hardware if hwmixer | software
 # - mixer_control - from file if manually set | hwmixer | null
 # - mixer_device  - card index
 # - dop           - if set
 
+usbdac=$1
+
 . /srv/http/bash/common.sh
-. $dirbash/mpd-devices.sh
-. $dirbash/mpd-asound.sh
+. $dirbash/settings/player-devices.sh
+. $dirbash/settings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
-output= # reset var from mpd-devices.sh
+output= # reset var from player-devices.sh
 if [[ $i != -1 ]]; then # $i - current card number
 	aplayname=${Aaplayname[i]}
 	dop=${Adop[i]}
@@ -21,19 +23,19 @@ if [[ $i != -1 ]]; then # $i - current card number
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------<
 		output+='
-	name           "CamillaDSP"
+	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
-		[[ -e $dirshm/btclient ]] && mixertype=software
+		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------<
 		output+='
 	name           "ALSAEqual"
@@ -153,15 +155,9 @@ $output
 $btoutput" > /etc/mpd.conf
 
 # usbdac.rules -------------------------------------------------------------------------
-if [[ $1 == add || $1 == remove ]]; then
+if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
-	if [[ ! $name ]]; then
-		name='(No sound device)'
-		volumenone=true
-	else
-		volumenone=$( echo "$output" | grep -q 'mixer_type.*none' && echo true || echo false )
-	fi
-	pushstream display '{"volumenone":'$volumenone'}'
+	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 
@@ -172,7 +168,7 @@ if [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-if [[ -e $dirsystem/autoplaybt && -e $dirshm/btclient ]]; then
+if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
 	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
 pushstream mpdplayer "$( $dirbash/status.sh )"
@@ -186,7 +182,7 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		conf+='
 	output_device = "hw:'$cardloopback',0";'
 	elif [[ $btmixer ]]; then
@@ -207,7 +203,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $camilladsp ]]; then
+	if [[ $dsp ]]; then
 		device='sysdefault:CARD=Loopback'
 	elif [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
@@ -225,7 +221,7 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 device = "'$device'"'
-	if [[ ! $camilladsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
+	if [[ ! $dsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
 control = "hw:'$i'"

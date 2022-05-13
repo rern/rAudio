@@ -3,25 +3,27 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'button' => [ 'btscan' => 'search wh' ]
+	, 'button' => [ 'btscan' => 'search' ]
 ] );
 ?>
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide"><wh>rAudio as sender:</wh>
+	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
  • Pairing:
- &emsp; - On receiver device - Turn on pairing/discovery mode
- &emsp; - On rAudio - Search and select the receiver device to pair
- &emsp; - Once paired successfully, the receiver device must be powered off.
+ &emsp; - On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
+ &emsp; - On rAudio -&ensp;<i class="fa fa-search"></i>Search > Select receiver to pair
  • Connecting:
- &emsp; - On receiver devices - Power on/off to connect/disconnect
+ &emsp; - On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
+ • Receiver buttons:
+ &emsp; - Playback controls <code>play</code> <code>pause</code> <code>previous</code> <code>next</code>
+
 <wh>rAudio as receiver:</wh>
  • Pairing:
- &emsp; - On rAudio - Settings > Bluetooth setting - enable Discoverable by senders
- &emsp; - On sender device - Search and select rAudio to pair
- &emsp; - To forget/remove from the list - Do it both on rAudio and sender device
+ &emsp; - On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
+ &emsp; - On sender - Search > Select rAudio to pair
+ &emsp; - <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
  • Connecting:
- &emsp; - On sender devices - Select rAudio to connect/disconnect
+ &emsp; - On sender - Select rAudio > <code>connect</code> / <code>disconnect</code>
 </div>
 </div>
 <div id="divwl" class="section">
@@ -29,7 +31,7 @@ htmlHead( [ //////////////////////////////////
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
 	, 'status'  => 'wlan'
-	, 'button'  => [ 'wladd' => 'plus-circle wh', 'wlscan' => 'search wh' ]
+	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>

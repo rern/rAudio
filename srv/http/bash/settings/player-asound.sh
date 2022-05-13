@@ -1,6 +1,6 @@
 #!/bin/bash
 
-### includedby < mpd-conf.sh
+### includedby < player-conf.sh
 
 ########
 asound="\
@@ -8,6 +8,7 @@ defaults.pcm.card $i
 defaults.ctl.card $i
 "
 if [[ -e $dirsystem/camilladsp ]]; then
+	dsp=1
 	modprobe snd-aloop
 	camilladspyml=$dirdata/camilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
@@ -40,8 +41,8 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
-	if [[ -e $dirshm/btclient ]]; then
-		btmixer=$( cat $dirshm/btclient )
+	if [[ -e $dirshm/btreceiver ]]; then
+		btmixer=$( cat $dirshm/btreceiver )
 ########
 		asound+='
 pcm.bluealsa {
@@ -85,38 +86,22 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	$dirbash/mpd-wm5102.sh $wm5102card $output
+	$dirbash/settings/player-wm5102.sh $wm5102card $output
 fi
 
-[[ $preset ]] && $dirbash/cmd.sh "equalizer
-preset
-$preset"
+if [[ $dsp ]]; then
+	$dirbash/settings/camilladsp-setformat.sh
+else
+	[[ $preset ]] && $dirbash/cmd.sh "equalizer
+	preset
+	$preset"
 
-if [[ -e $dirsystem/camilladsp ]]; then
-	card=$( cat $dirshm/asoundcard )
-	sed -i "/playback:/,/device:/ s/\(device: hw:\).*/\1$card,0/" $camilladspyml
-	camilladsp $camilladspyml &> /dev/null &
-	sleep 1
-	if pgrep -x camilladsp &> /dev/null; then
-		pkill -x camilladsp
-		camilladsp=1
+	if [[ $btmixer ]]; then
+		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
+		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		systemctl -q is-active localbrowser && action=stop || action=start
+		systemctl $action bluetoothbutton
 	else
-		lineformat=$( sed -n '/playback:/,/format:/=' $camilladspyml | tail -1 )
-		for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-			sed -i "$lineformat s/\(format: \).*/\1$format/" $camilladspyml
-			camilladsp $camilladspyml &> /dev/null &
-			sleep 1
-			if pgrep -x camilladsp &> /dev/null; then
-				pkill -x camilladsp
-				camilladsp=1
-				break
-			fi
-		done
+		systemctl stop bluetoothbutton
 	fi
-	[[ $camilladsp ]] && systemctl start camilladsp || systemctl stop camilladsp
-	pushstream refresh "$( $dirbash/settings/features-data.sh )"
-elif [[ $btmixer ]]; then
-	btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-	[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
-	systemctl -q is-active localbrowser || systemctl start bluetoothbutton
 fi

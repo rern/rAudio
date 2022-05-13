@@ -66,11 +66,9 @@ if [[ -e /usr/bin/camilladsp ]]; then
 devices:
   adjust_period: 10
   capture:
-    avoid_blocking_read: false
     channels: 2
     device: hw:Loopback,0
     format: S32LE
-    retry_on_error: false
     type: Alsa
   capture_samplerate: 0
   chunksize: 2048
@@ -116,6 +114,7 @@ config_dir: "$dircamilladsp/configs"
 coeff_dir: "$dircamilladsp/coeffs"
 default_config: "$dircamilladsp/configs/default_config.yml"
 active_config: "$dircamilladsp/configs/active_config.yml"
+log_file: "/var/log/camilladsp.log"
 update_symlink: true
 on_set_active_config: "/srv/http/bash/settings/features.sh camilladspasound"
 on_get_active_config: null
@@ -123,6 +122,13 @@ supported_capture_types: null
 supported_playback_types: null
 EOF
 fi
+	if [[ $( camilladsp -V ) == CamillaDSP 0.6.3 ]]; then
+		sed -i '/capture:/ a\
+    avoid_blocking_read: false\
+    retry_on_error: false
+' $dircamilladsp/configs/default_config.yml
+		sed -i '/log_file/ d' /srv/http/settings/camillagui/config/camillagui.yml
+	fi
 # display
 cat << EOF > $dirsystem/display
 {

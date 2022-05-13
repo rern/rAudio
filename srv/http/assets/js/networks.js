@@ -9,6 +9,15 @@ $( '.back' ).click( function() {
 	refreshData();
 } );
 $( '#btscan' ).click( function() {
+	if ( $( this ).hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'bluetooth'
+			, title   : 'Bluetooth'
+			, message : '<wh>DSP</wh> is currently enabled.'
+		} );
+		return
+	}
+	
 	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
@@ -84,7 +93,7 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
-		notify( list.name, 'Connect ...', list.sink ? 'bluetooth' : 'btclient', -1 );
+		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
 		return
 	}
@@ -97,7 +106,6 @@ $( '.disconnect' ).click( function() {
 	if ( G.listbt ) {
 		var list = G.listbt[ G.liindex ];
 		bluetoothcommand( 'disconnect', list );
-		$( '#listbt grn' ).replaceWith( '<gr>•</gr>' );
 		return
 	}
 	
@@ -129,15 +137,13 @@ $( '.forget' ).click( function() {
 	var connectedlan = '';
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.li.index() ]
-		var name = list.name;
-		var mac = list.mac;
 		info( {
-			  icon    : list.sink ? 'bluetooth' : 'btclient'
-			, title   : name
+			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
+			, title   : list.name
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( name, 'Forget ...', 'bluetooth' );
+				notify( list.name, 'Forget ...', 'bluetooth' );
 				bluetoothcommand( 'remove', list );
 			}
 		} );
@@ -159,18 +165,13 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	var $code = $( '#codebluetooth' );
-	if ( !$code.hasClass( 'hide' ) ) {
-		$code.addClass( 'hide' );
+	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+		$( '#codebluetooth' ).addClass( 'hide' );
 		return
 	}
 	
 	var list = G.listbt[ G.li.index() ]
-	bash( [ 'bluetoothinfo', list.mac ], function( data ) {
-		$code
-			.html( data )
-			.removeClass( 'hide' );
-	} );
+	infoBluetooth( list.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
@@ -243,7 +244,7 @@ $( '#setting-accesspoint' ).click( function() {
 } );
 
 function bluetoothcommand( cmd, list ) {
-	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' "'+ list.name +'"' );
+	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.type +' "'+ list.name +'"' );
 }
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
@@ -338,6 +339,20 @@ function infoAccesspoint() {
 		, message : 'Access Point must be disabled.'
 	} );
 }
+function infoBluetooth( mac ) {
+	bash( [ 'bluetoothinfo', mac ], function( data ) {
+		if ( !data ) {
+			$( '#codebluetooth' )
+				.empty()
+				.addClass( 'hide' );
+		} else {
+			$( '#codebluetooth' )
+				.html( data )
+				.data( 'mac', mac )
+				.removeClass( 'hide' );
+		}
+	} );
+}
 function infoWiFi( values ) {
 	if ( values ) {
 		var add = false;
@@ -397,23 +412,24 @@ function infoWiFi( values ) {
 	} );
 }
 function renderBluetooth() {
-	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '.back' ).click();
-	G.btconnected = false;
-	var htmlbt = '';
+	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
+		var htmlbt = '';
 		G.listbt.forEach( function( list ) {
-			if ( list.connected ) G.btconnected = true;
-			htmlbt += '<li class="bt" data-name="'+ list.name +'" data-sink="'+ list.sink +'" data-connected="'+ list.connected +'">'
-					 +'<i class="fa fa-'+ ( list.sink ? 'bluetooth' : 'btclient' ) +'"></i>';
-			htmlbt += list.connected ? '<grn>•</grn>&ensp;' : '<gr>•</gr>&ensp;'
-			htmlbt += list.name +'</li>';
+			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
+			htmlbt += '<li class="bt"><i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
 	} else {
 		$( '#listbt' ).empty();
 	}
+	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+		var mac = $( '#codebluetooth' ).data( 'mac' );
+		infoBluetooth( mac );
+	}
 }
 function renderPage() {
+	$( '#btscan' ).toggleClass( 'disabled', G.camilladsp );
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );

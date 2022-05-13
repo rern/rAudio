@@ -464,7 +464,7 @@ function renderPage() {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {
 		$( '#divdsp' ).removeClass( 'hide' );
-		$( '#camilladsp' ).toggleClass( 'disabled', G.bluetoothactive || G.equalizer );
+		$( '#camilladsp' ).toggleClass( 'disabled', G.bluetoothsink || G.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
 	}
 	if ( ! /code|error/.test( window.location.href ) ) {

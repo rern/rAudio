@@ -1086,6 +1086,8 @@ function renderLibraryList( data ) {
 	} );
 }
 function renderPlayback() {
+	if ( ! G.status.state ) return // suppress on reboot
+	
 	local();
 	if ( G.status.state === 'stop' ) setProgress( 0 );
 	$volumeRS.setValue( G.status.volume );
@@ -1264,6 +1266,8 @@ function setBlinkDot() {
 	}
 }
 function setButtonControl() {
+	if ( ! G.status.state ) return // suppress on reboot
+	
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
@@ -1273,7 +1277,7 @@ function setButtonControl() {
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream && G.status.player !== 'upnp' );
 		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ G.status.state ).addClass( 'active' );
+		$( '#'+ G.status.state ).addClass( 'active' ); // suppress on reboot
 	}
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
@@ -1283,7 +1287,7 @@ function setButtonOptions() {
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $( '#time-knob' ).is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'i';
-	$( '#'+ prefix +'-btclient' ).toggleClass( 'hide', !G.status.btclient );
+	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !G.status.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', !G.status.stoptimer );
 	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', !G.display.snapclientactive );

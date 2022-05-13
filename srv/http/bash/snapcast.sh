@@ -43,11 +43,11 @@ if [[ $1 == start ]]; then # client start - save server ip
 elif [[ $1 == stop ]]; then # server + client on same device
 	systemctl stop snapclient
 	rm $dirshm/snapclientactive
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btclient ]] && volumenone=false || volumenone=true
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
 	fi
 	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
 	data=$( $dirbash/settings/features-data.sh )

@@ -15,17 +15,13 @@ volumeBtGet() {
 		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
 }
 restartMPD() {
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 }
 
 case ${args[0]} in
 
 audiooutput )
-	aplayname=${args[1]}
-	card=${args[2]}
-	output=${args[3]}
-	mixer=${args[4]}
-	sed -i "s/.$/$card/" /etc/asound.conf
+	echo ${args[1]} > $dirsystem/asoundcard
 	restartMPD
 	;;
 autoupdate )
@@ -114,21 +110,38 @@ customset )
 	fi
 	;;
 devices )
-	devices+=$'<bll># aplay -l | grep ^card</bll>\n'$( aplay -l | grep ^card )
-	devices+=$'\n\n<bll># amixer scontrols</bll>\n'
-	card=$( cat $dirshm/asoundcard )
-	aplayname=$( aplay -l | grep "^card $card" | awk -F'[][]' '{print $2}' )
+	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
+					| grep -B1 pvolume \
+					| head -1 )
+	[[ $bluealsa ]] && devices="\
+<bll># amixer -D bluealsa scontrols</bll>
+$bluealsa
+
+"
+	devices+="\
+<bll># aplay -l | grep ^card</bll>
+$( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
+
+<bll># amixer scontrols</bll>"
+	card=$( cat $dirsystem/asoundcard )
+	aplayname=$( aplay -l \
+					| grep "^card $card" \
+					| awk -F'[][]' '{print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
-		devices+=$( amixer -c $card scontrols )
+		devices+="
+$( amixer -c $card scontrols )
+"
 	else
 		devices+="\
 Simple mixer control 'HPOUT1 Digital',0
 Simple mixer control 'HPOUT2 Digital',0
 Simple mixer control 'SPDIF Out',0
-Simple mixer control 'Speaker Digital',0"
+Simple mixer control 'Speaker Digital',0
+"
 	fi
-	[[ -e $dirshm/btclient || -e $dirshm/btsender ]] && devices+=$'\n\n<bll># bluealsa-aplay -L</bll>\n'$( bluealsa-aplay -L )
-	devices+=$'\n\n<bll># cat /etc/asound.conf</bll>\n'$( cat /etc/asound.conf )
+	devices+="
+<bll># cat /etc/asound.conf</bll>
+$( cat /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )
@@ -203,8 +216,6 @@ mpdignorelist )
 	readarray -t files < $file
 	list="\
 <bll># find /mnt/MPD -name .mpdignore</bll>
-
-
 "
 	for file in "${files[@]}"; do
 		list+="\

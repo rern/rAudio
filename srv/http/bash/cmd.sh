@@ -15,7 +15,7 @@ addonsListGet() {
 equalizerGet() {
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btclient ]] && filepresets+="-$( cat $dirshm/btclient )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
 	
 	[[ $2 == set ]] && sed -i "1 s/.*/(unnamed)/" "$filepresets"
@@ -165,7 +165,7 @@ $Album" &> /dev/null &
 }
 snapclientStop() {
 	systemctl stop snapclient
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
 	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/serverip
@@ -181,7 +181,7 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeGet() {
-	if [[ -e $dirshm/btclient ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
 			[[ $volume ]] && break
@@ -198,7 +198,7 @@ volumeGet() {
 	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( cat $dirshm/asoundcard )
+		card=$( cat $dirsystem/asoundcard )
 		if [[ ! -e $dirshm/amixercontrol ]]; then
 			volume=100
 		else
@@ -222,10 +222,10 @@ volumeSetAt() {
 	target=$1
 	card=$2
 	control=$3
-	btclient=$( cat $dirshm/btclient 2> /dev/null )
-	if [[ $btclient ]]; then
-		amixer -MqD bluealsa sset "$btclient" $target% 2> /dev/null
-		echo $target > "$dirsystem/btvolume-$btclient"
+	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
+	if [[ $btreceiver ]]; then
+		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
+		echo $target > "$dirsystem/btvolume-$btreceiver"
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
 	else
@@ -252,7 +252,7 @@ volumeSet() {
 		fi
 	fi
 	pushstreamVolume disable false
-	[[ $control && ! -e $dirshm/btclient ]] && alsactl store
+	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
 	count=$( find -L $dirdata/webradios -type f ! -name "*.jpg" ! -name "*.gif" | wc -l )
@@ -492,10 +492,10 @@ coverfileslimit )
 dirpermissions )
 	list='/srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/'
 	chmod 755 $list
-	chmod -R 755 /srv/http/{assets,bash,data,settings}
-	
 	chown http:http $list
-	chown -R http:http /srv/http/{assets,bash,data,settings}
+	list='/srv/http/{assets,bash,data,settings}'
+	chmod -R 755 $list
+	chown -R http:http $list
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
 	;;
 displaysave )
@@ -514,7 +514,7 @@ displaysave )
 		rm -f $dirsystem/vumeter
 		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
 	fi
-	$dirbash/mpd-conf.sh
+	$dirbash/settings/player-conf.sh
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -524,7 +524,7 @@ equalizer )
 	newname=${args[3]}
 	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btclient ]] && filepresets+="-$( cat $dirshm/btclient )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
 	if [[ $type == preset ]]; then
 		[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$filepresets" | cut -d^ -f2- ) )
 	else # remove then save again with current values
@@ -977,7 +977,7 @@ power )
 	action=${args[1]}
 	touch $dirshm/power
 	mpc -q stop
-	pushstream btclient false
+	pushstream btreceiver false
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
@@ -990,10 +990,11 @@ power )
 		$dirbash/settings/relays.sh
 		sleep 2
 	fi
+	systemctl -q is-active camilladsp && $dirbash/settings/camilladsp-gain.py
 	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink Power 'Reboot ...' reboot reboot
+		pushstreamNotifyBlink Power 'Reboot ...' reboot
 	else
-		pushstreamNotifyBlink Power 'Off ...' power off
+		pushstreamNotify Power 'Off ...' 'power blink' 10000
 	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
@@ -1173,7 +1174,7 @@ volumeget )
 	fi
 	;;
 volumepushstream )
-	[[ -e $dirshm/btclient ]] && sleep 1
+	[[ -e $dirshm/btreceiver ]] && sleep 1
 	volumeGet
 	pushstream volume '{"val":'$volume'}'
 	[[ $control ]] && alsactl store
@@ -1183,8 +1184,8 @@ volumesave )
 	;;
 volumeupdown )
 	updn=${args[1]}
-	if [[ -e $dirshm/btclient ]]; then
-		amixer -MqD bluealsa sset "$( cat $dirshm/btclient )" 1%$updn 2> /dev/null
+	if [[ -e $dirshm/btreceiver ]]; then
+		amixer -MqD bluealsa sset "$( cat $dirshm/btreceiver )" 1%$updn 2> /dev/null
 	else
 		card=${args[2]}
 		control=${args[3]}

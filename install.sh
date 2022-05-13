@@ -2,6 +2,15 @@
 
 alias=r1
 
+# 20220505
+[[ ! -e /srv/http/data/system/asoundcard ]] && cp /srv/http/data/{shm,system}/asoundcard
+
+dir=/srv/http/shareddata
+if [[ -e $dir ]]; then
+	chown -h http:http $dir/*/
+	chown -h mpd:audio $dir $dir/{mpd,playlist} $dir/mpd/mpd.db $dir/playlists/*
+fi
+
 # 20220428
 # /etc/udev/rules.d/bluetooth.rules
 rm -f /etc/systemd/system/bluealsa-aplay.service
@@ -57,6 +66,7 @@ if [[ -e /srv/http/bash/features.sh ]]; then
 	rm -f /srv/http/bash/{features*,networks*,player*,relays.*,relays-data*,system*}
 fi
 
+# 20220428
 chmod +x /srv/http/bash/cmd.sh
 /srv/http/bash/cmd.sh dirpermissions
 

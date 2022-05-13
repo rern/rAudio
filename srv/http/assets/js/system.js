@@ -768,7 +768,7 @@ $( '#restore' ).click( function() {
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
 			if ( infoVal() === 'reset' ) {
-				bash( '/srv/http/bash/datareset.sh', bannerHide );
+				bash( '/srv/http/bash/settings/system-datareset.sh', bannerHide );
 			} else {
 				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 				var formData = new FormData();
@@ -1000,7 +1000,7 @@ function renderPage() {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', G.camilladsp || G.bluetoothactive );
+	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected );
 	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );

@@ -1,13 +1,14 @@
 #!/bin/bash
 
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
+
 timerfile=$dirshm/relaystimer
 timer=$( cat $timerfile )
 i=$timer
 while sleep 60; do
 	playing=
-	if [[ -e $dirshm/camilladsp ]]; then
-		grep -q 'state="playing"' $dirshm/status && playing=1
+	if  aplay -l | grep -q Loopback; then
+		grep -q '^state=.play' $dirshm/status && playing=1
 	elif grep -q RUNNING /proc/asound/card*/pcm*p/sub*/status; then # state: RUNNING
 		playing=1
 	fi
@@ -15,12 +16,13 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( cat $timerfile )
-		(( $i == 1 )) && /srv/http/bash/settings/relays.sh && exit
+		(( $i == 1 )) && $dirbash/settings/relays.sh && exit
 		
 		(( i-- ))
 		echo $i > $timerfile
 		(( $i > 1 )) && continue
 		
-		curl -s -X POST http://127.0.0.1/pub?id=relays -d '{ "state": "IDLE", "timer": '$timer' }'
+		data='{ "state": "IDLE", "timer": '$timer' }'
+		pushstream relays "$data"
 	fi
 done

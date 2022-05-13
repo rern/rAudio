@@ -118,10 +118,12 @@ function refreshData() {
 	} );
 }
 function resetLocal() {
-	var delay = page !== 'networks' && $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
+	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( G.timeoutbanner );
-	G.timeoutbanner = setTimeout( bannerHide, delay );
+	if ( page !== 'networks' ) {
+		clearTimeout( G.timeoutbanner );
+		G.timeoutbanner = setTimeout( bannerHide, delay );
+	}
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
@@ -220,21 +222,30 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	if ( page === 'networks' ) {
+	if ( !data ) {
+		if ( page === 'networks' ) {
+			G.listbt = data;
+			renderBluetooth();
+		} else if ( page === 'system' ) {
+			$( '#bluetooth' ).removeClass( 'disabled' );
+		}
+	} else if ( 'connected' in data ) {
+		if ( page === 'features' ) {
+			$( '#camilladsp' ).toggleClass( 'disabled', data.btreceiver );
+		} else if ( page === 'system' ) {
+			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
+		}
+	} else if ( page === 'networks' ) {
 		G.listbt = data;
 		renderBluetooth();
 	}
 }
 function psNotify( data ) {
+	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
+	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( 'power' in data ) {
-		if ( data.power === 'off' ) {
-			$( '#loader' ).addClass( 'splash' );
-			setTimeout( bannerHide, 10000 );
-		}
-		loader();
-	}
+	if ( data.title === 'power' ) loader();
 }
 function psPlayer( data ) {
 	var player_id = {
@@ -254,7 +265,10 @@ function psRefresh( data ) {
 	}
 }
 function psState( data ) {
-	if ( page === 'player' ) playbackState( data.state );
+	if ( page === 'player' ) {
+		G.state = data.state;
+		playbackIcon();
+	}
 }
 function psReload() {
 	if ( localhost ) location.reload();

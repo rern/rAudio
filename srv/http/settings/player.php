@@ -20,7 +20,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 </div>
 </div>
 <?php
-if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btclient' ) ) {
+if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
@@ -31,7 +31,7 @@ $body = [
 			  'label'       => 'Bluetooth'
 			, 'sublabel'    => 'bluetoothctl'
 			, 'icon'        => 'bluetooth'
-			, 'id'          => 'btclient'
+			, 'id'          => 'btreceiver'
 			, 'status'      => 'bluetooth'
 			, 'input'       => '<select id="btaplayname"></select>'
 			, 'setting'     => 'self'
