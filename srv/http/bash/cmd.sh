@@ -490,12 +490,10 @@ coverfileslimit )
 	done
 	;;
 dirpermissions )
-	list='/srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/'
-	chmod 755 $list
-	chown http:http $list
-	list='/srv/http/{assets,bash,data,settings}'
-	chmod -R 755 $list
-	chown -R http:http $list
+	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -R http:http /srv/http/{assets,bash,data,settings}
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
 	;;
 displaysave )
