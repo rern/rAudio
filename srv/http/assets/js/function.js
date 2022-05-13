@@ -1264,6 +1264,8 @@ function setBlinkDot() {
 	}
 }
 function setButtonControl() {
+	if ( !G.status.state ) return // suppress error on reboot
+	
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
