@@ -11,8 +11,8 @@
 usbdac=$1
 
 . /srv/http/bash/common.sh
-. $dirbash/player-devices.sh
-. $dirbash/player-asound.sh
+. $dirbash/settings/player-devices.sh
+. $dirbash/settings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
 output= # reset var from player-devices.sh
