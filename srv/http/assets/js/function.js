@@ -1266,6 +1266,8 @@ function setBlinkDot() {
 	}
 }
 function setButtonControl() {
+	if ( ! G.status.state ) return // suppress on reboot
+	
 	if ( $( '#bar-top' ).is( ':visible' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
@@ -1275,7 +1277,7 @@ function setButtonControl() {
 		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', !mpd_upnp );
 		$( '#pause' ).toggleClass( 'hide', G.status.stream && G.status.player !== 'upnp' );
 		$( '#playback-controls i' ).removeClass( 'active' );
-		if ( G.status.state ) $( '#'+ G.status.state ).addClass( 'active' ); // suppress on reboot
+		$( '#'+ G.status.state ).addClass( 'active' ); // suppress on reboot
 	}
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
