@@ -30,7 +30,7 @@ textarea,
 .files div:not([class]) .button-with-text,
 .files input[type=text],
 .quick-config-switch .button,
-#camilladsp pre,
+#status pre,
 #fileconfig {
 	font-family: Inconsolata;
 }
@@ -394,7 +394,7 @@ input[type=range]:disabled::-moz-range-thumb {
 .rc-progress-line:last-child {
 	margin-top: 10px;
 }
-#camilladsp pre {
+#status pre {
 	margin: 0px 0;
 	padding: 5px;
 	background: var( --cga );
