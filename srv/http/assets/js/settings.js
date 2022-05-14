@@ -158,10 +158,9 @@ function showContent() {
 // active / inactive window /////////
 var active = 1;
 connect = () => {
-	if ( !active ) {
+	if ( !active && !G.poweroff ) {
 		active = 1;
 		pushstream.connect();
-		$( '#scanning-bt, #scanning-wifi' ).addClass( 'blink' );
 	}
 }
 disconnect = () => {
@@ -245,7 +244,17 @@ function psNotify( data ) {
 	
 	G.bannerhold = data.hold || 0;
 	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.title === 'power' ) loader();
+	if ( data.title === 'Power' ) {
+		if ( data.text === 'Off ...' ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			setTimeout( function() {
+				$( '#loader .logo' ).css( 'animation', 'none' );
+			}, 10000 );
+			pushstream.disconnect();
+			G.poweroff = 1;
+		}
+		loader();
+	}
 }
 function psPlayer( data ) {
 	var player_id = {
