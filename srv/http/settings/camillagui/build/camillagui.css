@@ -323,13 +323,13 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 #button-mute,
 #button-dim {
-	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
 	border-radius: 3px 0 0 3px;
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 #button-dim {
+	border-left: 1px solid var( --cga );
 	border-radius: 0 3px 3px 0;
 	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -389,7 +389,7 @@ input[type=range]:disabled::-moz-range-thumb {
 .rc-progress-line {
 	position: absolute;
 	right: 0;
-	width: 237px;
+	width: 238px;
 }
 .rc-progress-line:last-child {
 	margin-top: 10px;
@@ -403,13 +403,6 @@ input[type=range]:disabled::-moz-range-thumb {
 	width: 100% !important;
 	line-height: 27px;
 	background: var( --cga );
-}
-#applyauto {
-	color: var( --cg60 );
-}
-#applyauto input {
-	float: left;
-	margin: -3px 6px 0 0 !important;
 }
 /* Fetch and Apply button */
 #config .two-column-grid {
@@ -433,9 +426,6 @@ input[type=range]:disabled::-moz-range-thumb {
 	position: absolute;
 	top: -31px;
 	right: -4px;
-}
-.versions {
-	display: none;
 }
 /* Panels ----------------------------------------------------------------- */
 .configtabs {
@@ -697,7 +687,6 @@ textarea:focus-visible {
 }
 .head i,
 #divhelp i,
-#log,
 #logo,
 input[type=range] {
 	cursor: pointer;
