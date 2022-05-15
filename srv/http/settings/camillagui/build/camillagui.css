@@ -125,7 +125,7 @@ body {
 	background: #000000;
 }
 #divhelp a {
-	color: var( --cg60 );
+	color: var( --cml );
 	text-decoration: none;
 }
 #divhelp i {
