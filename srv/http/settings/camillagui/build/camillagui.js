@@ -1,13 +1,3 @@
-fetch( '/api/status' )
-	.then( response => response.json() )
-	.then( status => {
-		document.getElementById( 'version' ).innerHTML = `\
-    CamillaDSP ${ status.cdsp_version }
-<br>pyCamillaDSP ${ status.py_cdsp_version }
-<br>Backend ${ status.backend_version }
-`;
-} );
-
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
 
 document.body.addEventListener( 'click', function( e ) {
@@ -40,6 +30,15 @@ cacheBusting = () => {
 		} );
 		setTimeout( () => {
 			document.body.classList.toggle( 'hide' );
+			fetch( '/api/status' )
+				.then( response => response.json() )
+				.then( status => {
+					document.getElementById( 'version' ).innerHTML = `\
+				CamillaDSP ${ status.cdsp_version }
+			<br>pyCamillaDSP ${ status.py_cdsp_version }
+			<br>Backend ${ status.backend_version }
+			`;
+			} );
 		}, 300 );
 	}, 300 );
 }
