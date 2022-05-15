@@ -8,7 +8,7 @@ alias=r1
 dir=/srv/http/shareddata
 if [[ -e $dir ]]; then
 	chown -h http:http $dir/*/
-	chown -h mpd:audio $dir $dir/{mpd,playlist} $dir/mpd/mpd.db $dir/playlists/*
+	chown -h mpd:audio $dir $dir/{mpd,playlist} $dir/mpd/mpd.db $dir/playlists/* 2> /dev/null
 fi
 
 # 20220428

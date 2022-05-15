@@ -10,27 +10,30 @@
 	<link rel="stylesheet" href="./static/assets/css/colors.css">
 	<link rel="stylesheet" href="./camillagui.css">
 </head>
-<body class="css-variables">
+<body class="css-variables hide">
 
 <div class="head">
 	<i class="page-icon fa fa-camilladsp"></i>
 	<span>CamillaDSP</span>
 	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-help"></i>
 </div>
-<div id="divhelp" style="display: none">
+<div id="divhelp" class="hide">
 	<a id="logo" href="https://github.com/HEnquist/camilladsp" target="_blank"><img src="./camilladsp.svg"><div id="version"></div></a>
 	<a href="https://henquist.github.io/0.6.3/#introduction" target="_blank" style="color: var( --cw )">User Manual <i class="fa fa-help"></i></a>
-<br><a href="https://henquist.github.io/0.6.3/#devices" target="_blank">Devices&ensp;•&nbsp;</a>
-<br><a href="https://henquist.github.io/0.6.3/#filters" target="_blank">Filters&ensp;•&nbsp;</a>
-<br><a href="https://henquist.github.io/0.6.3/#mixers" target="_blank">Mixers&ensp;•&nbsp;</a>
-<br><a href="https://henquist.github.io/0.6.3/#pipeline" target="_blank">Pipeline&ensp;•&nbsp;</a>
-<br>Discussions: <i class="fa fa-info-circle"></i>
-<br><a href="https://www.audiosciencereview.com/forum/index.php?threads/rpi4-camilladsp-tutorial.29656" target="_blank">#1&ensp;•&nbsp;</a>
-<br><a href="https://www.diyaudio.com/community/threads/camilladsp-cross-platform-iir-and-fir-engine-for-crossovers-room-correction-etc.349818" target="_blank">#2&ensp;•&nbsp;</a>
-<br>
+	<br>
+	<a href="https://henquist.github.io/0.6.3/#devices" target="_blank">Devices&ensp;•&nbsp;</a>
+	<a href="https://henquist.github.io/0.6.3/#filters" target="_blank">Filters&ensp;•&nbsp;</a>
+	<a href="https://henquist.github.io/0.6.3/#mixers" target="_blank">Mixers&ensp;•&nbsp;</a>
+	<a href="https://henquist.github.io/0.6.3/#pipeline" target="_blank">Pipeline</a>
+	<br>
+	<br>Discussions: <i class="fa fa-info-circle"></i>
+	<br>
+	<a href="https://www.audiosciencereview.com/forum/index.php?threads/rpi4-camilladsp-tutorial.29656" target="_blank">#1&ensp;•&nbsp;</a>
+	<a href="https://www.diyaudio.com/community/threads/camilladsp-cross-platform-iir-and-fir-engine-for-crossovers-room-correction-etc.349818" target="_blank">#2</a>
+	<br>
 </div>
 
-<div id="root" style="display: none"></div>
+<div id="root"></div>
 
 <script src="./static/js/main.js"></script>
 <script src="./camillagui.js"></script>

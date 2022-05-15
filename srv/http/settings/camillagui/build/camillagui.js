@@ -8,22 +8,20 @@ fetch( '/api/status' )
 `;
 } );
 
-if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) {
-	document.getElementById( 'help' ).remove();
-	document.getElementById( 'divhelp' ).remove();
-}
-document.getElementById( 'help' ).onclick = () => {
-	var divhelp = document.getElementById( 'divhelp' );
-	divhelp.style.display = divhelp.style.display === 'none' ? 'block' : 'none';
-}
-document.getElementById( 'close' ).onclick = () => {
-	var hostname = location.hostname;
-	var http = new XMLHttpRequest();
-	http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
-	http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
-	http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
-	location.href = 'http://' + hostname;
-}
+if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
+
+document.body.addEventListener( 'click', function( e ) {
+	if ( e.target.id === 'close' ) {
+		var hostname = location.hostname;
+		var http = new XMLHttpRequest();
+		http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
+		http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
+		http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
+		location.href = 'http://' + hostname;
+	} else if ( e.target.id === 'help' || e.target.id === 'eqhelp' ) {
+		document.getElementById( 'div'+ e.target.id ).classList.toggle( 'hide' );
+	}
+});
 
 cacheBusting = () => {
 	setTimeout( () => {
@@ -41,7 +39,7 @@ cacheBusting = () => {
 			script.src = script.attributes.src.textContent + hash;
 		} );
 		setTimeout( () => {
-			document.getElementById( 'root' ).style.display = '';
+			document.body.classList.toggle( 'hide' );
 		}, 300 );
 	}, 300 );
 }
