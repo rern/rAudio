@@ -973,6 +973,11 @@ plsimilar )
 	;;
 power )
 	action=${args[1]}
+	if [[ $action == reboot ]]; then
+		pushstreamNotifyBlink Power 'Reboot ...' reboot
+	else
+		pushstreamNotify Power 'Off ...' 'power blink' 10000
+	fi
 	touch $dirshm/power
 	mpc -q stop
 	pushstream btreceiver false
@@ -989,11 +994,6 @@ power )
 		sleep 2
 	fi
 	systemctl -q is-active camilladsp && $dirbash/settings/camilladsp-gain.py
-	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink Power 'Reboot ...' reboot
-	else
-		pushstreamNotify Power 'Off ...' 'power blink' 10000
-	fi
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q /mnt/MPD/NAS; then
 		umount -l /mnt/MPD/NAS/* &> /dev/null
