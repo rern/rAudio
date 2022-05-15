@@ -58,12 +58,15 @@ textarea,
 	--phase-color: hsl( 0 40% 55% );
 	--red: #bb2828;
 }
+html,
+body  {
+	background: #000000;
+}
 body {
 	padding-top: 40px;
 	font-family: Lato;
 	font-size: 16px;
 	color: var( --cw );
-	background: #000000;
 }
 #root {
 	max-width: 700px;
