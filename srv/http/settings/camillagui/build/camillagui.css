@@ -143,6 +143,9 @@ body {
 	text-align: left;
 	color: var( --cg60 );
 }
+.hide {
+	display: none;
+}
 /* common --------------------------------------------------------------------- */
 /* main container */
 .configapp {
