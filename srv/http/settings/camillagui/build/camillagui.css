@@ -479,6 +479,15 @@ input[type=range]:disabled::-moz-range-thumb {
 .react-tabs__tab-list span {
 	display: none;
 }
+legend {
+	padding-inline-start: 0;
+	padding-inline-end: 0;
+}
+.devices legend,
+.files legend {
+	padding-inline-start: 4px;
+	padding-inline-end: 4px;
+}
 /* Devices ------------------------------ */
 .devices .setting-label {
 	width: 50%;
