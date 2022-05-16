@@ -394,7 +394,6 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .rc-progress-line {
 	position: absolute;
-	right: 0;
 	width: 238px;
 }
 .rc-progress-line:last-child {
