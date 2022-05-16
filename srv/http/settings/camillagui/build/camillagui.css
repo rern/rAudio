@@ -402,12 +402,13 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 #status pre {
 	margin: 0px 0;
-	padding: 5px;
+	padding: 0 5px;
+	line-height: 26px;
 	background: var( --cga );
 }
 #fileconfig {
 	width: 100% !important;
-	line-height: 27px;
+	line-height: 26px;
 	background: var( --cga );
 }
 /* Fetch and Apply button */
