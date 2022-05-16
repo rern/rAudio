@@ -2,12 +2,13 @@ if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getEl
 
 document.body.addEventListener( 'click', function( e ) {
 	if ( e.target.id === 'close' ) {
-		var hostname = location.hostname;
+		var href = 'http://'+ location.hostname;
 		var http = new XMLHttpRequest();
-		http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
+		http.open( 'POST', href +'/cmd.php', true );
 		http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
+		http.setRequestHeader( 'Access-Control-Allow-Origin', href );
 		http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
-		location.href = 'http://' + hostname;
+		location.href = href;
 	} else if ( e.target.id === 'help' || e.target.id === 'eqhelp' ) {
 		document.getElementById( 'div'+ e.target.id ).classList.toggle( 'hide' );
 	}
