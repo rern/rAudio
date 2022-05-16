@@ -5,10 +5,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 	<link rel="icon" href="./static/assets/img/icon.png">
-	<link rel="stylesheet" href="./css-variables.css">
+	<link rel="stylesheet" href="./static/css/css-variables.css">
 	<link rel="stylesheet" href="./static/css/main.113b3bad.css">
 	<link rel="stylesheet" href="./static/assets/css/colors.css">
-	<link rel="stylesheet" href="./camillagui.css">
+	<link rel="stylesheet" href="./static/css/camillagui.113b3bad.css">
+	<script defer="defer" src="./static/js/main.b49c9a4d.js"></script>
+	<script defer="defer" src="./static/js/camillagui.b49c9a4d.js"></script>
 </head>
 <body class="css-variables hide">
 
@@ -18,7 +20,7 @@
 	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-help"></i>
 </div>
 <div id="divhelp" class="hide">
-	<a id="logo" href="https://github.com/HEnquist/camilladsp" target="_blank"><img src="./camilladsp.svg"><div id="version"></div></a>
+	<a id="logo" href="https://github.com/HEnquist/camilladsp" target="_blank"><img src="./static/img/camilladsp.svg"><div id="version"></div></a>
 	<a href="https://henquist.github.io/0.6.3/#introduction" target="_blank" style="color: var( --cw )">User Manual <i class="fa fa-help"></i></a>
 	<br>
 	<a href="https://henquist.github.io/0.6.3/#devices" target="_blank">Devices&ensp;•&nbsp;</a>
@@ -34,39 +36,6 @@
 </div>
 
 <div id="root"></div>
-
-<script defer="defer" src="./static/js/main.b49c9a4d.js"></script>
-<script defer="defer">
-if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
-
-document.body.addEventListener( 'click', function( e ) {
-	if ( e.target.id === 'close' ) {
-		var hostname = location.hostname;
-		var http = new XMLHttpRequest();
-		http.open( 'POST', 'http://' + hostname + '/cmd.php', true );
-		http.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
-		http.send( 'cmd=bash&bash=systemctl%20stop%20camillagui' );
-		location.href = 'http://' + hostname;
-	} else if ( e.target.id === 'help' || e.target.id === 'eqhelp' ) {
-		document.getElementById( 'div'+ e.target.id ).classList.toggle( 'hide' );
-	}
-});
-
-var link = document.querySelector( 'link[href*="camillagui"]' );
-link.href = link.href +'?v='+ Date.now();
-setTimeout( function() {
-	document.body.classList.remove( 'hide' );
-}, 300 );
-fetch( '/api/status' )
-	.then( response => response.json() )
-	.then( status => {
-		document.getElementById( 'version' ).innerHTML = `\
-	CamillaDSP ${ status.cdsp_version }
-<br>pyCamillaDSP ${ status.py_cdsp_version }
-<br>Backend ${ status.backend_version }
-`;
-} );
-</script>
 
 </body>
 </html>

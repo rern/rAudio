@@ -1,25 +1,25 @@
 @font-face {
 	font-family: rern;
-	src: url( './static/assets/fonts/rern.woff2' ) format( 'woff2' );
+	src: url( '../assets/fonts/rern.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
 }
 @font-face {
 	font-family: Lato;
-	src: url( './static/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	src: url( '../assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
 	font-weight: normal;
 	font-style: normal;
 }
 @font-face {
 	font-family: Lato;
-	src: url( './static/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	src: url( '../assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
 	font-weight: 300;
 	font-style: normal;
 }
 @font-face {
 	font-family: Inconsolata;
-	src: url('./static/assets/fonts/Inconsolata.woff2') format('woff2');
+	src: url('../assets/fonts/Inconsolata.woff2') format('woff2');
 	font-weight: normal;
 	font-style: normal;
 }
