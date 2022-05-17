@@ -48,15 +48,30 @@ textarea,
 .fa-power::before { content: '\f520' }
 .fa-times::before { content: '\f51A' }
 
-.css-variables {
+:root {
 	--background-color: var( --cg );
 	--button-add-icon-color: #46c846;
 	--button-background-color: var( --cg );
+	
+    --button-remove-icon-color: #bb2828;
 	--error-field-background-color: #bb2828 !important;
+    --error-text-color: #bb2828;
+    --error-field-background-color: #bb2828;
+	--red: #bb2828;
+	
 	--border-radius: 3px;
 	--gain-color: hsl( 200 100% 45% );
 	--phase-color: hsl( 0 40% 55% );
-	--red: #bb2828;
+    --success-text-color: #46c846;
+    --disabled-button-opacity: 0.4;
+    --axes-color: #555;
+    --gain-color: #4646f0;
+    --phase-color: #bb2828;
+    --impulse-color: #46c846;
+    --arrow-color: #555;
+    --frame-background-color: #333;
+    --block-background-color: rgb(200, 200, 200);
+    --block-text-color: rgb(16, 10, 90);
 }
 html,
 body  {
