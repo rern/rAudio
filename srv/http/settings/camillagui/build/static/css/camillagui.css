@@ -60,8 +60,6 @@ textarea,
 	--red: #bd3e3e;
 	
 	--border-radius: 3px;
-	--gain-color: hsl( 200 100% 45% );
-	--phase-color: hsl( 0 40% 55% );
 	--success-text-color: #46c846;
 	--disabled-button-opacity: 0.4;
 	--axes-color: #555;
