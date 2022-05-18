@@ -11,7 +11,7 @@ setTimeout( function() {
 	<br>Backend ${ status.backend_version }
 	`;
 	} );
-}, 300 );
+}, 600 );
 
 document.body.addEventListener( 'click', function( e ) {
 	if ( e.target.id === 'close' ) {
