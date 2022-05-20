@@ -381,6 +381,7 @@ function psNotify( data ) {
 	
 	banner( data.title, data.text, data.icon, data.delay );
 	if ( data.title === 'Power' ) {
+		pushstream.disconnect();
 		switchPage( 'playback' );
 		loader();
 		if ( data.text === 'Off ...' ) {
@@ -388,8 +389,11 @@ function psNotify( data ) {
 			setTimeout( function() {
 				$( '#loader .logo' ).css( 'animation', 'none' );
 			}, 10000 );
-			pushstream.disconnect();
 			G.poweroff = 1;
+		} else {
+			setTimeout( function() {
+				pushstream.connect();
+			}, 20000 );
 		}
 	} else if ( data.text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
