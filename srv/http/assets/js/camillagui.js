@@ -12,7 +12,7 @@ var observer = new MutationObserver( function( mutations ) {
 		`;
 		} );
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
-	}, 300 );
+	}, 600 );
 	observer.disconnect();
 });
 var config = { attributes: true, childList: true, characterData: true }
