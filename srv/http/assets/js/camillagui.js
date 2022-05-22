@@ -1,17 +1,22 @@
-if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
-
-setTimeout( function() {
-	document.body.removeAttribute( 'style' );
-	fetch( '/api/status' )
-		.then( response => response.json() )
-		.then( status => {
-			document.getElementById( 'version' ).innerHTML = `\
-		CamillaDSP ${ status.cdsp_version }
-	<br>pyCamillaDSP ${ status.py_cdsp_version }
-	<br>Backend ${ status.backend_version }
-	`;
-	} );
-}, 600 );
+var target = document.getElementById( 'root' );
+var observer = new MutationObserver( function( mutations ) {
+	setTimeout( function() {
+		document.body.removeAttribute( 'style' );
+		fetch( '/api/status' )
+			.then( response => response.json() )
+			.then( status => {
+				document.getElementById( 'version' ).innerHTML = `\
+			CamillaDSP ${ status.cdsp_version }
+		<br>pyCamillaDSP ${ status.py_cdsp_version }
+		<br>Backend ${ status.backend_version }
+		`;
+		} );
+		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) document.getElementById( 'help' ).classList.add( 'hide' );
+	}, 300 );
+	observer.disconnect();
+});
+var config = { attributes: true, childList: true, characterData: true }
+observer.observe( target, config );
 
 document.body.addEventListener( 'click', function( e ) {
 	if ( e.target.id === 'close' ) {
