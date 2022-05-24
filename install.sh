@@ -2,6 +2,12 @@
 
 alias=r1
 
+# 20220527
+if grep -q 'force user = mpd' /etc/samba/smb.conf; then
+	sed -i 's/\(force user = \).*/\1http/' /etc/samba/smb.conf
+	systemctl try-restart smb
+fi
+
 # 20220505
 [[ ! -e /srv/http/data/system/asoundcard ]] && cp /srv/http/data/{shm,system}/asoundcard
 
