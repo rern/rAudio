@@ -121,7 +121,7 @@ input::-moz-focus-inner {
 .fa-btreceiver::before { content: '\f595' }
 .fa-btsender::before { content: '\f596' }
 .fa-brush::before { content: '\f536' }
-.fa-camilladsp::before {content: '\f59D'; position: absolute; color: #000000; text-shadow: none; }
+.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg60 ); text-shadow: none; }
 .fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
 .fa-capslock:before { content: '\f607' }
 .fa-check::before { content: '\f51B' }
