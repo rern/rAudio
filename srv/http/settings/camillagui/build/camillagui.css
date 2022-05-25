@@ -369,6 +369,9 @@ input[type=range]:disabled::-moz-range-thumb {
 #button-compactview {
 	float: none !important;
 }
+.button-compactview {
+	margin-top: 0;
+}
 #compactview .smallbutton {
 	margin-top: -20px;
 }
@@ -393,8 +396,8 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 #compactview {
 	width: 370px;
-	margin-top: -2px !important;
-	padding: 0 10px;
+	margin-top: 3px !important;
+	padding: 0;
 }
 #compactview legend {
 	padding-left: 5px;
@@ -419,8 +422,11 @@ input[type=range]:disabled::-moz-range-thumb {
 	padding: 10px 0;
 	border: none;
 }
+#compactview .box {
+	margin-left: 3px;
+}
 #compactview #volume {
-	margin-top: 19px;
+	margin-top: 21px;
 }
 #mainpanel legend {
 	padding: 0;
@@ -684,6 +690,12 @@ label.setting select:first-child {
 	width: 100% !important;
 }
 /* popup --------------------------------- */
+.popup-overlay {
+	background: #000000 !important;
+}
+.popup-content {
+	background-color: #000000 !important;
+}
 #popup-root h3 {
 	margin: 0 0 10px 0;
 	width: 100%;
@@ -692,6 +704,13 @@ label.setting select:first-child {
 	text-indent: 20px;
 	font-weight: normal;
 	color: var( --cw );
+}
+.closepopup {
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 28px;
+	color: var(--cm);
 }
 textarea {
 	padding: 5px;
@@ -703,26 +722,6 @@ textarea {
 }
 textarea:focus-visible {
 	outline: none;
-}
-.popup-overlay {
-	background: #000000 !important;
-}
-.popup-overlay::before {
-	content: '\00d7';
-	position: absolute;
-	top: 30px;
-	right: 30px;
-	font-size: 38px;
-	color: var( --cm );
-	z-index: 1;
-}
-.popup-content {
-	background-color: #000000 !important;
-}
-.popup-content div:not([class]) {
-	float: right;
-	text-align: center !important;
-	color: transparent;
 }
 /* ---------------------------------------------------------------------------- */
 @media (max-width: 719px) {
@@ -760,7 +759,7 @@ textarea:focus-visible {
 		float: none;
 		min-width: 360px !important;
 		margin: auto;
-		padding-top: 35px;
+		padding-top: 60px;
 	}
 	#mainpanel legend .horizontally-spaced-content {
 		width: 360px;
@@ -815,6 +814,7 @@ textarea:focus-visible {
 #button-apply:hover {
 	background-color: var( --cma ) !important;
 }
+.closepopup,
 .head svg,
 .popup-overlay::before,
 #eqhelp,
