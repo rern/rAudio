@@ -31,6 +31,9 @@ if [[ $formatok ]]; then
 	sleep 1
 	systemctl start camilladsp
 	$dirbash/settings/camilladsp-gain.py set
+	defaultyml=$dirdata/camilladsp/configs/default_config.yml
+	lineformat=$( sed -n '/playback:/,/format:/=' $defaultyml | tail -1 )
+	sed -i "$lineformat s/\(format: \).*/\1$format/" $defaultyml
 else
 	pushstreamNotify CamillaDSP "Playback format: <wh>Setting required</wh>" camilladsp 10000
 fi

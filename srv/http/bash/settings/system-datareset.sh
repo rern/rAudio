@@ -57,6 +57,8 @@ if [[ $version ]]; then # from create-ros.sh
 else
 	mv /tmp/addons $dirdata
 fi
+# camillagui
+ln -sf /srv/http/assets/fonts /srv/http/settings/camillagui/build
 # display
 cat << EOF > $dirsystem/display
 {

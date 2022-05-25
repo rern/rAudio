@@ -3,6 +3,14 @@
 alias=r1
 
 # 20220527
+if [[ $( pacman -Q camilladsp 2> /dev/null ) == 'camilladsp 0.6.3-1' ]]; then
+	systemctl stop camilladsp camillagui
+	pacman -R --noconfirm camillagui
+	pacman -Sy --noconfirm camilladsp camillagui-backend python-pycamilladsp python-pycamilladsp-plot
+	rm -rf /srv/http/settings/camillagui/build
+	mkdir /srv/http/settings/camillagui/build
+	ln -sf /srv/http/assets/fonts /srv/http/settings/camillagui/build
+fi
 if grep -q 'force user = mpd' /etc/samba/smb.conf; then
 	sed -i 's/\(force user = \).*/\1http/' /etc/samba/smb.conf
 	systemctl try-restart smb
