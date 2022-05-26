@@ -17,7 +17,7 @@ if grep -q 'force user = mpd' /etc/samba/smb.conf; then
 fi
 
 # 20220505
-[[ ! -e /srv/http/data/system/asoundcard ]] && cp /srv/http/data/{shm,system}/asoundcard
+[[ ! -e /srv/http/data/system/asoundcard && ! -e /srv/http/data/shm/nosound ]] && cp /srv/http/data/{shm,system}/asoundcard
 
 dir=/srv/http/shareddata
 if [[ -e $dir ]]; then
