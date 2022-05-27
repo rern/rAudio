@@ -463,6 +463,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	padding: 60px 10px 0 10px;
 }
 #mainpanel .split-20-80 {
+	position: relative;
 	margin: 10px 0;
 	grid-template-columns: 13% 87%;
 	column-gap: 0;
@@ -476,6 +477,26 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: #000000;
 	outline: 3px solid #000000;
 	z-index: 1;
+}
+.dblabel {
+	position: absolute;
+	top: -6px;
+	right: 13px;
+	width: 240px;
+	z-index: 1;
+}
+.dblabel.lower {
+	top: auto;
+	bottom: -6px;
+}
+.dblabel i {
+	display: inline-block;
+	width: 47.6px;
+	font-size: 13px;
+	font-family: 'Inconsolata';
+	font-style: normal;
+	text-align: center;
+	color: var( --cg60 );
 }
 #log,
 #eqhelp {
