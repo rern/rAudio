@@ -726,12 +726,27 @@ label.setting select:first-child {
 	font-weight: normal;
 	color: var( --cw );
 }
+#popup-root .resetzoom,
 .closepopup {
 	position: absolute;
 	top: 0;
 	right: 0;
 	width: 28px;
 	color: var(--cm);
+}
+#popup-root .resetzoom {
+	left: 0;
+	width: 120px;
+	color: var( --cgl );
+}
+.resetzoom svg {
+	width: 28px;
+	vertical-align: -8px;
+	color: var(--cm);
+}
+.filters .resetzoom {
+	margin: 20px 0 -10px;
+	color: var( --cgl );
 }
 textarea {
 	padding: 5px;
@@ -837,7 +852,7 @@ textarea:focus-visible {
 }
 .closepopup,
 .head svg,
-.popup-overlay::before,
+.resetzoom,
 #eqhelp,
 #log,
 #logo {
