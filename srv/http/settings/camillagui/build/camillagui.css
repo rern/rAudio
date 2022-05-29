@@ -20,6 +20,7 @@ code,
 textarea,
 .config-status,
 .db-label,
+.eqvalue,
 .files div:not([class]) .button-with-text,
 .files input[type=text],
 .quick-config-switch .button,
@@ -446,12 +447,18 @@ input[type=range]:disabled::-moz-range-thumb {
 	font-weight: 300;
 	letter-spacing: 0;
 }
-#equalizer .db-label {
-	width: 4ch !important;
-	min-width: auto;
+.eq {
+	position: relative;
 }
-.bass.db-label {
-	margin-left: 20px;
+.eqlabel {
+	position: absolute;
+	left: 15px;
+}
+.eqvalue {
+	text-align: center;
+}
+.eqvalue.disabled {
+	color: var( --cgl )
 }
 /* volume + status ------------------------------------------------------------ */
 #mainpanel {
@@ -480,9 +487,9 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .dblabel {
 	position: absolute;
-	top: -6px;
-	right: 13px;
-	width: 240px;
+	top: -8px;
+	right: 11px;
+	width: 242px;
 	z-index: 1;
 }
 .dblabel.lower {
@@ -491,12 +498,15 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .dblabel i {
 	display: inline-block;
-	width: 47.6px;
+	width: 47.3px;
 	font-size: 13px;
 	font-family: 'Inconsolata';
 	font-style: normal;
 	text-align: center;
 	color: var( --cg60 );
+}
+.dblabel i:last-of-type {
+	width: 52px;
 }
 #log,
 #eqhelp {
