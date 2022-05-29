@@ -476,6 +476,9 @@ input[type=range]:disabled::-moz-range-thumb {
 	grid-template-columns: 13% 87%;
 	column-gap: 0;
 }
+#mainpanel input[type=range] {
+	margin: 15px auto !important;
+}
 #volume .label {
 	display: flex;
 	height: 100%;
@@ -488,14 +491,15 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .dblabel {
 	position: absolute;
-	top: -8px;
+	top: -5px;
 	right: 11px;
 	width: 242px;
+	line-height: 16px;
 	z-index: 1;
 }
 .dblabel.lower {
 	top: auto;
-	bottom: -6px;
+	bottom: -4px;
 }
 .dblabel i {
 	display: inline-block;
@@ -804,7 +808,7 @@ textarea:focus-visible {
 	#mainpanel {
 		position: relative;
 		float: none;
-		min-width: 360px !important;
+		min-width: 355px !important;
 		margin: auto;
 		padding-top: 60px;
 	}
