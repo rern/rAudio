@@ -24,9 +24,10 @@ textarea,
 .files div:not([class]) .button-with-text,
 .files input[type=text],
 .quick-config-switch .button,
-#status pre,
 #compactview .two-column-grid,
 #fileconfig,
+#popup-root text,
+#status pre,
 #volume .label {
 	font-family: Inconsolata;
 }
@@ -152,9 +153,9 @@ body {
 #logo {
 	float: left;
 }
-#logo img {
-	width: 145px;
-	margin-bottom: 5px;
+#logo svg {
+    width: 150px;
+    height: 50px;
 }
 #version {
 	font-size: 12px;
@@ -506,7 +507,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	color: var( --cg60 );
 }
 .dblabel i:last-of-type {
-	width: 52px;
+	width: 51px;
 }
 #log,
 #eqhelp {
