@@ -19,7 +19,7 @@
 code,
 textarea,
 .config-status,
-.db-label,
+.rangevalue,
 .eqvalue,
 .files div:not([class]) .button-with-text,
 .files input[type=text],
@@ -258,7 +258,7 @@ input[type=range] {
 	display: block;
 	width: 270px !important;
 	height: 4px;
-	margin: 30px auto !important;
+	margin: 20px auto !important;
 	padding: 0 9px !important;
 	background-color: var( --cga ) !important;
 	-webkit-appearance: none;
@@ -341,7 +341,8 @@ input[type=range]:disabled::-moz-range-thumb {
 	font-size: 16px;
 }
 #volume .button {
-	margin-top: -20px;
+	float: right;
+	margin: -18px 0 0 0;
 }
 #button-mute,
 #button-undo {
@@ -373,9 +374,6 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .button-compactview {
 	margin-top: 0;
-}
-#compactview .smallbutton {
-	margin-top: -20px;
 }
 #button-undo,
 #button-redo {
@@ -433,32 +431,34 @@ input[type=range]:disabled::-moz-range-thumb {
 #mainpanel legend {
 	padding: 0;
 }
+#mainpanel legend .horizontally-spaced-content,
 #compactview legend .horizontally-spaced-content {
-	width: 360px;
-	border-bottom: 1px solid var( --cg );
-}
-#mainpanel legend .horizontally-spaced-content {
+	display: block !important;
 	width: 270px;
 	border-bottom: 1px solid var( --cg );
 }
-.db-label {
+#compactview legend .horizontally-spaced-content {
+	width: 360px;
+}
+.rangevalue {
 	width: 100% !important;
 	min-width: 110px;
 	font-size: 16px;
 	font-weight: 300;
 	letter-spacing: 0;
+	text-align: center;
 }
 .eq {
 	position: relative;
+	height: 70px;
 }
-.eqlabel {
+.rangelabel {
 	position: absolute;
+}
+#compactview .rangelabel {
 	left: 15px;
 }
-.eqvalue {
-	text-align: center;
-}
-.eqvalue.disabled {
+.rangevalue.disabled {
 	color: var( --cgl )
 }
 /* volume + status ------------------------------------------------------------ */
@@ -475,9 +475,6 @@ input[type=range]:disabled::-moz-range-thumb {
 	margin: 10px 0;
 	grid-template-columns: 13% 87%;
 	column-gap: 0;
-}
-#mainpanel input[type=range] {
-	margin: 15px auto !important;
 }
 #volume .label {
 	display: flex;
@@ -517,7 +514,7 @@ input[type=range]:disabled::-moz-range-thumb {
 #eqhelp {
 	position: absolute;
 	top: -26px;
-	left: 65px;
+	right: 0;
 	width: 24px !important;
 	font-size: 22px;
 	text-align: center;
