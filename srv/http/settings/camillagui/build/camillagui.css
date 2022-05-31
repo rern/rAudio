@@ -344,7 +344,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	float: right;
 	margin: -18px 0 0 0;
 }
-#button-mute,
+#button-volumedn,
 #button-undo {
 	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
@@ -352,7 +352,23 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
-#button-dim,
+#button-mute {
+	border-radius: 0;
+	border-right: 1px solid var( --cga );
+	background: -webkit-linear-gradient(
+		top,
+		hsla(0,0%,100%,.3) 0%,
+		hsla(0,0%,100%,.3) 45%,
+		rgba(0,0,0,0) 50%,
+		rgba(0,0,0,0) 100% );
+	background: linear-gradient(
+		to bottom,
+		hsla(0,0%,100%,.3) 0%,
+		hsla(0,0%,100%,.3) 45%,
+		rgba(0,0,0,0) 50%,
+		rgba(0,0,0,0) 100% );
+}
+#button-volumeup,
 #button-redo {
 	border-radius: 0 3px 3px 0;
 	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -835,7 +851,20 @@ textarea:focus-visible {
 	}
 	.popup-content {
 		width: 100% !important;
+		max-width: calc( 100% - 10px);
 		min-width: 100%;
+	}
+	.popup-content canvas {
+		max-width: calc( 100% - 10px);
+	}
+	.closepopup {
+		right: 15px;
+	}
+	.resetzoom {
+		left: 5px !important;
+	}
+	.resetzoom span {
+		display: none;
 	}
 	label.setting select:first-child {
 		width: 107px !important;
