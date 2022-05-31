@@ -113,6 +113,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
+		, 'setting'  => true
 		, 'disabled' =>  ( exec( 'systemctl -q is-active bluetooth && echo true' ) ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.

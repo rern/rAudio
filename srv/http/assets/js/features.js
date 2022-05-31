@@ -112,6 +112,30 @@ $( '#setting-upmpdcli' ).click( function() {
 		}
 	} );
 } );
+$( '#setting-camilladsp' ).click( function() {
+	info( {
+		  icon         : 'camilladsp'
+		, title        : 'CamillaDSP'
+		, textlabel    : 'Status: Refresh <gr>(ms)</gr>'
+		, checkbox     : [ 'Apply automatically' ]
+		, focus        : 0
+		, checkblank   : 1
+		, boxwidth     : 100
+		, values       : G.camillaguiconf
+		, boxwidth     : 100
+		, checkchanged : ( G.camilladsp ? 1 : 0 )
+		, beforeshow   : function() {
+			$( '#infoContent tr:eq( 1 ) td:eq( 0 )' ).text( 'Configurations:' )
+		}
+		, cancel       : function() {
+			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
+		}
+		, ok           : function() {
+			bash( [ 'camillaguiset', ...infoVal() ] );
+			notify( 'CamillaDSP', G.camilladsp ? 'Change ...' : 'Enable ...', 'camilladsp' );
+		}
+	} );
+} );
 $( '#setting-hostapd' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'

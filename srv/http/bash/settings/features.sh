@@ -88,6 +88,14 @@ camilladspasound )
 	done
 	alsactl nrestore &> /dev/null
 	;;
+camillaguiset )
+	refresh=${args[1]}
+	applyauto=${args[2]}
+	sed -i "s/\(apply_config_automatically: \).*/\1$applyauto/
+			s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	systemctl restart camillagui
+	pushRefresh
+	;;
 hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
