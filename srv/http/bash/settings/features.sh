@@ -69,11 +69,6 @@ camilladspdisable )
 	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
-camilladsp )
-	touch $dirsystem/camilladsp
-	$dirbash/settings/player-conf.sh
-	pushRefresh
-	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
 	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
@@ -94,6 +89,8 @@ camillaguiset )
 	sed -i "s/\(apply_config_automatically: \).*/\1$applyauto/
 			s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
+	touch $dirsystem/camilladsp
+	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 equalizer )
