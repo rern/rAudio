@@ -61,16 +61,16 @@ autoplayset )
 	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
+camilladspdisable )
+	$dirbash/settings/camilladsp-gain.py
+	systemctl stop camilladsp
+	rm $dirsystem/camilladsp
+	rmmod snd-aloop &> /dev/null
+	$dirbash/settings/player-conf.sh
+	pushRefresh
+	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then # start with player-conf.sh (+ modprobe in player-devices.sh)
-		touch $dirsystem/camilladsp
-	else
-		$dirbash/settings/camilladsp-gain.py
-		systemctl stop camilladsp
-		rm $dirsystem/camilladsp
-		rmmod snd-aloop &> /dev/null
-		pushRefresh
-	fi
+	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
@@ -94,6 +94,19 @@ camillaguiset )
 	sed -i "s/\(apply_config_automatically: \).*/\1$applyauto/
 			s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
+	pushRefresh
+	;;
+equalizer )
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/equalizer
+	else
+		$dirbash/cmd.sh "equalizer
+preset
+Flat"
+		rm -f $dirsystem/equalizer
+	fi
+	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
+	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
 hostapddisable )

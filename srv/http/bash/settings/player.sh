@@ -154,18 +154,6 @@ dop )
 	fi
 	restartMPD
 	;;
-equalizer )
-	if [[ ${args[1]} == true ]]; then
-		touch $dirsystem/equalizer
-	else
-		$dirbash/cmd.sh "equalizer
-preset
-Flat"
-		rm -f $dirsystem/equalizer
-	fi
-	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
-	restartMPD
-	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
