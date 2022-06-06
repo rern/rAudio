@@ -115,7 +115,7 @@ $( '#setting-upmpdcli' ).click( function() {
 $( '#setting-camilladsp' ).click( function() {
 	info( {
 		  icon         : 'camilladsp'
-		, title        : 'CamillaDSP'
+		, title        : 'CamillaGUI'
 		, textlabel    : 'Status: Refresh <gr>(ms)</gr>'
 		, checkbox     : [ 'Apply automatically' ]
 		, focus        : 0

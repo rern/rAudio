@@ -4,7 +4,8 @@
 
 systemctl stop camilladsp
 
-camilladspyml=$dirdata/camilladsp/configs/camilladsp.yml
+dirconfigs=$dirdata/camilladsp/configs
+camilladspyml=$dirconfigs/camilladsp.yml
 card=$( cat $dirsystem/asoundcard )
 sed -i "/playback:/,/device:/ s/\(device: hw:\).*/\1$card,0/" $camilladspyml
 
@@ -27,13 +28,15 @@ else
 	done
 fi
 if [[ $formatok ]]; then
-	[[ $format ]] && pushstreamNotify CamillaDSP "Playback format: <wh>$format</wh>" camilladsp
+	if [[ $format ]]; then
+		pushstreamNotify CamillaDSP "Playback format: <wh>$format</wh>" camilladsp
+		defaultyml=$dirconfigs/default_config.yml
+		lineformat=$( sed -n '/playback:/,/format:/=' $defaultyml | tail -1 )
+		sed -i "$lineformat s/\(format: \).*/\1$format/" $defaultyml
+	fi
 	sleep 1
 	systemctl start camilladsp
 	$dirbash/settings/camilladsp-gain.py set
-	defaultyml=$dirdata/camilladsp/configs/default_config.yml
-	lineformat=$( sed -n '/playback:/,/format:/=' $defaultyml | tail -1 )
-	sed -i "$lineformat s/\(format: \).*/\1$format/" $defaultyml
 else
 	pushstreamNotify CamillaDSP "Playback format: <wh>Setting required</wh>" camilladsp 10000
 fi
