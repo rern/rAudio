@@ -307,6 +307,7 @@ function psEqualizer( data ) {
 	infoSetValues();
 	selectricRender();
 	eqButtonSet();
+	if ( !$( '#eqname' ).hasClass( 'hide' ) ) $( '#eq .selectric-wrapper' ).addClass( 'hide' )
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

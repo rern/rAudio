@@ -57,6 +57,7 @@
 	position: absolute;
 	width: 100% !important;
 	left: 50%;
+	line-height: 36px;
 	transform: translateX( -50% );
 	font-size: 0; /* force no space between inline-block */
 	z-index: 1;
@@ -95,4 +96,7 @@
 #eq i,
 #eqname {
 	position: relative;
+}
+#eq input[type=text] {
+	vertical-align: -5px;
 }
