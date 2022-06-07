@@ -364,6 +364,10 @@ bookmarkthumb )
 	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
 	echo ${coverartfile: -3} # ext
 	;;
+camillagui )
+	systemctl start camillagui
+	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
+	;;
 color )
 	hsl=${args[1]}
 	file=$dirsystem/color
