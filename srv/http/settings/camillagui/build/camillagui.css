@@ -594,13 +594,13 @@ input[type=range]:disabled::-moz-range-thumb {
 .configtabs .tabpanel {
 	width: 400px !important;
 	min-height: calc( 100vh - 140px );
-	padding: 50px 5px 40px 5px;
+	padding: 55px 5px 40px 5px;
 	background: var( --cgd );
 }
 .react-tabs__tab-list {
 	position: fixed;
 	width: 410px;
-	margin-top: -6px;
+	margin: -6px 0 0 0;
 	padding-top: 10px;
 	background: #000000;
 	box-shadow: 0px 4px 10px #000000;
@@ -608,25 +608,26 @@ input[type=range]:disabled::-moz-range-thumb {
 	z-index: 1;
 }
 .react-tabs__tab {
-	position: static;
-	width: calc( 100% / 5 - 1px );
+	position: relative;
+	bottom: 0;
+	width: calc( 100% / 5 );
 	padding: 0;
 	line-height: 36px;
 	text-align: center;
 	text-shadow: -1px 1px 2px #000000;
 	background: var( --cga);
 	border: none;
-	border-radius: 5px 5px 0 0;
-	border-right: 1px solid #000000;
+	border-radius: 0 5px 0 0;
+	box-shadow: 2px 0px 5px #000;
 }
+.react-tabs__tab:nth-child( 2 ) { z-index: 4; border-radius: 5px 5px 0 0; }
+.react-tabs__tab:nth-child( 3 ) { z-index: 3 }
+.react-tabs__tab:nth-child( 4 ) { z-index: 2 }
+.react-tabs__tab:nth-child( 5 ) { z-index: 1 }
 .react-tabs__tab:focus:after {
 	content: '';
 	height: 0;
 	position: absolute;
-}
-.tab-files {
-	width: calc( 100% / 5 );
-	border: none;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	background: var( --cgl );
