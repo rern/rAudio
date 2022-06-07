@@ -533,7 +533,6 @@ equalizer )
 		append=1
 		sed -i "/^$name\^/ d" "$filepresets" 2> /dev/null
 		if [[ $type == delete ]]; then
-			append=
 			v=( $flat )
 			name=Flat
 		elif [[ $type == rename ]]; then
@@ -550,7 +549,7 @@ equalizer )
 		done
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
-	[[ $append ]] && echo $name^$val >> "$filepresets"
+	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
 	[[ $type != save ]] && equalizerGet pushstream
 	;;
 equalizerget )

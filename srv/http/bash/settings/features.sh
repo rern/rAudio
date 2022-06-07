@@ -97,9 +97,6 @@ equalizer )
 	if [[ ${args[1]} == true ]]; then
 		touch $dirsystem/equalizer
 	else
-		$dirbash/cmd.sh "equalizer
-preset
-Flat"
 		rm -f $dirsystem/equalizer
 	fi
 	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
