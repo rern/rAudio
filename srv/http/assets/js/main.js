@@ -156,7 +156,7 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'camilladsp':
-			bash( 'systemctl start camillagui', function() {
+			bash( [ 'camillagui' ], function() {
 				urlReachable( 'http://'+ location.host +':5000' );
 			} );
 			loader();

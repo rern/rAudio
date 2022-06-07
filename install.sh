@@ -3,6 +3,8 @@
 alias=r1
 
 # 20220606
+sed -i '/Flat/ d' /srv/http/data/system/equalizer.presets &> /dev/null
+
 file=/srv/http/data/camilladsp/configs/default_config.yml
 if grep -q 'format: *$' $file; then
 	format=$( grep 'format: .\+$' /srv/http/data/camilladsp/configs/camilladsp.yml \

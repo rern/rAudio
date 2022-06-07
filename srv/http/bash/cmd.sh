@@ -364,6 +364,10 @@ bookmarkthumb )
 	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
 	echo ${coverartfile: -3} # ext
 	;;
+camillagui )
+	systemctl start camillagui
+	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
+	;;
 color )
 	hsl=${args[1]}
 	file=$dirsystem/color
@@ -529,6 +533,7 @@ equalizer )
 		append=1
 		sed -i "/^$name\^/ d" "$filepresets" 2> /dev/null
 		if [[ $type == delete ]]; then
+			append=
 			v=( $flat )
 			name=Flat
 		elif [[ $type == rename ]]; then
@@ -545,7 +550,7 @@ equalizer )
 		done
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
-	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
+	[[ $append ]] && echo $name^$val >> "$filepresets"
 	[[ $type != save ]] && equalizerGet pushstream
 	;;
 equalizerget )
