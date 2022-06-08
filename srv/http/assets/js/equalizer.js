@@ -93,7 +93,7 @@ function equalizer() {
 					$( '#eqnew' ).click();
 				} );
 				$( '#eqsave' ).click( function() {
-					var eqname = $( '#eqname' ).val();
+					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? $( '#eqpreset' ).val() : $( '#eqname' ).val();
 					bash( [ 'equalizer', 'save', eqname ] );
 					$( '#eqcancel' ).click();
 					$( '#eqrename' ).removeClass( 'disabled' );
