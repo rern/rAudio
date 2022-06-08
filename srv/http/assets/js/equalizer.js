@@ -130,6 +130,7 @@ function equalizer() {
 				$( '#eqflat' ).click( function() {
 					G.eqcurrent = 'Flat';
 					bash( [ 'equalizer', 'preset', 'Flat' ] );
+					console.log(9)
 				} );
 			}
 			, buttonnoreset : 1
@@ -137,12 +138,12 @@ function equalizer() {
 		} );
 	}, 'json' );
 }
-function eqButtonSet( changed ) {
+function eqButtonSet() {
 	var flat = G.eqcurrent === 'Flat';
 	var unnamed = G.eqcurrent === '(unnamed)';
 	var notpreset = flat || unnamed;
 	$( '#eqrename' ).toggleClass( 'disabled', notpreset );
-	$( '#eqsave' ).toggleClass( 'disabled', !changed );
+	$( '#eqsave' ).toggleClass( 'disabled', notpreset );
 	$( '#eqnew' ).toggleClass( 'disabled', flat || !unnamed );
 	$( '#eqflat' ).toggleClass( 'disabled', flat );
 }
@@ -154,11 +155,9 @@ function eqValueSet( band, val ) {
 	}, 1000 );
 	var vnew = infoVal().slice( 2 ).join( '' );
 	if ( vnew !== G.vcurrent ) {
-		changed = true;
 		G.eqcurrent = vnew === vflat ? 'Flat' : '(unnamed)';
 	} else {
 		changed = false;
-		G.eqcurrent = G.vcurrent;
 	}
-	eqButtonSet( changed );
+	eqButtonSet();
 }
