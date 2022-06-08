@@ -130,7 +130,6 @@ function equalizer() {
 				$( '#eqflat' ).click( function() {
 					G.eqcurrent = 'Flat';
 					bash( [ 'equalizer', 'preset', 'Flat' ] );
-					console.log(9)
 				} );
 			}
 			, buttonnoreset : 1
