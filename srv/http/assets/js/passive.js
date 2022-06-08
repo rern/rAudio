@@ -296,8 +296,6 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	if ( O.title !== 'Equalizer' ) return
-	
 	O.values = [ '', data.current, ...data.values ];
 	var options = '';
 	data.presets.forEach( function( name ) {

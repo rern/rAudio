@@ -74,6 +74,7 @@
 	content: '';
 	width: 1px;
 	height: 100%;
+	right: 138px;
 	background: var( --cgl );
 }
 #eq input {
