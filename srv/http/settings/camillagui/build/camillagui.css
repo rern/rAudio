@@ -580,7 +580,7 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .config-status {
 	position: absolute;
-	top: -31px;
+	top: -30px;
 	right: -4px;
 }
 /* Panels ----------------------------------------------------------------- */
@@ -611,16 +611,23 @@ input[type=range]:disabled::-moz-range-thumb {
 	position: relative;
 	bottom: 0;
 	width: calc( 100% / 5 );
-	padding: 0;
+	margin-left: -5px;
+	padding: 0 0 0 5px;
 	line-height: 36px;
 	text-align: center;
 	text-shadow: -1px 1px 2px #000000;
-	background: var( --cga);
+	background: var( --cga );
 	border: none;
 	border-radius: 0 5px 0 0;
 	box-shadow: 2px 0px 5px #000;
 }
-.react-tabs__tab:nth-child( 2 ) { z-index: 4; border-radius: 5px 5px 0 0; }
+.react-tabs__tab:nth-child( 2 ) {
+	width: calc( 100% / 5 );
+	margin-left: 0;
+	padding: 0;
+	border-radius: 5px 5px 0 0;
+	z-index: 4;
+}
 .react-tabs__tab:nth-child( 3 ) { z-index: 3 }
 .react-tabs__tab:nth-child( 4 ) { z-index: 2 }
 .react-tabs__tab:nth-child( 5 ) { z-index: 1 }
