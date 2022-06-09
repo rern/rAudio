@@ -3,7 +3,7 @@
 alias=r1
 
 # 20220610
-if [[ ! -e /srv/http/assets/css/colors.css ]]; then
+if [[ -e /usr/bin/camilladsp && ! -e /srv/http/assets/css/colors.css ]]; then
 	ln -sf /srv/http/assets/css/colors.css /srv/http/settings/camillagui/build
 	ln -sf /srv/http/assets/img/icon.png /srv/http/settings/camillagui/build
 fi
