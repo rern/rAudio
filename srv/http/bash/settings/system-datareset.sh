@@ -48,6 +48,10 @@ fi
 mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
+if [[ -e /usr/bin/camilladsp ]]; then
+	ln -sf /srv/http/assets/css/colors.css /srv/http/settings/camillagui/build
+	ln -sf /srv/http/assets/img/icon.png /srv/http/settings/camillagui/build
+fi
 chown -h http:http $dirdata /srv/http/mnt
 
 # addons - new/restore
