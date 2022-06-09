@@ -416,6 +416,8 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
+	hash=$( date +%s )
+	sed -i -E 's/\?v=.{10}/?v='$hash'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 count )

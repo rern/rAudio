@@ -2,7 +2,12 @@
 
 alias=r1
 
-# 20220606
+# 20220610
+if [[ ! -e /srv/http/assets/css/colors.css ]]; then
+	ln -sf /srv/http/assets/css/colors.css /srv/http/settings/camillagui/build
+	ln -sf /srv/http/assets/img/icon.png /srv/http/settings/camillagui/build
+fi
+
 sed -i -e 's/\s*Flat/Flat/
 ' -e '/Flat^/ d
 ' /srv/http/data/system/equalizer.presets &> /dev/null
