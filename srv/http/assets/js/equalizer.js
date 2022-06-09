@@ -94,7 +94,11 @@ function equalizer() {
 				} );
 				$( '#eqsave' ).click( function() {
 					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? $( '#eqpreset' ).val() : $( '#eqname' ).val();
-					bash( [ 'equalizer', 'save', eqname ] );
+					if ( $( '#eqname' ).hasClass( 'hide' ) ) {
+						bash( [ 'equalizer', 'save', eqname ] );
+					} else {
+						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
+					}
 					$( '#eqcancel' ).click();
 					$( '#eqrename' ).removeClass( 'disabled' );
 					$( '#eqsave' ).addClass( 'disabled' );
