@@ -15,7 +15,7 @@ var content = `
 	<i id="eqsave" class="fa fa-save"></i>
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
 	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-times bl hide"></i>
-	<i id="eqflat" class="fa fa-set0"></i>
+	<i id="equndo" class="fa fa-undo"></i>
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
@@ -105,7 +105,7 @@ function equalizer() {
 				} );
 				$( '#eqnew' ).click( function() {
 					eqbuttons = {};
-					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
 					} );
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
@@ -117,13 +117,13 @@ function equalizer() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
-					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						$( '#'+ btn ).toggleClass( 'disabled', eqbuttons[ btn ] );
 					} );
 				} );
-				$( '#eqflat' ).click( function() {
-					G.eqcurrent = 'Flat';
-					bash( [ 'equalizer', 'preset', 'Flat' ] );
+				$( '#equndo' ).click( function() {
+					if ( G.eqcurrent === '(unnamed)' ) G.eqcurrent = 'Flat';
+					bash( [ 'equalizer', 'preset', G.eqcurrent ] );
 				} );
 			}
 			, buttonnoreset : 1
@@ -138,7 +138,7 @@ function eqButtonSet() {
 	var changed = infoVal().slice( 2 ).join( ' ' ) !== G.nameval[ current ];
 	$( '#eqrename' ).toggleClass( 'disabled', unnamed || flat || changed );
 	$( '#eqsave' ).toggleClass( 'disabled', unnamed || flat || !changed );
-	$( '#eqflat' ).toggleClass( 'disabled', flat );
+	$( '#equndo' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' || !changed );
 }
 function eqValueSet( band, val ) {
 	clearTimeout( timeout );
