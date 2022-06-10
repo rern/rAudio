@@ -34,15 +34,6 @@ if grep -q 'force user = mpd' /etc/samba/smb.conf; then
 	systemctl try-restart smb
 fi
 
-# 20220505
-[[ ! -e /srv/http/data/system/asoundcard && ! -e /srv/http/data/shm/nosound ]] && cp /srv/http/data/{shm,system}/asoundcard
-
-dir=/srv/http/shareddata
-if [[ -e $dir ]]; then
-	chown -h http:http $dir/*/
-	chown -h mpd:audio $dir $dir/{mpd,playlist} $dir/mpd/mpd.db $dir/playlists/* 2> /dev/null
-fi
-
 . /srv/http/bash/addons.sh
 
 installstart "$1"
