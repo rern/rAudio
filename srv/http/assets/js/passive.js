@@ -296,8 +296,9 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	if ( O.title !== 'Equalizer' ) return
-	
+	G.eqcurrent = data.current;
+	G.vcurrent = data.values.join( '' );
+	G.nameval = data.nameval;
 	O.values = [ '', data.current, ...data.values ];
 	var options = '';
 	data.presets.forEach( function( name ) {
@@ -307,6 +308,7 @@ function psEqualizer( data ) {
 	infoSetValues();
 	selectricRender();
 	eqButtonSet();
+	if ( !$( '#eqname' ).hasClass( 'hide' ) ) $( '#eq .selectric-wrapper' ).addClass( 'hide' )
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

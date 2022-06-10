@@ -12,25 +12,32 @@ addonsListGet() {
 	[[ ! $1 ]] && branch=main || branch=$1
 	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || ( echo -1 && exit )
 }
-equalizerGet() {
-	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+equalizerGet() { # sudo - mixer equal is user dependent
+	val=$( sudo -u mpd amixer -MD equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
 	filepresets=$dirsystem/equalizer.presets
 	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
 	
-	[[ $2 == set ]] && sed -i "1 s/.*/(unnamed)/" "$filepresets"
-	current=$( head -1 "$filepresets" )
+	if [[ $2 == set ]]; then
+		current='(unnamed)'
+		sed -i "1 s/.*/(unnamed)/" "$filepresets"
+	else
+		current=$( head -1 "$filepresets" )
+	fi
 	[[ $current != '(unnamed)' ]] && presets+='"Flat"' || presets+='"(unnamed)","Flat"'
-	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | cut -d^ -f1 | sort )
+	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | sort )
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do
-			presets+=',"'$line'"'
+			name=${line/^*}
+			presets+=',"'$name'"'
+			nameval+=',"'$name'":"'${line/*^}'"'
 		done
 	fi
 	data='{
   "current" : "'$current'"
 , "values"  : [ '${val// /,}' ]
 , "presets" : [ '$presets' ]
+, "nameval" : { '${nameval:1}' }
 }'
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
@@ -364,6 +371,10 @@ bookmarkthumb )
 	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
 	echo ${coverartfile: -3} # ext
 	;;
+camillagui )
+	systemctl start camillagui
+	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
+	;;
 color )
 	hsl=${args[1]}
 	file=$dirsystem/color
@@ -405,6 +416,8 @@ s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
+	hash=$( date +%s )
+	sed -i -E 's/\?v=.{10}/?v='$hash'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 count )
@@ -520,9 +533,15 @@ equalizer )
 	type=${args[1]} # preset, delete, rename, new, save
 	name=${args[2]}
 	newname=${args[3]}
-	flat='61 61 61 61 61 61 61 61 61 61' # value 60 > set at 59
 	filepresets=$dirsystem/equalizer.presets
 	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
+	if [[ $type == rename ]]; then
+		sed -i "s/^$name/$newname/" "$filepresets"
+		equalizerGet pushstream
+		exit
+	fi
+	
+	flat='62 62 62 62 62 62 62 62 62 62'
 	if [[ $type == preset ]]; then
 		[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$filepresets" | cut -d^ -f2- ) )
 	else # remove then save again with current values
@@ -531,8 +550,6 @@ equalizer )
 		if [[ $type == delete ]]; then
 			v=( $flat )
 			name=Flat
-		elif [[ $type == rename ]]; then
-			name=$newname
 		fi
 	fi
 	sed -i "1 s/.*/$name/" "$filepresets"
@@ -546,7 +563,7 @@ equalizer )
 	fi
 	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
 	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
-	[[ $type != save ]] && equalizerGet pushstream
+	equalizerGet pushstream
 	;;
 equalizerget )
 	equalizerGet ${args[1]} ${args[2]}

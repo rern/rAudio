@@ -92,10 +92,6 @@ fi
 if [[ $dsp ]]; then
 	$dirbash/settings/camilladsp-setformat.sh
 else
-	[[ $preset ]] && $dirbash/cmd.sh "equalizer
-	preset
-	$preset"
-
 	if [[ $btmixer ]]; then
 		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
 		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
@@ -104,4 +100,7 @@ else
 	else
 		systemctl stop bluetoothbutton
 	fi
+	[[ $preset ]] && $dirbash/cmd.sh "equalizer
+preset
+$preset"
 fi

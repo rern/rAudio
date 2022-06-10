@@ -169,7 +169,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			if ( substr( $file, 0, 4 ) === 'http' ) { // webradio
 				$urlname = str_replace( '/', '|', $file );
 				$fileradio = '/srv/http/data/webradios/'.$urlname;
-				if ( file_exists( $fileradio ) ) $stationname = exec( 'head -1 "'.$fileradio.'"' );
+				$stationname = file_exists( $fileradio ) ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
 				$urlname = str_replace( '#', '%23', $list->urlname );
 				$stationname = '';

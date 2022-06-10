@@ -1,4 +1,3 @@
-var vflat = '60'.repeat( 10 );
 var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var timeout;
 var band = [];
@@ -16,7 +15,7 @@ var content = `
 	<i id="eqsave" class="fa fa-save"></i>
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
 	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-times bl hide"></i>
-	<i id="eqflat" class="fa fa-set0"></i>
+	<i id="equndo" class="fa fa-undo"></i>
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
@@ -24,6 +23,7 @@ function equalizer() {
 	bash( [ 'equalizerget' ], function( data ) {
 		G.eqcurrent = data.current;
 		G.vcurrent = data.values.join( '' );
+		G.nameval = data.nameval;
 		var eqbuttons = {}
 		var changed = false;
 		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
@@ -38,7 +38,6 @@ function equalizer() {
 			, values     : values
 			, beforeshow : function() {
 				$( '#infoBox' ).css( 'width', 550 );
-				var notpreset = G.eqcurrent === '(unnamed)' || G.eqcurrent === 'Flat';
 				eqButtonSet();
 				if ( !/Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
 					$( '#infoRange input' ).on( 'click input keyup', function() {
@@ -94,24 +93,19 @@ function equalizer() {
 					$( '#eqnew' ).click();
 				} );
 				$( '#eqsave' ).click( function() {
-					var cmd = '';
-					var eqname = $( '#eqname' ).val();
-					if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
-						G.eqcurrent = eqname;
-						$( '#eqcancel' ).click();
-					} else if ( $( '#eqnew' ).hasClass( 'hide' )  ) {
-						G.eqcurrent = eqname;
-						bash( [ 'equalizer', 'new', eqname ] );
-						$( '#eqcancel' ).click();
+					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? $( '#eqpreset' ).val() : $( '#eqname' ).val();
+					if ( $( '#eqname' ).hasClass( 'hide' ) ) {
+						bash( [ 'equalizer', 'save', eqname ] );
 					} else {
-						bash( [ 'equalizer', 'save', G.eqcurrent ] );
+						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
 					}
-					$( this ).addClass( 'disabled' );
+					$( '#eqcancel' ).click();
+					$( '#eqrename' ).removeClass( 'disabled' );
+					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqnew' ).click( function() {
 					eqbuttons = {};
-					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
 					} );
 					$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
@@ -123,13 +117,13 @@ function equalizer() {
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
-					[ 'eqrename', 'eqsave', 'eqflat' ].forEach( function( btn ) {
+					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						$( '#'+ btn ).toggleClass( 'disabled', eqbuttons[ btn ] );
 					} );
 				} );
-				$( '#eqflat' ).click( function() {
-					G.eqcurrent = 'Flat';
-					bash( [ 'equalizer', 'preset', 'Flat' ] );
+				$( '#equndo' ).click( function() {
+					if ( G.eqcurrent === '(unnamed)' ) G.eqcurrent = 'Flat';
+					bash( [ 'equalizer', 'preset', G.eqcurrent ] );
 				} );
 			}
 			, buttonnoreset : 1
@@ -137,28 +131,20 @@ function equalizer() {
 		} );
 	}, 'json' );
 }
-function eqButtonSet( changed ) {
-	var flat = G.eqcurrent === 'Flat';
-	var unnamed = G.eqcurrent === '(unnamed)';
-	var notpreset = flat || unnamed;
-	$( '#eqrename' ).toggleClass( 'disabled', notpreset );
-	$( '#eqsave' ).toggleClass( 'disabled', !changed );
-	$( '#eqnew' ).toggleClass( 'disabled', flat || !unnamed );
-	$( '#eqflat' ).toggleClass( 'disabled', flat );
+function eqButtonSet() {
+	var current = $( '#eqpreset' ).val();
+	var flat = current === 'Flat';
+	var unnamed = current === '(unnamed)';
+	var changed = infoVal().slice( 2 ).join( ' ' ) !== G.nameval[ current ];
+	$( '#eqrename' ).toggleClass( 'disabled', unnamed || flat || changed );
+	$( '#eqsave' ).toggleClass( 'disabled', unnamed || flat || !changed );
+	$( '#equndo' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' || !changed );
 }
 function eqValueSet( band, val ) {
 	clearTimeout( timeout );
 	bash( [ 'equalizerupdn', band, val ] );
+	eqButtonSet();
 	timeout = setTimeout( function() {
-		bash( [ 'equalizerget', 'pushstream', 'set' ] );
+		bash( [ 'equalizerget', 'pushstream', $( '#eqpreset' ).val() === 'Flat' ? 'set' : '' ] );
 	}, 1000 );
-	var vnew = infoVal().slice( 2 ).join( '' );
-	if ( vnew !== G.vcurrent ) {
-		changed = true;
-		G.eqcurrent = vnew === vflat ? 'Flat' : '(unnamed)';
-	} else {
-		changed = false;
-		G.eqcurrent = G.vcurrent;
-	}
-	eqButtonSet( changed );
 }

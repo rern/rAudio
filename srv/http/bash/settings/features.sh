@@ -61,18 +61,14 @@ autoplayset )
 	[[ ${args[3]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
 	pushRefresh
 	;;
-camilladsp )
-	if [[ ${args[1]} == true ]]; then # start with player-conf.sh (+ modprobe in player-devices.sh)
-		touch $dirsystem/camilladsp
-	else
-		$dirbash/settings/camilladsp-gain.py
-		systemctl stop camilladsp
-		rm $dirsystem/camilladsp
-		rmmod snd-aloop &> /dev/null
-		pushRefresh
-	fi
+camilladspdisable )
+	$dirbash/settings/camilladsp-gain.py
+	systemctl stop camilladsp
+	rm $dirsystem/camilladsp
+	rmmod snd-aloop &> /dev/null
 	$dirbash/settings/player-conf.sh
 	pushRefresh
+	pushstream reload 1
 	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
@@ -87,6 +83,28 @@ camilladspasound )
 		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
 	done
 	alsactl nrestore &> /dev/null
+	;;
+camillaguiset )
+	refresh=${args[1]}
+	applyauto=${args[2]}
+	sed -i "s/\(apply_config_automatically: \).*/\1$applyauto/
+			s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	systemctl restart camillagui
+	touch $dirsystem/camilladsp
+	$dirbash/settings/player-conf.sh
+	pushRefresh
+	pushstream reload 1
+	;;
+equalizer )
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/equalizer
+	else
+		rm -f $dirsystem/equalizer
+	fi
+	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
+	$dirbash/settings/player-conf.sh
+	pushRefresh
+	pushstream reload 1
 	;;
 hostapddisable )
 	systemctl disable --now hostapd

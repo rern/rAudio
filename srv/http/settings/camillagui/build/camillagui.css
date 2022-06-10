@@ -19,32 +19,20 @@
 code,
 textarea,
 .config-status,
-.db-label,
+.rangevalue,
+.eqvalue,
 .files div:not([class]) .button-with-text,
 .files input[type=text],
 .quick-config-switch .button,
-#status pre,
 #compactview .two-column-grid,
 #fileconfig,
+#popup-root text,
+#status pre,
 #volume .label {
 	font-family: Inconsolata;
 }
 
 :root {
-	--cd   : hsl(200,100%,35%); /* default main */
-	--cw   : hsl(0,0%,90%);     /* white */
-	--cml  : hsl(200,100%,40%); /* main-light */
-	--cm   : hsl(200,100%,35%); /* main */
-	--cma  : hsl(200,100%,30%); /* main-active */
-	--cmd  : hsl(200,100%,20%); /* main-dark */
-	--cg75 : hsl(200,3%,75%);   /* gray-75% */
-	--cg70 : hsl(200,3%,70%);   /* gray-70% */
-	--cg60 : hsl(200,3%,60%);   /* gray-60% */
-	--cgl  : hsl(200,3%,40%);   /* gray-light */
-	--cg   : hsl(200,3%,30%);   /* gray */
-	--cga  : hsl(200,3%,20%);   /* gray-active */
-	--cgd  : hsl(200,3%,10%);   /* gray-dark */
-	
 	--background-color: var( --cg );
 	--button-add-icon-color: #46c846;
 	--button-background-color: var( --cg );
@@ -151,9 +139,9 @@ body {
 #logo {
 	float: left;
 }
-#logo img {
-	width: 145px;
-	margin-bottom: 5px;
+#logo svg {
+    width: 150px;
+    height: 50px;
 }
 #version {
 	font-size: 12px;
@@ -256,7 +244,7 @@ input[type=range] {
 	display: block;
 	width: 270px !important;
 	height: 4px;
-	margin: 30px auto !important;
+	margin: 20px auto !important;
 	padding: 0 9px !important;
 	background-color: var( --cga ) !important;
 	-webkit-appearance: none;
@@ -339,9 +327,10 @@ input[type=range]:disabled::-moz-range-thumb {
 	font-size: 16px;
 }
 #volume .button {
-	margin-top: -20px;
+	float: right;
+	margin: -18px 0 0 0;
 }
-#button-mute,
+#button-volumedn,
 #button-undo {
 	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
@@ -349,7 +338,23 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
-#button-dim,
+#button-mute {
+	border-radius: 0;
+	border-right: 1px solid var( --cga );
+	background: -webkit-linear-gradient(
+		top,
+		hsla(0,0%,100%,.3) 0%,
+		hsla(0,0%,100%,.3) 45%,
+		rgba(0,0,0,0) 50%,
+		rgba(0,0,0,0) 100% );
+	background: linear-gradient(
+		to bottom,
+		hsla(0,0%,100%,.3) 0%,
+		hsla(0,0%,100%,.3) 45%,
+		rgba(0,0,0,0) 50%,
+		rgba(0,0,0,0) 100% );
+}
+#button-volumeup,
 #button-redo {
 	border-radius: 0 3px 3px 0;
 	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -371,9 +376,6 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .button-compactview {
 	margin-top: 0;
-}
-#compactview .smallbutton {
-	margin-top: -20px;
 }
 #button-undo,
 #button-redo {
@@ -431,27 +433,35 @@ input[type=range]:disabled::-moz-range-thumb {
 #mainpanel legend {
 	padding: 0;
 }
+#mainpanel legend .horizontally-spaced-content,
 #compactview legend .horizontally-spaced-content {
-	width: 360px;
-	border-bottom: 1px solid var( --cg );
-}
-#mainpanel legend .horizontally-spaced-content {
+	display: block !important;
 	width: 270px;
 	border-bottom: 1px solid var( --cg );
 }
-.db-label {
+#compactview legend .horizontally-spaced-content {
+	width: 360px;
+}
+.rangevalue {
 	width: 100% !important;
 	min-width: 110px;
 	font-size: 16px;
 	font-weight: 300;
 	letter-spacing: 0;
+	text-align: center;
 }
-#equalizer .db-label {
-	width: 4ch !important;
-	min-width: auto;
+.eq {
+	position: relative;
+	height: 70px;
 }
-.bass.db-label {
-	margin-left: 20px;
+.rangelabel {
+	position: absolute;
+}
+#compactview .rangelabel {
+	left: 15px;
+}
+.rangevalue.disabled {
+	color: var( --cgl )
 }
 /* volume + status ------------------------------------------------------------ */
 #mainpanel {
@@ -463,6 +473,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	padding: 60px 10px 0 10px;
 }
 #mainpanel .split-20-80 {
+	position: relative;
 	margin: 10px 0;
 	grid-template-columns: 13% 87%;
 	column-gap: 0;
@@ -477,11 +488,35 @@ input[type=range]:disabled::-moz-range-thumb {
 	outline: 3px solid #000000;
 	z-index: 1;
 }
+.dblabel {
+	position: absolute;
+	top: -5px;
+	right: 11px;
+	width: 242px;
+	line-height: 16px;
+	z-index: 1;
+}
+.dblabel.lower {
+	top: auto;
+	bottom: -4px;
+}
+.dblabel i {
+	display: inline-block;
+	width: 47.3px;
+	font-size: 13px;
+	font-family: 'Inconsolata';
+	font-style: normal;
+	text-align: center;
+	color: var( --cg60 );
+}
+.dblabel i:last-of-type {
+	width: 51px;
+}
 #log,
 #eqhelp {
 	position: absolute;
 	top: -26px;
-	left: 65px;
+	right: 0;
 	width: 24px !important;
 	font-size: 22px;
 	text-align: center;
@@ -531,7 +566,7 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 .config-status {
 	position: absolute;
-	top: -31px;
+	top: -30px;
 	right: -4px;
 }
 /* Panels ----------------------------------------------------------------- */
@@ -545,13 +580,13 @@ input[type=range]:disabled::-moz-range-thumb {
 .configtabs .tabpanel {
 	width: 400px !important;
 	min-height: calc( 100vh - 140px );
-	padding: 50px 5px 40px 5px;
+	padding: 55px 5px 40px 5px;
 	background: var( --cgd );
 }
 .react-tabs__tab-list {
 	position: fixed;
 	width: 410px;
-	margin-top: -6px;
+	margin: -6px 0 0 0;
 	padding-top: 10px;
 	background: #000000;
 	box-shadow: 0px 4px 10px #000000;
@@ -559,25 +594,33 @@ input[type=range]:disabled::-moz-range-thumb {
 	z-index: 1;
 }
 .react-tabs__tab {
-	position: static;
-	width: calc( 100% / 5 - 1px );
-	padding: 0;
+	position: relative;
+	bottom: 0;
+	width: calc( 100% / 5 );
+	margin-left: -5px;
+	padding: 0 0 0 5px;
 	line-height: 36px;
 	text-align: center;
 	text-shadow: -1px 1px 2px #000000;
-	background: var( --cga);
+	background: var( --cga );
 	border: none;
-	border-radius: 5px 5px 0 0;
-	border-right: 1px solid #000000;
+	border-radius: 0 5px 0 0;
+	box-shadow: 2px 0px 5px #000;
 }
+.react-tabs__tab:nth-child( 2 ) {
+	width: calc( 100% / 5 );
+	margin-left: 0;
+	padding: 0;
+	border-radius: 5px 5px 0 0;
+	z-index: 4;
+}
+.react-tabs__tab:nth-child( 3 ) { z-index: 3 }
+.react-tabs__tab:nth-child( 4 ) { z-index: 2 }
+.react-tabs__tab:nth-child( 5 ) { z-index: 1 }
 .react-tabs__tab:focus:after {
 	content: '';
 	height: 0;
 	position: absolute;
-}
-.tab-files {
-	width: calc( 100% / 5 );
-	border: none;
 }
 .react-tabs__tab-list .react-tabs__tab--selected {
 	background: var( --cgl );
@@ -705,12 +748,27 @@ label.setting select:first-child {
 	font-weight: normal;
 	color: var( --cw );
 }
+#popup-root .resetzoom,
 .closepopup {
 	position: absolute;
 	top: 0;
 	right: 0;
 	width: 28px;
 	color: var(--cm);
+}
+#popup-root .resetzoom {
+	left: 0;
+	width: 120px;
+	color: var( --cgl );
+}
+.resetzoom svg {
+	width: 28px;
+	vertical-align: -8px;
+	color: var(--cm);
+}
+.filters .resetzoom {
+	margin: 20px 0 -10px;
+	color: var( --cgl );
 }
 textarea {
 	padding: 5px;
@@ -757,7 +815,7 @@ textarea:focus-visible {
 	#mainpanel {
 		position: relative;
 		float: none;
-		min-width: 360px !important;
+		min-width: 355px !important;
 		margin: auto;
 		padding-top: 60px;
 	}
@@ -787,7 +845,20 @@ textarea:focus-visible {
 	}
 	.popup-content {
 		width: 100% !important;
+		max-width: calc( 100% - 10px);
 		min-width: 100%;
+	}
+	.popup-content canvas {
+		max-width: calc( 100% - 10px);
+	}
+	.closepopup {
+		right: 15px;
+	}
+	.resetzoom {
+		left: 5px !important;
+	}
+	.resetzoom span {
+		display: none;
 	}
 	label.setting select:first-child {
 		width: 107px !important;
@@ -816,7 +887,7 @@ textarea:focus-visible {
 }
 .closepopup,
 .head svg,
-.popup-overlay::before,
+.resetzoom,
 #eqhelp,
 #log,
 #logo {

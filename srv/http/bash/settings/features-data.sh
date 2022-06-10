@@ -9,12 +9,15 @@ for key in airplay bluetooth spotify upnp notify; do
 done
 scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
 
+camillaguiconf=( $( grep 'apply_config_automatically\|status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 ) )
+
 data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
 , "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camillaguiconf"   : [ '${camillaguiconf[1]}', '${camillaguiconf[0]}' ]
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
