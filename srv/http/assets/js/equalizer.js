@@ -21,10 +21,9 @@ var content = `
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], function( data ) {
+		G.eq = data;
 		G.eqcurrent = data.current;
 		G.vcurrent = data.values.join( '' );
-		G.nameval = data.nameval;
-		G.eqnew = 0;
 		var eqbuttons = {}
 		var changed = false;
 		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
@@ -95,18 +94,16 @@ function equalizer() {
 				} );
 				$( '#eqsave' ).click( function() {
 					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? G.eqcurrent : $( '#eqname' ).val();
-					if ( G.eqnew ) {
-						bash( [ 'equalizer', 'save', eqname ] );
-					} else {
+					if ( eqname in G.eq.presets && eqname !== G.eqcurrent ) {
 						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
+					} else {
+						bash( [ 'equalizer', 'save', eqname ] );
 					}
 					$( '#eqcancel' ).click();
 					$( '#eqrename' ).removeClass( 'disabled' );
 					$( '#eqsave' ).addClass( 'disabled' );
-					G.eqnew = 0;
 				} );
 				$( '#eqnew' ).click( function() {
-					G.eqnew = 1;
 					eqbuttons = {};
 					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
@@ -117,7 +114,6 @@ function equalizer() {
 					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
-					G.eqnew = 0;
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
@@ -136,10 +132,9 @@ function equalizer() {
 	}, 'json' );
 }
 function eqButtonSet() {
-	var current = $( '#eqpreset' ).val();
-	var flat = current === 'Flat';
-	var unnamed = current === '(unnamed)';
-	var changed = infoVal().slice( 2 ).join( ' ' ) !== G.nameval[ current ];
+	var flat = G.eqcurrent === 'Flat';
+	var unnamed = G.eqcurrent === '(unnamed)';
+	var changed = infoVal().slice( 2 ).join( ' ' ) !== G.eq.nameval[ G.eqcurrent ];
 	$( '#eqrename' ).toggleClass( 'disabled', unnamed || flat || changed );
 	$( '#eqsave' ).toggleClass( 'disabled', unnamed || flat || !changed );
 	$( '#equndo' ).toggleClass( 'disabled', G.eqcurrent === 'Flat' || !changed );

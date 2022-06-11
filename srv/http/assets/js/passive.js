@@ -296,9 +296,9 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
+	G.eq = data;
 	G.eqcurrent = data.current;
 	G.vcurrent = data.values.join( '' );
-	G.nameval = data.nameval;
 	O.values = [ '', data.current, ...data.values ];
 	var options = '';
 	data.presets.forEach( function( name ) {
