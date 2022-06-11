@@ -24,6 +24,7 @@ function equalizer() {
 		G.eqcurrent = data.current;
 		G.vcurrent = data.values.join( '' );
 		G.nameval = data.nameval;
+		G.eqnew = 0;
 		var eqbuttons = {}
 		var changed = false;
 		var values = [ '', data.current, ...data.values ]; // [ #eqname, #eqpreset, ... ]
@@ -84,7 +85,7 @@ function equalizer() {
 				} );
 				$( '#eqdelete' ).click( function() {
 					G.eqcurrent = 'Flat';
-					bash( [ 'equalizer', 'delete', $( '#eqpreset' ).val() ] );
+					bash( [ 'equalizer', 'delete', G.eqcurrent ] );
 					$( '#eqcancel' ).click();
 				} );
 				$( '#eqrename' ).click( function() {
@@ -93,8 +94,8 @@ function equalizer() {
 					$( '#eqnew' ).click();
 				} );
 				$( '#eqsave' ).click( function() {
-					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? $( '#eqpreset' ).val() : $( '#eqname' ).val();
-					if ( $( '#eqname' ).hasClass( 'hide' ) ) {
+					var eqname = $( '#eqname' ).hasClass( 'hide' ) ? G.eqcurrent : $( '#eqname' ).val();
+					if ( G.eqnew ) {
 						bash( [ 'equalizer', 'save', eqname ] );
 					} else {
 						bash( [ 'equalizer', 'rename', G.eqcurrent, eqname ] );
@@ -102,8 +103,10 @@ function equalizer() {
 					$( '#eqcancel' ).click();
 					$( '#eqrename' ).removeClass( 'disabled' );
 					$( '#eqsave' ).addClass( 'disabled' );
+					G.eqnew = 0;
 				} );
 				$( '#eqnew' ).click( function() {
+					G.eqnew = 1;
 					eqbuttons = {};
 					[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
 						eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
@@ -114,6 +117,7 @@ function equalizer() {
 					$( '#eqsave' ).addClass( 'disabled' );
 				} );
 				$( '#eqcancel' ).click( function() {
+					G.eqnew = 0;
 					$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 					$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 					$( '#eqname' ).val( '' );
