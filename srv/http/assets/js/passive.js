@@ -297,7 +297,7 @@ function psDisplay( data ) {
 }
 function psEqualizer( data ) {
 	G.eq = data;
-	infoEqualizer();
+	infoEqualizer( 'update' );
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

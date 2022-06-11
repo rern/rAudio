@@ -25,7 +25,7 @@ function equalizer() {
 		infoEqualizer();
 	}, 'json' );
 }
-function infoEqualizer() {
+function infoEqualizer( update ) {
 	var eqbuttons = {}
 	var changed = false;
 	var values = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
@@ -38,6 +38,7 @@ function infoEqualizer() {
 		, title      : 'Equalizer'
 		, content    : content.replace( 'PRESETS', optpreset )
 		, values     : values
+		, noreset    : update ? 1 : 0
 		, beforeshow : function() {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();

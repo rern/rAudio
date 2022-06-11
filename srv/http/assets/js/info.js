@@ -165,7 +165,7 @@ info( {                                       // default
 	button        : [ FUNCTION, ... ]         // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
 	buttonfit     : 1                         // (none)         (fit buttons width to label)
-	buttonnoreset : 1                         // (none)         (do not hide/reset on button clicked)
+	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked)
 	
 	okno          : 1                         // (show)         (no ok button)
 	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
@@ -184,6 +184,7 @@ info( {                                       // default
 	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
+	noreset       : 1                         // (none)         (do not reset content - for update value)
 } );
 
 Get values: infoVal()
@@ -205,7 +206,7 @@ function infoReset() {
 O = {}
 function info( json ) {
 	O = json;
-	$( '#infoOverlay' ).html(`
+	if ( !O.noreset ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
