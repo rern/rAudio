@@ -87,8 +87,7 @@ camilladspasound )
 camillaguiset )
 	refresh=${args[1]}
 	applyauto=${args[2]}
-	sed -i "s/\(apply_config_automatically: \).*/\1$applyauto/
-			s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	sed -i "s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
 	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
