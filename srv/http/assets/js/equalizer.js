@@ -125,20 +125,18 @@ function infoEqualizer( update ) {
 function eqButtonSet() {
 	var flat = G.eq.current === 'Flat';
 	var unnamed = G.eq.current === '(unnamed)';
-	if ( flat ) {
-		var val = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
-	} else if ( unnamed ) {
-		var val = G.eq.values;
+	if ( flat || unnamed ) {
+		var changed = false;
 	} else {
 		var val = G.eq.nameval[ G.eq.current ].split( ' ' )
+		var vnew = infoVal().slice( 2 );
+		var changed = vnew.some( function( v, i ) {
+			return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
+		} );
 	}
-	var vnew = infoVal().slice( 2 );
-	var changed = vnew.some( function( v, i ) {
-		return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
-	} );
-	$( '#eqrename' ).toggleClass( 'disabled', unnamed || flat || changed );
-	$( '#eqsave' ).toggleClass( 'disabled', unnamed || flat || !changed );
-	$( '#equndo' ).toggleClass( 'disabled', G.eq.current === 'Flat' || !changed );
+	$( '#eqrename' ).toggleClass( 'disabled', flat || unnamed || changed );
+	$( '#eqsave' ).toggleClass( 'disabled', flat || unnamed || !changed );
+	$( '#equndo' ).toggleClass( 'disabled', flat || !changed );
 }
 function eqValueSet( band, val ) {
 	clearTimeout( timeout );
