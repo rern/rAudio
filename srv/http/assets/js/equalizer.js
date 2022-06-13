@@ -26,8 +26,6 @@ function equalizer() {
 	}, 'json' );
 }
 function infoEqualizer( update ) {
-	var eqbuttons = {}
-	var changed = false;
 	var values = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset = '';
 	G.eq.presets.forEach( function( name ) {
@@ -93,32 +91,28 @@ function infoEqualizer( update ) {
 				$( '#eqnew' ).click();
 			} );
 			$( '#eqsave' ).click( function() {
-				if ( $( '#eqname' ).hasClass( 'hide' ) ) {
-					bash( [ 'equalizer', 'save', G.eq.current ] );
-				} else {
+				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 					bash( [ 'equalizer', 'rename', G.eq.current, $( '#eqname' ).val() ] );
+				} else {
+					var name = $( '#eqname' ).hasClass( 'hide' ) ? G.eq.current : $( '#eqname' ).val();
+					bash( [ 'equalizer', 'save', name ] );
 				}
 				$( '#eqcancel' ).click();
 				$( '#eqrename' ).removeClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
 			} );
 			$( '#eqnew' ).click( function() {
-				eqbuttons = {};
-				[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
-					eqbuttons[ btn ] = $( '#'+ btn ).hasClass( 'disabled' );
-				} );
 				$( '#eqnew, #eq .selectric-wrapper' ).addClass( 'hide' );
 				$( '#eqname, #eqcancel' ).removeClass( 'hide' );
 				$( '#eqrename' ).addClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
+				if ( G.eq.current !== 'Flat' && G.eq.current !== '(unnamed)' ) $( '#eqname' ).val( G.eq.current )
 			} );
 			$( '#eqcancel' ).click( function() {
 				$( '#eqrename, #eqnew, #eq .selectric-wrapper' ).removeClass( 'hide' );
 				$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 				$( '#eqname' ).val( '' );
-				[ 'eqrename', 'eqsave', 'equndo' ].forEach( function( btn ) {
-					$( '#'+ btn ).toggleClass( 'disabled', eqbuttons[ btn ] );
-				} );
+				eqButtonSet();
 			} );
 			$( '#equndo' ).click( function() {
 				bash( [ 'equalizer', 'preset', G.eq.current ] );
