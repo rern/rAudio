@@ -550,6 +550,11 @@ function getPlaybackStatus( withdisplay ) {
 			delete G.coverTL;
 			displaySubMenu();
 			bannerHide();
+			if ( !G.display.camilladsp && !G.display.equalizer ) {
+				$( '#features' ).removeClass( 'sub' );
+			} else if ( ( G.display.camilladsp && !$( '#camilladsp' ).length ) || ( G.display.equalizer && !$( '#equalizer' ).length ) ) {
+				location.reload();
+			}
 		}
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
