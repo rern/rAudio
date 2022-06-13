@@ -540,6 +540,8 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: var( --cga );
 }
 #applyauto {
+	display: block;
+	margin-top: 20px;
 	color: var( --cg60 );
 }
 #applyauto input {
@@ -888,6 +890,7 @@ textarea:focus-visible {
 .closepopup,
 .head svg,
 .resetzoom,
+#applyauto,
 #eqhelp,
 #log,
 #logo {
