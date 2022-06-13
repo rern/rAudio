@@ -68,7 +68,7 @@ camilladspdisable )
 	rmmod snd-aloop &> /dev/null
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream reload 1
+	pushstream display '{"submenu":"camilladsp","value":false}'
 	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
@@ -92,18 +92,18 @@ camillaguiset )
 	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream reload 1
+	pushstream display '{"submenu":"camilladsp","value":true}'
 	;;
 equalizer )
-	if [[ ${args[1]} == true ]]; then
+	enabled=${args[1]}
+	if [[ $enabled == true ]]; then
 		touch $dirsystem/equalizer
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	pushstream display '{"submenu":"equalizer","value":'${args[1]}'}'
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream reload 1
+	pushstream display '{"submenu":"equalizer","value":'$enabled'}'
 	;;
 hostapddisable )
 	systemctl disable --now hostapd

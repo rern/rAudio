@@ -429,17 +429,23 @@ function displaySave( keys ) {
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
-	var submenu = [ 'camilladsp', 'equalizer', 'lock', 'relays', 'snapclient', 'multiraudio' ];
-	submenu.forEach( function( el ) {
+	if ( G.display.equalizer && typeof infoEqualizer !== 'function' ) {
+		location.reload();
+		return
+	}
+	
+	if ( G.display.camilladsp ) {
+		if ( $( '#equalizer' ).length ) $( '#equalizer' ).replaceWith( '<i id="camilladsp" class="submenu fa fa-camilladsp"></i>' );
+	} else if ( G.display.equalizer ) {
+		if ( $( '#camilladsp' ).length ) $( '#camilladsp' ).replaceWith( '<i id="equalizer" class="submenu fa fa-equalizer"></i>' );
+	}
+	$( '#features' ).toggleClass( 'sub', G.display.camilladsp  || G.display.equalizer );
+	var submenu = [ 'lock', 'relays', 'snapclient', 'multiraudio' ];
+	submenu.forEach( function( el ) { // submenu toggled by css .settings + .submenu
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
-	} );  // submenu toggled by css .settings + .submenu
+	} );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
-/*function flag( iso ) { // from: https://stackoverflow.com/a/11119265
-	var iso0 = ( iso.toLowerCase().charCodeAt( 0 ) - 97 ) * -15;
-	var iso1 = ( iso.toLowerCase().charCodeAt( 1 ) - 97 ) * -20;
-	return [ iso1, iso0 ];
-}*/
 function getBio( artist ) {
 	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .artist' ).text() ) {
@@ -550,11 +556,6 @@ function getPlaybackStatus( withdisplay ) {
 			delete G.coverTL;
 			displaySubMenu();
 			bannerHide();
-			if ( !G.display.camilladsp && !G.display.equalizer ) {
-				$( '#features' ).removeClass( 'sub' );
-			} else if ( ( G.display.camilladsp && !$( '#camilladsp' ).length ) || ( G.display.equalizer && !$( '#equalizer' ).length ) ) {
-				location.reload();
-			}
 		}
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;

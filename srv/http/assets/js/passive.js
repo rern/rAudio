@@ -296,6 +296,8 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
+	if ( !$( '#features' ).hasClass( 'sub' ) ) return
+	
 	G.eq = data;
 	infoEqualizer( 'update' );
 }
