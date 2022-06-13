@@ -125,7 +125,17 @@ function infoEqualizer( update ) {
 function eqButtonSet() {
 	var flat = G.eq.current === 'Flat';
 	var unnamed = G.eq.current === '(unnamed)';
-	var changed = infoVal().slice( 2 ).join( ' ' ) !== G.eq.nameval[ G.eq.current ];
+	if ( flat ) {
+		var val = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
+	} else if ( unnamed ) {
+		var val = G.eq.values;
+	} else {
+		var val = G.eq.nameval[ G.eq.current ].split( ' ' )
+	}
+	var vnew = infoVal().slice( 2 );
+	var changed = vnew.some( function( v, i ) {
+		return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
+	} );
 	$( '#eqrename' ).toggleClass( 'disabled', unnamed || flat || changed );
 	$( '#eqsave' ).toggleClass( 'disabled', unnamed || flat || !changed );
 	$( '#equndo' ).toggleClass( 'disabled', G.eq.current === 'Flat' || !changed );
