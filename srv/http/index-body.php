@@ -206,7 +206,7 @@ $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 $dsp = file_exists( '/srv/http/data/system/equalizer' ) ? 'equalizer' : 'camilladsp';
 $settinglist = [
 	  [ 'features', 'settings', 'features', 'Features',
-		$dsp, $dsp ]
+		'dsp', '' ]
 	, ['player', 'settings', 'player', 'Player',
 		'lock', 'lock' ]
 	, ['networks', 'settings', 'networks', 'Networks',

@@ -13,6 +13,9 @@ pushRefreshNetworks() {
 	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
 }
+pushSubmenu() {
+	pushstream display '{"submenu":"'$1'","value":'$2'}'
+}
 featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
@@ -68,7 +71,7 @@ camilladspdisable )
 	rmmod snd-aloop &> /dev/null
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream display '{"submenu":"camilladsp","value":false}'
+	pushSubmenu camilladsp false
 	;;
 camilladspasound )
 	camilladspyml=/srv/http/data/camilladsp/configs/camilladsp.yml
@@ -92,7 +95,7 @@ camillaguiset )
 	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream display '{"submenu":"camilladsp","value":true}'
+	pushSubmenu camilladsp true
 	;;
 equalizer )
 	enabled=${args[1]}
@@ -103,7 +106,7 @@ equalizer )
 	fi
 	$dirbash/settings/player-conf.sh
 	pushRefresh
-	pushstream display '{"submenu":"equalizer","value":'$enabled'}'
+	pushSubmenu equalizer $enabled
 	;;
 hostapddisable )
 	systemctl disable --now hostapd
@@ -215,7 +218,7 @@ cursor=$newcursor
 		localbrowserXset $newscreenoff
 		if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
 			[[ $off == 0 ]] && tf=false || tf=true
-			pushstream display '{"submenu":"screenoff","value":'$tf'}'
+			pushSubmenu screenoff $tf
 		fi
 	fi
 	pushRefresh
@@ -228,18 +231,19 @@ logindisable )
 	sed -i '/^bind_to_address/ s/".*"/"0.0.0.0"/' /etc/mpd.conf
 	systemctl restart mpd
 	pushRefresh
-	pushstream display '{"submenu":"lock","value":false}'
+	pushSubmenu lock false
 	;;
 loginset )
 	touch $dirsystem/login
 	sed -i '/^bind_to_address/ s/".*"/"127.0.0.1"/' /etc/mpd.conf
 	systemctl restart mpd
 	pushRefresh
-	pushstream display '{"submenu":"lock","value":true}'
+	pushSubmenu lock true
 	;;
 multiraudiodisable )
 	rm -f $dirsystem/multiraudio
 	pushRefresh
+	pushSubmenu multiraudio false
 	;;
 multiraudioset )
 	data=$( printf "%s\n" "${args[@]:1}" | grep . )
@@ -258,6 +262,7 @@ EOF
 		rm -f $dirsystem/multiraudio*
 	fi
 	pushRefresh
+	pushSubmenu multiraudio true
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
@@ -340,14 +345,14 @@ smbset )
 snapclientdisable )
 	rm $dirsystem/snapclient
 	pushRefresh
-	pushstream display '{"submenu":"sanpclient","value":false}'
+	pushSubmenu sanpclient false
 	;;
 snapclientset )
 	echo 'SNAPCLIENT_OPTS="--latency='${args[1]}'"' > /etc/default/snapclient
 	touch $dirsystem/snapclient
 	systemctl try-restart snapclient
 	pushRefresh
-	pushstream display '{"submenu":"sanpclient","value":true}'
+	pushSubmenu sanpclient true
 	;;
 snapserver )
 	if [[ ${args[1]} == true ]]; then

@@ -434,13 +434,11 @@ function displaySubMenu() {
 		return
 	}
 	
-	if ( G.display.camilladsp ) {
-		if ( $( '#equalizer' ).length ) $( '#equalizer' ).replaceWith( '<i id="camilladsp" class="submenu fa fa-camilladsp"></i>' );
-	} else if ( G.display.equalizer ) {
-		if ( $( '#camilladsp' ).length ) $( '#camilladsp' ).replaceWith( '<i id="equalizer" class="submenu fa fa-equalizer"></i>' );
-	}
-	$( '#features' ).toggleClass( 'sub', G.display.camilladsp  || G.display.equalizer );
-	var submenu = [ 'lock', 'relays', 'snapclient', 'multiraudio' ];
+	$( '#dsp' )
+		.toggleClass( 'fa-camilladsp', G.display.camilladsp )
+		.toggleClass( 'fa-equalizer', G.display.equalizer );
+	G.display.dsp = G.display.camilladsp || G.display.equalizer;
+	var submenu = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
 	submenu.forEach( function( el ) { // submenu toggled by css .settings + .submenu
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );

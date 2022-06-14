@@ -155,14 +155,15 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
-		case 'camilladsp':
-			bash( [ 'camillagui' ], function() {
-				urlReachable( 'http://'+ location.host +':5000' );
-			} );
-			loader();
-			break;
-		case 'equalizer':
-			equalizer();
+		case 'dsp':
+			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
+				bash( [ 'camillagui' ], function() {
+					urlReachable( 'http://'+ location.host +':5000' );
+				} );
+				loader();
+			} else {
+				equalizer();
+			}
 			break;
 		case 'lock':
 			$.post( cmdphp, { cmd: 'logout' }, function() {
