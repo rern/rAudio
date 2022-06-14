@@ -91,9 +91,7 @@ async def get_param(request):
     elif name == "volumemute":
         volume = cdsp.get_volume()
         mute = 1 if cdsp.get_mute() else 0
-        with open('/srv/http/settings/camillagui/config/gui-config.yml') as f:
-            applyauto = 1 if 'apply_config_automatically: true' in f.read() else 0
-        result = [volume, mute, applyauto]
+        result = [volume, mute]
     elif name == "signalrange":
         result = cdsp.get_signal_range()
     elif name == "signalrangedb":
