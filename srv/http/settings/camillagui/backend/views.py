@@ -159,7 +159,7 @@ async def eval_filter_values(request):
         config,
         name=(content["name"]),
         samplerate=samplerate,
-        npoints=300,
+        npoints=1000,
     )
     data["channels"] = channels
     data["options"] = options

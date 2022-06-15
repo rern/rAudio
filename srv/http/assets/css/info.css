@@ -351,7 +351,7 @@ hr {
 #infoArrow i {
 	float: left;
 	width: 40px;
-	height: 40px;
+	line-height: 40px;
 	font-size: 24px;
 	color: var( --cm );
 }
