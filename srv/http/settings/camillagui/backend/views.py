@@ -159,7 +159,7 @@ async def eval_filter_values(request):
         config,
         name=(content["name"]),
         samplerate=samplerate,
-        npoints=1000,
+        npoints=100,
     )
     data["channels"] = channels
     data["options"] = options
@@ -185,7 +185,7 @@ async def eval_filterstep_values(request):
         plot_config,
         step_index,
         name="Filterstep {}".format(step_index),
-        npoints=1000,
+        npoints=300,
     )
     data["channels"] = channels
     data["options"] = options
