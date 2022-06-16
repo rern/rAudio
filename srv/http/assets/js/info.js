@@ -232,9 +232,6 @@ function info( json ) {
 		return;
 	}
 	
-	// switch arrows
-	if ( O.arrowright ) switchRL( 'right', O.arrowright )
-	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
 	if ( O.width ) $( '#infoBox' ).css( 'width', O.width );
 	if ( O.height ) $( '#infoContent' ).css( 'height', O.height );
@@ -815,13 +812,6 @@ function setFileImage( file ) {
 		ctx.rotate( Math.PI / 2 );
 		ctx.drawImage( img, -cw, -ch );
 		image.src = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function switchRL( rl, fn ) {
-	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).on( 'click', function() {
-		fn();
-		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
 }
 

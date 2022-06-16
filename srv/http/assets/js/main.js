@@ -260,7 +260,7 @@ $( '#power' ).click( function() {
 	} );
 } );
 $( '#displaylibrary' ).click( function() {
-	infoLibrary();
+	infoLibrary( 1 );
 } );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {

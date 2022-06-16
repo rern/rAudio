@@ -669,8 +669,7 @@ var chklibrary2 = {
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
-function infoLibrary( page2 ) {
-	var page1 = !page2;
+function infoLibrary( page1 ) {
 	var checkbox = Object.values( page1 ? chklibrary : chklibrary2 );
 	var keys = Object.keys( page1 ? chklibrary : chklibrary2 );
 	keys = keys.filter( function( k ) {
@@ -682,16 +681,19 @@ function infoLibrary( page2 ) {
 	} );
 	info( {
 		  icon         : 'library'
-		, title        : page1 ? 'Library Home' : 'Library'
-		, message      : page1 ? '1/2 - Show:' : '2/2 - Options:'
+		, title        : 'Library'
 		, messagealign : 'left'
-		, arrowright   : page1 ? function() { infoLibrary( 2 ) } : ''
-		, arrowleft    : page1 ? '' : infoLibrary
 		, checkbox     : checkbox
 		, checkcolumn  : page1 ? 1 : ''
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
+			var active1 = page1 ? 'class="active"' : '';
+			var active2 = page1 ? '' : 'class="active"';
+			$( '#infoContent' ).before( '<div id="infoTab"><a '+ active1 +' style="width: 50%">Show</a><a '+ active2 +' style="width: 50%">Options</a></div>' );
+			$( '#infoTab a' ).click( function() {
+				if ( !$( this ).hasClass( 'active' ) ) page1 ? infoLibrary() : infoLibrary( 1 );
+			} );
 			if ( !page1 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
