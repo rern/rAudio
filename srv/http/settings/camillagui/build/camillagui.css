@@ -413,11 +413,13 @@ input[data-tip='Mixer name, must be unique'] {
 	color: var( --cg60 );
 }
 #diveqhelp {
-	padding: 10px;
 	font-size: 16px;
 	line-height: 22px;
 	letter-spacing: 0;
 	color: var( --cg60 );
+}
+#compactview #diveqhelp {
+	padding: 0 50px;
 }
 /* Compact view button ------------------- */
 #compactview .box,
