@@ -184,7 +184,7 @@ info( {                                       // default
 	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
-	noreset       : 1                         // (none)         (do not reset content - for update value)
+	noreload      : 1                         // (none)         (do not reset content - for update value)
 } );
 
 Get values: infoVal()
@@ -206,7 +206,7 @@ function infoReset() {
 O = {}
 function info( json ) {
 	O = json;
-	if ( !O.noreset ) $( '#infoOverlay' ).html(`
+	if ( !O.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
@@ -214,7 +214,7 @@ function info( json ) {
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>
 </div>
-`);
+` );
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos

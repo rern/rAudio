@@ -36,7 +36,7 @@ function infoEqualizer( update ) {
 		, title      : 'Equalizer'
 		, content    : content.replace( 'PRESETS', optpreset )
 		, values     : values
-		, noreset    : update ? 1 : 0
+		, noreload   : update ? 1 : 0
 		, beforeshow : function() {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();
@@ -118,7 +118,6 @@ function infoEqualizer( update ) {
 				bash( [ 'equalizer', 'preset', G.eq.current ] );
 			} );
 		}
-		, buttonnoreset : 1
 		, okno          : 1
 	} );
 }
