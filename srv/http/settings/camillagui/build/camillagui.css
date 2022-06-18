@@ -376,6 +376,7 @@ input[data-tip='Mixer name, must be unique'] {
 	background: none;
 }
 #button-compactview {
+	display: none;
 	float: none !important;
 }
 .button-compactview {
@@ -532,6 +533,8 @@ input[data-tip='Mixer name, must be unique'] {
 }
 #eqhelp {
 	left: auto;
+}
+#compactview #eqhelp {
 	right: 5px;
 }
 #status pre {
@@ -815,6 +818,7 @@ textarea:focus-visible {
 	}
 	#button-compactview {
 		position: fixed;
+		display: flex;
 		top: 48px;
 	}
 	#divhelp {
