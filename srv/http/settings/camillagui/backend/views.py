@@ -88,10 +88,13 @@ async def get_param(request):
     cdsp = request.app["CAMILLA"]
     if name == "volume":
         result = cdsp.get_volume()
-    elif name == "volumemute":
+    elif name == "configmutevolume":
+        config = cdsp.get_config()
+        mute = True if cdsp.get_mute() else False
         volume = cdsp.get_volume()
-        mute = 1 if cdsp.get_mute() else 0
-        result = [volume, mute]
+        result = {"config": config, "mute": mute, "volume": volume}
+        return web.json_response(result)
+        
     elif name == "signalrange":
         result = cdsp.get_signal_range()
     elif name == "signalrangedb":
