@@ -17,7 +17,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.png">
+	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">

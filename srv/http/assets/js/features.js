@@ -116,22 +116,17 @@ $( '#setting-camilladsp' ).click( function() {
 	info( {
 		  icon         : 'camilladsp'
 		, title        : 'CamillaGUI'
-		, textlabel    : 'Status: Refresh <gr>(ms)</gr>'
-		, checkbox     : [ 'Apply automatically' ]
+		, textlabel    : 'VU refresh rate <gr>(ms)</gr>'
 		, focus        : 0
 		, checkblank   : 1
 		, boxwidth     : 100
-		, values       : G.camillaguiconf
-		, boxwidth     : 100
+		, values       : G.camillarefresh
 		, checkchanged : ( G.camilladsp ? 1 : 0 )
-		, beforeshow   : function() {
-			$( '#infoContent tr:eq( 1 ) td:eq( 0 )' ).text( 'Configurations:' )
-		}
 		, cancel       : function() {
 			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
 		}
 		, ok           : function() {
-			bash( [ 'camillaguiset', ...infoVal() ] );
+			bash( [ 'camillaguiset', infoVal() ] );
 			notify( 'CamillaDSP', G.camilladsp ? 'Change ...' : 'Enable ...', 'camilladsp' );
 		}
 	} );

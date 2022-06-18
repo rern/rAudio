@@ -62,7 +62,10 @@ else
 	mv /tmp/addons $dirdata
 fi
 # camillagui
-ln -sf /srv/http/assets/fonts /srv/http/settings/camillagui/build
+dircamillagui=/srv/http/settings/camillagui/build
+ln -sf /srv/http/assets/fonts $dircamillagui
+ln -sf /srv/http/assets/css/colors.css $dircamillagui
+ln -sf /srv/http/assets/img/icon.png $dircamillagui
 # display
 cat << EOF > $dirsystem/display
 {

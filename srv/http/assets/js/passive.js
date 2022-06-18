@@ -296,19 +296,10 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	G.eqcurrent = data.current;
-	G.vcurrent = data.values.join( '' );
-	G.nameval = data.nameval;
-	O.values = [ '', data.current, ...data.values ];
-	var options = '';
-	data.presets.forEach( function( name ) {
-		options += '<option value="'+ name +'">'+ name +'</option>';
-	} );
-	$( '#eqpreset' ).html( options );
-	infoSetValues();
-	selectricRender();
-	eqButtonSet();
-	if ( !$( '#eqname' ).hasClass( 'hide' ) ) $( '#eq .selectric-wrapper' ).addClass( 'hide' )
+	if ( !$( '#eqpreset' ).length ) return
+	
+	G.eq = data;
+	infoEqualizer( 'update' );
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );

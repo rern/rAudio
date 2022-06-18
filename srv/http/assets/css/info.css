@@ -287,10 +287,11 @@ hr {
 #infoTop {
 	float: left;
 	width: calc( 100% - 40px );
-	color: var( --cw );
-	line-height: 40px;
+	height: 40px;
 	padding: 0 0 0 5px;
+	line-height: 40px;
 	text-align: left;
+	color: var( --cw );
 }
 #infoTop i {
 	float: left;
@@ -344,19 +345,17 @@ hr {
 	text-overflow: ellipsis;
 	letter-spacing: 2px;
 }
-#infoArrow {
-	position: absolute;
+#infoTab {
 	width: 100%;
+	background: var( --cgd );
 }
-#infoArrow i {
-	float: left;
-	width: 40px;
-	height: 40px;
-	font-size: 24px;
-	color: var( --cm );
+#infoTab a {
+	display: inline-block;
+	line-height: 40px;
 }
-.fa-arrow-right {
-	float: right !important;
+#infoTab a.active {
+	background: var( --cga );
+	border-radius: 5px 5px 0 0;
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;
@@ -573,6 +572,7 @@ hr {
 }
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
+	#infoTab,
 	#infoContent label,
 	input[type=checkbox],
 	input[type=radio],

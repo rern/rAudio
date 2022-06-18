@@ -201,19 +201,18 @@ select {
 	padding: 0 5px !important;
 	font-family: Lato;
 	font-size: 16px;
-	border: solid 1px var( --cgl ) !important;
 	color: var( --cw ) !important;
+}
+input[type=text],
+input[type=number] {
+	border: 1px solid var( --cg );
+	background-color: #000000;
 }
 input[type=text] {
 	width: 150px !important;
 }
-input[data-tip='Mixer name, must be unique'] {
-	width: 150px !important;
-}
-select {
-	width: 100% !important;
-	max-width: 175px;
-	padding: 0 !important;
+input[type=text]:focus {
+	outline: solid 2px var( --cg60 );
 }
 input[type=number] {
 	width: 70px !important;
@@ -232,9 +231,6 @@ input[type=checkbox] {
 }
 input:checked {
 	background-color: var( --cm ) !important;
-}
-input[type=text]:focus {
-	outline: solid 2px var( --cg60 );
 }
 input[type=range] {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -295,6 +291,14 @@ input[type=range]:disabled::-webkit-slider-thumb {
 }
 input[type=range]:disabled::-moz-range-thumb {
 	background-color: var( --cmd );
+}
+select {
+	width: 100% !important;
+	max-width: 175px;
+	padding: 1px !important;
+}
+input[data-tip='Mixer name, must be unique'] {
+	width: 150px !important;
 }
 
 /* ---------------------------------------------------------------------------- */
@@ -372,6 +376,7 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: none;
 }
 #button-compactview {
+	display: none;
 	float: none !important;
 }
 .button-compactview {
@@ -409,11 +414,13 @@ input[type=range]:disabled::-moz-range-thumb {
 	color: var( --cg60 );
 }
 #diveqhelp {
-	padding: 10px;
 	font-size: 16px;
 	line-height: 22px;
 	letter-spacing: 0;
 	color: var( --cg60 );
+}
+#compactview #diveqhelp {
+	padding: 0 50px;
 }
 /* Compact view button ------------------- */
 #compactview .box,
@@ -526,6 +533,8 @@ input[type=range]:disabled::-moz-range-thumb {
 }
 #eqhelp {
 	left: auto;
+}
+#compactview #eqhelp {
 	right: 5px;
 }
 #status pre {
@@ -540,6 +549,8 @@ input[type=range]:disabled::-moz-range-thumb {
 	background: var( --cga );
 }
 #applyauto {
+	display: block;
+	margin-top: 20px;
 	color: var( --cg60 );
 }
 #applyauto input {
@@ -807,6 +818,7 @@ textarea:focus-visible {
 	}
 	#button-compactview {
 		position: fixed;
+		display: flex;
 		top: 48px;
 	}
 	#divhelp {
@@ -888,6 +900,7 @@ textarea:focus-visible {
 .closepopup,
 .head svg,
 .resetzoom,
+#applyauto,
 #eqhelp,
 #log,
 #logo {

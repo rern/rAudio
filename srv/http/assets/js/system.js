@@ -312,13 +312,13 @@ $( '#setting-lcdchar' ).click( function() {
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
 	info( {
-		  icon          : 'lcdchar'
-		, title         : 'Character LCD'
-		, content       : infolcdchar
-		, boxwidth      : 180
-		, values        : G.lcdcharconf
-		, checkchanged  : ( G.lcdchar ? 1 : 0 )
-		, beforeshow    : function() {
+		  icon         : 'lcdchar'
+		, title        : 'Character LCD'
+		, content      : infolcdchar
+		, boxwidth     : 180
+		, values       : G.lcdcharconf
+		, checkchanged : ( G.lcdchar ? 1 : 0 )
+		, beforeshow   : function() {
 			$( '#infoContent .gpio td:even' )
 				.css( 'width', 60 )
 				.find( '.selectric-wrapper, .selectric' )
@@ -337,18 +337,20 @@ $( '#setting-lcdchar' ).click( function() {
 				$( '.i2c' ).toggleClass( 'hide', !i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
+			if ( G.lcdchar ) {
+				$( '#infoOk' )
+					.before( '<gr id="lcdlogo"><i class="fa fa-plus-r wh" style="font-size: 20px"></i>&ensp;Logo</gr>&ensp;' )
+					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
+				$( '#infoButtons gr' ).click( function() {
+					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
+					bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'"+ action )
+				} );
+			}
 		}
-		, cancel        : function() {
+		, cancel       : function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
-		, buttonlabel   : [ '<i class="fa fa-plus-r"></i>Logo', '<i class="fa fa-screenoff"></i>Sleep' ]
-		, buttoncolor   : [ '', orange ]
-		, button        : !G.lcdchar ? '' : [ 
-			  function() { bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'logo" ) }
-			, function() { bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'off" ) }
-		]
-		, buttonnoreset : 1
-		, ok            : function() {
+		, ok           : function() {
 			bash( [ 'lcdcharset', ...infoVal() ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}

@@ -165,7 +165,7 @@ info( {                                       // default
 	button        : [ FUNCTION, ... ]         // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
 	buttonfit     : 1                         // (none)         (fit buttons width to label)
-	buttonnoreset : 1                         // (none)         (do not hide/reset on button clicked)
+	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked)
 	
 	okno          : 1                         // (show)         (no ok button)
 	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
@@ -184,6 +184,7 @@ info( {                                       // default
 	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
+	noreload      : 1                         // (none)         (do not reset content - for update value)
 } );
 
 Get values: infoVal()
@@ -205,7 +206,7 @@ function infoReset() {
 O = {}
 function info( json ) {
 	O = json;
-	$( '#infoOverlay' ).html(`
+	if ( !O.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
@@ -213,7 +214,7 @@ function info( json ) {
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>
 </div>
-`);
+` );
 	O.infoscroll = $( window ).scrollTop();
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
@@ -231,9 +232,6 @@ function info( json ) {
 		return;
 	}
 	
-	// switch arrows
-	if ( O.arrowright ) switchRL( 'right', O.arrowright )
-	if ( O.arrowleft ) switchRL( 'left', O.arrowleft )
 	// title
 	if ( O.width ) $( '#infoBox' ).css( 'width', O.width );
 	if ( O.height ) $( '#infoContent' ).css( 'height', O.height );
@@ -814,13 +812,6 @@ function setFileImage( file ) {
 		ctx.rotate( Math.PI / 2 );
 		ctx.drawImage( img, -cw, -ch );
 		image.src = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function switchRL( rl, fn ) {
-	$( '#infoContent' ).before( '<div id="infoArrow"><i class="fa fa-arrow-'+ rl +'"></i></div>' );
-	$( '#infoArrow i' ).on( 'click', function() {
-		fn();
-		$( '#infoOverlay' ).removeClass( 'hide' ); // keep background on switch info
 	} );
 }
 

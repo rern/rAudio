@@ -155,14 +155,15 @@ $( '.settings' ).click( function() {
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
-		case 'camilladsp':
-			bash( [ 'camillagui' ], function() {
-				urlReachable( 'http://'+ location.host +':5000' );
-			} );
-			loader();
-			break;
-		case 'equalizer':
-			equalizer();
+		case 'dsp':
+			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
+				bash( [ 'camillagui' ], function() {
+					urlReachable( 'http://'+ location.host +':5000' );
+				} );
+				loader();
+			} else {
+				equalizer();
+			}
 			break;
 		case 'lock':
 			$.post( cmdphp, { cmd: 'logout' }, function() {
@@ -259,7 +260,7 @@ $( '#power' ).click( function() {
 	} );
 } );
 $( '#displaylibrary' ).click( function() {
-	infoLibrary();
+	infoLibrary( 1 );
 } );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {
@@ -363,9 +364,9 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
-		  plclear        : 'Confirm on replace'
-		, plsimilar      : 'Confirm on add similar'
-		, audiocdplclear : 'Clear on load Audio CD'
+		  plclear        : 'Confirm on <i class="fa fa-replace"></i>Replace <gr>|</gr> <i class="fa fa-play-replace"></i>'
+		, plsimilar      : 'Confirm on <i class="fa fa-lastfm"></i>Add similar'
+		, audiocdplclear : 'Clear on <i class="fa fa-audiocd"></i>Audio CD load'
 	}
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys = Object.keys( chkplaylist );

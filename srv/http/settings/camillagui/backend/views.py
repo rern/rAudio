@@ -88,12 +88,13 @@ async def get_param(request):
     cdsp = request.app["CAMILLA"]
     if name == "volume":
         result = cdsp.get_volume()
-    elif name == "volumemute":
+    elif name == "configmutevolume":
+        config = cdsp.get_config()
+        mute = True if cdsp.get_mute() else False
         volume = cdsp.get_volume()
-        mute = 1 if cdsp.get_mute() else 0
-        with open('/srv/http/settings/camillagui/config/gui-config.yml') as f:
-            applyauto = 1 if 'apply_config_automatically: true' in f.read() else 0
-        result = [volume, mute, applyauto]
+        result = {"config": config, "mute": mute, "volume": volume}
+        return web.json_response(result)
+        
     elif name == "signalrange":
         result = cdsp.get_signal_range()
     elif name == "signalrangedb":
@@ -161,7 +162,7 @@ async def eval_filter_values(request):
         config,
         name=(content["name"]),
         samplerate=samplerate,
-        npoints=300,
+        npoints=100,
     )
     data["channels"] = channels
     data["options"] = options
@@ -187,7 +188,7 @@ async def eval_filterstep_values(request):
         plot_config,
         step_index,
         name="Filterstep {}".format(step_index),
-        npoints=1000,
+        npoints=300,
     )
     data["channels"] = channels
     data["options"] = options
