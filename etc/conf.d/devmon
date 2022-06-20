@@ -1,1 +1,0 @@
-ARGS='--exec-on-drive "/srv/http/bash/settings/system.sh usbconnect" --exec-on-remove "/srv/http/bash/settings/system.sh usbremove"'
