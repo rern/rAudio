@@ -26,11 +26,4 @@ installstart "$1"
 
 getinstallzip
 
-udevadm control --reload-rules
-udevadm trigger
-
-systemctl daemon-reload
-systemctl try-restart bluetooth
-systemctl restart mpd
-
 installfinish
