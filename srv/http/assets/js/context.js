@@ -1,5 +1,6 @@
 function addReplace( cmd, command, title, msg ) {
 	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
+	console.log(command);
 	bash( command, function() {
 		if ( !G.display.playbackswitch ) return
 		
@@ -361,7 +362,8 @@ function webRadioCoverart() {
 			if ( coverart !== G.coverdefault ) {
 				var imagefilenoext = coverart.slice( 0, -15 );
 			} else {
-				var url = G.list.li.find( '.lipath' ).text().replace( /.*(http.*:)/, '$1' );
+				var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
+				var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 				var imagefilenoext = '/data/webradiosimg/'+ url.replace( /\//g, '|' );
 			}
 			imageReplace( '/srv/http'+ imagefilenoext, 'webradio' );
@@ -403,7 +405,8 @@ var htmlwebradio = `\
 function webRadioEdit() {
 	var name = G.list.name;
 	var img = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url = G.list.path.replace( /.*(http.*:)/, '$1' )
+	var pathsplit = G.list.path.split( '//' );
+	var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	var charset = G.list.li.data( 'charset' );
 	info( {
 		  icon         : 'webradio'
@@ -680,7 +683,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	
 	// replaceplay|replace|addplay|add //////////////////////////////////////////
-	var path = G.mode !== 'webradio' ? G.list.path : G.list.path.replace( /.*(http.*:)/, '$1' );
+	var path = G.list.path;
+	if ( G.mode === 'webradio' ) {
+		var pathsplit = path.split( '//' );
+		path = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+	}
 	var mpccmd;
 	// must keep order otherwise replaceplay -> play, addplay -> play
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
