@@ -347,7 +347,7 @@ hr {
 }
 #infoTab {
 	width: 100%;
-	margin-bottom: -1px; /* fix - chrome bottom thin line */
+	margin-bottom: -2px; /* fix - chrome bottom thin line */
 	background: var( --cgd );
 }
 #infoTab a {
