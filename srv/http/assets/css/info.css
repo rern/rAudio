@@ -347,7 +347,6 @@ hr {
 }
 #infoTab {
 	width: 100%;
-	margin-bottom: -2px; /* fix - chrome bottom thin line */
 	background: var( --cgd );
 }
 #infoTab a {
@@ -356,7 +355,7 @@ hr {
 }
 #infoTab a.active {
 	background: var( --cga );
-	border-radius: 5px 5px 0 0;
+	border-radius: 6px 6px 0 0;
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;

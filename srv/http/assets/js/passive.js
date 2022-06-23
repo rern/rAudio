@@ -257,6 +257,7 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
+	console.log(data)
 	if ( 'submenu' in data ) {
 		G.display[ data.submenu ] = data.value;
 		displaySubMenu();
@@ -293,6 +294,7 @@ function psDisplay( data ) {
 				}, 'json' );
 			}
 		}
+		$( '#button-lib-back' ).toggleClass( 'back-left', G.display.backonleft );
 	}
 }
 function psEqualizer( data ) {
