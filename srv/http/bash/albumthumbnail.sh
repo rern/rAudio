@@ -5,7 +5,11 @@
 warningWrite() {
 	title "$warn Unable to create thumbnails."
 	echo "Directory:  $( tcolor "$1" )"
-	echo -e "Permission: $( ls -ld "$1" | cut -d' ' -f1 | sed 's/r-/r\\e[31m-\\e[0m/g' )\n"
+	if (( $( stat -c %a "$1" ) < 755 )); then
+		echo "No write permission: $( stat -c '%A (%a)' "$1" )"
+	else
+		echo "Conversion failed."
+	fi
 }
 
 title "$bar Update Album Thumbnails ..."
