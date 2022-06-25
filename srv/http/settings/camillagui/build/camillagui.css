@@ -126,6 +126,7 @@ body {
 	padding: 20px 0;
 	text-align: right;
 	background: #000000;
+	z-index: 1;
 }
 #divhelp a {
 	color: var( --cml );

@@ -166,10 +166,11 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'</li>';
 			$countupnp++;
 		} else {
-			if ( substr( $file, 0, 4 ) === 'http' ) { // webradio
+			if ( str_contains( $file, '://' ) ) { // webradio
 				$urlname = str_replace( '/', '|', $file );
 				$fileradio = '/srv/http/data/webradios/'.$urlname;
-				$stationname = file_exists( $fileradio ) ? exec( 'head -1 "'.$fileradio.'"' ) : '';
+				if ( !file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/webradios -name "'.$urlname.'" | head -1' );
+				$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
 				$urlname = str_replace( '#', '%23', $list->urlname );
 				$stationname = '';

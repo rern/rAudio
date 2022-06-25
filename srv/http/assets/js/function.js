@@ -685,12 +685,18 @@ function infoLibrary( page1 ) {
 		, messagealign : 'left'
 		, checkbox     : checkbox
 		, checkcolumn  : page1 ? 1 : ''
+		, noreload     : !$( '#infoOverlay' ).hasClass( 'hide' )
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
 			var active1 = page1 ? 'class="active"' : '';
 			var active2 = page1 ? '' : 'class="active"';
-			$( '#infoContent' ).before( '<div id="infoTab"><a '+ active1 +' style="width: 50%">Show</a><a '+ active2 +' style="width: 50%">Options</a></div>' );
+			var htmltab = '<a '+ active1 +' style="width: 50%">Show</a><a '+ active2 +' style="width: 50%">Options</a>';
+			if ( !$( '#infoTab' ).length ) {
+				$( '#infoContent' ).before( '<div id="infoTab">'+ htmltab +'</div>' );
+			} else {
+				$( '#infoTab' ).html( htmltab );
+			}
 			$( '#infoTab a' ).click( function() {
 				if ( !$( this ).hasClass( 'active' ) ) page1 ? infoLibrary() : infoLibrary( 1 );
 			} );
@@ -972,7 +978,6 @@ function renderLibrary() {
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
-	$( '#button-lib-back' ).toggleClass( 'back-left', G.display.backonleft );
 	$( '#lib-breadcrumbs, #lib-search, #lib-index, #button-lib-back' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-search-input' ).val( '' );
@@ -1012,7 +1017,9 @@ function renderLibraryCounts() {
 function renderLibraryList( data ) {
 	G.librarylist = 1;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
-	$( '#button-lib-back' ).toggleClass( 'hide', data.modetitle === 'search' );
+	$( '#button-lib-back' )
+		.toggleClass( 'back-left', G.display.backonleft )
+		.toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
 	if ( 'count' in data && G.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );

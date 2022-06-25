@@ -319,7 +319,7 @@ dtparam=audio=on"
 	pushReboot 'Audio I&#178;S module' i2saudio
 	;;
 journalctl )
-	filebootlog=$dirdata/tmp/bootlog
+	filebootlog=/tmp/bootlog
 	if [[ -e $filebootlog ]]; then
 		journal=$( cat $filebootlog )
 	else
