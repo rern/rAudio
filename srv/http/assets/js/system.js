@@ -1015,7 +1015,7 @@ function renderStatus() {
 	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
 	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
-			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+			+'<br>'+ ( G.startup ? G.startup.replace( ' ', 's <gr>kernel</gr> ' ) +'s <gr>userspace</gr>' : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) {                       // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ) // 20 bits ( hex > decimal > binary )

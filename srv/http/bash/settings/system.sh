@@ -324,13 +324,7 @@ journalctl )
 		journal=$( cat $filebootlog )
 	else
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		if grep -q 'Startup finished.*kernel' <<< "$journal"; then
-			echo "$journal" > $filebootlog
-		else
-			journal+='
-(Starting ...)
-'
-		fi
+		grep -q 'Startup finished.*kernel' <<< "$journal" && echo "$journal" > $filebootlog
 	fi
 	echo "\
 <bll># journalctl -b</bll>

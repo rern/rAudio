@@ -240,6 +240,12 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
+	if ( data.title === 'startup' && page === 'system' ) {
+		G.startup = data.text
+		renderStatus()
+		return
+	}
+	
 	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
 	
 	G.bannerhold = data.hold || 0;

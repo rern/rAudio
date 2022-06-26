@@ -7,7 +7,7 @@ data='
   "page"             : "system"
 , "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
 , "cputemp"          : '$( [[ $cputemp ]] && echo $cputemp || echo 0 )'
-, "startup"          : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
+, "startup"          : "'$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )'"
 , "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 , "time"             : "'$( date +'%T %F' )'"
 , "timezone"         : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
