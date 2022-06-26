@@ -67,7 +67,7 @@ html
 		...
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body[, $id] );
 */
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;

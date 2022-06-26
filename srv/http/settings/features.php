@@ -2,7 +2,9 @@
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 
-$head = [ 'title' => 'Renderers' ]; //////////////////////////////////
+if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
+// ----------------------------------------------------------------------------------
+$head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'AirPlay'
@@ -72,7 +74,9 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'renderers' );
+// ----------------------------------------------------------------------------------
+}
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
