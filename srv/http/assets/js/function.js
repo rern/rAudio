@@ -669,9 +669,9 @@ var chklibrary2 = {
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
-function infoLibrary( page1 ) {
-	var checkbox = Object.values( page1 ? chklibrary : chklibrary2 );
-	var keys = Object.keys( page1 ? chklibrary : chklibrary2 );
+function infoLibrary( page2 ) {
+	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
+	var keys = Object.keys( page2 ? chklibrary2 : chklibrary );
 	keys = keys.filter( function( k ) {
 		return k[ 0 ] !== '-'
 	} );
@@ -682,22 +682,17 @@ function infoLibrary( page1 ) {
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
+		, tab          : [ 'Show', 'Options' ]
+		, tabfunction  : [ infoLibrary, infoLibrary2 ]
+		, tabactive    : page2 ? 1 : 0
 		, messagealign : 'left'
 		, checkbox     : checkbox
-		, checkcolumn  : page1 ? 1 : ''
+		, checkcolumn  : page2 ? '' : 1
 		, noreload     : !$( '#infoOverlay' ).hasClass( 'hide' )
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			$( '#infoTab' ).remove();
-			$( '#infoContent' ).before( '<div id="infoTab"><a>Show</a><a>Options</a></div>' );
-			$( '#infoTab a' )
-				.css( 'width', '50%' )
-				.eq( page1 ? 0 : 1 ).addClass( 'active' );
-			$( '#infoTab a' ).click( function() {
-				if ( !$( this ).hasClass( 'active' ) ) page1 ? infoLibrary() : infoLibrary( 1 );
-			} );
-			if ( !page1 ) {
+			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
@@ -722,6 +717,9 @@ function infoLibrary( page1 ) {
 			displaySave( keys );
 		}
 	} );
+}
+function infoLibrary2() {
+	infoLibrary( 2 );
 }
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {

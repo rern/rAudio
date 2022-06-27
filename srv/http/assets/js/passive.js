@@ -257,7 +257,6 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
-	console.log(data)
 	if ( 'submenu' in data ) {
 		G.display[ data.submenu ] = data.value;
 		displaySubMenu();
