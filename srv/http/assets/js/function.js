@@ -689,14 +689,11 @@ function infoLibrary( page1 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			var active1 = page1 ? 'class="active"' : '';
-			var active2 = page1 ? '' : 'class="active"';
-			var htmltab = '<a '+ active1 +' style="width: 50%">Show</a><a '+ active2 +' style="width: 50%">Options</a>';
-			if ( !$( '#infoTab' ).length ) {
-				$( '#infoContent' ).before( '<div id="infoTab">'+ htmltab +'</div>' );
-			} else {
-				$( '#infoTab' ).html( htmltab );
-			}
+			$( '#infoTab' ).remove();
+			$( '#infoContent' ).before( '<div id="infoTab"><a>Show</a><a>Options</a></div>' );
+			$( '#infoTab a' )
+				.css( 'width', '50%' )
+				.eq( page1 ? 0 : 1 ).addClass( 'active' );
 			$( '#infoTab a' ).click( function() {
 				if ( !$( this ).hasClass( 'active' ) ) page1 ? infoLibrary() : infoLibrary( 1 );
 			} );
