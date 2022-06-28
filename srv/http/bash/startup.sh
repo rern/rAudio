@@ -149,4 +149,4 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 fi
 
 startup=$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )
-pushstream refresh '{"startup":"'$startup'"}'
+pushstream refresh '{"startupfinished":"'$startup'"}'

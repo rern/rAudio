@@ -522,12 +522,26 @@ mpdoledset )
 	fi
 	;;
 powerbuttondisable )
-	systemctl disable --now powerbutton
-	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
-	sed -i '/gpio-shutdown/ d' $fileconfig
+	if [[ -e $dirsystem/audiophonics ]]; then
+		rm $dirsystem/audiophonics
+	else
+		systemctl disable --now powerbutton
+		gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
+	fi
+	sed -i '/gpio-poweroff\|gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )
+	if [[ ${args[4]} == true ]]; then
+		sed -i '/disable_overscan/ a\
+dtoverlay=gpio-poweroff,gpiopin=22\
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
+' $fileconfig
+		touch $dirsystem/audiophonics
+		pushReboot 'Power Button' power
+		exit
+	fi
+	
 	sw=${args[1]}
 	led=${args[2]}
 	reserved=${args[3]}

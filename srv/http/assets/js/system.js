@@ -381,7 +381,10 @@ $( '#setting-powerbutton' ).click( function() {
 <tr class="reserved hide"><td>Reserved</td>
 	<td><select >${ respin }</select></td>
 </tr>
-</table>`;
+</table>
+<br>
+<input id="audiophonics" type="checkbox"> Audiophonics</td>
+`;
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
@@ -390,9 +393,16 @@ $( '#setting-powerbutton' ).click( function() {
 		, values       : [ 5, ...G.powerbuttonconf ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
-			$( '#infoContent select' ).eq( 0 ).change( function() {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			if ( !G.powerbuttonconf[ 3 ] ) {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
+				$( '#infoContent select' ).eq( 0 ).change( function() {
+					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+				} );
+			} else {
+				$( '#infoContent table' ).addClass( 'hide' );
+			}
+			$( '#audiophonics' ).change( function() {
+				$( '#infoContent table' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
 		, cancel       : function() {
