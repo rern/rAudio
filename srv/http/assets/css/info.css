@@ -347,6 +347,7 @@ hr {
 }
 #infoTab {
 	width: 100%;
+	font-size: 16px;
 	background: var( --cgd );
 }
 #infoTab a {
