@@ -465,7 +465,7 @@ function info( json ) {
 	if ( !htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		setButoonWidth();
+		setButtonWidth();
 		return
 	}
 	
@@ -497,7 +497,7 @@ function info( json ) {
 			$( '#infoOverlay' ).focus();
 		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		setButoonWidth();
+		setButtonWidth();
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
@@ -741,7 +741,7 @@ function selectricRender() {
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
-function setButoonWidth() {
+function setButtonWidth() {
 	if ( O.buttonfit ) return
 	
 	var widest = 0;
