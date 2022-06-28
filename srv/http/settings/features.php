@@ -30,7 +30,7 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast wh"></i>
+ • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -100,7 +100,7 @@ HTML
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
  &emsp; • Enable SnapClient
- &emsp; • Connect: &ensp;<i class="fa fa-networks"></i>Networks |&ensp;<i class="fa fa-snapcast wh"></i>
+ &emsp; • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
  • Snapcast control client and player:
  &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a>
  &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
@@ -121,7 +121,7 @@ $body = [
 		, 'disabled' =>  ( exec( 'systemctl -q is-active bluetooth && echo true' ) ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-camilladsp"></i>
+Settings:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-camilladsp"></i>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -133,7 +133,7 @@ HTML
 		, 'disabled' => 'DSP is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control:&emsp;<i class="fa fa-features"></i>Features |&ensp;<i class="fa fa-equalizer"></i>
+Control:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-equalizer"></i>
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
  • New: Adjust > <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
@@ -220,7 +220,7 @@ HTML
 		, 'setting' => true
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: &ensp;<i class="fa fa-playlist"></i>Playlist |&ensp;<i class="fa fa-raudiobox wh"></i>
+Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="fa fa-raudiobox wh"></i>
  • SSH passwords must be default.
 HTML
 	]
@@ -232,7 +232,7 @@ HTML
 		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-player"></i>Player |&ensp;<i class="fa fa-lock wh"></i>
+Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>
 HTML
 	]
 	, [
