@@ -348,11 +348,11 @@ hr {
 #infoTab {
 	width: 100%;
 	font-size: 16px;
+	line-height: 40px;
 	background: var( --cgd );
 }
 #infoTab a {
 	display: inline-block;
-	line-height: 40px;
 }
 #infoTab a.active {
 	background: var( --cga );
