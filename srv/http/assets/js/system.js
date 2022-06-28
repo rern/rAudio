@@ -383,7 +383,7 @@ $( '#setting-powerbutton' ).click( function() {
 </tr>
 </table>
 <br>
-<input id="audiophonics" type="checkbox"> Audiophonics</td>
+<label><input id="audiophonics" type="checkbox"> Audiophonics</label>
 `;
 	info( {
 		  icon         : 'power'
