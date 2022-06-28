@@ -348,7 +348,6 @@ hr {
 #infoTab {
 	width: 100%;
 	background: var( --cgd );
-	border-bottom: 1px solid var( --cga );
 }
 #infoTab a {
 	display: inline-block;
@@ -357,6 +356,7 @@ hr {
 #infoTab a.active {
 	background: var( --cga );
 	border-radius: 6px 6px 0 0;
+	border-bottom: 1px solid var( --cga );
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;
