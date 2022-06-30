@@ -845,9 +845,16 @@ $( '.listtitle' ).click( function() {
 	}
 } );
 $( '.list' ).on( 'click', 'bl', function() {
-	var pkg = $( this ).text();
-	bash( 'pacman -Qi '+ $( this ).text() +" | grep ^URL | sed 's/.*: //'", function( url ) {
-		window.open( url );
+	bash( 'pacman -Qi '+ $( this ).text() +' | head -5 | grep -v ^Arch | sed "s/    //"', function( data ) {
+		info( {
+			  icon     : 'gear'
+			, title    : 'Package'
+			, message  : '<pre style="white-space: pre-wrap">'
+						+ data.replace( /(URL *: )(.*)/, '$1<a href="$2" target="_blank">$2</a>' )
+						+'</pre>'
+			, boxwidth : 'max'
+			, okno     : 1
+		} );
 	} );
 } );
 $( '.sub .help' ).click( function() {
