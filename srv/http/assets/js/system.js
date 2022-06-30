@@ -821,12 +821,13 @@ $( '.listtitle' ).click( function() {
 		if ( $list.html() ) {
 			$list.removeClass( 'hide' );
 		} else {
-			bash( 'pacman -Qq', function( list ) {
-				var list = list.split( '\n' );
+			bash( 'pacman -Q', function( list ) {
+				var list = list.trim().split( '\n' );
 				pkghtml = '';
 				list.forEach( function( pkg ) {
 					if ( !localhost ) {
-						pkghtml += '<bl>'+ pkg +'</bl><br>';
+						pkg = pkg.split( ' ' );
+						pkghtml += '<bl>'+ pkg[ 0 ] +'</bl> '+ pkg[ 1 ] +'<br>';
 					} else {
 						pkghtml += pkg +'<br>';
 					}
