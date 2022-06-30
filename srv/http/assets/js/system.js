@@ -845,16 +845,18 @@ $( '.listtitle' ).click( function() {
 	}
 } );
 $( '.list' ).on( 'click', 'bl', function() {
-	bash( 'pacman -Qi '+ $( this ).text() +' | head -5 | grep -v ^Arch | sed "s/    //"', function( data ) {
-		info( {
-			  icon     : 'gear'
-			, title    : 'Package'
-			, message  : '<pre style="white-space: pre-wrap">'
-						+ data.replace( /(URL *: )(.*)/, '$1<a href="$2" target="_blank">$2</a>' )
-						+'</pre>'
-			, boxwidth : 'max'
-			, okno     : 1
-		} );
+	var $next = $( this ).next();
+	if ( $next.hasClass( 'detail' ) ) {
+		$next.toggleClass( 'hide' );
+		return
+	}
+	
+	bash( 'pacman -Qi '+ $( this ).text() +" | grep '^Desc\\|^URL' | sed 's/.*: //'", function( data ) {
+		var data = data.split( '\n' );
+		$next.before(
+			 '<div class="detail"> &emsp; '+ data[ 0 ]
+			+'<br> &emsp; <a href="'+ data[ 1 ] +'" target="_blank">'+ data[ 1 ] +'</a><br><div>'
+		);
 	} );
 } );
 $( '.sub .help' ).click( function() {
