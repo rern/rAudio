@@ -846,8 +846,8 @@ $( '.listtitle' ).click( function() {
 } );
 $( '.list' ).on( 'click', 'bl', function() {
 	var pkg = $( this ).text();
-	bash( 'pacman -Qi '+ $( this ).text() +' | grep ^URL', function( url ) {
-		window.open( url.replace( /.*: /, '' ) );
+	bash( 'pacman -Qi '+ $( this ).text() +" | grep ^URL | sed 's/.*: //'", function( url ) {
+		window.open( url );
 	} );
 } );
 $( '.sub .help' ).click( function() {
