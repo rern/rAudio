@@ -521,6 +521,14 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
+packagelist )
+	pacman -Qi \
+		| grep '^Name\|^Vers\|^Desc\|^URL' \
+		| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
+			   s|^Vers.*: \(.*\)|\1</div>|
+			   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
+			   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|'
+	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
 		rm $dirsystem/audiophonics

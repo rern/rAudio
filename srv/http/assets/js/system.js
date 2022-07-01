@@ -821,19 +821,9 @@ $( '.listtitle' ).click( function() {
 		if ( $list.html() ) {
 			$list.removeClass( 'hide' );
 		} else {
-			bash( 'pacman -Q', function( list ) {
-				var list = list.trim().split( '\n' );
-				pkghtml = '';
-				list.forEach( function( pkg ) {
-					if ( !localhost ) {
-						pkg = pkg.split( ' ' );
-						pkghtml += '<bl>'+ pkg[ 0 ] +'</bl> '+ pkg[ 1 ] +'<br>';
-					} else {
-						pkghtml += pkg +'<br>';
-					}
-				} );
+			bash( [ 'packagelist' ], function( list ) {
 				$list
-					.html( pkghtml.slice( 0, -4 ) )
+					.html( list )
 					.removeClass( 'hide' );
 			} );
 		}
@@ -843,21 +833,6 @@ $( '.listtitle' ).click( function() {
 			.addClass( 'fa-chevron-down' );
 		$list.addClass( 'hide' );
 	}
-} );
-$( '.list' ).on( 'click', 'bl', function() {
-	var $next = $( this ).next();
-	if ( $next.hasClass( 'detail' ) ) {
-		$next.toggleClass( 'hide' );
-		return
-	}
-	
-	bash( 'pacman -Qi '+ $( this ).text() +" | grep '^Desc\\|^URL' | sed 's/.*: //'", function( data ) {
-		var data = data.split( '\n' );
-		$next.before(
-			 '<div class="detail"> &emsp; '+ data[ 0 ]
-			+'<br> &emsp; <a href="'+ data[ 1 ] +'" target="_blank">'+ data[ 1 ] +'</a><br><div>'
-		);
-	} );
 } );
 $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );

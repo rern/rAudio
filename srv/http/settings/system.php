@@ -338,21 +338,53 @@ HTML
 ];
 htmlSection( $head, $body );
 $listui = [
-	  'jQuery'             => 'https://jquery.com/'
-	, 'HTML5-Color-Picker' => 'https://github.com/NC22/HTML5-Color-Picker'
-	, 'Inconsolata font'   => 'https://github.com/google/fonts/tree/main/ofl/inconsolata'
-	, 'jQuery Selectric'   => 'https://github.com/lcdsantos/jQuery-Selectric'
-	, 'Lato-Fonts'         => 'http://www.latofonts.com/lato-free-fonts'
-	, 'lazysizes'          => 'https://github.com/aFarkas/lazysizes'
-	, 'pica'               => 'https://github.com/nodeca/pica'
-	, 'QR Code generator'  => 'https://github.com/datalog/qrcode-svg'
-	, 'roundSlider'        => 'https://github.com/soundar24/roundSlider'
-	, 'simple-keyboard'    => 'https://github.com/hodgef/simple-keyboard/'
-	, 'Sortable'           => 'https://github.com/SortableJS/Sortable'
+	[
+	    'HTML5-Color-Picker'
+	  , 'A scaleable color picker implemented using HTML5'
+	  , 'https://github.com/NC22/HTML5-Color-Picker'
+	],[
+	    'Inconsolata font'
+	  , 'A monospace font designed for printed code listings and the like'
+	  , 'https://fonts.google.com/specimen/Inconsolata'
+	],[
+	    'jQuery Selectric'
+	  , 'A plugin for easy manipulation and customization of HTML selects'
+	  , 'https://github.com/lcdsantos/jQuery-Selectric'
+	],[
+	    'Lato-Fonts'
+	  , 'A san-serif typeface family'
+	  , 'http://www.latofonts.com/lato-free-fonts'
+	],[
+	    'lazysizes'
+	  , 'Lazy loader for images'
+	  , 'https://github.com/aFarkas/lazysizes'
+	],[
+	    'pica'
+	  , 'Resize image in browser with high quality and high speed'
+	  , 'https://github.com/nodeca/pica'
+	],[
+	    'QR Code generator'
+	  , 'QR Code generator'
+	  , 'https://github.com/datalog/qrcode-svg'
+	],[
+	    'roundSlider'
+	  , 'A plugin that allows the user to select a value or range of values.'
+	  , 'https://github.com/soundar24/roundSlider'
+	],[
+	    'simple-keyboard'
+	  , 'Virtual Keyboard'
+	  , 'https://github.com/hodgef/simple-keyboard/'
+	],[
+	    'Sortable'
+	  , 'Reorderable drag-and-drop lists'
+	  , 'https://github.com/SortableJS/Sortable'
+	]
 ];
 $uihtml = '';
-foreach( $listui as $name => $link ) {
-	$uihtml.= $localhost ? $name.'<br>' : '<a href="'.$link.'" target="_blank">'.$name.'</a><br>';
+foreach( $listui as $ui ) {
+	$uihtml.= '<code>'.$ui[ 0 ].'</code>';
+	$uihtml.= '<br> &emsp; '.$ui[ 1 ];
+	$uihtml.= $localhost ? '' : '<br> &emsp; <a href="'.$ui[ 2 ].'" target="_blank">'.$ui[ 2 ].'</a><br>';
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
@@ -363,25 +395,26 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><gr>by</gr>&emsp;r e r n
 	<br>&nbsp;
 
-	<heading class="sub">Back End<i class="help fa fa-help"></i></heading>
-	<div id="divbackend" class="help-sub hide">
+	<heading class="sub">Back End</heading>
+	<div id="divbackend" class="help-sub">
 	<a href="https://www.archlinuxarm.org" target="_blank">ArchLinuxArm</a>
 	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list hide"></div><br>&nbsp;
+	<div class="list gr hide"></div><br>&nbsp;
 	</div>
 
-	<heading class="sub">Front End<i class="help fa fa-help"></i></heading>
-	<div id="divfrontend" class="help-sub hide">
+	<heading class="sub">Front End</heading>
+	<div id="divfrontend" class="help-sub">
 		<a href="https://whatwg.org" target="_blank">HTML</a>
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
 	<br><a href="https://www.php.net" target="_blank">PHP</a>
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
+	<br><a href="https://jquery.com/" target="_blank">jQuery</a>
 	<br><span class="listtitle">JS libraries and plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list hide"><?=$uihtml?></div><br>&nbsp;
+	<div class="list gr hide"><?=$uihtml?></div><br>&nbsp;
 	</div>
 
-	<heading class="sub">Data<i class="help fa fa-help"></i></heading>
-	<div id="divdata" class="gr help-sub hide">
+	<heading class="sub">Data</heading>
+	<div id="divdata" class="gr help-sub">
 		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
 	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
 	<br><a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for each stations
