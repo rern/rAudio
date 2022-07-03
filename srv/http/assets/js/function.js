@@ -740,7 +740,15 @@ function infoUpdate( path ) {
 		, radio   : ( path ? '' : radio )
 		, values  : 'update'
 		, ok      : function() {
-			bash( [ 'mpcupdate', infoVal() ] );
+			bash( [ 'mpcupdate', infoVal() ], function( std ) {
+				if ( std == -1 ) {
+					info( {
+						  icon    : 'refresh-library'
+						, title   : 'Rescan DAB radio'
+						, message : 'No DAB device found.'
+					} );
+				}
+			} );
 		}
 	} );
 }

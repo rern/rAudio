@@ -297,7 +297,7 @@ elif [[ $stream ]]; then
 			icon=radiofrance
 		elif [[ $file == *stream.radioparadise.com* ]]; then
 			icon=radioparadise
-		elif [[ $file == *rtsp://*$( hostname -f )* ]]
+		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
 			icon=dab
 		fi
 		if [[ $state != play ]]; then
