@@ -669,9 +669,9 @@ var chklibrary2 = {
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
-function infoLibrary( page1 ) {
-	var checkbox = Object.values( page1 ? chklibrary : chklibrary2 );
-	var keys = Object.keys( page1 ? chklibrary : chklibrary2 );
+function infoLibrary( page2 ) {
+	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
+	var keys = Object.keys( page2 ? chklibrary2 : chklibrary );
 	keys = keys.filter( function( k ) {
 		return k[ 0 ] !== '-'
 	} );
@@ -682,25 +682,17 @@ function infoLibrary( page1 ) {
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
+		, tab          : [ 'Show', 'Options' ]
+		, tabfunction  : [ infoLibrary, infoLibrary2 ]
+		, tabactive    : page2 ? 1 : 0
 		, messagealign : 'left'
 		, checkbox     : checkbox
-		, checkcolumn  : page1 ? 1 : ''
+		, checkcolumn  : page2 ? '' : 1
 		, noreload     : !$( '#infoOverlay' ).hasClass( 'hide' )
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
-			var active1 = page1 ? 'class="active"' : '';
-			var active2 = page1 ? '' : 'class="active"';
-			var htmltab = '<a '+ active1 +' style="width: 50%">Show</a><a '+ active2 +' style="width: 50%">Options</a>';
-			if ( !$( '#infoTab' ).length ) {
-				$( '#infoContent' ).before( '<div id="infoTab">'+ htmltab +'</div>' );
-			} else {
-				$( '#infoTab' ).html( htmltab );
-			}
-			$( '#infoTab a' ).click( function() {
-				if ( !$( this ).hasClass( 'active' ) ) page1 ? infoLibrary() : infoLibrary( 1 );
-			} );
-			if ( !page1 ) {
+			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
@@ -726,6 +718,9 @@ function infoLibrary( page1 ) {
 		}
 	} );
 }
+function infoLibrary2() {
+	infoLibrary( 2 );
+}
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
@@ -736,15 +731,24 @@ function infoUpdate( path ) {
 		return
 	}
 	
+	var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+	if ( G.display.dab ) radio[ 'Rescan DAB radio' ] = 'dab';
 	info( {
 		  icon    : 'refresh-library'
 		, title   : 'Library Database'
 		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
-		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
-		, values  : [ 1 ]
+		, radio   : ( path ? '' : radio )
+		, values  : 'update'
 		, ok      : function() {
-			if ( infoVal() == 2 ) path = 'rescan';
-			bash( [ 'mpcupdate', path ] );
+			bash( [ 'mpcupdate', infoVal() ], function( std ) {
+				if ( std == -1 ) {
+					info( {
+						  icon    : 'refresh-library'
+						, title   : 'Rescan DAB radio'
+						, message : 'No DAB device found.'
+					} );
+				}
+			} );
 		}
 	} );
 }

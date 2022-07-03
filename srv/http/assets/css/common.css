@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.2022040300.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2022060200.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -133,6 +133,7 @@ input::-moz-focus-inner {
 .fa-consume::before { content: '\f566' }
 .fa-coverart-refresh::before { content: '\f53D' }
 .fa-crop::before { content: '\f568' }
+.fa-dab::before { content: '\f589' }
 .fa-date::before { content: '\f55C' }
 .fa-edit-circle::before { content: '\f565' }
 .fa-equalizer::before { content: '\f50C' }

@@ -132,9 +132,10 @@ heading {
 }
 heading.sub {
 	margin: 5px 0 10px 0;
-	padding-bottom: 5px;
+	padding-bottom: 0;
 	line-height: 24px;
-	font-size: 18px;
+	font-size: 17px;
+	border-bottom-color: var( --cga );
 }
 heading.status .headtitle::after,
 .col-l.status gr::after {
@@ -522,7 +523,7 @@ input.disabled + .switchlabel:after {
 	background: var( --cw );
 }
 .list {
-	padding-left: 20px;
+	margin-top: 10px;
 }
 #guide {
 	position: absolute;

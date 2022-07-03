@@ -324,13 +324,7 @@ journalctl )
 		journal=$( cat $filebootlog )
 	else
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		if grep -q 'Startup finished.*kernel' <<< "$journal"; then
-			echo "$journal" > $filebootlog
-		else
-			journal+='
-(Starting ...)
-'
-		fi
+		grep -q 'Startup finished.*kernel' <<< "$journal" && echo "$journal" > $filebootlog
 	fi
 	echo "\
 <bll># journalctl -b</bll>
@@ -527,13 +521,35 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
+packagelist )
+	pacman -Qi \
+		| grep '^Name\|^Vers\|^Desc\|^URL' \
+		| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
+			   s|^Vers.*: \(.*\)|\1</div>|
+			   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
+			   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|'
+	;;
 powerbuttondisable )
-	systemctl disable --now powerbutton
-	gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
-	sed -i '/gpio-shutdown/ d' $fileconfig
+	if [[ -e $dirsystem/audiophonics ]]; then
+		rm $dirsystem/audiophonics
+	else
+		systemctl disable --now powerbutton
+		gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
+	fi
+	sed -i '/gpio-poweroff\|gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )
+	if [[ ${args[4]} == true ]]; then
+		sed -i '/disable_overscan/ a\
+dtoverlay=gpio-poweroff,gpiopin=22\
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
+' $fileconfig
+		touch $dirsystem/audiophonics
+		pushReboot 'Power Button' power
+		exit
+	fi
+	
 	sw=${args[1]}
 	led=${args[2]}
 	reserved=${args[3]}

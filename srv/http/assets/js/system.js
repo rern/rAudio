@@ -381,7 +381,10 @@ $( '#setting-powerbutton' ).click( function() {
 <tr class="reserved hide"><td>Reserved</td>
 	<td><select >${ respin }</select></td>
 </tr>
-</table>`;
+</table>
+<br>
+<label><input id="audiophonics" type="checkbox"> Audiophonics</label>
+`;
 	info( {
 		  icon         : 'power'
 		, title        : 'Power Button'
@@ -390,9 +393,16 @@ $( '#setting-powerbutton' ).click( function() {
 		, values       : [ 5, ...G.powerbuttonconf ]
 		, checkchanged : ( G.powerbutton ? 1 : 0 )
 		, beforeshow   : function() {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
-			$( '#infoContent select' ).eq( 0 ).change( function() {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			if ( !G.powerbuttonconf[ 3 ] ) {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
+				$( '#infoContent select' ).eq( 0 ).change( function() {
+					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+				} );
+			} else {
+				$( '#infoContent table' ).addClass( 'hide' );
+			}
+			$( '#audiophonics' ).change( function() {
+				$( '#infoContent table' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
 		, cancel       : function() {
@@ -811,18 +821,9 @@ $( '.listtitle' ).click( function() {
 		if ( $list.html() ) {
 			$list.removeClass( 'hide' );
 		} else {
-			bash( 'pacman -Qq', function( list ) {
-				var list = list.split( '\n' );
-				pkghtml = '';
-				list.forEach( function( pkg ) {
-					if ( !localhost ) {
-						pkghtml += '<bl>'+ pkg +'</bl><br>';
-					} else {
-						pkghtml += pkg +'<br>';
-					}
-				} );
+			bash( [ 'packagelist' ], function( list ) {
 				$list
-					.html( pkghtml.slice( 0, -4 ) )
+					.html( list )
 					.removeClass( 'hide' );
 			} );
 		}
@@ -831,17 +832,6 @@ $( '.listtitle' ).click( function() {
 			.removeClass( 'fa-chevron-up' )
 			.addClass( 'fa-chevron-down' );
 		$list.addClass( 'hide' );
-	}
-} );
-$( '.list' ).on( 'click', 'bl', function() {
-	var pkg = $( this ).text();
-	if ( [ 'alsaequal', 'audio_spectrum_oled', 'bluealsa', 'cava', 'hfsprogs'
-		, 'matchbox-window-manager', 'nginx-mainline-pushstream'
-		, 'plymouth-lite-rbp-git', 'python-rpi-gpio', 'python-rplcd', 'python-smbus2'
-		, 'raspberrypi-stop-initramfs', 'snapcast', 'upmpdcli', 'xf86-video-fbturbo-git' ].includes( pkg ) ) {
-		window.open( 'https://aur.archlinux.org/packages/'+ pkg );
-	} else {
-		window.open( 'https://archlinuxarm.org/packages/aarch64/'+ pkg );
 	}
 } );
 $( '.sub .help' ).click( function() {
@@ -1015,7 +1005,7 @@ function renderStatus() {
 	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
 	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
 			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
-			+'<br>'+ ( G.startup ? G.startup.replace( /\(/g, '<gr>' ).replace( /\)/g, '</gr>' ) : 'Booting ...' );
+			+'<br>'+ ( G.startup ? G.startup.replace( ' ', 's <gr>kernel</gr> ' ) +'s <gr>userspace</gr>' : 'Booting ...' );
 	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
 	if ( G.throttled !== '0x0' ) {                       // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
 		var bits = parseInt( G.throttled ).toString( 2 ) // 20 bits ( hex > decimal > binary )

@@ -754,7 +754,12 @@ mpcseek )
 	;;
 mpcupdate )
 	path=${args[1]}
-	if [[ $path == rescan ]]; then
+	if [[ $path == dab ]]; then
+		timeout 1 rtl_test &> /dev/null
+		[[ $? == 1 ]] && echo -1 && exit
+		
+		$dirbash/dab/dab-skeleton.sh
+	elif [[ $path == rescan ]]; then
 		echo rescan > $dirmpd/updating
 		mpc -q rescan
 	else

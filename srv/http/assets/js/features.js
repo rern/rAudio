@@ -480,9 +480,9 @@ function renderPage() {
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	if ( G.nosound ) {
-		$( '#divdsp' ).addClass( 'hide' );
+		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
 	} else {
-		$( '#divdsp' ).removeClass( 'hide' );
+		$( '#divdsp, #divsnapserver' ).removeClass( 'hide' );
 		$( '#camilladsp' ).toggleClass( 'disabled', G.bluetoothsink || G.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
 	}

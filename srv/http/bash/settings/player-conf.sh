@@ -158,6 +158,16 @@ $btoutput" > /etc/mpd.conf
 if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
 	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
+	if [[ $usbdac == add ]]; then
+		mv $dirsystem/asoundcard{,.backup}
+		aplay -l \
+			| grep ^card \
+			| tail -1 \
+			| cut -d: -f1 \
+			| cut -d' ' -f2 > $dirsystem/asoundcard
+	else
+		mv $dirsystem/asoundcard{.backup,}
+	fi
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 

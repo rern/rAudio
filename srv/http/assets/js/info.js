@@ -127,8 +127,9 @@ info( {                                       // default
 	title         : 'TITLE'                   // 'Information'  (top title)
 	width         : N                         // 400            (info width)
 	
-	arrowright    : FUNCTION                  // (none)         (switch between multiple infos)
-	arrowleft     : FUNCTION                  // (none)
+	tab           : [ 'LABEL', ... ]          // (none)         (tabs for switch between multiple infos)
+	tabfunction   : [ FUNCTION, ... ]         // (none)         (info() functions)
+	tabactive     : N                         // (none)         (active tab)
 	
 	content       : 'HTML'                    // ***            (custom html <table> input content)
 	height        : N                         // (fit)          (infocontent height)
@@ -350,6 +351,21 @@ function info( json ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
+		if ( O.tab ) {
+			$( '#infoTab' ).remove();
+			htmltab = '<div id="infoTab">';
+			O.tab.forEach( function( l ) {
+				htmltab += '<a>'+ l +'</a>';
+			} );
+			htmltab += '</div>';
+			$( '#infoTopBg' ).after( htmltab );
+			$( '#infoTab a' ).click( function() {
+				if ( !$( this ).hasClass( 'active' ) ) O.tabfunction[ $( this ).index() ]();
+			} );
+			$( '#infoTab a' )
+				.css( 'width', 100 / O.tab.length +'%' )
+				.eq( O.tabactive ).addClass( 'active' );
+		}
 		var htmls = {}
 		if ( O.message ) {
 			htmls.message = '<div class="infomessage"';
@@ -434,7 +450,9 @@ function info( json ) {
 					+'<div class="value">'+ O.rangevalue +'</div>'
 					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
-		var htmlcontent = htmls.message || '';
+		var htmlcontent = '';
+		htmlcontent += htmls.tab || '';
+		htmlcontent += htmls.message || '';
 		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
 		var htmlinputs = '';
 		O.order.forEach( function( type ) {
@@ -447,7 +465,7 @@ function info( json ) {
 	if ( !htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		setButoonWidth();
+		setButtonWidth();
 		return
 	}
 	
@@ -479,7 +497,7 @@ function info( json ) {
 			$( '#infoOverlay' ).focus();
 		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		setButoonWidth();
+		setButtonWidth();
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
@@ -723,7 +741,7 @@ function selectricRender() {
 /*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
-function setButoonWidth() {
+function setButtonWidth() {
 	if ( O.buttonfit ) return
 	
 	var widest = 0;

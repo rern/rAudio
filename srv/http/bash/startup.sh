@@ -138,12 +138,15 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-if [[ ! $shareddata && ( ! -e $dirmpd/mpd.db || $( mpc stats | awk '/Songs/ {print $NF}' ) -eq 0 ) ]]; then
-	echo rescan > $dirmpd/updating
-	mpc -q rescan
+if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
+	if [[ ! -z $( ls /mnt/MPD/NAS ) || ! -z $( ls /mnt/MPD/SD ) || ! -z $( ls /mnt/MPD/USB ) ]]; then
+		$dirbash/cmd.sh$'\n'rescan
+	fi
 elif [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	$dirbash/cmd.sh$'\n'"$( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
+
+startup=$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )
+pushstream refresh '{"startupfinished":"'$startup'"}'

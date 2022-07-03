@@ -7,7 +7,7 @@ data='
   "page"             : "system"
 , "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
 , "cputemp"          : '$( [[ $cputemp ]] && echo $cputemp || echo 0 )'
-, "startup"          : "'$( systemd-analyze | head -1 | cut -d' ' -f4- | cut -d= -f1 | sed 's/\....s/s/g' )'"
+, "startup"          : "'$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )'"
 , "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
 , "time"             : "'$( date +'%T %F' )'"
 , "timezone"         : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
@@ -133,10 +133,13 @@ oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baudrate ]] && baudrate=800000
 mpdoledconf='[ '$oledchip', '$baudrate' ]'
+[[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
 if [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
+	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
+#elif [[ -e $dirsystem/audiophonics ]]; then
+#	powerbuttonconf='["audiophonics"]'
 else
-	powerbuttonconf='[ 5,40,5 ]'
+	powerbuttonconf='[ 5,40,5,'$audiophonics' ]'
 fi
 if [[ -e $dirsystem/rotaryencoder.conf ]]; then
 	rotaryencoderconf="[ $( cat $dirsystem/rotaryencoder.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
@@ -167,7 +170,7 @@ data+='
 , "mpdoledconf"      : '$mpdoledconf'
 , "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
-, "powerbutton"      : '$( systemctl -q is-active powerbutton && echo true )'
+, "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'

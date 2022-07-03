@@ -267,6 +267,12 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
+	if ( 'startupfinished' in data && page === 'system' ) {
+		G.startup = data.startup
+		renderStatus();
+		return
+	}
+	
 	if ( data.page === page ) {
 		G = data;
 		setSwitch();
