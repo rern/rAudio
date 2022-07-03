@@ -754,7 +754,9 @@ mpcseek )
 	;;
 mpcupdate )
 	path=${args[1]}
-	if [[ $path == rescan ]]; then
+	if [[ $path == dab ]]; then
+		$dirbash/dab/dab-skeleton.sh
+	elif [[ $path == rescan ]]; then
 		echo rescan > $dirmpd/updating
 		mpc -q rescan
 	else

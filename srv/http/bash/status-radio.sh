@@ -38,9 +38,16 @@ case $id in
 	lajazz )              id=405;;
 	ocoramonde )          id=404;;
 	opera )               id=409;;
+	dab ) id=500;;
 esac
-[[ $id < 4 ]] && icon=radioparadise || icon=radiofrance
+if [[ $id != 500 ]]; then
+	: >/dev/tcp/8.8.8.8/53 || exit # online check
+fi
 
+dabData() {
+	DABlabel=$( cat $dirshm/webradio/DABlabel )
+	metadata=( "$station" "${DABlabel//\"/}" 'DAB radio' dab 10 )
+}
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "chan=$id" \
@@ -66,6 +73,16 @@ radiofranceData() {
 }
 metadataGet() {
 	[[ $id < 4 ]] && radioparadiseData || radiofranceData
+	if [[ $id < 4 ]]; then
+		icon=radioparadise
+		radioparadiseData
+	elif [[ $id < 500 ]]; then
+		icon=radiofrance
+		radiofranceData
+	else
+		icon=dab
+		dabData
+	fi
 	artist=${metadata[0]//\"/\\\"}
 	title=${metadata[1]//\"/\\\"}
 	album=${metadata[2]//\"/\\\"}
@@ -82,8 +99,14 @@ metadataGet() {
 	elif [[ ${#metadata[@]} == 6 ]]; then
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
-
-	if [[ $coverurl ]]; then
+	
+	if [[ $coverurl == dab ]]; then
+		slidename=DABslide$( date +%s%3N ).jpg
+		coverart=/data/shm/webradio/$slidename
+		cp /srv/http/data/shm/webradio/DABslide.jpg /srv/http/data/shm/webradio/$slidename
+		touch /srv/http/data/shm/webradio/DABlabel.txt #avoid label deletion by coverfileslimit
+		touch /srv/http/data/shm/webradio/DABslide.jpg #avoid label deletion by coverfileslimit
+	elif [[ $coverurl ]]; then
 		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
 		coverfile=$dirshm/webradio/$name.jpg
 		curl -s $coverurl -o $coverfile

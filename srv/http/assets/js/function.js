@@ -731,15 +731,16 @@ function infoUpdate( path ) {
 		return
 	}
 	
+	var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+	if ( G.display.dab ) radio[ 'Rescan DAB radio' ] = 'dab';
 	info( {
 		  icon    : 'refresh-library'
 		, title   : 'Library Database'
 		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
-		, radio   : ( path ? '' : { 'Only changed files' : 1, 'Rebuild entire database': 2 } )
-		, values  : [ 1 ]
+		, radio   : ( path ? '' : radio )
+		, values  : 'update'
 		, ok      : function() {
-			if ( infoVal() == 2 ) path = 'rescan';
-			bash( [ 'mpcupdate', path ] );
+			bash( [ 'mpcupdate', infoVal() ] );
 		}
 	} );
 }

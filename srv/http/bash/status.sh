@@ -86,6 +86,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "dab"              : '$( exists /usr/bin/dab-scanner-rtlsdr )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
@@ -292,24 +293,29 @@ elif [[ $stream ]]; then
 			station=${radiodata[0]}
 			radiosampling=${radiodata[1]}
 		fi
-		[[ $file == *icecast.radiofrance.fr* ]] && icon=radiofrance
-		[[ $file == *stream.radioparadise.com* ]] && icon=radioparadise
+		if [[ $file == *icecast.radiofrance.fr* ]]; then
+			icon=radiofrance
+		elif [[ $file == *stream.radioparadise.com* ]]; then
+			icon=radioparadise
+		elif [[ $file == *rtsp://*$( hostname -f )* ]]
+			icon=dab
+		fi
 		if [[ $state != play ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
-				id=$( basename ${file/-*} )
+			if [[ icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+				[[ $icon == dab ]] && id=dab || id=$( basename ${file/-*} )
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ ! $id ]] && id=francemusique
 				stationname=${station/* - }
-				if [[ ! -e $dirshm/radio ]] || ! systemctl -q is-active radio; then
+				if [[ ! -e $dirshm/radio ]]; then
 					echo "\
 $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					systemctl start radio
+					[[ $icon != dab ]] && ! systemctl -q is-active radio && systemctl start radio
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
