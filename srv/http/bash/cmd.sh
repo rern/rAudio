@@ -262,7 +262,7 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
-	count=$( find -L $dirdata/webradios -type f ! -name "*.jpg" ! -name "*.gif" | wc -l )
+	count=$( find -L $dirdata/webradios -type f | wc -l )
 	pushstream webradio $count
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }

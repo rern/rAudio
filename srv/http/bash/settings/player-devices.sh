@@ -129,10 +129,10 @@ for card in $cards; do
 done
 
 if [[ $usbdac == add ]]; then
-	[[ -e $dirsystem/asoundcard ]] && mv $dirsystem/asoundcard{,.backup}
+	mv $dirsystem/asoundcard{,.backup} &> /dev/null
 	echo $card > $dirsystem/asoundcard
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
-	mv $dirsystem/asoundcard{.backup,}
+	mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then
 	asoundcard=$( cat $dirsystem/asoundcard )
 	! echo "$aplay" | grep -v Loopback | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
