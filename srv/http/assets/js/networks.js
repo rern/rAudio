@@ -74,6 +74,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', !notconnected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
+		$( '#menu .info' ).addClass( 'hide' );
 	}
 	var menuH = $menu.height();
 	$menu
@@ -167,11 +168,10 @@ $( '.forget' ).click( function() {
 $( '.info' ).click( function() {
 	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		$( '#codebluetooth' ).addClass( 'hide' );
-		return
+	} else {
+		var list = G.listbt[ G.li.index() ]
+		infoBluetooth( list.mac );
 	}
-	
-	var list = G.listbt[ G.li.index() ]
-	infoBluetooth( list.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
