@@ -64,8 +64,8 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
-//		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
-//		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
+		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
