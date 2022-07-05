@@ -92,7 +92,7 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
-	if ( G.listbt ) {
+	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
@@ -104,7 +104,7 @@ $( '.connect' ).click( function() {
 	bash( [ 'profileconnect', name ] );
 } );
 $( '.disconnect' ).click( function() {
-	if ( G.listbt ) {
+	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		bluetoothcommand( 'disconnect', list );
 		return
@@ -113,16 +113,10 @@ $( '.disconnect' ).click( function() {
 	var list = G.listwl[ G.liindex ];
 	var name = list.ssid;
 	var icon = 'wifi';
-	if ( G.ipeth ) {
-		notify( name, 'Disconnect ...', icon );
-		bash( [ 'disconnect' ] );
-		return
-	}
-	
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : '<i class="fa fa-warning"></i> No network connections after this.'
+		, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
@@ -141,6 +135,7 @@ $( '.forget' ).click( function() {
 		info( {
 			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
 			, title   : list.name
+			, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {

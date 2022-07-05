@@ -120,10 +120,8 @@ function refreshData() {
 function resetLocal() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	if ( page !== 'networks' ) {
-		clearTimeout( G.timeoutbanner );
-		G.timeoutbanner = setTimeout( bannerHide, delay );
-	}
+	clearTimeout( G.timeoutbanner );
+	G.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
