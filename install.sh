@@ -3,8 +3,7 @@
 alias=r1
 
 # 20220708
-file=/etc/systemd/system/upmpdcli.service
-grep -q mpd.service $file && sed -i 's/mpd.service/startup.service/' $file
+sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 
 # 20220610
 if [[ -e /usr/bin/camilladsp && ! -e /srv/http/settings/camillagui/build/colors.css ]]; then
