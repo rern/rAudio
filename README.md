@@ -25,23 +25,6 @@ Audio player for
 - Access point - `hostapd`
 - File sharing - `samba`
 - Easy update and extra features with Addons
-- Supported devices:
-	- USB:
-		- DAC
-		- DAB
-		- HDD
-		- Audio CD
-		- Wi-Fi
-		- Plug and Play devices
-	- GPIO:
-		- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-		- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
-		- Power on/off button
-		- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
-		- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
-		- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
-		- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
-		- VU LED (7 LEDs+Rs)
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay - `shairport-sync`
 	- Bluetooth audio receiver
@@ -56,6 +39,26 @@ Audio player for
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
 - Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
+
+### Supported devices
+- Bluetooth:
+	- Audio - Receiver / Sender
+	- Keyboard and mouse
+- USB:
+	- DAC
+	- DAB
+	- HDD
+	- Audio CD
+	- Wi-Fi
+- GPIO:
+	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
+	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
+	- Power on/off button
+	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
+	- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
+	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
+	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
+	- VU LED (7 LEDs+Rs)
 	
 ### Default root password
 - `ros`
