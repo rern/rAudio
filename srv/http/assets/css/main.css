@@ -1091,6 +1091,7 @@ i.map.disabled, .map.disabled i {
 }
 #lyrics i {
 	width: 40px;
+	line-height: 40px;
 	text-align: center;
 }
 #divlyricstitle,
