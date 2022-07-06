@@ -320,7 +320,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		if ( $list === '' ) continue;
 		
 		$list = explode( '^^', $list ); // album^^artist 
-		$sort = in_array( $mode, [ 'artist', 'albumartist' ] ) ? $list[ 0 ] : $list[ 1 ]; // sort by artist
+		$sort = in_array( $mode, [ 'artist', 'albumartist', 'composer' ] ) ? $list[ 0 ] : $list[ 1 ]; // sort by artist
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key = $f[ $i ];
@@ -348,10 +348,10 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$indexes[] = $index;
 		if ( !$val0 && !$val1 ) continue;
 		
-		if ( in_array( $mode, [ 'artist', 'albumartist' ] ) ) { // display as artist - album
+		if ( in_array( $mode, [ 'artist', 'albumartist', 'composer' ] ) ) { // display as artist - album
 			$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		} else {
-			$name = $fL > 1 && $mode !== 'conductor' ? $val1.'<gr> • </gr>'.$val0 : $val0;
+			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
 		}
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
