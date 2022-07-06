@@ -1,7 +1,5 @@
 #!/bin/bash
 
-: >/dev/tcp/8.8.8.8/53 || exit # online check
-
 dirbash=/srv/http/bash
 dirsystem=/srv/http/data/system
 dirshm=/srv/http/data/shm
@@ -11,6 +9,10 @@ file=${tmpradio[0]}
 station=${tmpradio[1]}
 station=${station//\"/\\\"}
 id=${tmpradio[2]}
+if [[ $id != dab ]]; then
+	: >/dev/tcp/8.8.8.8/53 || exit # online check
+fi
+
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
 sampling="$pos &bull; ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
@@ -40,12 +42,9 @@ case $id in
 	opera )               id=409;;
 	dab ) id=500;;
 esac
-if [[ $id != 500 ]]; then
-	: >/dev/tcp/8.8.8.8/53 || exit # online check
-fi
 
 dabData() {
-	DABlabel=$( cat $dirshm/webradio/DABlabel )
+	DABlabel=$( cat $dirshm/webradio/DABlabel.txt )
 	metadata=( "$station" "${DABlabel//\"/}" 'DAB radio' dab 10 )
 }
 radioparadiseData() {
@@ -72,7 +71,6 @@ radiofranceData() {
 		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
 }
 metadataGet() {
-	[[ $id < 4 ]] && radioparadiseData || radiofranceData
 	if [[ $id < 4 ]]; then
 		icon=radioparadise
 		radioparadiseData
