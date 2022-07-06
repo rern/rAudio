@@ -1134,6 +1134,8 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
+	G.query = [];
+	delete G.gmode;
 	if ( G.query.length > 1 ) G.scrolltop[ G.query[ G.query.length - 1 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
 	if ( G.mode === 'webradio' ) {
@@ -1157,7 +1159,6 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	}, 'json' );
 	query.path = path;
 	query.modetitle = path;
-	G.query.push( query );
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
@@ -1364,7 +1365,7 @@ $( '.mode' ).click( function() {
 	}, 'json' );
 	query.path = G.mode === 'webradio' ? '' : path;
 	query.modetitle = path;
-	G.query.push( query );
+	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
 	if ( G.press || !G.bookmarkedit ) return
@@ -1738,7 +1739,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	}, 'json' );
 	query.path = path;
 	query.modetitle = modetitle;
-	G.query.push( query );
+	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '.index' ).on( 'click', 'a', function() {
 	var index = $( this ).find( 'wh' ).text()[ 0 ];
