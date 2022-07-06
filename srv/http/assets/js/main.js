@@ -1259,19 +1259,16 @@ $( '#lib-search-input' ).keyup( function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).click();
 } );
 $( '#button-lib-back' ).click( function() {
-	if ( G.gmode ) {
-		G.mode = G.gmode;
-		delete G.gmode;
-	}
 	menuHide();
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
+	var backmode = 'gmode' in G && G.gmode !== G.mode;
 	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
 		|| ( bL && bL < 2 )
 		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
-	} else if ( bL && G.mode !== 'latest' ) {
+	} else if ( bL && G.mode !== 'latest' && !backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
@@ -1281,6 +1278,7 @@ $( '#button-lib-back' ).click( function() {
 		} else {
 			list( query, function( data ) {
 				if ( data != -1 ) {
+					if ( backmode ) G.mode = G.gmode;
 					if ( G.mode === 'album' ) {
 						data.path = 'ALBUM';
 					} else {
