@@ -24,9 +24,14 @@ Audio player for
 - Wi-Fi connection can be pre-configured for headless mode.
 - Access point - `hostapd`
 - File sharing - `samba`
-- USB DAC plug ang play
 - Easy update and extra features with Addons
-- Supported GPIO devices
+- Support USB devices:
+	- DAC
+	- DAB
+	- HDD
+	- Audio CD
+	- Plug and Play devices
+- Support GPIO devices
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
 	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
 	- Power on/off button
@@ -49,9 +54,6 @@ Audio player for
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
 - Support boot from USB drive without SD card
-- USB drive
-	- Plug and play
-	- Audio CD (with metadata and coverarts)
 	
 ### Default root password
 - `ros`
