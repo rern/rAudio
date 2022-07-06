@@ -53,7 +53,7 @@ Audio player for
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
-- Support boot from USB drive without SD card
+- Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
 	
 ### Default root password
 - `ros`
