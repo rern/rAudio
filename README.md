@@ -25,6 +25,13 @@ Audio player for
 - Access point - `hostapd`
 - File sharing - `samba`
 - Easy update and extra features with Addons
+- Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
+-
+- Local files
+	- USB HDD
+	- USB Audio CD
+	- NAS
+	- SD card
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay - `shairport-sync`
 	- Bluetooth audio receiver
@@ -35,10 +42,10 @@ Audio player for
 	- Bluetooth audio sender
 	- HTTP (no metadata)
 	- SnapSever - `snapcast` Multiroom audio server
+	- Internet radio
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
-- Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
 
 ### Supported devices
 - Bluetooth:
@@ -46,9 +53,7 @@ Audio player for
 	- Keyboard and mouse
 - USB:
 	- DAC
-	- DAB
-	- HDD
-	- Audio CD
+	- RTL-SDR (DAB)
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
