@@ -144,7 +144,7 @@ heading.status .headtitle::after,
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
-	content: "\f50A";
+	content: "\f561";
 	text-align: center;
 	color: var( --cg60 );
 	letter-spacing: normal;
