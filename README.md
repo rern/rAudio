@@ -43,6 +43,7 @@ Audio player for
 	- HTTP (no metadata)
 	- SnapSever - `snapcast` Multiroom audio server
 	- Internet radio
+	- DAB radio
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
@@ -53,7 +54,7 @@ Audio player for
 	- Keyboard and mouse
 - USB:
 	- DAC
-	- RTL-SDR (DAB)
+	- RTL-SDR (DAB radio)
 	- Wi-Fi
 - GPIO:
 	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
