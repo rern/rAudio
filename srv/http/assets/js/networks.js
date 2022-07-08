@@ -64,8 +64,8 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		var list = G.listbt[ G.liindex ];
-//		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
-//		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
+		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -74,6 +74,7 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', !notconnected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
+		$( '#menu .info' ).addClass( 'hide' );
 	}
 	var menuH = $menu.height();
 	$menu
@@ -91,7 +92,7 @@ $( 'body' ).click( function( e ) {
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
-	if ( G.listbt ) {
+	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
@@ -103,7 +104,7 @@ $( '.connect' ).click( function() {
 	bash( [ 'profileconnect', name ] );
 } );
 $( '.disconnect' ).click( function() {
-	if ( G.listbt ) {
+	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		bluetoothcommand( 'disconnect', list );
 		return
@@ -112,16 +113,10 @@ $( '.disconnect' ).click( function() {
 	var list = G.listwl[ G.liindex ];
 	var name = list.ssid;
 	var icon = 'wifi';
-	if ( G.ipeth ) {
-		notify( name, 'Disconnect ...', icon );
-		bash( [ 'disconnect' ] );
-		return
-	}
-	
 	info( {
 		  icon    : icon
 		, title   : name
-		, message : '<i class="fa fa-warning"></i> No network connections after this.'
+		, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
@@ -140,6 +135,7 @@ $( '.forget' ).click( function() {
 		info( {
 			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
 			, title   : list.name
+			, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
@@ -167,11 +163,10 @@ $( '.forget' ).click( function() {
 $( '.info' ).click( function() {
 	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		$( '#codebluetooth' ).addClass( 'hide' );
-		return
+	} else {
+		var list = G.listbt[ G.li.index() ]
+		infoBluetooth( list.mac );
 	}
-	
-	var list = G.listbt[ G.li.index() ]
-	infoBluetooth( list.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];

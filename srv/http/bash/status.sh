@@ -304,7 +304,7 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+			if [[ $icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
 				[[ $icon == dab ]] && id=dab || id=$( basename ${file/-*} )
 				[[ ${id:0:13} == francemusique ]] && id=${id:13}
 				[[ ! $id ]] && id=francemusique
@@ -315,7 +315,7 @@ $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					[[ $icon != dab ]] && ! systemctl -q is-active radio && systemctl start radio
+					systemctl -q is-active radio || systemctl start radio
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=

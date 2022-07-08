@@ -24,17 +24,14 @@ Audio player for
 - Wi-Fi connection can be pre-configured for headless mode.
 - Access point - `hostapd`
 - File sharing - `samba`
-- USB DAC plug ang play
 - Easy update and extra features with Addons
-- Supported GPIO devices
-	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
-	- Power on/off button
-	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
-	- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
-	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
-	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
-	- VU LED (7 LEDs+Rs)
+- Support boot from USB drive without SD card ([DIY](https://github.com/rern/rOS))
+-
+- Local files
+	- USB HDD
+	- USB Audio CD
+	- NAS
+	- SD card
 - Renderers / Clients - with metadata and coverarts
 	- AirPlay - `shairport-sync`
 	- Bluetooth audio receiver
@@ -45,13 +42,29 @@ Audio player for
 	- Bluetooth audio sender
 	- HTTP (no metadata)
 	- SnapSever - `snapcast` Multiroom audio server
+	- Internet radio
+	- DAB radio
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
-- Support boot from USB drive without SD card
-- USB drive
-	- Plug and play
-	- Audio CD (with metadata and coverarts)
+
+### Supported devices
+- Bluetooth:
+	- Audio - Receiver / Sender
+	- Keyboard and mouse
+- USB:
+	- DAC
+	- RTL-SDR (DAB radio)
+	- Wi-Fi
+- GPIO:
+	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
+	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
+	- Power on/off button
+	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
+	- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
+	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
+	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
+	- VU LED (7 LEDs+Rs)
 	
 ### Default root password
 - `ros`

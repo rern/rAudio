@@ -1134,6 +1134,8 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
+	G.query = [];
+	delete G.gmode;
 	if ( G.query.length > 1 ) G.scrolltop[ G.query[ G.query.length - 1 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
 	if ( G.mode === 'webradio' ) {
@@ -1157,7 +1159,6 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	}, 'json' );
 	query.path = path;
 	query.modetitle = path;
-	G.query.push( query );
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
@@ -1259,19 +1260,16 @@ $( '#lib-search-input' ).keyup( function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).click();
 } );
 $( '#button-lib-back' ).click( function() {
-	if ( G.gmode ) {
-		G.mode = G.gmode;
-		delete G.gmode;
-	}
 	menuHide();
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
+	var backmode = 'gmode' in G && G.gmode !== G.mode;
 	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
 		|| ( bL && bL < 2 )
 		|| ( !bL && G.query.length === 1 )
 	) {
 		$( '#button-library' ).click();
-	} else if ( bL && G.mode !== 'latest' ) {
+	} else if ( bL && G.mode !== 'latest' && !backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
 		G.query.pop();
@@ -1281,6 +1279,7 @@ $( '#button-lib-back' ).click( function() {
 		} else {
 			list( query, function( data ) {
 				if ( data != -1 ) {
+					if ( backmode ) G.mode = G.gmode;
 					if ( G.mode === 'album' ) {
 						data.path = 'ALBUM';
 					} else {
@@ -1366,7 +1365,7 @@ $( '.mode' ).click( function() {
 	}, 'json' );
 	query.path = G.mode === 'webradio' ? '' : path;
 	query.modetitle = path;
-	G.query.push( query );
+	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
 	if ( G.press || !G.bookmarkedit ) return
@@ -1740,7 +1739,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	}, 'json' );
 	query.path = path;
 	query.modetitle = modetitle;
-	G.query.push( query );
+	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '.index' ).on( 'click', 'a', function() {
 	var index = $( this ).find( 'wh' ).text()[ 0 ];

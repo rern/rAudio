@@ -120,10 +120,8 @@ function refreshData() {
 function resetLocal() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	if ( page !== 'networks' ) {
-		clearTimeout( G.timeoutbanner );
-		G.timeoutbanner = setTimeout( bannerHide, delay );
-	}
+	clearTimeout( G.timeoutbanner );
+	G.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
@@ -267,12 +265,6 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
-	if ( 'startupfinished' in data && page === 'system' ) {
-		G.startup = data.startup
-		renderStatus();
-		return
-	}
-	
 	if ( data.page === page ) {
 		G = data;
 		setSwitch();
