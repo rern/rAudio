@@ -9,13 +9,15 @@ file=${tmpradio[0]}
 station=${tmpradio[1]}
 station=${station//\"/\\\"}
 id=${tmpradio[2]}
+pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
+song=$(( ${pos/\/*} - 1 ))
 if [[ $id != dab ]]; then
 	: >/dev/tcp/8.8.8.8/53 || exit # online check
+	sampling="$pos &bull; ${tmpradio[3]}"
+else
+	sampling="$pos &bull; 48 kHz 160 kbit/s"
 fi
 
-pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]}"
-song=$(( ${pos/\/*} - 1 ))
 case $id in
 	flac )   id=0;;
 	mellow ) id=1;;
@@ -44,8 +46,10 @@ case $id in
 esac
 
 dabData() {
-	DABlabel=$( cat $dirshm/webradio/DABlabel.txt )
-	metadata=( "$station" "${DABlabel//\"/}" 'DAB radio' dab 10 )
+	readarray -t radioname <<< $( sed 's/ - \|: /\n/' $dirshm/webradio/DABlabel.txt )
+	artist=${radioname[0]//\"/\\\"}
+	title=${radioname[1]//\"/\\\"}
+	metadata=( "$artist" "$title" "" dab 10 )
 }
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
