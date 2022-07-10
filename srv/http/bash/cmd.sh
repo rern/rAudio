@@ -753,18 +753,19 @@ mpcseek )
 	rm -f $dirshm/scrobble
 	;;
 mpcupdate )
-	path=${args[1]}
-	if [[ $path == dab ]]; then
+	type=${args[1]}
+	if [[ $type == update ]]; then
+		path=${args[2]}
+		echo $path > $dirmpd/updating
+		mpc -q update "$path"
+	elif [[ $type == rescan ]]; then
+		echo rescan > $dirmpd/updating
+		mpc -q rescan
+	else # dab
 		timeout 1 rtl_test &> /dev/null
 		[[ $? == 1 ]] && echo -1 && exit
 		
 		$dirbash/dab/dab-skeleton.sh
-	elif [[ $path == rescan ]]; then
-		echo rescan > $dirmpd/updating
-		mpc -q rescan
-	else
-		echo $path > $dirmpd/updating
-		mpc -q update "$path"
 	fi
 	pushstream mpdupdate 1
 	;;
