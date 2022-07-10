@@ -349,6 +349,23 @@ function psMpdUpdate( data ) {
 		G.status.counts = data;
 		renderLibraryCounts();
 		setButtonUpdating();
+		if ( G.librarylist ) {
+			var lipath = $( '#lib-path .lipath' ).text();
+			if ( G.query.length ) {
+				var query = G.query[ G.query.length - 1 ];
+			} else {
+				var query = {
+					  query  : 'ls'
+					, string : lipath
+					, format : [ 'file' ]
+				}
+			}
+			list( query, function( data ) {
+				data.path = lipath;
+				data.modetitle = lipath;
+				renderLibraryList( data );
+			}, 'json' );
+		}
 		banner( 'Library Update', 'Done', 'library' );
 		if ( G.library ) {
 			if ( !G.librarylist ) return

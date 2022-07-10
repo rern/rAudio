@@ -740,8 +740,9 @@ function infoUpdate( path ) {
 		, radio   : ( path ? '' : radio )
 		, values  : 'update'
 		, ok      : function() {
-			bash( [ 'mpcupdate', infoVal() ], function( std ) {
-				if ( std == -1 ) {
+			var type = path ? 'update' : infoVal();
+			bash( [ 'mpcupdate', type, path ], function( std ) {
+				if ( type === 'dab' && std == -1 ) {
 					info( {
 						  icon    : 'refresh-library'
 						, title   : 'Rescan DAB radio'
