@@ -23,6 +23,7 @@ scan=$( iwlist $wlandev scan \
 			| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 			| sed -e 's/^Cell.*/},{/
 					  s/^ESSID:/,"ssid":/
+					  s/\\x00//g
 					  s/^Encryption key:\(.*\)/,"encrypt":"\1"/
 					  s/^IE.*WPA.*/,"wpa":true/
 					  s/^Quality.*level.\(.*\)/,"signal":"\1"/' \
