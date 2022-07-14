@@ -26,7 +26,7 @@ HTML
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => <<< HTML
-<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
+Digital radio reception for USB RTL-SDR devices.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
 	]
