@@ -282,7 +282,15 @@ elif [[ $stream ]]; then
 		fi
 	else
 		ext=Radio
-		icon=webradio
+		if [[ $file == *icecast.radiofrance.fr* ]]; then
+			icon=radiofrance
+		elif [[ $file == *stream.radioparadise.com* ]]; then
+			icon=radioparadise
+		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
+			icon=dab
+		else
+			icon=webradio
+		fi
 		# before webradios play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
@@ -293,22 +301,21 @@ elif [[ $stream ]]; then
 			station=${radiodata[0]}
 			radiosampling=${radiodata[1]}
 		fi
-		if [[ $file == *icecast.radiofrance.fr* ]]; then
-			icon=radiofrance
-		elif [[ $file == *stream.radioparadise.com* ]]; then
-			icon=radioparadise
-		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
-			icon=dab
-		fi
 		if [[ $state != play ]]; then
 			state=stop
 			Title=
 		else
 			if [[ $icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
-				[[ $icon == dab ]] && id=dab || id=$( basename ${file/-*} )
-				[[ ${id:0:13} == francemusique ]] && id=${id:13}
-				[[ ! $id ]] && id=francemusique
-				stationname=${station/* - }
+				if [[ $icon == dab ]]; then
+					id=dab
+					radiosampling='48 kHz 160 kbit/s'
+					stationname=$station
+				else
+					id=$( basename ${file/-*} )
+					[[ ${id:0:13} == francemusique ]] && id=${id:13}
+					[[ ! $id ]] && id=francemusique
+					stationname=${station/* - }
+				fi
 				if [[ ! -e $dirshm/radio ]]; then
 					echo "\
 $file

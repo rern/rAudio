@@ -19,6 +19,18 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
+		  'label'    => 'DAB Radio'
+		, 'id'       => 'dabradio'
+		, 'sublabel' => 'rtsp-server'
+		, 'icon'     => 'dab'
+		, 'status'   => 'rtsp-simple-server'
+		, 'disabled' => 'No DAB devices found.'
+		, 'help'     => <<< HTML
+<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
+HTML
+		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
+	]
+	, [
 		  'label'    => 'SnapClient'
 		, 'sublabel' => 'snapclient'
 		, 'id'       => 'snapclient'

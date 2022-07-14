@@ -37,7 +37,19 @@ var cmd = {
 	, timedatectl  : systemsh +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'camilladsp', 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [
+	  'camilladsp'
+	, 'rtsp-simple-server'
+	, 'hostapd'
+	, 'localbrowser'
+	, 'mpd'
+	, 'shairport-sync'
+	, 'smb'
+	, 'snapclient'
+	, 'snapserver'
+	, 'spotifyd'
+	, 'upmpdcli'
+];
 
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );

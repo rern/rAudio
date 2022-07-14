@@ -97,6 +97,17 @@ camillaguiset )
 	pushRefresh
 	pushSubmenu camilladsp true
 	;;
+dabradio )
+	if [[ ${args[1]} == true ]]; then
+		systemctl enable --now rtsp-simple-server
+		if ! grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes; then
+			sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
+			/srv/http/bash/settings/player-conf.sh
+		fi
+	else
+		systemctl disable --now rtsp-simple-server
+	fi
+	;;
 equalizer )
 	enabled=${args[1]}
 	if [[ $enabled == true ]]; then

@@ -10,13 +10,8 @@ station=${tmpradio[1]}
 station=${station//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
+sampling="$pos &bull; ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
-if [[ $id != dab ]]; then
-	: >/dev/tcp/8.8.8.8/53 || exit # online check
-	sampling="$pos &bull; ${tmpradio[3]}"
-else
-	sampling="$pos &bull; 48 kHz 160 kbit/s"
-fi
 
 case $id in
 	flac )   id=0;;
@@ -46,10 +41,13 @@ case $id in
 esac
 
 dabData() {
-	readarray -t radioname <<< $( sed 's/ - \|: /\n/' $dirshm/webradio/DABlabel.txt )
-	artist=${radioname[0]//\"/\\\"}
-	title=${radioname[1]//\"/\\\"}
-	metadata=( "$artist" "$title" "" dab 10 )
+	artist_title=$( sed 's/ - \|: /\n/' $dirshm/webradio/DABlabel.txt )
+	if [[ $artist_title == $( head -2 $dirshm/status ) ]]; then
+		sleep 10
+		metadataGet
+	else
+		readarray -t metadata <<< $( echo "$artist_title" )
+	fi
 }
 radioparadiseData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
@@ -102,17 +100,17 @@ metadataGet() {
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
 	
-	if [[ $coverurl == dab ]]; then
-		slidename=DABslide$( date +%s%3N ).jpg
-		coverart=/data/shm/webradio/$slidename
-		cp /srv/http/data/shm/webradio/DABslide.jpg /srv/http/data/shm/webradio/$slidename
-		touch /srv/http/data/shm/webradio/DABlabel.txt #avoid label deletion by coverfileslimit
-		touch /srv/http/data/shm/webradio/DABslide.jpg #avoid label deletion by coverfileslimit
-	elif [[ $coverurl ]]; then
-		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+	if [[ $coverurl ]]; then
 		coverfile=$dirshm/webradio/$name.jpg
 		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio/$name.jpg
+	else
+		coverart=$( ls /srv/http/data/shm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+$artist
+title
+webradio" &> /dev/null &
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
