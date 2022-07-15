@@ -125,12 +125,10 @@ if [[ $action == connect || $action == pair ]]; then
 	done
 #-----X
 	[[ $type == Source ]] && icon=btsender
+	uptime -s | date -f - +%s > $dirshm/uptime
+	date +%s >> $dirshm/uptime
 	if [[ ! $btmixer ]]; then
-		startupfin=$( journalctl -b \
-							| grep 'Startup finished.*kernel' \
-							| cut -d' ' -f1-3 \
-							| date -f - +%s )
-		(( $(( $( date +%s ) - startupfin )) > 20 )) && bannerReconnect 'Mixer not ready' # suppress on startup
+		(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && bannerReconnect 'Mixer not ready' # suppress on startup
 		exit
 	fi
 	
