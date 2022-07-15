@@ -126,9 +126,9 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 	[[ $type == Source ]] && icon=btsender
 	if [[ ! $btmixer ]]; then
-		mpdsince=$( systemctl status mpd | grep Active: | sed 's/^.*since \(.*\);.*/\1/' )
-		mpdsec=$(( $( date +%s ) - $( date -d "$mpdsince" +%s ) ))
-		(( $mpdsec > 15 )) && bannerReconnect 'Mixer not ready' # suppress on startup
+		nginxsince=$( journalctl -b -u nginx | head -1 | cut -d' ' -f1-3 )
+		nginxsec=$(( $( date +%s ) - $( date -d "$nginxsince" +%s ) ))
+		(( $nginxsec > 40 )) && bannerReconnect 'Mixer not ready' # suppress on startup
 		exit
 	fi
 	
