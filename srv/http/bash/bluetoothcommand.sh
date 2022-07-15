@@ -18,8 +18,8 @@ bannerReconnect() {
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
-	[[ $type == Source ]] && icon=btsender
 	if [[ $type == Source ]]; then
+		icon=btsender
 		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
@@ -111,7 +111,6 @@ if [[ $action == connect || $action == pair ]]; then
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
 	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
-	[[ $type == Source ]] && icon=btsender
 	if [[ ! $type ]]; then
 ##### non-audio
 		echo $mac Device $name >> $dirshm/btconnected
@@ -125,7 +124,13 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 #-----X
-	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready' && exit
+	[[ $type == Source ]] && icon=btsender
+	if [[ ! $btmixer ]]; then
+		mpdsince=$( systemctl status mpd | grep Active: | sed 's/^.*since \(.*\);.*/\1/' )
+		mpdsec=$(( $( date +%s ) - $( date -d "$mpdsince" +%s ) ))
+		(( $mpdsec > 15 )) && bannerReconnect 'Mixer not ready' # suppress on startup
+		exit
+	fi
 	
 #-----
 	pushstreamNotify "$name" Ready $icon
