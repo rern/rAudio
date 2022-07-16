@@ -29,7 +29,7 @@ foreach( $sh as $arg ) {
 	$opttxt.= strpos( $arg, ' ' ) ? '"'.$arg.'" ' : $arg.' ';
 }
 $postinfo = $type." done.<br>See Addons Progress for result.";
-$postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>&ensp;'.$addon[ 'postinfo' ] : '';
+$postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
 $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
