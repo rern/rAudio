@@ -28,7 +28,7 @@ HTML
 		, 'help'     => <<< HTML
 Digital radio reception for USB RTL-SDR devices.
 HTML
-		, 'exist'    => exec( 'timeout 1 dab-scanner-rtlsdr -C 5A &> /dev/null && echo 1 || echo 0' )
+		, 'exist'    => exec( 'timeout 1 rtl_test &> /dev/null && echo 1 || echo 0' )
 	]
 	, [
 		  'label'    => 'SnapClient'

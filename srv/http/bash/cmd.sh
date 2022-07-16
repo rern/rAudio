@@ -754,20 +754,29 @@ mpcseek )
 	;;
 mpcupdate )
 	type=${args[1]}
-	if [[ $type == update ]]; then
-		path=${args[2]}
+	path=${args[2]}
+	if [[ $path == true ]]; then # ffmpeg
+		sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
+		/srv/http/bash/settings/player-conf.sh
+	fi
+	if [[ $type == rescan ]]; then
+		touch $dirmpd/updating
+		mpc -q rescan
+	elif [[ $type == update ]]; then
+		touch $dirmpd/updating
+		mpc -q update
+	elif [[ $type == path ]]; then
 		echo $path > $dirmpd/updating
 		mpc -q update "$path"
-	elif [[ $type == rescan ]]; then
-		echo rescan > $dirmpd/updating
-		mpc -q rescan
-	else # dab
-		timeout 1 rtl_test &> /dev/null
-		[[ $? == 1 ]] && echo -1 && exit
-		
+	elif [[ $type == dabradio ]]; then
 		$dirbash/dab/dab-skeleton.sh
 	fi
 	pushstream mpdupdate 1
+	;;
+mpcupdatecheck )
+	timeout 1 rtl_test &> /dev/null && dabdevice=1 || dabdevice=0
+	grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && ffmpeg=1 || ffmpeg=0
+	echo '{"dabdevice":'$dabdevice',"ffmpeg":'$ffmpeg'}'
 	;;
 mpdoledlogo )
 	mpdoledLogo

@@ -731,27 +731,24 @@ function infoUpdate( path ) {
 		return
 	}
 	
-	var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-	if ( G.display.dab ) radio[ 'Rescan DAB radio' ] = 'dab';
-	info( {
-		  icon    : 'refresh-library'
-		, title   : 'Library Database'
-		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
-		, radio   : ( path ? '' : radio )
-		, values  : 'update'
-		, ok      : function() {
-			var type = path ? 'update' : infoVal();
-			bash( [ 'mpcupdate', type, path ], function( std ) {
-				if ( type === 'dab' && std == -1 ) {
-					info( {
-						  icon    : 'refresh-library'
-						, title   : 'Rescan DAB radio'
-						, message : 'No DAB device found.'
-					} );
-				}
-			} );
-		}
-	} );
+	bash( [ 'mpcupdatecheck' ], function( data ) {
+		var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+		if ( data.dabdevice ) radio[ 'Rescan DAB radio' ] = 'dabradio';
+		info( {
+			  icon     : 'refresh-library'
+			, title    : 'Library Database'
+			, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+			, radio    : path ? '' : radio
+			, checkbox : path || data.ffmpeg ? '' : [ 'FFmpeg decoder' ]
+			, values   : path ? '' : 'update'
+			, beforeshow : function() {
+				if ( !path ) $( '#infoContent tr' ).last().before( '<hr>' );
+			}
+			, ok       : function() {
+				bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
+			}
+		} );
+	}, 'json' );
 }
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
