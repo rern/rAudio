@@ -3,9 +3,6 @@
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-systemctl -q is-active rtsp-simple-server && rtspserver=1
-timeout 1 dab-scanner-rtlsdr -C 5A &> /dev/null && dabdevice=1
-
 dirscrobble=$dirsystem/scrobble.conf
 for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
@@ -19,8 +16,7 @@ data+='
 , "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
-, "dabradio"         : '$( [[ $rtspserver ]] && echo true )'
-, "dabdevice"        : '$( [[ $rtspserver || $dabdevice ]] && echo true )'
+, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
