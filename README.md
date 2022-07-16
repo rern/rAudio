@@ -181,6 +181,7 @@ Audio player for
 	- Subdirectories listed after partial Library database update from context menu.
 	- Subdirectories - context menu > Exclude directory
 - Some music files missing from library
+	- Make sure embedded metadata in each file is in UTF-8 encoding.
 	- Settings > MPD > question mark icon -scroll- FFmpeg Decoder
 	- Enable if filetypes list contains ones of the missing files.
 - No albums found after update very large Library
