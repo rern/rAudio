@@ -215,9 +215,9 @@ $albumignore = file_exists( '/srv/http/data/mpd/albumignore' );
 $mpdignore = file_exists( '/srv/http/data/mpd/mpdignorelist' );
 $nonutf8 = file_exists( '/srv/http/data/mpd/nonutf8' );
 
-if ( $albumignore || $mpdignore || $nonutf8 ) {
+$hide = $albumignore || $mpdignore || $nonutf8 ? '' : ' hide';
 
-echo '<br><div class="section">
+echo '<br><div class="section '.$hide.'">
 	  <heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
 	  'title'   => 'Ignored Album'
@@ -255,5 +255,3 @@ HTML
 	, 'exist'   => $nonutf8
 ] );
 echo '</div>';
-
-}
