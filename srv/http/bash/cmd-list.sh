@@ -76,7 +76,7 @@ filealbumprev=$dirmpd/albumprev
 [[ -s $dirmpd/album ]] && cp -f $filealbum{,prev} || > $dirmpd/latest
 
 for mode in album albumartist artist composer conductor genre date; do
-	dircount=$dirmpd/$mode
+	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
 		album=$( awk NF <<< "$album_artist_file" | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
@@ -87,9 +87,9 @@ for mode in album albumartist artist composer conductor genre date; do
 		fi
 		album=$( echo "$album" | awk NF | tee $filealbum | wc -l )
 	else
-		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $dircount | wc -l )
+		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi
-	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
+	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $filemode
 done
 
 ##### latest album #############################################
@@ -150,6 +150,14 @@ if [[ -e /srv/http/shareddata/iplist ]]; then
 fi
 
 (
+	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
+	if [[ $nonutf8 ]]; then
+		echo "$nonutf8" > $dirmpd/nonutf8
+		pushstreamNotifyBlink 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files' library
+	else
+		rm -f $dirmpd/nonutf8
+	fi
+	
 	list=$( find -L /mnt/MPD -name .mpdignore | sort -V )
 	[[ $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
 ) &

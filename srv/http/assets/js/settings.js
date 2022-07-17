@@ -31,6 +31,7 @@ var cmd = {
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
+	, nonutf8      : playersh +'nonutf8'
 	, rfkill       : networkssh +'rfkilllist'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'

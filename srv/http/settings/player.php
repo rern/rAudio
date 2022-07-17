@@ -211,37 +211,49 @@ HTML
 ];
 htmlSection( $head, $body );
 
-$albumignorefile = file_exists( '/srv/http/data/mpd/albumignore' );
-$mpdignorefile = file_exists( '/srv/http/data/mpd/mpdignorelist' );
-if ( $albumignorefile || $mpdignorefile ) {
-	echo '<div class="section">';
-	htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
-	htmlHead( [
-		  'title'   => 'Album'
-		, 'status'  => 'albumignore'
-		, 'subhead' => true
-		, 'help'    => <<< HTML
+$albumignore = file_exists( '/srv/http/data/mpd/albumignore' );
+$mpdignore = file_exists( '/srv/http/data/mpd/mpdignorelist' );
+$nonutf8 = file_exists( '/srv/http/data/mpd/nonutf8' );
+
+if ( $albumignore || $mpdignore || $nonutf8 ) {
+
+echo '<br><div class="section">
+	  <heading><span class="headtitle">Lists</span></heading>';
+htmlHead( [
+	  'title'   => 'Ignored Album'
+	, 'subhead' => true
+	, 'status'  => 'albumignore'
+	, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
  • Edit <code>/srv/http/data/mpd/albumignore</code>
  • Remove albums to restore
  • Update Library
 HTML
-		, 'exist'   => $albumignorefile
-	] );
-	htmlHead( [
-		  'title'   => 'Directory'
-		, 'status'  => 'mpdignore'
-		, 'subhead' => true
-		, 'help'    => <<< HTML
+	, 'exist'   => $albumignore
+] );
+htmlHead( [
+	  'title'   => 'Ignored Directory'
+	, 'subhead' => true
+	, 'status'  => 'mpdignore'
+	, 'help'    => <<< HTML
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
- • Edit <code>.../.mpdignore</code>
- • Remove directories to restore
- • Update Library
-</p>
+• Edit <code>.../.mpdignore</code>
+• Remove directories to restore
+• Update Library
 HTML
-		, 'exist'   => $mpdignorefile
-	] );
-	echo '</div>';
+	, 'exist'   => $mpdignore
+] );
+htmlHead( [
+	  'title'   => 'Non UTF-8 Files'
+	, 'subhead' => true
+	, 'status'  => 'nonutf8'
+	, 'help'    => <<< HTML
+List of files with metadata is not UTF-8 encoding which must be corrected.
+HTML
+	, 'exist'   => $nonutf8
+] );
+echo '</div>';
+
 }

@@ -213,6 +213,9 @@ $( cat "$file" | sed 's|^| <grn>●</grn> |' )
 	done
 	echo "$list"
 	;;
+nonutf8 )
+	cat $dirmpd/nonutf8
+	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
 		sed -i '/^user/ a\volume_normalization   "yes"' /etc/mpd.conf
