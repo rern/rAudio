@@ -11,6 +11,7 @@ connectedCheck() {
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
+	initialboot=1
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	dev=${partition:0:-2}
@@ -28,7 +29,6 @@ fi
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
 	$dirbash/settings/system.sh datarestore
-	reboot=1
 fi
 
 # wifi - on-board or usb
@@ -96,7 +96,7 @@ fi
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
 
-# after all sources connected
+# after all sources connected ######################################
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
@@ -138,13 +138,11 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
-	if [[ ! -z $( ls /mnt/MPD/NAS ) || ! -z $( ls /mnt/MPD/SD ) || ! -z $( ls /mnt/MPD/USB ) ]]; then
-		$dirbash/cmd.sh "mpcupdate
+if [[ $initialboot ]]; then
+	$dirbash/cmd.sh "mpcupdate
 rescan"
-	fi
 elif [[ -e $dirmpd/updating ]]; then
-		$dirbash/cmd.sh "mpcupdate
+	$dirbash/cmd.sh "mpcupdate
 update
 $( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
