@@ -11,8 +11,8 @@ connectedCheck() {
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
-	initialboot=1
 	rm /boot/expand
+	touch $dirmpd/updating # for initial auto 'mpc rescan'
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
 	dev=${partition:0:-2}
 	[[ $dev == /dev/sd ]] && dev=${partition:0:-1}
@@ -138,10 +138,7 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-if [[ $initialboot ]]; then
-	$dirbash/cmd.sh "mpcupdate
-rescan"
-elif [[ -e $dirmpd/updating ]]; then
+if [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh "mpcupdate
 update
 $( cat $dirmpd/updating )"
