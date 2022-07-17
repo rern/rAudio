@@ -215,11 +215,11 @@ $albumignore = file_exists( '/srv/http/data/mpd/albumignore' );
 $mpdignore = file_exists( '/srv/http/data/mpd/mpdignorelist' );
 $nonutf8 = file_exists( '/srv/http/data/mpd/nonutf8' );
 
-$hide = $albumignore || $mpdignore || $nonutf8 ? '' : ' hide';
+if ( $albumignore || $mpdignore || $nonutf8 ) {
 
-echo '<br><div class="section '.$hide.'">
+echo '<br><div class="section">
 	  <heading><span class="headtitle">Lists</span></heading>';
-htmlHead( [
+if ( $albumignore ) htmlHead( [
 	  'title'   => 'Ignored Album'
 	, 'subhead' => true
 	, 'status'  => 'albumignore'
@@ -230,9 +230,8 @@ To restore:
  • Remove albums to restore
  • Update Library
 HTML
-	, 'exist'   => $albumignore
 ] );
-htmlHead( [
+if ( $mpdignore ) htmlHead( [
 	  'title'   => 'Ignored Directory'
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
@@ -243,15 +242,15 @@ To restore:
 • Remove directories to restore
 • Update Library
 HTML
-	, 'exist'   => $mpdignore
 ] );
-htmlHead( [
+if ( $nonutf8 ) htmlHead( [
 	  'title'   => 'Non UTF-8 Files'
 	, 'subhead' => true
 	, 'status'  => 'nonutf8'
 	, 'help'    => <<< HTML
 List of files with metadata is not UTF-8 encoding which must be corrected.
 HTML
-	, 'exist'   => $nonutf8
 ] );
 echo '</div>';
+
+}
