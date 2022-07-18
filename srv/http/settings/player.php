@@ -211,44 +211,43 @@ HTML
 ];
 htmlSection( $head, $body );
 
-$albumignore = file_exists( '/srv/http/data/mpd/albumignore' );
-$mpdignore = file_exists( '/srv/http/data/mpd/mpdignorelist' );
-$nonutf8 = file_exists( '/srv/http/data/mpd/nonutf8' );
-
-if ( $albumignore || $mpdignore || $nonutf8 ) {
-	echo '<br><div class="section">
-		  <heading><span class="headtitle">Lists</span></heading>';
-	if ( $albumignore ) htmlHead( [
-		  'title'   => 'Ignored Album'
-		, 'subhead' => true
-		, 'status'  => 'albumignore'
-		, 'help'    => <<< HTML
+echo '
+<div id="divlists" class="section">
+	<heading><span class="headtitle">Lists</span></heading>';
+htmlHead( [
+	  'title'   => 'Ignored Album'
+	, 'id'      => 'albumignore'
+	, 'subhead' => true
+	, 'status'  => 'albumignore'
+	, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
  • Edit <code>/srv/http/data/mpd/albumignore</code>
  • Remove albums to restore
  • Update Library
 HTML
-	] );
-	if ( $mpdignore ) htmlHead( [
-		  'title'   => 'Ignored Directory'
-		, 'subhead' => true
-		, 'status'  => 'mpdignore'
-		, 'help'    => <<< HTML
+] );
+htmlHead( [
+	  'title'   => 'Ignored Directory'
+	, 'id'      => 'mpdignore'
+	, 'subhead' => true
+	, 'status'  => 'mpdignore'
+	, 'help'    => <<< HTML
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
 • Edit <code>.../.mpdignore</code>
 • Remove directories to restore
 • Update Library
 HTML
-	] );
-	if ( $nonutf8 ) htmlHead( [
-		  'title'   => 'Non UTF-8 Files'
-		, 'subhead' => true
-		, 'status'  => 'nonutf8'
-		, 'help'    => <<< HTML
+] );
+htmlHead( [
+	  'title'   => 'Non UTF-8 Files'
+	, 'id'      => 'nonutf8'
+	, 'subhead' => true
+	, 'status'  => 'nonutf8'
+	, 'help'    => <<< HTML
 List of files with metadata is not UTF-8 encoding which must be corrected.
 HTML
-	] );
-	echo '</div>';
-}
+] );
+echo '
+</div>';

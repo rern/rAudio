@@ -423,6 +423,8 @@ function renderPage() {
 			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
+	$( '#divlists' ).toggleClass( 'hide', G.lists.indexOf( true ) === -1 );
+	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', !G.lists[ i ] );
 	showContent();
 }
 function setMixerType( mixertype ) {

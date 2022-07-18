@@ -32,6 +32,7 @@ data='
 , "custom"           : '$( exists $dirsystem/custom )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true )'
+, "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
 , "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
