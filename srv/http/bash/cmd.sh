@@ -774,7 +774,7 @@ mpcupdate )
 	pushstream mpdupdate 1
 	;;
 mpcupdatecheck )
-	timeout 1 rtl_test &> /dev/null && dabdevice=1 || dabdevice=0
+	timeout 0.1 rtl_test &> /dev/null && dabdevice=1 || dabdevice=0
 	grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && ffmpeg=1 || ffmpeg=0
 	echo '{"dabdevice":'$dabdevice',"ffmpeg":'$ffmpeg'}'
 	;;
