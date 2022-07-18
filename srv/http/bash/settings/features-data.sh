@@ -16,6 +16,7 @@ data+='
 , "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
+, "dabdevice"        : '$( timeout 0.1 rtl_test &> /dev/null && echo true )'
 , "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
