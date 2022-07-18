@@ -284,14 +284,14 @@ function psRefresh( data ) {
 		renderPage();
 	}
 }
+function psReload() {
+	if ( localhost ) location.reload();
+}
 function psState( data ) {
 	if ( page === 'player' ) {
 		G.state = data.state;
 		playbackIcon();
 	}
-}
-function psReload() {
-	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
 	if ( G.local || !$( '#infoRange .value' ).text() ) return

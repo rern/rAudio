@@ -107,6 +107,7 @@ dabradio )
 	else
 		systemctl disable --now rtsp-simple-server
 	fi
+	pushRefresh
 	;;
 equalizer )
 	enabled=${args[1]}
@@ -274,6 +275,9 @@ EOF
 	fi
 	pushRefresh
 	pushSubmenu multiraudio true
+	;;
+pushrefresh )
+	pushRefresh
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
