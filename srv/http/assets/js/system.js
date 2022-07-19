@@ -814,7 +814,10 @@ $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
-	if ( $( e.target ).is( 'a' ) ) { // system
+	if ( !$this.hasClass( 'backend' ) ) {
+		chevronToggle( $chevron );
+		$list.toggleClass( 'hide' )
+	} else if ( $( e.target ).is( 'a' ) ) { // system
 		bash( [ 'packagelist', $( e.target ).text() ], function( list ) {
 			$list.html( list )
 			if ( $list.hasClass( 'hide' ) ) {

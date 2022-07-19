@@ -399,7 +399,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	
 	<heading class="sub">Back End</heading>
 		<a href="https://www.archlinuxarm.org" target="_blank">Arch Linux Arm</a>
-	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-up bl hide"></i>
+	<br><span class="listtitle backend">Packages:&ensp;<i class="fa fa-chevron-up bl hide"></i>
 	<br><?=$indexhtml?></span>
 	<div class="list gr hide"></div>
 	
