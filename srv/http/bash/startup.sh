@@ -27,7 +27,7 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	mv /boot/backup.gz $dirdata/tmp
+	mv /boot/backup.gz $dirtmp
 	$dirbash/settings/system.sh datarestore
 fi
 
@@ -49,6 +49,7 @@ if [[ -e /boot/wifi ]]; then
 	netctl enable "$ssid"
 fi
 # ----------------------------------------------------------------------------
+rm -f $dirtmp/*
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm

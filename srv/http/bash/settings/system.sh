@@ -319,16 +319,15 @@ dtparam=audio=on"
 	pushReboot 'Audio I&#178;S module' i2saudio
 	;;
 journalctl )
-	filebootlog=/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		journal=$( cat $filebootlog )
-	else
+	filebootlog=$dirdata/tmp/bootlog
+	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		grep -q 'Startup finished.*kernel' <<< "$journal" && echo "$journal" > $filebootlog
+		tail -1 <<< "$journal" | grep -q 'Startup finished' || journal='(Boot ...)'
+		echo "$journal" > $filebootlog
 	fi
 	echo "\
 <bll># journalctl -b</bll>
-$journal
+$( cat $filebootlog )
 "
 	;;
 lcdcalibrate )
@@ -522,12 +521,17 @@ mpdoledset )
 	fi
 	;;
 packagelist )
-	pacman -Qi \
-		| grep '^Name\|^Vers\|^Desc\|^URL' \
-		| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
-			   s|^Vers.*: \(.*\)|\1</div>|
-			   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
-			   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|'
+	filepackages=$dirtmp/packages
+	if [[ ! -e $filepackages ]]; then
+		pacman -Qi \
+			| grep '^Name\|^Vers\|^Desc\|^URL' \
+			| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
+				   s|^Vers.*: \(.*\)|\1</div>|
+				   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
+				   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|' \
+			> $dirtmp/packages
+	fi
+	cat $filepackages | grep -A3 --no-group-separator "<code>${args[1],}"
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then

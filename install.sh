@@ -2,6 +2,15 @@
 
 alias=r1
 
+# 20220722
+file=/etc/udev/rules.d/rtl-sdr.rules
+if [[ -e /usr/bin/rtsp-simple-server && ! -e $file ]]; then
+	echo 'SUBSYSTEMS=="usb", ENV{ID_SOFTWARE_RADIO}="1", RUN+="/srv/http/bash/settings/features.sh pushrefresh"' > $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+grep -q gpio-poweroff /boot/config.txt && sed -i '/gpio-poweroff\|gpio-shutdown/ d' /boot/config.txt
+
 # 20220708
 sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 
