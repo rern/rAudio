@@ -1019,10 +1019,15 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	width: 100%;
 	margin-bottom: 10px;
-	padding: 10px 0;
 	font-size: 30px;
+	line-height: 50px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
+}
+#biocontent .artist img {
+	height: 40px;
+	margin-right: 10px;
+	vertical-align: -6px;
 }
 #biocontent .close-root,
 #biocontent .bioback {

@@ -482,7 +482,7 @@ function getBio( artist ) {
 			} );
 			similars = similars.slice( 0, -7 ) +'</span><br><br>';
 		}
-		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i>'+ artist +'</p>'
+		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i><a>'+ artist +'</a></p>'
 				+ genre
 				+ similars
 				+'<p>'+ content +'</p>'
@@ -517,6 +517,19 @@ function getBio( artist ) {
 					$( '#bioimg' )
 						.html( images )
 						.removeClass( 'hide' );
+					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
+					$( '#bioimg img' ).last().on( 'load', function() {
+						var imgbottom = this.getBoundingClientRect().bottom;
+						$( '#bio' ).scroll( function() {
+							if ( this.scrollTop > imgbottom ) {
+								$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
+								$( '#biocontent .artist img' ).removeClass( 'hide' );
+							} else {
+								$( '#biocontent .artist a' ).css( 'margin-left', '' );
+								$( '#biocontent .artist img' ).addClass( 'hide' );
+							}
+						} );
+					} );
 				}
 			} );
 		} );
