@@ -85,8 +85,10 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
 		if ( G.display.noswipe
-			|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].includes( e.target.id )
-			|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+			|| $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| !$( '#bio' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
