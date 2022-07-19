@@ -388,6 +388,8 @@ foreach( $listui as $ui ) {
 }
 $version = file_get_contents( '/srv/http/data/system/version' );
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
+$indexhtml = '';
+for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 ?>
 <div class="section">
 	<heading>About</heading>
@@ -395,9 +397,10 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><gr>by</gr>&emsp;r e r n
 	
 	
-	<heading id="backend" class="sub">Back End</heading>
+	<heading class="sub">Back End</heading>
 		<a href="https://www.archlinuxarm.org" target="_blank">Arch Linux Arm</a>
-	<br><span class="listtitle">Packages:&ensp;<i id="backendchevron" class="fa fa-chevron-down bl"></i></span>
+	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-up bl hide"></i>
+	<br><?=$indexhtml?></span>
 	<div class="list gr hide"></div>
 	
 	<heading class="sub">Front End</heading>

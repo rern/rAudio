@@ -814,27 +814,18 @@ $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
-	if ( $list.hasClass( 'hide' ) ) {
-		if ( $list.html() ) { // jquery
-			$list.removeClass( 'hide' );
-			chevronToggle( $chevron );
-		} else { // system
-			bash( [ 'packagelist' ], function( list ) {
-				$list
-					.html( list )
-					.removeClass( 'hide' );
-				chevronToggle( $chevron );
-			} );
-		}
-		if ( e.target.id === 'backendchevron' ) $( '#backend' ).addClass( 'stickyhead' );
-	} else {
-		chevronToggle( $chevron );
+	if ( $( e.target ).is( 'a' ) ) { // system
+		bash( [ 'packagelist', $( e.target ).text() ], function( list ) {
+			$list.html( list )
+			if ( $list.hasClass( 'hide' ) ) {
+				$list.removeClass( 'hide' );
+				$chevron.removeClass( 'hide' );
+			}
+		} );
+	} else if ( !$list.hasClass( 'hide' ) ) {
 		$list.addClass( 'hide' );
-		$( '#backend' ).removeClass( 'stickyhead' );
+		$chevron.addClass( 'hide' );
 	}
-} );
-$( '#backend' ).click( function() {
-	$( '.listtitle' ).click();
 } );
 $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
