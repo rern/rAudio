@@ -142,6 +142,7 @@ heading.sub {
 	width: calc( 100% / 26 );
 	min-width: 16px;
 	text-align: center;
+	line-height: 24px;
 	color: var( --cml );
 }
 heading.status .headtitle::after,
