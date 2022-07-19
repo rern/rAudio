@@ -133,9 +133,21 @@ heading {
 heading.sub {
 	margin: 5px 0 10px 0;
 	padding-bottom: 0;
-	line-height: 24px;
+	line-height: 40px;
 	font-size: 17px;
 	border-bottom-color: var( --cga );
+}
+.stickyhead {
+	position: sticky;
+	top: 40px;
+	background: #000000;
+	box-shadow: 0px 4px 10px #000000;
+}
+.stickyhead::after {
+	content: '\f604';
+	font-family: rern;
+	margin-left: 5px;
+	color: var( --cml );
 }
 heading.status .headtitle::after,
 .col-l.status gr::after {
@@ -709,6 +721,7 @@ input.disabled + .switchlabel:after {
 	.switchlabel,
 	.undervoltage,
 	.wiring,
+	#backend,
 	#button-data,
 	#close,
 	#filetype,

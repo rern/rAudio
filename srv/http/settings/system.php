@@ -393,13 +393,13 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<heading>About</heading>
 	<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
 	<br><gr>by</gr>&emsp;r e r n
-	<br>&nbsp;
-
-	<heading class="sub">Back End</heading>
+	
+	
+	<heading id="backend" class="sub">Back End</heading>
 		<a href="https://www.archlinuxarm.org" target="_blank">Arch Linux Arm</a>
-	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list gr hide"></div><br>&nbsp;
-
+	<br><span class="listtitle">Packages:&ensp;<i id="backendchevron" class="fa fa-chevron-down bl"></i></span>
+	<div class="list gr hide"></div>
+	
 	<heading class="sub">Front End</heading>
 		<a href="https://whatwg.org" target="_blank">HTML</a>
 	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
@@ -407,8 +407,8 @@ $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
 	<br><a href="https://jquery.com/" target="_blank">jQuery</a>
 	<br><span class="listtitle">Plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list gr hide"><?=$uihtml?></div><br>&nbsp;
-
+	<div class="list gr hide"><?=$uihtml?></div>
+	
 	<heading class="sub">Data</heading>
 		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
 	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts

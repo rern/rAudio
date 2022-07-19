@@ -810,29 +810,31 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '.listtitle' ).click( function() {
+$( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
 	if ( $list.hasClass( 'hide' ) ) {
-		$chevron
-			.removeClass( 'fa-chevron-down' )
-			.addClass( 'fa-chevron-up' );
-		if ( $list.html() ) {
+		if ( $list.html() ) { // jquery
 			$list.removeClass( 'hide' );
-		} else {
+			chevronToggle( $chevron );
+		} else { // system
 			bash( [ 'packagelist' ], function( list ) {
 				$list
 					.html( list )
 					.removeClass( 'hide' );
+				chevronToggle( $chevron );
 			} );
 		}
+		if ( e.target.id === 'backendchevron' ) $( '#backend' ).addClass( 'stickyhead' );
 	} else {
-		$chevron
-			.removeClass( 'fa-chevron-up' )
-			.addClass( 'fa-chevron-down' );
+		chevronToggle( $chevron );
 		$list.addClass( 'hide' );
+		$( '#backend' ).removeClass( 'stickyhead' );
 	}
+} );
+$( '#backend' ).click( function() {
+	$( '.listtitle' ).click();
 } );
 $( '.sub .help' ).click( function() {
 	$( this ).parent().next().toggleClass( 'hide' );
@@ -842,6 +844,12 @@ if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function chevronToggle( $chevron ) {
+	var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
+	$chevron
+		.removeClass( 'fa-chevron-up fa-chevron-down' )
+		.addClass( 'fa-chevron-'+ updn );
+}
 function infoMount( values ) {
 	var ip = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
