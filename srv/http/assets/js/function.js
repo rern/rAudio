@@ -445,7 +445,6 @@ function displaySubMenu() {
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist ) {
-	var artist = 'Sting';
 	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
