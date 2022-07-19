@@ -519,8 +519,8 @@ function getBio( artist ) {
 						.html( images )
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
-					$( '#bioimg img' ).last().on( 'load', function() {
-						setTimeout( function() { // fix: a lot of images need sone times
+					$( '#bioimg img' ).last().one( 'load', function() {
+						setTimeout( function() { // fix: a lot of images need some times
 							$( '#biocontent .artist' ).removeClass( 'hide' );
 						}, 0 );
 						var imgbottom = this.getBoundingClientRect().bottom;
