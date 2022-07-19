@@ -814,23 +814,22 @@ $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
-	if ( !$this.hasClass( 'backend' ) ) {
+	if ( !$this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
 		$chevron
 			.removeClass( 'fa-chevron-up fa-chevron-down' )
 			.addClass( 'fa-chevron-'+ updn );
-	} else if ( $( e.target ).is( 'a' ) ) { // system
+	} else if ( $( e.target ).is( 'a' ) ) { // package
+		$( '.listtitle a' ).removeAttr( 'class' );
 		bash( [ 'packagelist', $( e.target ).text() ], function( list ) {
-			$list.html( list )
-			if ( $list.hasClass( 'hide' ) ) {
-				$list.removeClass( 'hide' );
-				$chevron.removeClass( 'hide' );
-			}
+			$list.html( list );
+			$( e.target ).addClass( 'wh' );
+			if ( $list.hasClass( 'hide' ) ) $list.add( $chevron ).removeClass( 'hide' );
 		} );
-	} else if ( !$list.hasClass( 'hide' ) ) {
-		$list.addClass( 'hide' );
-		$chevron.addClass( 'hide' );
+	} else {
+		$list.add( $chevron ).addClass( 'hide' );
+		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
 $( '.sub .help' ).click( function() {
