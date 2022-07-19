@@ -814,17 +814,20 @@ $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
+	var $target = $( e.target );
 	if ( !$this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
 		$chevron
 			.removeClass( 'fa-chevron-up fa-chevron-down' )
 			.addClass( 'fa-chevron-'+ updn );
-	} else if ( $( e.target ).is( 'a' ) ) { // package
+	} else if ( $target.is( 'a' ) ) { // package
+		if ( $target.hasClass( 'wh' ) ) return
+		
 		$( '.listtitle a' ).removeAttr( 'class' );
-		bash( [ 'packagelist', $( e.target ).text() ], function( list ) {
+		bash( [ 'packagelist', $target.text() ], function( list ) {
 			$list.html( list );
-			$( e.target ).addClass( 'wh' );
+			$target.addClass( 'wh' );
 			if ( $list.hasClass( 'hide' ) ) $list.add( $chevron ).removeClass( 'hide' );
 		} );
 	} else {
