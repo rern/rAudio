@@ -445,6 +445,7 @@ function displaySubMenu() {
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist ) {
+	var artist = 'Sting';
 	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
@@ -514,11 +515,15 @@ function getBio( artist ) {
 					data.artistthumb.forEach( function( el ) {
 						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
+					$( '#biocontent .artist' ).addClass( 'hide' );
 					$( '#bioimg' )
 						.html( images )
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
 					$( '#bioimg img' ).last().on( 'load', function() {
+						setTimeout( function() { // fix: a lot of images need sone times
+							$( '#biocontent .artist' ).removeClass( 'hide' );
+						}, 0 );
 						var imgbottom = this.getBoundingClientRect().bottom;
 						$( '#bio' ).scroll( function() {
 							if ( this.scrollTop > imgbottom ) {
