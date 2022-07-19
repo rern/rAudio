@@ -815,8 +815,11 @@ $( '.listtitle' ).click( function( e ) {
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
 	if ( !$this.hasClass( 'backend' ) ) {
-		chevronToggle( $chevron );
 		$list.toggleClass( 'hide' )
+		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
+		$chevron
+			.removeClass( 'fa-chevron-up fa-chevron-down' )
+			.addClass( 'fa-chevron-'+ updn );
 	} else if ( $( e.target ).is( 'a' ) ) { // system
 		bash( [ 'packagelist', $( e.target ).text() ], function( list ) {
 			$list.html( list )
@@ -838,12 +841,6 @@ if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function chevronToggle( $chevron ) {
-	var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
-	$chevron
-		.removeClass( 'fa-chevron-up fa-chevron-down' )
-		.addClass( 'fa-chevron-'+ updn );
-}
 function infoMount( values ) {
 	var ip = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
