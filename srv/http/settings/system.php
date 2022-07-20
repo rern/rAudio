@@ -386,14 +386,13 @@ foreach( $listui as $ui ) {
 	$uihtml.= '<br> &emsp; '.$ui[ 1 ];
 	$uihtml.= $localhost ? '' : '<br> &emsp; <a href="'.$ui[ 2 ].'" target="_blank">'.$ui[ 2 ].'</a><br>';
 }
-$version = file_get_contents( '/srv/http/data/system/version' );
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 ?>
 <div id="about" class="section">
 	<heading>About</heading>
-	<i class="fa fa-plus-r fa-lg"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
+	<i class="fa fa-plus-r fa-lg"></i>&ensp;<a href="https://github.com/rern/rAudio-1/discussions">r A u d i o</a>
 	<br>by&emsp;r e r n
 	
 	
