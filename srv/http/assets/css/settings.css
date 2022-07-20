@@ -137,14 +137,6 @@ heading.sub {
 	font-size: 17px;
 	border-bottom-color: var( --cga );
 }
-.listtitle a {
-	display: inline-block;
-	width: calc( 100% / 26 );
-	min-width: 16px;
-	text-align: center;
-	line-height: 24px;
-	color: var( --cml );
-}
 heading.status .headtitle::after,
 .col-l.status gr::after {
 	display: inline-block;
@@ -345,6 +337,16 @@ code {
 input[type=image] {
 	padding: 0;
 	border: none !important;
+}
+#about {
+	line-height: 22px;
+}
+.listtitle a {
+	display: inline-block;
+	width: calc( 100% / 26 );
+	min-width: 16px;
+	text-align: center;
+	color: var( --cml );
 }
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
 .container input[type=checkbox] {
