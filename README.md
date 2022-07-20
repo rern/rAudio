@@ -6,6 +6,7 @@ Audio player for
 	- 32bit: `2 (BCM2836)`
 	- Legacy: `1` `Zero`
 - BeagleBone Black
+- CubieBoard2
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
@@ -74,8 +75,9 @@ Audio player for
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- [**Release i202207101**](https://github.com/rern/rAudio-1/releases/tag/i202207101)
-- BeagleBone Black - Need DIY: [rAudio-1 running on BeagleBone Black](https://github.com/rern/rAudio-1/discussions/299)
+- Raspberry Pi - [**Release i202207101**](https://github.com/rern/rAudio-1/releases/tag/i202207101)
+- BeagleBone Black - [DIY](https://github.com/rern/rAudio-1/discussions/299)
+- CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
 
 ### DIY Image file
 - [**rOS**](https://github.com/rern/rOS) - Build image files with interactive process
