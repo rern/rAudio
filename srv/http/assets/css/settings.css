@@ -131,10 +131,11 @@ heading {
 	letter-spacing: 5px;
 }
 heading.sub {
-	margin: 5px 0 10px 0;
+	margin: 15px 0 10px 0;
 	padding-bottom: 0;
-	line-height: 40px;
+	line-height: 28px;
 	font-size: 17px;
+	color: var( --cw );
 	border-bottom-color: var( --cga );
 }
 heading.status .headtitle::after,
@@ -340,6 +341,7 @@ input[type=image] {
 }
 #about {
 	line-height: 22px;
+	color: var( --cg75 );
 }
 .listtitle a {
 	display: inline-block;
