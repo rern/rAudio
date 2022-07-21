@@ -397,8 +397,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	
 	<heading class="sub">Back End</heading>
 		• <a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
-	<br>• <span class="listtitle backend">Packages:&ensp;<i class="fa fa-chevron-up bl hide"></i>
-	<br><?=$indexhtml?></span>
+	<div class="listtitle backend">P a c k a g e s :&ensp;<i class="fa fa-chevron-up bl hide"></i>
+	<br><?=$indexhtml?></div>
 	<div class="list gr hide"></div>
 	
 	<heading class="sub">Front End</heading>
@@ -407,7 +407,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	<br>• <a href="https://www.php.net">PHP</a>
 	<br>• <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
 	<br>• <a href="https://jquery.com/">jQuery</a>
-	<br>• <span class="listtitle">Plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
+	<div class="listtitle">P l u g i n s :&ensp;<i class="fa fa-chevron-down bl"></i></div>
 	<div class="list gr hide"><?=$uihtml?></div>
 	
 	<heading class="sub">Data</heading>
