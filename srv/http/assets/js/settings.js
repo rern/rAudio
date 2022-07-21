@@ -349,7 +349,11 @@ var selectchange = 0;
 
 document.title = page;
 
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
+if ( localhost ) {
+	$( 'a' ).removeAttr( 'href' );
+} else {
+	$( 'a[href]' ).attr( 'target', '_blank' );
+}
 
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return

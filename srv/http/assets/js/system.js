@@ -821,6 +821,7 @@ $( '.listtitle' ).click( function( e ) {
 		$chevron
 			.removeClass( 'fa-chevron-up fa-chevron-down' )
 			.addClass( 'fa-chevron-'+ updn );
+		if ( localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) { // package
 		if ( $target.hasClass( 'wh' ) ) return
 		
@@ -828,18 +829,14 @@ $( '.listtitle' ).click( function( e ) {
 		bash( [ 'packagelist', $target.text() ], function( list ) {
 			$list.html( list );
 			$target.addClass( 'wh' );
+			if ( localhost ) $( '.list a' ).remove();
 			if ( $list.hasClass( 'hide' ) ) $list.add( $chevron ).removeClass( 'hide' );
-			if ( localhost ) $( '.pkg' ).addClass( 'localhost' );
 		} );
 	} else {
 		$list.add( $chevron ).addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '#about' ).on( 'click', '.pkg', function() {
-	window.open( $( this ).next( 'a' ).text() );
-} );
-if ( localhost ) $( '.pkg' ).addClass( 'localhost' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

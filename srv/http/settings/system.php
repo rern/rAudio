@@ -382,9 +382,8 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '<div class="pkg"><code>'.$ui[ 0 ].'</code></div>';
-	$uihtml.= ' &emsp; '.$ui[ 1 ];
-	$uihtml.= $localhost ? '' : '<a>'.$ui[ 2 ].'</a><br>';
+	$uihtml.= '<code>'.$ui[ 0 ].'</code><a href="'.$ui[ 2 ].'"><i class="fa fa-link"></i><a><br>';
+	$uihtml.= ' &emsp; '.$ui[ 1 ].'<br>';
 }
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
@@ -397,17 +396,17 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
 	
 	
 	<heading class="sub">Back End</heading>
-		• <a href="https://www.archlinuxarm.org" target="_blank">Arch Linux Arm</a>
+		• <a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 	<br>• <span class="listtitle backend">Packages:&ensp;<i class="fa fa-chevron-up bl hide"></i>
 	<br><?=$indexhtml?></span>
 	<div class="list gr hide"></div>
 	
 	<heading class="sub">Front End</heading>
-		• <a href="https://whatwg.org" target="_blank">HTML</a>
-	<br>• <a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
-	<br>• <a href="https://www.php.net" target="_blank">PHP</a>
-	<br>• <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
-	<br>• <a href="https://jquery.com/" target="_blank">jQuery</a>
+		• <a href="https://whatwg.org">HTML</a>
+	<br>• <a href="https://www.w3.org/TR/CSS">CSS</a>
+	<br>• <a href="https://www.php.net">PHP</a>
+	<br>• <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
+	<br>• <a href="https://jquery.com/">jQuery</a>
 	<br>• <span class="listtitle">Plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
 	<div class="list gr hide"><?=$uihtml?></div>
 	

@@ -100,7 +100,7 @@ foreach( $arrayalias as $alias ) {
 	$description = str_replace( '\\', '', $description );
 	$sourcecode = $addon[ 'sourcecode' ];
 	if ( $sourcecode && $buttonlabel !== 'Link' ) {
-		$detail = '<br><a href="'.$sourcecode.'" target="_blank" class="source">source <i class="fa fa-github"></i></a>';
+		$detail = '<br><a href="'.$sourcecode.'" class="source">source <i class="fa fa-github"></i></a>';
 	} else {
 		$detail = '';
 	}

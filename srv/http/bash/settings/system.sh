@@ -523,12 +523,27 @@ mpdoledset )
 packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
-		pacman -Qi \
-			| grep '^Name\|^Vers\|^Desc\|^URL' \
-			| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
-				   s|^Vers.*: \(.*\)|\1</div>|
-				   s|^Desc.*: \(.*\)| \&emsp; \1|
-				   s|^URL.*: \(.*\)|<a>\1</a><br>|' \
+		pacmanqi=$( pacman -Qi | grep '^Name\|^Vers\|^Desc\|^URL' )
+		while read line; do
+			case ${line:0:3} in
+			Nam ) name=$line;;
+			Ver ) version=$line;;
+			Des ) description=$line;;
+			URL ) url=$line
+				  lines+="\
+$name
+$version
+$url
+$description
+"
+;;
+			esac
+		done <<< "$pacmanqi"
+		echo "$lines" \
+			| sed  's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
+					s|^Vers.*: \(.*\)|\1|
+					s|^URL.*: \(.*\)|<a href="\1" target="_blank"><i class="fa fa-link"></i></a></div>|
+					s|^Desc.*: \(.*\)| \&emsp; \1<br>|' \
 			> $dirtmp/packages
 	fi
 	cat $filepackages | grep -A3 --no-group-separator "<code>${args[1],}"
