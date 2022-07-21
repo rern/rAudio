@@ -540,7 +540,7 @@ $description
 			esac
 		done <<< "$pacmanqi"
 		echo "$lines" \
-			| sed  's|^URL.*: \(.*\)|• <a href="\1" target="_blank">|
+			| sed  's|^URL.*: \(.*\)|<a href="\1" target="_blank">|
 					s|^Name.*: \(.*\)|\1</a> |
 					s|^Vers.*: \(.*\)|\1|
 					s|^Desc.*: \(.*\)|<p>\1</p>|' \

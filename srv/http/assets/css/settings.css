@@ -343,8 +343,12 @@ input[type=image] {
 	line-height: 22px;
 	color: var( --cg75 );
 }
+.list a::before {
+	content: '• ';
+	color: var( --cg75 );
+}
 .list p {
-	margin: 0 0 0 20px;
+	margin: 0 0 0 12px;
 }
 .listtitle a {
 	display: inline-block;

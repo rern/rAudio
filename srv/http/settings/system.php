@@ -382,8 +382,8 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '• </code><a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'<a><br>';
-	$uihtml.= ' &emsp; '.$ui[ 1 ].'<br>';
+	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a>';
+	$uihtml.= '<p>'.$ui[ 1 ].'</p>';
 }
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
