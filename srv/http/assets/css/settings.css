@@ -351,6 +351,9 @@ input[type=image] {
 	text-align: center;
 	color: var( --cml );
 }
+.localhost.pkg::after {
+	display: none;
+}
 .listtitle a {
 	display: inline-block;
 	width: calc( 100% / 26 );

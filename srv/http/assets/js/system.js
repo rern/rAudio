@@ -829,6 +829,7 @@ $( '.listtitle' ).click( function( e ) {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( $list.hasClass( 'hide' ) ) $list.add( $chevron ).removeClass( 'hide' );
+			if ( localhost ) $( '.pkg' ).addClass( 'localhost' );
 		} );
 	} else {
 		$list.add( $chevron ).addClass( 'hide' );
@@ -838,7 +839,7 @@ $( '.listtitle' ).click( function( e ) {
 $( '#about' ).on( 'click', '.pkg', function() {
 	window.open( $( this ).next( 'a' ).text() );
 } );
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
+if ( localhost ) $( '.pkg' ).addClass( 'localhost' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
