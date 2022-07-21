@@ -531,22 +531,22 @@ packagelist )
 			Des ) description=$line;;
 			URL ) url=$line
 				  lines+="\
+$url
 $name
 $version
-$url
 $description
 "
 ;;
 			esac
 		done <<< "$pacmanqi"
 		echo "$lines" \
-			| sed  's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
+			| sed  's|^URL.*: \(.*\)|• <a href="\1" target="_blank">|
+					s|^Name.*: \(.*\)|\1</a> |
 					s|^Vers.*: \(.*\)|\1|
-					s|^URL.*: \(.*\)|<a href="\1" target="_blank"><i class="fa fa-link"></i></a></div>|
-					s|^Desc.*: \(.*\)| \&emsp; \1<br>|' \
+					s|^Desc.*: \(.*\)|<p>\1</p>|' \
 			> $dirtmp/packages
 	fi
-	cat $filepackages | grep -A3 --no-group-separator "<code>${args[1],}"
+	cat $filepackages | grep -B1 -A2 --no-group-separator "^${args[1],}"
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
