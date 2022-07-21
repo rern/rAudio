@@ -104,7 +104,7 @@ bluetoothset )
 	;;
 databackup )
 	dirconfig=$dirdata/config
-	backupfile=$dirdata/tmp/backup.gz
+	backupfile=$dirtmp/backup.gz
 	rm -f $backupfile
 	alsactl store
 	files=(
@@ -168,7 +168,7 @@ databackup )
 	rm -rf $dirdata/{config,disable,enable}
 	;;
 datarestore )
-	backupfile=$dirdata/tmp/backup.gz
+	backupfile=$dirtmp/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
 	# remove all flags
@@ -319,7 +319,7 @@ dtparam=audio=on"
 	pushReboot 'Audio I&#178;S module' i2saudio
 	;;
 journalctl )
-	filebootlog=$dirdata/tmp/bootlog
+	filebootlog=$dirtmp/bootlog
 	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
 		tail -1 <<< "$journal" | grep -q 'Startup finished' || journal='(Boot ...)'
