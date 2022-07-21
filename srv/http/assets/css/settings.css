@@ -343,6 +343,14 @@ input[type=image] {
 	line-height: 22px;
 	color: var( --cg75 );
 }
+.pkg::after {
+	content: '\f56B';
+	font-family: rern;
+	display: inline-block;
+	width: 40px;
+	text-align: center;
+	color: var( --cml );
+}
 .listtitle a {
 	display: inline-block;
 	width: calc( 100% / 26 );
@@ -711,7 +719,7 @@ input.disabled + .switchlabel:after {
 	.help-block bl,
 	.img,
 	.listtitle,
-	.list,
+	.list .pkg::after,
 	.page-icon,
 	.prev-next,
 	.setting,

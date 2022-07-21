@@ -1,6 +1,6 @@
 @font-face {
 	font-family: rern;
-	src: url( '/assets/fonts/rern.2022060200.woff2' ) format( 'woff2' );
+	src: url( '/assets/fonts/rern.2022072100.woff2' ) format( 'woff2' );
 	font-display: block;
 	font-style: normal;
 	font-weight: normal;
@@ -170,7 +170,8 @@ input::-moz-focus-inner {
 .fa-librandom::before { content: '\f569' }
 .fa-library::before { content: '\f506' }
 .fa-libupdate::before { content: '\f506'; animation: blinkopaque 1.5s linear infinite; }
-.fa-lock::before { content: '\f574'; }
+.fa-link::before { content: '\f56B' }
+.fa-lock::before { content: '\f574' }
 .fa-lyrics::before { content: '\f54B' }
 .fa-microsd::before { content: '\f543' }
 .fa-minus::before { content: '\f518' }

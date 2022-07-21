@@ -835,9 +835,8 @@ $( '.listtitle' ).click( function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '.sub .help' ).click( function() {
-	$( this ).parent().next().toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
+$( '#about' ).on( 'click', '.pkg', function() {
+	window.open( $( this ).next( 'a' ).text() );
 } );
 if ( localhost ) $( 'a' ).removeAttr( 'href' );
 

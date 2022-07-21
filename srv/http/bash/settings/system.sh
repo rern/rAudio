@@ -527,8 +527,8 @@ packagelist )
 			| grep '^Name\|^Vers\|^Desc\|^URL' \
 			| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
 				   s|^Vers.*: \(.*\)|\1</div>|
-				   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
-				   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|' \
+				   s|^Desc.*: \(.*\)| \&emsp; \1|
+				   s|^URL.*: \(.*\)|<a>\1</a><br>|' \
 			> $dirtmp/packages
 	fi
 	cat $filepackages | grep -A3 --no-group-separator "<code>${args[1],}"

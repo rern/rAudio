@@ -382,9 +382,9 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '<code>'.$ui[ 0 ].'</code>';
-	$uihtml.= '<br> &emsp; '.$ui[ 1 ];
-	$uihtml.= $localhost ? '' : '<br> &emsp; <a href="'.$ui[ 2 ].'" target="_blank">'.$ui[ 2 ].'</a><br>';
+	$uihtml.= '<div class="pkg"><code>'.$ui[ 0 ].'</code></div>';
+	$uihtml.= ' &emsp; '.$ui[ 1 ];
+	$uihtml.= $localhost ? '' : '<a>'.$ui[ 2 ].'</a><br>';
 }
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
