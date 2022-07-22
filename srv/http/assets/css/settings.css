@@ -340,11 +340,17 @@ input[type=image] {
 	border: none !important;
 }
 #about {
+	margin-top: 40px;
 	line-height: 22px;
 }
-#aboutlogo {
+#logotext {
+	display: inline-block;
+	margin-left: 8px;
+	line-height: 16px;
 	letter-spacing: 15px;
-	color: var( --cw );
+}
+#logotext gr {
+	letter-spacing: normal;
 }
 .list {
 	margin-top: 10px;
