@@ -394,7 +394,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 ?>
 <div id="about" class="section">
 	<heading>About</heading>
-	<i class="fa fa-plus-r fa-lg"></i>&ensp;<a href="https://github.com/rern/rAudio-1/discussions">r A u d i o</a>&emsp;<gr>by</gr>&emsp;r e r n
+	<a id="aboutlogo" href="https://github.com/rern/rAudio-1/discussions"><i class="fa fa-plus-r fa-lg"></i>rAudio</a>&emsp;<gr>by</gr>&emsp;r e r n
 	
 	
 	<heading class="sub">Back End</heading>

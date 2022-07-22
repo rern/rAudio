@@ -131,7 +131,7 @@ heading {
 	letter-spacing: 5px;
 }
 heading.sub {
-	margin: 15px 0 10px 0;
+	margin: 20px 0 10px 0;
 	padding-bottom: 0;
 	line-height: 28px;
 	font-size: 17px;
@@ -342,16 +342,20 @@ input[type=image] {
 #about {
 	line-height: 22px;
 }
+#aboutlogo {
+	letter-spacing: 15px;
+	color: var( --cw );
+}
 .list {
 	margin-top: 10px;
+	color: var( --cg75 );
 }
 .list a::before {
 	content: '• ';
-	color: var( --cg60 );
+	color: var( --cg75 );
 }
 .list p {
 	margin: 0 0 0 12px;
-	color: var( --cg60 );
 }
 .listtitle a {
 	display: inline-block;
