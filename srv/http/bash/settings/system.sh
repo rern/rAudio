@@ -99,7 +99,7 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
+	[[ $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
 	pushRefresh
 	;;
 databackup )
