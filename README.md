@@ -54,6 +54,7 @@ Audio player for
 	- Audio - Receiver / Sender
 	- Keyboard and mouse
 - USB:
+	- Bluetooth
 	- DAC
 	- RTL-SDR (DAB radio)
 	- Wi-Fi
