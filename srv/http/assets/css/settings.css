@@ -341,14 +341,17 @@ input[type=image] {
 }
 #about {
 	line-height: 22px;
-	color: var( --cg75 );
+}
+.list {
+	margin-top: 10px;
 }
 .list a::before {
 	content: '• ';
-	color: var( --cg75 );
+	color: var( --cg60 );
 }
 .list p {
 	margin: 0 0 0 12px;
+	color: var( --cg60 );
 }
 .listtitle a {
 	display: inline-block;
@@ -356,6 +359,9 @@ input[type=image] {
 	min-width: 16px;
 	text-align: center;
 	color: var( --cml );
+}
+.brindex {
+	display: none;
 }
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
 .container input[type=checkbox] {
@@ -542,9 +548,6 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
-.list {
-	margin-top: 10px;
-}
 #guide {
 	position: absolute;
 	width: 100%;
@@ -664,6 +667,12 @@ input.disabled + .switchlabel:after {
 	}
 	.selectric .button {
 		width: 25px !important;
+	}
+	.listtitle a {
+		width: calc( 100% / 13 );
+	}
+	.brindex {
+		display: block;
 	}
 }
 @media (max-width: 419px) {

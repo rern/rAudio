@@ -823,14 +823,17 @@ $( '.listtitle' ).click( function( e ) {
 			.addClass( 'fa-chevron-'+ updn );
 		if ( localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) { // package
-		if ( $target.hasClass( 'wh' ) ) return
-		
+		var active = $target.hasClass( 'wh' );
 		$( '.listtitle a' ).removeAttr( 'class' );
+		if ( active ) {
+			$list.empty();
+			return
+		}
+		
 		bash( [ 'packagelist', $target.text() ], function( list ) {
 			$list.html( list );
 			$target.addClass( 'wh' );
-			if ( localhost ) $( '.list a' ).remove();
-			if ( $list.hasClass( 'hide' ) ) $list.add( $chevron ).removeClass( 'hide' );
+			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
 		} );
 	} else {
 		$list.add( $chevron ).addClass( 'hide' );

@@ -387,34 +387,52 @@ foreach( $listui as $ui ) {
 }
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
-for( $i = 'A'; $i !== 'AA'; $i++ ) $indexhtml.= '<a>'.$i.'</a>';
+for( $i = 'A'; $i !== 'AA'; $i++ ) {
+	$indexhtml.= '<a>'.$i.'</a>';
+	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
+}
 ?>
 <div id="about" class="section">
 	<heading>About</heading>
-	<i class="fa fa-plus-r fa-lg"></i>&ensp;<a href="https://github.com/rern/rAudio-1/discussions">r A u d i o</a>
-	<br>by&emsp;r e r n
+	<i class="fa fa-plus-r fa-lg"></i>&ensp;<a href="https://github.com/rern/rAudio-1/discussions">r A u d i o</a>&emsp;<gr>by</gr>&emsp;r e r n
 	
 	
 	<heading class="sub">Back End</heading>
-		• <a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
-	<div class="listtitle backend">P a c k a g e s :&ensp;<i class="fa fa-chevron-up bl hide"></i>
+	<div class="list">
+		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
+		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
+	</div>
+	<div class="listtitle backend">P a c k a g e s :</i>
 	<br><?=$indexhtml?></div>
-	<div class="list gr hide"></div>
+	<div class="list"></div>
 	
 	<heading class="sub">Front End</heading>
-		• <a href="https://whatwg.org">HTML</a>
-	<br>• <a href="https://www.w3.org/TR/CSS">CSS</a>
-	<br>• <a href="https://www.php.net">PHP</a>
-	<br>• <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
-	<br>• <a href="https://jquery.com/">jQuery</a>
+	<div class="list">
+		<a href="https://whatwg.org">HTML</a>
+		<p>Hypertext Markup Language for displaying documents in web browsers</p>
+		<a href="https://www.w3.org/TR/CSS">CSS</a>
+		<p>Cascading Style Sheets for describing the presentation of HTMLs</p>
+		<a href="https://www.php.net">PHP</a>
+		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
+		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
+		<p>A scripting language for working with HTML Document Object Model(DOM) on client side</p>
+		<a href="https://jquery.com/">jQuery</a>
+		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
+	</div>
 	<div class="listtitle">P l u g i n s :&ensp;<i class="fa fa-chevron-down bl"></i></div>
-	<div class="list gr hide"><?=$uihtml?></div>
+	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="sub">Data</heading>
-		• <a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
-	<br>• <a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
-	<br>• <a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for their own stations
-	<br>• <a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
+	<div class="list">
+		<a href="https://www.last.fm">last.fm</a>
+		<p>Coverarts and artist biographies</p>
+		<a href="https://webservice.fanart.tv">fanart.tv</a>
+		<p>Artist images and fallback coverarts</p>
+		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a>
+		<p>Coverarts for their own stations</p>
+		<a href="http://gnudb.gnudb.org">GnuDB</a>
+		<p>Audio CD</p>
+	</div>
 </div>
 
 <div id="menu" class="menu hide">
