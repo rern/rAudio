@@ -34,7 +34,13 @@ pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
 #---------------------------------------------------------------------------------------------
-if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
+if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
+	if ! bluetoothctl show &> /dev/null; then # usb
+		pushstreamNotify 'USB Bluetooth' Removed bluetooth
+		systemctl stop bluetooth
+		exit
+	fi
+	
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -51,7 +57,14 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 	exit
 fi
 
-if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device;
+if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device; 3. usb on
+	if ! systemctl -q is-active bluetooth; then # usb
+		pushstreamNotify 'USB Bluetooth' Detected bluetooth
+		systemctl start bluetooth
+		bluetoothctl discoverable yes
+		exit
+	fi
+	
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )

@@ -56,7 +56,6 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
