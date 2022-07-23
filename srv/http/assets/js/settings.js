@@ -32,7 +32,7 @@ var cmd = {
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
 	, nonutf8      : playersh +'nonutf8'
-	, rfkill       : networkssh +'rfkilllist'
+	, rfkill       : systemsh +'rfkilllist'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
 	, timedatectl  : systemsh +'timedate'

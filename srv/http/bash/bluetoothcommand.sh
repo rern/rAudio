@@ -33,13 +33,17 @@ disconnectRemove() {
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
+startupFinished() {
+	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
+}
 #---------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
-	if ! rfkill | grep -q bluetooth; then # usb
+	if [[ -e $dirshm/btusb ]]; then
 		pushstreamNotify 'USB Bluetooth' Removed bluetooth
-		systemctl stop bluetooth
+		! rfkill | grep -q bluetooth && systemctl stop bluetooth
 		rmmod btusb
 		sed -i '/^#dtparam=krnbt=on/ s/^#//' /boot/config.txt
+		rm $dirshm/btusb
 		exit
 	fi
 	
@@ -61,10 +65,11 @@ fi
 
 if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device; 3. usb on
 	if ! systemctl -q is-active bluetooth; then # usb
-		pushstreamNotify 'USB Bluetooth' Detected bluetooth
 		systemctl start bluetooth
 		bluetoothctl discoverable yes
+		startupFinished && pushstreamNotify 'USB Bluetooth' Ready bluetooth
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
+		touch $dirshm/btusb
 		exit
 	fi
 	
@@ -144,7 +149,7 @@ if [[ $action == connect || $action == pair ]]; then
 	uptime -s | date -f - +%s > $dirshm/uptime
 	date +%s >> $dirshm/uptime
 	if [[ ! $btmixer ]]; then
-		(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && bannerReconnect 'Mixer not ready' # suppress on startup
+		startupFinished && bannerReconnect 'Mixer not ready' # suppress on startup
 		exit
 	fi
 	

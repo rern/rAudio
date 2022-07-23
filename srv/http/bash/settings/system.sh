@@ -610,6 +610,11 @@ remove )
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
+rfkilllist )
+	hciusb=$( ls -l /sys/class/bluetooth | grep hci.*usb | sed 's/.*\(hci.\).*/\1/' )
+	echo "<bll># rfkill</bll>
+$( rfkill | grep -v $hciusb )"
+	;;
 rotaryencoderdisable )
 	systemctl disable --now rotaryencoder
 	pushRefresh

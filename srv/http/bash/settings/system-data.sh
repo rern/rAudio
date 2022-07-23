@@ -188,7 +188,13 @@ data+='
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
-if rfkill | grep -q bluetooth; then
+if [[ -e $dirshm/onboardwlan ]]; then
+	data+='
+, "wlan"             : '$( rfkill | grep -q wlan && echo true )'
+, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+fi
+if ls -l /sys/class/bluetooth | grep -q hci.*serial; then
 	bluetooth=$( systemctl -q is-active bluetooth && echo true )
 	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
 		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
@@ -199,12 +205,6 @@ if rfkill | grep -q bluetooth; then
 , "bluetooth"        : '$bluetooth'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
-fi
-if [[ -e $dirshm/onboardwlan ]]; then
-	data+='
-, "wlan"             : '$( rfkill | grep -q wlan && echo true )'
-, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 
 data2json "$data"

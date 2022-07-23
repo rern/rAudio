@@ -193,9 +193,5 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-rfkilllist )
-	echo '<bll># rfkill</bll>'
-	rfkill
-	;;
 	
 esac
