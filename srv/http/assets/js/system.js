@@ -982,6 +982,7 @@ function renderPage() {
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}
+		if ( G.btusb ) $( '#bluetooth' ).data( 'disabled', 'USB Bluetooth is in use.' );
 	} else {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
@@ -993,7 +994,7 @@ function renderPage() {
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
 	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected );
+	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected || G.btusb );
 	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );

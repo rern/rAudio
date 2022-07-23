@@ -611,7 +611,7 @@ remove )
 	pushRefresh
 	;;
 rfkilllist )
-	hciusb=$( ls -l /sys/class/bluetooth | grep hci.*usb | sed 's/.*\(hci.\).*/\1/' )
+	hciusb=$( ls -l /sys/class/bluetooth | grep usb | sed 's|^.*/||' )
 	echo "<bll># rfkill</bll>
 $( rfkill | grep -v $hciusb )"
 	;;

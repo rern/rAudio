@@ -194,8 +194,9 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
-if ls -l /sys/class/bluetooth | grep -q hci.*serial; then
-	bluetooth=$( systemctl -q is-active bluetooth && echo true )
+if ls -l /sys/class/bluetooth | grep -q serial; then
+	btusb=$( ls -l /sys/class/bluetooth | grep -q usb && echo true )
+	bluetooth=$( systemctl -q is-active bluetooth && [[ $btusb != true ]] && echo true )
 	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
 		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
 	else
@@ -204,7 +205,8 @@ if ls -l /sys/class/bluetooth | grep -q hci.*serial; then
 	data+='
 , "bluetooth"        : '$bluetooth'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
+, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )'
+, "btusb"            : '$btusb
 fi
 
 data2json "$data"

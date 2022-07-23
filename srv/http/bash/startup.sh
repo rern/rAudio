@@ -145,3 +145,6 @@ $( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
+
+ls -l /sys/class/bluetooth > $dirshm/btdevices
+	
