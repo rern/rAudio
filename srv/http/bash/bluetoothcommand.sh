@@ -35,11 +35,11 @@ pushstreamList() {
 }
 #---------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
-	if ! bluetoothctl show &> /dev/null; then # usb
+	if ! rfkill | grep -q bluetooth; then # usb
 		pushstreamNotify 'USB Bluetooth' Removed bluetooth
 		systemctl stop bluetooth
 		rmmod btusb
-		sed -i '/#dtparam=krnbt=on/ s/^#//' /boot/config.txt
+		sed -i '/^#dtparam=krnbt=on/ s/^#//' /boot/config.txt
 		exit
 	fi
 	
@@ -64,7 +64,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 		pushstreamNotify 'USB Bluetooth' Detected bluetooth
 		systemctl start bluetooth
 		bluetoothctl discoverable yes
-		sed -i '/dtparam=krnbt=on/ s/^/#/' /boot/config.txt
+		sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
 		exit
 	fi
 	
