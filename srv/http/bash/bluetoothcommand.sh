@@ -33,30 +33,29 @@ disconnectRemove() {
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
-refreshBluetooth() {
-	startupFinished && pushstreamNotify 'USB Bluetooth' $1 bluetooth
-	if rfkill | grep -q bluetooth; then
-		systemctl start bluetooth
-		ls -l /sys/class/bluetooth > $dirshm/btdevices
-	else
-		systemctl stop bluetooth
-		rm $dirshm/btdevices
+refreshController() {
+	current=$( ls -l /sys/class/bluetooth | wc -l )
+	[[ -e $dirshm/btdevices ]] && existing=$( cat $dirshm/btdevices | wc -l ) || existing=0
+	(( $current == $existing )) && return
+	
+	if (( $current > $existing )); then
+		ls -l /sys/class/bluetooth | grep -q usb && startupFinished && msg=Ready
+	elif (( $current < $existing )); then
+		msg=Removed
 	fi
+	[[ $msg ]] && pushstreamNotify 'USB Bluetooth' $msg bluetooth
+	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
+	ls -l /sys/class/bluetooth > $dirshm/btdevices
 	data=$( $dirbash/settings/system-data.sh )
 	pushstream refresh "$data"
+	exit
 }
 startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
 }
 #---------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
-	if ! ls -l /sys/class/bluetooth | grep -q usb && grep -q usb $dirshm/btdevices; then
-		! rfkill | grep -q bluetooth && systemctl stop bluetooth
-		rmmod btusb
-		refreshBluetooth Removed
-		exit
-	fi
-	
+	refreshController
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -74,15 +73,7 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. 
 fi
 
 if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device; 3. usb on
-	if ! systemctl -q is-active bluetooth; then # usb
-		systemctl start bluetooth
-		bluetoothctl discoverable yes
-		if ls -l /sys/class/bluetooth | grep -q usb && ! grep -q usb $dirshm/btdevices; then
-			refreshBluetooth Ready
-		fi
-		exit
-	fi
-	
+	refreshController
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )

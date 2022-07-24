@@ -60,6 +60,11 @@ $( bluealsa-aplay -L | grep -A2 $mac )
 $info"
 	echo "$data"
 	;;
+btcontroller )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
+	;;
 connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )

@@ -26,6 +26,7 @@ var cmd = {
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
 	, bluetooth    : systemsh +'bluetoothstatus'
+	, btcontroller : networkssh +'btcontroller'
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
