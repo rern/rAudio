@@ -108,7 +108,6 @@ Auto update Library database on insert / remove USB drives.
 HTML
 	] );
 echo '</div>';
-$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
 if ( exec( 'grep -q dtparam=krnbt=on /boot/config.txt && echo 1 || echo 0' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
