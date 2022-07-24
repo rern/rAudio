@@ -34,18 +34,18 @@ pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
 refreshController() {
-	current=$( ls -l /sys/class/bluetooth | wc -l )
-	[[ -e $dirshm/btdevices ]] && existing=$( cat $dirshm/btdevices | wc -l ) || existing=0
-	(( $current == $existing )) && return
+	current=$( ls -l /sys/class/bluetooth 2> /dev/null | wc -l )
+	previous=$( cat $dirshm/btdevices 2> /dev/null | wc -l )
+	(( $current == $previous )) && return
 	
-	if (( $current > $existing )); then
+	if (( $current > $previous )); then
 		ls -l /sys/class/bluetooth | grep -q usb && startupFinished && msg=Ready
-	elif (( $current < $existing )); then
+	elif (( $current < $previous )); then
 		msg=Removed
 	fi
 	[[ $msg ]] && pushstreamNotify 'USB Bluetooth' $msg bluetooth
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
-	ls -l /sys/class/bluetooth > $dirshm/btdevices
+	ls -l /sys/class/bluetooth 2> /dev/null > $dirshm/btdevices
 	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
 	exit
@@ -53,7 +53,7 @@ refreshController() {
 startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
 }
-#---------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
 	refreshController
 	sleep 2
@@ -114,7 +114,7 @@ else # >>>> rAudio: 1. pair to receiver; 2. remove paired device
 	type=$3
 	name=$4
 fi
-#---------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
