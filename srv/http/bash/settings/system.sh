@@ -623,15 +623,9 @@ remove )
 	pushRefresh
 	;;
 rfkilllist )
-	list="\
+	echo "\
 <bll># rfkill</bll>
 $( rfkill )"
-	hciusb=$( ls -l /sys/class/bluetooth | grep usb | sed 's|^.*/||' )
-	if [[ $hciusb ]]; then
-		echo "$list" | grep -v $hciusb
-	else
-		echo "$list"
-	fi
 	;;
 rotaryencoderdisable )
 	systemctl disable --now rotaryencoder

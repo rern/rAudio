@@ -194,7 +194,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
-if ls -l /sys/class/bluetooth | grep -q serial; then
+if grep -q dtparam=krnbt=on /boot/config.txt; then
 	bluetooth=$( grep -q ^dtparam=krnbt=on /boot/config.txt && echo true )
 	if [[ $bluetooth ]] && systemctl -q is-active bluetooth; then
 		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )

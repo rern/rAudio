@@ -109,7 +109,7 @@ HTML
 	] );
 echo '</div>';
 $rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
+if ( exec( 'grep -q dtparam=krnbt=on /boot/config.txt && echo 1 || echo 0' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Wireless'
