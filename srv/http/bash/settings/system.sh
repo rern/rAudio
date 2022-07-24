@@ -535,6 +535,7 @@ mpdoledset )
 packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
+		pushstreamNotify Backend 'Package list ...' system
 		pacmanqi=$( pacman -Qi | grep '^Name\|^Vers\|^Desc\|^URL' )
 		while read line; do
 			case ${line:0:3} in
