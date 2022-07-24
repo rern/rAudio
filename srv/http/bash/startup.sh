@@ -145,8 +145,3 @@ $( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
-
-if rfkill | grep -q bluetooth; then
-	systemctl start bluetooth
-	ls -l /sys/class/bluetooth > $dirshm/btdevices
-fi
