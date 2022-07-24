@@ -107,9 +107,10 @@ bluetoothset )
 	pushRefresh
 	;;
 bluetoothstatus )
-	hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
-	mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
-	status=$( bluetoothctl show $mac )
+	if (( $( rfkill | grep bluetooth | wc -l ) > 1 )); then
+		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
+		mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
+	fi
 	echo "\
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show $mac )"
