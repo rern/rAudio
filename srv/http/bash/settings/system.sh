@@ -9,7 +9,7 @@ readarray -t args <<< "$1"
 
 pushReboot() {
 	pushRefresh
-	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' $2 5000
+	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' system 5000
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
@@ -73,17 +73,15 @@ bluetooth )
 	bluetoothctl pairable yes &
 	;;
 bluetoothdisable )
-	systemctl disable --now bluetooth
-	pkill bluetooth
-	rm -f $dirshm/{btdevice,btreceiver,btsender}
-	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
+	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
+	if ! rfkill | grep -q bluetooth; then
+		systemctl stop bluetooth
+		pkill bluetooth
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	fi
 	pushRefresh
-	;;
-bluetoothstatus )
-	echo "\
-<bll># bluetoothctl show</bll>
-
-$( bluetoothctl show )"
 	;;
 bluetoothset )
 	btdiscoverable=${args[1]}
@@ -95,12 +93,26 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
-	! systemctl -q is-active bluetooth && systemctl enable --now bluetooth
+	sed -i '/dtparam=krnbt=on/ s/^#//' /boot/config.txt
+	if ls -l /sys/class/bluetooth | grep -q serial; then
+		systemctl start bluetooth
+		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	else
+		pushReboot Bluetooth
+	fi
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 	[[ $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
 	pushRefresh
+	;;
+bluetoothstatus )
+	hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
+	mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
+	status=$( bluetoothctl show $mac )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show $mac )"
 	;;
 databackup )
 	dirconfig=$dirdata/config
@@ -316,7 +328,7 @@ dtparam=audio=on"
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	pushReboot 'Audio I&#178;S module' i2saudio
+	pushReboot 'Audio I&#178;S module'
 	;;
 journalctl )
 	filebootlog=$dirtmp/bootlog
@@ -377,7 +389,7 @@ backlight=${args[13]^}"
 	touch $dirsystem/lcdchar
 	I2Cset
 	if [[ $reboot ]]; then
-		pushReboot 'Character LCD' lcdchar
+		pushReboot 'Character LCD'
 	else
 		$dirbash/lcdchar.py logo
 		pushRefresh
@@ -411,7 +423,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
 	fi
 	systemctl enable localbrowser
-	pushReboot 'TFT 3.5" LCD' lcd
+	pushReboot 'TFT 3.5" LCD'
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -515,7 +527,7 @@ mpdoledset )
 	touch $dirsystem/mpdoled
 	I2Cset
 	if [[ $reboot ]]; then
-		pushReboot 'Spectrum OLED' mpdoled
+		pushReboot 'Spectrum OLED'
 	else
 		pushRefresh
 	fi
@@ -565,7 +577,7 @@ dtoverlay=gpio-poweroff,gpiopin=22\
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
 ' $fileconfig
 		touch $dirsystem/audiophonics
-		pushReboot 'Power Button' power
+		pushReboot 'Power Button'
 		exit
 	fi
 	
@@ -584,7 +596,7 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 		pushRefresh
 	else
 		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button' power
+		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
 	fi
 	;;
 relaysdisable )
@@ -611,9 +623,15 @@ remove )
 	pushRefresh
 	;;
 rfkilllist )
+	list="\
+<bll># rfkill</bll>
+$( rfkill )"
 	hciusb=$( ls -l /sys/class/bluetooth | grep usb | sed 's|^.*/||' )
-	echo "<bll># rfkill</bll>
-$( rfkill | grep -v $hciusb )"
+	if [[ $hciusb ]]; then
+		echo "$list" | grep -v $hciusb
+	else
+		echo "$list"
+	fi
 	;;
 rotaryencoderdisable )
 	systemctl disable --now rotaryencoder

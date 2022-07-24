@@ -195,18 +195,17 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 fi
 if ls -l /sys/class/bluetooth | grep -q serial; then
-	btusb=$( ls -l /sys/class/bluetooth | grep -q usb && echo true )
-	bluetooth=$( systemctl -q is-active bluetooth && [[ $btusb != true ]] && echo true )
-	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
+	bluetooth=$( grep -q ^dtparam=krnbt=on /boot/config.txt && echo true )
+	if [[ $bluetooth ]] && systemctl -q is-active bluetooth; then
+		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true || echo false )
 	else
 		discoverable=true
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
+, "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )'
-, "btusb"            : '$btusb
+, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
 fi
 
 data2json "$data"

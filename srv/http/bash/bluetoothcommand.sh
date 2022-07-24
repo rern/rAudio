@@ -34,7 +34,14 @@ pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
 refreshBluetooth() {
-	ls -l /sys/class/bluetooth > $dirshm/btdevices
+	startupFinished && pushstreamNotify 'USB Bluetooth' $1 bluetooth
+	if rfkill | grep -q bluetooth; then
+		systemctl start bluetooth
+		ls -l /sys/class/bluetooth > $dirshm/btdevices
+	else
+		systemctl stop bluetooth
+		rm $dirshm/btdevices
+	fi
 	data=$( $dirbash/settings/system-data.sh )
 	pushstream refresh "$data"
 }
@@ -44,11 +51,9 @@ startupFinished() {
 #---------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
 	if ! ls -l /sys/class/bluetooth | grep -q usb && grep -q usb $dirshm/btdevices; then
-		pushstreamNotify 'USB Bluetooth' Removed bluetooth
 		! rfkill | grep -q bluetooth && systemctl stop bluetooth
 		rmmod btusb
-		sed -i '/^#dtparam=krnbt=on/ s/^#//' /boot/config.txt
-		refreshBluetooth
+		refreshBluetooth Removed
 		exit
 	fi
 	
@@ -73,9 +78,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 		systemctl start bluetooth
 		bluetoothctl discoverable yes
 		if ls -l /sys/class/bluetooth | grep -q usb && ! grep -q usb $dirshm/btdevices; then
-			startupFinished && pushstreamNotify 'USB Bluetooth' Ready bluetooth
-			sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
-			refreshBluetooth
+			refreshBluetooth Ready
 		fi
 		exit
 	fi

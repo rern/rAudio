@@ -2,7 +2,7 @@
 
 alias=r1
 
-# 20220722
+# 20220729
 file=/etc/udev/rules.d/rtl-sdr.rules
 if [[ -e /usr/bin/rtsp-simple-server && ! -e $file ]]; then
 	echo 'SUBSYSTEMS=="usb", ENV{ID_SOFTWARE_RADIO}="1", RUN+="/srv/http/bash/settings/features.sh pushrefresh"' > $file
