@@ -46,9 +46,9 @@ refreshController() {
 	[[ $msg ]] && pushstreamNotify 'USB Bluetooth' $msg bluetooth
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
 	ls -l /sys/class/bluetooth > $dirshm/btdevices
-	data=$( $dirbash/settings/system-data.sh )
-	pushstream refresh "$data"
 	data=$( $dirbash/settings/networks-data.sh )
+	pushstream refresh "$data"
+	data=$( $dirbash/settings/system-data.sh )
 	pushstream refresh "$data"
 	exit
 }
