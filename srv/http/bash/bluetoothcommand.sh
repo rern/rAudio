@@ -48,8 +48,6 @@ refreshController() {
 	ls -l /sys/class/bluetooth > $dirshm/btdevices
 	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
-	data=$( $dirbash/settings/system-data.sh )
-	pushstream refresh "$data"
 	exit
 }
 startupFinished() {
