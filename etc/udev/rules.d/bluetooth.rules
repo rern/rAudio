@@ -1,9 +1,9 @@
 ACTION=="add", \
 SUBSYSTEM=="bluetooth", \
 ENV{DEVTYPE}=="link", \
-RUN+="/srv/http/bash/bluetoothcommand.sh bton"
+RUN+="/srv/http/bash/bluetoothcommand.sh connect"
 
 ACTION=="remove", \
 SUBSYSTEM=="bluetooth", \
 ENV{DEVTYPE}=="link", \
-RUN+="/srv/http/bash/bluetoothcommand.sh btoff"
+RUN+="/srv/http/bash/bluetoothcommand.sh disconnect"

@@ -39,7 +39,7 @@ startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
 }
 #-------------------------------------------------------------------------------------------
-if [[ $udev == Ready || $udev == Removed ]]; then # >>>> udev: usb
+if [[ $udev == Ready || $udev == Removed ]]; then # >>>> usbbluetooth.rules
 	startupFinished && pushstreamNotify 'USB Bluetooth' $udev bluetooth
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
 	pushstreamList
@@ -47,7 +47,7 @@ if [[ $udev == Ready || $udev == Removed ]]; then # >>>> udev: usb
 fi
 
 #-------------------------------------------------------------------------------------------
-if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
+if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from paired device
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -64,7 +64,7 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 	exit
 fi
 
-if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device
+if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. connect from paired device
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
