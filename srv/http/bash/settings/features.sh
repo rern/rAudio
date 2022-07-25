@@ -275,10 +275,7 @@ EOF
 	pushRefresh
 	pushSubmenu multiraudio true
 	;;
-pushrefresh )
-	pushRefresh
-	;;
-pushrefreshRTL )
+pushrefreshrtl )
 	timeout 0.1 rtl_test &> /dev/null && pushRefresh
 	;;
 screenofftoggle )

@@ -32,15 +32,20 @@ disconnectRemove() {
 	pushstreamList
 }
 pushstreamList() {
-	$dirbash/settings/networks-data.sh btlistpush
 	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
 	exit
 }
 #-------------------------------------------------------------------------------------------
 if [[ $udev == Ready || $udev == Removed ]]; then # >>>> usbbluetooth.rules
-	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
+	if rfkill | grep -q bluetooth; then
+		! systemctl -q is-active bluetooth && systemctl start bluetooth
+	else
+		systemctl stop bluetooth
+	fi
 	if systemctl -q is-active mpd; then # suppress on startup
 		pushstreamNotify 'USB Bluetooth' $udev bluetooth
+		[[ $udev == Ready ]] && sleep 3
 		pushstreamList
 	fi
 fi

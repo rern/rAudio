@@ -35,7 +35,7 @@ echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=fals
 echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
 pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
-[[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
+[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ $ipeth ]]; then
