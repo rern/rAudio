@@ -33,7 +33,7 @@ disconnectRemove() {
 }
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
-	$dirbash/settings/features.sh pushrefresh
+	$dirbash/settings/features-data.sh pushrefresh
 }
 startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0

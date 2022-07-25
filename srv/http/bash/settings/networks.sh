@@ -7,8 +7,7 @@ readarray -t args <<< "$1"
 
 pushRefresh() {
 	sleep 2
-	data=$( $dirbash/settings/networks-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/networks-data.sh pushrefresh
 }
 netctlSwitch() {
 	ssid=$1

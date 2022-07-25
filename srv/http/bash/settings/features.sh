@@ -6,8 +6,7 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/settings/features-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/features-data.sh pushrefresh
 }
 pushRefreshNetworks() {
 	data=$( $dirbash/settings/networks-data.sh )
@@ -278,6 +277,9 @@ EOF
 	;;
 pushrefresh )
 	pushRefresh
+	;;
+pushrefreshRTL )
+	timeout 0.1 rtl_test &> /dev/null && pushRefresh
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

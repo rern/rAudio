@@ -118,4 +118,4 @@ data='
 , "hostapd"    : '$ap'
 , "hostname"   : "'$( hostname )'"'
 
-data2json "$data"
+data2json "$data" $1

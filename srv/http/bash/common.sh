@@ -20,13 +20,14 @@ ${data:1}
 ]"
 	fi
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	echo "$data" \
-		| sed  's/:\s*$/: false/
-				s/:\s*}$/: false }/
-				s/^,\s*$/, false/
-				s/\[\s*,/[ false,/g
-				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g'
+	data=$( echo "$data" \
+				| sed  's/:\s*$/: false/
+						s/:\s*}$/: false }/
+						s/^,\s*$/, false/
+						s/\[\s*,/[ false,/g
+						s/,\s*,/, false,/g
+						s/,\s*]/, false ]/g' )
+	[[ $2 != pushrefresh ]] && echo "$data" || pushstream refresh "$data"
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false

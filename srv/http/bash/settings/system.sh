@@ -13,8 +13,7 @@ pushReboot() {
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
-	data=$( $dirbash/settings/system-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/system-data.sh pushrefresh
 }
 I2Cset() {
 	# parse finalized settings

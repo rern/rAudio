@@ -6,8 +6,7 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/settings/player-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/player-data.sh pushrefresh
 }
 volumeBtGet() {
 	voldb=$( amixer -MD bluealsa 2> /dev/null \

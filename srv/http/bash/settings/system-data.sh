@@ -208,4 +208,4 @@ if grep -q dtparam=krnbt=on /boot/config.txt; then
 , "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
 fi
 
-data2json "$data"
+data2json "$data" $1

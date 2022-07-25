@@ -42,4 +42,4 @@ data='
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
-data2json "$data"
+data2json "$data" $1

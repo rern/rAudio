@@ -81,4 +81,4 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smbconf"          : '$smbconf
 fi
 
-data2json "$data"
+data2json "$data" $1
