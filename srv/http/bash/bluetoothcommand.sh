@@ -39,7 +39,7 @@ pushstreamList() {
 #-------------------------------------------------------------------------------------------
 if [[ $udev == Ready || $udev == Removed ]]; then # >>>> usbbluetooth.rules
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
-	if systemctl -q is-active mpd; then
+	if systemctl -q is-active mpd; then # suppress on startup
 		pushstreamNotify 'USB Bluetooth' $udev bluetooth
 		pushstreamList
 	fi
