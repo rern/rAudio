@@ -33,6 +33,7 @@ disconnectRemove() {
 }
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
+	$dirbash/settings/features.sh pushrefresh
 }
 startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
@@ -41,14 +42,12 @@ startupFinished() {
 if [[ $udev == Ready || $udev == Removed ]]; then # >>>> udev: usb
 	startupFinished && pushstreamNotify 'USB Bluetooth' $udev bluetooth
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
-	data=$( $dirbash/settings/networks-data.sh )
-	pushstream refresh "$data"
+	pushstreamList
 	exit
 fi
 
 #-------------------------------------------------------------------------------------------
 if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
-	touch $dirshm/btoff
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -66,7 +65,6 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 fi
 
 if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device
-	touch $dirshm/bton
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
