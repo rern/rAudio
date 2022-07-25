@@ -1,1 +1,0 @@
-SUBSYSTEM!="bluetooth", SUBSYSTEM!="net", SUBSYSTEMS=="usb", ENV{ID_SOFTWARE_RADIO}="1", RUN+="/srv/http/bash/settings/features-data.sh pushrefresh"
