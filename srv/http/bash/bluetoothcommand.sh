@@ -12,8 +12,8 @@ icon=bluetooth
 
 bannerReconnect() {
 	bluetoothctl disconnect $mac
-	pushstreamList
 	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 15000
+	pushstreamList
 }
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
@@ -34,16 +34,15 @@ disconnectRemove() {
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 	$dirbash/settings/features-data.sh pushrefresh
-}
-startupFinished() {
-	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
+	exit
 }
 #-------------------------------------------------------------------------------------------
 if [[ $udev == Ready || $udev == Removed ]]; then # >>>> usbbluetooth.rules
-	startupFinished && pushstreamNotify 'USB Bluetooth' $udev bluetooth
 	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
-	pushstreamList
-	exit
+	if systemctl -q is-active mpd; then
+		pushstreamNotify 'USB Bluetooth' $udev bluetooth
+		pushstreamList
+	fi
 fi
 
 #-------------------------------------------------------------------------------------------
@@ -117,7 +116,7 @@ if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
 #-----X
-	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
+	[[ $action == pair ]] && bannerReconnect 'Paired successfully'
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
@@ -140,10 +139,7 @@ if [[ $action == connect || $action == pair ]]; then
 	[[ $type == Source ]] && icon=btsender
 	uptime -s | date -f - +%s > $dirshm/uptime
 	date +%s >> $dirshm/uptime
-	if [[ ! $btmixer ]]; then
-		startupFinished && bannerReconnect 'Mixer not ready' # suppress on startup
-		exit
-	fi
+	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready'
 	
 #-----
 	pushstreamNotify "$name" Ready $icon
