@@ -18,6 +18,7 @@ bannerReconnect() {
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
+	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
 		icon=btsender
 		$dirbash/cmd.sh playerstop
@@ -33,29 +34,21 @@ disconnectRemove() {
 pushstreamList() {
 	$dirbash/settings/networks-data.sh btlistpush
 }
-refreshController() {
-	current=$( ls -l /sys/class/bluetooth 2> /dev/null | wc -l )
-	previous=$( cat $dirshm/btdevices 2> /dev/null | wc -l )
-	(( $current == $previous )) && return
-	
-	if (( $current > $previous )); then
-		ls -l /sys/class/bluetooth | grep -q usb && startupFinished && msg=Ready
-	elif (( $current < $previous )); then
-		msg=Removed
-	fi
-	[[ $msg ]] && pushstreamNotify 'USB Bluetooth' $msg bluetooth
-	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
-	ls -l /sys/class/bluetooth 2> /dev/null > $dirshm/btdevices
-	data=$( $dirbash/settings/networks-data.sh )
-	pushstream refresh "$data"
-	exit
-}
 startupFinished() {
 	(( $(( $( date +%s ) - $( uptime -s | date -f - +%s ) )) > 30 )) && return 0
 }
 #-------------------------------------------------------------------------------------------
-if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. usb off
-	refreshController
+if [[ $udev == Ready || $udev == Removed ]]; then # >>>> udev: usb
+	startupFinished && pushstreamNotify 'USB Bluetooth' $udev bluetooth
+	rfkill | grep -q bluetooth && systemctl start bluetooth || systemctl stop bluetooth
+	data=$( $dirbash/settings/networks-data.sh )
+	pushstream refresh "$data"
+	exit
+fi
+
+#-------------------------------------------------------------------------------------------
+if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
+	touch $dirshm/btoff
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
 	for line in "${lines[@]}"; do
@@ -72,8 +65,8 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device; 2. 
 	exit
 fi
 
-if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device; 3. usb on
-	refreshController
+if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device
+	touch $dirshm/bton
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
