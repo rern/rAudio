@@ -275,9 +275,6 @@ EOF
 	pushRefresh
 	pushSubmenu multiraudio true
 	;;
-pushrefreshrtl )
-	timeout 0.1 rtl_test &> /dev/null && pushRefresh
-	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
