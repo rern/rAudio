@@ -219,12 +219,16 @@ usbwifion )
 					| cut -d' ' -f1 )
 	echo $wlandev > /dev/shm/wlan
 	iw $wlandev set power_save off &> /dev/null
+	! systemctl -q is-active mpd && exit
+	
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
 	pushRefresh
 	;;
 usbwifioff )
-	echo wlan0 > /dev/shm/wlan
-	iw wlan0 set power_save off &> /dev/null
+	if rfkill | grep -q wlan; then
+		echo wlan0 > /dev/shm/wlan
+		iw wlan0 set power_save off &> /dev/null
+	fi
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
 	pushRefresh
 	;;
