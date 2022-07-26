@@ -197,5 +197,36 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
+usbbluetoothon )
+	! systemctl -q is-active bluetooth && systemctl start bluetooth
+	! systemctl -q is-active mpd && exit
+	
+	pushstreamNotify 'USB Bluetooth' Ready bluetooth
+	sleep 3
+	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
+	;;
+usbbluetoothoff )
+	! rfkill | grep -q bluetooth && systemctl stop bluetooth
+	pushstreamNotify 'USB Bluetooth' Removed bluetooth
+	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
+	;;
+usbwifion )
+	wlandev=$( ip -br link \
+					| grep ^w \
+					| grep -v wlan \
+					| cut -d' ' -f1 )
+	echo $wlandev > /dev/shm/wlan
+	iw $wlandev set power_save off &> /dev/null
+	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
+	pushRefresh
+	;;
+usbwifioff )
+	echo wlan0 > /dev/shm/wlan
+	iw wlan0 set power_save off &> /dev/null
+	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
+	pushRefresh
+	;;
 	
 esac

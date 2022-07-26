@@ -37,20 +37,6 @@ pushstreamList() {
 	exit
 }
 #-------------------------------------------------------------------------------------------
-if [[ $udev == Ready || $udev == Removed ]]; then # >>>> usbbluetooth.rules
-	if rfkill | grep -q bluetooth; then
-		! systemctl -q is-active bluetooth && systemctl start bluetooth
-	else
-		systemctl stop bluetooth
-	fi
-	if systemctl -q is-active mpd; then # suppress on startup
-		pushstreamNotify 'USB Bluetooth' $udev bluetooth
-		[[ $udev == Ready ]] && sleep 3
-		pushstreamList
-	fi
-fi
-
-#-------------------------------------------------------------------------------------------
 if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from paired device
 	sleep 2
 	readarray -t lines <<< $( cat $dirshm/btconnected )
