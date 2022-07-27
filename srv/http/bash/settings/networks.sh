@@ -201,10 +201,11 @@ usbbluetoothon )
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	! systemctl -q is-active mpd && exit
 	
-	pushstreamNotify 'USB Bluetooth' Ready bluetooth
+	pushstreamNotify 'USB Bluetooth' Detected bluetooth
 	sleep 3
 	$dirbash/settings/features-data.sh pushrefresh
 	$dirbash/settings/networks-data.sh pushbt
+	pushstreamNotify 'USB Bluetooth' Ready bluetooth
 	;;
 usbbluetoothoff )
 	! rfkill | grep -q bluetooth && systemctl stop bluetooth
