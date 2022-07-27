@@ -199,7 +199,7 @@ profileremove )
 	;;
 usbbluetoothon )
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
-	! systemctl -q is-active mpd && exit
+	! systemctl -q is-active mpd && exit # suppress on startup
 	
 	pushstreamNotify 'USB Bluetooth' Detected bluetooth
 	sleep 3
@@ -220,7 +220,7 @@ usbwifion )
 					| cut -d' ' -f1 )
 	echo $wlandev > /dev/shm/wlan
 	iw $wlandev set power_save off &> /dev/null
-	! systemctl -q is-active mpd && exit
+	! systemctl -q is-active mpd && exit # suppress on startup
 	
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
 	pushRefresh
