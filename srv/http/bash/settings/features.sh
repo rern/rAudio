@@ -99,10 +99,7 @@ camillaguiset )
 dabradio )
 	if [[ ${args[1]} == true ]]; then
 		systemctl enable --now rtsp-simple-server
-		if ! grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes; then
-			sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
-			/srv/http/bash/settings/player-conf.sh
-		fi
+		! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
 	else
 		systemctl disable --now rtsp-simple-server
 	fi

@@ -3,6 +3,11 @@
 alias=r1
 
 # 20220729
+file=/srv/http/bash/dab/dab-skeleton.sh
+! grep -r updatingdab $file && echo rm /srv/http/data/shm/updatingdab >> $file
+
+grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf
+
 if [[ $(  uname -m ) == armv6l && $( uname -r ) != '5.10.92-2-rpi-legacy-ARCH' ]]; then
 	echo Downgrade kernel to 5.10.92 ...
 	pkgfile=linux-rpi-legacy-5.10.92-2-armv6h.pkg.tar.xz

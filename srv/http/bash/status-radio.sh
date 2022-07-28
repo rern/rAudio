@@ -46,7 +46,7 @@ dabData() {
 		sleep 10
 		metadataGet
 	else
-		readarray -t metadata <<< $( echo "$artist_title" )
+		readarray -t metadata <<< "$artist_title"
 	fi
 }
 radioparadiseData() {

@@ -162,6 +162,7 @@ HTML
 		  'label'    => 'FFmpeg'
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
+		, 'disabled' => 'DAB Radio is currently enabled.'
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.

@@ -155,9 +155,15 @@ dop )
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
+		sed -i '/^resampler/ i\
+decoder {\
+	plugin         "ffmpeg"\
+	enabled        "yes"\
+}\
+
+' /etc/mpd.conf
 	else
-		sed -i '/ffmpeg/ {n; s/".*"/"no"/}' /etc/mpd.conf
+		sed -i '/decoder/,+4 d' /etc/mpd.conf
 	fi
 	restartMPD
 	;;

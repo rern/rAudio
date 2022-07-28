@@ -755,10 +755,14 @@ mpcseek )
 mpcupdate )
 	type=${args[1]}
 	path=${args[2]}
-	if [[ $path == true ]]; then # ffmpeg
-		sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
-		/srv/http/bash/settings/player-conf.sh
+	[[ $path == true || $type == dabradio ]] && $dirbash/settings/player.sh ffmpeg$'\n'true
+	if [[ $type == dabradio ]]; then
+		touch $dirshm/updatingdab
+		$dirbash/dab/dab-skeleton.sh &> /dev/null &
+		pushstream mpdupdate '{"type":"dabradio"}'
+		exit
 	fi
+	
 	if [[ $type == rescan ]]; then
 		touch $dirmpd/updating
 		mpc -q rescan
@@ -768,15 +772,13 @@ mpcupdate )
 	elif [[ $type == path ]]; then
 		echo $path > $dirmpd/updating
 		mpc -q update "$path"
-	elif [[ $type == dabradio ]]; then
-		$dirbash/dab/dab-skeleton.sh
 	fi
-	pushstream mpdupdate 1
+	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 mpcupdatecheck )
-	timeout 0.1 rtl_test &> /dev/null && dabdevice=1 || dabdevice=0
-	grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && ffmpeg=1 || ffmpeg=0
-	echo '{"dabdevice":'$dabdevice',"ffmpeg":'$ffmpeg'}'
+	systemctl -q is-active rtsp-simple-server && dabradio=1 || dabradio=0
+	grep -q 'plugin.*ffmpeg' /etc/mpd.conf && ffmpeg=1 || ffmpeg=0
+	echo '{"dabradio":'$dabradio',"ffmpeg":'$ffmpeg'}'
 	;;
 mpdoledlogo )
 	mpdoledLogo

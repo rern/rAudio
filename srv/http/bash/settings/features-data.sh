@@ -16,8 +16,6 @@ data+='
 , "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
-, "dabdevice"        : '$( timeout 0.1 rtl_test &> /dev/null && echo true )'
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
@@ -80,5 +78,10 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smb"              : '$( systemctl -q is-active smb && echo true )'
 , "smbconf"          : '$smbconf
 fi
-
+if [[ -e /usr/bin/rtsp-simple-server ]]; then
+	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
+	data+='
+, "dabdevice"        : '$dabdevice'
+, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )
+fi
 data2json "$data" $1

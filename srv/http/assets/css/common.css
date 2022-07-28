@@ -134,6 +134,7 @@ input::-moz-focus-inner {
 .fa-coverart-refresh::before { content: '\f53D' }
 .fa-crop::before { content: '\f568' }
 .fa-dab::before { content: '\f589' }
+.fa-dabupdate::before { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
 .fa-date::before { content: '\f55C' }
 .fa-edit-circle::before { content: '\f565' }
 .fa-equalizer::before { content: '\f50C' }

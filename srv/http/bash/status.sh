@@ -35,13 +35,14 @@ else
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
-	if [[ -e $dirmpd/updating ]]; then 
+	if [[ -e $dirmpd/updating ]]; then
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
 			path=$( cat $dirmpd/updating )
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
+	[[ -e $dirshm/updatingdab ]] && updatingdab=true
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
@@ -71,6 +72,7 @@ else
 , "stream"       : false
 , "updateaddons" : '$updateaddons'
 , "updating_db"  : '$updating_db'
+, "updatingdab"  : '$updatingdab'
 , "volume"       : '$volume'
 , "volumemute"   : '$volumemute'
 , "webradio"     : false'

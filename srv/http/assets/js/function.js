@@ -750,16 +750,21 @@ function infoUpdate( path ) {
 	
 	bash( [ 'mpcupdatecheck' ], function( data ) {
 		var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		if ( data.dabdevice ) radio[ 'Rescan DAB radio' ] = 'dabradio';
+		if ( data.dabradio ) radio[ 'DAB radio scan' ] = 'dabradio';
 		info( {
 			  icon     : 'refresh-library'
 			, title    : 'Library Database'
 			, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
 			, radio    : path ? '' : radio
-			, checkbox : path || data.ffmpeg ? '' : [ 'FFmpeg decoder' ]
-			, values   : path ? '' : 'update'
+			, checkbox : path ? '' : [ 'FFmpeg decoder' ]
+			, values   : path ? '' : [ 'update', data.ffmpeg ]
 			, beforeshow : function() {
-				if ( !path ) $( '#infoContent tr' ).last().before( '<hr>' );
+				$( '#infoContent' ).find( 'input[value=dabradio], input[type=checkbox]' ).before( '<hr>' );
+				if ( data.dabradio ) {
+					$( '#infoContent input' ).change( function() {
+						$( '#infoContent input[type=checkbox]' ).parents( 'tr' ).toggleClass( 'hide', infoVal()[0] == 'dabradio' )
+					} );
+				}
 			}
 			, ok       : function() {
 				bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
@@ -1376,6 +1381,7 @@ function setButtonUpdating() {
 		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
+	$( '#i-dabupdate' ).toggleClass( 'hide', !G.status.updatingdab );
 }
 function setCoverart() {
 	if ( !G.display.cover ) {

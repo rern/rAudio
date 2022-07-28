@@ -338,8 +338,12 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
-	G.status.updating_db = data === 1;
-	if ( G.status.updating_db ) {
+	if ( 'type' in data ) {
+		if ( data.type === 'mpd' ) {
+			G.status.updating_db = true;
+		} else {
+			G.status.updatingdab = true;
+		}
 		setButtonUpdating();
 		return
 	}
@@ -593,5 +597,7 @@ function psWebradio( data ) {
 	} else if ( G.playlist && !G.local ) {
 		getPlaylist();
 	}
+	G.status.updatingdab = false;
+	$( '#i-dabupdate' ).addeClass( 'hide' );
 }
 

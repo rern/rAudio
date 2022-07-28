@@ -408,6 +408,7 @@ function renderPage() {
 			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
+			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
 		}
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
 	}
