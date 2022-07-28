@@ -760,11 +760,11 @@ function infoUpdate( path ) {
 			, values   : path ? '' : [ 'update', data.ffmpeg ]
 			, beforeshow : function() {
 				$( '#infoContent' ).find( 'input[value=dabradio], input[type=checkbox]' ).before( '<hr>' );
-				if ( data.dabradio ) {
-					$( '#infoContent input' ).change( function() {
-						$( '#infoContent input[type=checkbox]' ).parents( 'tr' ).toggleClass( 'hide', infoVal()[0] == 'dabradio' )
-					} );
-				}
+				var $ffmpeg = $( '#infoContent input[type=checkbox]' ).parents( 'tr' );
+				$ffmpeg.addClass( 'hide' );
+				$( '#infoContent input' ).change( function() {
+					$ffmpeg.toggleClass( 'hide', infoVal()[0] !== 'rescan' )
+				} );
 			}
 			, ok       : function() {
 				bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
