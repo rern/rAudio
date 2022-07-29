@@ -295,7 +295,7 @@ function psState( data ) {
 	}
 }
 function psVolume( data ) {
-	if ( G.local || !$( '#infoRange .value' ).text() ) return
+	if ( !$( '#infoRange .value' ).text() ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
