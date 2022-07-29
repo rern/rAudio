@@ -333,7 +333,6 @@ G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
 var intervalcputime;
-var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
