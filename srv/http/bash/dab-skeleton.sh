@@ -43,6 +43,6 @@ done
 
 chown -R http:http $dirdabradio
 count=$( ls -1 $dirdabradio | wc -l )
-sed -i '/"webradio":/ i\  "dabradio": '$count',' $dirmpd/counts
+sed -i '/"webradio":/ i\  "dab": '$count',' $dirmpd/counts
 pushstream mpdupdate "$( cat $dirmpd/counts )"
 rm $dirshm/updatingdab

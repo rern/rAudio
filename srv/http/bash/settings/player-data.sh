@@ -30,7 +30,7 @@ data='
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirsystem/custom )'
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$( isactive rtsp-simple-server )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( grep -q 'plugin.*ffmpeg' /etc/mpd.conf && echo true )'
 , "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']

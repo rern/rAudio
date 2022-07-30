@@ -8,10 +8,11 @@ if [[ -e /srv/http/bash/dab ]]; then
 	rm -rf /srv/http/bash/dab
 	stations=$( sed '1,/^paths:/ d' /etc/rtsp-simple-server/rtsp-simple-server.yml )
 	[[ $stations ]] && echo "$stations" | sed 's|dab/dabstart|dab-start|' >> /etc/rtsp-simple-server.yml
-	rm -f /srv/http/data/webradios/DAB/*.jpg
+	mkdir /srv/http/data/dabradioimg
+	mv /srv/http/data/{webradios/DAB,dabradioimg}/*.jpg
 	mv /srv/http/data/{webradios/DAB,dabradio}
 	count=$( ls -1 /srv/http/data/dabradio | wc -l )
-	sed -i '/"webradio":/ i\  "dabradio": '$count',' /srv/http/data/mpd/counts
+	sed -i '/"webradio":/ i\  "dab": '$count',' /srv/http/data/mpd/counts
 fi
 
 grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf

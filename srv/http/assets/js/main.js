@@ -1164,6 +1164,15 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
+} ).on( 'click', '.button-dab-refresh', function() {
+	info( {
+		  icon     : 'dab'
+		, title    : 'DAB Radio'
+		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
+		, ok       : function() {
+			bash( [ 'dabscan' ] );
+		}
+	} );
 } ).on( 'click', '.button-latest-clear', function() {
 	info( {
 		  icon         : 'latest'
@@ -1204,18 +1213,18 @@ $( '#lib-search-btn' ).click( function() { // search
 	if ( !keyword ) {
 		$( '#lib-search-close' ).click();
 	} else {
-		if ( G.mode !== 'webradio' ) {
+		if ( G.mode === 'webradio' || G.mode === 'dab' ) {
+			var query = {
+				  query  : G.mode
+				, string : keyword
+				, mode   : 'search'
+			}
+		} else {
 			var query = {
 				  query  : 'search'
 				, string : keyword
 				, gmode  : G.mode
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-			}
-		} else {
-			var query = {
-				  query  : 'webradio'
-				, string : keyword
-				, mode   : 'search'
 			}
 		}
 		list( query, function( data ) {
@@ -1306,7 +1315,7 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
+	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' && G.mode !== 'dab' ) {
 		if ( G.mode === 'playlists' ) {
 			var message = 'No saved playlists found.';
 		} else if ( G.mode === 'latest' ) {
@@ -1340,7 +1349,7 @@ $( '.mode' ).click( function() {
 	}
 	
 	var path = G.mode.toUpperCase();
-	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre, playlists
+	// G.modes: sd, nas, usb, webradio, dab, album, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].includes( G.mode ) ) { // browse by directory
 		var query = {
@@ -1348,9 +1357,10 @@ $( '.mode' ).click( function() {
 			, string : path
 			, format : [ 'file' ]
 		}
-	} else if ( G.mode === 'webradio' ) {
+	} else if ( G.mode === 'webradio' || G.mode === 'dab' ) {
 		var query = {
-			  query  : 'webradio'
+			  query : 'radio'
+			, gmode : G.mode
 		}
 	} else { // browse by modes
 		var query = {

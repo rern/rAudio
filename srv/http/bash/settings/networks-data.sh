@@ -106,7 +106,7 @@ fi
 
 data='
   "page"       : "networks"
-, "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
+, "activebt"   : '$( isactive bluetooth )'
 , "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
 , "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'

@@ -261,9 +261,14 @@ volumeSet() {
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
+dabradioCount() {
+	count=$( ls -1 $dirdata/dabradio | wc -l )
+	pushstream radiocount '{"radiotype":"dab", "count":'$count'}'
+	sed -i 's/\("dab": \).*/\1'$count'/' $dirmpd/counts
+}
 webradioCount() {
-	count=$( find -L $dirdata/webradios -type f | wc -l )
-	pushstream webradio $count
+	count=$( find -L $dirwebradios -type f | wc -l )
+	pushstream radiocount '{"radiotype":"webradio", "count":'$count'}'
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
@@ -501,6 +506,11 @@ coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
+	;;
+dabscan )
+	touch $dirshm/updatingdab
+	$dirbash/dab/dab-skeleton.sh &> /dev/null &
+	pushstream mpdupdate '{"type":"dabradio"}'
 	;;
 dirpermissions )
 	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
@@ -755,14 +765,6 @@ mpcseek )
 mpcupdate )
 	type=${args[1]}
 	path=${args[2]}
-	[[ $path == true || $type == dabradio ]] && $dirbash/settings/player.sh ffmpeg$'\n'true
-	if [[ $type == dabradio ]]; then
-		touch $dirshm/updatingdab
-		$dirbash/dab/dab-skeleton.sh &> /dev/null &
-		pushstream mpdupdate '{"type":"dabradio"}'
-		exit
-	fi
-	
 	if [[ $type == rescan ]]; then
 		touch $dirmpd/updating
 		mpc -q rescan
@@ -774,11 +776,6 @@ mpcupdate )
 		mpc -q update "$path"
 	fi
 	pushstream mpdupdate '{"type":"mpd"}'
-	;;
-mpcupdatecheck )
-	systemctl -q is-active rtsp-simple-server && dabradio=1 || dabradio=0
-	grep -q 'plugin.*ffmpeg' /etc/mpd.conf && ffmpeg=1 || ffmpeg=0
-	echo '{"dabradio":'$dabradio',"ffmpeg":'$ffmpeg'}'
 	;;
 mpdoledlogo )
 	mpdoledLogo
@@ -1254,18 +1251,22 @@ $charset" > "$file"
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
+	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset"}'
+	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":'$type'}'
 	;;
 webradiodelete )
 	url=${args[1]}
-	dir=${args[2]}
+	subdir=${args[2]}
+	type=${args[3]}
 	urlname=${url//\//|}
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
-	rm -f "$file"
-	[[ -z $( find $dirwebradios -name $urlname ) ]] && rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
-	webradioCount
+	[[ $type == webradio ]] && type+=s
+	dir=$dirdata/$type
+	[[ $subdir ]] && dir+="/$subdir"
+	rm -f "$dir/$urlname"
+	[[ -z $( find $dir -name $urlname ) ]] && rm -f "${dir}img/$urlname"{,-thumb}.*
+	[[ $type == dab ]] && dabradioCount || webradioCount $type
 	;;
 webradioedit )
 	name=${args[1]}

@@ -198,6 +198,7 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
 	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
+	$menu.find( '.wredit' ).toggleClass( 'hide', G.mode === 'dab' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
@@ -627,9 +628,15 @@ function imageLoad( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
-			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
+			if ( G.mode === 'webradio' || G.mode === 'dab' ) {
+				var mode = G.mode;
+				var menumode = 'webradio';
+			} else {
+				var mode = 'folder';
+				var menumode = 'folder';
+			}
 			$lazyload.off( 'error' ).on( 'error', function() {
-				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
+				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
 			} );
 		}
 	} else {
@@ -748,29 +755,16 @@ function infoUpdate( path ) {
 		return
 	}
 	
-	bash( [ 'mpcupdatecheck' ], function( data ) {
-		var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		if ( data.dabradio ) radio[ 'DAB radio scan' ] = 'dabradio';
-		info( {
-			  icon     : 'refresh-library'
-			, title    : 'Library Database'
-			, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
-			, radio    : path ? '' : radio
-			, checkbox : path ? '' : [ 'FFmpeg decoder' ]
-			, values   : path ? '' : [ 'update', data.ffmpeg ]
-			, beforeshow : function() {
-				$( '#infoContent' ).find( 'input[value=dabradio], input[type=checkbox]' ).before( '<hr>' );
-				var $ffmpeg = $( '#infoContent input[type=checkbox]' ).parents( 'tr' );
-				$ffmpeg.addClass( 'hide' );
-				$( '#infoContent input' ).change( function() {
-					$ffmpeg.toggleClass( 'hide', infoVal()[0] !== 'rescan' )
-				} );
-			}
-			, ok       : function() {
-				bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
-			}
-		} );
-	}, 'json' );
+	info( {
+		  icon     : 'refresh-library'
+		, title    : 'Library Database'
+		, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+		, radio    : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+		, values   : path ? '' : [ 'update', data.ffmpeg ]
+		, ok       : function() {
+			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
+		}
+	} );
 }
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
@@ -1072,6 +1066,8 @@ function renderLibraryList( data ) {
 	}
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
+	} else if ( G.mode === 'dab' ) {
+		htmlpath += '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}

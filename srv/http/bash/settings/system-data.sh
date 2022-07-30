@@ -157,7 +157,7 @@ data+='
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
-, "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
+, "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
@@ -173,7 +173,7 @@ data+='
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'
+, "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "rpimodel"         : "'$rpimodel'"
 , "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
@@ -203,7 +203,7 @@ if grep -q dtparam=krnbt=on /boot/config.txt; then
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
-, "bluetoothactive"  : '$( systemctl -q is-active bluetooth && echo true )'
+, "bluetoothactive"  : '$( isactive bluetooth )'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
 fi

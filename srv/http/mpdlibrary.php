@@ -186,24 +186,24 @@ case 'track': // for tag editor
 		}
 	}
 	break;
-case 'webradio':
-	$dirwebradios = '/srv/http/data/webradios/';
+case 'radio':
+	$dir = $gmode === 'webradio' ? '/srv/http/data/webradios/' : '/srv/http/data/dabradio/';
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
 	$html = '';
 	if ( $mode === 'search' ) {
 		$searchmode = 1;
-		exec( "grep -ril '".$string."' ".$dirwebradios." | sed 's|^".$dirwebradios."||'"
+		exec( "grep -ril '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
 		$searchmode = 0;
 		$path = $string !== '' ? $string.'/' : '';
-		$dirwebradios.= $path;
-		exec( 'ls -1 "'.$dirwebradios.'" | grep -v "\.jpg$\|\.gif$"'
+		$dir.= $path;
+		exec( 'ls -1 "'.$dir.'" | grep -v "\.jpg$\|\.gif$"'
 			, $lists );
 		foreach( $lists as $list ) {
-			if ( is_dir( $dirwebradios.$list ) ) {
+			if ( is_dir( $dir.$list ) ) {
 				$subdirs[] = $list;
 			} else {
 				$files[] = $list;
@@ -211,9 +211,8 @@ case 'webradio':
 		}
 		if ( count( $subdirs ) ) {
 			foreach( $subdirs as $dir ) {
-				$foldericon = $dir === 'DAB' ? 'dab' : 'folder';
 				$html.= '<li class="dir">'
-							.'<i class="lib-icon fa fa-'.$foldericon.'" data-target="#menu-wrdir"></i>'
+							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
 							.'<a class="lipath">'.$path.$dir.'</a>'
 							.'<span class="single">'.$dir.'</span>'
 						.'</li>';
@@ -223,7 +222,7 @@ case 'webradio':
 	if ( count( $files ) ) {
 		foreach( $files as $file ) {
 			$each = ( object )[];
-			$data = file( "$dirwebradios/$file", FILE_IGNORE_NEW_LINES );
+			$data = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
 			$name = $data[ 0 ];
 			$each->charset = $data[ 2 ] ?? '';
 			$each->name    = $name;
@@ -234,6 +233,7 @@ case 'webradio':
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
+		$dirimg = $gmode === 'webradio' ? '/data/webradiosimg/' : '/data/dabradioimg/';
 		$time = time();
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
@@ -241,7 +241,7 @@ case 'webradio':
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
+			$thumbsrc = $dirimg.$urlname.'-thumb.'.$time.'.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'

@@ -32,26 +32,26 @@ data+='
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 [[ -e /usr/bin/hostapd ]] && data+='
-, "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
+, "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirbash/settings/features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( systemctl -q is-active shairport-sync && echo true )'
+, "shairport-sync"   : '$( isactive shairport-sync )'
 , "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapserver"       : '$( systemctl -q is-active snapserver && echo true )'
+, "snapserver"       : '$( isactive snapserver )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientactive" : '$( systemctl -q is-active snapclient && echo true )'
+, "snapclientactive" : '$( isactive snapclient )'
 , "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( systemctl -q is-active spotifyd && echo true )'
+, "spotifyd"         : '$( isactive spotifyd )'
 , "spotifydactive"   : '$( [[ $( cat $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( systemctl -q is-active upmpdcli && echo true )'
+, "upmpdcli"         : '$( isactive upmpdcli )'
 , "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /etc/X11/xinit/xinitrc ]]; then
@@ -67,7 +67,7 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
 	fi
 	data+='
-, "localbrowser"     : '$( systemctl -q is-active localbrowser && echo true )'
+, "localbrowser"     : '$( isactive localbrowser )'
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
@@ -75,13 +75,13 @@ if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
-, "smb"              : '$( systemctl -q is-active smb && echo true )'
+, "smb"              : '$( isactive smb )'
 , "smbconf"          : '$smbconf
 fi
 if [[ -e /usr/bin/rtsp-simple-server ]]; then
 	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
 	data+='
 , "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )
+, "dabradio"         : '$( isactive rtsp-simple-server )
 fi
 data2json "$data" $1
