@@ -211,8 +211,9 @@ case 'webradio':
 		}
 		if ( count( $subdirs ) ) {
 			foreach( $subdirs as $dir ) {
+				$foldericon = $dir === 'DAB' ? 'dab' : 'folder';
 				$html.= '<li class="dir">'
-							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+							.'<i class="lib-icon fa fa-'.$foldericon.'" data-target="#menu-wrdir"></i>'
 							.'<a class="lipath">'.$path.$dir.'</a>'
 							.'<span class="single">'.$dir.'</span>'
 						.'</li>';
