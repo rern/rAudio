@@ -1018,4 +1018,14 @@ function renderStatus() {
 		}
 	}
 	$( '#status' ).html( status );
+	if ( !G.startup ) {
+		setTimeout( function() {
+			bash( "systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g'", function( data ) {
+				if ( data ) {
+					G.startup = data;
+					renderStatus();
+				}
+			} );
+		}, 10000 );
+	}
 }
