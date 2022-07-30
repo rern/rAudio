@@ -20,22 +20,15 @@ fileyml=/etc/rtsp-simple-server.yml
 linepaths=$( sed -n '/^paths:/ =' $fileyml )
 sed -i "$(( linepaths + 1 )),$ d" $fileyml
 
-trim() {
-	local var="$*"
-	var="${var%"${var##*[![:space:]]}"}"   
-	printf '%s' "$var"
-}
-
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
-	if grep -q "^audioservice" <<< $service; then
-		readarray -d ';' -t field <<< $service
-		service_name=$(trim "${field[1]}")
-		service_chan=$(trim "${field[2]}")
-		service_id=$(trim "${field[3]}")
-		legal_nameU=${service_name//[^[:alnum:]]/_}
-		legal_name=${legal_nameU,,} # rtsp-simple-server does not like all uppercase/number service names
-		echo "\
+	readarray -d ';' -t field <<< $service
+	service_name=$( echo ${field[1]} | xargs )
+	service_chan=$( echo ${field[2]} | xargs )
+	service_id=$( echo ${field[3]} | xargs )
+	legal_nameU=${service_name//[^[:alnum:]]/_}
+	legal_name=${legal_nameU,,} # rtsp-simple-server does not like all uppercase/number service names
+	echo "\
 $service_name
 48 kHz 160 kbit/s
 " > "$dirdabradio/rtsp:||$MYNAME|R$legal_name"
@@ -46,7 +39,6 @@ $service_name
     runOnDemandStartTimeout: 15s
     runOnDemandCloseAfter: 3s
 EOT
-	fi
 done
 
 chown -R http:http $dirdabradio
