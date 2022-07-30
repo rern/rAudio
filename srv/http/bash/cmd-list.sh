@@ -112,6 +112,7 @@ for mode in NAS SD USB; do
 done
 playlists=$( ls -1 $dirdata/playlists | wc -l )
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
+dabradio=$( ls -1 $dirdata/dabradio 2> /dev/null | wc -l )
 webradio=$( find -L $dirdata/webradios -type f \
 				| grep -v '\.jpg$\|\.gif$' \
 				| wc -l )
@@ -121,14 +122,15 @@ counts='{
 , "artist"      : '$artist'
 , "composer"    : '$composer'
 , "conductor"   : '$conductor'
+, "dabradio"    : '$dabradio'
 , "date"        : '$date'
 , "genre"       : '$genre'
-, "playlists"   : '$playlists'
 , "latest"      : '$latest'
 , "nas"         : '$NAS'
+, "playlists"   : '$playlists'
 , "sd"          : '$SD'
-, "usb"         : '$USB'
 , "song"        : '$song'
+, "usb"         : '$USB'
 , "webradio"    : '$webradio'
 }'
 echo $counts | jq > $dirmpd/counts

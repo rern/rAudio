@@ -3,8 +3,15 @@
 alias=r1
 
 # 20220729
-file=/srv/http/bash/dab/dab-skeleton.sh
-! grep -r updatingdab $file && echo rm /srv/http/data/shm/updatingdab >> $file
+if [[ $( pacman -Q dab-scanner 2> /dev/null ) == 'dab-scanner 0.8-1' ]]; then
+	pacman -Sy --noconfirm dab-scanner
+	stations=$( sed '1,/^paths:/ d' /etc/rtsp-simple-server/rtsp-simple-server.yml )
+	[[ $stations ]] && echo "$stations" | sed 's|dab/dabstart|dab-start|' >> /etc/rtsp-simple-server.yml
+	rm -f /srv/http/data/webradios/DAB/*.jpg
+	mv /srv/http/data/{webradios/DAB,dabradio}
+	count=$( ls -1 /srv/http/data/dabradio | wc -l )
+	sed -i '/"webradio":/ i\  "dabradio": '$count',' /srv/http/data/mpd/counts
+fi
 
 grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf
 

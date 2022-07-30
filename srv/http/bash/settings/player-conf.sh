@@ -135,13 +135,8 @@ fi
 linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
 [[ $linecdio ]] && sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
 
-conf=$( cat /etc/mpd.conf )
-line=$( echo "$conf" \
-			| awk '/^resampler/,/}/ {print NR}' \
-			| tail -1 )
-global=$( echo "$conf" \
-			| sed -n "1,$line p" \
-			| sed '/# custom0/,/# custom1/ d' )
+lastline=$(( $( sed -n '/^resampler/=' /etc/mpd.conf ) + 3 ))
+global=$( sed -n "1,$lastline p" /etc/mpd.conf | sed '/# custom0/,/# custom1/ d' )
 if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
 	custom=$( echo "
 # custom0
