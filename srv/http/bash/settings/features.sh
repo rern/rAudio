@@ -98,8 +98,13 @@ camillaguiset )
 	;;
 dabradio )
 	if [[ ${args[1]} == true ]]; then
-		systemctl enable --now rtsp-simple-server
-		! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
+		if timeout 1 rtl_test -t &> /dev/null; then
+			systemctl enable --now rtsp-simple-server
+			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
+		else
+			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dab 5000
+		fi
+		
 	else
 		systemctl disable --now rtsp-simple-server
 	fi
