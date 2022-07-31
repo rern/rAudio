@@ -79,7 +79,7 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smbconf"          : '$smbconf
 fi
 if [[ -e /usr/bin/rtsp-simple-server ]]; then
-	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
+	dabdevice=$( timeout 1 rtl_test -t &> /dev/null && echo true || systemctl disable --now rtsp-simple-server )
 	data+='
 , "dabdevice"        : '$dabdevice'
 , "dabradio"         : '$( isactive rtsp-simple-server )
