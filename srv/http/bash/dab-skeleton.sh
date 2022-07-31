@@ -16,9 +16,6 @@ MYNAME=$( hostname -f )
 dirdabradio=$dirdata/dabradio
 mkdir -p $dirdabradio
 rm -f $dirdabradio/*
-fileyml=/etc/rtsp-simple-server.yml
-linepaths=$( sed -n '/^paths:/ =' $fileyml )
-sed -i "$(( linepaths + 1 )),$ d" $fileyml
 
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
@@ -31,15 +28,21 @@ for service in "${services[@]}"; do
 	echo "\
 $service_name
 48 kHz 160 kbit/s
-" > "$dirdabradio/rtsp:||$MYNAME|R$legal_name"
-		cat << EOT >> $fileyml
+" > "$dirdabradio/rtsp:||$MYNAME|$legal_name"
+	list+=$( cat << EOF
   $legal_name:
-    runOnDemand: /srv/http/bash/dab-start.sh $service_id $service_chan  \$RTSP_PORT \$RTSP_PATH
+    runOnDemand: /srv/http/bash/dab-start.sh $service_id $service_chan \$RTSP_PORT \$RTSP_PATH
     runOnDemandRestart: yes
     runOnDemandStartTimeout: 15s
     runOnDemandCloseAfter: 3s
-EOT
+EOF
+)
 done
+
+fileyml=/etc/rtsp-simple-server.yml
+linepaths=$( sed -n '/^paths:/ =' $fileyml )
+sed -i "$(( linepaths + 1 )),$ d" $fileyml
+echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
 count=$( ls -1 $dirdabradio | wc -l )
