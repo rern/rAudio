@@ -90,7 +90,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'playlists', 'relays', 'reload', 'volume', 'webradio' ];
+				'notify', 'option', 'order', 'playlist', 'playlists', 'radiocount', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -465,8 +465,11 @@ function psPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psRadioCount( data ) {
-	if ( 'count' in data ) $( '#mode-'+ data.radiotype +' gr' ).text( data.count );
-	if ( G.librarylist && G.mode === data.radiotype ) {
+	if ( 'count' in data ) {
+		G.status.counts[ data.type ] = data.count;
+		$( '#mode-'+ data.type +' gr' ).text( data.count );
+	}
+	if ( G.librarylist && G.mode === data.type ) {
 		var query = G.query[ G.query.length - 1 ];
 		if ( query.path ) {
 			list( query, function( data ) {
@@ -474,14 +477,12 @@ function psRadioCount( data ) {
 				data.modetitle = query.modetitle;
 				renderLibraryList( data );
 			}, 'json' );
-		} else {
-			$( '#mode-'+ data.radiotype +' gr' ).click();
 		}
 	} else if ( G.playlist && !G.local ) {
 		getPlaylist();
 	}
 	G.status.updatingdab = false;
-	$( '#i-dabupdate' ).addeClass( 'hide' );
+	$( '#i-dabupdate' ).addClass( 'hide' );
 }
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );

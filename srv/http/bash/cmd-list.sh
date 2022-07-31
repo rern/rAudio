@@ -110,11 +110,13 @@ latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
 done
-dab=$( ls -1 $dirdata/dabradio 2> /dev/null | wc -l )
+dabradio=$( ls -1 $dirdata/dabradio 2> /dev/null \
+				| grep -v ^img$ \
+				| wc -l )
 playlists=$( ls -1 $dirdata/playlists | wc -l )
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find -L $dirdata/webradios -type f \
-				| grep -v '\.jpg$\|\.gif$' \
+webradio=$( find -L $dirdata/webradio -type f \
+				| grep -v '^img$\|\.jpg$\|\.gif$' \
 				| wc -l )
 counts='{
   "album"       : '$album'
@@ -122,7 +124,7 @@ counts='{
 , "artist"      : '$artist'
 , "composer"    : '$composer'
 , "conductor"   : '$conductor'
-, "dab"         : '$dab'
+, "dabradio"    : '$dabradio'
 , "date"        : '$date'
 , "genre"       : '$genre'
 , "latest"      : '$latest'

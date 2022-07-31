@@ -261,14 +261,9 @@ volumeSet() {
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
-dabradioCount() {
-	count=$( ls -1 $dirdata/dabradio | wc -l )
-	pushstream radiocount '{"radiotype":"dab", "count":'$count'}'
-	sed -i 's/\("dab": \).*/\1'$count'/' $dirmpd/counts
-}
 webradioCount() {
-	count=$( find -L $dirwebradios -type f | wc -l )
-	pushstream radiocount '{"radiotype":"webradio", "count":'$count'}'
+	count=$( find -L $dirwebradio -type f | grep -v ^img$ | wc -l )
+	pushstream radiocount '{"type":"webradio", "count":'$count'}'
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
@@ -509,7 +504,7 @@ coverfileslimit )
 	;;
 dabscan )
 	touch $dirshm/updatingdab
-	$dirbash/dab/dab-skeleton.sh &> /dev/null &
+	$dirbash/dab-scan.sh &> /dev/null &
 	pushstream mpdupdate '{"type":"dabradio"}'
 	;;
 dirpermissions )
@@ -1238,7 +1233,7 @@ webradioadd )
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	[[ -e "$file" ]] && echo -1 && exit
 	
 	echo "\
@@ -1261,12 +1256,17 @@ webradiodelete )
 	subdir=${args[2]}
 	type=${args[3]}
 	urlname=${url//\//|}
-	[[ $type == webradio ]] && type+=s
 	dir=$dirdata/$type
 	[[ $subdir ]] && dir+="/$subdir"
 	rm -f "$dir/$urlname"
-	[[ -z $( find $dir -name $urlname ) ]] && rm -f "${dir}img/$urlname"{,-thumb}.*
-	[[ $type == dab ]] && dabradioCount || webradioCount $type
+	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$dir/img/$urlname"{,-thumb}.*
+	if [[ $type == webradio ]]; then
+		webradioCount
+	else
+		count=$( ls -1 $dirdata/dabradio | grep -v ^img$ | wc -l )
+		pushstream radiocount '{"type":"dabradio", "count":'$count'}'
+		sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
+	fi
 	;;
 webradioedit )
 	name=${args[1]}
@@ -1276,7 +1276,7 @@ webradioedit )
 	urlprev=${args[5]}
 	urlname=${url//\//|}
 	[[ $url != $urlprev ]] && urlchanged=1
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	if [[ $urlchanged ]]; then
 		ext=${url/*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
@@ -1291,32 +1291,32 @@ $sampling
 $charset" > "$file"
 	if [[ $urlchanged ]]; then
 		urlprevname=${urlprev//\//|}
-		[[ $dir ]] && rm "$dirwebradios/$dir/$urlprevname" || rm "$dirwebradios/$urlprevname"
-		mv ${dirwebradios}img/{$urlprevname,$urlname}.jpg
-		mv ${dirwebradios}img/{$urlprevname,$urlname}-thumb.jpg
+		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
+		mv $dirwebradio/img/{$urlprevname,$urlname}.jpg
+		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
 	pushstream webradio -1
 	;;
 wrdirdelete )
 	path=${args[1]}
-	if [[ $( ls -A "$dirwebradios/$path" ) ]]; then
+	if [[ $( ls -A "$dirwebradio/$path" ) ]]; then
 		echo -1
 	else
-		rm -rf "$dirwebradios/$path"
+		rm -rf "$dirwebradio/$path"
 		pushstream webradio -1
 	fi
 	;;
 wrdirnew )
 	path=${args[1]}
-	mkdir -p "$dirwebradios/$path"
+	mkdir -p "$dirwebradio/$path"
 	pushstream webradio -1
 	;;
 wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
-	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
+	mv -f "$dirwebradio/$path/$name" "$dirwebradio/$path/$newname"
 	pushstream webradio -1
 	;;
 	

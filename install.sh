@@ -2,17 +2,22 @@
 
 alias=r1
 
-# 20220729
+# 20220805
 [[ $( pacman -Q dab-scanner 2> /dev/null ) == 'dab-scanner 0.8-1' ]] && pacman -Sy --noconfirm dab-scanner
 if [[ -e /srv/http/bash/dab ]]; then
 	rm -rf /srv/http/bash/dab
+	rm -f /srv/http/data/webradiosimg/{dablogo*,rtsp*8554*}
 	stations=$( sed '1,/^paths:/ d' /etc/rtsp-simple-server/rtsp-simple-server.yml )
 	[[ $stations ]] && echo "$stations" | sed 's|dab/dabstart|dab-start|' >> /etc/rtsp-simple-server.yml
-	mkdir /srv/http/data/dabradioimg
-	mv /srv/http/data/{webradios/DAB,dabradioimg}/*.jpg
 	mv /srv/http/data/{webradios/DAB,dabradio}
 	count=$( ls -1 /srv/http/data/dabradio | wc -l )
-	sed -i '/"webradio":/ i\  "dab": '$count',' /srv/http/data/mpd/counts
+	sed -i '/"webradio":/ i\  "dabradio": '$count',' /srv/http/data/mpd/counts
+	mkdir /srv/http/data/dabradio/img
+fi
+
+if [[ -e /srv/http/data/webradios ]]; then
+	mv /srv/http/data/webradio{s,}
+	mv /srv/http/data/{webradiosimg,webradio/img}
 fi
 
 grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf
@@ -36,7 +41,7 @@ installstart "$1"
 
 getinstallzip
 
-# 20220729
+# 20220805
 udevadm control --reload-rules
 udevadm trigger
 

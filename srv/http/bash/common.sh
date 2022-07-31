@@ -2,7 +2,7 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-for dir in addons mpd playlists shm system tmp webradios; do
+for dir in addons mpd playlists shm system tmp webradio; do
 	printf -v dir$dir '%s' /srv/http/data/$dir
 done
 

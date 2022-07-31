@@ -102,7 +102,7 @@ dabradio )
 			systemctl enable --now rtsp-simple-server
 			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
 		else
-			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dab 5000
+			pushstreamNotify 'DABradio' 'No DAB devices found.' dabradio 5000
 		fi
 		
 	else

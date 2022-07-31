@@ -88,7 +88,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "dab"              : '$( [[ -e /usr/bin/rtsp-simple-server ]] && systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$( [[ -e /usr/bin/rtsp-simple-server ]] && systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
@@ -289,15 +289,15 @@ elif [[ $stream ]]; then
 		elif [[ $file == *stream.radioparadise.com* ]]; then
 			icon=radioparadise
 		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
-			icon=dab
+			icon=dabradio
 		else
 			icon=webradio
 		fi
-		# before webradios play: no 'Name:' - use station name from file instead
+		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
-		radiofile=$dirdata/webradios/$urlname
-		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
+		radiofile=$dirdata/webradio/$urlname
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
 			station=${radiodata[0]}
@@ -307,9 +307,9 @@ elif [[ $stream ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
-				if [[ $icon == dab ]]; then
-					id=dab
+			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+				if [[ $icon == dabradio ]]; then
+					id=dabradio
 					radiosampling='48 kHz 160 kbit/s'
 					stationname=$station
 				else
@@ -344,7 +344,7 @@ $radiosampling" > $dirshm/radio
 			fi
 		fi
 		if [[ $displaycover ]]; then
-			filenoext=/data/webradiosimg/$urlname
+			filenoext=/data/webradio/img/$urlname
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
 				stationcover=$filenoext.$date.gif

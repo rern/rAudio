@@ -48,7 +48,7 @@ $( '#pwd' ).keypress( function( e ) {
 }
 $color = file_exists( '/srv/http/data/system/color' );
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'DAB', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
+$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'DABradio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
     $modeLC = strtolower( $mode );

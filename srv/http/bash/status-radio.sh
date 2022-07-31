@@ -37,7 +37,7 @@ case $id in
 	lajazz )              id=405;;
 	ocoramonde )          id=404;;
 	opera )               id=409;;
-	dab ) id=500;;
+	dabradio ) id=500;;
 esac
 
 dabData() {
@@ -80,7 +80,7 @@ metadataGet() {
 		icon=radiofrance
 		radiofranceData
 	else
-		icon=dab
+		icon=dabradio
 		dabData
 	fi
 	artist=${metadata[0]//\"/\\\"}

@@ -187,20 +187,21 @@ case 'track': // for tag editor
 	}
 	break;
 case 'radio':
-	$dir = $gmode === 'webradio' ? '/srv/http/data/webradios/' : '/srv/http/data/dabradio/';
+	$dir = '/srv/http/data/'.$gmode.'/';
+	$dirimg = '/data/'.$gmode.'/img/';
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
 	$html = '';
 	if ( $mode === 'search' ) {
 		$searchmode = 1;
-		exec( "grep -ril '".$string."' ".$dir." | sed 's|^".$dir."||'"
+		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
 		$searchmode = 0;
 		$path = $string !== '' ? $string.'/' : '';
 		$dir.= $path;
-		exec( 'ls -1 "'.$dir.'" | grep -v "\.jpg$\|\.gif$"'
+		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
 			, $lists );
 		foreach( $lists as $list ) {
 			if ( is_dir( $dir.$list ) ) {
@@ -210,11 +211,11 @@ case 'radio':
 			}
 		}
 		if ( count( $subdirs ) ) {
-			foreach( $subdirs as $dir ) {
+			foreach( $subdirs as $subdir ) {
 				$html.= '<li class="dir">'
 							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-							.'<a class="lipath">'.$path.$dir.'</a>'
-							.'<span class="single">'.$dir.'</span>'
+							.'<a class="lipath">'.$path.$subdir.'</a>'
+							.'<span class="single">'.$subdir.'</span>'
 						.'</li>';
 			}
 		}
@@ -233,7 +234,6 @@ case 'radio':
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$dirimg = $gmode === 'webradio' ? '/data/webradiosimg/' : '/data/dabradioimg/';
 		$time = time();
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );

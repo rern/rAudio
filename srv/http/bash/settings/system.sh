@@ -190,6 +190,11 @@ datarestore )
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
+	# temp
+	if [[ -e $dirdata/webradios ]]; then
+		mv $dirdata/webradio{s,}
+		mv $dirdata/{webradiosimg,webradio/img}
+	fi
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
@@ -229,7 +234,7 @@ datarestore )
 		chmod 777 $mountpoint
 		std=$( mount $mountpoint )
 		if [[ $? == 0 ]]; then
-			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 				rm -rf $dirdata/$dir
 				ln -s $mountpoint/$dir $dirdata
 			done
@@ -675,7 +680,7 @@ shareddatadisable )
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	sed -i "/$ip/ d" $mountpoint/iplist
 	[[ $( grep . $mountpoint/iplist | wc -l ) == 0 ]] && rm $mountpoint/iplist
-	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 	done
@@ -725,7 +730,7 @@ shareddata )
 			sleep 1
 			mount | grep -q "$mountpoint" && break
 		done
-		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 			if [[ $copydata == true ]]; then
 				rm -rf $mountpoint/$dir
 				cp -rf $dirdata/$dir $mountpoint

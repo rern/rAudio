@@ -45,7 +45,7 @@ over_voltage=2"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 if [[ -e /usr/bin/camilladsp ]]; then

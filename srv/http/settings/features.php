@@ -22,7 +22,7 @@ HTML
 		  'label'    => 'DAB Radio'
 		, 'id'       => 'dabradio'
 		, 'sublabel' => 'rtsp-server'
-		, 'icon'     => 'dab'
+		, 'icon'     => 'dabradio'
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => <<< HTML

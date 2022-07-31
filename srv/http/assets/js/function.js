@@ -198,7 +198,6 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
 	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
-	$menu.find( '.wredit' ).toggleClass( 'hide', G.mode === 'dab' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
@@ -628,7 +627,7 @@ function imageLoad( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
-			if ( G.mode === 'webradio' || G.mode === 'dab' ) {
+			if ( G.mode.slice( -5 ) === 'radio' ) {
 				var mode = G.mode;
 				var menumode = 'webradio';
 			} else {
@@ -1025,12 +1024,12 @@ function renderLibrary() {
 	renderLibraryCounts();
 }
 function renderLibraryCounts() {
+	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 	} );
-	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
@@ -1066,7 +1065,7 @@ function renderLibraryList( data ) {
 	}
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
-	} else if ( G.mode === 'dab' ) {
+	} else if ( G.mode === 'dabradio' ) {
 		htmlpath += '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
