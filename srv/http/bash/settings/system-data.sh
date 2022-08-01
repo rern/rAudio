@@ -15,7 +15,7 @@ data='
 , "uptimesince"      : "'$( uptime -s | cut -d: -f1-2 )'"'
 
 # for interval refresh
-(( $# > 0 )) && echo {$data} && exit
+[[ $1 == status ]] && echo {$data} && exit
 
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
@@ -136,8 +136,6 @@ mpdoledconf='[ '$oledchip', '$baudrate' ]'
 [[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
-#elif [[ -e $dirsystem/audiophonics ]]; then
-#	powerbuttonconf='["audiophonics"]'
 else
 	powerbuttonconf='[ 5,40,5,'$audiophonics' ]'
 fi
