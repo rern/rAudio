@@ -575,7 +575,6 @@ function getPlaybackStatus( withdisplay ) {
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		displayBars();
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
@@ -584,6 +583,7 @@ function getPlaybackStatus( withdisplay ) {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
+		displayBars();
 		renderPlayback();
 		setButtonControl();
 		setButtonUpdating();
