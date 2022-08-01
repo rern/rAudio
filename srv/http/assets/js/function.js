@@ -1054,7 +1054,7 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>Web Radio: </a>';
+		if ( G.mode === 'webradio' ) htmlpath += '<a>webradio/</a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
