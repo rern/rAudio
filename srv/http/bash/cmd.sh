@@ -263,7 +263,7 @@ volumeSet() {
 }
 webradioCount() {
 	count=$( find -L $dirwebradio -type f | grep -v ^img$ | wc -l )
-	pushstream radiocount '{"type":"webradio", "count":'$count'}'
+	pushstream radiolist '{"type":"webradio", "count":'$count'}'
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
@@ -1249,7 +1249,7 @@ webradiocoverreset )
 	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":'$type'}'
+	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":"'$type'"}'
 	;;
 webradiodelete )
 	url=${args[1]}
@@ -1264,7 +1264,7 @@ webradiodelete )
 		webradioCount
 	else
 		count=$( ls -1 $dirdata/dabradio | grep -v ^img$ | wc -l )
-		pushstream radiocount '{"type":"dabradio", "count":'$count'}'
+		pushstream radiolist '{"type":"dabradio", "count":'$count'}'
 		sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
 	fi
 	;;
@@ -1296,7 +1296,7 @@ $charset" > "$file"
 		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
-	pushstream webradio -1
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 wrdirdelete )
 	path=${args[1]}
@@ -1304,20 +1304,20 @@ wrdirdelete )
 		echo -1
 	else
 		rm -rf "$dirwebradio/$path"
-		pushstream webradio -1
+		pushstream radiolist '{"type":"webradio"}'
 	fi
 	;;
 wrdirnew )
 	path=${args[1]}
 	mkdir -p "$dirwebradio/$path"
-	pushstream webradio -1
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
 	mv -f "$dirwebradio/$path/$name" "$dirwebradio/$path/$newname"
-	pushstream webradio -1
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 	
 esac

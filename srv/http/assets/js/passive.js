@@ -63,6 +63,18 @@ function bookmarkCover( url, path ) {
 		}
 	} );
 }
+function radioRefresh() {
+	var query = G.query[ G.query.length - 1 ];
+	if ( query.path ) {
+		list( query, function( data ) {
+			data.path = query.path;
+			data.modetitle = query.modetitle;
+			renderLibraryList( data );
+		}, 'json' );
+	} else {
+		$( '#mode-'+ G.mode ).click();
+	}
+}
 function statusUpdate( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
@@ -90,7 +102,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-				'notify', 'option', 'order', 'playlist', 'playlists', 'radiocount', 'relays', 'reload', 'volume', 'webradio' ];
+				'notify', 'option', 'order', 'playlist', 'playlists', 'radiolist', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -127,7 +139,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'order':      psOrder( data );      break;
 		case 'playlist':   psPlaylist( data );   break;
 		case 'playlists':  psPlaylists( data );  break;
-		case 'radiocount': psRadioCount( data ); break;
+		case 'radiolist':  psRadioList( data ); break;
 		case 'relays':     psRelays( data );     break;
 		case 'reload':     location.href = '/';  break;
 		case 'restore':    psRestore( data );    break;
@@ -239,8 +251,8 @@ function psCoverart( data ) {
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			} else if ( G.librarylist && G.mode === data.radiotype ) {
-				psRadioCount();
+			} else if ( G.librarylist && G.mode === data.type ) {
+				radioRefresh();
 			}
 			break;
 		case 'webradioreset':
@@ -250,7 +262,7 @@ function psCoverart( data ) {
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
 			} else if ( G.librarylist && G.mode === data.radiotype ) {
-				psRadioCount();
+				radioRefresh();
 			}
 			break;
 	}
@@ -464,20 +476,13 @@ function psPlaylists( data ) {
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 	$( '#mode-playlists gr' ).text( count || '' );
 }
-function psRadioCount( data ) {
+function psRadioList( data ) {
 	if ( 'count' in data ) {
 		G.status.counts[ data.type ] = data.count;
 		$( '#mode-'+ data.type +' gr' ).text( data.count );
 	}
 	if ( G.librarylist && G.mode === data.type ) {
-		var query = G.query[ G.query.length - 1 ];
-		if ( query.path ) {
-			list( query, function( data ) {
-				data.path = query.path;
-				data.modetitle = query.modetitle;
-				renderLibraryList( data );
-			}, 'json' );
-		}
+		radioRefresh();
 	} else if ( G.playlist && !G.local ) {
 		getPlaylist();
 	}

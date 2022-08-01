@@ -41,8 +41,19 @@ installstart "$1"
 
 getinstallzip
 
+installfinish
+
 # 20220805
 udevadm control --reload-rules
 udevadm trigger
 
-installfinish
+! grep -q /srv/http/shareddata /etc/fstab && exit
+
+echo -e "\
+$info Shared data:
+    • Disable
+    • On server
+      - Rename: $( tcolor webradios 1 ) > $( tcolor webradio 2 )
+      - Move:   $( tcolor webradiosimg 1 ) > $( tcolor webradio/img 2 )
+    • Re-enable again.
+"

@@ -753,7 +753,7 @@ function setButtonWidth() {
 }
 function setFileImage( file ) {
 	var timeout = setTimeout( function() {
-		banner( 'Change Image', 'Load ...', 'coverart blink', -1 );
+		banner( 'Change Image', 'Load ...', 'refresh blink', -1 );
 	}, 1000 );
 	G.rotate = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
