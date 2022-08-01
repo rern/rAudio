@@ -14,9 +14,9 @@ if ( $alias !== 'cove' ) {
 	$href = '/settings/addons.php';
 	$title = preg_replace( '/\**$/', '', $addon[ 'title' ] );
 } else {
-	$heading = 'CoverArt Thumbnails';
+	$heading = 'Cover Art Thumbnails';
 	$href = '/';
-	$title = 'CoverArt Thumbnails';
+	$title = 'Cover Art Thumbnails';
 	$sh = array_slice( $sh, 3 );
 }
 $opt = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $sh ) );

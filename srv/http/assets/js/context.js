@@ -347,7 +347,7 @@ function webRadioCoverart() {
 	var radioicon = coverart === G.coverdefault;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' ) +' CoverArt'
+		, title       : ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' ) +' Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'

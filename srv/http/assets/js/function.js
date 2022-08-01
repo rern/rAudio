@@ -254,7 +254,7 @@ function coverartChange() {
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : 'Change Album CoverArt'
+		, title       : 'Change Album Cover Art'
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
@@ -273,7 +273,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
-			banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>' );
+			banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>' );
 		}
 	} );
 }
@@ -312,7 +312,7 @@ function coverartSave() {
 	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
-		, title   : 'Save Album CoverArt'
+		, title   : 'Save Album Cover Art'
 		, message : '<img src="'+ src +'">'
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
@@ -662,7 +662,7 @@ function imageReplace( imagefilenoext, type, covername ) {
 						.pop();
 	}
 	$.post( cmdphp, data );
-	banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>', -1 );
+	banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
