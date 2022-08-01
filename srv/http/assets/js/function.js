@@ -1070,9 +1070,11 @@ function renderLibraryList( data ) {
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
-	if ( htmlpath ) $( '#lib-breadcrumbs' )
+	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
+	if ( !data.html ) return // radio
+	
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
