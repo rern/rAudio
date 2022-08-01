@@ -502,6 +502,13 @@ coverfileslimit )
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
+dabradioedit )
+	name=${args[1]}
+	url=${args[2]}
+	urlname=${url//\//|}
+	sed -i "1 s|.*|$name|" $dirdata/dabradio/$urlname
+	pushstream radiolist '{"type":"dabradio"}'
+	;;
 dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &

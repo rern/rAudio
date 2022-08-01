@@ -408,6 +408,26 @@ function webRadioEdit() {
 	var pathsplit = G.list.path.split( '//' );
 	var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	var charset = G.list.li.data( 'charset' );
+	if ( G.mode === 'dabradio' ) {
+		info( {
+			  icon         : 'dbbradio'
+			, title        : 'Edit DABradio'
+			, textlabel    : [ 'Name', 'URL' ]
+			, values       : [ name, url ]
+			, checkchanged : 1
+			, checkblank   : [ 0 ]
+			, boxwidth     : 'max'
+			, beforeshow   : function() {
+				$( '#infoContent input' ).eq( 1 ).addClass( 'disabled' );
+			}
+			, oklabel      : '<i class="fa fa-save"></i>Save'
+			, ok           : function() {
+				bash( [ 'dabradioedit', ...infoVal() ] );
+			}
+		} );
+		return
+	}
+		
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit WebRadio'
