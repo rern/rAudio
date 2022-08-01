@@ -262,7 +262,7 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
-	count=$( find -L $dirwebradio -type f | grep -v /img/ | wc -l )
+	count=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"webradio", "count":'$count'}'
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
@@ -1270,7 +1270,7 @@ webradiodelete )
 	if [[ $type == webradio ]]; then
 		webradioCount
 	else
-		count=$( ls -1 $dirdata/dabradio | grep -v ^img$ | wc -l )
+		count=$( ls -1p $dirdata/dabradio | grep -v /$ | wc -l )
 		pushstream radiolist '{"type":"dabradio", "count":'$count'}'
 		sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
 	fi

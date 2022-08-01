@@ -296,8 +296,8 @@ elif [[ $stream ]]; then
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
-		radiofile=$dirdata/webradio/$urlname
-		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradio -name "$urlname" )
+		radiofile=$dirwebradio/$urlname
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirwebradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
 			station=${radiodata[0]}

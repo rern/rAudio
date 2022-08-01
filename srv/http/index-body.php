@@ -54,7 +54,7 @@ foreach( $modes as $mode ) {
 	$lipath = str_replace( ' ', '', $mode );
     $modeLC = strtolower( $lipath );
 	$modehtml.= '
-		<div class="lib-mode">
+		<div class="lib-mode '.$modeLC.'">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$modeLC.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
