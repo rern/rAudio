@@ -295,7 +295,7 @@ $body = [
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'none'
 		, 'help'     => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
  • SSH passwords must be default.
  • Music files should be on NAS only.
  • On file server, setup a network share with all permissions
@@ -322,7 +322,7 @@ Backup all settings and Library database:
  • Saved playlists
  • Bookmarks
  • Lyrics
- • WebRadios
+ • Web Radio
 HTML
 	]
 	, [

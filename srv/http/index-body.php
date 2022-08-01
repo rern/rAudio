@@ -48,14 +48,15 @@ $( '#pwd' ).keypress( function( e ) {
 }
 $color = file_exists( '/srv/http/data/system/color' );
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'WebRadio', 'DABradio', 'Album', 'Artist', 'AlbumArtist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
+$modes = [ 'SD', 'USB', 'NAS', 'Web Radio', 'DAB Radio', 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
-    $modeLC = strtolower( $mode );
+	$lipath = str_replace( ' ', '', $mode );
+    $modeLC = strtolower( $lipath );
 	$modehtml.= '
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
-				<a class="lipath">'.$mode.'</a>
+				<a class="lipath">'.$modeLC.'</a>
 				<i class="fa fa-'.$modeLC.'"></i>
 				<gr></gr>
 				<a class="label">'.$mode.'</a>
@@ -132,7 +133,7 @@ $menu.= menudiv( 'filepl', $html );
 $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',       'lastfm',        'Add similar' ]
-	, [ 'wrsave',        'save',          'Save to WebRadio' ]
+	, [ 'wrsave',        'save',          'Save to Web Radio' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
 	, [ 'savedplremove', 'minus-circle',  'Remove' ]
 	, [ 'tag',           'tag',           'Tag Editor' ]
@@ -156,7 +157,7 @@ $menulist = [
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
 	, [ 'current',    'check',         'Current' ]
-	, [ 'wrsave',     'save',          'Save to WebRadio' ]
+	, [ 'wrsave',     'save',          'Save to Web Radio' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 	, [ 'remove',     'minus-circle',  'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]

@@ -7,7 +7,7 @@ LC_CTYPE=C # this is needed to consider the lowercase accented chars outside of 
 dabscan=$( dab-scanner-rtlsdr -C 5A )
 services=$( echo "$dabscan" | grep ^audioservice )
 if [[ ! $services ]]; then
-	pushstreamNotify 'DABradio' 'No stations found.' dabradio
+	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
 	rm $dirshm/updatingdab
 	exit
 fi

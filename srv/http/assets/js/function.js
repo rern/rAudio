@@ -667,12 +667,12 @@ function imageReplace( imagefilenoext, type, covername ) {
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
 	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
-	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>AlbumArtist</gr>'
+	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
 	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
 	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
 	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
 	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
-	, webradio       : '<i class="fa fa-webradio wh"></i><gr>WebRadio</gr>'
+	, webradio       : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
@@ -850,7 +850,7 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	$.each( G.display.order, function( i, name ) {
+	G.display.order.forEach( function( name ) {
 		var $libmode = $( '.lib-mode' ).filter( function() {
 			return $( this ).find( '.lipath' ).text() === name;
 		} );
@@ -1054,7 +1054,7 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>WebRadio: </a>';
+		if ( G.mode === 'webradio' ) htmlpath += '<a>Web Radio: </a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;

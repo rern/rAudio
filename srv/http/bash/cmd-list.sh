@@ -116,7 +116,7 @@ dabradio=$( ls -1 $dirdata/dabradio 2> /dev/null \
 playlists=$( ls -1 $dirdata/playlists | wc -l )
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 webradio=$( find -L $dirdata/webradio -type f \
-				| grep -v '^img$\|\.jpg$\|\.gif$' \
+				| grep -v /img/ \
 				| wc -l )
 counts='{
   "album"       : '$album'

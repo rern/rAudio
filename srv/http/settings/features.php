@@ -258,7 +258,7 @@ HTML
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+ • Web Radio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [

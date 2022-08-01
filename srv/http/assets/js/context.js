@@ -347,7 +347,7 @@ function webRadioCoverart() {
 	var radioicon = coverart === G.coverdefault;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : ( G.mode === 'webradio' ? 'WebRadio' : 'DABradio' ) +' CoverArt'
+		, title       : ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' ) +' CoverArt'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
@@ -376,7 +376,7 @@ function webRadioDelete() {
 	var url = G.list.li.find( '.li2' ).text();
 	info( {
 		  icon    : G.mode
-		, title   : 'Delete '+ ( G.mode === 'webradio' ? 'WebRadio' : 'DABradio' )
+		, title   : 'Delete '+ ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' )
 		, width   : 500
 		, message : '<br><img src="'+ img +'">'
 				   +'<br><wh>'+ name +'</wh>'
@@ -411,7 +411,7 @@ function webRadioEdit() {
 	if ( G.mode === 'dabradio' ) {
 		info( {
 			  icon         : 'dbbradio'
-			, title        : 'Edit DABradio'
+			, title        : 'Edit DAB Radio'
 			, textlabel    : [ 'Name', 'URL' ]
 			, values       : [ name, url ]
 			, checkchanged : 1
@@ -430,7 +430,7 @@ function webRadioEdit() {
 		
 	info( {
 		  icon         : 'webradio'
-		, title        : 'Edit WebRadio'
+		, title        : 'Edit Web Radio'
 		, content      : htmlwebradio
 		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkchanged : 1
@@ -459,7 +459,7 @@ function webRadioExists( error, name, url, charset ) {
 	var message = error == -1 ? 'already exists.' : 'contains no valid URL.';
 	info( {
 		  icon    : 'webradio'
-		, title   : 'Add WebRadio'
+		, title   : 'Add Web Radio'
 		, message : '<wh>'+ url +'</wh><br>'+ message
 		, ok      : function() {
 			setTimeout( function() {
@@ -471,7 +471,7 @@ function webRadioExists( error, name, url, charset ) {
 function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
-		, title        : 'Add WebRadio'
+		, title        : 'Add Web Radio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
 		, focus        : 0
@@ -503,14 +503,14 @@ function webRadioNew( name, url, charset ) {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
-			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'WebRadio', 'Add ...', 'webradio blink',  -1 );
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'Web Radio', 'Add ...', 'webradio blink',  -1 );
 		}
 	} );
 }
 function webRadioSave( url ) {
 	info( {
 		  icon       : 'webradio'
-		, title      : 'Save WebRadio'
+		, title      : 'Save Web Radio'
 		, message    : url
 		, textlabel  : 'Name'
 		, focus      : 0
@@ -647,7 +647,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var path = G.list.li.find( '.lipath' ).text();
 			info( {
 				  icon    : 'webradio'
-				, title   : 'WebRadio Delete'
+				, title   : 'Web Radio Delete'
 				, message : 'Folder:'
 							+'<br><wh>'+ path +'</wh>'
 				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
@@ -657,7 +657,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 						if ( std == -1 ) {
 							info( {
 								  icon    : 'webradio'
-								, title   : 'WebRadio Delete'
+								, title   : 'Web Radio Delete'
 								, message : 'Folder <wh>'+ path +'</wh> not empty.'
 							} );
 						}
@@ -671,7 +671,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var path = path.join( '/' );
 			info( {
 				  icon        : 'webradio'
-				, title       : 'WebRadio Rename'
+				, title       : 'Web Radio Rename'
 				, textlabel   : 'Name'
 				, focus       : 0
 				, values      : name

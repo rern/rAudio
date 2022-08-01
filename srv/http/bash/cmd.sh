@@ -262,7 +262,7 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
-	count=$( find -L $dirwebradio -type f | grep -v ^img$ | wc -l )
+	count=$( find -L $dirwebradio -type f | grep -v /img/ | wc -l )
 	pushstream radiolist '{"type":"webradio", "count":'$count'}'
 	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
 }
@@ -286,7 +286,7 @@ webRadioSampling() {
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
 	if [[ ! -s /tmp/webradio ]]; then
-		pushstreamNotify WebRadio "URL cannot be streamed:<br>$url" warning 8000
+		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
 		exit
 	fi
 	
@@ -296,7 +296,7 @@ webRadioSampling() {
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	if [[ ! $data ]]; then
-		pushstreamNotify WebRadio "URL contains no stream data:<br>$url" webradio 8000
+		pushstreamNotify 'Web Radio' "URL contains no stream data:<br>$url" webradio 8000
 		exit
 	fi
 	

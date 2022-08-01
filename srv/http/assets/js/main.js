@@ -269,7 +269,7 @@ $( '#displayplayback' ).click( function() {
 		  bars         : 'Top-Bottom bars'
 		, barsalways   : 'Bars always on'
 		, time         : 'Time'
-		, radioelapsed : 'WebRadio time'
+		, radioelapsed : 'Web Radio time'
 		, cover        : 'Coverart'
 		, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 		, volume       : 'Volume'
@@ -1167,7 +1167,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 } ).on( 'click', '.button-dab-refresh', function() {
 	info( {
 		  icon     : 'dabradio'
-		, title    : 'DABradio'
+		, title    : 'DAB Radio'
 		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
 		, ok       : function() {
 			bash( [ 'dabscan' ] );
