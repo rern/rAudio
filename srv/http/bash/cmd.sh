@@ -807,24 +807,25 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			conf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
+			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
-			conf=/etc/hostapd/hostapd.conf;;
+			fileconf=/etc/hostapd/hostapd.conf;;
 		localbrowser )
-			conf=/srv/http/data/system/localbrowser.conf
+			fileconf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
+		rtsp-simple-server )
+			catconf=$'\n'$( script -c "timeout 1 rtl_test -t" | grep -v ^Script );;
 		smb )
-			conf=/etc/samba/smb.conf
+			fileconf=/etc/samba/smb.conf
 			pkg=samba;;
 		snapclient|snapserver )
-			[[ $id == snapclient ]] && conf=/etc/default/snapclient
+			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
 			pkg=snapcast
 			service=$id;;
 		* )
-			conf=/etc/$id.conf;;
+			fileconf=/etc/$id.conf;;
 	esac
-	[[ -e $conf ]] && catconf="
-$( cat $conf )"
+	[[ -e $fileconf ]] && catconf=$'\n'$( cat $fileconf )
 	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
 	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
