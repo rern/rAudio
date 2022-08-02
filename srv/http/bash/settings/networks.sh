@@ -201,7 +201,6 @@ usbbluetoothon )
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
-	pushstreamNotify 'USB Bluetooth' Detected bluetooth
 	sleep 3
 	$dirbash/settings/features-data.sh pushrefresh
 	$dirbash/settings/networks-data.sh pushbt
