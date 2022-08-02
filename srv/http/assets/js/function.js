@@ -851,7 +851,9 @@ function mpcSeekBar( pageX ) {
 }
 function orderLibrary() {
 	G.display.order.forEach( function( name ) {
-		var $libmode = $( '.lib-mode.'+ name );
+		var $libmode = $( '.lib-mode' ).filter( function() {
+			return $( this ).find( '.lipath' ).text() === name;
+		} );
 		$libmode.detach();
 		$( '#lib-mode-list' ).append( $libmode );
 	} );
