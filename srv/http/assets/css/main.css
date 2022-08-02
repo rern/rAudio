@@ -1409,7 +1409,7 @@ i.map.disabled, .map.disabled i {
 .lialbum,
 #button-pl-back,
 #lib-breadcrumbs a:first-of-type {
-	color: var( --cm );
+	color: var( --cml );
 }
 #button-coverart {
 	position:relative;
