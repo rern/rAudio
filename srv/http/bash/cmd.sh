@@ -814,7 +814,9 @@ pkgstatus )
 			fileconf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
 		rtsp-simple-server )
-			catconf=$'\n'$( script -c "timeout 1 rtl_test -t" | grep -v ^Script );;
+			catconf="
+<bll># rtl_test -t</bll>
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		smb )
 			fileconf=/etc/samba/smb.conf
 			pkg=samba;;
