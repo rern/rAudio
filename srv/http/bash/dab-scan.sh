@@ -44,7 +44,7 @@ sed -i "$(( linepaths + 1 )),$ d" $fileyml
 echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
-count=$( ls -1 $dirdabradio | grep -v ^img$ | wc -l )
+count=$( ls -1p $dirdata/dabradio | grep -v /$ | wc -l )
 sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
 pushstream mpdupdate "$( cat $dirmpd/counts )"
 rm $dirshm/updatingdab
