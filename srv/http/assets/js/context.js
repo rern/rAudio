@@ -385,8 +385,8 @@ function webRadioDelete() {
 		, okcolor : red
 		, ok      : function() {
 			G.list.li.remove();
-			var lipath = G.mode === 'webradio' ? $( '#lib-path .lipath' ).text() : '';
-			bash( ['webradiodelete', url, lipath, G.mode ] );
+			var dir = $( '#lib-path .lipath' ).text();
+			bash( ['webradiodelete', dir, url, G.mode ] );
 		}
 	} );
 }
@@ -408,26 +408,6 @@ function webRadioEdit() {
 	var pathsplit = G.list.path.split( '//' );
 	var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	var charset = G.list.li.data( 'charset' );
-	if ( G.mode === 'dabradio' ) {
-		info( {
-			  icon         : 'dbbradio'
-			, title        : 'Edit DAB Radio'
-			, textlabel    : [ 'Name', 'URL' ]
-			, values       : [ name, url ]
-			, checkchanged : 1
-			, checkblank   : [ 0 ]
-			, boxwidth     : 'max'
-			, beforeshow   : function() {
-				$( '#infoContent input' ).eq( 1 ).addClass( 'disabled' );
-			}
-			, oklabel      : '<i class="fa fa-save"></i>Save'
-			, ok           : function() {
-				bash( [ 'dabradioedit', ...infoVal() ] );
-			}
-		} );
-		return
-	}
-		
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
@@ -444,12 +424,12 @@ function webRadioEdit() {
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
+			var dir = $( '#lib-path .lipath' ).text();
 			var values = infoVal();
 			var newname = values[ 0 ];
 			var newurl = values[ 1 ];
 			var newcharset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			var lipath = $( '#lib-path .lipath' ).text();
-			bash( [ 'webradioedit', newname, newurl, newcharset, lipath, url ], function( error ) {
+			bash( [ 'webradioedit', dir, newname, newurl, newcharset, url ], function( error ) {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -486,9 +466,8 @@ function webRadioNew( name, url, charset ) {
 					, focus      : 0
 					, checkblank : 1
 					, ok         : function() {
-						var path = $( '#lib-path .lipath' ).text().replace( 'WEBRADIO', '' );
-						path += path ? '/' : '';
-						bash( [ 'wrdirnew', path + infoVal() ] );
+						var dir = $( '#lib-path .lipath' ).text();
+						bash( [ 'wrdirnew', dir, infoVal() ] );
 					}
 				} );
 			} );
@@ -498,8 +477,8 @@ function webRadioNew( name, url, charset ) {
 			var name = values[ 0 ];
 			var url = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			var lipath = $( '#lib-path .lipath' ).text();
-			bash( [ 'webradioadd', name, url, charset, lipath ], function( error ) {
+			var dir = $( '#lib-path .lipath' ).text();
+			bash( [ 'webradioadd', dir, name, url, charset ], function( error ) {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );

@@ -262,9 +262,11 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
-	count=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{"type":"webradio", "count":'$count'}'
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	[[ $1 == dabradio ]] && type=dabradio || type=webradio
+	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
+	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
+	[[ $1 == dabradio ]] && count+=,
+	sed -i 's/\("'$type'": \).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
 	ext=$1
@@ -501,13 +503,6 @@ coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
-	;;
-dabradioedit )
-	name=${args[1]}
-	url=${args[2]}
-	urlname=${url//\//|}
-	sed -i "1 s|.*|$name|" $dirdata/dabradio/$urlname
-	pushstream radiolist '{"type":"dabradio"}'
 	;;
 dabscan )
 	touch $dirshm/updatingdab
@@ -1235,14 +1230,13 @@ volumeupdown )
 	pushstreamVolume updn $volume
 	;;
 webradioadd )
-	name=${args[1]}
-	url=$( urldecode ${args[2]} )
-	charset=${args[3]}
-	dir=${args[4]}
+	dir=${args[1]}
+	name=${args[2]}
+	url=$( urldecode ${args[3]} )
+	charset=${args[4]}
 	urlname=${url//\//|}
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-	
 	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	[[ -e "$file" ]] && echo -1 && exit
 	
@@ -1262,27 +1256,21 @@ webradiocoverreset )
 	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":"'$type'"}'
 	;;
 webradiodelete )
-	url=${args[1]}
-	subdir=${args[2]}
+	dir=${args[1]}
+	url=${args[2]}
 	type=${args[3]}
 	urlname=${url//\//|}
-	dir=$dirdata/$type
-	[[ $subdir ]] && dir+="/$subdir"
-	rm -f "$dir/$urlname"
-	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$dir/img/$urlname"{,-thumb}.*
-	if [[ $type == webradio ]]; then
-		webradioCount
-	else
-		count=$( ls -1p $dirdata/dabradio | grep -v /$ | wc -l )
-		pushstream radiolist '{"type":"dabradio", "count":'$count'}'
-		sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
-	fi
+	path=$dirdata/$type
+	[[ $dir ]] && path+="/$dir"
+	rm -f "$path/$urlname"
+	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	webradioCount $type
 	;;
 webradioedit )
-	name=${args[1]}
-	url=${args[2]}
-	charset=${args[3]}
-	dir=${args[4]}
+	dir=${args[1]}
+	name=${args[2]}
+	url=${args[3]}
+	charset=${args[4]}
 	urlprev=${args[5]}
 	urlname=${url//\//|}
 	[[ $url != $urlprev ]] && urlchanged=1
@@ -1318,8 +1306,9 @@ wrdirdelete )
 	fi
 	;;
 wrdirnew )
-	path=${args[1]}
-	mkdir -p "$dirwebradio/$path"
+	dir=${args[1]}
+	sub=${args[2]}
+	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
 	pushstream radiolist '{"type":"webradio"}'
 	;;
 wrdirrename )

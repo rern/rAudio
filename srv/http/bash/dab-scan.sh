@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-dabscan=$( dab-scanner-rtlsdr -C 5A )
+#dabscan=$( dab-scanner-rtlsdr -C 5A )
+dabscan=$( cat /root/dabscan )
 services=$( echo "$dabscan" | grep '^Ensemble\|^audioservice' )
 if ! grep -q ^audioservice <<< "$services"; then
 	pushstreamNotify 'DAB Radio' 'No id_channels found.' dabradio
@@ -11,14 +12,17 @@ if ! grep -q ^audioservice <<< "$services"; then
 fi
 
 dirdabradio=$dirdata/dabradio
+mv $dirdabradio/img $dirshm &> /dev/null
+rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
-rm -f $dirdabradio/* 2> /dev/null
+mv $dirshm/img $dirdabradio &> /dev/null
 
-pathurl="$dirdabradio/rtsp:||$( hostname -f )"
+host=$( hostname -f )
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		station=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
 	
@@ -28,9 +32,9 @@ for service in "${services[@]}"; do
 	id=$( echo ${field[3]} )
 	channel_id=${channel,,}_${id,,}
 	echo "\
-$station - $name
+$name
 48 kHz 160 kbit/s
-" > "$pathurl|$channel_id"
+" > "$dirdabradio/$ensemble/rtsp:||$host|$channel_id"
 	list+="\
   $channel_id:
     runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$RTSP_PATH
@@ -46,7 +50,7 @@ sed -i "$(( linepaths + 1 )),$ d" $fileyml
 echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
-count=$( ls -1p $dirdata/dabradio | grep -v /$ | wc -l )
-sed -i 's/\("dabradio": \).*/\1'$count',/' $dirmpd/counts
+dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' | wc -l )
+sed -i 's/\("dabradio": \).*/\1'$dabradio',/' $dirmpd/counts
 pushstream mpdupdate "$( cat $dirmpd/counts )"
 rm $dirshm/updatingdab
