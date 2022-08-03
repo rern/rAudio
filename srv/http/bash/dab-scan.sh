@@ -12,11 +12,11 @@ if [[ ! $services ]]; then
 	exit
 fi
 
-MYNAME=$( hostname -f )
 dirdabradio=$dirdata/dabradio
 mkdir -p $dirdabradio/img
 rm -f $dirdabradio/* 2> /dev/null
 
+pathurl="$dirdabradio/rtsp:||$( hostname -f )"
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	readarray -d ';' -t field <<< $service
@@ -28,7 +28,7 @@ for service in "${services[@]}"; do
 	echo "\
 $service_name
 48 kHz 160 kbit/s
-" > "$dirdabradio/rtsp:||$MYNAME|$legal_name"
+" > "$pathurl|$legal_name"
 	list+="\
   $legal_name:
     runOnDemand: /srv/http/bash/dab-start.sh $service_id $service_chan \$RTSP_PORT \$RTSP_PATH
