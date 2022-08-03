@@ -236,6 +236,7 @@ function psCoverart( data ) {
 			}
 			bookmarkCover( url, path );
 			break;
+		case 'dabradio':
 		case 'webradio':
 			G.status.stationcover = src;
 			if ( G.playback ) {

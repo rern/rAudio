@@ -70,7 +70,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
-		webradio )
+		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
 			[[ $animated ]] && gifNotify
@@ -102,7 +102,7 @@ jpgThumbnail() {
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
-		webradio )
+		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
 			cp -f $source $target
