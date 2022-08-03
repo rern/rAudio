@@ -21,13 +21,13 @@ host=$( hostname -f )
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
 	
 	readarray -d ';' -t field <<< $service
-	name=$( echo ${field[1]} | xargs )
+	name=$( echo ${field[1]} )
 	channel=$( echo ${field[2]} )
 	id=$( echo ${field[3]} )
 	channel_id=${channel,,}_${id,,}
