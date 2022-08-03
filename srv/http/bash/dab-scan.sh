@@ -3,9 +3,9 @@
 . /srv/http/bash/common.sh
 
 dabscan=$( dab-scanner-rtlsdr -C 5A )
-services=$( echo "$dabscan" | grep ^audioservice )
-if [[ ! $services ]]; then
-	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
+services=$( echo "$dabscan" | grep '^Ensemble\|^audioservice' )
+if ! grep -q ^audioservice <<< "$services"; then
+	pushstreamNotify 'DAB Radio' 'No id_channels found.' dabradio
 	rm $dirshm/updatingdab
 	exit
 fi
@@ -17,17 +17,22 @@ rm -f $dirdabradio/* 2> /dev/null
 pathurl="$dirdabradio/rtsp:||$( hostname -f )"
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
+	if [[ ${service:0:8} == Ensemble ]]; then
+		station=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		continue
+	fi
+	
 	readarray -d ';' -t field <<< $service
 	name=$( echo ${field[1]} | xargs )
 	channel=$( echo ${field[2]} )
 	id=$( echo ${field[3]} )
-	station=${id,,}_${channel,,}
+	channel_id=${channel,,}_${id,,}
 	echo "\
-$name
+$station - $name
 48 kHz 160 kbit/s
-" > "$pathurl|$station"
+" > "$pathurl|$channel_id"
 	list+="\
-  $station:
+  $channel_id:
     runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$RTSP_PATH
     runOnDemandRestart: yes
     runOnDemandStartTimeout: 15s
