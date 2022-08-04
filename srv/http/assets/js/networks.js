@@ -30,10 +30,10 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothcommand( 'pair', list );
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : infoWiFi();
+	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : wlanStatus();
+	G.hostapd ? infoAccesspoint() : wlanStatus();
 } );
 $( '#lanadd' ).click( function() {
 	info( {
@@ -96,6 +96,11 @@ $( '.connect' ).click( function() {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
+		return
+	}
+	
+	if ( G.hostapd ) {
+		infoAccesspoint();
 		return
 	}
 	
@@ -331,7 +336,7 @@ function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
 		, title   : 'Wi-Fi'
-		, message : 'Access Point must be disabled.'
+		, message : 'Access Point is currently active.'
 	} );
 }
 function infoBluetooth( mac ) {
