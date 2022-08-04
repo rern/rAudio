@@ -207,7 +207,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 						| grep "^card $i" \
 						| head -1 \
 						| cut -d' ' -f3 )
-		device=$( aplay -L | grep "^default.*$cardname" | head -1 )
+		device=$( aplay -L | grep -m1 "^default.*$cardname" )
 	fi
 ########
 	conf='[global]

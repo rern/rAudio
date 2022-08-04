@@ -142,8 +142,8 @@ if [[ $toolarge ]]; then
 fi
 
 if [[ -e /srv/http/shareddata/iplist ]]; then
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
-	iplist=$( cat /srv/http/shareddata/iplist | grep -v $ip )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	iplist=$( grep -v $ip /srv/http/shareddata/iplist )
 	for ip in $iplist; do
 		sshCommand $ip $dirbash/cmd.sh shareddatareload
 	done

@@ -224,7 +224,7 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if (( $pllength  == 0 )); then
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
@@ -384,7 +384,7 @@ else
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
 		cuefile=$( dirname "$file" )
-		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | cut -d'"' -f2 )
+		cuesrc=$( grep -m1 ^FILE "/mnt/MPD/$cuefile" | cut -d'"' -f2 )
 		ext=${cuesrc/*.}
 	fi
 	ext=${ext^^}

@@ -564,7 +564,7 @@ $description
 					  s|^Desc.*: (.*)|<p>\1</p>|' \
 			> $dirtmp/packages
 	fi
-	cat $filepackages | grep -B1 -A2 --no-group-separator "^${args[1],}"
+	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
@@ -677,7 +677,7 @@ servers )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 	sed -i "/$ip/ d" $mountpoint/iplist
 	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
@@ -740,7 +740,7 @@ shareddata )
 			rm -rf $dirdata/$dir
 			ln -s $mountpoint/$dir $dirdata
 		done
-		ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' >> $mountpoint/iplist
+		ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' >> $mountpoint/iplist
 		chown -h http:http $mountpoint/*/
 		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
 		pushRefresh

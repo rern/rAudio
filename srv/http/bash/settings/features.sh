@@ -43,9 +43,6 @@ spotifyReset() {
 
 case ${args[0]} in
 
-aplaydevices )
-	aplay -L | egrep -v '^\s|^null' | head -c -1
-	;;
 autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
@@ -263,7 +260,7 @@ multiraudioset )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multiraudio
 		echo "$data" > $dirsystem/multiraudio.conf
-		ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
 		for ip in $iplist; do
 			sshCommand $ip << EOF

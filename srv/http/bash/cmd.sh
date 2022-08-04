@@ -272,9 +272,9 @@ webradioPlaylistVerify() {
 	ext=$1
 	url=$2
 	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url 2> /dev/null | grep ^http | head -1 )
+		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url 2> /dev/null | grep ^File | head -1 | cut -d= -f2 )
+		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	if [[ $url ]]; then
 		urlname=${url//\//|}
