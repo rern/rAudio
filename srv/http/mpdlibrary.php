@@ -189,6 +189,8 @@ case 'track': // for tag editor
 case 'radio':
 	$dir = '/srv/http/data/'.$gmode.'/';
 	$dirimg = '/data/'.$gmode.'/img/';
+	$path = $string !== '' ? $string.'/' : '';
+	$dir.= $path;
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
@@ -199,8 +201,6 @@ case 'radio':
 			, $files );
 	} else {
 		$searchmode = 0;
-		$path = $string !== '' ? $string.'/' : '';
-		$dir.= $path;
 		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
 			, $lists );
 		foreach( $lists as $list ) {
@@ -210,14 +210,14 @@ case 'radio':
 				$files[] = $list;
 			}
 		}
-		if ( count( $subdirs ) ) {
-			foreach( $subdirs as $subdir ) {
-				$html.= '<li class="dir">'
-							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-							.'<a class="lipath">'.$path.$subdir.'</a>'
-							.'<span class="single">'.$subdir.'</span>'
-						.'</li>';
-			}
+	}
+	if ( count( $subdirs ) ) {
+		foreach( $subdirs as $subdir ) {
+			$html.= '<li class="dir">'
+						.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+						.'<a class="lipath">'.$path.$subdir.'</a>'
+						.'<span class="single">'.$subdir.'</span>'
+					.'</li>';
 		}
 	}
 	if ( count( $files ) ) {

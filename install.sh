@@ -3,14 +3,18 @@
 alias=r1
 
 # 20220805
-if [[ $( pacman -Q dab-scanner 2> /dev/null ) != 'dab-scanner 0.8-3' ]]; then
-	rm -f /etc/rtsp-simple-server.yml
+dirdata=/srv/http/data
+
+dab=$( pacman -Q dab-scanner 2> /dev/null )
+if [[ $dab && $dab != 'dab-scanner 0.8-3' ]]; then
+	rm -f /etc/rtsp-simple-server.yml $dirdata/webradiosimg/{dablogo*,rtsp*8554*}
+	rm -rf /srv/http/bash/dab $dirdata/webradios/DAB
 	pacman -Sy --noconfirm dab-scanner
 fi
 
-if [[ -e /srv/http/data/webradios ]]; then
-	mv /srv/http/data/webradio{s,}
-	mv /srv/http/data/{webradiosimg,webradio/img}
+if [[ -e $dirdata/webradios ]]; then
+	mv $dirdata/webradio{s,}
+	mv $dirdata/{webradiosimg,webradio/img}
 fi
 
 grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf
@@ -51,9 +55,7 @@ $info Shared data:
 "
 fi
 
-if [[ ! -e /srv/http/bash/data/dabradio ]]; then
-	rm -rf /srv/http/bash/dab
-	rm -f /srv/http/data/webradiosimg/{dablogo*,*8554*}
+if [[ ! -e $dirdata/dabradio ]]; then
 	echo -e "\
 $info DAB Radio:
     • Rescan for stations again.
