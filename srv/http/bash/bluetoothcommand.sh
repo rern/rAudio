@@ -82,7 +82,7 @@ if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. 
 	
 #-----
 	pushstreamNotifyBlink Bluetooth "$msg" bluetooth
-	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
+	if (( $( bluetoothctl info $mac | egrep 'Paired: yes|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
 		sleep 2

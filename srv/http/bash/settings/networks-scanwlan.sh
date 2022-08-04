@@ -20,7 +20,7 @@ fi
 # IE: WPA Version 1
 scan=$( iwlist $wlandev scan \
 			| sed 's/^\s*\|\s*$//g' \
-			| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
+			| egrep '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 			| sed -e 's/^Cell.*/},{/
 					  s/^ESSID:/,"ssid":/
 					  s/\\x00//g

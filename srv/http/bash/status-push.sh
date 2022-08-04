@@ -8,7 +8,7 @@ else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^, "counts"/,/}/ d' \
-		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
+		| egrep '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
 		| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then

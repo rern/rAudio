@@ -108,7 +108,7 @@ case 'ls':
 		$f = $formatall; // set format for directory with files only - track list
 		$format = '%'.implode( '%^^%', $f ).'%';
 		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-		exec( 'mpc ls "'.$string.'" | grep ".cue$\|.m3u$\|.m3u8$\|.pls$" | sort -u'
+		exec( 'mpc ls "'.$string.'" | egrep ".cue$|.m3u$|.m3u8$|.pls$" | sort -u'
 			, $plfiles );
 		if ( count( $plfiles ) ) {
 			asort( $plfiles );
@@ -134,7 +134,7 @@ case 'ls':
 	}
 	break;
 case 'search':
-	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
+	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | grep .'
 		, $lists );
 	$array = htmlTracks( $lists, $f, 'search', $string );
 	break;
@@ -496,7 +496,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".m3u$\|.m3u8$\|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | egrep ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
 			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';

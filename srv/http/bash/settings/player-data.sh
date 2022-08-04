@@ -5,7 +5,7 @@
 
 active=$( mpc &> /dev/null && echo true )
 if [[ -e $dirsystem/soxr.conf ]]; then
-	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
+	soxrconf="[ $( egrep -v 'quality|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi

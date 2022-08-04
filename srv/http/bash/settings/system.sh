@@ -17,7 +17,7 @@ pushRefresh() {
 }
 I2Cset() {
 	# parse finalized settings
-	grep -q 'waveshare\|tft35a' $fileconfig && lcd=1
+	egrep -q 'waveshare|tft35a' $fileconfig && lcd=1
 	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -251,7 +251,7 @@ datarestore )
 			list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
 			if grep -q '^\s*"Range": ' "$plfile"; then
 				readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
-												| grep '"file":\|"Track":' \
+												| egrep '"file":|"Track":' \
 												| sed 's/^\s*"file": "\|^\s*"Track": //; s/",$\|,$//; s/\\//g' )
 				iL=${#file_track[@]}
 				for (( i=0; i < iL; i++ )); do
@@ -310,7 +310,7 @@ hostname )
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( egrep 'dtparam=i2c_arm=on|dtparam=krnbt=on|dtparam=spi=on|dtoverlay=gpio|dtoverlay=sdtweak,poll_once|waveshare|tft35a|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -440,7 +440,7 @@ mirrorlist )
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
-	readarray -t lines <<< $( awk NF $file \
+	readarray -t lines <<< $( grep . $file \
 								| sed -n '/### A/,$ p' \
 								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
 	clist='"Auto (by Geo-IP)"'
@@ -541,7 +541,7 @@ packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
 		pushstreamNotify Backend 'Package list ...' system
-		pacmanqi=$( pacman -Qi | grep '^Name\|^Vers\|^Desc\|^URL' )
+		pacmanqi=$( pacman -Qi | egrep '^Name|^Vers|^Desc|^URL' )
 		while read line; do
 			case ${line:0:3} in
 			Nam ) name=$line;;
@@ -762,11 +762,11 @@ soundprofiledisable )
 soundprofileget )
 	echo "\
 <bll># sysctl vm.swappiness
-# ifconfig eth0 | grep 'mtu\\|txq'</bll>
+# ifconfig eth0 | egrep 'mtu|txq'</bll>
 
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
-	| grep 'mtu\|txq' \
+	| egrep 'mtu|txq' \
 	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )

@@ -6,7 +6,7 @@
 if systemctl -q is-active bluetooth; then
 	readarray -t lines <<< $( bluetoothctl paired-devices \
 								| cut -d' ' -f2,3- \
-								| awk NF \
+								| grep . \
 								| sort -k2 -fh )
 	if [[ $lines ]]; then
 		for line in "${lines[@]}"; do

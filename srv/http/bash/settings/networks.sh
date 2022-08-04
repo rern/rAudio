@@ -47,7 +47,7 @@ bluetoothinfo )
 	info=$( bluetoothctl info $mac )
 	echo "$info" | grep -q 'not available' && exit
 	
-	if (( $( echo "$info" | grep 'Connected: yes\|UUID: Audio' | wc -l ) == 2 )); then
+	if (( $( echo "$info" | egrep 'Connected: yes|UUID: Audio' | wc -l ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
@@ -148,14 +148,14 @@ editwifidhcp )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
+$( ifconfig eth0 | egrep -v 'RX|TX' | grep . )"
 	;;
 ifconfigwlan )
 	wlandev=$( cat $dirshm/wlan )
 	echo "\
 <bll># ifconfig $wlandev; iwconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -v 'RX\|TX')
-$( iwconfig $wlandev | awk NF )"
+$( ifconfig $wlandev | egrep -v 'RX|TX')
+$( iwconfig $wlandev | grep . )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0

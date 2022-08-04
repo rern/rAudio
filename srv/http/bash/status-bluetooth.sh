@@ -11,7 +11,7 @@ data=$( dbus-send \
 			--dest=org.bluez $dest \
 			org.freedesktop.DBus.Properties.GetAll \
 			string:org.bluez.MediaPlayer1 \
-			| grep -A1 'string.*Status\|string.*Title\|string.*Album\|string.*Artist\|string.*Duration\|string.*Position' \
+			| egrep -A1 'string.*Status|string.*Title|string.*Album|string.*Artist|string.*Duration|string.*Position' \
 			| sed 's/^\s*string "\|^\s*variant\s*string "\|^\s*variant\s*uint32 //; s/"$//' \
 			| tr '\n' ^ \
 			| sed 's/\^--\^/\n/g; s/\^$//' )

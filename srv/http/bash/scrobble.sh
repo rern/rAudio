@@ -15,7 +15,7 @@ Artist=${args[0]}
 Title=${args[1]}
 Album=${args[2]}
 
-keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+keys=( $( egrep 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}
 sharedsecret=${keys[1]}
 sk=$( cat $dirsystem/scrobble.conf/key )

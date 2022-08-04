@@ -4,7 +4,7 @@
 
 #dabscan=$( dab-scanner-rtlsdr -C 5A )
 dabscan=$( cat /root/dabscan )
-services=$( echo "$dabscan" | grep '^Ensemble\|^audioservice' )
+services=$( echo "$dabscan" | egrep '^Ensemble|^audioservice' )
 if ! grep -q ^audioservice <<< "$services"; then
 	pushstreamNotify 'DAB Radio' 'No id_channels found.' dabradio
 	rm $dirshm/updatingdab

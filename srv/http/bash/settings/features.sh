@@ -44,7 +44,7 @@ spotifyReset() {
 case ${args[0]} in
 
 aplaydevices )
-	aplay -L | grep -v '^\s\|^null' | head -c -1
+	aplay -L | egrep -v '^\s|^null' | head -c -1
 	;;
 autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
@@ -77,7 +77,7 @@ camilladspasound )
 	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
-	old=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	old=( $( egrep 'channels|format|rate' /etc/asound.conf | awk '{print $NF}' ) )
 	[[ "${new[@]}" == "${old[@]}" ]] && exit
 	
 	list=( channels format rate )
@@ -196,7 +196,7 @@ cursor=$newcursor
 
 	if [[ $changedrotate ]]; then
 		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
-		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
+		if egrep -q 'waveshare|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
 				CCW )    degree=270;;
@@ -306,7 +306,7 @@ scrobbleset )
 		exit
 	fi
 	
-	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	keys=( $( egrep 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \

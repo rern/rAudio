@@ -19,7 +19,7 @@ data+='
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "latest"           : '$( exists $dirsystem/latest )'
-, "lcd"              : '$( grep -q 'waveshare\|tft35a' /boot/config.txt 2> /dev/null && echo true )'
+, "lcd"              : '$( egrep -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
@@ -58,7 +58,7 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( cat $brightnessfile )
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		conf=$( awk NF $dirsystem/localbrowser.conf \
+		conf=$( grep . $dirsystem/localbrowser.conf \
 				| sed 's/^/,"/; s/=/":/' \
 				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
 		conf+=', "brightness" : '$brightness
