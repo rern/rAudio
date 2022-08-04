@@ -21,18 +21,17 @@ dab-rtlsdr-3 \
 DABPID=$!
 
 ffmpeg \
-	-re \
-	-stream_loop \
-	-1 \
-	-ar 48000 \
 	-ac 2 \
-	-f s16le \
-	-i $MYPIPE \
-	-vn \
-	-c:a aac \
+	-ar 48000 \
 	-b:a 160k \
-	-metadata title="Dab radio" \
+	-c:a aac \
+	-f s16le \
 	-f rtsp rtsp://localhost:$3/$4 \
+	-i $MYPIPE \
+	-metadata title="DAB Radio" \
+	-readrate 1 \
+	-stream_loop -1 \
+	-vn \
 	&> /dev/null &
 FFMPID=$!
 
