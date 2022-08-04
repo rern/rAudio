@@ -1005,7 +1005,7 @@ plsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	echo "$list" | awk 'NF' | mpc -q add
+	echo "$list" | awk NF | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
