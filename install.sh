@@ -3,16 +3,9 @@
 alias=r1
 
 # 20220805
-[[ $( pacman -Q dab-scanner 2> /dev/null ) == 'dab-scanner 0.8-1' ]] && pacman -Sy --noconfirm dab-scanner
-if [[ -e /srv/http/bash/dab ]]; then
-	rm -rf /srv/http/bash/dab
-	rm -f /srv/http/data/webradiosimg/{dablogo*,rtsp*8554*}
-	stations=$( sed '1,/^paths:/ d' /etc/rtsp-simple-server/rtsp-simple-server.yml )
-	[[ $stations ]] && echo "$stations" | sed 's|dab/dabstart|dab-start|' >> /etc/rtsp-simple-server.yml
-	mv /srv/http/data/{webradios/DAB,dabradio}
-	count=$( ls -1 /srv/http/data/dabradio | wc -l )
-	sed -i '/"webradio":/ i\  "dabradio": '$count',' /srv/http/data/mpd/counts
-	mkdir /srv/http/data/dabradio/img
+if [[ $( pacman -Q dab-scanner 2> /dev/null ) != 'dab-scanner 0.8-3' ]]; then
+	rm -f /etc/rtsp-simple-server.yml
+	pacman -Sy --noconfirm dab-scanner
 fi
 
 if [[ -e /srv/http/data/webradios ]]; then
@@ -47,9 +40,8 @@ installfinish
 udevadm control --reload-rules
 udevadm trigger
 
-! grep -q /srv/http/shareddata /etc/fstab && exit
-
-echo -e "\
+if ! grep -q /srv/http/shareddata /etc/fstab; then
+	echo -e "\
 $info Shared data:
     • Disable
     • On server
@@ -57,3 +49,13 @@ $info Shared data:
       - Move:   $( tcolor webradiosimg 1 ) > $( tcolor webradio/img 2 )
     • Re-enable again.
 "
+fi
+
+if [[ ! -e /srv/http/bash/data/dabradio ]]; then
+	rm -rf /srv/http/bash/dab
+	rm -f /srv/http/data/webradiosimg/{dablogo*,*8554*}
+	echo -e "\
+$info DAB Radio:
+    • Rescan for stations again.
+"
+fi

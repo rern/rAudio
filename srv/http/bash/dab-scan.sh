@@ -5,7 +5,7 @@
 dabscan=$( dab-scanner-rtlsdr -C 5A )
 services=$( egrep '^Ensemble|^audioservice' <<< "$dabscan" )
 if ! grep -q ^audioservice <<< "$services"; then
-	pushstreamNotify 'DAB Radio' 'No id_channels found.' dabradio
+	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
 	rm $dirshm/updatingdab
 	exit
 fi
@@ -20,13 +20,13 @@ host=$( hostname -f )
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( cut -d' ' -f2- <<< ${service/;*} )
+		ensemble=$( cut -d' ' -f2- <<< ${service/;*} | xargs )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
 	
 	readarray -d ';' -t field <<< $service
-	name=${field[1]}
+	name=$( echo ${field[1]} | xargs )
 	channel=${field[2]}
 	id=${field[3]}
 	channel_id=${channel,,}_${id,,}
@@ -43,9 +43,8 @@ $name
 "
 done
 
-fileyml=/etc/rtsp-simple-server.yml
-linepaths=$( sed -n '/^paths:/ =' $fileyml )
-sed -i "$(( linepaths + 1 )),$ d" $fileyml
+fileyml=/etc/rtsp-simple-server/rtsp-simple-server.yml
+sed -i '1,/^paths:/ !d' $fileyml
 echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
