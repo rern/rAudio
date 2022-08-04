@@ -3,7 +3,7 @@
 randomfileAdd() {
 	dir=$( cat /srv/http/data/mpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
-	file=$( grep '\.cue$' <<< "$mpcls" )
+	file=$( grep -m1 '\.cue$' <<< "$mpcls" )
 	if [[ $file ]]; then
 		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$file" | wc -l ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
