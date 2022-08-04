@@ -95,7 +95,8 @@ fi
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
-[[ ! -e $dirmpd/counts ]] && $dirbash/cmd-list.sh
+
+[[ ! -e $dirmpd/counts ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
 
 # after all sources connected ######################################
 
