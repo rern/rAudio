@@ -124,7 +124,7 @@ if [[ -e $dirsystem/hddspindown ]]; then
 		duration=$( cat $dirsystem/hddspindown )
 		readarray -t usb <<< "$usb"
 		for dev in "${usb[@]}"; do
-			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
+			hdparm -B $dev | grep -q 'APM.*not supported' && continue
 			
 			hdparm -q -B 127 $dev
 			hdparm -q -S $duration $dev

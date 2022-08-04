@@ -39,7 +39,7 @@ pushstreamList() {
 #-------------------------------------------------------------------------------------------
 if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from paired device
 	sleep 2
-	readarray -t lines <<< $( cat $dirshm/btconnected )
+	readarray -t lines < $dirshm/btconnected
 	for line in "${lines[@]}"; do
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
@@ -64,7 +64,7 @@ if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. 
 		fi
 	done
 	 # unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on 
-	if grep -q $mac <<< $( bluetoothctl paired-devices ); then
+	if bluetoothctl paired-devices | grep -q $mac; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
 			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			bluetoothctl disconnect $mac
