@@ -30,8 +30,8 @@ I2Cset() {
 	fi
 
 	# reset
-	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=i2c_arm_baudrate/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev\|^\s*$/ d' $filemodule
+	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
+	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
 	[[ -s $filemodule ]] || rm -f $filemodule
 
 	# dtparam=i2c_arm=on
@@ -252,7 +252,7 @@ datarestore )
 			if grep -q '^\s*"Range": ' "$plfile"; then
 				readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
 												| egrep '"file":|"Track":' \
-												| sed 's/^\s*"file": "\|^\s*"Track": //; s/",$\|,$//; s/\\//g' )
+												| sed -E 's/^\s*"file": "|^\s*"Track": //; s/",$|,$//; s/\\//g' )
 				iL=${#file_track[@]}
 				for (( i=0; i < iL; i++ )); do
 					track=000${file_track[$(( i + 1 ))]}
@@ -329,7 +329,7 @@ dtparam=audio=on"
 		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
+	sed -i -E '/dtparam=|dtoverlay=|gpio=25=op,dh|^$/ d' $fileconfig
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
@@ -402,7 +402,7 @@ backlight=${args[13]^}"
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
+	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
 	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
@@ -416,7 +416,7 @@ lcdset )
 		rm $dirsystem/lcdmodel
 	fi
 	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
+	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
 	echo "\
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
@@ -573,7 +573,7 @@ powerbuttondisable )
 		systemctl disable --now powerbutton
 		gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 	fi
-	sed -i '/gpio-poweroff\|gpio-shutdown/ d' $fileconfig
+	sed -i -E '/gpio-poweroff|gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )

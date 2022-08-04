@@ -653,7 +653,7 @@ lyrics )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
-		artist=$( echo $artist | sed 's/^A \|^The \|\///g' )
+		artist=$( echo $artist | sed -E 's/^A |^The |\///g' )
 		title=${title//\/}
 		query=$( echo $artist/$title \
 					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )

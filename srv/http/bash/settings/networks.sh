@@ -138,7 +138,7 @@ Gateway=$gw
 editwifidhcp )
 	ssid=${args[1]}
 	netctl stop "$ssid"
-	sed -i -e '/^Address\|^Gateway/ d
+	sed -i -e -E '/^Address|^Gateway/ d
 ' -e 's/^IP.*/IP=dhcp/
 ' "$file"
 	cp "$file" "/etc/netctl/$ssid"

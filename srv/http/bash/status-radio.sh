@@ -41,7 +41,7 @@ case $id in
 esac
 
 dabData() {
-	artist_title=$( sed 's/ - \|: /\n/' $dirshm/webradio/DABlabel.txt )
+	artist_title=$( sed -E 's/ - |: /\n/' $dirshm/webradio/DABlabel.txt )
 	if [[ $artist_title == $( head -2 $dirshm/status ) ]]; then
 		sleep 10
 		metadataGet

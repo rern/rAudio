@@ -331,7 +331,7 @@ $radiosampling" > $dirshm/radio
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
+				readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart

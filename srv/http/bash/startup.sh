@@ -42,7 +42,7 @@ echo $wlandev > /dev/shm/wlan
 if [[ -e /boot/wifi ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i -E "s/^(Interface=).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
-	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
+	sed -i -e -E '/^#|^$/ d' -e 's/\r//' /boot/wifi
 	mv -f /boot/wifi "/etc/netctl/$ssid"
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"

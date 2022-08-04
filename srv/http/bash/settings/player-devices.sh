@@ -5,7 +5,7 @@
 # - mixer device
 #    - from file if manually set
 #    - from 'amixer'
-#        - if more than 1, filter with 'Digital\|Master' | get 1st one
+#        - if more than 1, filter with 'Digital|Master' | get 1st one
 # - mixer_type
 #    - from file if manually set
 #    - set as hardware if mixer device available

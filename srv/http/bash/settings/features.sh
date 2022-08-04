@@ -141,12 +141,12 @@ hostapdset )
 " -e -E "s/^(.*option:router,).*/\1$router/
 " -e -E "s/^(.*option:dns-server,).*/\1$router/
 " /etc/dnsmasq.conf
-		sed -i -e '/^#*wpa\|^#*rsn/ s/^#*//
+		sed -i -E '/^#*wpa|^#*rsn/ s/^#*//
 ' -e -E "s/(wpa_passphrase=).*/\1$password/
 " /etc/hostapd/hostapd.conf
 	else
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
+		sed -i -E '/^wpa|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
 	netctl stop-all
 	wlandev=$( cat $dirshm/wlan )

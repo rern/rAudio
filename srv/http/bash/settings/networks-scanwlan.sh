@@ -19,7 +19,7 @@ fi
 # IE: IEEE 802.11i/WPA2 Version 1
 # IE: WPA Version 1
 scan=$( iwlist $wlandev scan \
-			| sed 's/^\s*\|\s*$//g' \
+			| sed -E 's/^\s*|\s*$//g' \
 			| egrep '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 			| sed -E 's/^Cell.*/},{/
 					  s/^ESSID:/,"ssid":/
