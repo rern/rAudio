@@ -1,7 +1,6 @@
 #!/bin/bash
 
 killsubs() {
-	echo killing $DABPID and $FFMPID
 	kill $DABPID
 	kill $FFMPID
 	rm $MYPIPE
