@@ -177,7 +177,7 @@ mpdStatus currentsong
 #   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
 ! grep -q '^file: .\+' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
 # 'state:' - missing on webradio track change
-grep -q '^state' <<< "$mpdtelnet" || mpdStatus currentsong
+! grep -q '^state' <<< "$mpdtelnet" && mpdStatus currentsong
 
 readarray -t lines <<< "$mpdtelnet"
 for line in "${lines[@]}"; do
