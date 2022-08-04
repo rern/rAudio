@@ -20,7 +20,7 @@ host=$( hostname -f )
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( cut -d' ' -f2- <<< ${service/;*} | xargs )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
