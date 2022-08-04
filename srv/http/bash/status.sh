@@ -140,8 +140,8 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshCommand $serverip $dirbash/status.sh snapclient \
-	| sed -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
-		' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|
+	| sed -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+		' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
 		;;
 	spotify )

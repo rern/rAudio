@@ -300,9 +300,9 @@ hddspindown )
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
-	sed -i "s/^\(ssid=\).*/\1${args[1]}/" /etc/hostapd/hostapd.conf
-	sed -i '/^\tname =/ s/".*"/"'$hostname'"/' /etc/shairport-sync.conf
-	sed -i "s/^\(friendlyname = \).*/\1${args[1]}/" /etc/upmpdcli.conf
+	sed -i -E "s/^(ssid=).*/\1$hostname/" /etc/hostapd/hostapd.conf
+	sed -i -E 's/(name = ").*/\1'$hostname'"/' /etc/shairport-sync.conf
+	sed -i -E "s/^(friendlyname = ).*/\1$hostname/" /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
@@ -353,7 +353,7 @@ lcdcalibrate )
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then
-		sed -i "s/\(Calibration\"  \"\).*/\1$value\"/" /etc/X11/xorg.conf.d/99-calibration.conf
+		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser
 	fi
 	;;
@@ -558,10 +558,10 @@ $description
 			esac
 		done <<< "$pacmanqi"
 		echo "$lines" \
-			| sed  's|^URL.*: \(.*\)|<a href="\1" target="_blank">|
-					s|^Name.*: \(.*\)|\1</a> |
-					s|^Vers.*: \(.*\)|\1|
-					s|^Desc.*: \(.*\)|<p>\1</p>|' \
+			| sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
+					  s|^Name.*: (.*)|\1</a> |
+					  s|^Vers.*: (.*)|\1|
+					  s|^Desc.*: (.*)|<p>\1</p>|' \
 			> $dirtmp/packages
 	fi
 	cat $filepackages | grep -B1 -A2 --no-group-separator "^${args[1],}"
@@ -653,7 +653,7 @@ servers )
 	file=/etc/systemd/timesyncd.conf
 	prevntp=$( grep ^NTP $file | cut -d= -f2 )
 	if [[ $ntp != $prevntp ]]; then
-		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
+		sed -i -E "s/^(NTP=).*/\1$ntp/" $file
 		ntpdate $ntp
 	fi
 	if [[ $mirror ]]; then
@@ -767,7 +767,7 @@ soundprofileget )
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
 	| egrep 'mtu|txq' \
-	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
+	| sed -E 's/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
 	if [[ ${args[@]:1:4} == '60 1500 1000' ]]; then
@@ -787,7 +787,7 @@ statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
 		echo '<hr>'
-		bluetoothctl show | sed 's/^\(Controller.*\)/bluetooth: \1/'
+		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
 	;;
 systemconfig )

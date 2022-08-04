@@ -11,7 +11,7 @@ pushRefresh() {
 volumeBtGet() {
 	voldb=$( amixer -MD bluealsa 2> /dev/null \
 		| grep -m1 '%.*dB' \
-		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+		| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 }
 restartMPD() {
 	$dirbash/settings/player-conf.sh

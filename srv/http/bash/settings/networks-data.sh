@@ -16,7 +16,7 @@ if systemctl -q is-active bluetooth; then
 			info=$( bluetoothctl info $mac )
 			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+			type=$( echo "$info" | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
 			[[ ! $type ]] && type=Device
 			listbt+=',{
   "name"      : "'$name'"

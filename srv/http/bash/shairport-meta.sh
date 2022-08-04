@@ -13,7 +13,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	
 	##### code - hex matched
-	hex=$( echo $line | sed 's|.*code>\(.*\)</code.*|\1|' )
+	hex=$( echo $line | sed -E 's|.*code>(.*)</code.*|\1|' )
 	if [[ $hex ]]; then # found code > [next line]
 		case $hex in
 			61736172 ) code=Artist   && continue;;

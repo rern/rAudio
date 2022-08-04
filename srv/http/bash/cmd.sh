@@ -212,14 +212,14 @@ volumeGet() {
 			control=$( cat $dirshm/amixercontrol )
 			voldb=$( amixer -c $card -M sget "$control" \
 				| grep -m1 '%.*dB' \
-				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
 				volume=$( amixer -c $card -M sget "$control" \
 							| grep -m1 '%]' \
-							| sed 's/.*\[\(.*\)%].*/\1/' )
+							| sed -E 's/.*\[(.*)%].*/\1/' )
 				[[ ! $volume ]] && volume=100
 			fi
 		fi
@@ -266,7 +266,7 @@ webradioCount() {
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
 	[[ $1 == dabradio ]] && count+=,
-	sed -i 's/\("'$type'": \).*/\1'$count'/' $dirmpd/counts
+	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
 	ext=$1
@@ -393,27 +393,27 @@ color )
 	hsg="$h,3%,"
 	hsl="${hs}$l%"
 
-	sed -i "
- s|\(--cml *: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
-  s|\(--cm *: *hsl\).*;|\1($hsl);|
- s|\(--cma *: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
- s|\(--cmd *: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
-s|\(--cg75 *: *hsl\).*;|\1(${hsg}75%);|
-s|\(--cg60 *: *hsl\).*;|\1(${hsg}60%);|
- s|\(--cgl *: *hsl\).*;|\1(${hsg}40%);|
-  s|\(--cg *: *hsl\).*;|\1(${hsg}30%);|
- s|\(--cga *: *hsl\).*;|\1(${hsg}20%);|
- s|\(--cgd *: *hsl\).*;|\1(${hsg}10%);|
+	sed -i -E "
+ s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
+  s|(--cm *: *hsl).*;|\1($hsl);|
+ s|(--cma *: *hsl).*;|\1(${hs}$(( l - 5 ))%);|
+ s|(--cmd *: *hsl).*;|\1(${hs}$(( l - 15 ))%);|
+s|(--cg75 *: *hsl).*;|\1(${hsg}75%);|
+s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
+ s|(--cgl *: *hsl).*;|\1(${hsg}40%);|
+  s|(--cg *: *hsl).*;|\1(${hsg}30%);|
+ s|(--cga *: *hsl).*;|\1(${hsg}20%);|
+ s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
-	sed -i "
- s|\(.box{fill:hsl\).*|\1($hsl);|
-s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
+	sed -i -E "
+ s|(.box{fill:hsl).*|\1($hsl);|
+s|(.text{fill:hsl).*|\1(${hsg}30%);}|
 " $dirimg/coverart.svg
-	sed -i "
-s|\(.box{fill:hsl\).*|\1($hsl);}|
-s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
+	sed -i -E "
+s|(.box{fill:hsl).*|\1($hsl);}|
+s|(path{fill:hsl).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
-	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+	sed -E "s|(path{fill:hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
@@ -611,7 +611,7 @@ ignoredir )
 	;;
 latestclear )
 	> /srv/http/data/mpd/latest
-	sed -i 's/\("latest": \).*/\10,/' /srv/http/data/mpd/counts
+	sed -i -E 's/("latest": ).*/\10,/' /srv/http/data/mpd/counts
 	pushstreamNotify Latest Cleared. latest
 	;;
 librandom )
@@ -800,17 +800,23 @@ pkgstatus )
 	id=${args[1]}
 	pkg=$id
 	service=$id
+	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
 	case $id in
 		camilladsp )
 			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
-			fileconf=/etc/hostapd/hostapd.conf;;
+			catconf="
+$dot <code>/etc/hostapd/hostapd.conf</code>
+$( cat /etc/hostapd/hostapd.conf )
+
+$dot <code>/etc/dnsmasq.conf</code>
+$( cat /etc/dnsmasq.conf )";;
 		localbrowser )
 			fileconf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
 		rtsp-simple-server )
 			catconf="
-<bll># rtl_test -t</bll>
+$dot <code># rtl_test -t</code>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		smb )
 			fileconf=/etc/samba/smb.conf
@@ -823,14 +829,13 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 			fileconf=/etc/$id.conf;;
 	esac
 	[[ -e $fileconf ]] && catconf=$'\n'$( cat $fileconf )
-	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
 	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
-<code>$version</code>$catconf
+$dot <code>$version</code>$catconf
 
 $dot $( systemctl status $service \
-	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
-	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
+	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
+	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
 	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
 	;;
 pladd )
@@ -1065,7 +1070,7 @@ savedpldelete )
 	name=${args[1]}
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;
@@ -1124,7 +1129,7 @@ savedplsave )
 	mpc -q save "$name"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;

@@ -118,12 +118,12 @@ fi
 if [[ -e $dirsystem/lcdchar.conf ]]; then
 	vals=$( cat $dirsystem/lcdchar.conf \
 				| grep -v '\[var]' \
-				| sed -e '/charmap\|inf\|chip/ s/.*=\(.*\)/"\1"/; s/.*=//' \
-					  -e 's/[][]//g; s/,/ /g; s/\(True\|False\)/\l\1/' )
+				| sed -e -E '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//' \
+					  -e -E 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/' )
 	if grep -q i2c <<< "$vals"; then
-		vals=$( echo $vals | sed 's/\(true\|false\)$/15 18 16 21 22 23 24 \1/' )
+		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' )
 	else
-		vals=$( echo $vals | sed 's/\("gpio"\)/\1 39 "PCF8574"/' )
+		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' )
 	fi
 	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
 else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight

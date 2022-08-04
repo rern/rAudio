@@ -50,7 +50,7 @@ cards=$( echo "$aplay" \
 			| sed 's/card //' )
 for card in $cards; do
 	line=$( echo "$aplay" | sed -n "/^card $card/ p" )
-	hw=$( echo $line | sed 's/card \(.*\):.*device \(.*\):.*/hw:\1,\2/' )
+	hw=$( echo $line | sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' )
 	card=${hw:3:1}
 	device=${hw: -1}
 	aplayname=$( echo $line \

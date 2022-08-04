@@ -21,16 +21,16 @@ fi
 scan=$( iwlist $wlandev scan \
 			| sed 's/^\s*\|\s*$//g' \
 			| egrep '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
-			| sed -e 's/^Cell.*/},{/
+			| sed -E 's/^Cell.*/},{/
 					  s/^ESSID:/,"ssid":/
 					  s/\\x00//g
-					  s/^Encryption key:\(.*\)/,"encrypt":"\1"/
+					  s/^Encryption key:(.*)/,"encrypt":"\1"/
 					  s/^IE.*WPA.*/,"wpa":true/
-					  s/^Quality.*level.\(.*\)/,"signal":"\1"/' \
+					  s/^Quality.*level.(.*)/,"signal":"\1"/' \
 			| sed '/},{/ {n;s/^,/ /}' )
 # save profile
 readarray -t ssids <<< $( grep '"ssid":' <<< "$scan" \
-			| sed 's/^.*:"\(.*\)"/\1/' \
+			| sed -E 's/^.*:"(.*)"/\1/' \
 			| grep . )
 for ssid in "${ssids[@]}"; do
 	[[ -e "/etc/netctl/$ssid" ]] && scan=$( sed '/"ssid":"'$ssid'"/ a\,"profile":true' <<< "$scan" )

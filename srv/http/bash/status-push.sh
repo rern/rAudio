@@ -44,7 +44,7 @@ if [[ -e $dirsystem/mpdoled ]]; then
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
+	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 fi
@@ -72,8 +72,8 @@ if [[ -e $dirshm/clientip ]]; then
 				| sed -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/
 					' -e '/^, "icon" *:/ d
-					' -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
-					' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
+					' -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+					' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
 	clientip=$( cat $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

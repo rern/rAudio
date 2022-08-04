@@ -113,7 +113,7 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
-	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
 	if [[ ! $type ]]; then
 ##### non-audio
 		echo $mac Device $name >> $dirshm/btconnected

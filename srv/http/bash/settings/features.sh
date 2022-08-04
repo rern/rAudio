@@ -82,14 +82,14 @@ camilladspasound )
 	
 	list=( channels format rate )
 	for (( i=0; i < 3; i++ )); do
-		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
+		[[ ${new[i]} != ${old[i]} ]] && sed -i -E 's/^(\s*'${list[i]}'\s*).*/\1'${new[i]}'/' /etc/asound.conf
 	done
 	alsactl nrestore &> /dev/null
 	;;
 camillaguiset )
 	refresh=${args[1]}
 	applyauto=${args[2]}
-	sed -i "s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
 	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
@@ -137,12 +137,12 @@ hostapdset )
 		iprange=${args[1]}
 		router=${args[2]}
 		password=${args[3]}
-		sed -i -e "s/^\(dhcp-range=\).*/\1$iprange/
-" -e "s/^\(.*option:router,\).*/\1$router/
-" -e "s/^\(.*option:dns-server,\).*/\1$router/
+		sed -i -e -E "s/^(dhcp-range=).*/\1$iprange/
+" -e -E "s/^(.*option:router,).*/\1$router/
+" -e -E "s/^(.*option:dns-server,).*/\1$router/
 " /etc/dnsmasq.conf
 		sed -i -e '/^#*wpa\|^#*rsn/ s/^#*//
-' -e "s/\(wpa_passphrase=\).*/\1$password/
+' -e -E "s/(wpa_passphrase=).*/\1$password/
 " /etc/hostapd/hostapd.conf
 	else
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
@@ -162,7 +162,7 @@ localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
-	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	pushRefresh
@@ -190,7 +190,7 @@ onwhileplay=$newonwhileplay
 cursor=$newcursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
-		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+		sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 		systemctl disable --now getty@tty1
 	fi
 
@@ -203,7 +203,7 @@ cursor=$newcursor
 				CW )     degree=90;;
 				UD )     degree=180;;
 			esac
-			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
+			sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			pushRefresh
 			echo Rotate GPIO LCD screen >> $dirshm/reboot
@@ -444,7 +444,7 @@ upmpdclidisable )
 	;;
 upmpdcliset )
 	[[ ${args[1]} == true ]] && val=1 || val=0
-	sed -i "s/\(ownqueue = \)./\1$val/" /etc/upmpdcli.conf
+	sed -i -E "s/(ownqueue = )./\1$val/" /etc/upmpdcli.conf
 	featureSet upmpdcli
 	;;
 	

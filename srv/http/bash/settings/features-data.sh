@@ -60,7 +60,7 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		conf=$( grep . $dirsystem/localbrowser.conf \
 				| sed 's/^/,"/; s/=/":/' \
-				| sed 's/\(.*rotate.*:\)\(.*\)/\1"\2"/' )
+				| sed -E 's/(.*rotate.*:)(.*)/\1"\2"/' )
 		conf+=', "brightness" : '$brightness
 		localbrowserconf="{${conf:1}}"
 	else
