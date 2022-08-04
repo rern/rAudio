@@ -259,7 +259,7 @@ multiraudiodisable )
 	pushSubmenu multiraudio false
 	;;
 multiraudioset )
-	data=$( printf "%s\n" "${args[@]:1}" | grep . )
+	data=$( printf "%s\n" "${args[@]:1}" | awk NF )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multiraudio
 		echo "$data" > $dirsystem/multiraudio.conf

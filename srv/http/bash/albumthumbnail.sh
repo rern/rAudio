@@ -68,7 +68,7 @@ for mpdpath in "${lines[@]}"; do
 	done
 	if [[ ! $coverfile ]]; then # embedded
 		files=$( mpc ls "$mpdpath" 2> /dev/null )
-		readarray -t files <<<"$files"
+		readarray -t files <<< "$files"
 		for file in "${files[@]}"; do
 			file="/mnt/MPD/$file"
 			if [[ -f "$file" ]]; then

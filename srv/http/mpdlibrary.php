@@ -134,7 +134,7 @@ case 'ls':
 	}
 	break;
 case 'search':
-	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | grep .'
+	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
 		, $lists );
 	$array = htmlTracks( $lists, $f, 'search', $string );
 	break;
@@ -152,7 +152,7 @@ case 'track': // for tag editor
 		if (  $track === 'cover' && $array[ 1 ] ) $array [ 2 ] = '*'; // if album artist > various artists
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = exec( 'mpc ls "'.$file.'" | grep .wav$ | head -1' ); // MPD not read albumartist in *.wav
+			$wav = exec( 'mpc ls "'.$file.'" | grep "\.wav$" | head -1' ); // MPD not read albumartist in *.wav
 			if ( $wav ) {
 				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
 				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );

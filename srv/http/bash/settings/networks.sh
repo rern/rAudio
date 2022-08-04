@@ -148,14 +148,14 @@ editwifidhcp )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | egrep -v 'RX|TX' | grep . )"
+$( ifconfig eth0 | egrep -v 'RX|TX' | awk NF )"
 	;;
 ifconfigwlan )
 	wlandev=$( cat $dirshm/wlan )
 	echo "\
 <bll># ifconfig $wlandev; iwconfig $wlandev</bll>
 $( ifconfig $wlandev | egrep -v 'RX|TX')
-$( iwconfig $wlandev | grep . )"
+$( iwconfig $wlandev | awk NF )"
 	;;
 ipused )
 	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0

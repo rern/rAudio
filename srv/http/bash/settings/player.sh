@@ -170,7 +170,7 @@ decoder {\
 filetype )
 	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
 	for i in {a..z}; do
-		line=$( grep ^$i <<<"$type" | tr '\n' ' ' )
+		line=$( grep ^$i <<< "$type" | tr '\n' ' ' )
 		[[ $line ]] && list+=${line:0:-1}'<br>'
 	done
 	echo "${list:0:-4}"

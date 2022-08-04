@@ -31,7 +31,7 @@ scan=$( iwlist $wlandev scan \
 # save profile
 readarray -t ssids <<< $( grep '"ssid":' <<< "$scan" \
 			| sed -E 's/^.*:"(.*)"/\1/' \
-			| grep . )
+			| awk NF )
 for ssid in "${ssids[@]}"; do
 	[[ -e "/etc/netctl/$ssid" ]] && scan=$( sed '/"ssid":"'$ssid'"/ a\,"profile":true' <<< "$scan" )
 done

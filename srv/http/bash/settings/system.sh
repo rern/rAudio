@@ -440,7 +440,7 @@ mirrorlist )
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
 	fi
-	readarray -t lines <<< $( grep . $file \
+	readarray -t lines <<< $( awk NF $file \
 								| sed -n '/### A/,$ p' \
 								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
 	clist='"Auto (by Geo-IP)"'
@@ -679,7 +679,7 @@ shareddatadisable )
 	mountpoint=/srv/http/shareddata
 	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
 	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ $( grep . $mountpoint/iplist | wc -l ) == 0 ]] && rm $mountpoint/iplist
+	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
