@@ -1,8 +1,6 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
@@ -102,11 +100,15 @@ metadataGet() {
 	
 	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
 	if [[ $coverurl ]]; then
-		coverfile=$dirshm/webradio/$name.jpg
-		curl -s $coverurl -o $coverfile
 		coverart=/data/shm/webradio/$name.jpg
+		coverfile=$dirshm/webradio/$name.jpg
+		if [[ $coverurl != dab ]]; then
+			curl -s $coverurl -o $coverfile
+		else
+			mv $dirshm/webradio/{DABslide,$name}.jpg
+		fi
 	else
-		coverart=$( ls /srv/http/data/shm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
 		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
 $artist
 title
