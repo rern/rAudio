@@ -213,14 +213,30 @@ case 'radio':
 	}
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
-			$html.= '<li class="dir">'
-						.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-						.'<a class="lipath">'.$path.$subdir.'</a>'
-						.'<span class="single">'.$subdir.'</span>'
-					.'</li>';
+			$each = ( object )[];
+			$each->subdir = $subdir;
+			$each->sort   = stripSort( $subdir );
+			$array[] = $each;
+		}
+		usort( $array, function( $a, $b ) {
+			return strnatcasecmp( $a->sort, $b->sort );
+		} );
+		foreach( $array as $each ) {
+			if ( count( $files ) ) {
+				$html.= '<li class="dir">';
+			} else {
+				$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+				$indexes[] = $index;
+				$html.= '<li class="dir" data-index="'.$index.'">';
+			}
+			$html.= '<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+					.'<a class="lipath">'.$path.$each->subdir.'</a>'
+					.'<span class="single">'.$each->subdir.'</span>'
+				.'</li>';
 		}
 	}
 	if ( count( $files ) ) {
+		unset( $array );
 		foreach( $files as $file ) {
 			$each = ( object )[];
 			$data = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
