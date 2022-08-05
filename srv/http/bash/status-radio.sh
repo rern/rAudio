@@ -47,13 +47,6 @@ dabData() {
 		readarray -t metadata <<< "$artist_title"
 	fi
 }
-radioparadiseData() {
-	readarray -t metadata <<< $( curl -sGk -m 5 \
-		--data-urlencode "chan=$id" \
-		https://api.radioparadise.com/api/now_playing \
-		| jq -r .artist,.title,.album,.cover,.time \
-		| sed 's/^null$//' )
-}
 radiofranceData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "operationName=Now" \
@@ -69,6 +62,13 @@ radiofranceData() {
 ,.data.now.playing_item.end_time\
 ,.data.now.server_time \
 		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
+}
+radioparadiseData() {
+	readarray -t metadata <<< $( curl -sGk -m 5 \
+		--data-urlencode "chan=$id" \
+		https://api.radioparadise.com/api/now_playing \
+		| jq -r .artist,.title,.album,.cover,.time \
+		| sed 's/^null$//' )
 }
 metadataGet() {
 	if [[ $id < 4 ]]; then
