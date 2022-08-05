@@ -3,8 +3,10 @@
 . /srv/http/bash/common.sh
 
 dabscan=$( dab-scanner-rtlsdr -C 5A )
-services=$( egrep '^Ensemble|^audioservice' <<< "$dabscan" )
-if ! grep -q ^audioservice <<< "$services"; then
+services=$( echo "$dabscan" \
+				| egrep '^Ensemble|^audioservice' <<< "$dabscan" \
+				| sed 's/ *;/;/g' )
+if [[ ! $services ]]; then
 	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
 	rm $dirshm/updatingdab
 	exit
@@ -20,13 +22,13 @@ host=$( hostname -f )
 readarray -t services <<< "$services"
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
 	
-	readarray -d ';' -t field <<< $service
-	name=$( echo ${field[1]} | xargs )
+	readarray -d';' -n4 -t field <<< $service
+	name=${field[1]}
 	channel=${field[2]}
 	id=${field[3]}
 	channel_id=${channel,,}_${id,,}
