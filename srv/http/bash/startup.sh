@@ -32,12 +32,12 @@ if [[ -e /boot/backup.gz ]]; then
 fi
 
 # wifi - on-board or usb
-wlandev=$( ip -br link \
-				| grep ^w \
-				| grep -v wlan \
-				| cut -d' ' -f1 )
-[[ ! $wlandev ]] && wlandev=wlan0
-echo $wlandev > /dev/shm/wlan
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
+[[ $( rfkill | grep -c wlan ) > 1 ]] && rmmod brcmfmac &> /dev/null
+ip -br link \
+	| grep ^w \
+	| cut -d' ' -f1 \
+	> /dev/shm/wlan
 
 if [[ -e /boot/wifi ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i -E "s/^(Interface=).*/\1$wlandev/" /boot/wifi
@@ -56,11 +56,10 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-# ( no profile && no hostapd ) || usb wifi > disable onboard
+# no profile && no hostapd - disable onboard
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
 systemctl -q is-enabled hostapd && hostapd=1
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ ! $profiles && ! $hostapd || $wlandev != wlan0 ]] && rmmod brcmfmac &> /dev/null
+[[ ! $profiles && ! $hostapd ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
