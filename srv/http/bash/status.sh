@@ -88,7 +88,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "dabradio"         : '$( [[ -e /usr/bin/rtsp-simple-server ]] && systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
