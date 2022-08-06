@@ -800,23 +800,22 @@ pkgstatus )
 	id=${args[1]}
 	pkg=$id
 	service=$id
-	dot='<code>●</code>'
 	case $id in
 		camilladsp )
 			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
 			catconf="
-$dot <code>/etc/hostapd/hostapd.conf</code>
+<bll># cat /etc/hostapd/hostapd.conf</bll>
 $( cat /etc/hostapd/hostapd.conf )
 
-$dot <code>/etc/dnsmasq.conf</code>
+<bll># cat /etc/dnsmasq.conf</bll>
 $( cat /etc/dnsmasq.conf )";;
 		localbrowser )
 			fileconf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
 		rtsp-simple-server )
 			catconf="
-$dot <code># rtl_test -t</code>
+<bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		smb )
 			fileconf=/etc/samba/smb.conf
@@ -828,12 +827,14 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		* )
 			fileconf=/etc/$id.conf;;
 	esac
-	[[ -e $fileconf ]] && catconf=$'\n'$( cat $fileconf )
+	[[ -e $fileconf ]] && catconf="
+<bll># cat $fileconf</bll>
+$( cat $fileconf )"
 	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
-$dot <code>$version</code>$catconf
+<code>$version</code>$catconf
 
-$dot $( systemctl status $service \
+$( systemctl status $service \
 	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
 	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
 	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
