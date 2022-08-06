@@ -26,7 +26,7 @@ HTML
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => <<< HTML
-Digital radio reception for USB RTL-SDR devices.
+Digital Audio Broadcasting radio for USB RTL-SDR devices.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
 	]
