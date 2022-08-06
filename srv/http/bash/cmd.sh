@@ -800,7 +800,7 @@ pkgstatus )
 	id=${args[1]}
 	pkg=$id
 	service=$id
-	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
+	dot='<code>●</code>'
 	case $id in
 		camilladsp )
 			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
