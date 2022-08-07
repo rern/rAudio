@@ -188,7 +188,7 @@ data+='
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
-, "wlan"             : '$( rfkill | grep -q wlan && echo true )'
+, "wlan"             : '$( rfkill -no type | grep -q wlan && echo true )'
 , "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 	discoverable=true

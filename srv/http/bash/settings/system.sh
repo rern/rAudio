@@ -74,7 +74,7 @@ bluetooth )
 bluetoothdisable )
 	sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
 	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
-	if ! rfkill | grep -q bluetooth; then
+	if ! rfkill -no type | grep -q bluetooth; then
 		systemctl stop bluetooth
 		pkill bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
@@ -106,7 +106,7 @@ bluetoothset )
 	pushRefresh
 	;;
 bluetoothstatus )
-	if (( $( rfkill | grep bluetooth | wc -l ) > 1 )); then
+	if rfkill -no type | grep -q bluetooth; then
 		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
 		mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
 	fi

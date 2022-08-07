@@ -50,7 +50,7 @@ touch $dirshm/status
 
 # ( no profile && no hostapd ) || usb wifi > disable onboard
 lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( ip -br link | grep -c ^w ) > 1 ]] && usbwifi=1
+[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
 systemctl -q is-enabled hostapd && hostapd=1
 readarray -t profiles <<< $( ls -1pt /etc/netctl | grep -v /$ )
 [[ $usbwifi || ( ! $hostapd && ! $profiles ) ]] && rmmod brcmfmac &> /dev/null
@@ -59,12 +59,15 @@ readarray -t profiles <<< $( ls -1pt /etc/netctl | grep -v /$ )
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
 if [[ ! $connected && ! $hostapd && $profiles ]]; then
-	! ip -br link | grep -q ^w && [[ -e $dirshm/onboardwlan ]] && modprobe brcmfmac
-	if ip -br link | grep -q ^w; then
-		for profile in "${profiles[@]}"; do
-			[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1 && break
-		done
-		[[ ! $enabledprofile ]] && $dirbash/settings/networks.sh profileconnect$'\n'"${profiles[0]}"
+	! rfkill -no type | grep -q wlan && [[ -e $dirshm/onboardwlan ]] && modprobe brcmfmac
+	if rfkill -no type | grep -q wlan; then
+		if [[ $profiles ]]; then
+			for profile in "${profiles[@]}"; do
+				[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1
+				grep -q $wlandev "/etc/netctl/$profile" && devprofile=$profile
+			done
+			[[ ! $enabledprofile && $devprofile ]] && $dirbash/settings/networks.sh profileconnect$'\n'"$devprofile"
+		fi
 		connectedCheck 30 3
 	fi
 fi

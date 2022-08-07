@@ -24,7 +24,7 @@ netctlSwitch() {
 			break
 		fi
 	done
-	[[ ! $active ]] && netctl switch-to "$connected"
+	[[ ! $active && $connected ]] && netctl switch-to "$connected"
 	sleep 3
 	pushRefresh
 }
@@ -221,7 +221,7 @@ usbbluetoothon )
 	pushstreamNotify 'USB Bluetooth' Ready bluetooth
 	;;
 usbbluetoothoff )
-	! rfkill | grep -q bluetooth && systemctl stop bluetooth
+	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
 	pushstreamNotify 'USB Bluetooth' Removed bluetooth
 	$dirbash/settings/features-data.sh pushrefresh
 	$dirbash/settings/networks-data.sh pushbt

@@ -108,7 +108,7 @@ data='
   "page"       : "networks"
 , "activebt"   : '$( isactive bluetooth )'
 , "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
-, "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
+, "activewlan" : '$( rfkill -no type | grep -q wlan && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
