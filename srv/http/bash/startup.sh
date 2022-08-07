@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+# wifi - on-board or usb
+wlandev=$( $dirbash/settings/networks.sh wlandevice )
+
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
@@ -22,9 +25,6 @@ if [[ -e /boot/backup.gz ]]; then
 	$dirbash/settings/system.sh datarestore
 	reboot=1
 fi
-
-# wifi - on-board or usb
-wlandev=$( $dirbash/settings/networks.sh wlandevice )
 
 if [[ -e /boot/wifi && $wlandev != false ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
