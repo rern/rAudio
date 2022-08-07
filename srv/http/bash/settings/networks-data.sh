@@ -64,7 +64,7 @@ fi
 wlandev=$( cat $dirshm/wlan )
 ifconfig $wlandev up &> /dev/null # force up
 
-readarray -t profiles <<< $( netctl list | sed 's/^. //' )
+readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 if [[ $profiles ]]; then
 	for profile in "${profiles[@]}"; do
 		if netctl is-active "$profile" &> /dev/null; then
@@ -107,7 +107,7 @@ fi
 data='
   "page"       : "networks"
 , "activebt"   : '$( isactive bluetooth )'
-, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
+, "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
 , "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"

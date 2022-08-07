@@ -108,7 +108,7 @@ Auto update Library database on insert / remove USB drives.
 HTML
 	] );
 echo '</div>';
-if ( exec( 'grep -q dtparam=krnbt=on /boot/config.txt && echo 1 || echo 0' ) ) {
+if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Wireless'

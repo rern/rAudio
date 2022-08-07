@@ -879,7 +879,7 @@ wlandisable )
 wlanset )
 	regdom=${args[1]}
 	apauto=${args[2]}
-	rfkill | grep -q wlan || modprobe brcmfmac
+	! lsmod | grep -q brcmfmac && modprobe brcmfmac
 	echo wlan0 > $dirshm/wlan
 	iw wlan0 set power_save off
 	[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap

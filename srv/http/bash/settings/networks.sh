@@ -28,6 +28,18 @@ netctlSwitch() {
 	sleep 3
 	pushRefresh
 }
+wlanDevice() {
+	iplinkw=$( ip -br link | grep ^w )
+	if [[ $iplinkw ]]; then
+		wlandev=$( echo "$iplinkw" \
+						| head -1 \
+						| cut -d' ' -f1 )
+		iw $wlandev set power_save off
+	else
+		wlandev=false
+	fi
+	echo $wlandev | tee $dirshm/wlan
+}
 
 case ${args[0]} in
 
@@ -104,7 +116,9 @@ Gateway=$( jq -r .Gateway <<< $data )
 	;;
 disconnect )
 	wlandev=$( cat $dirshm/wlan )
-	netctl stop-all
+	profile=$( netctl list | grep ^\* | cut -d' ' -f 2- )
+	netctl stop "$profile"
+	netctl disable "$profile"
 	killall wpa_supplicant
 	ifconfig $wlandev up
 	pushRefresh
@@ -214,10 +228,10 @@ usbbluetoothoff )
 	;;
 usbwifion )
 	wlandev=$( ip -br link \
-					| grep ^w \
-					| grep -v wlan \
-					| cut -d' ' -f1 )
-	echo $wlandev > /dev/shm/wlan
+		| grep ^w \
+		| tail -1 \
+		| cut -d' ' -f1 \
+		| tee $dirshm/wlan )
 	iw $wlandev set power_save off &> /dev/null
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
@@ -225,12 +239,12 @@ usbwifion )
 	pushRefresh
 	;;
 usbwifioff )
-	if rfkill | grep -q wlan; then
-		echo wlan0 > /dev/shm/wlan
-		iw wlan0 set power_save off &> /dev/null
-	fi
+	wlandev=$( wlanDevice )
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
 	pushRefresh
+	;;
+wlandevice )
+	wlanDevice
 	;;
 	
 esac
