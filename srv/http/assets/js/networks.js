@@ -1,6 +1,14 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var accesspoint = $( '#accesspoint' ).length;
+$( '.container' ).click( function( e ) {
+	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length
+		|| $( e.target ).is( 'pre.status' )
+	) return
+	
+	$( '#menu' ).addClass( 'hide' );
+	$( 'li' ).removeClass( 'active' );
+} );
 $( '.back' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	$( '#divinterface' ).removeClass( 'hide' );
@@ -53,7 +61,6 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
-	$( 'pre.status' ).addClass( 'hide' );
 	var $menu = $( '#menu' );
 	if ( !$menu.hasClass( 'hide' ) ) {
 		$menu.addClass( 'hide' );
@@ -83,12 +90,6 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	var targetB = $menu.offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-} );
-$( 'body' ).click( function( e ) {
-	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length && !$( e.target ).hasClass( 'status' ) ) {
-		$( '#menu, pre.status' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	}
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );

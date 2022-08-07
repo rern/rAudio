@@ -396,6 +396,19 @@ $( document ).keyup( function( e ) {
 		}
 	}
 } );
+$( '.container' ).click( function( e ) {
+	$target = $( e.target );
+	if ( $target.is( 'pre' ) || $target.parent().is( 'pre' )
+		|| $target.is( 'li' ) || $target.parent().is( 'li' )
+	) return
+	
+	$( 'pre.status' ).addClass( 'hide' );
+} ).on( 'click', 'heading.status', function( e ) {
+	if ( $( e.target ).is( 'i' ) ) return
+	
+	var $this = $( this );
+	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
+} );
 $( '#close' ).click( function() {
 	if ( page === 'networks' ) {
 		clearTimeout( G.timeoutScan );
@@ -470,12 +483,6 @@ $( '#help' ).click( function() {
 $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
-} );
-$( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).is( 'i' ) ) return
-	
-	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;
