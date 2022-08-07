@@ -2,20 +2,11 @@
 
 . /srv/http/bash/common.sh
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
-		sleep $2
-	done
-}
-
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
-	touch $dirmpd/updating # for initial auto 'mpc rescan'
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	dev=${partition:0:-2}
-	[[ $dev == /dev/sd ]] && dev=${partition:0:-1}
+	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
@@ -27,44 +18,56 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	mv /boot/backup.gz $dirtmp
+	mv /boot/backup.gz $dirdata/tmp
 	$dirbash/settings/system.sh datarestore
+	reboot=1
 fi
 
 # wifi - on-board or usb
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( rfkill | grep -c wlan ) > 1 ]] && rmmod brcmfmac &> /dev/null
-ip -br link \
-	| grep ^w \
-	| cut -d' ' -f1 \
-	> /dev/shm/wlan
+wlandev=$( $dirbash/settings/networks.sh wlandevice )
 
-if [[ -e /boot/wifi ]]; then
-	! grep -q $wlandev /boot/wifi && sed -i -E "s/^(Interface=).*/\1$wlandev/" /boot/wifi
+if [[ -e /boot/wifi && $wlandev != false ]]; then
+	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
-	sed -i -e -E '/^#|^$/ d' -e 's/\r//' /boot/wifi
+	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv -f /boot/wifi "/etc/netctl/$ssid"
-	ifconfig $wlandev down
-	netctl switch-to "$ssid"
-	netctl enable "$ssid"
+	$dirbash/settings/networks.sh profileconnect$'\n'"$ssid"
 fi
 # ----------------------------------------------------------------------------
-rm -f $dirtmp/*
+
+connectedCheck() {
+	for (( i=0; i < $1; i++ )); do
+		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
+		sleep $2
+	done
+}
+
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-# no profile && no hostapd - disable onboard
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+# ( no profile && no hostapd ) || usb wifi > disable onboard
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
+[[ $( ip -br link | grep -c ^w ) > 1 ]] && usbwifi=1
 systemctl -q is-enabled hostapd && hostapd=1
-[[ ! $profiles && ! $hostapd ]] && rmmod brcmfmac &> /dev/null
+readarray -t profiles <<< $( ls -1pt /etc/netctl | grep -v /$ )
+[[ $usbwifi || ( ! $hostapd && ! $profiles ) ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
-[[ ! $connected && $profiles && ! $hostapd ]] && connectedCheck 30 3
+if [[ ! $connected && ! $hostapd && $profiles ]]; then
+	! ip -br link | grep -q ^w && [[ -e $dirshm/onboardwlan ]] && modprobe brcmfmac
+	if ip -br link | grep -q ^w; then
+		for profile in "${profiles[@]}"; do
+			[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1 && break
+		done
+		[[ ! $enabledprofile ]] && $dirbash/settings/networks.sh profileconnect$'\n'"${profiles[0]}"
+		connectedCheck 30 3
+	fi
+fi
 
 [[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
 if [[ $nas ]]; then
@@ -95,9 +98,7 @@ fi
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
 
-[[ ! -e $dirmpd/counts ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
-
-# after all sources connected ######################################
+# after all sources connected
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
@@ -125,7 +126,7 @@ if [[ -e $dirsystem/hddspindown ]]; then
 		duration=$( cat $dirsystem/hddspindown )
 		readarray -t usb <<< "$usb"
 		for dev in "${usb[@]}"; do
-			hdparm -B $dev | grep -q 'APM.*not supported' && continue
+			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
 			
 			hdparm -q -B 127 $dev
 			hdparm -q -S $duration $dev
@@ -139,10 +140,13 @@ if [[ -e $file ]]; then
 	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
-if [[ -e $dirmpd/updating ]]; then
-	$dirbash/cmd.sh "mpcupdate
-update
-$( cat $dirmpd/updating )"
+if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
+	if [[ ! -z $( ls /mnt/MPD/NAS ) || ! -z $( ls /mnt/MPD/SD ) || ! -z $( ls /mnt/MPD/USB ) ]]; then
+		$dirbash/cmd.sh$'\n'rescan
+	fi
+elif [[ -e $dirmpd/updating ]]; then
+	$dirbash/cmd.sh$'\n'"$( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
+
