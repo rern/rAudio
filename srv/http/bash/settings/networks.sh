@@ -116,9 +116,9 @@ Gateway=$( jq -r .Gateway <<< $data )
 	;;
 disconnect )
 	wlandev=$( cat $dirshm/wlan )
-	profile=$( netctl list | grep ^\* | cut -d' ' -f 2- )
-	netctl stop "$profile"
-	netctl disable "$profile"
+	connected=$( iwgetid $wlandev -r )
+	netctl stop "$connected"
+	netctl disable "$connected"
 	killall wpa_supplicant
 	ifconfig $wlandev up
 	pushRefresh
