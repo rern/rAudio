@@ -398,10 +398,10 @@ $( document ).keyup( function( e ) {
 } );
 $( '.container' ).click( function( e ) {
 	$target = $( e.target );
-	if ( $target.is( 'pre' ) || $target.parent().is( 'pre' )
+	if ( $target.hasClass( 'status' ) || $target.parent().hasClass( 'status' )
 		|| $target.is( 'li' ) || $target.parent().is( 'li' )
-		|| $target.is( '.setting' )
-		|| $target.is( '.switch' )
+		|| $target.hasClass( '.setting' )
+		|| $target.hasClass( '.switch' )
 	) return
 	
 	$( 'pre.status' ).addClass( 'hide' );
