@@ -21,8 +21,12 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	mv /boot/backup.gz $dirdata/tmp
-	$dirbash/settings/system.sh datarestore
+	if bsdtar tf backup.gz | grep -q ^data/system/$; then
+		mv /boot/backup.gz $dirdata/tmp
+		$dirbash/settings/system.sh datarestore
+	else
+		restorefailed=1
+	fi
 fi
 
 if [[ -e /boot/wifi && $wlandev != false ]]; then
@@ -152,3 +156,4 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
 
+[[ $restorefailed ]] && pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000

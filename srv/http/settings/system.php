@@ -291,26 +291,6 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'Shared Data'
-		, 'id'       => 'shareddata'
-		, 'setting'  => 'none'
-		, 'help'     => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
- • SSH passwords must be default.
- • Music files should be on NAS only.
- • On file server, setup a network share with all permissions
- &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
- &emsp; • Samba: <code>read only = no</code>
- &emsp; • Windows: <code>Everyone - Full Control</code>
- • On each rAudio
-  &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
-  &emsp; • Shared Data - Enable to connect the share.
- • <code>Use data from this rAudio</code>:
- &emsp; • Check only on rAudio with data to be used or to overwrite existing.
- &emsp; • Leave unchecked to use existing data on the server.
-HTML
-	]
-	, [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
@@ -332,6 +312,27 @@ HTML
 		, 'setting' => 'none'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
+HTML
+	]
+	, [
+		  'label'   => 'Shared Data'
+		, 'id'      => 'shareddata'
+		, 'icon'    => 'networks'
+		, 'setting' => 'none'
+		, 'help'    => <<< HTML
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
+ • SSH passwords must be default.
+ • Music files should be on NAS only.
+ • On file server, setup a network share with all permissions
+ &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
+ &emsp; • Samba: <code>read only = no</code>
+ &emsp; • Windows: <code>Everyone - Full Control</code>
+ • On each rAudio
+  &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
+  &emsp; • Shared Data - Enable to connect the share.
+ • <code>Use data from this rAudio</code>:
+ &emsp; • Check only on rAudio with data to be used or to overwrite existing.
+ &emsp; • Leave unchecked to use existing data on the server.
 HTML
 	]
 ];
