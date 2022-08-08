@@ -2,9 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var accesspoint = $( '#accesspoint' ).length;
 $( '.container' ).click( function( e ) {
-	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length
-		|| $( e.target ).is( 'pre.status' )
-	) return
+	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) return
 	
 	$( '#menu' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
