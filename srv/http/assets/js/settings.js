@@ -400,6 +400,8 @@ $( '.container' ).click( function( e ) {
 	$target = $( e.target );
 	if ( $target.is( 'pre' ) || $target.parent().is( 'pre' )
 		|| $target.is( 'li' ) || $target.parent().is( 'li' )
+		|| $target.is( '.setting' )
+		|| $target.is( '.switch' )
 	) return
 	
 	$( 'pre.status' ).addClass( 'hide' );
