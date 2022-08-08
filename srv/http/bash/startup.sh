@@ -23,7 +23,6 @@ fi
 if [[ -e /boot/backup.gz ]]; then
 	mv /boot/backup.gz $dirdata/tmp
 	$dirbash/settings/system.sh datarestore
-	reboot=1
 fi
 
 if [[ -e /boot/wifi && $wlandev != false ]]; then
