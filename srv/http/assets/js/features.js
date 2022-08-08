@@ -472,6 +472,7 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
+	$( '#dabradio' ).toggleClass( 'disabled', !G.dabdevice );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', !G.snapclientactive );
 	$( '#snapclient' ).toggleClass( 'disabled', G.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', G.snapserveractive );

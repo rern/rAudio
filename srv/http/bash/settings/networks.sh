@@ -7,8 +7,7 @@ readarray -t args <<< "$1"
 
 pushRefresh() {
 	sleep 2
-	data=$( $dirbash/settings/networks-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/networks-data.sh pushrefresh
 }
 netctlSwitch() {
 	ssid=$1
@@ -25,9 +24,21 @@ netctlSwitch() {
 			break
 		fi
 	done
-	[[ ! $active ]] && netctl switch-to "$connected"
+	[[ ! $active && $connected ]] && netctl switch-to "$connected"
 	sleep 3
 	pushRefresh
+}
+wlanDevice() {
+	iplinkw=$( ip -br link | grep ^w )
+	if [[ $iplinkw ]]; then
+		wlandev=$( echo "$iplinkw" \
+						| head -1 \
+						| cut -d' ' -f1 )
+		iw $wlandev set power_save off
+	else
+		wlandev=false
+	fi
+	echo $wlandev | tee $dirshm/wlan
 }
 
 case ${args[0]} in
@@ -48,7 +59,7 @@ bluetoothinfo )
 	info=$( bluetoothctl info $mac )
 	echo "$info" | grep -q 'not available' && exit
 	
-	if (( $( echo "$info" | grep 'Connected: yes\|UUID: Audio' | wc -l ) == 2 )); then
+	if (( $( echo "$info" | egrep 'Connected: yes|UUID: Audio' | wc -l ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
@@ -59,6 +70,11 @@ $( bluealsa-aplay -L | grep -A2 $mac )
 <bll># bluetoothctl info $mac</bll>
 $info"
 	echo "$data"
+	;;
+btcontroller )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
 	;;
 connect )
 	data=${args[1]}
@@ -100,7 +116,9 @@ Gateway=$( jq -r .Gateway <<< $data )
 	;;
 disconnect )
 	wlandev=$( cat $dirshm/wlan )
-	netctl stop-all
+	connected=$( iwgetid $wlandev -r )
+	netctl stop "$connected"
+	netctl disable "$connected"
 	killall wpa_supplicant
 	ifconfig $wlandev up
 	pushRefresh
@@ -134,7 +152,7 @@ Gateway=$gw
 editwifidhcp )
 	ssid=${args[1]}
 	netctl stop "$ssid"
-	sed -i -e '/^Address\|^Gateway/ d
+	sed -i -e -E '/^Address|^Gateway/ d
 ' -e 's/^IP.*/IP=dhcp/
 ' "$file"
 	cp "$file" "/etc/netctl/$ssid"
@@ -144,13 +162,13 @@ editwifidhcp )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | grep -v 'RX\\|TX' | awk NF )"
+$( ifconfig eth0 | egrep -v 'RX|TX' | awk NF )"
 	;;
 ifconfigwlan )
 	wlandev=$( cat $dirshm/wlan )
 	echo "\
 <bll># ifconfig $wlandev; iwconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -v 'RX\|TX')
+$( ifconfig $wlandev | egrep -v 'RX|TX')
 $( iwconfig $wlandev | awk NF )"
 	;;
 ipused )
@@ -193,9 +211,40 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-rfkilllist )
-	echo '<bll># rfkill</bll>'
-	rfkill
+usbbluetoothon )
+	! systemctl -q is-active bluetooth && systemctl start bluetooth
+	! systemctl -q is-active mpd && exit # suppress on startup
+	
+	sleep 3
+	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
+	pushstreamNotify 'USB Bluetooth' Ready bluetooth
+	;;
+usbbluetoothoff )
+	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
+	pushstreamNotify 'USB Bluetooth' Removed bluetooth
+	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
+	;;
+usbwifion )
+	wlandev=$( ip -br link \
+		| grep ^w \
+		| tail -1 \
+		| cut -d' ' -f1 \
+		| tee $dirshm/wlan )
+	iw $wlandev set power_save off &> /dev/null
+	! systemctl -q is-active mpd && exit # suppress on startup
+	
+	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
+	pushRefresh
+	;;
+usbwifioff )
+	wlandev=$( wlanDevice )
+	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
+	pushRefresh
+	;;
+wlandevice )
+	wlanDevice
 	;;
 	
 esac

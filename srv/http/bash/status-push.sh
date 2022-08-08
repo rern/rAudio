@@ -8,20 +8,20 @@ else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^, "counts"/,/}/ d' \
-		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
+		| egrep '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
 		| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
-		compare='^Artist\|^Title\|^Album'
+		compare='^Artist|^Title|^Album'
 		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
 			[[ ! $trackchanged && $state == play ]] && exit
 			
 		else
-			compare='^state\|^elapsed'
-			[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
+			compare='^state|^elapsed'
+			[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
 			[[ ! $trackchanged && ! $statuschanged ]] && exit
 			
 		fi
@@ -44,7 +44,7 @@ if [[ -e $dirsystem/mpdoled ]]; then
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed 's/\(true\|false\)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
+	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 	kill -9 $( pgrep lcdchar ) &> /dev/null
 	$dirbash/lcdchar.py &
 fi
@@ -72,8 +72,8 @@ if [[ -e $dirshm/clientip ]]; then
 				| sed -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/
 					' -e '/^, "icon" *:/ d
-					' -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
-					' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|' )
+					' -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+					' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
 	clientip=$( cat $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

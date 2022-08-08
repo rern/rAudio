@@ -63,6 +63,18 @@ function bookmarkCover( url, path ) {
 		}
 	} );
 }
+function radioRefresh() {
+	var query = G.query[ G.query.length - 1 ];
+	if ( query.path ) {
+		list( query, function( data ) {
+			data.path = query.path;
+			data.modetitle = query.modetitle;
+			renderLibraryList( data );
+		}, 'json' );
+	} else {
+		$( '#mode-'+ G.mode ).click();
+	}
+}
 function statusUpdate( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
@@ -90,7 +102,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-	'notify', 'option', 'order', 'playlist', 'playlists', 'relays', 'reload', 'volume', 'webradio' ];
+				'notify', 'option', 'order', 'playlist', 'playlists', 'radiolist', 'relays', 'reload', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -99,11 +111,6 @@ pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
 		getPlaybackStatus( 'withdisplay' );
-		if ( O.title === 'Equalizer' ) {
-			bash( [ 'equalizerget' ], function( data ) {
-				psEqualizer( data );
-			}, 'json' );
-		}
 	} else if ( status === 0 ) {
 		G.disconnected = 1;
 		clearIntervalAll();
@@ -119,7 +126,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'coverart':   psCoverart( data );   break;
 		case 'display':    psDisplay( data );    break;
 		case 'equalizer':  psEqualizer( data );  break;
-		case 'relays':     psRelays( data );     break;
 		case 'mpdplayer':  psMpdPlayer( data );  break;
 		case 'mpdradio':   psMpdRadio( data );   break;
 		case 'mpdupdate':  psMpdUpdate( data );  break;
@@ -128,11 +134,12 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'order':      psOrder( data );      break;
 		case 'playlist':   psPlaylist( data );   break;
 		case 'playlists':  psPlaylists( data );  break;
+		case 'radiolist':  psRadioList( data ); break;
+		case 'relays':     psRelays( data );     break;
 		case 'reload':     location.href = '/';  break;
 		case 'restore':    psRestore( data );    break;
 		case 'volume':     psVolume( data );     break;
 		case 'vumeter':    psVUmeter( data );    break;
-		case 'webradio':   psWebradio( data );   break;
 	}
 }
 function psAirplay( data ) {
@@ -229,6 +236,7 @@ function psCoverart( data ) {
 			}
 			bookmarkCover( url, path );
 			break;
+		case 'dabradio':
 		case 'webradio':
 			G.status.stationcover = src;
 			if ( G.playback ) {
@@ -239,8 +247,8 @@ function psCoverart( data ) {
 					.removeClass( 'hide' );
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			} else if ( G.librarylist && G.mode === 'webradio' ) {
-				psWebradio( -1 );
+			} else if ( G.librarylist && G.mode === data.type ) {
+				radioRefresh();
 			}
 			break;
 		case 'webradioreset':
@@ -249,8 +257,8 @@ function psCoverart( data ) {
 				if ( G.status.coverart === src ) coverartDefault();
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
-			} else if ( G.librarylist && G.mode === 'webradio' ) {
-				psWebradio( -1 );
+			} else if ( G.librarylist && G.mode === data.radiotype ) {
+				radioRefresh();
 			}
 			break;
 	}
@@ -338,8 +346,12 @@ function psMpdRadio( data ) {
 	}
 }	
 function psMpdUpdate( data ) {
-	G.status.updating_db = data === 1;
-	if ( G.status.updating_db ) {
+	if ( 'type' in data ) {
+		if ( data.type === 'mpd' ) {
+			G.status.updating_db = true;
+		} else {
+			G.status.updatingdab = true;
+		}
 		setButtonUpdating();
 		return
 	}
@@ -460,6 +472,19 @@ function psPlaylists( data ) {
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 	$( '#mode-playlists gr' ).text( count || '' );
 }
+function psRadioList( data ) {
+	if ( 'count' in data ) {
+		G.status.counts[ data.type ] = data.count;
+		$( '#mode-'+ data.type +' gr' ).text( data.count );
+	}
+	if ( G.librarylist && G.mode === data.type ) {
+		radioRefresh();
+	} else if ( G.playlist && !G.local ) {
+		getPlaylist();
+	}
+	G.status.updatingdab = false;
+	$( '#i-dabupdate' ).addClass( 'hide' );
+}
 function psRelays( response ) {
 	clearInterval( G.intRelaysTimer );
 	if ( 'on' in response ) {
@@ -576,22 +601,5 @@ function psVolume( data ) {
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree
-}
-function psWebradio( data ) {
-	if ( data != -1 ) $( '#mode-webradio gr' ).text( data );
-	if ( G.librarylist && G.mode === 'webradio' ) {
-		var query = G.query[ G.query.length - 1 ];
-		if ( query.path ) {
-			list( query, function( data ) {
-				data.path = query.path;
-				data.modetitle = query.modetitle;
-				renderLibraryList( data );
-			}, 'json' );
-		} else {
-			$( '#mode-webradio gr' ).click();
-		}
-	} else if ( G.playlist && !G.local ) {
-		getPlaylist();
-	}
 }
 

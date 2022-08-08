@@ -12,14 +12,15 @@ icon=bluetooth
 
 bannerReconnect() {
 	bluetoothctl disconnect $mac
-	pushstreamList
 	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 15000
+	pushstreamList
 }
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
-	[[ $type == Source ]] && icon=btsender
+	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
+		icon=btsender
 		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
@@ -31,12 +32,14 @@ disconnectRemove() {
 	pushstreamList
 }
 pushstreamList() {
-	$dirbash/settings/networks-data.sh btlistpush
+	$dirbash/settings/features-data.sh pushrefresh
+	$dirbash/settings/networks-data.sh pushbt
+	exit
 }
-#---------------------------------------------------------------------------------------------
-if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
+#-------------------------------------------------------------------------------------------
+if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from paired device
 	sleep 2
-	readarray -t lines <<< $( cat $dirshm/btconnected )
+	readarray -t lines < $dirshm/btconnected
 	for line in "${lines[@]}"; do
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
@@ -51,7 +54,7 @@ if [[ $udev == btoff ]]; then # >>>> udev: 1. disconnect from paired device
 	exit
 fi
 
-if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from paired device;
+if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. connect from paired device
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
@@ -61,7 +64,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 		fi
 	done
 	 # unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on 
-	if grep -q $mac <<< $( bluetoothctl paired-devices ); then
+	if bluetoothctl paired-devices | grep -q $mac; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
 			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			bluetoothctl disconnect $mac
@@ -79,7 +82,7 @@ if [[ $udev == bton ]]; then # >>>> udev: 1. pair from sender; 2. connect from p
 	
 #-----
 	pushstreamNotifyBlink Bluetooth "$msg" bluetooth
-	if (( $( bluetoothctl info $mac | grep 'Paired: yes\|Trusted: yes' | wc -l ) == 2 )); then
+	if (( $( bluetoothctl info $mac | egrep 'Paired: yes|Trusted: yes' | wc -l ) == 2 )); then
 		action=connect
 	else
 		sleep 2
@@ -92,7 +95,7 @@ else # >>>> rAudio: 1. pair to receiver; 2. remove paired device
 	type=$3
 	name=$4
 fi
-#---------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
@@ -104,14 +107,13 @@ if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
 #-----X
-	[[ $action == pair ]] && bannerReconnect 'Paired successfully' && exit
+	[[ $action == pair ]] && bannerReconnect 'Paired successfully'
 	
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
-	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
-	[[ $type == Source ]] && icon=btsender
+	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
 	if [[ ! $type ]]; then
 ##### non-audio
 		echo $mac Device $name >> $dirshm/btconnected
@@ -125,7 +127,10 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 #-----X
-	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready' && exit
+	[[ $type == Source ]] && icon=btsender
+	uptime -s | date -f - +%s > $dirshm/uptime
+	date +%s >> $dirshm/uptime
+	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready'
 	
 #-----
 	pushstreamNotify "$name" Ready $icon

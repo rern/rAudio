@@ -14,9 +14,9 @@ if ( $alias !== 'cove' ) {
 	$href = '/settings/addons.php';
 	$title = preg_replace( '/\**$/', '', $addon[ 'title' ] );
 } else {
-	$heading = 'CoverArt Thumbnails';
+	$heading = 'Cover Art Thumbnails';
 	$href = '/';
-	$title = 'CoverArt Thumbnails';
+	$title = 'Cover Art Thumbnails';
 	$sh = array_slice( $sh, 3 );
 }
 $opt = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $sh ) );
@@ -29,7 +29,7 @@ foreach( $sh as $arg ) {
 	$opttxt.= strpos( $arg, ' ' ) ? '"'.$arg.'" ' : $arg.' ';
 }
 $postinfo = $type." done.<br>See Addons Progress for result.";
-$postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>&ensp;'.$addon[ 'postinfo' ] : '';
+$postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
 $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";

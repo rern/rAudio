@@ -166,10 +166,11 @@ function htmlPlaylist( $lists, $plname = '' ) {
 					.'</li>';
 			$countupnp++;
 		} else {
-			if ( str_contains( $file, '://' ) ) { // webradio
+			if ( str_contains( $file, '://' ) ) { // webradio / dabradio
 				$urlname = str_replace( '/', '|', $file );
-				$fileradio = '/srv/http/data/webradios/'.$urlname;
-				if ( !file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/webradios -name "'.$urlname.'" | head -1' );
+				$type = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+				$fileradio = '/srv/http/data/'.$type.'/'.$urlname;
+				if ( !file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.' -name "'.$urlname.'" | head -1' );
 				$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
 				$urlname = str_replace( '#', '%23', $list->urlname );
@@ -177,7 +178,7 @@ function htmlPlaylist( $lists, $plname = '' ) {
 			}
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/webradiosimg/'.$urlname.'-thumb.jpg"'
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/'.$type.'/img/'.$urlname.'-thumb.jpg"'
 						.' data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
@@ -246,10 +247,10 @@ function playlist() { // current playlist
 		if ( in_array( $fileheader, $headers ) ) {
 			$file = preg_replace( '/#charset=.*/', '', $each->file );
 			$urlname = str_replace( '/', '|', $file );
-			$radiofile = '/srv/http/data/webradios/'.$urlname;
+			$radiofile = '/srv/http/data/webradio/'.$urlname;
 			if ( !file_exists( $radiofile ) ) {
 				$radiofile = '';
-				$radiofile = exec( 'find /srv/http/data/webradios -name "'.$urlname.'"' );
+				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
 			}
 			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
 			$each->urlname = $urlname;
@@ -264,7 +265,7 @@ function playlistInfo( $index = '' ) { // mpd protocol
 		.'; echo playlistinfo '.$index
 		.'; sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); }'
 		.' | telnet 127.0.0.1 6600 2> /dev/null'
-		.' | grep "^Album\|^Artist\|^Composer\|^Conductor\|^Date\|^file\|^Genre\|^Range\|^Time\|^Title\|^Track"'
+		.' | egrep "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track"'
 		.' |  sed "s/^\(file:\)/---\n\1/"' // file: as start track set
 		, $lists );
 	if ( !count( $lists ) ) exit( '-1' );
@@ -278,7 +279,7 @@ function playlistInfo( $index = '' ) { // mpd protocol
 			$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 			if ( in_array( $fileheader, $headers ) ) {
 				$urlname = str_replace( '/', '|', $each->file );
-				$name = file( '/srv/http/data/webradios/'.$urlname, FILE_IGNORE_NEW_LINES )[ 0 ];
+				$name = file( '/srv/http/data/webradio/'.$urlname, FILE_IGNORE_NEW_LINES )[ 0 ];
 				$each->Name = explode( '^^', $name )[ 0 ];
 				unset( $each->Title );
 			}

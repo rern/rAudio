@@ -56,11 +56,11 @@ elif [[ $1 == stop ]]; then # server + client on same device
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $clientfile
-	[[ $( awk NF $clientfile | wc -l ) == 0 ]] && rm -f $clientfile
+	[[ ! $( awk NF $clientfile ) ]] && rm -f $clientfile
 else # sshpass add clientip from connected client
 	clientip=$1
 	iplist="\
 $( cat $clientfile 2> /dev/null )
 $clientip"
-	echo "$iplist" | sort -u | awk NF > $clientfile
+	echo "$iplist" | awk NF | sort -u > $clientfile
 fi

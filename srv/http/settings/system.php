@@ -108,8 +108,7 @@ Auto update Library database on insert / remove USB drives.
 HTML
 	] );
 echo '</div>';
-$rev = substr( exec( "awk '/Revision/ {print \$NF}' /proc/cpuinfo" ), -3, 2 );
-if ( in_array( $rev, [ '08', '0c', '0d', '0e', '11', '12' ] ) ) {
+if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Wireless'
@@ -121,7 +120,7 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
-		, 'status'   => 'bluetoothctl'
+		, 'status'   => 'bluetooth'
 		, 'setting'  => true
 		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
 		, 'help'     => <<< HTML
@@ -292,11 +291,36 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'Shared Data'
-		, 'id'       => 'shareddata'
-		, 'setting'  => 'none'
-		, 'help'     => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and WebRadios stations. 
+		  'label'   => 'Backup'
+		, 'id'      => 'backup'
+		, 'icon'    => 'sd'
+		, 'setting' => 'none'
+		, 'help'    => <<< HTML
+Backup all settings and Library database:
+ • Settings
+ • Library database
+ • Saved playlists
+ • Bookmarks
+ • Lyrics
+ • Web Radio
+HTML
+	]
+	, [
+		  'label'   => 'Restore'
+		, 'id'      => 'restore'
+		, 'icon'    => 'restore'
+		, 'setting' => 'none'
+		, 'help'    => <<< HTML
+Restore all settings and Library database from a backup file. The system will reboot after finished.
+HTML
+	]
+	, [
+		  'label'   => 'Shared Data'
+		, 'id'      => 'shareddata'
+		, 'icon'    => 'networks'
+		, 'setting' => 'none'
+		, 'help'    => <<< HTML
+Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
  • SSH passwords must be default.
  • Music files should be on NAS only.
  • On file server, setup a network share with all permissions
@@ -309,30 +333,6 @@ Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, 
  • <code>Use data from this rAudio</code>:
  &emsp; • Check only on rAudio with data to be used or to overwrite existing.
  &emsp; • Leave unchecked to use existing data on the server.
-HTML
-	]
-	, [
-		  'label'   => 'Backup'
-		, 'id'      => 'backup'
-		, 'icon'    => 'sd'
-		, 'setting' => 'none'
-		, 'help'    => <<< HTML
-Backup all settings and Library database:
- • Settings
- • Library database
- • Saved playlists
- • Bookmarks
- • Lyrics
- • WebRadios
-HTML
-	]
-	, [
-		  'label'   => 'Restore'
-		, 'id'      => 'restore'
-		, 'icon'    => 'restore'
-		, 'setting' => 'none'
-		, 'help'    => <<< HTML
-Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML
 	]
 ];
@@ -382,38 +382,57 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '<code>'.$ui[ 0 ].'</code>';
-	$uihtml.= '<br> &emsp; '.$ui[ 1 ];
-	$uihtml.= $localhost ? '' : '<br> &emsp; <a href="'.$ui[ 2 ].'" target="_blank">'.$ui[ 2 ].'</a><br>';
+	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a>';
+	$uihtml.= '<p>'.$ui[ 1 ].'</p>';
 }
-$version = file_get_contents( '/srv/http/data/system/version' );
 $hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
+$indexhtml = '';
+for( $i = 'A'; $i !== 'AA'; $i++ ) {
+	$indexhtml.= '<a>'.$i.'</a>';
+	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
+}
 ?>
-<div class="section">
-	<heading>About</heading>
-	<i class="fa fa-plus-r fa-lg gr"></i>&ensp;<a href="https://github.com/rern/rAudio-<?=$version?>/discussions">r A u d i o&emsp;<?=$version?></a>
-	<br><gr>by</gr>&emsp;r e r n
-	<br>&nbsp;
-
+<div id="about" class="section">
+	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg" style="width: 40px"></a>
+	<div id="logotext">rAudio
+	<br><gr>by&emsp;r e r n</gr></div>
+	
 	<heading class="sub">Back End</heading>
-		<a href="https://www.archlinuxarm.org" target="_blank">Arch Linux Arm</a>
-	<br><span class="listtitle">Packages:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list gr hide"></div><br>&nbsp;
-
+	<div class="list">
+		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
+		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
+	</div>
+	<div class="listtitle backend">P a c k a g e s :</i>
+	<br><?=$indexhtml?></div>
+	<div class="list"></div>
+	
 	<heading class="sub">Front End</heading>
-		<a href="https://whatwg.org" target="_blank">HTML</a>
-	<br><a href="https://www.w3.org/TR/CSS" target="_blank">CSS</a>
-	<br><a href="https://www.php.net" target="_blank">PHP</a>
-	<br><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">JavaScript</a>
-	<br><a href="https://jquery.com/" target="_blank">jQuery</a>
-	<br><span class="listtitle">Plugins:&ensp;<i class="fa fa-chevron-down bl"></i></span>
-	<div class="list gr hide"><?=$uihtml?></div><br>&nbsp;
-
+	<div class="list">
+		<a href="https://whatwg.org">HTML</a>
+		<p>Hypertext Markup Language for displaying documents in web browsers</p>
+		<a href="https://www.w3.org/TR/CSS">CSS</a>
+		<p>Cascading Style Sheets for describing the presentation of HTMLs</p>
+		<a href="https://www.php.net">PHP</a>
+		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
+		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
+		<p>A scripting language for working with HTML Document Object Model(DOM) on client side</p>
+		<a href="https://jquery.com/">jQuery</a>
+		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
+	</div>
+	<div class="listtitle">P l u g i n s :&ensp;<i class="fa fa-chevron-down bl"></i></div>
+	<div class="list hide"><?=$uihtml?></div>
+	
 	<heading class="sub">Data</heading>
-		<a href="https://www.last.fm">last.fm</a> - Coverarts and artist biographies
-	<br><a href="https://webservice.fanart.tv">fanart.tv</a> - Artist images and fallback coverarts
-	<br><a href="https://radioparadise.com">Radio Paradise</a>, <a href="https://www.fip.fr/">Fip</a>, <a href="https://www.francemusique.fr/">France Musique</a> - Coverarts for their own stations
-	<br><a href="http://gnudb.gnudb.org">GnuDB</a> - Audio CD data
+	<div class="list">
+		<a href="https://www.last.fm">last.fm</a>
+		<p>Coverarts and artist biographies</p>
+		<a href="https://webservice.fanart.tv">fanart.tv</a>
+		<p>Artist images and fallback coverarts</p>
+		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a>
+		<p>Coverarts for their own stations</p>
+		<a href="http://gnudb.gnudb.org">GnuDB</a>
+		<p>Audio CD</p>
+	</div>
 </div>
 
 <div id="menu" class="menu hide">

@@ -15,7 +15,7 @@ data='
 , "uptimesince"      : "'$( uptime -s | cut -d: -f1-2 )'"'
 
 # for interval refresh
-(( $# > 0 )) && echo {$data} && exit
+[[ $1 == status ]] && echo {$data} && exit
 
 lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
 lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
@@ -118,12 +118,12 @@ fi
 if [[ -e $dirsystem/lcdchar.conf ]]; then
 	vals=$( cat $dirsystem/lcdchar.conf \
 				| grep -v '\[var]' \
-				| sed -e '/charmap\|inf\|chip/ s/.*=\(.*\)/"\1"/; s/.*=//' \
-					  -e 's/[][]//g; s/,/ /g; s/\(True\|False\)/\l\1/' )
+				| sed -e -E '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//' \
+					  -e -E 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/' )
 	if grep -q i2c <<< "$vals"; then
-		vals=$( echo $vals | sed 's/\(true\|false\)$/15 18 16 21 22 23 24 \1/' )
+		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' )
 	else
-		vals=$( echo $vals | sed 's/\("gpio"\)/\1 39 "PCF8574"/' )
+		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' )
 	fi
 	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
 else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
@@ -136,8 +136,6 @@ mpdoledconf='[ '$oledchip', '$baudrate' ]'
 [[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
-#elif [[ -e $dirsystem/audiophonics ]]; then
-#	powerbuttonconf='["audiophonics"]'
 else
 	powerbuttonconf='[ 5,40,5,'$audiophonics' ]'
 fi
@@ -157,7 +155,7 @@ data+='
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
-, "hostapd"          : '$( systemctl -q is-active hostapd && echo true )'
+, "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
@@ -173,7 +171,7 @@ data+='
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$( systemctl -q is-active rotaryencoder && echo true )'
+, "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "rpimodel"         : "'$rpimodel'"
 , "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
@@ -188,23 +186,24 @@ data+='
 , "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
-if rfkill | grep -q bluetooth; then
-	bluetooth=$( systemctl -q is-active bluetooth && echo true )
-	if [[ $bluetooth == true ]]; then # 'bluetoothctl show' needs active bluetooth
-		discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
-	else
-		discoverable=true
+if [[ -e $dirshm/onboardwlan ]]; then
+	data+='
+, "wlan"             : '$( rfkill -no type | grep -q wlan && echo true )'
+, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
+, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+	discoverable=true
+	if grep -q ^dtparam=krnbt=on /boot/config.txt; then
+		bluetooth=true
+		bluetoothactive=$( isactive bluetooth )
+		if [[ $bluetoothactive == true ]]; then
+			discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
+		fi
 	fi
 	data+='
 , "bluetooth"        : '$bluetooth'
+, "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
 fi
-if [[ -e $dirshm/onboardwlan ]]; then
-	data+='
-, "wlan"             : '$( rfkill | grep -q wlan && echo true )'
-, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
-fi
 
-data2json "$data"
+data2json "$data" $1

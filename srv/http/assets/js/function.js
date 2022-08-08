@@ -198,6 +198,7 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
 	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
+	$menu.find( '.wredit, .wrdirrename' ).toggleClass( 'hide', G.mode !== 'webradio' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
@@ -254,7 +255,7 @@ function coverartChange() {
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : 'Change Album CoverArt'
+		, title       : 'Change Album Cover Art'
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
@@ -273,7 +274,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
-			banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>' );
+			banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>' );
 		}
 	} );
 }
@@ -312,7 +313,7 @@ function coverartSave() {
 	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
-		, title   : 'Save Album CoverArt'
+		, title   : 'Save Album Cover Art'
 		, message : '<img src="'+ src +'">'
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
@@ -482,7 +483,7 @@ function getBio( artist ) {
 			} );
 			similars = similars.slice( 0, -7 ) +'</span><br><br>';
 		}
-		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i>'+ artist +'</p>'
+		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i><a>'+ artist +'</a></p>'
 				+ genre
 				+ similars
 				+'<p>'+ content +'</p>'
@@ -514,9 +515,26 @@ function getBio( artist ) {
 					data.artistthumb.forEach( function( el ) {
 						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
+					$( '#biocontent .artist' ).addClass( 'hide' );
 					$( '#bioimg' )
 						.html( images )
 						.removeClass( 'hide' );
+					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
+					$( '#bioimg img' ).last().one( 'load', function() {
+						setTimeout( function() { // fix: a lot of images need some times
+							$( '#biocontent .artist' ).removeClass( 'hide' );
+						}, 0 );
+						var imgbottom = this.getBoundingClientRect().bottom;
+						$( '#bio' ).scroll( function() {
+							if ( this.scrollTop > imgbottom ) {
+								$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
+								$( '#biocontent .artist img' ).removeClass( 'hide' );
+							} else {
+								$( '#biocontent .artist a' ).css( 'margin-left', '' );
+								$( '#biocontent .artist img' ).addClass( 'hide' );
+							}
+						} );
+					} );
 				}
 			} );
 		} );
@@ -558,7 +576,6 @@ function getPlaybackStatus( withdisplay ) {
 		$.each( status, function( key, value ) {
 			G.status[ key ] = value;
 		} );
-		displayBars();
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
@@ -567,6 +584,7 @@ function getPlaybackStatus( withdisplay ) {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
 		}
+		displayBars();
 		renderPlayback();
 		setButtonControl();
 		setButtonUpdating();
@@ -610,9 +628,15 @@ function imageLoad( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
-			var mode = G.mode === 'webradio' ? 'webradio' : 'folder';
+			if ( G.mode.slice( -5 ) === 'radio' ) {
+				var mode = G.mode;
+				var menumode = 'webradio';
+			} else {
+				var mode = 'folder';
+				var menumode = 'folder';
+			}
 			$lazyload.off( 'error' ).on( 'error', function() {
-				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ mode +'"></i>' );
+				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
 			} );
 		}
 	} else {
@@ -639,17 +663,17 @@ function imageReplace( imagefilenoext, type, covername ) {
 						.pop();
 	}
 	$.post( cmdphp, data );
-	banner( 'Album CoverArt', 'Change ...', '<i class="iconcover"></i>', -1 );
+	banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
 	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
-	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>AlbumArtist</gr>'
+	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
 	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
 	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
 	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
 	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
-	, webradio       : '<i class="fa fa-webradio wh"></i><gr>WebRadio</gr>'
+	, webradio       : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
@@ -731,25 +755,14 @@ function infoUpdate( path ) {
 		return
 	}
 	
-	var radio = { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-	if ( G.display.dab ) radio[ 'Rescan DAB radio' ] = 'dab';
 	info( {
-		  icon    : 'refresh-library'
-		, title   : 'Library Database'
-		, message : ( path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : '' )
-		, radio   : ( path ? '' : radio )
-		, values  : 'update'
-		, ok      : function() {
-			var type = path ? 'update' : infoVal();
-			bash( [ 'mpcupdate', type, path ], function( std ) {
-				if ( type === 'dab' && std == -1 ) {
-					info( {
-						  icon    : 'refresh-library'
-						, title   : 'Rescan DAB radio'
-						, message : 'No DAB device found.'
-					} );
-				}
-			} );
+		  icon     : 'refresh-library'
+		, title    : 'Library Database'
+		, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+		, radio    : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+		, values   : path ? '' : [ 'update', data.ffmpeg ]
+		, ok       : function() {
+			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
 		}
 	} );
 }
@@ -838,7 +851,7 @@ function mpcSeekBar( pageX ) {
 	if ( !G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	$.each( G.display.order, function( i, name ) {
+	G.display.order.forEach( function( name ) {
 		var $libmode = $( '.lib-mode' ).filter( function() {
 			return $( this ).find( '.lipath' ).text() === name;
 		} );
@@ -1012,12 +1025,12 @@ function renderLibrary() {
 	renderLibraryCounts();
 }
 function renderLibraryCounts() {
+	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
 	} );
-	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
@@ -1042,7 +1055,7 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>WebRadio: </a>';
+		if ( G.mode === 'webradio' ) htmlpath += '<a>webradio/</a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -1053,12 +1066,16 @@ function renderLibraryList( data ) {
 	}
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
+	} else if ( G.mode === 'dabradio' ) {
+		htmlpath += '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
-	if ( htmlpath ) $( '#lib-breadcrumbs' )
+	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
+	if ( !data.html ) return // radio
+	
 	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
@@ -1362,6 +1379,7 @@ function setButtonUpdating() {
 		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
+	$( '#i-dabupdate' ).toggleClass( 'hide', !G.status.updatingdab );
 }
 function setCoverart() {
 	if ( !G.display.cover ) {

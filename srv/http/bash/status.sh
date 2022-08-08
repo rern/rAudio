@@ -35,13 +35,14 @@ else
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
 	updateaddons=$( exists $dirdata/addons/update )
-	if [[ -e $dirmpd/updating ]]; then 
+	if [[ -e $dirmpd/updating ]]; then
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
 			path=$( cat $dirmpd/updating )
 			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 		fi
 	fi
+	[[ -e $dirshm/updatingdab ]] && updatingdab=true
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
@@ -71,6 +72,7 @@ else
 , "stream"       : false
 , "updateaddons" : '$updateaddons'
 , "updating_db"  : '$updating_db'
+, "updatingdab"  : '$updatingdab'
 , "volume"       : '$volume'
 , "volumemute"   : '$volumemute'
 , "webradio"     : false'
@@ -86,7 +88,7 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
-, "dab"              : '$( exists /usr/bin/dab-scanner-rtlsdr )'
+, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
@@ -138,8 +140,8 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshCommand $serverip $dirbash/status.sh snapclient \
-	| sed -e 's|^\(, "stationcover" *: "\)\(.\+"\)|\1http://'$serverip'\2|
-		' -e 's|^\(, "coverart" *: "\)\(.\+"\)|\1http://'$serverip'\2|
+	| sed -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+		' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
 		;;
 	spotify )
@@ -158,14 +160,14 @@ $( cat $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep '"cover".*true\|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
+(( $( egrep '"cover".*true|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
 filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
 [[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 		| telnet 127.0.0.1 6600 2> /dev/null \
-		| grep -E "$filter" )
+		| egrep "$filter" )
 }
 mpdStatus currentsong
 # 'file:' missing / blank
@@ -175,7 +177,7 @@ mpdStatus currentsong
 #   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
 ! grep -q '^file: .\+' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
 # 'state:' - missing on webradio track change
-grep -q '^state' <<< "$mpdtelnet" || mpdStatus currentsong
+! grep -q '^state' <<< "$mpdtelnet" && mpdStatus currentsong
 
 readarray -t lines <<< "$mpdtelnet"
 for line in "${lines[@]}"; do
@@ -222,7 +224,7 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if (( $pllength  == 0 )); then
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
@@ -282,33 +284,40 @@ elif [[ $stream ]]; then
 		fi
 	else
 		ext=Radio
-		icon=webradio
-		# before webradios play: no 'Name:' - use station name from file instead
-		url=${file/\#charset*}
-		urlname=${url//\//|}
-		radiofile=$dirdata/webradios/$urlname
-		[[ ! -e $radiofile  ]] && radiofile=$( find $dirdata/webradios -name "$urlname" )
-		if [[ -e $radiofile ]]; then
-			readarray -t radiodata < "$radiofile"
-			station=${radiodata[0]}
-			radiosampling=${radiodata[1]}
-		fi
 		if [[ $file == *icecast.radiofrance.fr* ]]; then
 			icon=radiofrance
 		elif [[ $file == *stream.radioparadise.com* ]]; then
 			icon=radioparadise
 		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
-			icon=dab
+			icon=dabradio
+		else
+			icon=webradio
+		fi
+		# before webradio play: no 'Name:' - use station name from file instead
+		url=${file/\#charset*}
+		urlname=${url//\//|}
+		radiofile=$dirwebradio/$urlname
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirwebradio -name "$urlname" )
+		if [[ -e $radiofile ]]; then
+			readarray -t radiodata < "$radiofile"
+			station=${radiodata[0]}
+			radiosampling=${radiodata[1]}
 		fi
 		if [[ $state != play ]]; then
 			state=stop
 			Title=
 		else
-			if [[ $icon == dab || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
-				[[ $icon == dab ]] && id=dab || id=$( basename ${file/-*} )
-				[[ ${id:0:13} == francemusique ]] && id=${id:13}
-				[[ ! $id ]] && id=francemusique
-				stationname=${station/* - }
+			if [[ $icon == dabradio || $icon == radiofrance || $icon == radioparadise ]]; then # triggered once on start - subsequently by status-push.sh
+				if [[ $icon == dabradio ]]; then
+					id=dabradio
+					radiosampling='48 kHz 160 kbit/s'
+					stationname=$station
+				else
+					id=$( basename ${file/-*} )
+					[[ ${id:0:13} == francemusique ]] && id=${id:13}
+					[[ ! $id ]] && id=francemusique
+					stationname=${station/* - }
+				fi
 				if [[ ! -e $dirshm/radio ]]; then
 					echo "\
 $file
@@ -317,12 +326,12 @@ $id
 $radiosampling" > $dirshm/radio
 					systemctl -q is-active radio || systemctl start radio
 				else
-					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
+					. <( egrep '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed 's/ - \|: /\n/' )
+				readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
 				Artist=${radioname[0]}
 				Title=${radioname[1]}
 				# fetched coverart
@@ -335,7 +344,7 @@ $radiosampling" > $dirshm/radio
 			fi
 		fi
 		if [[ $displaycover ]]; then
-			filenoext=/data/webradiosimg/$urlname
+			filenoext=/data/webradio/img/$urlname
 			pathnoext=/srv/http$filenoext
 			if [[ -e $pathnoext.gif ]]; then
 				stationcover=$filenoext.$date.gif
@@ -343,7 +352,7 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
-		status=$( grep -v '^, *"state"\|^, *"webradio"' <<< "$status" )
+		status=$( egrep -v '^, *"state"|^, *"webradio"' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"
@@ -375,7 +384,7 @@ else
 	ext=${file/*.}
 	if [[ ${ext:0:9} == cue/track ]]; then
 		cuefile=$( dirname "$file" )
-		cuesrc=$( grep ^FILE "/mnt/MPD/$cuefile" | head -1 | cut -d'"' -f2 )
+		cuesrc=$( grep -m1 ^FILE "/mnt/MPD/$cuefile" | cut -d'"' -f2 )
 		ext=${cuesrc/*.}
 	fi
 	ext=${ext^^}

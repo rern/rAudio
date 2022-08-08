@@ -1,6 +1,12 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var accesspoint = $( '#accesspoint' ).length;
+$( '.container' ).click( function( e ) {
+	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) return
+	
+	$( '#menu' ).addClass( 'hide' );
+	$( 'li' ).removeClass( 'active' );
+} );
 $( '.back' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	$( '#divinterface' ).removeClass( 'hide' );
@@ -30,10 +36,10 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothcommand( 'pair', list );
 } );
 $( '#wladd' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : infoWiFi();
+	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
-	'ssid' in G ? infoAccesspoint() : wlanStatus();
+	G.hostapd ? infoAccesspoint() : wlanStatus();
 } );
 $( '#lanadd' ).click( function() {
 	info( {
@@ -53,7 +59,6 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
-	$( 'pre.status' ).addClass( 'hide' );
 	var $menu = $( '#menu' );
 	if ( !$menu.hasClass( 'hide' ) ) {
 		$menu.addClass( 'hide' );
@@ -84,18 +89,17 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
-$( 'body' ).click( function( e ) {
-	if ( !$( e.target ).parents( '#listbt, #listlan, #listwl' ).length && !$( e.target ).hasClass( 'status' ) ) {
-		$( '#menu, pre.status' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	}
-} );
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
 		bluetoothcommand( 'connect', list );
+		return
+	}
+	
+	if ( G.hostapd ) {
+		infoAccesspoint();
 		return
 	}
 	
@@ -331,7 +335,7 @@ function infoAccesspoint() {
 	info( {
 		  icon    : 'wifi'
 		, title   : 'Wi-Fi'
-		, message : 'Access Point must be disabled.'
+		, message : 'Access Point is currently active.'
 	} );
 }
 function infoBluetooth( mac ) {

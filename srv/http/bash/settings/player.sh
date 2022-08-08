@@ -6,13 +6,12 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/settings/player-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/player-data.sh pushrefresh
 }
 volumeBtGet() {
 	voldb=$( amixer -MD bluealsa 2> /dev/null \
 		| grep -m1 '%.*dB' \
-		| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+		| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 }
 restartMPD() {
 	$dirbash/settings/player-conf.sh
@@ -156,16 +155,22 @@ dop )
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/ffmpeg/ {n; s/".*"/"yes"/}' /etc/mpd.conf
+		sed -i '/^resampler/ i\
+decoder {\
+	plugin         "ffmpeg"\
+	enabled        "yes"\
+}\
+
+' /etc/mpd.conf
 	else
-		sed -i '/ffmpeg/ {n; s/".*"/"no"/}' /etc/mpd.conf
+		sed -i '/decoder/,+4 d' /etc/mpd.conf
 	fi
 	restartMPD
 	;;
 filetype )
 	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
 	for i in {a..z}; do
-		line=$( grep ^$i <<<"$type" | tr '\n' ' ' )
+		line=$( grep ^$i <<< "$type" | tr '\n' ' ' )
 		[[ $line ]] && list+=${line:0:-1}'<br>'
 	done
 	echo "${list:0:-4}"
@@ -212,6 +217,9 @@ $( cat "$file" | sed 's|^| <grn>●</grn> |' )
 "
 	done
 	echo "$list"
+	;;
+nonutf8 )
+	cat $dirmpd/nonutf8
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then

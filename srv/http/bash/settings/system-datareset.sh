@@ -7,7 +7,7 @@ rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,cross
 
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf
-[[ -e $file ]] && sed -i '/i2c-bcm2708\|i2c-dev/ d' $file
+[[ -e $file ]] && sed -i -E '/i2c-bcm2708|i2c-dev/ d' $file
 #file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
 #[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
@@ -45,7 +45,7 @@ over_voltage=2"
 	echo "$config" > /boot/config.txt
 fi
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradios,webradiosimg} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 if [[ -e /usr/bin/camilladsp ]]; then
@@ -141,7 +141,7 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-sed -i -e '/^auto_update\|^audio_buffer_size\| #custom$/ d
+sed -i -e -E '/^auto_update|^audio_buffer_size| #custom$/ d
 ' -e '/quality/,/}/ d
 ' -e '/soxr/ a\
 	quality        "very high"\

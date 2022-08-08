@@ -9,16 +9,15 @@ readarray -t args <<< "$1"
 
 pushReboot() {
 	pushRefresh
-	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' $2 5000
+	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' system 5000
 	echo $1 >> $dirshm/reboot
 }
 pushRefresh() {
-	data=$( $dirbash/settings/system-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/system-data.sh pushrefresh
 }
 I2Cset() {
 	# parse finalized settings
-	grep -q 'waveshare\|tft35a' $fileconfig && lcd=1
+	egrep -q 'waveshare|tft35a' $fileconfig && lcd=1
 	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -31,8 +30,8 @@ I2Cset() {
 	fi
 
 	# reset
-	sed -i '/dtparam=i2c_arm=on\|dtparam=spi=on\|dtparam=i2c_arm_baudrate/ d' $fileconfig
-	sed -i '/i2c-bcm2708\|i2c-dev\|^\s*$/ d' $filemodule
+	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
+	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
 	[[ -s $filemodule ]] || rm -f $filemodule
 
 	# dtparam=i2c_arm=on
@@ -73,17 +72,15 @@ bluetooth )
 	bluetoothctl pairable yes &
 	;;
 bluetoothdisable )
-	systemctl disable --now bluetooth
-	pkill bluetooth
-	rm -f $dirshm/{btdevice,btreceiver,btsender}
-	grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
+	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
+	if ! rfkill -no type | grep -q bluetooth; then
+		systemctl stop bluetooth
+		pkill bluetooth
+		rm -f $dirshm/{btdevice,btreceiver,btsender}
+		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	fi
 	pushRefresh
-	;;
-bluetoothstatus )
-	echo "\
-<bll># bluetoothctl show</bll>
-
-$( bluetoothctl show )"
 	;;
 bluetoothset )
 	btdiscoverable=${args[1]}
@@ -95,16 +92,31 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
-	! systemctl -q is-active bluetooth && systemctl enable --now bluetooth
+	sed -i '/dtparam=krnbt=on/ s/^#//' /boot/config.txt
+	if ls -l /sys/class/bluetooth | grep -q serial; then
+		systemctl start bluetooth
+		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	else
+		pushReboot Bluetooth
+	fi
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $mpdrestart || $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
+	[[ $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
 	pushRefresh
+	;;
+bluetoothstatus )
+	if rfkill -no type | grep -q bluetooth; then
+		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
+		mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
+	fi
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show $mac )"
 	;;
 databackup )
 	dirconfig=$dirdata/config
-	backupfile=$dirdata/tmp/backup.gz
+	backupfile=$dirtmp/backup.gz
 	rm -f $backupfile
 	alsactl store
 	files=(
@@ -168,7 +180,7 @@ databackup )
 	rm -rf $dirdata/{config,disable,enable}
 	;;
 datarestore )
-	backupfile=$dirdata/tmp/backup.gz
+	backupfile=$dirtmp/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
 	# remove all flags
@@ -178,6 +190,11 @@ datarestore )
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
+	# temp
+	if [[ -e $dirdata/webradios ]]; then
+		mv $dirdata/webradio{s,}
+		mv $dirdata/{webradiosimg,webradio/img}
+	fi
 	
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
@@ -217,7 +234,7 @@ datarestore )
 		chmod 777 $mountpoint
 		std=$( mount $mountpoint )
 		if [[ $? == 0 ]]; then
-			for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 				rm -rf $dirdata/$dir
 				ln -s $mountpoint/$dir $dirdata
 			done
@@ -234,8 +251,8 @@ datarestore )
 			list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
 			if grep -q '^\s*"Range": ' "$plfile"; then
 				readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
-												| grep '"file":\|"Track":' \
-												| sed 's/^\s*"file": "\|^\s*"Track": //; s/",$\|,$//; s/\\//g' )
+												| egrep '"file":|"Track":' \
+												| sed -E 's/^\s*"file": "|^\s*"Track": //; s/",$|,$//; s/\\//g' )
 				iL=${#file_track[@]}
 				for (( i=0; i < iL; i++ )); do
 					track=000${file_track[$(( i + 1 ))]}
@@ -283,9 +300,9 @@ hddspindown )
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
-	sed -i "s/^\(ssid=\).*/\1${args[1]}/" /etc/hostapd/hostapd.conf
-	sed -i '/^\tname =/ s/".*"/"'$hostname'"/' /etc/shairport-sync.conf
-	sed -i "s/^\(friendlyname = \).*/\1${args[1]}/" /etc/upmpdcli.conf
+	sed -i -E "s/^(ssid=).*/\1$hostname/" /etc/hostapd/hostapd.conf
+	sed -i -E 's/(name = ").*/\1'$hostname'"/' /etc/shairport-sync.conf
+	sed -i -E "s/^(friendlyname = ).*/\1$hostname/" /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
@@ -293,7 +310,7 @@ hostname )
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	dtoverlay=$( grep 'dtparam=i2c_arm=on\|dtparam=krnbt=on\|dtparam=spi=on\|dtoverlay=gpio\|dtoverlay=sdtweak,poll_once\|waveshare\|tft35a\|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( egrep 'dtparam=i2c_arm=on|dtparam=krnbt=on|dtparam=spi=on|dtoverlay=gpio|dtoverlay=sdtweak,poll_once|waveshare|tft35a|hdmi_force_hotplug=1' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -312,23 +329,22 @@ dtparam=audio=on"
 		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	sed -i '/dtparam=\|dtoverlay=\|gpio=25=op,dh\|^$/ d' $fileconfig
+	sed -i -E '/dtparam=|dtoverlay=|gpio=25=op,dh|^$/ d' $fileconfig
 	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	pushReboot 'Audio I&#178;S module' i2saudio
+	pushReboot 'Audio I&#178;S module'
 	;;
 journalctl )
-	filebootlog=/tmp/bootlog
-	if [[ -e $filebootlog ]]; then
-		journal=$( cat $filebootlog )
-	else
+	filebootlog=$dirtmp/bootlog
+	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		grep -q 'Startup finished.*kernel' <<< "$journal" && echo "$journal" > $filebootlog
+		tail -1 <<< "$journal" | grep -q 'Startup finished' || journal='(Boot ...)'
+		echo "$journal" > $filebootlog
 	fi
 	echo "\
 <bll># journalctl -b</bll>
-$journal
+$( cat $filebootlog )
 "
 	;;
 lcdcalibrate )
@@ -337,7 +353,7 @@ lcdcalibrate )
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then
-		sed -i "s/\(Calibration\"  \"\).*/\1$value\"/" /etc/X11/xorg.conf.d/99-calibration.conf
+		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser
 	fi
 	;;
@@ -378,7 +394,7 @@ backlight=${args[13]^}"
 	touch $dirsystem/lcdchar
 	I2Cset
 	if [[ $reboot ]]; then
-		pushReboot 'Character LCD' lcdchar
+		pushReboot 'Character LCD'
 	else
 		$dirbash/lcdchar.py logo
 		pushRefresh
@@ -386,7 +402,7 @@ backlight=${args[13]^}"
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
+	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
 	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
@@ -400,7 +416,7 @@ lcdset )
 		rm $dirsystem/lcdmodel
 	fi
 	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-	sed -i '/hdmi_force_hotplug\|rotate=/ d' $fileconfig
+	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
 	echo "\
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
@@ -412,7 +428,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
 	fi
 	systemctl enable localbrowser
-	pushReboot 'TFT 3.5" LCD' lcd
+	pushReboot 'TFT 3.5" LCD'
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -516,18 +532,39 @@ mpdoledset )
 	touch $dirsystem/mpdoled
 	I2Cset
 	if [[ $reboot ]]; then
-		pushReboot 'Spectrum OLED' mpdoled
+		pushReboot 'Spectrum OLED'
 	else
 		pushRefresh
 	fi
 	;;
 packagelist )
-	pacman -Qi \
-		| grep '^Name\|^Vers\|^Desc\|^URL' \
-		| sed 's|^Name.*: \(.*\)|<div class="pkg"><code>\1</code>|
-			   s|^Vers.*: \(.*\)|\1</div>|
-			   s|^Desc.*: \(.*\)|<div class="descr"> \&emsp; \1|
-			   s|^URL.*: \(.*\)|<br> \&emsp; <a href="\1" target="_blank">\1</a></div>|'
+	filepackages=$dirtmp/packages
+	if [[ ! -e $filepackages ]]; then
+		pushstreamNotify Backend 'Package list ...' system
+		pacmanqi=$( pacman -Qi | egrep '^Name|^Vers|^Desc|^URL' )
+		while read line; do
+			case ${line:0:3} in
+			Nam ) name=$line;;
+			Ver ) version=$line;;
+			Des ) description=$line;;
+			URL ) url=$line
+				  lines+="\
+$url
+$name
+$version
+$description
+"
+;;
+			esac
+		done <<< "$pacmanqi"
+		echo "$lines" \
+			| sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
+					  s|^Name.*: (.*)|\1</a> |
+					  s|^Vers.*: (.*)|\1|
+					  s|^Desc.*: (.*)|<p>\1</p>|' \
+			> $dirtmp/packages
+	fi
+	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
@@ -536,7 +573,7 @@ powerbuttondisable )
 		systemctl disable --now powerbutton
 		gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 	fi
-	sed -i '/gpio-poweroff\|gpio-shutdown/ d' $fileconfig
+	sed -i -E '/gpio-poweroff|gpio-shutdown/ d' $fileconfig
 	pushRefresh
 	;;
 powerbuttonset )
@@ -546,7 +583,7 @@ dtoverlay=gpio-poweroff,gpiopin=22\
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
 ' $fileconfig
 		touch $dirsystem/audiophonics
-		pushReboot 'Power Button' power
+		pushReboot 'Power Button'
 		exit
 	fi
 	
@@ -565,7 +602,7 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 		pushRefresh
 	else
 		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button' power
+		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
 	fi
 	;;
 relaysdisable )
@@ -591,6 +628,11 @@ remove )
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
+rfkilllist )
+	echo "\
+<bll># rfkill</bll>
+$( rfkill )"
+	;;
 rotaryencoderdisable )
 	systemctl disable --now rotaryencoder
 	pushRefresh
@@ -611,7 +653,7 @@ servers )
 	file=/etc/systemd/timesyncd.conf
 	prevntp=$( grep ^NTP $file | cut -d= -f2 )
 	if [[ $ntp != $prevntp ]]; then
-		sed -i "s/^\(NTP=\).*/\1$ntp/" $file
+		sed -i -E "s/^(NTP=).*/\1$ntp/" $file
 		ntpdate $ntp
 	fi
 	if [[ $mirror ]]; then
@@ -635,10 +677,10 @@ servers )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ $( grep . $mountpoint/iplist | wc -l ) == 0 ]] && rm $mountpoint/iplist
-	for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 	done
@@ -688,7 +730,7 @@ shareddata )
 			sleep 1
 			mount | grep -q "$mountpoint" && break
 		done
-		for dir in audiocd bookmarks lyrics mpd playlists webradios webradiosimg; do
+		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 			if [[ $copydata == true ]]; then
 				rm -rf $mountpoint/$dir
 				cp -rf $dirdata/$dir $mountpoint
@@ -698,7 +740,7 @@ shareddata )
 			rm -rf $dirdata/$dir
 			ln -s $mountpoint/$dir $dirdata
 		done
-		ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' >> $mountpoint/iplist
+		ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' >> $mountpoint/iplist
 		chown -h http:http $mountpoint/*/
 		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
 		pushRefresh
@@ -720,12 +762,12 @@ soundprofiledisable )
 soundprofileget )
 	echo "\
 <bll># sysctl vm.swappiness
-# ifconfig eth0 | grep 'mtu\\|txq'</bll>
+# ifconfig eth0 | egrep 'mtu|txq'</bll>
 
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
-	| grep 'mtu\|txq' \
-	| sed 's/.*\(mtu.*\)/\1/; s/.*\(txq.*\) (.*/\1/; s/ / = /' )"
+	| egrep 'mtu|txq' \
+	| sed -E 's/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
 	if [[ ${args[@]:1:4} == '60 1500 1000' ]]; then
@@ -745,7 +787,7 @@ statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
 		echo '<hr>'
-		bluetoothctl show | sed 's/^\(Controller.*\)/bluetooth: \1/'
+		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
 	;;
 systemconfig )
@@ -837,7 +879,7 @@ wlandisable )
 wlanset )
 	regdom=${args[1]}
 	apauto=${args[2]}
-	rfkill | grep -q wlan || modprobe brcmfmac
+	! lsmod | grep -q brcmfmac && modprobe brcmfmac
 	echo wlan0 > $dirshm/wlan
 	iw wlan0 set power_save off
 	[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap

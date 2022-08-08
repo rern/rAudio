@@ -40,10 +40,7 @@ mpc idleloop | while read changed; do
 			;;
 		update )
 			sleep 1
-			if ! mpc | grep -q '^Updating'; then
-				$dirbash/cmd-list.sh
-				echo mpdidle >> $dirshm/date
-			fi
+			! mpc | grep -q '^Updating' && $dirbash/cmd-list.sh
 			;;
 	esac
 done

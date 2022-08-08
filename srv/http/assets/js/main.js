@@ -85,8 +85,10 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	window.addEventListener( 'touchstart', function( e ) {
 		var $target = $( e.target );
 		if ( G.display.noswipe
-			|| [ 'volume-band', 'volume-knob', 'time-band', 'time-knob',  ].includes( e.target.id )
-			|| $target.parents( '#time-knob' ).length || $target.parents( '#volume-knob' ).length
+			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+			|| $target.parents( '#time-knob' ).length
+			|| $target.parents( '#volume-knob' ).length
+			|| !$( '#bio' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
@@ -267,7 +269,7 @@ $( '#displayplayback' ).click( function() {
 		  bars         : 'Top-Bottom bars'
 		, barsalways   : 'Bars always on'
 		, time         : 'Time'
-		, radioelapsed : 'WebRadio time'
+		, radioelapsed : 'Web Radio time'
 		, cover        : 'Coverart'
 		, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 		, volume       : 'Volume'
@@ -1138,9 +1140,9 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	delete G.gmode;
 	if ( G.query.length > 1 ) G.scrolltop[ G.query[ G.query.length - 1 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
-	if ( G.mode === 'webradio' ) {
+	if ( G.mode.slice( -5 ) === 'radio' ) {
 		var query = {
-			  query  : 'webradio'
+			  query  : 'radio'
 			, string : path
 		}
 	} else {
@@ -1152,7 +1154,7 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
-		if ( !path && G.mode === 'webradio' ) path = 'WEBRADIO';
+		if ( !path && G.mode.slice( -5 ) === 'radio' ) path = G.mode.toUpperCase();
 		data.path = path;
 		data.modetitle = path;
 		renderLibraryList( data );
@@ -1162,6 +1164,15 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 } );
 $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 	webRadioNew();
+} ).on( 'click', '.button-dab-refresh', function() {
+	info( {
+		  icon     : 'dabradio'
+		, title    : 'DAB Radio'
+		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
+		, ok       : function() {
+			bash( [ 'dabscan' ] );
+		}
+	} );
 } ).on( 'click', '.button-latest-clear', function() {
 	info( {
 		  icon         : 'latest'
@@ -1202,18 +1213,18 @@ $( '#lib-search-btn' ).click( function() { // search
 	if ( !keyword ) {
 		$( '#lib-search-close' ).click();
 	} else {
-		if ( G.mode !== 'webradio' ) {
+		if ( G.mode.slice( -5 ) === 'radio' ) {
+			var query = {
+				  query  : G.mode
+				, string : keyword
+				, mode   : 'search'
+			}
+		} else {
 			var query = {
 				  query  : 'search'
 				, string : keyword
 				, gmode  : G.mode
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
-			}
-		} else {
-			var query = {
-				  query  : 'webradio'
-				, string : keyword
-				, mode   : 'search'
 			}
 		}
 		list( query, function( data ) {
@@ -1304,7 +1315,7 @@ $( '.mode' ).click( function() {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( !G.status.counts[ G.mode ] && G.mode !== 'webradio' ) {
+	if ( !G.status.counts[ G.mode ] && G.mode.slice( -5 ) !== 'radio' ) {
 		if ( G.mode === 'playlists' ) {
 			var message = 'No saved playlists found.';
 		} else if ( G.mode === 'latest' ) {
@@ -1338,7 +1349,7 @@ $( '.mode' ).click( function() {
 	}
 	
 	var path = G.mode.toUpperCase();
-	// G.modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, genre, playlists
+	// G.modes: sd, nas, usb, webradio, dabradio, album, artist, albumartist, composer, conductor, genre, playlists
 	// ( coverart, bookmark by other functions )
 	if ( [ 'sd', 'nas', 'usb' ].includes( G.mode ) ) { // browse by directory
 		var query = {
@@ -1346,9 +1357,10 @@ $( '.mode' ).click( function() {
 			, string : path
 			, format : [ 'file' ]
 		}
-	} else if ( G.mode === 'webradio' ) {
+	} else if ( G.mode.slice( -5 ) === 'radio' ) {
 		var query = {
-			  query  : 'webradio'
+			  query : 'radio'
+			, gmode : G.mode
 		}
 	} else { // browse by modes
 		var query = {
@@ -1359,11 +1371,11 @@ $( '.mode' ).click( function() {
 	}
 	query.gmode = G.mode;
 	list( query, function( data ) {
-		data.path = path;
+		data.path = G.mode === 'dabradio' ? '' : path;
 		data.modetitle = path;
 		renderLibraryList( data );
 	}, 'json' );
-	query.path = G.mode === 'webradio' ? '' : path;
+	query.path = G.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	if ( query.query !== 'ls' ) G.query.push( query );
 } );
@@ -1382,7 +1394,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var path = $( this ).find( '.lipath' ).text();
 	if ( G.bookmarkedit ) return
 	
-	if ( path.slice( 0, 10 ) !== 'webradios/' ) {
+	if ( path.slice( 3, 9 ) !== 'radio' ) {
 		var mode = path.split( '/' )[ 0 ].toLowerCase();
 		var query = {
 			  query  : 'ls'
@@ -1480,7 +1492,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	// select file
 	//    - gif    > [file]   - no canvas
 	//    - others > [base64] - data:image/jpeg;base64,...
-	var imagepath = path.slice( 0, 9 ) !== 'webradios' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
+	var imagepath = path.slice( 3, 9 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -1631,14 +1643,14 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	if ( $( '.bkedit' ).length ) {
 		$( '.bkedit' ).remove();
 		$( '.licoverimg img' ).css( 'opacity', '' );
-		if ( $( this ).is( '.licover' ) ) return
+		if ( $( this ).hasClass( 'licover' ) ) return
 	}
 	
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .fa-artist, .fa-albumartist, .licomposer, .fa-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .fa-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
 			getBio( name );
-		} else if ( $target.is( '.liinfopath' ) ) {
+		} else if ( $target.hasClass( 'liinfopath' ) ) {
 			G.gmode = G.mode;
 			var path = $target.text();
 			G.mode = path.replace( /\/.*/, '' ).toLowerCase();
@@ -1677,10 +1689,10 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 			, format : [ 'file' ]
 		}
 		var modetitle = path;
-	} else if ( G.mode === 'webradio' ) {
+	} else if ( G.mode.slice( -5 ) === 'radio' ) {
 		if ( $( this ).hasClass( 'dir' ) ) {
 			var query = {
-				  query  : 'webradio'
+				  query  : 'radio'
 				, string : path
 			}
 			var modetitle = path;

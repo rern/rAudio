@@ -1,8 +1,9 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var setmpdconf = '/srv/http/bash/settings/player-conf.sh';
-var warning = `\
+var warning = `
 <wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
+
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 
@@ -408,6 +409,7 @@ function renderPage() {
 			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
+			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
 		}
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
 	}
@@ -423,6 +425,8 @@ function renderPage() {
 			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
+	$( '#divlists' ).toggleClass( 'hide', G.lists.indexOf( true ) === -1 );
+	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', !G.lists[ i ] );
 	showContent();
 }
 function setMixerType( mixertype ) {

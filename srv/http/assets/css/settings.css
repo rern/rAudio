@@ -131,10 +131,11 @@ heading {
 	letter-spacing: 5px;
 }
 heading.sub {
-	margin: 5px 0 10px 0;
+	margin: 20px 0 10px 0;
 	padding-bottom: 0;
-	line-height: 24px;
+	line-height: 28px;
 	font-size: 17px;
+	color: var( --cw );
 	border-bottom-color: var( --cga );
 }
 heading.status .headtitle::after,
@@ -338,6 +339,40 @@ input[type=image] {
 	padding: 0;
 	border: none !important;
 }
+#about {
+	margin-top: 40px;
+	line-height: 22px;
+}
+#logotext {
+	display: inline-block;
+	margin-left: 8px;
+	line-height: 16px;
+	letter-spacing: 15px;
+}
+#logotext gr {
+	letter-spacing: normal;
+}
+.list {
+	margin-top: 10px;
+	color: var( --cg75 );
+}
+.list a::before {
+	content: '• ';
+	color: var( --cg75 );
+}
+.list p {
+	margin: 0 0 0 12px;
+}
+.listtitle a {
+	display: inline-block;
+	width: calc( 100% / 26 );
+	min-width: 16px;
+	text-align: center;
+	color: var( --cml );
+}
+.brindex {
+	display: none;
+}
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
 .container input[type=checkbox] {
 	position: absolute;
@@ -523,9 +558,6 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
-.list {
-	margin-top: 10px;
-}
 #guide {
 	position: absolute;
 	width: 100%;
@@ -646,6 +678,12 @@ input.disabled + .switchlabel:after {
 	.selectric .button {
 		width: 25px !important;
 	}
+	.listtitle a {
+		width: calc( 100% / 13 );
+	}
+	.brindex {
+		display: block;
+	}
 }
 @media (max-width: 419px) {
 	#bar-bottom a {
@@ -699,7 +737,6 @@ input.disabled + .switchlabel:after {
 	.help-block bl,
 	.img,
 	.listtitle,
-	.list,
 	.page-icon,
 	.prev-next,
 	.setting,
@@ -709,6 +746,7 @@ input.disabled + .switchlabel:after {
 	.switchlabel,
 	.undervoltage,
 	.wiring,
+	#backend,
 	#button-data,
 	#close,
 	#filetype,

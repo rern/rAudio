@@ -5,7 +5,7 @@
 # - mixer device
 #    - from file if manually set
 #    - from 'amixer'
-#        - if more than 1, filter with 'Digital\|Master' | get 1st one
+#        - if more than 1, filter with 'Digital|Master' | get 1st one
 # - mixer_type
 #    - from file if manually set
 #    - set as hardware if mixer device available
@@ -31,7 +31,7 @@ getControls() {
 	[[ ! $amixer ]] && controls= && return
 	
 	controls=$( echo "$amixer" \
-					| grep 'volume.*pswitch\|Master.*volume' \
+					| egrep 'volume.*pswitch|Master.*volume' \
 					| cut -d"'" -f2 )
 	[[ ! $controls ]] && controls=$( echo "$amixer" \
 										| grep volume \
@@ -50,7 +50,7 @@ cards=$( echo "$aplay" \
 			| sed 's/card //' )
 for card in $cards; do
 	line=$( echo "$aplay" | sed -n "/^card $card/ p" )
-	hw=$( echo $line | sed 's/card \(.*\):.*device \(.*\):.*/hw:\1,\2/' )
+	hw=$( echo $line | sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' )
 	card=${hw:3:1}
 	device=${hw: -1}
 	aplayname=$( echo $line \

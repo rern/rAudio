@@ -2,19 +2,14 @@
 
 . /srv/http/bash/common.sh
 
-connectedCheck() {
-	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
-		sleep $2
-	done
-}
+# wifi - on-board or usb
+wlandev=$( $dirbash/settings/networks.sh wlandevice )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
 	rm /boot/expand
 	partition=$( mount | grep ' on / ' | cut -d' ' -f1 )
-	dev=${partition:0:-2}
-	[[ $dev == /dev/sd ]] && dev=${partition:0:-1}
+	[[ ${partition:0:7} == /dev/sd ]] && dev=${partition:0:-1} || dev=${partition:0:-2}
 	if (( $( sfdisk -F $dev | awk 'NR==1{print $6}' ) != 0 )); then
 		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
 		partprobe $dev
@@ -26,46 +21,59 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	mv /boot/backup.gz $dirdata/tmp
-	$dirbash/settings/system.sh datarestore
-	reboot=1
+	if bsdtar tf backup.gz | grep -q ^data/system/$; then
+		mv /boot/backup.gz $dirdata/tmp
+		$dirbash/settings/system.sh datarestore
+	else
+		restorefailed=1
+	fi
 fi
 
-# wifi - on-board or usb
-wlandev=$( ip -br link \
-				| grep ^w \
-				| grep -v wlan \
-				| cut -d' ' -f1 )
-[[ ! $wlandev ]] && wlandev=wlan0
-echo $wlandev > /dev/shm/wlan
-
-if [[ -e /boot/wifi ]]; then
+if [[ -e /boot/wifi && $wlandev != false ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv -f /boot/wifi "/etc/netctl/$ssid"
-	ifconfig $wlandev down
-	netctl switch-to "$ssid"
-	netctl enable "$ssid"
+	$dirbash/settings/networks.sh profileconnect$'\n'"$ssid"
 fi
 # ----------------------------------------------------------------------------
+
+connectedCheck() {
+	for (( i=0; i < $1; i++ )); do
+		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
+		sleep $2
+	done
+}
+
 echo mpd > $dirshm/player
 mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-
 # ( no profile && no hostapd ) || usb wifi > disable onboard
-readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
-systemctl -q is-enabled hostapd && hostapd=1
 lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ ! $profiles && ! $hostapd || $wlandev != wlan0 ]] && rmmod brcmfmac &> /dev/null
+[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
+systemctl -q is-enabled hostapd && hostapd=1
+readarray -t profiles <<< $( ls -1pt /etc/netctl | grep -v /$ )
+[[ $usbwifi || ( ! $hostapd && ! $profiles ) ]] && rmmod brcmfmac &> /dev/null
 
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
-[[ ! $connected && $profiles && ! $hostapd ]] && connectedCheck 30 3
+if [[ ! $connected && ! $hostapd && $profiles ]]; then
+	! rfkill -no type | grep -q wlan && [[ -e $dirshm/onboardwlan ]] && modprobe brcmfmac
+	if rfkill -no type | grep -q wlan; then
+		if [[ $profiles ]]; then
+			for profile in "${profiles[@]}"; do
+				[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1
+				grep -q $wlandev "/etc/netctl/$profile" && devprofile=$profile
+			done
+			[[ ! $enabledprofile && $devprofile ]] && $dirbash/settings/networks.sh profileconnect$'\n'"$devprofile"
+		fi
+		connectedCheck 30 3
+	fi
+fi
 
 [[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
 if [[ $nas ]]; then
@@ -147,3 +155,5 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
+
+[[ $restorefailed ]] && pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000

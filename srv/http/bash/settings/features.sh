@@ -6,8 +6,7 @@
 readarray -t args <<< "$1"
 
 pushRefresh() {
-	data=$( $dirbash/settings/features-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/features-data.sh pushrefresh
 }
 pushRefreshNetworks() {
 	data=$( $dirbash/settings/networks-data.sh )
@@ -44,9 +43,6 @@ spotifyReset() {
 
 case ${args[0]} in
 
-aplaydevices )
-	aplay -L | grep -v '^\s\|^null' | head -c -1
-	;;
 autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
@@ -78,24 +74,38 @@ camilladspasound )
 	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
-	old=( $( grep 'channels\|format\|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	old=( $( egrep 'channels|format|rate' /etc/asound.conf | awk '{print $NF}' ) )
 	[[ "${new[@]}" == "${old[@]}" ]] && exit
 	
 	list=( channels format rate )
 	for (( i=0; i < 3; i++ )); do
-		[[ ${new[i]} != ${old[i]} ]] && sed -i 's/^\(\s*'${list[i]}'\s*\).*/\1'${new[i]}'/' /etc/asound.conf
+		[[ ${new[i]} != ${old[i]} ]] && sed -i -E 's/^(\s*'${list[i]}'\s*).*/\1'${new[i]}'/' /etc/asound.conf
 	done
 	alsactl nrestore &> /dev/null
 	;;
 camillaguiset )
 	refresh=${args[1]}
 	applyauto=${args[2]}
-	sed -i "s/\(status_update_interval: \).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
 	touch $dirsystem/camilladsp
 	$dirbash/settings/player-conf.sh
 	pushRefresh
 	pushSubmenu camilladsp true
+	;;
+dabradio )
+	if [[ ${args[1]} == true ]]; then
+		if timeout 1 rtl_test -t &> /dev/null; then
+			systemctl enable --now rtsp-simple-server
+			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
+		else
+			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dabradio 5000
+		fi
+		
+	else
+		systemctl disable --now rtsp-simple-server
+	fi
+	pushRefresh
 	;;
 equalizer )
 	enabled=${args[1]}
@@ -124,16 +134,16 @@ hostapdset )
 		iprange=${args[1]}
 		router=${args[2]}
 		password=${args[3]}
-		sed -i -e "s/^\(dhcp-range=\).*/\1$iprange/
-" -e "s/^\(.*option:router,\).*/\1$router/
-" -e "s/^\(.*option:dns-server,\).*/\1$router/
+		sed -i -e -E "s/^(dhcp-range=).*/\1$iprange/
+" -e -E "s/^(.*option:router,).*/\1$router/
+" -e -E "s/^(.*option:dns-server,).*/\1$router/
 " /etc/dnsmasq.conf
-		sed -i -e '/^#*wpa\|^#*rsn/ s/^#*//
-' -e "s/\(wpa_passphrase=\).*/\1$password/
+		sed -i -E '/^#*wpa|^#*rsn/ s/^#*//
+' -e -E "s/(wpa_passphrase=).*/\1$password/
 " /etc/hostapd/hostapd.conf
 	else
 		router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-		sed -i -e '/^wpa\|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
+		sed -i -E '/^wpa|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
 	netctl stop-all
 	wlandev=$( cat $dirshm/wlan )
@@ -149,7 +159,7 @@ localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
 	systemctl enable --now getty@tty1
-	sed -i 's/\(console=\).*/\1tty1/' /boot/cmdline.txt
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
 	rm -f $dirsystem/onwhileplay
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 	pushRefresh
@@ -177,20 +187,20 @@ onwhileplay=$newonwhileplay
 cursor=$newcursor
 " > $dirsystem/localbrowser.conf
 	if ! grep -q console=tty3 /boot/cmdline.txt; then
-		sed -i 's/\(console=\).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
+		sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 		systemctl disable --now getty@tty1
 	fi
 
 	if [[ $changedrotate ]]; then
 		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
-		if grep -q 'waveshare\|tft35a' /boot/config.txt; then
+		if egrep -q 'waveshare|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
 				CCW )    degree=270;;
 				CW )     degree=90;;
 				UD )     degree=180;;
 			esac
-			sed -i "/waveshare\|tft35a/ s/\(rotate=\).*/\1$degree/" /boot/config.txt
+			sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
 			cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 			pushRefresh
 			echo Rotate GPIO LCD screen >> $dirshm/reboot
@@ -246,11 +256,11 @@ multiraudiodisable )
 	pushSubmenu multiraudio false
 	;;
 multiraudioset )
-	data=$( printf "%s\n" "${args[@]:1}" | grep . )
+	data=$( printf "%s\n" "${args[@]:1}" | awk NF )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multiraudio
 		echo "$data" > $dirsystem/multiraudio.conf
-		ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
+		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
 		for ip in $iplist; do
 			sshCommand $ip << EOF
@@ -293,7 +303,7 @@ scrobbleset )
 		exit
 	fi
 	
-	keys=( $( grep 'apikeylastfm\|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	keys=( $( egrep 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
@@ -431,7 +441,7 @@ upmpdclidisable )
 	;;
 upmpdcliset )
 	[[ ${args[1]} == true ]] && val=1 || val=0
-	sed -i "s/\(ownqueue = \)./\1$val/" /etc/upmpdcli.conf
+	sed -i -E "s/(ownqueue = )./\1$val/" /etc/upmpdcli.conf
 	featureSet upmpdcli
 	;;
 	

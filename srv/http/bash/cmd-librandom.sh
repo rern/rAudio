@@ -3,14 +3,13 @@
 randomfileAdd() {
 	dir=$( cat /srv/http/data/mpd/album | shuf -n 1 | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
-	file=$( echo "$mpcls" | shuf -n 1 )
-	echo $mpcls | grep -q .cue$ && file="${file%.*}.cue"
-	if [[ ${file: -4} == .cue ]]; then
+	file=$( grep -m1 '\.cue$' <<< "$mpcls" )
+	if [[ $file ]]; then
 		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$file" | wc -l ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		mpc --range=$range load "$file"
 	else
-		mpc add "$file"
+		mpc add "$( shuf -n 1 <<< "$mpcls" )"
 	fi
 }
 counts=$( mpc | awk '/\[playing\]/ {print $2}' | tr -d '#' )

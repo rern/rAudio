@@ -16,7 +16,7 @@ if systemctl -q is-active bluetooth; then
 			info=$( bluetoothctl info $mac )
 			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			type=$( echo "$info" | grep 'UUID: Audio' | sed 's/\s*UUID: Audio \(.*\) .*/\1/' | xargs )
+			type=$( echo "$info" | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
 			[[ ! $type ]] && type=Device
 			listbt+=',{
   "name"      : "'$name'"
@@ -35,7 +35,7 @@ echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=fals
 echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
 pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
-[[ $1 == btlistpush ]] && pushstream bluetooth "$listbt" && exit 
+[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
 if [[ $ipeth ]]; then
@@ -64,7 +64,7 @@ fi
 wlandev=$( cat $dirshm/wlan )
 ifconfig $wlandev up &> /dev/null # force up
 
-readarray -t profiles <<< $( netctl list | sed 's/^. //' )
+readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 if [[ $profiles ]]; then
 	for profile in "${profiles[@]}"; do
 		if netctl is-active "$profile" &> /dev/null; then
@@ -106,9 +106,9 @@ fi
 
 data='
   "page"       : "networks"
-, "activebt"   : '$( systemctl -q is-active bluetooth && echo true )'
-, "activeeth"  : '$( ifconfig eth0 &> /dev/null && echo true )'
-, "activewlan" : '$( ip -br link | grep -q ^w && echo true )'
+, "activebt"   : '$( isactive bluetooth )'
+, "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
+, "activewlan" : '$( rfkill -no type | grep -q wlan && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"
@@ -118,4 +118,4 @@ data='
 , "hostapd"    : '$ap'
 , "hostname"   : "'$( hostname )'"'
 
-data2json "$data"
+data2json "$data" $1

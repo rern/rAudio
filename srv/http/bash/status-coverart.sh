@@ -27,7 +27,7 @@ onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 
 ##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
-										| grep -i '/album\....$\|cover\....$\|/folder\....$\|/front\....$' \
+										| egrep -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
 										| head -1 )
 if [[ $coverfile ]]; then
 	echo "${coverfile:0:-4}".$date.${coverfile: -3} | tee $dirshm/local/$covername

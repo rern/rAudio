@@ -31,9 +31,9 @@ if [[ $cue == false ]]; then
 	fi
 else
 	if [[ $album == false ]]; then
-		sed -i '/^\s\+TRACK '${args[2]}'/ {
-n; s/^\(\s\+TITLE\).*/\1 "'${args[1]}'"/
-n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
+		sed -i -E '/^\s+TRACK '${args[2]}'/ {
+n; s/^(\s+TITLE).*/\1 "'${args[1]}'"/
+n; s/^(\s+PERFORMER).*/\1 "'${args[0]}'"/
 }
 ' "$path"
 	else
@@ -48,7 +48,7 @@ n; s/^\(\s\+PERFORMER\).*/\1 "'${args[0]}'"/
 			case $i in
 				0 ) sed -i "1 i\TITLE \"$val\"" "$path";;
 				1 ) sed -i "1 i\PERFORMER \"$val\"" "$path";;
-				2 ) sed -i 's/^\(\s\+PERFORMER\).*/\1 "'$val'"/' "$path";;
+				2 ) sed -i -E 's/^(\s+PERFORMER).*/\1 "'$val'"/' "$path";;
 				3 ) sed -i "1 a\REM COMPOSER \"$val\"" "$path";;
 				4 ) sed -i "1 a\REM CONDUCTOR \"$val\"" "$path";;
 				5 ) sed -i "1 a\REM DATE \"$val\"" "$path";;

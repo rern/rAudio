@@ -810,35 +810,36 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '.listtitle' ).click( function() {
+$( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list = $this.next();
-	if ( $list.hasClass( 'hide' ) ) {
+	var $target = $( e.target );
+	if ( !$this.hasClass( 'backend' ) ) { // js
+		$list.toggleClass( 'hide' )
+		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
 		$chevron
-			.removeClass( 'fa-chevron-down' )
-			.addClass( 'fa-chevron-up' );
-		if ( $list.html() ) {
-			$list.removeClass( 'hide' );
-		} else {
-			bash( [ 'packagelist' ], function( list ) {
-				$list
-					.html( list )
-					.removeClass( 'hide' );
-			} );
+			.removeClass( 'fa-chevron-up fa-chevron-down' )
+			.addClass( 'fa-chevron-'+ updn );
+		if ( localhost ) $( '.list a' ).remove();
+	} else if ( $target.is( 'a' ) ) { // package
+		var active = $target.hasClass( 'wh' );
+		$( '.listtitle a' ).removeAttr( 'class' );
+		if ( active ) {
+			$list.empty();
+			return
 		}
+		
+		bash( [ 'packagelist', $target.text() ], function( list ) {
+			$list.html( list );
+			$target.addClass( 'wh' );
+			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
+		} );
 	} else {
-		$chevron
-			.removeClass( 'fa-chevron-up' )
-			.addClass( 'fa-chevron-down' );
-		$list.addClass( 'hide' );
+		$list.add( $chevron ).addClass( 'hide' );
+		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
-$( '.sub .help' ).click( function() {
-	$( this ).parent().next().toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
-} );
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -946,7 +947,7 @@ function renderPage() {
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html(
-		  'rAudio '+ G.version +' <gr>• '+ G.versionui +'</gr>'
+		  'rAudio <gr>• '+ G.versionui +'</gr>'
 		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
 		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
 		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
@@ -970,7 +971,7 @@ function renderPage() {
 	$( '#list' ).html( html );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
-			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetooth );
+			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
@@ -1017,4 +1018,14 @@ function renderStatus() {
 		}
 	}
 	$( '#status' ).html( status );
+	if ( !G.startup ) {
+		setTimeout( function() {
+			bash( "systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g'", function( data ) {
+				if ( data ) {
+					G.startup = data;
+					renderStatus();
+				}
+			} );
+		}, 10000 );
+	}
 }

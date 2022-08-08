@@ -162,6 +162,7 @@ HTML
 		  'label'    => 'FFmpeg'
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
+		, 'disabled' => 'DAB Radio is currently enabled.'
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.
@@ -211,37 +212,43 @@ HTML
 ];
 htmlSection( $head, $body );
 
-$albumignorefile = file_exists( '/srv/http/data/mpd/albumignore' );
-$mpdignorefile = file_exists( '/srv/http/data/mpd/mpdignorelist' );
-if ( $albumignorefile || $mpdignorefile ) {
-	echo '<div class="section">';
-	htmlHead( [ 'title' => 'Excluded Lists' ] ); //////////////////////////////////
-	htmlHead( [
-		  'title'   => 'Album'
-		, 'status'  => 'albumignore'
-		, 'subhead' => true
-		, 'help'    => <<< HTML
+echo '
+<div id="divlists" class="section">
+	<heading><span class="headtitle">Lists</span></heading>';
+htmlHead( [
+	  'title'   => 'Ignored Album'
+	, 'id'      => 'albumignore'
+	, 'subhead' => true
+	, 'status'  => 'albumignore'
+	, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
  • Edit <code>/srv/http/data/mpd/albumignore</code>
  • Remove albums to restore
  • Update Library
 HTML
-		, 'exist'   => $albumignorefile
-	] );
-	htmlHead( [
-		  'title'   => 'Directory'
-		, 'status'  => 'mpdignore'
-		, 'subhead' => true
-		, 'help'    => <<< HTML
+] );
+htmlHead( [
+	  'title'   => 'Ignored Directory'
+	, 'id'      => 'mpdignore'
+	, 'subhead' => true
+	, 'status'  => 'mpdignore'
+	, 'help'    => <<< HTML
 List of <code>.mpdignore</code> files contain directories excluded from database.
 To restore:
- • Edit <code>.../.mpdignore</code>
- • Remove directories to restore
- • Update Library
-</p>
+• Edit <code>.../.mpdignore</code>
+• Remove directories to restore
+• Update Library
 HTML
-		, 'exist'   => $mpdignorefile
-	] );
-	echo '</div>';
-}
+] );
+htmlHead( [
+	  'title'   => 'Non UTF-8 Files'
+	, 'id'      => 'nonutf8'
+	, 'subhead' => true
+	, 'status'  => 'nonutf8'
+	, 'help'    => <<< HTML
+List of files with metadata is not UTF-8 encoding which must be corrected.
+HTML
+] );
+echo '
+</div>';

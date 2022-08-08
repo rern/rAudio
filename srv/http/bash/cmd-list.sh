@@ -51,7 +51,7 @@ fi
 ##### wav list #############################################
 # mpd not read *.wav albumartist
 readarray -t dirwav <<< $( mpc listall \
-							| grep .wav$ \
+							| grep '\.wav$' \
 							| sed 's|/[^/]*$||' \
 							| sort -u )
 if [[ $dirwav ]]; then
@@ -76,9 +76,9 @@ filealbumprev=$dirmpd/albumprev
 [[ -s $dirmpd/album ]] && cp -f $filealbum{,prev} || > $dirmpd/latest
 
 for mode in album albumartist artist composer conductor genre date; do
-	dircount=$dirmpd/$mode
+	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		album=$( awk NF <<< "$album_artist_file" | sort -uf )
+		album=$( echo "$album_artist_file" | awk NF | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
 			for line in "${albumignore[@]}"; do
@@ -87,9 +87,9 @@ for mode in album albumartist artist composer conductor genre date; do
 		fi
 		album=$( echo "$album" | awk NF | tee $filealbum | wc -l )
 	else
-		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $dircount | wc -l )
+		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi
-	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $dircount
+	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $filemode
 done
 
 ##### latest album #############################################
@@ -110,25 +110,25 @@ latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
 done
+dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' | wc -l )
 playlists=$( ls -1 $dirdata/playlists | wc -l )
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find -L $dirdata/webradios -type f \
-				| grep -v '\.jpg$\|\.gif$' \
-				| wc -l )
+webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 counts='{
   "album"       : '$album'
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
 , "composer"    : '$composer'
 , "conductor"   : '$conductor'
+, "dabradio"    : '$dabradio'
 , "date"        : '$date'
 , "genre"       : '$genre'
-, "playlists"   : '$playlists'
 , "latest"      : '$latest'
 , "nas"         : '$NAS'
+, "playlists"   : '$playlists'
 , "sd"          : '$SD'
-, "usb"         : '$USB'
 , "song"        : '$song'
+, "usb"         : '$USB'
 , "webradio"    : '$webradio'
 }'
 echo $counts | jq > $dirmpd/counts
@@ -142,14 +142,22 @@ if [[ $toolarge ]]; then
 fi
 
 if [[ -e /srv/http/shareddata/iplist ]]; then
-	ip=$( ifconfig | grep inet.*broadcast | head -1 | awk '{print $2}' )
-	iplist=$( cat /srv/http/shareddata/iplist | grep -v $ip )
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	iplist=$( grep -v $ip /srv/http/shareddata/iplist )
 	for ip in $iplist; do
 		sshCommand $ip $dirbash/cmd.sh shareddatareload
 	done
 fi
 
 (
+	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
+	if [[ $nonutf8 ]]; then
+		echo "$nonutf8" > $dirmpd/nonutf8
+		pushstreamNotifyBlink 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files' library
+	else
+		rm -f $dirmpd/nonutf8
+	fi
+	
 	list=$( find -L /mnt/MPD -name .mpdignore | sort -V )
 	[[ $list ]] && echo "$list" > $dirmpd/mpdignorelist || rm -f $dirmpd/mpdignorelist
 ) &

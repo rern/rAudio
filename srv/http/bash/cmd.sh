@@ -70,7 +70,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
-		webradio )
+		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
 			[[ $animated ]] && gifNotify
@@ -102,7 +102,7 @@ jpgThumbnail() {
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
-		webradio )
+		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
 			cp -f $source $target
@@ -212,14 +212,14 @@ volumeGet() {
 			control=$( cat $dirshm/amixercontrol )
 			voldb=$( amixer -c $card -M sget "$control" \
 				| grep -m1 '%.*dB' \
-				| sed 's/.*\[\(.*\)%\] \[\(.*\)dB.*/\1 \2/' )
+				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
 				volume=$( amixer -c $card -M sget "$control" \
 							| grep -m1 '%]' \
-							| sed 's/.*\[\(.*\)%].*/\1/' )
+							| sed -E 's/.*\[(.*)%].*/\1/' )
 				[[ ! $volume ]] && volume=100
 			fi
 		fi
@@ -262,17 +262,19 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 webradioCount() {
-	count=$( find -L $dirdata/webradios -type f | wc -l )
-	pushstream webradio $count
-	sed -i 's/\("webradio": \).*/\1'$count'/' $dirmpd/counts
+	[[ $1 == dabradio ]] && type=dabradio || type=webradio
+	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
+	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
+	[[ $1 == dabradio ]] && count+=,
+	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
 	ext=$1
 	url=$2
 	if [[ $ext == m3u ]]; then
-		url=$( curl -s $url 2> /dev/null | grep ^http | head -1 )
+		url=$( curl -s $url 2> /dev/null | grep -m1 ^http )
 	elif [[ $ext == pls ]]; then
-		url=$( curl -s $url 2> /dev/null | grep ^File | head -1 | cut -d= -f2 )
+		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
 	if [[ $url ]]; then
 		urlname=${url//\//|}
@@ -286,7 +288,7 @@ webRadioSampling() {
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
 	if [[ ! -s /tmp/webradio ]]; then
-		pushstreamNotify WebRadio "URL cannot be streamed:<br>$url" warning 8000
+		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
 		exit
 	fi
 	
@@ -296,7 +298,7 @@ webRadioSampling() {
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	if [[ ! $data ]]; then
-		pushstreamNotify WebRadio "URL contains no stream data:<br>$url" webradio 8000
+		pushstreamNotify 'Web Radio' "URL contains no stream data:<br>$url" webradio 8000
 		exit
 	fi
 	
@@ -391,27 +393,27 @@ color )
 	hsg="$h,3%,"
 	hsl="${hs}$l%"
 
-	sed -i "
- s|\(--cml *: *hsl\).*;|\1(${hs}$(( l + 5 ))%);|
-  s|\(--cm *: *hsl\).*;|\1($hsl);|
- s|\(--cma *: *hsl\).*;|\1(${hs}$(( l - 5 ))%);|
- s|\(--cmd *: *hsl\).*;|\1(${hs}$(( l - 15 ))%);|
-s|\(--cg75 *: *hsl\).*;|\1(${hsg}75%);|
-s|\(--cg60 *: *hsl\).*;|\1(${hsg}60%);|
- s|\(--cgl *: *hsl\).*;|\1(${hsg}40%);|
-  s|\(--cg *: *hsl\).*;|\1(${hsg}30%);|
- s|\(--cga *: *hsl\).*;|\1(${hsg}20%);|
- s|\(--cgd *: *hsl\).*;|\1(${hsg}10%);|
+	sed -i -E "
+ s|(--cml *: *hsl).*;|\1(${hs}$(( l + 5 ))%);|
+  s|(--cm *: *hsl).*;|\1($hsl);|
+ s|(--cma *: *hsl).*;|\1(${hs}$(( l - 5 ))%);|
+ s|(--cmd *: *hsl).*;|\1(${hs}$(( l - 15 ))%);|
+s|(--cg75 *: *hsl).*;|\1(${hsg}75%);|
+s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
+ s|(--cgl *: *hsl).*;|\1(${hsg}40%);|
+  s|(--cg *: *hsl).*;|\1(${hsg}30%);|
+ s|(--cga *: *hsl).*;|\1(${hsg}20%);|
+ s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
-	sed -i "
- s|\(.box{fill:hsl\).*|\1($hsl);|
-s|\(.text{fill:hsl\).*|\1(${hsg}30%);}|
+	sed -i -E "
+ s|(.box{fill:hsl).*|\1($hsl);|
+s|(.text{fill:hsl).*|\1(${hsg}30%);}|
 " $dirimg/coverart.svg
-	sed -i "
-s|\(.box{fill:hsl\).*|\1($hsl);}|
-s|\(path{fill:hsl\).*|\1(${hsg}75%);}|
+	sed -i -E "
+s|(.box{fill:hsl).*|\1($hsl);}|
+s|(path{fill:hsl).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
-	sed "s|\(path{fill:hsl\).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+	sed -E "s|(path{fill:hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
@@ -426,7 +428,7 @@ count )
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| grep -i '\.gif$\|\.jpg$\|\.png$' \
+						| egrep -i '\.gif$|\.jpg$|\.png$' \
 						| head -1 ) # full path
 	if [[ $coverartfile ]]; then
 		echo $coverartfile | sed 's|^/srv/http||'
@@ -436,8 +438,8 @@ coverartget )
 	[[ ${path:0:4} == /srv ]] && exit
 	
 	coverfile=$( ls -1X "$path" \
-					| grep -i '^cover\.\|^folder\.\|^front\.\|^album\.' \
-					| grep -i '\.gif$\|\.jpg$\|\.png$' \
+					| egrep -i '^cover\.|^folder\.|^front\.|^album\.' \
+					| egrep -i '\.gif$|\.jpg$|\.png$' \
 					| head -1 ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
@@ -502,6 +504,11 @@ coverfileslimit )
 		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
 	done
 	;;
+dabscan )
+	touch $dirshm/updatingdab
+	$dirbash/dab-scan.sh &> /dev/null &
+	pushstream mpdupdate '{"type":"dabradio"}'
+	;;
 dirpermissions )
 	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
 	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
@@ -512,7 +519,7 @@ dirpermissions )
 displaysave )
 	data=${args[1]}
 	pushstream display "$data"
-	jq -S . <<< $data > $dirsystem/display
+	jq -S <<< $data > $dirsystem/display
 	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
@@ -604,7 +611,7 @@ ignoredir )
 	;;
 latestclear )
 	> /srv/http/data/mpd/latest
-	sed -i 's/\("latest": \).*/\10,/' /srv/http/data/mpd/counts
+	sed -i -E 's/("latest": ).*/\10,/' /srv/http/data/mpd/counts
 	pushstreamNotify Latest Cleared. latest
 	;;
 librandom )
@@ -646,7 +653,7 @@ lyrics )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
-		artist=$( echo $artist | sed 's/^A \|^The \|\///g' )
+		artist=$( echo $artist | sed -E 's/^A |^The |\///g' )
 		title=${title//\/}
 		query=$( echo $artist/$title \
 					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )
@@ -754,20 +761,18 @@ mpcseek )
 	;;
 mpcupdate )
 	type=${args[1]}
-	if [[ $type == update ]]; then
-		path=${args[2]}
+	path=${args[2]}
+	if [[ $type == rescan ]]; then
+		touch $dirmpd/updating
+		mpc -q rescan
+	elif [[ $type == update ]]; then
+		touch $dirmpd/updating
+		mpc -q update
+	elif [[ $type == path ]]; then
 		echo $path > $dirmpd/updating
 		mpc -q update "$path"
-	elif [[ $type == rescan ]]; then
-		echo rescan > $dirmpd/updating
-		mpc -q rescan
-	else # dab
-		timeout 1 rtl_test &> /dev/null
-		[[ $? == 1 ]] && echo -1 && exit
-		
-		$dirbash/dab/dab-skeleton.sh
 	fi
-	pushstream mpdupdate 1
+	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 mpdoledlogo )
 	mpdoledLogo
@@ -797,33 +802,42 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			conf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
+			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
 		hostapd )
-			conf=/etc/hostapd/hostapd.conf;;
+			catconf="
+<bll># cat /etc/hostapd/hostapd.conf</bll>
+$( cat /etc/hostapd/hostapd.conf )
+
+<bll># cat /etc/dnsmasq.conf</bll>
+$( cat /etc/dnsmasq.conf )";;
 		localbrowser )
-			conf=/srv/http/data/system/localbrowser.conf
+			fileconf=/srv/http/data/system/localbrowser.conf
 			pkg=chromium;;
+		rtsp-simple-server )
+			catconf="
+<bll># rtl_test -t</bll>
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		smb )
-			conf=/etc/samba/smb.conf
+			fileconf=/etc/samba/smb.conf
 			pkg=samba;;
 		snapclient|snapserver )
-			[[ $id == snapclient ]] && conf=/etc/default/snapclient
+			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
 			pkg=snapcast
 			service=$id;;
 		* )
-			conf=/etc/$id.conf;;
+			fileconf=/etc/$id.conf;;
 	esac
-	[[ -e $conf ]] && catconf="
-$( cat $conf )"
-	systemctl -q is-active $service && dot='<grn>●</grn>' || dot='<red>●</red>'
+	[[ -e $fileconf ]] && catconf="
+<bll># cat $fileconf</bll>
+$( cat $fileconf )"
 	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
 	echo "\
 <code>$version</code>$catconf
 
-$dot $( systemctl status $service \
-	| sed '1 s|^.* \(.*service\)|<code>\1</code>|' \
-	| sed '/^\s*Active:/ s|\( active (.*)\)|<grn>\1</grn>|; s|\( inactive (.*)\)|<red>\1</red>|; s|\(failed\)|<red>\1</red>|ig' \
-	| grep -v 'Could not resolve keysym\|Address family not supported by protocol\|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
+$( systemctl status $service \
+	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
+	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
+	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
 	;;
 pladd )
 	item=${args[1]}
@@ -854,7 +868,7 @@ playerstart )
 	;;
 playerstop )
 	elapsed=${args[1]}
-	player=$dirshm/player
+	player=$( cat $dirshm/player )
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
@@ -992,7 +1006,7 @@ plsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	echo "$list" | awk 'NF' | mpc -q add
+	echo "$list" | awk NF | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
@@ -1057,7 +1071,7 @@ savedpldelete )
 	name=${args[1]}
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;
@@ -1116,7 +1130,7 @@ savedplsave )
 	mpc -q save "$name"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i 's/\(.*playlists": \).*/\1'$count',/' $dirmpd/counts
+	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
 	list=$( php /srv/http/mpdplaylist.php list )
 	pushstream playlists "$list"
 	;;
@@ -1222,15 +1236,14 @@ volumeupdown )
 	pushstreamVolume updn $volume
 	;;
 webradioadd )
-	name=${args[1]}
-	url=$( urldecode ${args[2]} )
-	charset=${args[3]}
-	dir=${args[4]}
+	dir=${args[1]}
+	name=${args[2]}
+	url=$( urldecode ${args[3]} )
+	charset=${args[4]}
 	urlname=${url//\//|}
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-	
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	[[ -e "$file" ]] && echo -1 && exit
 	
 	echo "\
@@ -1243,28 +1256,31 @@ $charset" > "$file"
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
+	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset"}'
+	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":"'$type'"}'
 	;;
 webradiodelete )
-	url=${args[1]}
-	dir=${args[2]}
+	dir=${args[1]}
+	url=${args[2]}
+	type=${args[3]}
 	urlname=${url//\//|}
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
-	rm -f "$file"
-	[[ -z $( find $dirwebradios -name $urlname ) ]] && rm -f "${dirwebradios}img/$urlname"{,-thumb}.*
-	webradioCount
+	path=$dirdata/$type
+	[[ $dir ]] && path+="/$dir"
+	rm -f "$path/$urlname"
+	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	webradioCount $type
 	;;
 webradioedit )
-	name=${args[1]}
-	url=${args[2]}
-	charset=${args[3]}
-	dir=${args[4]}
+	dir=${args[1]}
+	name=${args[2]}
+	url=${args[3]}
+	charset=${args[4]}
 	urlprev=${args[5]}
 	urlname=${url//\//|}
 	[[ $url != $urlprev ]] && urlchanged=1
-	[[ $dir ]] && file="$dirwebradios/$dir/$urlname" || file="$dirwebradios/$urlname"
+	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	if [[ $urlchanged ]]; then
 		ext=${url/*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
@@ -1279,33 +1295,34 @@ $sampling
 $charset" > "$file"
 	if [[ $urlchanged ]]; then
 		urlprevname=${urlprev//\//|}
-		[[ $dir ]] && rm "$dirwebradios/$dir/$urlprevname" || rm "$dirwebradios/$urlprevname"
-		mv ${dirwebradios}img/{$urlprevname,$urlname}.jpg
-		mv ${dirwebradios}img/{$urlprevname,$urlname}-thumb.jpg
+		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
+		mv $dirwebradio/img/{$urlprevname,$urlname}.jpg
+		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
-	pushstream webradio -1
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 wrdirdelete )
 	path=${args[1]}
-	if [[ $( ls -A "$dirwebradios/$path" ) ]]; then
+	if [[ $( ls -A "$dirwebradio/$path" ) ]]; then
 		echo -1
 	else
-		rm -rf "$dirwebradios/$path"
-		pushstream webradio -1
+		rm -rf "$dirwebradio/$path"
+		pushstream radiolist '{"type":"webradio"}'
 	fi
 	;;
 wrdirnew )
-	path=${args[1]}
-	mkdir -p "$dirwebradios/$path"
-	pushstream webradio -1
+	dir=${args[1]}
+	sub=${args[2]}
+	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
-	mv -f "$dirwebradios/$path/$name" "$dirwebradios/$path/$newname"
-	pushstream webradio -1
+	mv -f "$dirwebradio/$path/$name" "$dirwebradio/$path/$newname"
+	pushstream radiolist '{"type":"webradio"}'
 	;;
 	
 esac

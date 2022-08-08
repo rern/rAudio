@@ -25,19 +25,33 @@ var cmd = {
 	  albumignore  : playersh +'albumignore'
 	, asound       : playersh +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetoothctl : systemsh +'bluetoothstatus'
+	, bluetooth    : systemsh +'bluetoothstatus'
+	, btcontroller : networkssh +'btcontroller'
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh +'fstabget'
 	, mpdignore    : playersh +'mpdignorelist'
-	, rfkill       : networkssh +'rfkilllist'
+	, nonutf8      : playersh +'nonutf8'
+	, rfkill       : systemsh +'rfkilllist'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
 	, timedatectl  : systemsh +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [ 'camilladsp', 'hostapd', 'localbrowser', 'mpd', 'shairport-sync', 'smb', 'snapclient', 'snapserver', 'spotifyd', 'upmpdcli' ];
+var services = [
+	  'camilladsp'
+	, 'rtsp-simple-server'
+	, 'hostapd'
+	, 'localbrowser'
+	, 'mpd'
+	, 'shairport-sync'
+	, 'smb'
+	, 'snapclient'
+	, 'snapserver'
+	, 'spotifyd'
+	, 'upmpdcli'
+];
 
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
@@ -271,17 +285,17 @@ function psRefresh( data ) {
 		renderPage();
 	}
 }
+function psReload() {
+	if ( localhost ) location.reload();
+}
 function psState( data ) {
 	if ( page === 'player' ) {
 		G.state = data.state;
 		playbackIcon();
 	}
 }
-function psReload() {
-	if ( localhost ) location.reload();
-}
 function psVolume( data ) {
-	if ( G.local || !$( '#infoRange .value' ).text() ) return
+	if ( !$( '#infoRange .value' ).text() ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -319,7 +333,6 @@ G = {}
 var debounce;
 var dirsystem = '/srv/http/data/system';
 var intervalcputime;
-var local = 0;
 var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange = '#de810e';
 var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
@@ -336,7 +349,11 @@ var selectchange = 0;
 
 document.title = page;
 
-if ( localhost ) $( 'a' ).removeAttr( 'href' );
+if ( localhost ) {
+	$( 'a' ).removeAttr( 'href' );
+} else {
+	$( 'a[href]' ).attr( 'target', '_blank' );
+}
 
 $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
@@ -378,6 +395,21 @@ $( document ).keyup( function( e ) {
 			if ( $focus.length ) $focus.click();
 		}
 	}
+} );
+$( '.container' ).click( function( e ) {
+	$target = $( e.target );
+	if ( $target.hasClass( 'status' ) || $target.parent().hasClass( 'status' )
+		|| $target.is( 'li' ) || $target.parent().is( 'li' )
+		|| $target.hasClass( '.setting' )
+		|| $target.hasClass( '.switch' )
+	) return
+	
+	$( 'pre.status' ).addClass( 'hide' );
+} ).on( 'click', 'heading.status', function( e ) {
+	if ( $( e.target ).is( 'i' ) ) return
+	
+	var $this = $( this );
+	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '#close' ).click( function() {
 	if ( page === 'networks' ) {
@@ -453,12 +485,6 @@ $( '#help' ).click( function() {
 $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
-} );
-$( '.container' ).on( 'click', '.status', function( e ) {
-	if ( $( e.target ).is( 'i' ) ) return
-	
-	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.switch' ).click( function() {
 	var id = this.id;

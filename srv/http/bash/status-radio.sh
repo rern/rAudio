@@ -1,8 +1,6 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirsystem=/srv/http/data/system
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
@@ -10,13 +8,8 @@ station=${tmpradio[1]}
 station=${station//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
+sampling="$pos &bull; ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
-if [[ $id != dab ]]; then
-	: >/dev/tcp/8.8.8.8/53 || exit # online check
-	sampling="$pos &bull; ${tmpradio[3]}"
-else
-	sampling="$pos &bull; 48 kHz 160 kbit/s"
-fi
 
 case $id in
 	flac )   id=0;;
@@ -42,21 +35,17 @@ case $id in
 	lajazz )              id=405;;
 	ocoramonde )          id=404;;
 	opera )               id=409;;
-	dab ) id=500;;
+	dabradio ) id=500;;
 esac
 
 dabData() {
-	readarray -t radioname <<< $( sed 's/ - \|: /\n/' $dirshm/webradio/DABlabel.txt )
-	artist=${radioname[0]//\"/\\\"}
-	title=${radioname[1]//\"/\\\"}
-	metadata=( "$artist" "$title" "" dab 10 )
-}
-radioparadiseData() {
-	readarray -t metadata <<< $( curl -sGk -m 5 \
-		--data-urlencode "chan=$id" \
-		https://api.radioparadise.com/api/now_playing \
-		| jq -r .artist,.title,.album,.cover,.time \
-		| sed 's/^null$//' )
+	artist_title=$( sed -E 's/ - |: /\n/' $dirshm/webradio/DABlabel.txt )
+	if [[ $artist_title == $( head -2 $dirshm/status ) ]]; then
+		sleep 10
+		metadataGet
+	else
+		readarray -t metadata <<< "$artist_title"
+	fi
 }
 radiofranceData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
@@ -74,6 +63,13 @@ radiofranceData() {
 ,.data.now.server_time \
 		| sed 's/""/"/g; s/^null$//' ) # trim 2 x doublequotes and null(jq empty value)
 }
+radioparadiseData() {
+	readarray -t metadata <<< $( curl -sGk -m 5 \
+		--data-urlencode "chan=$id" \
+		https://api.radioparadise.com/api/now_playing \
+		| jq -r .artist,.title,.album,.cover,.time \
+		| sed 's/^null$//' )
+}
 metadataGet() {
 	if [[ $id < 4 ]]; then
 		icon=radioparadise
@@ -82,7 +78,7 @@ metadataGet() {
 		icon=radiofrance
 		radiofranceData
 	else
-		icon=dab
+		icon=dabradio
 		dabData
 	fi
 	artist=${metadata[0]//\"/\\\"}
@@ -102,17 +98,21 @@ metadataGet() {
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
 	
-	if [[ $coverurl == dab ]]; then
-		slidename=DABslide$( date +%s%3N ).jpg
-		coverart=/data/shm/webradio/$slidename
-		cp /srv/http/data/shm/webradio/DABslide.jpg /srv/http/data/shm/webradio/$slidename
-		touch /srv/http/data/shm/webradio/DABlabel.txt #avoid label deletion by coverfileslimit
-		touch /srv/http/data/shm/webradio/DABslide.jpg #avoid label deletion by coverfileslimit
-	elif [[ $coverurl ]]; then
-		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-		coverfile=$dirshm/webradio/$name.jpg
-		curl -s $coverurl -o $coverfile
+	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+	if [[ $coverurl ]]; then
 		coverart=/data/shm/webradio/$name.jpg
+		coverfile=$dirshm/webradio/$name.jpg
+		if [[ $coverurl != dab ]]; then
+			curl -s $coverurl -o $coverfile
+		else
+			mv $dirshm/webradio/{DABslide,$name}.jpg
+		fi
+	else
+		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+$artist
+title
+webradio" &> /dev/null &
 	fi
 	[[ -e $dirsystem/vumeter ]] && coverart=
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \

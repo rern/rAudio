@@ -19,6 +19,18 @@ HTML
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
+		  'label'    => 'DAB Radio'
+		, 'id'       => 'dabradio'
+		, 'sublabel' => 'rtsp-server'
+		, 'icon'     => 'dabradio'
+		, 'status'   => 'rtsp-simple-server'
+		, 'disabled' => 'No DAB devices found.'
+		, 'help'     => <<< HTML
+Digital Audio Broadcasting radio for USB RTL-SDR devices.
+HTML
+		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
+	]
+	, [
 		  'label'    => 'SnapClient'
 		, 'sublabel' => 'snapclient'
 		, 'id'       => 'snapclient'
@@ -46,7 +58,7 @@ HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
  • Get <code>ID</code> and <code>Secret</code> from private app : <bll class="screenshot pointer">(Screenshots)</bll>
- &emsp; • <a href="https://developer.spotify.com/dashboard/applications" target="_blank">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
+ &emsp; • <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
  &emsp; • <code>CREATE AN APP</code>
  &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
  &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
@@ -246,7 +258,7 @@ HTML
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • WebRadio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+ • Web Radio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
 HTML
 	]
 	, [

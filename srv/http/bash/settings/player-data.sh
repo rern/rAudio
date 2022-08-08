@@ -5,7 +5,7 @@
 
 active=$( mpc &> /dev/null && echo true )
 if [[ -e $dirsystem/soxr.conf ]]; then
-	soxrconf="[ $( grep -v 'quality\|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
+	soxrconf="[ $( egrep -v 'quality|}' $dirsystem/soxr.conf | cut -d'"' -f2 | xargs | tr ' ' , ) ]"
 else
 	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
 fi
@@ -30,8 +30,10 @@ data='
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirsystem/custom )'
+, "dabradio"         : '$( isactive rtsp-simple-server )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
-, "ffmpeg"           : '$( grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q yes && echo true )'
+, "ffmpeg"           : '$( grep -q 'plugin.*ffmpeg' /etc/mpd.conf && echo true )'
+, "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
 , "normalization"    : '$( grep -q 'volume_normalization.*yes' /etc/mpd.conf && echo true )'
 , "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( ! grep -q '^replaygain.*off' /etc/mpd.conf && echo true )'
@@ -41,4 +43,4 @@ data='
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
-data2json "$data"
+data2json "$data" $1

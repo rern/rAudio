@@ -108,7 +108,7 @@ case 'ls':
 		$f = $formatall; // set format for directory with files only - track list
 		$format = '%'.implode( '%^^%', $f ).'%';
 		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-		exec( 'mpc ls "'.$string.'" | grep ".cue$\|.m3u$\|.m3u8$\|.pls$" | sort -u'
+		exec( 'mpc ls "'.$string.'" | egrep ".cue$|.m3u$|.m3u8$|.pls$" | sort -u'
 			, $plfiles );
 		if ( count( $plfiles ) ) {
 			asort( $plfiles );
@@ -152,7 +152,7 @@ case 'track': // for tag editor
 		if (  $track === 'cover' && $array[ 1 ] ) $array [ 2 ] = '*'; // if album artist > various artists
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = exec( 'mpc ls "'.$file.'" | grep .wav$ | head -1' ); // MPD not read albumartist in *.wav
+			$wav = exec( 'mpc ls "'.$file.'" | grep "\.wav$" | head -1' ); // MPD not read albumartist in *.wav
 			if ( $wav ) {
 				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
 				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
@@ -186,43 +186,60 @@ case 'track': // for tag editor
 		}
 	}
 	break;
-case 'webradio':
-	$dirwebradios = '/srv/http/data/webradios/';
+case 'radio':
+	$dir = '/srv/http/data/'.$gmode.'/';
+	$dirimg = '/data/'.$gmode.'/img/';
+	$path = $string !== '' ? $string.'/' : '';
+	$dir.= $path;
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
 	$html = '';
 	if ( $mode === 'search' ) {
 		$searchmode = 1;
-		exec( "grep -ril '".$string."' ".$dirwebradios." | sed 's|^".$dirwebradios."||'"
+		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
 		$searchmode = 0;
-		$path = $string !== '' ? $string.'/' : '';
-		$dirwebradios.= $path;
-		exec( 'ls -1 "'.$dirwebradios.'" | grep -v "\.jpg$\|\.gif$"'
+		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
 			, $lists );
 		foreach( $lists as $list ) {
-			if ( is_dir( $dirwebradios.$list ) ) {
+			if ( is_dir( $dir.$list ) ) {
 				$subdirs[] = $list;
 			} else {
 				$files[] = $list;
 			}
 		}
-		if ( count( $subdirs ) ) {
-			foreach( $subdirs as $dir ) {
-				$html.= '<li class="dir">'
-							.'<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-							.'<a class="lipath">'.$path.$dir.'</a>'
-							.'<span class="single">'.$dir.'</span>'
-						.'</li>';
+	}
+	if ( count( $subdirs ) ) {
+		foreach( $subdirs as $subdir ) {
+			$each = ( object )[];
+			$each->subdir = $subdir;
+			$each->sort   = stripSort( $subdir );
+			$array[] = $each;
+		}
+		usort( $array, function( $a, $b ) {
+			return strnatcasecmp( $a->sort, $b->sort );
+		} );
+		foreach( $array as $each ) {
+			if ( count( $files ) ) {
+				$html.= '<li class="dir">';
+			} else {
+				$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+				$indexes[] = $index;
+				$html.= '<li class="dir" data-index="'.$index.'">';
 			}
+			$html.= '<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+					.'<a class="lipath">'.$path.$each->subdir.'</a>'
+					.'<span class="single">'.$each->subdir.'</span>'
+				.'</li>';
 		}
 	}
 	if ( count( $files ) ) {
+		unset( $array );
 		foreach( $files as $file ) {
 			$each = ( object )[];
-			$data = file( "$dirwebradios/$file", FILE_IGNORE_NEW_LINES );
+			$data = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
 			$name = $data[ 0 ];
 			$each->charset = $data[ 2 ] ?? '';
 			$each->name    = $name;
@@ -240,7 +257,7 @@ case 'webradio':
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$thumbsrc = '/data/webradiosimg/'.$urlname.'-thumb.'.$time.'.jpg';
+			$thumbsrc = $dirimg.$urlname.'-thumb.'.$time.'.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'
@@ -495,7 +512,7 @@ function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { //
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep ".m3u$\|.m3u8$\|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | egrep ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
 			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
