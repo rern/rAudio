@@ -263,10 +263,14 @@ case 'radio':
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'
 						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
 						.'<a class="lipath">'.$path.$url.'</a>'
-						.'<a class="liname">'.$liname.'</a>'
-						.'<div class="li1">'.$name.'</div>'
-						.'<div class="li2">'.$url.'</div>'
-					.'</li>';
+						.'<a class="liname">'.$liname.'</a>';
+			if ( $gmode === 'webradio' ) {
+				$html.=  '<div class="li1">'.$name.'</div>'
+						.'<div class="li2">'.$url.'</div>';
+			} else {
+				$html.=  '<span class="single">'.$name.'</span>';
+			}
+			$html.= '</li>';
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
