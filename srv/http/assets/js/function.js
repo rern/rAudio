@@ -666,22 +666,22 @@ function imageReplace( imagefilenoext, type, covername ) {
 	banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
-	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
-	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
-	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
+	  nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
+	, album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
 	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
-	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
+	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
 	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
-	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
+	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
 	, webradio       : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
-	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
-	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
-	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
+	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
 	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
-	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
+	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
 	, '-'            : ''
+	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
 	, count          : 'Count'
+	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
 	, label          : 'Label'
+	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
@@ -1067,7 +1067,7 @@ function renderLibraryList( data ) {
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'dabradio' ) {
-		htmlpath += '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
+		htmlpath += data.path ? '' : '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
