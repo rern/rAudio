@@ -1643,14 +1643,14 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	if ( $( '.bkedit' ).length ) {
 		$( '.bkedit' ).remove();
 		$( '.licoverimg img' ).css( 'opacity', '' );
-		if ( $( this ).is( '.licover' ) ) return
+		if ( $( this ).hasClass( 'licover' ) ) return
 	}
 	
 	if ( $this.hasClass( 'licover' ) ) {
 		if ( $target.is( '.liartist, .fa-artist, .fa-albumartist, .licomposer, .fa-composer' ) ) {
 			var name = ( $target.is( '.licomposer, .fa-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
 			getBio( name );
-		} else if ( $target.is( '.liinfopath' ) ) {
+		} else if ( $target.hasClass( 'liinfopath' ) ) {
 			G.gmode = G.mode;
 			var path = $target.text();
 			G.mode = path.replace( /\/.*/, '' ).toLowerCase();
