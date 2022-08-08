@@ -405,7 +405,7 @@ $( '.container' ).click( function( e ) {
 	) return
 	
 	$( 'pre.status' ).addClass( 'hide' );
-} ).on( 'click', 'heading.status', function( e ) {
+} ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
