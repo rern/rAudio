@@ -2,13 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-dabscan=$( dab-scanner-rtlsdr -C 5A )
-services=$( echo "$dabscan" \
-				| egrep '^Ensemble|^audioservice' <<< "$dabscan" \
-				| sed 's/ *;/;/g' )
-if [[ ! $services ]]; then
+script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan
+if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
-	rm $dirshm/updatingdab
+	rm $dirshm/{dabscan,updatingdab}
 	exit
 fi
 
@@ -19,7 +16,7 @@ mkdir -p $dirdabradio/img
 mv $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
-readarray -t services <<< "$services"
+readarray -t services <<< $( egrep '^Ensemble|^audioservice' $dirshm/dabscan | sed 's/ *;/;/g' )
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
 		ensemble=$( echo ${service/;*} | cut -d' ' -f2- )
@@ -53,4 +50,4 @@ chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
 pushstream mpdupdate "$( cat $dirmpd/counts )"
-rm $dirshm/updatingdab
+rm $dirshm/{dabscan,updatingdab}
