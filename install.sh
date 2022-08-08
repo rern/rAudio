@@ -44,7 +44,7 @@ installfinish
 udevadm control --reload-rules
 udevadm trigger
 
-if ! grep -q /srv/http/shareddata /etc/fstab; then
+if grep -q /srv/http/shareddata /etc/fstab; then
 	echo -e "\
 $info Shared data:
     • Disable
