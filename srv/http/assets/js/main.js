@@ -473,7 +473,7 @@ $( '#page-playback' ).click( function( e ) {
 	
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
-		if ( !$( e.target ).hasClass( '.coveredit.cover' ) ) {
+		if ( !$( e.target ).hasClass( 'coveredit' ) ) {
 			$( '#divcover .coveredit.cover' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
@@ -1621,7 +1621,7 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	}
 	var $this = $( this );
 	var $target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( '.coverart' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
