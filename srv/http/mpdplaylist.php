@@ -10,11 +10,8 @@ $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 switch( $cmd ) {
 	
 case 'current':
-	$lists = playlist();
-	$array = htmlTrackSavedPlaylist( $lists );
-	$elapsed = exec( '{ echo status; sleep 0.05; } | telnet 127.0.0.1 6600 2> /dev/null | grep ^elapsed' );
-	$array[ 'elapsed' ] = $elapsed !== '' ? round( substr( $elapsed, 9 ) ) : false;
-	echo json_encode( $array );
+	$lists = currentPlaylist();
+	$array = htmlTrack( $lists );
 	break;
 case 'get':
 	$name = $_POST[ 'name' ];
@@ -31,12 +28,10 @@ case 'get':
 		$each->Time   = $v[ 5 ];
 		$lists[] = $each;
 	}
-	$array = htmlTrackSavedPlaylist( $lists, $name );
-	echo json_encode( $array );
+	$array = htmlTrack( $lists, $name );
 	break;
 case 'list':
 	$array = htmlSavedPlaylist();
-	echo json_encode( $array );
 	break;
 case 'load': // load saved playlist to current
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
@@ -45,15 +40,69 @@ case 'load': // load saved playlist to current
 	exec( 'mpc -q load "'.$name.'"' );
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
+	exit();
 	break;
 case 'track':
 	$array = playlistInfo( $_POST[ 'track' ] );
-	echo json_encode( $array );
 	break;
 	
 }
 
+echo json_encode( $array, JSON_NUMERIC_CHECK );
+
 //-------------------------------------------------------------------------------------
+
+function currentPlaylist() {
+	global $headers;
+	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
+	$format = '%'.implode( '%^^%', $f ).'%';
+	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
+	if ( !count( $lists ) ) exit( '-1' );
+	
+	$fL = count( $f );
+	foreach( $lists as $list ) {
+		$list = explode( '^^', $list );
+		if ( substr( $list[ 3 ], 0, 4 ) === 'cdda' ) {
+			$each = ( object )[];
+			$file = $list[ 3 ];
+			$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$track = substr( $file, 8 );
+			$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
+			$data = $content[ $track - 1 ];
+			$audiocd = explode( '^', $data );
+			$each->Artist = $audiocd[ 0 ];
+			$each->Album = $audiocd[ 1 ];
+			$each->Title = $audiocd[ 2 ];
+			$each->Time = second2HMS( $audiocd[ 3 ] );
+			$each->file = $file;
+			$each->Track = $track;
+			$array[] = $each;
+			continue;
+		}
+		
+		$each = ( object )[];
+		for ( $i = 0; $i < $fL; $i++ ) {
+			$key = $f[ $i ];
+			$val = $list[ $i ];
+			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
+			$each->$key = $val;
+		}
+		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
+		if ( in_array( $fileheader, $headers ) ) {
+			$file = preg_replace( '/#charset=.*/', '', $each->file );
+			$urlname = str_replace( '/', '|', $file );
+			$radiofile = '/srv/http/data/webradio/'.$urlname;
+			if ( !file_exists( $radiofile ) ) {
+				$radiofile = '';
+				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
+			}
+			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
+			$each->urlname = $urlname;
+		}
+		$array[] = $each;
+	}
+	return $array;
+}
 function htmlSavedPlaylist() {
 	include '/srv/http/bash/cmd-listsort.php';
 	global $dirplaylists;
@@ -93,7 +142,7 @@ function htmlSavedPlaylist() {
 		, 'count'     => $count
 	];
 }
-function htmlTrackSavedPlaylist( $lists, $plname = '' ) {
+function htmlTrack( $lists, $plname = '' ) {
 	global $headers;
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
@@ -201,61 +250,19 @@ function htmlTrackSavedPlaylist( $lists, $plname = '' ) {
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
-	$song = exec( "{ echo status; sleep 0.05; } \
-								| telnet 127.0.0.1 6600 2> /dev/null \
-								| awk '/^song:/ {print \$NF}'" );
-	return [ 'html' => $html, 'counthtml' => $counthtml, 'pllength' => $count, 'song' => $song ];
-}
-function playlist() { // current playlist
-	global $headers;
-	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
-	$format = '%'.implode( '%^^%', $f ).'%';
-	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
-	if ( !count( $lists ) ) exit( '-1' );
-	
-	$fL = count( $f );
-	foreach( $lists as $list ) {
-		$list = explode( '^^', $list );
-		if ( substr( $list[ 3 ], 0, 4 ) === 'cdda' ) {
-			$each = ( object )[];
-			$file = $list[ 3 ];
-			$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$track = substr( $file, 8 );
-			$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
-			$data = $content[ $track - 1 ];
-			$audiocd = explode( '^', $data );
-			$each->Artist = $audiocd[ 0 ];
-			$each->Album = $audiocd[ 1 ];
-			$each->Title = $audiocd[ 2 ];
-			$each->Time = second2HMS( $audiocd[ 3 ] );
-			$each->file = $file;
-			$each->Track = $track;
-			$array[] = $each;
-			continue;
+	exec( "{ echo status; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| egrep '^song:|^elapsed:'"
+		, $song_elapsed );
+	$elapsed = '';
+	foreach( $song_elapsed as $se ) {
+		if ( substr( $se, 0, 4 ) === 'song' ) {
+			$song = str_replace( 'song: ', '', $se );
+		} else {
+			$elapsed = round( str_replace( 'elapsed: ', '', $se ) );
 		}
-		
-		$each = ( object )[];
-		for ( $i = 0; $i < $fL; $i++ ) {
-			$key = $f[ $i ];
-			$val = $list[ $i ];
-			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
-			$each->$key = $val;
-		}
-		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
-		if ( in_array( $fileheader, $headers ) ) {
-			$file = preg_replace( '/#charset=.*/', '', $each->file );
-			$urlname = str_replace( '/', '|', $file );
-			$radiofile = '/srv/http/data/webradio/'.$urlname;
-			if ( !file_exists( $radiofile ) ) {
-				$radiofile = '';
-				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
-			}
-			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
-			$each->urlname = $urlname;
-		}
-		$array[] = $each;
 	}
-	return $array;
+	return [ 'html' => $html, 'counthtml' => $counthtml, 'song' => $song, 'elapsed' => $elapsed ];
 }
 function playlistInfo( $index = '' ) { // mpd protocol
 	// 2nd sleep: varied with length, 1000track/0.1s

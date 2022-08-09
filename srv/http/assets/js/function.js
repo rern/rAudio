@@ -1183,7 +1183,6 @@ function renderPlayback() {
 function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.savedplaylist = 0;
-	G.status.pllength = data.pllength;
 	G.status.elapsed = data.elapsed;
 	G.status.song = data.song;
 	$( '#pl-search-close' ).click();
@@ -1216,6 +1215,7 @@ function renderPlaylist( data ) {
 		var timestamp = Math.floor( Date.now() / 1000 );
 		var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
 		$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
+			G.status.pllength = $( '#pl-list li' ).length;
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
 			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
