@@ -133,6 +133,33 @@ case 'ls':
 		}
 	}
 	break;
+case 'radio':
+	$dir = '/srv/http/data/'.$gmode.'/';
+	$dirimg = '/data/'.$gmode.'/img/';
+	$path = $string !== '' ? $string.'/' : '';
+	$dir.= $path;
+	$subdirs = [];
+	$files = [];
+	$indexes = [];
+	$html = '';
+	if ( $mode === 'search' ) {
+		$searchmode = 1;
+		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
+			, $files );
+	} else {
+		$searchmode = 0;
+		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
+			, $lists );
+		foreach( $lists as $list ) {
+			if ( is_dir( $dir.$list ) ) {
+				$subdirs[] = $list;
+			} else {
+				$files[] = $list;
+			}
+		}
+	}
+	$array = htmlRadio( $subdirs, $files, $dir, $dirimg, $path );
+	break;
 case 'search':
 	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
 		, $lists );
@@ -184,100 +211,6 @@ case 'track': // for tag editor
 			$lists = exec( 'mpc ls -f "'.$format.'" "'.$file.'"' );
 			$array = explode( '^^', $lists );
 		}
-	}
-	break;
-case 'radio':
-	$dir = '/srv/http/data/'.$gmode.'/';
-	$dirimg = '/data/'.$gmode.'/img/';
-	$path = $string !== '' ? $string.'/' : '';
-	$dir.= $path;
-	$subdirs = [];
-	$files = [];
-	$indexes = [];
-	$html = '';
-	if ( $mode === 'search' ) {
-		$searchmode = 1;
-		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
-			, $files );
-	} else {
-		$searchmode = 0;
-		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
-			, $lists );
-		foreach( $lists as $list ) {
-			if ( is_dir( $dir.$list ) ) {
-				$subdirs[] = $list;
-			} else {
-				$files[] = $list;
-			}
-		}
-	}
-	if ( count( $subdirs ) ) {
-		foreach( $subdirs as $subdir ) {
-			$each = ( object )[];
-			$each->subdir = $subdir;
-			$each->sort   = stripSort( $subdir );
-			$array[] = $each;
-		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
-		foreach( $array as $each ) {
-			if ( count( $files ) ) {
-				$html.= '<li class="dir">';
-			} else {
-				$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-				$indexes[] = $index;
-				$html.= '<li class="dir" data-index="'.$index.'">';
-			}
-			$html.= '<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
-					.'<a class="lipath">'.$path.$each->subdir.'</a>'
-					.'<span class="single">'.$each->subdir.'</span>'
-				.'</li>';
-		}
-	}
-	if ( count( $files ) ) {
-		unset( $array );
-		foreach( $files as $file ) {
-			$each = ( object )[];
-			$data = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
-			$name = $data[ 0 ];
-			$each->charset = $data[ 2 ] ?? '';
-			$each->name    = $name;
-			$each->url     = str_replace( '|', '/', $file );
-			$each->sort    = stripSort( $name );
-			$array[] = $each;
-		}
-		usort( $array, function( $a, $b ) {
-			return strnatcasecmp( $a->sort, $b->sort );
-		} );
-		$time = time();
-		foreach( $array as $each ) {
-			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-			$indexes[] = $index;
-			$url = $each->url;
-			$urlname = str_replace( '/', '|', $url );
-			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$thumbsrc = $dirimg.$urlname.'-thumb.'.$time.'.jpg';
-			$liname = $each->name;
-			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
-			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'
-						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
-						.'<a class="lipath">'.$path.$url.'</a>'
-						.'<a class="liname">'.$liname.'</a>';
-			if ( $gmode === 'webradio' ) {
-				$html.=  '<div class="li1">'.$name.'</div>'
-						.'<div class="li2">'.$url.'</div>';
-			} else {
-				$html.=  '<span class="single">'.$name.'</span>';
-			}
-			$html.= '</li>';
-		}
-	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	if ( $mode !== 'search' ) {
-		$array = [ 'html' => $html, 'index' => $indexbar ];
-	} else {
-		$array = [ 'html' => $html, 'count' => count( $array ) ];
 	}
 	break;
 }
@@ -429,6 +362,72 @@ function htmlList( $lists ) { // non-file 'list' command
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
 	return [ 'html' => $html, 'index' => $indexbar ];
+}
+function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
+	if ( count( $subdirs ) ) {
+		foreach( $subdirs as $subdir ) {
+			$each = ( object )[];
+			$each->subdir = $subdir;
+			$each->sort   = stripSort( $subdir );
+			$array[] = $each;
+		}
+		usort( $array, function( $a, $b ) {
+			return strnatcasecmp( $a->sort, $b->sort );
+		} );
+		foreach( $array as $each ) {
+			if ( count( $files ) ) {
+				$html.= '<li class="dir">';
+			} else {
+				$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+				$indexes[] = $index;
+				$html.= '<li class="dir" data-index="'.$index.'">';
+			}
+			$html.= '<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>'
+					.'<a class="lipath">'.$path.$each->subdir.'</a>'
+					.'<span class="single">'.$each->subdir.'</span>'
+				.'</li>';
+		}
+	}
+	if ( count( $files ) ) {
+		unset( $array );
+		foreach( $files as $file ) {
+			$each = ( object )[];
+			$data = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
+			$name = $data[ 0 ];
+			$each->charset = $data[ 2 ] ?? '';
+			$each->name    = $name;
+			$each->url     = str_replace( '|', '/', $file );
+			$each->sort    = stripSort( $name );
+			$array[] = $each;
+		}
+		usort( $array, function( $a, $b ) {
+			return strnatcasecmp( $a->sort, $b->sort );
+		} );
+		$time = time();
+		foreach( $array as $each ) {
+			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+			$indexes[] = $index;
+			$url = $each->url;
+			$urlname = str_replace( '/', '|', $url );
+			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
+			$thumbsrc = $dirimg.$urlname.'-thumb.'.$time.'.jpg';
+			$liname = $each->name;
+			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
+			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">'
+						.'<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">'
+						.'<a class="lipath">'.$path.$url.'</a>'
+						.'<a class="liname">'.$liname.'</a>'
+						.'<div class="li1">'.$name.'</div>'
+						.'<div class="li2">'.$url.'</div>'
+					.'</li>';
+		}
+	}
+	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	if ( $mode !== 'search' ) {
+		return [ 'html' => $html, 'index' => $indexbar ];
+	} else {
+		return [ 'html' => $html, 'count' => count( $array ) ];
+	}
 }
 function htmlTracks( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( !count( $lists ) ) exit( '-1' );
