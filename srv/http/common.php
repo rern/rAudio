@@ -33,3 +33,22 @@ function indexbar( $indexes ) {
 	}
 	return [ $indexbar, $indexbar1 ];
 }
+function HMS2second( $time ) {
+	$HMS = explode( ':', $time );
+	$count = count( $HMS );
+	switch( $count ) {
+		case 1: return $HMS[ 0 ]; break;
+		case 2: return $HMS[ 0 ] * 60 + $HMS[ 1 ]; break;
+		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
+	}
+}
+function second2HMS( $second ) {
+	$hh = floor( $second / 3600 );
+	$mm = floor( ( $second % 3600 ) / 60 );
+	$ss = $second % 60;
+	
+	$hh = $hh ? $hh.':' : '';
+	$mm = $hh ? ( $mm > 9 ? $mm.':' : '0'.$mm.':' ) : ( $mm ? $mm.':' : '' );
+	$ss = $mm ? ( $ss > 9 ? $ss : '0'.$ss ) : $ss;
+	return $hh.$mm.$ss;
+}

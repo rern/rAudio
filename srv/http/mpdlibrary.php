@@ -36,8 +36,8 @@ File
 search
 			track list: mpc search -f %*% any $keyword
 */
+include '/srv/http/common.php';
 include '/srv/http/bash/cmd-listsort.php';
-include '/srv/http/indexbar.php';
 
 $gmode = $_POST[ 'gmode' ] ?? null;
 $mode = $_POST[ 'mode' ] ?? null;
@@ -494,22 +494,8 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		}
 		$hhmmss = array_column( $array, 'time' );
 		$seconds = 0;
-		foreach( $hhmmss as $t ) { // hh:mm:ss > seconds
-			$hms = explode( ':', $t );
-			$count = count( $hms );
-			switch( $count ) {
-				case 1: $seconds += $hms[ 0 ]; break;
-				case 2: $seconds += $hms[ 0 ] * 60 + $hms[ 1 ]; break;
-				case 3: $seconds += $hms[ 0 ] * 60 * 60 + $hms[ 1 ] * 60 + $hms[ 0 ]; break;
-			}
-		}
-		$hh = floor( $seconds / 3600 ); // seconds > hh:mm:ss
-		$mm = floor( ( $seconds % 3600 ) / 60 );
-		$ss = $seconds % 60;
-		$hh = $hh ? $hh.':' : '';
-		$mm = $hh ? ( $mm > 9 ? $mm.':' : '0'.$mm.':' ) : ( $mm ? $mm.':' : '' );
-		$ss = $mm ? ( $ss > 9 ? $ss : '0'.$ss ) : $ss;
-		$totaltime = $hh.$mm.$ss;
+		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
+		$totaltime = second2HMS( $seconds );
 		$args = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
 		$coverart = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$html.= '<li data-mode="'.$gmode.'" class="licover">

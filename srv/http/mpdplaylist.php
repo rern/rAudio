@@ -1,5 +1,5 @@
 <?php
-include '/srv/http/indexbar.php';
+include '/srv/http/common.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $dirplaylists = '/srv/http/data/playlists/';
@@ -294,30 +294,4 @@ function playlistInfo( $index = '' ) { // mpd protocol
 		$each->$key = $value;
 	}
 	return $array;
-}
-function pushstream( $channel, $data ) {
-	$ch = curl_init( 'http://127.0.0.1/pub?id='.$channel );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type:application/json' ] );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data, JSON_NUMERIC_CHECK ) );
-	curl_exec( $ch );
-	curl_close( $ch );
-}
-function HMS2second( $time ) {
-	$HMS = explode( ':', $time );
-	$count = count( $HMS );
-	switch( $count ) {
-		case 1: return $HMS[ 0 ]; break;
-		case 2: return $HMS[ 0 ] * 60 + $HMS[ 1 ]; break;
-		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
-	}
-}
-function second2HMS( $second ) {
-	$hh = floor( $second / 3600 );
-	$mm = floor( ( $second % 3600 ) / 60 );
-	$ss = $second % 60;
-	
-	$hh = $hh ? $hh.':' : '';
-	$mm = $hh ? ( $mm > 9 ? $mm.':' : '0'.$mm.':' ) : ( $mm ? $mm.':' : '' );
-	$ss = $mm ? ( $ss > 9 ? $ss : '0'.$ss ) : $ss;
-	return $hh.$mm.$ss;
 }
