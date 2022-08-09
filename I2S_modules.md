@@ -63,6 +63,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - HiFiBerry DAC 2 HD
 - HiFiBerry Digi
 - HiFiBerry Digi Pro
+- HiFiBerry Digi2 Pro
 - HiFiBerry Digi+
 - HiFiBerry Digi+ Pro
 - HiFiBox DAC
