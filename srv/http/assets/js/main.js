@@ -489,7 +489,7 @@ $( '#bar-top' ).click( function( e ) {
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
 } );
-$( '#lib-list, #pl-list, #pl-savedlist' ).on( 'click', 'p', function() {
+$( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
 	menuHide();
 	if ( G.library ) {
 		$( '.licover .coveredit.cover' ).remove();
@@ -1153,12 +1153,15 @@ $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
 		}
 	}
 	query.gmode = G.mode;
-	list( query, function( data ) {
+	list( query, function( html ) {
 		if ( !path && G.mode.slice( -5 ) === 'radio' ) path = G.mode.toUpperCase();
-		data.path = path;
-		data.modetitle = path;
+		var data = {
+			  html      : html
+			, modetitle : path
+			, path      : path
+		}
 		renderLibraryList( data );
-	}, 'json' );
+	} );
 	query.path = path;
 	query.modetitle = path;
 } );
@@ -1227,9 +1230,12 @@ $( '#lib-search-btn' ).click( function() { // search
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		}
-		list( query, function( data ) {
-			if ( data != -1 ) {
-				data.modetitle = 'search';
+		list( query, function( html ) {
+			if ( html != -1 ) {
+				var data = {
+					  html      : html
+					, modetitle : 'search'
+				}
 				renderLibraryList( data );
 				$( 'html, body' ).scrollTop( 0 );
 			} else {
@@ -1240,7 +1246,7 @@ $( '#lib-search-btn' ).click( function() { // search
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
 			}
-		}, 'json' );
+		} );
 	}
 } );
 $( '#lib-search-close' ).click( function() {
@@ -1258,11 +1264,14 @@ $( '#lib-search-close' ).click( function() {
 		$( '#mode-album' ).click();
 	} else if ( G.query.length ) {
 		var query = G.query[ G.query.length - 1 ];
-		list( query, function( data ) {
-			data.path = query.path;
-			data.modetitle = query.modetitle;
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : query.path
+			}
 			renderLibraryList( data );
-		}, 'json' );
+		} );
 	} else {
 		$( '#button-library' ).click();
 	}
@@ -1288,21 +1297,25 @@ $( '#button-lib-back' ).click( function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {
-			list( query, function( data ) {
-				if ( data != -1 ) {
+			list( query, function( html ) {
+				if ( html != -1 ) {
 					if ( backmode ) G.mode = G.gmode;
 					if ( G.mode === 'album' ) {
-						data.path = 'ALBUM';
+						var path = 'ALBUM';
 					} else {
+						var path = query.path;
 						G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-						data.path = query.path;
 					}
-					data.modetitle = query.modetitle;
+					var data = {
+						  html      : html
+						, modetitle : query.modetitle
+						, path      : path
+					}
 					renderLibraryList( data );
 				} else {
 					$( '#button-lib-back' ).click(); 
 				}
-			}, 'json' );
+			} );
 		}
 	}
 } );
@@ -1370,11 +1383,14 @@ $( '.mode' ).click( function() {
 		}
 	}
 	query.gmode = G.mode;
-	list( query, function( data ) {
-		data.path = G.mode === 'dabradio' ? '' : path;
-		data.modetitle = path;
+	list( query, function( html ) {
+		var data = {
+			  html      : html
+			, modetitle : path
+			, path      : G.mode === 'dabradio' ? '' : path
+		}
 		renderLibraryList( data );
-	}, 'json' );
+	} );
 	query.path = G.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	if ( query.query !== 'ls' ) G.query.push( query );
@@ -1411,12 +1427,15 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			, gmode  : mode
 		}
 	}
-	list( query, function( data ) {
-		data.path = path;
-		data.modetitle = path;
-		G.mode = mode;
+	G.mode = mode;
+	list( query, function( html ) {
+		var data = {
+			  html      : html
+			, modetitle : path
+			, path      : path
+		}
 		renderLibraryList( data );
-	}, 'json' );
+	} );
 	query.path = path;
 	query.modetitle = path;
 	G.query.push( query );
@@ -1546,7 +1565,7 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 		bash( [ 'ordersave', JSON.stringify( order ) ] );
 	}
 } );
-$( '#lib-list' ).on( 'click', '.coverart', function() {
+$( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	if ( G.press ) return
 	
 	G.scrolltop[ 'ALBUM' ] = $( window ).scrollTop();
@@ -1559,11 +1578,14 @@ $( '#lib-list' ).on( 'click', '.coverart', function() {
 		, mode   : 'album'
 		, string : path
 	}
-	list( query, function( data ) {
-		data.modetitle = $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text();
-		data.path = 'ALBUM';
+	list( query, function( html ) {
+		var data = {
+			  html      : html
+			, modetitle : $this.find( G.display.albumbyartist ? '.coverart2' : '.coverart1' ).text()
+			, path      : 'ALBUM'
+		}
 		renderLibraryList( data );
-	}, 'json' );
+	} );
 	query.modetitle = 'ALBUM';
 	G.query.push( query );
 } ).press( '.coverart', function( e ) {
@@ -1602,7 +1624,7 @@ Exclude this thumbnail?`
 		coverartChange();
 	}
 } );
-$( '#lib-list' ).press( '.licoverimg',  function( e ) {
+$( '#page-library' ).press( '.licoverimg',  function( e ) {
 	var $this = $( e.currentTarget );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
@@ -1611,7 +1633,7 @@ $( '#lib-list' ).press( '.licoverimg',  function( e ) {
 		.after( icoveredit );
 	menuHide();
 } );
-$( '#lib-list' ).on( 'click', 'li', function( e ) {
+$( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	if ( G.press ) return
 	
 	if ( $( '.licover .coveredit.cover' ).length ) {
@@ -1660,11 +1682,14 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 				, format : [ 'file' ]
 			}
 			query.gmode = G.mode;
-			list( query, function( data ) {
-				data.path = path;
-				data.modetitle = path;
+			list( query, function( html ) {
+				var data = {
+					  html      : html
+					, modetitle : path
+					, path      : path
+				}
 				renderLibraryList( data );
-			}, 'json' );
+			} );
 			G.query.push( query );
 		}
 		return
@@ -1744,16 +1769,19 @@ $( '#lib-list' ).on( 'click', 'li', function( e ) {
 	}
 	G.scrolltop[ libpath ] = $( window ).scrollTop();
 	query.gmode = G.mode;
-	list( query, function( data ) {
-		data.path = path;
-		data.modetitle = modetitle;
+	list( query, function( html ) {
+		var data = {
+			  html      : html
+			, modetitle : modetitle
+			, path      : path
+		}
 		renderLibraryList( data );
-	}, 'json' );
+	} );
 	query.path = path;
 	query.modetitle = modetitle;
 	if ( query.query !== 'ls' ) G.query.push( query );
 } );
-$( '.index' ).on( 'click', 'a', function() {
+$( '.page' ).on( 'click', '.index a', function() {
 	var index = $( this ).find( 'wh' ).text()[ 0 ];
 	if ( !index ) return
 	

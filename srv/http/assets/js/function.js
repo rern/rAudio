@@ -1034,6 +1034,7 @@ function renderLibraryCounts() {
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
+	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', G.display.backonleft )
@@ -1076,7 +1077,8 @@ function renderLibraryList( data ) {
 						.removeClass( 'hide' );
 	if ( !data.html ) return // radio
 	
-	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
+	
+	$( '#lib-mode-list' ).after( data.html ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
@@ -1099,15 +1101,7 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).removeClass( 'hide' );
 			G.color ? colorSet() : setTrackCoverart();
 		}
-		if ( 'index' in data ) {
-			$( '#lib-list' ).css( 'width', '' );
-			$( '#lib-index' ).html( data.index[ 0 ] )
-			$( '#lib-index1' ).html( data.index[ 1 ] )
-			$( '#lib-index, #lib-index1' ).removeClass( 'hide' );
-		} else {
-			$( '#lib-list' ).css( 'width', '100%' );
-			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
-		}
+		$( '#lib-list' ).css( 'width', $( '#lib-index' ).length ? '' : '100%' );
 		var pH = G.wH - 80;
 		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
 		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;

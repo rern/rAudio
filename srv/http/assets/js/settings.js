@@ -404,7 +404,7 @@ $( '.container' ).click( function( e ) {
 		|| $target.hasClass( 'switch' )
 	) return
 	
-//	$( 'pre.status' ).addClass( 'hide' );
+	$( 'pre.status' ).addClass( 'hide' );
 } ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
