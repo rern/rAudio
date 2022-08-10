@@ -2,6 +2,9 @@
 
 alias=r1
 
+# 20220810
+sed -i '/#IgnorePkg/ a\IgnorePkg = bluez-utils' /etc/pacman.conf
+
 # 20220805
 dirdata=/srv/http/data
 
