@@ -10,8 +10,7 @@ $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 switch( $cmd ) {
 	
 case 'current':
-	$lists = currentPlaylist();
-	$array = htmlTrack( $lists );
+	currentPlaylist();
 	break;
 case 'get':
 	$name = $_POST[ 'name' ];
@@ -28,10 +27,10 @@ case 'get':
 		$each->Time   = $v[ 5 ];
 		$lists[] = $each;
 	}
-	$array = htmlTrack( $lists, $name );
+	htmlTrack( $lists, $name );
 	break;
 case 'list':
-	$array = htmlSavedPlaylist();
+	htmlSavedPlaylist();
 	break;
 case 'load': // load saved playlist to current
 	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
@@ -40,15 +39,12 @@ case 'load': // load saved playlist to current
 	exec( 'mpc -q load "'.$name.'"' );
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
-	exit();
 	break;
 case 'track':
-	$array = playlistInfo( $_POST[ 'track' ] );
+	playlistInfo( $_POST[ 'track' ] );
 	break;
 	
 }
-
-echo json_encode( $array, JSON_NUMERIC_CHECK );
 
 //-------------------------------------------------------------------------------------
 
@@ -101,7 +97,7 @@ function currentPlaylist() {
 		}
 		$array[] = $each;
 	}
-	return $array;
+	htmlTrack( $array );
 }
 function htmlSavedPlaylist() {
 	include '/srv/http/bash/cmd-listsort.php';
@@ -134,13 +130,13 @@ function htmlSavedPlaylist() {
 	$counthtml = '&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 				<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
 				<i class="fa fa-file-playlist"></i>';
-	return [
+	echo json_encode( [
 		  'html'      => $html
 		, 'index'     => $indexbar
 		, 'counthtml' => $counthtml
 		, 'indexes'   => $indexes
 		, 'count'     => $count
-	];
+	], JSON_NUMERIC_CHECK );
 }
 function htmlTrack( $lists, $plname = '' ) {
 	global $headers;
@@ -262,7 +258,12 @@ function htmlTrack( $lists, $plname = '' ) {
 			$elapsed = round( str_replace( 'elapsed: ', '', $se ) );
 		}
 	}
-	return [ 'html' => $html, 'counthtml' => $counthtml, 'song' => $song, 'elapsed' => $elapsed ];
+	echo json_encode( [
+		  'html'      => $html
+		, 'counthtml' => $counthtml
+		, 'song'      => $song
+		, 'elapsed'   => $elapsed
+	], JSON_NUMERIC_CHECK );
 }
 function playlistInfo( $index = '' ) { // mpd protocol
 	// 2nd sleep: varied with length, 1000track/0.1s
@@ -298,5 +299,5 @@ function playlistInfo( $index = '' ) { // mpd protocol
 		$value = $key === 'Time' ? second2HMS( $val ) : $val;
 		$each->$key = $value;
 	}
-	return $array;
+	echo json_encode( $array, JSON_NUMERIC_CHECK );
 }
