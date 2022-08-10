@@ -55,7 +55,7 @@ $info Shared data:
 "
 fi
 
-if [[ ! -e $dirdata/dabradio ]]; then
+if [[ -e /usr/bin/rtsp-simple-server && ! -e $dirdata/dabradio ]]; then
 	echo -e "\
 $info DAB Radio:
     • Rescan for stations again.
