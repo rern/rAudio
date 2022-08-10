@@ -66,11 +66,14 @@ function bookmarkCover( url, path ) {
 function radioRefresh() {
 	var query = G.query[ G.query.length - 1 ];
 	if ( query.path ) {
-		list( query, function( data ) {
-			data.path = query.path;
-			data.modetitle = query.modetitle;
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : query.path
+			}
 			renderLibraryList( data );
-		}, 'json' );
+		} );
 	} else {
 		$( '#mode-'+ G.mode ).click();
 	}
@@ -294,11 +297,14 @@ function psDisplay( data ) {
 				$( '.licover' ).remove();
 			} else {
 				var query = G.query[ G.query.length - 1 ];
-				list( query, function( data ) {
-					data.path = query.path;
-					data.modetitle = query.modetitle;
+				list( query, function( html ) {
+					var data = {
+						  html      : html
+						, modetitle : query.modetitle
+						, path      : query.path
+					}
 					renderLibraryList( data );
-				}, 'json' );
+				} );
 			}
 		}
 		$( '#button-lib-back' ).toggleClass( 'back-left', G.display.backonleft );
@@ -372,11 +378,14 @@ function psMpdUpdate( data ) {
 					, format : [ 'file' ]
 				}
 			}
-			list( query, function( data ) {
-				data.path = lipath;
-				data.modetitle = lipath;
+			list( query, function( html ) {
+				var data = {
+					  html      : html
+					, modetitle : lipath
+					, path      : lipath
+				}
 				renderLibraryList( data );
-			}, 'json' );
+			} );
 		}
 		banner( 'Library Update', 'Done', 'library' );
 		if ( G.library ) {
@@ -387,11 +396,14 @@ function psMpdUpdate( data ) {
 			} else {
 				var query = G.query[ G.query.length - 1 ];
 				if ( query ) {
-					list( query, function( data ) {
-						data.path = query.path;
-						data.modetitle = query.modetitle;
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : query.modetitle
+							, path      : query.path
+						}
 						renderLibraryList( data );
-					}, 'json' );
+					} );
 				}
 			}
 		} else if ( G.playlist && !G.savedlist ) {
