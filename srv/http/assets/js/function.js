@@ -666,22 +666,22 @@ function imageReplace( imagefilenoext, type, covername ) {
 	banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
-	  nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
-	, album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
-	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
+	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
+		, nas        : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
 	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
-	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
+		, sd         : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
 	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
-	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
+		, usb        : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
 	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
-	, webradio       : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
+		, playlists  : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
-	, '-'            : ''
+		, webradio   : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
-	, count          : 'Count'
+		, '-'        : ''
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
-	, label          : 'Label'
+		, count      : 'Count'
 	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
+		, label      : 'Label'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'

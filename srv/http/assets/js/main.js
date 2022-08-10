@@ -266,16 +266,16 @@ $( '#displaylibrary' ).click( function() {
 } );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {
-		  bars         : 'Top-Bottom bars'
-		, barsalways   : 'Bars always on'
-		, time         : 'Time'
-		, radioelapsed : 'Web Radio time'
-		, cover        : 'Coverart'
-		, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
-		, volume       : 'Volume'
-		, vumeter      : 'VU meter'
-		, buttons      : 'Buttons'
-		, noswipe      : 'Disable swipe'
+		  bars             : 'Top-Bottom bars'
+			, barsalways   : 'Bars always on'
+		, time             : 'Time'
+			, radioelapsed : 'Web Radio time'
+		, cover            : 'Coverart'
+			, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
+		, volume           : 'Volume'
+			, vumeter      : 'VU meter'
+		, buttons          : 'Buttons'
+			, noswipe      : 'Disable swipe'
 	}
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys = Object.keys( chkplayback );
