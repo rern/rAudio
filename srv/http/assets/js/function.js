@@ -717,7 +717,7 @@ function infoLibrary( page2 ) {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			if ( page2 ) {
-				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
