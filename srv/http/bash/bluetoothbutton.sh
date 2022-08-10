@@ -6,8 +6,7 @@ dirbash=/srv/http/bash
 mac=$( bluetoothctl show \
 		| head -1 \
 		| cut -d' ' -f2 )
-event=$( cat /proc/bus/input/devices \
-			| sed -n "/Phys=${mac,,}/,/Handlers=/ p" \
+event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ p" /proc/bus/input/devices \
 			| tail -1 \
 			| awk '{print $NF}' )
 
