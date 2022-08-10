@@ -2,6 +2,9 @@
 
 alias=r1
 
+# 20220810
+sed -i '/#IgnorePkg/ a\IgnorePkg = bluez-utils' /etc/pacman.conf
+
 # 20220805
 dirdata=/srv/http/data
 
@@ -55,7 +58,8 @@ $info Shared data:
 "
 fi
 
-if [[ ! -e $dirdata/dabradio ]]; then
+
+if [[ -e /usr/bin/rtsp-simple-server && ! -e $dirdata/dabradio ]]; then
 	echo -e "\
 $info DAB Radio:
     • Rescan for stations again.
