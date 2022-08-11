@@ -1511,7 +1511,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	// select file
 	//    - gif    > [file]   - no canvas
 	//    - others > [base64] - data:image/jpeg;base64,...
-	var imagepath = path.slice( 3, 9 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
+	var imagepath = path.slice( 3, 8 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'

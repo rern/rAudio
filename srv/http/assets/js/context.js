@@ -14,7 +14,7 @@ function bookmarkNew() {
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	if ( G.mode.slice( -5 ) === 'radio' ) path = G.mode +'/'+ path;
-	var bkpath = path.slice( 3, 9 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
+	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
 		info( {
