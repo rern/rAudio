@@ -41,7 +41,7 @@ ib {
 }
 .infobookmark {
 	float: left;
-	width: 140px;
+	min-width: 100px;
 	height: 100px;
 }
 .infobookmark i {
