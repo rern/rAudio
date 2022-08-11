@@ -148,7 +148,7 @@ case 'radio':
 			, $files );
 	} else {
 		$searchmode = 0;
-		exec( 'ls -1 "'.$dir.'" | grep -v ^img$'
+		exec( 'ls -1 "'.$dir.'" | egrep -v "^img|\.jpg$|\.gif$"'
 			, $lists );
 		foreach( $lists as $list ) {
 			if ( is_dir( $dir.$list ) ) {
