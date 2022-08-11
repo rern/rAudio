@@ -1410,8 +1410,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	var path = $( this ).find( '.lipath' ).text();
 	if ( G.bookmarkedit ) return
 	
-	if ( path.slice( 3, 9 ) !== 'radio' ) {
-		var mode = path.split( '/' )[ 0 ].toLowerCase();
+	var path0 = path.split( '/' )[ 0 ];
+	var mode = path0.toLowerCase();
+	if ( path0.slice( 3 ) !== 'radio' ) {
 		var query = {
 			  query  : 'ls'
 			, string : path
@@ -1419,10 +1420,9 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			, gmode  : mode
 		}
 	} else {
-		path = path.slice( 10 );
-		var mode = 'webradio';
+		path = path.slice( 9 );
 		var query = {
-			  query  : 'webradio'
+			  query  : 'radio'
 			, string : path
 			, gmode  : mode
 		}
