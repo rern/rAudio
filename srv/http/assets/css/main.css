@@ -50,6 +50,9 @@ ib {
 	color: var( --cm );
 	text-shadow: -2px 2px 4px #000000;
 }
+.infobookmark .fa-bookmark {
+	margin-top: 20px;
+}
 #infoIcon.fa-bookmark {
 	line-height: 34px;
 }
