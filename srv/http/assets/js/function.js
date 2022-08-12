@@ -590,10 +590,11 @@ function getPlaybackStatus( withdisplay ) {
 		setButtonUpdating();
 	} );
 }
-function getPlaylist() {
+function getPlaylist( refresh ) {
 	if ( G.local ) return
 			
 	local( 1000 );
+	if ( refresh ) G.htmlplaylist = '';
 	list( { cmd: 'current' }, renderPlaylist, 'json' );
 }
 function hideGuide() {

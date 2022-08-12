@@ -215,31 +215,9 @@ function psCoverart( data ) {
 						}
 					} );
 				}
-			} else {
-				if ( path === '/data/shm' || !$( '#pl-index' ).hasClass( 'hide' ) ) return
-				
-				if ( path === '/data/audiocd' ) {
-					$( '#pl-list li' ).each( function() {
-						if ( $( this ).find( '.lipath' ).text().slice( 0, 4 ) === 'cdda' ) {
-							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
-						}
-					} );
-					return // skip .bookmark
-				}
-				
-				var $li = G.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
-				$li.each( function() {
-					var lipath = $( this ).find( '.lipath' ).text()
-					if ( getDirectory( lipath ) === path ) {
-						if ( url.slice( -4 ) !== 'none' ) {
-							$( this ).find( '.pl-icon' ).replaceWith( '<img class="iconthumb pl-icon" src="'+ url +'">' );
-						} else {
-							$( this ).find( '.pl-icon' ).replaceWith( '<i class="fa fa-music pl-icon" data-target="#menu-filesavedpl"></i>' );
-						}
-					}
-				} );
 			}
 			bookmarkCover( url, path );
+			getPlaylist( 'refresh' );
 			break;
 		case 'dabradio':
 		case 'webradio':
@@ -255,11 +233,10 @@ function psCoverart( data ) {
 					G.status.stationcover = '';
 					coverartDefault();
 				}
-			} else if ( G.playlist ) {
-				$( '#playlist' ).click();
 			} else if ( G.librarylist && G.mode === data.type ) {
 				radioRefresh();
 			}
+			getPlaylist( 'refresh' );
 			break;
 	}
 	bannerHide();
