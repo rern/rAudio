@@ -136,8 +136,12 @@ pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 }
 pushstreamThumb() {
-	[[ ${target:0:4} == /mnt ]] && coverfile=${target:0:-4} || coverfile=${target:9:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
+	if [[ ${target:0:4} == /mnt ]]; then # /mnt/...
+		coverfile=${target:0:-4}
+		coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # encode path with special characters
+	else # /data/...
+		coverfile=${target:9:-4} # radio url
+	fi
 	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
 pushstreamVolume() {

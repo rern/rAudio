@@ -187,9 +187,9 @@ function psCoverart( data ) {
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			if ( G.playback ) {
-				G.status.coverart = url;
+				G.status.coverart = decodeURIComponent( src );
 				setCoverart();
-				if ( 'Album' in data ) { // with webradio
+				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
 					setInfo();
 				}
@@ -224,7 +224,7 @@ function psCoverart( data ) {
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
 				if ( src ) {
-					G.status.stationcover = decodeURIComponent( src );
+					G.status.stationcover = src;
 					$( '#coverart' )
 						.attr( 'src', src )
 						.css( 'opacity', '' )
