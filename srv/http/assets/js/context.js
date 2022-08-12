@@ -339,14 +339,16 @@ function tagEditor() {
 function webRadioCoverart() {
 	if ( G.playback ) {
 		var coverart = G.status.stationcover || G.coverdefault;
+		var type = G.status.icon === 'dabradio' ? 'dabradio' : 'webradio';
 	} else {
 		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
 		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
+		var type = G.mode;
 	}
 	var radioicon = coverart === G.coverdefault;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' ) +' Cover Art'
+		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
@@ -365,7 +367,7 @@ function webRadioCoverart() {
 				var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 				var imagefilenoext = '/data/'+ G.mode +'/img/'+ url.replace( /\//g, '|' );
 			}
-			imageReplace( '/srv/http'+ imagefilenoext, G.mode );
+			imageReplace( '/srv/http'+ imagefilenoext, type );
 		}
 	} );
 }

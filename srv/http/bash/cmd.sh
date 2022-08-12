@@ -136,7 +136,7 @@ pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 }
 pushstreamThumb() {
-	coverfile=${target:0:-4}
+	[[ ${target:0:4} == /mnt ]] && coverfile=${target:0:-4} || coverfile=${target:9:-4}
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
 	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
