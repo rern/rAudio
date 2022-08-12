@@ -174,9 +174,11 @@ function psBookmark( data ) {
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
-	var src = data.url;
-	var url = decodeURIComponent( data.url );
-	var path = getDirectory( url ).replace( '/mnt/MPD/', '' );
+	if ( 'url' in data ) {
+		var src = data.url;
+		var url = decodeURIComponent( data.url );
+		var path = getDirectory( url ).replace( '/mnt/MPD/', '' );
+	}
 	switch( data.type ) {
 		case 'bookmark':
 			bookmarkCover( url, path );
@@ -241,26 +243,21 @@ function psCoverart( data ) {
 			break;
 		case 'dabradio':
 		case 'webradio':
-			G.status.stationcover = src;
 			if ( G.playback ) {
 				$( '#vu' ).addClass( 'hide' );
-				$( '#coverart' )
-					.attr( 'src', src )
-					.css( 'opacity', '' )
-					.removeClass( 'hide' );
+				if ( src ) {
+					G.status.stationcover = decodeURIComponent( src );
+					$( '#coverart' )
+						.attr( 'src', src )
+						.css( 'opacity', '' )
+						.removeClass( 'hide' );
+				} else {
+					G.status.stationcover = '';
+					coverartDefault();
+				}
 			} else if ( G.playlist ) {
 				$( '#playlist' ).click();
 			} else if ( G.librarylist && G.mode === data.type ) {
-				radioRefresh();
-			}
-			break;
-		case 'webradioreset':
-			G.status.stationcover = '';
-			if ( G.playback ) {
-				if ( G.status.coverart === src ) coverartDefault();
-			} else if ( G.playlist ) {
-				$( '#playlist' ).click();
-			} else if ( G.librarylist && G.mode === data.radiotype ) {
 				radioRefresh();
 			}
 			break;

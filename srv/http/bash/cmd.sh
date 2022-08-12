@@ -1259,7 +1259,7 @@ webradiocoverreset )
 	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":"'$type'"}'
+	pushstream coverart '{"type":"'$type'"}'
 	;;
 webradiodelete )
 	dir=${args[1]}

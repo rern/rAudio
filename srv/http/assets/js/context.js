@@ -357,15 +357,19 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-'+ G.mode +'"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'webradiocoverreset', coverart, G.mode ] );
+			bash( [ 'webradiocoverreset', coverart, type ] );
 		}
 		, ok          : function() {
 			if ( coverart !== G.coverdefault ) {
 				var imagefilenoext = coverart.slice( 0, -15 );
 			} else {
-				var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
-				var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-				var imagefilenoext = '/data/'+ G.mode +'/img/'+ url.replace( /\//g, '|' );
+				if ( G.library ) {
+					var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
+					var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+				} else {
+					var url =  G.status.file;
+				}
+				var imagefilenoext = '/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 			}
 			imageReplace( '/srv/http'+ imagefilenoext, type );
 		}
