@@ -481,7 +481,11 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ ! $url ]] && url=/mnt/MPD/$mpdpath/reset
+	if [[ $url ]]; then
+		url="${url:0:-4}.$( date +%s ).${url: -3}"
+	else
+		url=/mnt/MPD/$mpdpath/reset
+	fi
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;

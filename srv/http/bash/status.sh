@@ -512,6 +512,7 @@ if [[ $ext != CD && ! $stream ]]; then
 $AlbumArtist
 $Album
 $file0" )
+	[[ $coverart ]] && coverart="${coverart:0:-4}.$date.${coverart: -3}"
 fi
 elapsedGet
 ########
