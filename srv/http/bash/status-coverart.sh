@@ -30,7 +30,7 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 										| egrep -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
 										| head -1 )
 if [[ $coverfile ]]; then
-	echo "${coverfile:0:-4}".$date.${coverfile: -3} | tee $dirshm/local/$covername
+	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" | tee $localfile # rawurlencode - local path only
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi

@@ -99,27 +99,23 @@ case 'imagereplace':
 	$covername = $_POST[ 'covername' ] ?? '';
 	$base64 = $_POST[ 'base64' ] ?? '';
 	$ext = $base64 ? '.jpg' : '.gif';
-	if ( $type === 'audiocd' ) {
-		$filenoext = substr( $imagefile, 0, -3 );
-		exec( 'rm -f '.$filenoext.'*' );
-		$content = $base64 ? base64_decode( $base64 ) : $_FILES[ 'file' ][ 'tmp_name' ];
-		file_put_contents( $imagefile, $content );
-		$coverfile = substr( $filenoext, 9 ).time().$ext; // remove /srv/http
-		pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"coverart"}' ) );
-	} else if ( $base64 ) { // jpg/png - album coverart(path /mnt/...) needs sudo
+	$filenoext = substr( $imagefile, 0, -3 );
+	if ( $base64 ) { // jpg/png - path /mnt/... needs sudo
 		$tmpfile = $dirdata.'shm/binary';
 		file_put_contents( $tmpfile, base64_decode( $base64 ) );
-		cmdsh( [ 'thumbjpg', $type, $tmpfile, $imagefile, $covername ] );
 	} else { // gif passed as file
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
-		cmdsh( [ 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
 	}
+	cmdsh( [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
 	if ( $type === 'bookmark' ) {
-		$coverart = preg_replace( '#^/srv/http#', '', $imagefile ); // webradio
+		$coverfile = preg_replace( '#^/srv/http#', '', $imagefile ); // radio - /srv/http/data/...
 		$path = exec( 'head -1 "'.$dirbookmarks.$covername.'"' );
-		if ( file_exists( $imagefile ) ) $path.= "\n".$coverart;
+		if ( file_exists( $imagefile ) ) $path.= "\n".$coverfile;
 		file_put_contents( $dirbookmarks.$covername, $path );
 	}
+	$coverfile = $filenoext.time().$ext;
+	if ( substr( $coverfile, 0, 4 ) === '/mnt' ) $coverfile = rawurlencode( $coverfile );
+	pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"'.$type.'"}' ) );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';

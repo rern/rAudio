@@ -78,7 +78,6 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
-	pushstreamThumb gif $type
 }
 jpgThumbnail() {
 	type=$1
@@ -109,7 +108,6 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
-	pushstreamThumb jpg $type
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -134,11 +132,6 @@ pladdPosition() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-}
-pushstreamThumb() {
-	coverfile=${target:0:-4}
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -365,7 +358,7 @@ bookmarkreset )
 	name=${args[2]}
 	sed -i '2d' "$dirdata/bookmarks/$name"
 	rm -f "$imagepath/coverart".*
-	data='{"url":"'$imagepath/none'","type":"bookmark"}'
+	data='{"url":"'$imagepath/reset'","type":"bookmark"}'
 	pushstream coverart "$data"
 	;;
 bookmarkthumb )
@@ -488,7 +481,11 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ ! $url ]] && url=/mnt/MPD/$mpdpath/none
+	if [[ $url ]]; then
+		url="${url:0:-4}.$( date +%s ).${url: -3}"
+	else
+		url=/mnt/MPD/$mpdpath/reset
+	fi
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
@@ -1259,7 +1256,7 @@ webradiocoverreset )
 	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"url":"'$coverart'","type":"webradioreset", "radiotype":"'$type'"}'
+	pushstream coverart '{"type":"'$type'"}'
 	;;
 webradiodelete )
 	dir=${args[1]}

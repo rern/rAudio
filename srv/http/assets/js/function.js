@@ -250,7 +250,7 @@ function coverartChange() {
 		var embedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	}
 	var coverartlocal = ( G.playback && !embedded && !pbonlinefetched && !pbcoverdefault )
-						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
+						|| ( G.library && !embedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
@@ -541,6 +541,7 @@ function getBio( artist ) {
 	} );
 }
 function getDirectory( path ) {
+	if ( path.slice( 0, 3 ) === '%2F' ) path = decodeURIComponent( path );
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
 function getPlaybackStatus( withdisplay ) {
@@ -590,10 +591,11 @@ function getPlaybackStatus( withdisplay ) {
 		setButtonUpdating();
 	} );
 }
-function getPlaylist() {
+function getPlaylist( refresh ) {
 	if ( G.local ) return
 			
 	local( 1000 );
+	if ( refresh ) G.htmlplaylist = '';
 	list( { cmd: 'current' }, renderPlaylist, 'json' );
 }
 function hideGuide() {
@@ -667,21 +669,21 @@ function imageReplace( imagefilenoext, type, covername ) {
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
-	, nas            : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
+		, nas        : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
 	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
-	, sd             : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
+		, sd         : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
 	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
-	, usb            : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
+		, usb        : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
 	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
-	, webradio       : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
+		, playlists  : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
 	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
+		, webradio   : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
 	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
+		, '-'        : ''
 	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
-	, playlists      : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
+		, count      : 'Count'
 	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
-	, '-'            : ''
-	, count          : 'Count'
-	, label          : 'Label'
+		, label      : 'Label'
 }
 var chklibrary2 = {
 	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
@@ -717,7 +719,7 @@ function infoLibrary( page2 ) {
 		, checkchanged : 1
 		, beforeshow   : function() {
 			if ( page2 ) {
-				$( '.infomessage, #infoContent td' ).css( 'width', '287' );
+				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
 				var $chk = $( '#infoContent input' );
 				keys.forEach( function( k, i ) {
 					window[ '$'+ k ] = $chk.eq( i );
@@ -756,13 +758,19 @@ function infoUpdate( path ) {
 	}
 	
 	info( {
-		  icon     : 'refresh-library'
-		, title    : 'Library Database'
-		, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
-		, radio    : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		, values   : path ? '' : [ 'update', data.ffmpeg ]
-		, ok       : function() {
-			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
+		  icon       : 'refresh-library'
+		, title      : 'Library Database'
+		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+		, radio      : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+		, values     : path ? '' : 'update'
+		, beforeshow : function() {
+			if ( !G.status.counts ) {
+				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
+				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
+			}
+		}
+		, ok         : function() {
+			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', infoVal() ] );
 		}
 	} );
 }
@@ -1034,6 +1042,7 @@ function renderLibraryCounts() {
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
+	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', G.display.backonleft )
@@ -1067,7 +1076,7 @@ function renderLibraryList( data ) {
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'dabradio' ) {
-		htmlpath += '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
+		htmlpath += data.path ? '' : '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
@@ -1076,7 +1085,8 @@ function renderLibraryList( data ) {
 						.removeClass( 'hide' );
 	if ( !data.html ) return // radio
 	
-	$( '#lib-list' ).html( data.html +'<p></p>' ).promise().done( function() {
+	
+	$( '#lib-mode-list' ).after( data.html ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
@@ -1099,15 +1109,7 @@ function renderLibraryList( data ) {
 			$( '#lib-list' ).removeClass( 'hide' );
 			G.color ? colorSet() : setTrackCoverart();
 		}
-		if ( 'index' in data ) {
-			$( '#lib-list' ).css( 'width', '' );
-			$( '#lib-index' ).html( data.index[ 0 ] )
-			$( '#lib-index1' ).html( data.index[ 1 ] )
-			$( '#lib-index, #lib-index1' ).removeClass( 'hide' );
-		} else {
-			$( '#lib-list' ).css( 'width', '100%' );
-			$( '#lib-index, #lib-index1' ).addClass( 'hide' );
-		}
+		$( '#lib-list' ).css( 'width', $( '#lib-index' ).length ? '' : '100%' );
 		var pH = G.wH - 80;
 		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
 		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
@@ -1189,7 +1191,6 @@ function renderPlayback() {
 function renderPlaylist( data ) {
 	G.savedlist = 0;
 	G.savedplaylist = 0;
-	G.status.pllength = data.pllength;
 	G.status.elapsed = data.elapsed;
 	G.status.song = data.song;
 	$( '#pl-search-close' ).click();
@@ -1222,6 +1223,7 @@ function renderPlaylist( data ) {
 		var timestamp = Math.floor( Date.now() / 1000 );
 		var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
 		$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
+			G.status.pllength = $( '#pl-list li' ).length;
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
 			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );

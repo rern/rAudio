@@ -14,7 +14,7 @@ function bookmarkNew() {
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
 	if ( G.mode.slice( -5 ) === 'radio' ) path = G.mode +'/'+ path;
-	var bkpath = path.slice( 3, 9 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
+	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
 		info( {
@@ -339,14 +339,16 @@ function tagEditor() {
 function webRadioCoverart() {
 	if ( G.playback ) {
 		var coverart = G.status.stationcover || G.coverdefault;
+		var type = G.status.icon === 'dabradio' ? 'dabradio' : 'webradio';
 	} else {
 		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
 		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
+		var type = G.mode;
 	}
 	var radioicon = coverart === G.coverdefault;
 	info( {
 		  icon        : '<i class="iconcover"></i>'
-		, title       : ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' ) +' Cover Art'
+		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 						+'<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
@@ -355,17 +357,21 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-'+ G.mode +'"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'webradiocoverreset', coverart, G.mode ] );
+			bash( [ 'webradiocoverreset', coverart, type ] );
 		}
 		, ok          : function() {
 			if ( coverart !== G.coverdefault ) {
 				var imagefilenoext = coverart.slice( 0, -15 );
 			} else {
-				var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
-				var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-				var imagefilenoext = '/data/'+ G.mode +'/img/'+ url.replace( /\//g, '|' );
+				if ( G.library ) {
+					var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
+					var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+				} else {
+					var url =  G.status.file;
+				}
+				var imagefilenoext = '/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 			}
-			imageReplace( '/srv/http'+ imagefilenoext, G.mode );
+			imageReplace( '/srv/http'+ imagefilenoext, type );
 		}
 	} );
 }

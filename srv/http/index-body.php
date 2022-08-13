@@ -48,7 +48,7 @@ $( '#pwd' ).keypress( function( e ) {
 }
 $color = file_exists( '/srv/http/data/system/color' );
 // library home blocks
-$modes = [ 'SD', 'USB', 'NAS', 'Web Radio', 'DAB Radio', 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Playlists', 'Latest' ];
+$modes = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest', 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
 $modehtml = '';
 foreach( $modes as $mode ) {
 	$lipath = str_replace( ' ', '', $mode );
@@ -362,9 +362,6 @@ foreach( $settinglist as $l ) {
 		</div>
 	</div>
 	<div id="lib-mode-list"><?=$modehtml?></div>
-	<ul id="lib-list" class="list"></ul>
-	<div id="lib-index" class="index index0"></div>
-	<div id="lib-index1" class="index index1"></div>
 </div>
 
 <div id="page-playlist" class="page hide">
