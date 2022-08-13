@@ -353,6 +353,22 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
+bookmarkremove )
+	name=${args[1]//\//\\/}
+	path=${args[2]}
+	rm "$dirdata/bookmarks/$name"
+	[[ -e $dirsystem/order ]] && sed -i '#"'$path'"# d' $dirsystem/order
+	data='{"type":"delete","path":"'$path'","order":'$( cat $dirsystem/order 2> /dev/null )'}'
+	pushstream bookmark "$data"
+	;;
+bookmarkrename )
+	name=${args[1]//\//\\/}
+	newname=${args[2]//\//\\/}
+	path=${args[3]}
+	mv $dirdata/bookmarks/{"$name","$newname"} 
+	data='{"type":"rename","path":"'$path'","name":"'$newname'"}'
+	pushstream bookmark "$data"
+	;;
 bookmarkreset )
 	imagepath=${args[1]}
 	name=${args[2]}

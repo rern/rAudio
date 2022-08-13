@@ -56,8 +56,7 @@ function bookmarkCover( src, path ) {
 				htmlbk += '<img class="bkcoverart" src="'+ src +'">';
 			} else {
 				htmlbk += '<i class="fa fa-bookmark"></i>'
-						 +'<div class="divbklabel">'
-						 +'<span class="bklabel label">'+ path.split( '/' ).pop() +'</span></div>'
+						 +'<a class="label">'+ path.split( '/' ).pop() +'</a>'
 			}
 			$this.find( '.mode' ).html( htmlbk );
 			return false
@@ -159,20 +158,19 @@ function psBookmark( data ) {
 	if ( 'html' in data ) {
 		$( '#lib-mode-list' ).append( data.html );
 	} else {
-		var $bookmark = $( '.lib-mode' ).filter( function() {
-			return $( this ).find( '.lipath' ) === data.path;
+		$( '.lib-mode.bookmark' ).each( function() {
+			var $this = $( this );
+			if ( $this.find( '.lipath' ).text() === data.path ) {
+				data.type === 'delete' ? $this.remove() : $this.find( '.label' ).text( data.name );
+				return false
+			}
 		} );
-		if ( data.type === 'delete' ) {
-			$bookmark.remove();
-		} else {
-			$bookmark.find( '.bklabel' ).text( data.name );
-		}
 	}
-	$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
 	if ( 'order' in data ) {
 		G.display.order = data.order;
 		orderLibrary();
 	}
+	$( '#lib-mode-list' ).click();
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );

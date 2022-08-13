@@ -276,6 +276,7 @@ hr {
 }
 #infoContent .bklabel {
 	height: auto;
+	line-height: 30px;
 }
 #infoTopBg {
 	width: 100%;

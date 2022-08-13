@@ -70,23 +70,6 @@ case 'bookmark':
 	];
 	pushstream( 'bookmark', $data );
 	break;
-case 'bookmarkremove':
-	$path = $_POST[ 'path' ];
-	$fileorder = $dirsystem.'order';
-	$order = json_decode( file_get_contents( $fileorder ) );
-	$name = str_replace( '/', '|', $_POST[ 'delete' ] );
-	exec( 'rm "'.$dirbookmarks.escape( $name ).'"' );
-	$index = array_search( $path, $order );
-	array_splice( $order, $index, 1 ); // remove + reindex for json_encode
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
-	pushstream( 'bookmark', [ 'type' => 'delete', 'path' => $path, 'order' => $order ] );
-	break;
-case 'bookmarkrename':
-	$name = $_POST[ 'name' ];
-	$rename = $_POST[ 'rename' ];
-	rename( $dirbookmarks.str_replace( '/', '|', $name ), $dirbookmarks.str_replace( '/', '|', $rename ) );
-	pushstream( 'bookmark', [ 'type' => 'rename', 'path' => $_POST[ 'path' ], 'name' => $rename ] );
-	break;
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
