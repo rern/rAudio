@@ -411,7 +411,7 @@ function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$thumbsrc = $dirimg.$urlname.'-thumb.'.$time.'.jpg';
+			$thumbsrc = rawurlencode( $dirimg.$urlname.'-thumb.'.$time.'.jpg' );
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">

@@ -541,6 +541,7 @@ function getBio( artist ) {
 	} );
 }
 function getDirectory( path ) {
+	if ( path.slice( 0, 3 ) === '%2F' ) path = decodeURIComponent( path );
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
 function getPlaybackStatus( withdisplay ) {

@@ -44,15 +44,14 @@ disconnect = () => {
 		pushstream.disconnect();
 	}
 }
-function bookmarkCover( url, path ) {
-	var url = url.replace( '/srv/http', '' );
+function bookmarkCover( src, path ) {
 	var path = path.replace( '/srv/http/data/', '' );
 	$( '.bookmark' ).each( function() {
 		var $this = $( this );
 		if ( $this.find( '.lipath' ).text() === path ) {
 			var htmlbk = '<a class="lipath">'+ path +'</a>';
-			if ( url.slice( -4 ) !== 'none' ) {
-				htmlbk += '<img class="bkcoverart" src="'+ url +'">';
+			if ( src.slice( -4 ) !== 'none' ) {
+				htmlbk += '<img class="bkcoverart" src="'+ src +'">';
 			} else {
 				htmlbk += '<i class="fa fa-bookmark"></i>'
 						 +'<div class="divbklabel">'
@@ -176,18 +175,17 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	if ( 'url' in data ) {
 		var src = data.url;
-		var url = decodeURIComponent( data.url );
-		var path = getDirectory( url );
+		var path = getDirectory( src );
 	}
 	switch( data.type ) {
 		case 'bookmark':
-			bookmarkCover( url, path );
+			bookmarkCover( src, path );
 			break;
 		case 'coverart':
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			if ( G.playback ) {
-				G.status.coverart = url;
+				G.status.coverart = src;
 				setCoverart();
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
@@ -197,8 +195,8 @@ function psCoverart( data ) {
 				if ( path === '/data/audiocd' ) return
 				
 				if ( $( '.licover' ).length ) {
-					if ( getDirectory( $( '#liimg' ).attr( 'src' ) ) === path ) {
-						$( '#liimg' ).attr( 'src', url );
+					if ( $( '.lipath' ).eq( 0 ).text() === path ) {
+						$( '#liimg' ).attr( 'src', src );
 						$( '.licover .coveredit' ).remove();
 						$( '.licoverimg ' ).css( 'opacity', '' )
 						if ( path.slice( 0, 9 ) === '/data/shm' ) $( '.licoverimg ' ).append( icoversave );
@@ -206,13 +204,13 @@ function psCoverart( data ) {
 				} else {
 					$( '#lib-list li' ).each( function() {
 						if ( $( this ).find( '.lipath' ).text() === path ) {
-							$( this ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ url +'" data-target="#menu-folder">' );
+							$( this ).find( '.lib-icon' ).replaceWith( '<img class="iconthumb lib-icon" src="'+ src +'" data-target="#menu-folder">' );
 							return false
 						}
 					} );
 				}
 			}
-			bookmarkCover( url, path );
+			bookmarkCover( src, path );
 			getPlaylist( 'refresh' );
 			break;
 		case 'dabradio':
