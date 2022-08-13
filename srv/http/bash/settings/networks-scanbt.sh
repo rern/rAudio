@@ -18,11 +18,11 @@ paired=$( listBt paired-devices )
 [[ $paired ]] && devices=$( diff <( echo "$paired" ) <( echo "$devices" ) | grep '^>' | cut -c 3- )
 readarray -t devices <<< "$devices"
 for dev in "${devices[@]}"; do
-        name=${dev/^*}
-        mac=${dev/*^}
-        data+=',{
-  "name"      : "'$name'"
-, "mac"       : "'$mac'"
+	name=${dev/^*}
+	mac=${dev/*^}
+	data+=',{
+  "name" : "'$name'"
+, "mac"  : "'$mac'"
 }'
 done
 
