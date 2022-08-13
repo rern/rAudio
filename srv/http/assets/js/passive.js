@@ -177,7 +177,7 @@ function psCoverart( data ) {
 	if ( 'url' in data ) {
 		var src = data.url;
 		var url = decodeURIComponent( data.url );
-		var path = getDirectory( url ).replace( '/mnt/MPD/', '' );
+		var path = getDirectory( url );
 	}
 	switch( data.type ) {
 		case 'bookmark':
@@ -187,7 +187,7 @@ function psCoverart( data ) {
 			$( '.coveredit, .bkedit' ).remove();
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
 			if ( G.playback ) {
-				G.status.coverart = decodeURIComponent( src );
+				G.status.coverart = url;
 				setCoverart();
 				if ( 'Album' in data ) {
 					G.status.Album = data.Album;
@@ -197,15 +197,11 @@ function psCoverart( data ) {
 				if ( path === '/data/audiocd' ) return
 				
 				if ( $( '.licover' ).length ) {
-					var covername = url.split( '/' ).pop().slice( 0, -4 );
-					var artistalbum = $( '.liinfo .liartist' ).text() + $( '.liinfo .lialbum' ).text();
-					artistalbum = artistalbum.replace( /[ '"`?/#&]/g, '' );
-					if ( covername === artistalbum ) {
+					if ( getDirectory( $( '#liimg' ).attr( 'src' ) ) === path ) {
 						$( '#liimg' ).attr( 'src', url );
 						$( '.licover .coveredit' ).remove();
-						$( '.licoverimg ' )
-							.css( 'opacity', '' )
-							.append( icoversave );
+						$( '.licoverimg ' ).css( 'opacity', '' )
+						if ( path.slice( 0, 9 ) === '/data/shm' ) $( '.licoverimg ' ).append( icoversave );
 					}
 				} else {
 					$( '#lib-list li' ).each( function() {
@@ -339,6 +335,8 @@ function psMpdUpdate( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		G.status.counts = data;
+		G.status.updating_db = false;
+		G.status.updatingdab = false;
 		renderLibraryCounts();
 		setButtonUpdating();
 		if ( G.librarylist ) {

@@ -250,7 +250,7 @@ function coverartChange() {
 		var embedded = $( '.licoverimg img' ).attr( 'src' ).split( '/' )[ 3 ] === 'embedded' ? '(Embedded)' : '';
 	}
 	var coverartlocal = ( G.playback && !embedded && !pbonlinefetched && !pbcoverdefault )
-						|| ( G.library && !liembedded && !lionlinefetched && !licoverdefault )
+						|| ( G.library && !embedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	info( {
@@ -757,13 +757,19 @@ function infoUpdate( path ) {
 	}
 	
 	info( {
-		  icon     : 'refresh-library'
-		, title    : 'Library Database'
-		, message  : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
-		, radio    : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		, values   : path ? '' : [ 'update', data.ffmpeg ]
-		, ok       : function() {
-			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', ...infoVal() ] );
+		  icon       : 'refresh-library'
+		, title      : 'Library Database'
+		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+		, radio      : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
+		, values     : path ? '' : 'update'
+		, beforeshow : function() {
+			if ( !G.status.counts ) {
+				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
+				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
+			}
+		}
+		, ok         : function() {
+			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', infoVal() ] );
 		}
 	} );
 }

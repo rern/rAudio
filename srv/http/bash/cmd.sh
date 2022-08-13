@@ -78,7 +78,6 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
-	pushstreamThumb gif $type
 }
 jpgThumbnail() {
 	type=$1
@@ -109,7 +108,6 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
-	pushstreamThumb jpg $type
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -134,15 +132,6 @@ pladdPosition() {
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-}
-pushstreamThumb() {
-	if [[ ${target:0:4} == /mnt ]]; then # /mnt/...
-		coverfile=${target:0:-4}
-		coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # encode path with special characters
-	else # /data/...
-		coverfile=${target:9:-4} # radio url
-	fi
-	pushstream coverart '{"url":"'$coverfile.$( date +%s ).$1'","type":"'$2'"}'
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
