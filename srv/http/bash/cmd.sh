@@ -358,7 +358,7 @@ bookmarkreset )
 	name=${args[2]}
 	sed -i '2d' "$dirdata/bookmarks/$name"
 	rm -f "$imagepath/coverart".*
-	data='{"url":"'$imagepath/none'","type":"bookmark"}'
+	data='{"url":"'$imagepath/reset'","type":"bookmark"}'
 	pushstream coverart "$data"
 	;;
 bookmarkthumb )
@@ -481,7 +481,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ ! $url ]] && url=/mnt/MPD/$mpdpath/none
+	[[ ! $url ]] && url=/mnt/MPD/$mpdpath/reset
 	data='{"url":"'$url'","type":"coverart"}'
 	pushstream coverart "$data"
 	;;
