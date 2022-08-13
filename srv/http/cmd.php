@@ -100,7 +100,6 @@ case 'imagereplace':
 	$base64 = $_POST[ 'base64' ] ?? '';
 	$ext = $base64 ? '.jpg' : '.gif';
 	$filenoext = substr( $imagefile, 0, -3 );
-#	$coverfile = substr( $filenoext, 9 ).time().$ext; // remove /srv/http
 	$coverfile = $filenoext.time().$ext; // remove /srv/http
 	if ( substr( $type, 3, 5 ) !== 'radio' ) $coverfile = rawurlencode( $coverfile );
 	if ( $base64 ) { // jpg/png - path /mnt/... needs sudo
