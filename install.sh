@@ -58,7 +58,6 @@ $info Shared data:
 "
 fi
 
-
 if [[ -e /usr/bin/rtsp-simple-server && ! -e $dirdata/dabradio ]]; then
 	echo -e "\
 $info DAB Radio:
