@@ -155,8 +155,20 @@ function psBtReceiver( connected ) {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
-	if ( 'html' in data ) {
-		$( '#lib-mode-list' ).append( data.html );
+	if ( data.type === 'add' ) {
+		if ( data.src ) {
+			var icon = '<img class="bkcoverart" src="'+ data.src +'">';
+		} else {
+			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name.replace( /|/g, '/' ) +'</a>';
+		}
+		var html = `
+<div class="lib-mode bookmark">
+	<div class="mode mode-bookmark">
+	<a class="lipath">${ data.path }</a>
+	${ icon }
+</div></div>
+`;
+		$( '#lib-mode-list' ).append( html );
 	} else {
 		$( '.lib-mode.bookmark' ).each( function() {
 			var $this = $( this );

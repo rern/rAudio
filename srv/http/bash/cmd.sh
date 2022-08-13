@@ -353,8 +353,24 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
+bookmarkadd )
+	name=${args[1]//\//|}
+	path=${args[2]}
+	coverart=${args[3]}
+	[[ -e "$dirdata/bookmarks/$name" ]] && echo -1 && exit
+	
+	content=$path
+	if [[ $coverart ]]; then
+		content+="
+$coverart"
+		src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	fi
+	echo "$content" > "$dirdata/bookmarks/$name"
+	data='{"type":"add","path":"'$path'", "src":"'$src'","name":"'$name'"}'
+	pushstream bookmark "$data"
+	;;
 bookmarkremove )
-	name=${args[1]//\//\\/}
+	name=${args[1]//\//|}
 	path=${args[2]}
 	rm "$dirdata/bookmarks/$name"
 	[[ -e $dirsystem/order ]] && sed -i '#"'$path'"# d' $dirsystem/order
@@ -362,8 +378,8 @@ bookmarkremove )
 	pushstream bookmark "$data"
 	;;
 bookmarkrename )
-	name=${args[1]//\//\\/}
-	newname=${args[2]//\//\\/}
+	name=${args[1]//\//|}
+	newname=${args[2]//\//|}
 	path=${args[3]}
 	mv $dirdata/bookmarks/{"$name","$newname"} 
 	data='{"type":"rename","path":"'$path'","name":"'$newname'"}'

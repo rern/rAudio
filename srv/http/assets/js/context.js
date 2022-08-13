@@ -31,12 +31,7 @@ function bookmarkNew() {
 			}
 			, ok         : function() {
 				var name = infoVal();
-				$.post( cmdphp, {
-					  cmd      : 'bookmark'
-					, path     : path
-					, name     : name
-					, coverart : coverart
-				}, function( std ) {
+				bash( [ 'bookmarkadd', name, path, coverart ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
@@ -46,9 +41,10 @@ function bookmarkNew() {
 										+'<br><wh>'+ path +'</wh>'
 										+'<br><br><wh>'+ name +'</wh> already exists.'
 						} );
+					} else {
+						banner( 'Bookmark Added', path, 'bookmark' );
 					}
 				} );
-				banner( 'Bookmark Added', path, 'bookmark' );
 			}
 		} );
 	} );

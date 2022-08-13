@@ -69,7 +69,7 @@ $dir = '/srv/http/data/bookmarks';
 $files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 if ( count( $files ) ) {
 	foreach( $files as $name ) {
-		$data = file( $dir.'/'.$name, FILE_IGNORE_NEW_LINES );
+		$data = file( $dir.'/'.str_replace( '|', '/', $name ), FILE_IGNORE_NEW_LINES );
 		$bkpath = $data[ 0 ];
 		$coverart = $data[ 1 ] ?? '';
 		if ( $coverart ) {

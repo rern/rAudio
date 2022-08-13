@@ -40,36 +40,6 @@ case 'exec': // single / one-line command - return array of lines to js
 	echo json_encode( $output );
 	break;
 	
-case 'bookmark':
-	$name = $_POST[ 'name' ];
-	if ( file_exists( $dirbookmarks.$name ) ) exit( '-1' );
-	
-	$path = $_POST[ 'path' ];
-	$coverart = $_POST[ 'coverart' ] ?? '';
-	$fileorder = $dirsystem.'order';
-	$order = json_decode( file_get_contents( $fileorder ) );
-	$order[] = $path;
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
-	if ( $coverart ) {
-		$content = $path."\n".$coverart;
-		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'">';
-	} else {
-		$content = $path;
-		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
-	}
-	file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $content );
-	$data = [
-		  'path' => $path
-		, 'html' => '
-			<div class="lib-mode bookmark">
-				<div class="mode mode-bookmark">
-				<a class="lipath">'.$path.'</a>
-				'.$icon.'
-			</div></div>'
-		, 'order' => $order
-	];
-	pushstream( 'bookmark', $data );
-	break;
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
