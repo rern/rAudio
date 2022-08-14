@@ -419,10 +419,14 @@ function htmlRadio( $subdirs, $files, $dir, $dirimg ) {
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">
 						<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">
 						<a class="lipath">'.$url.'</a>
-						<a class="liname">'.$liname.'</a>
-						<div class="li1">'.$name.'</div>
-						<div class="li2">'.$url.'</div>
-					</li>';
+						<a class="liname">'.$liname.'</a>';
+			if ( $gmode === 'webradio' ) {
+				$html.= '<div class="li1">'.$name.'</div>
+						 <div class="li2">'.$url.'</div>';
+			} else {
+				$html.= '<span class="single">'.$name.'</span>';
+			}
+			$html.= '</li>';
 		}
 	}
 	$html.= '<p></p></ul>';
