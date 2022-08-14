@@ -4,25 +4,21 @@
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
-	readarray -t lines <<< $( bluetoothctl paired-devices \
-								| cut -d' ' -f2,3- \
-								| awk NF \
-								| sort -k2 -fh )
-	if [[ $lines ]]; then
-		for line in "${lines[@]}"; do
-			mac=${line/ *}
-			[[ $mac == Device ]] && continue
-			
-			info=$( bluetoothctl info $mac )
-			name=$( echo "$info" | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
-			connected=$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )
-			type=$( echo "$info" | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
-			[[ ! $type ]] && type=Device
+	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
+	readarray -t macs <<< $( ls -1 /var/lib/bluetooth/$controller | egrep -v 'cache|settings' )
+	if [[ $macs ]]; then
+		for mac in "${macs[@]}"; do
+			readarray -t info <<< $( bluetoothctl info $mac \
+										| egrep 'Name: |Connected: |UUID: Audio' \
+										| sed -E 's/^\s*Name: //
+												  s/^\s*Connected: yes/true/
+												  s/^\s*Connected: no/false/
+												  s/\s*UUID: Audio (.*) .*/\1/' )
 			listbt+=',{
-  "name"      : "'$name'"
-, "mac"       : "'$mac'"
-, "connected" : '$connected'
-, "type"      : "'$type'"
+  "mac"       : "'$mac'"
+, "name"      : "'${info[0]}'"
+, "connected" : '${info[1]}'
+, "type"      : "'${info[2]}'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"

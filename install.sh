@@ -2,8 +2,8 @@
 
 alias=r1
 
-# 20220813
-! grep -q bluez-utils /etc/pacman.conf && sed -i '/#IgnorePkg/ a\IgnorePkg = bluez-utils' /etc/pacman.conf
+# 20220815
+grep -q bluez-utils /etc/pacman.conf && sed -i '/bluez-utils/ d' /etc/pacman.conf
 
 # 20220805
 dirdata=/srv/http/data
