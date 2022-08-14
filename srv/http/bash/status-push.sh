@@ -14,14 +14,14 @@ else
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
 		compare='^Artist|^Title|^Album'
-		[[ "$( grep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
+		[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( egrep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
 			[[ ! $trackchanged && $state == play ]] && exit
 			
 		else
 			compare='^state|^elapsed'
-			[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( grep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
+			[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( egrep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
 			[[ ! $trackchanged && ! $statuschanged ]] && exit
 			
 		fi

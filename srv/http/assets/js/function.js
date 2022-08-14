@@ -630,20 +630,16 @@ function imageLoad( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
-			if ( G.mode.slice( -5 ) === 'radio' ) {
-				var mode = G.mode;
-				var menumode = 'webradio';
-				var radio = 1;
-			} else {
-				var mode = 'folder';
-				var menumode = 'folder';
-				var radio = 0;
-			}
+			var radio = G.mode.slice( -5 ) === 'radio';
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var dir = $this.parent().hasClass( 'dir' );
-				mode = dir ? 'folder' : G.mode;
-				var menu = radio && dir ? 'wrdir' : menumode;
+				var mode = dir ? 'folder' : G.mode;
+				if ( radio ) {
+					var menu = dir ? 'wrdir' : 'webradio';
+				} else {
+					var menu = 'folder';
+				}
 				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
