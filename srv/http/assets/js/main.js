@@ -1387,7 +1387,7 @@ $( '.mode' ).click( function() {
 		var data = {
 			  html      : html
 			, modetitle : path
-			, path      : G.mode === 'dabradio' ? '' : path
+			, path      : path
 		}
 		renderLibraryList( data );
 	} );

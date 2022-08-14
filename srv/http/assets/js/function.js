@@ -1055,10 +1055,10 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
-	} else if ( data.path === 'WEBRADIO' ) {
+	} else if ( data.modetitle.slice( -5 ) === 'RADIO' ) {
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>';
-	} else if ( ![ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) ) {
+		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">'+ data.modetitle +'</span>';
+	} else if ( ![ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( G.mode ) ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
@@ -1066,7 +1066,7 @@ function renderLibraryList( data ) {
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>webradio/</a>';
+		if ( G.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ G.mode +'/</a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
