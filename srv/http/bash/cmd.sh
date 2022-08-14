@@ -1337,6 +1337,30 @@ webradiodelete )
 	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
 	webradioCount $type
 	;;
+wrdirdelete )
+	path=${args[1]}
+	mode=${args[2]}
+	if [[ $( ls -A "$dirdata/$mode/$path" ) ]]; then
+		echo -1
+	else
+		rm -rf "$dirdata/$mode/$path"
+		pushstream radiolist '{"type":"webradio"}'
+	fi
+	;;
+wrdirnew )
+	dir=${args[1]}
+	sub=${args[2]}
+	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
+	pushstream radiolist '{"type":"webradio"}'
+	;;
+wrdirrename )
+	path=${args[1]}
+	name=${args[2]}
+	newname=${args[3]}
+	mode=${args[4]}
+	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
+	pushstream radiolist '{"type":"webradio"}'
+	;;
 webradioedit )
 	dir=${args[1]}
 	name=${args[2]}
@@ -1365,28 +1389,6 @@ $charset" > "$file"
 		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
-	pushstream radiolist '{"type":"webradio"}'
-	;;
-wrdirdelete )
-	path=${args[1]}
-	if [[ $( ls -A "$dirwebradio/$path" ) ]]; then
-		echo -1
-	else
-		rm -rf "$dirwebradio/$path"
-		pushstream radiolist '{"type":"webradio"}'
-	fi
-	;;
-wrdirnew )
-	dir=${args[1]}
-	sub=${args[2]}
-	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
-	pushstream radiolist '{"type":"webradio"}'
-	;;
-wrdirrename )
-	path=${args[1]}
-	name=${args[2]}
-	newname=${args[3]}
-	mv -f "$dirwebradio/$path/$name" "$dirwebradio/$path/$newname"
 	pushstream radiolist '{"type":"webradio"}'
 	;;
 	
