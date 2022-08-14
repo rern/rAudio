@@ -1340,7 +1340,8 @@ webradiodelete )
 wrdirdelete )
 	path=${args[1]}
 	mode=${args[2]}
-	if [[ $( ls -A "$dirdata/$mode/$path" ) ]]; then
+	noconfirm=${args[3]}
+	if [[ ! $noconfirm && $( ls -A "$dirdata/$mode/$path" ) ]]; then
 		echo -1
 	else
 		rm -rf "$dirdata/$mode/$path"

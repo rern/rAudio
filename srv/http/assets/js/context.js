@@ -638,7 +638,14 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 							info( {
 								  icon    : 'webradio'
 								, title   : 'Web Radio Delete'
-								, message : 'Folder <wh>'+ path +'</wh> not empty.'
+								, message : 'Folder not empty:'
+											+'<br><wh>'+ path +'</wh>'
+											+'<br>Confirm delete?'
+								, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+								, okcolor : red
+								, ok      : function() {
+									bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] );
+								}
 							} );
 						}
 					} );
