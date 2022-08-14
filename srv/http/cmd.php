@@ -59,19 +59,6 @@ case 'imagereplace':
 	$sh = [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ];
 	$script = '/usr/bin/sudo /srv/http/bash/cmd.sh "'.escape( implode( "\n", $sh ) ).'"';
 	shell_exec( $script );
-	if ( $type === 'bookmark' ) {
-		$coverfile = preg_replace( '#^/srv/http#', '', $imagefile ); // radio - /srv/http/data/...
-		$path = exec( 'head -1 "'.$dirbookmarks.$covername.'"' );
-		if ( file_exists( $imagefile ) ) $path.= "\n".$coverfile;
-		file_put_contents( $dirbookmarks.$covername, $path );
-	}
-	$coverfile = $filenoext.time().$ext;
-	if ( substr( $coverfile, 0, 4 ) === '/mnt' ) $coverfile = rawurlencode( $coverfile );
-	$ch = curl_init( 'http://localhost/pub?id=coverart' );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type:application/json' ) );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'url' => $coverfile, 'type' => $type ] ) );
-	curl_exec( $ch );
-	curl_close( $ch );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';

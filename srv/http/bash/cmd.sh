@@ -56,6 +56,7 @@ gifThumbnail() {
 			rm -f "${target:0:-4}".*
 			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
+			[[ -e $target ]] && sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -78,6 +79,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
+	pushstreamImage "$target" $type
 }
 jpgThumbnail() {
 	type=$1
@@ -88,6 +90,7 @@ jpgThumbnail() {
 		bookmark )
 			rm -f "${target:0:-4}".*
 			cp -f "$source" "$target"
+			sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -108,6 +111,7 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
+	pushstreamImage "$target" $type
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -129,6 +133,14 @@ pladdPosition() {
 	else
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	fi
+}
+pushstreamImage() {
+	target=$1
+	type=$2
+	coverart=${target:0:-4}.$( date +%s ).${target: -3};
+	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	data='{"url":"'$coverart'","type":"'$type'"}'
+	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -359,22 +371,37 @@ bookmarkadd )
 	coverart=${args[3]}
 	[[ -e "$dirdata/bookmarks/$name" ]] && echo -1 && exit
 	
-	content=$path
-	if [[ $coverart ]]; then
-		content+="
-$coverart"
-		src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	echo "\
+$path
+$coverart
+" > "$dirdata/bookmarks/$name"
+	if [[ -e $dirsystem/order ]]; then
+		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order
 	fi
-	echo "$content" > "$dirdata/bookmarks/$name"
-	data='{"type":"add","path":"'$path'", "src":"'$src'","name":"'$name'"}'
+	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	data='{
+  "type"  : "add"
+, "path"  : "'$path'"
+, "src"   : "'$src'"
+, "name"  : "'$name'"
+, "order" : '$order'
+}'
 	pushstream bookmark "$data"
 	;;
 bookmarkremove )
 	name=${args[1]//\//|}
 	path=${args[2]}
 	rm "$dirdata/bookmarks/$name"
-	[[ -e $dirsystem/order ]] && sed -i '#"'$path'"# d' $dirsystem/order
-	data='{"type":"delete","path":"'$path'","order":'$( cat $dirsystem/order 2> /dev/null )'}'
+	if [[ -e $dirsystem/order ]]; then
+		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order
+	fi
+	data='{
+  "type"  : "delete"
+, "path"  : "'$path'"
+, "order" :'$( cat $dirsystem/order 2> /dev/null )'
+}'
 	pushstream bookmark "$data"
 	;;
 bookmarkrename )
@@ -382,7 +409,11 @@ bookmarkrename )
 	newname=${args[2]//\//|}
 	path=${args[3]}
 	mv $dirdata/bookmarks/{"$name","$newname"} 
-	data='{"type":"rename","path":"'$path'","name":"'$newname'"}'
+	data='{
+  "type" : "rename"
+, "path" : "'$path'"
+, "name" : "'$newname'"
+}'
 	pushstream bookmark "$data"
 	;;
 bookmarkreset )
@@ -390,7 +421,10 @@ bookmarkreset )
 	name=${args[2]}
 	sed -i '2d' "$dirdata/bookmarks/$name"
 	rm -f "$imagepath/coverart".*
-	data='{"url":"'$imagepath/reset'","type":"bookmark"}'
+	data='{
+  "url"  : "'$imagepath/reset'"
+, "type" :"bookmark"
+}'
 	pushstream coverart "$data"
 	;;
 bookmarkthumb )
