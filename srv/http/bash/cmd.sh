@@ -57,7 +57,6 @@ gifThumbnail() {
 			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
-			[[ -e $target ]] && sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -80,7 +79,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
-	pushstreamImage "$target" $type
+	pushstreamImage "$target" $type "$covername"
 }
 jpgThumbnail() {
 	type=$1
@@ -92,7 +91,6 @@ jpgThumbnail() {
 			rm -f "${target:0:-4}".*
 			cp -f "$source" "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -113,7 +111,7 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
-	pushstreamImage "$target" $type
+	pushstreamImage "$target" $type "$covername"
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -138,7 +136,15 @@ pladdPosition() {
 }
 pushstreamImage() {
 	target=$1
+	[[ ! -e $target ]] && exit
+	
 	type=$2
+	covername=$3
+	if [[ $type == bookmark ]]; then
+		bkfile="$dirdata/bookmarks/$covername"
+		echo "$( head -1 "$bkfile" )
+${target/\/srv\/http}" > "$bkfile"
+	fi
 	coverart=${target:0:-4}.$( date +%s ).${target: -3};
 	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
 	data='{"url":"'$coverart'","type":"'$type'"}'
@@ -371,11 +377,11 @@ bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
 	coverart=${args[3]}
-	[[ -e "$dirdata/bookmarks/$name" ]] && echo -1 && exit
+	bkfile="$dirdata/bookmarks/$covername"
+	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo "\
-$path
-$coverart" > "$dirdata/bookmarks/$name"
+	echo "$path
+$coverart" > "$bkfile"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
