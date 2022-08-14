@@ -59,7 +59,9 @@ case 'imagereplace':
 	} else { // gif passed as file
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 	}
-	cmdsh( [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
+	$sh = [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ];
+	$script = '/usr/bin/sudo /srv/http/bash/cmd.sh "'.escape( implode( "\n", $sh ) ).'"';
+	shell_exec( $script );
 	if ( $type === 'bookmark' ) {
 		$coverfile = preg_replace( '#^/srv/http#', '', $imagefile ); // radio - /srv/http/data/...
 		$path = exec( 'head -1 "'.$dirbookmarks.$covername.'"' );
@@ -68,7 +70,11 @@ case 'imagereplace':
 	}
 	$coverfile = $filenoext.time().$ext;
 	if ( substr( $coverfile, 0, 4 ) === '/mnt' ) $coverfile = rawurlencode( $coverfile );
-	pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"'.$type.'"}' ) );
+	$ch = curl_init( 'http://localhost/pub?id=coverart' );
+	curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type:application/json' ) );
+	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'url' => $coverfile, 'type' => $type ] ) );
+	curl_exec( $ch );
+	curl_close( $ch );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';
@@ -99,18 +105,6 @@ case 'logout':
 	break;
 }
 
-function cmdsh( $sh ) {
-	$script = '/usr/bin/sudo /srv/http/bash/cmd.sh "';
-	$script.= escape( implode( "\n", $sh ) ).'"';
-	return shell_exec( $script );
-}
 function escape( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
-}
-function pushstream( $channel, $data ) {
-	$ch = curl_init( 'http://localhost/pub?id='.$channel );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type:application/json' ) );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data, JSON_NUMERIC_CHECK ) );
-	curl_exec( $ch );
-	curl_close( $ch );
 }
