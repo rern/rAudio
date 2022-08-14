@@ -198,7 +198,8 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
 	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
-	$menu.find( '.wredit, .wrdirrename' ).toggleClass( 'hide', G.mode !== 'webradio' );
+	$menu.find( '.wredit' ).toggleClass( 'hide', G.mode !== 'webradio' );
+	$menu.find( '.wrdirrename' ).toggleClass( 'hide', G.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
