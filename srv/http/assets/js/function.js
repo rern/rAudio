@@ -641,11 +641,10 @@ function imageLoad( list ) {
 			}
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				if ( radio && $this.parent().hasClass( 'dir' ) ) {
-					mode = 'folder';
-					menumode = 'wrdir';
-				}
-				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
+				var dir = $this.parent().hasClass( 'dir' );
+				mode = dir ? 'folder' : G.mode;
+				var menu = radio && dir ? 'wrdir' : menumode;
+				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {
