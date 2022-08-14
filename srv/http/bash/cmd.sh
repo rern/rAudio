@@ -377,7 +377,7 @@ bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
 	coverart=${args[3]}
-	bkfile="$dirdata/bookmarks/$covername"
+	bkfile="$dirdata/bookmarks/$name"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
 	echo "$path
