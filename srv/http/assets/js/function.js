@@ -1058,7 +1058,7 @@ function renderLibraryList( data ) {
 		var htmlpath = '';
 	} else if ( data.modetitle.slice( -5 ) === 'RADIO' ) {
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">'+ data.modetitle +'</span>';
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title" class="radiomodetitle">'+ data.modetitle +'</span>';
 	} else if ( ![ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( G.mode ) ) {
 		// track view - keep previous title
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
