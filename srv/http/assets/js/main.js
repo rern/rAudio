@@ -1512,7 +1512,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', imagepath, name ] );
+			bash( [ 'bookmarkcoverreset', imagepath, name ] );
 		}
 		, ok          : function() {
 			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext

@@ -375,8 +375,7 @@ bookmarkadd )
 	
 	echo "\
 $path
-$coverart
-" > "$dirdata/bookmarks/$name"
+$coverart" > "$dirdata/bookmarks/$name"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
@@ -390,6 +389,17 @@ $coverart
 , "order" : '$order'
 }'
 	pushstream bookmark "$data"
+	;;
+bookmarkcoverreset )
+	imagepath=${args[1]}
+	name=${args[2]}
+	sed -i '2d' "$dirdata/bookmarks/$name"
+	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
+	data='{
+  "url"  : "'$imagepath/reset'"
+, "type" :"bookmark"
+}'
+	pushstream coverart "$data"
 	;;
 bookmarkremove )
 	name=${args[1]//\//|}
@@ -417,22 +427,6 @@ bookmarkrename )
 , "name" : "'$newname'"
 }'
 	pushstream bookmark "$data"
-	;;
-bookmarkreset )
-	imagepath=${args[1]}
-	name=${args[2]}
-	sed -i '2d' "$dirdata/bookmarks/$name"
-	rm -f "$imagepath/coverart".*
-	data='{
-  "url"  : "'$imagepath/reset'"
-, "type" :"bookmark"
-}'
-	pushstream coverart "$data"
-	;;
-bookmarkthumb )
-	mpdpath=${args[1]}
-	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
-	echo ${coverartfile: -3} # ext
 	;;
 camillagui )
 	systemctl start camillagui

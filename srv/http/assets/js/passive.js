@@ -159,7 +159,7 @@ function psBookmark( data ) {
 		if ( data.src ) {
 			var icon = '<img class="bkcoverart" src="'+ data.src +'">';
 		} else {
-			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name.replace( /|/g, '/' ) +'</a>';
+			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name +'</a>';
 		}
 		var html = `
 <div class="lib-mode bookmark">
