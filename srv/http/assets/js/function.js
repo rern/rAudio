@@ -190,7 +190,7 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	var filemode = [ 'nas', 'sd', 'usb', 'webradio' ].includes( G.mode );
+	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( G.mode );
 	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', !G.status.pllength );
 	$menu.find( '.replace' ).next().toggleClass( 'hide', !G.status.pllength );
 	$menu.find( '.refresh-library' ).toggleClass( 'hide', !( 'updating_db' in G.status ) );
@@ -630,15 +630,17 @@ function imageLoad( list ) {
 				$this.attr( 'src', src );
 			} );
 		} else {
-			if ( G.mode.slice( -5 ) === 'radio' ) {
-				var mode = G.mode;
-				var menumode = 'webradio';
-			} else {
-				var mode = 'folder';
-				var menumode = 'folder';
-			}
+			var radio = G.mode.slice( -5 ) === 'radio';
 			$lazyload.off( 'error' ).on( 'error', function() {
-				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
+				var $this = $( this );
+				var dir = $this.parent().hasClass( 'dir' );
+				var mode = dir ? 'folder' : G.mode;
+				if ( radio ) {
+					var menu = dir ? 'wrdir' : 'webradio';
+				} else {
+					var menu = 'folder';
+				}
+				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {

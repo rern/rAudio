@@ -63,8 +63,9 @@ if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. 
 			grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
 		fi
 	done
-	 # unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on 
-	if bluetoothctl paired-devices | grep -q $mac; then
+	# unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on
+	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
+	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
 			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
 			bluetoothctl disconnect $mac
@@ -157,7 +158,8 @@ elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
 	else
 		bluetoothctl remove $mac &> /dev/null
 		for i in {1..5}; do
-			bluetoothctl paired-devices 2> /dev/null | grep -q $mac && sleep 1 || break
+			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
+			[[ -e /var/lib/bluetooth/$controller/$mac ]] && sleep 1 || break
 		done
 		disconnectRemove Removed
 	fi

@@ -184,7 +184,7 @@ disconnect = () => {
 hiddenSet = () => {
 	if ( page === 'networks' ) {
 		if ( !$( '#divbluetooth' ).hasClass( 'hide' ) || !$( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( 'killall -q networks-scanbt.sh; killall -q networks-scanwlan.sh' );
+			bash( 'killall -q networks-scan.sh &> /dev/null' );
 			clearTimeout( G.timeoutScan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
@@ -414,7 +414,7 @@ $( '.container' ).click( function( e ) {
 $( '#close' ).click( function() {
 	if ( page === 'networks' ) {
 		clearTimeout( G.timeoutScan );
-		bash( 'killall networks-scanbt.sh networks-scanwlan.sh &> /dev/null' );
+		bash( 'killall networks-scan.sh &> /dev/null' );
 	}
 	bash( [ 'cmd', 'rebootlist' ], function( list ) {
 		if ( !list ) {

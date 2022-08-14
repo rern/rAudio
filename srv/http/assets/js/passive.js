@@ -56,8 +56,7 @@ function bookmarkCover( src, path ) {
 				htmlbk += '<img class="bkcoverart" src="'+ src +'">';
 			} else {
 				htmlbk += '<i class="fa fa-bookmark"></i>'
-						 +'<div class="divbklabel">'
-						 +'<span class="bklabel label">'+ path.split( '/' ).pop() +'</span></div>'
+						 +'<a class="label">'+ path.split( '/' ).pop() +'</a>'
 			}
 			$this.find( '.mode' ).html( htmlbk );
 			return false
@@ -156,23 +155,34 @@ function psBtReceiver( connected ) {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
-	if ( 'html' in data ) {
-		$( '#lib-mode-list' ).append( data.html );
-	} else {
-		var $bookmark = $( '.lib-mode' ).filter( function() {
-			return $( this ).find( '.lipath' ) === data.path;
-		} );
-		if ( data.type === 'delete' ) {
-			$bookmark.remove();
+	if ( data.type === 'add' ) {
+		if ( data.src ) {
+			var icon = '<img class="bkcoverart" src="'+ data.src +'">';
 		} else {
-			$bookmark.find( '.bklabel' ).text( data.name );
+			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name +'</a>';
 		}
+		var html = `
+<div class="lib-mode bookmark">
+	<div class="mode mode-bookmark">
+	<a class="lipath">${ data.path }</a>
+	${ icon }
+</div></div>
+`;
+		$( '#lib-mode-list' ).append( html );
+	} else {
+		$( '.lib-mode.bookmark' ).each( function() {
+			var $this = $( this );
+			if ( $this.find( '.lipath' ).text() === data.path ) {
+				data.type === 'delete' ? $this.remove() : $this.find( '.label' ).text( data.name );
+				return false
+			}
+		} );
 	}
-	$( '.mode-bookmark, .bklabel' ).removeAttr( 'style' );
 	if ( 'order' in data ) {
 		G.display.order = data.order;
 		orderLibrary();
 	}
+	$( '#lib-mode-list' ).click();
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );

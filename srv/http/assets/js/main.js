@@ -1442,7 +1442,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
 	var path = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var $img = $this.find( 'img' );
 	if ( $img.length ) {
 		var src = $img.attr( 'src' );
@@ -1461,36 +1461,26 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, okcolor : red
 		, ok      : function() {
 			G.bookmarkedit = 1;
-			$.post( cmdphp, {
-				  cmd    : 'bookmarkremove'
-				, path   : path
-				, delete : name
-			} );
-			$this.parent().remove();
+			bash( [ 'bookmarkremove', name, path ] );
 		}
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
 	var path = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bklabel' ).text() || path.split( '/' ).pop();
+	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	info( {
-		  icon       : 'bookmark'
-		, title      : 'Rename Bookmark'
-		, message    : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+		  icon         : 'bookmark'
+		, title        : 'Rename Bookmark'
+		, message      : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
 						+'<br><span class="bklabel">'+ name +'</span></div>'
-		, textlabel  : 'To:'
-		, values     : name
-		, checkblank : 1
-		, oklabel    : '<i class="fa fa-flash"></i>Rename'
-		, ok         : function() {
+		, textlabel    : 'To:'
+		, values       : name
+		, checkblank   : 1
+		, checkchanged : 1
+		, oklabel      : '<i class="fa fa-flash"></i>Rename'
+		, ok           : function() {
 			var newname = infoVal();
-			$.post( cmdphp, {
-				  cmd    : 'bookmarkrename'
-				, path   : path
-				, name   : name
-				, rename : newname
-			} );
-			$this.find( '.bklabel' ).text( newname );
+			bash( [ 'bookmarkrename', name, newname, path ] );
 		}
 	} );
 } ).on( 'click', '.bk-cover .iconcover', function() {
@@ -1522,7 +1512,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, buttonlabel : !thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : !thumbnail ? '' : orange
 		, button      : !thumbnail ? '' : function() {
-			bash( [ 'bookmarkreset', imagepath, name ] );
+			bash( [ 'bookmarkcoverreset', imagepath, name ] );
 		}
 		, ok          : function() {
 			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext
@@ -1532,7 +1522,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	if ( G.drag ) return
 	
 	G.bookmarkedit = 1;
-	G.bklabel = $( this ).find( '.bklabel' );
+	G.bklabel = $( this ).find( '.label' );
 	$( '.mode-bookmark' ).each( function() {
 		var $this = $( this );
 		var path = $this.find( '.lipath' ).text();
@@ -1543,7 +1533,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.fa-bookmark, .bklabel, img' )
+		.find( '.fa-bookmark, .label, img' )
 		.css( 'opacity', 0.33 );
 } );
 new Sortable( document.getElementById( 'lib-mode-list' ), {

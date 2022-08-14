@@ -56,6 +56,7 @@ gifThumbnail() {
 			rm -f "${target:0:-4}".*
 			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
+			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -78,6 +79,7 @@ gifThumbnail() {
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
 	esac
+	pushstreamImage "$target" $type "$covername"
 }
 jpgThumbnail() {
 	type=$1
@@ -88,13 +90,14 @@ jpgThumbnail() {
 		bookmark )
 			rm -f "${target:0:-4}".*
 			cp -f "$source" "$target"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$dir/cover.jpg" # already resized from client
+			cp -f "$source" "$target" # already resized from client
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
@@ -108,6 +111,7 @@ jpgThumbnail() {
 			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
 			;;
 	esac
+	pushstreamImage "$target" $type "$covername"
 }
 mpdoledLogo() {
 	systemctl stop mpd_oled
@@ -129,6 +133,22 @@ pladdPosition() {
 	else
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	fi
+}
+pushstreamImage() {
+	target=$1
+	[[ ! -e $target ]] && exit
+	
+	type=$2
+	covername=$3
+	if [[ $type == bookmark ]]; then
+		bkfile="$dirdata/bookmarks/$covername"
+		echo "$( head -1 "$bkfile" )
+${target/\/srv\/http}" > "$bkfile"
+	fi
+	coverart=${target:0:-4}.$( date +%s ).${target: -3};
+	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	data='{"url":"'$coverart'","type":"'$type'"}'
+	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -353,18 +373,66 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
 	pushstreamPlaylist
 	;;
-bookmarkreset )
+bookmarkadd )
+	name=${args[1]//\//|}
+	path=${args[2]}
+	coverart=${args[3]}
+	bkfile="$dirdata/bookmarks/$name"
+	[[ -e $bkfile ]] && echo -1 && exit
+	
+	echo "$path
+$coverart" > "$bkfile"
+	if [[ -e $dirsystem/order ]]; then
+		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order
+	fi
+	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	data='{
+  "type"  : "add"
+, "path"  : "'$path'"
+, "src"   : "'$src'"
+, "name"  : "'$name'"
+, "order" : '$order'
+}'
+	pushstream bookmark "$data"
+	;;
+bookmarkcoverreset )
 	imagepath=${args[1]}
 	name=${args[2]}
 	sed -i '2d' "$dirdata/bookmarks/$name"
-	rm -f "$imagepath/coverart".*
-	data='{"url":"'$imagepath/reset'","type":"bookmark"}'
+	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
+	data='{
+  "url"  : "'$imagepath/reset'"
+, "type" :"bookmark"
+}'
 	pushstream coverart "$data"
 	;;
-bookmarkthumb )
-	mpdpath=${args[1]}
-	coverartfile=$( ls "/mnt/MPD/$mpdpath/coverart".* )
-	echo ${coverartfile: -3} # ext
+bookmarkremove )
+	name=${args[1]//\//|}
+	path=${args[2]}
+	rm "$dirdata/bookmarks/$name"
+	if [[ -e $dirsystem/order ]]; then
+		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order
+	fi
+	data='{
+  "type"  : "delete"
+, "path"  : "'$path'"
+, "order" :'$( cat $dirsystem/order 2> /dev/null )'
+}'
+	pushstream bookmark "$data"
+	;;
+bookmarkrename )
+	name=${args[1]//\//|}
+	newname=${args[2]//\//|}
+	path=${args[3]}
+	mv $dirdata/bookmarks/{"$name","$newname"} 
+	data='{
+  "type" : "rename"
+, "path" : "'$path'"
+, "name" : "'$newname'"
+}'
+	pushstream bookmark "$data"
 	;;
 camillagui )
 	systemctl start camillagui
@@ -1269,6 +1337,31 @@ webradiodelete )
 	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
 	webradioCount $type
 	;;
+wrdirdelete )
+	path=${args[1]}
+	mode=${args[2]}
+	noconfirm=${args[3]}
+	if [[ ! $noconfirm && $( ls -A "$dirdata/$mode/$path" ) ]]; then
+		echo -1
+	else
+		rm -rf "$dirdata/$mode/$path"
+		pushstream radiolist '{"type":"webradio"}'
+	fi
+	;;
+wrdirnew )
+	dir=${args[1]}
+	sub=${args[2]}
+	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
+	pushstream radiolist '{"type":"webradio"}'
+	;;
+wrdirrename )
+	path=${args[1]}
+	name=${args[2]}
+	newname=${args[3]}
+	mode=${args[4]}
+	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
+	pushstream radiolist '{"type":"webradio"}'
+	;;
 webradioedit )
 	dir=${args[1]}
 	name=${args[2]}
@@ -1297,28 +1390,6 @@ $charset" > "$file"
 		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
-	pushstream radiolist '{"type":"webradio"}'
-	;;
-wrdirdelete )
-	path=${args[1]}
-	if [[ $( ls -A "$dirwebradio/$path" ) ]]; then
-		echo -1
-	else
-		rm -rf "$dirwebradio/$path"
-		pushstream radiolist '{"type":"webradio"}'
-	fi
-	;;
-wrdirnew )
-	dir=${args[1]}
-	sub=${args[2]}
-	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
-	pushstream radiolist '{"type":"webradio"}'
-	;;
-wrdirrename )
-	path=${args[1]}
-	name=${args[2]}
-	newname=${args[3]}
-	mv -f "$dirwebradio/$path/$name" "$dirwebradio/$path/$newname"
 	pushstream radiolist '{"type":"webradio"}'
 	;;
 	

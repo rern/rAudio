@@ -4,9 +4,6 @@ $sudobin = $sudo.'/usr/bin/';
 $dirdata = '/srv/http/data/';
 $dirbookmarks = $dirdata.'bookmarks/';
 $dirsystem = $dirdata.'system/';
-$coverartsize = '200x200';
-$thumbsize = '80x80';
-$unsharp = '0x.5';
 
 switch( $_POST[ 'cmd' ] ) {
 
@@ -40,53 +37,6 @@ case 'exec': // single / one-line command - return array of lines to js
 	echo json_encode( $output );
 	break;
 	
-case 'bookmark':
-	$name = $_POST[ 'name' ];
-	if ( file_exists( $dirbookmarks.$name ) ) exit( '-1' );
-	
-	$path = $_POST[ 'path' ];
-	$coverart = $_POST[ 'coverart' ] ?? '';
-	$fileorder = $dirsystem.'order';
-	$order = json_decode( file_get_contents( $fileorder ) );
-	$order[] = $path;
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
-	if ( $coverart ) {
-		$content = $path."\n".$coverart;
-		$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'">';
-	} else {
-		$content = $path;
-		$icon ='<i class="fa fa-bookmark"></i><div class="divbklabel"><span class="bklabel label" style="">'.$name.'</span></div>';
-	}
-	file_put_contents( $dirbookmarks.str_replace( '/', '|', $name ), $content );
-	$data = [
-		  'path' => $path
-		, 'html' => '
-			<div class="lib-mode bookmark">
-				<div class="mode mode-bookmark">
-				<a class="lipath">'.$path.'</a>
-				'.$icon.'
-			</div></div>'
-		, 'order' => $order
-	];
-	pushstream( 'bookmark', $data );
-	break;
-case 'bookmarkremove':
-	$path = $_POST[ 'path' ];
-	$fileorder = $dirsystem.'order';
-	$order = json_decode( file_get_contents( $fileorder ) );
-	$name = str_replace( '/', '|', $_POST[ 'delete' ] );
-	exec( 'rm "'.$dirbookmarks.escape( $name ).'"' );
-	$index = array_search( $path, $order );
-	array_splice( $order, $index, 1 ); // remove + reindex for json_encode
-	file_put_contents( $fileorder, json_encode( $order, JSON_PRETTY_PRINT ) );
-	pushstream( 'bookmark', [ 'type' => 'delete', 'path' => $path, 'order' => $order ] );
-	break;
-case 'bookmarkrename':
-	$name = $_POST[ 'name' ];
-	$rename = $_POST[ 'rename' ];
-	rename( $dirbookmarks.str_replace( '/', '|', $name ), $dirbookmarks.str_replace( '/', '|', $rename ) );
-	pushstream( 'bookmark', [ 'type' => 'rename', 'path' => $_POST[ 'path' ], 'name' => $rename ] );
-	break;
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
@@ -106,16 +56,9 @@ case 'imagereplace':
 	} else { // gif passed as file
 		$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 	}
-	cmdsh( [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ] );
-	if ( $type === 'bookmark' ) {
-		$coverfile = preg_replace( '#^/srv/http#', '', $imagefile ); // radio - /srv/http/data/...
-		$path = exec( 'head -1 "'.$dirbookmarks.$covername.'"' );
-		if ( file_exists( $imagefile ) ) $path.= "\n".$coverfile;
-		file_put_contents( $dirbookmarks.$covername, $path );
-	}
-	$coverfile = $filenoext.time().$ext;
-	if ( substr( $coverfile, 0, 4 ) === '/mnt' ) $coverfile = rawurlencode( $coverfile );
-	pushstream( 'coverart', json_decode( '{"url":"'.$coverfile.'","type":"'.$type.'"}' ) );
+	$sh = [ $base64 ? 'thumbjpg' : 'thumbgif', $type, $tmpfile, $imagefile, $covername ];
+	$script = '/usr/bin/sudo /srv/http/bash/cmd.sh "'.escape( implode( "\n", $sh ) ).'"';
+	shell_exec( $script );
 	break;
 case 'login':
 	$passwordfile = $dirsystem.'loginset';
@@ -146,18 +89,6 @@ case 'logout':
 	break;
 }
 
-function cmdsh( $sh ) {
-	$script = '/usr/bin/sudo /srv/http/bash/cmd.sh "';
-	$script.= escape( implode( "\n", $sh ) ).'"';
-	return shell_exec( $script );
-}
 function escape( $string ) {
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
-}
-function pushstream( $channel, $data ) {
-	$ch = curl_init( 'http://localhost/pub?id='.$channel );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type:application/json' ) );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data, JSON_NUMERIC_CHECK ) );
-	curl_exec( $ch );
-	curl_close( $ch );
 }

@@ -31,12 +31,7 @@ function bookmarkNew() {
 			}
 			, ok         : function() {
 				var name = infoVal();
-				$.post( cmdphp, {
-					  cmd      : 'bookmark'
-					, path     : path
-					, name     : name
-					, coverart : coverart
-				}, function( std ) {
+				bash( [ 'bookmarkadd', name, path, coverart ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
@@ -46,9 +41,10 @@ function bookmarkNew() {
 										+'<br><wh>'+ path +'</wh>'
 										+'<br><br><wh>'+ name +'</wh> already exists.'
 						} );
+					} else {
+						banner( 'Bookmark Added', path, 'bookmark' );
 					}
 				} );
-				banner( 'Bookmark Added', path, 'bookmark' );
 			}
 		} );
 	} );
@@ -630,19 +626,26 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'wrdirdelete':
 			var path = G.list.li.find( '.lipath' ).text();
 			info( {
-				  icon    : 'webradio'
-				, title   : 'Web Radio Delete'
+				  icon    : G.mode
+				, title   : 'Delete Folder'
 				, message : 'Folder:'
 							+'<br><wh>'+ path +'</wh>'
 				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 				, okcolor : red
 				, ok      : function() {
-					bash( [ 'wrdirdelete', path ], function( std ) {
+					bash( [ 'wrdirdelete', path, G.mode ], function( std ) {
 						if ( std == -1 ) {
 							info( {
 								  icon    : 'webradio'
 								, title   : 'Web Radio Delete'
-								, message : 'Folder <wh>'+ path +'</wh> not empty.'
+								, message : 'Folder not empty:'
+											+'<br><wh>'+ path +'</wh>'
+											+'<br>Confirm delete?'
+								, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+								, okcolor : red
+								, ok      : function() {
+									bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] );
+								}
 							} );
 						}
 					} );
@@ -654,8 +657,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var name = path.pop();
 			var path = path.join( '/' );
 			info( {
-				  icon        : 'webradio'
-				, title       : 'Web Radio Rename'
+				  icon        : G.mode
+				, title       : 'Rename Folder'
 				, textlabel   : 'Name'
 				, focus       : 0
 				, values      : name
@@ -663,7 +666,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkchange : 1
 				, oklabel     : 'Rename'
 				, ok          : function() {
-					bash( [ 'wrdirrename', path, name, infoVal() ] );
+					bash( [ 'wrdirrename', path, name, infoVal(), G.mode ] );
 				}
 			} );
 			return

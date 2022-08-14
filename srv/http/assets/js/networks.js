@@ -504,7 +504,7 @@ function renderQR() {
 	}
 }
 function scanBluetooth() {
-	bash( '/srv/http/bash/settings/networks-scanbt.sh', function( data ) {
+	bash( '/srv/http/bash/settings/networks-scan.sh', function( data ) {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt = '';
@@ -517,7 +517,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( '/srv/http/bash/settings/networks-scanwlan.sh', function( data ) {
+	bash( '/srv/http/bash/settings/networks-scan.sh wlan', function( data ) {
 		if ( data ) {
 			var signals = '';
 			data.forEach( function( list, i, obj ) {
