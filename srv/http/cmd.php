@@ -4,9 +4,6 @@ $sudobin = $sudo.'/usr/bin/';
 $dirdata = '/srv/http/data/';
 $dirbookmarks = $dirdata.'bookmarks/';
 $dirsystem = $dirdata.'system/';
-$coverartsize = '200x200';
-$thumbsize = '80x80';
-$unsharp = '0x.5';
 
 switch( $_POST[ 'cmd' ] ) {
 
