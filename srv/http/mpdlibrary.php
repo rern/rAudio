@@ -137,8 +137,7 @@ case 'ls':
 case 'radio':
 	$dir = '/srv/http/data/'.$gmode.'/';
 	$dirimg = '/data/'.$gmode.'/img/';
-	$path = $string !== '' ? $string.'/' : '';
-	$dir.= $path;
+	$dir.= $string;
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
@@ -151,14 +150,14 @@ case 'radio':
 		exec( 'ls -1 "'.$dir.'" | egrep -v "^img|\.jpg$|\.gif$"'
 			, $lists );
 		foreach( $lists as $list ) {
-			if ( is_dir( $dir.$list ) ) {
+			if ( is_dir( $dir.'/'.$list ) ) {
 				$subdirs[] = $list;
 			} else {
 				$files[] = $list;
 			}
 		}
 	}
-	htmlRadio( $subdirs, $files, $dir, $dirimg, $path );
+	htmlRadio( $subdirs, $files, $dir, $dirimg );
 	break;
 case 'search':
 	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
@@ -361,7 +360,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
-function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
+function htmlRadio( $subdirs, $files, $dir, $dirimg ) {
 	global $mode;
 	global $gmode;
 	global $html;
@@ -375,6 +374,7 @@ function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
+		$path = substr( $dir, 9 );
 		foreach( $array as $each ) {
 			if ( count( $files ) ) {
 				$html.= '<li class="dir">';
@@ -383,9 +383,11 @@ function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
 				$indexes[] = $index;
 				$html.= '<li class="dir" data-index="'.$index.'">';
 			}
-			$html.= '<i class="lib-icon fa fa-folder" data-target="#menu-wrdir"></i>
-					<a class="lipath">'.$path.$each->subdir.'</a>
-					<span class="single">'.$each->subdir.'</span>
+			$subdir = $each->subdir;
+			$thumbsrc = rawurlencode( $path.$subdir.'/thumb.'.time().'.jpg' );
+			$html.= '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-wrdir">
+					<a class="lipath">'.$subdir.'</a>
+					<span class="single">'.$subdir.'</span>
 				</li>';
 		}
 	}
@@ -416,7 +418,7 @@ function htmlRadio( $subdirs, $files, $dir, $dirimg, $path ) {
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">
 						<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-webradio">
-						<a class="lipath">'.$path.$url.'</a>
+						<a class="lipath">'.$url.'</a>
 						<a class="liname">'.$liname.'</a>
 						<div class="li1">'.$name.'</div>
 						<div class="li2">'.$url.'</div>

@@ -56,6 +56,7 @@ gifThumbnail() {
 			rm -f "${target:0:-4}".*
 			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
+			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
 			[[ -e $target ]] && sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
@@ -90,6 +91,7 @@ jpgThumbnail() {
 		bookmark )
 			rm -f "${target:0:-4}".*
 			cp -f "$source" "$target"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			sed -i "2 s|.*|${target/\/srv\/http}|" "$dirdata/bookmarks/$covername"
 			;;
 		coverart )
@@ -97,7 +99,7 @@ jpgThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$dir/cover.jpg" # already resized from client
+			cp -f "$source" "$target" # already resized from client
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"

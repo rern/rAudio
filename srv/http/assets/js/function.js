@@ -638,7 +638,9 @@ function imageLoad( list ) {
 				var menumode = 'folder';
 			}
 			$lazyload.off( 'error' ).on( 'error', function() {
-				$( this ).replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
+				var $this = $( this );
+				if ( $this.parent().hasClass( 'dir' ) ) mode = 'folder';
+				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menumode +'"></i>' );
 			} );
 		}
 	} else {
