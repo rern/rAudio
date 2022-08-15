@@ -1539,6 +1539,8 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
 		G.drag = 1;
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	}
 	, onEnd         : function () {
 		G.drag = 0;
