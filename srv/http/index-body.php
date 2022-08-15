@@ -179,7 +179,7 @@ $menu.= menudiv( 'radio', $html );
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'iconcover',    'Change coverart' ]
+	, [ 'wrcoverart', 'iconcover',    'Change station art' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
