@@ -69,16 +69,6 @@ function blinkUpdate() {
 		}, 1500 );
 	}, 2500 );
 }
-function bookmarkeditClear() {
-	if ( !G.bookmarkedit ) return
-	
-	G.bookmarkedit = 0;
-	$( '.bkedit' ).remove();
-	$( '.mode-bookmark' )
-		.css( 'background', '' )
-		.find( '.fa-bookmark, .bklabel, img' )
-		.css( 'opacity', '' );
-}
 function changeIP() { // for android app
 	info( {
 		  icon         : 'networks'
@@ -254,6 +244,8 @@ function coverartChange() {
 						|| ( G.library && !embedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
+	$( '#coverart, #liimg' ).removeAttr( 'style' );
+	$( '.coveredit' ).remove();
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'Change Album Cover Art'
@@ -1027,12 +1019,10 @@ function renderLibrary() {
 	$( '#lib-mode-list' )
 		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
-	$( '.mode-bookmark' ).children()
-		.add( '.coverart img' ).css( 'opacity', '' );
-	$( '.bkedit' ).remove();
-	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
+	$( '.bkedit' ).remove();
+	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	renderLibraryCounts();
 }
 function renderLibraryCounts() {

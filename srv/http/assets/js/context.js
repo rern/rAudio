@@ -342,6 +342,8 @@ function webRadioCoverart() {
 		var type = G.mode;
 	}
 	var radioicon = coverart === G.coverdefault;
+	$( '#coverart, #liimg' ).removeAttr( 'style' );
+	$( '.coveredit' ).remove();
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'

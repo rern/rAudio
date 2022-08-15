@@ -46,7 +46,7 @@ var picaOption = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
+var icoveredit = '<i class="coveredit cover iconcover"></i>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
@@ -270,7 +270,7 @@ $( '#displayplayback' ).click( function() {
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
 			, radioelapsed : 'Web Radio time'
-		, cover            : 'Coverart'
+		, cover            : 'Cover art'
 			, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 		, volume           : 'Volume'
 			, vumeter      : 'VU meter'
@@ -436,11 +436,10 @@ $( '#library, #button-library' ).click( function() {
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
-		if ( G.librarylist || G.bookmarkedit ) {
+		if ( G.librarylist ) {
 			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 			G.mode = '';
 			G.librarylist = 0;
-			G.bookmarkedit = 0;
 			G.query = [];
 		}
 		renderLibrary();
@@ -492,6 +491,7 @@ $( '#settings' ).click( function() {
 $( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
 	menuHide();
 	if ( G.library ) {
+		console.log(9)
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
@@ -1396,20 +1396,19 @@ $( '.mode' ).click( function() {
 	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
-	if ( G.press || !G.bookmarkedit ) return
+	if ( G.press
+		|| $( e.target ).hasClass( 'bkedit' )
+		|| $( e.target ).hasClass( 'iconcover' )
+	) return
 	
-	if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
-		bookmarkeditClear();
-		return
-	}
+	$( '.bkedit' ).remove();
+	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
-	if ( G.press || G.bookmarkedit ) return
+	if ( G.press || $( '.bkedit' ).length ) return
 	
 	var path = $( this ).find( '.lipath' ).text();
-	if ( G.bookmarkedit ) return
-	
 	var path0 = path.split( '/' )[ 0 ];
 	var mode = path0.toLowerCase();
 	if ( path0.slice( 3 ) !== 'radio' ) {
@@ -1460,7 +1459,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
 		, ok      : function() {
-			G.bookmarkedit = 1;
 			bash( [ 'bookmarkremove', name, path ] );
 		}
 	} );
@@ -1483,7 +1481,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			bash( [ 'bookmarkrename', name, newname, path ] );
 		}
 	} );
-} ).on( 'click', '.bk-cover .iconcover', function() {
+} ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
@@ -1521,14 +1519,13 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 } ).press( '.mode-bookmark', function() {
 	if ( G.drag ) return
 	
-	G.bookmarkedit = 1;
 	G.bklabel = $( this ).find( '.label' );
 	$( '.mode-bookmark' ).each( function() {
 		var $this = $( this );
 		var path = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
+		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
@@ -1542,7 +1539,6 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	, forceFallback : true // fix: iphone safari
 	, onStart       : function () {
 		G.drag = 1;
-		bookmarkeditClear();
 	}
 	, onEnd         : function () {
 		G.drag = 0;
