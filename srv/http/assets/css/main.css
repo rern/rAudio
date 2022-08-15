@@ -2215,7 +2215,7 @@ li.active .li2 bl {
 	@media ( max-width: 330px ) {
 		#playback-controls i { margin: 0 }
 		#button-pl-shuffle { display: none }
-		.radiomodetitle { display: none; }
+		#mode-title { display: none; }
 	}
 	@media ( max-width: 280px ) {
 		#sampling { display: none }

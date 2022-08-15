@@ -1284,7 +1284,7 @@ $( '#button-lib-back' ).click( function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
 	var backmode = 'gmode' in G && G.gmode !== G.mode;
-	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
+	if ( G.mode === $( '#mode-title' ).text().replace( ' ', '' ).toLowerCase()
 		|| ( bL && bL < 2 )
 		|| ( !bL && G.query.length === 1 )
 	) {

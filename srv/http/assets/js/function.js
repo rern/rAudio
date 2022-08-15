@@ -1056,12 +1056,11 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
-	} else if ( data.modetitle.slice( -5 ) === 'RADIO' ) {
+	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title" class="radiomodetitle">'+ data.modetitle +'</span>';
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
 	} else if ( ![ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( G.mode ) ) {
-		// track view - keep previous title
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir = data.path.split( '/' );
@@ -1076,17 +1075,25 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
+	var root = data.modetitle.toLowerCase() === G.mode;
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'dabradio' ) {
-		htmlpath += data.path ? '' : '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
+		htmlpath += root ? '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>' : '';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( !data.html ) return // radio
+	var modetitle = !root ? data.modetitle : data.modetitle
+												.replace( 'MARTIST', 'M ARTIST' )
+												.replace( 'BRADIO', 'B RADIO' );
+	$( '#mode-title' )
+		.toggleClass( 'spaced', root )
+		.text( modetitle );
+	
+	if ( !data.html ) return // empty radio
 	
 	
 	$( '#lib-mode-list' ).after( data.html ).promise().done( function() {
@@ -1095,7 +1102,6 @@ function renderLibraryList( data ) {
 		} else {
 			imageLoad( 'lib-list' );
 		}
-		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
