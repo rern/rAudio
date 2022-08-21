@@ -700,7 +700,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var mpccmd;
 	// must keep order otherwise replaceplay -> play, addplay -> play
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
-	switch( mode ) {
+	switch ( mode ) {
 		case '':
 			if ( G.list.singletrack || G.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'pladd', path ];

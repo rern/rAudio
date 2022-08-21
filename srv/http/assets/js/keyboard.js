@@ -107,47 +107,55 @@ function onChange( value ) {
 function onKeyPress( key ) { // input value not yet changed until onChange
 	var id = $( 'input.active' ).prop( 'id' );
 	var layout = keyboard.options.layoutName;
-	if ( key === '{shift}' ) {
-		current = layout !== 'shift' ? 'shift' : 'alpha';
-		capslock = false;
-	} else if ( key === '{numshift}' ) {
-		current = layout !== 'numshift' ? 'numshift' : 'num';
-		numslock = false;
-	} else if ( key === '{num}' ) {
-		current = 'num';
-		capslock = false;
-	} else if ( key === '{alpha}' ) {
-		current = 'alpha';
-	} else if ( key === '{lock}' ) {
-		if ( layout !== 'shift' ) {
-			current = 'shift';
-			capslock = true;
-		} else {
-			current = capslock ? 'alpha' : 'shift';
-			capslock = current === 'shift' ? true : false;
-		}
-	} else if ( key === '{numlock}' ) {
-		if ( layout !== 'numshift' ) {
-			current = 'numshift';
-			numslock = true;
-		} else {
-			current = numslock ? 'num' : 'numshift';
-			numslock = current === 'numshift' ? true : false;
-		}
-	} else if ( key === '{enter}' ) {
-		if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
-			$( '#infoOk' ).click();
-		} else {
-			var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';
-			$( button ).click();
-		}
-		hideKeyboard();
-	} else {
-		if ( ( layout === 'shift' && !capslock ) ) {
-			current = 'alpha';
-		} else if ( layout === 'numshift' && !numslock ) {
+	switch ( key ) {
+		case '{shift}':
+			current = layout !== 'shift' ? 'shift' : 'alpha';
+			capslock = false;
+			break;
+		case '{numshift}':
+			current = layout !== 'numshift' ? 'numshift' : 'num';
+			numslock = false;
+			break;
+		case '{num}':
 			current = 'num';
-		}
+			capslock = false;
+			break;
+		case '{alpha}':
+			current = 'alpha';
+			break;
+		case '{lock}':
+			if ( layout !== 'shift' ) {
+				current = 'shift';
+				capslock = true;
+			} else {
+				current = capslock ? 'alpha' : 'shift';
+				capslock = current === 'shift' ? true : false;
+			}
+			break;
+		case '{numlock}':
+			if ( layout !== 'numshift' ) {
+				current = 'numshift';
+				numslock = true;
+			} else {
+				current = numslock ? 'num' : 'numshift';
+				numslock = current === 'numshift' ? true : false;
+			}
+			break;
+		case '{enter}':
+			if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
+				$( '#infoOk' ).click();
+			} else {
+				var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';
+				$( button ).click();
+			}
+			hideKeyboard();
+			break;
+		default:
+			if ( ( layout === 'shift' && !capslock ) ) {
+				current = 'alpha';
+			} else if ( layout === 'numshift' && !numslock ) {
+				current = 'num';
+			}
 	}
 	keyboard.setOptions( { layoutName: current } );
 	$( '.hg-button-lock' ).toggleClass( 'bgbl', capslock );

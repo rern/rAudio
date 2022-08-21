@@ -129,49 +129,55 @@ $( '#menu a' ).click( function() {
 		var icon = 'usbdrive';
 		var title = 'Local Mount';
 	}
-	if ( cmd === 'remount' ) {
-		notify( title, 'Remount ...', icon );
-		bash( [ 'remount', mountpoint, source ] );
-	} else if ( cmd === 'unmount' ) {
-		notify( title, 'Unmount ...', icon )
-		bash( [ 'unmount', mountpoint ] );
-	} else if ( cmd === 'forget' ) {
-		notify( title, 'Forget ...', icon );
-		bash( [ 'remove', mountpoint ] );
-	} else if ( cmd === 'info' ) {
-		var $code = $( '#codehddinfo' );
-		if ( $code.hasClass( 'hide' ) ) {
-			bash( 'hdparm -I '+ source, function( data ) {
-				$code
-					.html( data )
-					.removeClass( 'hide' );
-			} );
-		} else {
-			$code.addClass( 'hide' );
-		}
-	} else if ( cmd === 'spindown' ) {
-		info( {
-			  icon         : 'usbdrive'
-			, title        : 'USB Drive'
-			, message      : 'Spindown when idle:'
-			, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-			, values       : G.hddspindown
-			, checkchanged : 1
-			, ok           : function() {
-				var val = infoVal()
-				notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
-				bash( [ 'hddspindown', val, source ], function( std ) {
-					if ( std == -1 ) {
-						info( {
-							  icon         : 'usbdrive'
-							, title        : 'USB Drive'
-							, message      : '<wh>'+ source +'</wh> not support spindown.'
-						} );
-						bannerHide();
-					}
+	switch ( cmd ) {
+		case 'remount':
+			notify( title, 'Remount ...', icon );
+			bash( [ 'remount', mountpoint, source ] );
+			break;
+		case 'unmount':
+			notify( title, 'Unmount ...', icon )
+			bash( [ 'unmount', mountpoint ] );
+			break;
+		case 'forget':
+			notify( title, 'Forget ...', icon );
+			bash( [ 'remove', mountpoint ] );
+			break;
+		case 'info':
+			var $code = $( '#codehddinfo' );
+			if ( $code.hasClass( 'hide' ) ) {
+				bash( 'hdparm -I '+ source, function( data ) {
+					$code
+						.html( data )
+						.removeClass( 'hide' );
 				} );
+			} else {
+				$code.addClass( 'hide' );
 			}
-		} );
+			break;
+		case 'spindown':
+			info( {
+				  icon         : 'usbdrive'
+				, title        : 'USB Drive'
+				, message      : 'Spindown when idle:'
+				, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+				, values       : G.hddspindown
+				, checkchanged : 1
+				, ok           : function() {
+					var val = infoVal()
+					notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+					bash( [ 'hddspindown', val, source ], function( std ) {
+						if ( std == -1 ) {
+							info( {
+								  icon         : 'usbdrive'
+								, title        : 'USB Drive'
+								, message      : '<wh>'+ source +'</wh> not support spindown.'
+							} );
+							bannerHide();
+						}
+					} );
+				}
+			} );
+			break;
 	}
 } );
 $( '#setting-bluetooth' ).click( function() {

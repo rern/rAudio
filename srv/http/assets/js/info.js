@@ -55,15 +55,20 @@ checkbox: [space]     - check
 select:   [U] [D]     - check
 */
 	var key = e.key;
-	if ( key == 'Enter' ) {
-		if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
-	} else if ( key === 'Escape' ) {
-		G.local = 1; // prevent toggle setting menu
-		setTimeout( function() { G.local = 0 }, 300 );
-		$( '#infoX' ).click();
-	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
-		var rl = key === 'ArrowLeft' ? 'left' : 'right';
-		$( '#infoArrow .fa-arrow-'+ rl ).click();
+	switch ( key ) {
+		case 'Enter':
+			if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			break;
+		case 'Escape':
+			G.local = 1; // prevent toggle setting menu
+			setTimeout( function() { G.local = 0 }, 300 );
+			$( '#infoX' ).click();
+			break;
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			var rl = key === 'ArrowLeft' ? 'left' : 'right';
+			$( '#infoArrow .fa-arrow-'+ rl ).click();
+			break;
 	}
 } );
 $( '#infoContent' ).click( function() {
@@ -638,20 +643,26 @@ function infoVal() {
 		$this = $( this );
 		type = $this.prop( 'type' );
 		val = '';
-		if ( type === 'radio' ) { // radio has only single checked - skip unchecked inputs
-			val = $( '#infoContent input:radio[name='+ this.name +']:checked' ).val();
-			if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
-		} else if ( type === 'checkbox' ) {
-			val = $this.prop( 'checked' );
-		} else if ( type === 'textarea' ) {
-			O.textarea = 1;
-			val = $this.val().trim().replace( /\n/g, '\\n' );
-		} else if ( type === 'password' ) {
-			val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
-		} else if ( type === 'text' ) {
-			val = $this.val().trim();
-		} else {
-			val = $this.val();
+		switch ( type ) {
+			case 'radio': // radio has only single checked - skip unchecked inputs
+				val = $( '#infoContent input:radio[name='+ this.name +']:checked' ).val();
+				if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
+				break;
+			case 'checkbox':
+				val = $this.prop( 'checked' );
+				break;
+			case 'textarea':
+				O.textarea = 1;
+				val = $this.val().trim().replace( /\n/g, '\\n' );
+				break;
+			case 'password':
+				val = $this.val().trim().replace( /(["&()\\])/g, '\$1' ); // escape extra characters
+				break;
+			case 'text':
+				val = $this.val().trim();
+				break;
+			default:
+				val = $this.val();
 		}
 		values.push( val );
 	} );

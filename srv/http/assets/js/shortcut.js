@@ -126,74 +126,78 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		var $menuactive = $contextmenu.find( 'a.active' );
 		var $menufirst = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
 		var $menulast = $contextmenu.find( 'a:not( .hide )' ).last();
-		if ( key === 'ArrowLeft' ) {
-			if ( $( '.submenu.active' ).length ) {
-				$( '.submenu.active' )
-					.removeClass( 'active' )
-					.prev().addClass( 'active' );
-			} else {
-				$( '.menu' ).addClass( 'hide' )
-				$menuactive.removeClass( 'active' );
-				$( '.submenu' ).removeClass( 'active' );
-				if ( G.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
-			}
-		} else if ( key === 'ArrowRight' ) {
-			var $next = $menuactive.next();
-			if ( $next.hasClass( 'submenu' ) ) {
-				$menuactive.removeClass( 'active' );
-				$next.addClass( 'active' );
-			}
-		} else if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-			e.preventDefault();
-			if ( $( '.submenu.active' ).length ) {
-				$menuactive = $( '.submenu.active' );
-				if ( key === 'ArrowDown' ) {
-					$next = $menuactive.nextAll( 'a:not( .hide )' ).eq( 0 );
-					if ( !$next.length ) $next = $menuactive.prevAll( 'a:not( .hide )' ).last();
+		switch ( key ) {
+			case 'ArrowLeft':
+				if ( $( '.submenu.active' ).length ) {
+					$( '.submenu.active' )
+						.removeClass( 'active' )
+						.prev().addClass( 'active' );
 				} else {
-					$next = $menuactive.prevAll( 'a:not( .hide )' ).eq( 1 );
-					if ( !$next.length ) $next = $menuactive.nextAll( 'a:not( .hide )' ).last();
+					$( '.menu' ).addClass( 'hide' )
+					$menuactive.removeClass( 'active' );
+					$( '.submenu' ).removeClass( 'active' );
+					if ( G.playlist ) $( '#pl-list li' ).removeClass( 'lifocus' );
 				}
-				$next.addClass( 'active' );
-				$menuactive.removeClass( 'active' );
-				return
-			}
-			
-			if ( !$menuactive.length ) {
-				$menufirst.addClass( 'active' );
-			} else {
-				$menuactive.removeClass( 'active' );
-				$( '.submenu' ).removeClass( 'active' );
-				if ( key === 'ArrowDown' ) {
-					if ( $menuactive.is( $menulast ) ) {
-						$menufirst.addClass( 'active' );
+				break;
+			case 'ArrowRight':
+				var $next = $menuactive.next();
+				if ( $next.hasClass( 'submenu' ) ) {
+					$menuactive.removeClass( 'active' );
+					$next.addClass( 'active' );
+				}
+				break;
+			case 'ArrowUp':
+			case 'ArrowDown':
+				e.preventDefault();
+				if ( $( '.submenu.active' ).length ) {
+					$menuactive = $( '.submenu.active' );
+					if ( key === 'ArrowDown' ) {
+						$next = $menuactive.nextAll( 'a:not( .hide )' ).eq( 0 );
+						if ( !$next.length ) $next = $menuactive.prevAll( 'a:not( .hide )' ).last();
 					} else {
-						$menuactive.nextAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
+						$next = $menuactive.prevAll( 'a:not( .hide )' ).eq( 1 );
+						if ( !$next.length ) $next = $menuactive.nextAll( 'a:not( .hide )' ).last();
 					}
+					$next.addClass( 'active' );
+					$menuactive.removeClass( 'active' );
+					return
+				}
+				
+				if ( !$menuactive.length ) {
+					$menufirst.addClass( 'active' );
 				} else {
-					if ( $menuactive.is( $menufirst ) ) {
-						$menulast.addClass( 'active' );
+					$menuactive.removeClass( 'active' );
+					$( '.submenu' ).removeClass( 'active' );
+					if ( key === 'ArrowDown' ) {
+						if ( $menuactive.is( $menulast ) ) {
+							$menufirst.addClass( 'active' );
+						} else {
+							$menuactive.nextAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
+						}
 					} else {
-						$menuactive.prevAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
+						if ( $menuactive.is( $menufirst ) ) {
+							$menulast.addClass( 'active' );
+						} else {
+							$menuactive.prevAll( 'a:not( .hide )' ).eq( 0 ).addClass( 'active' );
+						}
 					}
 				}
-			}
-		} else if ( key === 'Enter' ) { // context menu
-			if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).click();
+				break;
+			case 'Enter':  // context menu
+				if ( $( '.menu:not(.hide)' ).length ) $contextmenu.find( '.active' ).click();
+				break;
 		}
 		return
 	}
 	
 	if ( G.playback ) {
-		if ( key === 'ArrowLeft' ) {
-			$( '#previous' ).click();
-		} else if ( key === 'ArrowRight' ) {
-			$( '#next' ).click();
-		} else if ( key === 'ArrowUp' ) {
-			$( '#volup' ).click();
-		} else if ( key === 'ArrowDown' ) {
-			$( '#voldn' ).click();
+		var key_btn = {
+			  ArrowLeft  : 'previous'
+			, ArrowRight : 'next'
+			, ArrowUp    : 'volup'
+			, ArrowDown  : 'voldn'
 		}
+		$( '#'+ key_btn[ key ] ).click();
 	} else if ( G.library ) {
 		if ( !$( '#lib-search' ).hasClass( 'hide' ) ) return
 		
@@ -205,18 +209,22 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 				return
 			}
 			
-			if ( key === 'ArrowLeft' ) {
-				var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide )' ).eq( 0 );
-				$( '.lib-mode' ).removeClass( 'updn' );
-				if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).last();
-				$div.addClass( 'updn' );
-			} else if ( key === 'ArrowRight' ) {
-				var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide )' ).eq( 0 );
-				$( '.lib-mode' ).removeClass( 'updn' );
-				if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).eq( 0 );
-				$div.addClass( 'updn' );
-			} else if ( key === 'Enter' ) {
-				$( '.lib-mode.updn .mode' ).click()
+			switch ( key ) {
+				case 'ArrowLeft':
+					var $div = $( '.lib-mode.updn' ).prevAll( ':not( .hide )' ).eq( 0 );
+					$( '.lib-mode' ).removeClass( 'updn' );
+					if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).last();
+					$div.addClass( 'updn' );
+					break;
+				case 'ArrowRight':
+					var $div = $( '.lib-mode.updn' ).nextAll( ':not( .hide )' ).eq( 0 );
+					$( '.lib-mode' ).removeClass( 'updn' );
+					if ( !$div.length ) $div = $( '.lib-mode:not( .hide )' ).eq( 0 );
+					$div.addClass( 'updn' );
+					break;
+				case 'Enter':
+					$( '.lib-mode.updn .mode' ).click();
+					break;
 			}
 			return
 		}
@@ -228,79 +236,96 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 			}
 			
 			var $active = $( '#lib-list .coverart.active' );
-			var arrowL = key === 'ArrowLeft';
-			var arrowR = key === 'ArrowRight';
-			if ( arrowL || arrowR ) {
-				if ( arrowL && $active.index() === 0 ) return
-				if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
-				
-				var $next = arrowR ? $active.next() : $active.prev();
-				$active.removeClass( 'active' );
-				$next.addClass( 'active' );
-				var rect = $next[ 0 ].getBoundingClientRect();
-				var wH = $( window ).height();
-				var eH = $next.height();
-				var top = $next.offset().top;
-				if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
-					var scroll = top - ( G.bars ? 80 : 40 );
-				} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
-					var scroll = top - eH;
-				}
-				$( 'html, body' ).scrollTop( scroll );
-			} else if ( key === 'ArrowUp' ) {
+			switch ( key ) {
+				case 'ArrowLeft':
+				case 'ArrowRight':
+					if ( arrowL && $active.index() === 0 ) return
+					if ( arrowR && $active.index() === $( '#lib-list .coverart' ).length + 1 ) return
+					
+					var $next = arrowR ? $active.next() : $active.prev();
+					$active.removeClass( 'active' );
+					$next.addClass( 'active' );
+					var rect = $next[ 0 ].getBoundingClientRect();
+					var wH = $( window ).height();
+					var eH = $next.height();
+					var top = $next.offset().top;
+					if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
+						var scroll = top - ( G.bars ? 80 : 40 );
+					} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
+						var scroll = top - eH;
+					}
+					$( 'html, body' ).scrollTop( scroll );
+					break;
+				case 'ArrowUp':
+					$( '#button-lib-back' ).click();
+					break;
+				case 'Enter':
+					G.iactive = $( '#lib-list .coverart.active' ).index();
+					$active.click();
+					break;
+			}
+			return
+		}
+		
+		switch ( key ) {
+			case 'ArrowLeft': // back button
 				$( '#button-lib-back' ).click();
-			} else if ( key === 'Enter' ) {
-				G.iactive = $( '#lib-list .coverart.active' ).index();
-				$active.click();
-			}
-			return
-		}
-		
-		if ( key === 'ArrowLeft' ) { // back button
-			$( '#button-lib-back' ).click();
-			return
-		} else if ( key === 'ArrowRight' ) { // show context menu
-			$( '#lib-list li.active .lib-icon' ).click();
-			return
-		}
-		
-		// list ///////////////////////////////////////
-		if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-			scrollUpDown( e, $( '#lib-list' ), key );
-		} else if ( key === 'Enter' ) {
-			var $liactive = $( '#lib-list li.active' );
-			if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
-				if ( $( '.menu:not(.hide)' ).length ) { // context menu
-					var menu = $liactive.find( '.lib-icon' ).data( 'target' );
-					$( menu ).find( 'a' ).eq( 1 ).click();
+				return
+			case 'ArrowRight': // show context menu
+				$( '#lib-list li.active .lib-icon' ).click();
+				return
+			// list ///////////////////////////////////////
+			case 'ArrowUp':
+			case 'ArrowDown':
+				scrollUpDown( e, $( '#lib-list' ), key );
+				break;
+			case 'Enter':
+				var $liactive = $( '#lib-list li.active' );
+				if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
+					if ( $( '.menu:not(.hide)' ).length ) { // context menu
+						var menu = $liactive.find( '.lib-icon' ).data( 'target' );
+						$( menu ).find( 'a' ).eq( 1 ).click();
+					}
+				} else {
+					$liactive.click();
 				}
-			} else {
-				$liactive.click();
-			}
+				break;
 		}
 		menuHide();
 	} else if ( G.playlist ) {
 		if ( G.savedplaylist || G.savedlist ) {
-			if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-				scrollUpDown( e, $( '#pl-savedlist' ), key );
-			} else if ( key === 'ArrowRight' ) {
-				$( '#pl-savedlist li.active .pl-icon' ).click();
-			} else if ( key === 'Enter' ) {
-				$( '#pl-savedlist li.active' ).click();
-			} else if ( key === 'ArrowLeft' ) {
-				if ( !$( '.contextmenu:not( .hide )' ).length ) $( '#button-pl-back' ).click();
+			switch ( key ) {
+				case 'ArrowUp':
+				case 'ArrowDown':
+					scrollUpDown( e, $( '#pl-savedlist' ), key );
+					break;
+				case 'ArrowRight':
+					$( '#pl-savedlist li.active .pl-icon' ).click();
+					break;
+				case 'Enter':
+					$( '#pl-savedlist li.active' ).click();
+					break;
+				case 'ArrowLeft':
+					if ( !$( '.contextmenu:not( .hide )' ).length ) $( '#button-pl-back' ).click();
+					break;
 			}
 		} else {
-			if ( key === 'ArrowUp' || key === 'ArrowDown' ) {
-				var $liactive = $( '#pl-list li.updn' );
-				if ( !$liactive.length ) $( '#pl-list li.active' ).addClass( 'updn' );
-				scrollUpDown( e, $( '#pl-list' ), key );
-			} else if ( key === 'ArrowRight' ) {
-				$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .pl-icon' ).click() : $( '#pl-list li.active .pl-icon' ).click();
-			} else if ( key === 'Enter' ) {
-				$( '#pl-list li.updn' ).click();
-			} else if ( key === 'Delete' ) {
-				$( '#button-pl-clear' ).click();
+			switch ( key ) {
+				case 'ArrowUp':
+				case 'ArrowDown':
+					var $liactive = $( '#pl-list li.updn' );
+					if ( !$liactive.length ) $( '#pl-list li.active' ).addClass( 'updn' );
+					scrollUpDown( e, $( '#pl-list' ), key );
+					break;
+				case 'ArrowRight':
+					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .pl-icon' ).click() : $( '#pl-list li.active .pl-icon' ).click();
+					break;
+				case 'Enter':
+					$( '#pl-list li.updn' ).click();
+					break;
+				case 'Delete':
+					$( '#button-pl-clear' ).click();
+					break;
 			}
 		}
 	}

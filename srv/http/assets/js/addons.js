@@ -21,7 +21,7 @@ function getoptions() {
 	olength = okey.length;
 	oj = okey[ j ];
 	oj0 = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
-	switch( oj0 ) {
+	switch ( oj0 ) {
 		case 'wait': // only 1 'Ok' = continue
 			info( {
 				  icon    : 'jigsaw'

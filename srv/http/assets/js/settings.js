@@ -220,7 +220,7 @@ pushstream.onstatuschange = function( status ) {
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
-	switch( channel ) {
+	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
 		case 'notify':    psNotify( data );    break;
 		case 'player':    psPlayer( data );    break;
@@ -359,41 +359,47 @@ $( document ).keyup( function( e ) {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
-	if ( key === 'Tab'  ) {
-		$( '#bar-bottom div' ).removeClass( 'bgr' );
-		$( '.switchlabel, .setting' ).removeClass( 'focus' );
-		setTimeout( function() {
-			$focus = $( 'input:checkbox:focus' );
-			if ( $focus.length ) {
-				$focus.next().addClass( 'focus' );
+	switch ( key ) {
+		case 'Tab':
+			$( '#bar-bottom div' ).removeClass( 'bgr' );
+			$( '.switchlabel, .setting' ).removeClass( 'focus' );
+			setTimeout( function() {
+				$focus = $( 'input:checkbox:focus' );
+				if ( $focus.length ) {
+					$focus.next().addClass( 'focus' );
+				}
+			}, 0 );
+			break;
+		case 'Escape':
+			$focus = $( '.switchlabel.focus' );
+			setTimeout( function() {
+				if ( $focus.length ) $focus.prev().focus();
+			}, 300 );
+			if ( $( '.setting.focus' ).length ) {
+				$( '.setting' ).removeClass( 'focus' );
+				return
 			}
-		}, 0 );
-	} else if ( key === 'Escape' ) {
-		$focus = $( '.switchlabel.focus' );
-		setTimeout( function() {
-			if ( $focus.length ) $focus.prev().focus();
-		}, 300 );
-		if ( $( '.setting.focus' ).length ) {
-			$( '.setting' ).removeClass( 'focus' );
-			return
-		}
-		
-		if ( $focus.length && $focus.prev().prop( 'checked' ) && $focus.next().hasClass( 'setting' ) ) {
-			$( '.switchlabel.focus' ).next().addClass( 'focus' );
-		}
-	} else if ( key === 'ArrowLeft' || key === 'ArrowRight' ) {
-		var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
-		var id = $current[ 0 ].id;
-		var $next = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
-		$( '#bar-bottom div' ).removeClass( 'bgr' );
-		if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
-	} else if ( key === 'Enter' ) {
-		if ( $( '#bar-bottom .bgr' ).length ) {
-			$( '#bar-bottom .bgr' ).click();
-		} else {
-			$focus = $( '.setting.focus' );
-			if ( $focus.length ) $focus.click();
-		}
+			
+			if ( $focus.length && $focus.prev().prop( 'checked' ) && $focus.next().hasClass( 'setting' ) ) {
+				$( '.switchlabel.focus' ).next().addClass( 'focus' );
+			}
+			break;
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
+			var id = $current[ 0 ].id;
+			var $next = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
+			$( '#bar-bottom div' ).removeClass( 'bgr' );
+			if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
+			break;
+		case 'Enter':
+			if ( $( '#bar-bottom .bgr' ).length ) {
+				$( '#bar-bottom .bgr' ).click();
+			} else {
+				$focus = $( '.setting.focus' );
+				if ( $focus.length ) $focus.click();
+			}
+			break;
 	}
 } );
 $( '.container' ).click( function( e ) {

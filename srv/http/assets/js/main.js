@@ -950,81 +950,85 @@ $( '.map' ).click( function() {
 	}
 	
 	hideGuide();
-	if ( cmd === 'cover' ) {
-		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.pllength
-			|| $( '#page-playback' ).css( 'transform' ) !== 'none'
-		) return
-		
-		if ( !( 'coverTL' in G )
-			&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
-			&& !G.display.volumenone
-			&& !$( '#volume-knob' ).is( ':visible' )
-		) {
-			if ( $( '#info' ).hasClass( 'hide' ) ) {
-				$( '#info' ).removeClass( 'hide' );
-			} else {
-				$( '#info' ).addClass( 'hide' );
-				$( '#volume-band' ).click();
-			}
-			return
-		}
-		
-		if ( G.wW < 545 && G.wW < G.wH ) return
-		
-		var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
-		if ( 'coverTL' in G ) {
-			list.forEach( function( el ) {
-				G.display[ el ] = G.coverTL[ el ];
-			} );
-			delete G.coverTL;
-		} else {
-			G.coverTL = {};
-			list.forEach( function( el ) {
-				G.coverTL[ el ] = G.display[ el ];
-			} );
-			if ( this.id === 'coverTL' ) {
-				if ( G.display.time || G.display.volume ) {
-					G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
+	switch ( cmd ) {
+		case 'cover':
+			$( '#bar-bottom' ).removeClass( 'translucent' );
+			if ( G.status.player === 'mpd' && !G.status.pllength
+				|| $( '#page-playback' ).css( 'transform' ) !== 'none'
+			) return
+			
+			if ( !( 'coverTL' in G )
+				&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+				&& !G.display.volumenone
+				&& !$( '#volume-knob' ).is( ':visible' )
+			) {
+				if ( $( '#info' ).hasClass( 'hide' ) ) {
+					$( '#info' ).removeClass( 'hide' );
 				} else {
-					G.display.bars = G.display.time = G.display.volume = G.display.buttons = true;
+					$( '#info' ).addClass( 'hide' );
+					$( '#volume-band' ).click();
+				}
+				return
+			}
+			
+			if ( G.wW < 545 && G.wW < G.wH ) return
+			
+			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
+			if ( 'coverTL' in G ) {
+				list.forEach( function( el ) {
+					G.display[ el ] = G.coverTL[ el ];
+				} );
+				delete G.coverTL;
+			} else {
+				G.coverTL = {};
+				list.forEach( function( el ) {
+					G.coverTL[ el ] = G.display[ el ];
+				} );
+				if ( this.id === 'coverTL' ) {
+					if ( G.display.time || G.display.volume ) {
+						G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
+					} else {
+						G.display.bars = G.display.time = G.display.volume = G.display.buttons = true;
+					}
+				} else {
+					G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
+				}
+			}
+			$( '.band' ).addClass( 'transparent' );
+			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+			$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
+			displayBars();
+			setButtonControl();
+			displayPlayback();
+			if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
+				setProgress();
+				setTimeout( setProgressAnimate, 0 );
+			}
+			if ( 'coverTL' in G && !G.display.cover ) $( '#timemap' ).removeClass( 'hide' );
+			break;
+		case 'settings':
+			$( '#button-settings' ).click();
+			break;
+		case 'repeat':
+			if ( G.status.repeat ) {
+				if ( G.status.single ) {
+					$( '#single' ).click();
+					G.status.repeat = false;
+					G.status.single = false;
+					setButtonOptions();
+					local( 600 );
+					bash( [ 'mpcoption', 'repeat', false ] );
+					bash( [ 'mpcoption', 'single', false ] );
+				} else {
+					$( '#single' ).click();
 				}
 			} else {
-				G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
+				$( '#repeat' ).click();
 			}
-		}
-		$( '.band' ).addClass( 'transparent' );
-		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
-		displayBars();
-		setButtonControl();
-		displayPlayback();
-		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
-			setProgress();
-			setTimeout( setProgressAnimate, 0 );
-		}
-		if ( 'coverTL' in G && !G.display.cover ) $( '#timemap' ).removeClass( 'hide' );
-	} else if ( cmd === 'settings' ) {
-		$( '#button-settings' ).click();
-	} else if ( cmd === 'repeat' ) {
-		if ( G.status.repeat ) {
-			if ( G.status.single ) {
-				$( '#single' ).click();
-				G.status.repeat = false;
-				G.status.single = false;
-				setButtonOptions();
-				local( 600 );
-				bash( [ 'mpcoption', 'repeat', false ] );
-				bash( [ 'mpcoption', 'single', false ] );
-			} else {
-				$( '#single' ).click();
-			}
-		} else {
-			$( '#repeat' ).click();
-		}
-	} else {
-		if ( cmd === 'play' && G.status.state === 'play' ) cmd = !G.status.stream ? 'pause' : 'stop';
-		$( '#'+ cmd ).click();
+			break
+		default:
+			if ( cmd === 'play' && G.status.state === 'play' ) cmd = !G.status.stream ? 'pause' : 'stop';
+			$( '#'+ cmd ).click();
 	}
 } );
 $( '.btn-cmd' ).click( function() {

@@ -123,7 +123,7 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 	}
 }
 pushstream.onmessage = ( data, id, channel ) => {
-	switch( channel ) {
+	switch ( channel ) {
 		case 'airplay':    psAirplay( data );    break;
 		case 'bookmark':   psBookmark( data );   break;
 		case 'btreceiver': psBtReceiver( data ); break;
@@ -138,7 +138,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'order':      psOrder( data );      break;
 		case 'playlist':   psPlaylist( data );   break;
 		case 'playlists':  psPlaylists( data );  break;
-		case 'radiolist':  psRadioList( data ); break;
+		case 'radiolist':  psRadioList( data );  break;
 		case 'relays':     psRelays( data );     break;
 		case 'reload':     location.href = '/';  break;
 		case 'restore':    psRestore( data );    break;
@@ -190,7 +190,7 @@ function psCoverart( data ) {
 		var src = data.url;
 		var path = getDirectory( src );
 	}
-	switch( data.type ) {
+	switch ( data.type ) {
 		case 'bookmark':
 			bookmarkCover( src, path );
 			break;
