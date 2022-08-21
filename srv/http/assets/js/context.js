@@ -249,7 +249,7 @@ function tagEditor() {
 		message += '</div>';
 		var footer = '';
 		footer += '<div id="taglabel"><i class="fa fa-help fa-lg"></i>&emsp;Label</div>';
-		if ( G.list.licover ) footer += '<div><code> * </code>&ensp;Different values in tracks</div>';
+		if ( G.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
