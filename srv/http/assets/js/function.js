@@ -626,10 +626,14 @@ function imageLoad( list ) {
 			var radio = G.mode.slice( -5 ) === 'radio';
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				var dir = $this.parent().hasClass( 'dir' );
 				if ( radio ) {
-					var icon = dir ? 'folder' : G.mode;
-					var menu = dir ? 'wrdir' : 'webradio';
+					if ( $this.parent().hasClass( 'dir' ) ) {
+						var icon = 'folder';
+						var menu = 'wrdir';
+					} else {
+						var icon = G.mode;
+						var menu = 'webradio';
+					}
 				} else {
 					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : G.mode;
 					var menu = 'folder';
