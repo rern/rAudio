@@ -1705,7 +1705,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			, string : path
 			, format : [ 'file' ]
 		}
-		var modetitle = path;
+		var modetitle = [ 'sd', 'nas', 'usb' ].includes( G.mode ) ? path : $( '#mode-title' ).text();
 	} else if ( G.mode.slice( -5 ) === 'radio' ) {
 		if ( $( this ).hasClass( 'dir' ) ) {
 			var query = {
@@ -1718,10 +1718,8 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			return
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
-		if ( [ 'genre', 'composer', 'date' ].includes( G.mode ) ) {
+		if ( [ 'genre', 'composer', 'conductor', 'date' ].includes( G.mode ) ) {
 			var format = [ 'album', 'artist' ];
-		} else if ( G.mode === 'conductor' ) {
-			var format = [ 'album', 'conductor' ];
 		} else {
 			var format = [ 'album' ];
 		}

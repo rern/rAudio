@@ -219,7 +219,6 @@ function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
 function htmlDirectory( $lists ) {
-	global $mode;
 	global $gmode;
 	global $html;
 	foreach( $lists as $list ) {
@@ -239,12 +238,14 @@ function htmlDirectory( $lists ) {
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
+			$mode = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
 			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
 		} else {
+			$mode = $gmode;
 			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
 		}
-		$html.=  '<li data-mode="'.$gmode.'" data-index="'.$index.'">
+		$html.=  '<li data-mode="'.$mode.'" data-index="'.$index.'">
 				'.$htmlicon.'
 				<a class="lipath">'.$path.'</a>
 				<span class="single">'.$each->dir.'</span>
@@ -267,12 +268,11 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		if ( $list === '' ) continue;
 		
 		$list = explode( '^^', $list ); // album^^artist 
-		$sort = in_array( $mode, [ 'artist', 'albumartist', 'composer' ] ) ? $list[ 0 ] : $list[ 1 ]; // sort by artist
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
 			$key = $f[ $i ];
 			$each->$key = $list[ $i ];
-			$each->sort = stripSort( $sort );
+			$each->sort = stripSort( $list[ 0 ] ).stripSort( $list[ 1 ] );
 		}
 		if ( isset( $list[ $fL ] ) ) $each->path = $list[ $fL ];
 		$array[] = $each;
@@ -294,11 +294,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$indexes[] = $index;
 		if ( !$val0 && !$val1 ) continue;
 		
-		if ( in_array( $mode, [ 'artist', 'albumartist', 'composer' ] ) ) { // display as artist - album
-			$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
-		} else {
-			$name = $fL > 1 ? $val1.'<gr> • </gr>'.$val0 : $val0;
-		}
+		$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
 			$datamode = $mode;
