@@ -265,11 +265,7 @@ function tagEditor() {
 			, beforeshow   : function() {
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
-				if ( G.playlist ) {
-					$( '#infoContent input' ).prop( 'disabled', 1 );
-				} else if ( !G.list.licover ) {
-					$( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
-				}
+				if ( G.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
 				var tableW = $( '#infoContent table' ).width();
 				$( '#infoContent' ).on( 'click', '#taglabel', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
