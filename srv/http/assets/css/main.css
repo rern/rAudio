@@ -2010,6 +2010,9 @@ li.active .li2 bl {
 	line-height: 34px;
 	background-color: var( --cm );
 }
+#taglabel {
+	line-height: 30px;
+}
 /************************************************************************************/
 @media ( min-width: 900px ) {
 	#playback-row { align-items: center }
