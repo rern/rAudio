@@ -626,14 +626,15 @@ function imageLoad( list ) {
 			var radio = G.mode.slice( -5 ) === 'radio';
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				var dir = [ 'nas', 'sd', 'usb' ].includes( $this.parent().data( 'mode' ) );
-				var mode = dir ? 'folder' : G.mode;
+				var dir = $this.parent().hasClass( 'dir' );
 				if ( radio ) {
+					var icon = dir ? 'folder' : G.mode;
 					var menu = dir ? 'wrdir' : 'webradio';
 				} else {
+					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : G.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="fa fa-'+ icon +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {

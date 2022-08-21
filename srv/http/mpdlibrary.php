@@ -308,7 +308,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		} // cue //////////////////////////////////////////////////////////////////
 		$html.= '<li data-mode="'.$datamode.'" data-index="'.$index.'">
 					<a class="liname">'.$val0.'</a>
-					<i class="fa fa-'.$mode.' lib-icon" data-target="#menu-album"></i>
+					<i class="fa fa-folder lib-icon" data-target="#menu-album"></i>
 					<span class="single">'.$name.'</span>
 				</li>';
 	}
