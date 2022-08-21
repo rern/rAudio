@@ -2015,10 +2015,17 @@ li.active .li2 bl {
 	align-items: flex-end;
 	width: calc( 100% - 40px );
 	margin-bottom: 10px;
+	line-height: 24px;
+	color: var( --cw );
 	cursor: pointer;
 }
 .tagmessage img {
 	margin: 0;
+	float: left;
+}
+.tagmessage div {
+	margin-left: 10px;
+	float: left;
 }
 .tagfooter {
 	line-height: 40px;

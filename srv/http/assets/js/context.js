@@ -239,12 +239,12 @@ function tagEditor() {
 			values = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = file.slice( -4 ) !== '.cue' ? 'file-music' : 'file-playlist';
-		var message = '<img src="'+ src +'" style="float: left"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div style="margin-left: 10px"><i class="fa fa-folder wh"></i>';
+		var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
+					 +'<div><i class="fa fa-folder"></i>';
 		if ( G.list.licover ) {
 			message += file;
 		} else {
-			message += filepath +'<br><i class="fa fa-'+ fileicon +' wh"></i>'+ filename;
+			message += '<gr>'+ filepath +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ filename;
 		}
 		message += '</div>';
 		var footer = '';
