@@ -248,8 +248,8 @@ function tagEditor() {
 		}
 		message += '</div>';
 		var footer = '';
-		footer += '<div id="taglabel"><i class="fa fa-help fa-lg"></i>&ensp;Label</div>';
-		if ( G.list.licover ) footer += '<code style="width: 19px; text-align: center">*</code>&ensp;Different values in tracks';
+		footer += '<div id="taglabel"><i class="fa fa-help fa-lg"></i>&emsp;Label</div>';
+		if ( G.list.licover ) footer += '<div><code> * </code>&ensp;Different values in tracks</div>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -263,12 +263,8 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				$( '#infoContent .infomessage' ).css( {
-					  display         : 'flex'
-					, 'align-items'   : 'flex-end'
-					, 'margin-bottom' : '10px'
-					, cursor          : 'pointer'
-				} );
+				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
+				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
 				if ( G.playlist ) {
 					$( '#infoContent input' ).prop( 'disabled', 1 );
 				} else if ( !G.list.licover ) {
@@ -283,9 +279,6 @@ function tagEditor() {
 						$( '.taglabel' ).addClass( 'hide' );
 					}
 				} );
-				$( '.infomessage' )
-					.css( 'width', 'calc( 100% - 40px )' )
-					.find( 'img' ).css( 'margin', 0 );
 				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
 					

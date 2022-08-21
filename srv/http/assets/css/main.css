@@ -2010,8 +2010,27 @@ li.active .li2 bl {
 	line-height: 34px;
 	background-color: var( --cm );
 }
-#taglabel {
-	line-height: 30px;
+.tagmessage {
+	display: flex;
+	align-items: flex-end;
+	width: calc( 100% - 40px );
+	margin-bottom: 10px;
+	cursor: pointer;
+}
+.tagmessage img {
+	margin: 0;
+}
+.tagfooter {
+	line-height: 40px;
+}
+.tagfooter div {
+	display: inline-block;
+}
+.tagfooter div:first-child {
+	float: left;
+}
+.tagfooter div:nth-child( 2 ) {
+	float: right;
 }
 /************************************************************************************/
 @media ( min-width: 900px ) {
