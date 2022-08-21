@@ -167,7 +167,7 @@ case 'search':
 case 'track': // for tag editor
 	$track = $_POST[ 'track' ] ?? '';
 	$file = escape( $_POST[ 'file' ] );
-	if ( $track ) { // cue
+	if ( $track ) { // cue / info
 		if ( $track === 'cover' ) {
 			$filter = 'head -1';
 		} else {
@@ -211,6 +211,7 @@ case 'track': // for tag editor
 			$array = explode( '^^', $lists );
 		}
 	}
+	echo json_encode( $array );
 	break;
 }
 
