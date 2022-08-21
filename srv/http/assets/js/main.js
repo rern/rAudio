@@ -491,7 +491,6 @@ $( '#settings' ).click( function() {
 $( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
 	menuHide();
 	if ( G.library ) {
-		console.log(9)
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
@@ -1698,6 +1697,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
+	var modefile = [ 'sd', 'nas', 'usb' ].includes( G.mode );
 	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
 	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // list by directory
 		var query = {
@@ -1705,7 +1705,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			, string : path
 			, format : [ 'file' ]
 		}
-		var modetitle = [ 'sd', 'nas', 'usb' ].includes( G.mode ) ? path : $( '#mode-title' ).text();
+		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( G.mode.slice( -5 ) === 'radio' ) {
 		if ( $( this ).hasClass( 'dir' ) ) {
 			var query = {
@@ -1769,7 +1769,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	} );
 	query.path = path;
 	query.modetitle = modetitle;
-	if ( query.query !== 'ls' ) G.query.push( query );
+	if ( query.query !== 'ls' || !modefile ) G.query.push( query );
 } );
 $( '.page' ).on( 'click', '.index a', function() {
 	var index = $( this ).find( 'wh' ).text()[ 0 ];
