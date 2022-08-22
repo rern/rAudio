@@ -670,7 +670,7 @@ ignoredir )
 	dir=$( basename "$path" )
 	mpdpath=$( dirname "$path" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushstream mpdupdate 1
+	pushstream mpdupdate '{"type":"mpd"}'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
