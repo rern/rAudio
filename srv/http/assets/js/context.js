@@ -285,12 +285,16 @@ function tagEditor() {
 					}
 					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
 					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
-					list( query, function( data ) {
-						data.path = filepath;
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : filepath
+							, path      : filepath
+						}
 						renderLibraryList( data );
 						$( '#library' ).click();
 						$( '#infoX' ).click();
-					}, 'json' );
+					} );
 				} );
 			}
 			, okno         : G.playlist
