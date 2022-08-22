@@ -192,6 +192,7 @@ i.map.disabled, .map.disabled i {
 .biosimilar p,
 .bklabel,
 .scrollellipse,
+.tagmessage div,
 #divlyricstitle,
 #lib-breadcrumbs,
 #lib-list li,
@@ -2014,14 +2015,13 @@ li.active .li2 bl {
 	display: flex;
 	align-items: flex-end;
 	width: calc( 100% - 40px );
-	margin-bottom: 10px;
+	margin: -10px 0 10px 0;
 	line-height: 24px;
 	color: var( --cw );
 	cursor: pointer;
 }
 .tagmessage img {
 	margin: 0;
-	float: left;
 }
 .tagmessage div {
 	margin-left: 10px;

@@ -240,11 +240,11 @@ function tagEditor() {
 		}
 		var fileicon = file.slice( -4 ) !== '.cue' ? 'file-music' : 'file-playlist';
 		var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div><i class="fa fa-folder"></i>';
+					 +'<div>';
 		if ( G.list.licover ) {
-			message += file;
+			message += '<i class="fa fa-folder"></i>'+ file;
 		} else {
-			message += '<gr>'+ filepath +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ filename;
+			message += '<i class="fa fa-folder gr"></i><gr>'+ filepath +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ filename;
 		}
 		message += '</div>';
 		var footer = '';
