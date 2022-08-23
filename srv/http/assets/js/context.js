@@ -265,6 +265,7 @@ function tagEditor() {
 			, beforeshow   : function() {
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
+				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
 				if ( G.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
 				var tableW = $( '#infoContent table' ).width();
 				$( '#infoContent' ).on( 'click', '#taglabel', function() {
@@ -274,6 +275,33 @@ function tagEditor() {
 					} else {
 						$( '.taglabel' ).addClass( 'hide' );
 					}
+				} ).on( 'click', 'table i', function() {
+					var $this = $( this );
+					var mode = $this.data( 'mode' );
+					if ( [ 'title', 'track' ].includes( mode ) ) return
+					
+					var string = $this.parent().next().find( 'input' ).val();
+					if ( !string ) return
+					
+					var query = {
+						  query  : 'find'
+						, mode   : mode
+						, string : string
+						, format : [ 'album', 'artist' ]
+					}
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : string
+							, path      : string
+						}
+						G.mode = mode;
+						renderLibraryList( data );
+						query.gmode = mode;
+						query.modetitle = string;
+						tagModeSwitch();
+						G.query.push( query );
+					} );
 				} );
 				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
@@ -283,7 +311,6 @@ function tagEditor() {
 						, string : filepath
 						, format : [ 'file' ]
 					}
-					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
 					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
 					list( query, function( html ) {
 						var data = {
@@ -291,9 +318,9 @@ function tagEditor() {
 							, modetitle : filepath
 							, path      : filepath
 						}
+						G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
+						tagModeSwitch();
 						renderLibraryList( data );
-						$( '#library' ).click();
-						$( '#infoX' ).click();
 					} );
 				} );
 			}
@@ -324,6 +351,16 @@ function tagEditor() {
 			}
 		} );
 	}, 'json' );
+}
+function tagModeSwitch() {
+	$( '#infoX' ).click();
+	if ( G.playlist ) {
+		$( '#page-playlist' ).addClass( 'hide' );
+		$( '#page-library' ).removeClass( 'hide' );
+		G.playlist = 0;
+		G.library = 1;
+		G.page = 'library';
+	}
 }
 function webRadioCoverart() {
 	if ( G.playback ) {

@@ -89,6 +89,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
 			|| !$( '#bio' ).hasClass( 'hide' )
+			|| !$( '#infoOverlay' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
@@ -1300,6 +1301,7 @@ $( '#button-lib-back' ).click( function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {
+			G.mode = query.gmode;
 			list( query, function( html ) {
 				if ( html != -1 ) {
 					if ( backmode ) G.mode = G.gmode;
@@ -1386,7 +1388,9 @@ $( '.mode' ).click( function() {
 		}
 	}
 	query.gmode = G.mode;
+	console.log(query)
 	list( query, function( html ) {
+	console.log(html)
 		var data = {
 			  html      : html
 			, modetitle : path
