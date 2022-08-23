@@ -20,9 +20,8 @@ else                 # restore
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
 dwc_otg.lpm_enable=0 elevator=noop ipv6.disable=1 fsck.repair=yes"
-	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	BB=${hwrevision: -3:2}
-	[[ $BB =~ ^(04|08|0d|0e|11|12)$ ]] && cmdline+=' isolcpus=3'
+	cpuInfo
+	[[ $core4 ]] && cmdline+=' isolcpus=3'
 	if systemctl is-enabled localbrowser &> /dev/null; then
 		config+=' console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
 	else

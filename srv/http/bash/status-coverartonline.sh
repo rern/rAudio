@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 : >/dev/tcp/8.8.8.8/53 || exit # online check
 
 readarray -t args <<< "$1"
@@ -51,10 +53,10 @@ fi
 
 ext=${url/*.}
 if [[ $type == audiocd ]]; then
-	coverfile=/srv/http/data/audiocd/$discid.$ext
+	coverfile=$diraudiocd/$discid.$ext
 else
 	[[ $type ]] && prefix=$type || prefix=online
-	coverfile=/srv/http/data/shm/$prefix/$name.$ext
+	coverfile=$dirshm/$prefix/$name.$ext
 fi
 curl -sL $url -o $coverfile
 [[ ! -e $coverfile ]] && exit
@@ -64,9 +66,9 @@ data='
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
 	Album=$( jq -r .title <<< "$album" )
-	echo $Album > /srv/http/data/shm/webradio/$name
+	echo $Album > $dirshm/webradio/$name
 	data+='
 , "Album" : "'$Album'"'
 fi
-curl -s -X POST http://127.0.0.1/pub?id=coverart -d "{$data}"
+pushstream coverart "{$data}"
 /srv/http/bash/cmd.sh coverfileslimit

@@ -362,15 +362,15 @@ addonsupdates )
 albumignore )
 	album=${args[1]}
 	artist=${args[2]}
-	sed -i "/\^$album^^$artist^/ d" $dirdata/mpd/album
-	sed -i "/\^$artist^^$album^/ d" $dirdata/mpd/albumbyartist
-	echo $album^^$artist >> $dirdata/mpd/albumignore
+	sed -i "/\^$album^^$artist^/ d" $dirmpd/album
+	sed -i "/\^$artist^^$album^/ d" $dirmpd/albumbyartist
+	echo $album^^$artist >> $dirmpd/albumignore
 	;;
 audiocdtag )
 	track=${args[1]}
 	tag=${args[2]}
 	discid=${args[3]}
-	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
+	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
 	pushstreamPlaylist
 	;;
 bookmarkadd )
@@ -675,8 +675,8 @@ ignoredir )
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	> /srv/http/data/mpd/latest
-	sed -i -E 's/("latest": ).*/\10,/' /srv/http/data/mpd/counts
+	> $dirmpd/latest
+	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
 	pushstreamNotify Latest Cleared. latest
 	;;
 librandom )
@@ -749,7 +749,7 @@ mpcplayback )
 		fi
 		
 		if mpc | grep -q '\[playing'; then
-			grep -q webradio=true /srv/http/data/shm/status && command=stop || command=pause
+			grep -q webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
 		fi
@@ -867,7 +867,7 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
+			fileconf=$dirdata/camilladsp/configs/camilladsp.yml;;
 		hostapd )
 			catconf="
 <bll># cat /etc/hostapd/hostapd.conf</bll>
@@ -876,7 +876,7 @@ $( cat /etc/hostapd/hostapd.conf )
 <bll># cat /etc/dnsmasq.conf</bll>
 $( cat /etc/dnsmasq.conf )";;
 		localbrowser )
-			fileconf=/srv/http/data/system/localbrowser.conf
+			fileconf=$dirsystem/localbrowser.conf
 			pkg=chromium;;
 		rtsp-simple-server )
 			catconf="

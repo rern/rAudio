@@ -3,7 +3,9 @@
 # RPi as renderer - status.sh > this:
 #    - retreive current status from dbus
 
-dest=$( cat /srv/http/data/shm/bluetoothdest )
+. /srv/http/bash/common.sh
+
+dest=$( cat $dirshm/bluetoothdest )
 data=$( dbus-send \
 			--system \
 			--type=method_call \
@@ -28,11 +30,11 @@ case $Status in
 esac
 
 name=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
-onlinefile=$( ls /srv/http/data/shm/online/$name.* 2> /dev/null ) # jpg / png
+onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
 	coverart=/data/shm/online/$name.$( date +%s ).${onlinefile/*.}
 else
-	/srv/http/bash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
+	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
 elapsed=$( [[ ! $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
 Time=$( [[ ! $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )

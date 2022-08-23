@@ -31,8 +31,12 @@ netctlSwitch() {
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
 	if [[ ! $iplinkw ]]; then
-		modprobe brcmfmac
-		iplinkw=$( ip -br link | grep ^w )
+		cpuInfo
+		if [[ $onboardwireless ]]; then
+			modprobe brcmfmac
+			sleep 1
+			iplinkw=$( ip -br link | grep ^w )
+		fi
 	fi
 	if [[ $iplinkw ]]; then
 		wlandev=$( echo "$iplinkw" \
@@ -230,19 +234,13 @@ usbbluetoothoff )
 	$dirbash/settings/networks-data.sh pushbt
 	;;
 usbwifion )
-	wlandev=$( ip -br link \
-		| grep ^w \
-		| tail -1 \
-		| cut -d' ' -f1 \
-		| tee $dirshm/wlan )
-	iw $wlandev set power_save off &> /dev/null
+	wlandev=$( wlanDevice )
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
 	pushRefresh
 	;;
 usbwifioff )
-	wlandev=$( wlanDevice )
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
 	pushRefresh
 	;;

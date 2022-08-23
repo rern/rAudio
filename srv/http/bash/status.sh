@@ -26,7 +26,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 else
 	btreceiver=$( exists $dirshm/btreceiver )
 	consume=$( mpc | grep -q 'consume: on' && echo true )
-	counts=$( cat $dirdata/mpd/counts 2> /dev/null )
+	counts=$( cat $dirmpd/counts 2> /dev/null )
 	librandom=$( exists $dirsystem/librandom )
 	player=$( cat $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
@@ -34,7 +34,7 @@ else
 	relays=$( exists $dirsystem/relays )
 	relayson=$( exists $dirshm/relayson )
 	stoptimer=$( exists $dirshm/stoptimer )
-	updateaddons=$( exists $dirdata/addons/update )
+	updateaddons=$( exists $diraddons/update )
 	if [[ -e $dirmpd/updating ]]; then
 		updating_db=true
 		if ! mpc | grep -q ^Updating; then
@@ -245,15 +245,15 @@ if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
 	discid=$( cat $dirshm/audiocd 2> /dev/null )
-	if [[ $discid && -e $dirdata/audiocd/$discid ]]; then
+	if [[ $discid && -e $diraudiocd/$discid ]]; then
 		track=${file/*\/}
-		readarray -t audiocd <<< $( sed -n ${track}p $dirdata/audiocd/$discid | tr ^ '\n' )
+		readarray -t audiocd <<< $( sed -n ${track}p $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
 		Album=${audiocd[1]}
 		Title=${audiocd[2]}
 		Time=${audiocd[3]}
 		if [[ $displaycover ]]; then
-			coverfile=$( ls $dirdata/audiocd/$discid.* 2> /dev/null | head -1 )
+			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
 			[[ $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
 		fi
 	else

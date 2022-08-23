@@ -220,7 +220,7 @@ datarestore )
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	chown -R http:http /srv/http
-	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
+	chown mpd:audio $dirmpd/mpd* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -322,9 +322,8 @@ gpio=25=op,dh"
 	else
 		dtoverlay+="
 dtparam=audio=on"
-		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-		revision=${revision: -3:2}
-		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
+		cpuInfo
+		[[ $BB == 09 || $BB == 0c ]] && output='HDMI 1' || output=Headphones
 		aplayname="bcm2835 $output"
 		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
@@ -688,7 +687,7 @@ shareddatadisable )
 	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
-	chown -R mpd:audio $dirdata/mpd
+	chown -R mpd:audio $dirmpd
 	pushRefresh
 	if [[ $copydata == false ]]; then
 		rm -f $dirmpd/{updating,listing}

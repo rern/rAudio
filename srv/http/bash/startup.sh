@@ -16,8 +16,8 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	[[ ${hwrevision: -3:2} =~ ^(00|01|02|03|04|09)$ ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	cpuInfo
+	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then

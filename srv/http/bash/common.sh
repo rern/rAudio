@@ -2,10 +2,17 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-for dir in addons mpd playlists shm system tmp webradio; do
+for dir in addons audiocd dabradio mpd playlists shm system tmp webradio; do
 	printf -v dir$dir '%s' /srv/http/data/$dir
 done
 
+cpuInfo() {
+	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	BB=${hwrevision: -3:2}
+	C=${hwrevision: -4:1}
+	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || onboardwireless=1
+	[[ $BB =~ ^(04|08|0d|0e|11|12)$ ]] && core4=1
+}
 data2json() {
 	data="$1"
 	if [[ ${data:0:1} != , ]]; then
