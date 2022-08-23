@@ -33,7 +33,7 @@ wlanDevice() {
 	[[ ! $iplinkw ]] && modprobe brcmfmac && iplinkw=$( ip -br link | grep ^w )
 	if [[ $iplinkw ]]; then
 		wlandev=$( echo "$iplinkw" \
-						| head -1 \
+						| tail -1 \
 						| cut -d' ' -f1 )
 		iw $wlandev set power_save off
 		echo $wlandev | tee $dirshm/wlan
