@@ -1388,9 +1388,7 @@ $( '.mode' ).click( function() {
 		}
 	}
 	query.gmode = G.mode;
-	console.log(query)
 	list( query, function( html ) {
-	console.log(html)
 		var data = {
 			  html      : html
 			, modetitle : path
