@@ -70,7 +70,7 @@ camilladspdisable )
 	pushSubmenu camilladsp false
 	;;
 camilladspasound )
-	camilladspyml=$dirdata/camilladsp/configs/camilladsp.yml
+	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )

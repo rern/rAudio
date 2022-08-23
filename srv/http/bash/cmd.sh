@@ -141,7 +141,7 @@ pushstreamImage() {
 	type=$2
 	covername=$3
 	if [[ $type == bookmark ]]; then
-		bkfile="$dirdata/bookmarks/$covername"
+		bkfile="$dirbookmarks/$covername"
 		echo "$( head -1 "$bkfile" )
 ${target/\/srv\/http}" > "$bkfile"
 	fi
@@ -377,7 +377,7 @@ bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
 	coverart=${args[3]}
-	bkfile="$dirdata/bookmarks/$name"
+	bkfile="$dirbookmarks/$name"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
 	echo "$path
@@ -399,7 +399,7 @@ $coverart" > "$bkfile"
 bookmarkcoverreset )
 	imagepath=${args[1]}
 	name=${args[2]}
-	sed -i '2d' "$dirdata/bookmarks/$name"
+	sed -i '2d' "$dirbookmarks/$name"
 	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
 	data='{
   "url"  : "'$imagepath/reset'"
@@ -410,7 +410,7 @@ bookmarkcoverreset )
 bookmarkremove )
 	name=${args[1]//\//|}
 	path=${args[2]}
-	rm "$dirdata/bookmarks/$name"
+	rm "$dirbookmarks/$name"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
@@ -426,7 +426,7 @@ bookmarkrename )
 	name=${args[1]//\//|}
 	newname=${args[2]//\//|}
 	path=${args[3]}
-	mv $dirdata/bookmarks/{"$name","$newname"} 
+	mv $dirbookmarks/{"$name","$newname"} 
 	data='{
   "type" : "rename"
 , "path" : "'$path'"
@@ -704,7 +704,7 @@ lyrics )
 	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
-	lyricsfile="$dirdata/lyrics/${name,,}.txt"
+	lyricsfile="$dirlyrics/${name,,}.txt"
 	if [[ $cmd == save ]]; then
 		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
@@ -867,7 +867,7 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			fileconf=$dirdata/camilladsp/configs/camilladsp.yml;;
+			fileconf=$dircamilladsp/configs/camilladsp.yml;;
 		hostapd )
 			catconf="
 <bll># cat /etc/hostapd/hostapd.conf</bll>
