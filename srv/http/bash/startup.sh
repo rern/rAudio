@@ -46,7 +46,7 @@ connectedCheck() {
 }
 
 echo mpd > $dirshm/player
-mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
@@ -106,6 +106,12 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
+file=/sys/class/backlight/rpi_backlight/brightness
+if [[ -e $file ]]; then
+	chmod 666 $file
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
+fi
+
 if [[ $connected ]]; then
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
@@ -113,7 +119,6 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-# disable onboard wlan
 lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
 [[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
 profiles=$( netctl list )
@@ -132,12 +137,6 @@ if [[ -e $dirsystem/hddspindown ]]; then
 			hdparm -q -S $duration $dev
 		done
 	fi
-fi
-
-file=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $file ]]; then
-	chmod 666 $file
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
 if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
