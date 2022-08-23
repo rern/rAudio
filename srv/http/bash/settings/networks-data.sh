@@ -56,36 +56,37 @@ if [[ $ipeth ]]; then
 , "static"   : '$static'
 }'
 fi
-
-wlandev=$( cat $dirshm/wlan )
-ifconfig $wlandev up &> /dev/null # force up
-
-readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
-if [[ $profiles ]]; then
-	for profile in "${profiles[@]}"; do
-		if netctl is-active "$profile" &> /dev/null; then
-			for i in {1..10}; do
-				ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
-				[[ $ipwlan ]] && break || sleep 1
-			done
-			gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )
-			dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
-			[[ ! $dbm ]] && dbm=0
-			listwl=',{
-  "dbm"      : '$dbm'
-, "gateway"  : "'$gateway'"
-, "ip"       : "'$ipwlan'"
-, "ssid"     : "'${profile//\"/\\\"}'"
-}'
-		else
-			listwlnotconnected=',{
-  "ssid"     : "'${profile//\"/\\\"}'"
-}'
-		fi
-	done
+if [[ -e $dirshm/wlan ]]; then
+	wlandev=$( cat $dirshm/wlan )
+	ifconfig $wlandev up &> /dev/null # force up
+	
+	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
+	if [[ $profiles ]]; then
+		for profile in "${profiles[@]}"; do
+			if netctl is-active "$profile" &> /dev/null; then
+				for i in {1..10}; do
+					ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
+					[[ $ipwlan ]] && break || sleep 1
+				done
+				gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )
+				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+				[[ ! $dbm ]] && dbm=0
+				listwl=',{
+	  "dbm"      : '$dbm'
+	, "gateway"  : "'$gateway'"
+	, "ip"       : "'$ipwlan'"
+	, "ssid"     : "'${profile//\"/\\\"}'"
+	}'
+			else
+				listwlnotconnected=',{
+	  "ssid"     : "'${profile//\"/\\\"}'"
+	}'
+			fi
+		done
+	fi
+	listwl+="$listwlnotconnected"
+	[[ $listwl ]] && listwl="[ ${listwl:1} ]"
 fi
-listwl+="$listwlnotconnected"
-[[ $listwl ]] && listwl="[ ${listwl:1} ]"
 
 # hostapd
 if systemctl -q is-active hostapd; then

@@ -30,15 +30,16 @@ netctlSwitch() {
 }
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
+	[[ ! $iplinkw ]] && modprobe brcmfmac && iplinkw=$( ip -br link | grep ^w )
 	if [[ $iplinkw ]]; then
 		wlandev=$( echo "$iplinkw" \
 						| head -1 \
 						| cut -d' ' -f1 )
 		iw $wlandev set power_save off
+		echo $wlandev | tee $dirshm/wlan
 	else
-		wlandev=false
+		rm -f $dirshm/wlan
 	fi
-	echo $wlandev | tee $dirshm/wlan
 }
 
 case ${args[0]} in
@@ -201,12 +202,11 @@ profileget )
 profileremove )
 	ssid=${args[1]}
 	connected=${args[2]}
-	wlandev=$( cat $dirshm/wlan )
 	netctl disable "$ssid"
 	if [[ $connected == true ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig $wlandev up
+		ifconfig $( cat $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
