@@ -30,7 +30,10 @@ netctlSwitch() {
 }
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
-	[[ ! $iplinkw ]] && modprobe brcmfmac && iplinkw=$( ip -br link | grep ^w )
+	if [[ ! $iplinkw ]]; then
+		modprobe brcmfmac
+		iplinkw=$( ip -br link | grep ^w )
+	fi
 	if [[ $iplinkw ]]; then
 		wlandev=$( echo "$iplinkw" \
 						| tail -1 \
