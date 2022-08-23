@@ -108,6 +108,11 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	
 $( '.page' ).click( function( e ) {
 	if ( ![ 'coverTR', 'timeTR' ].includes( e.target.id ) ) $( '#settings' ).addClass( 'hide' );
+} ).contextmenu( function( e ) { // touch device - on press - disable default context menu
+	e.preventDefault();
+	e.stopPropagation();
+    e.stopImmediatePropagation();
+	return false
 } );
 $( '#loader' ).click( function() {
 	loaderHide();
@@ -1324,9 +1329,6 @@ $( '#button-lib-back' ).click( function() {
 		}
 	}
 } );
-/*$( '#lib-mode-list' ).contextmenu( function( e ) { // touch device - on press - disable default image context menu
-	e.preventDefault();
-} );*/
 $( '.mode' ).click( function() {
 	var $this = $( this );
 	G.mode = $this.data( 'mode' );
@@ -1406,8 +1408,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		|| $( e.target ).hasClass( 'iconcover' )
 	) return
 	
-	$( '.bkedit' ).remove();
-	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+	$( '#lib-title .fa-bookmark' ).click();
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
@@ -1521,8 +1522,13 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext
 		}
 	} );
-} ).press( '.mode-bookmark', function() {
-	if ( G.drag ) return
+} )
+$( '#lib-title' ).on( 'click', '.fa-bookmark', function() {
+	if ( $( '.bkedit' ).length ) {
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+		return
+	}
 	
 	G.bklabel = $( this ).find( '.label' );
 	$( '.mode-bookmark' ).each( function() {
@@ -1542,14 +1548,6 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
-	, onStart       : function () {
-		G.drag = 1;
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-	}
-	, onEnd         : function () {
-		G.drag = 0;
-	}
 	, onUpdate      : function () {
 		var order = [];
 		$( '.mode' ).each( function() {

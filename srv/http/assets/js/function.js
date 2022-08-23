@@ -1033,6 +1033,7 @@ function renderLibrary() {
 function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
+	if ( $( '.bookmark' ).length ) songs += ' <i class="fa fa-bookmark"></i>';
 	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
