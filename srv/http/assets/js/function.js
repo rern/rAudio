@@ -1033,7 +1033,6 @@ function renderLibrary() {
 function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', !G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
-	if ( $( '.bookmark' ).length ) songs += ' <i class="fa fa-bookmark"></i>';
 	$( '#li-count' ).html( songs );
 	$.each( G.status.counts, function( key, val ) {
 		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
@@ -1304,6 +1303,27 @@ function setBlinkDot() {
 			setProgressElapsed();
 		}
 	}
+}
+function setBookmarkEdit() {
+	if ( $( '.bkedit' ).length ) {
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+		return
+	}
+	
+	G.bklabel = $( this ).find( '.label' );
+	$( '.mode-bookmark' ).each( function() {
+		var $this = $( this );
+		var path = $this.find( '.lipath' ).text();
+		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
+		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
+		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
+		$this.append( buttonhtml );
+	} );
+	$( '.mode-bookmark' )
+		.css( 'background', 'hsl(0,0%,15%)' )
+		.find( '.fa-bookmark, .label, img' )
+		.css( 'opacity', 0.33 );
 }
 function setButtonControl() {
 	if ( ! G.status.state ) return // suppress on reboot

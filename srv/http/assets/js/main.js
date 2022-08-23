@@ -1403,12 +1403,7 @@ $( '.mode' ).click( function() {
 	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
-	if ( G.press
-		|| $( e.target ).hasClass( 'bkedit' )
-		|| $( e.target ).hasClass( 'iconcover' )
-	) return
-	
-	$( '#lib-title .fa-bookmark' ).click();
+	if ( !G.press && $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
@@ -1523,31 +1518,16 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		}
 	} );
 } )
-$( '#lib-title' ).on( 'click', '.fa-bookmark', function() {
-	if ( $( '.bkedit' ).length ) {
-		$( '.bkedit' ).remove();
-		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-		return
-	}
-	
-	G.bklabel = $( this ).find( '.label' );
-	$( '.mode-bookmark' ).each( function() {
-		var $this = $( this );
-		var path = $this.find( '.lipath' ).text();
-		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
-		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
-		$this.append( buttonhtml );
-	} );
-	$( '.mode-bookmark' )
-		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.fa-bookmark, .label, img' )
-		.css( 'opacity', 0.33 );
-} );
+$( '.mode-bookmark' ).press( setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
+	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
+	, onMove       : function() {
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+	}
 	, onUpdate      : function () {
 		var order = [];
 		$( '.mode' ).each( function() {
