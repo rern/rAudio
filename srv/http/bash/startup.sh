@@ -51,9 +51,6 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
-
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -116,11 +113,12 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-# usb wifi || ( no profiles && no hostapd ) > disable onboard
+# disable onboard wlan
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
+[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
 profiles=$( netctl list )
-if [[ $usbwifi ]] || ( [[ ! $profiles ]] && ! systemctl -q is-active hostapd ); then
-	rmmod brcmfmac &> /dev/null
-fi
+systemctl -q is-active hostapd && hostapd=1
+[[ $usbwifi || ( ! $profiles && ! $hostapd ) ]] && rmmod brcmfmac &> /dev/null
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
