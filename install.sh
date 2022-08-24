@@ -45,11 +45,11 @@ rm -rf /srv/http/{assets,bash,settings}
 
 getinstallzip
 
-installfinish
-
 chmod +x $dirbash/cmd.sh
 $dirbash/cmd.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+
+installfinish
 #-------------------------------------------------------------------------------
 
 # 20220805
