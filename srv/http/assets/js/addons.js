@@ -159,10 +159,9 @@ function getoptions() {
 }
 function postcmd() { // post submit with temporary form
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	var optL = opt.length;
-	for ( i = 0; i < optL; i++ ) { // [ branch, alias, type, opt1, opt2, ... ]
-		form += '<input type="hidden" name="sh[]" value="'+ opt[ i ] +'">'
-	}
+	opt.forEach( function( o ) {
+		form += '<input type="hidden" name="sh[]" value="'+ o.trim() +'">'
+	} );
 	form += '</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();

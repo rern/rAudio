@@ -24,10 +24,6 @@ if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i = array_search( 'password', array_keys( $addon[ 'option' ] ) );
 	$sh[ $i + 3 ] = '***';
 }
-$opttxt = '';
-foreach( $sh as $arg ) {
-	$opttxt.= strpos( $arg, ' ' ) ? '"'.$arg.'" ' : $arg.' ';
-}
 $postinfo = $type." done.<br>See Addons Progress for result.";
 $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
 $installurl = $addon[ 'installurl' ];
@@ -104,6 +100,7 @@ cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 cmd;
+$opttxt = str_replace( "\n", "$'\\n'", $opt );
 
 if ( $alias === 'cove' ) {
 	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$opt.'"';
