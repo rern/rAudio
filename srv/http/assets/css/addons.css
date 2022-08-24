@@ -167,6 +167,7 @@ pre {
 	white-space: pre-wrap;
 	overflow-x: hidden;
 	overflow-y: auto;
+	user-select: text;
 	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
 }
 code {
