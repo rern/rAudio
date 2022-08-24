@@ -160,7 +160,7 @@ function getoptions() {
 function postcmd() { // post submit with temporary form
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
 	opt.forEach( function( o ) {
-		form += '<input type="hidden" name="sh[]" value="'+ o.trim() +'">'
+		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
 	} );
 	form += '</form>';
 	$( 'body' ).append( form );
@@ -169,11 +169,7 @@ function postcmd() { // post submit with temporary form
 }
 function sendcommand() {
 	j++;
-	if ( j < olength ) {
-		getoptions();
-	} else {
-		postcmd();
-	}
+	j < olength ? getoptions() : postcmd();
 }
 
 //---------------------------------------------------------------------------

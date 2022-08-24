@@ -4,10 +4,10 @@ ignore_user_abort( TRUE ); // for 'connection_status()' to work
 $addons = json_decode( file_get_contents( '/srv/http/data/addons/addons-list.json' ), true );
 $time = time();
 
-$sh = $_POST[ 'sh' ]; // [ alias, type, branch, opt1, opt2, ... ]
-$alias = $sh[ 0 ];
-$type = $sh[ 1 ];
-$branch = $sh[ 2 ] ?? '';
+$opt = $_POST[ 'opt' ]; // [ alias, type, branch, opt1, opt2, ... ]
+$alias = $opt[ 0 ];
+$type = $opt[ 1 ];
+$branch = $opt[ 2 ] ?? '';
 $addon = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
 	$heading = 'Addons Progress';
@@ -17,12 +17,12 @@ if ( $alias !== 'cove' ) {
 	$heading = 'Cover Art Thumbnails';
 	$href = '/';
 	$title = 'Cover Art Thumbnails';
-	$sh = array_slice( $sh, 3 );
+	$opt = array_slice( $opt, 3 );
 }
-$opt = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $sh ) );
+$options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i = array_search( 'password', array_keys( $addon[ 'option' ] ) );
-	$sh[ $i + 3 ] = '***';
+	$opt[ $i + 3 ] = '***';
 }
 $postinfo = $type." done.<br>See Addons Progress for result.";
 $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
@@ -100,10 +100,10 @@ cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 cmd;
-$opttxt = str_replace( "\n", "$'\\n'", $opt );
+$opttxt = str_replace( "\n", "$'\\n'", $options );
 
 if ( $alias === 'cove' ) {
-	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$opt.'"';
+	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$options.'"';
 	$commandtxt = '/srv/http/bash/albumthumbnail.sh '.$opttxt;
 } else if ( $type === 'Uninstall' ) {
 	$command = $uninstall;
@@ -112,7 +112,7 @@ if ( $alias === 'cove' ) {
 	$command = <<<cmd
 $getinstall
 $uninstall
-/usr/bin/sudo ./$installfile "$opt"
+/usr/bin/sudo ./$installfile "$options"
 cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
@@ -123,7 +123,7 @@ cmd;
 } else {
 	$command = <<<cmd
 $getinstall
-/usr/bin/sudo ./$installfile "$opt"
+/usr/bin/sudo ./$installfile "$options"
 cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
