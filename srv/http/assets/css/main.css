@@ -2015,7 +2015,7 @@ li.active .li2 bl {
 	display: flex;
 	align-items: flex-end;
 	width: calc( 100% - 40px );
-	margin: -10px 0 10px 0;
+	margin: -13px 0 7px 5px;
 	line-height: 24px;
 	color: var( --cw );
 	cursor: pointer;

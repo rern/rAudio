@@ -220,14 +220,14 @@ function tagEditor() {
 			filename = parts.pop();
 			filepath = parts.join( '/' );
 		}
-		var mode, label = [];
+		name[ 1 ] = 'Album Artist';
+		var label = [];
 		format.forEach( function( el, i ) {
 			if ( G.playlist && !values[ i ] ) {
 				delete values[ i ];
 				return
 			}
 			
-			mode = el;
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( G.library ) {
