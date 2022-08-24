@@ -3,6 +3,7 @@ $time = time();
 $sudo = '/usr/bin/sudo /usr/bin/';
 $diraddons = '/srv/http/data/addons';
 $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true );
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 ?>
 <!DOCTYPE html>
 <html>
