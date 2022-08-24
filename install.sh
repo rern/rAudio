@@ -40,14 +40,7 @@ sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 
 installstart "$1"
 
-rm /srv/http/*.*
-rm -rf /srv/http/{assets,bash,settings}
-
 getinstallzip
-
-chmod +x $dirbash/cmd.sh
-$dirbash/cmd.sh dirpermissions
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
 #-------------------------------------------------------------------------------
