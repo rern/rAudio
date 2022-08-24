@@ -3,7 +3,6 @@ $time = time();
 $sudo = '/usr/bin/sudo /usr/bin/';
 $diraddons = '/srv/http/data/addons';
 $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true );
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 ?>
 <!DOCTYPE html>
 <html>
@@ -156,7 +155,7 @@ foreach( $arrayalias as $alias ) {
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
-	<?php if ( $localhost ) include 'keyboard.php';?>
+	<?php if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
 <script>
 var addons = <?=json_encode( $addonslist )?>;
 </script>
