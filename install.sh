@@ -2,6 +2,9 @@
 
 alias=r1
 
+# 20220826
+rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
+
 # 20220814
 sed -i '/bluez-utils/ d' /etc/pacman.conf
 
@@ -41,6 +44,10 @@ sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 installstart "$1"
 
 getinstallzip
+
+chmod +x $dirbash/cmd.sh
+$dirbash/cmd.sh dirpermissions
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
 #-------------------------------------------------------------------------------

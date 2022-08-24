@@ -99,21 +99,8 @@ getinstallzip() {
 	mkdir -p $tmpdir
 	bsdtar xf $installfile --strip 1 -C $tmpdir
 	rm $installfile $tmpdir/{.*,*} &> /dev/null
-	
-	if [[ $alias == r1 ]]; then
-		mv /srv/http/assets/img/guide $tmpdir/srv/http/assets/img
-		rm /srv/http/*.*
-		rm -rf /srv/http/{assets,bash,settings}
-	fi
-	
 	cp -r $tmpdir/* /
 	rm -rf $tmpdir
-	
-	if [[ $alias == r1 ]]; then
-		chmod +x $dirbash/cmd.sh
-		$dirbash/cmd.sh dirpermissions
-		[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-	fi
 }
 installstart() { # $1-'u'=update
 	rm $0
