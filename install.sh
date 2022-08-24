@@ -35,13 +35,22 @@ grep -q gpio-poweroff /boot/config.txt && sed -i '/gpio-poweroff\|gpio-shutdown/
 # 20220708
 sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 
+#-------------------------------------------------------------------------------
 . /srv/http/bash/addons.sh
 
 installstart "$1"
 
+rm /srv/http/*.*
+rm -rf /srv/http/{assets,bash,settings}
+
 getinstallzip
 
 installfinish
+
+chmod +x $dirbash/cmd.sh
+$dirbash/cmd.sh dirpermissions
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+#-------------------------------------------------------------------------------
 
 # 20220805
 udevadm control --reload-rules
