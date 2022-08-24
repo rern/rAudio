@@ -248,7 +248,7 @@ ul,
 	cursor: default;
 }
 .infobtn.disabled {
-	pointer-events: all;
+	pointer-events: auto;
 }
 .cbgr { color: #808080; background: #808080; }
 .cbw  { color: #ffffff; background: #ffffff; }
