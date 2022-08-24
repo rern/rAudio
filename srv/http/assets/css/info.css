@@ -207,6 +207,7 @@
 	background-color: var( --cgd ) !important;
 	box-shadow: none;
 	pointer-events: none;
+	filter: none !important;
 }
 .infobtn i {
 	font-size: 18px;

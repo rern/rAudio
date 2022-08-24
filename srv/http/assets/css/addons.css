@@ -245,9 +245,10 @@ ul,
 	color: var( --cw );
 }
 .disabled:hover {
-	color: var( --cg60 );
-	background-color: var( --cg ) !important;
 	cursor: default;
+}
+.infobtn.disabled {
+	pointer-events: all;
 }
 .cbgr { color: #808080; background: #808080; }
 .cbw  { color: #ffffff; background: #ffffff; }

@@ -47,15 +47,9 @@ foreach( $arrayalias as $alias ) {
 	$buttonlabel = $addon[ 'buttonlabel' ] ?? '<i class="fa fa-plus-circle"></i> Install';
 	$uninstallfile = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
 	if ( $nouninstall || $uninstallfile ) {
-		$installed = ' class="installed"';
+		$installed = 'class="installed"';
 		$check = '<grn>•</grn> ';
-		if ( $nouninstall ) {
-			$taphold = ' style="pointer-events: unset"';
-			$hide = ' hide';
-		} else {
-			$taphold = '';
-			$hide = '';
-		}
+		$hide = $nouninstall ? 'hide' : '';
 		if ( isset( $addon[ 'verify' ] ) ) {
 			$verify = $addon[ 'verify' ];
 			$notverified = exec( $verify[ 'command' ] ) ? $verify[ 'notverified' ] : '';
@@ -65,16 +59,16 @@ foreach( $arrayalias as $alias ) {
 		} else if ( !$version || $version == $versioninstalled ) {
 			$icon = $nouninstall ? '<i class="fa fa-update"></i>' : '';
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
-			$btnin = '<a class="infobtn infobtn-default disabled"'.$taphold.'>'.$icon.' '.$buttonlabel.'</a>';
+			$btnin = '<a class="infobtn infobtn-default disabled">'.$icon.' '.$buttonlabel.'</a>';
 		} else {
 			$updates = 1;
 			$update = 1;
-			$installed = ' class="installed update"';
+			$installed = 'class="installed update"';
 			$check = '<grn class="blink">•</grn> ';
 			$btnin = '<a class="infobtn infobtn-primary"><i class="fa fa-update"></i> Update</a>';
 		}
 		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
-		$btnun = '<a class="infobtn infobtn-primary red'.$hide.'" '.$btnunattr.'><i class="fa fa-minus-circle"></i> Uninstall</a>';
+		$btnun = '<a class="infobtn infobtn-primary red '.$hide.'" '.$btnunattr.'><i class="fa fa-minus-circle"></i> Uninstall</a>';
 	} else {
 		$installed = '';
 		$check = '';
@@ -84,7 +78,7 @@ foreach( $arrayalias as $alias ) {
 	
 	// addon list ---------------------------------------------------------------
 	$title = $addon[ 'title' ];
-	$list.= '<li alias="'.$alias.'"'.$installed.'>'.$title.'</li>';
+	$list.= '<li alias="'.$alias.'" '.$installed.'>'.$title.'</li>';
 	// addon blocks -------------------------------------------------------------
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
