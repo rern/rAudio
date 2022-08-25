@@ -100,11 +100,10 @@ cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 cmd;
-$opttxt = str_replace( "\n", "$'\\n'", $options );
 
 if ( $alias === 'cove' ) {
 	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$options.'"';
-	$commandtxt = '/srv/http/bash/albumthumbnail.sh '.$opttxt;
+	$commandtxt = '/srv/http/bash/albumthumbnail.sh "'.$options.'"';
 } else if ( $type === 'Uninstall' ) {
 	$command = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
@@ -118,7 +117,7 @@ cmd;
 curl -skLO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 } else {
 	$command = <<<cmd
@@ -128,7 +127,7 @@ cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
 chmod 755 $installfile
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 }
 
