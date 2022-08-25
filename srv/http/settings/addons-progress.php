@@ -30,6 +30,7 @@ $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
+$blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,7 +53,7 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<wh><?=$title?></wh><br>
-		<i class="fa fa-gear <?=( $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink' )?>"></i>&nbsp; <?=$type?> ...
+		<i class="fa fa-gear <?=$blink?>"></i>&nbsp; <?=$type?> ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
