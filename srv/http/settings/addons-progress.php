@@ -30,6 +30,7 @@ $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
+$blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 ?>
 <!DOCTYPE html>
 <html>
@@ -52,7 +53,7 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<wh><?=$title?></wh><br>
-		<i class="fa fa-gear <?=( $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink' )?>"></i>&nbsp; <?=$type?> ...
+		<i class="fa fa-gear <?=$blink?>"></i>&nbsp; <?=$type?> ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
@@ -100,11 +101,10 @@ cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 cmd;
-$opttxt = str_replace( "\n", "$'\\n'", $options );
 
 if ( $alias === 'cove' ) {
 	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$options.'"';
-	$commandtxt = '/srv/http/bash/albumthumbnail.sh '.$opttxt;
+	$commandtxt = '/srv/http/bash/albumthumbnail.sh "'.$options.'"';
 } else if ( $type === 'Uninstall' ) {
 	$command = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
@@ -118,7 +118,7 @@ cmd;
 curl -skLO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 } else {
 	$command = <<<cmd
@@ -128,7 +128,7 @@ cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
 chmod 755 $installfile
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 }
 
@@ -159,7 +159,7 @@ $replace = [
 $skip = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
 $fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
-ob_implicit_flush();       // start flush: bypass buffer - output to screen
+ob_implicit_flush( true ); // start flush: bypass buffer - output to screen
 ob_end_flush();            // force flush: current buffer (run after flush started)
 
 echo $fillbuffer;          // fill buffer to force start output

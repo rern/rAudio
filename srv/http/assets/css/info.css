@@ -178,9 +178,6 @@
 	box-shadow: -1px 1px 2px 1px #000000;  /* x, y, blurw, shadoww, color */
 }
 .infobtn {
-	box-shadow: -2px 2px 3px 1px #000000;
-}
-.infobtn {
 	display: inline-block;
 	margin: 0 5px;
 	min-width: 70px;
@@ -194,6 +191,7 @@
 	text-align: center;
 	color: var( --cw ) !important;
 	background-color: var( --cg );
+	box-shadow: -2px 2px 3px 1px #000000;
 	cursor: pointer;
 }
 .infobtn-primary {
@@ -566,14 +564,6 @@ hr {
 		left: calc( -100% / 18 );
 	}
 }
-/* iOS */
-@media not all and ( min-resolution:.001dpcm ) {
-	@supports (-webkit-appearance:none) and (stroke-color:transparent) {
-		#infoOverlay input[type=checkbox]:checked:disabled {
-			background-color: var( --cml );
-		}
-	}
-}
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
 	#infoTab,
@@ -608,5 +598,16 @@ hr {
 	}
 	.infobtn.active {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
+	}
+}
+/* iOS only */
+@media not all and ( min-resolution:.001dpcm ) {
+	@supports ( -webkit-appearance:none ) and ( stroke-color:transparent ) {
+		#infoOverlay input[type=checkbox]:checked:disabled {
+			background-color: var( --cml );
+		}
+		.infobtn {
+			line-height: 32px;
+		}
 	}
 }
