@@ -539,6 +539,8 @@ function scanWlan() {
 			G.listwlscan = data;
 			var htmlwl = '';
 			data.forEach( function( list, i ) {
+				if ( 'profile' in list ) return
+				
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
 					var dbm = parseInt( list.signal.slice( 0, -4 ) );
 					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
