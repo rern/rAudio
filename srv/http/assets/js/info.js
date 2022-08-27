@@ -225,9 +225,9 @@ function info( json ) {
 	// simple use as info( 'message' )
 	setTimeout( function() { // allow consecutive infos
 	//////////////////////////////////////////////////////////////////////////
-	$( '#infoOverlay' ).click( function( e ) {
+/*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
-	} );
+	} );*/
 	$( '#infoX' ).click( function() {
 		if ( O.cancel ) O.cancel();
 		infoReset();

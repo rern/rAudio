@@ -1698,7 +1698,9 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			return
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
-		if ( [ 'genre', 'composer', 'conductor', 'date' ].includes( G.mode ) ) {
+		if ( [ 'genre', 'date' ].includes( G.mode ) ) {
+			var format = [ 'artist', 'album' ];
+		} else if ( [ 'composer', 'conductor' ].includes( G.mode ) ) {
 			var format = [ 'album', 'artist' ];
 		} else {
 			var format = [ 'album' ];
