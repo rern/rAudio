@@ -53,7 +53,8 @@ switch( $_POST[ 'query' ] ) {
 case 'find':
 	$format = str_replace( '%artist%', '[%artist%|%albumartist%]', $format );
 	if ( is_array( $mode ) ) {
-		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u", $dirs );
+		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u"
+			, $dirs );
 		if ( count( $dirs ) > 1 ) {
 			htmlDirectory( $dirs );
 			break;
@@ -65,16 +66,17 @@ case 'find':
 					, $lists );
 				if ( !count( $lists ) ) { // find with albumartist
 					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
-					, $lists );
+						, $lists );
 				}
 			} else { // $file = '/path/to/file.cue/track0001'
 				$format = '%'.implode( '%^^%', $f ).'%';
 				exec( 'mpc -f "'.$format.'" playlist "'.dirname( $file ).'"'
-						, $lists );
+					, $lists );
 			}
 		}
 	} else {
-		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'", $lists );
+		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
+			, $lists );
 	}
 	if ( count( $f ) > 2 ) {
 		htmlTrack( $lists, $f );
@@ -90,7 +92,8 @@ case 'list':
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
-		exec( 'mpc ls "'.$string.'"', $mpcls );
+		exec( 'mpc ls "'.$string.'"'
+			, $mpcls );
 		foreach( $mpcls as $mpdpath ) {
 			if ( is_dir( '/mnt/MPD/'.$mpdpath ) ) {
 				$subdirs = 1;

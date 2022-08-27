@@ -15,7 +15,8 @@ case 'current':
 case 'get':
 	$name = $_POST[ 'name' ];
 	$nameesc = str_replace( '"', '\"', $name );
-	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"', $values );
+	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"'
+		, $values );
 	foreach( $values as $value ) {
 		$v = explode( '^^', $value );
 		$each = ( object )[];
@@ -52,7 +53,8 @@ function currentPlaylist() {
 	global $headers;
 	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
-	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
+	exec( 'mpc playlist -f '.$format
+		, $lists ); // avoid json literal issue with escape double quotes
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
@@ -102,7 +104,8 @@ function currentPlaylist() {
 function htmlSavedPlaylist() {
 	include '/srv/http/bash/cmd-listsort.php';
 	global $dirplaylists;
-	exec( 'mpc lsplaylists', $lists );
+	exec( 'mpc lsplaylists'
+		, $lists );
 	$count = count( $lists );
 	if ( !$count ) return [ 'count' => 0 ];
 	
