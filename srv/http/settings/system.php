@@ -160,10 +160,14 @@ $body = [
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
 </div>
-<div id="divi2smodule">$selecti2s</div>
+<div id="divi2smodule">
+	$selecti2s
+	<i id="setting-i2smodule" class="setting fa fa-gear"></i>
+</div>
 HTML
 	, 'help'     => <<< HTML
 I²S DAC for better quality of audio output.
+Note: Some modules might need their obsolete EEPROM disabled to work properly.
 HTML
 	]
 	, [

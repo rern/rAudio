@@ -154,6 +154,7 @@ data+='
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
+, "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'

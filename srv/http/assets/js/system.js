@@ -256,6 +256,18 @@ $( '#i2smodule' ).change( function() {
 		}
 	}, 300 );
 } );
+$( '#setting-i2smodule' ).click( function() {
+	info( {
+		  icon         : 'i2saudio'
+		, title        : 'Audio - I²S'
+		, checkbox     : [ 'Disable module EEPROM' ]
+		, values       : G.i2seeprom
+		, checkchanged : 1
+		, ok           : function() {
+			bash( [ 'i2seeprom', infoVal() ] );
+		}
+	} );
+} );
 $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
 		$( '#gpiopin' ).slideToggle();
@@ -998,7 +1010,7 @@ function renderPage() {
 	} ).prop( 'selected', true );
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
-	$( '#divi2smodule' ).toggleClass( 'hide', !G.i2senabled );
+	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', !G.i2senabled );
 	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected );
 	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
