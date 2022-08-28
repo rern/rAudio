@@ -166,8 +166,8 @@ $body = [
 </div>
 HTML
 	, 'help'     => <<< HTML
-I²S DAC for better quality of audio output.
-Note: Some modules might need their obsolete EEPROM disabled to work properly.
+I²S DAC HAT for better quality of audio output.
+Note: Some DAC HATs might need their obsolete EEPROM disabled to work properly.
 HTML
 	]
 	, [
