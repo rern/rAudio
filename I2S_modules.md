@@ -1,6 +1,6 @@
 ### Supported I2S Modules
 ```sh
-sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/system-i2s.json
+sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/system-i2s.json
 ```
 
 - Adafruit MAX98357
@@ -22,13 +22,14 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Audioinjector Ultra
 - Audioinjector WM8731
 - Audioinjector Zero
+- Audiophonics Evo-Sabre DAC 2xES9038Q2M
 - Audiophonics I-Sabre DAC ES9023
 - Audiophonics I-Sabre AMP DAC ES9023
 - Audiophonics I-Sabre DAC ES9028Q2M
 - Audiophonics I-Sabre DAC ES9038Q2M
 - AudioSense-Pi
-- ChipDip DAC
 - BerryNOS
+- ChipDip DAC
 - DACBerry AMP2
 - DACBerry One+ - RCA
 - DACBerry One+ - Digital
@@ -49,6 +50,7 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Generic ESS ES90xx
 - Generic RPi-DAC compatible
 - HiFiBerry Amp
+- HiFiBerry Amp+
 - HiFiBerry Amp2
 - HiFiBerry DAC
 - HiFiBerry DAC+
@@ -60,7 +62,8 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - HiFiBerry DAC+ADC
 - HiFiBerry DAC+ADC Pro
 - HiFiBerry DAC+DSP
-- HiFiBerry DAC 2 HD
+- HiFiBerry DAC2 HD
+- HiFiBerry DAC2 Pro
 - HiFiBerry Digi
 - HiFiBerry Digi Pro
 - HiFiBerry Digi2 Pro
@@ -116,3 +119,4 @@ sed -e '/[{}]\|Disabled/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/syste
 - Waveshare WM8960
 - Wolfson Audio
 - X10 DAC
+
