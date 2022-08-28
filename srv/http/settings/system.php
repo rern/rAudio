@@ -1,6 +1,7 @@
 <?php
 $i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
-$selecti2s = '<select id="i2smodule">';
+$selecti2s = '<select id="i2smodule">
+				<option value="none">None / Auto detect</option>';
 foreach( $i2slist as $name => $sysname ) {
 	$selecti2s.= '<option value="'.$sysname.'">'.$name.'</option>';
 }
@@ -160,10 +161,15 @@ $body = [
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
 </div>
-<div id="divi2smodule">$selecti2s</div>
+<div id="divi2smodule">
+	$selecti2s
+	<i id="setting-i2smodule" class="setting fa fa-gear"></i>
+</div>
 HTML
 	, 'help'     => <<< HTML
-I²S DAC for better quality of audio output.
+I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
+ • HAT with EEPROM might be automatically detected and setup. See <i class="fa fa-player gr"></i>Player if it's already listed in Output.
+ • HAT with obsolete EEPROM - Disable EEPROM read to use selected driver by kernel. ( <i class="fa fa-gear gr"></i>next to selected HAT)
 HTML
 	]
 	, [
