@@ -168,7 +168,7 @@ $body = [
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected and setup. See <i class="fa fa-player gr"></i>Player if it's ready as Output device.
+ • HAT with EEPROM could be automatically detected. See&ensp;<i class="fa fa-player gr"></i>Player if it's already set as Output device.
  • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with <i class="fa fa-gear gr"></i>next to it.
 HTML
 	]
