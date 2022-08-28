@@ -306,14 +306,15 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 			$val1 = $each->$key1;
 			$name = $date_genre ? $val1.'<gr> • </gr>'.$val0 : $val0.'<gr> • </gr>'.$val1;
 		} else {
-			$val0 = $each->$f[ 0 ];
+			$key0 = $f[ 0 ];
+			$val0 = $each->$key0;
 			$val1 = '';
 			$name = $val0;
 		}
-		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
-		$indexes[] = $index;
 		if ( !$val0 && !$val1 ) continue;
 		
+		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+		$indexes[] = $index;
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
 			$datamode = $mode;
