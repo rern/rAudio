@@ -1594,7 +1594,7 @@ i.map.disabled, .map.disabled i {
 	margin-top: 230px;
 }
 .licover.active {
-	background: linear-gradient( #000000 192px, var( --cm ) 0 ) !important;
+	background: linear-gradient( #000000 195px, var( --cm ) 0 ) !important;
 }
 .licoverimg {
 	position: relative;
@@ -1608,7 +1608,7 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	margin: auto 0 0 0;
 	padding: 0 5px 0 10px;
-	line-height: 34px;
+	line-height: 30px;
 	color: var( --cw );
 	overflow: hidden;
 }
@@ -1620,8 +1620,8 @@ i.map.disabled, .map.disabled i {
 .liinfo i {
 	margin: 0 10px 0 0 !important;
 	width: 28px !important;
-	line-height: 33px !important;
-	vertical-align: middle;
+	font-size: 22px !important;
+	line-height: 25px !important;
 	color: var( --cg60 ) !important;
 }
 #lib-list,
@@ -1736,7 +1736,7 @@ i.map.disabled, .map.disabled i {
 #lib-list i {
 	width: 40px;
 	margin-top: 3px;
-	font-size: 26px;
+	font-size: 24px;
 	line-height: 40px;
 	text-align: center;
 	color: var( --cg60 );

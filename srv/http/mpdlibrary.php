@@ -298,20 +298,22 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
 	foreach( $array as $each ) {
-		$key0 = $f[ 0 ];
-		$val0 = $each->$key0;
 		if ( count( $f ) > 1 ) {
-			$key1 = $f[ 1 ];
+			$date_genre = in_array( $gmode, [ 'date', 'genre' ] );
+			$key0 = $date_genre ? $f[ 1 ] : $f[ 0 ];
+			$key1 = $date_genre ? $f[ 0 ] : $f[ 1 ];
+			$val0 = $each->$key0;
 			$val1 = $each->$key1;
+			$name = $date_genre ? $val1.'<gr> • </gr>'.$val0 : $val0.'<gr> • </gr>'.$val1;
 		} else {
-			$key1 = '';
+			$val0 = $each->$f[ 0 ];
 			$val1 = '';
+			$name = $val0;
 		}
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		if ( !$val0 && !$val1 ) continue;
 		
-		$name = $fL > 1 ? $val0.'<gr> • </gr>'.$val1 : $val0;
 		if ( property_exists( $each, 'path' ) ) { // cue //////////////////////////
 			$path = $each->path;
 			$datamode = $mode;
