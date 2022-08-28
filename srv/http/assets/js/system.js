@@ -260,7 +260,7 @@ $( '#setting-i2smodule' ).click( function() {
 	info( {
 		  icon         : 'i2saudio'
 		, title        : 'Audio - I²S'
-		, checkbox     : [ 'Disable EEPROM of I²S device' ]
+		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : G.i2seeprom
 		, checkchanged : 1
 		, ok           : function() {
