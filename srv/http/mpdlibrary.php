@@ -53,7 +53,8 @@ switch( $_POST[ 'query' ] ) {
 case 'find':
 	$format = str_replace( '%artist%', '[%artist%|%albumartist%]', $format );
 	if ( is_array( $mode ) ) {
-		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u"
+		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." \
+				| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u"
 			, $dirs );
 		if ( count( $dirs ) > 1 ) {
 			htmlDirectory( $dirs );
@@ -62,10 +63,12 @@ case 'find':
 		} else {
 			$file = $dirs[ 0 ];
 			if ( substr( $file, -14, 4 ) !== '.cue' ) {
-				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
+				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." \
+						| awk 'NF && !a[$0]++'"
 					, $lists );
 				if ( !count( $lists ) ) { // find with albumartist
-					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
+					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." \
+							| awk 'NF && !a[$0]++'"
 						, $lists );
 				}
 			} else { // $file = '/path/to/file.cue/track0001'
@@ -75,7 +78,8 @@ case 'find':
 			}
 		}
 	} else {
-		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
+		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." \
+				| awk 'NF && !a[$0]++'"
 			, $lists );
 	}
 	if ( count( $f ) > 2 ) {
@@ -112,7 +116,9 @@ case 'ls':
 		$f = $formatall; // set format for directory with files only - track list
 		$format = '%'.implode( '%^^%', $f ).'%';
 		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
-		exec( 'mpc ls "'.$string.'" | egrep ".cue$|.m3u$|.m3u8$|.pls$" | sort -u'
+		exec( 'mpc ls "'.$string.'" \
+				| egrep ".cue$|.m3u$|.m3u8$|.pls$" \
+				| sort -u'
 			, $plfiles );
 		if ( count( $plfiles ) ) {
 			asort( $plfiles );
@@ -130,7 +136,8 @@ case 'ls':
 				, $lists );
 			if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
 				$lists = '';
-				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null | sort -h | sed "s/^.*__//"'
+				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null \
+						| sort -h | sed "s/^.*__//"'
 					, $lists );
 			}
 			htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
@@ -146,11 +153,13 @@ case 'radio':
 	$indexes = [];
 	if ( $mode === 'search' ) {
 		$searchmode = 1;
-		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
+		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." \
+				| sed 's|^".$dir."||'"
 			, $files );
 	} else {
 		$searchmode = 0;
-		exec( 'ls -1 "'.$dir.'" | egrep -v "^img|\.jpg$|\.gif$"'
+		exec( 'ls -1 "'.$dir.'" \
+				| egrep -v "^img|\.jpg$|\.gif$"'
 			, $lists );
 		foreach( $lists as $list ) {
 			if ( is_dir( $dir.'/'.$list ) ) {
@@ -163,7 +172,8 @@ case 'radio':
 	htmlRadio( $subdirs, $files, $dir, $dirimg );
 	break;
 case 'search':
-	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
+	exec( 'mpc search -f "'.$format.'" any "'.$string.'" \
+			| awk NF'
 		, $lists );
 	htmlTrack( $lists, $f, 'search', $string );
 	break;
@@ -176,12 +186,15 @@ case 'track': // for tag editor
 		} else {
 			$filter = 'grep "\^\^'.$track.'"';
 		}
-		$lists = exec( 'mpc playlist -f "'.$format.'" "'.$file.'" | '.$filter );
+		$lists = exec( 'mpc playlist -f "'.$format.'" "'.$file.'" \
+					| '.$filter );
 		$array = explode( '^^', $lists );
 		if (  $track === 'cover' && $array[ 1 ] ) $array [ 2 ] = '*'; // if album artist > various artists
 	} else {
 		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = exec( 'mpc ls "'.$file.'" | grep "\.wav$" | head -1' ); // MPD not read albumartist in *.wav
+			$wav = exec( 'mpc ls "'.$file.'" \
+							| grep "\.wav$" \
+							| head -1' ); // MPD not read albumartist in *.wav
 			if ( $wav ) {
 				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
 				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
@@ -466,7 +479,9 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {
 		$cue = true;
 		$cuename = pathinfo( $cuefile, PATHINFO_BASENAME );
-		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" | grep -v ".cue$" | head -1' );
+		$musicfile = exec( 'mpc ls "'.dirname( $cuefile ).'" \
+							| grep -v ".cue$" \
+							| head -1' );
 		$ext = pathinfo( $musicfile, PATHINFO_EXTENSION );
 	} else {
 		$cue = false;
@@ -491,7 +506,8 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$hidegenre = $each0->genre && $gmode !== 'genre' ? '' : ' hide';
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
-		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | egrep ".m3u$|.m3u8$|.pls$"' );
+		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null \
+							| egrep ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
 			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
