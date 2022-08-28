@@ -306,7 +306,8 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 			$val1 = $each->$key1;
 			$name = $date_genre ? $val1.'<gr> • </gr>'.$val0 : $val0.'<gr> • </gr>'.$val1;
 		} else {
-			$val0 = $each->$f[ 0 ];
+			$key0 = $f[ 0 ];
+			$val0 = $each->$key0;
 			$val1 = '';
 			$name = $val0;
 		}
