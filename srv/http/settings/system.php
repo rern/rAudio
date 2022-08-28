@@ -1,6 +1,7 @@
 <?php
 $i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
-$selecti2s = '<select id="i2smodule">';
+$selecti2s = '<select id="i2smodule">
+				<option value="none">None / Auto detect</option>';
 foreach( $i2slist as $name => $sysname ) {
 	$selecti2s.= '<option value="'.$sysname.'">'.$name.'</option>';
 }
@@ -166,8 +167,10 @@ $body = [
 </div>
 HTML
 	, 'help'     => <<< HTML
-I²S DAC HAT for better quality of audio output.
-Note: Some DAC HATs might need their obsolete EEPROM disabled to work properly.
+I²S DAC HAT(Hardware Attached on Top) for high quality audio output.
+Some modules:
+ • With EEPROM - might be auto detected without this selection. See Player setting page if any listed in Output.
+ • With obsolete EEPROM - They need to be disabled and use a driver for the selected one. (icon next to the selection)
 HTML
 	]
 	, [
