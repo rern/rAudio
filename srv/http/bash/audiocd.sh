@@ -1,7 +1,6 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-diraudiocd=$dirdata/audiocd
 
 pushstreamPlaylist() {
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"

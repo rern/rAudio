@@ -4,10 +4,10 @@ ignore_user_abort( TRUE ); // for 'connection_status()' to work
 $addons = json_decode( file_get_contents( '/srv/http/data/addons/addons-list.json' ), true );
 $time = time();
 
-$sh = $_POST[ 'sh' ]; // [ alias, type, branch, opt1, opt2, ... ]
-$alias = $sh[ 0 ];
-$type = $sh[ 1 ];
-$branch = $sh[ 2 ] ?? '';
+$opt = $_POST[ 'opt' ]; // [ alias, type, branch, opt1, opt2, ... ]
+$alias = $opt[ 0 ];
+$type = $opt[ 1 ];
+$branch = $opt[ 2 ] ?? '';
 $addon = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
 	$heading = 'Addons Progress';
@@ -17,16 +17,12 @@ if ( $alias !== 'cove' ) {
 	$heading = 'Cover Art Thumbnails';
 	$href = '/';
 	$title = 'Cover Art Thumbnails';
-	$sh = array_slice( $sh, 3 );
+	$opt = array_slice( $opt, 3 );
 }
-$opt = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $sh ) );
+$options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i = array_search( 'password', array_keys( $addon[ 'option' ] ) );
-	$sh[ $i + 3 ] = '***';
-}
-$opttxt = '';
-foreach( $sh as $arg ) {
-	$opttxt.= strpos( $arg, ' ' ) ? '"'.$arg.'" ' : $arg.' ';
+	$opt[ $i + 3 ] = '***';
 }
 $postinfo = $type." done.<br>See Addons Progress for result.";
 $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
@@ -34,6 +30,7 @@ $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
+$blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 ?>
 <!DOCTYPE html>
 <html>
@@ -56,7 +53,7 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
 	<p id="wait">
 		<wh><?=$title?></wh><br>
-		<i class="fa fa-gear <?=( $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink' )?>"></i>&nbsp; <?=$type?> ...
+		<i class="fa fa-gear <?=$blink?>"></i>&nbsp; <?=$type?> ...
 	</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
@@ -106,8 +103,8 @@ $uninstall = <<<cmd
 cmd;
 
 if ( $alias === 'cove' ) {
-	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$opt.'"';
-	$commandtxt = '/srv/http/bash/albumthumbnail.sh '.$opttxt;
+	$command = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$options.'"';
+	$commandtxt = '/srv/http/bash/albumthumbnail.sh "'.$options.'"';
 } else if ( $type === 'Uninstall' ) {
 	$command = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
@@ -115,23 +112,23 @@ if ( $alias === 'cove' ) {
 	$command = <<<cmd
 $getinstall
 $uninstall
-/usr/bin/sudo ./$installfile "$opt"
+/usr/bin/sudo ./$installfile "$options"
 cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 } else {
 	$command = <<<cmd
 $getinstall
-/usr/bin/sudo ./$installfile "$opt"
+/usr/bin/sudo ./$installfile "$options"
 cmd;
 	$commandtxt = <<<cmd
 curl -skLO $installurl
 chmod 755 $installfile
-./$installfile $opttxt
+./$installfile "$options"
 cmd;
 }
 
@@ -162,7 +159,7 @@ $replace = [
 $skip = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
 $fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
-ob_implicit_flush();       // start flush: bypass buffer - output to screen
+ob_implicit_flush( true ); // start flush: bypass buffer - output to screen
 ob_end_flush();            // force flush: current buffer (run after flush started)
 
 echo $fillbuffer;          // fill buffer to force start output

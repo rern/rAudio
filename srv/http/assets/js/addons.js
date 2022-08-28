@@ -21,7 +21,7 @@ function getoptions() {
 	olength = okey.length;
 	oj = okey[ j ];
 	oj0 = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
-	switch( oj0 ) {
+	switch ( oj0 ) {
 		case 'wait': // only 1 'Ok' = continue
 			info( {
 				  icon    : 'jigsaw'
@@ -159,10 +159,9 @@ function getoptions() {
 }
 function postcmd() { // post submit with temporary form
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	var optL = opt.length;
-	for ( i = 0; i < optL; i++ ) { // [ branch, alias, type, opt1, opt2, ... ]
-		form += '<input type="hidden" name="sh[]" value="'+ opt[ i ] +'">'
-	}
+	opt.forEach( function( o ) {
+		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
+	} );
 	form += '</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
@@ -170,11 +169,7 @@ function postcmd() { // post submit with temporary form
 }
 function sendcommand() {
 	j++;
-	if ( j < olength ) {
-		getoptions();
-	} else {
-		postcmd();
-	}
+	j < olength ? getoptions() : postcmd();
 }
 
 //---------------------------------------------------------------------------

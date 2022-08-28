@@ -141,7 +141,7 @@ pushstreamImage() {
 	type=$2
 	covername=$3
 	if [[ $type == bookmark ]]; then
-		bkfile="$dirdata/bookmarks/$covername"
+		bkfile="$dirbookmarks/$covername"
 		echo "$( head -1 "$bkfile" )
 ${target/\/srv\/http}" > "$bkfile"
 	fi
@@ -362,22 +362,22 @@ addonsupdates )
 albumignore )
 	album=${args[1]}
 	artist=${args[2]}
-	sed -i "/\^$album^^$artist^/ d" $dirdata/mpd/album
-	sed -i "/\^$artist^^$album^/ d" $dirdata/mpd/albumbyartist
-	echo $album^^$artist >> $dirdata/mpd/albumignore
+	sed -i "/\^$album^^$artist^/ d" $dirmpd/album
+	sed -i "/\^$artist^^$album^/ d" $dirmpd/albumbyartist
+	echo $album^^$artist >> $dirmpd/albumignore
 	;;
 audiocdtag )
 	track=${args[1]}
 	tag=${args[2]}
 	discid=${args[3]}
-	sed -i "$track s|.*|$tag|" $dirdata/audiocd/$discid
+	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
 	pushstreamPlaylist
 	;;
 bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
 	coverart=${args[3]}
-	bkfile="$dirdata/bookmarks/$name"
+	bkfile="$dirbookmarks/$name"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
 	echo "$path
@@ -399,7 +399,7 @@ $coverart" > "$bkfile"
 bookmarkcoverreset )
 	imagepath=${args[1]}
 	name=${args[2]}
-	sed -i '2d' "$dirdata/bookmarks/$name"
+	sed -i '2d' "$dirbookmarks/$name"
 	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
 	data='{
   "url"  : "'$imagepath/reset'"
@@ -410,7 +410,7 @@ bookmarkcoverreset )
 bookmarkremove )
 	name=${args[1]//\//|}
 	path=${args[2]}
-	rm "$dirdata/bookmarks/$name"
+	rm "$dirbookmarks/$name"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
@@ -426,7 +426,7 @@ bookmarkrename )
 	name=${args[1]//\//|}
 	newname=${args[2]//\//|}
 	path=${args[3]}
-	mv $dirdata/bookmarks/{"$name","$newname"} 
+	mv $dirbookmarks/{"$name","$newname"} 
 	data='{
   "type" : "rename"
 , "path" : "'$path'"
@@ -670,13 +670,13 @@ ignoredir )
 	dir=$( basename "$path" )
 	mpdpath=$( dirname "$path" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushstream mpdupdate 1
+	pushstream mpdupdate '{"type":"mpd"}'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	> /srv/http/data/mpd/latest
-	sed -i -E 's/("latest": ).*/\10,/' /srv/http/data/mpd/counts
+	> $dirmpd/latest
+	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
 	pushstreamNotify Latest Cleared. latest
 	;;
 librandom )
@@ -704,7 +704,7 @@ lyrics )
 	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
-	lyricsfile="$dirdata/lyrics/${name,,}.txt"
+	lyricsfile="$dirlyrics/${name,,}.txt"
 	if [[ $cmd == save ]]; then
 		echo -e "$data" > "$lyricsfile"
 	elif [[ $cmd == delete ]]; then
@@ -749,7 +749,7 @@ mpcplayback )
 		fi
 		
 		if mpc | grep -q '\[playing'; then
-			grep -q webradio=true /srv/http/data/shm/status && command=stop || command=pause
+			grep -q webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
 		fi
@@ -867,7 +867,7 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			fileconf=/srv/http/data/camilladsp/configs/camilladsp.yml;;
+			fileconf=$dircamilladsp/configs/camilladsp.yml;;
 		hostapd )
 			catconf="
 <bll># cat /etc/hostapd/hostapd.conf</bll>
@@ -876,7 +876,7 @@ $( cat /etc/hostapd/hostapd.conf )
 <bll># cat /etc/dnsmasq.conf</bll>
 $( cat /etc/dnsmasq.conf )";;
 		localbrowser )
-			fileconf=/srv/http/data/system/localbrowser.conf
+			fileconf=$dirsystem/localbrowser.conf
 			pkg=chromium;;
 		rtsp-simple-server )
 			catconf="

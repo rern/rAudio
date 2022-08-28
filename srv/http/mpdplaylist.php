@@ -15,7 +15,8 @@ case 'current':
 case 'get':
 	$name = $_POST[ 'name' ];
 	$nameesc = str_replace( '"', '\"', $name );
-	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"', $values );
+	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"'
+		, $values );
 	foreach( $values as $value ) {
 		$v = explode( '^^', $value );
 		$each = ( object )[];
@@ -38,7 +39,7 @@ case 'load': // load saved playlist to current
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
 	exec( 'mpc -q load "'.$name.'"' );
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
-	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' );  // not by import playlists
+	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' ); // not by import playlists
 	break;
 case 'track':
 	playlistInfo( $_POST[ 'track' ] );
@@ -52,7 +53,8 @@ function currentPlaylist() {
 	global $headers;
 	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
-	exec( 'mpc playlist -f '.$format, $lists ); // avoid json literal issue with escape double quotes
+	exec( 'mpc playlist -f '.$format
+		, $lists ); // avoid json literal issue with escape double quotes
 	if ( !count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
@@ -102,7 +104,8 @@ function currentPlaylist() {
 function htmlSavedPlaylist() {
 	include '/srv/http/bash/cmd-listsort.php';
 	global $dirplaylists;
-	exec( 'mpc lsplaylists', $lists );
+	exec( 'mpc lsplaylists'
+		, $lists );
 	$count = count( $lists );
 	if ( !$count ) return [ 'count' => 0 ];
 	
@@ -247,8 +250,8 @@ function htmlTrack( $lists, $plname = '' ) {
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
 	exec( "{ echo status; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| egrep '^song:|^elapsed:'"
+				| telnet 127.0.0.1 6600 2> /dev/null \
+				| egrep '^song:|^elapsed:'"
 		, $song_elapsed );
 	$elapsed = '';
 	foreach( $song_elapsed as $se ) {
@@ -267,12 +270,12 @@ function htmlTrack( $lists, $plname = '' ) {
 }
 function playlistInfo( $index = '' ) { // mpd protocol
 	// 2nd sleep: varied with length, 1000track/0.1s
-	exec( '{ sleep 0.05'
-		.'; echo playlistinfo '.$index
-		.'; sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); }'
-		.' | telnet 127.0.0.1 6600 2> /dev/null'
-		.' | egrep "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track"'
-		.' |  sed "s/^\(file:\)/---\n\1/"' // file: as start track set
+	exec( '{ sleep 0.05;
+			echo playlistinfo '.$index.';
+			sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); } \
+			| telnet 127.0.0.1 6600 2> /dev/null \
+			| egrep "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track" \
+			| sed "s/^\(file:\)/---\n\1/"' // file: as start track set
 		, $lists );
 	if ( !count( $lists ) ) exit( '-1' );
 	

@@ -425,7 +425,7 @@ function renderPage() {
 			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
-	$( '#divlists' ).toggleClass( 'hide', G.lists.indexOf( true ) === -1 );
+	$( '#divlists' ).toggleClass( 'hide', !G.lists.includes( true ) );
 	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', !G.lists[ i ] );
 	showContent();
 }

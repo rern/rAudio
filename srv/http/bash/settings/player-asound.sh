@@ -10,7 +10,7 @@ defaults.ctl.card $i
 if [[ -e $dirsystem/camilladsp ]]; then
 	dsp=1
 	modprobe snd-aloop
-	camilladspyml=$dirdata/camilladsp/configs/camilladsp.yml
+	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
 	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
 	rate=$( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' )

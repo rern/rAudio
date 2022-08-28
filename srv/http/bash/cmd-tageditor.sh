@@ -58,6 +58,6 @@ n; s/^(\s+PERFORMER).*/\1 "'${args[0]}'"/
 	fi
 fi
 
-curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d 1
+curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d '{"type":"mpd"}'
 touch /srv/http/data/mpd/updating
 mpc update "$dir"

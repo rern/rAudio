@@ -167,6 +167,7 @@ pre {
 	white-space: pre-wrap;
 	overflow-x: hidden;
 	overflow-y: auto;
+	user-select: text;
 	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
 }
 code {
@@ -244,9 +245,10 @@ ul,
 	color: var( --cw );
 }
 .disabled:hover {
-	color: var( --cg60 );
-	background-color: var( --cg ) !important;
 	cursor: default;
+}
+.infobtn.disabled {
+	pointer-events: auto;
 }
 .cbgr { color: #808080; background: #808080; }
 .cbw  { color: #ffffff; background: #ffffff; }

@@ -83,9 +83,6 @@ getinstallzip() {
 	
 	echo
 	echo $bar Install new files ...
-	tmpdir=/tmp/install
-	rm -rf $tmpdir
-	mkdir -p $tmpdir
 	filelist=$( bsdtar tf $installfile )
 	uninstallfile=$( grep uninstall_.*sh <<< "$filelist" )
 	if [[ $uninstallfile ]]; then
@@ -97,13 +94,13 @@ getinstallzip() {
 		| grep -v '/$' \
 		| sed 's|^|/|' \
 		| sort -V
+	tmpdir=/tmp/install
+	rm -rf $tmpdir
+	mkdir -p $tmpdir
 	bsdtar xf $installfile --strip 1 -C $tmpdir
-	rm $installfile $tmpdir/* &> /dev/null
-	cp -rp $tmpdir/* /
-	rm -r $tmpdir
-	chmod +x $dirbash/cmd.sh
-	$dirbash/cmd.sh dirpermissions
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	rm $installfile $tmpdir/{.*,*} &> /dev/null
+	cp -r $tmpdir/* /
+	rm -rf $tmpdir
 }
 installstart() { # $1-'u'=update
 	rm $0

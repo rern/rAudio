@@ -72,7 +72,7 @@ bluetooth )
 	bluetoothctl pairable yes &
 	;;
 bluetoothdisable )
-	sed -i '/^dtparam=krnbt=on/ s/^/#/' /boot/config.txt
+	sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
 	if ! rfkill -no type | grep -q bluetooth; then
 		systemctl stop bluetooth
@@ -92,7 +92,7 @@ bluetoothset )
 		yesno=no
 		rm $dirsystem/btdiscoverable
 	fi
-	sed -i '/dtparam=krnbt=on/ s/^#//' /boot/config.txt
+	sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 	if ls -l /sys/class/bluetooth | grep -q serial; then
 		systemctl start bluetooth
 		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
@@ -220,7 +220,7 @@ datarestore )
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
 	chown -R http:http /srv/http
-	chown mpd:audio $dirdata/mpd/mpd* &> /dev/null
+	chown mpd:audio $dirmpd/mpd* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -307,10 +307,25 @@ hostname )
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
 	pushRefresh
 	;;
+i2seeprom )
+	if [[ ${args[1]} == true ]]; then
+		sed -i '$ a\force_eeprom_read=0' $fileconfig
+	else
+		sed -i '/force_eeprom_read=0/ d' $fileconfig
+	fi
+	pushRefresh
+	;;
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	dtoverlay=$( egrep 'dtparam=i2c_arm=on|dtparam=krnbt=on|dtparam=spi=on|dtoverlay=gpio|dtoverlay=sdtweak,poll_once|waveshare|tft35a|hdmi_force_hotplug=1' $fileconfig )
+	dtoverlay=$( egrep 'dtoverlay=gpio
+						|dtoverlay=sdtweak,poll_once
+						|dtparam=i2c_arm=on
+						|dtparam=krnbt=on
+						|dtparam=spi=on
+						|hdmi_force_hotplug=1
+						|tft35a
+						|waveshare' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -322,15 +337,15 @@ gpio=25=op,dh"
 	else
 		dtoverlay+="
 dtparam=audio=on"
-		revision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-		revision=${revision: -3:2}
-		[[ $revision == 09 || $revision == 0c ]] && output='HDMI 1' || output=Headphones
+		cpuInfo
+		[[ $BB == 09 || $BB == 0c ]] && output='HDMI 1' || output=Headphones
 		aplayname="bcm2835 $output"
 		output="On-board - $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	sed -i -E '/dtparam=|dtoverlay=|gpio=25=op,dh|^$/ d' $fileconfig
-	echo "$dtoverlay" | sed '/^$/ d' >> $fileconfig
+	sed -i -E '/dtparam=|dtoverlay=|force_eeprom_read=0|gpio=25=op,dh|^$/ d' $fileconfig
+	echo "$dtoverlay" >> $fileconfig
+	sed -i '/^$/ d' $fileconfig
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
 	pushReboot 'Audio I&#178;S module'
@@ -688,7 +703,7 @@ shareddatadisable )
 	sed -i "\|$mountpoint| d" /etc/fstab
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
-	chown -R mpd:audio $dirdata/mpd
+	chown -R mpd:audio $dirmpd
 	pushRefresh
 	if [[ $copydata == false ]]; then
 		rm -f $dirmpd/{updating,listing}

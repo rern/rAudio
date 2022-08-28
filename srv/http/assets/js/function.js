@@ -69,16 +69,6 @@ function blinkUpdate() {
 		}, 1500 );
 	}, 2500 );
 }
-function bookmarkeditClear() {
-	if ( !G.bookmarkedit ) return
-	
-	G.bookmarkedit = 0;
-	$( '.bkedit' ).remove();
-	$( '.mode-bookmark' )
-		.css( 'background', '' )
-		.find( '.fa-bookmark, .bklabel, img' )
-		.css( 'opacity', '' );
-}
 function changeIP() { // for android app
 	info( {
 		  icon         : 'networks'
@@ -198,7 +188,8 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', !filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
 	$menu.find( '.tag' ).toggleClass( 'hide', !$( '.licover' ).length || !filemode );
-	$menu.find( '.wredit, .wrdirrename' ).toggleClass( 'hide', G.mode !== 'webradio' );
+	$menu.find( '.wredit' ).toggleClass( 'hide', G.mode !== 'webradio' );
+	$menu.find( '.wrdirrename' ).toggleClass( 'hide', G.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
 	var barsvisible = $( '#bar-top' ).is( ':visible' );
 	if ( G.list.licover ) {
@@ -253,6 +244,8 @@ function coverartChange() {
 						|| ( G.library && !embedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
+	$( '#coverart, #liimg' ).removeAttr( 'style' );
+	$( '.coveredit' ).remove();
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : 'Change Album Cover Art'
@@ -633,14 +626,19 @@ function imageLoad( list ) {
 			var radio = G.mode.slice( -5 ) === 'radio';
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				var dir = $this.parent().hasClass( 'dir' );
-				var mode = dir ? 'folder' : G.mode;
 				if ( radio ) {
-					var menu = dir ? 'wrdir' : 'webradio';
+					if ( $this.parent().hasClass( 'dir' ) ) {
+						var icon = 'folder';
+						var menu = 'wrdir';
+					} else {
+						var icon = G.mode;
+						var menu = 'webradio';
+					}
 				} else {
+					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : G.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="fa fa-'+ mode +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="fa fa-'+ icon +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {
@@ -1026,12 +1024,10 @@ function renderLibrary() {
 	$( '#lib-mode-list' )
 		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
-	$( '.mode-bookmark' ).children()
-		.add( '.coverart img' ).css( 'opacity', '' );
-	$( '.bkedit' ).remove();
-	$( '#liimg' ).css( 'opacity', '' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
+	$( '.bkedit' ).remove();
+	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	renderLibraryCounts();
 }
 function renderLibraryCounts() {
@@ -1055,18 +1051,17 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
-	} else if ( data.path === 'WEBRADIO' ) {
+	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-webradio"></i> <span id="mode-title" class="radiomodetitle">WEBRADIO</span>';
-	} else if ( ![ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) ) {
-		// track view - keep previous title
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title">'+ data.modetitle +'</span>';
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
+	} else if ( ![ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( G.mode ) ) {
+		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir = data.path.split( '/' );
 		var dir0 = dir[ 0 ];
 		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i>';
-		if ( G.mode === 'webradio' ) htmlpath += '<a>webradio/</a>';
+		if ( G.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ G.mode +'/</a>';
 		htmlpath += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir = dir0;
 		var iL = dir.length;
@@ -1075,17 +1070,25 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
+	var root = data.modetitle.toLowerCase() === G.mode;
 	if ( G.mode === 'webradio' ) {
 		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'dabradio' ) {
-		htmlpath += data.path ? '' : '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>';
+		htmlpath += root ? '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>' : '';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
 	}
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( !data.html ) return // radio
+	var modetitle = !root ? data.modetitle : data.modetitle
+												.replace( 'MARTIST', 'M ARTIST' )
+												.replace( 'BRADIO', 'B RADIO' );
+	$( '#mode-title' )
+		.toggleClass( 'spaced', root )
+		.text( modetitle );
+	
+	if ( !data.html ) return // empty radio
 	
 	
 	$( '#lib-mode-list' ).after( data.html ).promise().done( function() {
@@ -1094,7 +1097,6 @@ function renderLibraryList( data ) {
 		} else {
 			imageLoad( 'lib-list' );
 		}
-		if ( data.modetitle ) $( '#mode-title' ).toggleClass( 'spaced', data.modetitle.toLowerCase() === G.mode );
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( G.mode ) );
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
@@ -1301,6 +1303,27 @@ function setBlinkDot() {
 			setProgressElapsed();
 		}
 	}
+}
+function setBookmarkEdit() {
+	if ( $( '.bkedit' ).length ) {
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
+		return
+	}
+	
+	G.bklabel = $( this ).find( '.label' );
+	$( '.mode-bookmark' ).each( function() {
+		var $this = $( this );
+		var path = $this.find( '.lipath' ).text();
+		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
+		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
+		buttonhtml += '<i class="bkedit bk-cover iconcover"></i>';
+		$this.append( buttonhtml );
+	} );
+	$( '.mode-bookmark' )
+		.css( 'background', 'hsl(0,0%,15%)' )
+		.find( '.fa-bookmark, .label, img' )
+		.css( 'opacity', 0.33 );
 }
 function setButtonControl() {
 	if ( ! G.status.state ) return // suppress on reboot

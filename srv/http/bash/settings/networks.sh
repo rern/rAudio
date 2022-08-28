@@ -30,15 +30,23 @@ netctlSwitch() {
 }
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
+	if [[ ! $iplinkw ]]; then
+		cpuInfo
+		if [[ $onboardwireless ]]; then
+			modprobe brcmfmac
+			sleep 1
+			iplinkw=$( ip -br link | grep ^w )
+		fi
+	fi
 	if [[ $iplinkw ]]; then
 		wlandev=$( echo "$iplinkw" \
-						| head -1 \
+						| tail -1 \
 						| cut -d' ' -f1 )
 		iw $wlandev set power_save off
+		echo $wlandev | tee $dirshm/wlan
 	else
-		wlandev=false
+		rm -f $dirshm/wlan
 	fi
-	echo $wlandev | tee $dirshm/wlan
 }
 
 case ${args[0]} in
@@ -201,12 +209,11 @@ profileget )
 profileremove )
 	ssid=${args[1]}
 	connected=${args[2]}
-	wlandev=$( cat $dirshm/wlan )
 	netctl disable "$ssid"
 	if [[ $connected == true ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig $wlandev up
+		ifconfig $( cat $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh
@@ -227,19 +234,13 @@ usbbluetoothoff )
 	$dirbash/settings/networks-data.sh pushbt
 	;;
 usbwifion )
-	wlandev=$( ip -br link \
-		| grep ^w \
-		| tail -1 \
-		| cut -d' ' -f1 \
-		| tee $dirshm/wlan )
-	iw $wlandev set power_save off &> /dev/null
+	wlandev=$( wlanDevice )
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
 	pushRefresh
 	;;
 usbwifioff )
-	wlandev=$( wlanDevice )
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
 	pushRefresh
 	;;

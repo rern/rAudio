@@ -220,14 +220,14 @@ function tagEditor() {
 			filename = parts.pop();
 			filepath = parts.join( '/' );
 		}
-		var mode, label = [];
+		name[ 1 ] = 'Album Artist';
+		var label = [];
 		format.forEach( function( el, i ) {
 			if ( G.playlist && !values[ i ] ) {
 				delete values[ i ];
 				return
 			}
 			
-			mode = el;
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( G.library ) {
@@ -239,17 +239,17 @@ function tagEditor() {
 			values = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = file.slice( -4 ) !== '.cue' ? 'file-music' : 'file-playlist';
-		var message = '<img src="'+ src +'" style="float: left"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div style="margin-left: 10px"><i class="fa fa-folder wh"></i>';
+		var message = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
+					 +'<div>';
 		if ( G.list.licover ) {
-			message += file;
+			message += '<i class="fa fa-folder"></i>'+ file;
 		} else {
-			message += filepath +'<br><i class="fa fa-'+ fileicon +' wh"></i>'+ filename;
+			message += '<i class="fa fa-folder gr"></i><gr>'+ filepath +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ filename;
 		}
 		message += '</div>';
 		var footer = '';
-		footer += '<span id="taglabel"><i class="fa fa-help fa-lg"></i>&ensp;Label</span>';
-		if ( G.list.licover ) footer += '<br><code style="width: 19px; text-align: center">*</code>&ensp;Various values';
+		footer += '<div id="taglabel"><i class="fa fa-help fa-lg"></i>&emsp;Label</div>';
+		if ( G.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : G.playlist ? 'info-circle' : 'tag'
 			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
@@ -263,17 +263,10 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : 1
 			, beforeshow   : function() {
-				$( '#infoContent .infomessage' ).css( {
-					  display         : 'flex'
-					, 'align-items'   : 'flex-end'
-					, 'margin-bottom' : '10px'
-					, cursor          : 'pointer'
-				} );
-				if ( G.playlist ) {
-					$( '#infoContent input' ).prop( 'disabled', 1 );
-				} else if ( !G.list.licover ) {
-					$( '#infoContent input' ).slice( 0, 2 ).prop( 'disabled', 1 );
-				}
+				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
+				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
+				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
+				if ( G.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
 				var tableW = $( '#infoContent table' ).width();
 				$( '#infoContent' ).on( 'click', '#taglabel', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
@@ -282,10 +275,34 @@ function tagEditor() {
 					} else {
 						$( '.taglabel' ).addClass( 'hide' );
 					}
+				} ).on( 'click', 'table i', function() {
+					var $this = $( this );
+					var mode = $this.data( 'mode' );
+					if ( [ 'title', 'track' ].includes( mode ) ) return
+					
+					var string = $this.parent().next().find( 'input' ).val();
+					if ( !string ) return
+					
+					var query = {
+						  query  : 'find'
+						, mode   : mode
+						, string : string
+						, format : [ 'album', 'artist' ]
+					}
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : string
+							, path      : string
+						}
+						G.mode = mode;
+						renderLibraryList( data );
+						query.gmode = mode;
+						query.modetitle = string;
+						tagModeSwitch();
+						G.query.push( query );
+					} );
 				} );
-				$( '.infomessage' )
-					.css( 'width', 'calc( 100% - 40px )' )
-					.find( 'img' ).css( 'margin', 0 );
 				$( '.infomessage' ).click( function() {
 					if ( G.library ) return
 					
@@ -294,14 +311,17 @@ function tagEditor() {
 						, string : filepath
 						, format : [ 'file' ]
 					}
-					G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
 					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
-					list( query, function( data ) {
-						data.path = filepath;
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : filepath
+							, path      : filepath
+						}
+						G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
+						tagModeSwitch();
 						renderLibraryList( data );
-						$( '#library' ).click();
-						$( '#infoX' ).click();
-					}, 'json' );
+					} );
 				} );
 			}
 			, okno         : G.playlist
@@ -332,6 +352,16 @@ function tagEditor() {
 		} );
 	}, 'json' );
 }
+function tagModeSwitch() {
+	$( '#infoX' ).click();
+	if ( G.playlist ) {
+		$( '#page-playlist' ).addClass( 'hide' );
+		$( '#page-library' ).removeClass( 'hide' );
+		G.playlist = 0;
+		G.library = 1;
+		G.page = 'library';
+	}
+}
 function webRadioCoverart() {
 	if ( G.playback ) {
 		var coverart = G.status.stationcover || G.coverdefault;
@@ -342,6 +372,8 @@ function webRadioCoverart() {
 		var type = G.mode;
 	}
 	var radioicon = coverart === G.coverdefault;
+	$( '#coverart, #liimg' ).removeAttr( 'style' );
+	$( '.coveredit' ).remove();
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
@@ -698,7 +730,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var mpccmd;
 	// must keep order otherwise replaceplay -> play, addplay -> play
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
-	switch( mode ) {
+	switch ( mode ) {
 		case '':
 			if ( G.list.singletrack || G.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'pladd', path ];

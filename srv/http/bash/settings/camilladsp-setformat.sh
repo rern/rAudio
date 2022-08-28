@@ -4,7 +4,7 @@
 
 systemctl stop camilladsp
 
-dirconfigs=$dirdata/camilladsp/configs
+dirconfigs=$dircamilladsp/configs
 camilladspyml=$dirconfigs/camilladsp.yml
 card=$( cat $dirsystem/asoundcard )
 sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $camilladspyml

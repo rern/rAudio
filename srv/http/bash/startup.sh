@@ -16,8 +16,8 @@ if [[ -e /boot/expand ]]; then # run once
 		resize2fs $partition
 	fi
 	# no on-board wireless - remove bluetooth
-	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	[[ ${hwrevision: -3:2} =~ ^(00|01|02|03|04|09)$ ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	cpuInfo
+	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -29,7 +29,7 @@ if [[ -e /boot/backup.gz ]]; then
 	fi
 fi
 
-if [[ -e /boot/wifi && $wlandev != false ]]; then
+if [[ -e /boot/wifi && $wlandev ]]; then
 	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
@@ -46,31 +46,21 @@ connectedCheck() {
 }
 
 echo mpd > $dirshm/player
-mkdir $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
+mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
-# ( no profile && no hostapd ) || usb wifi > disable onboard
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
-systemctl -q is-enabled hostapd && hostapd=1
-readarray -t profiles <<< $( ls -1pt /etc/netctl | grep -v /$ )
-[[ $usbwifi || ( ! $hostapd && ! $profiles ) ]] && rmmod brcmfmac &> /dev/null
-
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
-if [[ ! $connected && ! $hostapd && $profiles ]]; then
-	! rfkill -no type | grep -q wlan && [[ -e $dirshm/onboardwlan ]] && modprobe brcmfmac
-	if rfkill -no type | grep -q wlan; then
-		if [[ $profiles ]]; then
-			for profile in "${profiles[@]}"; do
-				[[ $( netctl is-enabled "$profile" ) == enabled ]] && enabledprofile=1
-				grep -q $wlandev "/etc/netctl/$profile" && devprofile=$profile
-			done
-			[[ ! $enabledprofile && $devprofile ]] && $dirbash/settings/networks.sh profileconnect$'\n'"$devprofile"
-		fi
+[[ ! $connected ]] && connectedCheck 30 3
+# if wlan not connected, try connect with saved profile
+if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
+	devprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
+	if [[ $devprofile ]]; then
+		$dirbash/settings/networks.sh "profileconnect
+$( basename "$devprofile" )"
 		connectedCheck 30 3
 	fi
 fi
@@ -116,15 +106,24 @@ fi
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
+file=/sys/class/backlight/rpi_backlight/brightness
+if [[ -e $file ]]; then
+	chmod 666 $file
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
+fi
+
 if [[ $connected ]]; then
 	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
-elif [[ ! -e $dirsystem/wlannoap ]]; then
-	modprobe brcmfmac &> /dev/null 
-	systemctl -q is-enabled hostapd || $dirbash/settings/features.sh hostapdset
+elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
+	$dirbash/settings/features.sh hostapdset
 	systemctl -q disable hostapd
 fi
 
-iw $wlandev set power_save off &> /dev/null
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
+[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
+profiles=$( netctl list )
+systemctl -q is-active hostapd && hostapd=1
+[[ $usbwifi || ( ! $profiles && ! $hostapd ) ]] && rmmod brcmfmac &> /dev/null
 
 if [[ -e $dirsystem/hddspindown ]]; then
 	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
@@ -138,12 +137,6 @@ if [[ -e $dirsystem/hddspindown ]]; then
 			hdparm -q -S $duration $dev
 		done
 	fi
-fi
-
-file=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $file ]]; then
-	chmod 666 $file
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
 fi
 
 if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then

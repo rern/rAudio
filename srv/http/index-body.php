@@ -179,7 +179,7 @@ $menu.= menudiv( 'radio', $html );
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'iconcover',    'Change coverart' ]
+	, [ 'wrcoverart', 'iconcover',    'Change station art' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
@@ -355,7 +355,7 @@ foreach( $settinglist as $l ) {
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"><i class="fa fa-music gr"></i></span></div>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs">
 			</div>
 			<span class="lipath"></span>

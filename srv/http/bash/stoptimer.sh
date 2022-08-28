@@ -1,12 +1,11 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
-dirshm=/srv/http/data/shm
+. /srv/http/bash/common.sh
 
 min=$1
 poweroff=$2
 
-rm -f /srv/http/data/shm/relaystimer
+rm -f $dirshm/relaystimer
 kill -9 $( pgrep relaystimer ) &> /dev/null
 
 sleep $(( min * 60 ))

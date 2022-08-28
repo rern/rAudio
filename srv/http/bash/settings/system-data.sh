@@ -30,18 +30,15 @@ rpimodel=$( cat /proc/device-tree/model | tr -d '\000' | sed 's/ Model //; s/ Pl
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
-	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
-	BB=${hwrevision: -3:2}
-	case ${hwrevision: -4:1} in
+	cpuInfo
+	case $C in
 		0 ) soc=BCM2835;;
 		1 ) soc=BCM2836;;
-		2 ) if [[ $BB == 12 ]]; then
-				soc=BCM2710A1
-			elif [[ $BB > 08 ]]; then
-				soc=BCM2837B0
-			else
-				soc=BCM2837
-			fi
+		2 ) case $BB in
+				12 ) soc=BCM2710A1;;
+				08 ) soc=BCM2837B0;;
+				04 ) soc=BCM2837;;
+			esac
 			;;
 		3 ) soc=BCM2711;;
 	esac
@@ -157,6 +154,7 @@ data+='
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
+, "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
 , "kernel"           : "'$( uname -rm )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'

@@ -2,6 +2,9 @@
 
 alias=r1
 
+# 20220826
+rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
+
 # 20220814
 sed -i '/bluez-utils/ d' /etc/pacman.conf
 
@@ -35,13 +38,19 @@ grep -q gpio-poweroff /boot/config.txt && sed -i '/gpio-poweroff\|gpio-shutdown/
 # 20220708
 sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
 
+#-------------------------------------------------------------------------------
 . /srv/http/bash/addons.sh
 
 installstart "$1"
 
 getinstallzip
 
+chmod +x $dirbash/cmd.sh
+$dirbash/cmd.sh dirpermissions
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+
 installfinish
+#-------------------------------------------------------------------------------
 
 # 20220805
 udevadm control --reload-rules

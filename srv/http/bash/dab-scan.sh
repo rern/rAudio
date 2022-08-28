@@ -9,7 +9,7 @@ if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	exit
 fi
 
-dirdabradio=$dirdata/dabradio
+dirdabradio=$dirdabradio
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
@@ -47,7 +47,7 @@ sed -i '1,/^paths:/ !d' $fileyml
 echo "$list" >> $fileyml
 
 chown -R http:http $dirdabradio
-dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' | wc -l )
+dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
 pushstream mpdupdate "$( cat $dirmpd/counts )"
 rm $dirshm/{dabscan,updatingdab}

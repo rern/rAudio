@@ -46,7 +46,7 @@ var picaOption = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-var icoveredit = '<div class="coveredit cover"><i class="iconcover"></i></div>';
+var icoveredit = '<i class="coveredit cover iconcover"></i>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
 var red = '#bb2828';
@@ -89,6 +89,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
 			|| !$( '#bio' ).hasClass( 'hide' )
+			|| !$( '#infoOverlay' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
@@ -107,6 +108,11 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	
 $( '.page' ).click( function( e ) {
 	if ( ![ 'coverTR', 'timeTR' ].includes( e.target.id ) ) $( '#settings' ).addClass( 'hide' );
+} ).contextmenu( function( e ) { // touch device - on press - disable default context menu
+	e.preventDefault();
+	e.stopPropagation();
+    e.stopImmediatePropagation();
+	return false
 } );
 $( '#loader' ).click( function() {
 	loaderHide();
@@ -270,7 +276,7 @@ $( '#displayplayback' ).click( function() {
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
 			, radioelapsed : 'Web Radio time'
-		, cover            : 'Coverart'
+		, cover            : 'Cover art'
 			, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
 		, volume           : 'Volume'
 			, vumeter      : 'VU meter'
@@ -436,11 +442,10 @@ $( '#library, #button-library' ).click( function() {
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
-		if ( G.librarylist || G.bookmarkedit ) {
+		if ( G.librarylist ) {
 			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 			G.mode = '';
 			G.librarylist = 0;
-			G.bookmarkedit = 0;
 			G.query = [];
 		}
 		renderLibrary();
@@ -950,81 +955,85 @@ $( '.map' ).click( function() {
 	}
 	
 	hideGuide();
-	if ( cmd === 'cover' ) {
-		$( '#bar-bottom' ).removeClass( 'translucent' );
-		if ( G.status.player === 'mpd' && !G.status.pllength
-			|| $( '#page-playback' ).css( 'transform' ) !== 'none'
-		) return
-		
-		if ( !( 'coverTL' in G )
-			&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
-			&& !G.display.volumenone
-			&& !$( '#volume-knob' ).is( ':visible' )
-		) {
-			if ( $( '#info' ).hasClass( 'hide' ) ) {
-				$( '#info' ).removeClass( 'hide' );
-			} else {
-				$( '#info' ).addClass( 'hide' );
-				$( '#volume-band' ).click();
-			}
-			return
-		}
-		
-		if ( G.wW < 545 && G.wW < G.wH ) return
-		
-		var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
-		if ( 'coverTL' in G ) {
-			list.forEach( function( el ) {
-				G.display[ el ] = G.coverTL[ el ];
-			} );
-			delete G.coverTL;
-		} else {
-			G.coverTL = {};
-			list.forEach( function( el ) {
-				G.coverTL[ el ] = G.display[ el ];
-			} );
-			if ( this.id === 'coverTL' ) {
-				if ( G.display.time || G.display.volume ) {
-					G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
+	switch ( cmd ) {
+		case 'cover':
+			$( '#bar-bottom' ).removeClass( 'translucent' );
+			if ( G.status.player === 'mpd' && !G.status.pllength
+				|| $( '#page-playback' ).css( 'transform' ) !== 'none'
+			) return
+			
+			if ( !( 'coverTL' in G )
+				&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
+				&& !G.display.volumenone
+				&& !$( '#volume-knob' ).is( ':visible' )
+			) {
+				if ( $( '#info' ).hasClass( 'hide' ) ) {
+					$( '#info' ).removeClass( 'hide' );
 				} else {
-					G.display.bars = G.display.time = G.display.volume = G.display.buttons = true;
+					$( '#info' ).addClass( 'hide' );
+					$( '#volume-band' ).click();
+				}
+				return
+			}
+			
+			if ( G.wW < 545 && G.wW < G.wH ) return
+			
+			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
+			if ( 'coverTL' in G ) {
+				list.forEach( function( el ) {
+					G.display[ el ] = G.coverTL[ el ];
+				} );
+				delete G.coverTL;
+			} else {
+				G.coverTL = {};
+				list.forEach( function( el ) {
+					G.coverTL[ el ] = G.display[ el ];
+				} );
+				if ( this.id === 'coverTL' ) {
+					if ( G.display.time || G.display.volume ) {
+						G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
+					} else {
+						G.display.bars = G.display.time = G.display.volume = G.display.buttons = true;
+					}
+				} else {
+					G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
+				}
+			}
+			$( '.band' ).addClass( 'transparent' );
+			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
+			$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
+			displayBars();
+			setButtonControl();
+			displayPlayback();
+			if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
+				setProgress();
+				setTimeout( setProgressAnimate, 0 );
+			}
+			if ( 'coverTL' in G && !G.display.cover ) $( '#timemap' ).removeClass( 'hide' );
+			break;
+		case 'settings':
+			$( '#button-settings' ).click();
+			break;
+		case 'repeat':
+			if ( G.status.repeat ) {
+				if ( G.status.single ) {
+					$( '#single' ).click();
+					G.status.repeat = false;
+					G.status.single = false;
+					setButtonOptions();
+					local( 600 );
+					bash( [ 'mpcoption', 'repeat', false ] );
+					bash( [ 'mpcoption', 'single', false ] );
+				} else {
+					$( '#single' ).click();
 				}
 			} else {
-				G.display.time = G.display.cover = G.display.volume = G.display.buttons = true;
+				$( '#repeat' ).click();
 			}
-		}
-		$( '.band' ).addClass( 'transparent' );
-		$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-		$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone );
-		displayBars();
-		setButtonControl();
-		displayPlayback();
-		if ( G.status.state === 'play' && !G.status.stream && !G.localhost ) {
-			setProgress();
-			setTimeout( setProgressAnimate, 0 );
-		}
-		if ( 'coverTL' in G && !G.display.cover ) $( '#timemap' ).removeClass( 'hide' );
-	} else if ( cmd === 'settings' ) {
-		$( '#button-settings' ).click();
-	} else if ( cmd === 'repeat' ) {
-		if ( G.status.repeat ) {
-			if ( G.status.single ) {
-				$( '#single' ).click();
-				G.status.repeat = false;
-				G.status.single = false;
-				setButtonOptions();
-				local( 600 );
-				bash( [ 'mpcoption', 'repeat', false ] );
-				bash( [ 'mpcoption', 'single', false ] );
-			} else {
-				$( '#single' ).click();
-			}
-		} else {
-			$( '#repeat' ).click();
-		}
-	} else {
-		if ( cmd === 'play' && G.status.state === 'play' ) cmd = !G.status.stream ? 'pause' : 'stop';
-		$( '#'+ cmd ).click();
+			break
+		default:
+			if ( cmd === 'play' && G.status.state === 'play' ) cmd = !G.status.stream ? 'pause' : 'stop';
+			$( '#'+ cmd ).click();
 	}
 } );
 $( '.btn-cmd' ).click( function() {
@@ -1284,7 +1293,7 @@ $( '#button-lib-back' ).click( function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
 	var backmode = 'gmode' in G && G.gmode !== G.mode;
-	if ( G.mode === $( '#mode-title' ).text().toLowerCase()
+	if ( G.mode === $( '#mode-title' ).text().replace( ' ', '' ).toLowerCase()
 		|| ( bL && bL < 2 )
 		|| ( !bL && G.query.length === 1 )
 	) {
@@ -1297,6 +1306,7 @@ $( '#button-lib-back' ).click( function() {
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {
+			G.mode = query.gmode;
 			list( query, function( html ) {
 				if ( html != -1 ) {
 					if ( backmode ) G.mode = G.gmode;
@@ -1319,9 +1329,6 @@ $( '#button-lib-back' ).click( function() {
 		}
 	}
 } );
-/*$( '#lib-mode-list' ).contextmenu( function( e ) { // touch device - on press - disable default image context menu
-	e.preventDefault();
-} );*/
 $( '.mode' ).click( function() {
 	var $this = $( this );
 	G.mode = $this.data( 'mode' );
@@ -1387,7 +1394,7 @@ $( '.mode' ).click( function() {
 		var data = {
 			  html      : html
 			, modetitle : path
-			, path      : G.mode === 'dabradio' ? '' : path
+			, path      : path
 		}
 		renderLibraryList( data );
 	} );
@@ -1396,20 +1403,13 @@ $( '.mode' ).click( function() {
 	if ( query.query !== 'ls' ) G.query.push( query );
 } );
 $( '#lib-mode-list' ).click( function( e ) {
-	if ( G.press || !G.bookmarkedit ) return
-	
-	if ( !$( e.target ).hasClass( 'bkedit' ) && !$( e.target ).hasClass( 'iconcover' ) ) {
-		bookmarkeditClear();
-		return
-	}
+	if ( !G.press && $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
 } );
 $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
-	if ( G.press || G.bookmarkedit ) return
+	if ( G.press || $( '.bkedit' ).length ) return
 	
 	var path = $( this ).find( '.lipath' ).text();
-	if ( G.bookmarkedit ) return
-	
 	var path0 = path.split( '/' )[ 0 ];
 	var mode = path0.toLowerCase();
 	if ( path0.slice( 3 ) !== 'radio' ) {
@@ -1460,7 +1460,6 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
 		, ok      : function() {
-			G.bookmarkedit = 1;
 			bash( [ 'bookmarkremove', name, path ] );
 		}
 	} );
@@ -1483,7 +1482,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			bash( [ 'bookmarkrename', name, newname, path ] );
 		}
 	} );
-} ).on( 'click', '.bk-cover .iconcover', function() {
+} ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
@@ -1518,34 +1517,16 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext
 		}
 	} );
-} ).press( '.mode-bookmark', function() {
-	if ( G.drag ) return
-	
-	G.bookmarkedit = 1;
-	G.bklabel = $( this ).find( '.label' );
-	$( '.mode-bookmark' ).each( function() {
-		var $this = $( this );
-		var path = $this.find( '.lipath' ).text();
-		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
-		if ( !$this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml += '<div class="bkedit bk-cover"><i class="iconcover"></i></div>';
-		$this.append( buttonhtml );
-	} );
-	$( '.mode-bookmark' )
-		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.fa-bookmark, .label, img' )
-		.css( 'opacity', 0.33 );
-} );
+} )
+$( '.mode-bookmark' ).press( setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
+	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
 	, forceFallback : true // fix: iphone safari
-	, onStart       : function () {
-		G.drag = 1;
-		bookmarkeditClear();
-	}
-	, onEnd         : function () {
-		G.drag = 0;
+	, onMove       : function() {
+		$( '.bkedit' ).remove();
+		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	}
 	, onUpdate      : function () {
 		var order = [];
@@ -1696,6 +1677,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	var path = $this.find( '.lipath' ).text();
 	var name = $this.find( '.liname' ).text();
 	var mode = $( this ).data( 'mode' );
+	var modefile = [ 'sd', 'nas', 'usb' ].includes( G.mode );
 	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
 	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // list by directory
 		var query = {
@@ -1703,7 +1685,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			, string : path
 			, format : [ 'file' ]
 		}
-		var modetitle = path;
+		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( G.mode.slice( -5 ) === 'radio' ) {
 		if ( $( this ).hasClass( 'dir' ) ) {
 			var query = {
@@ -1716,10 +1698,10 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 			return
 		}
 	} else if ( mode !== 'album' ) { // list by mode (non-album)
-		if ( [ 'genre', 'composer', 'date' ].includes( G.mode ) ) {
+		if ( [ 'genre', 'date' ].includes( G.mode ) ) {
+			var format = [ 'artist', 'album' ];
+		} else if ( [ 'composer', 'conductor' ].includes( G.mode ) ) {
 			var format = [ 'album', 'artist' ];
-		} else if ( G.mode === 'conductor' ) {
-			var format = [ 'album', 'conductor' ];
 		} else {
 			var format = [ 'album' ];
 		}
@@ -1769,7 +1751,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	} );
 	query.path = path;
 	query.modetitle = modetitle;
-	if ( query.query !== 'ls' ) G.query.push( query );
+	if ( query.query !== 'ls' || !modefile ) G.query.push( query );
 } );
 $( '.page' ).on( 'click', '.index a', function() {
 	var index = $( this ).find( 'wh' ).text()[ 0 ];
