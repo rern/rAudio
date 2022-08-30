@@ -63,6 +63,8 @@ if [[ -e $dirshm/wlan ]]; then
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
+			! grep -q Interface=$wlandev && continue
+			
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
 					ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
