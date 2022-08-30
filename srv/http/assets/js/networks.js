@@ -410,6 +410,13 @@ function infoWiFi( values ) {
 		}
 	} );
 }
+function qr( msg ) {
+	return new QRCode( {
+		  msg : msg
+		, dim : 130
+		, pad : 0
+	} );
+}
 function renderBluetooth() {
 	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
@@ -472,13 +479,6 @@ function renderPage() {
 	if ( !$( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
 	showContent();
 }
-function qr( msg ) {
-	return new QRCode( {
-		  msg : msg
-		, dim : 130
-		, pad : 0
-	} );
-}
 function renderQR() {
 	var ip = G.ipeth || G.ipwlan;
 	if ( !ip ) return
@@ -534,7 +534,7 @@ function scanWlan() {
 				} else {
 					var ab = [ a.ssid, b.ssid ];
 				}
-				return  ab[ 0 ].localeCompare( ab[ 1 ] )
+				return  ab[ 0 ].localeCompare( ab[ 1 ], 'en', { numeric: true } )
 			} );
 			G.listwlscan = data;
 			var htmlwl = '';
