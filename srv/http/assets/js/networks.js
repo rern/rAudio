@@ -468,7 +468,9 @@ function renderPage() {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
-		var htmlwl = G.listeth ? '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth +'</li>' : '';
+		var htmlwl = '';
+		if ( G.listeth ) htmlwl = '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth
+								 +'<gr>&ensp;&raquo;&ensp;'+ G.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
