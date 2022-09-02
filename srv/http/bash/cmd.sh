@@ -118,7 +118,7 @@ mpdoledLogo() {
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
 }
-pladdPlay() {
+plAddPlay() {
 	pushstreamPlaylist
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
@@ -126,7 +126,7 @@ pladdPlay() {
 		$dirbash/status-push.sh
 	fi
 }
-pladdPosition() {
+plAddPosition() {
 	if [[ ${1:0:7} == replace ]]; then
 		mpc -q clear
 		pos=1
@@ -946,13 +946,16 @@ pladd )
 	item=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q add "$item"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 pladdplaynext )
 	mpc -q insert "${args[1]}"
 	pushstreamPlaylist
+	;;
+pladdrandom )
+	plAddRandom
 	;;
 playerstart )
 	newplayer=${args[1]}
@@ -1007,9 +1010,6 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
-pladdrandom )
-	plAddRandom
-	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
 		mpc -q crop
@@ -1032,7 +1032,7 @@ plfindadd )
 		type=${args[1]}
 		string=${args[2]}
 		cmd=${args[3]}
-		pladdPosition $cmd
+		plAddPosition $cmd
 		mpc -q findadd $type "$string"
 	else
 		type=${args[2]}
@@ -1040,33 +1040,33 @@ plfindadd )
 		type2=${args[4]}
 		string2=${args[5]}
 		cmd=${args[6]}
-		pladdPosition $cmd
+		plAddPosition $cmd
 		mpc -q findadd $type "$string" $type2 "$string2"
 	fi
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plload )
 	playlist=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q load "$playlist"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plloadrange )
 	range=${args[1]}
 	playlist=${args[2]}
 	cmd=${args[3]}
 	delay=${args[4]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q --range=$range load "$playlist"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plls )
 	dir=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$dir" | mpc -q add &> /dev/null
@@ -1075,7 +1075,7 @@ plls )
 			mpc -q load "$cuefile"
 		done
 	fi
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plorder )
 	mpc -q move ${args[1]} ${args[2]}

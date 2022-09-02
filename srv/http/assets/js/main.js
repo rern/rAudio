@@ -1831,7 +1831,7 @@ $( '#button-pl-librandom' ).click( function() {
 			  icon    : 'librandom'
 			, title   : 'Roll The Dice'
 			, message : 'Randomly add songs and play continuously.'
-			, checkbox : [ 'Start from current song' ]
+			, checkbox : G.status.song + 1 === G.status.pllength ? '' : [ 'Start from current song' ]
 			, ok      : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
