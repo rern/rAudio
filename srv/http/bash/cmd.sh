@@ -118,21 +118,57 @@ mpdoledLogo() {
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
 }
-pladdPlay() {
-	pushstreamPlaylist
+plAddPlay() {
+	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	fi
 }
-pladdPosition() {
+plAddPosition() {
 	if [[ ${1:0:7} == replace ]]; then
 		mpc -q clear
 		pos=1
 	else
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	fi
+}
+plAddRandom() {
+	plLengthSong
+	(( $tail > 1 )) && pushstreamPlaylist add && return
+	
+	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
+	mpcls=$( mpc ls "$dir" )
+	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
+	if [[ $cuefile ]]; then
+		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$cuefile" | wc -l ) - 1 ))
+		range=$( shuf -i 0-$plL -n 1 )
+		file="$range $cuefile"
+		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		
+		mpc --range=$range load "$cuefile"
+	else
+		file=$( shuf -n 1 <<< "$mpcls" )
+		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		
+		mpc add "$file"
+	fi
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( cat $dirsystem/librandom | wc -l ) ))
+	if (( $diffcount > 1 )); then
+		echo $file >> $dirsystem/librandom
+	else
+		> $dirsystem/librandom
+	fi
+	(( $tail > 1 )) || plAddRandom
+}
+plLengthSong() {
+	readarray -t status <<< $( { echo status; sleep 0.05; } \
+										| telnet 127.0.0.1 6600 2> /dev/null \
+										| awk '/^playlistlength:|^song:/ {print $NF}' )
+	total=${status[0]}
+	pos=$(( ${status[1]} + 1 ))
+	tail=$(( total - pos ))
 }
 pushstreamImage() {
 	target=$1
@@ -151,7 +187,7 @@ ${target/\/srv\/http}" > "$bkfile"
 	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+	pushstream playlist "$( php /srv/http/mpdplaylist.php current $1 )"
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -467,14 +503,10 @@ s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
  s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	sed -i -E "
- s|(.box{fill:hsl).*|\1($hsl);|
-s|(.text{fill:hsl).*|\1(${hsg}30%);}|
-" $dirimg/coverart.svg
-	sed -i -E "
-s|(.box{fill:hsl).*|\1($hsl);}|
-s|(path{fill:hsl).*|\1(${hsg}75%);}|
+s|(.box.*hsl).*|\1($hsl);}|
+s|(path.*hsl).*|\1(${hsg}75%);}|
 " $dirimg/icon.svg
-	sed -E "s|(path{fill:hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+	sed -E "s|(path.*hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
@@ -684,15 +716,18 @@ librandom )
 	if [[ $enable == false ]]; then
 		rm -f $dirsystem/librandom
 	else
+		[[ ${args[2]} == true ]] && play=1
 		mpc -q random 0
-		plL=$( mpc playlist | wc -l )
-		$dirbash/cmd-librandom.sh start
+		plLengthSong
+		if [[ $play ]]; then
+			playnext=$(( total + 1 ))
+			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
+		fi
 		touch $dirsystem/librandom
-		sleep 1
-		mpc -q play $(( plL + 1 ))
+		plAddRandom
+		[[ $play ]] && mpc -q play $playnext
 	fi
 	pushstream option '{ "librandom": '$enable' }'
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	;;
 list )
 	list
@@ -795,7 +830,7 @@ mpcprevnext )
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
 			mpc | grep -q 'consume: on' && mpc -q del $current
-			[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
+			[[ -e $dirsystem/librandom ]] && plAddRandom
 		else
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
@@ -908,13 +943,16 @@ pladd )
 	item=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q add "$item"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 pladdplaynext )
 	mpc -q insert "${args[1]}"
-	pushstreamPlaylist
+	pushstreamPlaylist add
+	;;
+pladdrandom )
+	plAddRandom
 	;;
 playerstart )
 	newplayer=${args[1]}
@@ -977,7 +1015,7 @@ plcrop )
 		mpc -q crop
 		mpc -q stop
 	fi
-	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
@@ -991,7 +1029,7 @@ plfindadd )
 		type=${args[1]}
 		string=${args[2]}
 		cmd=${args[3]}
-		pladdPosition $cmd
+		plAddPosition $cmd
 		mpc -q findadd $type "$string"
 	else
 		type=${args[2]}
@@ -999,33 +1037,33 @@ plfindadd )
 		type2=${args[4]}
 		string2=${args[5]}
 		cmd=${args[6]}
-		pladdPosition $cmd
+		plAddPosition $cmd
 		mpc -q findadd $type "$string" $type2 "$string2"
 	fi
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plload )
 	playlist=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q load "$playlist"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plloadrange )
 	range=${args[1]}
 	playlist=${args[2]}
 	cmd=${args[3]}
 	delay=${args[4]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	mpc -q --range=$range load "$playlist"
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plls )
 	dir=${args[1]}
 	cmd=${args[2]}
 	delay=${args[3]}
-	pladdPosition $cmd
+	plAddPosition $cmd
 	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$dir" | mpc -q add &> /dev/null
@@ -1034,7 +1072,7 @@ plls )
 			mpc -q load "$cuefile"
 		done
 	fi
-	pladdPlay $cmd $delay
+	plAddPlay $cmd $delay
 	;;
 plorder )
 	mpc -q move ${args[1]} ${args[2]}

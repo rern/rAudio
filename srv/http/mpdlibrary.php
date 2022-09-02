@@ -146,7 +146,6 @@ case 'ls':
 	break;
 case 'radio':
 	$dir = '/srv/http/data/'.$gmode.'/';
-	$dirimg = '/data/'.$gmode.'/img/';
 	$dir.= $string;
 	$subdirs = [];
 	$files = [];
@@ -161,6 +160,8 @@ case 'radio':
 		exec( 'ls -1 "'.$dir.'" \
 				| egrep -v "^img|\.jpg$|\.gif$"'
 			, $lists );
+		if ( !count( $lists ) ) exit();
+		
 		foreach( $lists as $list ) {
 			if ( is_dir( $dir.'/'.$list ) ) {
 				$subdirs[] = $list;
@@ -169,7 +170,7 @@ case 'radio':
 			}
 		}
 	}
-	htmlRadio( $subdirs, $files, $dir, $dirimg );
+	htmlRadio( $subdirs, $files, $dir );
 	break;
 case 'search':
 	exec( 'mpc search -f "'.$format.'" any "'.$string.'" \
@@ -376,10 +377,11 @@ function htmlList( $lists ) { // non-file 'list' command
 			<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
-function htmlRadio( $subdirs, $files, $dir, $dirimg ) {
+function htmlRadio( $subdirs, $files, $dir ) {
 	global $mode;
 	global $gmode;
 	global $html;
+	$dirimg = '/data/'.$gmode.'/img/';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each = ( object )[];

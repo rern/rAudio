@@ -2,6 +2,7 @@
 include '/srv/http/common.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
+$add = $argv[ 2 ] ? true : false;
 $dirplaylists = '/srv/http/data/playlists/';
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
@@ -143,6 +144,7 @@ function htmlSavedPlaylist() {
 }
 function htmlTrack( $lists, $plname = '' ) {
 	global $headers;
+	global $add;
 	$count = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
@@ -266,6 +268,7 @@ function htmlTrack( $lists, $plname = '' ) {
 		, 'counthtml' => $counthtml
 		, 'song'      => $song
 		, 'elapsed'   => $elapsed
+		, 'add'       => $add
 	], JSON_NUMERIC_CHECK );
 }
 function playlistInfo( $index = '' ) { // mpd protocol

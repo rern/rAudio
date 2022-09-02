@@ -32,15 +32,15 @@ if [[ $rpimodel == *BeagleBone* ]]; then
 else
 	cpuInfo
 	case $C in
-		0 ) soc=BCM2835;;
-		1 ) soc=BCM2836;;
+		0 ) soc=BCM2835;; # 0, 1
+		1 ) soc=BCM2836;; # 2
 		2 ) case $BB in
-				12 ) soc=BCM2710A1;;
-				08 ) soc=BCM2837B0;;
-				04 ) soc=BCM2837;;
+				04|08 ) soc=BCM2837;;   # 2 1.2, 3B
+				0d|0e ) soc=BCM2837B0;; # 3A+, 3B+
+				12 )    soc=BCM2710A1;; # 0 2W
 			esac
 			;;
-		3 ) soc=BCM2711;;
+		3 ) soc=BCM2711;; # 4
 	esac
 fi
 if ifconfig | grep -q eth0; then
@@ -186,7 +186,7 @@ data+='
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
-, "wlan"             : '$( rfkill -no type | grep -q wlan && echo true )'
+, "wlan"             : '$( lsmod | grep -q brcmfmac && echo true )'
 , "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 	discoverable=true

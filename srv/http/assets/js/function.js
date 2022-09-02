@@ -980,7 +980,7 @@ function plRemove( $li ) {
 		}
 		var i = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
-			if ( i < G.status.pllength ) {
+			if ( $li.next().is( 'li' ) ) {
 				var activenext = i;
 				$li.next().addClass( 'active' );
 			} else {
@@ -990,7 +990,6 @@ function plRemove( $li ) {
 		} else {
 			var activenext = '';
 		}
-		local( 1000 );
 		bash( [ 'plremove', i, activenext ] );
 		$( '#pl-list li .pos' ).slice( i ).each( function() {
 			$( this ).text( i );
@@ -1554,7 +1553,6 @@ function setPlaylistScroll() {
 	clearIntervalAll();
 	if ( !G.playlist || G.savedlist || G.savedplaylist
 		|| !G.status.pllength || G.sortable
-		|| $( '.pl-remove' ).length
 		|| ![ 'mpd', 'upnp' ].includes( G.status.player )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
@@ -1564,12 +1562,14 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	if ( G.status.pllength < 5 || !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
-		var top = 0;
-	} else {
-		var top = $liactive.offset().top - litop - ( 49 * 3 );
+	if ( !$( '.pl-remove' ).length && $( '#infoOverlay' ).hasClass( 'hide' ) ) {
+		if ( G.status.pllength < 5 ) {
+			var top = 0;
+		} else {
+			var top = $liactive.offset().top - litop - ( 49 * 3 );
+		}
+		$( 'html, body' ).scrollTop( top );
 	}
-	$( 'html, body' ).scrollTop( top );
 	$( '#pl-list .elapsed' ).empty();
 	var $this = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed = $this.find( '.elapsed' );
@@ -1757,10 +1757,10 @@ function switchPage( page ) {
 }
 function thumbUpdate( path ) {
 	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">'
-					+'<input type="hidden" name="sh[]" value="cove">'
-					+'<input type="hidden" name="sh[]" value="Update">'
-					+'<input type="hidden" name="sh[]" value="main">'
-					+'<input type="hidden" name="sh[]" value="'+ ( path || '' ) +'">'
+					+'<input type="hidden" name="opt[]" value="cove">'
+					+'<input type="hidden" name="opt[]" value="Update">'
+					+'<input type="hidden" name="opt[]" value="main">'
+					+'<input type="hidden" name="opt[]" value="'+ ( path || '' ) +'">'
 			  +'</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();

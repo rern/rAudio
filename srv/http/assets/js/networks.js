@@ -410,6 +410,13 @@ function infoWiFi( values ) {
 		}
 	} );
 }
+function qr( msg ) {
+	return new QRCode( {
+		  msg : msg
+		, dim : 130
+		, pad : 0
+	} );
+}
 function renderBluetooth() {
 	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
@@ -461,7 +468,9 @@ function renderPage() {
 		$( '#divwl' ).addClass( 'hide' );
 	}
 	if ( G.activeeth ) {
-		var htmlwl = G.listeth ? '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth +'</li>' : '';
+		var htmlwl = '';
+		if ( G.listeth ) htmlwl = '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth
+								 +'<gr>&ensp;&raquo;&ensp;'+ G.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
@@ -471,13 +480,6 @@ function renderPage() {
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 	if ( !$( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
 	showContent();
-}
-function qr( msg ) {
-	return new QRCode( {
-		  msg : msg
-		, dim : 130
-		, pad : 0
-	} );
 }
 function renderQR() {
 	var ip = G.ipeth || G.ipwlan;
@@ -534,7 +536,7 @@ function scanWlan() {
 				} else {
 					var ab = [ a.ssid, b.ssid ];
 				}
-				return  ab[ 0 ].localeCompare( ab[ 1 ] )
+				return  ab[ 0 ].localeCompare( ab[ 1 ], 'en', { numeric: true } )
 			} );
 			G.listwlscan = data;
 			var htmlwl = '';

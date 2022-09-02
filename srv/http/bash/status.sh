@@ -415,7 +415,17 @@ samplingLine() {
 	samplerate=$2
 	bitrate=$3
 	ext=$4
-	[[ $bitrate -eq 0 || ! $bitrate ]] && bitrate=$(( bitdepth * samplerate * 2 ))
+	if [[ $bitrate == 0 || ! $bitrate ]]; then
+		if [[ ${bitdepth//[!0-9]/} ]]; then
+			bitrate=$(( bitdepth * samplerate * 2 ))
+		else
+			bitrate=$( ffprobe \
+							-v quiet \
+							-show_entries format=bit_rate \
+							-of default=noprint_wrappers=1:nokey=1 \
+							"/mnt/MPD/$file" )
+		fi
+	fi
 	if (( $bitrate < 1000000 )); then
 		rate="$(( bitrate / 1000 )) kbit/s"
 	else
@@ -430,7 +440,7 @@ samplingLine() {
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
 #		sample=$( echo "print $samplerate / 1000" | perl )' kHz'
-		if [[ $bitdepth && $ext != Radio && $ext != MP3 && $ext != AAC ]]; then
+		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then
 			sampling="$bitdepth bit $sample $rate"
 		else # lossy has no bitdepth
 			sampling="$sample $rate"

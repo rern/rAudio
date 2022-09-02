@@ -35,9 +35,6 @@ fi
 
 grep -q gpio-poweroff /boot/config.txt && sed -i '/gpio-poweroff\|gpio-shutdown/ d' /boot/config.txt
 
-# 20220708
-sed -i 's/mpd.service/startup.service/' /etc/systemd/system/upmpdcli.service
-
 #-------------------------------------------------------------------------------
 . /srv/http/bash/addons.sh
 

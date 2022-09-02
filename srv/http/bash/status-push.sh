@@ -80,7 +80,7 @@ if [[ -e $dirshm/clientip ]]; then
 	done
 fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd-librandom.sh
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom
 
 [[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
 
