@@ -119,7 +119,7 @@ mpdoledLogo() {
 	mpd_oled -o $type -L
 }
 plAddPlay() {
-	pushstreamPlaylist
+	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
@@ -135,13 +135,8 @@ plAddPosition() {
 	fi
 }
 plAddRandom() {
-	readarray -t status <<< $( { echo status; sleep 0.05; } \
-										| telnet 127.0.0.1 6600 2> /dev/null \
-										| awk '/^playlistlength:|^song:/ {print $NF}' )
-	total=${status[0]}
-	song=${status[1]}
-	diff=$(( total - song ))
-	(( $diff > 2 )) && return
+	plLengthSong
+	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
@@ -150,12 +145,12 @@ plAddRandom() {
 		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$cuefile" | wc -l ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		file="$range $cuefile"
-		grep -q "$file" $dirsystem/librandom && randomAdd && return
+		grep -q "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc --range=$range load "$cuefile"
 	else
 		file=$( shuf -n 1 <<< "$mpcls" )
-		grep -q "$file" $dirsystem/librandom && randomAdd && return
+		grep -q "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc add "$file"
 	fi
@@ -165,12 +160,15 @@ plAddRandom() {
 	else
 		> $dirsystem/librandom
 	fi
-	if (( $diff < 3 )); then
-		randomAdd
-	else
-		sleep 2
-		pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-	fi
+	(( $tail > 1 )) || plAddRandom
+}
+plLengthSong() {
+	readarray -t status <<< $( { echo status; sleep 0.05; } \
+										| telnet 127.0.0.1 6600 2> /dev/null \
+										| awk '/^playlistlength:|^song:/ {print $NF}' )
+	total=${status[0]}
+	pos=$(( ${status[1]} + 1 ))
+	tail=$(( total - pos ))
 }
 pushstreamImage() {
 	target=$1
@@ -189,7 +187,7 @@ ${target/\/srv\/http}" > "$bkfile"
 	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+	pushstream playlist "$( php /srv/http/mpdplaylist.php current $1 )"
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -715,22 +713,21 @@ latestclear )
 	;;
 librandom )
 	enable=${args[1]}
-	[[ ${args[2]} == false ]] && startnew=1
 	if [[ $enable == false ]]; then
 		rm -f $dirsystem/librandom
 	else
+		[[ ${args[2]} == true ]] && play=1
 		mpc -q random 0
-		plL=$( mpc playlist | wc -l )
-		if [[ $startnew ]]; then
-			mpc -q play $plL
-			mpc -q stop
+		plLengthSong
+		if [[ $play ]]; then
+			playnext=$(( total + 1 ))
+			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
 		fi
 		touch $dirsystem/librandom
 		plAddRandom
-		[[ $startnew ]] && mpc -q play $(( plL + 1 ))
+		[[ $play ]] && mpc -q play $playnext
 	fi
 	pushstream option '{ "librandom": '$enable' }'
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 	;;
 list )
 	list
@@ -952,7 +949,7 @@ pladd )
 	;;
 pladdplaynext )
 	mpc -q insert "${args[1]}"
-	pushstreamPlaylist
+	pushstreamPlaylist add
 	;;
 pladdrandom )
 	plAddRandom

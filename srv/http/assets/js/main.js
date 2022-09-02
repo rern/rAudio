@@ -1828,11 +1828,15 @@ $( '#button-pl-librandom' ).click( function() {
 		bash( [ 'librandom', false ] );
 	} else {
 		info( {
-			  icon    : 'librandom'
-			, title   : 'Roll The Dice'
-			, message : 'Randomly add songs and play continuously.'
-			, checkbox : G.status.song + 1 === G.status.pllength ? '' : [ 'Start from current song' ]
-			, ok      : function() {
+			  icon       : 'librandom'
+			, title      : 'Roll The Dice'
+			, message    : 'Randomly add songs and play continuously.'
+			, checkbox   : [ 'Start playing the random songs' ]
+			, values     : [ true ]
+			, beforeshow : function() {
+				if ( G.status.song + 1 === G.status.pllength ) $( '#infoContent table' ).addClass( 'hide' );
+			}
+			, ok         : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
 				banner( 'Roll The Dice', 'On ...', 'librandom' );
@@ -1927,7 +1931,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$target = $( e.target );
-	if ( $target.hasClass( 'pl-icon' ) || $target.hasClass( 'fa-save' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ![ 'mpd', 'upnp' ].includes( G.status.player ) ) {

@@ -980,7 +980,7 @@ function plRemove( $li ) {
 		}
 		var i = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
-			if ( i < G.status.pllength ) {
+			if ( $li.next().is( 'li' ) ) {
 				var activenext = i;
 				$li.next().addClass( 'active' );
 			} else {
