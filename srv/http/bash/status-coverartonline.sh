@@ -22,14 +22,14 @@ else
 	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
-data=$( curl -sGk -m 5 \
+data=$( curl -sfG -m 5 \
 	--data-urlencode "artist=$artist" \
 	--data-urlencode "$param" \
 	--data "$method" \
 	--data "api_key=$apikey" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-[[ $data =~ error ]] && exit
+[[ $? != 0 || $data =~ error ]] && exit
 
 if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< "$data" )
@@ -46,7 +46,10 @@ if [[ $image && $image != null ]]; then
 	else
 ### 2 - coverartarchive.org #####################################
 		mbid=$( jq -r .mbid <<< "$album" )
-		[[ $mbid && $mbid != null ]] && url=$( curl -skL -m 10 https://coverartarchive.org/release/$mbid | jq -r .images[0].image )
+		if [[ $mbid && $mbid != null ]]; then
+			imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
+			[[ $? == 0 ]] && url=$( echo "$imgdata" | jq -r .images[0].image )
+		fi
 	fi
 fi
 [[ ! $url || $url == null ]] && exit
@@ -58,8 +61,7 @@ else
 	[[ $type ]] && prefix=$type || prefix=online
 	coverfile=$dirshm/$prefix/$name.$ext
 fi
-curl -sL $url -o $coverfile
-[[ ! -e $coverfile ]] && exit
+curl -sfL $url -o $coverfile || exit
 
 data='
   "url"   : "'${coverfile:9}'"

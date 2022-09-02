@@ -451,10 +451,9 @@ mirrorlist )
 				| head -1 \
 				| sed 's|\.*mirror.*||; s|.*//||' )
 	[[ ! $current ]] && current=0
-	if ! grep -q '^###' $file; then
-		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
-		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
-	fi
+	pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
+	curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
+	[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
 	readarray -t lines <<< $( awk NF $file \
 								| sed -n '/### A/,$ p' \
 								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
