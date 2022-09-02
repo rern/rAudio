@@ -1830,12 +1830,13 @@ $( '#button-pl-librandom' ).click( function() {
 		info( {
 			  icon    : 'librandom'
 			, title   : 'Roll The Dice'
-			, message : 'Randomly add songs and play continuously?'
+			, message : 'Randomly add songs and play continuously.'
+			, checkbox : [ 'Start from current song' ]
 			, ok      : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
-				banner( 'Roll The Dice', 'Add+play ...', 'librandom' );
-				bash( [ 'librandom', true ] );
+				banner( 'Roll The Dice', 'On ...', 'librandom' );
+				bash( [ 'librandom', true, infoVal() ] );
 			}
 		} );
 	}

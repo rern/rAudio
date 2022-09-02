@@ -134,6 +134,44 @@ pladdPosition() {
 		pos=$(( $( mpc playlist | wc -l ) + 1 ))
 	fi
 }
+plAddRandom() {
+	readarray -t status <<< $( { echo status; sleep 0.05; } \
+										| telnet 127.0.0.1 6600 2> /dev/null \
+										| awk '/^playlistlength:|^song:/ {print $NF}' )
+	total=${status[0]}
+	song=${status[1]}
+	diff=$(( total - song ))
+	(( $diff > 2 )) && return
+	
+	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
+	mpcls=$( mpc ls "$dir" )
+	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
+	if [[ $cuefile ]]; then
+		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$cuefile" | wc -l ) - 1 ))
+		range=$( shuf -i 0-$plL -n 1 )
+		file="$range $cuefile"
+		grep -q "$file" $dirsystem/librandom && randomAdd && return
+		
+		mpc --range=$range load "$cuefile"
+	else
+		file=$( shuf -n 1 <<< "$mpcls" )
+		grep -q "$file" $dirsystem/librandom && randomAdd && return
+		
+		mpc add "$file"
+	fi
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( cat $dirsystem/librandom | wc -l ) ))
+	if (( $diffcount > 1 )); then
+		echo $file >> $dirsystem/librandom
+	else
+		> $dirsystem/librandom
+	fi
+	if (( $diff < 3 )); then
+		randomAdd
+	else
+		sleep 2
+		pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+	fi
+}
 pushstreamImage() {
 	target=$1
 	[[ ! -e $target ]] && exit
@@ -677,15 +715,19 @@ latestclear )
 	;;
 librandom )
 	enable=${args[1]}
+	[[ ${args[2]} == false ]] && startnew=1
 	if [[ $enable == false ]]; then
 		rm -f $dirsystem/librandom
 	else
 		mpc -q random 0
 		plL=$( mpc playlist | wc -l )
-		$dirbash/cmd-librandom.sh start
+		if [[ $startnew ]]; then
+			mpc -q play $plL
+			mpc -q stop
+		fi
 		touch $dirsystem/librandom
-		sleep 1
-		mpc -q play $(( plL + 1 ))
+		plAddRandom
+		[[ $startnew ]] && mpc -q play $(( plL + 1 ))
 	fi
 	pushstream option '{ "librandom": '$enable' }'
 	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
@@ -791,7 +833,7 @@ mpcprevnext )
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
 			mpc | grep -q 'consume: on' && mpc -q del $current
-			[[ -e $dirsystem/librandom ]] && $dirbash/cmd-librandom.sh
+			[[ -e $dirsystem/librandom ]] && plAddRandom
 		else
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
@@ -965,6 +1007,9 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
+pladdrandom )
+	plAddRandom
+	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
 		mpc -q crop
@@ -973,7 +1018,7 @@ plcrop )
 		mpc -q crop
 		mpc -q stop
 	fi
-	systemctl -q is-active libraryrandom && $dirbash/cmd-librandom.sh
+	[[ -e $dirsystem/librandom ]] && plAddRandom
 	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;

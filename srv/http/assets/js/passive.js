@@ -435,7 +435,7 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( G.local || G.plremove || G.sortable ) return
+	if ( G.local || G.sortable || $( '.pl-remove' ).length ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -447,7 +447,7 @@ function psPlaylist( data ) {
 			G.autoplaycd = 1;
 			setTimeout( function() { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
-			if ( G.playlist && !G.plremove ) renderPlaylist( data );
+			if ( G.playlist && !G.savedlist && !G.savedplaylist ) renderPlaylist( data );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
