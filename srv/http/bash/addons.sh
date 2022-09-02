@@ -74,12 +74,9 @@ title() {
 getinstallzip() {
 	echo $bar Get files ...
 	installfile=$branch.tar.gz
-	curl -skLO $( jq -r .$alias.installurl $addonsjson \
+	curl -sfkLO $( jq -r .$alias.installurl $addonsjson \
 					| sed "s|raw/main/install.sh|archive/$installfile|" )
-	if [[ ! -e $installfile ]]; then
-		echo -e "$warn Get files failed."
-		exit
-	fi
+	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
 	
 	echo
 	echo $bar Install new files ...
