@@ -4,21 +4,23 @@
 
 # bluetooth
 if systemctl -q is-active bluetooth; then
-	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-	readarray -t macs <<< $( ls -1 /var/lib/bluetooth/$controller | egrep -v 'cache|settings' )
-	if [[ $macs ]]; then
-		for mac in "${macs[@]}"; do
+	readarray -t devices <<< $( bluetoothctl devices Paired \
+									| cut -d' ' -f2,3- \
+									| sort -k2 -fh )
+	if [[ $devices ]]; then
+		for dev in "${devices[@]}"; do
+			mac=${dev/ *}
+			name=${dev/$mac }
 			readarray -t info <<< $( bluetoothctl info $mac \
-										| egrep 'Name: |Connected: |UUID: Audio' \
-										| sed -E 's/^\s*Name: //
-												  s/^\s*Connected: yes/true/
+										| egrep 'Connected: |UUID: Audio' \
+										| sed -E 's/^\s*Connected: yes/true/
 												  s/^\s*Connected: no/false/
 												  s/\s*UUID: Audio (.*) .*/\1/' )
 			listbt+=',{
   "mac"       : "'$mac'"
-, "name"      : "'${info[0]}'"
-, "connected" : '${info[1]}'
-, "type"      : "'${info[2]}'"
+, "name"      : "'$name'"
+, "connected" : '${info[0]}'
+, "type"      : "'${info[1]}'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"

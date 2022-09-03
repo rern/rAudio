@@ -48,21 +48,23 @@ fi
 bluetoothctl --timeout=10 scan on &> /dev/null
 devices=$( bluetoothctl devices \
 			| grep -v ' ..-..-..-..-..-..$' \
-			| sed -E 's/Device (..:..:..:..:..:..) (.*)/\2^\1/' \
-			| sort -f )
+			| cut -d' ' -f2,3- \
+			| sort -k2 -fh )
 [[ ! $devices ]] && exit
 
-controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-readarray -t macs <<< $( ls -1 /var/lib/bluetooth/$controller | egrep -v 'cache|settings' )
-if [[ $macs ]]; then
-	for mac in "${macs[@]}"; do
-		devices=$( grep -v $mac <<< "$devices" )
-	done
+paired=$( bluetoothctl devices Paired \
+			| cut -d' ' -f2,3- \
+			| sort -k2 -fh )
+if [[ $paired ]]; then
+	devices=$( echo "$devices
+$paired" \
+	| sort \
+	| uniq -u )
 fi
 readarray -t devices <<< "$devices"
 for dev in "${devices[@]}"; do
-	name=${dev/^*}
-	mac=${dev/*^}
+	mac=${dev/ *}
+	name=${dev/$mac }
 	data+=',{
 "name" : "'$name'"
 , "mac"  : "'$mac'"
