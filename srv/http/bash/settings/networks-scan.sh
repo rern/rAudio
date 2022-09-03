@@ -39,35 +39,28 @@ if [[ $1 == wlan ]]; then
 	# connected ssid
 	connectedssid=$( iwgetid $wlandev -r )
 	scan=$( sed '/"ssid":"'$connectedssid'"/ a\,"connected":true' <<< "$scan" )
-
-	# },{... > [ {...} ]
-	echo "[ ${scan:2} } ]" | jq
+	
+	echo "[ ${scan:2} } ]" # },{... > [ {...} ]
 	exit
 fi
 
 bluetoothctl --timeout=10 scan on &> /dev/null
-devices=$( bluetoothctl devices \
-			| grep -v ' ..-..-..-..-..-..$' \
-			| cut -d' ' -f2,3- \
-			| sort -k2 -fh )
+devices=$( bluetoothctl devices | grep -v ' ..-..-..-..-..-..$' )
 [[ ! $devices ]] && exit
 
-paired=$( bluetoothctl devices Paired \
-			| cut -d' ' -f2,3- \
-			| sort -k2 -fh )
+paired=$( bluetoothctl devices Paired )
 if [[ $paired ]]; then
 	devices=$( echo "$devices
 $paired" \
-	| sort \
+	| sort -k3 -fh \
 	| uniq -u )
 fi
 readarray -t devices <<< "$devices"
 for dev in "${devices[@]}"; do
-	mac=${dev/ *}
-	name=${dev/$mac }
 	data+=',{
-"name" : "'$name'"
-, "mac"  : "'$mac'"
+  "name" : "'$( echo $dev | cut -d' ' -f3- )'"
+, "mac"  : "'$( echo $dev | cut -d' ' -f2 )'"
 }'
 done
-data2json "$data"
+
+echo "[ ${data:1} ]" # ,{...} > [ {...} ]
