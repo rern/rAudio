@@ -7,18 +7,12 @@ if systemctl -q is-active bluetooth; then
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
-			name=$( echo $dev | cut -d' ' -f3- )
 			mac=$( echo $dev | cut -d' ' -f2 )
-			readarray -t info <<< $( bluetoothctl info $mac \
-										| egrep 'Connected: |UUID: Audio' \
-										| sed -E 's/^\s*Connected: yes/true/
-												  s/^\s*Connected: no/false/
-												  s/\s*UUID: Audio (.*) .*/\1/' )
 			listbt+=',{
-  "name"      : "'$name'"
-, "mac"       : "'$mac'"
-, "connected" : '${info[0]}'
-, "type"      : "'${info[1]}'"
+  "mac"       : "'$mac'"
+, "name"      : "'$( echo $dev | cut -d' ' -f3- )'"
+, "connected" : '$( bluetoothctl devices Connected | grep -q $mac && echo true || echo false )'
+, "type"      : "'$( bluetoothctl info $mac | grep -q 'UUID: Audio' && echo true || echo false )'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"
