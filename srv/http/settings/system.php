@@ -126,8 +126,6 @@ $body = [
 		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
- • Pairing:&emsp;<i class="fa fa-networks"></i>Networks > Bluetooth&ensp;<i class="fa fa-search wh"></i>
- • Button on device can be used for play/pause
 HTML
 	]
 	, [
@@ -139,10 +137,11 @@ HTML
 		, 'setting'  => true
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-Auto start Access Point - On failed connection or no router
-Country of Wi-Fi regulatory domain:
- • 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
- • The connected router may override it to a certain country.
+<i class="fa fa-gear"></i> Settings
+ • Auto start Access Point - On failed connection or no router
+ • Country of Wi-Fi regulatory domain:
+ &emsp; - 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+ &emsp; - The connected router may override it to a certain country.
 HTML
 	]
 ];
@@ -334,7 +333,7 @@ Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, 
  &emsp; • Samba: <code>read only = no</code>
  &emsp; • Windows: <code>Everyone - Full Control</code>
  • On each rAudio
-  &emsp; • Storage > <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
+  &emsp; • Storage <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
   &emsp; • Shared Data - Enable to connect the share.
  • <code>Use data from this rAudio</code>:
  &emsp; • Check only on rAudio with data to be used or to overwrite existing.
