@@ -450,11 +450,10 @@ function webRadioEdit() {
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : function() {
-			$( '#addwebradiodir' ).empty();
+			$( '#addwebradiodir' ).remove();
 			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
 				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
 			}
-			if $( $( '#lib-path .lipath' ).text() ) $( '#addwebradiodir' ).remove();
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
@@ -492,19 +491,23 @@ function webRadioNew( name, url, charset ) {
 		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : function() {
-			$( '#addwebradiodir' ).click( function() {
-				info( {
-					  icon       : 'webradio'
-					, title      : 'Add New Folder'
-					, textlabel  : 'Name'
-					, focus      : 0
-					, checkblank : 1
-					, ok         : function() {
-						var dir = $( '#lib-path .lipath' ).text();
-						bash( [ 'wrdirnew', dir, infoVal() ] );
-					}
+			if ( $( '#lib-path .lipath' ).text() ) {
+				$( '#addwebradiodir' ).remove();
+			} else {
+				$( '#addwebradiodir' ).click( function() {
+					info( {
+						  icon       : 'webradio'
+						, title      : 'Add New Folder'
+						, textlabel  : 'Name'
+						, focus      : 0
+						, checkblank : 1
+						, ok         : function() {
+							var dir = $( '#lib-path .lipath' ).text();
+							bash( [ 'wrdirnew', dir, infoVal() ] );
+						}
+					} );
 				} );
-			} );
+			}
 		}
 		, ok           : function() {
 			var values = infoVal();
