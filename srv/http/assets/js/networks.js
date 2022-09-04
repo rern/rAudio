@@ -9,7 +9,7 @@ $( '.container' ).click( function( e ) {
 } );
 $( '.back' ).click( function() {
 	clearTimeout( G.timeoutScan );
-	$( '#divinterface' ).removeClass( 'hide' );
+	$( '#help, #divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
@@ -24,7 +24,7 @@ $( '#btscan' ).click( function() {
 		return
 	}
 	
-	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
@@ -39,7 +39,13 @@ $( '#wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
-	G.hostapd ? infoAccesspoint() : wlanStatus();
+	if ( G.hostapd ) {
+		infoAccesspoint();
+	} else {
+		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+		$( '#divwifi' ).removeClass( 'hide' );
+		scanWlan();
+	}
 } );
 $( '#lanadd' ).click( function() {
 	info( {
@@ -521,28 +527,9 @@ function scanBluetooth() {
 function scanWlan() {
 	bash( '/srv/http/bash/settings/networks-scan.sh wlan', function( data ) {
 		if ( data ) {
-			var signals = '';
-			data.forEach( function( list, i, obj ) {
-				if ( !list.ssid ) { // remove blank ssid
-					obj.splice( i, 1 );
-					return
-				}
-				
-				if ( list.signal != 0 ) signals += list.signal;
-			} );
-			data.sort( function( a, b ) {
-				if ( signals ) {
-					var ab = signals.includes( 'dBm' ) ? [ a.signal, b.signal ] : [ b.signal, a.signal ];
-				} else {
-					var ab = [ a.ssid, b.ssid ];
-				}
-				return  ab[ 0 ].localeCompare( ab[ 1 ], 'en', { numeric: true } )
-			} );
 			G.listwlscan = data;
 			var htmlwl = '';
 			data.forEach( function( list, i ) {
-				if ( 'profile' in list ) return
-				
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
 					var dbm = parseInt( list.signal.slice( 0, -4 ) );
 					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );
@@ -551,11 +538,9 @@ function scanWlan() {
 					var signal = '';
 				}
 				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
-				if ( list.connected ) htmlwl += '<grn>•</grn>&ensp;';
 				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
 				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
-				if ( list.profile && !list.connected ) htmlwl += '&ensp;<i class="fa fa-save-circle wh"></i>';
 				htmlwl += '</li>';
 			} );
 		} else {
@@ -564,9 +549,4 @@ function scanWlan() {
 		$( '#listwlscan' ).html( htmlwl );
 		G.timeoutScan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
-}
-function wlanStatus() {
-	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
-	$( '#divwifi' ).removeClass( 'hide' );
-	scanWlan();
 }

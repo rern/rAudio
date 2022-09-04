@@ -135,7 +135,7 @@ fi
 linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
 [[ $linecdio ]] && sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
 
-lastline=$(( $( sed -n '/^resampler/=' /etc/mpd.conf ) + 3 ))
+lastline=$(( $( sed -n '/^audio_output/ =' /etc/mpd.conf | head -1 ) - 1 ))
 global=$( sed -n "1,$lastline p" /etc/mpd.conf | sed '/# custom0/,/# custom1/ d' )
 if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
 	custom=$( echo "

@@ -17,7 +17,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 <span class="help-block hide"><img src="/assets/img/relays.jpg">
 Power on/off peripheral equipments
-On/Off:  <i class="fa fa-plus-r"></i>System | <i class="fa fa-relays"></i>
+On/Off:  <i class="fa fa-plus-r"></i>System | <i class="fa fa-relays wh"></i>
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 </span>

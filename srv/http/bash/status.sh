@@ -190,27 +190,24 @@ for line in "${lines[@]}"; do
 			bitdepth=${data[1]}
 			;;
 		bitrate )
-			bitrate=$(( val * 1000 ));;
-		# true/false
+			bitrate=$(( val * 1000 ))
+			;;
+		duration | playlistlength | song | state | Time )
+			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
+		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json
+			printf -v $key '%s' "${val//\"/\\\"}"
+			;;
+		file )
+			filenoesc=$val # no escape " for coverart and ffprobe
+			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
+			file=${val//\"/\\\"} # escape " for json
+			;;
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
 ########
 			status+='
 , "'$key'" : '$tf
 			;;
-		# number
-		duration | playlistlength | song | Time )
-			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
-		# string - escaped name
-		Album | AlbumArtist | Artist | Name | Title )
-			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
-		file )
-			file0=$val           # no escape " for coverart and ffprobe
-			[[ $file0 == *".cue/track"* ]] && file0=$( dirname "$file0" )
-			file=${val//\"/\\\"};; # escape " for json
-		# string
-		* ) # state | updating_db
-			[[ $key ]] && printf -v $key '%s' "$val";;
 	esac
 done
 
@@ -423,7 +420,7 @@ samplingLine() {
 							-v quiet \
 							-show_entries format=bit_rate \
 							-of default=noprint_wrappers=1:nokey=1 \
-							"/mnt/MPD/$file" )
+							"/mnt/MPD/$filenoesc" )
 		fi
 	fi
 	if (( $bitrate < 1000000 )); then
@@ -431,7 +428,6 @@ samplingLine() {
 	else
 		[[ $bitdepth == dsd ]] && bitrate=$(( bitrate / 2 ))
 		rate="$( awk "BEGIN { printf \"%.2f\n\", $bitrate / 1000000 }" ) Mbit/s"
-#		rate=$( echo "print $bitrate / 1000000" | perl )' Mbit/s'
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
@@ -439,7 +435,6 @@ samplingLine() {
 	else
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
-#		sample=$( echo "print $samplerate / 1000" | perl )' kHz'
 		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then
 			sampling="$bitdepth bit $sample $rate"
 		else # lossy has no bitdepth
@@ -481,14 +476,13 @@ else
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
-#				bitrate=$( echo "print $dsd * 44100 / 1000000" | perl )
 				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
 			else
 				data=( $( ffprobe -v quiet -select_streams a:0 \
 					-show_entries stream=bits_per_raw_sample,sample_rate \
 					-show_entries format=bit_rate \
 					-of default=noprint_wrappers=1:nokey=1 \
-					"/mnt/MPD/$file0" ) )
+					"/mnt/MPD/$filenoesc" ) )
 				samplerate=${data[0]}
 				bitdepth=${data[1]}
 				bitrate=${data[2]}
@@ -521,7 +515,7 @@ if [[ $ext != CD && ! $stream ]]; then
 	coverart=$( $dirbash/status-coverart.sh "\
 $AlbumArtist
 $Album
-$file0" )
+$filenoesc" )
 	[[ $coverart ]] && coverart="${coverart:0:-4}.$date.${coverart: -3}"
 fi
 elapsedGet

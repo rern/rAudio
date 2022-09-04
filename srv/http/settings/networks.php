@@ -10,20 +10,19 @@ htmlHead( [ //////////////////////////////////
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
 	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
- • Pairing:
+ • Pair:
  &emsp; - On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
- &emsp; - On rAudio -&ensp;<i class="fa fa-search"></i>Search > Select receiver to pair
- • Connecting:
+ &emsp; - On rAudio - Bluetooth &nbsp;<i class="fa fa-search wh"></i>Search > Select to pair
+ • Connect:
  &emsp; - On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
- • Receiver buttons:
- &emsp; - Playback controls <code>play</code> <code>pause</code> <code>previous</code> <code>next</code>
+ &emsp; - Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
- • Pairing:
+ • Pair:
  &emsp; - On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
  &emsp; - On sender - Search > Select rAudio to pair
  &emsp; - <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
- • Connecting:
+ • Connect:
  &emsp; - On sender - Select rAudio > <code>connect</code> / <code>disconnect</code>
 </div>
 </div>
@@ -36,7 +35,9 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="help-block hide">Avoid connecting to access points which signal less than 2 bars, audio quality and responsiveness are very likely to suffer.
+	<div class="help-block hide">
+ • Connect: Wi-Fi &nbsp;<i class="fa fa-search wh"></i>Search > Select to connect
+ • Avoid connecting to access points which signal is less than 2 bars.
 </div>
 </div>
 <div id="divlan" class="section">

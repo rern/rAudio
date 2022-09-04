@@ -451,9 +451,10 @@ mirrorlist )
 				| head -1 \
 				| sed 's|\.*mirror.*||; s|.*//||' )
 	[[ ! $current ]] && current=0
-	if ! grep -q '^###' $file; then
+	if : >/dev/tcp/8.8.8.8/53; then
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
-		curl -skL https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist -o $file
+		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
+		[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
 	fi
 	readarray -t lines <<< $( awk NF $file \
 								| sed -n '/### A/,$ p' \

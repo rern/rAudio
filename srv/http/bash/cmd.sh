@@ -10,7 +10,8 @@ addonsListGet() {
 	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
 	
 	[[ ! $1 ]] && branch=main || branch=$1
-	curl -skL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json || ( echo -1 && exit )
+	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
+	[[ $? != 0 ]] && echo -1 && exit
 }
 equalizerGet() { # sudo - mixer equal is user dependent
 	val=$( sudo -u mpd amixer -MD equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
