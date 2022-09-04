@@ -9,7 +9,7 @@ $( '.container' ).click( function( e ) {
 } );
 $( '.back' ).click( function() {
 	clearTimeout( G.timeoutScan );
-	$( '#divinterface' ).removeClass( 'hide' );
+	$( '#help, #divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
@@ -24,7 +24,7 @@ $( '#btscan' ).click( function() {
 		return
 	}
 	
-	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();
 } );
@@ -39,7 +39,13 @@ $( '#wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
-	G.hostapd ? infoAccesspoint() : wlanStatus();
+	if ( G.hostapd ) {
+		infoAccesspoint();
+	} else {
+		$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
+		$( '#divwifi' ).removeClass( 'hide' );
+		scanWlan();
+	}
 } );
 $( '#lanadd' ).click( function() {
 	info( {
@@ -543,9 +549,4 @@ function scanWlan() {
 		$( '#listwlscan' ).html( htmlwl );
 		G.timeoutScan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
-}
-function wlanStatus() {
-	$( '#divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
-	$( '#divwifi' ).removeClass( 'hide' );
-	scanWlan();
 }
