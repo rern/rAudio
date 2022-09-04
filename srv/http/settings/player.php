@@ -179,7 +179,7 @@ Automatic update MPD database when files changed.
 HTML
 	]
 	, [
-		  'label'    => 'SoXR resampler'
+		  'label'    => 'SoXR Resampler'
 		, 'id'       => 'soxr'
 		, 'sublabel' => 'custom settings'
 		, 'setting'  => true
