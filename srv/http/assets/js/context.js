@@ -454,6 +454,7 @@ function webRadioEdit() {
 			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
 				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
 			}
+			if $( $( '#lib-path .lipath' ).text() ) $( '#addwebradiodir' ).remove();
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
 		, ok           : function() {
