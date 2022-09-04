@@ -8,11 +8,12 @@ if systemctl -q is-active bluetooth; then
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
 			mac=$( echo $dev | cut -d' ' -f2 )
+			info=$( bluetoothctl info $mac )
 			listbt+=',{
   "mac"       : "'$mac'"
 , "name"      : "'$( echo $dev | cut -d' ' -f3- )'"
-, "connected" : '$( bluetoothctl devices Connected | grep -q $mac && echo true || echo false )'
-, "type"      : "'$( bluetoothctl info $mac | grep -q 'UUID: Audio' && echo true || echo false )'"
+, "connected" : '$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )'
+, "type"      : "'$( echo "$info" | awk '/UUID: Audio/ {print $3}' )'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"

@@ -18,17 +18,17 @@ if [[ $1 == wlan ]]; then
 				| sed -E 's/^\s*|\s*$//g' \
 				| egrep '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 				| sed -E 's/^Cell.*/},{/
-						  s/^ESSID:/,"ssid":/
-						  s/\\x00//g
+						  s/^Quality.*level.(.*)/,"signal":"\1"/
 						  s/^Encryption key:(.*)/,"encrypt":"\1"/
+						  s/^ESSID:/,"ssid":/
 						  s/^IE.*WPA.*/,"wpa":true/
-						  s/^Quality.*level.(.*)/,"signal":"\1"/' \
+						  s/\\x00//g' \
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
 				| sed -e '1 d' \
-					  -e '$ s/$/}/' \
 					  -e '/"ssid":""/ d' \
 					  -e 's/wpa.*wpa/wpa/' \
+					  -e '$ s/$/}/' \
 				| sort )
 	
 	# omit saved profile
