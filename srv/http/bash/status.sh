@@ -510,7 +510,7 @@ if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	outputStatus
 fi
 
-if [[ $ext != CD && ! $stream  && $AlbumArtist && $Album ]]; then
+if [[ $ext != CD && ! $stream && $AlbumArtist && $Album ]]; then
 	getcover=1
 	coverart=$( $dirbash/status-coverart.sh "\
 $AlbumArtist
