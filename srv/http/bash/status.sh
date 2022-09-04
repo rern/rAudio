@@ -190,27 +190,24 @@ for line in "${lines[@]}"; do
 			bitdepth=${data[1]}
 			;;
 		bitrate )
-			bitrate=$(( val * 1000 ));;
-		# true/false
+			bitrate=$(( val * 1000 ))
+			;;
+		duration | playlistlength | song | state | Time )
+			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
+		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json
+			printf -v $key '%s' "${val//\"/\\\"}"
+			;;
+		file )
+			file0=$val # no escape " for coverart and ffprobe
+			[[ $file0 == *".cue/track"* ]] && file0=$( dirname "$file0" )
+			file=${val//\"/\\\"} # escape " for json
+			;;
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
 ########
 			status+='
 , "'$key'" : '$tf
 			;;
-		# number
-		duration | playlistlength | song | Time )
-			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
-		# string - escaped name
-		Album | AlbumArtist | Artist | Name | Title )
-			printf -v $key '%s' "${val//\"/\\\"}";; # escape " for json
-		file )
-			file0=$val           # no escape " for coverart and ffprobe
-			[[ $file0 == *".cue/track"* ]] && file0=$( dirname "$file0" )
-			file=${val//\"/\\\"};; # escape " for json
-		# string
-		* ) # state | updating_db
-			[[ $key ]] && printf -v $key '%s' "$val";;
 	esac
 done
 
@@ -423,7 +420,7 @@ samplingLine() {
 							-v quiet \
 							-show_entries format=bit_rate \
 							-of default=noprint_wrappers=1:nokey=1 \
-							"/mnt/MPD/$file" )
+							"/mnt/MPD/$file0" )
 		fi
 	fi
 	if (( $bitrate < 1000000 )); then
