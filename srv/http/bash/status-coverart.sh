@@ -19,10 +19,10 @@ localfile=$dirshm/local/$covername
 # found embedded
 embeddedname=$( echo ${filename%.*} | tr -d ' "`?/#&'"'" )
 embeddedfile=$dirshm/embedded/$embeddedname.jpg
-[[ -e "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
+[[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
 onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
-[[ -e $onlinefile ]] && echo ${onlinefile:9} && exit
+[[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 
 ##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
@@ -30,9 +30,9 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 										| egrep -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
 										| head -1 )
 if [[ $coverfile ]]; then
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" )
+	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - local path only
 	echo $coverfile
-	[[ -f $localfile ]] && echo $coverfile > $localfile # rawurlencode - local path only
+	[[ $covername ]] && echo $coverfile > $localfile
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
@@ -41,10 +41,12 @@ fi
 kid3-cli -c "cd \"$path\"" \
 		-c "select \"$filename\"" \
 		-c "get picture:$embeddedfile" &> /dev/null # suppress '1 space' stdout
-if [[ -e $embeddedfile ]]; then
+if [[ -f $embeddedfile ]]; then
 	echo ${embeddedfile:9}
 	exit
 fi
+
+[[ ! $artist || ! $album ]] && exit
 
 ##### online
 kill -9 $( pgrep status-coverartonline ) &> /dev/null
