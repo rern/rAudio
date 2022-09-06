@@ -250,6 +250,7 @@ HTML
 	, [
 		  'label'    => 'Scrobble'
 		, 'id'       => 'scrobble'
+		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
 		, 'setting'  => true
 		, 'help'     => <<< HTML
