@@ -1081,10 +1081,10 @@ plorder )
 	;;
 plremove )
 	pos=${args[1]}
-	activenext=${args[2]}
+	posprev=${args[2]}
 	if [[ $pos ]]; then
 		mpc -q del $pos
-		[[ $activenext ]] && mpc -q play $activenext && mpc -q stop
+		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
 	else
 		mpc -q clear
 	fi

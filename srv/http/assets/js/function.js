@@ -978,22 +978,20 @@ function plRemove( $li ) {
 				$count.prev().addBack().remove();
 			}
 		}
-		var i = $li.index() + 1;
+		var posprev = '';
+		var pos = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
 			if ( $li.next().is( 'li' ) ) {
-				var activenext = i;
 				$li.next().addClass( 'active' );
 			} else {
-				var activenext = i - 1;
+				posprev = pos - 1;
 				$li.prev().addClass( 'active' );
 			}
-		} else {
-			var activenext = '';
 		}
-		bash( [ 'plremove', i, activenext ] );
-		$( '#pl-list li .pos' ).slice( i ).each( function() {
-			$( this ).text( i );
-			i++
+		bash( [ 'plremove', pos, posprev ] );
+		$( '#pl-list li .pos' ).slice( pos ).each( function() {
+			$( this ).text( pos );
+			pos++
 		} );
 		$li.remove();
 	}
