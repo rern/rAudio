@@ -8,7 +8,7 @@ rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /
 # 20220814
 sed -i '/bluez-utils/ d' /etc/pacman.conf
 
-# 20220805
+# 20220808
 dirdata=/srv/http/data
 
 dab=$( pacman -Q dab-scanner 2> /dev/null )
@@ -49,7 +49,7 @@ $dirbash/cmd.sh dirpermissions
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20220805
+# 20220808
 udevadm control --reload-rules
 udevadm trigger
 
