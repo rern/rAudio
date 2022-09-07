@@ -609,7 +609,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case 'remove':
 			G.contextmenu = 1;
 			setTimeout( function() { G.contextmenu = 0 }, 500 );
-			plRemove( G.list.li );
+			playlistRemove( G.list.li );
 			return
 		case 'savedpladd':
 			if ( G.playlist ) {

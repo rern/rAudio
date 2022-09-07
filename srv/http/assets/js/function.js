@@ -957,8 +957,8 @@ function playlistFilter() {
 		$( '#pl-search-close' ).empty();
 	}
 }
-function plRemove( $li ) {
-	if ( G.status.pllength === 1 ) {
+function playlistRemove( $li ) {
+	if ( $( '#pl-list li' ).length === 1 ) {
 		bash( [ 'plremove' ] );
 	} else {
 		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
@@ -978,17 +978,18 @@ function plRemove( $li ) {
 				$count.prev().addBack().remove();
 			}
 		}
-		var posprev = '';
+		var poscurent = '';
 		var pos = $li.index() + 1;
 		if ( $li.hasClass( 'active' ) ) {
 			if ( $li.next().is( 'li' ) ) {
+				poscurent = pos;
 				$li.next().addClass( 'active' );
 			} else {
-				posprev = pos - 1;
+				poscurent = pos - 1;
 				$li.prev().addClass( 'active' );
 			}
 		}
-		bash( [ 'plremove', pos, posprev ] );
+		bash( [ 'plremove', pos, poscurent ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( function() {
 			$( this ).text( pos );
 			pos++
