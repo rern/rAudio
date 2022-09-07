@@ -2,13 +2,16 @@
 
 alias=r1
 
+# 20220907
+[[ $( pacman -Q bluez ) < 'bluez 5.65-3' ]] && pacman -Sy --noconfirm bluez
+
 # 20220826
 rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
 
 # 20220814
 sed -i '/bluez-utils/ d' /etc/pacman.conf
 
-# 20220805
+# 20220808
 dirdata=/srv/http/data
 
 dab=$( pacman -Q dab-scanner 2> /dev/null )
@@ -49,7 +52,7 @@ $dirbash/cmd.sh dirpermissions
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20220805
+# 20220808
 udevadm control --reload-rules
 udevadm trigger
 
