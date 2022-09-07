@@ -146,6 +146,10 @@ sed -i -e -E '/^auto_update|^audio_buffer_size| #custom$/ d
 	quality        "very high"\
 }
 ' /etc/mpd.conf
+if [[ ! -e $dirmpd/counts ]]; then
+	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+	echo '{ "webradio": '$webradio' }' > $dirmpd/counts
+fi
 
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
