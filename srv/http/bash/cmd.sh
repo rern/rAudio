@@ -1373,7 +1373,7 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
 	webradioCount $type
 	;;
 wrdirdelete )
