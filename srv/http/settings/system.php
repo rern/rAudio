@@ -68,9 +68,6 @@ CPU temperature:
  • 80-84°C: ARM cores throttled.
  • 85°C: ARM cores and GPU throttled.
  • RPi 3B+: 60°C soft limit (optimized throttling)
-<i class="fa fa-warning"></i> Under-voltage warning (if any):
- • occurred - Happenned.
- • currently detected - Currently under minimum limit - system is unstable.
 </div>
 </div>
 <div class="section">
