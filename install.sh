@@ -2,6 +2,9 @@
 
 alias=r1
 
+# 20220907
+[[ $( pacman -Q bluez ) < 'bluez 5.65-3' ]] && pacman -Sy --noconfirm bluez
+
 # 20220826
 rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
 
