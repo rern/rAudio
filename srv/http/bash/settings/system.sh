@@ -195,12 +195,12 @@ datarestore )
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
-	# temp 20220808
+	# temp 20220808 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	if [[ -e $dirdata/webradios ]]; then
 		mv $dirdata/webradio{s,}
 		mv $dirdata/{webradiosimg,webradio/img}
 	fi
-	
+	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
