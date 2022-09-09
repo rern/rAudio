@@ -915,14 +915,15 @@ ${ htmlname }
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
 			var $share = $( '#share' );
 			function hideOptions( type ) {
+				$share.val( '' );
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
-					 $( '.guest' ).addClass( 'hide' );
-					$share.val( '/'+ $share.val() );
+					$( '.guest' ).addClass( 'hide' );
+					$share.attr( 'placeholder', '/path/to/share' );
 				} else {
 					$( '#sharelabel' ).text( 'Share name' );
-					 $( '.guest' ).removeClass( 'hide' );
-					$share.val( $share.val().replace( /\//g, '' ) );
+					$( '.guest' ).removeClass( 'hide' );
+					$share.attr( 'placeholder', 'sharename' );
 				}
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
@@ -936,11 +937,14 @@ ${ htmlname }
 				}, 0 );
 			} );
 			$share.on( 'keyup paste', function() {
-				if ( $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ) {
-					setTimeout( function() {
-						$share.val( $share.val().replace( /[\/\\]/g, '' ) );
-					}, 0 );
-				}
+				setTimeout( function() {
+					var sharename = $share.val();
+					if ( $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ) {
+						$share.val( sharename.replace( /[\/\\]/g, '' ) );
+					} else {
+						if ( sharename[ 0 ] !== '/' ) $share.val( '/'+ sharename );
+					}
+				}, 0 );
 			} );
 		}
 		, cancel     : function() {
