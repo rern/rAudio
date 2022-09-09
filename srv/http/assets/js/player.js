@@ -364,13 +364,9 @@ function playbackIcon() {
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  G.version +'<br>'
-	if ( G.counts ) {
-		htmlstatus += '<i class="fa fa-song gr"></i>&ensp;'+ G.counts.song.toLocaleString() +'&emsp; '
-					 +'<i class="fa fa-album gr"></i>&ensp;'+ G.counts.album.toLocaleString() +'<wide>&emsp; '
-					 +'<i class="fa fa-webradio gr"></i>&ensp;'+ G.counts.webradio.toLocaleString() +'</wide>';
-	} else {
-		htmlstatus += '<gr>Updating ...</gr>';
-	}
+					+'<i class="fa fa-song gr"></i>&ensp;'+ ( G.counts.song || 0 ).toLocaleString() +'&emsp; '
+					+'<i class="fa fa-album gr"></i>&ensp;'+ ( G.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
+					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( G.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	if ( !G.active ) htmlstatus += '<br><i class="fa fa-warning red"></i>&ensp;MPD not running'
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( G.asoundcard != -1 ) {

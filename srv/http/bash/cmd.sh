@@ -1081,10 +1081,10 @@ plorder )
 	;;
 plremove )
 	pos=${args[1]}
-	activenext=${args[2]}
+	posprev=${args[2]}
 	if [[ $pos ]]; then
 		mpc -q del $pos
-		[[ $activenext ]] && mpc -q play $activenext && mpc -q stop
+		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
 	else
 		mpc -q clear
 	fi
@@ -1373,7 +1373,7 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ -z $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
 	webradioCount $type
 	;;
 wrdirdelete )

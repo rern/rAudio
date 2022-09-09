@@ -349,7 +349,7 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
-		status=$( egrep -v '^, *"state"|^, *"webradio"' <<< "$status" )
+		status=$( egrep -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"

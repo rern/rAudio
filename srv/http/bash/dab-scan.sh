@@ -32,7 +32,7 @@ for service in "${services[@]}"; do
 	echo "\
 $name
 48 kHz 160 kbit/s
-" > "$dirdabradio/$ensemble/rtsp:||$host|$channel_id"
+" > "$dirdabradio/$ensemble/rtsp:||$host:8554|$channel_id"
 	list+="\
   $channel_id:
     runOnDemand: /srv/http/bash/dab-start.sh $id $channel \$RTSP_PORT \$RTSP_PATH

@@ -868,7 +868,7 @@ function infoMount( values ) {
 	if ( !values || values.length === 8 ) {
 		var htmlname = `\
 <tr><td><gr>As:</gr> NAS/</td>
-	<td><input type="text"></td>
+	<td><input id="mountpoint" type="text"></td>
 </tr>`;
 		var chktext = 'Update Library on mount'
 	} else  {
@@ -889,8 +889,8 @@ ${ htmlname }
 <tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
-<tr id="sharename"><td>Share name</td>
-	<td><input type="text"></td>
+<tr><td id="sharelabel">Share name</td>
+	<td><input id="share" type="text"></td>
 </tr>
 <tr class="guest"><td>User</td>
 	<td><input type="text"></td>
@@ -913,23 +913,38 @@ ${ htmlname }
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
-			var $sharelabel = $( '#sharename td' ).eq( 0 );
-			var $share = $( '#sharename input' );
-			var $guest = $( '.guest' );
+			var $share = $( '#share' );
 			function hideOptions( type ) {
+				$share.val( '' );
 				if ( type === 'nfs' ) {
-					$sharelabel.text( 'Share path' );
-					$guest.addClass( 'hide' );
-					$share.val( $share.val() || '/' );
+					$( '#sharelabel' ).text( 'Share path' );
+					$( '.guest' ).addClass( 'hide' );
+					$share.attr( 'placeholder', '/path/to/share' );
 				} else {
-					$sharelabel.text( 'Share name' );
-					$guest.removeClass( 'hide' );
-					$share.val( $share.val().replace( /\//g, '' ) );
+					$( '#sharelabel' ).text( 'Share name' );
+					$( '.guest' ).removeClass( 'hide' );
+					$share.attr( 'placeholder', 'sharename' );
 				}
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
 			$( '#infoContent input:radio' ).change( function() {
 				hideOptions( $( this ).val() );
+			} );
+			var $mountpoint = $( '#mountpoint' );
+			$mountpoint.on( 'keyup paste', function() {
+				setTimeout( function() {
+					$mountpoint.val( $mountpoint.val().replace( /\//g, '' ) );
+				}, 0 );
+			} );
+			$share.on( 'keyup paste', function() {
+				setTimeout( function() {
+					var sharename = $share.val();
+					if ( $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ) {
+						$share.val( sharename.replace( /[\/\\]/g, '' ) );
+					} else {
+						if ( sharename[ 0 ] !== '/' ) $share.val( '/'+ sharename );
+					}
+				}, 0 );
 			} );
 		}
 		, cancel     : function() {

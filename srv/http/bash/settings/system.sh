@@ -158,6 +158,11 @@ databackup )
 	fi
 	mkdir -p $dirconfig/var/lib
 	cp -r /var/lib/bluetooth $dirconfig/var/lib &> /dev/null
+	xinitrcfiles=$( ls /etc/X11/xinit/xinitrc.d | grep -v 50-systemd-user.sh )
+	if [[ $xinitrcfiles ]]; then
+		mkdir -p $dirconfig/etc/X11/xinit
+		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
+	fi
 	
 	services='bluetooth hostapd localbrowser mpdscribble@mpd powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
@@ -190,18 +195,17 @@ datarestore )
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
-	# temp
+	# temp 20220808 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	if [[ -e $dirdata/webradios ]]; then
 		mv $dirdata/webradio{s,}
 		mv $dirdata/{webradiosimg,webradio/img}
 	fi
-	
+	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
 	sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig/etc/fstab
 	
-	rm -f $dirconfig/etc/{shairport-sync,spotifyd}.conf # temp: for ealier version
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
@@ -219,8 +223,6 @@ datarestore )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
 	rmdir /mnt/MPD/NAS/* &> /dev/null
-	chown -R http:http /srv/http
-	chown mpd:audio $dirmpd/mpd* &> /dev/null
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
@@ -240,36 +242,7 @@ datarestore )
 			done
 		fi
 	fi
-	
-	# temp 20220312 ###
-	readarray -t plfiles <<< $( ls -I '*.*' $dirplaylists )
-	if [[ $plfiles ]]; then
-		echo -e "\n\e[38;5;6m\e[48;5;6m . \e[0m Convert saved playlists ..."
-		for name in "${plfiles[@]}"; do
-			echo $name
-			plfile="$dirplaylists/$name"
-			list=$( grep '"file":' "$plfile" | sed 's/^\s*"file": "//; s/",$//; s/\\//g' )
-			if grep -q '^\s*"Range": ' "$plfile"; then
-				readarray -t file_track <<< $( grep -B1 -A5 '"Range":' "$plfile" \
-												| egrep '"file":|"Track":' \
-												| sed -E 's/^\s*"file": "|^\s*"Track": //; s/",$|,$//; s/\\//g' )
-				iL=${#file_track[@]}
-				for (( i=0; i < iL; i++ )); do
-					track=000${file_track[$(( i + 1 ))]}
-					file=${file_track[i]}
-					filecue="${file%.*}.cue/track${track: -4}"
-					list=$( sed "s|$file|$filecue|" <<< "$list" )
-					(( i++ ))
-				done
-			fi
-			echo "$list" > "$plfile.m3u"
-		    rm "$plfile"
-		done
-	fi
-	# temp 20220312 ###
-	
-	chown -R http:http /srv/http/{assets,bash,settings}
-	chmod 755 /srv/http/* $dirbash/* /srv/http/settings/*
+	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;

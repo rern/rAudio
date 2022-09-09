@@ -462,7 +462,7 @@ $( '#playback' ).click( function() {
 		switchPage( 'playback' );
 	}
 } );
-$( '#playlist' ).click( function() {
+$( '#playlist, #button-playlist' ).click( function() {
 	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) getPlaylist();
@@ -1770,9 +1770,6 @@ $( '.page' ).on( 'click', '.index a', function() {
 	$( 'html, body' ).scrollTop( scrollT - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
-$( '#button-playlist' ).click( function() {
-	$( '#playlist' ).click();
-} );
 $( '#pl-manage i' ).click( function() {
 	menuHide();
 } );
@@ -2013,7 +2010,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.wrsave' ).toggleClass( 'hide', !notsaved );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
-	plRemove( $( this ).parent() );
+	playlistRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	menuHide();

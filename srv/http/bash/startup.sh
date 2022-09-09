@@ -140,9 +140,7 @@ if [[ -e $dirsystem/hddspindown ]]; then
 fi
 
 if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
-	if [[ ! -z $( ls /mnt/MPD/NAS ) || ! -z $( ls /mnt/MPD/SD ) || ! -z $( ls /mnt/MPD/USB ) ]]; then
-		$dirbash/cmd.sh$'\n'rescan
-	fi
+	$dirbash/cmd.sh$'\n'rescan
 elif [[ -e $dirmpd/updating ]]; then
 	$dirbash/cmd.sh$'\n'"$( cat $dirmpd/updating )"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
