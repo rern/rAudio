@@ -145,7 +145,7 @@ foreach( $arrayalias as $alias ) {
 	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
 }
 ?>
-<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
