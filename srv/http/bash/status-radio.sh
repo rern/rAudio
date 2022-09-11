@@ -45,6 +45,7 @@ dabData() {
 		metadataGet
 	else
 		readarray -t metadata <<< "$artist_title"
+		metadata[3]=dab
 	fi
 }
 radiofranceData() {

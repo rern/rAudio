@@ -19,7 +19,7 @@ host=$( hostname -f )
 readarray -t services <<< $( egrep '^Ensemble|^audioservice' $dirshm/dabscan | sed 's/ *;/;/g' )
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( echo ${service/;*} | cut -d' ' -f2- )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
