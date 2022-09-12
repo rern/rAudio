@@ -40,7 +40,7 @@ fi
 
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q 'inet.*broadcast' && connected=1 && break
+		ifconfig | grep -q inet.*broadcast && connected=1 && break
 		sleep $2
 	done
 }
