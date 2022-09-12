@@ -9,7 +9,6 @@ if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	exit
 fi
 
-dirdabradio=$dirdabradio
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
