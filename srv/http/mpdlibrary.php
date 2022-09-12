@@ -392,7 +392,9 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = substr( $dir, 9 );
+		$path = substr( $dir, 9 );     // /srv/http/data/webradio/... > /data/webradio/..
+		$lipath = substr( $path, 15 ); // /data/webradio/path..       > path
+		$lipath.= $lipath ? '/'.$subdir : $subdir;
 		foreach( $array as $each ) {
 			if ( count( $files ) ) {
 				$html.= '<li class="dir">';
@@ -404,7 +406,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			$subdir = $each->subdir;
 			$thumbsrc = rawurlencode( $path.$subdir.'/thumb.'.time().'.jpg' );
 			$html.= '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-wrdir">
-					<a class="lipath">'.$subdir.'</a>
+					<a class="lipath">'.$lipath.'</a>
 					<span class="single">'.$subdir.'</span>
 				</li>';
 		}
