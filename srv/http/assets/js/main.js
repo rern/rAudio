@@ -1848,7 +1848,7 @@ $( '#button-pl-shuffle' ).click( function() {
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
 		, ok      : function() {
-			bash( [ 'plshuffle' ] );
+			bash( [ 'mpcshuffle' ] );
 		}
 	} );
 } );
@@ -1860,7 +1860,7 @@ $( '#button-pl-clear' ).click( function() {
 			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
 			, okcolor     : red
 			, ok          : function() {
-				bash( [ 'plremove' ] );
+				bash( [ 'mpcremove' ] );
 				banner( 'Playlist', 'Clear ...', 'playlist blink', -1 );
 			}
 		} );
@@ -1878,13 +1878,13 @@ $( '#button-pl-clear' ).click( function() {
 				, function() {
 					$( '#pl-list li:not( .active )' ).remove();
 					if ( !G.status.librandom ) local();
-					bash( [ 'plcrop' ] );
+					bash( [ 'mpccrop' ] );
 				}
 			]
 			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
 			, okcolor     : red
 			, ok          : function() {
-				bash( [ 'plremove' ] );
+				bash( [ 'mpcremove' ] );
 				setPlaybackBlank();
 			}
 		} );

@@ -959,7 +959,7 @@ function playlistFilter() {
 }
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
-		bash( [ 'plremove' ] );
+		bash( [ 'mpcremove' ] );
 	} else {
 		var total = $( '#pl-time' ).data( 'time' ) - $li.find( '.time' ).data( 'time' );
 		var file = $li.hasClass( 'file' );
@@ -989,7 +989,7 @@ function playlistRemove( $li ) {
 				$li.prev().addClass( 'active' );
 			}
 		}
-		bash( [ 'plremove', pos, poscurent ] );
+		bash( [ 'mpcremove', pos, poscurent ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( function() {
 			$( this ).text( pos );
 			pos++
@@ -1699,7 +1699,7 @@ function sortPlaylist( pl, iold, inew ) {
 	G.sortable = 1;
 	setTimeout( function() { G.sortable = 0 }, 500 );
 	if ( pl === 'pl-list' ) {
-		bash( [ 'plorder', iold + 1, inew + 1 ] );
+		bash( [ 'mpcmove', iold + 1, inew + 1 ] );
 	} else {
 		bash( [ 'savedpledit', $( '#pl-path .lipath' ).text(), 'move', iold, inew ] );
 	}

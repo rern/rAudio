@@ -768,6 +768,79 @@ lyrics )
 		fi
 	fi
 	;;
+mpcadd )
+	item=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	mpc -q add "$item"
+	plAddPlay $cmd $delay
+	pushstreamPlaylist add
+	;;
+mpcaddplaynext )
+	mpc -q insert "${args[1]}"
+	pushstreamPlaylist add
+	;;
+mpcaddrandom )
+	plAddRandom
+	;;
+mpccrop )
+	if mpc | grep -q '\[playing'; then
+		mpc -q crop
+	else
+		mpc -q play
+		mpc -q crop
+		mpc -q stop
+	fi
+	[[ -e $dirsystem/librandom ]] && plAddRandom
+	$dirbash/status-push.sh
+	pushstreamPlaylist
+	;;
+mpcfindadd )
+	if [[ ${args[1]} != multi ]]; then
+		type=${args[1]}
+		string=${args[2]}
+		cmd=${args[3]}
+		plAddPosition $cmd
+		mpc -q findadd $type "$string"
+	else
+		type=${args[2]}
+		string=${args[3]}
+		type2=${args[4]}
+		string2=${args[5]}
+		cmd=${args[6]}
+		plAddPosition $cmd
+		mpc -q findadd $type "$string" $type2 "$string2"
+	fi
+	plAddPlay $cmd $delay
+	;;
+mpcload )
+	playlist=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	mpc -q load "$playlist"
+	plAddPlay $cmd $delay
+	;;
+mpcls )
+	dir=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
+	if [[ ! $cuefiles ]]; then
+		mpc ls "$dir" | mpc -q add &> /dev/null
+	else
+		for cuefile in "${cuefiles[@]}"; do
+			mpc -q load "$cuefile"
+		done
+	fi
+	plAddPlay $cmd $delay
+	;;
+mpcmove )
+	mpc -q move ${args[1]} ${args[2]}
+	pushstreamPlaylist
+	;;
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
@@ -847,6 +920,18 @@ mpcprevnext )
 		scrobbleOnStop $elapsed
 	fi
 	;;
+mpcremove )
+	pos=${args[1]}
+	posprev=${args[2]}
+	if [[ $pos ]]; then
+		mpc -q del $pos
+		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
+	else
+		mpc -q clear
+	fi
+	$dirbash/status-push.sh
+	pushstreamPlaylist
+	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
@@ -859,6 +944,34 @@ mpcseek )
 	fi
 	mpc -q seek $seek
 	rm -f $dirshm/scrobble
+	;;
+mpcsetcurrent )
+	mpc -q play ${args[1]}
+	mpc -q stop
+	$dirbash/status-push.sh
+	;;
+mpcshuffle )
+	mpc -q shuffle
+	pushstreamPlaylist
+	;;
+mpcsimilar )
+	plLprev=$( mpc playlist | wc -l )
+	linesL=${#args[@]}
+	for (( i=1; i < linesL; i++ )); do
+		artist=${args[$i]}
+		(( i++ ))
+		title=${args[$i]}
+		[[ ! $artist || ! $title ]] && continue
+		
+		file=$( mpc find artist "$artist" title "$title" )
+		[[ ! $file ]] && continue
+		
+		list+="$( mpc find artist "$artist" title "$title" )
+"
+	done
+	echo "$list" | awk NF | mpc -q add
+	pushstreamPlaylist
+	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
 mpcupdate )
 	type=${args[1]}
@@ -992,128 +1105,6 @@ playerstop )
 	[[ $service && $service != snapclient ]] && systemctl restart $service
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
-	;;
-pladd )
-	item=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	mpc -q add "$item"
-	plAddPlay $cmd $delay
-	pushstreamPlaylist add
-	;;
-pladdplaynext )
-	mpc -q insert "${args[1]}"
-	pushstreamPlaylist add
-	;;
-pladdrandom )
-	plAddRandom
-	;;
-plcrop )
-	if mpc | grep -q '\[playing'; then
-		mpc -q crop
-	else
-		mpc -q play
-		mpc -q crop
-		mpc -q stop
-	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	$dirbash/status-push.sh
-	pushstreamPlaylist
-	;;
-plcurrent )
-	mpc -q play ${args[1]}
-	mpc -q stop
-	$dirbash/status-push.sh
-	;;
-plfindadd )
-	if [[ ${args[1]} != multi ]]; then
-		type=${args[1]}
-		string=${args[2]}
-		cmd=${args[3]}
-		plAddPosition $cmd
-		mpc -q findadd $type "$string"
-	else
-		type=${args[2]}
-		string=${args[3]}
-		type2=${args[4]}
-		string2=${args[5]}
-		cmd=${args[6]}
-		plAddPosition $cmd
-		mpc -q findadd $type "$string" $type2 "$string2"
-	fi
-	plAddPlay $cmd $delay
-	;;
-plload )
-	playlist=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	mpc -q load "$playlist"
-	plAddPlay $cmd $delay
-	;;
-plloadrange )
-	range=${args[1]}
-	playlist=${args[2]}
-	cmd=${args[3]}
-	delay=${args[4]}
-	plAddPosition $cmd
-	mpc -q --range=$range load "$playlist"
-	plAddPlay $cmd $delay
-	;;
-plls )
-	dir=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
-	if [[ ! $cuefiles ]]; then
-		mpc ls "$dir" | mpc -q add &> /dev/null
-	else
-		for cuefile in "${cuefiles[@]}"; do
-			mpc -q load "$cuefile"
-		done
-	fi
-	plAddPlay $cmd $delay
-	;;
-plorder )
-	mpc -q move ${args[1]} ${args[2]}
-	pushstreamPlaylist
-	;;
-plremove )
-	pos=${args[1]}
-	posprev=${args[2]}
-	if [[ $pos ]]; then
-		mpc -q del $pos
-		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
-	else
-		mpc -q clear
-	fi
-	$dirbash/status-push.sh
-	pushstreamPlaylist
-	;;
-plshuffle )
-	mpc -q shuffle
-	pushstreamPlaylist
-	;;
-plsimilar )
-	plLprev=$( mpc playlist | wc -l )
-	linesL=${#args[@]}
-	for (( i=1; i < linesL; i++ )); do
-		artist=${args[$i]}
-		(( i++ ))
-		title=${args[$i]}
-		[[ ! $artist || ! $title ]] && continue
-		
-		file=$( mpc find artist "$artist" title "$title" )
-		[[ ! $file ]] && continue
-		
-		list+="$( mpc find artist "$artist" title "$title" )
-"
-	done
-	echo "$list" | awk NF | mpc -q add
-	pushstreamPlaylist
-	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
 power )
 	action=${args[1]}

@@ -172,7 +172,7 @@ function addSimilar() {
 				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
 			}
 			banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
-			bash( [ 'plsimilar', similar ], function( count ) {
+			bash( [ 'mpcsimilar', similar ], function( count ) {
 				getPlaylist();
 				setButtonControl();
 				banner( title, count +' tracks added.', 'library' );
@@ -566,7 +566,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	
 	switch ( cmd ) {
 		case 'current':
-			bash( [ 'plcurrent', G.list.index + 1 ] );
+			bash( [ 'mpcsetcurrent', G.list.index + 1 ] );
 			return
 		case 'directory':
 			if ( G.mode === 'latest' ) {
@@ -737,17 +737,17 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	switch ( mode ) {
 		case '':
 			if ( G.list.singletrack || G.mode.slice( -5 ) === 'radio' ) { // single track
-				mpccmd = [ 'pladd', path ];
+				mpccmd = [ 'mpcadd', path ];
 			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
-				mpccmd = [ 'plfindadd', 'multi', G.mode, path, 'album', G.list.album ];
+				mpccmd = [ 'mpcfindadd', 'multi', G.mode, path, 'album', G.list.album ];
 			} else { // directory or album
-				mpccmd = [ 'plls', path ];
+				mpccmd = [ 'mpcls', path ];
 			}
 			break;
 		case 'pl':
 			cmd = cmd.slice( 2 );
 			if ( G.library ) {
-				mpccmd = [ 'plload', path ];
+				mpccmd = [ 'mpcload', path ];
 			} else { // saved playlist
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
@@ -762,20 +762,20 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			}
 			break;
 		case 'playnext':
-			mpccmd = [ 'pladdplaynext', path ];
+			mpccmd = [ 'mpcaddplaynext', path ];
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
 			var charset = G.list.li.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
-			mpccmd = [ 'pladd', path ];
+			mpccmd = [ 'mpcadd', path ];
 			break;
 		default:
 			if ( !G.list.name ) {
-				mpccmd = [ 'plfindadd', mode, path ];
+				mpccmd = [ 'mpcfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
-				mpccmd = [ 'plfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
+				mpccmd = [ 'mpcfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
 			}
 	}
 	if ( !mpccmd ) mpccmd = [];
