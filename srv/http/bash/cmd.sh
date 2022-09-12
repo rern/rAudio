@@ -940,21 +940,6 @@ $( systemctl status $service \
 	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
 	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
 	;;
-pladd )
-	item=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	mpc -q add "$item"
-	plAddPlay $cmd $delay
-	;;
-pladdplaynext )
-	mpc -q insert "${args[1]}"
-	pushstreamPlaylist add
-	;;
-pladdrandom )
-	plAddRandom
-	;;
 playerstart )
 	newplayer=${args[1]}
 	[[ $newplayer == bluetooth ]] && volumeGet save
@@ -1007,6 +992,22 @@ playerstop )
 	[[ $service && $service != snapclient ]] && systemctl restart $service
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
+	;;
+pladd )
+	item=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	mpc -q add "$item"
+	plAddPlay $cmd $delay
+	pushstreamPlaylist add
+	;;
+pladdplaynext )
+	mpc -q insert "${args[1]}"
+	pushstreamPlaylist add
+	;;
+pladdrandom )
+	plAddRandom
 	;;
 plcrop )
 	if mpc | grep -q '\[playing'; then
