@@ -12,13 +12,13 @@ done
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-if ifconfig | grep -q broadcast; then
-	[[ $cursor == false ]] && cursor=no || cursor=yes
-else # no network connection
+if [[ $cursor == true ]] || ! ifconfig | grep -q broadcast; then  # no network connection
 	cursor=yes
+else
+	cursor=no
 fi
-zoom=$( echo "print $zoom / 100" | perl )
-[[ $zoom != 1 ]] && scalefactor=--force-device-scale-factor=$zoom
+
+(( $zoom != 100 )) && scalefactor=--force-device-scale-factor=$( echo "print $zoom / 100" | perl )
 
 matchbox-window-manager -use_cursor $cursor &
 
