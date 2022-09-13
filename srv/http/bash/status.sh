@@ -273,24 +273,25 @@ elif [[ $stream ]]; then
 , "Artist" : "'$Artist'"
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
-		# fetched coverart
-		if [[ $displaycover ]]; then
+		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart=${onlinefile:9}
 		fi
 	else
 		ext=Radio
-		dirradio=$dirwebradio
-		if [[ $file == *icecast.radiofrance.fr* ]]; then
-			icon=radiofrance
-		elif [[ $file == *stream.radioparadise.com* ]]; then
-			icon=radioparadise
-		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
-			icon=dabradio
+		if [[ $file == *rtsp://*$( hostname -f )* ]]; then
 			dirradio=$dirdabradio
+			icon=dabradio
 		else
-			icon=webradio
+			dirradio=$dirwebradio
+			if [[ $file == *icecast.radiofrance.fr* ]]; then
+				icon=radiofrance
+			elif [[ $file == *stream.radioparadise.com* ]]; then
+				icon=radioparadise
+			else
+				icon=webradio
+			fi
 		fi
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
