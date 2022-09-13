@@ -106,7 +106,9 @@ metadataGet() {
 		if [[ $coverurl != dab ]]; then
 			curl -s $coverurl -o $coverfile
 		else
-			mv $dirshm/webradio/{DABslide,$name}.jpg
+			date=$( date +%s )
+			coverart=/data/shm/webradio/DABslide.$date.jpg
+			mv /srv/http/data/shm/webradio/DABslide{,.$date}.jpg
 		fi
 	else
 		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )

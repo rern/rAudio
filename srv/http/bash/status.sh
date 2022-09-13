@@ -281,20 +281,22 @@ elif [[ $stream ]]; then
 		fi
 	else
 		ext=Radio
+		dirradio=$dirwebradio
 		if [[ $file == *icecast.radiofrance.fr* ]]; then
 			icon=radiofrance
 		elif [[ $file == *stream.radioparadise.com* ]]; then
 			icon=radioparadise
 		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
 			icon=dabradio
+			dirradio=$dirdabradio
 		else
 			icon=webradio
 		fi
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
-		radiofile=$dirwebradio/$urlname
-		[[ ! -e $radiofile  ]] && radiofile=$( find $dirwebradio -name "$urlname" )
+		radiofile=$dirradio/$urlname
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
 			station=${radiodata[0]}
