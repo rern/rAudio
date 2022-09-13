@@ -72,7 +72,7 @@ metadataGet() {
 		icon=dabradio
 		dablabel=$( cat $dirshm/webradio/DABlabel.txt )
 		if [[ $( grep ^Title $dirshm/status | cut -d= -f2- ) == "$dablabel" ]]; then
-			sleep 5
+			sleep 15
 			metadataGet
 			return
 		fi
@@ -95,23 +95,26 @@ metadataGet() {
 	elif [[ ${#metadata[@]} == 6 ]]; then
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
-	
-	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-	if [[ $coverurl ]]; then
-		coverart=/data/shm/webradio/$name.jpg
-		curl -s $coverurl -o $dirshm/webradio/$name.jpg
-	elif [[ $icon == dabradio ]]; then
-		date=$( date +%s )
-		coverart=/data/shm/webradio/DABslide.$date.jpg
-		mv /srv/http/data/shm/webradio/DABslide{,.$date}.jpg
-	else
-		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
-		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+	if [[ ! -e $dirsystem/vumeter ]]; then
+		if [[ $icon == dabradio ]]; then
+			date=$( date +%s )
+			coverart=/data/shm/webradio/DABslide.$date.jpg
+			rm -f $dirshm/webradio/DABslide.*.jpg
+			mv $dirshm/webradio/DABslide{,.$date}.jpg
+		else
+			name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+			if [[ $coverurl ]]; then
+				coverart=/data/shm/webradio/$name.jpg
+				curl -s $coverurl -o $dirshm/webradio/$name.jpg
+			else
+				coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+				[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
 $artist
 title
 webradio" &> /dev/null &
+			fi
+		fi
 	fi
-	[[ -e $dirsystem/vumeter ]] && coverart=
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
@@ -145,7 +148,6 @@ timestamp=$( date +%s%3N )
 webradio=true
 player="mpd"
 EOF
-
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 	$dirbash/cmd.sh coverfileslimit
 	# next fetch
