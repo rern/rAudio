@@ -38,16 +38,6 @@ case $id in
 	dabradio ) id=500;;
 esac
 
-dabData() {
-	artist_title=$( sed -E 's/ - |: /\n/' $dirshm/webradio/DABlabel.txt )
-	if [[ $artist_title == $( head -2 $dirshm/status ) ]]; then
-		sleep 10
-		metadataGet
-	else
-		readarray -t metadata <<< "$artist_title"
-		metadata[3]=dab
-	fi
-}
 radiofranceData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "operationName=Now" \
@@ -80,7 +70,14 @@ metadataGet() {
 		radiofranceData
 	else
 		icon=dabradio
-		dabData
+		dablabel=$( cat $dirshm/webradio/DABlabel.txt )
+		if [[ $( grep ^Title $dirshm/status | cut -d= -f2- ) == "$dablabel" ]]; then
+			sleep 5
+			metadataGet
+			return
+		fi
+		
+		metadata=( "$station" "$dablabel" 'DAB Radio' '' 10 )
 	fi
 	artist=${metadata[0]//\"/\\\"}
 	title=${metadata[1]//\"/\\\"}
@@ -102,14 +99,11 @@ metadataGet() {
 	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
 	if [[ $coverurl ]]; then
 		coverart=/data/shm/webradio/$name.jpg
-		coverfile=$dirshm/webradio/$name.jpg
-		if [[ $coverurl != dab ]]; then
-			curl -s $coverurl -o $coverfile
-		else
-			date=$( date +%s )
-			coverart=/data/shm/webradio/DABslide.$date.jpg
-			mv /srv/http/data/shm/webradio/DABslide{,.$date}.jpg
-		fi
+		curl -s $coverurl -o $dirshm/webradio/$name.jpg
+	elif [[ $icon == dabradio ]]; then
+		date=$( date +%s )
+		coverart=/data/shm/webradio/DABslide.$date.jpg
+		mv /srv/http/data/shm/webradio/DABslide{,.$date}.jpg
 	else
 		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
 		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
