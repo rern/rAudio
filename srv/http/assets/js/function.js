@@ -1127,10 +1127,7 @@ function renderPlayback() {
 	
 	local();
 	if ( G.status.state === 'stop' ) setProgress( 0 );
-	$volumeRS.setValue( G.status.volume );
-	if ( G.status.volume === 0 ) $volumehandle.rsRotate( -310 );
-	G.status.volumemute !== 0 ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
-	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+	setVolume();
 	clearInterval( G.intBlinkDot );
 	if ( !G.status.pllength && G.status.player === 'mpd' && G.status.state === 'stop' ) { // empty queue
 		setPlaybackBlank();
@@ -1693,6 +1690,23 @@ function setTrackCoverart() {
 	if ( !G.display.fixedcover ) {
 		$( '.licover' ).addClass( 'nofixed' );
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
+	}
+}
+function setVolume() {
+	var mute = G.status.volumemute !== 0;
+	$volumeRS.setValue( G.status.volume );
+	if ( G.status.volume === 0 ) $volumehandle.rsRotate( -310 );
+	mute ? volumeColorMute( G.status.volumemute ) : volumeColorUnmute();
+	$( '#voldn' ).toggleClass( 'disabled', G.status.volume === 0 );
+	$( '#volmute' ).toggleClass( 'disabled', G.status.volume === 0 && !mute );
+	$( '#volup' ).toggleClass( 'disabled', G.status.volume === 100 );
+	$( '#volume-bar' ).css( 'width', G.status.volume +'%' );
+	$( '#volume-text' )
+		.text( G.status.volumemute || G.status.volume )
+		.toggleClass( 'bl', mute );
+	if ( $( '#time-knob' ).is( ':hidden' ) ) {
+		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 	}
 }
 function sortPlaylist( pl, iold, inew ) {
