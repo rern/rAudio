@@ -117,7 +117,7 @@ case 'ls':
 		$format = '%'.implode( '%^^%', $f ).'%';
 		// parse if cue|m3u,|pls files (sort -u: mpc ls list *.cue twice)
 		exec( 'mpc ls "'.$string.'" \
-				| egrep ".cue$|.m3u$|.m3u8$|.pls$" \
+				| grep -E ".cue$|.m3u$|.m3u8$|.pls$" \
 				| sort -u'
 			, $plfiles );
 		if ( count( $plfiles ) ) {
@@ -158,7 +158,7 @@ case 'radio':
 	} else {
 		$searchmode = 0;
 		exec( 'ls -1 "'.$dir.'" \
-				| egrep -v "^img|\.jpg$|\.gif$"'
+				| grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
 		if ( !count( $lists ) ) exit();
 		
@@ -514,7 +514,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$hidedate = $each0->date && $gmode !== 'date' ? '' : ' hide';
 		$mpdpath = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null \
-							| egrep ".m3u$|.m3u8$|.pls$"' );
+							| grep -E ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
 			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';

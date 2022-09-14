@@ -522,7 +522,7 @@ count )
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| egrep -i '\.gif$|\.jpg$|\.png$' \
+						| grep -E -i '\.gif$|\.jpg$|\.png$' \
 						| head -1 ) # full path
 	if [[ $coverartfile ]]; then
 		echo $coverartfile | sed 's|^/srv/http||'
@@ -532,8 +532,8 @@ coverartget )
 	[[ ${path:0:4} == /srv ]] && exit
 	
 	coverfile=$( ls -1X "$path" \
-					| egrep -i '^cover\.|^folder\.|^front\.|^album\.' \
-					| egrep -i '\.gif$|\.jpg$|\.png$' \
+					| grep -E -i '^cover\.|^folder\.|^front\.|^album\.' \
+					| grep -E -i '\.gif$|\.jpg$|\.png$' \
 					| head -1 ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
@@ -1051,7 +1051,7 @@ $( cat $fileconf )"
 $( systemctl status $service \
 	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
 	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
-	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
+	| grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
 	;;
 playerstart )
 	newplayer=${args[1]}

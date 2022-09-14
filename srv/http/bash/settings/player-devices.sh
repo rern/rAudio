@@ -31,7 +31,7 @@ getControls() {
 	[[ ! $amixer ]] && controls= && return
 	
 	controls=$( echo "$amixer" \
-					| egrep 'volume.*pswitch|Master.*volume' \
+					| grep -E 'volume.*pswitch|Master.*volume' \
 					| cut -d"'" -f2 )
 	[[ ! $controls ]] && controls=$( echo "$amixer" \
 										| grep volume \

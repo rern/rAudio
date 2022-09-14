@@ -16,7 +16,7 @@ if [[ $1 == wlan ]]; then
 	
 	scan=$( echo "$scan" \
 				| sed -E 's/^\s*|\s*$//g' \
-				| egrep '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
+				| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 				| sed -E 's/^Cell.*/,{/
 						  s/^Quality.*level.(.*)/,"signal":"\1"/
 						  s/^Encryption key:(.*)/,"encrypt":"\1"/
