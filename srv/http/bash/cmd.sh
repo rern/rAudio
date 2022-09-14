@@ -275,20 +275,6 @@ volumeGet() {
 		fi
 	fi
 }
-volumeSetAt() {
-	target=$1
-	card=$2
-	control=$3
-	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
-	if [[ $btreceiver ]]; then
-		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
-		echo $target > "$dirsystem/btvolume-$btreceiver"
-	elif [[ $control ]]; then
-		amixer -c $card -Mq sset "$control" $target%
-	else
-		mpc -q volume $target
-	fi
-}
 volumeSet() {
 	current=$1
 	target=$2
@@ -310,6 +296,20 @@ volumeSet() {
 	fi
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
+}
+volumeSetAt() {
+	target=$1
+	card=$2
+	control=$3
+	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
+	if [[ $btreceiver ]]; then
+		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
+		echo $target > "$dirsystem/btvolume-$btreceiver"
+	elif [[ $control ]]; then
+		amixer -c $card -Mq sset "$control" $target%
+	else
+		mpc -q volume $target
+	fi
 }
 webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
@@ -1255,7 +1255,7 @@ upnpnice )
 		renice -n -19 -p $pid &> /dev/null
 	done
 	;;
-volume )
+volume ) # no args = toggle mute / unmute
 	current=${args[1]}
 	target=${args[2]}
 	card=${args[3]}
@@ -1268,17 +1268,14 @@ volume )
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
-		type=set
 		rm -f $filevolumemute
 		pushstreamVolume set $target
 	else
 		if (( $current > 0 )); then # mute
-			type=mute
 			target=0
 			echo $current > $filevolumemute
 			pushstreamVolume mute $current
 		else                        # unmute
-			type=unmute
 			target=$( cat $filevolumemute )
 			rm -f $filevolumemute
 			pushstreamVolume unmute $target

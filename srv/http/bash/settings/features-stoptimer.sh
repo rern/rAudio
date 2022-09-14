@@ -12,23 +12,9 @@ sleep $(( min * 60 ))
 
 rm -f $dirshm/stoptimer
 
-ccv=$( $dirbash/cmd.sh volumecontrolget )
-card=${ccv/^*}
-control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
-volume=${ccv/*^}
-player=$( cat $dirshm/player )
-if [[ $player == mpd ]]; then
-	$dirbash/cmd.sh mpcplayback$'\n'stop
-else
-	$dirbash/cmd.sh playerstop
-fi
-
-sleep 2
-$dirbash/cmd.sh "volume
-$volume
-0
-$card
-$control"
+$dirbash/cmd.sh volume # mute
+[[ $( cat $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop || $dirbash/cmd.sh playerstop
+$dirbash/cmd.sh volume # unmute
 
 if [[ $poweroff ]]; then
 	$dirbash/cmd.sh power$'\n'off
