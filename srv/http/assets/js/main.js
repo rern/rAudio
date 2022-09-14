@@ -766,7 +766,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
-	bash( [ 'volume', G.status.volume, 0, G.status.card, G.status.control ] );
+	bash( [ 'volume' ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
@@ -833,17 +833,9 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
 	}, 100 );
 } );
-$( '#volume-text' ).click( function() { // mute /unmute
+$( '#volume-text' ).click( function() { // mute / unmute
 	clearTimeout( G.volumebar );
-	if ( G.status.volumemute ) {
-		var offL = $( '#volume-band' ).offset().left;
-		var barW = G.status.volumemute ? $( '#volume-band' ).width() * G.status.volumemute / 100 : 0;
-		var pageX = offL + barW;
-	} else {
-		var pageX = 0
-		G.status.volumemute = G.status.volume;
-	}
-	volumeBarSet( pageX );
+	volumeBarSet( 'toggle' );
 } );
 $( '#divcover' ).press( function( e ) {
 	if (

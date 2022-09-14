@@ -1793,10 +1793,16 @@ function volumeBarHide() {
 }
 function volumeBarSet( pageX ) {
 	clearTimeout( G.volumebar );
-	var posX = pageX - $( '#volume-band' ).offset().left;
-	var bandW = $( '#volume-band' ).width();
-	posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-	var vol = Math.round( posX / bandW * 100 );
+	if ( pageX === 'toggle' ) {
+		var vol = G.status.volumemute || 0;
+		var cmd = [ 'volume' ];
+	} else {
+		var posX = pageX - $( '#volume-band' ).offset().left;
+		var bandW = $( '#volume-band' ).width();
+		posX = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+		var vol = Math.round( posX / bandW * 100 );
+		var cmd = [ 'volume', G.status.volume, vol, G.status.card, G.status.control ]
+	}
 	if ( G.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
 		bash( [ 'volume', 'drag', vol, G.status.card, G.status.control ] );
@@ -1813,7 +1819,8 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		bash( [ 'volume', G.status.volume, vol, G.status.card, G.status.control ], function() {
+		
+		bash( cmd, function() {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}
