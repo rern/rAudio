@@ -76,7 +76,7 @@ bluetoothdisable )
 	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
 	if ! rfkill -no type | grep -q bluetooth; then
 		systemctl stop bluetooth
-		pkill bluetooth
+		killall bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
 	fi
@@ -346,7 +346,7 @@ lcdcalibrate )
 	fi
 	;;
 lcdchar )
-	kill -9 $( pgrep lcdchar ) &> /dev/null
+	killall lcdchar.py &> /dev/null
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py ${args[1]}
 	;;
@@ -856,7 +856,7 @@ vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/settings/player-conf.sh
-	kill -9 $( pgrep cava ) &> /dev/null
+	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh
 	;;

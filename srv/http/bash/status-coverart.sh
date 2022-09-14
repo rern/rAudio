@@ -49,7 +49,7 @@ fi
 [[ ! $artist || ! $album ]] && exit
 
 ##### online
-kill -9 $( pgrep status-coverartonline ) &> /dev/null
+killall status-coverartonline.sh &> /dev/null
 $dirbash/status-coverartonline.sh "\
 $artist
 $album" &> /dev/null &

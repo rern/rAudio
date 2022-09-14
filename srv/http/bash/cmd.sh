@@ -1156,7 +1156,7 @@ refreshbrowser )
 	pushstream reload 1
 	;;
 relaystimerreset )
-	kill -9 $( pgrep relays-timer ) &> /dev/null
+	killall relays-timer.sh &> /dev/null
 	$dirbash/settings/relays-timer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;

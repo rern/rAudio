@@ -12,7 +12,7 @@ sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $camilladspyml
 camilladsp $camilladspyml &> /dev/null &
 sleep 1
 if pgrep -x camilladsp &> /dev/null; then
-	pkill -x camilladsp
+	killall camilladsp
 	formatok=1
 else
 	lineformat=$( sed -n '/playback:/,/format:/=' $camilladspyml | tail -1 )
@@ -21,7 +21,7 @@ else
 		camilladsp $camilladspyml &> /dev/null &
 		sleep 1
 		if pgrep -x camilladsp &> /dev/null; then
-			pkill -x camilladsp
+			killall camilladsp
 			formatok=1
 			break
 		fi

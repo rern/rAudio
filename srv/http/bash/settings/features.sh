@@ -414,7 +414,7 @@ spotifytokenreset )
 	spotifyReset 'Reset ...'
 	;;
 stoptimerdisable )
-	killall stoptimer.sh &> /dev/null
+	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ -e $dirshm/relayson ]]; then
 		. $dirsystem/relays.conf
@@ -427,10 +427,10 @@ stoptimerset )
 	min=${args[1]}
 	poweroff=${args[2]}
 	[[ $poweroff == true ]] && off=poweroff
-	kill -9 $( pgrep stoptimer ) &> /dev/null
+	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
-		$dirbash/stoptimer.sh $min $off &> /dev/null &
+		$dirbash/settings/features-stoptimer.sh $min $off &> /dev/null &
 		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
 	fi
 	pushRefresh

@@ -543,6 +543,6 @@ $Artist
 $Album"
 fi
 if [[ $args ]]; then
-	kill -9 $( pgrep status-coverartonline ) &> /dev/null
+	killall status-coverartonline.sh &> /dev/null
 	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi
