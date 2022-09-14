@@ -6,7 +6,7 @@ min=$1
 poweroff=$2
 
 rm -f $dirshm/relaystimer
-kill -9 $( pgrep relaystimer ) &> /dev/null
+kill -9 $( pgrep relays-timer ) &> /dev/null
 
 sleep $(( min * 60 ))
 

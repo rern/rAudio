@@ -38,11 +38,11 @@ if [[ $cmd == true ]]; then
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
-		$dirbash/relaystimer.sh &> /dev/null &
+		$dirbash/settings/relays-timer.sh &> /dev/null &
 	fi
 else
 	rm -f $dirshm/relayson $timerfile
-	kill -9 $( pgrep relaystimer ) &> /dev/null
+	kill -9 $( pgrep relays-timer ) &> /dev/null
 	pushstreamRelays '{"state": false, "order": '"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}

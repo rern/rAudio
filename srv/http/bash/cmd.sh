@@ -1156,8 +1156,8 @@ refreshbrowser )
 	pushstream reload 1
 	;;
 relaystimerreset )
-	kill -9 $( pgrep relaystimer ) &> /dev/null
-	$dirbash/relaystimer.sh &> /dev/null &
+	kill -9 $( pgrep relays-timer ) &> /dev/null
+	$dirbash/settings/relays-timer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotatesplash )
