@@ -457,7 +457,7 @@ $( '#setting-stoptimer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'stoptimerset', ...infoVal() ] );
-			notify( 'Scrobble', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
+			notify( 'Stop Timer', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
 		}
 	} );
 } );
