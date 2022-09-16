@@ -427,9 +427,9 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
+			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
-			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$thumbsrc = rawurlencode( '/data/'.$gmode.'/img/'.$urlname.'-thumb.'.time().'.jpg' );
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
