@@ -381,7 +381,6 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	global $mode;
 	global $gmode;
 	global $html;
-	$dirimg = '/data/'.$gmode.'/img/';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each = ( object )[];
@@ -392,7 +391,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path/to > path/to
+		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path/to > path/to 
 		if ( $path ) $path.= '/';
 		foreach( $array as $each ) {
 			$subdir = $each->subdir;
@@ -403,7 +402,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$indexes[] = $index;
 				$html.= '<li class="dir" data-index="'.$index.'">';
 			}
-			$thumbsrc = rawurlencode( '/data/'.$gmode.'/'.$subdir.'/thumb.'.time().'.jpg' );
+			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.time().jpg" );
 			$html.= '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-wrdir">
 					<a class="lipath">'.$path.$subdir.'</a>
 					<span class="single">'.$subdir.'</span>
@@ -425,14 +424,13 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$time = time();
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$thumbsrc = rawurlencode( $dirimg.$urlname.'-thumb.'.$time.'.jpg' );
+			$thumbsrc = rawurlencode( '/data/'.$gmode.'/img/'.$urlname.'-thumb.'.time().'.jpg' );
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">
