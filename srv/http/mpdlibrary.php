@@ -146,7 +146,6 @@ case 'ls':
 	break;
 case 'radio':
 	$dir = '/srv/http/data/'.$gmode.'/';
-	$dir.= $string;
 	$subdirs = [];
 	$files = [];
 	$indexes = [];
@@ -157,6 +156,7 @@ case 'radio':
 			, $files );
 	} else {
 		$searchmode = 0;
+		$dir.= $string;
 		exec( 'ls -1 "'.$dir.'" \
 				| grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
