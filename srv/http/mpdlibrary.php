@@ -392,10 +392,10 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = substr( $dir, 9 );     // /srv/http/data/webradio/... > /data/webradio/..
-		$lipath = substr( $path, 15 ); // /data/webradio/path..       > path
-		$lipath.= $lipath ? '/'.$subdir : $subdir;
+		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path > path
+		if ( $path ) $path.= '/';
 		foreach( $array as $each ) {
+			$subdir = $each->subdir;
 			if ( count( $files ) ) {
 				$html.= '<li class="dir">';
 			} else {
@@ -403,10 +403,9 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$indexes[] = $index;
 				$html.= '<li class="dir" data-index="'.$index.'">';
 			}
-			$subdir = $each->subdir;
-			$thumbsrc = rawurlencode( $path.$subdir.'/thumb.'.time().'.jpg' );
+			$thumbsrc = rawurlencode( '/data/'.$gmode.'/'.$subdir.'/thumb.'.time().'.jpg' );
 			$html.= '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-wrdir">
-					<a class="lipath">'.$lipath.'</a>
+					<a class="lipath">'.$path.$subdir.'</a>
 					<span class="single">'.$subdir.'</span>
 				</li>';
 		}
