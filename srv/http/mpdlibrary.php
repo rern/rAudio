@@ -392,7 +392,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path > path
+		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path/to > path/to
 		if ( $path ) $path.= '/';
 		foreach( $array as $each ) {
 			$subdir = $each->subdir;
