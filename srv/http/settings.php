@@ -160,7 +160,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	<?=$htmlbar?>
 </div>
 
-<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>

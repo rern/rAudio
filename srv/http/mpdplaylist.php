@@ -253,7 +253,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
 	exec( "{ echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
-				| egrep '^song:|^elapsed:'"
+				| grep -E '^song:|^elapsed:'"
 		, $song_elapsed );
 	$elapsed = '';
 	foreach( $song_elapsed as $se ) {
@@ -274,10 +274,10 @@ function htmlTrack( $lists, $plname = '' ) {
 function playlistInfo( $index = '' ) { // mpd protocol
 	// 2nd sleep: varied with length, 1000track/0.1s
 	exec( '{ sleep 0.05;
-			echo playlistinfo '.$index.';
-			sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); } \
+				echo playlistinfo '.$index.';
+				sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); } \
 			| telnet 127.0.0.1 6600 2> /dev/null \
-			| egrep "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track" \
+			| grep -E "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track" \
 			| sed "s/^\(file:\)/---\n\1/"' // file: as start track set
 		, $lists );
 	if ( !count( $lists ) ) exit( '-1' );

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-export XDG_CACHE_HOME="/tmp/.cache"
+mkdir -p /tmp/.cache
+
+export XDG_CACHE_HOME=/tmp/.cache
 
 for file in /etc/X11/xinit/xinitrc.d/*; do
 	. "$file"
@@ -10,15 +12,16 @@ done
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-if ifconfig | grep -q broadcast; then
-	[[ $cursor == false ]] && cursor=no || cursor=yes
-else # no network connection
+if [[ $cursor == true ]] || ! ifconfig | grep -q inet.*broadcast; then  # no network connection
 	cursor=yes
+else
+	cursor=no
 fi
+
+(( $zoom != 100 )) && scalefactor=--force-device-scale-factor=$( echo "print $zoom / 100" | perl )
+
 matchbox-window-manager -use_cursor $cursor &
 
-zoom=$( echo "print $zoom / 100" | perl )
-[[ $zoom != 1 ]] && scalefactor="--force-device-scale-factor=$zoom"
 chromium localhost $scalefactor \
 	--disable-software-rasterizer \
 	--incognito \

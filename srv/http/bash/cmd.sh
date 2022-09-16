@@ -275,20 +275,6 @@ volumeGet() {
 		fi
 	fi
 }
-volumeSetAt() {
-	target=$1
-	card=$2
-	control=$3
-	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
-	if [[ $btreceiver ]]; then
-		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
-		echo $target > "$dirsystem/btvolume-$btreceiver"
-	elif [[ $control ]]; then
-		amixer -c $card -Mq sset "$control" $target%
-	else
-		mpc -q volume $target
-	fi
-}
 volumeSet() {
 	current=$1
 	target=$2
@@ -310,6 +296,20 @@ volumeSet() {
 	fi
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
+}
+volumeSetAt() {
+	target=$1
+	card=$2
+	control=$3
+	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
+	if [[ $btreceiver ]]; then
+		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
+		echo $target > "$dirsystem/btvolume-$btreceiver"
+	elif [[ $control ]]; then
+		amixer -c $card -Mq sset "$control" $target%
+	else
+		mpc -q volume $target
+	fi
 }
 webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
@@ -522,7 +522,7 @@ count )
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| egrep -i '\.gif$|\.jpg$|\.png$' \
+						| grep -E -i '\.gif$|\.jpg$|\.png$' \
 						| head -1 ) # full path
 	if [[ $coverartfile ]]; then
 		echo $coverartfile | sed 's|^/srv/http||'
@@ -532,8 +532,8 @@ coverartget )
 	[[ ${path:0:4} == /srv ]] && exit
 	
 	coverfile=$( ls -1X "$path" \
-					| egrep -i '^cover\.|^folder\.|^front\.|^album\.' \
-					| egrep -i '\.gif$|\.jpg$|\.png$' \
+					| grep -E -i '^cover\.|^folder\.|^front\.|^album\.' \
+					| grep -E -i '\.gif$|\.jpg$|\.png$' \
 					| head -1 ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
@@ -768,6 +768,79 @@ lyrics )
 		fi
 	fi
 	;;
+mpcadd )
+	item=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	mpc -q add "$item"
+	plAddPlay $cmd $delay
+	pushstreamPlaylist add
+	;;
+mpcaddplaynext )
+	mpc -q insert "${args[1]}"
+	pushstreamPlaylist add
+	;;
+mpcaddrandom )
+	plAddRandom
+	;;
+mpccrop )
+	if mpc | grep -q '\[playing'; then
+		mpc -q crop
+	else
+		mpc -q play
+		mpc -q crop
+		mpc -q stop
+	fi
+	[[ -e $dirsystem/librandom ]] && plAddRandom
+	$dirbash/status-push.sh
+	pushstreamPlaylist
+	;;
+mpcfindadd )
+	if [[ ${args[1]} != multi ]]; then
+		type=${args[1]}
+		string=${args[2]}
+		cmd=${args[3]}
+		plAddPosition $cmd
+		mpc -q findadd $type "$string"
+	else
+		type=${args[2]}
+		string=${args[3]}
+		type2=${args[4]}
+		string2=${args[5]}
+		cmd=${args[6]}
+		plAddPosition $cmd
+		mpc -q findadd $type "$string" $type2 "$string2"
+	fi
+	plAddPlay $cmd $delay
+	;;
+mpcload )
+	playlist=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	mpc -q load "$playlist"
+	plAddPlay $cmd $delay
+	;;
+mpcls )
+	dir=${args[1]}
+	cmd=${args[2]}
+	delay=${args[3]}
+	plAddPosition $cmd
+	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
+	if [[ ! $cuefiles ]]; then
+		mpc ls "$dir" | mpc -q add &> /dev/null
+	else
+		for cuefile in "${cuefiles[@]}"; do
+			mpc -q load "$cuefile"
+		done
+	fi
+	plAddPlay $cmd $delay
+	;;
+mpcmove )
+	mpc -q move ${args[1]} ${args[2]}
+	pushstreamPlaylist
+	;;
 mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
@@ -847,6 +920,18 @@ mpcprevnext )
 		scrobbleOnStop $elapsed
 	fi
 	;;
+mpcremove )
+	pos=${args[1]}
+	posprev=${args[2]}
+	if [[ $pos ]]; then
+		mpc -q del $pos
+		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
+	else
+		mpc -q clear
+	fi
+	$dirbash/status-push.sh
+	pushstreamPlaylist
+	;;
 mpcseek )
 	seek=${args[1]}
 	state=${args[2]}
@@ -859,6 +944,34 @@ mpcseek )
 	fi
 	mpc -q seek $seek
 	rm -f $dirshm/scrobble
+	;;
+mpcsetcurrent )
+	mpc -q play ${args[1]}
+	mpc -q stop
+	$dirbash/status-push.sh
+	;;
+mpcshuffle )
+	mpc -q shuffle
+	pushstreamPlaylist
+	;;
+mpcsimilar )
+	plLprev=$( mpc playlist | wc -l )
+	linesL=${#args[@]}
+	for (( i=1; i < linesL; i++ )); do
+		artist=${args[$i]}
+		(( i++ ))
+		title=${args[$i]}
+		[[ ! $artist || ! $title ]] && continue
+		
+		file=$( mpc find artist "$artist" title "$title" )
+		[[ ! $file ]] && continue
+		
+		list+="$( mpc find artist "$artist" title "$title" )
+"
+	done
+	echo "$list" | awk NF | mpc -q add
+	pushstreamPlaylist
+	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
 mpcupdate )
 	type=${args[1]}
@@ -938,22 +1051,7 @@ $( cat $fileconf )"
 $( systemctl status $service \
 	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
 	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
-	| egrep -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
-	;;
-pladd )
-	item=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	mpc -q add "$item"
-	plAddPlay $cmd $delay
-	;;
-pladdplaynext )
-	mpc -q insert "${args[1]}"
-	pushstreamPlaylist add
-	;;
-pladdrandom )
-	plAddRandom
+	| grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
 	;;
 playerstart )
 	newplayer=${args[1]}
@@ -1008,112 +1106,6 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
-plcrop )
-	if mpc | grep -q '\[playing'; then
-		mpc -q crop
-	else
-		mpc -q play
-		mpc -q crop
-		mpc -q stop
-	fi
-	[[ -e $dirsystem/librandom ]] && plAddRandom
-	$dirbash/status-push.sh
-	pushstreamPlaylist
-	;;
-plcurrent )
-	mpc -q play ${args[1]}
-	mpc -q stop
-	$dirbash/status-push.sh
-	;;
-plfindadd )
-	if [[ ${args[1]} != multi ]]; then
-		type=${args[1]}
-		string=${args[2]}
-		cmd=${args[3]}
-		plAddPosition $cmd
-		mpc -q findadd $type "$string"
-	else
-		type=${args[2]}
-		string=${args[3]}
-		type2=${args[4]}
-		string2=${args[5]}
-		cmd=${args[6]}
-		plAddPosition $cmd
-		mpc -q findadd $type "$string" $type2 "$string2"
-	fi
-	plAddPlay $cmd $delay
-	;;
-plload )
-	playlist=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	mpc -q load "$playlist"
-	plAddPlay $cmd $delay
-	;;
-plloadrange )
-	range=${args[1]}
-	playlist=${args[2]}
-	cmd=${args[3]}
-	delay=${args[4]}
-	plAddPosition $cmd
-	mpc -q --range=$range load "$playlist"
-	plAddPlay $cmd $delay
-	;;
-plls )
-	dir=${args[1]}
-	cmd=${args[2]}
-	delay=${args[3]}
-	plAddPosition $cmd
-	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
-	if [[ ! $cuefiles ]]; then
-		mpc ls "$dir" | mpc -q add &> /dev/null
-	else
-		for cuefile in "${cuefiles[@]}"; do
-			mpc -q load "$cuefile"
-		done
-	fi
-	plAddPlay $cmd $delay
-	;;
-plorder )
-	mpc -q move ${args[1]} ${args[2]}
-	pushstreamPlaylist
-	;;
-plremove )
-	pos=${args[1]}
-	posprev=${args[2]}
-	if [[ $pos ]]; then
-		mpc -q del $pos
-		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
-	else
-		mpc -q clear
-	fi
-	$dirbash/status-push.sh
-	pushstreamPlaylist
-	;;
-plshuffle )
-	mpc -q shuffle
-	pushstreamPlaylist
-	;;
-plsimilar )
-	plLprev=$( mpc playlist | wc -l )
-	linesL=${#args[@]}
-	for (( i=1; i < linesL; i++ )); do
-		artist=${args[$i]}
-		(( i++ ))
-		title=${args[$i]}
-		[[ ! $artist || ! $title ]] && continue
-		
-		file=$( mpc find artist "$artist" title "$title" )
-		[[ ! $file ]] && continue
-		
-		list+="$( mpc find artist "$artist" title "$title" )
-"
-	done
-	echo "$list" | awk NF | mpc -q add
-	pushstreamPlaylist
-	echo $(( $( mpc playlist | wc -l ) - plLprev ))
-	;;
 power )
 	action=${args[1]}
 	if [[ $action == reboot ]]; then
@@ -1164,8 +1156,8 @@ refreshbrowser )
 	pushstream reload 1
 	;;
 relaystimerreset )
-	kill -9 $( pgrep relaystimer ) &> /dev/null
-	$dirbash/relaystimer.sh &> /dev/null &
+	killall relays-timer.sh &> /dev/null
+	$dirbash/settings/relays-timer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotatesplash )
@@ -1263,7 +1255,7 @@ upnpnice )
 		renice -n -19 -p $pid &> /dev/null
 	done
 	;;
-volume )
+volume ) # no args = toggle mute / unmute
 	current=${args[1]}
 	target=${args[2]}
 	card=${args[3]}
@@ -1276,17 +1268,14 @@ volume )
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
-		type=set
 		rm -f $filevolumemute
 		pushstreamVolume set $target
 	else
 		if (( $current > 0 )); then # mute
-			type=mute
 			target=0
 			echo $current > $filevolumemute
 			pushstreamVolume mute $current
 		else                        # unmute
-			type=unmute
 			target=$( cat $filevolumemute )
 			rm -f $filevolumemute
 			pushstreamVolume unmute $target

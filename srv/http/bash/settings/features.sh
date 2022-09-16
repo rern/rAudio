@@ -74,7 +74,7 @@ camilladspasound )
 	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
 	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
-	old=( $( egrep 'channels|format|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	old=( $( grep -E 'channels|format|rate' /etc/asound.conf | awk '{print $NF}' ) )
 	[[ "${new[@]}" == "${old[@]}" ]] && exit
 	
 	list=( channels format rate )
@@ -193,7 +193,7 @@ cursor=$newcursor
 
 	if [[ $changedrotate ]]; then
 		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
-		if egrep -q 'waveshare|tft35a' /boot/config.txt; then
+		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
 				CCW )    degree=270;;
@@ -303,7 +303,7 @@ scrobbleset )
 		exit
 	fi
 	
-	keys=( $( egrep 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]}
 	sharedsecret=${keys[1]}
 	apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
@@ -414,12 +414,12 @@ spotifytokenreset )
 	spotifyReset 'Reset ...'
 	;;
 stoptimerdisable )
-	killall stoptimer.sh &> /dev/null
+	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ -e $dirshm/relayson ]]; then
 		. $dirsystem/relays.conf
 		echo $timer > $timerfile
-		$dirbash/relaystimer.sh &> /dev/null &
+		$dirbash/settings/relays-timer.sh &> /dev/null &
 	fi
 	pushRefresh
 	;;
@@ -427,10 +427,10 @@ stoptimerset )
 	min=${args[1]}
 	poweroff=${args[2]}
 	[[ $poweroff == true ]] && off=poweroff
-	kill -9 $( pgrep stoptimer ) &> /dev/null
+	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
-		$dirbash/stoptimer.sh $min $off &> /dev/null &
+		$dirbash/settings/features-stoptimer.sh $min $off &> /dev/null &
 		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
 	fi
 	pushRefresh

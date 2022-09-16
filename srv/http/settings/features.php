@@ -263,11 +263,12 @@ HTML
 HTML
 	]
 	, [
-		  'label'   => 'Stop Timer'
-		, 'id'      => 'stoptimer'
-		, 'icon'    => 'stopwatch'
-		, 'setting' => true
-		, 'help'    => <<< HTML
+		  'label'    => 'Stop Timer'
+		, 'id'       => 'stoptimer'
+		, 'icon'     => 'stopwatch'
+		, 'setting'  => true
+		, 'disabled' => 'Player is not playing.'
+		, 'help'     => <<< HTML
 Stop timer:
  • Lower volume to 0 (Mute).
  • Stop player.

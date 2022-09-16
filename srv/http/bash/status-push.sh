@@ -8,20 +8,20 @@ else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^, "counts"/,/}/ d' \
-		| egrep '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
+		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
 		| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( cat $dirshm/status )
 		compare='^Artist|^Title|^Album'
-		[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( egrep "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
+		[[ "$( grep -E "$compare" <<< "$statusnew" | sort )" != "$( grep -E "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
 			[[ ! $trackchanged && $state == play ]] && exit
 			
 		else
 			compare='^state|^elapsed'
-			[[ "$( egrep "$compare" <<< "$statusnew" | sort )" != "$( egrep "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
+			[[ "$( grep -E "$compare" <<< "$statusnew" | sort )" != "$( grep -E "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
 			[[ ! $trackchanged && ! $statuschanged ]] && exit
 			
 		fi
@@ -45,7 +45,7 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
-	kill -9 $( pgrep lcdchar ) &> /dev/null
+	killall lcdchar.py &> /dev/null
 	$dirbash/lcdchar.py &
 fi
 
@@ -80,7 +80,7 @@ if [[ -e $dirshm/clientip ]]; then
 	done
 fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh pladdrandom
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
 
 [[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
 

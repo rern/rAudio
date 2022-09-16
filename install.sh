@@ -2,6 +2,15 @@
 
 alias=r1
 
+# 20220916
+dirmpd=/srv/http/data/mpd
+if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
+	echo '{
+  "playlists" : '$( ls -1 /srv/http/data/playlists | wc -l )'
+, "webradio"  : '$( find -L /srv/http/data/webradio -type f ! -path '*/img/*' | wc -l )'
+}' > $dirmpd/counts
+fi
+
 # 20220907
 [[ $( pacman -Q bluez ) < 'bluez 5.65-3' ]] && pacman -Sy --noconfirm bluez bluez-utils
 

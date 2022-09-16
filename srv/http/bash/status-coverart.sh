@@ -27,7 +27,7 @@ onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 
 ##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
-										| egrep -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
+										| grep -E -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
 										| head -1 )
 if [[ $coverfile ]]; then
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - local path only
@@ -49,7 +49,7 @@ fi
 [[ ! $artist || ! $album ]] && exit
 
 ##### online
-kill -9 $( pgrep status-coverartonline ) &> /dev/null
+killall status-coverartonline.sh &> /dev/null
 $dirbash/status-coverartonline.sh "\
 $artist
 $album" &> /dev/null &

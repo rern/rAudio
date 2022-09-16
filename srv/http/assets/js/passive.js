@@ -576,24 +576,14 @@ function psVolume( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		var vol = data.val;
-		var mute = data.type === 'mute';
-		if ( mute ) {
-			G.status.volumemute = vol;
-			vol = 0;
+		if ( data.type === 'mute' ) {
+			G.status.volume = 0;
+			G.status.volumemute = data.val;
 		} else {
+			G.status.volume = data.val;
 			G.status.volumemute = 0;
 		}
-		$volumeRS.setValue( vol );
-		mute ? volumeColorMute() : volumeColorUnmute();
-		$( '#volume-bar' ).css( 'width',  vol +'%' )
-		$( '#volume-text' )
-			.text( mute ? data.val : vol )
-			.toggleClass( 'bl', mute );
-		if ( $( '#time-knob' ).is( ':hidden' ) ) {
-			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
-			$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
-		}
+		setVolume();
 	}, G.debouncems );
 }
 function psVUmeter( data ) {

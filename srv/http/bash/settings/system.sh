@@ -17,7 +17,7 @@ pushRefresh() {
 }
 I2Cset() {
 	# parse finalized settings
-	egrep -q 'waveshare|tft35a' $fileconfig && lcd=1
+	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
 	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
@@ -76,7 +76,7 @@ bluetoothdisable )
 	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
 	if ! rfkill -no type | grep -q bluetooth; then
 		systemctl stop bluetooth
-		pkill bluetooth
+		killall bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
 		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
 	fi
@@ -291,14 +291,14 @@ i2seeprom )
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	dtoverlay=$( egrep 'dtoverlay=gpio
-						|dtoverlay=sdtweak,poll_once
-						|dtparam=i2c_arm=on
-						|dtparam=krnbt=on
-						|dtparam=spi=on
-						|hdmi_force_hotplug=1
-						|tft35a
-						|waveshare' $fileconfig )
+	dtoverlay=$( grep -E 'dtoverlay=gpio
+						 |dtoverlay=sdtweak,poll_once
+						 |dtparam=i2c_arm=on
+						 |dtparam=krnbt=on
+						 |dtparam=spi=on
+						 |hdmi_force_hotplug=1
+						 |tft35a
+						 |waveshare' $fileconfig )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -346,7 +346,7 @@ lcdcalibrate )
 	fi
 	;;
 lcdchar )
-	kill -9 $( pgrep lcdchar ) &> /dev/null
+	killall lcdchar.py &> /dev/null
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py ${args[1]}
 	;;
@@ -530,7 +530,7 @@ packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
 		pushstreamNotify Backend 'Package list ...' system
-		pacmanqi=$( pacman -Qi | egrep '^Name|^Vers|^Desc|^URL' )
+		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
 		while read line; do
 			case ${line:0:3} in
 			Nam ) name=$line;;
@@ -751,11 +751,11 @@ soundprofiledisable )
 soundprofileget )
 	echo "\
 <bll># sysctl vm.swappiness
-# ifconfig eth0 | egrep 'mtu|txq'</bll>
+# ifconfig eth0 | grep -E 'mtu|txq'</bll>
 
 $( sysctl vm.swappiness )
 $( ifconfig eth0 \
-	| egrep 'mtu|txq' \
+	| grep -E 'mtu|txq' \
 	| sed -E 's/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /' )"
 	;;
 soundprofileset )
@@ -856,7 +856,7 @@ vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
 	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/settings/player-conf.sh
-	kill -9 $( pgrep cava ) &> /dev/null
+	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh
 	;;

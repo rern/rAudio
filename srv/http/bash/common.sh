@@ -2,7 +2,8 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-for dir in addons audiocd bookmarks camilladsp dabradio lyrics mpd playlists shm system tmp webradio; do
+dirs=$( ls $dirdata )
+for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
 

@@ -56,7 +56,7 @@ $blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 		<i class="fa fa-gear <?=$blink?>"></i>&nbsp; <?=$type?> ...
 	</p>
 	
-<script src="/assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/info.<?=$time?>.js"></script>
 <script>
 $( '#loader' ).addClass( 'hide' );

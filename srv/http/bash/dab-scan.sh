@@ -9,17 +9,16 @@ if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	exit
 fi
 
-dirdabradio=$dirdabradio
 mv $dirdabradio/img $dirshm &> /dev/null
 rm -rf $dirdabradio
 mkdir -p $dirdabradio/img
 mv $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
-readarray -t services <<< $( egrep '^Ensemble|^audioservice' $dirshm/dabscan | sed 's/ *;/;/g' )
+readarray -t services <<< $( grep -E '^Ensemble|^audioservice' $dirshm/dabscan | sed 's/ *;/;/g' )
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( echo ${service/;*} | cut -d' ' -f2- )
+		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi

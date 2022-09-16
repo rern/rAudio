@@ -38,15 +38,6 @@ case $id in
 	dabradio ) id=500;;
 esac
 
-dabData() {
-	artist_title=$( sed -E 's/ - |: /\n/' $dirshm/webradio/DABlabel.txt )
-	if [[ $artist_title == $( head -2 $dirshm/status ) ]]; then
-		sleep 10
-		metadataGet
-	else
-		readarray -t metadata <<< "$artist_title"
-	fi
-}
 radiofranceData() {
 	readarray -t metadata <<< $( curl -sGk -m 5 \
 		--data-urlencode "operationName=Now" \
@@ -79,7 +70,14 @@ metadataGet() {
 		radiofranceData
 	else
 		icon=dabradio
-		dabData
+		dablabel=$( cat $dirshm/webradio/DABlabel.txt )
+		if [[ $( grep ^Title $dirshm/status | cut -d= -f2- ) == "$dablabel" ]]; then
+			sleep 15
+			metadataGet
+			return
+		fi
+		
+		metadata=( "$station" "$dablabel" 'DAB Radio' '' 10 )
 	fi
 	artist=${metadata[0]//\"/\\\"}
 	title=${metadata[1]//\"/\\\"}
@@ -97,24 +95,26 @@ metadataGet() {
 	elif [[ ${#metadata[@]} == 6 ]]; then
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
-	
-	name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-	if [[ $coverurl ]]; then
-		coverart=/data/shm/webradio/$name.jpg
-		coverfile=$dirshm/webradio/$name.jpg
-		if [[ $coverurl != dab ]]; then
-			curl -s $coverurl -o $coverfile
+	if [[ ! -e $dirsystem/vumeter ]]; then
+		if [[ $icon == dabradio ]]; then
+			date=$( date +%s )
+			coverart=/data/shm/webradio/DABslide.$date.jpg
+			rm -f $dirshm/webradio/DABslide.*.jpg
+			mv $dirshm/webradio/DABslide{,.$date}.jpg
 		else
-			mv $dirshm/webradio/{DABslide,$name}.jpg
-		fi
-	else
-		coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
-		[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+			name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+			if [[ $coverurl ]]; then
+				coverart=/data/shm/webradio/$name.jpg
+				curl -s $coverurl -o $dirshm/webradio/$name.jpg
+			else
+				coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+				[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
 $artist
 title
 webradio" &> /dev/null &
+			fi
+		fi
 	fi
-	[[ -e $dirsystem/vumeter ]] && coverart=
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
@@ -148,9 +148,8 @@ timestamp=$( date +%s%3N )
 webradio=true
 player="mpd"
 EOF
-
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-	$dirbash/cmd.sh coverfileslimit
+	[[ $icon != dabradio ]] && $dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

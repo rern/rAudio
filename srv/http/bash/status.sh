@@ -160,14 +160,14 @@ $( cat $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( egrep '"cover".*true|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
+(( $( grep -E '"cover".*true|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
 
 filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
 [[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
-		| telnet 127.0.0.1 6600 2> /dev/null \
-		| egrep "$filter" )
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep -E "$filter" )
 }
 mpdStatus currentsong
 # 'file:' missing / blank
@@ -273,28 +273,31 @@ elif [[ $stream ]]; then
 , "Artist" : "'$Artist'"
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
-		# fetched coverart
-		if [[ $displaycover ]]; then
+		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart=${onlinefile:9}
 		fi
 	else
 		ext=Radio
-		if [[ $file == *icecast.radiofrance.fr* ]]; then
-			icon=radiofrance
-		elif [[ $file == *stream.radioparadise.com* ]]; then
-			icon=radioparadise
-		elif [[ $file == *rtsp://*$( hostname -f )* ]]; then
+		if [[ $file == *rtsp://*$( hostname -f )* ]]; then
+			dirradio=$dirdabradio
 			icon=dabradio
 		else
-			icon=webradio
+			dirradio=$dirwebradio
+			if [[ $file == *icecast.radiofrance.fr* ]]; then
+				icon=radiofrance
+			elif [[ $file == *stream.radioparadise.com* ]]; then
+				icon=radioparadise
+			else
+				icon=webradio
+			fi
 		fi
 		# before webradio play: no 'Name:' - use station name from file instead
 		url=${file/\#charset*}
 		urlname=${url//\//|}
-		radiofile=$dirwebradio/$urlname
-		[[ ! -e $radiofile  ]] && radiofile=$( find $dirwebradio -name "$urlname" )
+		radiofile=$dirradio/$urlname
+		[[ ! -e $radiofile  ]] && radiofile=$( find $dirradio -name "$urlname" )
 		if [[ -e $radiofile ]]; then
 			readarray -t radiodata < "$radiofile"
 			station=${radiodata[0]}
@@ -323,7 +326,7 @@ $id
 $radiosampling" > $dirshm/radio
 					systemctl -q is-active radio || systemctl start radio
 				else
-					. <( egrep '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
+					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
@@ -349,7 +352,7 @@ $radiosampling" > $dirshm/radio
 				stationcover=$filenoext.$date.jpg
 			fi
 		fi
-		status=$( egrep -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
+		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
 ########
 		status+='
 , "Album"        : "'$Album'"
@@ -540,6 +543,6 @@ $Artist
 $Album"
 fi
 if [[ $args ]]; then
-	kill -9 $( pgrep status-coverartonline ) &> /dev/null
+	killall status-coverartonline.sh &> /dev/null
 	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi

@@ -5,7 +5,7 @@ if ( $login && !$_SESSION[ 'login' ] ) { ?>
 	<br><input type="password" id="pwd"><i class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
-<script src="assets/js/plugin/jquery-3.6.0.min.js"></script>
+<script src="assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="assets/js/info.<?=$time?>.js"></script>
 <script>
 $( '#divlogin' ).prepend( $( '#loader' ).html() );
