@@ -146,6 +146,7 @@ sed -i -e -E '/^auto_update|^audio_buffer_size| #custom$/ d
 	quality        "very high"\
 }
 ' /etc/mpd.conf
+curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C / # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
 	echo '{
   "playlists" : '$( ls -1 $dirplaylists | wc -l )'
@@ -154,9 +155,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 fi
 
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-
-# webradio default
-curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C /
 
 # services
 systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
