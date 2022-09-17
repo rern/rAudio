@@ -315,7 +315,7 @@ webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
-	[[ $1 == dabradio ]] && count+=,
+	grep -q "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
