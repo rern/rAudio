@@ -229,7 +229,7 @@ snapclientStop() {
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
-		systemctl stop radio
+		systemctl stop radio dab
 		rm -f $dirshm/{radio,status}
 	fi
 }
