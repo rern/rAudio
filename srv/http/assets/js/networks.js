@@ -1,9 +1,7 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var accesspoint = $( '#accesspoint' ).length;
-$( '.container' ).click( function( e ) {
-	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) return
-	
+$( 'body' ).click( function() {
 	$( '#menu' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 } );
@@ -58,17 +56,16 @@ $( '#lanadd' ).click( function() {
 		}
 	} );
 } );
-$( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
+$( '.entries' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
 	G.li = $( this );
 	G.liindex = G.li.index();
 	G.list = G.li.parent().prop( 'id' );
-	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
-	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) ) {
-		$menu.addClass( 'hide' );
-		if ( active ) return
+	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
+		$( '#menu' ).addClass( 'hide' );
+		return
 	}
 	
 	if ( G.list === 'listbt' ) {
@@ -87,11 +84,11 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
-	var menuH = $menu.height();
-	$menu
+	var menuH = $( '#menu' ).height();
+	$( '#menu' )
 		.removeClass( 'hide' )
 		.css( 'top', G.li.position().top + 48 );
-	var targetB = $menu.offset().top + menuH;
+	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );

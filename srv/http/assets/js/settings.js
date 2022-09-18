@@ -402,16 +402,7 @@ $( document ).keyup( function( e ) {
 			break;
 	}
 } );
-$( '.container' ).click( function( e ) {
-	$target = $( e.target );
-	if ( $target.hasClass( 'status' ) || $target.parent().hasClass( 'status' )
-		|| $target.is( 'li' ) || $target.parent().is( 'li' )
-		|| $target.hasClass( 'setting' )
-		|| $target.hasClass( 'switch' )
-	) return
-	
-	$( 'pre.status' ).addClass( 'hide' );
-} ).on( 'click', '.status', function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );

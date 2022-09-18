@@ -94,20 +94,19 @@ $( '#list' ).on( 'click', 'li', function() {
 	$( '#codehddinfo' ).addClass( 'hide' );
 	var mountpoint = $this.find( '.mountpoint' ).text();
 	$( 'li' ).removeClass( 'active' );
-	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) || mountpoint === '/' ) {
+	if ( !$( '#menu' ).hasClass( 'hide' ) || mountpoint === '/' ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
 		return
 	}
 	
 	$this.addClass( 'active' );
-	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
-	$menu.find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
-	var menuH = $menu.height();
-	$menu
+	$( '#menu' ).find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	$( '#menu' ).find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
+	var menuH = $( '#menu' ).height();
+	$( '#menu' )
 		.removeClass( 'hide' )
 		.css( 'top', $this.position().top + 48 );
-	var targetB = $menu.offset().top + menuH;
+	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
