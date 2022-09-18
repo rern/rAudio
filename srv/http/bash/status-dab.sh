@@ -13,7 +13,7 @@ touch $filelabel
 while read line; do
 	title=$( cat $filelabel | tr -d ' \"`?/#&'"'" )
 	coverart=/data/shm/webradio/$title.jpg
-	mv $dirshm/webradio/DABslide{,$title}.jpg
+	mv $dirshm/webradio/DABslide{,$title}.jpg &> /dev/null
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
