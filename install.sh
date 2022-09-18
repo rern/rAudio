@@ -3,10 +3,10 @@
 alias=r1
 
 # 20220923
-file=
-if [[ ! -e $file ]]; then
+if [[ ! -e /usr/bin/inotifywait ]]; then
+	pacman -Sy --noconfirm inotify-tools
 	echo "\
-	[Unit]
+[Unit]
 Description=DAB Radio metadata
 
 [Service]
