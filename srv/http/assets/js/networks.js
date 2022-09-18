@@ -1,6 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var accesspoint = $( '#accesspoint' ).length;
 $( 'body' ).click( function() {
 	$( '#menu' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );

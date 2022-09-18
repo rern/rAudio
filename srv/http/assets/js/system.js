@@ -1,5 +1,16 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( 'body' ).click( function( e ) {
+	$( '#menu' ).addClass( 'hide' );
+	$( 'li' ).removeClass( 'active' );
+	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
+		$( '#divi2smodulesw' ).removeClass( 'hide' );
+		$( '#divi2smodule' ).addClass( 'hide' );
+	}
+} );
+$( '.container' ).on( 'click', '.settings', function() {
+	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
+} );
 var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
@@ -40,15 +51,6 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, okno        : 1
 	} );
 } );
-$( '.container' ).on( 'click', '.settings', function() {
-	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
-} );
-$( 'body' ).on( 'click touchstart', function( e ) {
-	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
-	}
-} );
 $( '#power' ).click( function() {
 	info( {
 		  icon        : 'power'
@@ -88,7 +90,8 @@ $( '#refresh' ).click( function( e ) {
 $( '#addnas' ).click( function() {
 	infoMount();
 } );
-$( '#list' ).on( 'click', 'li', function() {
+$( '#list' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
 	$( '#codehddinfo' ).addClass( 'hide' );
@@ -109,12 +112,6 @@ $( '#list' ).on( 'click', 'li', function() {
 	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-} );
-$( 'body' ).click( function( e ) {
-	if ( this.id !== 'codehddinfo' && !$( e.target ).parents( '#list' ).length ) {
-		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	}
 } );
 $( '#menu a' ).click( function() {
 	var $this = $( this );
