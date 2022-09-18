@@ -4,6 +4,15 @@
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
+	data=$2
+	pushstream mpdradio "$data"
+	cat << EOF > $dirshm/status
+$( echo "$data" | sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' )
+timestamp=$( date +%s%3N )
+webradio=true
+player=mpd
+EOF
+	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \

@@ -2,6 +2,20 @@
 
 alias=r1
 
+# 20220923
+file=
+if [[ ! -e $file ]]; then
+	echo "\
+	[Unit]
+Description=DAB Radio metadata
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/status-dab.sh
+" > /etc/systemd/system/dab.service
+	systemctl daemon-reload
+fi
+
 # 20220916
 dirmpd=/srv/http/data/mpd
 if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
