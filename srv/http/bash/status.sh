@@ -312,11 +312,13 @@ elif [[ $stream ]]; then
 					id=dabradio
 					radiosampling='48 kHz 160 kbit/s'
 					stationname=$station
+					service=dab
 				else
 					id=$( basename ${file/-*} )
 					[[ ${id:0:13} == francemusique ]] && id=${id:13}
 					[[ ! $id ]] && id=francemusique
 					stationname=${station/* - }
+					service=radio
 				fi
 				if [[ ! -e $dirshm/radio ]]; then
 					echo "\
@@ -324,7 +326,7 @@ $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					systemctl -q is-active radio || systemctl start radio
+					systemctl -q is-active $service || systemctl start $service
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
