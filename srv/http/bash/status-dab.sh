@@ -24,6 +24,7 @@ while true; do
 		data='{
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
+, "coverart" : ""
 , "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
@@ -44,7 +45,10 @@ while true; do
 	if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 		cp -f $filecover $coverfile
 		coverart=/data/shm/webradio/$name.$( date +%s ).jpg
-		sed -i -E 's|^(coverart=").*|\1'$coverart'"|' $dirshm/status
+		sed -i -e '/^coverart=/ d
+' -e "$ a\
+coverart=$coverart
+" $dirshm/status
 		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
 	fi
 	sleep 10
