@@ -3,8 +3,8 @@
 alias=r1
 
 # 20220923
-if [[ ! -e /usr/bin/inotifywait ]]; then
-	pacman -Sy --noconfirm inotify-tools
+file=/etc/systemd/system/dab.service
+if [[ ! -e $file ]]; then
 	echo "\
 [Unit]
 Description=DAB Radio metadata
@@ -12,7 +12,7 @@ Description=DAB Radio metadata
 [Service]
 Type=simple
 ExecStart=/srv/http/bash/status-dab.sh
-" > /etc/systemd/system/dab.service
+" > $file
 	systemctl daemon-reload
 fi
 
