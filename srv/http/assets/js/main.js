@@ -1605,26 +1605,11 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
-	if ( $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
-		if ( $this.hasClass( 'active' ) && menushow ) {
-			menuHide();
-		} else {
-			$( '#lib-list li' ).removeClass( 'active' );
-			contextmenuLibrary( $this, $target );
-		}
-		return
-	}
-	
+	var active = $this.hasClass( 'active' );
 	menuHide();
-	if ( menushow ) return
-	
-	$( '#lib-list li' ).removeClass( 'active' );
-	if ( $target.hasClass( 'bkedit' ) ) return
-	
-	if ( $( '.bkedit' ).length ) {
-		$( '.bkedit' ).remove();
-		$( '.licoverimg img' ).css( 'opacity', '' );
-		if ( $( this ).hasClass( 'licover' ) ) return
+	if ( menushow || $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+		if ( !active ) contextmenuLibrary( $this, $target );
+		return
 	}
 	
 	if ( $this.hasClass( 'licover' ) ) {
@@ -1959,14 +1944,11 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	G.list.name = $thisli.find( '.name' ).text();
 	G.list.index = $thisli.index();
 	var $menu = $( '#menu-plaction' );
-	$( '#pl-list li' ).removeClass( 'updn' );
+	var menushow = !$menu.hasClass( 'hide' );
+	var updn = $thisli.hasClass( 'updn' );
+	menuHide();
 	$( '.pl-remove' ).remove();
-	$thisli.addClass( 'updn' );
-	if ( !$menu.hasClass( 'hide' ) && $menu.css( 'top' ) === ( $thisli.position().top + 48 ) +'px' ) {
-		$menu.addClass( 'hide' );
-		$thisli.removeClass( 'updn' );
-		return
-	}
+	if ( menushow && updn) return
 	
 	var state = G.status.state;
 	var play = state === 'play';
@@ -1975,6 +1957,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	var notsaved = $thisli.hasClass( 'notsaved' );
 	var radio = $thisli.hasClass( 'webradio' );
 	var upnp = $thisli.hasClass( 'upnp' );
+	$thisli.addClass( 'updn' );
 	$( '#menu-plaction a' ).removeClass( 'hide' );
 	$menu.find( '.current' ).toggleClass( 'hide', active || play );
 	if ( G.status.player === 'mpd' || G.status.player === 'upnp' ) {
@@ -1999,12 +1982,14 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
-	menuHide();
 	var $target = $( e.target );
 	if ( $target.hasClass( 'savewr' ) ) return
 	
 	$this = $( this );
-	if ( $this.hasClass( 'active' ) && $( '.contextmenu:not( .hide )' ).length ) return
+	var menushow = $( '.contextmenu:not( .hide )' ).length;
+	var active = $this.hasClass( 'active' );
+	menuHide();
+	if ( menushow && active ) return
 	
 	var pladd = 'file' in G.pladd;
 	var plicon = $target.hasClass( 'pl-icon' );
