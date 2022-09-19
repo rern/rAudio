@@ -10,10 +10,14 @@ song=$(( ${pos/\/*} - 1 ))
 filelabel=$dirshm/webradio/DABlabel.txt
 touch $filelabel
 
-while read line; do
-	title=$( cat $filelabel | tr -d ' \"`?/#&'"'" )
-	coverart=/data/shm/webradio/$title.jpg
-	mv $dirshm/webradio/DABslide{,$title}.jpg &> /dev/null
+while true; do
+	title=$( cat $filelabel )
+	name=$( echo $title | tr -d ' \"`?/#&'"'" )
+	coverart=/data/shm/webradio/$name.jpg
+	[[ -e /srv/http/$coverart ]] && continue # not change
+	
+	cp $dirshm/webradio/DABslide{,$name}.jpg &> /dev/null
+	touch $dirshm/webradio/DABslide.text
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
@@ -25,7 +29,7 @@ while read line; do
 , "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
-, "sampling" : "$pos &bull; 48 kHz 160 kbit/s"
+, "sampling" : "'$pos' &bull; 48 kHz 160 kbit/s"
 , "state"    : "play"
 , "song"     : '$song'
 , "station"  : ""
@@ -33,4 +37,5 @@ while read line; do
 , "Title"    : "'$title'"
 }'
 	$dirbash/status-push.sh statusradio "$data" &
-done < <( inotifywait -mq -e close_write $filelabel )
+	sleep 10
+done
