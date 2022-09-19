@@ -11,8 +11,6 @@ filelabel=$dirshm/webradio/DABlabel.txt
 
 while true; do
 	title=$( cat $filelabel 2> /dev/null )
-	[[ ! $title ]] && sleep 5 && continue
-	
 	name=$( echo $title | tr -d ' \"`?/#&'"'" )
 	coverart=/data/shm/webradio/$name.jpg
 	coverfile=/srv/http/$coverart
