@@ -16,7 +16,7 @@ while true; do
 	coverfile=/srv/http/data/shm/webradio/$name.jpg
 	[[ -e $coverfile ]] && notchange=1 || notchange=
 	cp $dirshm/webradio/DABslide{,$name}.jpg &> /dev/null
-	if [[ $notchange ]]; then # update coverart only
+	if [[ $notchange ]]; then # update coverart only (change later than title or multiple)
 		sed -i -E 's/^(coverart=").*/\1'$coverart'"/' $dirshm/status
 		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
 	else
