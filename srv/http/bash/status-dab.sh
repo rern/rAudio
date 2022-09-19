@@ -8,16 +8,18 @@ station=${tmpradio[1]//\"/\\\"}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
 song=$(( ${pos/\/*} - 1 ))
 filelabel=$dirshm/webradio/DABlabel.txt
-touch $filelabel
 
 while true; do
-	title=$( cat $filelabel )
+	title=$( cat $filelabel 2> /dev/null )
+	[[ ! $title ]] && sleep 5 && continue
+	
 	name=$( echo $title | tr -d ' \"`?/#&'"'" )
 	coverart=/data/shm/webradio/$name.jpg
-	[[ -e /srv/http/$coverart ]] && continue # not change
+	coverfile=/srv/http/$coverart
+	[[ -e $coverfile ]] && sleep 10 && continue # not change
 	
+	touch $coverfile
 	cp $dirshm/webradio/DABslide{,$name}.jpg &> /dev/null
-	touch $dirshm/webradio/DABslide.text
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
