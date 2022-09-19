@@ -106,9 +106,8 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	$.getScript( 'assets/js/shortcut.js' );
 }
 	
-$( '.page' ).click( function( e ) {
-	if ( ![ 'coverTR', 'timeTR' ].includes( e.target.id ) ) $( '#settings' ).addClass( 'hide' );
-} ).contextmenu( function( e ) { // touch device - on press - disable default context menu
+$( 'body' ).click( menuHide );
+$( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
 	e.stopPropagation();
     e.stopImmediatePropagation();
@@ -144,7 +143,8 @@ $( '#logo, #button-library, #button-playlist' ).press( function() { // from info
 $( '#logo' ).click( function() {
 	if ( !G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
-$( '#button-settings' ).click( function() {
+$( '#button-settings' ).click( function( e ) {
+	e.stopPropagation();
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		menuHide();
 		$( '#settings' )
@@ -438,7 +438,6 @@ $( '#addons' ).click( function () {
 	loader();
 } );
 $( '#library, #button-library' ).click( function() {
-	menuHide();
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
@@ -466,7 +465,6 @@ $( '#playlist, #button-playlist' ).click( function() {
 	if ( !G.local ) G.pladd = {}
 	if ( G.playlist ) {
 		if ( G.savedlist || G.savedplaylist ) getPlaylist();
-		menuHide();
 	} else {
 		switchPage( 'playlist' );
 		if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
@@ -495,7 +493,6 @@ $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
 } );
 $( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
-	menuHide();
 	if ( G.library ) {
 		$( '.licover .coveredit.cover' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
@@ -1281,7 +1278,6 @@ $( '#lib-search-input' ).keyup( function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).click();
 } );
 $( '#button-lib-back' ).click( function() {
-	menuHide();
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL = $breadcrumbs.length
 	var backmode = 'gmode' in G && G.gmode !== G.mode;
@@ -1594,9 +1590,9 @@ $( '#page-library' ).press( '.licoverimg',  function( e ) {
 	$this.find( 'img' )
 		.css( 'opacity', '0.33' )
 		.after( icoveredit );
-	menuHide();
 } );
 $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
+	e.stopPropagation();
 	if ( G.press ) return
 	
 	if ( $( '.licover .coveredit.cover' ).length ) {
@@ -1762,11 +1758,7 @@ $( '.page' ).on( 'click', '.index a', function() {
 	$( 'html, body' ).scrollTop( scrollT - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
-$( '#pl-manage i' ).click( function() {
-	menuHide();
-} );
 $( '#button-pl-back' ).click( function() {
-	menuHide();
 	if ( G.savedplaylist ) {
 		$( '#button-pl-playlists' ).click();
 	} else {
@@ -1919,6 +1911,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 	}
 } );
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
 	$target = $( e.target );
 	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'pl-remove' ) ) return
 	
@@ -2005,6 +1998,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	playlistRemove( $( this ).parent() );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
 	menuHide();
 	var $target = $( e.target );
 	if ( $target.hasClass( 'savewr' ) ) return
