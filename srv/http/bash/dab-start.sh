@@ -3,7 +3,7 @@
 killsubs() {
 	kill $DABPID
 	kill $FFMPID
-	rm $MYPIPE /srv/http/data/shm/webradio/DABlabel.txt
+	rm $MYPIPE /srv/http/data/shm/webradio/DAB*
 }
 trap killsubs SIGINT
 
