@@ -12,23 +12,19 @@ filelabel=$dirshm/webradio/DABlabel.txt
 while true; do
 	title=$( cat $filelabel 2> /dev/null )
 	name=$( echo $title | tr -d ' \"`?/#&'"'" )
-	coverart=/data/shm/webradio/$name.jpg
-	coverfile=/srv/http/$coverart
+	coverart=/data/shm/webradio/$name.$( date +%s ).jpg
+	coverfile=/srv/http/data/shm/webradio/$name.jpg
 	[[ -e $coverfile ]] && notchange=1 || notchange=
-	touch $coverfile
 	cp $dirshm/webradio/DABslide{,$name}.jpg &> /dev/null
-	if [[ $notchange ]]; then # not change
+	if [[ $notchange ]]; then # update coverart only
 		sed -i -E 's/^(coverart=").*/\1'$coverart'"/' $dirshm/status
 		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
-		sleep 10
-		continue
-	fi
-	
-	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep ^elapsed \
-				| cut -d' ' -f2 ) )
-	data='{
+	else
+		elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep ^elapsed \
+					| cut -d' ' -f2 ) )
+		data='{
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
 , "coverart" : "'$coverart'"
@@ -42,6 +38,7 @@ while true; do
 , "Time"     : false
 , "Title"    : "'$title'"
 }'
-	$dirbash/status-push.sh statusradio "$data" &
+		$dirbash/status-push.sh statusradio "$data" &
+	fi
 	sleep 10
 done
