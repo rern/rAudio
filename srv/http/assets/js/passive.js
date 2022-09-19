@@ -225,6 +225,15 @@ function psCoverart( data ) {
 			bookmarkCover( src, path );
 			getPlaylist( 'refresh' );
 			break;
+		case 'coverartplayback':
+			if ( G.playback ) {
+				G.status.coverart = src;
+				$( '#vu' ).addClass( 'hide' );
+				$( '#coverart' )
+					.attr( 'src', src )
+					.removeClass( 'hide' );
+			}
+			break;
 		case 'dabradio':
 		case 'webradio':
 			if ( G.playback ) {

@@ -14,10 +14,16 @@ while true; do
 	name=$( echo $title | tr -d ' \"`?/#&'"'" )
 	coverart=/data/shm/webradio/$name.jpg
 	coverfile=/srv/http/$coverart
-	[[ -e $coverfile ]] && sleep 10 && continue # not change
-	
+	[[ -e $coverfile ]] && notchange=1 || notchange=
 	touch $coverfile
 	cp $dirshm/webradio/DABslide{,$name}.jpg &> /dev/null
+	if [[ $notchange ]]; then # not change
+		sed -i -E 's/^(coverart=").*/\1'$coverart'"/' $dirshm/status
+		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
+		sleep 10
+		continue
+	fi
+	
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep ^elapsed \
