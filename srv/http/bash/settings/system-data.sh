@@ -8,7 +8,7 @@ $( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide> <gr>• $( timedatectl | awk '/zone:/ {print $3}' )</gr></wide><br>\
 $( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
-$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + usersapce)</gr></wide>" || echo . . . )"
+$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo . . . )"
 # for interval refresh
 [[ $1 == status ]] && echo $status && exit
 
