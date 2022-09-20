@@ -17,8 +17,6 @@ data='
 # for interval refresh
 [[ $1 == status ]] && echo {$data} && exit
 
-lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
-lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
 core=${cpu[1]}
@@ -46,6 +44,14 @@ else
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
+version=$( cat $dirsystem/version )
+system="\
+rAudio $( cat $diraddons/r$version 2> /dev/null )<br>\
+$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
+$rpimodel<br>\
+$soc<br>\
+$soccpu"
+
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
@@ -57,7 +63,6 @@ $( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
 ]"
 	fi
 fi
-version=$( cat $dirsystem/version )
 
 # sd, usb and nas
 if mount | grep -q 'mmcblk0p2 on /'; then
@@ -158,13 +163,12 @@ data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
-, "kernel"           : "'$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )'"
-, "lcd"              : '$lcd'
+, "lcd"              : '$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$i2caddress'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
-, "lcdmodel"         : "'$lcdmodel'"
+, "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
@@ -174,16 +178,11 @@ data+='
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
-, "rpimodel"         : "'$rpimodel'"
 , "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
-, "soc"              : "'$soc'"
-, "soccpu"           : "'$soccpu'"
-, "socspeed"         : "'$socspeed'"
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
+, "system"           : "'$system'"
 , "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
-, "version"          : "'$version'"
-, "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then

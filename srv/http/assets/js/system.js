@@ -975,13 +975,7 @@ function renderPage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-	$( '#systemvalue' ).html(
-		  'rAudio '+ G.versionui
-		+'<br>'+ G.kernel
-		+'<br>'+ G.rpimodel
-		+'<br>'+ G.soc
-		+'<br>'+ G.soccpu
-	);
+	$( '#systemvalue' ).html( G.system );
 	renderStatus();
 	var html = '';
 	$.each( G.list, function( i, val ) {
