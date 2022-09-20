@@ -977,9 +977,9 @@ function renderPage() {
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html(
 		  'rAudio '+ G.versionui
-		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>$1</gr>' )
-		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
-		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
+		+'<br>'+ G.kernel
+		+'<br>'+ G.rpimodel
+		+'<br>'+ G.soc
 		+'<br>'+ G.soccpu
 	);
 	renderStatus();

@@ -26,7 +26,9 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model | tr -d '\000' | sed 's/ Model //; s/ Plus/+/' )
+rpimodel=$( cat /proc/device-tree/model \
+				| tr -d '\000' \
+				| sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
@@ -43,6 +45,7 @@ else
 		3 ) soc=BCM2711;; # 4
 	esac
 fi
+soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
@@ -155,7 +158,7 @@ data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
-, "kernel"           : "'$( uname -rm )'"
+, "kernel"           : "'$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )'"
 , "lcd"              : '$lcd'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$i2caddress'
@@ -175,7 +178,6 @@ data+='
 , "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
 , "soc"              : "'$soc'"
 , "soccpu"           : "'$soccpu'"
-, "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
 , "socspeed"         : "'$socspeed'"
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
