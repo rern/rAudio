@@ -58,7 +58,7 @@ cat << EOF > $filestatus
 , "Artist"   : ${status[1]}
 , "coverart" : ${status[2]}
 , "file"     : ""
-, "sampling" : "48 kHz 320 kbit/s &bull; Spotify"
+, "sampling" : "48 kHz 320 kbit/s • Spotify"
 , "state"    : "$state"
 , "Time"     : $Time
 , "Title"    : ${status[5]}

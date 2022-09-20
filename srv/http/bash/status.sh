@@ -367,7 +367,7 @@ $radiosampling" > $dirshm/radio
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 	if [[ $id ]]; then
-		sampling="$(( song + 1 ))/$pllength &bull; $radiosampling"
+		sampling="$(( song + 1 ))/$pllength • $radiosampling"
 		elapsedGet
 ########
 		status+='
@@ -436,7 +436,7 @@ samplingLine() {
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
-		sampling="${samplerate^^} &bull; $rate"
+		sampling="${samplerate^^} • $rate"
 	else
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
@@ -446,11 +446,11 @@ samplingLine() {
 			sampling="$sample $rate"
 		fi
 	fi
-	[[ $ext != Radio ]] && sampling+=" &bull; $ext"
+	[[ $ext != Radio ]] && sampling+=" • $ext"
 }
 
 if [[ $ext == CD ]]; then
-	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
 elif [[ $state != stop ]]; then
 	if [[ $ext == DSF || $ext == DFF ]]; then
 		bitdepth=dsd
@@ -481,7 +481,7 @@ else
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
-				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
+				sampling="DSD$dsd • $bitrate Mbit/s • $ext"
 			else
 				data=( $( ffprobe -v quiet -select_streams a:0 \
 					-show_entries stream=bits_per_raw_sample,sample_rate \
@@ -500,7 +500,7 @@ fi
 
 ########
 pos="$(( song + 1 ))/$pllength"
-sampling="$pos &bull; $sampling"
+sampling="$pos • $sampling"
 status+='
 , "ext"      : "'$ext'"
 , "coverart" : "'$coverart'"

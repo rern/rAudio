@@ -7,7 +7,7 @@ file=${tmpradio[0]}
 station=${tmpradio[1]//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]}"
+sampling="$pos • ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
 
 case $id in

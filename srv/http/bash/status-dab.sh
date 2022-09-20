@@ -28,7 +28,7 @@ while true; do
 , "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
-, "sampling" : "'$pos' &bull; 48 kHz 160 kbit/s"
+, "sampling" : "'$pos' • 48 kHz 160 kbit/s • DAB"
 , "state"    : "play"
 , "song"     : '$song'
 , "station"  : ""
