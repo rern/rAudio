@@ -281,6 +281,7 @@ elif [[ $stream ]]; then
 	else
 		ext=Radio
 		if [[ $file == *rtsp://*$( hostname -f )* ]]; then
+			ext=DAB
 			dirradio=$dirdabradio
 			icon=dabradio
 		else
@@ -451,20 +452,21 @@ samplingLine() {
 
 if [[ $ext == CD ]]; then
 	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
+elif [[ $ext == DAB ]]; then
+	sampling='48 kHz 160 kbit/s • DAB'
 elif [[ $state != stop ]]; then
 	if [[ $ext == DSF || $ext == DFF ]]; then
 		bitdepth=dsd
 		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
-	fi
-	if [[ $ext != Radio ]]; then
-		samplingLine $bitdepth $samplerate $bitrate $ext
-	else
+	elif [[ $ext == Radio ]]; then
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
 		else
 			sampling=$radiosampling
 		fi
+	else
+		samplingLine $bitdepth $samplerate $bitrate $ext
 	fi
 	samplingSave &
 else
