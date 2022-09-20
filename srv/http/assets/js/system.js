@@ -77,14 +77,7 @@ $( '#refresh' ).click( function( e ) {
 		$this.removeClass( 'blink' );
 	} else {
 		$this.addClass( 'blink' );
-		G.intCputime = setInterval( function() {
-			bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
-				$.each( status, function( key, val ) {
-					G[ key ] = val;
-				} );
-				renderStatus();
-			}, 'json' );
-		}, 10000 );
+		G.intCputime = setInterval( getStatus, 10000 );
 	}
 } );
 $( '#addnas' ).click( function() {
@@ -976,7 +969,8 @@ function renderPage() {
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( G.system );
-	renderStatus();
+	$( '#status' ).html( G.status );
+	if ( !G.startup ) setTimeout( getStatus, 10000 );
 	var html = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
@@ -1024,30 +1018,8 @@ function renderPage() {
 	$( '#shareddata' ).prop( 'checked', G.shareddata );
 	showContent();
 }
-function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>•</gr> ' );
-	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
-	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
-			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
-			+'<br>'+ ( G.startup ? G.startup.replace( ' ', 's <gr>kernel</gr> + ' ) +'s <gr>userspace</gr>' : 'Booting ...' );
-	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
-	if ( G.throttled !== '0x0' ) {                        // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits ( hex > decimal > binary )
-		if ( bits[ 0 ] == 1 ) {                           // #0  > #18
-			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred <code>'+ G.throttled +'</code>';
-		} else if ( bits[ 18 ] == 1 ) {                   // #18 > #0
-			status += '<br><i class="fa fa-warning blink red"></i>&ensp;<red>Voltage under 4.7V</red> - now <code>'+ G.throttled +'</code>';
-		}
-	}
-	$( '#status' ).html( status );
-	if ( !G.startup ) {
-		setTimeout( function() {
-			bash( "systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g'", function( data ) {
-				if ( data ) {
-					G.startup = data;
-					renderStatus();
-				}
-			} );
-		}, 10000 );
-	}
+function getStatus() {
+	bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
+		$( '#status' ).html( status );
+	} );
 }

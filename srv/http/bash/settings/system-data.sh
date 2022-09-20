@@ -2,20 +2,15 @@
 
 . /srv/http/bash/common.sh
 
-cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
-data='
-  "page"             : "system"
-, "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-, "cputemp"          : '$( [[ $cputemp ]] && echo $cputemp || echo 0 )'
-, "startup"          : "'$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )'"
-, "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
-, "time"             : "'$( date +'%T %F' )'"
-, "timezone"         : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
-, "uptime"           : "'$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )'"
-, "uptimesince"      : "'$( uptime -s | cut -d: -f1-2 )'"'
-
+startup=$( systemd-analyze | grep '^Startup finished' | cut -d' ' -f 4,7 | sed -e 's/\....s/s/g; s/ / + /' )
+status="\
+$( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
+$( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
+$( date +'%F <gr>•</gr> %T' )<wide> <gr>• $( timedatectl | awk '/zone:/ {print $3}' )</gr></wide><br>\
+$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )'<wide>&ensp;<gr>since '$( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
+$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>kernel + usersapce</gr></wide>" || echo . . . )"
 # for interval refresh
-[[ $1 == status ]] && echo {$data} && exit
+[[ $1 == status ]] && echo $status && exit
 
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
@@ -156,7 +151,7 @@ else
 fi
 
 data+='
-, "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
+  "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
@@ -181,6 +176,8 @@ data+='
 , "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
+, "status"           : "'$status'"
+, "startup"          : '$( [[ $startup ]] && echo true )'
 , "system"           : "'$system'"
 , "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
