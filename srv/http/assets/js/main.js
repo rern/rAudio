@@ -418,7 +418,7 @@ $( '#colorreset' ).click( function() {
 	loader();
 } );
 $( '#colorcancel' ).click( function() {
-	$( '#colorpicker, .menu' ).addClass( 'hide' );
+	$( '#colorpicker' ).addClass( 'hide' );
 	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
 	  , .content-top, #button-library, #mode-title, #button-lib-back \
 	  , #lib-list li, #lib-list li.active, #lib-list i, #lib-list .li2 \
