@@ -9,6 +9,13 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide> <gr>• $( timedatectl | awk '/zone:/ {print $3}' )</gr></wide><br>\
 $( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
 $( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo . . . )"
+! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
+throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
+if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - now <code>$throttled</code>"
+elif [[ $throttled == 0x10000 ]]; then
+	status+="<br><i class='fa fa-warning'></i>&ensp;Voltage under 4.7V - occurred <code>$throttled</code>"
+fi
 # for interval refresh
 [[ $1 == status ]] && echo $status && exit
 
@@ -167,7 +174,6 @@ data+='
 , "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
-, "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
