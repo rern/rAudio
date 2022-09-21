@@ -151,7 +151,8 @@ else
 fi
 
 data+='
-  "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
+  "page"             : "system"
+, "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
