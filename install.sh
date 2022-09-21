@@ -3,6 +3,16 @@
 alias=r1
 
 # 20220923
+dir=/srv/http/assets/img/guide
+if [[ ! -e $dir/1.jpg ]]; then
+	mkdir -p $dir
+	if [[ -e /srv/http/assets/img/1.jpg ]]; then
+		find /srv/http/assets/img -maxdepth 1 -type f -name '[0-9]*' -exec mv {} $dir \;
+	else
+		curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
+	fi
+fi
+
 file=/etc/systemd/system/dab.service
 if [[ ! -e $file ]]; then
 	echo "\

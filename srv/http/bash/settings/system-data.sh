@@ -61,7 +61,7 @@ fi
 
 # sd, usb and nas
 if mount | grep -q 'mmcblk0p2 on /'; then
-	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
+	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
