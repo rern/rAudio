@@ -663,28 +663,6 @@ servers )
 	fi
 	pushRefresh
 	;;
-shareddatadisable )
-	copydata=${args[1]}
-	mountpoint=/srv/http/shareddata
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirdata/$dir
-		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
-	done
-	umount -l $mountpoint
-	sed -i "\|$mountpoint| d" /etc/fstab
-	rm -rf $mountpoint
-	chown -R http:http $dirdata
-	chown -R mpd:audio $dirmpd
-	pushRefresh
-	if [[ $copydata == false ]]; then
-		rm -f $dirmpd/{updating,listing}
-		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate
-	fi
-	;;
 shareddata )
 	protocol=${args[1]}
 	ip=${args[2]}
@@ -739,6 +717,28 @@ shareddata )
 		sed -i "\|$mountpoint| d" /etc/fstab
 		rm -rf $mountpoint
 		exit
+	fi
+	;;
+shareddatadisable )
+	copydata=${args[1]}
+	mountpoint=/srv/http/shareddata
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	sed -i "/$ip/ d" $mountpoint/iplist
+	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		rm -rf $dirdata/$dir
+		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+	done
+	umount -l $mountpoint
+	sed -i "\|$mountpoint| d" /etc/fstab
+	rm -rf $mountpoint
+	chown -R http:http $dirdata
+	chown -R mpd:audio $dirmpd
+	pushRefresh
+	if [[ $copydata == false ]]; then
+		rm -f $dirmpd/{updating,listing}
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate
 	fi
 	;;
 soundprofile )
