@@ -878,7 +878,8 @@ var btnctrl = {
 	, coverB  : 'stop'
 	, coverBR : 'repeat'
 }
-$( '.map' ).click( function() {
+$( '.map' ).click( function( e ) {
+	e.stopPropagation();
 	if ( G.press ) return
 	
 	if ( $( '#info' ).hasClass( 'hide' ) ) {
