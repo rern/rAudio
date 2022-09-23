@@ -82,12 +82,12 @@ if [[ $nas ]]; then
 	done
 fi
 if grep -q /srv/http/shareddata /etc/fstab; then
-	shareddata=1
 	mount /srv/http/shareddata
 	for i in {1..5}; do
 		sleep 1
 		[[ -d $dirmpd ]] && break
 	done
+	$dirbash/settings/system.sh shareddatalist
 fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
@@ -140,7 +140,8 @@ if [[ -e $dirsystem/hddspindown ]]; then
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	[[ ! $shareddata ]] && $dirbash/cmd.sh$'\n'rescan
+	$dirbash/cmd.sh "mpcupdate
+rescan"
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"

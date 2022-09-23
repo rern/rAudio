@@ -1113,6 +1113,10 @@ power )
 			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
+	if [[ -e /srv/http/shareddata/iplist ]]; then
+		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		sed -i "/$ip/ d" /srv/http/shareddata/iplist
+	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
@@ -1229,10 +1233,6 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
-	;;
-shareddatareload )
-	systemctl restart mpd
-	pushstream mpdupdate "$( cat $dirmpd/counts )"
 	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"

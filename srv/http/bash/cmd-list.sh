@@ -146,13 +146,7 @@ if [[ $toolarge ]]; then
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 fi
 
-if [[ -e /srv/http/shareddata/iplist ]]; then
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	iplist=$( grep -v $ip /srv/http/shareddata/iplist )
-	for ip in $iplist; do
-		sshCommand $ip $dirbash/cmd.sh shareddatareload
-	done
-fi
+[[ -e /srv/http/shareddata/iplist ]] && $dirbash/settings/system.sh shareddatalist reload
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

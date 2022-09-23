@@ -741,6 +741,22 @@ shareddatadisable )
 		$dirbash/cmd.sh mpcupdate
 	fi
 	;;
+shareddatalist )
+	reload=${args[1]}
+	list=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	iplist=$( grep -v $list /srv/http/shareddata/iplist )
+	for ip in $iplist; do
+		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+			[[ $reload ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			list+=$'\n'$ip
+		fi
+	done
+	echo "$list" | sort -u > /srv/http/shareddata/iplist
+	;;
+shareddatarestart )
+	systemctl restart mpd
+	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	;;
 soundprofile )
 	soundProfile
 	;;
