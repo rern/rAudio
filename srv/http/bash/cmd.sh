@@ -974,18 +974,9 @@ mpcsimilar )
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
 mpcupdate )
-	type=${args[1]}
-	path=${args[2]}
-	if [[ $type == rescan ]]; then
-		touch $dirmpd/updating
-		mpc -q rescan
-	elif [[ $type == update ]]; then
-		touch $dirmpd/updating
-		mpc -q update
-	elif [[ $type == path ]]; then
-		echo $path > $dirmpd/updating
-		mpc -q update "$path"
-	fi
+	path=${args[1]}
+	echo $path > $dirmpd/updating
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 mpdoledlogo )

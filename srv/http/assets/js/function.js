@@ -761,8 +761,7 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
-		, radio      : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		, values     : path ? '' : 'update'
+		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : function() {
 			if ( !G.status.counts ) {
 				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
@@ -770,7 +769,7 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok         : function() {
-			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', infoVal() ] );
+			bash( [ 'mpcupdate', path || infoVal() ] );
 		}
 	} );
 }

@@ -24,25 +24,9 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btreceiver=$( exists $dirshm/btreceiver )
-	consume=$( mpc | grep -q 'consume: on' && echo true )
-	counts=$( cat $dirmpd/counts 2> /dev/null )
-	librandom=$( exists $dirsystem/librandom )
 	player=$( cat $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	relays=$( exists $dirsystem/relays )
-	relayson=$( exists $dirshm/relayson )
-	stoptimer=$( exists $dirshm/stoptimer )
-	updateaddons=$( exists $diraddons/update )
-	if [[ -e $dirmpd/updating ]]; then
-		updating_db=true
-		if ! mpc | grep -q ^Updating; then
-			path=$( cat $dirmpd/updating )
-			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-		fi
-	fi
-	[[ -e $dirshm/updatingdab ]] && updatingdab=true
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
@@ -51,30 +35,28 @@ else
 		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
 		volume=${ccv/*^}
 	fi
-	scrobble=$( exists $dirsystem/scrobble )
-	volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 
 ########
 	status='
   "player"       : "'$player'"
-, "btreceiver"   : '$btreceiver'
+, "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "consume"      : '$consume'
+, "consume"      : '$( mpc | grep -q 'consume: on' && echo true )'
 , "control"      : "'$control'"
-, "counts"       : '$counts'
+, "counts"       : '$( cat $dirmpd/counts 2> /dev/null )'
 , "file"         : ""
 , "icon"         : "'$icon'"
-, "librandom"    : '$librandom'
-, "relays"       : '$relays'
-, "relayson"     : '$relayson'
-, "scrobble"     : '$scrobble'
-, "stoptimer"    : '$stoptimer'
+, "librandom"    : '$( exists $dirsystem/librandom )'
+, "relays"       : '$( exists $dirsystem/relays )'
+, "relayson"     : '$( exists $dirshm/relayson )'
+, "scrobble"     : '$( exists $dirsystem/scrobble )'
+, "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
-, "updateaddons" : '$updateaddons'
-, "updating_db"  : '$updating_db'
-, "updatingdab"  : '$updatingdab'
+, "updateaddons" : '$( exists $diraddons/update )'
+, "updating_db"  : '$( exists $dirmpd/updating )'
+, "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$volumemute'
+, "volumemute"   : '$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )'
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then

@@ -422,6 +422,7 @@ function info( json ) {
 					}
 				}
 			} );
+			if ( ! O.values ) O.values = [ '' ];
 		}
 		if ( O.checkbox ) {
 			var line;
