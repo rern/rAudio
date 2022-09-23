@@ -139,8 +139,8 @@ if [[ -e $dirsystem/hddspindown ]]; then
 	fi
 fi
 
-if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh$'\n'rescan
+if [[ ! -e $dirmpd/mpd.db ]]; then
+	[[ ! $shareddata ]] && $dirbash/cmd.sh$'\n'rescan
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
