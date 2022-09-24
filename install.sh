@@ -86,9 +86,6 @@ installfinish
 #-------------------------------------------------------------------------------
 
 # 20220808
-udevadm control --reload-rules
-udevadm trigger
-
 if [[ -e /srv/http/shareddata/webradios ]]; then
 	echo -e "\
 $info Shared data:
@@ -97,12 +94,5 @@ $info Shared data:
       - Rename: $( tcolor webradios 1 ) > $( tcolor webradio 2 )
       - Move:   $( tcolor webradiosimg 1 ) > $( tcolor webradio/img 2 )
     • Re-enable again.
-"
-fi
-
-if [[ -e /usr/bin/rtsp-simple-server && ! -e $dirdata/dabradio ]]; then
-	echo -e "\
-$info DAB Radio:
-    • Rescan for stations again.
 "
 fi

@@ -1,9 +1,0 @@
-ACTION=="add", \
-SUBSYSTEM=="bluetooth", \
-ENV{DEVTYPE}=="host", \
-RUN+="/srv/http/bash/settings/networks.sh usbbluetoothon"
-
-ACTION=="remove", \
-SUBSYSTEM=="bluetooth", \
-ENV{DEVTYPE}=="host", \
-RUN+="/srv/http/bash/settings/networks.sh usbbluetoothoff"
