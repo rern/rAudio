@@ -324,12 +324,13 @@ HTML
 		, 'help'    => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
  • SSH passwords must be default.
- • Music files should be on NAS only.
+ • Music files should be on NAS only, no local music files.
  • On file server, setup a network share with all permissions
  &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
  &emsp; • Samba: <code>read only = no</code>
  &emsp; • Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
  • On each rAudio
+ &emsp; • Connect shared music files
  &emsp; • Enable to connect the shared data
  &emsp; • Check <code>Use data from this rAudio</code> only on rAudio with data to be shared or to overwrite existing
 HTML
