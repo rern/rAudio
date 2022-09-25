@@ -140,6 +140,9 @@ oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baudrate ]] && baudrate=800000
 mpdoledconf='[ '$oledchip', '$baudrate' ]'
+[[ $( stat -c %a /mnt/MPD/SD ) == 777 ]] && permsd=true
+[[ $( stat -c %a /mnt/MPD/USB ) == 777 ]] && permusb=true
+grep -q /srv/http/shareddata /etc/exports && nfsshareddata=true
 [[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
@@ -174,6 +177,8 @@ data+='
 , "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
+, "nfs"              : '$( isactive nfs-server )'
+, "nfsconf"          : [ '$permsd', '$permusb', '$nfsshareddata' ]
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'

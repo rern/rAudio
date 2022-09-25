@@ -1014,22 +1014,13 @@ pkgstatus )
 	case $id in
 		camilladsp )
 			fileconf=$dircamilladsp/configs/camilladsp.yml;;
-		hostapd )
-			catconf="
-<bll># cat /etc/hostapd/hostapd.conf</bll>
-$( cat /etc/hostapd/hostapd.conf )
-
-<bll># cat /etc/dnsmasq.conf</bll>
-$( cat /etc/dnsmasq.conf )";;
 		localbrowser )
 			fileconf=$dirsystem/localbrowser.conf
 			pkg=chromium;;
-		rtsp-simple-server )
-			catconf="
-<bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 		nfs-server )
-			pkg=nfs-utils;;
+			pkg=nfs-utils
+			fileconf=/etc/exports
+			;;
 		smb )
 			fileconf=/etc/samba/smb.conf
 			pkg=samba;;
@@ -1040,13 +1031,30 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
 			fileconf=/etc/$id.conf;;
 	esac
 	conf="<code>$( pacman -Q $pkg )</code>"
-	[[ -e $fileconf ]] && conf+="
+	if [[ -e $fileconf ]]; then
+		conf+="
 <bll># cat $fileconf</bll>
-$( cat $fileconf )"
+$( grep -v ^# $fileconf )"
+	elif [[ $pkg == hostapd ]]; then
+		conf+="
+<bll># cat /etc/hostapd/hostapd.conf</bll>
+$( cat /etc/hostapd/hostapd.conf )
+
+<bll># cat /etc/dnsmasq.conf</bll>
+$( cat /etc/dnsmasq.conf )"
+	elif [[ $pkg == rtsp-simple-server ]]; then
+		conf+="
+<bll># rtl_test -t</bll>
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+	fi
 	status=$( systemctl status $service \
 					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
 					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
-	[[ $pkg == chromium ]] && status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
+	if [[ $pkg == chromium ]]; then
+		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
+	elif [[ $pkg == nfs-utils ]]; then
+		status=$( echo "$status" | grep -v 'Protocol not supported' )
+	fi
 	echo "\
 $conf
 

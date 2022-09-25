@@ -96,8 +96,9 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	$this.addClass( 'active' );
-	$( '#menu' ).find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
-	$( '#menu' ).find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
+	$( '#menu .info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
+	$( '#menu .remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', !G.list[ $this.index() ].mounted );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
@@ -168,6 +169,37 @@ $( '#menu a' ).click( function() {
 			} );
 			break;
 	}
+} );
+$( '#setting-nfs' ).click( function() {
+	info( {
+		  icon         : 'networks'
+		, title        : 'NFS Server'
+		, message      : '<wh>Write</wh> permission:</gr>'
+		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
+		, values       : G.nfsconf
+		, checkchanged : ( G.nfs ? 1 : 0 )
+		, beforeshow   : function() {
+			var $chk = $( '#infoContent input' );
+			$chk.eq( 2 ).change( function() {
+				if ( $( this ).prop( 'checked' ) ) {
+					$chk.prop( 'checked', 1 );
+				} else {
+					$chk.eq( 0 ).prop( 'checked', G.nfsconf[ 0 ] );
+					$chk.eq( 1 ).prop( 'checked', G.nfsconf[ 1 ] );
+				}
+			} );
+		}
+		, cancel       : function() {
+			$( '#nfs-server' ).prop( 'checked', G.nfs );
+		}
+		, ok           : function() {
+			var val = infoVal();
+			var permsd = val[ 0 ] ? 777 : 755;
+			var permusb = val[ 1 ] ? 777 : 755;
+			bash( [ 'nfsset', permsd, permusb ] );
+			notify( 'NFS Server', G.nfs ? 'Change ...' : 'Enable ...', 'networks' );
+		}
+	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
 	info( {

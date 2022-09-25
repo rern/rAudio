@@ -45,6 +45,7 @@ var services = [
 	, 'hostapd'
 	, 'localbrowser'
 	, 'mpd'
+	, 'nfs-server'
 	, 'shairport-sync'
 	, 'smb'
 	, 'snapclient'

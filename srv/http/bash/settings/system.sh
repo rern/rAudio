@@ -526,6 +526,28 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
+nfsdisable )
+	systemctl disable --now nfs-server
+	sed -i '/^.mnt.MPD\|^.srv.http/ d' /etc/exports
+	chmod 755 /mnt/MPD/{SD,USB}
+	pushRefresh
+	;;
+nfsset )
+	permsd=${args[1]}
+	permusb=${args[2]}
+	chmod $permsd /mnt/MPD/SD
+	chmod $permusb /mnt/MPD/USB
+	mkdir -p /srv/http/shareddata
+	chmod 777 /srv/http/shareddata
+	routerip=$( ip r get 1 | head -1 | cut -d' ' -f3 )
+	ip_options="${routerip%.*}.0/24(rw,sync,no_subtree_check)"
+	! grep -q /mnt/MPD/ /etc/exports && echo -n "\
+/mnt/MPD/SD $ip_options
+/mnt/MPD/USB $ip_options
+/srv/http/shareddata $ip_options" >> /etc/exports
+	systemctl enable --now nfs-server
+	pushRefresh
+	;;
 packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then

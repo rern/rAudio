@@ -97,14 +97,28 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-		  'label'    => 'Auto Update'
-		, 'id'       => 'usbautoupdate'
-		, 'sublabel' => 'USB Drives'
-		, 'icon'     => 'refresh-library'
-		, 'help'     => <<< HTML
+	  'label'    => 'Auto Update'
+	, 'id'       => 'usbautoupdate'
+	, 'sublabel' => 'USB Drives'
+	, 'icon'     => 'refresh-library'
+	, 'help'     => <<< HTML
 Auto update Library database on insert / remove USB drives.
 HTML
-	] );
+] );
+htmlSetting( [
+	  'label'    => 'NFS Server'
+	, 'id'       => 'nfs'
+	, 'sublabel' => 'nfs-server'
+	, 'icon'     => 'networks'
+	, 'setting'  => true
+	, 'status'   => 'nfs-server'
+	, 'help'     => <<< HTML
+<a href="http://nfs.sourceforge.net/nfs-howto/">Network File System</a> for:
+ • <code>/mnt/MPD/SD</code>
+ • <code>/mnt/MPD/USB</code>
+ • <code>/srv/http/shareddata</code>
+HTML
+] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
@@ -324,13 +338,16 @@ HTML
 		, 'help'    => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
  • SSH passwords must be default.
- • Music files should be on NAS only, no local music files.
- • On file server, setup a network share with all permissions
- &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
- &emsp; • Samba: <code>read only = no</code>
- &emsp; • Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
+ • Music files should be on NAS only.
+ • On file server:
+ &emsp; • rAudio as music file server: Enable NFS Server with write permissions
+ &emsp; • Remote file server: setup a network share with all permissions
+ &emsp; &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
+ &emsp; &emsp; • Samba: <code>read only = no</code>
+ &emsp; &emsp; • Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
  • On each rAudio
- &emsp; • Connect shared music files
+ &emsp; • Storage <i class="fa fa-plus-circle"></i> Add shared music
+ &emsp; • For rAudio as server, also add the share to itself
  &emsp; • Enable to connect the shared data
  &emsp; • Check <code>Use data from this rAudio</code> only on rAudio with data to be shared or to overwrite existing
 HTML

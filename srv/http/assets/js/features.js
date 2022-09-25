@@ -382,8 +382,6 @@ $( '#setting-login' ).click( function() {
 		}
 	} );
 } );
-
-} );
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
 <table>
@@ -460,6 +458,8 @@ $( '#setting-stoptimer' ).click( function() {
 			notify( 'Stop Timer', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
 		}
 	} );
+} );
+
 } );
 
 function passwordWrong() {

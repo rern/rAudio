@@ -334,12 +334,6 @@ shairport-sync | spotifyd | upmpdcli )
 		systemctl disable --now $service
 	fi
 	pushRefresh
-	if [[ $service == shairport-sync ]]; then
-		for pid in $( pgrep shairport-sync ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
 	;;
 smbdisable )
 	systemctl disable --now smb
