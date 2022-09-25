@@ -330,9 +330,8 @@ Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, 
  &emsp; • Samba: <code>read only = no</code>
  &emsp; • Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
  • On each rAudio
- &emsp; • Storage <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
  &emsp; • Enable to connect the shared data
- &emsp; • <code>Use data from this rAudio</code>: Check only on rAudio with data to be shared or to overwrite existing
+ &emsp; • Check <code>Use data from this rAudio</code> only on rAudio with data to be shared or to overwrite existing
 HTML
 	]
 ];
