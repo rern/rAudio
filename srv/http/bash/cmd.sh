@@ -119,6 +119,18 @@ mpdoledLogo() {
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
 }
+reniceProcess() {
+	if [[ $2 == reset ]]; then
+		for pid in $( pgrep $1 ); do
+			renice -n 0 -p $pid &> /dev/null
+		done
+	else
+		for pid in $( pgrep $1 ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
+}
 plAddPlay() {
 	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
@@ -982,12 +994,6 @@ mpcupdate )
 mpdoledlogo )
 	mpdoledLogo
 	;;
-nicespotify )
-	for pid in $( pgrep spotifyd ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
-	;;
 ordersave )
 	data=$( jq <<< ${args[1]} )
 	pushstream order "$data"
@@ -1022,27 +1028,29 @@ $( cat /etc/dnsmasq.conf )";;
 			catconf="
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
+		nfs-server )
+			pkg=nfs-utils;;
 		smb )
 			fileconf=/etc/samba/smb.conf
 			pkg=samba;;
 		snapclient|snapserver )
 			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
-			pkg=snapcast
-			service=$id;;
+			pkg=snapcast;;
 		* )
 			fileconf=/etc/$id.conf;;
 	esac
-	[[ -e $fileconf ]] && catconf="
+	conf="<code>$( pacman -Q $pkg )</code>"
+	[[ -e $fileconf ]] && conf+="
 <bll># cat $fileconf</bll>
 $( cat $fileconf )"
-	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
+	status=$( systemctl status $service \
+					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
+					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
+	[[ $pkg == chromium ]] && status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
 	echo "\
-<code>$version</code>$catconf
+$conf
 
-$( systemctl status $service \
-	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
-	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
-	| grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
+$status"
 	;;
 playerstart )
 	newplayer=${args[1]}
@@ -1052,11 +1060,17 @@ playerstart )
 	player=$( cat $dirshm/player )
 	echo $newplayer > $dirshm/player
 	case $player in
-		airplay )   restart=shairport-sync;;
-		mpd|upnp )  restart=mpd;;
-		spotify )   restart=spotifyd;;
+		airplay )     service=shairport-sync;;
+		mpd | upnp )  service=mpd;;
+		spotify )     service=spotifyd;;
 	esac
-	[[ $restart ]] && systemctl restart $restart || snapclientStop
+	if [[ $service ]]; then
+		systemctl restart $service
+		reniceProcess $service
+		[[ $service != mpd ]] && reniceProcess mpd reset
+	else
+		snapclientStop
+	fi
 	pushstream player '{"player":"'$newplayer'","active":true}'
 	;;
 playerstop )
@@ -1093,7 +1107,10 @@ playerstop )
 			$dirbash/status-push.sh
 			;;
 	esac
-	[[ $service && $service != snapclient ]] && systemctl restart $service
+	if [[ $service && $service != snapclient ]]; then
+		systemctl restart $service
+		reniceProcess $service reset
+	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
@@ -1239,12 +1256,6 @@ thumbgif )
 	;;
 thumbjpg )
 	jpgThumbnail "${args[@]:1}"
-	;;
-upnpnice )
-	for pid in $( pgrep upmpdcli ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}

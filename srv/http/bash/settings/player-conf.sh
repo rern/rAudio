@@ -158,6 +158,10 @@ fi
 
 ### mpd start ##########################################################################
 systemctl restart mpd
+for pid in $( pgrep mpd ); do # set priority
+	ionice -c 0 -n 0 -p $pid &> /dev/null 
+	renice -n -19 -p $pid &> /dev/null
+done
 
 if [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )

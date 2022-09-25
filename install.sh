@@ -2,7 +2,7 @@
 
 alias=r1
 
-# 20220923
+# 20220926
 dir=/srv/http/assets/img/guide
 if [[ ! -e $dir/1.jpg ]]; then
 	mkdir -p $dir
@@ -23,8 +23,12 @@ Description=DAB Radio metadata
 Type=simple
 ExecStart=/srv/http/bash/status-dab.sh
 " > $file
-	systemctl daemon-reload
 fi
+
+sed -i '/ExecStartPost/ d' /etc/systemd/system/spotifyd.service &> /dev/null
+sed -i '/ExecStartPost/ d' /etc/systemd/system/upmpdcli.service &> /dev/null
+
+systemctl daemon-reload
 
 # 20220916
 dirmpd=/srv/http/data/mpd
