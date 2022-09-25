@@ -88,7 +88,7 @@ if [[ $usb ]]; then
 		fi
 	done
 fi
-nas=$( awk '/\/mnt\/MPD\/NAS/ {print $1" "$2}' /etc/fstab )
+nas=$( awk '/.mnt.MPD.NAS|.srv.http.shareddata/ {print $1" "$2}' /etc/fstab )
 if [[ $nas ]]; then
 	readarray -t nas <<< "$nas"
 	for line in "${nas[@]}"; do

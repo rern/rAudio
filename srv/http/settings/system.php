@@ -87,7 +87,7 @@ Available sources, local USB and NAS mounts, for Library.
  • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-<gr># CIFS:</gr>
+<gr># CIFS: (Remove username=USER,password=PASSWORD, if blank)</gr>
 mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr># NFS:</gr>
@@ -328,13 +328,11 @@ Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, 
  • On file server, setup a network share with all permissions
  &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
  &emsp; • Samba: <code>read only = no</code>
- &emsp; • Windows: <code>Everyone - Full Control</code>
+ &emsp; • Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
  • On each rAudio
-  &emsp; • Storage <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
-  &emsp; • Shared Data - Enable to connect the share.
- • <code>Use data from this rAudio</code>:
- &emsp; • Check only on rAudio with data to be used or to overwrite existing.
- &emsp; • Leave unchecked to use existing data on the server.
+ &emsp; • Storage <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
+ &emsp; • Enable to connect the shared data
+ &emsp; • <code>Use data from this rAudio</code>: Check only on rAudio with data to be shared or to overwrite existing
 HTML
 	]
 ];

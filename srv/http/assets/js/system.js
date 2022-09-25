@@ -680,36 +680,6 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
-$( '#shareddata' ).click( function() {
-	if ( G.shareddata ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Shared Data'
-			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
-			, values  : [ true ]
-			, cancel  : function() {
-				$( '#shareddata' ).prop( 'checked', true );
-			}
-			, okcolor : orange
-			, oklabel : 'Disable'
-			, ok      : function() {
-				bash( [ 'shareddatadisable', infoVal() ] );
-				notify( 'Shared Data', 'Disable ...', 'networks' );
-			}
-		} );
-	} else {
-		if ( $( '#list .fa-networks' ).length ) {
-			infoMount( 'shareddata' );
-		} else {
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
-			} );
-			$( '#shareddata' ).prop( 'checked', false );
-		}
-	}
-} );
 $( '#backup' ).click( function() {
 	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
@@ -817,6 +787,36 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
+$( '#shareddata' ).click( function() {
+	if ( G.shareddata ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
+			, values  : [ true ]
+			, cancel  : function() {
+				$( '#shareddata' ).prop( 'checked', true );
+			}
+			, okcolor : orange
+			, oklabel : 'Disable'
+			, ok      : function() {
+				bash( [ 'shareddatadisable', infoVal() ] );
+				notify( 'Shared Data', 'Disable ...', 'networks' );
+			}
+		} );
+	} else {
+		if ( $( '#list .fa-networks' ).length ) {
+			infoMount( 'shareddata' );
+		} else {
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
+			} );
+			$( '#shareddata' ).prop( 'checked', false );
+		}
+	}
+} );
 $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
@@ -853,20 +853,18 @@ $( '.listtitle' ).click( function( e ) {
 function infoMount( values ) {
 	var ip = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
-	var shareddata = false;
-	if ( !values || values.length === 8 ) {
-		var htmlname = `\
-<tr><td><gr>As:</gr> NAS/</td>
-	<td><input id="mountpoint" type="text"></td>
-</tr>`;
-		var chktext = 'Update Library on mount'
-	} else  {
-		if ( values === 'shareddata' ) {
-			var shareddata = true;
-			values = [ 'cifs', ipsub, '', '', '', '', false ];
-		}
+	if ( values === 'shareddata' ) {
+		var shareddata = true;
+		values = [ 'cifs', ipsub, '', '', '', '', false ];
 		var htmlname = '';
 		var chktext = 'Use data from this rAudio'
+	} else {
+		var shareddata = false;
+		var htmlname = `\
+<tr><td>Name</td>
+<td><input id="mountpoint" type="text"></td>
+</tr>`;
+		var chktext = 'Update Library on mount'
 	}
 	var htmlmount = `\
 <table id="tblinfomount">
@@ -904,15 +902,18 @@ ${ htmlname }
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
 			var $share = $( '#share' );
 			function hideOptions( type ) {
-				$share.val( '' );
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
 					$( '.guest' ).addClass( 'hide' );
-					$share.attr( 'placeholder', '/path/to/share' );
+					var placeholder = '/path/to/share on server';
 				} else {
 					$( '#sharelabel' ).text( 'Share name' );
 					$( '.guest' ).removeClass( 'hide' );
-					$share.attr( 'placeholder', 'sharename' );
+					var placeholder = 'sharename on server';
+				}
+				if ( !values ) {
+					$( '#mountpoint' ).attr( 'placeholder', 'for Library > NAS > "Name" ' );
+					$share.attr( 'placeholder', placeholder );
 				}
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
@@ -948,7 +949,9 @@ ${ htmlname }
 						, title   : shareddata ? 'Shared Data' : 'Mount Share'
 						, message : error
 						, ok      : function() {
-							infoMount( values );
+							setTimeout( function() {
+								infoMount( values );
+							}, 0 );
 						}
 					} );
 					bannerHide();
@@ -956,7 +959,7 @@ ${ htmlname }
 					refreshData();
 				}
 			} );
-			if ( shareddata  ) {
+			if ( shareddata ) {
 				notify( 'Shared Data', 'Enable ...', 'networks' );
 			} else {
 				notify( 'Network Mount', 'Mount ...', 'networks' );
