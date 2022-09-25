@@ -358,44 +358,31 @@ function psMpdUpdate( data ) {
 		G.status.updatingdab = false;
 		renderLibraryCounts();
 		setButtonUpdating();
-		if ( G.librarylist ) {
-			var lipath = $( '#lib-path .lipath' ).text();
-			if ( G.query.length ) {
-				var query = G.query[ G.query.length - 1 ];
-			} else {
-				var query = {
-					  query  : 'ls'
-					, string : lipath
-					, format : [ 'file' ]
-				}
-			}
-			list( query, function( html ) {
-				var data = {
-					  html      : html
-					, modetitle : lipath
-					, path      : lipath
-				}
-				renderLibraryList( data );
-			} );
-		}
 		banner( 'Library Update', 'Done', 'library' );
 		if ( G.library ) {
-			if ( !G.librarylist ) return
+			if ( G.librarylist ) return
 			
 			if ( G.mode === 'webradio' ) {
 				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
 			} else {
-				var query = G.query[ G.query.length - 1 ];
-				if ( query ) {
-					list( query, function( html ) {
-						var data = {
-							  html      : html
-							, modetitle : query.modetitle
-							, path      : query.path
-						}
-						renderLibraryList( data );
-					} );
+				var lipath = $( '#lib-path .lipath' ).text();
+				if ( G.query.length ) {
+					var query = G.query[ G.query.length - 1 ];
+				} else {
+					var query = {
+						  query  : 'ls'
+						, string : lipath
+						, format : [ 'file' ]
+					}
 				}
+				list( query, function( html ) {
+					var data = {
+						  html      : html
+						, modetitle : lipath
+						, path      : lipath
+					}
+					renderLibraryList( data );
+				} );
 			}
 		} else if ( G.playlist && !G.savedlist ) {
 			$( '#playlist' ).click();
