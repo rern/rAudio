@@ -119,18 +119,6 @@ mpdoledLogo() {
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
 }
-reniceProcess() {
-	if [[ $2 == reset ]]; then
-		for pid in $( pgrep $1 ); do
-			renice -n 0 -p $pid &> /dev/null
-		done
-	else
-		for pid in $( pgrep $1 ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
-}
 plAddPlay() {
 	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
@@ -1019,7 +1007,7 @@ pkgstatus )
 			pkg=chromium;;
 		nfs-server )
 			pkg=nfs-utils
-			fileconf=/etc/exports
+			grep -q /mnt/MPD /etc/exports && fileconf=/etc/exports
 			;;
 		smb )
 			fileconf=/etc/samba/smb.conf
@@ -1061,25 +1049,22 @@ $conf
 $status"
 	;;
 playerstart )
-	newplayer=${args[1]}
-	[[ $newplayer == bluetooth ]] && volumeGet save
+	player=${args[1]}
+	[[ $player == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
-	player=$( cat $dirshm/player )
-	echo $newplayer > $dirshm/player
+	echo $player > $dirshm/player
 	case $player in
-		airplay )     service=shairport-sync;;
-		mpd | upnp )  service=mpd;;
-		spotify )     service=spotifyd;;
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )      service=upmpdcli;;
 	esac
-	if [[ $service ]]; then
-		systemctl restart $service
-		reniceProcess $service
-		[[ $service != mpd ]] && reniceProcess mpd reset
-	else
-		snapclientStop
-	fi
-	pushstream player '{"player":"'$newplayer'","active":true}'
+	for pid in $( pgrep $service ); do
+		ionice -c 0 -n 0 -p $pid &> /dev/null 
+		renice -n -19 -p $pid &> /dev/null
+	done
+	pushstream player '{"player":"'$player'","active":true}'
 	;;
 playerstop )
 	elapsed=${args[1]}
@@ -1090,35 +1075,30 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			service=shairport-sync
 			systemctl stop shairport-meta
 			rm -f $dirshm/airplay/start
+			systemctl restart shairport-sync
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
 			;;
 		snapcast )
-			service=snapclient
 			snapclientStop
 			;;
 		spotify )
-			service=spotifyd
 			rm -f $dirshm/spotify/start
+			systemctl restart spotifyd
 			;;
 		upnp )
-			service=upmpdcli
 			mpc -q stop
 			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
 			for i in $tracks; do
 				mpc -q del $i
 			done
 			$dirbash/status-push.sh
+			systemctl restart upmpdcli
 			;;
 	esac
-	if [[ $service && $service != snapclient ]]; then
-		systemctl restart $service
-		reniceProcess $service reset
-	fi
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;

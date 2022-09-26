@@ -3,10 +3,11 @@
 . /srv/http/bash/common.sh
 
 startup=$( systemd-analyze | grep '^Startup finished' | cut -d' ' -f 4,7 | sed -e 's/\....s/s/g; s/ / + /' )
+timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 status="\
 $( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
-$( date +'%F <gr>•</gr> %T' )<wide> <gr>• $( timedatectl | awk '/zone:/ {print $3}' )</gr></wide><br>\
+$( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
 $( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
 $( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo . . . )"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
@@ -142,7 +143,6 @@ baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 mpdoledconf='[ '$oledchip', '$baudrate' ]'
 [[ $( stat -c %a /mnt/MPD/SD ) == 777 ]] && permsd=true
 [[ $( stat -c %a /mnt/MPD/USB ) == 777 ]] && permusb=true
-grep -q /srv/http/shareddata /etc/exports && nfsshareddata=true
 [[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
 if [[ -e $dirsystem/powerbutton.conf ]]; then
 	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
@@ -178,19 +178,20 @@ data+='
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "nfs"              : '$( isactive nfs-server )'
-, "nfsconf"          : [ '$permsd', '$permusb', '$nfsshareddata' ]
+, "nfsconf"          : [ '$permsd', '$permusb' ]
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
-, "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
+, "shareddata"       : '$( exists /srv/http/shareddata )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "status"           : "'$status'"
 , "startup"          : '$( [[ $startup ]] && echo true )'
 , "system"           : "'$system'"
+, "timezone"         : "'$timezone'"
 , "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf

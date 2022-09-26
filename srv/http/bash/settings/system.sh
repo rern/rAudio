@@ -528,7 +528,7 @@ mpdoledset )
 	;;
 nfsdisable )
 	systemctl disable --now nfs-server
-	sed -i '/^.mnt.MPD\|^.srv.http/ d' /etc/exports
+	rm /mnt/MPD/NAS/{SD,USB}
 	chmod 755 /mnt/MPD/{SD,USB}
 	pushRefresh
 	;;
@@ -537,15 +537,13 @@ nfsset )
 	permusb=${args[2]}
 	chmod $permsd /mnt/MPD/SD
 	chmod $permusb /mnt/MPD/USB
-	mkdir -p /srv/http/shareddata
-	chmod 777 /srv/http/shareddata
 	routerip=$( ip r get 1 | head -1 | cut -d' ' -f3 )
 	ip_options="${routerip%.*}.0/24(rw,sync,no_subtree_check)"
 	! grep -q /mnt/MPD/ /etc/exports && echo -n "\
 /mnt/MPD/SD $ip_options
 /mnt/MPD/USB $ip_options
-/srv/http/shareddata $ip_options" >> /etc/exports
-	systemctl enable --now nfs-server
+" >> /etc/exports
+	systemctl -q is-active nfs-server && systemctl restart nfs-server || systemctl enable --now nfs-server
 	pushRefresh
 	;;
 packagelist )
@@ -744,15 +742,20 @@ shareddata )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 	done
-	umount -l $mountpoint
-	sed -i "\|$mountpoint| d" /etc/fstab
+	if [[ -L $mountpoint/mpd ]]; then # rAudio is server
+		sed -i -E '/^.srv.http.shareddata / d' /etc/exports
+		systemctl restart nfs-server
+	else
+		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		sed -i "/$ip/ d" $mountpoint/iplist
+		[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
+		umount -l $mountpoint
+		sed -i "\|$mountpoint| d" /etc/fstab
+	fi
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirmpd
@@ -778,6 +781,18 @@ shareddatalist )
 shareddatarestart )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	;;
+shareddataserver )
+	ln -s /mnt/MPD/SD /mnt/MPD/NAS
+	ln -s /mnt/MPD/USB /mnt/MPD/NAS
+	mkdir -p /srv/http/shareddata
+	for dir in audiocd bookmarks lyrics playlists webradio; do
+		mv -f $dirdata/$dir /srv/http/shareddata
+		ln -s /srv/http/shareddata/$dir $dirdata/$dir
+	done
+	chmod -R 777 /srv/http/shareddata
+	echo /srv/http/shareddata $ip_options >> /etc/exports
+	pushRefresh
 	;;
 soundprofile )
 	soundProfile

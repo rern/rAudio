@@ -837,7 +837,49 @@ $( '#shareddata' ).click( function() {
 			}
 		} );
 	} else {
-		if ( $( '#list .fa-networks' ).length ) {
+		if ( G.nfs ) {
+			info( {
+				  icon        : 'networks'
+				, title       : 'Shared Data'
+				, message     : '<wh>NFS Server</wh> is enabled.'
+								+'<br>Use this rAudio as server?'
+								+'<br>(<wh>Music files and Shared Data</wh>)'
+				, cancellabel : 'No'
+				, cancel      : function() {
+					$( '#shareddata' ).prop( 'checked', false );
+					setTimeout( function() {
+						infoMount( 'shareddata' );
+					}, 0 );
+				}
+				, ok      : function() {
+					setTimeout( function() {
+						info( {
+							  icon      : 'networks'
+							, title     : 'Shared Data'
+							, message   : 'NFS share names:'
+							, textlabel : [
+								  '<gr>/mnt/MPD/</gr>SD <gr>as</gr>'
+								, '<gr>/mnt/MPD/</gr>USB <gr>as</gr>'
+								, '<gr>/srv/http/</gr>shareddata <gr>as</gr>'
+							]
+							, values     : [ 'SD', 'USB', 'shareddata' ]
+							, footer     : '(Clients use as Name on Storage <i class="fa fa-plus-circle"></i>)'
+							, beforeshow : function() {
+								$( '#infoContent input' ).on( 'keyup paste', function() {
+									var $this = $( this );
+									setTimeout( function() {
+										$this.val( $this.val().replace( /\//g, '' ) );
+									}, 0 );
+								} );
+							}
+							, ok      : function() {
+								bash( [ 'shareddataserver', ...infoVal() ] );
+							}
+						} );
+					}, 0 );
+				}
+			} );
+		} else if ( $( '#list .fa-networks' ).length ) {
 			infoMount( 'shareddata' );
 		} else {
 			info( {
