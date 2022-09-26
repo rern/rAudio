@@ -268,10 +268,9 @@ function info( json ) {
 			htmlbutton += ' class="infobtn extrabtn infobtn-primary">'+ O.buttonlabel[ i ] +'</a>';
 		}
 	}
-	if ( O.cancelshow ) {
+	if ( O.cancelshow || O.cancellabel || O.cancelcolor ) {
 		var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
-		var hide = O.cancelshow ? '' : ' hide';
-		htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default'+ hide +'">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
+		htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 	}
 	if ( !O.okno ) {
 		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
