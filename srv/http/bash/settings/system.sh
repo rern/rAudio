@@ -236,6 +236,7 @@ datarestore )
 		chmod 777 $mountpoint
 		std=$( mount $mountpoint )
 		if [[ $? == 0 ]]; then
+			systemctl daemon-reload
 			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 				rm -rf $dirdata/$dir
 				ln -s $mountpoint/$dir $dirdata
@@ -487,6 +488,7 @@ mount )
 	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? == 0 ]]; then
+		systemctl daemon-reload
 		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 		for i in {1..5}; do
 			sleep 1
@@ -634,6 +636,7 @@ remove )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
+	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
@@ -713,6 +716,7 @@ shareddata )
 	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
 	std=$( mount $mountpoint )
 	if [[ $? == 0 ]]; then
+		systemctl daemon-reload
 		for i in {1..5}; do
 			sleep 1
 			mount | grep -q "$mountpoint" && break
@@ -755,6 +759,7 @@ shareddatadisable )
 		[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
 		umount -l $mountpoint
 		sed -i "\|$mountpoint| d" /etc/fstab
+		systemctl daemon-reload
 	fi
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
