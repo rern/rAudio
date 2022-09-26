@@ -820,7 +820,23 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	if ( G.shareddata ) {
+	if ( G.shareddataserver ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : '<wh><i class="fa fa-warning"></i> All clients will be disconnected.</wh>'
+						+'<br>Continue?'
+			, cancel  : function() {
+				$( '#shareddata' ).prop( 'checked', true );
+			}
+			, okcolor : orange
+			, oklabel : 'Disable'
+			, ok      : function() {
+				bash( [ 'shareddatadisable' ] );
+				notify( 'Shared Data', 'Disable ...', 'networks' );
+			}
+		} );
+	} else if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
@@ -839,50 +855,51 @@ $( '#shareddata' ).click( function() {
 	} else {
 		if ( G.nfs ) {
 			info( {
-				  icon        : 'networks'
-				, title       : 'Shared Data'
-				, message     : '<wh>NFS Server</wh> is enabled.'
-								+'<br>Use this rAudio as server?'
-								+'<br>(<wh>Music files and Shared Data</wh>)'
-				, cancellabel : 'No'
-				, cancel      : function() {
-					$( '#shareddata' ).prop( 'checked', false );
-					setTimeout( function() {
-						infoMount( 'shareddata' );
-					}, 0 );
-				}
-				, ok      : function() {
-					setTimeout( function() {
-						info( {
-							  icon      : 'networks'
-							, title     : 'Shared Data'
-							, message   : 'NFS share <wh>path</wh> : <wh>name</wh>'
-							, textlabel : [
-								  '/mnt/MPD/SD'
-								, '/mnt/MPD/USB'
-								, '/srv/http/shareddata'
-							]
-							, values     : [ 'SD', 'USB', '(for Shared Data)' ]
-							, footer     : '(<wh>Storage <i class="fa fa-plus-circle"></i></wh> - settings for clients)'
-							, beforeshow : function() {
-								$( '#infoContent input' ).eq( 2 )
-									.prop( 'disabled', 1 )
-									.css( 'color', 'var( --cg60 )' );
-								$( '#infoContent input' ).on( 'keyup paste', function() {
-									var $this = $( this );
-									setTimeout( function() {
-										$this.val( $this.val().replace( /\//g, '' ) );
-									}, 0 );
+				  icon       : 'networks'
+				, title      : 'Shared Data'
+				, radio      : { 'Share with <wh>NFS Server</wh> on this rAudio': 0, 'Add shares from other server': 1 }
+				, okno       : 1
+				, beforeshow : function() {
+					$( '#infoContent input' ).change( function() {
+						setTimeout( function() {
+							if ( $( '#infoContent input:checked' ).val() == 1 ) {
+								infoMount( 'shareddata' );
+							} else {
+								info( {
+									  icon       : 'networks'
+									, title      : 'Shared Data - NFS Server'
+									, message    : '<wh>Share path</wh> | <wh>Name</wh>'
+									, textlabel  : [
+										  '/mnt/MPD/SD'
+										, '/mnt/MPD/USB'
+										, '/srv/http/shareddata'
+									]
+									, values      : [ '', 'USB', 'SharedData' ]
+									, footer      : '<br> • Setting values for clients on <wh>Storage <i class="fa fa-plus-circle"></i></wh>)'
+													+'<br> • Blank = Disable'
+									, footeralign : 'left'
+									, beforeshow  : function() {
+										$( '.infomessage' ).eq( 0 ).css( 'margin-left', '-50px' );
+										$( '#infoContent input' ).eq( 2 )
+											.prop( 'disabled', 1 )
+											.css( 'color', 'var( --cg60 )' );
+										$( '#infoContent input' ).on( 'keyup paste', function() {
+											var $this = $( this );
+											setTimeout( function() {
+												$this.val( $this.val().replace( /\//g, '' ) );
+											}, 0 );
+										} );
+									}
+									, cancel     : function() {
+										$( '#shareddata' ).prop( 'checked', false );
+									}
+									, ok         : function() {
+										bash( [ 'shareddataserver', ...infoVal() ] );
+									}
 								} );
 							}
-							, cancel     : function() {
-								$( '#shareddata' ).prop( 'checked', false );
-							}
-							, ok         : function() {
-								bash( [ 'shareddataserver', ...infoVal() ] );
-							}
-						} );
-					}, 0 );
+						}, 0 );
+					} );
 				}
 			} );
 		} else if ( $( '#list .fa-networks' ).length ) {
@@ -1065,6 +1082,7 @@ function renderPage() {
 		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
 	} );
 	$( '#list' ).html( html );
+	$( '#nfs' ).toggleClass( 'disabled', G.shareddataserver );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );
@@ -1095,6 +1113,10 @@ function renderPage() {
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	$( '#shareddata' ).prop( 'checked', G.shareddata );
+	$( '#divshareddata .col-l' )
+		.toggleClass( 'status', G.shareddataserver )
+		.toggleClass( 'single', !G.shareddataserver )
+		.find( 'gr' ).toggleClass( 'hide', !G.shareddataserver );
 	showContent();
 }
 function getStatus() {

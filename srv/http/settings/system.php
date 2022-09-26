@@ -110,8 +110,9 @@ htmlSetting( [
 	, 'id'       => 'nfs'
 	, 'sublabel' => 'nfs-server'
 	, 'icon'     => 'networks'
-	, 'setting'  => true
 	, 'status'   => 'nfs-server'
+	, 'setting'  => true
+	, 'disabled' => '<wh>Shared Data</wh> is currently active on NFS Server.'
 	, 'help'     => <<< HTML
 <a href="http://nfs.sourceforge.net/nfs-howto/">Network File System</a> for <code>/mnt/MPD/SD</code> and <code>/mnt/MPD/USB</code>
 HTML
@@ -328,11 +329,13 @@ Restore all settings and Library database from a backup file. The system will re
 HTML
 	]
 	, [
-		  'label'   => 'Shared Data'
-		, 'id'      => 'shareddata'
-		, 'icon'    => 'networks'
-		, 'setting' => 'none'
-		, 'help'    => <<< HTML
+		  'label'    => 'Shared Data'
+		, 'id'       => 'shareddata'
+		, 'sublabel' => 'path | name'
+		, 'icon'     => 'networks'
+		, 'status'   => 'shareddata'
+		, 'setting'  => 'none'
+		, 'help'     => <<< HTML
 Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
  • SSH passwords must be default.
  • Music files should be on NAS only.

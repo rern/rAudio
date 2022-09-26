@@ -186,6 +186,7 @@ data+='
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( exists /srv/http/shareddata )'
+, "shareddataserver" : '$( [[ -e /srv/http/shareddata && -L /srv/http/shareddata/mpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "status"           : "'$status'"

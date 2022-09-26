@@ -34,6 +34,7 @@ var cmd = {
 	, mpdignore    : playersh +'mpdignorelist'
 	, nonutf8      : playersh +'nonutf8'
 	, rfkill       : systemsh +'rfkilllist'
+	, shareddata   : systemsh +'shareddataname'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
 	, timedatectl  : systemsh +'timedate'

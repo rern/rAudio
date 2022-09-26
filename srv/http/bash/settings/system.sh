@@ -45,6 +45,10 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
+ipOptions() {
+	routerip=$( ip r get 1 | head -1 | cut -d' ' -f3 )
+	ip_options="${routerip%.*}.0/24(rw,sync,no_subtree_check)"
+}
 soundProfile() {
 	if [[ $1 == reset ]]; then
 		swappiness=60
@@ -539,12 +543,13 @@ nfsset )
 	permusb=${args[2]}
 	chmod $permsd /mnt/MPD/SD
 	chmod $permusb /mnt/MPD/USB
-	routerip=$( ip r get 1 | head -1 | cut -d' ' -f3 )
-	ip_options="${routerip%.*}.0/24(rw,sync,no_subtree_check)"
-	! grep -q /mnt/MPD/ /etc/exports && echo -n "\
+	if ! grep -q /mnt/MPD/ /etc/exports; then
+		ipOptions
+		echo -n "\
 /mnt/MPD/SD $ip_options
 /mnt/MPD/USB $ip_options
 " >> /etc/exports
+	fi
 	systemctl -q is-active nfs-server && systemctl restart nfs-server || systemctl enable --now nfs-server
 	pushRefresh
 	;;
@@ -750,9 +755,15 @@ shareddatadisable )
 		sed -i -E '/^.srv.http.shareddata / d' /etc/exports
 		systemctl restart nfs-server
 		rm -rf /srv/http/shareddata
+		readarray -t dirs <<< $( ls -1 /mnt/MPD/NAS )
+		for dir in "${dirs[@]}"; do
+			[[ -L "/mnt/MPD/$dir" ]] && rm $dir
+		done
 	else
 		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-			rm -rf $dirdata/$dir
+			[[ ! -L $dirdata/$dir ]] && continue
+			
+			rm $dirdata/$dir
 			[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 		done
 		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
@@ -784,19 +795,30 @@ shareddatalist )
 	done
 	echo "$list" | sort -u > /srv/http/shareddata/iplist
 	;;
+shareddataname )
+	echo "\
+<bll># Share path | Name</bll>
+$( ls -l /mnt/MPD/NAS | grep -v ^total | awk '{print $11" | "$9}' )
+/srv/http/shareddata"
+	;;
 shareddatarestart )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
 	;;
 shareddataserver )
-	ln -s /mnt/MPD/SD /mnt/MPD/NAS/${args[1]}
-	ln -s /mnt/MPD/USB /mnt/MPD/NAS/${args[2]}
+	namesd=${args[1]}
+	nameusb=${args[2]}
+	[[ $namesd ]] && ln -s /mnt/MPD/SD /mnt/MPD/NAS/$namesd
+	[[ $nameusb ]] && ln -s /mnt/MPD/USB /mnt/MPD/NAS/$nameusb
 	mkdir -p /srv/http/shareddata
 	chmod 777 /srv/http/shareddata
-	for dir in audiocd bookmarks lyrics playlists webradio; do
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		ln -s $dirdata/$dir /srv/http/shareddata
 	done
-	echo /srv/http/shareddata $ip_options >> /etc/exports
+	if ! grep -r /srv/http/shareddata /etc/exports; then
+		ipOptions
+		echo /srv/http/shareddata $ip_options >> /etc/exports
+	fi
 	systemctl restart nfs-server
 	pushRefresh
 	;;
