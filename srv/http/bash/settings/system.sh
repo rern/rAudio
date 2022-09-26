@@ -789,14 +789,15 @@ shareddatarestart )
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
 	;;
 shareddataserver )
-	ln -s /mnt/MPD/SD /mnt/MPD/NAS
-	ln -s /mnt/MPD/USB /mnt/MPD/NAS
+	ln -s /mnt/MPD/SD /mnt/MPD/NAS/${args[1]}
+	ln -s /mnt/MPD/USB /mnt/MPD/NAS/${args[2]}
 	mkdir -p /srv/http/shareddata
 	for dir in audiocd bookmarks lyrics playlists webradio; do
 		ln -s $dirdata/$dir /srv/http/shareddata
 	done
 	chmod -R 777 /srv/http/shareddata
 	echo /srv/http/shareddata $ip_options >> /etc/exports
+	systemctl restart nfs-server
 	pushRefresh
 	;;
 soundprofile )

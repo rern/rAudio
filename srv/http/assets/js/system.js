@@ -856,15 +856,18 @@ $( '#shareddata' ).click( function() {
 						info( {
 							  icon      : 'networks'
 							, title     : 'Shared Data'
-							, message   : 'NFS share names:'
+							, message   : 'NFS share <wh>path</wh> : <wh>name</wh>'
 							, textlabel : [
-								  '<gr>/mnt/MPD/</gr>SD <gr>as</gr>'
-								, '<gr>/mnt/MPD/</gr>USB <gr>as</gr>'
-								, '<gr>/srv/http/</gr>shareddata <gr>as</gr>'
+								  '/mnt/MPD/SD'
+								, '/mnt/MPD/USB'
+								, '/srv/http/shareddata'
 							]
-							, values     : [ 'SD', 'USB', 'shareddata' ]
-							, footer     : '(Clients use as Name on Storage <i class="fa fa-plus-circle"></i>)'
+							, values     : [ 'SD', 'USB', '(for Shared Data)' ]
+							, footer     : '(<wh>Storage <i class="fa fa-plus-circle"></i></wh> - settings for clients)'
 							, beforeshow : function() {
+								$( '#infoContent input' ).eq( 2 )
+									.prop( 'disabled', 1 )
+									.css( 'color', 'var( --cg60 )' );
 								$( '#infoContent input' ).on( 'keyup paste', function() {
 									var $this = $( this );
 									setTimeout( function() {
@@ -872,7 +875,10 @@ $( '#shareddata' ).click( function() {
 									}, 0 );
 								} );
 							}
-							, ok      : function() {
+							, cancel     : function() {
+								$( '#shareddata' ).prop( 'checked', false );
+							}
+							, ok         : function() {
 								bash( [ 'shareddataserver', ...infoVal() ] );
 							}
 						} );
