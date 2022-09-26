@@ -746,14 +746,15 @@ shareddata )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirdata/$dir
-		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
-	done
 	if [[ -L $mountpoint/mpd ]]; then # rAudio is server
 		sed -i -E '/^.srv.http.shareddata / d' /etc/exports
 		systemctl restart nfs-server
+		rm -rf /srv/http/shareddata
 	else
+		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+			rm -rf $dirdata/$dir
+			[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+		done
 		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 		sed -i "/$ip/ d" $mountpoint/iplist
 		[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
@@ -792,8 +793,7 @@ shareddataserver )
 	ln -s /mnt/MPD/USB /mnt/MPD/NAS
 	mkdir -p /srv/http/shareddata
 	for dir in audiocd bookmarks lyrics playlists webradio; do
-		mv -f $dirdata/$dir /srv/http/shareddata
-		ln -s /srv/http/shareddata/$dir $dirdata/$dir
+		ln -s $dirdata/$dir /srv/http/shareddata
 	done
 	chmod -R 777 /srv/http/shareddata
 	echo /srv/http/shareddata $ip_options >> /etc/exports
