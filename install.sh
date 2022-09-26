@@ -5,10 +5,10 @@ alias=r1
 # 20220926
 dir=/etc/systemd/system
 for file in $dir/spotifyd.service $dir/upmpdcli.service; do
-	! grep -q CPUAffinity $file && sed -i -e '/ExecStartPost/ d' -e '/ExecStart=/ i\CPUAffinity=3' -e 's|/usr/bin/taskset -c 3 ||' $file
+	! grep -q CPUAffinity $file && sed -i -e '/ExecStartPost/ d' -e '/Service/ a\CPUAffinity=3' -e 's|/usr/bin/taskset -c 3 ||' $file
 done
 for file in $dir/mpd.service.d/override.conf $dir/shairport-sync.service.d/override.conf; do
-	! grep -q CPUAffinity $file && sed -i -e '/ExecStart=/ i\CPUAffinity=3' -e '/ExecStart/ d' $file
+	! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStart/ d' $file
 done
 
 dir=/srv/http/assets/img/guide
