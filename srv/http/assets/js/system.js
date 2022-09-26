@@ -960,12 +960,8 @@ ${ htmlname }
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( function() {
-					var sharename = $share.val();
-					if ( $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ) {
-						$share.val( sharename.replace( /[\/\\]/g, '' ) );
-					} else {
-						if ( sharename[ 0 ] !== '/' ) $share.val( '/'+ sharename );
-					}
+					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\//g;
+					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
 		}
