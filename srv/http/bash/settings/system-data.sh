@@ -83,7 +83,7 @@ if [[ $usb ]]; then
 						| sed "s| *$source||" )
 		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
-			grep -q /mnt/MPD/SD /etc/exports && nfs=',"nfs":true' || nfs=
+			grep -q "$mountpoint" /etc/exports && nfs=',"nfs":true' || nfs=
 			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"'$nfs$smb'}'
 		else
 			label=$( e2label $source )
