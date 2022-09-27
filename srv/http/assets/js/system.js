@@ -87,11 +87,12 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
+	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		return
+		if ( active ) return
 	}
 	
 	$this.addClass( 'active' );
@@ -104,7 +105,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		var mounted = list.mounted;
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
-		$( '#menu .info, .spindown' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+		$( '#menu' ).find( '.info, .share, .spindown' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
 	}
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
