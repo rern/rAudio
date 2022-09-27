@@ -108,6 +108,10 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
+hddapm=$( hdparm -B /dev/sda1 $( mount | grep -m1 .*USB/ | cut -d' ' -f1 ) | grep -m1 APM_level | awk '{print $NF}' )
+if [[ $hddapm ]]; then
+	[[ $hddapm == 128 ]] && hddsleep=false || hddsleep=$hddapm
+fi
 if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -166,7 +170,8 @@ data+='
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
+, "hddapm"           : '$hddapm'
+, "hddsleep"         : '$hddsleep'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'

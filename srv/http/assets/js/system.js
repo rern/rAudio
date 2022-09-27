@@ -103,9 +103,10 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		$( '#menu .share' ).removeClass( 'hide' );
 	} else {
 		var mounted = list.mounted;
+		var usb = list.icon === 'usbdrive';
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
-		$( '#menu' ).find( '.info, .share, .spindown' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+		$( '#menu' ).find( '.info, .share' ).toggleClass( 'hide', !usb );
 	}
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
@@ -135,7 +136,7 @@ $( '#menu a' ).click( function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( 'hdparm -I '+ source, function( data ) {
+				bash( [ 'hddinfo', source ], function( data ) {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -187,35 +188,39 @@ $( '#menu a' ).click( function() {
 				} );
 			}, 'json' );
 			break;
-		case 'spindown':
-			info( {
-				  icon         : 'usbdrive'
-				, title        : 'USB Drive'
-				, message      : 'Spindown when idle:'
-				, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-				, values       : G.hddspindown
-				, checkchanged : 1
-				, ok           : function() {
-					var val = infoVal()
-					notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
-					bash( [ 'hddspindown', val, source ], function( std ) {
-						if ( std == -1 ) {
-							info( {
-								  icon         : 'usbdrive'
-								, title        : 'USB Drive'
-								, message      : '<wh>'+ source +'</wh> not support spindown.'
-							} );
-							bannerHide();
-						}
-					} );
-				}
-			} );
-			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
 			bash( [ 'unmount', mountpoint ] );
 			break;
 	}
+} );
+$( '#setting-hddsleep' ).click( function() {
+	info( {
+		  icon         : 'usbdrive'
+		, title        : 'HDD Sleep'
+		, message      : 'Timer:'
+		, radio        : { Disable: 128, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+		, values       : G.hddsleep || 128
+		, checkchanged : 1
+		, cancel        : function() {
+			$( '#hddsleep' ).prop( 'checked', G.hddsleep );
+		}
+		, ok           : function() {
+			var val = infoVal()
+			notify( 'HDD Sleep', ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+			bash( [ 'hddsleep', val ], function( devices ) {
+				if ( devices ) {
+					info( {
+						  icon         : 'usbdrive'
+						, title        : 'HDD Sleep'
+						, message      : '<wh>Devices not support sleep:</wh><br>'
+										+ devices
+					} );
+					bannerHide();
+				}
+			} );
+		}
+	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
 	info( {
@@ -1101,7 +1106,8 @@ function renderPage() {
 		html += '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#nfs' ).toggleClass( 'disabled', G.shareddataserver );
+	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
+	$( '#hddsleep' ).toggleClass( 'disabled', !G.hddapm );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );

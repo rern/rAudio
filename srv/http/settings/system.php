@@ -97,6 +97,15 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
+	  'label'    => 'HDD Sleep'
+	, 'id'       => 'hddsleep'
+	, 'icon'     => 'screenoff'
+	, 'setting'  => true
+	, 'help'     => <<< HTML
+Sleep timer for hard drives.
+HTML
+] );
+htmlSetting( [
 	  'label'    => 'Update Hotplug'
 	, 'id'       => 'usbautoupdate'
 	, 'sublabel' => 'USB Drives'
@@ -443,5 +452,4 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
 <a class="share"><i class="fa fa-networks"></i>NFS share</a>
-<a class="spindown"<?=$hdparmhide?>><i class="fa fa-screenoff"></i>Spindown</a>
 </div>

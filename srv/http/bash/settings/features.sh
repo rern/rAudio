@@ -344,6 +344,7 @@ smbset )
 	sed -i '/read only = no/ d' $smbconf
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
+	$dirbash/settings/system.sh hddsleepdisable
 	featureSet smb
 	;;
 snapclientdisable )

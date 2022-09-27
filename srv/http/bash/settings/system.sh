@@ -15,6 +15,15 @@ pushReboot() {
 pushRefresh() {
 	$dirbash/settings/system-data.sh pushrefresh
 }
+hddSleepDisable() {
+	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+	if [[ $devs ]]; then
+		for dev in $devs; do
+			hdparm -q -B 128 $dev &> /dev/null
+		done
+		pushRefresh
+	fi
+}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
@@ -253,20 +262,29 @@ datarestore )
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-hddspindown )
-	duration=${args[1]}
-	dev=${args[2]}
-	grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && echo -1 && exit
-	
-	if [[ $duration == 0 ]]; then
-		apm=128
-		rm -f $dirsystem/hddspindown
-	else
-		apm=127
-		echo "$duration" > $dirsystem/hddspindown
-	fi
-	hdparm -q -B $apm $dev
-	hdparm -q -S $duration $dev
+hddinfo )
+	dev=${args[1]}
+	echo -n "\
+<bll># hdparm -I $dev</bll>
+$( hdparm -I $dev )
+"
+	;;
+hddsleepdisable )
+	hddSleepDisable
+	;;
+hddsleep )
+	apm=${args[1]}
+	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+	for dev in $devs; do
+		if hdparm -B $dev | grep -q 'APM.*not supported'; then
+			notsupport+="$dev
+"
+		else
+			echo hdparm -q -B $apm $dev
+			hdparm -q -B $apm $dev
+		fi
+	done
+	[[ $notsupport ]] && echo -n "$notsupport"
 	pushRefresh
 	;;
 hostname )
@@ -545,6 +563,7 @@ nfsset )
 	if [[ $shared == true ]]; then
 		[[ $write == true ]] && chmod 777 "$path" || chmod 755 "$path"
 		nfsAdd "$path"
+		hddSleepDisable # + pushRefresh
 	else
 		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
 		ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
@@ -560,8 +579,8 @@ $( getent hosts $ip )"
 		sed -i "\|^$path | d" /etc/exports
 		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
 		chmod 755 "$path"
+		pushRefresh
 	fi
-	pushRefresh
 	;;
 packagelist )
 	filepackages=$dirtmp/packages
