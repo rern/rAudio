@@ -151,12 +151,24 @@ $( '#menu a' ).click( function() {
 		case 'share':
 			var path = G.li.find( '.mountpoint' ).text();
 			bash( [ 'nfsdata', path ], function( data ) {
+				var shared = data[ 0 ];
+				var write = data[ 1 ];
 				info( {
 					  icon         : 'networks'
 					, title        : 'NFS Share'
 					, checkbox     : [ 'Share <code>'+ path +'</code>', 'Write permission' ]
 					, values       : data
-					, checkchanged : 1
+					, checkchanged : shared ? 1 : ''
+					, beforeshow   : function() {
+						var $chk = $( '#infoContent input' );
+						if ( !shared ) $chk.eq( 1 ).prop( 'disabled', 1 );
+						$chk.eq( 0 ).change( function() {
+							var checked = $( this ).prop( 'checked' );
+							$chk.eq( 1 )
+								.prop( 'checked', checked ? write : 0 )
+								.prop( 'disabled', !checked );
+						} );
+					}
 					, ok           : function() {
 						var val = infoVal();
 						bash( [ 'nfsset', path, ...val ], function( connected ) {

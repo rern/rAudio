@@ -558,7 +558,7 @@ $( getent hosts $ip )"
 		fi
 		
 		sed -i "\|^$path | d" /etc/exports
-		grep -qE ^/ /etc/exports && exportfs -arv || systemctl disable --now nfs-server
+		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
 		chmod 755 "$path"
 	fi
 	pushRefresh
