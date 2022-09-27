@@ -160,7 +160,7 @@ $( '#menu a' ).click( function() {
 					, ok           : function() {
 						var val = infoVal();
 						bash( [ 'nfsset', path, ...val ], function( connected ) {
-							if ( connected ) {
+							if ( !val[ 0 ] && connected ) {
 								bannerHide();
 								info( {
 									  icon    : 'networks'
