@@ -264,7 +264,10 @@ hddsleepdisable )
 	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 	if [[ $devs ]]; then
 		for dev in $devs; do
+			! hdparm -B $dev | grep -q 'APM_level' && continue
+			
 			hdparm -q -B 128 $dev &> /dev/null
+			hdparm -q -S 0 $dev &> /dev/null
 		done
 		pushRefresh
 	fi
@@ -273,15 +276,12 @@ hddsleep )
 	apm=${args[1]}
 	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 	for dev in $devs; do
-		if hdparm -B $dev | grep -q 'APM.*not supported'; then
-			notsupport+="$dev
-"
-		else
-			echo hdparm -q -B $apm $dev
-			hdparm -q -B $apm $dev
-		fi
+		! hdparm -B $dev | grep -q 'APM_level' && notsupport+="$dev"$'\n' && continue
+
+		hdparm -q -B $apm $dev
+		hdparm -q -S $apm $dev
 	done
-	[[ $notsupport ]] && echo -n "$notsupport"
+	[[ $notsupport ]] && echo -e "$notsupport"
 	pushRefresh
 	;;
 hostname )
