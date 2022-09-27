@@ -45,10 +45,6 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
-ipOptions() {
-	routerip=$( ip r get 1 | head -1 | cut -d' ' -f3 )
-	ip_options="${routerip%.*}.0/24(rw,sync,no_subtree_check)"
-}
 soundProfile() {
 	if [[ $1 == reset ]]; then
 		swappiness=60
@@ -250,14 +246,6 @@ datarestore )
 	$dirbash/cmd.sh dirpermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	$dirbash/cmd.sh power$'\n'reboot
-	;;
-fstabget )
-	echo -e "\
-<bll># cat /etc/fstab</bll>
-$( cat /etc/fstab )
-
-<bll># mount | grep ^/dev</bll>
-$( mount | grep ^/dev | sort )"
 	;;
 hddspindown )
 	duration=${args[1]}
@@ -532,25 +520,42 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
-nfsdisable )
-	systemctl disable --now nfs-server
-	rm /mnt/MPD/NAS/{SD,USB}
-	chmod 755 /mnt/MPD/{SD,USB}
-	pushRefresh
+nfsdata )
+	path=${args[1]}
+	if systemctl -q is-active nfs-server; then
+		active=true
+		grep -q "$path" /etc/exports && shared=true || shared=false
+	else
+		active=false
+		shared=false
+	fi
+	[[ $( stat -c %a "$path" ) == 777 ]] && write=true || write=false
+	echo [ $shared, $write ]
 	;;
 nfsset )
-	permsd=${args[1]}
-	permusb=${args[2]}
-	chmod $permsd /mnt/MPD/SD
-	chmod $permusb /mnt/MPD/USB
-	if ! grep -q /mnt/MPD/ /etc/exports; then
-		ipOptions
-		echo -n "\
-/mnt/MPD/SD $ip_options
-/mnt/MPD/USB $ip_options
-" >> /etc/exports
+	path=${args[1]}
+	shared=${args[2]}
+	write=${args[3]}
+	if [[ $shared == true ]]; then
+		[[ $write == true ]] && chmod 777 "$path" || chmod 755 "$path"
+		! grep -q "^$path " /etc/exports && echo "$path *(rw,sync,no_subtree_check)" >> /etc/exports
+		systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+	else
+		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
+		ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
+		if [[ $ips ]]; then
+			for ip in $ips; do
+				connected+="
+$( getent hosts $ip )"
+			done
+			echo "$connected"
+			exit
+		fi
+		
+		sed -i "\|^$path | d" /etc/exports
+		grep -qE ^/ /etc/exports && exportfs -arv || systemctl disable --now nfs-server
+		chmod 755 "$path"
 	fi
-	systemctl -q is-active nfs-server && systemctl restart nfs-server || systemctl enable --now nfs-server
 	pushRefresh
 	;;
 packagelist )
@@ -815,11 +820,8 @@ shareddataserver )
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		ln -s $dirdata/$dir /srv/http/shareddata
 	done
-	if ! grep -r /srv/http/shareddata /etc/exports; then
-		ipOptions
-		echo /srv/http/shareddata $ip_options >> /etc/exports
-	fi
-	systemctl restart nfs-server
+	! grep -r /srv/http/shareddata /etc/exports && echo '/srv/http/shareddata *(rw,sync,no_subtree_check)' >> /etc/exports
+	systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
 	pushRefresh
 	;;
 soundprofile )
@@ -859,6 +861,19 @@ statusonboard )
 		echo '<hr>'
 		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
+	;;
+storage )
+	data="\
+<bll># cat /etc/fstab</bll>
+$( cat /etc/fstab )
+
+<bll># mount | grep ^/dev</bll>
+$( mount | grep ^/dev | sort )
+"
+	systemctl -q is-active nfs-server && data+="
+<bll># cat /etc/exports # NFS</bll>
+$( grep ^/mnt/MPD/ /etc/exports )"
+	echo "$data"
 	;;
 systemconfig )
 	config="\

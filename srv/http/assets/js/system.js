@@ -88,17 +88,24 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	G.li = $this;
 	$( '#codehddinfo' ).addClass( 'hide' );
-	var mountpoint = $this.find( '.mountpoint' ).text();
 	$( 'li' ).removeClass( 'active' );
-	if ( !$( '#menu' ).hasClass( 'hide' ) || mountpoint === '/' ) {
+	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
 		return
 	}
 	
 	$this.addClass( 'active' );
-	$( '#menu .info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
-	$( '#menu .remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
-	$( '#menu .unmount' ).toggleClass( 'hide', !G.list[ $this.index() ].mounted );
+	$( '#menu a' ).addClass( 'hide' );
+	var i = $this.index()
+	var list = G.list[ i ];
+	if ( i === 0 ) {
+		$( '#menu .share' ).removeClass( 'hide' );
+	} else {
+		var mounted = list.mounted;
+		$( '#menu .remount' ).toggleClass( 'hide', mounted );
+		$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
+		$( '#menu .info, .spindown' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+	}
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
@@ -120,14 +127,6 @@ $( '#menu a' ).click( function() {
 		var title = 'Local Mount';
 	}
 	switch ( cmd ) {
-		case 'remount':
-			notify( title, 'Remount ...', icon );
-			bash( [ 'remount', mountpoint, source ] );
-			break;
-		case 'unmount':
-			notify( title, 'Unmount ...', icon )
-			bash( [ 'unmount', mountpoint ] );
-			break;
 		case 'forget':
 			notify( title, 'Forget ...', icon );
 			bash( [ 'remove', mountpoint ] );
@@ -143,6 +142,37 @@ $( '#menu a' ).click( function() {
 			} else {
 				$code.addClass( 'hide' );
 			}
+			break;
+		case 'remount':
+			notify( title, 'Remount ...', icon );
+			bash( [ 'remount', mountpoint, source ] );
+			break;
+		case 'share':
+			var path = G.li.find( '.mountpoint' ).text();
+			bash( [ 'nfsdata', path ], function( data ) {
+				info( {
+					  icon         : 'networks'
+					, title        : 'NFS Share'
+					, checkbox     : [ 'Share <code>'+ path +'</code>', 'Write permission' ]
+					, values       : data
+					, checkchanged : 1
+					, ok           : function() {
+						var val = infoVal();
+						bash( [ 'nfsset', path, ...val ], function( connected ) {
+							if ( connected ) {
+								bannerHide();
+								info( {
+									  icon    : 'networks'
+									, title   : 'NFS Share'
+									, message : '<wh>NFS Server is currently connected by:</wh><br>'
+												+ connected
+								} );
+							}
+						} );
+						notify( 'NFS Share', data[ 0 ] ? ( val[ 0 ] ? 'Change ...' : 'Disable ...' ) : 'Enable ...', 'networks' );
+					}
+				} );
+			}, 'json' );
 			break;
 		case 'spindown':
 			info( {
@@ -168,38 +198,11 @@ $( '#menu a' ).click( function() {
 				}
 			} );
 			break;
+		case 'unmount':
+			notify( title, 'Unmount ...', icon )
+			bash( [ 'unmount', mountpoint ] );
+			break;
 	}
-} );
-$( '#setting-nfs' ).click( function() {
-	info( {
-		  icon         : 'networks'
-		, title        : 'NFS Server'
-		, message      : '<wh>Write</wh> permission:</gr>'
-		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
-		, values       : G.nfsconf
-		, checkchanged : ( G.nfs ? 1 : 0 )
-		, beforeshow   : function() {
-			var $chk = $( '#infoContent input' );
-			$chk.eq( 2 ).change( function() {
-				if ( $( this ).prop( 'checked' ) ) {
-					$chk.prop( 'checked', 1 );
-				} else {
-					$chk.eq( 0 ).prop( 'checked', G.nfsconf[ 0 ] );
-					$chk.eq( 1 ).prop( 'checked', G.nfsconf[ 1 ] );
-				}
-			} );
-		}
-		, cancel       : function() {
-			$( '#nfs-server' ).prop( 'checked', G.nfs );
-		}
-		, ok           : function() {
-			var val = infoVal();
-			var permsd = val[ 0 ] ? 777 : 755;
-			var permusb = val[ 1 ] ? 777 : 755;
-			bash( [ 'nfsset', permsd, permusb ] );
-			notify( 'NFS Server', G.nfs ? 'Change ...' : 'Enable ...', 'networks' );
-		}
-	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
 	info( {
@@ -853,65 +856,65 @@ $( '#shareddata' ).click( function() {
 			}
 		} );
 	} else {
-		if ( G.nfs ) {
-			info( {
-				  icon       : 'networks'
-				, title      : 'Shared Data'
-				, radio      : { 'Share with <wh>NFS Server</wh> on this rAudio': 0, 'Add shares from other server': 1 }
-				, okno       : 1
-				, beforeshow : function() {
-					$( '#infoContent input' ).change( function() {
-						setTimeout( function() {
-							if ( $( '#infoContent input:checked' ).val() == 1 ) {
-								infoMount( 'shareddata' );
-							} else {
+		info( {
+			  icon       : 'networks'
+			, title      : 'Shared Data'
+			, radio      : { 'Share music and data from this rAudio': 0, 'Add shares from other server': 1 }
+			, okno       : 1
+			, beforeshow : function() {
+				$( '#infoContent input' ).change( function() {
+					setTimeout( function() {
+						if ( $( '#infoContent input:checked' ).val() == 1 ) {
+							if ( !$( '#list .fa-networks' ).length ) {
 								info( {
-									  icon       : 'networks'
-									, title      : 'Shared Data - NFS Server'
-									, message    : '<wh>Share path</wh> | <wh>Name</wh>'
-									, textlabel  : [
-										  '/mnt/MPD/SD'
-										, '/mnt/MPD/USB'
-										, '/srv/http/shareddata'
-									]
-									, values      : [ '', 'USB', 'SharedData' ]
-									, footer      : '<br> • Setting values for clients on <wh>Storage <i class="fa fa-plus-circle"></i></wh>)'
-													+'<br> • Blank = Disable'
-									, footeralign : 'left'
-									, beforeshow  : function() {
-										$( '.infomessage' ).eq( 0 ).css( 'margin-left', '-50px' );
-										$( '#infoContent input' ).eq( 2 )
-											.prop( 'disabled', 1 )
-											.css( 'color', 'var( --cg60 )' );
-										$( '#infoContent input' ).on( 'keyup paste', function() {
-											var $this = $( this );
-											setTimeout( function() {
-												$this.val( $this.val().replace( /\//g, '' ) );
-											}, 0 );
-										} );
-									}
-									, cancel     : function() {
-										$( '#shareddata' ).prop( 'checked', false );
-									}
-									, ok         : function() {
-										bash( [ 'shareddataserver', ...infoVal() ] );
-									}
+									  icon    : 'networks'
+									, title   : 'Shared Data'
+									, message : 'Connect <wh>music share</wh> before enable Shared Data.'
 								} );
+								$( '#shareddata' ).prop( 'checked', false );
+								return
 							}
-						}, 0 );
-					} );
-				}
-			} );
-		} else if ( $( '#list .fa-networks' ).length ) {
-			infoMount( 'shareddata' );
-		} else {
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
-			} );
-			$( '#shareddata' ).prop( 'checked', false );
-		}
+							
+							infoMount( 'shareddata' );
+						} else {
+							info( {
+								  icon       : 'networks'
+								, title      : 'Shared Data - NFS Server'
+								, message    : '<wh>Share path</wh>&ensp;• <wh>Name</wh>'
+								, textlabel  : [
+									  '<code>/mnt/MPD/SD</code>'
+									, '<code>/mnt/MPD/USB</code>'
+									, '<code>/srv/http/shareddata</code>'
+								]
+								, checkbox    : [ 'Update Library database' ]
+								, values      : [ '', 'Music', 'SharedData', true ]
+								, footer      : '<br> • Setting values for clients on <wh>Storage <i class="fa fa-plus-circle"></i></wh>'
+												+'<br> • Blank = Disable'
+								, footeralign : 'left'
+								, beforeshow  : function() {
+									$( '.infomessage' ).eq( 0 ).css( 'margin-left', '-40px' );
+									$( '#infoContent input' ).eq( 2 )
+										.prop( 'disabled', 1 )
+										.css( 'color', 'var( --cg60 )' );
+									$( '#infoContent input' ).on( 'keyup paste', function() {
+										var $this = $( this );
+										setTimeout( function() {
+											$this.val( $this.val().replace( /\//g, '' ) );
+										}, 0 );
+									} );
+								}
+								, cancel     : function() {
+									$( '#shareddata' ).prop( 'checked', false );
+								}
+								, ok         : function() {
+									bash( [ 'shareddataserver', ...infoVal() ] );
+								}
+							} );
+						}
+					}, 0 );
+				} );
+			}
+		} );
 	}
 } );
 $( '.listtitle' ).click( function( e ) {

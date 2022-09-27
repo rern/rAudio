@@ -30,7 +30,7 @@ var cmd = {
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
-	, mount        : systemsh +'fstabget'
+	, mount        : systemsh +'storage'
 	, mpdignore    : playersh +'mpdignorelist'
 	, nonutf8      : playersh +'nonutf8'
 	, rfkill       : systemsh +'rfkilllist'

@@ -79,7 +79,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
+	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Share / Spindown
 
 Available sources, local USB and NAS mounts, for Library.
  • USB drives will be found and mounted automatically.
@@ -97,24 +97,12 @@ mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-	  'label'    => 'Auto Update'
+	  'label'    => 'Update Hotplug'
 	, 'id'       => 'usbautoupdate'
 	, 'sublabel' => 'USB Drives'
 	, 'icon'     => 'refresh-library'
 	, 'help'     => <<< HTML
-Auto update Library database on insert / remove USB drives.
-HTML
-] );
-htmlSetting( [
-	  'label'    => 'NFS Server'
-	, 'id'       => 'nfs'
-	, 'sublabel' => 'nfs-server'
-	, 'icon'     => 'networks'
-	, 'status'   => 'nfs-server'
-	, 'setting'  => true
-	, 'disabled' => '<wh>Shared Data</wh> is currently active on NFS Server.'
-	, 'help'     => <<< HTML
-<a href="http://nfs.sourceforge.net/nfs-howto/">Network File System</a> for <code>/mnt/MPD/SD</code> and <code>/mnt/MPD/USB</code>
+Auto update Library database on insert/remove USB drives.
 HTML
 ] );
 echo '</div>';
@@ -454,5 +442,6 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <a class="remount"><i class="fa fa-check"></i>Re-mount</a>
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
+<a class="share"><i class="fa fa-networks"></i>NFS share</a>
 <a class="spindown"<?=$hdparmhide?>><i class="fa fa-screenoff"></i>Spindown</a>
 </div>
