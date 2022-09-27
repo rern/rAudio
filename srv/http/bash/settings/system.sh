@@ -15,15 +15,6 @@ pushReboot() {
 pushRefresh() {
 	$dirbash/settings/system-data.sh pushrefresh
 }
-hddSleepDisable() {
-	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
-	if [[ $devs ]]; then
-		for dev in $devs; do
-			hdparm -q -B 128 $dev &> /dev/null
-		done
-		pushRefresh
-	fi
-}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
@@ -270,7 +261,13 @@ $( hdparm -I $dev )
 "
 	;;
 hddsleepdisable )
-	hddSleepDisable
+	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+	if [[ $devs ]]; then
+		for dev in $devs; do
+			hdparm -q -B 128 $dev &> /dev/null
+		done
+		pushRefresh
+	fi
 	;;
 hddsleep )
 	apm=${args[1]}
@@ -563,7 +560,6 @@ nfsset )
 	if [[ $shared == true ]]; then
 		[[ $write == true ]] && chmod 777 "$path" || chmod 755 "$path"
 		nfsAdd "$path"
-		hddSleepDisable # + pushRefresh
 	else
 		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
 		ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
@@ -579,8 +575,8 @@ $( getent hosts $ip )"
 		sed -i "\|^$path | d" /etc/exports
 		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
 		chmod 755 "$path"
-		pushRefresh
 	fi
+	pushRefresh
 	;;
 packagelist )
 	filepackages=$dirtmp/packages
