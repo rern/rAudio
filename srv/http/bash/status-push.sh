@@ -75,7 +75,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	fi
 fi
 if [[ -e $dirshm/clientip ]]; then
-	serverip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	serverip=$( ipGet )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" \
 				| sed -e '1,/^, "single" *:/ d

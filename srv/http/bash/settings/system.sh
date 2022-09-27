@@ -47,7 +47,7 @@ I2Cset() {
 }
 nfsAdd() {
 	path=$1
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	ip=$( ipGet )
 	! grep -r "^$path" /etc/exports && echo "$path ${ip%.*}.0/24(rw,sync,no_subtree_check)" >> /etc/exports
 	systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
 }
@@ -746,7 +746,7 @@ shareddata )
 			rm -rf $dirdata/$dir
 			ln -s $mountpoint/$dir $dirdata
 		done
-		ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' >> $mountpoint/iplist
+		ipGet >> $mountpoint/iplist
 		chown -h http:http $mountpoint/*/
 		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
 		pushRefresh
@@ -776,7 +776,7 @@ shareddatadisable )
 			rm $dirdata/$dir
 			[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
 		done
-		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		ip=$( ipGet )
 		sed -i "/$ip/ d" $mountpoint/iplist
 		[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
 		umount -l $mountpoint
@@ -795,7 +795,7 @@ shareddatadisable )
 	;;
 shareddatalist )
 	reload=${args[1]}
-	list=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	list=$( ipGet )
 	iplist=$( grep -v $list /srv/http/shareddata/iplist )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then

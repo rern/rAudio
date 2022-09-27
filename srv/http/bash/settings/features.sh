@@ -260,7 +260,7 @@ multiraudioset )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multiraudio
 		echo "$data" > $dirsystem/multiraudio.conf
-		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		ip=$( ipGet )
 		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
 		for ip in $iplist; do
 			sshCommand $ip << EOF

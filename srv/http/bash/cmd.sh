@@ -223,8 +223,8 @@ $Album" &> /dev/null &
 snapclientStop() {
 	systemctl stop snapclient
 	$dirbash/settings/player-conf.sh
-	clientip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
+	ip=$( ipGet )
+	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
 stopRadio() {
@@ -1119,7 +1119,7 @@ power )
 		done
 	fi
 	if [[ -e /srv/http/shareddata/iplist ]]; then
-		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		ip=$( ipGet )
 		sed -i "/$ip/ d" /srv/http/shareddata/iplist
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )

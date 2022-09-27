@@ -40,6 +40,9 @@ ${data:1}
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+ipGet() {
+	echo $( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+}
 isactive() {
 	systemctl -q is-active $1 && echo true || echo false
 }
