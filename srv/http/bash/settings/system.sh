@@ -867,17 +867,13 @@ statusonboard )
 	fi
 	;;
 storage )
-	data="\
+	echo -n "\
 <bll># cat /etc/fstab</bll>
 $( cat /etc/fstab )
 
 <bll># mount | grep ^/dev</bll>
 $( mount | grep ^/dev | sort )
 "
-	systemctl -q is-active nfs-server && data+="
-<bll># cat /etc/exports # NFS</bll>
-$( grep ^/mnt/MPD/ /etc/exports )"
-	echo "$data"
 	;;
 systemconfig )
 	config="\

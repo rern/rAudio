@@ -1083,7 +1083,10 @@ function renderPage() {
 		html += '<li '+ dataunmounted;
 		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
 		html += '<gr class="source">'+ val.source +'</gr>';
-		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+		html +=  val.size ? '&ensp;'+ val.size : '';
+		html += val.nfs ? ' <gr>• NFS</gr>' : '';
+		html += val.smb ? ' <gr>• SMB</gr>' : '';
+		html += '</li>';
 	} );
 	$( '#list' ).html( html );
 	$( '#nfs' ).toggleClass( 'disabled', G.shareddataserver );
