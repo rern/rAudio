@@ -45,6 +45,12 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
+nfsAdd() {
+	path=$1
+	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	! grep -r "^$path" /etc/exports && echo "$path ${ip%.*}.0/24(rw,sync,no_subtree_check)" >> /etc/exports
+	systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+}
 soundProfile() {
 	if [[ $1 == reset ]]; then
 		swappiness=60
@@ -538,8 +544,7 @@ nfsset )
 	write=${args[3]}
 	if [[ $shared == true ]]; then
 		[[ $write == true ]] && chmod 777 "$path" || chmod 755 "$path"
-		! grep -q "^$path " /etc/exports && echo "$path *(rw,sync,no_subtree_check)" >> /etc/exports
-		systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+		nfsAdd "$path"
 	else
 		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
 		ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
@@ -820,8 +825,7 @@ shareddataserver )
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		ln -s $dirdata/$dir /srv/http/shareddata
 	done
-	! grep -r /srv/http/shareddata /etc/exports && echo '/srv/http/shareddata *(rw,sync,no_subtree_check)' >> /etc/exports
-	systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+	nfsAdd /srv/http/shareddata
 	pushRefresh
 	;;
 soundprofile )

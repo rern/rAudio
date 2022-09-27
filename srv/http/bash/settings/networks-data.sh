@@ -28,7 +28,7 @@ pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
 [[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
 
-ipeth=$( ifconfig eth0 2> /dev/null | awk '/^\s*inet / {print $2}' )
+ipeth=$( ifconfig eth0 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
 if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
@@ -62,7 +62,7 @@ if [[ -e $dirshm/wlan ]]; then
 			
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
-					ipwlan=$( ifconfig $wlandev | awk '/^\s*inet / {print $2}' )
+					ipwlan=$( ifconfig $wlandev | awk '/inet.*broadcast/ {print $2}' )
 					[[ $ipwlan ]] && break || sleep 1
 				done
 				gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )

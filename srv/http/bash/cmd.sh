@@ -223,7 +223,7 @@ $Album" &> /dev/null &
 snapclientStop() {
 	systemctl stop snapclient
 	$dirbash/settings/player-conf.sh
-	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	clientip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
 	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/serverip
 }
