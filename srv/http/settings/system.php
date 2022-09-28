@@ -461,8 +461,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <a class="remount"><i class="fa fa-check"></i>Re-mount</a>
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
-<a class="share"><i class="fa fa-networks"></i>Share</a>
-<a class="unshare"><i class="fa fa-flash"></i>Unshare</a>
+<a class="share"><i class="fa fa-networks"></i>NFS Share</a>
+<a class="unshare"><i class="fa fa-flash"></i>NFS Unshare</a>
 <a class="write"><i class="fa fa-edit-circle"></i>Read + Write</a>
 <a class="read"><i class="fa fa-eye"></i>Read only</a>
 </div>
