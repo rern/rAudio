@@ -110,6 +110,7 @@ htmlSetting( [
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
 	, 'setting'  => true
+	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => <<< HTML
 Sleep timer for hard drives.
 HTML

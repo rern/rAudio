@@ -106,6 +106,7 @@ if [[ $usb ]]; then
 			[[ ! $label ]] && label=?
 			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
+		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source | grep -m1 APM_level | awk '{print $NF}' )
 	done
 fi
 nas=$( awk '/.mnt.MPD.NAS|.srv.http.shareddata/ {print $1" "$2}' /etc/fstab )
@@ -134,10 +135,6 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
-hddapm=$( hdparm -B /dev/sda1 $( mount | grep -m1 .*USB/ | cut -d' ' -f1 ) | grep -m1 APM_level | awk '{print $NF}' )
-if [[ $hddapm ]]; then
-	[[ $hddapm == 128 ]] && hddsleep=false || hddsleep=$hddapm
-fi
 if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -197,7 +194,7 @@ data+='
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddapm"           : '$hddapm'
-, "hddsleep"         : '$hddsleep'
+, "hddsleep"         : '${hddapm/128/false}'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
