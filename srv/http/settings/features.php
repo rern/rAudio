@@ -207,6 +207,7 @@ HTML
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
 		, 'setting'  => true
+		, 'disabled' => 'NFS Server is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>

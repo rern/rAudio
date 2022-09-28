@@ -338,6 +338,7 @@ shairport-sync | spotifyd | upmpdcli )
 smbdisable )
 	systemctl disable --now smb
 	pushRefresh
+	$dirbash/settings/system-data.sh pushrefresh
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
@@ -345,6 +346,7 @@ smbset )
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
 	featureSet smb
+	$dirbash/settings/system-data.sh pushrefresh
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient

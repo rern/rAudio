@@ -47,9 +47,11 @@ I2Cset() {
 }
 nfsAdd() {
 	path=$1
-	ip=$( ipGet )
-	! grep -r "^$path" /etc/exports && echo "$path ${ip%.*}.0/24(rw,sync,no_subtree_check)" >> /etc/exports
-	systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+	if ! grep -q "^$path" /etc/exports; then
+		ip=$( ipGet )
+		echo "$path ${ip%.*}.0/24(rw,sync,no_subtree_check)" >> /etc/exports
+		systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
+	fi
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
@@ -479,7 +481,8 @@ mount )
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
 
 	if [[ -e $mountpoint ]]; then
-		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
+		[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
+		
 	else
 		mkdir "$mountpoint"
 	fi
@@ -545,23 +548,21 @@ nfsset )
 	action=${args[1]}
 	path=${args[2]}
 	if [[ $action == share ]]; then
-		nfsAdd "$path"
-	else
-		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
-		ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
-		if [[ $ips ]]; then
-			for ip in $ips; do
-				connected+="
-$( getent hosts $ip )"
-			done
-			echo "$connected"
+		if [[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB ]] && systemctl -q is-active smb; then
+			echo $path
 			exit
 		fi
 		
+		nfsAdd "$path"
+	else
+		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
+		#ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
 		sed -i "\|^$path | d" /etc/exports
 		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
 	fi
 	pushRefresh
+	grep -q -E '/mnt/MPD/SD |/mnt/MPD/USB ' /etc/exports && nfs=true || nfs=false
+	pushstream refresh '{"page":"features","nfs":'$nfs'}'
 	;;
 packagelist )
 	filepackages=$dirtmp/packages

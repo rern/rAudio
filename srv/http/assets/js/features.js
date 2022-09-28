@@ -263,7 +263,7 @@ $( '#setting-smb' ).click( function() {
 	info( {
 		  icon         : 'networks'
 		, title        : 'Samba File Sharing'
-		, message      : '<wh>Write</wh> permission:</gr>'
+		, message      : '<wh>Write</wh> permission:'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
 		, checkchanged : ( G.smb ? 1 : 0 )
@@ -480,6 +480,7 @@ function renderPage() {
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
+	$( '#smb' ).toggleClass( 'disabled', G.nfs );
 	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );

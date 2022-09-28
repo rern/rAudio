@@ -282,7 +282,9 @@ function psPlayer( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
-		G = data;
+		$.each( data, function( k, v ) {
+			G[ k ] = v;
+		} );
 		setSwitch();
 		renderPage();
 	}

@@ -106,9 +106,8 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	if ( list.icon === 'networks' ) {
 		$( '#menu .share' ).addClass( 'hide' );
 	} else {
-		var shared = list.nfs || list.smb;
-		$( '#menu .share' ).toggleClass( 'hide', shared );
-		$( '#menu .unshare' ).toggleClass( 'hide', !shared );
+		$( '#menu .share' ).toggleClass( 'hide', list.nfs );
+		$( '#menu .unshare' ).toggleClass( 'hide', !list.nfs );
 	}
 	if ( list.icon !== 'microsd' ) {
 		var mounted = list.mounted;
@@ -127,8 +126,9 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 $( '#menu a' ).click( function() {
 	var $this = $( this );
 	var cmd = $this.prop( 'class' );
-	var source = G.li.find( '.source' ).text();
-	var mountpoint = G.li.find( '.mountpoint' ).text();
+	var list = G.list[ G.li.index() ];
+	var mountpoint = list.mountpoint;
+	var source = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon = 'networks';
 		var title = 'Network Mount';
@@ -164,18 +164,18 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'share':
 		case 'unshare':
-			bash( [ 'nfsset', cmd, mountpoint ], function( connected ) {
-				if ( cmd === 'unshare' && connected ) {
-					bannerHide();
-					info( {
-						  icon    : 'networks'
-						, title   : 'NFS Share'
-						, message : '<wh>NFS Server is currently connected by:</wh><br>'
-									+ connected
-					} );
-				}
-			} );
-			notify( 'NFS Share', 'Unshare ...', 'networks' );
+			if ( list.smb ) {
+				info( {
+					  icon    : 'networks'
+					, title   : 'NFS Share'
+					, message : '<wh>Samba Server is currently active on:</wh><br>'
+								+ mountpoint
+				} );
+				break;
+			}
+			
+			bash( [ 'nfsset', cmd, mountpoint ] );
+			notify( 'NFS Share', ( cmd === 'share' ? 'Share ...' : 'Unshare ...' ), 'networks' );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
@@ -1086,8 +1086,9 @@ function renderPage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
+		var mountpoint = val.mountpoint === '/mnt/MPD/SD' ? '/<gr>mnt/MPD/SD</gr>' : val.mountpoint;
 		html += '<li '+ dataunmounted;
-		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ mountpoint +'</wh>'+ dot
 		html += '<gr class="source hide">'+ val.source +'</gr>';
 		html +=  val.size ? val.size : '';
 		html += val.icon !== 'networks' ? ' <gr>• '+ val.perm +'</gr>' : '';

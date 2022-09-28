@@ -73,7 +73,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
-, "mountpoint" : "/<gr>mnt/MPD/SD</gr>"
+, "mountpoint" : "/mnt/MPD/SD"
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
@@ -98,7 +98,7 @@ if [[ $usb ]]; then
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 , "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
-, "smb"        : '$smb'
+, "smb"        : '$( [[ $smb == true && $mountpoint == /mnt/MPD/USB ]] && echo true )'
 , "perm"       : "'$( stat -c %A "$mountpoint" )'"
 }'
 		else
