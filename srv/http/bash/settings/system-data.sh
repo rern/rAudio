@@ -68,11 +68,19 @@ $( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
 fi
 
 # sd, usb and nas
-systemctl -q is-active smb && smb=',"smb":true'
+smb=$( isactive smb )
 if mount | grep -q 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
-	grep -q /mnt/MPD/SD /etc/exports && nfs=',"nfs":true'
-	list+=',{"icon":"microsd","mountpoint":"/<gr>mnt/MPD/SD</gr>","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"'$nfs$smb'}'
+	list+=',{
+  "icon"       : "microsd"
+, "mountpoint" : "/<gr>mnt/MPD/SD</gr>"
+, "mounted"    : true
+, "source"     : "/dev/mmcblk0p2"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+, "nfs"        : '$( grep -q /mnt/MPD/SD /etc/exports && echo true )'
+, "smb"        : '$smb'
+, "perm"       : "'$( stat -c %A /mnt/MPD/SD )'"
+}'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
@@ -83,8 +91,16 @@ if [[ $usb ]]; then
 						| sed "s| *$source||" )
 		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
-			grep -q "$mountpoint" /etc/exports && nfs=',"nfs":true' || nfs=
-			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"'$nfs$smb'}'
+			list+=',{
+  "icon"       : "usbdrive"
+, "mountpoint" : "'$mountpoint'"
+, "mounted"    : true
+, "source"     : "'$source'"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+, "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
+, "smb"        : '$smb'
+, "perm"       : "'$( stat -c %A "$mountpoint" )'"
+}'
 		else
 			label=$( e2label $source )
 			[[ ! $label ]] && label=?
@@ -99,10 +115,20 @@ if [[ $nas ]]; then
 		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
 		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
+		list+=',{
+  "icon"       : "networks"
+, "mountpoint" : "'$mountpoint'"'
 		if [[ $used_size ]]; then
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+			list+='
+, "mounted"    : true
+, "source"     : "'$source'"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+}'
 		else
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
+			list+='
+, "mounted"    : false
+, "source"     : "'$source'"
+}'
 		fi
 	done
 fi

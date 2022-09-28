@@ -257,7 +257,7 @@ hddinfo )
 	dev=${args[1]}
 	echo -n "\
 <bll># hdparm -I $dev</bll>
-$( hdparm -I $dev )
+$( hdparm -I $dev | sed '1,3 d' )
 "
 	;;
 hddsleepdisable )
@@ -541,24 +541,10 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
-nfsdata )
-	path=${args[1]}
-	if systemctl -q is-active nfs-server; then
-		active=true
-		grep -q "$path" /etc/exports && shared=true || shared=false
-	else
-		active=false
-		shared=false
-	fi
-	[[ $( stat -c %a "$path" ) == 777 ]] && write=true || write=false
-	echo [ $shared, $write ]
-	;;
 nfsset )
-	path=${args[1]}
-	shared=${args[2]}
-	write=${args[3]}
-	if [[ $shared == true ]]; then
-		[[ $write == true ]] && chmod 777 "$path" || chmod 755 "$path"
+	action=${args[1]}
+	path=${args[2]}
+	if [[ $action == share ]]; then
 		nfsAdd "$path"
 	else
 		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
@@ -574,7 +560,6 @@ $( getent hosts $ip )"
 		
 		sed -i "\|^$path | d" /etc/exports
 		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
-		chmod 755 "$path"
 	fi
 	pushRefresh
 	;;
@@ -606,6 +591,10 @@ $description
 			> $dirtmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
+	;;
+permission )
+	chmod ${args[1]} "${args[2]}"
+	pushRefresh
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then

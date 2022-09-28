@@ -1,4 +1,7 @@
 <?php
+$hostname = getHostName();
+$ip = getHostByName( $hostname );
+
 $i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
 $selecti2s = '<select id="i2smodule">
 				<option value="none">None / Auto detect</option>';
@@ -79,21 +82,27 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Share / Spindown
+	<div class="help-block hide">Icon context menu: Unmount / Re-mount / Forget / Info / Share
 
-Available sources, local USB and NAS mounts, for Library.
- • USB drives will be found and mounted automatically.
- • Network shares must be manually configured.
+USB drives:
+ • Will be found and mounted automatically.
+
+Network shares:
+ • Must be manually configured.
  • If mount failed, try in SSH terminal:
 <pre>
 mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-<gr># CIFS: (Remove username=USER,password=PASSWORD, if blank)</gr>
-mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+<gr># CIFS: (no user - username=guest, no password - password="")</gr>
+mount -t cifs "//<bll>SERVER_IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr># NFS:</gr>
-mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+mount -t nfs "<bll>SERVER_IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre></div>
+</pre>NFS clients on Windows:
+ • Windows Features > Services for NFS > Client for NFS - Enable
+ • File Explorer > Address bar - <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
+
+</div>
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
@@ -451,5 +460,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <a class="remount"><i class="fa fa-check"></i>Re-mount</a>
 <a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
-<a class="share"><i class="fa fa-networks"></i>NFS share</a>
+<a class="share"><i class="fa fa-networks"></i>Share</a>
+<a class="unshare"><i class="fa fa-flash"></i>Unshare</a>
+<a class="write"><i class="fa fa-edit-circle"></i>Read + Write</a>
+<a class="read"><i class="fa fa-eye"></i>Read only</a>
 </div>

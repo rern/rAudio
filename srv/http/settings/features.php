@@ -209,8 +209,9 @@ HTML
 		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
- • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
- • At address bar of Windows File Explorer: <code>\\\\$ip</code> or <code>\\\\$hostname</code>
+ • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
+ • Windows: File Explorer > Address bar - <code>\\\\$ip</code> or <code>\\\\$hostname</code>
+ • NFS share should yeild better performance. (System > Storage - Context menu)
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]

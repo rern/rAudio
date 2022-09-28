@@ -2,6 +2,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).click( function( e ) {
 	$( '#menu' ).addClass( 'hide' );
+	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
@@ -95,18 +96,25 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		if ( active ) return
 	}
 	
-	$this.addClass( 'active' );
-	$( '#menu a' ).addClass( 'hide' );
 	var i = $this.index()
 	var list = G.list[ i ];
-	if ( i === 0 ) {
-		$( '#menu .share' ).removeClass( 'hide' );
+	$this.addClass( 'active' );
+	$( '#menu a' ).addClass( 'hide' );
+	var write = list.perm.slice( -2, -1 ) === 'w';
+	$( '#menu .read' ).toggleClass( 'hide', !write );
+	$( '#menu .write' ).toggleClass( 'hide', write );
+	if ( list.icon === 'networks' ) {
+		$( '#menu .share' ).addClass( 'hide' );
 	} else {
+		var shared = list.nfs || list.smb;
+		$( '#menu .share' ).toggleClass( 'hide', shared );
+		$( '#menu .unshare' ).toggleClass( 'hide', !shared );
+	}
+	if ( list.icon !== 'microsd' ) {
 		var mounted = list.mounted;
-		var usb = list.icon === 'usbdrive';
 		$( '#menu .remount' ).toggleClass( 'hide', mounted );
 		$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
-		$( '#menu' ).find( '.info, .share' ).toggleClass( 'hide', !usb );
+		$( '#menu .info' ).toggleClass( 'hide', list.icon === 'usbdrive' );
 	}
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
@@ -145,48 +153,29 @@ $( '#menu a' ).click( function() {
 				$code.addClass( 'hide' );
 			}
 			break;
+		case 'read':
+		case 'write':
+			bash( [ 'permission', cmd === 'read' ? 755 : 777, mountpoint ] );
+			notify( 'Permission', 'Change ...', 'edit-circle' )
+			break;
 		case 'remount':
 			notify( title, 'Remount ...', icon );
 			bash( [ 'remount', mountpoint, source ] );
 			break;
 		case 'share':
-			var path = G.li.find( '.mountpoint' ).text();
-			bash( [ 'nfsdata', path ], function( data ) {
-				var shared = data[ 0 ];
-				var write = data[ 1 ];
-				info( {
-					  icon         : 'networks'
-					, title        : 'NFS Share'
-					, checkbox     : [ 'Share <code>'+ path +'</code>', 'Write permission' ]
-					, values       : data
-					, checkchanged : shared ? 1 : ''
-					, beforeshow   : function() {
-						var $chk = $( '#infoContent input' );
-						if ( !shared ) $chk.eq( 1 ).prop( 'disabled', 1 );
-						$chk.eq( 0 ).change( function() {
-							var checked = $( this ).prop( 'checked' );
-							$chk.eq( 1 )
-								.prop( 'checked', checked ? write : 0 )
-								.prop( 'disabled', !checked );
-						} );
-					}
-					, ok           : function() {
-						var val = infoVal();
-						bash( [ 'nfsset', path, ...val ], function( connected ) {
-							if ( !val[ 0 ] && connected ) {
-								bannerHide();
-								info( {
-									  icon    : 'networks'
-									, title   : 'NFS Share'
-									, message : '<wh>NFS Server is currently connected by:</wh><br>'
-												+ connected
-								} );
-							}
-						} );
-						notify( 'NFS Share', data[ 0 ] ? ( val[ 0 ] ? 'Change ...' : 'Disable ...' ) : 'Enable ...', 'networks' );
-					}
-				} );
-			}, 'json' );
+		case 'unshare':
+			bash( [ 'nfsset', cmd, mountpoint ], function( connected ) {
+				if ( cmd === 'unshare' && connected ) {
+					bannerHide();
+					info( {
+						  icon    : 'networks'
+						, title   : 'NFS Share'
+						, message : '<wh>NFS Server is currently connected by:</wh><br>'
+									+ connected
+					} );
+				}
+			} );
+			notify( 'NFS Share', 'Unshare ...', 'networks' );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
@@ -1099,8 +1088,9 @@ function renderPage() {
 		}
 		html += '<li '+ dataunmounted;
 		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>';
-		html +=  val.size ? '&ensp;'+ val.size : '';
+		html += '<gr class="source hide">'+ val.source +'</gr>';
+		html +=  val.size ? val.size : '';
+		html += val.icon !== 'networks' ? ' <gr>• '+ val.perm +'</gr>' : '';
 		html += val.nfs ? ' <gr>• NFS</gr>' : '';
 		html += val.smb ? ' <gr>• SMB</gr>' : '';
 		html += '</li>';
