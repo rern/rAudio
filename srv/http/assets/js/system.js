@@ -188,8 +188,8 @@ $( '#setting-hddsleep' ).click( function() {
 		  icon         : 'usbdrive'
 		, title        : 'HDD Sleep'
 		, message      : 'Timer:'
-		, radio        : { Disable: 128, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-		, values       : G.hddsleep || 128
+		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+		, values       : G.hddsleep || 60
 		, checkchanged : 1
 		, cancel        : function() {
 			$( '#hddsleep' ).prop( 'checked', G.hddsleep );
