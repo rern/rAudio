@@ -247,9 +247,9 @@ HTML
 		, 'disabled' => 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Set rAudio as a server for music files and Shared Data.
- • Shares:
+ • Share paths:
  &emsp; - SD card
- &emsp; - directories in USB drives
+ &emsp; - Each directories in USB drives
  &emsp; - Shared Data directory
  • Share paths for Storage <i class="fa fa-plus-circle"></i>- click NFS Share label
 HTML
