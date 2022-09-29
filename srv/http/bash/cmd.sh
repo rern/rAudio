@@ -1018,7 +1018,7 @@ $( cat /etc/hostapd/hostapd.conf )
 			pkg=nfs-utils
 			if systemctl -q is-active nfs-server; then
 				conf='<bll># Share path:</bll>'
-				paths=$( grep ^/ /etc/exports | cut -d' ' -f1 )
+				paths=$( grep ^/ /etc/exports | sed 's/ .*//; s/\\040/ /g' )
 				for path in $paths; do
 					[[ $path == /srv/http/shareddata ]] && type='Shared Data' || type=$( echo $path | cut -d/ -f4 )
 					conf+=$'\n'$( printf "%-15s %-7s" "<gr>$type" ':</gr>' $path )

@@ -277,7 +277,9 @@ EOF
 nfsserver )
 	if [[ ${args[1]} == true ]]; then
 		options="$( ipGet subnet )(rw,sync,no_subtree_check)"
-		readarray -t dirs <<< $( { ls -d1 /mnt/MPD/SD/*/; ls -d1 /mnt/MPD/USB/*/; } | sed 's|/$||; s| |\\040|g' )
+		dirs="\
+/mnt/MPD/SD
+$( ls -d1 /mnt/MPD/USB/*/ | sed 's|/$||; s| |\\040|g' )"
 		for dir in "${dirs[@]}"; do
 			! grep -q "^$dir" /etc/exports && list+="$dir $options"$'\n'
 			[[ -d "$dir" ]] && ln -s "$dir" /mnt/MPD/NAS
