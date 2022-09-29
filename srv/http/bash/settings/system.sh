@@ -45,14 +45,6 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
-nfsAdd() {
-	path=$1
-	if ! grep -q "^$path" /etc/exports; then
-		ip=$( ipGet )
-		echo "$path ${ip%.*}.0/24(rw,sync,no_subtree_check)" >> /etc/exports
-		systemctl -q is-active nfs-server && exportfs -arv || systemctl enable --now nfs-server
-	fi
-}
 soundProfile() {
 	if [[ $1 == reset ]]; then
 		swappiness=60
@@ -544,26 +536,6 @@ mpdoledset )
 		pushRefresh
 	fi
 	;;
-nfsset )
-	action=${args[1]}
-	path=${args[2]}
-	if [[ $action == share ]]; then
-		if [[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB ]] && systemctl -q is-active smb; then
-			echo $path
-			exit
-		fi
-		
-		nfsAdd "$path"
-	else
-		#ips=$( netstat -an | awk '/.*:2049.*EST/ {print $5}' | cut -d: -f1 )
-		#ips=$( grep -shr 'callback address' /proc/fs/nfsd/clients | cut -d: -f2 )
-		sed -i "\|^$path | d" /etc/exports
-		grep -qE ^/ /etc/exports && exportfs -arv &> /dev/null || systemctl -q disable --now nfs-server
-	fi
-	pushRefresh
-	grep -q -E '/mnt/MPD/SD |/mnt/MPD/USB ' /etc/exports && nfs=true || nfs=false
-	pushstream refresh '{"page":"features","nfs":'$nfs'}'
-	;;
 packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
@@ -592,10 +564,6 @@ $description
 			> $dirtmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
-	;;
-permission )
-	chmod ${args[1]} "${args[2]}"
-	pushRefresh
 	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
@@ -766,28 +734,16 @@ shareddata )
 shareddatadisable )
 	copydata=${args[1]}
 	mountpoint=/srv/http/shareddata
-	if [[ -L $mountpoint/mpd ]]; then # rAudio is server
-		sed -i -E '/^.srv.http.shareddata / d' /etc/exports
-		systemctl restart nfs-server
-		rm -rf /srv/http/shareddata
-		readarray -t dirs <<< $( ls -1 /mnt/MPD/NAS )
-		for dir in "${dirs[@]}"; do
-			[[ -L "/mnt/MPD/$dir" ]] && rm $dir
-		done
-	else
-		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-			[[ ! -L $dirdata/$dir ]] && continue
-			
-			rm $dirdata/$dir
-			[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
-		done
-		ip=$( ipGet )
-		sed -i "/$ip/ d" $mountpoint/iplist
-		[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
-		umount -l $mountpoint
-		sed -i "\|$mountpoint| d" /etc/fstab
-		systemctl daemon-reload
-	fi
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		rm $dirdata/$dir
+		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+	done
+	ip=$( ipGet )
+	sed -i "/$ip/ d" $mountpoint/iplist
+	[[ ! -s $mountpoint/iplist ]] && rm $mountpoint/iplist
+	umount -l $mountpoint
+	sed -i "\|$mountpoint| d" /etc/fstab
+	systemctl daemon-reload
 	rm -rf $mountpoint
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirmpd
@@ -810,28 +766,9 @@ shareddatalist )
 	done
 	echo "$list" | sort -u > /srv/http/shareddata/iplist
 	;;
-shareddataname )
-	echo "\
-<bll># Share path | Name</bll>
-$( ls -l /mnt/MPD/NAS | grep -v ^total | awk '{print $11" | "$9}' )
-/srv/http/shareddata"
-	;;
 shareddatarestart )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
-	;;
-shareddataserver )
-	namesd=${args[1]}
-	nameusb=${args[2]}
-	[[ $namesd ]] && ln -s /mnt/MPD/SD /mnt/MPD/NAS/$namesd
-	[[ $nameusb ]] && ln -s /mnt/MPD/USB /mnt/MPD/NAS/$nameusb
-	mkdir -p /srv/http/shareddata
-	chmod 777 /srv/http/shareddata
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		ln -s $dirdata/$dir /srv/http/shareddata
-	done
-	nfsAdd /srv/http/shareddata
-	pushRefresh
 	;;
 soundprofile )
 	soundProfile

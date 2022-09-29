@@ -79,7 +79,6 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 , "nfs"        : '$( grep -q /mnt/MPD/SD /etc/exports && echo true )'
 , "smb"        : '$smb'
-, "perm"       : "'$( stat -c %A /mnt/MPD/SD )'"
 }'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
@@ -99,7 +98,6 @@ if [[ $usb ]]; then
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 , "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
 , "smb"        : '$( [[ $smb == true && $mountpoint == /mnt/MPD/USB ]] && echo true )'
-, "perm"       : "'$( stat -c %A "$mountpoint" )'"
 }'
 		else
 			label=$( e2label $source )
@@ -206,6 +204,7 @@ data+='
 , "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
+, "nfs"              : '$( [[ -L /srv/http/shareddata ]] && echo true )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'

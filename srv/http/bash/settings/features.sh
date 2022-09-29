@@ -274,6 +274,29 @@ EOF
 	pushRefresh
 	pushSubmenu multiraudio true
 	;;
+nfsserver )
+	if [[ ${args[1]} == true ]]; then
+		options="$( ipGet subnet )(rw,sync,no_subtree_check)"
+		readarray -t dirs <<< $( { ls -d1 /mnt/MPD/SD/*/; ls -d1 /mnt/MPD/USB/*/; } | sed 's|/$||; s| |\\040|g' )
+		for dir in "${dirs[@]}"; do
+			! grep -q "^$dir" /etc/exports && list+="$dir $options"$'\n'
+			[[ -d "$dir" ]] && ln -s "$dir" /mnt/MPD/NAS
+		done
+		list+="/srv/http/shareddata $options"
+		echo "$list" >> /etc/exports
+		ipGet > /srv/http/data/iplist
+		chmod 777 /srv/http/data
+		ln -sf /srv/http/{data,shareddata}
+		systemctl -q is-active nfs-server && exportfs -ar || systemctl enable --now nfs-server
+	else
+		systemctl disable --now nfs-server
+		rm -f /srv/http/data/iplist /srv/http/shareddata
+		chmod 755 /srv/http/data
+		sed -i '/^\// d' /etc/exports
+		find /mnt/MPD/NAS -maxdepth 1 -type l -exec rm -f {} \;
+	fi
+	pushRefresh
+	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
@@ -338,7 +361,6 @@ shairport-sync | spotifyd | upmpdcli )
 smbdisable )
 	systemctl disable --now smb
 	pushRefresh
-	$dirbash/settings/system-data.sh pushrefresh
 	;;
 smbset )
 	smbconf=/etc/samba/smb.conf
@@ -346,7 +368,6 @@ smbset )
 	[[ ${args[1]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
 	[[ ${args[2]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
 	featureSet smb
-	$dirbash/settings/system-data.sh pushrefresh
 	;;
 snapclientdisable )
 	rm $dirsystem/snapclient

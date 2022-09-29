@@ -480,7 +480,8 @@ function renderPage() {
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
-	$( '#smb' ).toggleClass( 'disabled', G.nfs );
+	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
+	$( '#nfsserver' ).toggleClass( 'disabled', G.smb );
 	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );

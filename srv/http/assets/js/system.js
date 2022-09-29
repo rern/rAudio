@@ -85,6 +85,8 @@ $( '#addnas' ).click( function() {
 	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
+	if ( $( this ).find( '.fa-microsd' ).length ) return
+	
 	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
@@ -100,21 +102,10 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var list = G.list[ i ];
 	$this.addClass( 'active' );
 	$( '#menu a' ).addClass( 'hide' );
-	var write = list.perm.slice( -2, -1 ) === 'w';
-	$( '#menu .read' ).toggleClass( 'hide', !write );
-	$( '#menu .write' ).toggleClass( 'hide', write );
-	if ( list.icon === 'networks' ) {
-		$( '#menu .share' ).addClass( 'hide' );
-	} else {
-		$( '#menu .share' ).toggleClass( 'hide', list.nfs );
-		$( '#menu .unshare' ).toggleClass( 'hide', !list.nfs );
-	}
-	if ( list.icon !== 'microsd' ) {
-		var mounted = list.mounted;
-		$( '#menu .remount' ).toggleClass( 'hide', mounted );
-		$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
-		$( '#menu .info' ).toggleClass( 'hide', list.icon === 'usbdrive' );
-	}
+	var mounted = list.mounted;
+	$( '#menu .remount' ).toggleClass( 'hide', mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
+	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
@@ -153,29 +144,9 @@ $( '#menu a' ).click( function() {
 				$code.addClass( 'hide' );
 			}
 			break;
-		case 'read':
-		case 'write':
-			bash( [ 'permission', cmd === 'read' ? 755 : 777, mountpoint ] );
-			notify( 'Permission', 'Change ...', 'edit-circle' )
-			break;
 		case 'remount':
 			notify( title, 'Remount ...', icon );
 			bash( [ 'remount', mountpoint, source ] );
-			break;
-		case 'share':
-		case 'unshare':
-			if ( list.smb ) {
-				info( {
-					  icon    : 'networks'
-					, title   : 'NFS Share'
-					, message : '<wh>Samba Server is currently active on:</wh><br>'
-								+ mountpoint
-				} );
-				break;
-			}
-			
-			bash( [ 'nfsset', cmd, mountpoint ] );
-			notify( 'NFS Share', ( cmd === 'share' ? 'Share ...' : 'Unshare ...' ), 'networks' );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
@@ -830,23 +801,9 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	if ( G.shareddataserver ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Shared Data'
-			, message : '<wh><i class="fa fa-warning"></i> All clients will be disconnected.</wh>'
-						+'<br>Continue?'
-			, cancel  : function() {
-				$( '#shareddata' ).prop( 'checked', true );
-			}
-			, okcolor : orange
-			, oklabel : 'Disable'
-			, ok      : function() {
-				bash( [ 'shareddatadisable' ] );
-				notify( 'Shared Data', 'Disable ...', 'networks' );
-			}
-		} );
-	} else if ( G.shareddata ) {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
@@ -863,65 +820,7 @@ $( '#shareddata' ).click( function() {
 			}
 		} );
 	} else {
-		info( {
-			  icon       : 'networks'
-			, title      : 'Shared Data'
-			, radio      : { 'Share music and data from this rAudio': 0, 'Add shares from other server': 1 }
-			, okno       : 1
-			, beforeshow : function() {
-				$( '#infoContent input' ).change( function() {
-					setTimeout( function() {
-						if ( $( '#infoContent input:checked' ).val() == 1 ) {
-							if ( !$( '#list .fa-networks' ).length ) {
-								info( {
-									  icon    : 'networks'
-									, title   : 'Shared Data'
-									, message : 'Connect <wh>music share</wh> before enable Shared Data.'
-								} );
-								$( '#shareddata' ).prop( 'checked', false );
-								return
-							}
-							
-							infoMount( 'shareddata' );
-						} else {
-							info( {
-								  icon       : 'networks'
-								, title      : 'Shared Data - NFS Server'
-								, message    : '<wh>Share path</wh>&ensp;• <wh>Name</wh>'
-								, textlabel  : [
-									  '<code>/mnt/MPD/SD</code>'
-									, '<code>/mnt/MPD/USB</code>'
-									, '<code>/srv/http/shareddata</code>'
-								]
-								, checkbox    : [ 'Update Library database' ]
-								, values      : [ '', 'Music', 'SharedData', true ]
-								, footer      : '<br> • Setting values for clients on <wh>Storage <i class="fa fa-plus-circle"></i></wh>'
-												+'<br> • Blank = Disable'
-								, footeralign : 'left'
-								, beforeshow  : function() {
-									$( '.infomessage' ).eq( 0 ).css( 'margin-left', '-40px' );
-									$( '#infoContent input' ).eq( 2 )
-										.prop( 'disabled', 1 )
-										.css( 'color', 'var( --cg60 )' );
-									$( '#infoContent input' ).on( 'keyup paste', function() {
-										var $this = $( this );
-										setTimeout( function() {
-											$this.val( $this.val().replace( /\//g, '' ) );
-										}, 0 );
-									} );
-								}
-								, cancel     : function() {
-									$( '#shareddata' ).prop( 'checked', false );
-								}
-								, ok         : function() {
-									bash( [ 'shareddataserver', ...infoVal() ] );
-								}
-							} );
-						}
-					}, 0 );
-				} );
-			}
-		} );
+		infoMount( 'shareddata' );
 	}
 } );
 $( '.listtitle' ).click( function( e ) {
@@ -1089,9 +988,8 @@ function renderPage() {
 		var mountpoint = val.mountpoint === '/mnt/MPD/SD' ? '/<gr>mnt/MPD/SD</gr>' : val.mountpoint;
 		html += '<li '+ dataunmounted;
 		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ mountpoint +'</wh>'+ dot
-		html += '<gr class="source hide">'+ val.source +'</gr>';
+		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
 		html +=  val.size ? val.size : '';
-		html += val.icon !== 'networks' ? ' <gr>• '+ val.perm +'</gr>' : '';
 		html += val.nfs ? ' <gr>• NFS</gr>' : '';
 		html += val.smb ? ' <gr>• SMB</gr>' : '';
 		html += '</li>';
@@ -1128,11 +1026,12 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#shareddata' ).prop( 'checked', G.shareddata );
-	$( '#divshareddata .col-l' )
-		.toggleClass( 'status', G.shareddataserver )
-		.toggleClass( 'single', !G.shareddataserver )
-		.find( 'gr' ).toggleClass( 'hide', !G.shareddataserver );
+	if ( G.nfs ) {
+		$( '#divshareddata' ).addClass( 'hide' );
+	} else {
+		$( '#divshareddata' ).removeClass( 'hide' );
+		$( '#shareddata' ).toggleClass( 'disabled', $( '#list .fa-networks' ).length === 0 );
+	}
 	showContent();
 }
 function getStatus() {

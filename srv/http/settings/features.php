@@ -239,6 +239,19 @@ Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="f
 HTML
 	]
 	, [
+		  'label'    => 'NFS Server'
+		, 'id'       => 'nfsserver'
+		, 'sublabel' => 'nfs-server'
+		, 'icon'     => 'networks'
+		, 'status'   => 'nfs-server'
+		, 'disabled' => 'File Sharing is currently active.'
+		, 'help'     => <<< HTML
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Set rAudio as server, file and Shared Data for rAudio clients.
+ • Share all subdirectories in SD card and USB drives
+ • Click label to see all share paths
+HTML
+	]
+	, [
 		  'label'    => 'Password Login'
 		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'

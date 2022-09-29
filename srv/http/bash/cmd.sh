@@ -1001,39 +1001,55 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			fileconf=$dircamilladsp/configs/camilladsp.yml;;
-		localbrowser )
-			fileconf=$dirsystem/localbrowser.conf
-			pkg=chromium;;
-		nfs-server )
-			pkg=nfs-utils
-			grep -q /mnt/MPD /etc/exports && fileconf=/etc/exports
+			fileconf=$dircamilladsp/configs/camilladsp.yml
 			;;
-		smb )
-			fileconf=/etc/samba/smb.conf
-			pkg=samba;;
-		snapclient|snapserver )
-			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
-			pkg=snapcast;;
-		* )
-			fileconf=/etc/$id.conf;;
-	esac
-	conf="<code>$( pacman -Q $pkg )</code>"
-	if [[ -e $fileconf ]]; then
-		conf+="
-<bll># cat $fileconf</bll>
-$( grep -v ^# $fileconf )"
-	elif [[ $pkg == hostapd ]]; then
-		conf+="
+		hostapd )
+			conf="\
 <bll># cat /etc/hostapd/hostapd.conf</bll>
 $( cat /etc/hostapd/hostapd.conf )
 
-<bll># cat /etc/dnsmasq.conf</bll>
-$( cat /etc/dnsmasq.conf )"
-	elif [[ $pkg == rtsp-simple-server ]]; then
-		conf+="
+<bll># cat /etc/dnsmasq.conf"
+			;;
+		localbrowser )
+			pkg=chromium
+			fileconf=$dirsystem/localbrowser.conf
+			;;
+		nfs-server )
+			pkg=nfs-utils
+			if systemctl -q is-active nfs-server; then
+				conf='<bll># Share path:</bll>'
+				paths=$( grep ^/ /etc/exports | cut -d' ' -f1 )
+				for path in $paths; do
+					[[ $path == /srv/http/shareddata ]] && type='Shared Data' || type=$( echo $path | cut -d/ -f4 )
+					conf+=$'\n'$( printf "%-15s %-7s" "<gr>$type" ':</gr>' $path )
+				done
+			fi
+			;;
+		rtsp-simple-server )
+			conf="\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+			;;
+		smb )
+			pkg=samba
+			fileconf=/etc/samba/smb.conf
+			;;
+		snapclient|snapserver )
+			pkg=snapcast
+			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			;;
+		* )
+			fileconf=/etc/$id.conf
+			;;
+	esac
+	config="<code>$( pacman -Q $pkg )</code>"
+	if [[ $conf ]]; then
+		config+="
+$conf"
+	elif [[ -e $fileconf ]]; then
+		config+="
+<bll># cat $fileconf</bll>
+$( grep -v ^# $fileconf )"
 	fi
 	status=$( systemctl status $service \
 					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
@@ -1044,7 +1060,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		status=$( echo "$status" | grep -v 'Protocol not supported' )
 	fi
 	echo "\
-$conf
+$config
 
 $status"
 	;;
