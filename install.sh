@@ -3,7 +3,7 @@
 alias=r1
 
 # 20220930
-[[ -e /srv/http/data/system/hddspindown }} && mv /srv/http/data/system/{hddspindown,apm}
+[[ -e /srv/http/data/system/hddspindown ]] && mv /srv/http/data/system/{hddspindown,apm}
 
 if [[ ! -e /boot/kernel.img ]]; then
 	dir=/etc/systemd/system
