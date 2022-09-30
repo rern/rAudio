@@ -67,7 +67,7 @@ bluetoothinfo )
 	info=$( bluetoothctl info $mac )
 	echo "$info" | grep -q 'not available' && exit
 	
-	if (( $( echo "$info" | grep -E 'Connected: yes|UUID: Audio' | wc -l ) == 2 )); then
+	if (( $( echo "$info" | grep -cE 'Connected: yes|UUID: Audio' ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )

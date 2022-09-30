@@ -142,7 +142,7 @@ $( cat $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -E '"cover".*true|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
 
 filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
 [[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'

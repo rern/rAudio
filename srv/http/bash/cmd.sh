@@ -143,7 +143,7 @@ plAddRandom() {
 	mpcls=$( mpc ls "$dir" )
 	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
 	if [[ $cuefile ]]; then
-		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$cuefile" | wc -l ) - 1 ))
+		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		file="$range $cuefile"
 		grep -q "$file" $dirsystem/librandom && plAddRandom && return
