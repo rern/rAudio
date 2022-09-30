@@ -276,26 +276,28 @@ EOF
 	;;
 nfsserver )
 	if [[ ${args[1]} == true ]]; then
-		options="$( ipGet subnet )(rw,sync,no_subtree_check)"
-		dirs="\
+		ip=$( ipGet )
+		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
+		echo $ip >> /srv/http/data/iplist
+		readarray -t dirs <<< $( echo "\
 /mnt/MPD/SD
-$( ls -d1 /mnt/MPD/USB/*/ | sed 's|/$||; s| |\\040|g' )"
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+/srv/http/shareddata" )
 		for dir in "${dirs[@]}"; do
-			! grep -q "^$dir" /etc/exports && list+="$dir $options"$'\n'
-			[[ -d "$dir" ]] && ln -s "$dir" /mnt/MPD/NAS
+			dirname=${dir// /\\040}
+			! grep -q "^$dirname" /etc/exports && list+="$dirname $options"$'\n'
+			[[ ! -d "$dir" ]] && ln -s "$dir" /mnt/MPD/NAS
 		done
-		list+="/srv/http/shareddata $options"
 		echo "$list" >> /etc/exports
-		ipGet > /srv/http/data/iplist
 		chmod 777 /srv/http/data
 		ln -sf /srv/http/{data,shareddata}
 		systemctl -q is-active nfs-server && exportfs -ar || systemctl enable --now nfs-server
 	else
 		systemctl disable --now nfs-server
-		rm -f /srv/http/data/iplist /srv/http/shareddata
 		chmod 755 /srv/http/data
 		sed -i '/^\// d' /etc/exports
-		find /mnt/MPD/NAS -maxdepth 1 -type l -exec rm -f {} \;
+		rm /srv/http/data/iplist /srv/http/shareddata
+		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 	fi
 	pushRefresh
 	;;
