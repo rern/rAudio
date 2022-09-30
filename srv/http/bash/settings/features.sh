@@ -294,10 +294,10 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
 		systemctl -q is-active nfs-server && exportfs -ar || systemctl enable --now nfs-server
 	else
 		systemctl disable --now nfs-server
-		rm -f /srv/http/data/iplist /srv/http/shareddata
 		chmod 755 /srv/http/data
 		sed -i '/^\// d' /etc/exports
-		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm -f {} \;
+		rm /srv/http/data/iplist /srv/http/shareddata
+		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 	fi
 	pushRefresh
 	;;
