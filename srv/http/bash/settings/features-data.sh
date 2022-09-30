@@ -68,6 +68,11 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	else
 		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
 	fi
+	if systemctl -q is-active localbrowser; then
+		localbrowser=true
+	else
+		systemctl -q is-enabled localbrowser && systemctl -q disable --now localbrowser
+	fi
 	data+='
 , "localbrowser"     : '$( isactive localbrowser )'
 , "localbrowserconf" : '$localbrowserconf
