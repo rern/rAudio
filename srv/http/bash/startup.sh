@@ -65,32 +65,38 @@ $( basename "$devprofile" )"
 	fi
 fi
 
-[[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
-if [[ $nas ]]; then
-	for mountpoint in "${nas[@]}"; do # ping target before mount
-		ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
-				| cut -d' ' -f1 \
-				| sed 's|^//||; s|:*/.*$||' )
-		for i in {1..10}; do
-			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-				mount "$mountpoint" && break
-			else
-				(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
-				sleep 2
-			fi
+if [[ $connected  ]]; then
+	readarray -t nas <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	if [[ $nas ]]; then
+		for mountpoint in "${nas[@]}"; do # ping target before mount
+			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
+					| cut -d' ' -f1 \
+					| sed 's|^//||; s|:*/.*$||' )
+			[[ ! $ip ]] && continue
+			
+			for i in {1..10}; do
+				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+					mount "$mountpoint" && break
+				else
+					(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
+					sleep 2
+				fi
+			done
 		done
-	done
-fi
-if grep -q /srv/http/shareddata /etc/fstab; then
-	mount /srv/http/shareddata
-	for i in {1..5}; do
-		sleep 1
-		[[ -d $dirmpd ]] && break
-	done
-	$dirbash/settings/system.sh shareddatalist
+	fi
+	if grep -q /srv/http/shareddata /etc/fstab; then
+		mount /srv/http/shareddata
+		for i in {1..5}; do
+			sleep 1
+			[[ -d $dirmpd ]] && break
+		done
+		$dirbash/settings/system.sh shareddatalist
+	fi
 fi
 
-[[ -e /boot/startup.sh ]] && . /boot/startup.sh
+if [[ -e /boot/startup.sh ]]; then
+	/boot/startup.sh
+fi
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
 
@@ -119,24 +125,8 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
-profiles=$( netctl list )
-systemctl -q is-active hostapd && hostapd=1
-[[ $usbwifi || ( ! $profiles && ! $hostapd ) ]] && rmmod brcmfmac &> /dev/null
-
-if [[ -e $dirsystem/hddspindown ]]; then
-	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
-	if [[ $usb ]]; then
-		duration=$( cat $dirsystem/hddspindown )
-		readarray -t usb <<< "$usb"
-		for dev in "${usb[@]}"; do
-			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
-			
-			hdparm -q -B 127 $dev
-			hdparm -q -S $duration $dev
-		done
-	fi
+if [[ -e $dirsystem/hddsleep ]]; then
+	$dirbash/settings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
@@ -148,4 +138,11 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
 
-[[ $restorefailed ]] && pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000
+if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
+	rmmod brcmfmac &> /dev/null
+fi
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
+
+if [[ $restorefailed ]]; then
+	pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000
+fi

@@ -83,7 +83,7 @@ echo "$asound" > /etc/asound.conf
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------
-wm5102card=$( aplay -l | grep snd_rpi_wsp | cut -c 6 )
+wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
 	$dirbash/settings/player-wm5102.sh $wm5102card $output

@@ -265,6 +265,7 @@ hddsleepdisable )
 		done
 		pushRefresh
 	fi
+	rm -f $dirsystem/hddsleep
 	;;
 hddsleep )
 	apm=${args[1]}
@@ -274,8 +275,10 @@ hddsleep )
 
 		hdparm -q -B $apm $dev
 		hdparm -q -S $apm $dev
+		support=1
 	done
 	[[ $notsupport ]] && echo -e "$notsupport"
+	[[ $support ]] && echo $apm > $dirsystem/apm
 	pushRefresh
 	;;
 hostname )
