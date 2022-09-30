@@ -146,7 +146,7 @@ if [[ $toolarge ]]; then
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 fi
 
-[[ -e /srv/http/shareddata/iplist ]] && $dirbash/settings/system.sh shareddatalist reload
+[[ -e /srv/http/shareddata/iplist ]] && $dirbash/settings/system.sh shareddataiplist$'\n'reload
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

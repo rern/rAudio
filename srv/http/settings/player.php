@@ -193,12 +193,12 @@ SoX Resampler custom settings:
  • Stopband Begin - Aliasing/imaging control
  • Attenuation - Lowers the source to prevent clipping
  • Flags - Extra settings:
- &emsp; 0 - Rolloff - small (<= 0.01 dB)
- &emsp; 1 - Rolloff - medium (<= 0.35 dB)
- &emsp; 2 - Rolloff - none - For Chebyshev bandwidth
- &emsp; 8 - High precision - Increase irrational ratio accuracy
- &emsp; 16 - Double precision - even if Precision <= 20
- &emsp; 32 - Variable rate resampling
+	&nbsp; 0 - Rolloff - small (<= 0.01 dB)
+	&nbsp; 1 - Rolloff - medium (<= 0.35 dB)
+	&nbsp; 2 - Rolloff - none - For Chebyshev bandwidth
+	&nbsp; 8 - High precision - Increase irrational ratio accuracy
+	16 - Double precision - even if Precision <= 20
+	32 - Variable rate resampling
 HTML
 	]
 	, [

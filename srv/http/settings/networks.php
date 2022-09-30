@@ -11,19 +11,19 @@ htmlHead( [ //////////////////////////////////
 	<pre id="codebluetooth" class="status hide"></pre>
 	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
  • Pair:
- &emsp; - On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
- &emsp; - On rAudio - Bluetooth &nbsp;<i class="fa fa-search wh"></i>Search > Select to pair
+	- On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
+	- On rAudio - Bluetooth &nbsp;<i class="fa fa-search wh"></i>Search > Select to pair
  • Connect:
- &emsp; - On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
- &emsp; - Receiver buttons can be used to control playback
+	- On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
+	- Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
- &emsp; - On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
- &emsp; - On sender - Search > Select rAudio to pair
- &emsp; - <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
+	- On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
+	- On sender - Search > Select rAudio to pair
+	- <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
  • Connect:
- &emsp; - On sender - Select rAudio > <code>connect</code> / <code>disconnect</code>
+	- On sender - Select rAudio > <code>connect</code> / <code>disconnect</code>
 </div>
 </div>
 <div id="divwl" class="section">

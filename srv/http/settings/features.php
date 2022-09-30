@@ -65,17 +65,17 @@ HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
  • Get <code>ID</code> and <code>Secret</code> from private app : <bll class="screenshot pointer">(Screenshots)</bll>
- &emsp; • <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
- &emsp; • <code>CREATE AN APP</code>
- &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
- &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
- &emsp; • <code>EDIT SETTINGS</code>
- &emsp; &emsp; - <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
- &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
- &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
- &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
- &emsp; • rAudio <code>Spotify</code>
- &emsp; &emsp; - Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
+	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
+	• <code>CREATE AN APP</code>
+		- <wh>App name:</wh> <gr>(any)</gr>
+		- <wh>App description:</wh> <gr>(any)</gr>
+	• <code>EDIT SETTINGS</code>
+		- <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
+	• <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
+		- <wh>Name:</wh> <gr>(any)</gr>
+		- <wh>Spotify Account:</wh> (login email)
+	• rAudio <code>Spotify</code>
+		- Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -118,11 +118,11 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
- &emsp; • Enable SnapClient
- &emsp; • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
+	- Enable SnapClient
+	- Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
  • Snapcast control client and player:
- &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a>
- &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
+	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -255,9 +255,9 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • Share paths:
- &emsp; - USB drive: {$usbdir}
- &emsp; - SD card: <code>/mnt/MPD/SD</code>
- &emsp; - Shared Data: <code>/srv/http/data</code>
+	- USB drive: {$usbdir}
+	- SD card: <code>/mnt/MPD/SD</code>
+	- Shared Data: <code>/srv/http/data</code>
 HTML
 	]
 	, [

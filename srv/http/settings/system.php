@@ -156,8 +156,8 @@ HTML
 <i class="fa fa-gear"></i> Settings
  • Auto start Access Point - On failed connection or no router
  • Country of Wi-Fi regulatory domain:
- &emsp; - 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
- &emsp; - The connected router may override it to a certain country.
+	- 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+	- The connected router may override it to a certain country.
 HTML
 	]
 ];
@@ -339,18 +339,20 @@ HTML
 		  'label'    => 'Shared Data'
 		, 'id'       => 'shareddata'
 		, 'icon'     => 'networks'
-		, 'setting'  => true
-		, 'disabled' => 'No connected music shares.'
+		, 'setting'  => 'self'
 		, 'help'     => <<< HTML
-Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio. 
- • On server: setup a share for data with full permissions.
- &emsp; - rAudio server: Storage context menu > NFS share - Share data
- &emsp; - NFS: <code>777</code>
- &emsp; - CIFS: <code>read only = no</code>
- &emsp; - Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
- • On clients:
- &emsp; - Add: Storage <i class="fa fa-plus-circle"></i> with the same music share, name and path/share name.
- &emsp; - Enable this Shared Data
+Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
+ • <wh>rAudio as server:</wh>
+	- Server:&ensp;<i class="fa fa-features"></i>Features > NFS share - Enable
+	- Clients: Enable Shared Data - Auto connect and setup
+ 
+ • <wh>On server:</wh> setup a share for data with full permissions.
+	- NFS: <code>777</code>
+	- CIFS: <code>read only = no</code>
+	- Windows: <code>Everyone - Full Control</code> (Sharing and Security tabs)
+ • <wh>On clients:</wh>
+	- Add:&ensp;<i class="fa fa-system"></i>System > Storage <i class="fa fa-plus-circle"></i> with the same music share, name and path/share name.
+	- Enable this Shared Data
 HTML
 	]
 ];

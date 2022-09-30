@@ -90,7 +90,7 @@ if [[ $connected  ]]; then
 			sleep 1
 			[[ -d $dirmpd ]] && break
 		done
-		$dirbash/settings/system.sh shareddatalist
+		$dirbash/settings/system.sh shareddataiplist
 	fi
 fi
 

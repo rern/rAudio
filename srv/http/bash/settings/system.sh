@@ -45,6 +45,18 @@ I2Cset() {
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
+sharedDataIPlist() {
+	reload=$1
+	list=$( ipGet )
+	iplist=$( grep -v $list /srv/http/shareddata/iplist )
+	for ip in $iplist; do
+		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+			[[ $reload ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			list+=$'\n'$ip
+		fi
+	done
+	echo "$list" | sort -u > /srv/http/shareddata/iplist
+}
 soundProfile() {
 	if [[ $1 == reset ]]; then
 		swappiness=60
@@ -742,31 +754,45 @@ shareddataconnect )
 	options=defaults,noauto,bg,soft,timeo=5
 	for path in "${paths[@]}"; do
 		source=${path// /\\040}
-		[[ $path != /srv/http/data ]] && mountpoint=/mnt/MPD/NAS/$( basename $source ) mountpoint=/srv/http/shareddata
+		if [[ $path == /srv/http/data ]]; then
+			mkdir -p /srv/http/shareddata
+			mountpoint=/srv/http/shareddata
+		else
+			mkdir "/mnt/MPD/NAS/$( basename $path )"
+			mountpoint=/mnt/MPD/NAS/$( basename $source )
+		fi
 		list+="$ip:$source  $mountpoint  nfs  $options  0  0"$'\n'
 	done
 	echo -n "$list" >> /etc/fstab
-	mkdir -p /srv/http/shareddata
 	mount -a
+	systemctl daemon-reload
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf /srv/http/data/$dir
 		ln -s /srv/http/{shareddata,data}/$dir
 	done
+	sharedDataIPlist
+	pushRefresh
 	;;
 shareddatadisable )
 	copydata=${args[1]}
 	dirshared=/srv/http/shareddata
+	! grep -q $dirshared /etc/fstab && exit
+	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $dirshared/$dir $dirdata || mkdir $dirdata/$dir
 	done
+	rm $dirshared
 	ip=$( ipGet )
 	sed -i "/$ip/ d" $dirshared/iplist
 	[[ ! -s $dirshared/iplist ]] && rm $dirshared/iplist
-	umount -l $dirshared
-	sed -i "\|$dirshared| d" /etc/fstab
+	ipserver=$( grep $dirshared /etc/fstab | cut -d: -f1 )
+	readarray -t mountpoints <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	for mountpoint in "${mountpoints[@]}"; do
+		umount -l "$mountpoint"
+	done
+	sed -i "/^$ipserver/ d" /etc/fstab
 	systemctl daemon-reload
-	rm -rf $dirshared
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirmpd
 	pushRefresh
@@ -776,17 +802,8 @@ shareddatadisable )
 		$dirbash/cmd.sh mpcupdate
 	fi
 	;;
-shareddatalist )
-	reload=${args[1]}
-	list=$( ipGet )
-	iplist=$( grep -v $list /srv/http/shareddata/iplist )
-	for ip in $iplist; do
-		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-			[[ $reload ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
-			list+=$'\n'$ip
-		fi
-	done
-	echo "$list" | sort -u > /srv/http/shareddata/iplist
+shareddataiplist )
+	sharedDataIPlist ${args[1]}
 	;;
 shareddatarestart )
 	systemctl restart mpd

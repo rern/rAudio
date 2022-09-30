@@ -802,8 +802,6 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
-	
 	if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
@@ -919,9 +917,12 @@ ${ htmlname }
 					info( {
 						  icon      : 'networks'
 						, title     : 'Shared Data'
-						, message   : 'Connect rAudio NFS server:'
+						, message   : 'rAudio NFS server - files and data'
 						, textlabel : 'IP'
 						, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
+						, cancel    : function() {
+							$( '#shareddata' ).prop( 'checked', false );
+						}
 						, ok        : function() {
 							var ip = infoVal();
 							bash( [ 'shareddataconnect', ip ], function( std ) {
@@ -1058,6 +1059,7 @@ function renderPage() {
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
 	$( '#divshareddata' ).toggleClass( 'hide', G.nfsserver );
+	$( '#setting-shareddata' ).addClass( 'hide' );
 	showContent();
 }
 function getStatus() {
