@@ -702,52 +702,71 @@ shareddata )
 		options=defaults,noauto,bg,soft,timeo=5
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
-	mountpoint=/srv/http/shareddata
-	mkdir -p $mountpoint
-	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	std=$( mount $mountpoint )
+	dirshared=/srv/http/shareddata
+	mkdir -p $dirshared
+	echo "${source// /\\040}  $dirshared  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	std=$( mount $dirshared )
 	if [[ $? == 0 ]]; then
 		systemctl daemon-reload
 		for i in {1..5}; do
 			sleep 1
-			mount | grep -q "$mountpoint" && break
+			mount | grep -q "$dirshared" && break
 		done
 		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 			if [[ $copydata == true ]]; then
-				rm -rf $mountpoint/$dir
-				cp -rf $dirdata/$dir $mountpoint
+				rm -rf $dirshared/$dir
+				cp -rf $dirdata/$dir $dirshared
 			else
-				mkdir -p $mountpoint/$dir
+				mkdir -p $dirshared/$dir
 			fi
 			rm -rf $dirdata/$dir
-			ln -s $mountpoint/$dir $dirdata
+			ln -s $dirshared/$dir $dirdata
 		done
-		ipGet >> $mountpoint/iplist
-		chown -h http:http $mountpoint/*/
-		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
+		ipGet >> $dirshared/iplist
+		chown -h http:http $dirshared/*/
+		chown -h mpd:audio $dirshared $dirshared/{mpd,playlist}
 		pushRefresh
 		[[ $copydata == false ]] && systemctl restart mpd
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "\|$mountpoint| d" /etc/fstab
-		rm -rf $mountpoint
+		sed -i "\|$dirshared| d" /etc/fstab
+		rm -rf $dirshared
 		exit
 	fi
 	;;
+shareddataconnect )
+	ip=${args[1]}
+	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
+	[[ ! $paths ]] && echo -1 && exit
+	
+	options=defaults,noauto,bg,soft,timeo=5
+	for path in "${paths[@]}"; do
+		source=${path// /\\040}
+		[[ $path != /srv/http/data ]] && mountpoint=/mnt/MPD/NAS/$( basename $source ) mountpoint=/srv/http/shareddata
+		list+="$ip:$source  $mountpoint  nfs  $options  0  0"$'\n'
+	done
+	echo -n "$list" >> /etc/fstab
+	mkdir -p /srv/http/shareddata
+	mount -a
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		rm -rf /srv/http/data/$dir
+		ln -s /srv/http/{shareddata,data}/$dir
+	done
+	;;
 shareddatadisable )
 	copydata=${args[1]}
-	mountpoint=/srv/http/shareddata
+	dirshared=/srv/http/shareddata
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm $dirdata/$dir
-		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+		[[ $copydata == true ]] && cp -rf $dirshared/$dir $dirdata || mkdir $dirdata/$dir
 	done
 	ip=$( ipGet )
-	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ ! -s $mountpoint/iplist ]] && rm $mountpoint/iplist
-	umount -l $mountpoint
-	sed -i "\|$mountpoint| d" /etc/fstab
+	sed -i "/$ip/ d" $dirshared/iplist
+	[[ ! -s $dirshared/iplist ]] && rm $dirshared/iplist
+	umount -l $dirshared
+	sed -i "\|$dirshared| d" /etc/fstab
 	systemctl daemon-reload
-	rm -rf $mountpoint
+	rm -rf $dirshared
 	chown -R http:http $dirdata
 	chown -R mpd:audio $dirmpd
 	pushRefresh

@@ -897,6 +897,9 @@ ${ htmlname }
 </tr>
 <tr><td></td>
 	<td><label><input type="checkbox" checked>${ chktext }</label></td>
+</tr>
+<tr class="nfsconnect"><td></td>
+<td><label><input type="checkbox">Connect rAudio NFS server</label></td>
 </tr>`;
 	htmlmount += '</table>';
 	info( {
@@ -908,6 +911,33 @@ ${ htmlname }
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
 			var $share = $( '#share' );
+			if ( !shareddata ) {
+				$( '#infoContent .nfsconnect' ).remove();
+			} else {
+				$( '#infoContent .nfsconnect' ).click( function() {
+					var ip = $( '#list' ).data( 'ip' );
+					info( {
+						  icon      : 'networks'
+						, title     : 'Shared Data'
+						, message   : 'Connect rAudio NFS server:'
+						, textlabel : 'IP'
+						, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
+						, ok        : function() {
+							var ip = infoVal();
+							bash( [ 'shareddataconnect', ip ], function( std ) {
+								if ( std == -1 ) {
+									info( {
+										  icon      : 'networks'
+										, title     : 'Shared Data'
+										, message   : 'No NFS shares found on rAudio:'
+													 +'<br><wh>'+ ip +'</wh>'
+									} );
+								}
+							} );
+						}
+					} );
+				} );
+			}
 			function hideOptions( type ) {
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
@@ -1027,12 +1057,7 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	if ( G.nfs ) {
-		$( '#divshareddata' ).addClass( 'hide' );
-	} else {
-		$( '#divshareddata' ).removeClass( 'hide' );
-		$( '#shareddata' ).toggleClass( 'disabled', $( '#list .fa-networks' ).length === 0 );
-	}
+	$( '#divshareddata' ).toggleClass( 'hide', G.nfsserver );
 	showContent();
 }
 function getStatus() {
