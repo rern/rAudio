@@ -1,6 +1,13 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
+exec( 'find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d', $dirs );
+$usbdir = '';
+if ( count( $dirs ) === 1 ) {
+	$usbdir.= '<code>'.$dirs[ 0 ].'</code>';
+} else {
+	foreach( $dirs as $dir ) $usbdir.= '<br> &emsp; &emsp; <code>'.$dir.'</code>';
+}
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
@@ -246,12 +253,11 @@ HTML
 		, 'status'   => 'nfs-server'
 		, 'disabled' => 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Set rAudio as a server for music files and Shared Data.
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • Share paths:
- &emsp; - SD card
- &emsp; - Each directories in USB drives
- &emsp; - Shared Data directory
- • Share paths for Storage <i class="fa fa-plus-circle"></i>- click NFS Share label
+ &emsp; - USB drive: {$usbdir}
+ &emsp; - SD card: <code>/mnt/MPD/SD</code>
+ &emsp; - Shared Data: <code>/srv/http/data</code>
 HTML
 	]
 	, [

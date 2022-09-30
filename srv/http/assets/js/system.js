@@ -103,6 +103,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	$this.addClass( 'active' );
 	$( '#menu a' ).addClass( 'hide' );
 	var mounted = list.mounted;
+	$( '#menu .forget' ).toggleClass( 'hide', mounted );
 	$( '#menu .remount' ).toggleClass( 'hide', mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
 	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );

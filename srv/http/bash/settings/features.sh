@@ -279,24 +279,22 @@ nfsserver )
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		echo $ip >> /srv/http/data/iplist
-		readarray -t dirs <<< $( echo "\
-/mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
-/srv/http/shareddata" )
+		readarray -t dirs <<< $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+		dirs+=( /mnt/MPD/SD )
 		for dir in "${dirs[@]}"; do
-			dirname=${dir// /\\040}
-			! grep -q "^$dirname" /etc/exports && list+="$dirname $options"$'\n'
-			[[ ! -d "$dir" ]] && ln -s "$dir" /mnt/MPD/NAS
+			list+="${dir// /\\040} $options"$'\n'
+			ln -s "$dir" "/mnt/MPD/NAS/$( basename "$dir" )"
 		done
-		echo "$list" >> /etc/exports
+		echo -n "\
+$list
+/srv/http/data $options" >> /etc/exports
 		chmod 777 /srv/http/data
-		ln -sf /srv/http/{data,shareddata}
-		systemctl -q is-active nfs-server && exportfs -ar || systemctl enable --now nfs-server
+		systemctl enable --now nfs-server
 	else
 		systemctl disable --now nfs-server
 		chmod 755 /srv/http/data
-		sed -i '/^\// d' /etc/exports
-		rm /srv/http/data/iplist /srv/http/shareddata
+		rm /srv/http/data/iplist
+		> /etc/exports
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 	fi
 	pushRefresh
