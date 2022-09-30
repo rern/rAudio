@@ -343,7 +343,7 @@ HTML
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	- Server:&ensp;<i class="fa fa-features"></i>Features > NFS share - Enable
+	- Server:&ensp;<i class="fa fa-features"></i>Features > NFS Share <i class="fa fa-networks"></i>- Enable
 	- Clients: Enable Shared Data - Auto connect and setup
  
  • <wh>On server:</wh> setup a share for data with full permissions.

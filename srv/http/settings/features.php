@@ -1,13 +1,6 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
-exec( 'find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d', $dirs );
-$usbdir = '';
-if ( count( $dirs ) === 1 ) {
-	$usbdir.= '<code>'.$dirs[ 0 ].'</code>';
-} else {
-	foreach( $dirs as $dir ) $usbdir.= '<br> &emsp; &emsp; <code>'.$dir.'</code>';
-}
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
@@ -254,10 +247,7 @@ HTML
 		, 'disabled' => 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
- • Share paths:
-	- USB drive: {$usbdir}
-	- SD card: <code>/mnt/MPD/SD</code>
-	- Shared Data: <code>/srv/http/data</code>
+ • rAudio clients:&ensp;<i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
 HTML
 	]
 	, [
