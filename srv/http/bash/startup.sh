@@ -65,29 +65,33 @@ $( basename "$devprofile" )"
 	fi
 fi
 
-[[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
-if [[ $nas ]]; then
-	for mountpoint in "${nas[@]}"; do # ping target before mount
-		ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
-				| cut -d' ' -f1 \
-				| sed 's|^//||; s|:*/.*$||' )
-		for i in {1..10}; do
-			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-				mount "$mountpoint" && break
-			else
-				(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
-				sleep 2
-			fi
+if [[ $connected  ]]; then
+	readarray -t nas <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	if [[ $nas ]]; then
+		for mountpoint in "${nas[@]}"; do # ping target before mount
+			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
+					| cut -d' ' -f1 \
+					| sed 's|^//||; s|:*/.*$||' )
+			[[ ! $ip ]] && continue
+			
+			for i in {1..10}; do
+				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+					mount "$mountpoint" && break
+				else
+					(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
+					sleep 2
+				fi
+			done
 		done
-	done
-fi
-if grep -q /srv/http/shareddata /etc/fstab; then
-	mount /srv/http/shareddata
-	for i in {1..5}; do
-		sleep 1
-		[[ -d $dirmpd ]] && break
-	done
-	$dirbash/settings/system.sh shareddatalist
+	fi
+	if grep -q /srv/http/shareddata /etc/fstab; then
+		mount /srv/http/shareddata
+		for i in {1..5}; do
+			sleep 1
+			[[ -d $dirmpd ]] && break
+		done
+		$dirbash/settings/system.sh shareddatalist
+	fi
 fi
 
 [[ -e /boot/startup.sh ]] && . /boot/startup.sh
