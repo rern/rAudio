@@ -275,7 +275,8 @@ EOF
 	pushSubmenu multiraudio true
 	;;
 nfsserver )
-	if [[ ${args[1]} == true ]]; then
+	active=${args[1]}
+	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		dirs="\
@@ -299,6 +300,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 	fi
 	pushRefresh
+	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

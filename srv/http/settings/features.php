@@ -244,7 +244,7 @@ HTML
 		, 'sublabel' => 'nfs-server'
 		, 'icon'     => 'networks'
 		, 'status'   => 'nfs-server'
-		, 'disabled' => 'File Sharing is currently active.'
+		, 'disabled' => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • rAudio clients:&ensp;<i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>

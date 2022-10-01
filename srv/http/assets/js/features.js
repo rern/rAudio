@@ -481,7 +481,7 @@ function renderPage() {
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
-	$( '#nfsserver' ).toggleClass( 'disabled', G.smb );
+	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata );
 	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
