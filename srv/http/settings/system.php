@@ -458,8 +458,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="unmount"><i class="fa fa-times"></i>Unmount</a>
-<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
-<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
 <a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
+<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
+<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
+<a class="unmount"><i class="fa fa-times"></i>Unmount</a>
 </div>
