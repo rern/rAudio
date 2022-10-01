@@ -340,20 +340,20 @@ HTML
 		, 'id'       => 'shareddata'
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
-		, 'setting'  => true
+		, 'setting'  => 'self'
 		, 'disabled' => 'This rAudio is NFS Server'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
 	- Server:&ensp;<i class="fa fa-features"></i>Features > NFS Share <i class="fa fa-networks"></i>- Enable
-	- Clients: Enable Shared Data > Connect rAudio server with IP address
+	- Clients: Shared Data > Connect rAudio server with IP address
  • <wh>Other servers:</wh> 
 	- Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	- Clients:
-		- Add:&ensp;<i class="fa fa-system"></i>System > Storage <i class="fa fa-plus-circle"></i> with the same music share, name and path/share name.
-		- Enable Shared Data - Add shared data from the server
+		- <i class="fa fa-system"></i>System > Storage <i class="fa fa-plus-circle"></i> with the same music share, name and path/share name.
+		- Shared Data - Add the created share on server
 HTML
 	]
 ];

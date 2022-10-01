@@ -754,8 +754,6 @@ shareddata )
 	;;
 shareddataconnect )
 	ip=${args[1]}
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
-	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
 	[[ ! $paths ]] && echo "No NFS shares found @$ip" && exit
 	
@@ -799,9 +797,10 @@ shareddataconnect )
 	echo data > /mnt/MPD/NAS/.mpdignore
 	mpc -q clear
 	sharedDataIPlist
+	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":true}'
 	;;
-shareddatadisable )
+shareddatadisconnect )
 	copydata=${args[1]}
 	[[ -e /mnt/MPD/NAS/data ]] && dirshared=/mnt/MPD/NAS/data || dirshared=/srv/http/shareddata
 	! grep -q $dirshared /etc/fstab && echo -1 && exit
@@ -817,9 +816,9 @@ shareddatadisable )
 	mpc -q clear
 	ipserver=$( grep $dirshared /etc/fstab | cut -d: -f1 )
 	readarray -t mountpoints <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
-	for mountpoint in "${mountpoints[@]}"; do
-		umount -l "$mountpoint"
-		rm "$mountpoint"
+	for dir in "${mountpoints[@]}"; do
+		umount -l "$dir"
+		rmdir "$dir" &> /dev/null
 	done
 	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
@@ -840,6 +839,21 @@ shareddataiplist )
 shareddatarestart )
 	systemctl restart mpd
 	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	;;
+sharelist )
+	ip=${args[1]}
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
+	
+	paths=$( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
+	if [[ $paths ]]; then
+		echo "\
+Shares @<wh>$ip</wh>:
+
+<pre><wh>$paths</wh></pre>
+Connect all shares?"
+	else
+		echo "No NFS shares found @$ip"
+	fi
 	;;
 soundprofile )
 	soundProfile

@@ -803,7 +803,7 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '#setting-shareddata' ).click( function() {
+$( '#shareddata' ).click( function() {
 	if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
@@ -816,7 +816,7 @@ $( '#setting-shareddata' ).click( function() {
 			, okcolor : orange
 			, oklabel : 'Disable'
 			, ok      : function() {
-				bash( [ 'shareddatadisable', infoVal() ] );
+				bash( [ 'shareddatadisconnect', infoVal() ] );
 				notify( 'Shared Data', 'Disable ...', 'networks' );
 			}
 		} );
@@ -992,15 +992,32 @@ function infoNFSconnect( ip ) {
 		}
 		, ok        : function() {
 			var ip = infoVal();
-			bash( [ 'shareddataconnect', ip ], function( std ) {
-				if ( std ) {
-					info( {
-						  icon      : 'networks'
-						, title     : 'Shared Data'
-						, message   : std
-					} );
-					bannerHide();
-				}
+			bash( [ 'sharelist', ip ], function( list ) {
+				info( {
+					  icon    : 'networks'
+					, title   : 'Shared Data'
+					, message : list
+					, cancel  : function() {
+						$( '#shareddata' ).prop( 'checked', false );
+					}
+					, ok      : function() {
+						if ( list.slice( 0, 6 ) === 'Shares' ) {
+							bash( [ 'shareddataconnect', ip ], function( std ) {
+								if ( std ) {
+									info( {
+										  icon      : 'networks'
+										, title     : 'Shared Data'
+										, message   : std
+									} );
+									bannerHide();
+								}
+							} );
+							notify( 'Shared Data', 'Connect rAudio server ...', 'networks' );
+						} else {
+							$( '#infoX' ).click();
+						}
+					} 
+				} );
 			} );
 		}
 	} );
@@ -1062,8 +1079,10 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#shareddata' ).toggleClass( 'disabled', G.nfsserver );
-	$( '#setting-shareddata' ).addClass( 'hide' );
+	$( '#shareddata' )
+		.toggleClass( 'disabled', G.nfsserver )
+		.prop( 'checked', G.shareddata );
+	$( '#setting-shareddata' ).remove();
 	showContent();
 }
 function getStatus() {
