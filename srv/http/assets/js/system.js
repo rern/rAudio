@@ -915,30 +915,7 @@ ${ htmlname }
 				$( '#infoContent .nfsconnect' ).remove();
 			} else {
 				$( '#infoContent .nfsconnect' ).click( function() {
-					var ip = $( '#list' ).data( 'ip' );
-					info( {
-						  icon      : 'networks'
-						, title     : 'Shared Data'
-						, message   : 'rAudio NFS server - files and data'
-						, textlabel : 'IP'
-						, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
-						, cancel    : function() {
-							$( '#shareddata' ).prop( 'checked', false );
-						}
-						, ok        : function() {
-							var ip = infoVal();
-							bash( [ 'shareddataconnect', ip ], function( std ) {
-								if ( std == -1 ) {
-									info( {
-										  icon      : 'networks'
-										, title     : 'Shared Data'
-										, message   : 'No NFS shares found on rAudio:'
-													 +'<br><wh>'+ ip +'</wh>'
-									} );
-								}
-							} );
-						}
-					} );
+					infoNFSconnect( $( '#list' ).data( 'ip' ) );
 				} );
 			}
 			function hideOptions( type ) {
@@ -1000,6 +977,31 @@ ${ htmlname }
 			} else {
 				notify( 'Network Mount', 'Mount ...', 'networks' );
 			}
+		}
+	} );
+}
+function infoNFSconnect( ip ) {
+	info( {
+		  icon      : 'networks'
+		, title     : 'Shared Data'
+		, message   : 'rAudio NFS server - files and data'
+		, textlabel : 'IP'
+		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
+		, cancel    : function() {
+			$( '#shareddata' ).prop( 'checked', false );
+		}
+		, ok        : function() {
+			var ip = infoVal();
+			bash( [ 'shareddataconnect', ip ], function( std ) {
+				if ( std ) {
+					info( {
+						  icon      : 'networks'
+						, title     : 'Shared Data'
+						, message   : std
+					} );
+					bannerHide();
+				}
+			} );
 		}
 	} );
 }

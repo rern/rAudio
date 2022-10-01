@@ -485,7 +485,7 @@ mount )
 	extraoptions=${args[7]}
 	update=${args[8]}
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
 
 	if [[ -e $mountpoint ]]; then
 		[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
@@ -523,7 +523,8 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		pushRefresh
 	else
 		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
+		fstab=$( grep -v "${mountpoint// /\\040}" /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
 		rmdir "$mountpoint"
 	fi
 	;;
@@ -753,23 +754,44 @@ shareddata )
 	;;
 shareddataconnect )
 	ip=${args[1]}
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
+	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
-	[[ ! $paths ]] && echo -1 && exit
+	[[ ! $paths ]] && echo "No NFS shares found @$ip" && exit
+	
+	for path in "${paths[@]}"; do
+		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		[[ -e "$dir" ]] && echo "Directory exists: <code>$dir</code>" && exit
+	done
 	
 	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
 	list=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
-		mkdir "/mnt/MPD/NAS/$( basename "$path" )"
+		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		mkdir "$dir"
+		mountpoints+=( "$dir" )
 		source=${path// /\\040}
 		mountpoint=/mnt/MPD/NAS/$( basename $source )
 		list+=$'\n'"$ip:$source  $mountpoint  $options"
-		mountpoints+=( "$path" )
 	done
 	echo "$list" | column -t > /etc/fstab
 	systemctl daemon-reload
-	for mountpoint in "${mountpoints[@]}"; do
-		mount "$mountpoint"
+	for dir in "${mountpoints[@]}"; do
+		std=$( mount "$dir" 2>&1 )
+		[[ $? != 0 ]] && failed=$std && break
 	done
+	if [[ $failed ]]; then
+		for dir in "${mountpoints[@]}"; do
+			umount -l "$dir" &> /dev/null
+			rm -rf "$dir"
+		done
+		fstab=$( grep ^PART /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
+		systemctl daemon-reload
+		echo "Mount <code>$failed</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		exit
+	fi
+	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		ln -s /mnt/MPD/NAS/data/$dir $dirdata
@@ -777,7 +799,6 @@ shareddataconnect )
 	echo data > /mnt/MPD/NAS/.mpdignore
 	mpc -q clear
 	sharedDataIPlist
-	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":true}'
 	;;
 shareddatadisable )
@@ -864,7 +885,7 @@ storage )
 $( cat /etc/fstab )
 
 <bll># mount | grep ^/dev</bll>
-$( mount | grep ^/dev | sort )
+$( mount | grep ^/dev | sort | column -t )
 "
 	;;
 systemconfig )
