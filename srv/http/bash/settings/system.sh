@@ -751,38 +751,38 @@ shareddataconnect )
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
 	[[ ! $paths ]] && echo -1 && exit
 	
-	options=defaults,noauto,bg,soft,timeo=5
+	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
+	list=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
+		mkdir "/mnt/MPD/NAS/$( basename $path )"
 		source=${path// /\\040}
-		if [[ $path == /srv/http/data ]]; then
-			mkdir -p /srv/http/shareddata
-			mountpoint=/srv/http/shareddata
-		else
-			mkdir "/mnt/MPD/NAS/$( basename $path )"
-			mountpoint=/mnt/MPD/NAS/$( basename $source )
-		fi
-		list+="$ip:$source  $mountpoint  nfs  $options  0  0"$'\n'
+		mountpoint=/mnt/MPD/NAS/$( basename $source )
+		list+="$ip:$source  $mountpoint  $options"$'\n'
+		mountpoints+=( "$mountpoint" )
 	done
-	echo -n "$list" >> /etc/fstab
-	mount -a
+	echo "$list" | column -t > /etc/fstab
+	for mountpoint in "${mountpoints[@]}"; do
+		mount "$mountpoint"
+	done
 	systemctl daemon-reload
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf /srv/http/data/$dir
-		ln -s /srv/http/{shareddata,data}/$dir
+		rm -rf $dirdata/$dir
+		ln -s /mnt/MPD/NAS/data/$dir $dirdata
 	done
+	echo data > /mnt/MPD/NAS/.mpdignore
 	sharedDataIPlist
 	pushRefresh
 	;;
 shareddatadisable )
-	copydata=${args[1]}
-	dirshared=/srv/http/shareddata
-	! grep -q $dirshared /etc/fstab && exit
+#	! grep -q $dirdata /etc/fstab && echo -1 && exit
 	
+	copydata=${args[1]}
+	[[ -e /mnt/MPD/NAS/data ]] && dirshared=/mnt/MPD/NAS/data || dirshared=/srv/http/shareddata
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm $dirdata/$dir
 		[[ $copydata == true ]] && cp -rf $dirshared/$dir $dirdata || mkdir $dirdata/$dir
 	done
-	rm $dirshared
+	rm -f $dirshared /mnt/MPD/NAS/.mpdignore
 	ip=$( ipGet )
 	sed -i "/$ip/ d" $dirshared/iplist
 	[[ ! -s $dirshared/iplist ]] && rm $dirshared/iplist
