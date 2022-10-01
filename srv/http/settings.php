@@ -53,7 +53,7 @@ $body = [
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
 		, 'setting'     => true         // true = common - setting before enable
-		                                // 'self' = self trigger setting
+		                                // 'self' = self trigger setting - must toggle check manually
 		                                // 'none' = no setting - self trigger script
 		, 'settingicon' => 'ICON'
 		, 'disable'     => 'MESSAGE'    // set data-diabled
