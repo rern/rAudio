@@ -338,8 +338,10 @@ HTML
 	, [
 		  'label'    => 'Shared Data'
 		, 'id'       => 'shareddata'
+		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
-		, 'setting'  => 'self'
+		, 'setting'  => true
+		, 'disabled' => 'This rAudio is NFS Server'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>

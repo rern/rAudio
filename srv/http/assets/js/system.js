@@ -801,7 +801,7 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '#shareddata' ).click( function() {
+$( '#setting-shareddata' ).click( function() {
 	if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
@@ -1058,7 +1058,7 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#divshareddata' ).toggleClass( 'hide', G.nfsserver );
+	$( '#shareddata' ).toggleClass( 'disabled', G.nfsserver );
 	$( '#setting-shareddata' ).addClass( 'hide' );
 	showContent();
 }

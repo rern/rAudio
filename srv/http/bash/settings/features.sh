@@ -278,22 +278,23 @@ nfsserver )
 	if [[ ${args[1]} == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
-		echo $ip >> /srv/http/data/iplist
-		readarray -t dirs <<< $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
-		dirs+=( /mnt/MPD/SD )
+		dirs="\
+/mnt/MPD/SD
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
+		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			list+="${dir// /\\040} $options"$'\n'
 			ln -s "$dir" "/mnt/MPD/NAS/$( basename "$dir" )"
 		done
-		echo -n "\
-$list
-/srv/http/data $options" >> /etc/exports
-		chmod 777 /srv/http/data
+		list+="$dirdata $options"
+		echo "$list" | column -t > /etc/exports
+		echo $ip > $dirdata/iplist
+		chmod 777 $dirdata
 		systemctl enable --now nfs-server
 	else
 		systemctl disable --now nfs-server
-		chmod 755 /srv/http/data
-		rm /srv/http/data/iplist
+		chmod 755 $dirdata
+		rm $dirdata/iplist
 		> /etc/exports
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 	fi
