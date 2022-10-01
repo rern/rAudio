@@ -102,11 +102,13 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var list = G.list[ i ];
 	$this.addClass( 'active' );
 	$( '#menu a' ).addClass( 'hide' );
+	if ( list.icon === 'microsd' ) return
+	
 	var mounted = list.mounted;
-	$( '#menu .forget' ).toggleClass( 'hide', mounted );
+	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+	$( '#menu .forget' ).removeClass( 'hide' );
 	$( '#menu .remount' ).toggleClass( 'hide', mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
-	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
