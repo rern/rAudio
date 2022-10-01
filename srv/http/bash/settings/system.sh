@@ -761,10 +761,10 @@ shareddataconnect )
 		mountpoints+=( "$mountpoint" )
 	done
 	echo "$list" | column -t > /etc/fstab
+	systemctl daemon-reload
 	for mountpoint in "${mountpoints[@]}"; do
 		mount "$mountpoint"
 	done
-	systemctl daemon-reload
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		ln -s /mnt/MPD/NAS/data/$dir $dirdata
