@@ -346,7 +346,7 @@ HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
 	- Server:&ensp;<i class="fa fa-features"></i>Features > NFS Share <i class="fa fa-networks"></i>- Enable
-	- Clients: Enable Shared Data - Auto connect and setup
+	- Clients: Enable Shared Data > Connect rAudio server with IP address
  • <wh>Other servers:</wh> 
 	- Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
