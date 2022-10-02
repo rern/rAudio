@@ -844,7 +844,7 @@ sharelist )
 	ip=${args[1]}
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
 	
-	paths=$( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
+	paths=$( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
 	if [[ $paths ]]; then
 		echo "\
 Shares @<wh>$ip</wh>:

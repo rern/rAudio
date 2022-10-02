@@ -11,6 +11,7 @@ $body = [
 		, 'id'       => 'shairport-sync'
 		, 'sublabel' => 'shairport-sync'
 		, 'icon'     => 'airplay'
+		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
 		, 'disabled' => 'AirPlay is currently active.'
 		, 'help'     => <<< HTML
@@ -23,6 +24,7 @@ HTML
 		, 'id'       => 'dabradio'
 		, 'sublabel' => 'rtsp-server'
 		, 'icon'     => 'dabradio'
+		, 'setting'  => false
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => <<< HTML
@@ -36,7 +38,6 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'setting'  => true
 		, 'disabled' => 'SnapClient is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
@@ -52,7 +53,6 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'setting'  => true
 		, 'disabled' => 'Spotify is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
@@ -78,7 +78,6 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'setting'  => true
 		, 'disabled' => 'UPnP is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
@@ -96,6 +95,7 @@ $body = [
 	, 'id'       => 'streaming'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
+	, 'setting'  => false
 	, 'help'     => <<< HTML
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
 HTML
@@ -105,6 +105,7 @@ HTML
 		, 'id'       => 'snapserver'
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
+		, 'setting'  => false
 		, 'status'   => 'snapserver'
 		, 'disabled' => 'SnapClient is currently connected.'
 		, 'help'     => <<< HTML
@@ -129,7 +130,6 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
-		, 'setting'  => true
 		, 'disabled' =>  ( exec( 'systemctl -q is-active bluetooth && echo true' ) ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
@@ -142,6 +142,7 @@ HTML
 		, 'sublabel' => 'alsaequal'
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
+		, 'setting'  => false
 		, 'disabled' => 'DSP is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
@@ -165,7 +166,6 @@ $body = [
 		, 'sublabel' => 'hostapd'
 		, 'icon'     => 'accesspoint'
 		, 'status'   => 'hostapd'
-		, 'setting'  => true
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
@@ -177,7 +177,6 @@ HTML
 		  'label'   => 'AutoPlay'
 		, 'id'      => 'autoplay'
 		, 'icon'    => 'play'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Start playing automatically on:
  • Bluetooth connected
@@ -191,7 +190,6 @@ HTML
 		, 'sublabel' => 'chromium'
 		, 'icon'     => 'chromium'
 		, 'status'   => 'localbrowser'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
@@ -206,7 +204,6 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'setting'  => true
 		, 'disabled' => 'NFS Server is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
@@ -220,6 +217,7 @@ HTML
 		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'
+		, 'setting'  => false
 		, 'help'  => <<< HTML
  • Get embedded lyrics from local files.
  • Search online if not available.
@@ -231,7 +229,6 @@ HTML
 		  'label'   => 'Multiple rAudios'
 		, 'id'      => 'multiraudio'
 		, 'icon'    => 'raudiobox'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
 Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="fa fa-raudiobox wh"></i>
@@ -243,6 +240,7 @@ HTML
 		, 'id'       => 'nfsserver'
 		, 'sublabel' => 'nfs-server'
 		, 'icon'     => 'networks'
+		, 'setting'  => 'self'
 		, 'status'   => 'nfs-server'
 		, 'disabled' => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
@@ -268,7 +266,6 @@ HTML
 		, 'id'       => 'scrobble'
 		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
  • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • Require Last.fm account.
@@ -282,7 +279,6 @@ HTML
 		  'label'    => 'Stop Timer'
 		, 'id'       => 'stoptimer'
 		, 'icon'     => 'stopwatch'
-		, 'setting'  => true
 		, 'disabled' => 'Player is not playing.'
 		, 'help'     => <<< HTML
 Stop timer:

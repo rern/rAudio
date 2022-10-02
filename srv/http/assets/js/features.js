@@ -333,6 +333,25 @@ $( '#setting-multiraudio' ).click( function() {
 		}
 	} );
 } );
+$( '#nfsserver' ).click( function() {
+	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'NFS Server'
+			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
+							 +'<pre><wh>'+ list +'</wh></pre><br>'
+							 + ( G.nfsserver ? 'Disable all shares?' : 'Share all directories?' )
+			, cancel  : function() {
+				$( '#nfsserver' ).prop( 'checked', G.nfsserver );
+			}
+			, okcolor : G.nfsserver ? orange : ''
+			, ok      : function() {
+				bash( [ 'nfsserver', !G.nfsserver ] );
+				notify( 'NFS Server', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+			}
+		} );
+	} );
+} );
 $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();

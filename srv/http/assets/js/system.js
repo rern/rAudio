@@ -804,6 +804,8 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
 	if ( G.shareddata ) {
 		info( {
 			  icon    : 'networks'
@@ -1079,9 +1081,7 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#shareddata' )
-		.toggleClass( 'disabled', G.nfsserver )
-		.prop( 'checked', G.shareddata );
+	$( '#shareddata' ).toggleClass( 'disabled', G.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
 }

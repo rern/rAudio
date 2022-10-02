@@ -303,6 +303,16 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
+nfssharelist )
+	if systemctl -q is-active nfs-server; then
+		timeout 3 showmount --no-headers -e localhost 2> /dev/null | awk 'NF{NF-=1};1' | sort
+	else
+		echo "\
+/mnt/MPD/SD
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+/srv/http/data"
+	fi
+	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi

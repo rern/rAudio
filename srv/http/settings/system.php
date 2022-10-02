@@ -109,7 +109,6 @@ htmlSetting( [
 	  'label'    => 'HDD Sleep'
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
-	, 'setting'  => true
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => <<< HTML
 Sleep timer for hard drives.
@@ -120,6 +119,7 @@ htmlSetting( [
 	, 'id'       => 'usbautoupdate'
 	, 'sublabel' => 'USB Drives'
 	, 'icon'     => 'refresh-library'
+	, 'setting'  => false
 	, 'help'     => <<< HTML
 Auto update Library database on insert/remove USB drives.
 HTML
@@ -138,7 +138,6 @@ $body = [
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetooth'
-		, 'setting'  => true
 		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
@@ -150,7 +149,6 @@ HTML
 		, 'sublabel' => 'iw'
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
-		, 'setting'  => true
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i> Settings
@@ -192,7 +190,6 @@ HTML
 		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
@@ -204,7 +201,6 @@ HTML
 		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  • On - Fixed to pin 5
@@ -218,7 +214,6 @@ HTML
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: &ensp;<i class="fa fa-plus-r"></i>System <gr>|</gr>&ensp;<i class="fa fa-relays wh"></i>
@@ -230,7 +225,6 @@ HTML
 		  'label'    => 'Rotary Encoder'
 		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  • Turn volume up/down
@@ -241,7 +235,6 @@ HTML
 		  'label'    => 'Spectrum OLED'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 HTML
@@ -250,7 +243,6 @@ HTML
 		  'label'    => 'TFT 3.5" LCD'
 		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 HTML
@@ -260,7 +252,6 @@ HTML
 		  'label'   => 'VU LED'
 		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  • <bl id="ledcalc">LED resister calculator</bl>
@@ -271,11 +262,12 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'label' => 'Host Name'
-		, 'id'    => 'hostname'
-		, 'icon'  => 'plus-r'
-		, 'input' => '<input type="text" id="hostname" readonly>'
-		, 'help'  => <<< HTML
+		  'label'   => 'Host Name'
+		, 'id'      => 'hostname'
+		, 'icon'    => 'plus-r'
+		, 'input'   => '<input type="text" id="hostname" readonly>'
+		, 'setting' => false
+		, 'help'    => <<< HTML
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  • Web Interface URL: <code id="avahiurl"></code>
@@ -302,7 +294,6 @@ HTML
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
 		, 'status'   => 'soundprofile'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 Tweak kernel parameters for sound profiles.
 HTML
@@ -315,7 +306,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'setting' => 'none'
+		, 'setting' => false
 		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
@@ -330,7 +321,7 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'none'
+		, 'setting' => 'self'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML
@@ -340,8 +331,8 @@ HTML
 		, 'id'       => 'shareddata'
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
-		, 'setting'  => 'self'
-		, 'disabled' => 'This rAudio is NFS Server'
+		, 'setting'  => false
+		, 'disabled' => 'This rAudio is NFS Server.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>

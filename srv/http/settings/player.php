@@ -44,10 +44,11 @@ $body = [
 HTML
 	]
 	, [
-		  'label' => 'Device'
-		, 'id'    => 'audiooutput'
-		, 'input' => '<select id="audiooutput"></select>'
-		, 'help'  => <<< HTML
+		  'label'   => 'Device'
+		, 'id'      => 'audiooutput'
+		, 'input'   => '<select id="audiooutput"></select>'
+		, 'setting' => false
+		, 'help'    => <<< HTML
 HDMI device available only when connected before boot.
 HTML
 	]
@@ -63,10 +64,11 @@ Available hardware mixers of current device.
 HTML
 	]
 	, [
-		  'label' => 'Volume Control'
-		, 'id'    => 'mixertype'
-		, 'input' => '<select id="mixertype"></select>'
-		, 'help'  => <<< HTML
+		  'label'   => 'Volume Control'
+		, 'id'      => 'mixertype'
+		, 'input'   => '<select id="mixertype"></select>'
+		, 'setting' => false
+		, 'help'    => <<< HTML
 Volume control for each device.
  • <code>None / 0dB</code> Best sound quality. (Use amplifier volume)
  • <code>Mixer device</code> Good and convenient. (Device hardware volume)
@@ -78,9 +80,10 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'label' => 'No Volume'
-		, 'id'    => 'novolume'
-		, 'help'  => <<< HTML
+		  'label'   => 'No Volume'
+		, 'id'      => 'novolume'
+		, 'setting' => 'self'
+		, 'help'    => <<< HTML
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
@@ -90,9 +93,10 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
 HTML
 	]
 	, [
-		  'label' => 'DSD over PCM'
-		, 'id'    => 'dop'
-		, 'help'  => <<< HTML
+		  'label'   => 'DSD over PCM'
+		, 'id'      => 'dop'
+		, 'setting' => false
+		, 'help'    => <<< HTML
 For DSD-capable devices without drivers dedicated for native DSD.
  • Enable if there's static/no sound from the DAC which means not support as native DSD.
  • DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
@@ -106,7 +110,6 @@ $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
 	[	  'label'   => 'Crossfade'
 		, 'id'      => 'crossfade'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <code>mpc crossfade N</code>
 Fade-out to fade-in between songs.
@@ -115,6 +118,7 @@ HTML
 	, [
 		  'label'   => 'Normalization'
 		, 'id'      => 'normalization'
+		, 'setting' => false
 		, 'help'    => <<< HTML
 <code>volume_normalization "yes"</code>
 Normalize the volume level of songs as they play.
@@ -123,7 +127,6 @@ HTML
 	, [
 		  'label'   => 'Replay Gain'
 		, 'id'      => 'replaygain'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <code>replaygain "N"</code>
 Set gain control to setting in replaygain tag.
@@ -140,7 +143,6 @@ $body = [
 		  'label'    => 'Buffer - Audio'
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <code>audio_buffer_size "kB"</code>
 Default buffer size: 4096 kB (24 seconds of CD-quality audio)
@@ -151,7 +153,6 @@ HTML
 		  'label'    => 'Buffer - Output'
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <code>max_output_buffer_size "kB"</code>
 Default buffer size: 8192 kB
@@ -162,6 +163,7 @@ HTML
 		  'label'    => 'FFmpeg'
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
+		, 'setting'  => false
 		, 'disabled' => 'DAB Radio is currently enabled.'
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
@@ -173,6 +175,7 @@ HTML
 	, [
 		  'label'   => 'Library Auto Update'
 		, 'id'      => 'autoupdate'
+		, 'setting' => false
 		, 'help'    => <<< HTML
 <code>auto_update "yes"</code>
 Automatic update MPD database when files changed.
@@ -182,7 +185,6 @@ HTML
 		  'label'    => 'SoXR Resampler'
 		, 'id'       => 'soxr'
 		, 'sublabel' => 'custom settings'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <code>quality "custom"</code>
 Default quality: very high
@@ -204,7 +206,6 @@ HTML
 	, [
 		  'label'   => "User's Configurations"
 		, 'id'      => 'custom'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Insert custom configurations into <code>/etc/mpd.conf</code>.
 HTML

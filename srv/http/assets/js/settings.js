@@ -487,10 +487,8 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-$( '.switch' ).click( function() {
+$( '.switch:not( .self )' ).click( function() {
 	var id = this.id;
-	if ( id === 'novolume' ) return
-	
 	var $this = $( this );
 	var checked = $this.prop( 'checked' );
 	var label = $this.data( 'label' );

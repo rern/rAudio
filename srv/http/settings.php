@@ -52,9 +52,9 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => true         // true = common - setting before enable
-		                                // 'self' = self trigger setting - must toggle check manually
-		                                // 'none' = no setting - self trigger script
+		, 'setting'     => (none)       // default = '.common' - setup before enable > $( '.switch' ).click( ... [id/iddisable] (like click setting)
+		                                // false   = no icon, no setting             > $( '.switch' ).click( ... [id, true/false]
+		                                // 'self'  = custom event script             > $( '#id' ).click( ...
 		, 'settingicon' => 'ICON'
 		, 'disable'     => 'MESSAGE'    // set data-diabled
 		, 'help'        => <<<html
@@ -100,7 +100,7 @@ function htmlSetting( $data ) {
 	$status = $data[ 'status' ] ?? '';
 	$id = $data[ 'id' ] ?? '';
 	$input = $data[ 'input' ] ?? '';
-	$setting = $data[ 'setting' ] ?? '';
+	$setting = $data[ 'setting' ] ?? 'common';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
 	$disabled = $data[ 'disabled' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
@@ -122,14 +122,13 @@ function htmlSetting( $data ) {
 	}
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
-		$html.= '<input type="checkbox" id="'.$id.'"';
-		$html.= $setting === 'self' || $setting === 'none' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
+		$html.= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"';
 		$html.= $disabled ? ' data-disabled="'.$disabled.'"' : '';
 		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html.= $input;
 	}
-	$html.= $setting && $setting !== 'none' ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
+	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>
 			 <div style="clear:both"></div>

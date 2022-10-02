@@ -1018,7 +1018,7 @@ $( cat /etc/hostapd/hostapd.conf )
 			pkg=nfs-utils
 			systemctl -q is-active nfs-server && conf="\
 <bll># showmount -e localhost</bll>
-$( timeout 3 showmount -e localhost 2> /dev/null )"
+$( timeout 3 showmount --no-headers -e localhost 2> /dev/null | sort )"
 			;;
 		rtsp-simple-server )
 			conf="\
