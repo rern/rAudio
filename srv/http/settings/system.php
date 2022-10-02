@@ -331,7 +331,7 @@ HTML
 		, 'id'       => 'shareddata'
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
-		, 'setting'  => false
+		, 'setting'  => 'custom'
 		, 'disabled' => 'This rAudio is NFS Server.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
