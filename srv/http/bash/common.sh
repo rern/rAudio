@@ -2,7 +2,7 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
-dirs=$( ls $dirdata )
+dirs=$( ls $dirdata | grep -v '\..*$' )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
