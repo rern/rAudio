@@ -49,11 +49,11 @@ $( '#pwd' ).keypress( function( e ) {
 $color = file_exists( '/srv/http/data/system/color' );
 // library home blocks
 $modes = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest', 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
-$modehtml = '';
+$htmlmode = '';
 foreach( $modes as $mode ) {
 	$lipath = str_replace( ' ', '', $mode );
     $modeLC = strtolower( $lipath );
-	$modehtml.= '
+	$htmlmode.= '
 		<div class="lib-mode">
 			<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 				<a class="lipath">'.$modeLC.'</a>
@@ -78,7 +78,7 @@ if ( count( $files ) ) {
 		} else {
 			$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
 		}
-		$modehtml.= '
+		$htmlmode.= '
 			<div class="lib-mode bookmark">
 				<div class="mode mode-bookmark" data-mode="bookmark">
 					<a class="lipath">'.$bkpath.'</a>'
@@ -361,7 +361,7 @@ foreach( $settinglist as $l ) {
 			<span class="lipath"></span>
 		</div>
 	</div>
-	<div id="lib-mode-list"><?=$modehtml?></div>
+	<div id="lib-mode-list"><?=$htmlmode?></div>
 </div>
 
 <div id="page-playlist" class="page hide">
