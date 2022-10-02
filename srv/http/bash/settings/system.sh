@@ -48,14 +48,15 @@ I2Cset() {
 sharedDataIPlist() {
 	reload=$1
 	list=$( ipGet )
-	iplist=$( grep -v $list /srv/http/shareddata/iplist )
+	[[ -e /mnt/MPD/NAS/data ]] && fileiplist=/mnt/MPD/NAS/data/iplist || fileiplist=/srv/http/shareddata/iplist
+	iplist=$( grep -v $list $fileiplist )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 			[[ $reload ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
 			list+=$'\n'$ip
 		fi
 	done
-	echo "$list" | sort -u > /srv/http/shareddata/iplist
+	echo "$list" | sort -u > $fileiplist
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
