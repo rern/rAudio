@@ -32,7 +32,7 @@ I2Cset() {
 	# reset
 	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
 	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
-	[[ -s $filemodule ]] || rm -f $filemodule
+	rmBlankFile $filemodule
 
 	# dtparam=i2c_arm=on
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> $fileconfig
@@ -812,7 +812,7 @@ shareddatadisconnect )
 	rm -f $dirshared /mnt/MPD/NAS/.mpdignore
 	ip=$( ipGet )
 	sed -i "/$ip/ d" $dirshared/iplist
-	[[ ! -s $dirshared/iplist ]] && rm $dirshared/iplist
+	rmBlankFile $dirshared/iplist
 	mpc -q clear
 	ipserver=$( grep $dirshared /etc/fstab | cut -d: -f1 )
 	readarray -t mountpoints <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )

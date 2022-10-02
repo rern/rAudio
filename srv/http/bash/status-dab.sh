@@ -13,7 +13,7 @@ filetitle=$dirshm/webradio/DABtitle
 
 while true; do
 	# title
-	[[ ! -s $filelabel ]] && sleep 10 && continue
+	[[ ! $( awk NF $filelabel ) ]] && sleep 10 && continue
 	
 	if ! cmp -s $filelabel $filetitle; then
 		cp -f $filelabel $filetitle
@@ -38,7 +38,7 @@ while true; do
 		$dirbash/status-push.sh statusradio "$data" &
 	fi
 	# coverart
-	[[ ! -s $filecover ]] && sleep 10 && continue
+	[[ ! $( awk NF $filecover ) ]] && sleep 10 && continue
 	
 	name=$( cat $filetitle | tr -d ' \"`?/#&'"'" )
 	coverfile=/srv/http/data/shm/webradio/$name.jpg

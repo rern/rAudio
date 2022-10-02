@@ -337,7 +337,7 @@ webRadioSampling() {
 	url=$1
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
-	if [[ ! -s /tmp/webradio ]]; then
+	if [[ ! $( awk NF /tmp/webradio ) ]]; then
 		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
 		exit
 	fi

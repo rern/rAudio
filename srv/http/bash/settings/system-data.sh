@@ -238,7 +238,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetooth"        : '$bluetooth'
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
+, "btconnected"      : '$( [[ $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
 
 data2json "$data" $1

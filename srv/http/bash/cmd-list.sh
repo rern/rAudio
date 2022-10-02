@@ -73,7 +73,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-if [[ -s $dirmpd/album && $( cat $dirmpd/updating ) != rescan ]]; then
+if [[ $( awk NF $dirmpd/album ) && $( cat $dirmpd/updating ) != rescan ]]; then
 	cp -f $filealbum{,prev}
 else
 	> $dirmpd/latest

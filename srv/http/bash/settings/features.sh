@@ -276,7 +276,10 @@ EOF
 	;;
 nfsserver )
 	active=${args[1]}
+	fileignore=/mnt/MPD/USB/.mpdignore
 	if [[ $active == true ]]; then
+		mv $dirmpd{,.backup}
+		mv $fileignore{,.backup} &> /dev/null
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		dirs="\
@@ -285,7 +288,9 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			list+="${dir// /\\040} $options"$'\n'
-			ln -s "$dir" "/mnt/MPD/NAS/$( basename "$dir" )"
+			dirname=$( basename "$dir" )
+			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
+			echo "$dirname" >> $fileignore
 		done
 		list+="$dirdata $options"
 		echo "$list" | column -t > /etc/exports
@@ -296,9 +301,11 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 	else
 		systemctl disable --now nfs-server
 		chmod 755 $dirdata
-		rm $dirdata/iplist
+		rm $dirdata/iplist $fileignore
 		> /etc/exports
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
+		mv $fileignore{.backup,} &> /dev/null
+		mv $dirmpd{.backup,}
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
