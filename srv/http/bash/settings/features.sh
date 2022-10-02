@@ -294,8 +294,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		list+="$dirdata $options"
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $dirdata/iplist
-		echo 
-		chmod 777 $dirdata
+		chmod 777 $dirdata $dirdata/iplist
 		systemctl enable --now nfs-server
 		rm -f $dirmpd/{counts,listing,updating}
 		if [[ -e $dirmpd.nfs ]]; then
