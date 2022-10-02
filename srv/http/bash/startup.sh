@@ -25,7 +25,7 @@ if [[ -e /boot/backup.gz ]]; then
 		mv /boot/backup.gz $dirdata/tmp
 		$dirbash/settings/system.sh datarestore
 	else
-		restorefailed=1
+		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
 	fi
 fi
 
@@ -84,19 +84,10 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	if grep -q /srv/http/shareddata /etc/fstab; then
-		mount /srv/http/shareddata
-		for i in {1..5}; do
-			sleep 1
-			[[ -d $dirmpd ]] && break
-		done
-		$dirbash/settings/system.sh shareddataiplist
-	fi
+	[[ -e $dirmpd/shareddataip ]] && $dirbash/settings/system.sh shareddataiplist &> /dev/null &
 fi
 
-if [[ -e /boot/startup.sh ]]; then
-	/boot/startup.sh
-fi
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
 
@@ -125,9 +116,7 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-if [[ -e $dirsystem/hddsleep ]]; then
-	$dirbash/settings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
-fi
+[[ -e $dirsystem/hddsleep ]] && $dirbash/settings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	$dirbash/cmd.sh mpcupdate$'\n'rescan
@@ -143,6 +132,6 @@ if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active ho
 fi
 lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
 
-if [[ $restorefailed ]]; then
-	pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000
+if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
+	pushstreamNotify "$restorefailed" restore 10000
 fi

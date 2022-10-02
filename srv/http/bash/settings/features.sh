@@ -293,8 +293,8 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		done
 		list+="$dirdata $options"
 		echo "$list" | column -t > /etc/exports
-		echo $ip > $dirdata/iplist
-		chmod 777 $dirdata $dirdata/iplist
+		echo $ip > $dirmpd/shareddataip
+#		chmod 777 $dirdata $dirmpd/shareddataip
 		chmod -R 777 $dirmpd
 		systemctl enable --now nfs-server
 		rm -f $dirmpd/{counts,listing,updating}
@@ -311,7 +311,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 	else
 		systemctl disable --now nfs-server
 		chmod 755 $dirdata
-		rm $dirdata/iplist
+		rm $dirmpd/shareddataip
 		> /etc/exports
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 		rm -f /mnt/MPD/.mpdignore $dirmpd/{counts,listing,updating}

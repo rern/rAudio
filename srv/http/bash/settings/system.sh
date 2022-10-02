@@ -46,17 +46,28 @@ I2Cset() {
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
 sharedDataIPlist() {
-	reload=$1
 	list=$( ipGet )
-	[[ -e /mnt/MPD/NAS/data ]] && fileiplist=/mnt/MPD/NAS/data/iplist || fileiplist=/srv/http/shareddata/iplist
-	iplist=$( grep -v $list $fileiplist )
+	iplist=$( grep -v $list $dirmpd/shareddataip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-			[[ $reload ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			[[ $1 ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
 			list+=$'\n'$ip
 		fi
 	done
-	echo "$list" | sort -u > $fileiplist
+	echo "$list" | sort -u > $dirmpd/shareddataip
+}
+sharedDataSet() {
+	rm -f $dirmpd/{counts,listing,updating}
+	mv $dirmpd{,.backup}
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		rm -rf $dirdata/$dir
+		ln -s $dirshareddata/$dir $dirdata
+	done
+	echo data > /mnt/MPD/NAS/.mpdignore
+	mpc -q clear
+	sharedDataIPlist
+	pushRefresh
+	pusrstream refresh '{"page":"features","shareddata":true}'
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
@@ -242,17 +253,14 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	mountpoint=/srv/http/shareddata
-	if grep -q $mountpoint /etc/fstab; then
-		mkdir -p $mountpoint
-		chown http:http $mountpoint
-		chmod 777 $mountpoint
-		std=$( mount $mountpoint )
+	if grep -q $dirshareddata /etc/fstab; then
+		mkdir -p $dirshareddata
+		std=$( mount $dirshareddata )
 		if [[ $? == 0 ]]; then
 			systemctl daemon-reload
 			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 				rm -rf $dirdata/$dir
-				ln -s $mountpoint/$dir $dirdata
+				ln -s $dirshareddata/$dir $dirdata
 			done
 		fi
 	fi
@@ -485,6 +493,7 @@ mount )
 	password=${args[6]}
 	extraoptions=${args[7]}
 	update=${args[8]}
+	shareddata=${args[9]}
 
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 
@@ -513,21 +522,23 @@ mount )
 $( cat /etc/fstab )
 ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
 	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
 	std=$( mount "$mountpoint" 2>&1 )
-	if [[ $? == 0 ]]; then
-		systemctl daemon-reload
-		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
-		for i in {1..5}; do
-			sleep 1
-			mount | grep -q "$mountpoint" && break
-		done
-		pushRefresh
-	else
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+	if [[ $? != 0 ]]; then
 		fstab=$( grep -v "${mountpoint// /\\040}" /etc/fstab )
 		echo "$fstab" | column -t > /etc/fstab
 		rmdir "$mountpoint"
+		systemctl daemon-reload
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		exit
 	fi
+	
+	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	for i in {1..5}; do
+		sleep 1
+		mount | grep -q "$mountpoint" && break
+	done
+	[[ $shareddata ]] && sharedDataSet || pushRefresh
 	;;
 mpdoleddisable )
 	rm $dirsystem/mpdoled
@@ -694,67 +705,6 @@ servers )
 	fi
 	pushRefresh
 	;;
-shareddata )
-	protocol=${args[1]}
-	ip=${args[2]}
-	directory=${args[3]}
-	user=${args[4]}
-	password=${args[5]}
-	extraoptions=${args[6]}
-	copydata=${args[7]}
-	
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
-	
-	if [[ $protocol == cifs ]]; then
-		source="//$ip/$directory"
-		options=noauto
-		if [[ ! $user ]]; then
-			options+=,username=guest
-		else
-			options+=",username=$user,password=$password"
-		fi
-		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8,file_mode=0777,dir_mode=0777
-	else
-		source="$ip:$directory"
-		options=defaults,noauto,bg,soft,timeo=5
-	fi
-	[[ $extraoptions ]] && options+=,$extraoptions
-	dirshared=/srv/http/shareddata
-	mkdir -p $dirshared
-	echo "${source// /\\040}  $dirshared  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	std=$( mount $dirshared )
-	if [[ $? == 0 ]]; then
-		systemctl daemon-reload
-		for i in {1..5}; do
-			sleep 1
-			mount | grep -q "$dirshared" && break
-		done
-		rm -f $dirmpd/{counts,listing,updating}
-		mv $dirmpd{,.backup}
-		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-			if [[ $copydata == true ]]; then
-				rm -rf $dirshared/$dir
-				cp -rf $dirdata/$dir $dirshared
-			else
-				mkdir -p $dirshared/$dir
-			fi
-			rm -rf $dirdata/$dir
-			ln -s $dirshared/$dir $dirdata
-		done
-		ipGet >> $dirshared/iplist
-		chown -h http:http $dirshared/*/
-		chown -h mpd:audio $dirshared $dirshared/{mpd,playlist}
-		pushRefresh
-		pusrstream refresh '{"page":"features","shareddata":true}'
-		mpc -q clear
-		[[ $copydata == false ]] && systemctl restart mpd
-	else
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "\|$dirshared| d" /etc/fstab
-		rm -rf $dirshared
-		exit
-	fi
-	;;
 shareddataconnect )
 	ip=${args[1]}
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
@@ -766,22 +716,22 @@ shareddataconnect )
 	done
 	
 	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
-	list=$( cat /etc/fstab )
+	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
 		mkdir "$dir"
 		mountpoints+=( "$dir" )
 		source=${path// /\\040}
 		mountpoint=/mnt/MPD/NAS/$( basename $source )
-		list+=$'\n'"$ip:$source  $mountpoint  $options"
+		fstab+=$'\n'"$ip:$source  $mountpoint  $options"
 	done
-	echo "$list" | column -t > /etc/fstab
+	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	for dir in "${mountpoints[@]}"; do
 		std=$( mount "$dir" 2>&1 )
-		[[ $? != 0 ]] && failed=$std && break
+		[[ $? != 0 ]] && dirfailed=$dir && break
 	done
-	if [[ $failed ]]; then
+	if [[ $dirfailed ]]; then
 		for dir in "${mountpoints[@]}"; do
 			umount -l "$dir" &> /dev/null
 			rm -rf "$dir"
@@ -789,39 +739,27 @@ shareddataconnect )
 		fstab=$( grep ^PART /etc/fstab )
 		echo "$fstab" | column -t > /etc/fstab
 		systemctl daemon-reload
-		echo "Mount <code>$failed</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		echo "Mount <code>$dirfailed</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
 		exit
 	fi
 	
-	rm -f $dirmpd/{counts,listing,updating}
-	mv $dirmpd{,.backup}
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirdata/$dir
-		ln -s /mnt/MPD/NAS/data/$dir $dirdata
-	done
-	echo data > /mnt/MPD/NAS/.mpdignore
-	mpc -q clear
-	sharedDataIPlist
-	pushRefresh
-	pusrstream refresh '{"page":"features","shareddata":true}'
+	sharedDataSet
 	;;
 shareddatadisconnect )
-	[[ -e /mnt/MPD/NAS/data ]] && dirshared=/mnt/MPD/NAS/data || dirshared=/srv/http/shareddata
-	! grep -q $dirshared /etc/fstab && echo -1 && exit
+	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
-	cp -r $dirshared/mpd $dirdata/tmp
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
 			rm $dirdata/$dir
 			mkdir $dirdata/$dir
 		fi
 	done
-	rm -f $dirshared /mnt/MPD/NAS/.mpdignore
+	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	ip=$( ipGet )
-	sed -i "/$ip/ d" $dirshared/iplist
-	rmBlankFile $dirshared/iplist
+	sed -i "/$ip/ d" $dirmpd/shareddataip
+	rmBlankFile $dirmpd/shareddataip
 	mpc -q clear
-	ipserver=$( grep $dirshared /etc/fstab | cut -d: -f1 )
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 	readarray -t mountpoints <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	for dir in "${mountpoints[@]}"; do
 		umount -l "$dir"

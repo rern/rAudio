@@ -1127,10 +1127,7 @@ power )
 			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
-	if [[ -e /srv/http/shareddata/iplist ]]; then
-		ip=$( ipGet )
-		sed -i "/$ip/ d" /srv/http/shareddata/iplist
-	fi
+	[[ -e $dirmpd/shareddataip ]] && sed -i "/$( ipGet )/ d" $dirmpd/shareddataip
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
