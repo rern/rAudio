@@ -485,7 +485,7 @@ mount )
 	extraoptions=${args[7]}
 	update=${args[8]}
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 
 	if [[ -e $mountpoint ]]; then
 		[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
@@ -842,7 +842,7 @@ shareddatarestart )
 	;;
 sharelist )
 	ip=${args[1]}
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP not found: <code>$ip</code>" && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 	
 	paths=$( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
 	if [[ $paths ]]; then
@@ -852,7 +852,7 @@ Shares @<wh>$ip</wh>:
 <pre><wh>$paths</wh></pre>
 Connect all shares?"
 	else
-		echo "No NFS shares found @$ip"
+		echo "No NFS shares found @<wh>$ip</wh>"
 	fi
 	;;
 soundprofile )
