@@ -391,6 +391,10 @@ hr {
 	color: var( --cg60 );
 	background: none;
 }
+.infomessage {
+	user-select: text;
+	-webkit-user-select: text;
+}
 .infomessage pre {
 	font-size: 16px;
 }
