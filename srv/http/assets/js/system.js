@@ -105,8 +105,9 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	if ( list.icon === 'microsd' ) return
 	
 	var mounted = list.mounted;
-	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
-	$( '#menu .forget' ).removeClass( 'hide' );
+	var usb = list.icon === 'usbdrive';
+	$( '#menu .info' ).toggleClass( 'hide', !usb );
+	$( '#menu .forget' ).removeClass( 'hide', usb );
 	$( '#menu .remount' ).toggleClass( 'hide', mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
 	var menuH = $( '#menu' ).height();
@@ -863,14 +864,9 @@ function infoMount( values ) {
 	if ( values === 'shareddata' ) {
 		var shareddata = true;
 		values = [ 'cifs', ipsub, '', '', '', '', false ];
-		var htmlname = '';
 		var chktext = 'Use data from this rAudio'
 	} else {
 		var shareddata = false;
-		var htmlname = `\
-<tr><td>Name</td>
-<td><input id="mountpoint" type="text"></td>
-</tr>`;
 		var chktext = 'Update Library on mount'
 	}
 	var htmlmount = `\
@@ -879,7 +875,9 @@ function infoMount( values ) {
 	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
 	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
 </tr>
-${ htmlname }
+<tr><td>Name</td>
+<td><input id="mountpoint" type="text"></td>
+</tr>
 <tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
@@ -914,6 +912,9 @@ ${ htmlname }
 			if ( !shareddata ) {
 				$( '#infoContent .nfsconnect' ).remove();
 			} else {
+				$( '$mountpoint' )
+					.val( 'data' )
+					.prop( 'disabled', 1 );
 				$( '#infoContent .nfsconnect' ).click( function() {
 					infoNFSconnect( $( '#list' ).data( 'ip' ) );
 				} );
@@ -956,7 +957,7 @@ ${ htmlname }
 		}
 		, ok         : function() {
 			var values = infoVal();
-			bash( [ shareddata ? 'shareddata' : 'mount', ...values ], function( error ) {
+			bash( [ 'mount', ...values, shareddata ], function( error ) {
 				if ( error ) {
 					info( {
 						  icon    : 'networks'
