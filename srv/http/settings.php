@@ -103,7 +103,7 @@ function htmlSetting( $data ) {
 	$id = $data[ 'id' ] ?? '';
 	$input = $data[ 'input' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
-	$setting = $settingicon === false ? '' : ( $data[ 'setting' ] ?? 'common' );
+	$setting = $data[ 'setting' ] ?? 'common';
 	$disabled = $data[ 'disabled' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$html = '<div id="div'.$id.'"><div class="col-l';
@@ -130,7 +130,7 @@ function htmlSetting( $data ) {
 	} else {
 		$html.= $input;
 	}
-	$html.= $setting ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
+	$html.= $setting && $settingicon ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>
 			 <div style="clear:both"></div>

@@ -236,14 +236,15 @@ Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="f
 HTML
 	]
 	, [
-		  'label'    => 'NFS Server'
-		, 'id'       => 'nfsserver'
-		, 'sublabel' => 'nfs-server'
-		, 'icon'     => 'networks'
-		, 'setting'  => 'custom'
-		, 'status'   => 'nfs-server'
-		, 'disabled' => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
-		, 'help'     => <<< HTML
+		  'label'       => 'NFS Server'
+		, 'id'          => 'nfsserver'
+		, 'sublabel'    => 'nfs-server'
+		, 'icon'        => 'networks'
+		, 'setting'     => 'custom'
+		, 'settingicon' => false
+		, 'status'      => 'nfs-server'
+		, 'disabled'    => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
+		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • rAudio server:
 	- Library - Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished

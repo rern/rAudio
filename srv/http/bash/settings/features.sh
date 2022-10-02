@@ -324,7 +324,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 nfssharelist )
-	if systemctl -q is-active nfs-server; then
+	if [[ ${args[1]} == true ]]; then
 		timeout 3 showmount --no-headers -e localhost 2> /dev/null | awk 'NF{NF-=1};1' | sort
 	else
 		echo "\

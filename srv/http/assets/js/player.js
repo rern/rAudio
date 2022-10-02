@@ -129,6 +129,9 @@ $( '#novolume' ).click( function() {
 			  icon    : 'volume'
 			, title   : 'No Volume'
 			, message : warning
+			, cancel  : function() {
+				$( '#novolume' ).prop( 'checked', G.novolume );
+			}
 			, ok      : function() {
 				notify( 'No Volume', 'Enable ...', 'mpd' );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
@@ -371,6 +374,7 @@ function renderPage() {
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( G.asoundcard != -1 ) {
 		device = G.devices[ G.asoundcard ];
+		G.novolume = device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain;
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
@@ -402,7 +406,7 @@ function renderPage() {
 				.html( htmlmixertype )
 				.val( device.mixertype );
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
+			$( '#novolume' ).prop( 'checked', G.novolume );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
 			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
