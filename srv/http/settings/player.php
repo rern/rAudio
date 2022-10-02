@@ -34,7 +34,7 @@ $body = [
 			, 'id'          => 'btreceiver'
 			, 'status'      => 'bluetooth'
 			, 'input'       => '<select id="btaplayname"></select>'
-			, 'setting'     => 'self'
+			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< HTML
 <i class="fa fa-volume"></i> Volume setting and control:
@@ -56,7 +56,7 @@ HTML
 		  'label'       => 'Mixer Device'
 		, 'id'          => 'hwmixer'
 		, 'input'       => '<select id="hwmixer"></select>'
-		, 'setting'     => 'self'
+		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
 Available hardware mixers of current device.
@@ -80,10 +80,11 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'No Volume'
-		, 'id'      => 'novolume'
-		, 'setting' => 'self'
-		, 'help'    => <<< HTML
+		  'label'       => 'No Volume'
+		, 'id'          => 'novolume'
+		, 'setting'     => 'custom'
+		, 'settingicon' => false
+		, 'help'        => <<< HTML
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)

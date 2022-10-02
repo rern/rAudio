@@ -487,7 +487,7 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
 	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-$( '.switch:not( .self )' ).click( function() {
+$( '.switch:not( .custom )' ).click( function() {
 	var id = this.id;
 	var $this = $( this );
 	var checked = $this.prop( 'checked' );

@@ -240,7 +240,7 @@ HTML
 		, 'id'       => 'nfsserver'
 		, 'sublabel' => 'nfs-server'
 		, 'icon'     => 'networks'
-		, 'setting'  => 'self'
+		, 'setting'  => 'custom'
 		, 'status'   => 'nfs-server'
 		, 'disabled' => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
 		, 'help'     => <<< HTML
@@ -255,7 +255,7 @@ HTML
 		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'
 		, 'icon'     => 'lock'
-		, 'setting'  => 'self'
+		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
 Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>

@@ -52,10 +52,12 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default = '.common' - setup before enable > $( '.switch' ).click( ... [id/iddisable] (like click setting)
-		                                // false   = no icon, no setting             > $( '.switch' ).click( ... [id, true/false]
-		                                // 'self'  = custom event script             > $( '#id' ).click( ...
-		, 'settingicon' => 'ICON'
+		, 'setting'     => (none)       // default  = '.common'           > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable > [ id/iddisable ]
+		                                // false    = no icon, no setting > $( '.switch' ).click( ... > [ id, true/false ]
+		                                // 'custom' = custom script       > $( '#id' ).click( ...     > [ command ]
+		, 'settingicon' => (none)       // default = 'gear' 
+		                                // false   = omit
+										// 'icon'  = 'fa-icon'
 		, 'disable'     => 'MESSAGE'    // set data-diabled
 		, 'help'        => <<<html
 HELP - PHP heredoc
@@ -100,8 +102,8 @@ function htmlSetting( $data ) {
 	$status = $data[ 'status' ] ?? '';
 	$id = $data[ 'id' ] ?? '';
 	$input = $data[ 'input' ] ?? '';
-	$setting = $data[ 'setting' ] ?? 'common';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
+	$setting = $settingicon === false ? '' : ( $data[ 'setting' ] ?? 'common' );
 	$disabled = $data[ 'disabled' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$html = '<div id="div'.$id.'"><div class="col-l';

@@ -281,7 +281,7 @@ HTML
 		, 'icon'     => 'globe'
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
-		, 'setting'  => 'self'
+		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i>Servers:
  • NTP: For time sync
@@ -321,7 +321,7 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'self'
+		, 'setting' => 'custom'
 		, 'help'    => <<< HTML
 Restore all settings and Library database from a backup file. The system will reboot after finished.
 HTML
