@@ -729,6 +729,8 @@ shareddata )
 			sleep 1
 			mount | grep -q "$dirshared" && break
 		done
+		rm -f $dirmpd/{counts,listing,updating}
+		mv $dirmpd{,.backup}
 		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 			if [[ $copydata == true ]]; then
 				rm -rf $dirshared/$dir
@@ -791,6 +793,8 @@ shareddataconnect )
 		exit
 	fi
 	
+	rm -f $dirmpd/{counts,listing,updating}
+	mv $dirmpd{,.backup}
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirdata/$dir
 		ln -s /mnt/MPD/NAS/data/$dir $dirdata
@@ -802,13 +806,15 @@ shareddataconnect )
 	pusrstream refresh '{"page":"features","shareddata":true}'
 	;;
 shareddatadisconnect )
-	copydata=${args[1]}
 	[[ -e /mnt/MPD/NAS/data ]] && dirshared=/mnt/MPD/NAS/data || dirshared=/srv/http/shareddata
 	! grep -q $dirshared /etc/fstab && echo -1 && exit
 	
+	cp -r $dirshared/mpd $dirdata/tmp
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		[[ -L $dirdata/$dir ]] && rm $dirdata/$dir
-		[[ $copydata == true ]] && cp -rf $dirshared/$dir $dirdata || mkdir $dirdata/$dir
+		if [[ -L $dirdata/$dir ]]; then
+			rm $dirdata/$dir
+			mkdir $dirdata/$dir
+		fi
 	done
 	rm -f $dirshared /mnt/MPD/NAS/.mpdignore
 	ip=$( ipGet )
@@ -824,15 +830,11 @@ shareddatadisconnect )
 	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
-	chown -R http:http $dirdata
-	chown -R mpd:audio $dirmpd
+	mv -f $dirmpd{.backup,}
+	systemctl restart mpd
 	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":false}'
-	if [[ $copydata == false ]]; then
-		rm -f $dirmpd/{updating,listing}
-		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate
-	fi
+	$dirbash/cmd.sh mpcupdate$'\n'update
 	;;
 shareddataiplist )
 	sharedDataIPlist ${args[1]}

@@ -810,15 +810,13 @@ $( '#shareddata' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
-			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
-			, values  : [ true ]
+			, message : 'Disable and disconnect all shares?'
 			, cancel  : function() {
 				$( '#shareddata' ).prop( 'checked', true );
 			}
 			, okcolor : orange
-			, oklabel : 'Disable'
 			, ok      : function() {
-				bash( [ 'shareddatadisconnect', infoVal() ] );
+				bash( [ 'shareddatadisconnect' ] );
 				notify( 'Shared Data', 'Disable ...', 'networks' );
 			}
 		} );
@@ -897,7 +895,7 @@ ${ htmlname }
 <tr><td>Options</td>
 	<td><input type="text"></td>
 </tr>
-<tr><td></td>
+<tr class="copydata"><td></td>
 	<td><label><input type="checkbox" checked>${ chktext }</label></td>
 </tr>
 <tr class="nfsconnect"><td></td>
@@ -912,7 +910,7 @@ ${ htmlname }
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
-			var $share = $( '#share' );
+			if ( !$( '#list .fa-networks' ).length ) $( '#infoContent .copydata' ).remove();
 			if ( !shareddata ) {
 				$( '#infoContent .nfsconnect' ).remove();
 			} else {
@@ -920,6 +918,7 @@ ${ htmlname }
 					infoNFSconnect( $( '#list' ).data( 'ip' ) );
 				} );
 			}
+			var $share = $( '#share' );
 			function hideOptions( type ) {
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
