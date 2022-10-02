@@ -391,6 +391,9 @@ hr {
 	color: var( --cg60 );
 	background: none;
 }
+.infomessage pre {
+	font-size: 16px;
+}
 .infomessage,
 .infofooter {
 	width: fit-content;

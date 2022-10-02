@@ -334,7 +334,7 @@ $( '#setting-multiraudio' ).click( function() {
 	} );
 } );
 $( '#nfsserver' ).click( function() {
-	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
+	bash( [ 'nfssharelist' ], function( list ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'NFS Server'
@@ -349,6 +349,16 @@ $( '#nfsserver' ).click( function() {
 				bash( [ 'nfsserver', !G.nfsserver ] );
 				notify( 'NFS Server', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
 			}
+		} );
+	} );
+} );
+$( '#setting-nfsserver' ).click( function() {
+	bash( [ 'nfssharelist' ], function( list ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'NFS Server'
+			, message : '@<wh>'+ G.ip +'</wh>&emsp;Share paths:'
+						+'<br><br><pre><wh>'+ list +'</wh></pre>'
 		} );
 	} );
 } );
