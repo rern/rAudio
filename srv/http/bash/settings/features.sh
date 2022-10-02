@@ -292,6 +292,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		echo $ip > $dirdata/iplist
 		chmod 777 $dirdata
 		systemctl enable --now nfs-server
+		$dirbash/cmd.sh mpcupdate$'\n'rescan
 	else
 		systemctl disable --now nfs-server
 		chmod 755 $dirdata
