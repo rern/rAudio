@@ -306,6 +306,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 		mv $fileignore{.backup,} &> /dev/null
 		mv $dirmpd{.backup,}
+		systemctl restart mpd
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
