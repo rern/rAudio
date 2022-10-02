@@ -441,12 +441,7 @@ $( '#library, #button-library' ).click( function() {
 	$( '#lib-path span' ).removeClass( 'hide' );
 	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 	if ( G.library ) {
-		if ( G.librarylist ) {
-			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-			G.mode = '';
-			G.librarylist = 0;
-			G.query = [];
-		}
+		if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 		renderLibrary();
 	} else {
 		switchPage( 'library' );

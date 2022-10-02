@@ -999,6 +999,8 @@ function playlistRemove( $li ) {
 	}
 }
 function renderLibrary() {
+	G.mode = '';
+	G.librarylist = 0;
 	G.query = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );

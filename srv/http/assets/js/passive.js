@@ -360,7 +360,7 @@ function psMpdUpdate( data ) {
 		setButtonUpdating();
 		banner( 'Library Update', 'Done', 'library' );
 		if ( G.library ) {
-			if ( G.librarylist ) return
+			if ( !G.librarylist ) return
 			
 			if ( G.mode === 'webradio' ) {
 				data.webradio ? $( '#mode-webradio' ).click() : $( '#button-library' ).click();
