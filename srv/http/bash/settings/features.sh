@@ -35,6 +35,12 @@ localbrowserXset() {
 		xset +dpms
 	fi
 }
+nfsShareList() {
+	echo "\
+/mnt/MPD/SD
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+$dirdata"
+}
 spotifyReset() {
 	pushstreamNotifyBlink 'Spotify Client' "$1" spotify
 	rm -f $dirsystem/spotify $dirshm/spotify/*
@@ -280,10 +286,7 @@ nfsserver )
 	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
-		dirs="\
-/mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
-$dirdata"
+		dirs=$( nfsShareList )
 		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			chmod 777 "$dir"
@@ -315,10 +318,14 @@ USB" > /mnt/MPD/.mpdignore
 			/mnt/MPD/NAS/.mpdignore \
 			$filesharedip \
 			$dirmpd/{counts,listing,updating}
+		dirs=$( nfsShareList )
+		readarray -t dirs <<< $( echo "$dirs" )
+		for dir in "${dirs[@]}"; do
+			chmod 755 "$dir"
+			link="/mnt/MPD/NAS/$( basename "$dir" )"
+			[[ -L "$link" ]] && rm "$link"
+		done
 		> /etc/exports
-		chmod 755 /mnt/MPD/SD $dirdata
-		find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type l -exec chmod 755 {} \;
-		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 		mv -f $dirmpd{,.nfs}
 		mv -f $dirmpd{.backup,}
 		systemctl restart mpd
@@ -328,14 +335,7 @@ USB" > /mnt/MPD/.mpdignore
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 nfssharelist )
-	if [[ ${args[1]} == true ]]; then
-		timeout 3 showmount --no-headers -e localhost 2> /dev/null | awk 'NF{NF-=1};1' | sort
-	else
-		echo "\
-/mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
-/srv/http/data"
-	fi
+	[[ ${args[1]} == true ]] && showmount --no-headers -e localhost | awk 'NF{NF-=1};1' | sort || nfsShareList
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

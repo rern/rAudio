@@ -340,7 +340,7 @@ $( '#nfsserver' ).click( function() {
 			, title   : 'NFS Server'
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
-							 + ( G.nfsserver ? 'Disable all shares?' : 'Share all directories?' )
+							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
 			, cancel  : function() {
 				$( '#nfsserver' ).prop( 'checked', G.nfsserver );
 			}
