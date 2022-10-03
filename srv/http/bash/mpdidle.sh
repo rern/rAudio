@@ -23,7 +23,8 @@ mpc idleloop | while read changed; do
 		playlist )
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+					data=$( php /srv/http/mpdplaylist.php current )
+					pushstream playlist "$data"
 				) &> /dev/null &
 			fi
 			;;

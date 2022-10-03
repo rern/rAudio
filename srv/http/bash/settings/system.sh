@@ -763,7 +763,8 @@ shareddataiplist )
 	;;
 shareddatarestart )
 	systemctl restart mpd
-	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	data=$( cat $dirmpd/counts )
+	pushstream mpdupdate "$data"
 	;;
 sharelist )
 	ip=${args[1]}

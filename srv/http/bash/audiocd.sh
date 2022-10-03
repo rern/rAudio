@@ -3,12 +3,8 @@
 . /srv/http/bash/common.sh
 
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
-}
-restartMPD() {
-	systemctl restart mpd
-	data=$( $dirbash/settings/player-data.sh )
-	pushstream refresh "$data"
+	data=$( php /srv/http/mpdplaylist.php current )
+	pushstream playlist "$data"
 }
 
 [[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
@@ -21,8 +17,10 @@ input {\
 	speed          "12"\
 }\
 ' /etc/mpd.conf
-	restartMPD
+	systemctl restart mpd
+	$dirbash/settings/player-data.sh pushrefresh
 	exit
+	
 elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
@@ -39,12 +37,14 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 	if [[ $1 == off ]]; then
 		linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
 		sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
-		restartMPD
+		systemctl restart mpd
+		$dirbash/settings/player-data.sh pushrefresh
 	elif [[ $1 == ejectwithicon ]]; then
 		eject
 	fi
 	( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	exit
+	
 fi
 
 ! : >/dev/tcp/8.8.8.8/53 || [[ $( mpc -f %file% playlist | grep ^cdda: ) ]] && exit
@@ -53,6 +53,7 @@ cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2
 if [[ ! $cddiscid ]]; then
 	pushstreamNotify 'Audio CD' 'ID of CD not found in database.' audiocd
 	exit
+	
 fi
 
 discid=${cddiscid[0]}

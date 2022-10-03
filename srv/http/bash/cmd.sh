@@ -188,7 +188,8 @@ ${target/\/srv\/http}" > "$bkfile"
 	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current $1 )"
+	data=$( php /srv/http/mpdplaylist.php current $1 )
+	pushstream playlist "$data"
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'

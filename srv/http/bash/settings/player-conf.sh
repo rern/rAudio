@@ -170,8 +170,9 @@ fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
 	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
-pushstream mpdplayer "$( $dirbash/status.sh )"
-pushstream refresh "$( $dirbash/settings/player-data.sh )"
+data=$( $dirbash/status.sh )
+pushstream mpdplayer "$data"
+$dirbash/settings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
 [[ ! $Acard && ! $btmixer ]] && exit
