@@ -500,7 +500,7 @@ function renderPage() {
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
-	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata );
+	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
 	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
