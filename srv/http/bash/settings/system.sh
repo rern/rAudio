@@ -157,6 +157,7 @@ databackup )
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
+/etc/exports
 /etc/fstab
 /etc/mpd.conf
 /etc/mpdscribble.conf
@@ -189,7 +190,7 @@ databackup )
 		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 	fi
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
+	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
@@ -226,6 +227,8 @@ datarestore )
 		mv $dirdata/{webradiosimg,webradio/img}
 	fi
 	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	$dirbash/cmd.sh dirpermissions
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
@@ -247,26 +250,23 @@ datarestore )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
-	rmdir /mnt/MPD/NAS/* &> /dev/null
+	readarray -t dirs <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	for dir in "${dirs[@]}"; do
+		umount -l "$dir" &> /dev/null
+		rmdir "$dir" &> /dev/null
+	done
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	if [[ $ipserver ]]; then
+		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
+	fi
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"
 		done
 	fi
-	if grep -q $dirshareddata /etc/fstab; then
-		mkdir -p $dirshareddata
-		std=$( mount $dirshareddata )
-		if [[ $? == 0 ]]; then
-			systemctl daemon-reload
-			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-				rm -rf $dirdata/$dir
-				ln -s $dirshareddata/$dir $dirdata
-			done
-		fi
-	fi
-	$dirbash/cmd.sh dirpermissions
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	grep -q /mnt/MPD/SD /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 hddinfo )
@@ -734,28 +734,23 @@ shareddataconnect )
 shareddatadisconnect )
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
-	mpc -q clear
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
 			rm $dirdata/$dir
 			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
-	if grep -q /mnt/MPD/SD /etc/fstab; then
-		[[ ! $( ls $dirbackup ) ]] && rm -rf $dirbackup
-		rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
-		sed -i "/$( ipGet )/ d" $filesharedip
-		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
-		for dir in "${dirs[@]}"; do
-			umount -l "$dir"
-			rmdir "$dir" &> /dev/null
-		done
-		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
-	else
-		umount -l $dirshareddata
-		fstab=$( sed "\|$dirshareddata| d" /etc/fstab )
-	fi
+	[[ ! $( ls $dirbackup ) ]] && rm -rf $dirbackup
+	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
+	sed -i "/$( ipGet )/ d" $filesharedip
+	mpc -q clear
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	for dir in "${dirs[@]}"; do
+		umount -l "$dir"
+		rmdir "$dir" &> /dev/null
+	done
+	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
