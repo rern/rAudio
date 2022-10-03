@@ -607,7 +607,7 @@ hr {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
 }
-/* iOS only */
+/* ios only */
 @media not all and ( min-resolution:.001dpcm ) {
 	@supports ( -webkit-appearance:none ) and ( stroke-color:transparent ) {
 		#infoOverlay input[type=checkbox]:checked:disabled {
@@ -615,6 +615,9 @@ hr {
 		}
 		.infobtn {
 			line-height: 32px;
+		}
+		::placeholder {
+			color: var( --cg );
 		}
 	}
 }

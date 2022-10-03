@@ -96,9 +96,6 @@ input::-moz-focus-inner {
 .splash svg {
 	animation: none !important;
 }
-::placeholder {
-	color: var( --cg );
-}
 
 .fa {
 	display: inline-block;
