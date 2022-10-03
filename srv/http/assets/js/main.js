@@ -1287,30 +1287,7 @@ $( '#button-lib-back' ).click( function() {
 	} else {
 		G.query.pop();
 		var query = G.query[ G.query.length - 1 ];
-		if ( query === 'album' ) {
-			$( '#mode-album' ).click();
-		} else {
-			G.mode = query.gmode;
-			list( query, function( html ) {
-				if ( html != -1 ) {
-					if ( backmode ) G.mode = G.gmode;
-					if ( G.mode === 'album' ) {
-						var path = 'ALBUM';
-					} else {
-						var path = query.path;
-						G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-					}
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : path
-					}
-					renderLibraryList( data );
-				} else {
-					$( '#button-lib-back' ).click(); 
-				}
-			} );
-		}
+		queryList( query, backmode );
 	}
 } );
 $( '.mode' ).click( function() {

@@ -114,6 +114,14 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
+		if ( G.library ) {
+			if ( [ 'nas', 'sd', 'usb' ].includes( G.mode ) ) {
+				$( '#lib-breadcrumbs .lidir' ).last().click();
+			} else {
+				var query = G.query[ G.query.length - 1 ];
+				queryList( query );
+			}
+		}
 		getPlaybackStatus( 'withdisplay' );
 	} else if ( status === 0 ) {
 		G.disconnected = 1;

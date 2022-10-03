@@ -998,6 +998,33 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
+function queryList( query, backmode ) {
+	var backmode = backmode || false;
+	if ( query === 'album' ) {
+		$( '#mode-album' ).click();
+	} else {
+		if ( 'gmode' in query ) G.mode = query.gmode;
+		list( query, function( html ) {
+			if ( html != -1 ) {
+				if ( backmode ) G.mode = G.gmode;
+				if ( G.mode === 'album' ) {
+					var path = 'ALBUM';
+				} else {
+					var path = query.path;
+					G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+				}
+				var data = {
+					  html      : html
+					, modetitle : query.modetitle
+					, path      : path
+				}
+				renderLibraryList( data );
+			} else {
+				$( '#button-lib-back' ).click(); 
+			}
+		} );
+	}
+}
 function renderLibrary() {
 	G.mode = '';
 	G.librarylist = 0;

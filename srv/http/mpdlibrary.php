@@ -527,7 +527,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$html.= '<li data-mode="'.$gmode.'" class="licover">
 					<a class="lipath">'.$mpdpath.'</a>
 					<div class="licoverimg"><img id="liimg" src="'.$coverart.'"></div>
-					<div class="liinfo '.$mode.'">
+					<div class="liinfo '.$gmode.'">
 					<div class="lialbum'.$hidealbum.'">'.$album.'</div>
 					<div class="liartist'.$hideartist.'"><i class="fa fa-'.$icon.'"></i>'.$artist.'</div>
 					<div class="licomposer'.$hidecomposer.'"><i class="fa fa-composer"></i>'.$each0->composer.'</div>
