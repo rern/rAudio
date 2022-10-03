@@ -740,8 +740,7 @@ shareddatadisconnect )
 		fi
 	done
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
-	ip=$( ipGet )
-	sed -i "/$ip/ d" $filesharedip
+	sed -i "/$( ipGet )/ d" $filesharedip
 	rmBlankFile $filesharedip
 	mpc -q clear
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
