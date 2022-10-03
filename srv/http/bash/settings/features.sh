@@ -296,13 +296,11 @@ nfsserver )
 		done
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $filesharedip
-		echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
+		echo SD$'\n'USB > /mnt/MPD/.mpdignore
 		echo data > /mnt/MPD/NAS/.mpdignore
 		if [[ -e $dirbackup/mpdnfs ]]; then
 			mv -f $dirmpd $dirbackup
-			mv -f $dirbackup/mpdnfs $dirdata
+			mv -f $dirbackup/mpdnfs $dirdata/mpd
 			systemctl restart mpd
 			action=update
 		else

@@ -387,7 +387,7 @@ $( '#nfsserver' ).click( function() {
 	if ( $this.hasClass( 'disabled' ) ) {
 		info( {
 			  icon    : 'networks'
-			, title   : 'rAudio Server'
+			, title   : 'Server rAudio'
 			, message : $this.data( 'disabled' )
 		} );
 		return
@@ -396,7 +396,7 @@ $( '#nfsserver' ).click( function() {
 	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
 		info( {
 			  icon    : 'networks'
-			, title   : 'rAudio Server'
+			, title   : 'Server rAudio'
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
@@ -406,7 +406,7 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : function() {
 				bash( [ 'nfsserver', !G.nfsserver ] );
-				notify( 'rAudio Server', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+				notify( 'Server rAudio', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
 			}
 		} );
 	} );

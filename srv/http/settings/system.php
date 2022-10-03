@@ -332,7 +332,7 @@ HTML
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
-		, 'disabled' => 'This rAudio is NFS Server.'
+		, 'disabled' => 'Server rAudio is currently active.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
