@@ -2,9 +2,10 @@
 
 dirbash=/srv/http/bash
 dirdata=/srv/http/data
+dirbackup=/srv/http/data/backup
 dirshareddata=/mnt/MPD/NAS/data
 filesharedip=/mnt/MPD/NAS/data/sharedip
-dirs=$( ls $dirdata | grep -v '\..*$' )
+dirs=$( ls $dirdata | grep -v 'backup$' )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
