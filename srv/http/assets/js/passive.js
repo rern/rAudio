@@ -121,6 +121,8 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 				var query = G.query[ G.query.length - 1 ];
 				queryList( query );
 			}
+		} else if ( G.playlist ) {
+			if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
 		}
 		getPlaybackStatus( 'withdisplay' );
 	} else if ( status === 0 ) {
