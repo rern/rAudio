@@ -30,7 +30,7 @@ data+='
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
-, "shareddata"       : '$( exists $filesharedip )'
+, "shareddata"       : '$( [[ -e $filesharedip && ! -L $dirshareddata ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
