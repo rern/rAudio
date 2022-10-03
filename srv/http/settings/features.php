@@ -280,6 +280,9 @@ HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • rAudio server:
 	- Library - Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
+	- Server rAudio, like all servers, must be up and running:
+		- While still connected by clients
+		- Before clients power on
  • rAudio Shared Data clients:
 	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
 	- With only IP address of the server, discover and connect all available file and data shares automatically.

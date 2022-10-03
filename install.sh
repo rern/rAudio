@@ -7,9 +7,13 @@ dir=/srv/http/shareddata
 dirshareddata=/mnt/MPD/NAS/data
 filesharedip=$dirshareddata/sharedip
 if [[ -e $dir ]]; then
-	echo data > /mnt/MPD/NAS/.mpdignore
-	mkdir -p $dirshareddata
-	[[ -e $filesharedip ]] && list=$( cat $filesharedip ) || list=$( grep $dir /etc/fstab | sed 's|^//||; s|/.*||; s|:.*||' )
+	if [[ -e $filesharedip ]]; then
+		list=$( cat $filesharedip )
+	else
+		echo data > /mnt/MPD/NAS/.mpdignore
+		mkdir -p $dirshareddata
+		list=$( grep $dir /etc/fstab | sed 's|^//||; s|/.*||; s|:.*||' )
+	fi
 	echo "\
 $list
 $( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )" | sort -u > $filesharedip
@@ -18,6 +22,7 @@ $( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )" | sort -u > $filesh
 	sed -i "s|$dir|$dirshareddata|" /etc/fstab
 	systemctl daemon-reload
 	mount $dirshareddata
+	rmdir $dir
 fi
 
 [[ -e /srv/http/data/system/hddspindown ]] && mv /srv/http/data/system/{hddspindown,apm}
