@@ -115,9 +115,9 @@ Sleep timer for hard drives.
 HTML
 ] );
 htmlSetting( [
-	  'label'    => 'Update on Hotplug'
+	  'label'    => 'Hotplug Update'
 	, 'id'       => 'usbautoupdate'
-	, 'sublabel' => 'USB Drives'
+	, 'sublabel' => 'USB drives data'
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
 	, 'help'     => <<< HTML

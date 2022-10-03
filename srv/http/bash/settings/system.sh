@@ -65,6 +65,7 @@ sharedDataSet() {
 	done
 	echo data > /mnt/MPD/NAS/.mpdignore
 	mpc -q clear
+	systemctl restart mpd
 	sharedDataIPlist
 	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":true}'
