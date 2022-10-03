@@ -863,7 +863,7 @@ function infoMount( values ) {
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
 	if ( values === 'shareddata' ) {
 		var shareddata = true;
-		values = [ 'cifs', ipsub, '', '', '', '', false ];
+		values = [ 'cifs', 'data', ipsub, '', '', '', '', false ];
 		var chktext = 'Use data from this rAudio'
 	} else {
 		var shareddata = false;
@@ -912,9 +912,7 @@ function infoMount( values ) {
 			if ( !shareddata ) {
 				$( '#infoContent .nfsconnect' ).remove();
 			} else {
-				$( '$mountpoint' )
-					.val( 'data' )
-					.prop( 'disabled', 1 );
+				$( '#mountpoint' ).prop( 'disabled', 1 );
 				$( '#infoContent .nfsconnect' ).click( function() {
 					infoNFSconnect( $( '#list' ).data( 'ip' ) );
 				} );

@@ -295,11 +295,12 @@ nfsserver )
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
 		done
 		echo "$list" | column -t > /etc/exports
-		echo $ip > $filesharedip
 		echo "\
 SD
 USB" > /mnt/MPD/.mpdignore
 		echo data > /mnt/MPD/NAS/.mpdignore
+		echo $ip > $filesharedip
+		chmod 777 $filesharedip
 		if [[ -e $dirmpd.nfs ]]; then
 			mv -f $dirmpd{,.backup}
 			mv -f $dirmpd{.nfs,}
