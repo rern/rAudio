@@ -107,7 +107,7 @@ if [[ $usb ]]; then
 		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source | grep -m1 APM_level | awk '{print $NF}' )
 	done
 fi
-nas=$( awk '/.mnt.MPD.NAS|.srv.http.shareddata/ {print $1" "$2}' /etc/fstab )
+nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab )
 if [[ $nas ]]; then
 	readarray -t nas <<< "$nas"
 	for line in "${nas[@]}"; do
@@ -211,7 +211,7 @@ data+='
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
-, "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
+, "shareddata"       : '$( exists $filesharedip )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "status"           : "'$status'"

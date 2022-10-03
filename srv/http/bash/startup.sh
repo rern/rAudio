@@ -84,7 +84,7 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	[[ -e $dirmpd/shareddataip ]] && $dirbash/settings/system.sh shareddataiplist &> /dev/null &
+	[[ -e $filesharedip ]] && $dirbash/settings/system.sh shareddataiplist
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh

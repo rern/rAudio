@@ -47,14 +47,14 @@ I2Cset() {
 }
 sharedDataIPlist() {
 	list=$( ipGet )
-	iplist=$( grep -v $list $dirmpd/shareddataip )
+	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 			[[ $1 ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
 			list+=$'\n'$ip
 		fi
 	done
-	echo "$list" | sort -u > $dirmpd/shareddataip
+	echo "$list" | sort -u > $filesharedip
 }
 sharedDataSet() {
 	rm -f $dirmpd/{counts,listing,updating}
@@ -515,7 +515,7 @@ mount )
 		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 	else
 		source="$ip:$directory"
-		options=defaults,noauto,bg,soft,timeo=5
+		options=defaults,noauto,bg,hard,intr,timeo=5
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
 	fstab="\
@@ -708,18 +708,16 @@ servers )
 shareddataconnect )
 	ip=${args[1]}
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
-	[[ ! $paths ]] && echo "No NFS shares found @$ip" && exit
-	
 	for path in "${paths[@]}"; do
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
-		[[ -e "$dir" ]] && echo "Directory exists: <code>$dir</code>" && exit
+		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
+		
 	done
-	
 	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
 	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
-		mkdir "$dir"
+		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
 		source=${path// /\\040}
 		mountpoint=/mnt/MPD/NAS/$( basename $source )
@@ -728,21 +726,8 @@ shareddataconnect )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	for dir in "${mountpoints[@]}"; do
-		std=$( mount "$dir" 2>&1 )
-		[[ $? != 0 ]] && dirfailed=$dir && break
+		mount "$dir"
 	done
-	if [[ $dirfailed ]]; then
-		for dir in "${mountpoints[@]}"; do
-			umount -l "$dir" &> /dev/null
-			rm -rf "$dir"
-		done
-		fstab=$( grep ^PART /etc/fstab )
-		echo "$fstab" | column -t > /etc/fstab
-		systemctl daemon-reload
-		echo "Mount <code>$dirfailed</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		exit
-	fi
-	
 	sharedDataSet
 	;;
 shareddatadisconnect )
@@ -756,12 +741,12 @@ shareddatadisconnect )
 	done
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	ip=$( ipGet )
-	sed -i "/$ip/ d" $dirmpd/shareddataip
-	rmBlankFile $dirmpd/shareddataip
+	sed -i "/$ip/ d" $filesharedip
+	rmBlankFile $filesharedip
 	mpc -q clear
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-	readarray -t mountpoints <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
-	for dir in "${mountpoints[@]}"; do
+	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	for dir in "${dirs[@]}"; do
 		umount -l "$dir"
 		rmdir "$dir" &> /dev/null
 	done
@@ -770,9 +755,9 @@ shareddatadisconnect )
 	systemctl daemon-reload
 	mv -f $dirmpd{.backup,}
 	systemctl restart mpd
+	$dirbash/cmd.sh mpcupdate$'\n'update
 	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":false}'
-	$dirbash/cmd.sh mpcupdate$'\n'update
 	;;
 shareddataiplist )
 	sharedDataIPlist ${args[1]}

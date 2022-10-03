@@ -277,44 +277,46 @@ EOF
 nfsserver )
 	active=${args[1]}
 	if [[ $active == true ]]; then
-		echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		dirs="\
 /mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )"
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+$dirdata"
 		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			list+="${dir// /\\040} $options"$'\n'
 			dirname=$( basename "$dir" )
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
 		done
-		list+="$dirdata $options"
 		echo "$list" | column -t > /etc/exports
-		echo $ip > $dirmpd/shareddataip
-#		chmod 777 $dirdata $dirmpd/shareddataip
-		chmod -R 777 $dirmpd
-		systemctl enable --now nfs-server
-		rm -f $dirmpd/{counts,listing,updating}
+		echo $ip > $filesharedip
+		echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+		echo data > /mnt/MPD/NAS/.mpdignore
 		if [[ -e $dirmpd.nfs ]]; then
 			mv -f $dirmpd{,.backup}
 			mv -f $dirmpd{.nfs,}
 			systemctl restart mpd
-			action=rescan
-		else
-			cp $dirmpd{,.backup}
 			action=update
+		else
+			rm -f $dirmpd/{counts,listing,updating}
+			cp $dirmpd{,.backup}
+			action=rescan
 		fi
+		chmod -R 777 $dirdata
+		systemctl enable --now nfs-server
 		$dirbash/cmd.sh mpcupdate$'\n'$action
 	else
 		systemctl disable --now nfs-server
 		chmod 755 $dirdata
-		rm $dirmpd/shareddataip
+		rm -f /mnt/MPD/.mpdignore \
+			/mnt/MPD/NAS/.mpdignore \
+			$filesharedip \
+			$dirmpd/{counts,listing,updating}
 		> /etc/exports
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
-		rm -f /mnt/MPD/.mpdignore $dirmpd/{counts,listing,updating}
 		mv -f $dirmpd{,.nfs}
 		mv -f $dirmpd{.backup,}
 		systemctl restart mpd
