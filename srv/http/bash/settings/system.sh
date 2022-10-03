@@ -58,9 +58,9 @@ sharedDataIPlist() {
 }
 sharedDataSet() {
 	rm -f $dirmpd/{counts,listing,updating}
-	mv $dirmpd{,.backup}
+	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirdata/$dir
+		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
 	echo data > /mnt/MPD/NAS/.mpdignore
@@ -737,9 +737,10 @@ shareddatadisconnect )
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
 			rm $dirdata/$dir
-			mkdir $dirdata/$dir
+			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
+	[[ ! $( ls $dirbackup ) ]] && rm -rf $dirbackup
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
@@ -752,7 +753,6 @@ shareddatadisconnect )
 	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
-	mv -f $dirmpd{.backup,}
 	systemctl restart mpd
 	$dirbash/cmd.sh mpcupdate$'\n'update
 	pushRefresh

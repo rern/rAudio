@@ -295,20 +295,20 @@ nfsserver )
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
 		done
 		echo "$list" | column -t > /etc/exports
+		echo $ip > $filesharedip
 		echo "\
 SD
 USB" > /mnt/MPD/.mpdignore
 		echo data > /mnt/MPD/NAS/.mpdignore
-		echo $ip > $filesharedip
-		chmod 777 $filesharedip
-		if [[ -e $dirmpd.nfs ]]; then
-			mv -f $dirmpd{,.backup}
-			mv -f $dirmpd{.nfs,}
+		if [[ -e $dirbackup/mpdnfs ]]; then
+			mv -f $dirmpd $dirbackup
+			mv -f $dirbackup/mpdnfs $dirdata
 			systemctl restart mpd
 			action=update
 		else
 			rm -f $dirmpd/{counts,listing,updating}
-			cp $dirmpd{,.backup}
+			mkdir -p $dirbackup
+			cp -r $dirmpd $dirbackup
 			action=rescan
 		fi
 		systemctl enable --now nfs-server
@@ -327,8 +327,9 @@ USB" > /mnt/MPD/.mpdignore
 			[[ -L "$link" ]] && rm "$link"
 		done
 		> /etc/exports
-		mv -f $dirmpd{,.nfs}
-		mv -f $dirmpd{.backup,}
+		mkdir -p $dirbackup
+		mv -f $dirmpd $dirbackup/mpdnfs
+		mv -f $dirbackup/mpd $dirdata
 		systemctl restart mpd
 		$dirbash/cmd.sh mpcupdate$'\n'update
 	fi
