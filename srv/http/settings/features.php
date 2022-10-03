@@ -243,7 +243,18 @@ Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="f
 HTML
 	]
 	, [
-		  'label'       => 'NFS Server'
+		  'label'    => 'Password Login'
+		, 'id'       => 'login'
+		, 'sublabel' => 'password_hash'
+		, 'icon'     => 'lock'
+		, 'setting'  => 'custom'
+		, 'help'     => <<< HTML
+<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
+Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>
+HTML
+	]
+	, [
+		  'label'       => 'rAudio Server'
 		, 'id'          => 'nfsserver'
 		, 'sublabel'    => 'nfs-server'
 		, 'icon'        => 'networks'
@@ -258,17 +269,6 @@ HTML
  • rAudio Shared Data clients:
 	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
 	- With only IP address of the server, discover and connect all available file and data shares automatically.
-HTML
-	]
-	, [
-		  'label'    => 'Password Login'
-		, 'id'       => 'login'
-		, 'sublabel' => 'password_hash'
-		, 'icon'     => 'lock'
-		, 'setting'  => 'custom'
-		, 'help'     => <<< HTML
-<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>
 HTML
 	]
 	, [
