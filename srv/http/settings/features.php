@@ -254,24 +254,6 @@ Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-l
 HTML
 	]
 	, [
-		  'label'       => 'rAudio Server'
-		, 'id'          => 'nfsserver'
-		, 'sublabel'    => 'nfs-server'
-		, 'icon'        => 'networks'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'status'      => 'nfs-server'
-		, 'disabled'    => $nfsdisabled
-		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
- • rAudio server:
-	- Library - Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
- • rAudio Shared Data clients:
-	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
-	- With only IP address of the server, discover and connect all available file and data shares automatically.
-HTML
-	]
-	, [
 		  'label'    => 'Scrobble'
 		, 'id'       => 'scrobble'
 		, 'sublabel' => 'Last.fm'
@@ -283,6 +265,24 @@ HTML
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
  • Web Radio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+HTML
+	]
+	, [
+		  'label'       => 'Server rAudio'
+		, 'id'          => 'nfsserver'
+		, 'sublabel'    => 'nfs-server'
+		, 'icon'        => 'rserver'
+		, 'setting'     => 'custom'
+		, 'settingicon' => false
+		, 'status'      => 'nfs-server'
+		, 'disabled'    => $nfsdisabled
+		, 'help'        => <<< HTML
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
+ • rAudio server:
+	- Library - Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
+ • rAudio Shared Data clients:
+	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
+	- With only IP address of the server, discover and connect all available file and data shares automatically.
 HTML
 	]
 	, [

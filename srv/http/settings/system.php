@@ -336,7 +336,7 @@ HTML
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server:&ensp;<wh><i class="fa fa-features"></i>Features</wh> > <wh>rAudio Server <i class="fa fa-networks"></i></wh>- Enable
+	Server:&ensp;<wh><i class="fa fa-features"></i>Features</wh> > <wh>Server rAudio <i class="fa fa-rserver"></i></wh>- Enable
 	Clients: <wh>Shared Data <i class="fa fa-networks"></i></wh> > Connect rAudio server with IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
