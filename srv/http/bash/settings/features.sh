@@ -8,7 +8,8 @@ readarray -t args <<< "$1"
 pushRefresh() {
 	$dirbash/settings/features-data.sh pushrefresh
 }
-pushRefreshNetworks() {
+pushRefreshOther() {
+	pushstream refresh '{"page":"system","hostapd":'$1'}'
 	data=$( $dirbash/settings/networks-data.sh )
 	pushstream refresh "$data"
 }
@@ -122,7 +123,7 @@ hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
 	pushRefresh
-	pushRefreshNetworks
+	pushRefreshOther false
 	;;
 hostapdget )
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
@@ -153,7 +154,7 @@ hostapdset )
 	fi
 	ifconfig $wlandev $router
 	featureSet hostapd
-	pushRefreshNetworks
+	pushRefreshOther true
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
