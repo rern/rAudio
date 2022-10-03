@@ -6,7 +6,7 @@ if ( is_link( '/srv/http/data/mpd' ) ) {
 } else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
 	$nfsdisabled = 'File Sharing is currently active.';
 } else {
-	$nfsdisabled = 'Still connected by clients';
+	$nfsdisabled = 'Currently connected by clients';
 }
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
