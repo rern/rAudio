@@ -334,6 +334,16 @@ $( '#setting-multiraudio' ).click( function() {
 	} );
 } );
 $( '#nfsserver' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'NFS Server'
+			, message : $this.data( 'disabled' )
+		} );
+		return
+	}
+	
 	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
 		info( {
 			  icon    : 'networks'
@@ -342,7 +352,7 @@ $( '#nfsserver' ).click( function() {
 							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
 			, cancel  : function() {
-				$( '#nfsserver' ).prop( 'checked', G.nfsserver );
+				$this.prop( 'checked', G.nfsserver );
 			}
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : function() {

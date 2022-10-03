@@ -1,6 +1,13 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
+if ( is_link( '/srv/http/data/mpd' ) ) {
+	$nfsdisabled = 'Shared Data is currently enabled.';
+} else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
+	$nfsdisabled = 'File Sharing is currently active.';
+} else {
+	$nfsdisabled = 'Still connected by clients';
+}
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
@@ -130,7 +137,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
-		, 'disabled' =>  ( exec( 'systemctl -q is-active bluetooth && echo true' ) ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
+		, 'disabled' =>  ( exec( 'systemctl is-active bluetooth' ) === 'active' ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-camilladsp wh"></i>
@@ -243,7 +250,7 @@ HTML
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'status'      => 'nfs-server'
-		, 'disabled'    => is_link( '/srv/http/data/mpd' ) ? 'Shared Data is currently enabled.' : 'File Sharing is currently active.'
+		, 'disabled'    => $nfsdisabled
 		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
  • rAudio server:
