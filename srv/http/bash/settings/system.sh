@@ -255,6 +255,11 @@ datarestore )
 		umount -l "$dir" &> /dev/null
 		rmdir "$dir" &> /dev/null
 	done
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	if [[ $ipserver ]]; then
+		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
+	fi
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
