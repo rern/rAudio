@@ -2,7 +2,24 @@
 
 alias=r1
 
-# 20220930
+# 20221005
+dir=/srv/http/shareddata
+dirshareddata=/mnt/MPD/NAS/data
+filesharedip=$dirshareddata/sharedip
+if [[ -e $dir ]]; then
+	echo data > /mnt/MPD/NAS/.mpdignore
+	mkdir -p $dirshareddata
+	[[ -e $filesharedip ]] && list=$( cat $filesharedip ) || list=$( grep $dir /etc/fstab | sed 's|^//||; s|/.*||; s|:.*||' )
+	echo "\
+$list
+$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )" | sort -u > $filesharedip
+	chmod 777 $filesharedip
+	umount -l $dir
+	sed -i "s|$dir|$dirshareddata|" /etc/fstab
+	systemctl daemon-reload
+	mount $dirshareddata
+fi
+
 [[ -e /srv/http/data/system/hddspindown ]] && mv /srv/http/data/system/{hddspindown,apm}
 
 if [[ ! -e /boot/kernel.img ]]; then
