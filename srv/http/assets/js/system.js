@@ -993,31 +993,34 @@ function infoNFSconnect( ip ) {
 		, ok        : function() {
 			var ip = infoVal();
 			bash( [ 'sharelist', ip ], function( list ) {
-				info( {
-					  icon    : 'networks'
-					, title   : 'Shared Data'
-					, message : list
-					, cancel  : function() {
-						$( '#shareddata' ).prop( 'checked', false );
-					}
-					, ok      : function() {
-						if ( list.slice( 0, 6 ) === 'Shares' ) {
-							bash( [ 'shareddataconnect', ip ], function( std ) {
-								if ( std ) {
-									info( {
-										  icon      : 'networks'
-										, title     : 'Shared Data'
-										, message   : std
-									} );
-									bannerHide();
-								}
-							} );
-							notify( 'Shared Data', 'Connect rAudio server ...', 'networks' );
-						} else {
-							$( '#infoX' ).click();
+				if ( list.slice( 0, 6 ) === 'Shares' ) {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Shared Data'
+						, message : list
+						, cancel  : function() {
+							$( '#shareddata' ).prop( 'checked', false );
 						}
-					} 
-				} );
+						, ok      : function() {
+							bash( [ 'shareddataconnect', ip ] );
+							notify( 'Shared Data', 'Connect rAudio server ...', 'networks' );
+						} 
+					} );
+				} else {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Shared Data'
+						, message : list
+						, cancel  : function() {
+							$( '#shareddata' ).prop( 'checked', false );
+						}
+						, ok      : function() {
+							setTimeout( function() {
+								infoNFSconnect( ip );
+							},0 );
+						}
+					} );
+				}
 			} );
 		}
 	} );
