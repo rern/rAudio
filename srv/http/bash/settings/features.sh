@@ -286,6 +286,7 @@ $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
 $dirdata"
 		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
 			list+="${dir// /\\040} $options"$'\n'
 			dirname=$( basename "$dir" )
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
@@ -306,17 +307,17 @@ USB" > /mnt/MPD/.mpdignore
 			cp $dirmpd{,.backup}
 			action=rescan
 		fi
-		chmod -R 777 $dirdata
 		systemctl enable --now nfs-server
 		$dirbash/cmd.sh mpcupdate$'\n'$action
 	else
 		systemctl disable --now nfs-server
-		chmod 755 $dirdata
 		rm -f /mnt/MPD/.mpdignore \
 			/mnt/MPD/NAS/.mpdignore \
 			$filesharedip \
 			$dirmpd/{counts,listing,updating}
 		> /etc/exports
+		chmod 755 /mnt/MPD/SD $dirdata
+		find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type l -exec chmod 755 {} \;
 		find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type l -exec rm {} \;
 		mv -f $dirmpd{,.nfs}
 		mv -f $dirmpd{.backup,}
