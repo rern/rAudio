@@ -872,8 +872,11 @@ function infoMount( values ) {
 	var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
-	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
-	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+	<td>
+		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
+		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
+		<label><input type="radio" name="inforadio" value="raudio">rAudio</label>
+	</td>
 </tr>
 <tr><td>Name</td>
 <td><input id="mountpoint" type="text"></td>
@@ -895,14 +898,11 @@ function infoMount( values ) {
 </tr>
 <tr class="copydata"><td></td>
 	<td><label><input type="checkbox" checked>${ chktext }</label></td>
-</tr>
-<tr class="nfsconnect"><td></td>
-<td><label><input type="checkbox">Connect rAudio NFS server</label></td>
 </tr>`;
 	htmlmount += '</table>';
 	info( {
 		  icon       : 'networks'
-		, title      : shareddata ? 'Shared Data' : 'Add Network Storage'
+		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
@@ -910,12 +910,9 @@ function infoMount( values ) {
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
 			if ( !$( '#list .fa-networks' ).length ) $( '#infoContent .copydata' ).remove();
 			if ( !shareddata ) {
-				$( '#infoContent .nfsconnect' ).remove();
+				$( '#infoContent label' ).eq( 2 ).remove();
 			} else {
 				$( '#mountpoint' ).prop( 'disabled', 1 );
-				$( '#infoContent .nfsconnect' ).click( function() {
-					infoNFSconnect( $( '#list' ).data( 'ip' ) );
-				} );
 			}
 			var $share = $( '#share' );
 			function hideOptions( type ) {
@@ -935,7 +932,12 @@ function infoMount( values ) {
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
 			$( '#infoContent input:radio' ).change( function() {
-				hideOptions( $( this ).val() );
+				var val = $( this ).val();
+				if ( val !== 'raudio' ) {
+					hideOptions( val );
+				} else {
+					infoNFSconnect( $( '#list' ).data( 'ip' ) );
+				}
 			} );
 			var $mountpoint = $( '#mountpoint' );
 			$mountpoint.on( 'keyup paste', function() {
