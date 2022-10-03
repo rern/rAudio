@@ -333,35 +333,6 @@ $( '#setting-multiraudio' ).click( function() {
 		}
 	} );
 } );
-$( '#nfsserver' ).click( function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'NFS Server'
-			, message : $this.data( 'disabled' )
-		} );
-		return
-	}
-	
-	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'NFS Server'
-			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
-							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
-							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : function() {
-				$this.prop( 'checked', G.nfsserver );
-			}
-			, okcolor : G.nfsserver ? orange : ''
-			, ok      : function() {
-				bash( [ 'nfsserver', !G.nfsserver ] );
-				notify( 'NFS Server', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
-			}
-		} );
-	} );
-} );
 $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();
@@ -409,6 +380,35 @@ $( '#setting-login' ).click( function() {
 				bannerHide();
 			} );
 		}
+	} );
+} );
+$( '#nfsserver' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'rAudio Server'
+			, message : $this.data( 'disabled' )
+		} );
+		return
+	}
+	
+	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'rAudio Server'
+			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
+							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
+							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
+			, cancel  : function() {
+				$this.prop( 'checked', G.nfsserver );
+			}
+			, okcolor : G.nfsserver ? orange : ''
+			, ok      : function() {
+				bash( [ 'nfsserver', !G.nfsserver ] );
+				notify( 'rAudio Server', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+			}
+		} );
 	} );
 } );
 $( '#setting-scrobble' ).click( function() {
