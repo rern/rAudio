@@ -279,7 +279,7 @@ HTML
 		, 'disabled'    => $nfsdisabled
 		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data&ensp;<i class="fa fa-networks"></i></wh>
- • <wh>rAudio server</wh>:
+ • <wh>rAudio Shared Data server</wh>:
 	- Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
