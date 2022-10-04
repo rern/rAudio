@@ -18,7 +18,7 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
-if ( file_exists( '/srv/http/data/system/camilladsp' ) {
+if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
 	$disabledbt = '<wh>DSP<i class=\'fa fa-camilladsp\'></i></wh> is currently active.';
 } else {
 	$disabledbt = 'Bluetooth is currently connected.';
