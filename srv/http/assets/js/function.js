@@ -998,8 +998,12 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
-function queryList( query, backmode ) {
-	var backmode = backmode || false;
+function queryList() {
+	if ( G.query.length < 2 ) return
+	
+	G.query.pop();
+	var query = G.query[ G.query.length - 1 ];
+	var backmode = 'gmode' in G && G.gmode !== G.mode;
 	if ( query === 'album' ) {
 		$( '#mode-album' ).click();
 	} else {

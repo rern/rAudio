@@ -1285,9 +1285,7 @@ $( '#button-lib-back' ).click( function() {
 	} else if ( bL && G.mode !== 'latest' && !backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
 	} else {
-		G.query.pop();
-		var query = G.query[ G.query.length - 1 ];
-		queryList( query, backmode );
+		queryList();
 	}
 } );
 $( '.mode' ).click( function() {

@@ -118,8 +118,7 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 			if ( [ 'nas', 'sd', 'usb' ].includes( G.mode ) ) {
 				$( '#lib-breadcrumbs .lidir' ).last().click();
 			} else {
-				var query = G.query[ G.query.length - 1 ];
-				queryList( query );
+				queryList();
 			}
 		} else if ( G.playlist ) {
 			if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
