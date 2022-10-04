@@ -31,7 +31,7 @@ nfsShareList() {
 	echo "\
 /mnt/MPD/SD
 $( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
-$dirdata"
+$dirdata" | awk NF
 }
 spotifyReset() {
 	pushstreamNotifyBlink 'Spotify Client' "$1" spotify
@@ -277,11 +277,10 @@ EOF
 	;;
 nfsserver )
 	active=${args[1]}
+	readarray -t dirs <<< $( nfsShareList )
 	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
-		dirs=$( nfsShareList )
-		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			chmod 777 "$dir"
 			list+="${dir// /\\040} $options"$'\n'
@@ -312,8 +311,6 @@ nfsserver )
 			/mnt/MPD/NAS/.mpdignore \
 			$filesharedip \
 			$dirmpd/{counts,listing,updating}
-		dirs=$( nfsShareList )
-		readarray -t dirs <<< $( echo "$dirs" )
 		for dir in "${dirs[@]}"; do
 			chmod 755 "$dir"
 			link="/mnt/MPD/NAS/$( basename "$dir" )"
