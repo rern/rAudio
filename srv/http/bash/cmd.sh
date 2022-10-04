@@ -423,6 +423,8 @@ $coverart" > "$bkfile"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
+	else
+		order=false
 	fi
 	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
 	data='{
