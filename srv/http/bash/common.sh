@@ -63,7 +63,7 @@ pushstream() {
 		if [[ $chan == coverart ]]; then
 			path=$( echo "$data" \
 						| grep '"url"' \
-						| sed -E 's/.*"url" *: *"(.*)",*.*/\1/' \
+						| sed -E 's/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g' \
 						| cut -d/ -f3 )
 			[[ 'MPD bookmark webradio' != *$path* ]] && return
 			
