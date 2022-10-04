@@ -995,7 +995,7 @@ function infoNFSconnect( ip ) {
 	info( {
 		  icon      : 'networks'
 		, title     : 'Shared Data'
-		, message   : 'rAudio NFS server - files and data'
+		, message   : 'Server rAudio <i class="fa fa-rserver wh"></i>'
 		, textlabel : 'IP'
 		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
 		, cancel    : function() {
