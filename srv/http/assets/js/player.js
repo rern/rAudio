@@ -190,7 +190,7 @@ $( '#setting-replaygain' ).click( function() {
 		}
 	} );
 } );
-$( '#filetype' ).click( function() {
+$( '.filetype' ).click( function() {
 	if ( $( '#divfiletype' ).is( ':empty' ) ) {
 		bash( [ 'filetype' ], function( data ) {
 			$( '#divfiletype' )

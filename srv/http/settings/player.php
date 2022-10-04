@@ -37,7 +37,7 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< HTML
-<i class="fa fa-volume"></i> Volume setting and control:
+{$hd( i( 'volume' ) )}Volume setting and control:
  • Player: Should be set at 0dB
  • Playback: Should be set at 100%
  • Use device volume to control level
@@ -60,7 +60,7 @@ HTML
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
 Available hardware mixers of current device.
-<i class="fa fa-volume"></i>Control current mixer device.
+{$hd( i( 'volume' ) )}Control current mixer device.
 HTML
 	]
 	, [
@@ -165,11 +165,11 @@ HTML
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DAB Radio<i class=\'fa fa-dabradio\'></i></wh> is currently enabled.'
+		, 'disabled' => '<wh>DAB Radio'.i( 'dabradio' ).'is currently enabled.'
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes:&emsp;<i id="filetype" class="fa fa-help"></i>
+Decoder for audio filetypes:{$hd( i( 'help filetype' ) )}
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]

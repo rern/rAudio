@@ -388,7 +388,7 @@ $( '#nfsserver' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Server rAudio'
-			, message : $this.data( 'disabled' )
+			, message : $this.prev().html()
 		} );
 		return
 	}

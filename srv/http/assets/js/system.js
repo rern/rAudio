@@ -811,7 +811,7 @@ $( '#shareddata' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
-			, message : $this.data( 'disabled' )
+			, message : $this.prev().html()
 		} );
 		return
 	}

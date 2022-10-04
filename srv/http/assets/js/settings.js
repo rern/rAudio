@@ -412,7 +412,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	var $this = $( this );
 	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
-$( '#close' ).click( function() {
+$( '.close' ).click( function() {
 	if ( page === 'networks' ) {
 		clearTimeout( G.timeoutScan );
 		bash( 'killall networks-scan.sh &> /dev/null' );
@@ -462,7 +462,7 @@ $( '#button-data' ).click( function() {
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
 	clearTimeout( timer );
 } );
-$( '#help' ).click( function() {
+$( '.help-head' ).click( function() {
 	var eltop = $( 'heading' ).filter( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
@@ -485,7 +485,7 @@ $( '#help' ).click( function() {
 } );
 $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
+	$( '.help-head' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 $( '.switch:not( .custom )' ).click( function() {
 	var id = this.id;
@@ -498,7 +498,7 @@ $( '.switch:not( .custom )' ).click( function() {
 		info( {
 			  icon    : icon
 			, title   : label
-			, message : $this.data( 'disabled' )
+			, message : $this.prev().html()
 		} );
 		return
 	}

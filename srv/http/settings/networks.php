@@ -12,7 +12,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
  • Pair:
 	- On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
-	- On rAudio - Bluetooth &nbsp;<i class="fa fa-search wh"></i>Search > Select to pair
+	- On rAudio - Bluetooth &nbsp;<?=( i( 'search wh' ) )?>Search > Select to pair
  • Connect:
 	- On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
 	- Receiver buttons can be used to control playback
@@ -36,7 +36,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="help-block hide">
- • Connect: Wi-Fi &nbsp;<i class="fa fa-search wh"></i>Search > Select to connect
+ • Connect: Wi-Fi &nbsp;<?=( i( 'search wh' ) )?>Search > Select to connect
  • Avoid connecting to access points which signal is less than 2 bars.
 </div>
 </div>
@@ -113,9 +113,9 @@ htmlHead( [ //////////////////////////////////
 </div>
 
 <div id="menu" class="menu hide">
-<a class="connect"><i class="fa fa-check"></i>Connect</a>
-<a class="disconnect"><i class="fa fa-times"></i>Disconnect</a>
-<a class="edit"><i class="fa fa-edit-circle"></i>Edit</a>
-<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
-<a class="info"><i class="fa fa-info-circle"></i>Info</a>
+<a class="connect"><?=( i( 'check' ) )?>Connect</a>
+<a class="disconnect"><?=( i( 'times' ) )?>Disconnect</a>
+<a class="edit"><?=( i( 'edit-circle' ) )?>Edit</a>
+<a class="forget"><?=( i( 'minus-circle' ) )?>Forget</a>
+<a class="info"><?=( i( 'info-circle' ) )?>Info</a>
 </div>

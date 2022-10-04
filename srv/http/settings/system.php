@@ -19,7 +19,7 @@ foreach( $timezonelist as $key => $zone ) {
 }
 $selecttimezone.= '</select>';
 if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
-	$disabledbt = '<wh>DSP<i class=\'fa fa-camilladsp\'></i></wh> is currently active.';
+	$disabledbt = '<wh>DSP'.i( 'camilladsp' ).'</wh> is currently active.';
 } else {
 	$disabledbt = 'Bluetooth is currently connected.';
 }
@@ -66,7 +66,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
-<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
+<?=( i( 'refresh' ) )?> <gr>Toggle refresh every 10 seconds.</gr>
 
 CPU Load:
  • Average number of processes which are being executed and in waiting.
@@ -141,7 +141,7 @@ $body = [
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
+{$hd( i( 'gear' ) )}<code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -152,7 +152,7 @@ HTML
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i> Settings
+{$hd( i( 'gear' ) )}Settings
  • Auto start Access Point - On failed connection or no router
  • Country of Wi-Fi regulatory domain:
 	- 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
@@ -177,13 +177,13 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	<i id="setting-i2smodule" class="setting fa fa-gear"></i>
+	{$hd( i( 'gear' ) )}
 </div>
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected. See&ensp;<i class="fa fa-player gr"></i>Player if it's already set as Output device.
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with <i class="fa fa-gear gr"></i>next to it.
+ • HAT with EEPROM could be automatically detected. See{$hd( i( 'player' ) )}Player if it's already set as Output device.
+ • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with{$hd( i( 'gear' ) )}next to it.
 HTML
 	]
 	, [
@@ -194,7 +194,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-<i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+{$hd( i( 'warning' ) )}LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -217,7 +217,7 @@ HTML
 		, 'icon'    => 'relays'
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: &ensp;<i class="fa fa-plus-r"></i>System <gr>|</gr>&ensp;<i class="fa fa-relays wh"></i>
+On/Off:{$hd( i( 'plus-r' ) )}System <gr>|</gr>{$hd( i( 'relays wh' ) )}
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -284,7 +284,7 @@ HTML
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i>Servers:
+{$hd( i( 'gear' ) )}Servers:
  • NTP: For time sync
  • Package mirror: For system upgrade <code>pacman -Syu</code>
 HTML
@@ -333,19 +333,19 @@ HTML
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
-		, 'disabled' => '<wh>Server rAudio<i class=\'fa fa-rserver\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio'.i( 'rserver' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server:&ensp;<wh><i class="fa fa-features"></i>Features</wh> > <wh>Server rAudio <i class="fa fa-rserver"></i></wh>- Enable
-	Clients: <wh>Shared Data <i class="fa fa-networks"></i></wh> > Connect rAudio server with IP address
+	Server: <wh>{$hd( i( 'features' ) )}Features</wh> > <wh>Server rAudio{$hd( i( 'rserver' ) )}</wh>- Enable
+	Clients: <wh>Shared Data{$hd( i( 'networks' ) )}</wh> > Connect rAudio server with IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	Clients:
-		- <wh>Storage <i class="fa fa-plus-circle"></i></wh> with the same name, share path/share name
-		- <wh>Shared Data <i class="fa fa-networks"></i></wh> - Add the created share on server
+		- <wh>Storage{$hd( i( 'plus-circle' ) )}</wh> with the same name, share path/share name
+		- <wh>Shared Data{$hd( i( 'networks' ) )}</wh> - Add the created share on server
 HTML
 	]
 ];
@@ -432,7 +432,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://jquery.com/">jQuery</a>
 		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
 	</div>
-	<div class="listtitle">P l u g i n s :&ensp;<i class="fa fa-chevron-down bl"></i></div>
+	<div class="listtitle">P l u g i n s : <?=( i( 'chevron-down bl' ) )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="sub">Data</heading>
@@ -449,8 +449,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
-<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
-<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
-<a class="unmount"><i class="fa fa-times"></i>Unmount</a>
+<a class="info"<?=$hdparmhide?>><?=( i( 'info-circle' ) )?>Info</a>
+<a class="forget"><?=( i( 'minus-circle' ) )?>Forget</a>
+<a class="remount"><?=( i( 'check' ) )?>Re-mount</a>
+<a class="unmount"><?=( i( 'times' ) )?>Unmount</a>
 </div>

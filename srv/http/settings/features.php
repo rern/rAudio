@@ -3,14 +3,14 @@ $hostname = getHostName();
 $ip = getHostByName( $hostname );
 $fileexplorer = 'File Explorer > Address bar - <code>\\\\'.$ip.'</code> or <code>\\\\'.$hostname.'</code>';
 if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
-	$disableddsp = '<wh>Bluetooth<i class=\'fa fa-bluetooth\'></i></wh> is currently enabled.';
+	$disableddsp = '<wh>Bluetooth'.i( 'bluetooth' ).'</wh> is currently enabled.';
 } else {
-	$disableddsp = '<wh>Equalizer<i class=\'fa fa-equalizer\'></i></wh> is currently enabled.';
+	$disableddsp = '<wh>Equalizer'.i( 'equalizer' ).'</wh> is currently enabled.';
 }
 if ( is_link( '/srv/http/data/mpd' ) ) {
-	$disablednfs = '<wh>Shared Data<i class=\'fa fa-networks\'></i></wh> is currently enabled.';
+	$disablednfs = '<wh>Shared Data'.i( 'networks' ).'</wh> is currently enabled.';
 } else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
-	$disablednfs = '<wh>File Sharing<i class=\'fa fa-networks\'></i></wh> is currently active.';
+	$disablednfs = '<wh>File Sharing'.i( 'networks' ).'</wh> is currently active.';
 } else {
 	$disablednfs = 'Currently connected by clients';
 }
@@ -26,7 +26,7 @@ $body = [
 		, 'icon'     => 'airplay'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => '<wh>AirPlay<i class=\'fa fa-airplay\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>AirPlay'.i( 'airplay' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 HTML
@@ -51,12 +51,12 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'disabled' => '<wh>SnapClient<i class=\'fa fa-snapcast\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>SnapClient'.i( 'snapcast' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
+ • Connect: {$hd( i( 'networks' ) )}Networks <gr>|</gr>{$hd( i( 'snapcast wh' ) )}
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -66,7 +66,7 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => '<wh>Spotify<i class=\'fa fa-spotify\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>Spotify'.i( 'spotify' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
@@ -91,7 +91,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => '<wh>UPnP<i class=\'fa fa-upnp\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>UPnP'.i( 'upnp' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 HTML
@@ -120,13 +120,13 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
 		, 'status'   => 'snapserver'
-		, 'disabled' => '<wh>SnapClient<i class=\'fa fa-snapcast\'></i></wh> is currently connected.'
+		, 'disabled' => '<wh>SnapClient'.i( 'snapcast' ).'</wh> is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
 	- Enable SnapClient
-	- Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
+	- Connect: {$hd( i( 'networks' ) )}Networks <gr>|</gr>{$hd( i( 'snapcast wh' ) )} 
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
@@ -146,7 +146,7 @@ $body = [
 		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-camilladsp wh"></i>
+Settings: {$hd( i( 'features' ) )}Features <gr>|</gr>{$hd( i( 'camilladsp wh' ) )}
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -156,16 +156,16 @@ HTML
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DSP<i class=\'fa fa-camilladsp\'></i></wh> is currently enabled.'
+		, 'disabled' => '<wh>DSP'.i( 'camilladsp' ).'</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-equalizer wh"></i>
+Control: {$hd( i( 'features' ) )}Features <gr>|</gr>{$hd( i( 'equalizer wh' ) )}
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
- • New: Adjust > <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
- • Existing: Adjust > <i class="fa fa-save"></i>Save
- • Adjust without <i class="fa fa-save"></i>Save will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
+ • New: Adjust >{$hd( i( 'plus-circle' ) )} Add > <code>NAME</code> >{$hd( i( 'save' ) )} Save
+ • Existing: Adjust >{$hd( i( 'save' ) )}Save
+ • Adjust without{$hd( i( 'save' ) )}Save will be listed as <code>(unnamed)</code>
+ • Save <code>(unnamed)</code>: {$hd( i( 'plus-circle' ) )} Add > <code>NAME</code> >{$hd( i( 'save' ) )}Save
  • If distortions occurred, lower all bands collectively and increase volume to fix distortions
 HTML
 	]
@@ -217,7 +217,7 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'disabled' => '<wh>Server rAudio<i class=\'fa fa-rserver\'></i></wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio'.i( 'rserver' ).'</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
@@ -244,7 +244,7 @@ HTML
 		, 'icon'    => 'raudiobox'
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="fa fa-raudiobox wh"></i>
+Switch: {$hd( i( 'playlist' ) )}Playlist <gr>|</gr>{$hd( i( 'raudiobox wh' ) )}
  • SSH passwords must be default.
 HTML
 	]
@@ -256,7 +256,7 @@ HTML
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>
+Lock: {$hd( i( 'player' ) )}Player <gr>|</gr>{$hd( i( 'lock wh' ) )}
 HTML
 	]
 	, [
@@ -270,7 +270,7 @@ HTML
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • Web Radio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+ • Web Radio must be manually scrobbled: Title >{$hd( i( 'lastfm wh' ) )}Scrobble
 HTML
 	]
 	, [
@@ -283,14 +283,14 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $disablednfs
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data&ensp;<i class="fa fa-networks"></i></wh>
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data{$hd( i( 'networks' ) )}</wh>
  • <wh>rAudio Shared Data server</wh>:
-	- Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
+	- Existing list in&ensp;<wh>{$hd( i( 'usb' ) )}USB</wh> displays in&ensp;<wh>{$hd( i( 'networks' ) )}NAS</wh> once update finished
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
  • <wh>rAudio Shared Data clients</wh>:
-	- <wh><i class="fa fa-system"></i>System</wh> > Settings and Data > <wh>Shared Data <i class="fa fa-networks"></i></wh> - Server IP address
+	-<wh>{$hd( i( 'system' ) )}System</wh> > Settings and Data > <wh>Shared Data{$hd( i( 'networks' ) )}</wh> - Server IP address
 	- Automatically discover, connect and setup for shared files and data.
  • <wh>Windows NFS clients</wh>:
 	- Windows Features > Services for NFS > Client for NFS - Enable
