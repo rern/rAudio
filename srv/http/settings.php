@@ -84,7 +84,7 @@ function htmlHead( $data ) {
 	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
 	$html.= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon, $id );
+	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );
 	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html.= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
 	$html.= '</heading>';

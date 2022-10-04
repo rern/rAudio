@@ -67,7 +67,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
-	, 'button' => [ 'setting-accesspoint' => 'gear' ]
+	, 'button' => [ 'hostapdset' => 'gear' ]
 ] );
 ?>
 	<div id="boxqr" class="hide">

@@ -52,7 +52,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, okno        : 1
 	} );
 } );
-$( '#power' ).click( function() {
+$( '.power' ).click( function() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
@@ -68,7 +68,7 @@ $( '#power' ).click( function() {
 		}
 	} );
 } );
-$( '#refresh' ).click( function( e ) {
+$( '.refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
 	var $this = $( this );
@@ -81,7 +81,7 @@ $( '#refresh' ).click( function( e ) {
 		G.intCputime = setInterval( getStatus, 10000 );
 	}
 } );
-$( '#addnas' ).click( function() {
+$( '.addnas' ).click( function() {
 	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {

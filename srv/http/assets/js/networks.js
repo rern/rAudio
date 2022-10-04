@@ -11,7 +11,7 @@ $( '.back' ).click( function() {
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
 } );
-$( '#btscan' ).click( function() {
+$( '.btscan' ).click( function() {
 	if ( $( this ).hasClass( 'disabled' ) ) {
 		info( {
 			  icon    : 'bluetooth'
@@ -32,7 +32,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
 	bluetoothcommand( 'pair', list );
 } );
-$( '#wladd' ).click( function() {
+$( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
@@ -44,7 +44,7 @@ $( '#wlscan' ).click( function() {
 		scanWlan();
 	}
 } );
-$( '#lanadd' ).click( function() {
+$( '.lanadd' ).click( function() {
 	info( {
 		  icon          : 'lan'
 		, title         : 'New LAN Connection'
@@ -218,7 +218,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		}
 	}
 } );
-$( '#setting-accesspoint' ).click( function() {
+$( '.hostapdset' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
 		, title        : 'Access Point'
@@ -437,7 +437,7 @@ function renderBluetooth() {
 	}
 }
 function renderPage() {
-	$( '#btscan' ).toggleClass( 'disabled', G.camilladsp );
+	$( '.btscan' ).toggleClass( 'disabled', G.camilladsp );
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );
@@ -474,7 +474,7 @@ function renderPage() {
 		if ( G.listeth ) htmlwl = '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ G.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
-		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
+		$( '.lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
 		$( '#divlan' ).addClass( 'hide' );

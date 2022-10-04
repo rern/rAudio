@@ -337,14 +337,14 @@ HTML
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server: <wh>I-features-I Features</wh> > <wh>Server rAudio I-rserver-I</wh>- Enable
-	Clients: <wh>Shared Data I-networks-I</wh> > Connect rAudio server with IP address
+	Server: | <wh>I-features-I Features</wh> | <wh>Server rAudio I-rserver-I</wh> = Enable
+	Clients: <wh>Shared Data I-networks-I</wh> = rAudio > Server IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	Clients:
-		- <wh>Storage I-plus-circle-I</wh> with the same name, share path/share name
+		- <wh>Storage I-plus-circle-I</wh> > Add with the same name, share path/share name
 		- <wh>Shared Data I-networks-I</wh> - Add the created share on server
 HTML
 	]

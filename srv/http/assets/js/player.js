@@ -7,7 +7,7 @@ var warning = `
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 
-$( '#playback' ).click( function() {
+$( '.playback' ).click( function() {
 	if ( !$( this ).hasClass( 'disabled' ) ) {
 		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
@@ -359,8 +359,8 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function playbackIcon() {
-	$( '#playback' )
-		.removeAttr( 'class' )
+	$( '.playback' )
+		.removeClass( 'fa-pause fa-play' )
 		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
 		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
 }
