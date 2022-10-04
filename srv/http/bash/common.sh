@@ -56,7 +56,16 @@ pushRefresh() {
 	$dirbash/settings/$page-data.sh $push
 }
 pushstream() {
-	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"
+	chan=$1
+	data=$2
+	if [[ ! -e $filesharedip ]]; then
+		curl -s -X POST http://127.0.0.1/pub?id=$chan -d "$data"
+	elif [[ 'bookmark coverart mpdupdate playlists' == *$chan* ]]; then
+		ips=$( cat $filesharedip )
+		for ip in $ips; do
+			curl -s -X POST http://$ip/pub?id=$chan -d "$data"
+		done
+	fi
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
