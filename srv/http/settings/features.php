@@ -290,7 +290,7 @@ HTML
 		- While still connected by clients
 		- Before clients power on
  • <wh>rAudio Shared Data clients</wh>:
-	-<wh> I-system-I System</wh> > Settings and Data > <wh>Shared Data I-networks-I</wh> - <wh>rAudio</wh>
+	- | <wh>I-system-I System</wh> | Settings and Data > <wh>Shared Data I-networks-I</wh> = <wh>rAudio</wh>
 	- Automatically setup: discover, connect shared files and data
  • <wh>Windows NFS clients</wh>:
 	- Windows Features > Services for NFS > Client for NFS - Enable

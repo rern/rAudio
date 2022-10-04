@@ -12,7 +12,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
  • Pair:
 	- On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
-	- On rAudio - Bluetooth &nbsp;<?=( i( 'search wh' ) )?>Search > Select to pair
+	- On rAudio - Bluetooth <?=( i( 'search wh' ) )?> Search - Select to pair
  • Connect:
 	- On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
 	- Receiver buttons can be used to control playback
