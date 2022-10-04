@@ -92,6 +92,9 @@ pre {
 	line-height: 20px;
 	overflow-x: auto;
 }
+div.help-block {
+	margin-left: 0;
+}
 .help-block {
 	display: block;
 	margin-top: 0;
@@ -105,14 +108,39 @@ pre {
 	line-height: 16px;
 	font-size: 16px !important;
 }
+.help-block i {
+	margin-left: 3px;
+	margin-right: -4px;
+}
 .help-block p {
 	margin: 0 0 0 10px;
 }
 .help-block .img {
 	color: var( --cml );
 }
-div.help-block {
-	margin-left: 0;
+.menu-sub {
+	display: inline-block;
+	height: 25px;
+	line-height: 27px;
+	padding: 0 5px 0 3px;
+	background: var( --cg );
+}
+@supports (-webkit-touch-callout: none) { /* ios only */
+	.menu-sub {
+		line-height: 25px;
+	}
+}
+.menu-sub i:last-of-type {
+	margin-left: 15px;
+}
+.menu-sub::after {
+	content: '';
+	display: inline-block;
+	position: absolute;
+	margin-left:-23px;
+	width: 1px;
+	height: 25px;
+	background: var( --cga );
 }
 .clear {
 	clear: both;

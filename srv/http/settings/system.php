@@ -141,7 +141,7 @@ $body = [
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-{$hd( i( 'gear' ) )}<code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
+I-gear-I <code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -152,7 +152,7 @@ HTML
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-{$hd( i( 'gear' ) )}Settings
+I-gear-I Settings
  • Auto start Access Point - On failed connection or no router
  • Country of Wi-Fi regulatory domain:
 	- 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
@@ -177,13 +177,13 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	{$hd( i( 'gear' ) )}
+	I-gear-I
 </div>
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected. See{$hd( i( 'player' ) )}Player if it's already set as Output device.
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with{$hd( i( 'gear' ) )}next to it.
+ • HAT with EEPROM could be automatically detected. See I-player-I Player if it's already set as Output device.
+ • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I-gear-I next to it.
 HTML
 	]
 	, [
@@ -194,7 +194,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-{$hd( i( 'warning' ) )}LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I-warning-I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -217,7 +217,7 @@ HTML
 		, 'icon'    => 'relays'
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off:{$hd( i( 'plus-r' ) )}System <gr>|</gr>{$hd( i( 'relays wh' ) )}
+On/Off: <a class="menu-sub">I-plus-r-I System I-relays wh-I</a>
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -284,7 +284,7 @@ HTML
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-{$hd( i( 'gear' ) )}Servers:
+I-gear-I Servers:
  • NTP: For time sync
  • Package mirror: For system upgrade <code>pacman -Syu</code>
 HTML
@@ -337,15 +337,15 @@ HTML
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server: <wh>{$hd( i( 'features' ) )}Features</wh> > <wh>Server rAudio{$hd( i( 'rserver' ) )}</wh>- Enable
-	Clients: <wh>Shared Data{$hd( i( 'networks' ) )}</wh> > Connect rAudio server with IP address
+	Server: <wh>I-features-I Features</wh> > <wh>Server rAudio I-rserver-I</wh>- Enable
+	Clients: <wh>Shared Data I-networks-I</wh> > Connect rAudio server with IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	Clients:
-		- <wh>Storage{$hd( i( 'plus-circle' ) )}</wh> with the same name, share path/share name
-		- <wh>Shared Data{$hd( i( 'networks' ) )}</wh> - Add the created share on server
+		- <wh>Storage I-plus-circle-I</wh> with the same name, share path/share name
+		- <wh>Shared Data I-networks-I</wh> - Add the created share on server
 HTML
 	]
 ];

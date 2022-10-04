@@ -37,7 +37,7 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< HTML
-{$hd( i( 'volume' ) )}Volume setting and control:
+I-volume-I Volume setting and control:
  • Player: Should be set at 0dB
  • Playback: Should be set at 100%
  • Use device volume to control level
@@ -60,7 +60,7 @@ HTML
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
 Available hardware mixers of current device.
-{$hd( i( 'volume' ) )}Control current mixer device.
+I-volume-I Control current mixer device.
 HTML
 	]
 	, [
@@ -169,7 +169,7 @@ HTML
 		, 'help'     => <<< HTML
 <code>enable "yes"</code>
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes:{$hd( i( 'help filetype' ) )}
+Decoder for audio filetypes: I-help filetype-I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]

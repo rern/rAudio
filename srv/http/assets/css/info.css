@@ -607,17 +607,14 @@ hr {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
 }
-/* ios only */
-@media not all and ( min-resolution:.001dpcm ) {
-	@supports ( -webkit-appearance:none ) and ( stroke-color:transparent ) {
-		#infoOverlay input[type=checkbox]:checked:disabled {
-			background-color: var( --cml );
-		}
-		.infobtn {
-			line-height: 32px;
-		}
-		::placeholder {
-			color: var( --cg );
-		}
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#infoOverlay input[type=checkbox]:checked:disabled {
+		background-color: var( --cml );
+	}
+	.infobtn {
+		line-height: 32px;
+	}
+	::placeholder {
+		color: var( --cg );
 	}
 }

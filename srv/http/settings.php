@@ -90,8 +90,7 @@ function htmlHead( $data ) {
 	$html.= '</heading>';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	
-	echo $html;
+	echoSetIcon( $html );
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
@@ -137,7 +136,7 @@ function htmlSetting( $data ) {
 			 <div style="clear:both"></div>
 			 </div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	echo $html;
+	echoSetIcon( $html );
 }
 function htmlSection( $head, $body, $id = '' ) {
 	$html = '<div';
@@ -148,13 +147,17 @@ function htmlSection( $head, $body, $id = '' ) {
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';
 }
+function echoSetIcon( $html ) {
+	echo str_replace(
+		  [ 'I-',               '-I'     ]
+		, [ '<i class="fa fa-', '"></i>' ]
+		, $html
+	);
+}
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
-$hd = function( $fn ) {
-	return '&ensp;'.$fn;
-};
 
 
 include "settings/$page.php";
