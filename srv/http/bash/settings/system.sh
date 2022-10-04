@@ -57,6 +57,7 @@ sharedDataSet() {
 	rm -f $dirmpd/{counts,listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		rm -rf $dirbackup/$dir $dirshareddata/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
@@ -733,7 +734,7 @@ shareddatadisconnect )
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
-			rm $dirdata/$dir
+			rm -rf $dirdata/$dir
 			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
