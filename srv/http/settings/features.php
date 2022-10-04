@@ -290,8 +290,8 @@ HTML
 		- While still connected by clients
 		- Before clients power on
  • <wh>rAudio Shared Data clients</wh>:
-	-<wh>{$hd( i( 'system' ) )}System</wh> > Settings and Data > <wh>Shared Data{$hd( i( 'networks' ) )}</wh> - Server IP address
-	- Automatically discover, connect and setup for shared files and data.
+	-<wh>{$hd( i( 'system' ) )}System</wh> > Settings and Data > <wh>Shared Data{$hd( i( 'networks' ) )}</wh> - <wh>rAudio</wh>
+	- Automatically setup: discover, connect shared files and data
  • <wh>Windows NFS clients</wh>:
 	- Windows Features > Services for NFS > Client for NFS - Enable
 	- $fileexplorer
