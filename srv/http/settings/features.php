@@ -277,15 +277,18 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $nfsdisabled
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data.
- • rAudio server:
-	- Library - Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
-	- Server rAudio, like all servers, must be up and running:
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data&ensp;<wh><i class="fa fa-networks"></i>
+ • <wh>rAudio server</wh>:
+	- Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
+	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
- • rAudio Shared Data clients:
-	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i>
-	- With only IP address of the server, discover and connect all available file and data shares automatically.
+ • <wh>rAudio Shared Data clients</wh>:
+	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i> - Server IP address
+	- Automatically discover, connect and setup for shared files and data.
+ • <wh>Windows NFS clients</wh>:
+	- Windows Features > Services for NFS > Client for NFS - Enable
+	- File Explorer > Address bar - <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
 HTML
 	]
 	, [

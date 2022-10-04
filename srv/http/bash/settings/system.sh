@@ -12,9 +12,6 @@ pushReboot() {
 	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' system 5000
 	echo $1 >> $dirshm/reboot
 }
-pushRefresh() {
-	$dirbash/settings/system-data.sh pushrefresh
-}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1

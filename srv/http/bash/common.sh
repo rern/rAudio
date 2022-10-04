@@ -38,7 +38,7 @@ ${data:1}
 						s/\[\s*,/[ false,/g
 						s/,\s*,/, false,/g
 						s/,\s*]/, false ]/g' )
-	[[ $2 != pushrefresh ]] && echo "$data" || pushstream refresh "$data"
+	[[ $2 ]] && pushstream refresh "$data" || echo "$data"
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false
@@ -48,6 +48,12 @@ ipGet() {
 }
 isactive() {
 	systemctl -q is-active $1 && echo true || echo false
+}
+pushRefresh() {
+	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
+	[[ $2 ]] && push=$2 || push=push
+	[[ $page == networks ]] && sleep 2
+	$dirbash/settings/$page-data.sh $push
 }
 pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$1 -d "$2"

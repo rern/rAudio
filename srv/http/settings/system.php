@@ -98,11 +98,7 @@ mount -t cifs "//<bll>SERVER_IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>N
 <gr># NFS:</gr>
 mount -t nfs "<bll>SERVER_IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre>NFS clients on Windows:
- • Windows Features > Services for NFS > Client for NFS - Enable
- • File Explorer > Address bar - <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
-
-</div>
+</pre></div>
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [

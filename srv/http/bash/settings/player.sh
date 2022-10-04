@@ -5,9 +5,6 @@
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushRefresh() {
-	$dirbash/settings/player-data.sh pushrefresh
-}
 volumeBtGet() {
 	voldb=$( amixer -MD bluealsa 2> /dev/null \
 		| grep -m1 '%.*dB' \

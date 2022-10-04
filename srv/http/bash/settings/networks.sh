@@ -5,10 +5,6 @@
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushRefresh() {
-	sleep 2
-	$dirbash/settings/networks-data.sh pushrefresh
-}
 netctlSwitch() {
 	ssid=$1
 	wlandev=$( cat $dirshm/wlan )
@@ -223,15 +219,15 @@ usbbluetoothon )
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
 	sleep 3
-	$dirbash/settings/features-data.sh pushrefresh
-	$dirbash/settings/networks-data.sh pushbt
+	pushRefresh features
+	pushRefresh networks pushbt
 	pushstreamNotify 'USB Bluetooth' Ready bluetooth
 	;;
 usbbluetoothoff )
 	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
 	pushstreamNotify 'USB Bluetooth' Removed bluetooth
-	$dirbash/settings/features-data.sh pushrefresh
-	$dirbash/settings/networks-data.sh pushbt
+	pushRefresh features
+	pushRefresh networks pushbt
 	;;
 usbwifion )
 	wlandev=$( wlanDevice )

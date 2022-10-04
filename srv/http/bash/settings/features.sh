@@ -5,9 +5,6 @@
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushRefresh() {
-	$dirbash/settings/features-data.sh pushrefresh
-}
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
@@ -125,7 +122,7 @@ hostapddisable )
 	ifconfig wlan0 0.0.0.0
 	pushRefresh
 	pushstream refresh '{"page":"system","hostapd":false}'
-	$dirbash/settings/networks-data.sh pushrefresh
+	pushRefresh networks
 	;;
 hostapdget )
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
@@ -157,7 +154,7 @@ hostapdset )
 	ifconfig $wlandev $router
 	featureSet hostapd
 	pushstream refresh '{"page":"system","hostapd":true}'
-	$dirbash/settings/networks-data.sh pushrefresh
+	pushRefresh networks
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
