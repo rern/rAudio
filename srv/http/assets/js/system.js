@@ -805,7 +805,16 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	if ( $( this ).hasClass( 'disabled' ) ) return
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		$( '#shareddata' ).prop( 'checked', false );
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : $this.data( 'disabled' )
+		} );
+		return
+	}
 	
 	if ( G.shareddata ) {
 		info( {
@@ -813,7 +822,7 @@ $( '#shareddata' ).click( function() {
 			, title   : 'Shared Data'
 			, message : 'Disable and disconnect all shares?'
 			, cancel  : function() {
-				$( '#shareddata' ).prop( 'checked', true );
+				$this.prop( 'checked', true );
 			}
 			, okcolor : orange
 			, ok      : function() {
@@ -1000,6 +1009,7 @@ function infoNFSconnect( ip ) {
 						  icon    : 'networks'
 						, title   : 'Shared Data'
 						, message : list
+									+'<br>Connect all shares?'
 						, cancel  : function() {
 							$( '#shareddata' ).prop( 'checked', false );
 						}

@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan
+script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
 if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
 	rm $dirshm/{dabscan,updatingdab}

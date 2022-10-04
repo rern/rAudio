@@ -767,16 +767,23 @@ sharelist )
 	ip=${args[1]}
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 	
-	paths=$( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
+	if [[ ${args[2]} == smb ]]; then
+		script -c "timeout 10 smbclient -NL $ip" $dirshm/smblist &> /dev/null # capture /dev/tty to file
+		paths=$( sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//' $dirshm/smblist )
+	else
+		paths=$( timeout 5 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
+	fi
 	if [[ $paths ]]; then
 		echo "\
 Shares @<wh>$ip</wh>:
 
-<pre><wh>$paths</wh></pre>
-Connect all shares?"
+<pre><wh>$paths</wh></pre>"
 	else
 		echo "No NFS shares found @<wh>$ip</wh>"
 	fi
+	;;
+sharelistsmb )
+	timeout 10 smbclient -NL ${args[1]} | sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//'
 	;;
 soundprofile )
 	soundProfile

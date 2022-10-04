@@ -18,6 +18,11 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
+if ( file_exists( '/srv/http/data/system/camilladsp' ) {
+	$disabledbt = '<wh>DSP<i class=\'fa fa-camilladsp\'></i></wh> is currently active.';
+} else {
+	$disabledbt = 'Bluetooth is currently connected.';
+}
 
 echo '
 <div id="gpiosvg" class="hide">';
@@ -134,7 +139,7 @@ $body = [
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetooth'
-		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
+		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
 <i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
 HTML
@@ -328,7 +333,7 @@ HTML
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
-		, 'disabled' => 'Server rAudio is currently active.'
+		, 'disabled' => '<wh>Server rAudio<i class=\'fa fa-rserver\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>

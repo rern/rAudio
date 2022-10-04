@@ -2,12 +2,17 @@
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 $fileexplorer = 'File Explorer > Address bar - <code>\\\\'.$ip.'</code> or <code>\\\\'.$hostname.'</code>';
-if ( is_link( '/srv/http/data/mpd' ) ) {
-	$nfsdisabled = 'Shared Data is currently enabled.';
-} else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
-	$nfsdisabled = 'File Sharing is currently active.';
+if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
+	$disableddsp = '<wh>Bluetooth<i class=\'fa fa-bluetooth\'></i></wh> is currently enabled.';
 } else {
-	$nfsdisabled = 'Currently connected by clients';
+	$disableddsp = '<wh>Equalizer<i class=\'fa fa-equalizer\'></i></wh> is currently enabled.';
+}
+if ( is_link( '/srv/http/data/mpd' ) ) {
+	$disablednfs = '<wh>Shared Data<i class=\'fa fa-networks\'></i></wh> is currently enabled.';
+} else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
+	$disablednfs = '<wh>File Sharing<i class=\'fa fa-networks\'></i></wh> is currently active.';
+} else {
+	$disablednfs = 'Currently connected by clients';
 }
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
@@ -21,7 +26,7 @@ $body = [
 		, 'icon'     => 'airplay'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => 'AirPlay is currently active.'
+		, 'disabled' => '<wh>AirPlay<i class=\'fa fa-airplay\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 HTML
@@ -46,7 +51,7 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'disabled' => 'SnapClient is currently active.'
+		, 'disabled' => '<wh>SnapClient<i class=\'fa fa-snapcast\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
@@ -61,7 +66,7 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => 'Spotify is currently active.'
+		, 'disabled' => '<wh>Spotify<i class=\'fa fa-spotify\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
@@ -86,7 +91,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => 'UPnP is currently active.'
+		, 'disabled' => '<wh>UPnP<i class=\'fa fa-upnp\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 HTML
@@ -115,7 +120,7 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
 		, 'status'   => 'snapserver'
-		, 'disabled' => 'SnapClient is currently connected.'
+		, 'disabled' => '<wh>SnapClient<i class=\'fa fa-snapcast\'></i></wh> is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
@@ -138,7 +143,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
-		, 'disabled' =>  ( exec( 'systemctl is-active bluetooth' ) === 'active' ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
+		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-camilladsp wh"></i>
@@ -151,7 +156,7 @@ HTML
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => 'DSP is currently enabled.'
+		, 'disabled' => '<wh>DSP<i class=\'fa fa-camilladsp\'></i></wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-equalizer wh"></i>
@@ -212,7 +217,7 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'disabled' => 'Server rAudio is currently active.'
+		, 'disabled' => '<wh>Server rAudio<i class=\'fa fa-rserver\'></i></wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
@@ -276,7 +281,7 @@ HTML
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'status'      => 'nfs-server'
-		, 'disabled'    => $nfsdisabled
+		, 'disabled'    => $disablednfs
 		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data&ensp;<i class="fa fa-networks"></i></wh>
  • <wh>rAudio Shared Data server</wh>:
@@ -296,7 +301,7 @@ HTML
 		  'label'    => 'Stop Timer'
 		, 'id'       => 'stoptimer'
 		, 'icon'     => 'stopwatch'
-		, 'disabled' => 'Player is not playing.'
+		, 'disabled' => 'Nothing is playing.'
 		, 'help'     => <<< HTML
 Stop timer:
  • Lower volume to 0 (Mute).
