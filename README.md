@@ -13,7 +13,8 @@ Audio player for
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm - `mpd` `nginx`
 - Share data and files between multiple rAudios
-	- Server-clients or all clients
+	- Server rAudio : clients (Easy setup with server IP address only)
+	- File server : clients
 	- Live data update - refresh across all rAudios
 - Control via GUI on any browsers
 - Live display update - refresh across multiple GUI clients
