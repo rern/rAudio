@@ -454,11 +454,13 @@ bookmarkremove )
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
+	else
+		order=false
 	fi
 	data='{
   "type"  : "delete"
 , "path"  : "'$path'"
-, "order" :'$( cat $dirsystem/order 2> /dev/null )'
+, "order" :'$order'
 }'
 	pushstream bookmark "$data"
 	;;
@@ -468,9 +470,10 @@ bookmarkrename )
 	path=${args[3]}
 	mv $dirbookmarks/{"$name","$newname"} 
 	data='{
-  "type" : "rename"
-, "path" : "'$path'"
-, "name" : "'$newname'"
+  "type"  : "rename"
+, "path"  : "'$path'"
+, "name"  : "'$newname'"
+, "order" : false
 }'
 	pushstream bookmark "$data"
 	;;

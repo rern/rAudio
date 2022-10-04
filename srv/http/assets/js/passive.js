@@ -187,11 +187,10 @@ function psBookmark( data ) {
 			}
 		} );
 	}
-	if ( 'order' in data ) {
+	if ( data.order ) {
 		G.display.order = data.order;
 		orderLibrary();
 	}
-	$( '#lib-mode-list' ).click();
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
