@@ -59,7 +59,7 @@ pushstream() {
 	chan=$1
 	data=$2
 	curl -s -X POST http://127.0.0.1/pub?id=$chan -d "$data"
-	if [[ -e $filesharedip && 'bookmark coverart mpdupdate' == *$chan* ]]; then
+	if [[ -e $filesharedip && 'bookmark coverart mpdupdate playlists radiolist' == *$chan* ]]; then
 		if [[ $chan == coverart ]]; then
 			path=$( echo "$data" \
 						| grep '"url"' \
