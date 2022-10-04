@@ -1,6 +1,7 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
+$fileexplorer = 'File Explorer > Address bar - <code>\\\\'.$ip.'</code> or <code>\\\\'.$hostname.'</code>';
 if ( is_link( '/srv/http/data/mpd' ) ) {
 	$nfsdisabled = 'Shared Data is currently enabled.';
 } else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
@@ -215,7 +216,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
- • Windows: File Explorer > Address bar - <code>\\\\$ip</code> or <code>\\\\$hostname</code>
+ • Windows: $fileexplorer
  • NFS share should yeild better performance. (System > Storage - Context menu)
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
@@ -277,18 +278,18 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $nfsdisabled
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and Shared Data&ensp;<wh><i class="fa fa-networks"></i>
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data&ensp;<i class="fa fa-networks"></i></wh>
  • <wh>rAudio server</wh>:
 	- Existing list in&ensp;<wh><i class="fa fa-usb"></i>USB</wh> displays in&ensp;<wh><i class="fa fa-networks"></i>NAS</wh> once update finished
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
  • <wh>rAudio Shared Data clients</wh>:
-	- <i class="fa fa-system"></i>System > Settings and Data > Shared Data <i class="fa fa-networks"></i> - Server IP address
+	- <wh><i class="fa fa-system"></i>System</wh> > Settings and Data > <wh>Shared Data <i class="fa fa-networks"></i></wh> - Server IP address
 	- Automatically discover, connect and setup for shared files and data.
  • <wh>Windows NFS clients</wh>:
 	- Windows Features > Services for NFS > Client for NFS - Enable
-	- File Explorer > Address bar - <code>\\<?=$ip?></code> or <code>\\<?=$hostname?></code>
+	- $fileexplorer
 HTML
 	]
 	, [
