@@ -161,12 +161,12 @@ HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: <a class="menu-sub">I-features-I Features</a>I-equalizer sub-I
 Presets:
- • <code>Flat</code>: All bands at <code>0dB</code>
- • New: Adjust > I-plus-circle-I Add > <code>NAME</code> > I-save-I Save
- • Existing: Adjust > I-save-I Save
- • Adjust without I-save-I Save will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: I-plus-circle-I Add > <code>NAME</code> > I-save-I Save
- • If distortions occurred, lower all bands collectively and increase volume to fix distortions
+ • <code>Flat</code>: All bands at 0dB
+ • New: | Adjust | I-plus-circle-I Add | <bll>NAME</bll> | I-save-I Save |
+ • Existing: | Adjust | I-save-I Save |
+ • Adjust without | I-save-I Save | will be listed as <code>(unnamed)</code>
+ • Save <code>(unnamed)</code>: | I-plus-circle-I Add | <bll>NAME</bll> | I-save-I Save |
+ • If distortions occurred, lower all bands collectively and increase volume
 HTML
 	]
 ];
