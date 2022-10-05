@@ -68,11 +68,12 @@ htmlHead( [ //////////////////////////////////
 	<div class="help-block hide">
 <?=( i( 'refresh' ) )?> <gr>Toggle refresh every 10 seconds.</gr>
 
-CPU Load:
+<wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
  • calculated over 1, 5 and 15 minutes.
  • Each one should not be constantly over 0.75 x CPU cores.
-CPU temperature:
+ 
+<wh>CPU temperature:</wh>
  • 80-84°C: ARM cores throttled.
  • 85°C: ARM cores and GPU throttled.
  • RPi 3B+: 60°C soft limit (optimized throttling)
@@ -89,10 +90,10 @@ htmlHead( [ //////////////////////////////////
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="help-block hide">Icon context menu: Unmount / Re-mount / Forget / Info / Share
 
-USB drives:
+<wh>USB drives:</wh>
  • Will be found and mounted automatically.
 
-Network shares:
+<wh>Network shares:</wh>
  • Must be manually configured.
  • If mount failed, try in SSH terminal:
 <pre>
@@ -195,7 +196,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-I-warning-I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I-warning yl-I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -325,7 +326,7 @@ HTML
 		, 'icon'    => 'restore'
 		, 'setting' => 'custom'
 		, 'help'    => <<< HTML
-Restore all settings and Library database from a backup file. The system will reboot after finished.
+Restore all settings and Library database from a backup file.
 HTML
 	]
 	, [
@@ -342,7 +343,7 @@ Connect share data as client for Library database, audio CD, bookmarks, lyrics, 
 	Clients: | <wh>Shared Data I-networks-I</wh> | • rAudio > Server IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
-		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
+		- Linux: NFS <code>777</code>, CIFS/SMB <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	Clients:
 		- | <wh>Storage I-plus-circle-I</wh> | Add with the same name, share path/share name

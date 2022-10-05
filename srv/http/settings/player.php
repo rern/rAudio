@@ -189,7 +189,8 @@ HTML
 		, 'help'     => <<< HTML
 <code>quality "custom"</code>
 Default quality: very high
-SoX Resampler custom settings:
+
+<wh>SoX Resampler custom settings:</wh>
  • Precision - Conversion precision (20 = HQ)
  • Phase Response (50 = Linear)
  • Passband End - 0dB point bandwidth to preserve (100 = Nyquist)

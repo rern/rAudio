@@ -122,7 +122,7 @@ div.help-block {
 	display: inline-block;
 	height: 25px;
 	line-height: 27px;
-	padding: 0 5px 0 3px;
+	padding: 0 10px 0 3px;
 	background: var( --cg );
 }
 .sub {
