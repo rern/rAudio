@@ -149,8 +149,8 @@ function htmlSection( $head, $body, $id = '' ) {
 }
 function echoSetIcon( $html ) {
 	echo str_replace(
-		  [ 'I-',               '-I'     ]
-		, [ '<i class="fa fa-', '"></i>' ]
+		  [ 'I-',               '-I',     '|'        ]
+		, [ '<i class="fa fa-', '"></i>', '<g>|</g>' ]
 		, $html
 	);
 }
