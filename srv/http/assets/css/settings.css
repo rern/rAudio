@@ -125,22 +125,19 @@ div.help-block {
 	padding: 0 5px 0 3px;
 	background: var( --cg );
 }
+.sub {
+	margin-left: 0 !important;
+	width: 25px !important;
+	line-height: 25px !important;
+	text-align: center;
+	color: var( --cw );
+	background: var( --cg );
+	border-left: solid 1px var( --cga );
+}
 @supports (-webkit-touch-callout: none) { /* ios only */
 	.menu-sub {
 		line-height: 25px;
 	}
-}
-.menu-sub i:last-of-type {
-	margin-left: 15px;
-}
-.menu-sub::after {
-	content: '';
-	display: inline-block;
-	position: absolute;
-	margin-left:-23px;
-	width: 1px;
-	height: 25px;
-	background: var( --cga );
 }
 .clear {
 	clear: both;
@@ -158,7 +155,7 @@ heading {
 heading {
 	letter-spacing: 5px;
 }
-heading.sub {
+heading.subhead {
 	margin: 20px 0 10px 0;
 	padding-bottom: 0;
 	line-height: 28px;

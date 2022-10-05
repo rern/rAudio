@@ -182,7 +182,8 @@ $body = [
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected. See I-player-I Player if it's already set as Output device.
+ • HAT with EEPROM could be automatically detected.
+	(See | I-player-I Player | Output | if it's already set as Output device.)
  • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I-gear-I next to it.
 HTML
 	]
@@ -217,7 +218,7 @@ HTML
 		, 'icon'    => 'relays'
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: <a class="menu-sub">I-plus-r-I System I-relays wh-I</a>
+On/Off: <a class="menu-sub">I-plus-r-I System</a>I-relays sub-I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -337,15 +338,15 @@ HTML
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server: | <wh>I-features-I Features</wh> | <wh>Server rAudio I-rserver-I</wh> = Enable
-	Clients: <wh>Shared Data I-networks-I</wh> = rAudio > Server IP address
+	Server: | <wh>I-features-I Features</wh> | <wh>Server rAudio I-rserver-I</wh> | Enable
+	Clients: | <wh>Shared Data I-networks-I</wh> | • rAudio > Server IP address
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
 		- Linux: NFS <code>777</code>, CIFS <code>read only = no</code>
 		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
 	Clients:
-		- <wh>Storage I-plus-circle-I</wh> > Add with the same name, share path/share name
-		- <wh>Shared Data I-networks-I</wh> - Add the created share on server
+		- | <wh>Storage I-plus-circle-I</wh> | Add with the same name, share path/share name
+		- | <wh>Shared Data I-networks-I</wh> | Add the created share on server
 HTML
 	]
 ];
@@ -410,7 +411,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>
 	
-	<heading class="sub">Back End</heading>
+	<heading class="subhead">Back End</heading>
 	<div class="list">
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
@@ -419,7 +420,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	<br><?=$indexhtml?></div>
 	<div class="list"></div>
 	
-	<heading class="sub">Front End</heading>
+	<heading class="subhead">Front End</heading>
 	<div class="list">
 		<a href="https://whatwg.org">HTML</a>
 		<p>Hypertext Markup Language for displaying documents in web browsers</p>
@@ -435,7 +436,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	<div class="listtitle">P l u g i n s : <?=( i( 'chevron-down bl' ) )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
-	<heading class="sub">Data</heading>
+	<heading class="subhead">Data</heading>
 	<div class="list">
 		<a href="https://www.last.fm">last.fm</a>
 		<p>Coverarts and artist biographies</p>

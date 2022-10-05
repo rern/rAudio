@@ -56,7 +56,7 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: <a class="menu-sub">I-networks-I Networks I-snapcast wh-I</a>
+ • Connect: <a class="menu-sub">I-networks-I Networks</a>I-snapcast sub-I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -126,7 +126,7 @@ HTML
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
 	- Enable SnapClient
-	- Connect: <a class="menu-sub">I-networks-I Networks I-snapcast wh-I</a>
+	- Connect: <a class="menu-sub">I-networks-I Networks</a>I-snapcast sub-I
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
@@ -146,7 +146,7 @@ $body = [
 		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: <a class="menu-sub">I-features-I Features I-camilladsp wh-I</a>
+Settings: <a class="menu-sub">I-features-I Features</a>I-camilladsp sub-I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -159,7 +159,7 @@ HTML
 		, 'disabled' => '<wh>DSP'.i( 'camilladsp' ).'</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control: <a class="menu-sub">I-features-I Features I-equalizer wh-I</a>
+Control: <a class="menu-sub">I-features-I Features</a>I-equalizer sub-I
 Presets:
  • <code>Flat</code>: All bands at <code>0dB</code>
  • New: Adjust > I-plus-circle-I Add > <code>NAME</code> > I-save-I Save
@@ -244,7 +244,7 @@ HTML
 		, 'icon'    => 'raudiobox'
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: <a class="menu-sub">I-playlist-I Playlist I-raudiobox wh-I</a>
+Switch: <a class="menu-sub">I-playlist-I Playlist</a>I-raudiobox sub-I
  • SSH passwords must be default.
 HTML
 	]
@@ -256,7 +256,7 @@ HTML
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: <a class="menu-sub">I-player-I Player I-lock wh-I</a>
+Lock: <a class="menu-sub">I-player-I Player</a>I-lock sub-I
 HTML
 	]
 	, [
@@ -283,14 +283,14 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $disablednfs
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and <wh>Shared Data I-networks-I</wh>
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I-networks-I</wh> |
  • <wh>rAudio Shared Data server</wh>:
 	- Existing list in <wh>I-usb-I USB</wh> displays in <wh>I-networks-I NAS</wh> once update finished
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
  • <wh>rAudio Shared Data clients</wh>:
-	- | <wh>I-system-I System</wh> | Settings and Data > <wh>Shared Data I-networks-I</wh> = <wh>rAudio</wh>
+	- | <wh>I-system-I System</wh> | Settings and Data | <wh>Shared Data I-networks-I</wh> | <wh>• rAudio</wh>
 	- Automatically setup: discover, connect shared files and data
  • <wh>Windows NFS clients</wh>:
 	- Windows Features > Services for NFS > Client for NFS - Enable

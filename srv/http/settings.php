@@ -79,7 +79,7 @@ function htmlHead( $data ) {
 	$button = $data[ 'button' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$class = $status ? 'status' : '';
-	$class.= $subhead ? ' sub' : '';
+	$class.= $subhead ? ' subhead' : '';
 	
 	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
