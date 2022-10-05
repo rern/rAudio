@@ -164,8 +164,7 @@ Presets:
  • <code>Flat</code>: All bands at 0dB
  • New: | Adjust | I-plus-circle-I Add | <bll>NAME</bll> | I-save-I Save |
  • Existing: | Adjust | I-save-I Save |
- • Adjust without | I-save-I Save | will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: | I-plus-circle-I Add | <bll>NAME</bll> | I-save-I Save |
+ • Adjusted values will be listed as <code>(unnamed)</code> until saved.
  • If distortions occurred, lower all bands collectively and increase volume
 HTML
 	]
