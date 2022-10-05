@@ -120,9 +120,10 @@ div.help-block {
 }
 .menu-sub {
 	display: inline-block;
+	width: 95px;
 	height: 25px;
 	line-height: 27px;
-	padding: 0 10px 0 3px;
+	padding-left: 3px;
 	background: var( --cg );
 }
 .sub {

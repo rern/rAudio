@@ -206,7 +206,8 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: Blank screen - backlight still on (no energy saved)
+ • Screen off: <a class="menu-sub">I-power-I Power</a>I-screenoff sub-I&emsp;or timer
+	(Backlight still on - no energy saved)
  • HDMI display: Must be connected before boot.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
@@ -222,7 +223,7 @@ HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
  • Windows: $fileexplorer
- • NFS share should yeild better performance. (System > Storage - Context menu)
+ • | Server rAudio I-rserver-I | NFS share should yeild better performance.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -270,7 +271,7 @@ HTML
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • Web Radio must be manually scrobbled: Title > I-lastfm wh-I Scrobble
+ • Web Radio must be manually scrobbled: | Playing title | I-lastfm wh-I Scrobble |
 HTML
 	]
 	, [
@@ -285,7 +286,7 @@ HTML
 		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I-networks-I</wh> |
  • <wh>rAudio Shared Data server</wh>:
-	- Existing list in <wh>I-usb-I USB</wh> displays in <wh>I-networks-I NAS</wh> once update finished
+	- Existing list in | I-library-I | <wh>I-usb-I USB</wh> | will display in | <wh>I-networks-I NAS</wh> | once update finished.
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
