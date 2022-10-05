@@ -142,7 +142,7 @@ $body = [
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-I-gear-I <code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
+I-gear-I C-Sampling 16bit-C - Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -273,7 +273,7 @@ $body = [
 		, 'help'    => <<< HTML
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
- • Web Interface URL: <code id="avahiurl"></code>
+ • Web Interface URL: <code id="avahiurl">-C
  • System hostname
 HTML
 	]
@@ -288,7 +288,7 @@ HTML
 		, 'help'     => <<< HTML
 I-gear-I Servers:
  • NTP: For time sync
- • Package mirror: For system upgrade <code>pacman -Syu</code>
+ • Package mirror: For system upgrade C-pacman -Syu-C
 HTML
 	]
 	, [
@@ -335,16 +335,16 @@ HTML
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
-		, 'disabled' => '<wh>Server rAudio'.i( 'rserver' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio I-rserver-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
 	Server: | <wh>I-features-I Features</wh> | <wh>Server rAudio I-rserver-I</wh> | Enable
-	Clients: | <wh>Shared Data I-networks-I</wh> | • rAudio > Server IP address
+	Clients: | <wh>Shared Data I-networks-I</wh> | • rAudio > Server <code>IP ADDRESS</code>
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
-		- Linux: NFS <code>777</code>, CIFS/SMB <code>read only = no</code>
-		- Windows: <code>Everyone - Full Control</code> (Sharing + Security)
+		- Linux: NFS C-777-C, CIFS/SMB C-read only = no-C
+		- Windows: C-Everyone - Full Control-C (Sharing + Security)
 	Clients:
 		- | <wh>Storage I-plus-circle-I</wh> | Add with the same name, share path/share name
 		- | <wh>Shared Data I-networks-I</wh> | Add the created share on server

@@ -6,25 +6,28 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'btcontroller'
 	, 'button' => [ 'btscan' => 'search' ]
 ] );
-?>
+$html = <<< HTML
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
 	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
  • Pair:
-	- On receiver: Turn on <code>discovery</code> / <code>pairing</code> mode
-	- On rAudio: | Bluetooth <?=( i( 'search wh' ) )?> | Select to pair
+	- On receiver: Turn on C-discovery-C / C-pairing-C mode
+	- On rAudio: | Bluetooth I-search wh-I | Select to pair
  • Connect:
-	- On receiver: <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
+	- On receiver: C-power on-C / C-power off-C > C-connect-C / C-disconnect-C
 	- Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	- On rAudio: | <?=( i( 'system' ) )?> System | Bluetooth <?=( i( 'bluetooth' ) )?> | Enable - <code>Discoverable by senders</code>
-	- On sender: Search > Select rAudio to pair
-	- <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
+	- On rAudio: | I-system-I System | Bluetooth I-bluetooth-I | • Discoverable by senders
+	- On sender: | Search | Select rAudio to pair
+	- C-Forget-C / C-Remove-C should be done on both rAudio and sender
  • Connect:
-	- On sender: Select rAudio > <code>connect</code> / <code>disconnect</code>
+	- On sender: Select rAudio > C-connect-C / C-disconnect-C
 </div>
+HTML;
+echoSetIcon( $html );
+?>
 </div>
 <div id="divwl" class="section">
 <?php
@@ -36,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="help-block hide">
- • Connect: Wi-Fi &nbsp;<?=( i( 'search wh' ) )?>Search > Select to connect
+ • Connect: <g>|</g> Wi-Fi &nbsp;<?=( i( 'search wh' ) )?>Search <g>|</g> Select to connect
  • Avoid connecting to access points which signal is less than 2 bars.
 </div>
 </div>

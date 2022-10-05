@@ -70,9 +70,9 @@ HTML
 		, 'setting' => false
 		, 'help'    => <<< HTML
 Volume control for each device.
- • <code>None / 0dB</code> Best sound quality. (Use amplifier volume)
- • <code>Mixer device</code> Good and convenient. (Device hardware volume)
- • <code>MPD software</code> Software volume.
+ • C-None / 0dB-C Best sound quality. (Use amplifier volume)
+ • C-Mixer device-C Good and convenient. (Device hardware volume)
+ • C-MPD software-C Software volume.
 HTML
 	]
 ];
@@ -88,7 +88,7 @@ $body = [
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
- • Volume Control: <code>None / 0db</code> (Hidden volume in Playback)
+ • Volume Control: C-None / 0db-C (Hidden volume in Playback)
  • Signal Processors: Disabled
  • Crossfade, Normalization and Replay Gain: Disabled
 HTML
@@ -112,7 +112,7 @@ $body = [
 	[	  'label'   => 'Crossfade'
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
-<code>mpc crossfade N</code>
+C-mpc crossfade N-C
 Fade-out to fade-in between songs.
 HTML
 	]
@@ -121,7 +121,7 @@ HTML
 		, 'id'      => 'normalization'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-<code>volume_normalization "yes"</code>
+C-volume_normalization "yes"-C
 Normalize the volume level of songs as they play.
 HTML
 	] 
@@ -129,7 +129,7 @@ HTML
 		  'label'   => 'Replay Gain'
 		, 'id'      => 'replaygain'
 		, 'help'    => <<< HTML
-<code>replaygain "N"</code>
+C-replaygain "N"-C
 Set gain control to setting in replaygain tag.
 Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 HTML
@@ -145,7 +145,7 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<code>audio_buffer_size "kB"</code>
+C-audio_buffer_size "kB"-C
 Default buffer size: 4096 kB (24 seconds of CD-quality audio)
 Increase to fix intermittent audio.
 HTML
@@ -155,7 +155,7 @@ HTML
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<code>max_output_buffer_size "kB"</code>
+C-max_output_buffer_size "kB"-C
 Default buffer size: 8192 kB
 Increase to fix missing Album list with large Library.
 HTML
@@ -165,9 +165,9 @@ HTML
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DAB Radio'.i( 'dabradio' ).'is currently enabled.'
+		, 'disabled' => '<wh>DAB Radio I-dabradio-I is currently enabled.'
 		, 'help'     => <<< HTML
-<code>enable "yes"</code>
+C-enable "yes"-C
 Should be disabled if not used for faster Library update.
 Decoder for audio filetypes: I-help filetype-I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
@@ -178,7 +178,7 @@ HTML
 		, 'id'      => 'autoupdate'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-<code>auto_update "yes"</code>
+C-auto_update "yes"-C
 Automatic update MPD database when files changed.
 HTML
 	]
@@ -187,7 +187,7 @@ HTML
 		, 'id'       => 'soxr'
 		, 'sublabel' => 'custom settings'
 		, 'help'     => <<< HTML
-<code>quality "custom"</code>
+C-quality "custom"-C
 Default quality: very high
 
 <wh>SoX Resampler custom settings:</wh>
@@ -209,7 +209,7 @@ HTML
 		  'label'   => "User's Configurations"
 		, 'id'      => 'custom'
 		, 'help'    => <<< HTML
-Insert custom configurations into <code>/etc/mpd.conf</code>.
+Insert custom configurations into C-/etc/mpd.conf-C.
 HTML
 	]
 ];
@@ -226,7 +226,7 @@ htmlHead( [
 	, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
- • Edit <code>/srv/http/data/mpd/albumignore</code>
+ • Edit C-/srv/http/data/mpd/albumignore-C
  • Remove albums to restore
  • Update Library
 HTML
@@ -237,9 +237,9 @@ htmlHead( [
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< HTML
-List of <code>.mpdignore</code> files contain directories excluded from database.
+List of C-.mpdignore-C files contain directories excluded from database.
 To restore:
-• Edit <code>.../.mpdignore</code>
+• Edit C-.../.mpdignore-C
 • Remove directories to restore
 • Update Library
 HTML

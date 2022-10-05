@@ -1,16 +1,16 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
-$fileexplorer = 'File Explorer > Address bar - <code>\\\\'.$ip.'</code> or <code>\\\\'.$hostname.'</code>';
+$fileexplorer = 'File Explorer > Address bar - C-\\\\'.$ip.'-C or C-\\\\'.$hostname.'-C';
 if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
-	$disableddsp = '<wh>Bluetooth'.i( 'bluetooth' ).'</wh> is currently enabled.';
+	$disableddsp = '<wh>Bluetooth I-bluetooth-I</wh> is currently enabled.';
 } else {
-	$disableddsp = '<wh>Equalizer'.i( 'equalizer' ).'</wh> is currently enabled.';
+	$disableddsp = '<wh>Equalizer I-equalizer-I</wh> is currently enabled.';
 }
 if ( is_link( '/srv/http/data/mpd' ) ) {
-	$disablednfs = '<wh>Shared Data'.i( 'networks' ).'</wh> is currently enabled.';
+	$disablednfs = '<wh>Shared Data I-networks-I</wh> is currently enabled.';
 } else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
-	$disablednfs = '<wh>File Sharing'.i( 'networks' ).'</wh> is currently active.';
+	$disablednfs = '<wh>File Sharing I-networks-I</wh> is currently active.';
 } else {
 	$disablednfs = 'Currently connected by clients';
 }
@@ -26,7 +26,7 @@ $body = [
 		, 'icon'     => 'airplay'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => '<wh>AirPlay'.i( 'airplay' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>AirPlay I-airplay-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 HTML
@@ -51,7 +51,7 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'disabled' => '<wh>SnapClient'.i( 'snapcast' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>SnapClient I-snapcast-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
@@ -66,21 +66,21 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => '<wh>Spotify'.i( 'spotify' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>Spotify I-spotify-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • Get <code>ID</code> and <code>Secret</code> from private app : <bll class="screenshot pointer">(Screenshots)</bll>
-	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
-	• <code>CREATE AN APP</code>
+ • Get C-ID-C and C-Secret-C from private app : <bll class="screenshot pointer">(Screenshots)</bll>
+	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > C-LOGIN-C with normal Spotify account
+	• C-CREATE AN APP-C
 		- <wh>App name:</wh> <gr>(any)</gr>
 		- <wh>App description:</wh> <gr>(any)</gr>
-	• <code>EDIT SETTINGS</code>
+	• C-EDIT SETTINGS-C
 		- <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
-	• <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
+	• C-USERS AND ACCESS-C > C-ADD NEW USER-C
 		- <wh>Name:</wh> <gr>(any)</gr>
 		- <wh>Spotify Account:</wh> (login email)
-	• rAudio <code>Spotify</code>
+	• rAudio C-Spotify-C
 		- Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -91,7 +91,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => '<wh>UPnP'.i( 'upnp' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>UPnP I-upnp-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 HTML
@@ -110,7 +110,7 @@ $body = [
 	, 'icon'     => 'webradio'
 	, 'setting'  => false
 	, 'help'     => <<< HTML
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
+<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via C-http://$ip:8000-C (Latency - several seconds)
 HTML
 	]
 	, [
@@ -120,7 +120,7 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
 		, 'status'   => 'snapserver'
-		, 'disabled' => '<wh>SnapClient'.i( 'snapcast' ).'</wh> is currently connected.'
+		, 'disabled' => '<wh>SnapClient I-snapcast-I</wh> is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
@@ -156,15 +156,15 @@ HTML
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DSP'.i( 'camilladsp' ).'</wh> is currently enabled.'
+		, 'disabled' => '<wh>DSP I-camilladsp-I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: <a class="menu-sub">I-features-I Features</a>I-equalizer sub-I
 Presets:
- • <code>Flat</code>: All bands at 0dB
- • New: | Adjust | I-plus-circle-I Add | <bll>NAME</bll> | I-save-I Save |
+ • C-Flat-C: All bands at 0dB
+ • New: | Adjust | I-plus-circle-I Add | C-NAME-C | I-save-I Save |
  • Existing: | Adjust | I-save-I Save |
- • Adjusted values will be listed as <code>(unnamed)</code> until saved.
+ • Adjusted values will be listed as C-(unnamed)-C until saved.
  • If distortions occurred, lower all bands collectively and increase volume
 HTML
 	]
@@ -217,10 +217,10 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'disabled' => '<wh>Server rAudio'.i( 'rserver' ).'</wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio I-rserver-I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
- • Set sources permissions for read + write - directory: <code>0777</code> file: <code>0555</code>
+ • Set sources permissions for read + write - directory: C-0777-C file: C-0555-C
  • Windows: $fileexplorer
  • | Server rAudio I-rserver-I | NFS share should yeild better performance.
 HTML
@@ -255,7 +255,7 @@ HTML
 		, 'icon'     => 'lock'
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
+<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using C-PASSWORD_BCRYPT-C.
 Lock: <a class="menu-sub">I-player-I Player</a>I-lock sub-I
 HTML
 	]
