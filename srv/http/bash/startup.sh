@@ -51,6 +51,8 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan # initial status
+
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -130,7 +132,6 @@ fi
 if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
 	rmmod brcmfmac &> /dev/null
 fi
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify "$restorefailed" restore 10000
