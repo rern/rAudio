@@ -1118,8 +1118,7 @@ power )
 	action=${args[1]}
 	nfsok=${args[2]}
 	if [[ ! $nfsok && $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server; then
-		echo -1
-		exit
+		[[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 	fi
 	
 	if [[ $action == reboot ]]; then
