@@ -59,9 +59,9 @@ pushstream() {
 	channel=$1
 	data=$2
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
-	grep -q 'line.*rserver' <<< $data && nfspower=1 || nfspower=
-	[[ 'bookmark coverart mpdupdate playlists radiolist' == *$channel* ]] && nfschannel=1 || nfschannel=
-	if [[ ( -e $filesharedip && $nfschannel ) || $nfspower ]]; then
+	[[ ! -e $filesharedip  ]] && return
+	
+	if [[ 'bookmark coverart mpdupdate playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # rserver reboot / off
 		if [[ $channel == coverart ]]; then
 			path=$( echo "$data" \
 						| grep '"url"' \
