@@ -211,7 +211,7 @@ data+='
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
-, "shareddata"       : '$( [[ -e $filesharedip && ! -L $dirshareddata ]] && echo true )'
+, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
 , "status"           : "'$status'"

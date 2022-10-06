@@ -25,13 +25,13 @@ data+='
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
-, "nfsserver"        : '$( isactive nfs-server )'
+, "nfsserver"        : '$( [[ $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "playing"          : '$( mpc | grep -q '\[playing]' && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
-, "shareddata"       : '$( [[ -e $filesharedip && ! -L $dirshareddata ]] && echo true )'
+, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
