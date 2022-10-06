@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# shareddata:
+#    [[ $( readlink $dirshareddata ) == $dirdata ]]    = server
+#    [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] = clients
+#    [[ -e $filesharedip ]]                            = server + clients
+
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 

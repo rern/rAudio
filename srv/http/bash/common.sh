@@ -56,21 +56,23 @@ pushRefresh() {
 	$dirbash/settings/$page-data.sh $push
 }
 pushstream() {
-	chan=$1
+	channel=$1
 	data=$2
-	curl -s -X POST http://127.0.0.1/pub?id=$chan -d "$data"
-	if [[ -e $filesharedip && 'bookmark coverart mpdupdate playlists radiolist' == *$chan* ]]; then
-		if [[ $chan == coverart ]]; then
+	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
+	grep -q 'line.*rserver' <<< $data && nfspower=1 || nfspower=
+	[[ 'bookmark coverart mpdupdate playlists radiolist' == *$channel* ]] && nfschannel=1 || nfschannel=
+	if [[ ( -e $filesharedip && $nfschannel ) || $nfspower ]]; then
+		if [[ $channel == coverart ]]; then
 			path=$( echo "$data" \
 						| grep '"url"' \
 						| sed -E 's/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g' \
 						| cut -d/ -f3 )
 			[[ 'MPD bookmark webradio' != *$path* ]] && return
-			
 		fi
+		
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
-			curl -s -X POST http://$ip/pub?id=$chan -d "$data"
+			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
 		done
 	fi
 }
