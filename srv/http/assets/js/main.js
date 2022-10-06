@@ -258,12 +258,12 @@ $( '#power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
-			bash( [ 'power', 'reboot' ] );
+			power( 'reboot' );
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
 		, ok          : function() {
-			bash( [ 'power', 'off' ] );
+			power( 'off' );
 		}
 	} );
 } );

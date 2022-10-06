@@ -1003,6 +1003,25 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
+function power( action ) {
+	var off = action === 'off';
+	bash( [ 'power', action ], function( nfs ) {
+		if ( nfs == -1 ) {
+			info( {
+				  icon    : 'power'
+				, title   : 'Power'
+				, message : '<wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+							+'<br>Connected clients will stop responding.'
+							+'<br><br>Continue?'
+				, oklabel : '<i class="fa fa-'+ action +'"></i>'+ ( off ? 'Off' : 'Reboot' )
+				, okcolor : off ? red : orange
+				, ok      : function() {
+					bash( [ 'power', action, 1 ] );
+				}
+			} );
+		}
+	} );
+}
 function renderLibrary() {
 	G.mode = '';
 	G.librarylist = 0;
