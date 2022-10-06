@@ -736,40 +736,6 @@ librandom )
 	fi
 	pushstream option '{ "librandom": '$enable' }'
 	;;
-libraryhomehtml ) # for refresh on page visible
-	modes=( Album Artist 'Album Artist' Composer Conductor Date Genre Latest NAS SD USB Playlists 'Web Radio' 'DAB Radio' )
-	for mode in "${modes[@]}"; do
-		lipath=${mode/ }
-		modeLC=${lipath,,}
-		htmlmode+='<div class="lib-mode">'
-		htmlmode+='<div id="mode-'$modeLC'" class="mode" data-mode="'$modeLC'">'
-		htmlmode+='<a class="lipath">'$modeLC'</a><i class="fa fa-'$modeLC'"></i><gr></gr><a class="label">'$mode'</a>'
-		htmlmode+='</div>'
-		htmlmode+='</div>'
-	done
-	readarray -t files <<< $( ls -1 $dirbookmarks )
-	[[ ! $files ]] && echo $htmlmode && exit
-	
-	for name in "${files[@]}"; do
-		readarray -t data <<< $( cat "$dirbookmarks/$name" )
-		bkpath=${data[0]//|/\/}
-		coverart=${data[1]}
-		if [[ $coverart ]]; then
-			coverart="${coverart:0:-4}.$( date +%s ).${coverart: -3}"
-			icon='<img class="bkcoverart" src="'$( printf "$coverart" | jq -sRr '@uri' )'" data-label="'$name'">'
-		else
-			icon='<i class="fa fa-bookmark bookmark bl"></i><a class="label">'$name'</a>'
-		fi
-		htmlmode+='<div class="lib-mode bookmark">'
-		htmlmode+='<div class="mode mode-bookmark" data-mode="bookmark">'
-		htmlmode+='<a class="lipath">'$bkpath'</a>'$icon
-		htmlmode+='</div></div>'
-	done
-	echo $htmlmode
-	;;
-list )
-	list
-	;;
 lyrics )
 	artist=${args[1]}
 	title=${args[2]}

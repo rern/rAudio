@@ -46,7 +46,8 @@ $( '#pwd' ).keypress( function( e ) {
 <?php
 	exit;
 }
-$color = file_exists( '/srv/http/data/system/color' );
+
+
 // library home blocks
 $modes = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest', 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
 $htmlmode = '';
@@ -72,7 +73,7 @@ if ( count( $files ) ) {
 		$bkpath = $data[ 0 ];
 		$coverart = $data[ 1 ] ?? '';
 		if ( $coverart ) {
-			$coverart = substr( $coverart, 0, -3 ).$time.substr( $coverart, -4 );
+			$coverart = substr( $coverart, 0, -3 ).time().substr( $coverart, -4 );
 			$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'" data-label="'.$name.'">';
 		} else {
 			$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
@@ -86,6 +87,11 @@ if ( count( $files ) ) {
 			.'</div>';
 	}
 }
+if ( $_POST[ 'modelist' ] ) { // for refresh on page visible
+	echo $htmlmode;
+	exit;
+}
+
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';

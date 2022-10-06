@@ -574,7 +574,7 @@ function getPlaybackStatus( withdisplay ) {
 			displayPlayback();
 		} else if ( G.library ) {
 			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) {
-				bash( [ 'libraryhomehtml' ], function( html ) {
+				$.post( 'index-body.php', { modelist: 1 }, function( html ) {
 					$( '#lib-mode-list' ).html( html );
 					renderLibrary();
 				} );
