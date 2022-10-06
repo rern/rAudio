@@ -95,13 +95,14 @@ htmlHead( [ //////////////////////////////////
 <wh>Network shares:</wh>
  • Must be manually configured.
  • If mount failed, try in SSH terminal:
+   (replace <cy>YELLOW</cy> with actual values)
 <pre>
-mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
+mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 <gr># CIFS: (no user - username=guest, no password - password="")</gr>
-mount -t cifs "//<bll>SERVER_IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
-      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
+mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
+      -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr># NFS:</gr>
-mount -t nfs "<bll>SERVER_IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
 <pre id="codehddinfo" class="hide"></pre>
