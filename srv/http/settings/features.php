@@ -1,16 +1,16 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
-$fileexplorer = 'File Explorer > Address bar - C-\\\\'.$ip.'-C or C-\\\\'.$hostname.'-C';
+$fileexplorer = 'File Explorer > Address bar - <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
-	$disableddsp = '<wh>Bluetooth I-bluetooth-I</wh> is currently enabled.';
+	$disableddsp = '<wh>Bluetooth I^bluetooth^I</wh> is currently enabled.';
 } else {
-	$disableddsp = '<wh>Equalizer I-equalizer-I</wh> is currently enabled.';
+	$disableddsp = '<wh>Equalizer I^equalizer^I</wh> is currently enabled.';
 }
 if ( is_link( '/srv/http/data/mpd' ) ) {
-	$disablednfs = '<wh>Shared Data I-networks-I</wh> is currently enabled.';
+	$disablednfs = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
 } else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
-	$disablednfs = '<wh>File Sharing I-networks-I</wh> is currently active.';
+	$disablednfs = '<wh>File Sharing I^networks^I</wh> is currently active.';
 } else {
 	$disablednfs = 'Currently connected by clients';
 }
@@ -26,7 +26,7 @@ $body = [
 		, 'icon'     => 'airplay'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => '<wh>AirPlay I-airplay-I</wh> is currently active.'
+		, 'disabled' => '<wh>AirPlay I^airplay^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 HTML
@@ -51,12 +51,12 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'disabled' => '<wh>SnapClient I-snapcast-I</wh> is currently active.'
+		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: <a class="menu-sub">I-networks-I Networks</a>I-snapcast sub-I
+ • Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -66,22 +66,22 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => '<wh>Spotify I-spotify-I</wh> is currently active.'
+		, 'disabled' => '<wh>Spotify I^spotify^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • Get C-ID-C and C-Secret-C from private app : <bll class="screenshot pointer">(Screenshots)</bll>
-	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > C-LOGIN-C with normal Spotify account
-	• C-CREATE AN APP-C
-		- <wh>App name:</wh> <gr>(any)</gr>
-		- <wh>App description:</wh> <gr>(any)</gr>
-	• C-EDIT SETTINGS-C
-		- <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
-	• C-USERS AND ACCESS-C > C-ADD NEW USER-C
-		- <wh>Name:</wh> <gr>(any)</gr>
-		- <wh>Spotify Account:</wh> (login email)
-	• rAudio C-Spotify-C
-		- Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
+ • Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
+	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> | LOGIN | with normal Spotify account
+	• | CREATE AN APP |
+		- App name: <c>&lt;Name&gt;</c>
+		- App description: <c>&lt;Any&gt;</c>
+	• | EDIT SETTINGS |
+		- Redirect URIs: <span id="redirecturi"></span>
+	• | USERS AND ACCESS | ADD NEW USER |
+		- Name: <c>&lt;User&gt;</c>
+		- Spotify Account: <c>&lt;email&gt;</c>
+	• rAudio | <wh>Spotify I^spotify^I</wh> |
+		- Paste <c>&lt;CLIENT_ID&gt;</c> and <c>&lt;CLIENT_SECRET&gt;</c> from the app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -91,7 +91,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => '<wh>UPnP I-upnp-I</wh> is currently active.'
+		, 'disabled' => '<wh>UPnP I^upnp^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 HTML
@@ -110,7 +110,7 @@ $body = [
 	, 'icon'     => 'webradio'
 	, 'setting'  => false
 	, 'help'     => <<< HTML
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via C-http://$ip:8000-C (Latency - several seconds)
+<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 HTML
 	]
 	, [
@@ -120,13 +120,13 @@ HTML
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
 		, 'status'   => 'snapserver'
-		, 'disabled' => '<wh>SnapClient I-snapcast-I</wh> is currently connected.'
+		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
 	- Enable SnapClient
-	- Connect: <a class="menu-sub">I-networks-I Networks</a>I-snapcast sub-I
+	- Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
@@ -146,7 +146,7 @@ $body = [
 		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: <a class="menu-sub">I-features-I Features</a>I-camilladsp sub-I
+Settings: <a class="menu-sub">I^features^I Features</a>I^camilladsp sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -156,15 +156,15 @@ HTML
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DSP I-camilladsp-I</wh> is currently enabled.'
+		, 'disabled' => '<wh>DSP I^camilladsp^I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control: <a class="menu-sub">I-features-I Features</a>I-equalizer sub-I
+Control: <a class="menu-sub">I^features^I Features</a>I^equalizer sub^I
 Presets:
- • C-Flat-C: All bands at 0dB
- • New: | Adjust | I-plus-circle-I Add | C-NAME-C | I-save-I Save |
- • Existing: | Adjust | I-save-I Save |
- • Adjusted values will be listed as C-(unnamed)-C until saved.
+ • <c>Flat</c>: All bands at 0dB
+ • New: | Adjust | I^plus-circle^I Add | <c>&lt;Name&gt;</c> | I^save^I Save |
+ • Existing: | Adjust | I^save^I Save |
+ • Adjusted values will be listed as <c>(unnamed)</c> until saved.
  • If distortions occurred, lower all bands collectively and increase volume
 HTML
 	]
@@ -205,7 +205,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: <a class="menu-sub">I-power-I Power</a>I-screenoff sub-I&emsp;or timer
+ • Screen off: <a class="menu-sub">I^power^I Power</a>I^screenoff sub^I&emsp;or timer
 	(Backlight still on - no energy saved)
  • HDMI display: Must be connected before boot.
 HTML
@@ -217,12 +217,12 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'disabled' => '<wh>Server rAudio I-rserver-I</wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
- • Set sources permissions for read + write - directory: C-0777-C file: C-0555-C
+ • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  • Windows: $fileexplorer
- • | Server rAudio I-rserver-I | NFS share should yeild better performance.
+ • | Server rAudio I^rserver^I | NFS share should yeild better performance.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -244,7 +244,7 @@ HTML
 		, 'icon'    => 'raudiobox'
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: <a class="menu-sub">I-playlist-I Playlist</a>I-raudiobox sub-I
+Switch: <a class="menu-sub">I^playlist^I Playlist</a>I^raudiobox sub^I
  • SSH passwords must be default.
 HTML
 	]
@@ -255,8 +255,8 @@ HTML
 		, 'icon'     => 'lock'
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using C-PASSWORD_BCRYPT-C.
-Lock: <a class="menu-sub">I-player-I Player</a>I-lock sub-I
+<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
+Lock: <a class="menu-sub">I^player^I Player</a>I^lock sub^I
 HTML
 	]
 	, [
@@ -270,7 +270,7 @@ HTML
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • Web Radio must be manually scrobbled: | Playing title | I-lastfm wh-I Scrobble |
+ • Web Radio must be manually scrobbled: | Playing title | I^lastfm wh^I Scrobble |
 HTML
 	]
 	, [
@@ -283,16 +283,16 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $disablednfs
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I-networks-I</wh> |
- • <wh>rAudio Shared Data server</wh>:
-	- Existing list in | I-library-I | <wh>I-usb-I USB</wh> | will display in | <wh>I-networks-I NAS</wh> | once update finished.
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I^networks^I</wh> |
+ • <wh>rAudio Shared Data server:</wh>
+	- Existing list in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once update finished.
 	- Like all servers, Server rAudio must be up and running:
 		- While still connected by clients
 		- Before clients power on
- • <wh>rAudio Shared Data clients</wh>:
-	- | <wh>I-system-I System</wh> | Settings and Data | <wh>Shared Data I-networks-I</wh> | <wh>• rAudio</wh>
+ • <wh>rAudio Shared Data clients:</wh>
+	- | I^system^I System | Settings and Data | <wh>Shared Data I^networks^I</wh> | <wh>• rAudio</wh>
 	- Automatically setup: discover, connect shared files and data
- • <wh>Windows NFS clients</wh>:
+ • <wh>Windows NFS clients:</wh>
 	- Windows Features > Services for NFS > Client for NFS - Enable
 	- $fileexplorer
 HTML

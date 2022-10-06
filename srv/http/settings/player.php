@@ -37,7 +37,7 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< HTML
-I-volume-I Volume setting and control:
+I^volume^I Volume setting and control:
  • Player: Should be set at 0dB
  • Playback: Should be set at 100%
  • Use device volume to control level
@@ -60,7 +60,7 @@ HTML
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
 Available hardware mixers of current device.
-I-volume-I Control current mixer device.
+I^volume^I Control current mixer device.
 HTML
 	]
 	, [
@@ -70,9 +70,11 @@ HTML
 		, 'setting' => false
 		, 'help'    => <<< HTML
 Volume control for each device.
- • C-None / 0dB-C Best sound quality. (Use amplifier volume)
- • C-Mixer device-C Good and convenient. (Device hardware volume)
- • C-MPD software-C Software volume.
+<pre>
+| None / 0dB   | Best sound quality. (Use amplifier volume)
+| Mixer device | Good and convenient. (Device hardware volume)
+| MPD software | Software volume.
+</pre>
 HTML
 	]
 ];
@@ -88,7 +90,7 @@ $body = [
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
- • Volume Control: C-None / 0db-C (Hidden volume in Playback)
+ • Volume Control: | None / 0db | (Hidden volume in Playback)
  • Signal Processors: Disabled
  • Crossfade, Normalization and Replay Gain: Disabled
 HTML
@@ -112,7 +114,7 @@ $body = [
 	[	  'label'   => 'Crossfade'
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
-C-mpc crossfade N-C
+<c>mpc crossfade N</c>
 Fade-out to fade-in between songs.
 HTML
 	]
@@ -121,7 +123,7 @@ HTML
 		, 'id'      => 'normalization'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-C-volume_normalization "yes"-C
+<c>volume_normalization "yes"</c>
 Normalize the volume level of songs as they play.
 HTML
 	] 
@@ -129,7 +131,7 @@ HTML
 		  'label'   => 'Replay Gain'
 		, 'id'      => 'replaygain'
 		, 'help'    => <<< HTML
-C-replaygain "N"-C
+<c>replaygain "N"</c>
 Set gain control to setting in replaygain tag.
 Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 HTML
@@ -145,7 +147,7 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-C-audio_buffer_size "kB"-C
+<c>audio_buffer_size "kB"</c>
 Default buffer size: 4096 kB (24 seconds of CD-quality audio)
 Increase to fix intermittent audio.
 HTML
@@ -155,7 +157,7 @@ HTML
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-C-max_output_buffer_size "kB"-C
+<c>max_output_buffer_size "kB"</c>
 Default buffer size: 8192 kB
 Increase to fix missing Album list with large Library.
 HTML
@@ -165,11 +167,11 @@ HTML
 		, 'id'       => 'ffmpeg'
 		, 'sublabel' => 'decoder plugin'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DAB Radio I-dabradio-I is currently enabled.'
+		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
-C-enable "yes"-C
+<c>enable "yes"</c>
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes: I-help filetype-I
+Decoder for audio filetypes: I^help filetype^I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 HTML
 	]
@@ -178,7 +180,7 @@ HTML
 		, 'id'      => 'autoupdate'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-C-auto_update "yes"-C
+<c>auto_update "yes"</c>
 Automatic update MPD database when files changed.
 HTML
 	]
@@ -187,8 +189,7 @@ HTML
 		, 'id'       => 'soxr'
 		, 'sublabel' => 'custom settings'
 		, 'help'     => <<< HTML
-C-quality "custom"-C
-Default quality: very high
+<c>quality "custom"</c>
 
 <wh>SoX Resampler custom settings:</wh>
  • Precision - Conversion precision (20 = HQ)
@@ -197,19 +198,21 @@ Default quality: very high
  • Stopband Begin - Aliasing/imaging control
  • Attenuation - Lowers the source to prevent clipping
  • Flags - Extra settings:
-	&nbsp; 0 - Rolloff - small (<= 0.01 dB)
-	&nbsp; 1 - Rolloff - medium (<= 0.35 dB)
-	&nbsp; 2 - Rolloff - none - For Chebyshev bandwidth
-	&nbsp; 8 - High precision - Increase irrational ratio accuracy
-	16 - Double precision - even if Precision <= 20
-	32 - Variable rate resampling
+<pre>
+|  0 - Rolloff - small  | (<= 0.01 dB)
+|  1 - Rolloff - medium | (<= 0.35 dB)
+|  2 - Rolloff - none   | For Chebyshev bandwidth
+|  8 - High precision   | Increase irrational ratio accuracy
+| 16 - Double precision | even if Precision <= 20
+| 32 - Variable rate    |
+</pre>
 HTML
 	]
 	, [
 		  'label'   => "User's Configurations"
 		, 'id'      => 'custom'
 		, 'help'    => <<< HTML
-Insert custom configurations into C-/etc/mpd.conf-C.
+Insert custom configurations into <c>/etc/mpd.conf</c>.
 HTML
 	]
 ];
@@ -226,7 +229,7 @@ htmlHead( [
 	, 'help'    => <<< HTML
 List of albums excluded from Album page.
 To restore:
- • Edit C-/srv/http/data/mpd/albumignore-C
+ • Edit <c>/srv/http/data/mpd/albumignore</c>
  • Remove albums to restore
  • Update Library
 HTML
@@ -237,9 +240,9 @@ htmlHead( [
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< HTML
-List of C-.mpdignore-C files contain directories excluded from database.
+List of <c>.mpdignore</c> files contain directories excluded from database.
 To restore:
-• Edit C-.../.mpdignore-C
+• Edit <c>.../.mpdignore</c>
 • Remove directories to restore
 • Update Library
 HTML

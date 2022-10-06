@@ -9,21 +9,21 @@ htmlHead( [ //////////////////////////////////
 $html = <<< HTML
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
+	<div class="help-block hide">W^rAudio as sender:^W (or pairing non-audio devices)
  • Pair:
-	- On receiver: Turn on C-discovery-C / C-pairing-C mode
-	- On rAudio: | Bluetooth I-search wh-I | Select to pair
+	- On receiver: Turn on Discovery / Pairing mode
+	- On rAudio: | Bluetooth I^search wh^I | Select to pair
  • Connect:
-	- On receiver: C-power on-C / C-power off-C > C-connect-C / C-disconnect-C
+	- On receiver: Power on / Power off > Connect / Disconnect
 	- Receiver buttons can be used to control playback
 
-<wh>rAudio as receiver:</wh>
+W^rAudio as receiver:^W
  • Pair:
-	- On rAudio: | I-system-I System | Bluetooth I-bluetooth-I | • Discoverable by senders
-	- On sender: | Search | Select rAudio to pair
-	- C-Forget-C / C-Remove-C should be done on both rAudio and sender
+	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | W^• Discoverable by senders^W |
+	- On sender: | Search | Select W^rAudio^W to pair
+	- Forget / remove should be done on both rAudio and sender
  • Connect:
-	- On sender: Select rAudio > C-connect-C / C-disconnect-C
+	- On sender: Select rAudio | Connect | / | Disconnect |
 </div>
 HTML;
 echoSetIcon( $html );
@@ -39,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="help-block hide">
- • Connect: <g>|</g> Wi-Fi &nbsp;<?=( i( 'search wh' ) )?>Search <g>|</g> Select to connect
+ • Connect: <g>|</g> Wi-Fi &nbsp;<?=i( 'search wh' )?>Search <g>|</g> Select to connect
  • Avoid connecting to access points which signal is less than 2 bars.
 </div>
 </div>
@@ -116,9 +116,9 @@ htmlHead( [ //////////////////////////////////
 </div>
 
 <div id="menu" class="menu hide">
-<a class="connect"><?=( i( 'check' ) )?>Connect</a>
-<a class="disconnect"><?=( i( 'times' ) )?>Disconnect</a>
-<a class="edit"><?=( i( 'edit-circle' ) )?>Edit</a>
-<a class="forget"><?=( i( 'minus-circle' ) )?>Forget</a>
-<a class="info"><?=( i( 'info-circle' ) )?>Info</a>
+<a class="connect"><?=i( 'check' )?>Connect</a>
+<a class="disconnect"><?=i( 'times' )?>Disconnect</a>
+<a class="edit"><?=i( 'edit-circle' )?>Edit</a>
+<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
+<a class="info"><?=i( 'info-circle' )?>Info</a>
 </div>

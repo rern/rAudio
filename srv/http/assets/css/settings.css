@@ -305,6 +305,7 @@ heading .disabled {
 	float: right;
 	color: var( --cm );
 }
+c,
 code {
 	font-family: 'Inconsolata';
 	font-size: 15px;

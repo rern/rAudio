@@ -19,17 +19,16 @@ foreach( $timezonelist as $key => $zone ) {
 }
 $selecttimezone.= '</select>';
 if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
-	$disabledbt = '<wh>DSP'.i( 'camilladsp' ).'</wh> is currently active.';
+	$disabledbt = '<wh>DSP I^camilladsp^I</wh> is currently active.';
 } else {
 	$disabledbt = 'Bluetooth is currently connected.';
 }
-
-echo '
-<div id="gpiosvg" class="hide">';
-include 'assets/img/gpio.svg';
-echo '
+?>
+<div id="gpiosvg" class="hide">
+<?php include 'assets/img/gpio.svg';?>
 </div>
-<div class="section">';
+<div class="section">
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
@@ -66,7 +65,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
-<?=( i( 'refresh' ) )?> <gr>Toggle refresh every 10 seconds.</gr>
+<?=i( 'refresh' )?> <gr>Toggle refresh every 10 seconds.</gr>
 
 <wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
@@ -142,7 +141,8 @@ $body = [
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-I-gear-I C-Sampling 16bit-C - Only for Bluetooth receivers with fixed sampling
+I^gear^I
+ • | Sampling 16bit | Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -153,10 +153,10 @@ HTML
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-I-gear-I Settings
- • Auto start Access Point - On failed connection or no router
+I^gear^I
+ • | Auto start Access Point | On failed connection or no router
  • Country of Wi-Fi regulatory domain:
-	- 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
+	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
 	- The connected router may override it to a certain country.
 HTML
 	]
@@ -178,14 +178,14 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	I-gear-I
+	I^gear^I
 </div>
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
  • HAT with EEPROM could be automatically detected.
-	(See | I-player-I Player | Output | if it's already set as Output device.)
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I-gear-I next to it.
+	(See | I^player^I Player | Output | if it's already set as Output device.)
+ • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I^gear^I next to it.
 HTML
 	]
 	, [
@@ -196,7 +196,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-I-warning yl-I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I</wh>arning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -219,7 +219,7 @@ HTML
 		, 'icon'    => 'relays'
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: <a class="menu-sub">I-plus-r-I System</a>I-relays sub-I
+On/Off: <a class="menu-sub">I^plus-r^I System</a>I^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -273,7 +273,7 @@ $body = [
 		, 'help'    => <<< HTML
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
- • Web Interface URL: <code id="avahiurl">-C
+ • Web Interface URL: <c id="avahiurl"></c>
  • System hostname
 HTML
 	]
@@ -286,9 +286,9 @@ HTML
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-I-gear-I Servers:
- • NTP: For time sync
- • Package mirror: For system upgrade C-pacman -Syu-C
+I^gear^I
+ • NTP server: For time sync
+ • Package mirror server: For system upgrade <c>pacman -Syu</c>
 HTML
 	]
 	, [
@@ -335,19 +335,20 @@ HTML
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
-		, 'disabled' => '<wh>Server rAudio I-rserver-I</wh> is currently active.'
+		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
  • <wh>rAudio as server:</wh>
-	Server: | <wh>I-features-I Features</wh> | <wh>Server rAudio I-rserver-I</wh> | Enable
-	Clients: | <wh>Shared Data I-networks-I</wh> | • rAudio > Server <code>IP ADDRESS</code>
+	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
+	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
  • <wh>Other servers:</wh> 
 	Server: Create a share for data with full permissions
-		- Linux: NFS C-777-C, CIFS/SMB C-read only = no-C
-		- Windows: C-Everyone - Full Control-C (Sharing + Security)
+		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
+		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
 	Clients:
-		- | <wh>Storage I-plus-circle-I</wh> | Add with the same name, share path/share name
-		- | <wh>Shared Data I-networks-I</wh> | Add the created share on server
+		- | <wh>Storage I^plus-circle^I</wh> | Add with the same name, share path/share name
+		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
+ • SSH passwords must be default.
 HTML
 	]
 ];
@@ -434,7 +435,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://jquery.com/">jQuery</a>
 		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
 	</div>
-	<div class="listtitle">P l u g i n s : <?=( i( 'chevron-down bl' ) )?></div>
+	<div class="listtitle">P l u g i n s : <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>
@@ -451,8 +452,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="info"<?=$hdparmhide?>><?=( i( 'info-circle' ) )?>Info</a>
-<a class="forget"><?=( i( 'minus-circle' ) )?>Forget</a>
-<a class="remount"><?=( i( 'check' ) )?>Re-mount</a>
-<a class="unmount"><?=( i( 'times' ) )?>Unmount</a>
+<a class="info"<?=$hdparmhide?>><?=i( 'info-circle' )?>Info</a>
+<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
+<a class="remount"><?=i( 'check' )?>Re-mount</a>
+<a class="unmount"><?=i( 'times' )?>Unmount</a>
 </div>

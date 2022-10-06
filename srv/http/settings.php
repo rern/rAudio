@@ -147,10 +147,10 @@ function htmlSection( $head, $body, $id = '' ) {
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';
 }
-function echoSetIcon( $html ) {
+function echoSetIcon( $html ) { // only within: htmlHead(), htmlSetting()
 	echo str_replace(
-		  [ 'I-',               '-I',     '|',        'C-',     '-C'      ]
-		, [ '<i class="fa fa-', '"></i>', '<g>|</g>', '<code>', '</code>' ]
+		  [ 'I^',               '^I',     '|',       ]
+		, [ '<i class="fa fa-', '"></i>', '<g>|</g>' ]
 		, $html
 	);
 }
