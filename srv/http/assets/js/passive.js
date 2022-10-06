@@ -114,15 +114,6 @@ streams.forEach( stream => {
 pushstream.connect();
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // suppress on 1st load
-		if ( G.library ) {
-			if ( [ 'nas', 'sd', 'usb' ].includes( G.mode ) ) {
-				$( '#lib-breadcrumbs .lidir' ).last().click();
-			} else {
-				queryList();
-			}
-		} else if ( G.playlist ) {
-			if ( !G.savedlist && !G.savedplaylist ) getPlaylist();
-		}
 		getPlaybackStatus( 'withdisplay' );
 	} else if ( status === 0 ) {
 		G.disconnected = 1;
