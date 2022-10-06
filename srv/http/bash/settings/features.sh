@@ -289,6 +289,7 @@ nfsserver )
 		done
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $filesharedip
+		cp -f $dirsystem/{display,order} $dirbackup
 		touch $dirshareddata/system/order # in case not exist
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
 		echo SD$'\n'USB > /mnt/MPD/.mpdignore
@@ -321,6 +322,7 @@ nfsserver )
 		mkdir -p $dirbackup
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
+		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
 		$dirbash/cmd.sh mpcupdate$'\n'update
 	fi
