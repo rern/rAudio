@@ -8,8 +8,7 @@
 
 
 . /srv/http/bash/common.sh
-serverfile=$dirshm/serverip
-clientfile=$dirshm/clientip
+fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then # client start - save server ip
 	if systemctl -q is-active snapserver; then # server + client on same device
@@ -29,7 +28,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
-		echo $serverip > $serverfile
+		echo $serverip > $dirshm/serverip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh
 		clientip=$( ipGet )
@@ -52,12 +51,12 @@ elif [[ $1 == stop ]]; then # server + client on same device
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
-	sed -i "/$clientip/ d" $clientfile
-	[[ ! $( awk NF $clientfile ) ]] && rm -f $clientfile
+	sed -i "/$clientip/ d" $fileclientip
+	[[ ! $( awk NF $fileclientip ) ]] && rm -f $fileclientip
 else # sshpass add clientip from connected client
 	clientip=$1
 	iplist="\
-$( cat $clientfile 2> /dev/null )
+$( cat $fileclientip 2> /dev/null )
 $clientip"
-	echo "$iplist" | awk NF | sort -u > $clientfile
+	echo "$iplist" | awk NF | sort -u > $fileclientip
 fi
