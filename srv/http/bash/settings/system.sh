@@ -61,6 +61,10 @@ sharedDataSet() {
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
+	for file in display order; do
+		mv $dirsystem/$file $dirbackup
+		ln -s $dirshareddata/system/$file $dirsystem
+	done
 	echo data > /mnt/MPD/NAS/.mpdignore
 	mpc -q clear
 	systemctl restart mpd
@@ -738,7 +742,10 @@ shareddatadisconnect )
 			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
-	[[ ! $( ls $dirbackup ) ]] && rm -rf $dirbackup
+	for file in display order; do
+		mv -f $dirbackup/$file $dirsystem &> /dev/null
+	done
+	rmBlankFile $dirbackup
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
@@ -886,7 +893,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	pushstreamNotify "$name" $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate

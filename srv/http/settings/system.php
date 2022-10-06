@@ -2,6 +2,11 @@
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
 
+if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
+	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
+} else {
+	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
+}
 $i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
 $selecti2s = '<select id="i2smodule">
 				<option value="none">None / Auto detect</option>';
@@ -122,6 +127,7 @@ htmlSetting( [
 	, 'sublabel' => 'USB drives data'
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
+	, 'disabled' => $disabledusbautoupdate
 	, 'help'     => <<< HTML
 Auto update Library database on insert/remove USB drives.
 HTML

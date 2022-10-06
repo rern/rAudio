@@ -1065,6 +1065,7 @@ function renderPage() {
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', !G.hddapm );
+	$( '#usbautoupdate' ).toggleClass( 'disabled', G.shareddata || G.nfsserver );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );

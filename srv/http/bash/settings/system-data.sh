@@ -218,7 +218,7 @@ data+='
 , "startup"          : '$( [[ $startup ]] && echo true )'
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
-, "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
+, "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
