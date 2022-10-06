@@ -29,7 +29,7 @@ I2Cset() {
 	# reset
 	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
 	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
-	rmBlankFile $filemodule
+	[[ ! $( awk NF $filemodule ) ]] && rm $filemodule
 
 	# dtparam=i2c_arm=on
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> $fileconfig
@@ -747,7 +747,7 @@ shareddatadisconnect )
 	for file in display order; do
 		mv -f $dirbackup/$file $dirsystem &> /dev/null
 	done
-	rmBlankFile $dirbackup
+	[[ ! $( ls $dirbackup ) ]] && $dirbackup
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear

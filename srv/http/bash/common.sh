@@ -83,9 +83,6 @@ pushstreamNotifyBlink() { # title text icon [hide]
 	data='{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
 	pushstream notify "$data"
 }
-rmBlankFile() {
-	[[ ! $( awk NF "$1" ) ]] && rm -f "$1"
-}
 sshCommand() {
 	sshpass -p ros ssh -q \
 		-o UserKnownHostsFile=/dev/null \
