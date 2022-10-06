@@ -289,7 +289,8 @@ nfsserver )
 		done
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $filesharedip
-		chmod 777 $filesharedip
+		touch $dirshareddata/system/order # in case not exist
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
 		echo SD$'\n'USB > /mnt/MPD/.mpdignore
 		echo data > /mnt/MPD/NAS/.mpdignore
 		if [[ -e $dirbackup/mpdnfs ]]; then

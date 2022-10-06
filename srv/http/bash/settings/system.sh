@@ -61,6 +61,8 @@ sharedDataSet() {
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
+	touch $filesharedip $dirshareddata/system/order # in case not exist
+	chmod 777 $filesharedip $dirshareddata/system/{display,order}
 	for file in display order; do
 		mv $dirsystem/$file $dirbackup
 		ln -s $dirshareddata/system/$file $dirsystem
