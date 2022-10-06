@@ -136,3 +136,7 @@ fi
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify "$restorefailed" restore 10000
 fi
+
+if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+	pushstreamNotify 'Server rAudio' 'Online ...' rserver
+fi

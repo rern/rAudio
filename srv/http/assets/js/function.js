@@ -1010,10 +1010,10 @@ function power( action ) {
 			info( {
 				  icon    : 'power'
 				, title   : 'Power'
-				, message : '<wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-							+'<br>Connected clients will stop responding.'
+				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+							+'<br>All clients will stop responding until on again.'
 							+'<br><br>Continue?'
-				, oklabel : '<i class="fa fa-'+ action +'"></i>'+ ( off ? 'Off' : 'Reboot' )
+				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
 				, okcolor : off ? red : orange
 				, ok      : function() {
 					bash( [ 'power', action, 1 ] );

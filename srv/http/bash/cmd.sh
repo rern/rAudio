@@ -1117,8 +1117,11 @@ playerstop )
 power )
 	action=${args[1]}
 	nfsok=${args[2]}
-	if [[ ! $nfsok && $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server; then
-		[[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
+	if [[ $nfsok ]]; then
+		pushstreamNotifyBlink 'Server rAudio' 'Offline ...' rserver
+	elif [[ $( readlink $dirshareddata ) == $dirdata && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]]; then
+		echo -1
+		exit
 	fi
 	
 	if [[ $action == reboot ]]; then
