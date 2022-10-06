@@ -61,15 +61,15 @@ pushstream() {
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
 	[[ ! -e $filesharedip  ]] && return
 	
+	if [[ $channel == coverart ]]; then
+		path=$( echo "$data" \
+					| grep '"url"' \
+					| sed -E 's/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g' \
+					| cut -d/ -f3 )
+		[[ 'MPD bookmark webradio' != *$path* ]] && return
+	fi
+	
 	if [[ 'bookmark coverart mpdupdate playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # rserver reboot / off
-		if [[ $channel == coverart ]]; then
-			path=$( echo "$data" \
-						| grep '"url"' \
-						| sed -E 's/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g' \
-						| cut -d/ -f3 )
-			[[ 'MPD bookmark webradio' != *$path* ]] && return
-		fi
-		
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
