@@ -50,7 +50,6 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
-, "shareddata"   : '$( exists $filesharedip )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
