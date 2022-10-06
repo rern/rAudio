@@ -69,7 +69,7 @@ pushstream() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	if [[ 'bookmark coverart mpdupdate playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # rserver reboot / off
+	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # rserver reboot / off
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
