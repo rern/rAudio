@@ -1011,8 +1011,8 @@ function power( action ) {
 				  icon    : 'power'
 				, title   : 'Power'
 				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will be disabled.'
-							+'<br>(Auto re-enable when server power on again)'
+							+'<br><wh>Shared Data</wh> on clients will stop.'
+							+'<br>(Resume when server online again)'
 							+'<br><br>Continue?'
 				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
 				, okcolor : off ? red : orange
