@@ -359,8 +359,9 @@ Connect share data as client for:
 	Clients:
 		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
 		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
-		- Data on 1st client will be used as initial shared.
- • SSH passwords must be default.
+		- Data on 1st connected client will be used as initial shared.
+		
+<wh>Note:</wh> SSH passwords must be default.
 HTML
 	]
 ];

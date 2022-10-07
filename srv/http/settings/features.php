@@ -260,7 +260,7 @@ Lock: <a class="menu-sub">I^player^I Player</a>I^lock sub^I
 HTML
 	]
 	, [
-		  'label'    => 'Scrobble'
+		  'label'    => 'Scrobbler'
 		, 'id'       => 'scrobble'
 		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
@@ -294,6 +294,8 @@ HTML
  • <wh>Windows NFS clients:</wh>
 	- Windows Features > Services for NFS > Client for NFS - Enable
 	- $fileexplorer
+	
+<wh>Note:</wh> SSH passwords must be default.
 HTML
 	]
 	, [
