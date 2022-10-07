@@ -904,9 +904,6 @@ function infoMount( values ) {
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
-</tr>
-<tr class="copydata"><td></td>
-	<td><label><input type="checkbox" checked>${ chktext }</label></td>
 </tr>`;
 	htmlmount += '</table>';
 	info( {
@@ -917,7 +914,6 @@ function infoMount( values ) {
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
-			if ( !$( '#list .fa-networks' ).length ) $( '#infoContent .copydata' ).remove();
 			if ( !shareddata ) {
 				$( '#infoContent label' ).eq( 2 ).remove();
 			} else {
