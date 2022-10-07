@@ -1018,6 +1018,7 @@ function power( action ) {
 				, okcolor : off ? red : orange
 				, ok      : function() {
 					bash( [ 'power', action, 1 ] );
+					banner( 'Server rAudio', 'Notify clients ...', 'rserver', -1 );
 				}
 			} );
 		}

@@ -722,6 +722,7 @@ shareddataconnect )
 		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
 		
 		reconnect=1
+		rm $dirsystem/sharedipserver
 	fi
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
