@@ -390,6 +390,7 @@ $( '#nfsserver' ).click( function() {
 			, title   : 'Server rAudio'
 			, message : $this.prev().html()
 		} );
+		$this.prop( 'checked', G.nfsserver );
 		return
 	}
 	
