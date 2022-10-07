@@ -424,7 +424,7 @@ $( '#setting-scrobble' ).click( function() {
 </table>`;
 	info( {
 		  icon          : 'lastfm'
-		, title         : 'Scrobble'
+		, title         : 'Scrobbler'
 		, content       : content
 		, boxwidth      : 170
 		, values        : G.scrobbleconf
@@ -460,7 +460,7 @@ $( '#setting-scrobble' ).click( function() {
 					$( '#scrobble' ).prop( 'checked', 0 );
 				}
 			}, 'json' );
-			notify( 'Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
+			notify( 'Scrobbler', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
 	} );
 } );
