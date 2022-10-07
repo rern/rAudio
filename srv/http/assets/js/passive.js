@@ -389,13 +389,21 @@ function psMpdUpdate( data ) {
 	}, 3000 );
 }
 function psNotify( data ) {
-	if ( $( '#bannerMessage' ).text().includes( 'Reconnect again' ) && data.text !== 'Connect ...' ) return
+	var title = data.title;
+	var text = data.text;
+	if ( text === 'Online ...' || text === 'Offline ...' ) { // rserver power on/off
+		setTimeout( function() {
+			location.href = '/';
+		}, 3000 );
+	} else if ( text !== 'Connect ...' && $( '#bannerMessage' ).text().includes( 'Reconnect again' ) ) { // bluetooth
+		return
+	}
 	
-	banner( data.title, data.text, data.icon, data.delay );
-	if ( data.title === 'Power' ) {
+	banner( title, text, data.icon, data.delay );
+	if ( title === 'Power' ) {
 		switchPage( 'playback' );
 		loader();
-		if ( data.text === 'Off ...' ) {
+		if ( text === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
 			setTimeout( function() {
 				$( '#loader .logo' ).css( 'animation', 'none' );
@@ -403,9 +411,9 @@ function psNotify( data ) {
 			pushstream.disconnect();
 			G.poweroff = 1;
 		}
-	} else if ( data.text === 'Change track ...' ) { // audiocd
+	} else if ( text === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
-	} else if ( data.title === 'Latest' ) {
+	} else if ( title === 'Latest' ) {
 		G.status.counts.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( G.mode === 'latest' ) $( '#button-library' ).click();

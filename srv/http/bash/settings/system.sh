@@ -722,7 +722,6 @@ shareddataconnect )
 		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
 		
 		reconnect=1
-		rm $dirsystem/sharedipserver
 	fi
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
@@ -747,7 +746,10 @@ shareddataconnect )
 		mount "$dir"
 	done
 	sharedDataSet
-	[[ $reconnect ]] && pushstreamNotify 'Server rAudio' 'Online ...' rserver
+	if [[ $reconnect ]]; then
+		rm $dirsystem/sharedipserver
+		pushstreamNotify 'Server rAudio' 'Online ...' rserver
+	fi
 	;;
 shareddatadisconnect )
 	disable=${args[1]} # null - sshpass from rserver to disconnect
@@ -775,12 +777,12 @@ shareddatadisconnect )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
+	pushRefresh
+	pusrstream refresh '{"page":"features","shareddata":false}'
 	if [[ ! $disable ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		pushstreamNotify 'Server rAudio' 'Offline ...' rserver
 	fi
-	pushRefresh
-	pusrstream refresh '{"page":"features","shareddata":false}'
 	;;
 shareddataiplist )
 	sharedDataIPlist ${args[1]}
