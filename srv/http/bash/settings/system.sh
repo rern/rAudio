@@ -753,9 +753,8 @@ shareddatadisconnect )
 			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
-	for file in display order; do
-		mv -f $dirbackup/$file $dirsystem &> /dev/null
-	done
+	rm $dirsystem/{display,order}
+	mv -f $dirbackup/{display,order} $dirsystem
 	rmdir $dirbackup &> /dev/null
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
