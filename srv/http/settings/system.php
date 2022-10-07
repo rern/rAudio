@@ -344,7 +344,11 @@ HTML
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
-Connect share data as client for Library database, audio CD, bookmarks, lyrics, saved playlists and Web Radio.
+Connect share data as client for:
+	- Library database
+	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+	- Show / hide items
+	- Display order of Library home
  • <wh>rAudio as server:</wh>
 	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
 	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
@@ -353,8 +357,9 @@ Connect share data as client for Library database, audio CD, bookmarks, lyrics, 
 		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
 		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
 	Clients:
-		- | <wh>Storage I^plus-circle^I</wh> | Add with the same name, share path/share name
+		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
 		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
+		- Data on 1st client will be used as initial shared.
  • SSH passwords must be default.
 HTML
 	]

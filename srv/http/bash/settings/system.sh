@@ -57,11 +57,16 @@ sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not rserver - initial setup
 		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
-	touch $filesharedip $dirshareddata/system/order # in case not exist
+	if [[ ! -e $dirshareddata/system ]]; then # not rserver - initial setup
+		mkdir $dirshareddata/system
+		cp -f $dirsystem/{display,order} $dirshareddata/system
+	fi
+	touch $filesharedip $dirshareddata/system/order # in case order not exist
 	chmod 777 $filesharedip $dirshareddata/system/{display,order}
 	for file in display order; do
 		mv $dirsystem/$file $dirbackup
