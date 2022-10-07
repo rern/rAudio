@@ -767,10 +767,12 @@ shareddatadisconnect )
 	done
 	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
-	[[ ! $disable ]] && echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 	systemctl daemon-reload
 	systemctl restart mpd
-	pushstreamNotify 'Server rAudio' 'Offline ...' rserver
+	if [[ ! $disable ]]; then
+		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
+		pushstreamNotify 'Server rAudio' 'Offline ...' rserver
+	fi
 	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":false}'
 	;;
