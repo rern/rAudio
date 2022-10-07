@@ -715,6 +715,8 @@ shareddataconnect )
 	if [[ ! $ip ]]; then # sshpass from server to reconnect
 		ip=$( cat $dirsystem/sharedipserver 2> /dev/null )
 		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
+		
+		reconnect=1
 	fi
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
@@ -739,7 +741,7 @@ shareddataconnect )
 		mount "$dir"
 	done
 	sharedDataSet
-	pushstreamNotify 'Server rAudio' 'Online ...' rserver
+	[[ $reconnect ]] && pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	;;
 shareddatadisconnect )
 	disable=${args[1]} # null if sshpass from rserver
