@@ -744,7 +744,7 @@ shareddataconnect )
 	[[ $reconnect ]] && pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	;;
 shareddatadisconnect )
-	disable=${args[1]} # null if sshpass from rserver
+	disable=${args[1]} # null - sshpass from rserver to disconnect
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
