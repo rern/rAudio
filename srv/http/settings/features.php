@@ -285,10 +285,9 @@ HTML
 		, 'help'        => <<< HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I^networks^I</wh> |
  • <wh>rAudio Shared Data server:</wh>
+	- IP address must be static(fixed) which should be set on router.
 	- Existing list in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once update finished.
-	- Like all servers, Server rAudio must be up and running:
-		- While still connected by clients
-		- Before clients power on
+	- On reboot / power off, Shared Data on clients will be temporarily disabled > re-enabled once the server is back online.
  • <wh>rAudio Shared Data clients:</wh>
 	- | I^system^I System | Settings and Data | <wh>Shared Data I^networks^I</wh> | <wh>• rAudio</wh>
 	- Automatically setup: discover, connect shared files and data

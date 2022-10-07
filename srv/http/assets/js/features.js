@@ -398,8 +398,8 @@ $( '#nfsserver' ).click( function() {
 			  icon    : 'networks'
 			, title   : 'Server rAudio'
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
-							 +'<br><br><pre><wh>'+ list +'</wh></pre><br>'
-							 + ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
+						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
+						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
 			, cancel  : function() {
 				$this.prop( 'checked', G.nfsserver );
 			}

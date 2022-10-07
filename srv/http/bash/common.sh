@@ -85,10 +85,12 @@ pushstreamNotifyBlink() { # title text icon [hide]
 	data='{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
 	pushstream notify "$data"
 }
-sshCommand() {
-	sshpass -p ros ssh -q \
-		-o UserKnownHostsFile=/dev/null \
-		-o StrictHostKeyChecking=no \
-		root@$1 \
-		"${@:2}"
+sshCommand() { # $1-ip, ${@:2}-commands
+	if ping -c 1 -w 1 $1 &> /dev/null; then
+		sshpass -p ros ssh -q \
+			-o UserKnownHostsFile=/dev/null \
+			-o StrictHostKeyChecking=no \
+			root@$1 \
+			"${@:2}"
+	fi
 }

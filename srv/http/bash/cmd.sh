@@ -1116,12 +1116,16 @@ playerstop )
 	;;
 power )
 	action=${args[1]}
-	nfsok=${args[2]}
-	if [[ $nfsok ]]; then
-		pushstreamNotifyBlink 'Server rAudio' 'Offline ...' rserver
-	elif [[ $( readlink $dirshareddata ) == $dirdata && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]]; then
-		echo -1
-		exit
+	rserverok=${args[2]}
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
+		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
+		
+		ips=$( grep -v $( ipGet ) $filesharedip )
+		for ip in $ips; do
+			sshCommand $ip $dirbash/settings/system.sh shareddatadisconnect
+		done
+	elif [[ -e $filesharedip ]]; then # rclient
+		sed -i "/$( ipGet )/ d" $filesharedip
 	fi
 	
 	if [[ $action == reboot ]]; then
@@ -1138,7 +1142,6 @@ power )
 			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
-	[[ -e $filesharedip ]] && sed -i "/$( ipGet )/ d" $filesharedip
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then

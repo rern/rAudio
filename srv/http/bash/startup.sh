@@ -86,7 +86,15 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	[[ -e $filesharedip ]] && $dirbash/settings/system.sh shareddataiplist
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
+		ipserver=$( ipGet )
+		ips=$( grep -v $ipserver $filesharedip )
+		for ip in $ips; do
+			sshCommand $ip $dirbash/settings/system.sh shareddataconnect$'\n'$ipserver
+		done
+	elif [[ -e $filesharedip ]]; then # rclient
+		$dirbash/settings/system.sh shareddataiplist
+	fi
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
@@ -135,8 +143,4 @@ fi
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify "$restorefailed" restore 10000
-fi
-
-if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
-	pushstreamNotify 'Server rAudio' 'Online ...' rserver
 fi

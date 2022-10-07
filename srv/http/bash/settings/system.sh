@@ -734,6 +734,7 @@ shareddataconnect )
 		mount "$dir"
 	done
 	sharedDataSet
+	pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	;;
 shareddatadisconnect )
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
@@ -761,7 +762,7 @@ shareddatadisconnect )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
-	$dirbash/cmd.sh mpcupdate$'\n'update
+	pushstreamNotify 'Server rAudio' 'Offline ...' rserver
 	pushRefresh
 	pusrstream refresh '{"page":"features","shareddata":false}'
 	;;
