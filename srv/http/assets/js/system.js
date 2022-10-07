@@ -1015,7 +1015,7 @@ function infoNFSconnect( ip ) {
 						}
 						, ok      : function() {
 							bash( [ 'shareddataconnect', ip ] );
-							notify( 'Shared Data', 'Connect rAudio server ...', 'networks' );
+							notify( 'Shared Data', 'Connect Server rAudio ...', 'networks' );
 						} 
 					} );
 				} else {
