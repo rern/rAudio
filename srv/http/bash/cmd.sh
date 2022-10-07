@@ -1127,6 +1127,7 @@ power )
 	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 		
+		cp $filesharedip{,.backup}
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			sshCommand $ip $dirbash/settings/system.sh shareddatadisconnect

@@ -54,7 +54,7 @@ sharedDataIPlist() {
 	echo "$list" | sort -u > $filesharedip
 }
 sharedDataSet() {
-	rm -f $dirmpd/{counts,listing,updating}
+	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		rm -rf $dirbackup/$dir $dirshareddata/$dir

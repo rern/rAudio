@@ -87,6 +87,7 @@ if [[ $connected  ]]; then
 		done
 	fi
 	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
+		mv -f $filesharedip{.backup,}
 		ipserver=$( ipGet )
 		ips=$( grep -v $ipserver $filesharedip )
 		for ip in $ips; do

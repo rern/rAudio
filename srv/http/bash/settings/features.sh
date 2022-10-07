@@ -300,7 +300,7 @@ nfsserver )
 			systemctl restart mpd
 			action=update
 		else
-			rm -f $dirmpd/{counts,listing,updating}
+			rm -f $dirmpd/{listing,updating}
 			mkdir -p $dirbackup
 			cp -r $dirmpd $dirbackup
 			action=rescan
@@ -312,7 +312,7 @@ nfsserver )
 		rm -f /mnt/MPD/.mpdignore \
 			/mnt/MPD/NAS/.mpdignore \
 			$filesharedip \
-			$dirmpd/{counts,listing,updating}
+			$dirmpd/{listing,updating}
 		for dir in "${dirs[@]}"; do
 			chmod 755 "$dir"
 			link="/mnt/MPD/NAS/$( basename "$dir" )"
