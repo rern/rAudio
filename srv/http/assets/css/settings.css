@@ -92,6 +92,9 @@ pre {
 	line-height: 20px;
 	overflow-x: auto;
 }
+div.help-block {
+	margin-left: 0;
+}
 .help-block {
 	display: block;
 	margin-top: 0;
@@ -105,14 +108,37 @@ pre {
 	line-height: 16px;
 	font-size: 16px !important;
 }
+.help-block i {
+	margin-left: 3px;
+	margin-right: -4px;
+}
 .help-block p {
 	margin: 0 0 0 10px;
 }
 .help-block .img {
 	color: var( --cml );
 }
-div.help-block {
-	margin-left: 0;
+.menu-sub {
+	display: inline-block;
+	width: 95px;
+	height: 25px;
+	line-height: 27px;
+	padding-left: 3px;
+	background: var( --cg );
+}
+.sub {
+	margin-left: 0 !important;
+	width: 25px !important;
+	line-height: 25px !important;
+	text-align: center;
+	color: var( --cw );
+	background: var( --cg );
+	border-left: solid 1px var( --cga );
+}
+@supports (-webkit-touch-callout: none) { /* ios only */
+	.menu-sub {
+		line-height: 25px;
+	}
 }
 .clear {
 	clear: both;
@@ -130,7 +156,7 @@ heading {
 heading {
 	letter-spacing: 5px;
 }
-heading.sub {
+heading.subhead {
 	margin: 20px 0 10px 0;
 	padding-bottom: 0;
 	line-height: 28px;
@@ -193,8 +219,8 @@ heading .disabled {
 	z-index: 95;
 }
 .page-icon,
-#help,
-#close {
+.help-head,
+.close {
 	width: 40px;
 	height: 40px;
 	line-height: 38px;
@@ -206,16 +232,16 @@ heading .disabled {
 	float: left;
 	background: var( --cm );
 }
-#help,
-#close {
+.help-head,
+.close {
 	float: right;
 }
-#help {
+.help-head {
 	margin-right: 5px;
 	color: var( --cg60 )
 }
 
-#close {
+.close {
 	font-size: 2em !important;
 	color: var( --cm );
 }
@@ -279,6 +305,8 @@ heading .disabled {
 	float: right;
 	color: var( --cm );
 }
+c,
+cy,
 code {
 	font-family: 'Inconsolata';
 	font-size: 15px;
@@ -286,6 +314,10 @@ code {
 	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: 3px;
+}
+cy {
+	color:yellow;
+	background: none;
 }
 .entries {
 	display: block;
@@ -606,10 +638,10 @@ input.disabled + .switchlabel:after {
 	color: var( --cm );
 }
 @media (max-height: 570px) {
-	#help {
+	.help-head {
 		margin-right: 0;
 	}
-	#help::before {
+	.help-head::before {
 		content: '\f509';
 		color: var( --cg60 );
 	}
@@ -731,9 +763,12 @@ input.disabled + .switchlabel:after {
 	heading i,
 	.back,
 	.btn,
+	.close,
 	.code,
 	.col-l.icon,
 	.entries li,
+	.filetype,
+	.help-head,
 	.help-block bl,
 	.img,
 	.listtitle,
@@ -748,10 +783,7 @@ input.disabled + .switchlabel:after {
 	.wiring,
 	#backend,
 	#button-data,
-	#close,
-	#filetype,
 	#gpioimgtxt,
-	#help,
 	#menu {
 		cursor: pointer;
 	}

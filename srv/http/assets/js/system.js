@@ -1,5 +1,17 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( 'body' ).click( function( e ) {
+	$( '#menu' ).addClass( 'hide' );
+	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
+	$( 'li' ).removeClass( 'active' );
+	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
+		$( '#divi2smodulesw' ).removeClass( 'hide' );
+		$( '#divi2smodule' ).addClass( 'hide' );
+	}
+} );
+$( '.container' ).on( 'click', '.settings', function() {
+	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
+} );
 var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
@@ -40,16 +52,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, okno        : 1
 	} );
 } );
-$( '.container' ).on( 'click', '.settings', function() {
-	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
-} );
-$( 'body' ).on( 'click touchstart', function( e ) {
-	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
-	}
-} );
-$( '#power' ).click( function() {
+$( '.power' ).click( function() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
@@ -65,7 +68,7 @@ $( '#power' ).click( function() {
 		}
 	} );
 } );
-$( '#refresh' ).click( function( e ) {
+$( '.refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	
 	var $this = $( this );
@@ -75,53 +78,52 @@ $( '#refresh' ).click( function( e ) {
 		$this.removeClass( 'blink' );
 	} else {
 		$this.addClass( 'blink' );
-		G.intCputime = setInterval( function() {
-			bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
-				$.each( status, function( key, val ) {
-					G[ key ] = val;
-				} );
-				renderStatus();
-			}, 'json' );
-		}, 10000 );
+		G.intCputime = setInterval( getStatus, 10000 );
 	}
 } );
-$( '#addnas' ).click( function() {
+$( '.addnas' ).click( function() {
 	infoMount();
 } );
-$( '#list' ).on( 'click', 'li', function() {
+$( '#list' ).on( 'click', 'li', function( e ) {
+	if ( $( this ).find( '.fa-microsd' ).length ) return
+	
+	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
+	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
-	var mountpoint = $this.find( '.mountpoint' ).text();
 	$( 'li' ).removeClass( 'active' );
-	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) || mountpoint === '/' ) {
+	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		return
+		if ( active ) return
 	}
 	
+	var i = $this.index()
+	var list = G.list[ i ];
 	$this.addClass( 'active' );
-	$menu.find( '.info, .spindown' ).toggleClass( 'hide', mountpoint.slice( 9, 12 ) !== 'USB' );
-	$menu.find( '.remount' ).toggleClass( 'hide', G.list[ $this.index() ].mounted );
-	var menuH = $menu.height();
-	$menu
+	$( '#menu a' ).addClass( 'hide' );
+	if ( list.icon === 'microsd' ) return
+	
+	var mounted = list.mounted;
+	var usb = list.icon === 'usbdrive';
+	$( '#menu .info' ).toggleClass( 'hide', !usb );
+	$( '#menu .forget' ).removeClass( 'hide', usb );
+	$( '#menu .remount' ).toggleClass( 'hide', mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
+	var menuH = $( '#menu' ).height();
+	$( '#menu' )
 		.removeClass( 'hide' )
 		.css( 'top', $this.position().top + 48 );
-	var targetB = $menu.offset().top + menuH;
+	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-} );
-$( 'body' ).click( function( e ) {
-	if ( this.id !== 'codehddinfo' && !$( e.target ).parents( '#list' ).length ) {
-		$( '#menu, #codehddinfo' ).addClass( 'hide' );
-		$( 'li' ).removeClass( 'active' );
-	}
 } );
 $( '#menu a' ).click( function() {
 	var $this = $( this );
 	var cmd = $this.prop( 'class' );
-	var source = G.li.find( '.source' ).text();
-	var mountpoint = G.li.find( '.mountpoint' ).text();
+	var list = G.list[ G.li.index() ];
+	var mountpoint = list.mountpoint;
+	var source = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
 		var icon = 'networks';
 		var title = 'Network Mount';
@@ -130,14 +132,6 @@ $( '#menu a' ).click( function() {
 		var title = 'Local Mount';
 	}
 	switch ( cmd ) {
-		case 'remount':
-			notify( title, 'Remount ...', icon );
-			bash( [ 'remount', mountpoint, source ] );
-			break;
-		case 'unmount':
-			notify( title, 'Unmount ...', icon )
-			bash( [ 'unmount', mountpoint ] );
-			break;
 		case 'forget':
 			notify( title, 'Forget ...', icon );
 			bash( [ 'remove', mountpoint ] );
@@ -145,7 +139,7 @@ $( '#menu a' ).click( function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( 'hdparm -I '+ source, function( data ) {
+				bash( [ 'hddinfo', source ], function( data ) {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -154,31 +148,43 @@ $( '#menu a' ).click( function() {
 				$code.addClass( 'hide' );
 			}
 			break;
-		case 'spindown':
-			info( {
-				  icon         : 'usbdrive'
-				, title        : 'USB Drive'
-				, message      : 'Spindown when idle:'
-				, radio        : { Disable: 0, '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-				, values       : G.hddspindown
-				, checkchanged : 1
-				, ok           : function() {
-					var val = infoVal()
-					notify( 'USB Drive Spindown', ( val === 0 ? 'Disable ...' : 'Idle: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
-					bash( [ 'hddspindown', val, source ], function( std ) {
-						if ( std == -1 ) {
-							info( {
-								  icon         : 'usbdrive'
-								, title        : 'USB Drive'
-								, message      : '<wh>'+ source +'</wh> not support spindown.'
-							} );
-							bannerHide();
-						}
-					} );
-				}
-			} );
+		case 'remount':
+			notify( title, 'Remount ...', icon );
+			bash( [ 'remount', mountpoint, source ] );
+			break;
+		case 'unmount':
+			notify( title, 'Unmount ...', icon )
+			bash( [ 'unmount', mountpoint ] );
 			break;
 	}
+} );
+$( '#setting-hddsleep' ).click( function() {
+	info( {
+		  icon         : 'usbdrive'
+		, title        : 'HDD Sleep'
+		, message      : 'Timer:'
+		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
+		, values       : G.hddsleep || 60
+		, checkchanged : 1
+		, cancel        : function() {
+			$( '#hddsleep' ).prop( 'checked', G.hddsleep );
+		}
+		, ok           : function() {
+			var val = infoVal()
+			notify( 'HDD Sleep', ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+			bash( [ 'hddsleep', val ], function( devices ) {
+				if ( devices ) {
+					info( {
+						  icon         : 'usbdrive'
+						, title        : 'HDD Sleep'
+						, message      : '<wh>Devices not support sleep:</wh><br>'
+										+ devices
+					} );
+					bannerHide();
+				}
+			} );
+		}
+	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
 	info( {
@@ -691,36 +697,6 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 	} );
 } );
-$( '#shareddata' ).click( function() {
-	if ( G.shareddata ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Shared Data'
-			, radio   : { 'Copy shared data to local': true, 'Rebuild entire database': false }
-			, values  : [ true ]
-			, cancel  : function() {
-				$( '#shareddata' ).prop( 'checked', true );
-			}
-			, okcolor : orange
-			, oklabel : 'Disable'
-			, ok      : function() {
-				bash( [ 'shareddatadisable', infoVal() ] );
-				notify( 'Shared Data', 'Disable ...', 'networks' );
-			}
-		} );
-	} else {
-		if ( $( '#list .fa-networks' ).length ) {
-			infoMount( 'shareddata' );
-		} else {
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : 'Connect <wh>music share</wh> before enable Shared Data.'
-			} );
-			$( '#shareddata' ).prop( 'checked', false );
-		}
-	}
-} );
 $( '#backup' ).click( function() {
 	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
@@ -828,6 +804,36 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
+$( '#shareddata' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		$( '#shareddata' ).prop( 'checked', false );
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : $this.prev().html()
+		} );
+		return
+	}
+	
+	if ( G.shareddata ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Shared Data'
+			, message : 'Disable and disconnect all shares?'
+			, cancel  : function() {
+				$this.prop( 'checked', true );
+			}
+			, okcolor : orange
+			, ok      : function() {
+				bash( [ 'shareddatadisconnect', 'disable' ] );
+				notify( 'Shared Data', 'Disable ...', 'networks' );
+			}
+		} );
+	} else {
+		infoMount( 'shareddata' );
+	}
+} );
 $( '.listtitle' ).click( function( e ) {
 	var $this = $( this );
 	var $chevron = $this.find( 'i' );
@@ -864,28 +870,26 @@ $( '.listtitle' ).click( function( e ) {
 function infoMount( values ) {
 	var ip = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
-	var shareddata = false;
-	if ( !values || values.length === 8 ) {
-		var htmlname = `\
-<tr><td><gr>As:</gr> NAS/</td>
-	<td><input id="mountpoint" type="text"></td>
-</tr>`;
-		var chktext = 'Update Library on mount'
-	} else  {
-		if ( values === 'shareddata' ) {
-			var shareddata = true;
-			values = [ 'cifs', ipsub, '', '', '', '', false ];
-		}
-		var htmlname = '';
+	if ( values === 'shareddata' ) {
+		var shareddata = true;
+		values = [ 'cifs', 'data', ipsub, '', '', '', '', false ];
 		var chktext = 'Use data from this rAudio'
+	} else {
+		var shareddata = false;
+		var chktext = 'Update Library on mount'
 	}
 	var htmlmount = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
-	<td><label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&emsp;
-	<label><input type="radio" name="inforadio" value="nfs">NFS</label></td>
+	<td>
+		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
+		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
+		<label><input type="radio" name="inforadio" value="raudio">rAudio</label>
+	</td>
 </tr>
-${ htmlname }
+<tr><td>Name</td>
+<td><input id="mountpoint" type="text"></td>
+</tr>
 <tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
@@ -900,35 +904,45 @@ ${ htmlname }
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
-</tr>
-<tr><td></td>
-	<td><label><input type="checkbox" checked>${ chktext }</label></td>
 </tr>`;
 	htmlmount += '</table>';
 	info( {
 		  icon       : 'networks'
-		, title      : shareddata ? 'Shared Data' : 'Add Network Storage'
+		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
+			if ( !shareddata ) {
+				$( '#infoContent label' ).eq( 2 ).remove();
+			} else {
+				$( '#mountpoint' ).prop( 'disabled', 1 );
+			}
 			var $share = $( '#share' );
 			function hideOptions( type ) {
-				$share.val( '' );
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
 					$( '.guest' ).addClass( 'hide' );
-					$share.attr( 'placeholder', '/path/to/share' );
+					var placeholder = '/path/to/share on server';
 				} else {
 					$( '#sharelabel' ).text( 'Share name' );
 					$( '.guest' ).removeClass( 'hide' );
-					$share.attr( 'placeholder', 'sharename' );
+					var placeholder = 'sharename on server';
+				}
+				if ( !values ) {
+					$( '#mountpoint' ).attr( 'placeholder', 'for Library > NAS > "Name" ' );
+					$share.attr( 'placeholder', placeholder );
 				}
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
 			$( '#infoContent input:radio' ).change( function() {
-				hideOptions( $( this ).val() );
+				var val = $( this ).val();
+				if ( val !== 'raudio' ) {
+					hideOptions( val );
+				} else {
+					infoNFSconnect( $( '#list' ).data( 'ip' ) );
+				}
 			} );
 			var $mountpoint = $( '#mountpoint' );
 			$mountpoint.on( 'keyup paste', function() {
@@ -938,12 +952,8 @@ ${ htmlname }
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( function() {
-					var sharename = $share.val();
-					if ( $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ) {
-						$share.val( sharename.replace( /[\/\\]/g, '' ) );
-					} else {
-						if ( sharename[ 0 ] !== '/' ) $share.val( '/'+ sharename );
-					}
+					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\//g;
+					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
 		}
@@ -952,14 +962,16 @@ ${ htmlname }
 		}
 		, ok         : function() {
 			var values = infoVal();
-			bash( [ shareddata ? 'shareddata' : 'mount', ...values ], function( error ) {
+			bash( [ 'mount', ...values, shareddata ], function( error ) {
 				if ( error ) {
 					info( {
 						  icon    : 'networks'
 						, title   : shareddata ? 'Shared Data' : 'Mount Share'
 						, message : error
 						, ok      : function() {
-							infoMount( values );
+							setTimeout( function() {
+								infoMount( values );
+							}, 0 );
 						}
 					} );
 					bannerHide();
@@ -967,7 +979,7 @@ ${ htmlname }
 					refreshData();
 				}
 			} );
-			if ( shareddata  ) {
+			if ( shareddata ) {
 				notify( 'Shared Data', 'Enable ...', 'networks' );
 			} else {
 				notify( 'Network Mount', 'Mount ...', 'networks' );
@@ -975,18 +987,59 @@ ${ htmlname }
 		}
 	} );
 }
+function infoNFSconnect( ip ) {
+	info( {
+		  icon      : 'networks'
+		, title     : 'Shared Data'
+		, message   : 'Server rAudio <i class="fa fa-rserver wh"></i>'
+		, textlabel : 'IP'
+		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
+		, cancel    : function() {
+			$( '#shareddata' ).prop( 'checked', false );
+		}
+		, ok        : function() {
+			var ip = infoVal();
+			bash( [ 'sharelist', ip ], function( list ) {
+				if ( list.slice( 0, 6 ) === 'Server' ) {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Shared Data'
+						, message : list
+									+'<br>Connect?'
+						, cancel  : function() {
+							$( '#shareddata' ).prop( 'checked', false );
+						}
+						, ok      : function() {
+							bash( [ 'shareddataconnect', ip ] );
+							notify( 'Shared Data', 'Connect Server rAudio ...', 'networks' );
+						} 
+					} );
+				} else {
+					info( {
+						  icon    : 'networks'
+						, title   : 'Shared Data'
+						, message : list
+						, cancel  : function() {
+							$( '#shareddata' ).prop( 'checked', false );
+						}
+						, ok      : function() {
+							setTimeout( function() {
+								infoNFSconnect( ip );
+							},0 );
+						}
+					} );
+				}
+			} );
+		}
+	} );
+}
 function renderPage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-	$( '#systemvalue' ).html(
-		  'rAudio <gr>• '+ G.versionui +'</gr>'
-		+'<br>'+ G.kernel.replace( /-r.*H (.*)/, ' <gr>• $1</gr>' )
-		+'<br>'+ G.rpimodel.replace( /(Rev.*)$/, '<wide>$1</wide>' )
-		+'<br>'+ G.soc + ' <gr>•</gr> '+ G.socram
-		+'<br>'+ G.soccpu
-	);
-	renderStatus();
+	$( '#systemvalue' ).html( G.system );
+	$( '#status' ).html( G.status );
+	if ( !G.startup ) setTimeout( getStatus, 10000 );
 	var html = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
@@ -996,12 +1049,19 @@ function renderPage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
+		var mountpoint = val.mountpoint === '/mnt/MPD/SD' ? '/<gr>mnt/MPD/SD</gr>' : val.mountpoint;
 		html += '<li '+ dataunmounted;
-		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>';
-		html +=  val.size ? '&ensp;'+ val.size +'</li>' : '</li>';
+		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ mountpoint +'</wh>'+ dot
+		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
+		html +=  val.size ? val.size : '';
+		html += val.nfs ? ' <gr>• NFS</gr>' : '';
+		html += val.smb ? ' <gr>• SMB</gr>' : '';
+		html += '</li>';
 	} );
 	$( '#list' ).html( html );
+	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
+	$( '#hddsleep' ).toggleClass( 'disabled', !G.hddapm );
+	$( '#usbautoupdate' ).toggleClass( 'disabled', G.shareddata || G.nfsserver );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );
@@ -1031,33 +1091,12 @@ function renderPage() {
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
-	$( '#shareddata' ).prop( 'checked', G.shareddata );
+	$( '#shareddata' ).toggleClass( 'disabled', G.nfsserver );
+	$( '#setting-shareddata' ).remove();
 	showContent();
 }
-function renderStatus() {
-	var status = G.cpuload.replace( / /g, ' <gr>•</gr> ' );
-	status += + G.cputemp < 80 ? '<br>'+ G.cputemp +' °C' : '<br><red><i class="fa fa-warning blink red"></i>&ensp;'+ G.cputemp +' °C</red>';
-	status += '<br>'+ G.time.replace( ' ', ' <gr>•</gr> ' ) +'<wide>&emsp;'+ G.timezone.replace( '/', ' · ' ) +'</wide>'
-			+'<br>'+ G.uptime +'<wide>&emsp;<gr>since '+ G.uptimesince.replace( ' ', ' • ' ) +'</gr></wide>'
-			+'<br>'+ ( G.startup ? G.startup.replace( ' ', 's <gr>kernel</gr> + ' ) +'s <gr>userspace</gr>' : 'Booting ...' );
-	if ( !G.online ) status += '<br><i class="fa fa-warning"></i>&ensp;No Internet connection.';
-	if ( G.throttled !== '0x0' ) {                        // https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-		var bits = parseInt( G.throttled ).toString( 2 ); // 20 bits ( hex > decimal > binary )
-		if ( bits[ 0 ] == 1 ) {                           // #0  > #18
-			status += '<br><i class="fa fa-warning"></i>&ensp;Voltage under 4.7V - occurred <code>'+ G.throttled +'</code>';
-		} else if ( bits[ 18 ] == 1 ) {                   // #18 > #0
-			status += '<br><i class="fa fa-warning blink red"></i>&ensp;<red>Voltage under 4.7V</red> - now <code>'+ G.throttled +'</code>';
-		}
-	}
-	$( '#status' ).html( status );
-	if ( !G.startup ) {
-		setTimeout( function() {
-			bash( "systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g'", function( data ) {
-				if ( data ) {
-					G.startup = data;
-					renderStatus();
-				}
-			} );
-		}, 10000 );
-	}
+function getStatus() {
+	bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
+		$( '#status' ).html( status );
+	} );
 }

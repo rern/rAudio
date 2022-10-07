@@ -12,6 +12,12 @@ Audio player for
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
 - Based on Arch Linux Arm - `mpd` `nginx`
+- Share data and files between multiple rAudios
+	- Server rAudio : clients (Easy setup with server IP address only)
+	- File server : clients
+	- Live data update - refresh across all rAudios
+- Control via GUI on any browsers
+- Live display update - refresh across multiple GUI clients
 - Metadata Tag Editor - `kid3-cli`
 - Album mode with coverarts
 - File mode with thumbnail icons
@@ -21,7 +27,6 @@ Audio player for
 - `*.wav` - album artists and sort tracks
 - `*.cue` - virtually as individual tracks in all modes and user playlists
 - VU meter as coverart (for remote screen)
-- Live display update across multiple clients
 - Wi-Fi connection can be pre-configured for headless mode.
 - Access point - `hostapd`
 - File sharing - `samba`
@@ -43,8 +48,8 @@ Audio player for
 	- Bluetooth audio sender
 	- HTTP (no metadata)
 	- SnapSever - `snapcast` Multiroom audio server
-	- Internet radio
-	- DAB radio
+	- Web Radio
+	- DAB Radio
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`

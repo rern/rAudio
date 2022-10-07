@@ -8,8 +8,7 @@
 
 
 . /srv/http/bash/common.sh
-serverfile=$dirshm/serverip
-clientfile=$dirshm/clientip
+fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then # client start - save server ip
 	if systemctl -q is-active snapserver; then # server + client on same device
@@ -20,10 +19,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
 		pushstream display '{"snapclientactive":true,"volumenone":false}'
-		data=$( $dirbash/settings/features-data.sh )
-		pushstream refresh "$data"
-		data=$( $dirbash/settings/player-data.sh )
-		pushstream refresh "$data"
+		pushstream refresh '{"page":"features","snapclientactive",true}'
+		$dirbash/settings/player-data.sh pushrefresh
 		exit
 	fi
 	
@@ -31,10 +28,10 @@ if [[ $1 == start ]]; then # client start - save server ip
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
-		echo $serverip > $serverfile
+		echo $serverip > $dirshm/serverip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh
-		clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+		clientip=$( ipGet )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 	else
 		systemctl stop snapclient
@@ -50,17 +47,16 @@ elif [[ $1 == stop ]]; then # server + client on same device
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
 	fi
 	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
-	data=$( $dirbash/settings/features-data.sh )
-	pushstream refresh "$data"
+	pushstream refresh '{"page":"features","snapclientactive",false}'
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
-	sed -i "/$clientip/ d" $clientfile
-	[[ ! $( awk NF $clientfile ) ]] && rm -f $clientfile
+	sed -i "/$clientip/ d" $fileclientip
+	[[ ! $( awk NF $fileclientip ) ]] && rm -f $fileclientip
 else # sshpass add clientip from connected client
 	clientip=$1
 	iplist="\
-$( cat $clientfile 2> /dev/null )
+$( cat $fileclientip 2> /dev/null )
 $clientip"
-	echo "$iplist" | awk NF | sort -u > $clientfile
+	echo "$iplist" | awk NF | sort -u > $fileclientip
 fi

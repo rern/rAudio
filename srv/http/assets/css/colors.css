@@ -14,14 +14,14 @@
 	--cgd  : hsl(200,3%,10%);   /* gray-dark */
 }
 
-bl,.bl    { color : var( --cm ) !important }
+bl,  .bl  { color : var( --cm ) !important }
 bll       { color : var( --cml ) !important }
-gr, .gr   { color : var( --cg60 ) !important }
+g         { color : var( --cgl ) }
+gr,  .gr  { color : var( --cg60 ) !important }
 grn, .grn { color : #0f0 }
 red, .red { color : #bb2828 }
-pre red   { color: #ff0000 }
-.yl       { color : yellow }
-wh, .wh   { color : var( --cw ) !important }
+yl,  .yl  { color : yellow }
+wh,  .wh  { color : var( --cw ) !important }
 
 .bgr      { background       : var( --cgd ) !important }
 .bgr60    { background-color : var( --cg60 ) !important }

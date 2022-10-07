@@ -1,4 +1,12 @@
 <?php
+$hostname = getHostName();
+$ip = getHostByName( $hostname );
+
+if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
+	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
+} else {
+	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
+}
 $i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
 $selecti2s = '<select id="i2smodule">
 				<option value="none">None / Auto detect</option>';
@@ -15,13 +23,17 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
-
-echo '
-<div id="gpiosvg" class="hide">';
-include 'assets/img/gpio.svg';
-echo '
+if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
+	$disabledbt = '<wh>DSP I^camilladsp^I</wh> is currently active.';
+} else {
+	$disabledbt = 'Bluetooth is currently connected.';
+}
+?>
+<div id="gpiosvg" class="hide">
+<?php include 'assets/img/gpio.svg';?>
 </div>
-<div class="section">';
+<div class="section">
+<?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
@@ -58,13 +70,14 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
-<i class="fa fa-refresh"></i> <gr>Toggle refresh every 10 seconds.</gr>
+<?=i( 'refresh' )?> <gr>Toggle refresh every 10 seconds.</gr>
 
-CPU Load:
+<wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
  • calculated over 1, 5 and 15 minutes.
  • Each one should not be constantly over 0.75 x CPU cores.
-CPU temperature:
+ 
+<wh>CPU temperature:</wh>
  • 80-84°C: ARM cores throttled.
  • 85°C: ARM cores and GPU throttled.
  • RPi 3B+: 60°C soft limit (optimized throttling)
@@ -79,32 +92,46 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Context menu: Unmount / Re-mount / Forget / Info / Spindown
+	<div class="help-block hide">Icon context menu: Unmount / Re-mount / Forget / Info / Share
 
-Available sources, local USB and NAS mounts, for Library.
- • USB drives will be found and mounted automatically.
- • Network shares must be manually configured.
+<wh>USB drives:</wh>
+ • Will be found and mounted automatically.
+
+<wh>Network shares:</wh>
+ • Must be manually configured.
  • If mount failed, try in SSH terminal:
+   (replace <cy>YELLOW</cy> with actual values)
 <pre>
-mkdir -p "/mnt/MPD/NAS/<bll>NAME</bll>"
-<gr># CIFS:</gr>
-mount -t cifs "//<bll>IP</bll>/<bll>SHARENAME</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
-      -o noauto,username=<bll>USER</bll>,password=<bll>PASSWORD</bll>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
+mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
+<gr># CIFS: (no user - username=guest, no password - password="")</gr>
+mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
+      -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr># NFS:</gr>
-mount -t nfs "<bll>IP</bll>:<bll>/SHARE/PATH</bll>" "/mnt/MPD/NAS/<bll>NAME</bll>" \
+mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-		  'label'    => 'Auto Update'
-		, 'id'       => 'usbautoupdate'
-		, 'sublabel' => 'USB Drives'
-		, 'icon'     => 'refresh-library'
-		, 'help'     => <<< HTML
-Auto update Library database on insert / remove USB drives.
+	  'label'    => 'HDD Sleep'
+	, 'id'       => 'hddsleep'
+	, 'icon'     => 'screenoff'
+	, 'disabled' => 'HDD not support sleep'
+	, 'help'     => <<< HTML
+Sleep timer for hard drives.
 HTML
-	] );
+] );
+htmlSetting( [
+	  'label'    => 'Hotplug Update'
+	, 'id'       => 'usbautoupdate'
+	, 'sublabel' => 'USB drives data'
+	, 'icon'     => 'refresh-library'
+	, 'setting'  => false
+	, 'disabled' => $disabledusbautoupdate
+	, 'help'     => <<< HTML
+Auto update Library database on insert/remove USB drives.
+HTML
+] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
@@ -119,10 +146,10 @@ $body = [
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetooth'
-		, 'setting'  => true
-		, 'disabled' => ( file_exists( '/srv/http/data/system/camilladsp' ) ? 'DSP is currently active.' : 'Bluetooth is currently connected.' )
+		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i><code>Sampling 16bit</code> - Only for Bluetooth receivers with fixed sampling
+I^gear^I
+ • | Sampling 16bit | Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -131,14 +158,13 @@ HTML
 		, 'sublabel' => 'iw'
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
-		, 'setting'  => true
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i> Settings
- • Auto start Access Point - On failed connection or no router
+I^gear^I
+ • | Auto start Access Point | On failed connection or no router
  • Country of Wi-Fi regulatory domain:
- &emsp; - 00 = Least common denominator settings, channels and transmit power are permitted in all countries.
- &emsp; - The connected router may override it to a certain country.
+	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
+	- The connected router may override it to a certain country.
 HTML
 	]
 ];
@@ -159,13 +185,14 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	<i id="setting-i2smodule" class="setting fa fa-gear"></i>
+	I^gear^I
 </div>
 HTML
 	, 'help'     => <<< HTML
 I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected. See&ensp;<i class="fa fa-player gr"></i>Player if it's already set as Output device.
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with <i class="fa fa-gear gr"></i>next to it.
+ • HAT with EEPROM could be automatically detected.
+	(See | I^player^I Player | Output | if it's already set as Output device.)
+ • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I^gear^I next to it.
 HTML
 	]
 	, [
@@ -173,11 +200,10 @@ HTML
 		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-<i class="fa fa-warning"></i> LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I</wh>arning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -185,7 +211,6 @@ HTML
 		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  • On - Fixed to pin 5
@@ -199,10 +224,9 @@ HTML
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: &ensp;<i class="fa fa-plus-r"></i>System <gr>|</gr>&ensp;<i class="fa fa-relays wh"></i>
+On/Off: <a class="menu-sub">I^plus-r^I System</a>I^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
@@ -211,7 +235,6 @@ HTML
 		  'label'    => 'Rotary Encoder'
 		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  • Turn volume up/down
@@ -222,7 +245,6 @@ HTML
 		  'label'    => 'Spectrum OLED'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
 HTML
@@ -231,7 +253,6 @@ HTML
 		  'label'    => 'TFT 3.5" LCD'
 		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
 HTML
@@ -241,7 +262,6 @@ HTML
 		  'label'   => 'VU LED'
 		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  • <bl id="ledcalc">LED resister calculator</bl>
@@ -252,14 +272,15 @@ htmlSection( $head, $body );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'label' => 'Host Name'
-		, 'id'    => 'hostname'
-		, 'icon'  => 'plus-r'
-		, 'input' => '<input type="text" id="hostname" readonly>'
-		, 'help'  => <<< HTML
+		  'label'   => 'Host Name'
+		, 'id'      => 'hostname'
+		, 'icon'    => 'plus-r'
+		, 'input'   => '<input type="text" id="hostname" readonly>'
+		, 'setting' => false
+		, 'help'    => <<< HTML
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
- • Web Interface URL: <code id="avahiurl"></code>
+ • Web Interface URL: <c id="avahiurl"></c>
  • System hostname
 HTML
 	]
@@ -270,11 +291,11 @@ HTML
 		, 'icon'     => 'globe'
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
-		, 'setting'  => 'self'
+		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-<i class="fa fa-gear"></i>Servers:
- • NTP: For time sync
- • Package mirror: For system upgrade <code>pacman -Syu</code>
+I^gear^I
+ • NTP server: For time sync
+ • Package mirror server: For system upgrade <c>pacman -Syu</c>
 HTML
 	]
 	, [
@@ -283,7 +304,6 @@ HTML
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
 		, 'status'   => 'soundprofile'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 Tweak kernel parameters for sound profiles.
 HTML
@@ -296,7 +316,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'setting' => 'none'
+		, 'setting' => false
 		, 'help'    => <<< HTML
 Backup all settings and Library database:
  • Settings
@@ -311,30 +331,37 @@ HTML
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'none'
+		, 'setting' => 'custom'
 		, 'help'    => <<< HTML
-Restore all settings and Library database from a backup file. The system will reboot after finished.
+Restore all settings and Library database from a backup file.
 HTML
 	]
 	, [
-		  'label'   => 'Shared Data'
-		, 'id'      => 'shareddata'
-		, 'icon'    => 'networks'
-		, 'setting' => 'none'
-		, 'help'    => <<< HTML
-Share data for multiple rAudios: audio CD, bookmarks, lyrics, Library database, saved playlists and Web Radio stations. 
- • SSH passwords must be default.
- • Music files should be on NAS only.
- • On file server, setup a network share with all permissions
- &emsp; • NFS: <code>777</code> / <code>a+rwx</code>
- &emsp; • Samba: <code>read only = no</code>
- &emsp; • Windows: <code>Everyone - Full Control</code>
- • On each rAudio
-  &emsp; • Storage <i class="fa fa-plus-circle"></i> Add to connect shared music on the server
-  &emsp; • Shared Data - Enable to connect the share.
- • <code>Use data from this rAudio</code>:
- &emsp; • Check only on rAudio with data to be used or to overwrite existing.
- &emsp; • Leave unchecked to use existing data on the server.
+		  'label'    => 'Shared Data'
+		, 'id'       => 'shareddata'
+		, 'sublabel' => 'client'
+		, 'icon'     => 'networks'
+		, 'setting'  => 'custom'
+		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
+		, 'help'     => <<< HTML
+Connect share data as client for:
+	- Library database
+	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+	- Show / hide items
+	- Display order of Library home
+ • <wh>rAudio as server:</wh>
+	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
+	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
+ • <wh>Other servers:</wh> 
+	Server: Create a share for data with full permissions
+		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
+		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
+	Clients:
+		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
+		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
+		- Data on 1st connected client will be used as initial shared.
+		
+<wh>Note:</wh> SSH passwords must be default.
 HTML
 	]
 ];
@@ -399,7 +426,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>
 	
-	<heading class="sub">Back End</heading>
+	<heading class="subhead">Back End</heading>
 	<div class="list">
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
@@ -408,7 +435,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	<br><?=$indexhtml?></div>
 	<div class="list"></div>
 	
-	<heading class="sub">Front End</heading>
+	<heading class="subhead">Front End</heading>
 	<div class="list">
 		<a href="https://whatwg.org">HTML</a>
 		<p>Hypertext Markup Language for displaying documents in web browsers</p>
@@ -421,10 +448,10 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://jquery.com/">jQuery</a>
 		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
 	</div>
-	<div class="listtitle">P l u g i n s :&ensp;<i class="fa fa-chevron-down bl"></i></div>
+	<div class="listtitle">P l u g i n s : <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
-	<heading class="sub">Data</heading>
+	<heading class="subhead">Data</heading>
 	<div class="list">
 		<a href="https://www.last.fm">last.fm</a>
 		<p>Coverarts and artist biographies</p>
@@ -438,9 +465,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 </div>
 
 <div id="menu" class="menu hide">
-<a class="unmount"><i class="fa fa-times"></i>Unmount</a>
-<a class="remount"><i class="fa fa-check"></i>Re-mount</a>
-<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
-<a class="info"<?=$hdparmhide?>><i class="fa fa-info-circle"></i>Info</a>
-<a class="spindown"<?=$hdparmhide?>><i class="fa fa-screenoff"></i>Spindown</a>
+<a class="info"<?=$hdparmhide?>><?=i( 'info-circle' )?>Info</a>
+<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
+<a class="remount"><?=i( 'check' )?>Re-mount</a>
+<a class="unmount"><?=i( 'times' )?>Unmount</a>
 </div>

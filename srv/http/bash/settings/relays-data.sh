@@ -14,4 +14,4 @@ data='
 , "timer"   : '$timer'
 , "enabled" : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 
-data2json "$data"
+data2json "$data" $1

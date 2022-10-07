@@ -6,25 +6,28 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'btcontroller'
 	, 'button' => [ 'btscan' => 'search' ]
 ] );
-?>
+$html = <<< HTML
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide"><wh>rAudio as sender:</wh>&ensp;<i>(or pairing non-audio devices)</i>
+	<div class="help-block hide"><wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
- &emsp; - On receiver - Turn on <code>discovery</code> / <code>pairing</code> mode
- &emsp; - On rAudio - Bluetooth &nbsp;<i class="fa fa-search wh"></i>Search > Select to pair
+	- On receiver: Turn on Discovery / Pairing mode
+	- On rAudio: | Bluetooth I^search wh^I | Select to pair
  • Connect:
- &emsp; - On receiver - <code>power on</code> / <code>power off</code> > <code>connect</code> / <code>disconnect</code>
- &emsp; - Receiver buttons can be used to control playback
+	- On receiver: Power on / Power off > Connect / Disconnect
+	- Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
- &emsp; - On rAudio - System > Bluetooth setting - enable <code>Discoverable by senders</code>
- &emsp; - On sender - Search > Select rAudio to pair
- &emsp; - <code>Forget</code> / <code>Remove</code> should be done on both rAudio and sender
+	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | <wh>• Discoverable by senders</wh> |
+	- On sender: | Search | Select <wh>rAudio</wh> to pair
+	- Forget / remove should be done on both rAudio and sender
  • Connect:
- &emsp; - On sender - Select rAudio > <code>connect</code> / <code>disconnect</code>
+	- On sender: Select rAudio | Connect | / | Disconnect |
 </div>
+HTML;
+echoSetIcon( $html );
+?>
 </div>
 <div id="divwl" class="section">
 <?php
@@ -36,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="help-block hide">
- • Connect: Wi-Fi &nbsp;<i class="fa fa-search wh"></i>Search > Select to connect
+ • Connect: <g>|</g> Wi-Fi &nbsp;<?=i( 'search wh' )?>Search <g>|</g> Select to connect
  • Avoid connecting to access points which signal is less than 2 bars.
 </div>
 </div>
@@ -61,13 +64,13 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
 	<div id="qrwebui" class="qr"></div>
-	<div class="help-block hide">Scan QR code or use IP address to connect with web user interface.</div>
+	<div class="help-block hide">Use IP address or scan QR code to connect with web user interface.</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
-	, 'button' => [ 'setting-accesspoint' => 'gear' ]
+	, 'button' => [ 'hostapdset' => 'gear' ]
 ] );
 ?>
 	<div id="boxqr" class="hide">
@@ -113,9 +116,9 @@ htmlHead( [ //////////////////////////////////
 </div>
 
 <div id="menu" class="menu hide">
-<a class="connect"><i class="fa fa-check"></i>Connect</a>
-<a class="disconnect"><i class="fa fa-times"></i>Disconnect</a>
-<a class="edit"><i class="fa fa-edit-circle"></i>Edit</a>
-<a class="forget"><i class="fa fa-minus-circle"></i>Forget</a>
-<a class="info"><i class="fa fa-info-circle"></i>Info</a>
+<a class="connect"><?=i( 'check' )?>Connect</a>
+<a class="disconnect"><?=i( 'times' )?>Disconnect</a>
+<a class="edit"><?=i( 'edit-circle' )?>Edit</a>
+<a class="forget"><?=i( 'minus-circle' )?>Forget</a>
+<a class="info"><?=i( 'info-circle' )?>Info</a>
 </div>

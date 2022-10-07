@@ -12,9 +12,6 @@ pushReboot() {
 	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' system 5000
 	echo $1 >> $dirshm/reboot
 }
-pushRefresh() {
-	$dirbash/settings/system-data.sh pushrefresh
-}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
@@ -32,7 +29,7 @@ I2Cset() {
 	# reset
 	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
 	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
-	[[ -s $filemodule ]] || rm -f $filemodule
+	[[ ! $( awk NF $filemodule ) ]] && rm $filemodule
 
 	# dtparam=i2c_arm=on
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> $fileconfig
@@ -44,6 +41,43 @@ I2Cset() {
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo i2c-dev >> $filemodule
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
+}
+sharedDataIPlist() {
+	list=$( ipGet )
+	iplist=$( grep -v $list $filesharedip )
+	for ip in $iplist; do
+		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+			[[ $1 ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			list+=$'\n'$ip
+		fi
+	done
+	echo "$list" | sort -u > $filesharedip
+}
+sharedDataSet() {
+	rm -f $dirmpd/{listing,updating}
+	mkdir -p $dirbackup
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not rserver - initial setup
+		rm -rf $dirbackup/$dir
+		mv -f $dirdata/$dir $dirbackup
+		ln -s $dirshareddata/$dir $dirdata
+	done
+	if [[ ! -e $dirshareddata/system ]]; then # not rserver - initial setup
+		mkdir $dirshareddata/system
+		cp -f $dirsystem/{display,order} $dirshareddata/system
+	fi
+	touch $filesharedip $dirshareddata/system/order # in case order not exist
+	chmod 777 $filesharedip $dirshareddata/system/{display,order}
+	for file in display order; do
+		mv $dirsystem/$file $dirbackup
+		ln -s $dirshareddata/system/$file $dirsystem
+	done
+	echo data > /mnt/MPD/NAS/.mpdignore
+	mpc -q clear
+	systemctl restart mpd
+	sharedDataIPlist
+	pushRefresh
+	pusrstream refresh '{"page":"features","shareddata":true}'
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
@@ -132,6 +166,7 @@ databackup )
 /etc/systemd/timesyncd.conf
 /etc/X11/xorg.conf.d/99-calibration.conf
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
+/etc/exports
 /etc/fstab
 /etc/mpd.conf
 /etc/mpdscribble.conf
@@ -164,7 +199,7 @@ databackup )
 		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 	fi
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
+	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
@@ -201,6 +236,8 @@ datarestore )
 		mv $dirdata/{webradiosimg,webradio/img}
 	fi
 	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	$dirbash/cmd.sh dirpermissions
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
@@ -222,52 +259,57 @@ datarestore )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
-	rmdir /mnt/MPD/NAS/* &> /dev/null
+	readarray -t dirs <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	for dir in "${dirs[@]}"; do
+		umount -l "$dir" &> /dev/null
+		rmdir "$dir" &> /dev/null
+	done
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	if [[ $ipserver ]]; then
+		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
+	fi
 	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"
 		done
 	fi
-	mountpoint=/srv/http/shareddata
-	if grep -q $mountpoint /etc/fstab; then
-		mkdir -p $mountpoint
-		chown http:http $mountpoint
-		chmod 777 $mountpoint
-		std=$( mount $mountpoint )
-		if [[ $? == 0 ]]; then
-			for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-				rm -rf $dirdata/$dir
-				ln -s $mountpoint/$dir $dirdata
-			done
-		fi
-	fi
-	$dirbash/cmd.sh dirpermissions
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	grep -q /mnt/MPD/SD /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
-fstabget )
-	echo -e "\
-<bll># cat /etc/fstab</bll>
-$( cat /etc/fstab )
-
-<bll># mount | grep ^/dev</bll>
-$( mount | grep ^/dev | sort )"
+hddinfo )
+	dev=${args[1]}
+	echo -n "\
+<bll># hdparm -I $dev</bll>
+$( hdparm -I $dev | sed '1,3 d' )
+"
 	;;
-hddspindown )
-	duration=${args[1]}
-	dev=${args[2]}
-	grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && echo -1 && exit
-	
-	if [[ $duration == 0 ]]; then
-		apm=128
-		rm -f $dirsystem/hddspindown
-	else
-		apm=127
-		echo "$duration" > $dirsystem/hddspindown
+hddsleepdisable )
+	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+	if [[ $devs ]]; then
+		for dev in $devs; do
+			! hdparm -B $dev | grep -q 'APM_level' && continue
+			
+			hdparm -q -B 128 $dev &> /dev/null
+			hdparm -q -S 0 $dev &> /dev/null
+		done
+		pushRefresh
 	fi
-	hdparm -q -B $apm $dev
-	hdparm -q -S $duration $dev
+	rm -f $dirsystem/hddsleep
+	;;
+hddsleep )
+	apm=${args[1]}
+	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+	for dev in $devs; do
+		! hdparm -B $dev | grep -q 'APM_level' && notsupport+="$dev"$'\n' && continue
+
+		hdparm -q -B $apm $dev
+		hdparm -q -S $apm $dev
+		support=1
+	done
+	[[ $notsupport ]] && echo -e "$notsupport"
+	[[ $support ]] && echo $apm > $dirsystem/apm
 	pushRefresh
 	;;
 hostname )
@@ -461,11 +503,13 @@ mount )
 	password=${args[6]}
 	extraoptions=${args[7]}
 	update=${args[8]}
+	shareddata=${args[9]}
 
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 
 	if [[ -e $mountpoint ]]; then
-		find "$mountpoint" -mindepth 1 | read && echo "Mount name <code>$mountpoint</code> not empty." && exit
+		[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
+		
 	else
 		mkdir "$mountpoint"
 	fi
@@ -481,23 +525,30 @@ mount )
 		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 	else
 		source="$ip:$directory"
-		options=defaults,noauto,bg,soft,timeo=5
+		options=defaults,noauto,bg,hard,intr,timeo=5
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
-	echo "${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
+	fstab="\
+$( cat /etc/fstab )
+${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
+	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
 	std=$( mount "$mountpoint" 2>&1 )
-	if [[ $? == 0 ]]; then
-		[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
-		for i in {1..5}; do
-			sleep 1
-			mount | grep -q "$mountpoint" && break
-		done
-		pushRefresh
-	else
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "\|${mountpoint// /\\040}| d" /etc/fstab
+	if [[ $? != 0 ]]; then
+		fstab=$( grep -v "${mountpoint// /\\040}" /etc/fstab )
+		echo "$fstab" | column -t > /etc/fstab
 		rmdir "$mountpoint"
+		systemctl daemon-reload
+		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		exit
 	fi
+	
+	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	for i in {1..5}; do
+		sleep 1
+		mount | grep -q "$mountpoint" && break
+	done
+	[[ $shareddata ]] && sharedDataSet || pushRefresh
 	;;
 mpdoleddisable )
 	rm $dirsystem/mpdoled
@@ -614,6 +665,7 @@ remove )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
+	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
@@ -663,83 +715,104 @@ servers )
 	fi
 	pushRefresh
 	;;
-shareddatadisable )
-	copydata=${args[1]}
-	mountpoint=/srv/http/shareddata
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	sed -i "/$ip/ d" $mountpoint/iplist
-	[[ ! $( awk NF $mountpoint/iplist ) ]] && rm $mountpoint/iplist
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirdata/$dir
-		[[ $copydata == true ]] && cp -rf $mountpoint/$dir $dirdata || mkdir $dirdata/$dir
+shareddataconnect )
+	ip=${args[1]}
+	if [[ ! $ip ]]; then # sshpass from server to reconnect
+		ip=$( cat $dirsystem/sharedipserver 2> /dev/null )
+		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
+		
+		reconnect=1
+	fi
+	
+	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
+	for path in "${paths[@]}"; do
+		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
+		
 	done
-	umount -l $mountpoint
-	sed -i "\|$mountpoint| d" /etc/fstab
-	rm -rf $mountpoint
-	chown -R http:http $dirdata
-	chown -R mpd:audio $dirmpd
-	pushRefresh
-	if [[ $copydata == false ]]; then
-		rm -f $dirmpd/{updating,listing}
-		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate
+	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
+	fstab=$( cat /etc/fstab )
+	for path in "${paths[@]}"; do
+		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		mkdir -p "$dir"
+		mountpoints+=( "$dir" )
+		source=${path// /\\040}
+		mountpoint=/mnt/MPD/NAS/$( basename $source )
+		fstab+=$'\n'"$ip:$source  $mountpoint  $options"
+	done
+	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
+	for dir in "${mountpoints[@]}"; do
+		mount "$dir"
+	done
+	sharedDataSet
+	if [[ $reconnect ]]; then
+		rm $dirsystem/sharedipserver
+		pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	fi
 	;;
-shareddata )
-	protocol=${args[1]}
-	ip=${args[2]}
-	directory=${args[3]}
-	user=${args[4]}
-	password=${args[5]}
-	extraoptions=${args[6]}
-	copydata=${args[7]}
+shareddatadisconnect )
+	disable=${args[1]} # null - sshpass from rserver to disconnect
+	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP <code>$ip</code> not found." && exit
-	
-	if [[ $protocol == cifs ]]; then
-		source="//$ip/$directory"
-		options=noauto
-		if [[ ! $user ]]; then
-			options+=,username=guest
-		else
-			options+=",username=$user,password=$password"
-		fi
-		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8,file_mode=0777,dir_mode=0777
-	else
-		source="$ip:$directory"
-		options=defaults,noauto,bg,soft,timeo=5
-	fi
-	[[ $extraoptions ]] && options+=,$extraoptions
-	mountpoint=/srv/http/shareddata
-	mkdir -p $mountpoint
-	echo "${source// /\\040}  $mountpoint  $protocol  ${options// /\\040}  0  0" >> /etc/fstab
-	std=$( mount $mountpoint )
-	if [[ $? == 0 ]]; then
-		for i in {1..5}; do
-			sleep 1
-			mount | grep -q "$mountpoint" && break
-		done
-		for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-			if [[ $copydata == true ]]; then
-				rm -rf $mountpoint/$dir
-				cp -rf $dirdata/$dir $mountpoint
-			else
-				mkdir -p $mountpoint/$dir
-			fi
+	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
+		if [[ -L $dirdata/$dir ]]; then
 			rm -rf $dirdata/$dir
-			ln -s $mountpoint/$dir $dirdata
-		done
-		ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' >> $mountpoint/iplist
-		chown -h http:http $mountpoint/*/
-		chown -h mpd:audio $mountpoint $mountpoint/{mpd,playlist}
-		pushRefresh
-		[[ $copydata == false ]] && systemctl restart mpd
-	else
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
-		sed -i "\|$mountpoint| d" /etc/fstab
-		rm -rf $mountpoint
-		exit
+			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
+		fi
+	done
+	rm $dirsystem/{display,order}
+	mv -f $dirbackup/{display,order} $dirsystem
+	rmdir $dirbackup &> /dev/null
+	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
+	sed -i "/$( ipGet )/ d" $filesharedip
+	mpc -q clear
+	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	for dir in "${dirs[@]}"; do
+		umount -l "$dir"
+		rmdir "$dir" &> /dev/null
+	done
+	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
+	systemctl restart mpd
+	pushRefresh
+	pusrstream refresh '{"page":"features","shareddata":false}'
+	if [[ ! $disable ]]; then
+		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
+		pushstreamNotify 'Server rAudio' 'Offline ...' rserver
 	fi
+	;;
+shareddataiplist )
+	sharedDataIPlist ${args[1]}
+	;;
+shareddatarestart )
+	systemctl restart mpd
+	data=$( cat $dirmpd/counts )
+	pushstream mpdupdate "$data"
+	;;
+sharelist )
+	ip=${args[1]}
+	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
+	
+	if [[ ${args[2]} == smb ]]; then
+		script -c "timeout 10 smbclient -NL $ip" $dirshm/smblist &> /dev/null # capture /dev/tty to file
+		paths=$( sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//' $dirshm/smblist )
+	else
+		paths=$( timeout 5 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
+	fi
+	if [[ $paths ]]; then
+		echo "\
+Server rAudio @<wh>$ip</wh> :
+
+<pre><wh>$paths</wh></pre>"
+	else
+		echo "No NFS shares found @<wh>$ip</wh>"
+	fi
+	;;
+sharelistsmb )
+	timeout 10 smbclient -NL ${args[1]} | sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//'
 	;;
 soundprofile )
 	soundProfile
@@ -778,6 +851,15 @@ statusonboard )
 		echo '<hr>'
 		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
+	;;
+storage )
+	echo -n "\
+<bll># cat /etc/fstab</bll>
+$( cat /etc/fstab )
+
+<bll># mount | grep ^/dev</bll>
+$( mount | grep ^/dev | sort | column -t )
+"
 	;;
 systemconfig )
 	config="\
@@ -832,7 +914,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	pushstreamNotify "$name" $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate

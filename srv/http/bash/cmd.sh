@@ -143,7 +143,7 @@ plAddRandom() {
 	mpcls=$( mpc ls "$dir" )
 	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
 	if [[ $cuefile ]]; then
-		plL=$(( $( grep '^\s*TRACK' "/mnt/MPD/$cuefile" | wc -l ) - 1 ))
+		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		file="$range $cuefile"
 		grep -q "$file" $dirsystem/librandom && plAddRandom && return
@@ -188,7 +188,8 @@ ${target/\/srv\/http}" > "$bkfile"
 	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current $1 )"
+	data=$( php /srv/http/mpdplaylist.php current $1 )
+	pushstream playlist "$data"
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -223,13 +224,13 @@ $Album" &> /dev/null &
 snapclientStop() {
 	systemctl stop snapclient
 	$dirbash/settings/player-conf.sh
-	clientip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
-	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $clientip
+	ip=$( ipGet )
+	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
-		systemctl stop radio
+		systemctl stop radio dab
 		rm -f $dirshm/{radio,status}
 	fi
 }
@@ -337,7 +338,7 @@ webRadioSampling() {
 	url=$1
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
-	if [[ ! -s /tmp/webradio ]]; then
+	if [[ ! $( awk NF /tmp/webradio ) ]]; then
 		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
 		exit
 	fi
@@ -422,6 +423,8 @@ $coverart" > "$bkfile"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
+	else
+		order=false
 	fi
 	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
 	data='{
@@ -451,11 +454,13 @@ bookmarkremove )
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
+	else
+		order=false
 	fi
 	data='{
   "type"  : "delete"
 , "path"  : "'$path'"
-, "order" :'$( cat $dirsystem/order 2> /dev/null )'
+, "order" :'$order'
 }'
 	pushstream bookmark "$data"
 	;;
@@ -465,9 +470,10 @@ bookmarkrename )
 	path=${args[3]}
 	mv $dirbookmarks/{"$name","$newname"} 
 	data='{
-  "type" : "rename"
-, "path" : "'$path'"
-, "name" : "'$newname'"
+  "type"  : "rename"
+, "path"  : "'$path'"
+, "name"  : "'$newname'"
+, "order" : false
 }'
 	pushstream bookmark "$data"
 	;;
@@ -613,6 +619,13 @@ dirpermissions )
 	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	chown -R http:http /srv/http/{assets,bash,data,settings}
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
+		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
+		done
+	fi
 	;;
 displaysave )
 	data=${args[1]}
@@ -729,9 +742,6 @@ librandom )
 		[[ $play ]] && mpc -q play $playnext
 	fi
 	pushstream option '{ "librandom": '$enable' }'
-	;;
-list )
-	list
 	;;
 lyrics )
 	artist=${args[1]}
@@ -974,28 +984,13 @@ mpcsimilar )
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
 mpcupdate )
-	type=${args[1]}
-	path=${args[2]}
-	if [[ $type == rescan ]]; then
-		touch $dirmpd/updating
-		mpc -q rescan
-	elif [[ $type == update ]]; then
-		touch $dirmpd/updating
-		mpc -q update
-	elif [[ $type == path ]]; then
-		echo $path > $dirmpd/updating
-		mpc -q update "$path"
-	fi
+	path=${args[1]}
+	echo $path > $dirmpd/updating
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 mpdoledlogo )
 	mpdoledLogo
-	;;
-nicespotify )
-	for pid in $( pgrep spotifyd ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
 	;;
 ordersave )
 	data=$( jq <<< ${args[1]} )
@@ -1016,57 +1011,79 @@ pkgstatus )
 	service=$id
 	case $id in
 		camilladsp )
-			fileconf=$dircamilladsp/configs/camilladsp.yml;;
+			fileconf=$dircamilladsp/configs/camilladsp.yml
+			;;
 		hostapd )
-			catconf="
+			conf="\
 <bll># cat /etc/hostapd/hostapd.conf</bll>
 $( cat /etc/hostapd/hostapd.conf )
 
-<bll># cat /etc/dnsmasq.conf</bll>
-$( cat /etc/dnsmasq.conf )";;
+<bll># cat /etc/dnsmasq.conf"
+			;;
 		localbrowser )
+			pkg=chromium
 			fileconf=$dirsystem/localbrowser.conf
-			pkg=chromium;;
+			;;
+		nfs-server )
+			pkg=nfs-utils
+			systemctl -q is-active nfs-server && fileconf=/etc/exports
+			;;
 		rtsp-simple-server )
-			catconf="
+			conf="\
 <bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )";;
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+			;;
 		smb )
+			pkg=samba
 			fileconf=/etc/samba/smb.conf
-			pkg=samba;;
+			;;
 		snapclient|snapserver )
-			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
 			pkg=snapcast
-			service=$id;;
+			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			;;
 		* )
-			fileconf=/etc/$id.conf;;
+			fileconf=/etc/$id.conf
+			;;
 	esac
-	[[ -e $fileconf ]] && catconf="
+	config="<code>$( pacman -Q $pkg )</code>"
+	if [[ $conf ]]; then
+		config+="
+$conf"
+	elif [[ -e $fileconf ]]; then
+		config+="
 <bll># cat $fileconf</bll>
-$( cat $fileconf )"
-	[[ $id != camilladsp ]] && version=$( pacman -Q $pkg ) || version=$( camilladsp -V )
+$( grep -v ^# $fileconf )"
+	fi
+	status=$( systemctl status $service \
+					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
+					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
+	if [[ $pkg == chromium ]]; then
+		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
+	elif [[ $pkg == nfs-utils ]]; then
+		status=$( echo "$status" | grep -v 'Protocol not supported' )
+	fi
 	echo "\
-<code>$version</code>$catconf
+$config
 
-$( systemctl status $service \
-	| sed -E '1 s|^.* (.*service)|<code>\1</code>|' \
-	| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' \
-	| grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )" # omit warning by xkeyboard | chromium
+$status"
 	;;
 playerstart )
-	newplayer=${args[1]}
-	[[ $newplayer == bluetooth ]] && volumeGet save
+	player=${args[1]}
+	[[ $player == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
-	player=$( cat $dirshm/player )
-	echo $newplayer > $dirshm/player
+	echo $player > $dirshm/player
 	case $player in
-		airplay )   restart=shairport-sync;;
-		mpd|upnp )  restart=mpd;;
-		spotify )   restart=spotifyd;;
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )      service=upmpdcli;;
 	esac
-	[[ $restart ]] && systemctl restart $restart || snapclientStop
-	pushstream player '{"player":"'$newplayer'","active":true}'
+	for pid in $( pgrep $service ); do
+		ionice -c 0 -n 0 -p $pid &> /dev/null 
+		renice -n -19 -p $pid &> /dev/null
+	done
+	pushstream player '{"player":"'$player'","active":true}'
 	;;
 playerstop )
 	elapsed=${args[1]}
@@ -1077,37 +1094,48 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			service=shairport-sync
 			systemctl stop shairport-meta
 			rm -f $dirshm/airplay/start
+			systemctl restart shairport-sync
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
 			;;
 		snapcast )
-			service=snapclient
 			snapclientStop
 			;;
 		spotify )
-			service=spotifyd
 			rm -f $dirshm/spotify/start
+			systemctl restart spotifyd
 			;;
 		upnp )
-			service=upmpdcli
 			mpc -q stop
 			tracks=$( mpc -f %file%^%position% playlist | grep 'http://192' | cut -d^ -f2 )
 			for i in $tracks; do
 				mpc -q del $i
 			done
 			$dirbash/status-push.sh
+			systemctl restart upmpdcli
 			;;
 	esac
-	[[ $service && $service != snapclient ]] && systemctl restart $service
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
 power )
 	action=${args[1]}
+	rserverok=${args[2]}
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
+		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
+		
+		cp $filesharedip{,.backup}
+		ips=$( grep -v $( ipGet ) $filesharedip )
+		for ip in $ips; do
+			sshCommand $ip $dirbash/settings/system.sh shareddatadisconnect
+		done
+	elif [[ -e $filesharedip ]]; then # rclient
+		sed -i "/$( ipGet )/ d" $filesharedip
+	fi
+	
 	if [[ $action == reboot ]]; then
 		pushstreamNotifyBlink Power 'Reboot ...' reboot
 	else
@@ -1239,21 +1267,11 @@ ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
-shareddatareload )
-	systemctl restart mpd
-	pushstream mpdupdate "$( cat $dirmpd/counts )"
-	;;
 thumbgif )
 	gifThumbnail "${args[@]:1}"
 	;;
 thumbjpg )
 	jpgThumbnail "${args[@]:1}"
-	;;
-upnpnice )
-	for pid in $( pgrep upmpdcli ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}

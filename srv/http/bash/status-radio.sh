@@ -4,11 +4,10 @@
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
-station=${tmpradio[1]}
-station=${station//\"/\\\"}
+station=${tmpradio[1]//\"/\\\"}
 id=${tmpradio[2]}
 pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos &bull; ${tmpradio[3]}"
+sampling="$pos • ${tmpradio[3]}"
 song=$(( ${pos/\/*} - 1 ))
 
 case $id in
@@ -35,7 +34,6 @@ case $id in
 	lajazz )              id=405;;
 	ocoramonde )          id=404;;
 	opera )               id=409;;
-	dabradio ) id=500;;
 esac
 
 radiofranceData() {
@@ -65,19 +63,9 @@ metadataGet() {
 	if [[ $id < 4 ]]; then
 		icon=radioparadise
 		radioparadiseData
-	elif [[ $id < 500 ]]; then
+	else
 		icon=radiofrance
 		radiofranceData
-	else
-		icon=dabradio
-		dablabel=$( cat $dirshm/webradio/DABlabel.txt )
-		if [[ $( grep ^Title $dirshm/status | cut -d= -f2- ) == "$dablabel" ]]; then
-			sleep 15
-			metadataGet
-			return
-		fi
-		
-		metadata=( "$station" "$dablabel" 'DAB Radio' '' 10 )
 	fi
 	artist=${metadata[0]//\"/\\\"}
 	title=${metadata[1]//\"/\\\"}
@@ -96,23 +84,16 @@ metadataGet() {
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
 	if [[ ! -e $dirsystem/vumeter ]]; then
-		if [[ $icon == dabradio ]]; then
-			date=$( date +%s )
-			coverart=/data/shm/webradio/DABslide.$date.jpg
-			rm -f $dirshm/webradio/DABslide.*.jpg
-			mv $dirshm/webradio/DABslide{,.$date}.jpg
+		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+		if [[ $coverurl ]]; then
+			coverart=/data/shm/webradio/$name.jpg
+			curl -s $coverurl -o $dirshm/webradio/$name.jpg
 		else
-			name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
-			if [[ $coverurl ]]; then
-				coverart=/data/shm/webradio/$name.jpg
-				curl -s $coverurl -o $dirshm/webradio/$name.jpg
-			else
-				coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
-				[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+			coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
+			[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
 $artist
 title
 webradio" &> /dev/null &
-			fi
 		fi
 	fi
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
@@ -133,23 +114,7 @@ webradio" &> /dev/null &
 , "Time"     : false
 , "Title"    : "'$title'"
 }'
-	curl -s -X POST http://127.0.0.1/pub?id=mpdradio -d "$data"
-	cat << EOF > $dirshm/status
-Artist="$artist"
-Title="$title"
-Album="$album"
-coverart="$coverart"
-station="$station"
-file="$file"
-state="play"
-Time=false
-elapsed=$elapsed
-timestamp=$( date +%s%3N )
-webradio=true
-player="mpd"
-EOF
-	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
-	[[ $icon != dabradio ]] && $dirbash/cmd.sh coverfileslimit
+	$dirbash/status-push.sh statusradio "$data" & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

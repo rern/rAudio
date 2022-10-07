@@ -1,9 +1,6 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var accesspoint = $( '#accesspoint' ).length;
-$( '.container' ).click( function( e ) {
-	if ( $( e.target ).parents( '#listbt, #listlan, #listwl' ).length ) return
-	
+$( 'body' ).click( function() {
 	$( '#menu' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 } );
@@ -14,7 +11,7 @@ $( '.back' ).click( function() {
 	$( '#listwlscan, #listbtscan' ).empty();
 	refreshData();
 } );
-$( '#btscan' ).click( function() {
+$( '.btscan' ).click( function() {
 	if ( $( this ).hasClass( 'disabled' ) ) {
 		info( {
 			  icon    : 'bluetooth'
@@ -35,7 +32,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
 	bluetoothcommand( 'pair', list );
 } );
-$( '#wladd' ).click( function() {
+$( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
 $( '#wlscan' ).click( function() {
@@ -47,7 +44,7 @@ $( '#wlscan' ).click( function() {
 		scanWlan();
 	}
 } );
-$( '#lanadd' ).click( function() {
+$( '.lanadd' ).click( function() {
 	info( {
 		  icon          : 'lan'
 		, title         : 'New LAN Connection'
@@ -58,17 +55,16 @@ $( '#lanadd' ).click( function() {
 		}
 	} );
 } );
-$( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
+$( '.entries' ).on( 'click', 'li', function( e ) {
+	e.stopPropagation();
 	G.li = $( this );
 	G.liindex = G.li.index();
 	G.list = G.li.parent().prop( 'id' );
-	var active = $( this ).hasClass( 'active' );
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
-	var $menu = $( '#menu' );
-	if ( !$menu.hasClass( 'hide' ) ) {
-		$menu.addClass( 'hide' );
-		if ( active ) return
+	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
+		$( '#menu' ).addClass( 'hide' );
+		return
 	}
 	
 	if ( G.list === 'listbt' ) {
@@ -87,11 +83,11 @@ $( '#listbt, #listlan, #listwl' ).on( 'click', 'li', function() {
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
-	var menuH = $menu.height();
-	$menu
+	var menuH = $( '#menu' ).height();
+	$( '#menu' )
 		.removeClass( 'hide' )
 		.css( 'top', G.li.position().top + 48 );
-	var targetB = $menu.offset().top + menuH;
+	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
@@ -222,7 +218,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 		}
 	}
 } );
-$( '#setting-accesspoint' ).click( function() {
+$( '.hostapdset' ).click( function() {
 	info( {
 		  icon         : 'accesspoint'
 		, title        : 'Access Point'
@@ -441,7 +437,7 @@ function renderBluetooth() {
 	}
 }
 function renderPage() {
-	$( '#btscan' ).toggleClass( 'disabled', G.camilladsp );
+	$( '.btscan' ).toggleClass( 'disabled', G.camilladsp );
 	if ( G.activebt ) {
 		renderBluetooth();
 		$( '#divbt' ).removeClass( 'hide' );
@@ -478,7 +474,7 @@ function renderPage() {
 		if ( G.listeth ) htmlwl = '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ G.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
-		$( '#lanadd' ).toggleClass( 'hide', G.listeth !== false );
+		$( '.lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	} else {
 		$( '#divlan' ).addClass( 'hide' );

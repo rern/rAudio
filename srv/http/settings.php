@@ -28,7 +28,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <div class="head hide">
 	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
 	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=( strtoupper( $pagehead ) )?></span>
-	<i id="close" class="fa fa-times"></i><i id="help" class="fa fa-help"></i>
+	<?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
 <div class="container hide">
 <?php
@@ -52,10 +52,12 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => true         // true = common - setting before enable
-		                                // 'self' = self trigger setting
-		                                // 'none' = no setting - self trigger script
-		, 'settingicon' => 'ICON'
+		, 'setting'     => (none)       // default  = '.common'           > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable > [ id/iddisable ]
+		                                // false    = no icon, no setting > $( '.switch' ).click( ... > [ id, true/false ]
+		                                // 'custom' = custom script       > $( '#id' ).click( ...     > [ command ]
+		, 'settingicon' => (none)       // default = 'gear' 
+		                                // false   = omit
+										// 'icon'  = 'fa-icon'
 		, 'disable'     => 'MESSAGE'    // set data-diabled
 		, 'help'        => <<<html
 HELP - PHP heredoc
@@ -77,19 +79,18 @@ function htmlHead( $data ) {
 	$button = $data[ 'button' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$class = $status ? 'status' : '';
-	$class.= $subhead ? ' sub' : '';
+	$class.= $subhead ? ' subhead' : '';
 	
 	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
 	$html.= $class ? ' class="'.$class.'">' : '>';
 	$html.= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $id => $icon ) $html.= '<i id="'.$id.'" class="fa fa-'.$icon.'"></i>';
-	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : '<i class="help fa fa-help"></i>';
-	$html.= isset( $data[ 'back' ] ) ? '<i class="fa fa-arrow-left back"></i>' : '';
+	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );
+	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
+	$html.= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
 	$html.= '</heading>';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	
-	echo $html;
+	echoSetIcon( $html );
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
@@ -100,8 +101,8 @@ function htmlSetting( $data ) {
 	$status = $data[ 'status' ] ?? '';
 	$id = $data[ 'id' ] ?? '';
 	$input = $data[ 'input' ] ?? '';
-	$setting = $data[ 'setting' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
+	$setting = $data[ 'setting' ] ?? 'common';
 	$disabled = $data[ 'disabled' ] ?? '';
 	$help = $data[ 'help' ] ?? '';
 	$html = '<div id="div'.$id.'"><div class="col-l';
@@ -113,7 +114,7 @@ function htmlSetting( $data ) {
 	} else {
 		$html.= $label;
 	}
-	$html.= $icon ? '<i class="fa fa-'.$icon.'"></i>' : '';
+	$html.= $icon ? i( $icon ) : '';
 	$html.= '</div>';
 	// col-r
 	if ( !$icon ) {
@@ -122,20 +123,20 @@ function htmlSetting( $data ) {
 	}
 	$html.= '<div class="col-r">';
 	if ( !$input ) {
-		$html.= '<input type="checkbox" id="'.$id.'"';
-		$html.= $setting === 'self' || $setting === 'none' ? '' : ( $setting ? ' class="switch common"' : ' class="switch"' );
-		$html.= $disabled ? ' data-disabled="'.$disabled.'"' : '';
-		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'"></div>';
+		$html.= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
+		$html.= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"';
+		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'">';
+		$html.= '</div>';
 	} else {
 		$html.= $input;
 	}
-	$html.= $setting && $setting !== 'none' ? '<i id="setting-'.$id.'" class="setting fa fa-'.$settingicon.'"></i>' : '';
+	$html.= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
 	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
 	$html.= '</div>
 			 <div style="clear:both"></div>
 			 </div>';
 	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	echo $html;
+	echoSetIcon( $html );
 }
 function htmlSection( $head, $body, $id = '' ) {
 	$html = '<div';
@@ -146,13 +147,25 @@ function htmlSection( $head, $body, $id = '' ) {
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';
 }
+function echoSetIcon( $html ) { // only within: htmlHead(), htmlSetting()
+	echo str_replace(
+		  [ 'I^',               '^I',     '|',       ]
+		, [ '<i class="fa fa-', '"></i>', '<g>|</g>' ]
+		, $html
+	);
+}
+function i( $icon, $id = '' ) {
+	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
+	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
+}
+
 
 include "settings/$page.php";
 $htmlbar = '';
 foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 	$id = strtolower( $name );
 	$active = $id === $pagehead ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$id.'"'.$active.'><i class="fa fa-'.$id.'"></i><a> '.$name.'</a></div>';
+	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 }
 ?>
 </div>

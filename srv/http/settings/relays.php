@@ -17,8 +17,8 @@ htmlHead( [ //////////////////////////////////
 ?>
 <span class="help-block hide"><img src="/assets/img/relays.jpg">
 Power on/off peripheral equipments
-On/Off:  <i class="fa fa-plus-r"></i>System | <i class="fa fa-relays wh"></i>
- • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+On/Off:  <?=( i( 'plus-r' ).'System | '.i( 'relays wh' ) )?>
+<br> • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 </span>
 </div>
@@ -26,27 +26,27 @@ On/Off:  <i class="fa fa-plus-r"></i>System | <i class="fa fa-relays wh"></i
 <br>
 <div class="gpio-float-l">
 	<div class="column" id="gpio-num">
-		<span class="gpio-text"><i class="fa fa-gpiopins bl"></i> Pin</span>
+		<span class="gpio-text"><?=( i( 'gpiopins bl' ) )?>Pin</span>
 		<?=$htmlpin?>
-		<span class="gpio-text"><i class="fa fa-stopwatch yl"></i> Idle</span>
+		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?>Idle</span>
 		<select id="timer" class="timer"></select>
 	</div>
 	<div class="column" id="gpio-name">
-		<span class="gpio-text"><i class="fa fa-tag bl"></i> Name</span>
+		<span class="gpio-text"><?=( i( 'tag bl' ) )?>Name</span>
 		<?=$htmlname?>
-		<span class="timer">&nbsp;min. to <i class="fa fa-power red"></i></span>
+		<span class="timer">&nbsp;min. to <?=( i( 'power red' ) )?></span>
 	</div>
 </div>
 <div class="gpio-float-r">
 	<div class="column">
-		<span class="gpio-text"><i class="fa fa-power grn"></i> On Sequence</span>
+		<span class="gpio-text"><?=( i( 'power grn' ) )?>On Sequence</span>
 		<div id="on"></div>
 	</div>
 	<div class="column">
-		<span class="gpio-text"><i class="fa fa-power red"></i> Off Sequence</span>
+		<span class="gpio-text"><?=( i( 'power red' ) )?>Off Sequence</span>
 		<div id="off"></div>
 		<br>
-		<a id="undo" class="infobtn infobtn disabled"><i class="fa fa-undo"></i> Undo</a>
-		<a id="save" class="infobtn infobtn-primary disabled"><i class="fa fa-save"></i> Save</a>
+		<a id="undo" class="infobtn infobtn disabled"><?=( i( 'undo' ) )?>Undo</a>
+		<a id="save" class="infobtn infobtn-primary disabled"><?=( i( 'save' ) )?>Save</a>
 	</div>
 </div>

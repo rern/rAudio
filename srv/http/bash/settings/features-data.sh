@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# shareddata:
+#    [[ $( readlink $dirshareddata ) == $dirdata ]]    = server
+#    [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] = clients
+#    [[ -e $filesharedip ]]                            = server + clients
+
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
 
@@ -24,11 +29,14 @@ data+='
 , "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
+, "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
+, "nfsserver"        : '$( [[ $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "playing"          : '$( mpc | grep -q '\[playing]' && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
+, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
@@ -66,6 +74,11 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 		localbrowserconf="{${conf:1}}"
 	else
 		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
+	fi
+	if systemctl -q is-active localbrowser; then
+		localbrowser=true
+	else
+		systemctl -q is-enabled localbrowser && systemctl -q disable --now localbrowser
 	fi
 	data+='
 , "localbrowser"     : '$( isactive localbrowser )'

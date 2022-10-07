@@ -2,11 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-for pid in $( pgrep mpd ); do
-	ionice -c 0 -n 0 -p $pid &> /dev/null 
-	renice -n -19 -p $pid &> /dev/null
-done
-
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
@@ -28,7 +23,8 @@ mpc idleloop | while read changed; do
 		playlist )
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+					data=$( php /srv/http/mpdplaylist.php current )
+					pushstream playlist "$data"
 				) &> /dev/null &
 			fi
 			;;

@@ -5,13 +5,6 @@
 # convert each line to each args
 readarray -t args <<< "$1"
 
-pushRefresh() {
-	$dirbash/settings/features-data.sh pushrefresh
-}
-pushRefreshNetworks() {
-	data=$( $dirbash/settings/networks-data.sh )
-	pushstream refresh "$data"
-}
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
@@ -33,6 +26,12 @@ localbrowserXset() {
 	else
 		xset +dpms
 	fi
+}
+nfsShareList() {
+	echo "\
+/mnt/MPD/SD
+$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+$dirdata" | awk NF
 }
 spotifyReset() {
 	pushstreamNotifyBlink 'Spotify Client' "$1" spotify
@@ -122,7 +121,8 @@ hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
 	pushRefresh
-	pushRefreshNetworks
+	pushstream refresh '{"page":"system","hostapd":false}'
+	pushRefresh networks
 	;;
 hostapdget )
 	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
@@ -153,7 +153,8 @@ hostapdset )
 	fi
 	ifconfig $wlandev $router
 	featureSet hostapd
-	pushRefreshNetworks
+	pushstream refresh '{"page":"system","hostapd":true}'
+	pushRefresh networks
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
@@ -260,7 +261,7 @@ multiraudioset )
 	if [[ $( echo "$data" | wc -l ) > 2 ]]; then
 		touch $dirsystem/multiraudio
 		echo "$data" > $dirsystem/multiraudio.conf
-		ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+		ip=$( ipGet )
 		iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
 		for ip in $iplist; do
 			sshCommand $ip << EOF
@@ -273,6 +274,63 @@ EOF
 	fi
 	pushRefresh
 	pushSubmenu multiraudio true
+	;;
+nfsserver )
+	active=${args[1]}
+	readarray -t dirs <<< $( nfsShareList )
+	if [[ $active == true ]]; then
+		ip=$( ipGet )
+		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
+		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
+			list+="${dir// /\\040} $options"$'\n'
+			dirname=$( basename "$dir" )
+			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
+		done
+		echo "$list" | column -t > /etc/exports
+		echo $ip > $filesharedip
+		cp -f $dirsystem/{display,order} $dirbackup
+		touch $dirshareddata/system/order # in case not exist
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		echo SD$'\n'USB > /mnt/MPD/.mpdignore
+		echo data > /mnt/MPD/NAS/.mpdignore
+		if [[ -e $dirbackup/mpdnfs ]]; then
+			mv -f $dirmpd $dirbackup
+			mv -f $dirbackup/mpdnfs $dirdata/mpd
+			systemctl restart mpd
+			action=update
+		else
+			rm -f $dirmpd/{listing,updating}
+			mkdir -p $dirbackup
+			cp -r $dirmpd $dirbackup
+			action=rescan
+		fi
+		systemctl enable --now nfs-server
+		$dirbash/cmd.sh mpcupdate$'\n'$action
+	else
+		systemctl disable --now nfs-server
+		rm -f /mnt/MPD/.mpdignore \
+			/mnt/MPD/NAS/.mpdignore \
+			$filesharedip \
+			$dirmpd/{listing,updating}
+		for dir in "${dirs[@]}"; do
+			chmod 755 "$dir"
+			link="/mnt/MPD/NAS/$( basename "$dir" )"
+			[[ -L "$link" ]] && rm "$link"
+		done
+		> /etc/exports
+		mkdir -p $dirbackup
+		mv -f $dirmpd $dirbackup/mpdnfs
+		mv -f $dirbackup/mpd $dirdata
+		mv -f $dirbackup/{display,order} $dirsystem
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate$'\n'update
+	fi
+	pushRefresh
+	pushstream refresh '{"page":"system","nfsserver":'$active'}'
+	;;
+nfssharelist )
+	[[ ${args[1]} == true ]] && showmount --no-headers -e localhost | awk 'NF{NF-=1};1' | sort || nfsShareList
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
@@ -334,12 +392,6 @@ shairport-sync | spotifyd | upmpdcli )
 		systemctl disable --now $service
 	fi
 	pushRefresh
-	if [[ $service == shairport-sync ]]; then
-		for pid in $( pgrep shairport-sync ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
 	;;
 smbdisable )
 	systemctl disable --now smb

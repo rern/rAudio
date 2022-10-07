@@ -263,7 +263,7 @@ $( '#setting-smb' ).click( function() {
 	info( {
 		  icon         : 'networks'
 		, title        : 'Samba File Sharing'
-		, message      : '<wh>Write</wh> permission:</gr>'
+		, message      : '<wh>Write</wh> permission:'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
 		, checkchanged : ( G.smb ? 1 : 0 )
@@ -382,7 +382,34 @@ $( '#setting-login' ).click( function() {
 		}
 	} );
 } );
-
+$( '#nfsserver' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Server rAudio'
+			, message : $this.prev().html()
+		} );
+		return
+	}
+	
+	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Server rAudio'
+			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
+						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
+						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
+			, cancel  : function() {
+				$this.prop( 'checked', G.nfsserver );
+			}
+			, okcolor : G.nfsserver ? orange : ''
+			, ok      : function() {
+				bash( [ 'nfsserver', !G.nfsserver ] );
+				notify( 'Server rAudio', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+			}
+		} );
+	} );
 } );
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
@@ -397,7 +424,7 @@ $( '#setting-scrobble' ).click( function() {
 </table>`;
 	info( {
 		  icon          : 'lastfm'
-		, title         : 'Scrobble'
+		, title         : 'Scrobbler'
 		, content       : content
 		, boxwidth      : 170
 		, values        : G.scrobbleconf
@@ -433,7 +460,7 @@ $( '#setting-scrobble' ).click( function() {
 					$( '#scrobble' ).prop( 'checked', 0 );
 				}
 			}, 'json' );
-			notify( 'Scrobble', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
+			notify( 'Scrobbler', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
 	} );
 } );
@@ -462,6 +489,8 @@ $( '#setting-stoptimer' ).click( function() {
 	} );
 } );
 
+} );
+
 function passwordWrong() {
 	info( {
 		  icon    : 'lock'
@@ -480,6 +509,8 @@ function renderPage() {
 	$( '#redirecturi' ).text( G.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', G.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
+	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
+	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
 	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );

@@ -3,8 +3,7 @@
 killsubs() {
 	kill $DABPID
 	kill $FFMPID
-	rm $MYPIPE
-	echo NO INFO > /srv/http/data/shm/webradio/DABlabel.txt
+	rm $MYPIPE /srv/http/data/shm/webradio/DAB*
 }
 trap killsubs SIGINT
 
@@ -34,5 +33,9 @@ ffmpeg \
 	-f rtsp rtsp://localhost:$3/$4 \
 	&> /dev/null &
 FFMPID=$!
+for pid in $( pgrep $FFMPID ); do
+	ionice -c 0 -n 0 -p $pid &> /dev/null 
+	renice -n -19 -p $pid &> /dev/null
+done
 
 wait $FFMPID

@@ -158,6 +158,10 @@ fi
 
 ### mpd start ##########################################################################
 systemctl restart mpd
+for pid in $( pgrep mpd ); do # set priority
+	ionice -c 0 -n 0 -p $pid &> /dev/null 
+	renice -n -19 -p $pid &> /dev/null
+done
 
 if [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
@@ -166,8 +170,9 @@ fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
 	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
-pushstream mpdplayer "$( $dirbash/status.sh )"
-pushstream refresh "$( $dirbash/settings/player-data.sh )"
+data=$( $dirbash/status.sh )
+pushstream mpdplayer "$data"
+$dirbash/settings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
 [[ ! $Acard && ! $btmixer ]] && exit
@@ -203,11 +208,11 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	elif [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
-		cardname=$( aplay -l \
+		cardname=$( aplay -l 2> /dev/null \
 						| grep "^card $i" \
 						| head -1 \
 						| cut -d' ' -f3 )
-		device=$( aplay -L | grep -m1 "^default.*$cardname" )
+		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
 	fi
 ########
 	conf='[global]

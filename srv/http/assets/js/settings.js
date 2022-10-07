@@ -30,10 +30,11 @@ var cmd = {
 	, iw           : networkssh +'iwlist'
 	, journalctl   : systemsh +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
-	, mount        : systemsh +'fstabget'
+	, mount        : systemsh +'storage'
 	, mpdignore    : playersh +'mpdignorelist'
 	, nonutf8      : playersh +'nonutf8'
 	, rfkill       : systemsh +'rfkilllist'
+	, shareddata   : systemsh +'shareddataname'
 	, soundprofile : systemsh +'soundprofileget'
 	, system       : systemsh +'systemconfig'
 	, timedatectl  : systemsh +'timedate'
@@ -45,6 +46,7 @@ var services = [
 	, 'hostapd'
 	, 'localbrowser'
 	, 'mpd'
+	, 'nfs-server'
 	, 'shairport-sync'
 	, 'smb'
 	, 'snapclient'
@@ -280,7 +282,9 @@ function psPlayer( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
-		G = data;
+		$.each( data, function( k, v ) {
+			G[ k ] = v;
+		} );
 		setSwitch();
 		renderPage();
 	}
@@ -402,22 +406,13 @@ $( document ).keyup( function( e ) {
 			break;
 	}
 } );
-$( '.container' ).click( function( e ) {
-	$target = $( e.target );
-	if ( $target.hasClass( 'status' ) || $target.parent().hasClass( 'status' )
-		|| $target.is( 'li' ) || $target.parent().is( 'li' )
-		|| $target.hasClass( 'setting' )
-		|| $target.hasClass( 'switch' )
-	) return
-	
-	$( 'pre.status' ).addClass( 'hide' );
-} ).on( 'click', '.status', function( e ) {
+$( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
 	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
-$( '#close' ).click( function() {
+$( '.close' ).click( function() {
 	if ( page === 'networks' ) {
 		clearTimeout( G.timeoutScan );
 		bash( 'killall networks-scan.sh &> /dev/null' );
@@ -467,7 +462,7 @@ $( '#button-data' ).click( function() {
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
 	clearTimeout( timer );
 } );
-$( '#help' ).click( function() {
+$( '.help-head' ).click( function() {
 	var eltop = $( 'heading' ).filter( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
@@ -490,12 +485,10 @@ $( '#help' ).click( function() {
 } );
 $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
-	$( '#help' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
+	$( '.help-head' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-$( '.switch' ).click( function() {
+$( '.switch:not( .custom )' ).click( function() {
 	var id = this.id;
-	if ( id === 'novolume' ) return
-	
 	var $this = $( this );
 	var checked = $this.prop( 'checked' );
 	var label = $this.data( 'label' );
@@ -505,7 +498,7 @@ $( '.switch' ).click( function() {
 		info( {
 			  icon    : icon
 			, title   : label
-			, message : $this.data( 'disabled' )
+			, message : $this.prev().html()
 		} );
 		return
 	}

@@ -73,7 +73,12 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-[[ -s $dirmpd/album ]] && cp -f $filealbum{,prev} || > $dirmpd/latest
+if [[ $( awk NF $dirmpd/album ) && $( cat $dirmpd/updating ) != rescan ]]; then
+	cp -f $filealbum{,prev}
+else
+	> $dirmpd/latest
+	latest=0
+fi
 
 for mode in album albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
@@ -104,8 +109,8 @@ if [[ -e $filealbumprev ]]; then # latest
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
+	latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 fi
-latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
 ##### count #############################################
 for mode in NAS SD USB; do
 	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
@@ -141,13 +146,7 @@ if [[ $toolarge ]]; then
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 fi
 
-if [[ -e /srv/http/shareddata/iplist ]]; then
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
-	iplist=$( grep -v $ip /srv/http/shareddata/iplist )
-	for ip in $iplist; do
-		sshCommand $ip $dirbash/cmd.sh shareddatareload
-	done
-fi
+[[ -e $filesharedip ]] && $dirbash/settings/system.sh shareddataiplist$'\n'reload
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

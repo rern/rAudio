@@ -573,7 +573,12 @@ function getPlaybackStatus( withdisplay ) {
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
-			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) renderLibrary();
+			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) {
+				$.post( 'index-body.php', { modelist: 1 }, function( html ) {
+					$( '#lib-mode-list' ).html( html );
+					renderLibrary();
+				} );
+			}
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
 			getPlaylist();
@@ -761,8 +766,7 @@ function infoUpdate( path ) {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
 		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
-		, radio      : path ? '' : { 'Only changed files' : 'update', 'Rebuild entire database': 'rescan' }
-		, values     : path ? '' : 'update'
+		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : function() {
 			if ( !G.status.counts ) {
 				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
@@ -770,7 +774,7 @@ function infoUpdate( path ) {
 			}
 		}
 		, ok         : function() {
-			bash( path ? [ 'mpcupdate', 'path', path ] : [ 'mpcupdate', infoVal() ] );
+			bash( [ 'mpcupdate', path || infoVal() ] );
 		}
 	} );
 }
@@ -825,6 +829,8 @@ function menuHide() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
 	$( '.pl-remove' ).remove();
+	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
+	$( '#pl-list li' ).removeClass( 'updn' );
 }
 function mpcSeek( elapsed ) {
 	G.status.elapsed = elapsed;
@@ -997,7 +1003,30 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
+function power( action ) {
+	var off = action === 'off';
+	bash( [ 'power', action ], function( nfs ) {
+		if ( nfs == -1 ) {
+			info( {
+				  icon    : 'power'
+				, title   : 'Power'
+				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+							+'<br><wh>Shared Data</wh> on clients will stop.'
+							+'<br>(Resume when server online again)'
+							+'<br><br>Continue?'
+				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+				, okcolor : off ? red : orange
+				, ok      : function() {
+					bash( [ 'power', action, 1 ] );
+					banner( 'Server rAudio', 'Notify clients ...', 'rserver', -1 );
+				}
+			} );
+		}
+	} );
+}
 function renderLibrary() {
+	G.mode = '';
+	G.librarylist = 0;
 	G.query = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
@@ -1455,7 +1484,15 @@ function setInfo() {
 	$( '#album' ).toggleClass( 'disabled', G.status.Album === '' );
 	setInfoScroll();
 	var sampling = G.status.sampling;
-	if ( G.status.stream ) sampling += ' • '+ ( G.status.Album && G.status.station ? G.status.station : G.status.ext );
+	if ( G.status.stream ) {
+		if ( G.status.icon === 'dabradio' ) {
+			sampling += ' • DAB';
+		} else if ( G.status.Album && G.status.station ) {
+			sampling += ' • '+ G.status.station;
+		} else {
+			sampling += ' • '+ G.status.ext;
+		}
+	}
 	$( '#sampling' ).html( sampling );
 	if ( G.status.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
 		$( '#playericon' ).removeAttr( 'class' );

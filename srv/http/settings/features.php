@@ -1,6 +1,19 @@
 <?php
 $hostname = getHostName();
 $ip = getHostByName( $hostname );
+$fileexplorer = 'File Explorer > Address bar - <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
+if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
+	$disableddsp = '<wh>Bluetooth I^bluetooth^I</wh> is currently enabled.';
+} else {
+	$disableddsp = '<wh>Equalizer I^equalizer^I</wh> is currently enabled.';
+}
+if ( is_link( '/srv/http/data/mpd' ) ) {
+	$disablednfs = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
+} else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
+	$disablednfs = '<wh>File Sharing I^networks^I</wh> is currently active.';
+} else {
+	$disablednfs = 'Currently connected by clients';
+}
 
 if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
@@ -11,8 +24,9 @@ $body = [
 		, 'id'       => 'shairport-sync'
 		, 'sublabel' => 'shairport-sync'
 		, 'icon'     => 'airplay'
+		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => 'AirPlay is currently active.'
+		, 'disabled' => '<wh>AirPlay I^airplay^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
 HTML
@@ -23,6 +37,7 @@ HTML
 		, 'id'       => 'dabradio'
 		, 'sublabel' => 'rtsp-server'
 		, 'icon'     => 'dabradio'
+		, 'setting'  => false
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => <<< HTML
@@ -36,13 +51,12 @@ HTML
 		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
 		, 'status'   => 'snapclient'
-		, 'setting'  => true
-		, 'disabled' => 'SnapClient is currently active.'
+		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
+ • Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -52,23 +66,22 @@ HTML
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
 		, 'status'   => 'spotifyd'
-		, 'setting'  => true
-		, 'disabled' => 'Spotify is currently active.'
+		, 'disabled' => '<wh>Spotify I^spotify^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
- • Get <code>ID</code> and <code>Secret</code> from private app : <bll class="screenshot pointer">(Screenshots)</bll>
- &emsp; • <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> > <code>LOGIN</code> with normal Spotify account
- &emsp; • <code>CREATE AN APP</code>
- &emsp; &emsp; - <wh>App name:</wh> <gr>(any)</gr>
- &emsp; &emsp; - <wh>App description:</wh> <gr>(any)</gr>
- &emsp; • <code>EDIT SETTINGS</code>
- &emsp; &emsp; - <WH>Redirect URIs:</WH> <span id="redirecturi"></span>
- &emsp; • <code>USERS AND ACCESS</code> > <code>ADD NEW USER</code>
- &emsp; &emsp; - <wh>Name:</wh> <gr>(any)</gr>
- &emsp; &emsp; - <wh>Spotify Account:</wh> (login email)
- &emsp; • rAudio <code>Spotify</code>
- &emsp; &emsp; - Paste <wh>Client ID</wh> and <wh>Client Secret</wh> from the app
+ • Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
+	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> | LOGIN | with normal Spotify account
+	• | CREATE AN APP |
+		- App name: <c>&lt;Name&gt;</c>
+		- App description: <c>&lt;Any&gt;</c>
+	• | EDIT SETTINGS |
+		- Redirect URIs: <span id="redirecturi"></span>
+	• | USERS AND ACCESS | ADD NEW USER |
+		- Name: <c>&lt;User&gt;</c>
+		- Spotify Account: <c>&lt;email&gt;</c>
+	• rAudio | <wh>Spotify I^spotify^I</wh> |
+		- Paste <c>&lt;CLIENT_ID&gt;</c> and <c>&lt;CLIENT_SECRET&gt;</c> from the app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -78,8 +91,7 @@ HTML
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
-		, 'setting'  => true
-		, 'disabled' => 'UPnP is currently active.'
+		, 'disabled' => '<wh>UPnP I^upnp^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
 HTML
@@ -96,8 +108,9 @@ $body = [
 	, 'id'       => 'streaming'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
+	, 'setting'  => false
 	, 'help'     => <<< HTML
-<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <code>http://$ip:8000</code> (Latency - several seconds)
+<a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 HTML
 	]
 	, [
@@ -105,17 +118,18 @@ HTML
 		, 'id'       => 'snapserver'
 		, 'sublabel' => 'snapserver'
 		, 'icon'     => 'snapcast'
+		, 'setting'  => false
 		, 'status'   => 'snapserver'
-		, 'disabled' => 'SnapClient is currently connected.'
+		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
- &emsp; • Enable SnapClient
- &emsp; • Connect: &ensp;<i class="fa fa-networks"></i>Networks <gr>|</gr>&ensp;<i class="fa fa-snapcast wh"></i>
+	- Enable SnapClient
+	- Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
  • Snapcast control client and player:
- &emsp; • <a href="https://github.com/badaix/snapweb">Snapweb</a>
- &emsp; • <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
+	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -129,11 +143,10 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
 		, 'status'   => 'camilladsp'
-		, 'setting'  => true
-		, 'disabled' =>  ( exec( 'systemctl -q is-active bluetooth && echo true' ) ? 'Bluetooth' : 'Equalizer' ).' is currently enabled.'
+		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-camilladsp wh"></i>
+Settings: <a class="menu-sub">I^features^I Features</a>I^camilladsp sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -142,17 +155,17 @@ HTML
 		, 'sublabel' => 'alsaequal'
 		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
-		, 'disabled' => 'DSP is currently enabled.'
+		, 'setting'  => false
+		, 'disabled' => '<wh>DSP I^camilladsp^I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control:&emsp;<i class="fa fa-features"></i>Features <gr>|</gr>&ensp;<i class="fa fa-equalizer wh"></i>
+Control: <a class="menu-sub">I^features^I Features</a>I^equalizer sub^I
 Presets:
- • <code>Flat</code>: All bands at <code>0dB</code>
- • New: Adjust > <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
- • Existing: Adjust > <i class="fa fa-save"></i>Save
- • Adjust without <i class="fa fa-save"></i>Save will be listed as <code>(unnamed)</code>
- • Save <code>(unnamed)</code>: <i class="fa fa-plus-circle"></i>Add > <code>NAME</code> > <i class="fa fa-save"></i>Save
- • If distortions occurred, lower all bands collectively and increase volume to fix distortions
+ • <c>Flat</c>: All bands at 0dB
+ • New: | Adjust | I^plus-circle^I Add | <c>&lt;Name&gt;</c> | I^save^I Save |
+ • Existing: | Adjust | I^save^I Save |
+ • Adjusted values will be listed as <c>(unnamed)</c> until saved.
+ • If distortions occurred, lower all bands collectively and increase volume
 HTML
 	]
 ];
@@ -165,7 +178,6 @@ $body = [
 		, 'sublabel' => 'hostapd'
 		, 'icon'     => 'accesspoint'
 		, 'status'   => 'hostapd'
-		, 'setting'  => true
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
@@ -177,7 +189,6 @@ HTML
 		  'label'   => 'AutoPlay'
 		, 'id'      => 'autoplay'
 		, 'icon'    => 'play'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Start playing automatically on:
  • Bluetooth connected
@@ -191,11 +202,11 @@ HTML
 		, 'sublabel' => 'chromium'
 		, 'icon'     => 'chromium'
 		, 'status'   => 'localbrowser'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: Blank screen - backlight still on (no energy saved)
+ • Screen off: <a class="menu-sub">I^power^I Power</a>I^screenoff sub^I&emsp;or timer
+	(Backlight still on - no energy saved)
  • HDMI display: Must be connected before boot.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
@@ -206,11 +217,12 @@ HTML
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
 		, 'status'   => 'smb'
-		, 'setting'  => true
+		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
- • Set sources permissions for read+write - directory: <code>0777</code> file: <code>0555</code>
- • At address bar of Windows File Explorer: <code>\\\\$ip</code> or <code>\\\\$hostname</code>
+ • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
+ • Windows: $fileexplorer
+ • | Server rAudio I^rserver^I | NFS share should yeild better performance.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -218,6 +230,7 @@ HTML
 		  'label' => 'Lyrics in File'
 		, 'id'    => 'lyricsembedded'
 		, 'icon'  => 'lyrics'
+		, 'setting'  => false
 		, 'help'  => <<< HTML
  • Get embedded lyrics from local files.
  • Search online if not available.
@@ -229,10 +242,9 @@ HTML
 		  'label'   => 'Multiple rAudios'
 		, 'id'      => 'multiraudio'
 		, 'icon'    => 'raudiobox'
-		, 'setting' => true
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: &ensp;<i class="fa fa-playlist"></i>Playlist <gr>|</gr>&ensp;<i class="fa fa-raudiobox wh"></i>
+Switch: <a class="menu-sub">I^playlist^I Playlist</a>I^raudiobox sub^I
  • SSH passwords must be default.
 HTML
 	]
@@ -241,33 +253,56 @@ HTML
 		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'
 		, 'icon'     => 'lock'
-		, 'setting'  => 'self'
+		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <code>PASSWORD_BCRYPT</code>.
-Lock: &ensp;<i class="fa fa-player"></i>Player <gr>|</gr>&ensp;<i class="fa fa-lock wh"></i>
+<a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
+Lock: <a class="menu-sub">I^player^I Player</a>I^lock sub^I
 HTML
 	]
 	, [
-		  'label'    => 'Scrobble'
+		  'label'    => 'Scrobbler'
 		, 'id'       => 'scrobble'
 		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
-		, 'setting'  => true
 		, 'help'     => <<< HTML
  • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  • Require Last.fm account.
  • No Last.fm password saved on rAudio.
  • Option to include renderers - Exclude if already scrobbleed by sender devices.
  • SnapClient already scrobbled by SnapServer.
- • Web Radio must be manually scrobbled: Title > <i class="fa fa-lastfm"></i>Scrobble
+ • Web Radio must be manually scrobbled: | Playing title | I^lastfm wh^I Scrobble |
+HTML
+	]
+	, [
+		  'label'       => 'Server rAudio'
+		, 'id'          => 'nfsserver'
+		, 'sublabel'    => 'nfs-server'
+		, 'icon'        => 'rserver'
+		, 'setting'     => 'custom'
+		, 'settingicon' => false
+		, 'status'      => 'nfs-server'
+		, 'disabled'    => $disablednfs
+		, 'help'        => <<< HTML
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I^networks^I</wh> |
+ • <wh>rAudio Shared Data server:</wh>
+	- Must be set to <wh>static IP address</wh> which should be set on router.
+	- Existing list in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once update finished.
+	- On reboot / power off, Shared Data on clients will be temporarily disabled > re-enabled once the server is back online.
+ • <wh>rAudio Shared Data clients:</wh>
+	- | I^system^I System | Settings and Data | <wh>Shared Data I^networks^I</wh> | <wh>• rAudio</wh>
+	- Automatically setup: discover, connect shared files and data
+ • <wh>Windows NFS clients:</wh>
+	- Windows Features > Services for NFS > Client for NFS - Enable
+	- $fileexplorer
+	
+<wh>Note:</wh> SSH passwords must be default.
 HTML
 	]
 	, [
 		  'label'    => 'Stop Timer'
 		, 'id'       => 'stoptimer'
 		, 'icon'     => 'stopwatch'
-		, 'setting'  => true
-		, 'disabled' => 'Player is not playing.'
+		, 'disabled' => 'Nothing is playing.'
 		, 'help'     => <<< HTML
 Stop timer:
  • Lower volume to 0 (Mute).

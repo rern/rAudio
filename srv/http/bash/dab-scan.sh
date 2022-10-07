@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan
+script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
 if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
 	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
 	rm $dirshm/{dabscan,updatingdab}
@@ -48,5 +48,6 @@ echo "$list" >> $fileyml
 chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
-pushstream mpdupdate "$( cat $dirmpd/counts )"
+data=$( cat $dirmpd/counts )
+pushstream mpdupdate "$data"
 rm $dirshm/{dabscan,updatingdab}

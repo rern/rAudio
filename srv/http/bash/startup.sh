@@ -25,7 +25,7 @@ if [[ -e /boot/backup.gz ]]; then
 		mv /boot/backup.gz $dirdata/tmp
 		$dirbash/settings/system.sh datarestore
 	else
-		restorefailed=1
+		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
 	fi
 fi
 
@@ -51,6 +51,8 @@ chmod -R 777 $dirshm
 chown -R http:http $dirshm
 touch $dirshm/status
 
+lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan # initial status
+
 # wait 5s max for lan connection
 connectedCheck 5 1
 # if lan not connected, wait 30s max for wi-fi connection
@@ -65,32 +67,37 @@ $( basename "$devprofile" )"
 	fi
 fi
 
-[[ $connected  ]] && readarray -t nas <<< $( ls -d1 /mnt/MPD/NAS/*/ 2> /dev/null | sed 's/.$//' )
-if [[ $nas ]]; then
-	for mountpoint in "${nas[@]}"; do # ping target before mount
-		ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
-				| cut -d' ' -f1 \
-				| sed 's|^//||; s|:*/.*$||' )
-		for i in {1..10}; do
-			if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-				mount "$mountpoint" && break
-			else
-				(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
-				sleep 2
-			fi
+if [[ $connected  ]]; then
+	readarray -t nas <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	if [[ $nas ]]; then
+		for mountpoint in "${nas[@]}"; do # ping target before mount
+			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
+					| cut -d' ' -f1 \
+					| sed 's|^//||; s|:*/.*$||' )
+			[[ ! $ip ]] && continue
+			
+			for i in {1..10}; do
+				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+					mount "$mountpoint" && break
+				else
+					(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
+					sleep 2
+				fi
+			done
 		done
-	done
-fi
-if grep -q /srv/http/shareddata /etc/fstab; then
-	shareddata=1
-	mount /srv/http/shareddata
-	for i in {1..5}; do
-		sleep 1
-		[[ -d $dirmpd ]] && break
-	done
+	fi
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
+		mv -f $filesharedip{.backup,}
+		ips=$( grep -v $( ipGet ) $filesharedip )
+		for ip in $ips; do
+			sshCommand $ip $dirbash/settings/system.sh shareddataconnect
+		done
+	elif [[ -e $filesharedip ]]; then # rclient
+		$dirbash/settings/system.sh shareddataiplist
+	fi
 fi
 
-[[ -e /boot/startup.sh ]] && . /boot/startup.sh
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 $dirbash/settings/player-conf.sh # mpd.service started by this script
 
@@ -119,32 +126,21 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan
-[[ $( rfkill -no type | grep -c wlan ) > 1 ]] && usbwifi=1
-profiles=$( netctl list )
-systemctl -q is-active hostapd && hostapd=1
-[[ $usbwifi || ( ! $profiles && ! $hostapd ) ]] && rmmod brcmfmac &> /dev/null
+[[ -e $dirsystem/hddsleep ]] && $dirbash/settings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
 
-if [[ -e $dirsystem/hddspindown ]]; then
-	usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
-	if [[ $usb ]]; then
-		duration=$( cat $dirsystem/hddspindown )
-		readarray -t usb <<< "$usb"
-		for dev in "${usb[@]}"; do
-			grep -q 'APM.*not supported' <<< $( hdparm -B $dev ) && continue
-			
-			hdparm -q -B 127 $dev
-			hdparm -q -S $duration $dev
-		done
-	fi
-fi
-
-if [[ ! $shareddata && ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh$'\n'rescan
+if [[ ! -e $dirmpd/mpd.db ]]; then
+	$dirbash/cmd.sh mpcupdate$'\n'rescan
 elif [[ -e $dirmpd/updating ]]; then
-	$dirbash/cmd.sh$'\n'"$( cat $dirmpd/updating )"
+	path=$( cat $dirmpd/updating )
+	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> dev/null &
 fi
 
-[[ $restorefailed ]] && pushstreamNotify 'Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.' restore 10000
+if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
+	rmmod brcmfmac &> /dev/null
+fi
+
+if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
+	pushstreamNotify "$restorefailed" restore 10000
+fi

@@ -2,23 +2,24 @@
 
 . /srv/http/bash/common.sh
 
-cputemp=$( /opt/vc/bin/vcgencmd measure_temp | sed 's/[^0-9.]//g' )
-data='
-  "page"             : "system"
-, "cpuload"          : "'$( cat /proc/loadavg | cut -d' ' -f1-3 )'"
-, "cputemp"          : '$( [[ $cputemp ]] && echo $cputemp || echo 0 )'
-, "startup"          : "'$( systemd-analyze | grep '^Startup finished' |  cut -d' ' -f 4,7 | sed 's/\....s//g' )'"
-, "throttled"        : "'$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )'"
-, "time"             : "'$( date +'%T %F' )'"
-, "timezone"         : "'$( timedatectl | awk '/zone:/ {print $3}' )'"
-, "uptime"           : "'$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )'"
-, "uptimesince"      : "'$( uptime -s | cut -d: -f1-2 )'"'
-
+startup=$( systemd-analyze | grep '^Startup finished' | cut -d' ' -f 4,7 | sed -e 's/\....s/s/g; s/ / + /' )
+timezone=$( timedatectl | awk '/zone:/ {print $3}' )
+status="\
+$( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
+$( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
+$( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
+$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
+$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo . . . )"
+! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
+throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
+if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
+	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - detected now <code>$throttled</code>"
+elif [[ $throttled == 0x10000 ]]; then
+	status+="<br><i class='fa fa-warning'></i>&ensp;Voltage under 4.7V - occurred <code>$throttled</code>"
+fi
 # for interval refresh
-[[ $1 == status ]] && echo {$data} && exit
+[[ $1 == status ]] && echo $status && exit
 
-lcdmodel=$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )
-lcd=$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
 core=${cpu[1]}
@@ -26,7 +27,9 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model | tr -d '\000' | sed 's/ Model //; s/ Plus/+/' )
+rpimodel=$( cat /proc/device-tree/model \
+				| tr -d '\000' \
+				| sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
@@ -43,6 +46,15 @@ else
 		3 ) soc=BCM2711;; # 4
 	esac
 fi
+soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
+version=$( cat $dirsystem/version )
+system="\
+rAudio $( cat $diraddons/r$version 2> /dev/null )<br>\
+$( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
+$rpimodel<br>\
+$soc<br>\
+$soccpu"
+
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
@@ -54,12 +66,20 @@ $( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
 ]"
 	fi
 fi
-version=$( cat $dirsystem/version )
 
 # sd, usb and nas
+smb=$( isactive smb )
 if mount | grep -q 'mmcblk0p2 on /'; then
-	used_size=( $( df -lh --output=used,size,target | grep '\/$' ) )
-	list+=',{"icon":"microsd","mountpoint":"/","mounted":true,"source":"/dev/mmcblk0p2","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
+	list+=',{
+  "icon"       : "microsd"
+, "mountpoint" : "/mnt/MPD/SD"
+, "mounted"    : true
+, "source"     : "/dev/mmcblk0p2"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+, "nfs"        : '$( grep -q /mnt/MPD/SD /etc/exports && echo true )'
+, "smb"        : '$smb'
+}'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
@@ -70,25 +90,44 @@ if [[ $usb ]]; then
 						| sed "s| *$source||" )
 		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
-			list+=',{"icon":"usbdrive","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+			list+=',{
+  "icon"       : "usbdrive"
+, "mountpoint" : "'$mountpoint'"
+, "mounted"    : true
+, "source"     : "'$source'"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+, "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
+, "smb"        : '$( [[ $smb == true && $mountpoint == /mnt/MPD/USB ]] && echo true )'
+}'
 		else
 			label=$( e2label $source )
 			[[ ! $label ]] && label=?
 			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
+		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source | grep -m1 APM_level | awk '{print $NF}' )
 	done
 fi
-nas=$( awk '/\/mnt\/MPD\/NAS/ {print $1" "$2}' /etc/fstab )
+nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
 if [[ $nas ]]; then
 	readarray -t nas <<< "$nas"
 	for line in "${nas[@]}"; do
 		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
 		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
+		list+=',{
+  "icon"       : "networks"
+, "mountpoint" : "'$mountpoint'"'
 		if [[ $used_size ]]; then
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":true,"source":"'$source'","size":"'${used_size[0]}'B/'${used_size[1]}'B"}'
+			list+='
+, "mounted"    : true
+, "source"     : "'$source'"
+, "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
+}'
 		else
-			list+=',{"icon":"networks","mountpoint":"'$mountpoint'","mounted":false,"source":"'$source'"}'
+			list+='
+, "mounted"    : false
+, "source"     : "'$source'"
+}'
 		fi
 	done
 fi
@@ -148,40 +187,38 @@ else
 fi
 
 data+='
+  "page"             : "system"
 , "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
 , "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "hddspindown"      : '$( cat $dirsystem/hddspindown 2> /dev/null || echo 0 )'
+, "hddapm"           : '$hddapm'
+, "hddsleep"         : '${hddapm/128/false}'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
-, "kernel"           : "'$( uname -rm )'"
-, "lcd"              : '$lcd'
+, "lcd"              : '$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$i2caddress'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
-, "lcdmodel"         : "'$lcdmodel'"
+, "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
-, "online"           : '$( : >/dev/tcp/8.8.8.8/53 && echo true )'
+, "nfsserver"        : '$( isactive nfs-server )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "rotaryencoder"    : '$( isactive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
-, "rpimodel"         : "'$rpimodel'"
-, "shareddata"       : '$( grep -q /srv/http/shareddata /etc/fstab && echo true )'
-, "soc"              : "'$soc'"
-, "soccpu"           : "'$soccpu'"
-, "socram"           : "'$( free -h | grep Mem | awk '{print $2}' )'B"
-, "socspeed"         : "'$socspeed'"
+, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : '$soundprofileconf'
-, "usbautoupdate"    : '$( exists $dirsystem/usbautoupdate )'
-, "version"          : "'$version'"
-, "versionui"        : '$( cat $diraddons/r$version 2> /dev/null )'
+, "status"           : "'$status'"
+, "startup"          : '$( [[ $startup ]] && echo true )'
+, "system"           : "'$system'"
+, "timezone"         : "'$timezone'"
+, "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
@@ -201,7 +238,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetooth"        : '$bluetooth'
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ -s $dirshm/btconnected ]] && echo true )
+, "btconnected"      : '$( [[ $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
 
 data2json "$data" $1

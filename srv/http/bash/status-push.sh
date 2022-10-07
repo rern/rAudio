@@ -4,6 +4,15 @@
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
+	data=$2
+	pushstream mpdradio "$data"
+	cat << EOF > $dirshm/status
+$( echo "$data" | sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' )
+timestamp=$( date +%s%3N )
+webradio=true
+player=mpd
+EOF
+	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( echo "$status" \
@@ -66,7 +75,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	fi
 fi
 if [[ -e $dirshm/clientip ]]; then
-	serverip=$( ifconfig | awk '/inet .*broadcast/ {print $2}' )
+	serverip=$( ipGet )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" \
 				| sed -e '1,/^, "single" *:/ d

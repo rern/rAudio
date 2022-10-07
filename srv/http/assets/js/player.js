@@ -7,7 +7,7 @@ var warning = `
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 
-$( '#playback' ).click( function() {
+$( '.playback' ).click( function() {
 	if ( !$( this ).hasClass( 'disabled' ) ) {
 		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
@@ -129,6 +129,9 @@ $( '#novolume' ).click( function() {
 			  icon    : 'volume'
 			, title   : 'No Volume'
 			, message : warning
+			, cancel  : function() {
+				$( '#novolume' ).prop( 'checked', G.novolume );
+			}
 			, ok      : function() {
 				notify( 'No Volume', 'Enable ...', 'mpd' );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
@@ -139,7 +142,7 @@ $( '#novolume' ).click( function() {
 			  icon         : 'volume'
 			, title        : 'No Volume'
 			, message      : `\
-No volume</wh> will be disabled on:
+<wh>No volume</wh> will be disabled on:
 &emsp; • Select a Mixer Control
 &emsp; • Enable any Volume options`
 			, messagealign : 'left'
@@ -187,7 +190,7 @@ $( '#setting-replaygain' ).click( function() {
 		}
 	} );
 } );
-$( '#filetype' ).click( function() {
+$( '.filetype' ).click( function() {
 	if ( $( '#divfiletype' ).is( ':empty' ) ) {
 		bash( [ 'filetype' ], function( data ) {
 			$( '#divfiletype' )
@@ -356,8 +359,8 @@ $( '#setting-custom' ).click( function() {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function playbackIcon() {
-	$( '#playback' )
-		.removeAttr( 'class' )
+	$( '.playback' )
+		.removeClass( 'fa-pause fa-play' )
 		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
 		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
 }
@@ -371,6 +374,7 @@ function renderPage() {
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( G.asoundcard != -1 ) {
 		device = G.devices[ G.asoundcard ];
+		G.novolume = device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain;
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
@@ -402,7 +406,7 @@ function renderPage() {
 				.html( htmlmixertype )
 				.val( device.mixertype );
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-			$( '#novolume' ).prop( 'checked', device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain );
+			$( '#novolume' ).prop( 'checked', G.novolume );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 			$( '#dop' ).prop( 'checked', device.dop == 1 );
 			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );

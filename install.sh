@@ -2,6 +2,68 @@
 
 alias=r1
 
+# 20221005
+dir=/srv/http/shareddata
+dirshareddata=/mnt/MPD/NAS/data
+filesharedip=$dirshareddata/sharedip
+if [[ -e $dir ]]; then
+	if [[ -e $filesharedip ]]; then
+		list=$( cat $filesharedip )
+	else
+		echo data > /mnt/MPD/NAS/.mpdignore
+		mkdir -p $dirshareddata
+		list=$( grep $dir /etc/fstab | sed 's|^//||; s|/.*||; s|:.*||' )
+	fi
+	echo "\
+$list
+$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )" | sort -u > $filesharedip
+	chmod 777 $filesharedip
+	umount -l $dir
+	sed -i "s|$dir|$dirshareddata|" /etc/fstab
+	systemctl daemon-reload
+	mount $dirshareddata
+	rmdir $dir
+fi
+
+[[ -e /srv/http/data/system/hddspindown ]] && mv /srv/http/data/system/{hddspindown,apm}
+
+if [[ ! -e /boot/kernel.img ]]; then
+	dir=/etc/systemd/system
+	for file in $dir/spotifyd.service $dir/upmpdcli.service; do
+		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStartPost/ d' -e 's|/usr/bin/taskset -c 3 ||' $file
+	done
+	for file in $dir/mpd.service.d/override.conf $dir/shairport-sync.service.d/override.conf; do
+		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStart/ d' $file
+	done
+	for file in $dir/bluealsa.service.d/override.conf $dir/bluetooth.service.d/override.conf; do
+		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' $file
+	done
+fi
+
+dir=/srv/http/assets/img/guide
+if [[ ! -e $dir/1.jpg ]]; then
+	mkdir -p $dir
+	if [[ -e /srv/http/assets/img/1.jpg ]]; then
+		find /srv/http/assets/img -maxdepth 1 -type f -name '[0-9]*' -exec mv {} $dir \;
+	else
+		curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
+	fi
+fi
+
+file=/etc/systemd/system/dab.service
+if [[ -e /usr/bin/rtl_sdr && ! -e $file ]]; then
+	echo "\
+[Unit]
+Description=DAB Radio metadata
+
+[Service]
+Type=simple
+ExecStart=/srv/http/bash/status-dab.sh
+" > $file
+fi
+
+systemctl daemon-reload
+
 # 20220916
 dirmpd=/srv/http/data/mpd
 if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
@@ -17,36 +79,6 @@ fi
 # 20220826
 rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
 
-# 20220814
-sed -i '/bluez-utils/ d' /etc/pacman.conf
-
-# 20220808
-dirdata=/srv/http/data
-
-dab=$( pacman -Q dab-scanner 2> /dev/null )
-if [[ $dab && $dab != 'dab-scanner 0.8-3' ]]; then
-	rm -f /etc/rtsp-simple-server.yml $dirdata/webradiosimg/{dablogo*,rtsp*8554*}
-	rm -rf /srv/http/bash/dab $dirdata/webradios/DAB
-	pacman -Sy --noconfirm dab-scanner
-fi
-
-if [[ -e $dirdata/webradios ]]; then
-	mv $dirdata/webradio{s,}
-	mv $dirdata/{webradiosimg,webradio/img}
-fi
-
-grep -A1 'plugin.*ffmpeg' /etc/mpd.conf | grep -q no && sed -i '/decoder/,+4 d' /etc/mpd.conf
-
-if [[ $(  uname -m ) == armv6l && $( uname -r ) != 5.10.92-2-rpi-legacy-ARCH ]]; then
-	echo Downgrade kernel to 5.10.92 ...
-	pkgfile=linux-rpi-legacy-5.10.92-2-armv6h.pkg.tar.xz
-	curl -skLO https://github.com/rern/_assets/raw/master/$pkgfile
-	pacman -U --noconfirm $pkgfile
-	rm $pkgfile
-fi
-
-grep -q gpio-poweroff /boot/config.txt && sed -i '/gpio-poweroff\|gpio-shutdown/ d' /boot/config.txt
-
 #-------------------------------------------------------------------------------
 . /srv/http/bash/addons.sh
 
@@ -60,25 +92,3 @@ $dirbash/cmd.sh dirpermissions
 
 installfinish
 #-------------------------------------------------------------------------------
-
-# 20220808
-udevadm control --reload-rules
-udevadm trigger
-
-if grep -q /srv/http/shareddata /etc/fstab; then
-	echo -e "\
-$info Shared data:
-    • Disable
-    • On server
-      - Rename: $( tcolor webradios 1 ) > $( tcolor webradio 2 )
-      - Move:   $( tcolor webradiosimg 1 ) > $( tcolor webradio/img 2 )
-    • Re-enable again.
-"
-fi
-
-if [[ -e /usr/bin/rtsp-simple-server && ! -e $dirdata/dabradio ]]; then
-	echo -e "\
-$info DAB Radio:
-    • Rescan for stations again.
-"
-fi

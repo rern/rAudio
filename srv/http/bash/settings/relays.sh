@@ -12,8 +12,7 @@ if [[ $cmd == relaysset ]]; then
 	data=${args[1]}
 	echo -e "$data" > $dirsystem/relays.conf
 	touch $dirsystem/relays
-	data=$( $dirbash/settings/relays-data.sh )
-	pushstream refresh "$data"
+	$dirbash/settings/relays-data.sh pushrefresh
 	pushstream display '{"submenu":"relays","value":true}'
 	exit
 fi

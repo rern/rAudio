@@ -24,25 +24,9 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	btreceiver=$( exists $dirshm/btreceiver )
-	consume=$( mpc | grep -q 'consume: on' && echo true )
-	counts=$( cat $dirmpd/counts 2> /dev/null )
-	librandom=$( exists $dirsystem/librandom )
 	player=$( cat $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	relays=$( exists $dirsystem/relays )
-	relayson=$( exists $dirshm/relayson )
-	stoptimer=$( exists $dirshm/stoptimer )
-	updateaddons=$( exists $diraddons/update )
-	if [[ -e $dirmpd/updating ]]; then
-		updating_db=true
-		if ! mpc | grep -q ^Updating; then
-			path=$( cat $dirmpd/updating )
-			[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-		fi
-	fi
-	[[ -e $dirshm/updatingdab ]] && updatingdab=true
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
@@ -51,30 +35,28 @@ else
 		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
 		volume=${ccv/*^}
 	fi
-	scrobble=$( exists $dirsystem/scrobble )
-	volumemute=$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )
 
 ########
 	status='
   "player"       : "'$player'"
-, "btreceiver"   : '$btreceiver'
+, "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "consume"      : '$consume'
+, "consume"      : '$( mpc | grep -q 'consume: on' && echo true )'
 , "control"      : "'$control'"
-, "counts"       : '$counts'
+, "counts"       : '$( cat $dirmpd/counts 2> /dev/null )'
 , "file"         : ""
 , "icon"         : "'$icon'"
-, "librandom"    : '$librandom'
-, "relays"       : '$relays'
-, "relayson"     : '$relayson'
-, "scrobble"     : '$scrobble'
-, "stoptimer"    : '$stoptimer'
+, "librandom"    : '$( exists $dirsystem/librandom )'
+, "relays"       : '$( exists $dirsystem/relays )'
+, "relayson"     : '$( exists $dirshm/relayson )'
+, "scrobble"     : '$( exists $dirsystem/scrobble )'
+, "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
-, "updateaddons" : '$updateaddons'
-, "updating_db"  : '$updating_db'
-, "updatingdab"  : '$updatingdab'
+, "updateaddons" : '$( exists $diraddons/update )'
+, "updating_db"  : '$( exists $dirmpd/updating )'
+, "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$volumemute'
+, "volumemute"   : '$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )'
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
@@ -160,7 +142,7 @@ $( cat $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -E '"cover".*true|"vumeter".*false' $dirsystem/display | wc -l ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
 
 filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
 [[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
@@ -221,7 +203,7 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if (( $pllength  == 0 )); then
-	ip=$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )
+	ip=$( ipGet )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='
@@ -281,6 +263,7 @@ elif [[ $stream ]]; then
 	else
 		ext=Radio
 		if [[ $file == *rtsp://*$( hostname -f )* ]]; then
+			ext=DAB
 			dirradio=$dirdabradio
 			icon=dabradio
 		else
@@ -312,11 +295,13 @@ elif [[ $stream ]]; then
 					id=dabradio
 					radiosampling='48 kHz 160 kbit/s'
 					stationname=$station
+					service=dab
 				else
 					id=$( basename ${file/-*} )
 					[[ ${id:0:13} == francemusique ]] && id=${id:13}
 					[[ ! $id ]] && id=francemusique
 					stationname=${station/* - }
+					service=radio
 				fi
 				if [[ ! -e $dirshm/radio ]]; then
 					echo "\
@@ -324,7 +309,7 @@ $file
 $stationname
 $id
 $radiosampling" > $dirshm/radio
-					systemctl -q is-active radio || systemctl start radio
+					systemctl -q is-active $service || systemctl start $service
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
@@ -365,7 +350,7 @@ $radiosampling" > $dirshm/radio
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 	if [[ $id ]]; then
-		sampling="$(( song + 1 ))/$pllength &bull; $radiosampling"
+		sampling="$(( song + 1 ))/$pllength • $radiosampling"
 		elapsedGet
 ########
 		status+='
@@ -434,7 +419,7 @@ samplingLine() {
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
-		sampling="${samplerate^^} &bull; $rate"
+		sampling="${samplerate^^} • $rate"
 	else
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
 		sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
@@ -444,25 +429,26 @@ samplingLine() {
 			sampling="$sample $rate"
 		fi
 	fi
-	[[ $ext != Radio ]] && sampling+=" &bull; $ext"
+	[[ $ext != Radio ]] && sampling+=" • $ext"
 }
 
 if [[ $ext == CD ]]; then
-	sampling='16 bit 44.1 kHz 1.41 Mbit/s &bull; CD'
+	sampling='16 bit 44.1 kHz 1.41 Mbit/s • CD'
+elif [[ $ext == DAB ]]; then
+	sampling='48 kHz 160 kbit/s • DAB'
 elif [[ $state != stop ]]; then
 	if [[ $ext == DSF || $ext == DFF ]]; then
 		bitdepth=dsd
 		[[ $state == pause ]] && bitrate=$(( ${samplerate/dsd} * 2 * 44100 ))
-	fi
-	if [[ $ext != Radio ]]; then
-		samplingLine $bitdepth $samplerate $bitrate $ext
-	else
+	elif [[ $ext == Radio ]]; then
 		if [[ $bitrate && $bitrate != 0 ]]; then
 			samplingLine $bitdepth $samplerate $bitrate $ext
 			[[ -e $radiofile ]] && sed -i "2 s|.*|$sampling|" $radiofile # update sampling on each play
 		else
 			sampling=$radiosampling
 		fi
+	else
+		samplingLine $bitdepth $samplerate $bitrate $ext
 	fi
 	samplingSave &
 else
@@ -479,7 +465,7 @@ else
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
 				bitrate=$( awk "BEGIN { printf \"%.2f\n\", $dsd * 44100 / 1000000 }" )
-				sampling="DSD$dsd • $bitrate Mbit/s &bull; $ext"
+				sampling="DSD$dsd • $bitrate Mbit/s • $ext"
 			else
 				data=( $( ffprobe -v quiet -select_streams a:0 \
 					-show_entries stream=bits_per_raw_sample,sample_rate \
@@ -498,7 +484,7 @@ fi
 
 ########
 pos="$(( song + 1 ))/$pllength"
-sampling="$pos &bull; $sampling"
+sampling="$pos • $sampling"
 status+='
 , "ext"      : "'$ext'"
 , "coverart" : "'$coverart'"
