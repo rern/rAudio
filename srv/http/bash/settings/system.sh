@@ -793,7 +793,7 @@ sharelist )
 	fi
 	if [[ $paths ]]; then
 		echo "\
-Shares @<wh>$ip</wh>:
+Server rAudio @<wh>$ip</wh> :
 
 <pre><wh>$paths</wh></pre>"
 	else

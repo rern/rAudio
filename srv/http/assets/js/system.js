@@ -1004,12 +1004,12 @@ function infoNFSconnect( ip ) {
 		, ok        : function() {
 			var ip = infoVal();
 			bash( [ 'sharelist', ip ], function( list ) {
-				if ( list.slice( 0, 6 ) === 'Shares' ) {
+				if ( list.slice( 0, 6 ) === 'Server' ) {
 					info( {
 						  icon    : 'networks'
 						, title   : 'Shared Data'
 						, message : list
-									+'<br>Connect all shares?'
+									+'<br>Connect?'
 						, cancel  : function() {
 							$( '#shareddata' ).prop( 'checked', false );
 						}
