@@ -712,6 +712,11 @@ servers )
 	;;
 shareddataconnect )
 	ip=${args[1]}
+	if [[ ! $ip ]]; then # sshpass from server to reconnect
+		ip=$( cat $dirsystem/sharedipserver 2> /dev/null )
+		[[ ! $ip || ! ping -c 1 -w 1 $ip &> /dev/null ]] && exit
+	fi
+	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
 	for path in "${paths[@]}"; do
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
@@ -753,6 +758,7 @@ shareddatadisconnect )
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+	echo $ipserver > $dirsystem/sharedipserver # for reconnect
 	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir"

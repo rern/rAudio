@@ -88,10 +88,9 @@ if [[ $connected  ]]; then
 	fi
 	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then # rserver
 		mv -f $filesharedip{.backup,}
-		ipserver=$( ipGet )
-		ips=$( grep -v $ipserver $filesharedip )
+		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
-			sshCommand $ip $dirbash/settings/system.sh shareddataconnect$'\n'$ipserver
+			sshCommand $ip $dirbash/settings/system.sh shareddataconnect
 		done
 	elif [[ -e $filesharedip ]]; then # rclient
 		$dirbash/settings/system.sh shareddataiplist
