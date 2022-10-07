@@ -9,7 +9,7 @@ htmlHead( [ //////////////////////////////////
 $html = <<< HTML
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide">W^rAudio as sender:^W (or pairing non-audio devices)
+	<div class="help-block hide"><wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	- On receiver: Turn on Discovery / Pairing mode
 	- On rAudio: | Bluetooth I^search wh^I | Select to pair
@@ -17,10 +17,10 @@ $html = <<< HTML
 	- On receiver: Power on / Power off > Connect / Disconnect
 	- Receiver buttons can be used to control playback
 
-W^rAudio as receiver:^W
+<wh>rAudio as receiver:</wh>
  • Pair:
-	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | W^• Discoverable by senders^W |
-	- On sender: | Search | Select W^rAudio^W to pair
+	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | <wh>• Discoverable by senders</wh> |
+	- On sender: | Search | Select <wh>rAudio</wh> to pair
 	- Forget / remove should be done on both rAudio and sender
  • Connect:
 	- On sender: Select rAudio | Connect | / | Disconnect |
