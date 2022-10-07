@@ -142,7 +142,7 @@ $( '#novolume' ).click( function() {
 			  icon         : 'volume'
 			, title        : 'No Volume'
 			, message      : `\
-No volume</wh> will be disabled on:
+<wh>No volume</wh> will be disabled on:
 &emsp; • Select a Mixer Control
 &emsp; • Enable any Volume options`
 			, messagealign : 'left'
