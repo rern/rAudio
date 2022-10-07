@@ -57,7 +57,7 @@ sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		rm -rf $dirbackup/$dir $dirshareddata/$dir
+		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
@@ -715,8 +715,6 @@ shareddataconnect )
 	if [[ ! $ip ]]; then # sshpass from server to reconnect
 		ip=$( cat $dirsystem/sharedipserver 2> /dev/null )
 		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
-		
-		reconnect=1
 	fi
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
@@ -741,7 +739,7 @@ shareddataconnect )
 		mount "$dir"
 	done
 	sharedDataSet
-	[[ $reconnect ]] && pushstreamNotify 'Server rAudio' 'Online ...' rserver
+	pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	;;
 shareddatadisconnect )
 	disable=${args[1]} # null if sshpass from rserver
