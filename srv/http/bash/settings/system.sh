@@ -742,6 +742,7 @@ shareddataconnect )
 	pushstreamNotify 'Server rAudio' 'Online ...' rserver
 	;;
 shareddatadisconnect )
+	disable=${args[1]} # null if sshpass from rserver
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
@@ -758,7 +759,6 @@ shareddatadisconnect )
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-	echo $ipserver > $dirsystem/sharedipserver # for reconnect
 	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir"
@@ -766,6 +766,7 @@ shareddatadisconnect )
 	done
 	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
+	[[ ! $disable ]] && echo $ipserver > $dirsystem/sharedipserver # for reconnect
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushstreamNotify 'Server rAudio' 'Offline ...' rserver

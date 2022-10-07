@@ -826,7 +826,7 @@ $( '#shareddata' ).click( function() {
 			}
 			, okcolor : orange
 			, ok      : function() {
-				bash( [ 'shareddatadisconnect' ] );
+				bash( [ 'shareddatadisconnect', 'disable' ] );
 				notify( 'Shared Data', 'Disable ...', 'networks' );
 			}
 		} );
