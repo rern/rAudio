@@ -331,10 +331,10 @@ $radiosampling" > $dirshm/radio
 		if [[ $displaycover ]]; then
 			filenoext=/data/webradio/img/$urlname
 			pathnoext=/srv/http$filenoext
-			if [[ -e $pathnoext.gif ]]; then
-				stationcover=$filenoext.$date.gif
-			elif [[ -e $pathnoext.jpg ]]; then
+			if [[ -e $pathnoext.jpg ]]; then
 				stationcover=$filenoext.$date.jpg
+			elif [[ -e $pathnoext.gif ]]; then
+				stationcover=$filenoext.$date.gif
 			fi
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
