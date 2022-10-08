@@ -525,7 +525,7 @@ mount )
 		options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 	else
 		source="$ip:$directory"
-		options=defaults,noauto,bg,hard,intr,timeo=5
+		options=defaults,noauto,bg,soft,timeo=5
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
 	fstab="\
@@ -730,7 +730,7 @@ shareddataconnect )
 		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
 		
 	done
-	options="nfs  defaults,noauto,bg,hard,intr,timeo=5  0  0"
+	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
