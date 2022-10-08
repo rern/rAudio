@@ -102,3 +102,6 @@ fi
 $Artist
 $Title
 $Album" &> /dev/null &
+
+[[ $state == play ]] && playing=true || playing=false
+pushstream refresh '{"page":"features","playing":'$playing'}'
