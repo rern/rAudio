@@ -3,6 +3,8 @@
 alias=r1
 
 # 20221007
+grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
+
 dir=/srv/http/shareddata
 dirshareddata=/mnt/MPD/NAS/data
 filesharedip=$dirshareddata/sharedip
