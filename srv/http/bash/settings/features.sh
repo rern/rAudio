@@ -278,6 +278,7 @@ EOF
 nfsserver )
 	active=${args[1]}
 	readarray -t dirs <<< $( nfsShareList )
+	mpc -q clear
 	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
@@ -297,16 +298,16 @@ nfsserver )
 		if [[ -e $dirbackup/mpdnfs ]]; then
 			mv -f $dirmpd $dirbackup
 			mv -f $dirbackup/mpdnfs $dirdata/mpd
-			action=update
+			systemctl restart mpd
 		else
 			rm -f $dirmpd/{listing,updating}
 			mkdir -p $dirbackup
 			cp -r $dirmpd $dirbackup
-			action=rescan
+			systemctl restart mpd
+			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
 	else
-		action=update
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
 			/mnt/MPD/NAS/.mpdignore \
@@ -322,10 +323,8 @@ nfsserver )
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
+		systemctl restart mpd
 	fi
-	mpc -q clear
-	systemctl restart mpd
-	$dirbash/cmd.sh mpcupdate$'\n'$action
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
