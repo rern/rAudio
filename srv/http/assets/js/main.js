@@ -1838,8 +1838,10 @@ $( '#button-pl-clear' ).click( function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  function() {
-					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
-					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+					setTimeout( function() { // must be delayed
+						$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
+						$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+					}, 0 );
 				}
 				, function() {
 					$( '#pl-list li:not( .active )' ).remove();
