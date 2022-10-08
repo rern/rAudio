@@ -35,7 +35,7 @@ case 'list':
 	htmlSavedPlaylist();
 	break;
 case 'load': // load saved playlist to current
-	if ( $_POST[ 'replace' ] ) exec( 'mpc clear' );
+	if ( $_POST[ 'replace' ] ) exec( 'mpc -q clear' );
 	
 	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
 	exec( 'mpc -q load "'.$name.'"' );

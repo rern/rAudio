@@ -297,7 +297,6 @@ nfsserver )
 		if [[ -e $dirbackup/mpdnfs ]]; then
 			mv -f $dirmpd $dirbackup
 			mv -f $dirbackup/mpdnfs $dirdata/mpd
-			systemctl restart mpd
 			action=update
 		else
 			rm -f $dirmpd/{listing,updating}
@@ -306,8 +305,8 @@ nfsserver )
 			action=rescan
 		fi
 		systemctl enable --now nfs-server
-		$dirbash/cmd.sh mpcupdate$'\n'$action
 	else
+		action=update
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
 			/mnt/MPD/NAS/.mpdignore \
@@ -323,9 +322,10 @@ nfsserver )
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
-		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate$'\n'update
 	fi
+	mpc -q clear
+	systemctl restart mpd
+	$dirbash/cmd.sh mpcupdate$'\n'$action
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
