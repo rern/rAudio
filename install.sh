@@ -2,21 +2,14 @@
 
 alias=r1
 
-# 20221005
+# 20221007
 dir=/srv/http/shareddata
 dirshareddata=/mnt/MPD/NAS/data
 filesharedip=$dirshareddata/sharedip
 if [[ -e $dir ]]; then
-	if [[ -e $filesharedip ]]; then
-		list=$( cat $filesharedip )
-	else
-		echo data > /mnt/MPD/NAS/.mpdignore
-		mkdir -p $dirshareddata
-		list=$( grep $dir /etc/fstab | sed 's|^//||; s|/.*||; s|:.*||' )
-	fi
-	echo "\
-$list
-$( ifconfig | grep -m1 inet.*broadcast | awk '{print $2}' )" | sort -u > $filesharedip
+	echo data > /mnt/MPD/NAS/.mpdignore
+	mkdir -p $dirshareddata
+	mv $dir/iplist > $filesharedip
 	chmod 777 $filesharedip
 	umount -l $dir
 	sed -i "s|$dir|$dirshareddata|" /etc/fstab
