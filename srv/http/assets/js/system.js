@@ -911,6 +911,7 @@ function infoMount( values ) {
 		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
+		, checkblank : [ 0, 1, 2 ]
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
@@ -952,7 +953,7 @@ function infoMount( values ) {
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( function() {
-					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\//g;
+					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\/g;
 					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
