@@ -1,9 +1,8 @@
 function addReplace( cmd, command, title, msg ) {
-	if ( cmd === 'addplay' || cmd === 'replaceplay' || cmd === 'replace' ) $( '#stop' ).click();
+	var play = cmd === 'addplay' || cmd === 'replaceplay';
+	if ( play || cmd === 'replace' ) $( '#stop' ).click();
 	bash( command, function() {
-		if ( !G.display.playbackswitch ) return
-		
-		if ( cmd === 'addplay' || cmd === 'replaceplay' ) $( '#playback' ).click();
+		if ( G.display.playbackswitch && play ) $( '#playback' ).click();
 	} );
 	banner( title, msg, 'playlist' );
 }
@@ -780,6 +779,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( !mpccmd ) mpccmd = [];
 	var sleep = G.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
+	if ( G.status.state === 'play' && G.status.webradio ) sleep += 1;
 	var contextCommand = {
 		  add         : mpccmd
 		, playnext    : mpccmd
