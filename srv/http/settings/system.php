@@ -113,7 +113,7 @@ mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</y
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-	  'label'    => 'HDD Sleep'
+	  'label'    => 'Hard Drive Sleep'
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
@@ -124,7 +124,7 @@ HTML
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
 	, 'id'       => 'usbautoupdate'
-	, 'sublabel' => 'USB drives data'
+	, 'sublabel' => 'data on USB'
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
