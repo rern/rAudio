@@ -104,7 +104,10 @@ if [[ $usb ]]; then
 			[[ ! $label ]] && label=?
 			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
-		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source | grep -m1 APM_level | awk '{print $NF}' )
+		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
+										| grep -m1 APM_level \
+										| awk '{print $NF}' \
+										| tr -d -c 0-9 )
 	done
 fi
 nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
