@@ -114,11 +114,6 @@ jpgThumbnail() {
 	esac
 	pushstreamImage "$target" $type "$covername"
 }
-mpdoledLogo() {
-	systemctl stop mpd_oled
-	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-	mpd_oled -o $type -L
-}
 plAddPlay() {
 	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
@@ -365,12 +360,6 @@ webRadioSampling() {
 
 case ${args[0]} in
 
-addonsclose )
-	script=${args[1]}
-	alias=${args[2]}
-	killall $script curl pacman &> /dev/null
-	rm -f /var/lib/pacman/db.lck /srv/http/*.zip $diraddons/$alias /usr/local/bin/uninstall_$alias.sh
-	;;
 addonslist )
 	addonsListGet ${args[1]}
 	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
@@ -523,9 +512,6 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	sed -i -E 's/\?v=.{10}/?v='$hash'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
-count )
-	count
-	;;
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
@@ -613,20 +599,6 @@ dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &
 	pushstream mpdupdate '{"type":"dabradio"}'
-	;;
-dirpermissions )
-	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chmod -R 755 /srv/http/{assets,bash,data,settings}
-	chown -R http:http /srv/http/{assets,bash,data,settings}
-	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
-	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
-		chmod 777 $filesharedip $dirshareddata/system/{display,order}
-		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
-		for dir in "${dirs[@]}"; do
-			chmod 777 "$dir"
-		done
-	fi
 	;;
 displaysave )
 	data=${args[1]}
@@ -990,83 +962,10 @@ mpcupdate )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
-mpdoledlogo )
-	mpdoledLogo
-	;;
 ordersave )
 	data=$( jq <<< ${args[1]} )
 	pushstream order "$data"
 	echo "$data" > $dirsystem/order
-	;;
-partexpand )
-	dev=$( mount | awk '/ on \/ / {printf $1}' | head -c -2 )
-	if (( $( sfdisk -F $dev | head -1 | awk '{print $6}' ) != 0 )); then
-		echo -e "d\n\nn\n\n\n\n\nw" | fdisk $dev &>/dev/null
-		partprobe $dev
-		resize2fs ${dev}p2
-	fi
-	;;
-pkgstatus )
-	id=${args[1]}
-	pkg=$id
-	service=$id
-	case $id in
-		camilladsp )
-			fileconf=$dircamilladsp/configs/camilladsp.yml
-			;;
-		hostapd )
-			conf="\
-<bll># cat /etc/hostapd/hostapd.conf</bll>
-$( cat /etc/hostapd/hostapd.conf )
-
-<bll># cat /etc/dnsmasq.conf"
-			;;
-		localbrowser )
-			pkg=chromium
-			fileconf=$dirsystem/localbrowser.conf
-			;;
-		nfs-server )
-			pkg=nfs-utils
-			systemctl -q is-active nfs-server && fileconf=/etc/exports
-			;;
-		rtsp-simple-server )
-			conf="\
-<bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
-			;;
-		smb )
-			pkg=samba
-			fileconf=/etc/samba/smb.conf
-			;;
-		snapclient|snapserver )
-			pkg=snapcast
-			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
-			;;
-		* )
-			fileconf=/etc/$id.conf
-			;;
-	esac
-	config="<code>$( pacman -Q $pkg )</code>"
-	if [[ $conf ]]; then
-		config+="
-$conf"
-	elif [[ -e $fileconf ]]; then
-		config+="
-<bll># cat $fileconf</bll>
-$( grep -v ^# $fileconf )"
-	fi
-	status=$( systemctl status $service \
-					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
-					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
-	if [[ $pkg == chromium ]]; then
-		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
-	elif [[ $pkg == nfs-utils ]]; then
-		status=$( echo "$status" | grep -v 'Protocol not supported' )
-	fi
-	echo "\
-$config
-
-$status"
 	;;
 playerstart )
 	player=${args[1]}
@@ -1174,15 +1073,6 @@ radiorestart )
 	systemctl -q is-active radio || systemctl start radio
 	sleep 1
 	rm $disshm/radiorestart
-	;;
-rebootlist )
-	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot \
-								| sort -u \
-								| tr '\n' ^ \
-								| head -c -1
-	;;
-refreshbrowser )
-	pushstream reload 1
 	;;
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null

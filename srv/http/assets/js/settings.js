@@ -2,9 +2,12 @@ function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
 		var args = { cmd: 'bash', bash : command }
 	} else {
-		if ( command[ 0 ] === 'cmd' ) {
+		var cmd0 = command[ 0 ];
+		if ( cmd0 === 'cmd' ) {
 			var filesh = 'cmd';
 			command.shift();
+		} else if ( cmd0 === 'pkgstatus' ) {
+			var filesh = 'settings/system';
 		} else {
 			var filesh = 'settings/'+ page;
 		}
@@ -67,7 +70,7 @@ function currentStatus( id, refresh ) {
 			notify( 'Get Data', id, page );
 		}, 1000 );
 	}
-	var command = services.includes( id ) ? [ 'cmd', 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, function( status ) {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( function() {
@@ -416,30 +419,29 @@ $( '.close' ).click( function() {
 	if ( page === 'networks' ) {
 		clearTimeout( G.timeoutScan );
 		bash( 'killall networks-scan.sh &> /dev/null' );
+	} else if ( page === 'system' ) {
+		bash( [ 'rebootlist' ], function( list ) {
+			if ( !list ) {
+				location.href = '/';
+			} else {
+				info( {
+					  icon    : page
+					, title   : 'System Setting'
+					, message : 'Reboot required for:<br><br>'
+								+'<pre><wh>'+ list +'</wh></pre>'
+					, cancel  : function() {
+						bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
+						location.href = '/';
+					}
+					, okcolor : orange
+					, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+					, ok      : function() {
+						bash( [ 'cmd', 'power', 'reboot' ] );
+					}
+				} );
+			}
+		} );
 	}
-	bash( [ 'cmd', 'rebootlist' ], function( list ) {
-		if ( !list ) {
-			location.href = '/';
-		} else {
-			var list = list.replace( /\^/s, '\n' );
-			info( {
-				  icon    : page
-				, title   : 'System Setting'
-				, message : `\
-Reboot required for:
-<wh>${ list }</wh>`
-				, cancel  : function() {
-					bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
-					location.href = '/';
-				}
-				, okcolor : orange
-				, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-				, ok      : function() {
-					bash( [ 'cmd', 'power', 'reboot' ] );
-				}
-			} );
-		}
-	} );
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return

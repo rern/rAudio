@@ -7,6 +7,20 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< "$1"
 
+dirPermissions() {
+	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
+		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
+		done
+	fi
+}
 pushReboot() {
 	pushRefresh
 	pushstreamNotify "${1//\"/\\\"}" 'Reboot required.' system 5000
@@ -236,7 +250,7 @@ datarestore )
 		mv $dirdata/{webradiosimg,webradio/img}
 	fi
 	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	$dirbash/cmd.sh dirpermissions
+	dirPermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
@@ -277,6 +291,9 @@ datarestore )
 	fi
 	grep -q /mnt/MPD/SD /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
 	$dirbash/cmd.sh power$'\n'reboot
+	;;
+dirpermissions )
+	dirPermissions
 	;;
 hddinfo )
 	dev=${args[1]}
@@ -556,6 +573,11 @@ mpdoleddisable )
 	$dirbash/settings/player-conf.sh
 	pushRefresh
 	;;
+mpdoledlogo )
+	systemctl stop mpd_oled
+	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+	mpd_oled -o $type -L
+	;;
 mpdoledset )
 	chip=${args[1]}
 	baud=${args[2]}
@@ -606,6 +628,68 @@ $description
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
+pkgstatus )
+	id=${args[1]}
+	pkg=$id
+	service=$id
+	case $id in
+		camilladsp )
+			fileconf=$dircamilladsp/configs/camilladsp.yml
+			;;
+		hostapd )
+			conf="\
+<bll># cat /etc/hostapd/hostapd.conf</bll>
+$( cat /etc/hostapd/hostapd.conf )
+
+<bll># cat /etc/dnsmasq.conf"
+			;;
+		localbrowser )
+			pkg=chromium
+			fileconf=$dirsystem/localbrowser.conf
+			;;
+		nfs-server )
+			pkg=nfs-utils
+			systemctl -q is-active nfs-server && fileconf=/etc/exports
+			;;
+		rtsp-simple-server )
+			conf="\
+<bll># rtl_test -t</bll>
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+			;;
+		smb )
+			pkg=samba
+			fileconf=/etc/samba/smb.conf
+			;;
+		snapclient|snapserver )
+			pkg=snapcast
+			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			;;
+		* )
+			fileconf=/etc/$id.conf
+			;;
+	esac
+	config="<code>$( pacman -Q $pkg )</code>"
+	if [[ $conf ]]; then
+		config+="
+$conf"
+	elif [[ -e $fileconf ]]; then
+		config+="
+<bll># cat $fileconf</bll>
+$( grep -v ^# $fileconf )"
+	fi
+	status=$( systemctl status $service \
+					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
+					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
+	if [[ $pkg == chromium ]]; then
+		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
+	elif [[ $pkg == nfs-utils ]]; then
+		status=$( echo "$status" | grep -v 'Protocol not supported' )
+	fi
+	echo "\
+$config
+
+$status"
+	;;
 powerbuttondisable )
 	if [[ -e $dirsystem/audiophonics ]]; then
 		rm $dirsystem/audiophonics
@@ -644,6 +728,9 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
 		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
 	fi
+	;;
+rebootlist )
+	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot | sort -u
 	;;
 relaysdisable )
 	rm -f $dirsystem/relays
