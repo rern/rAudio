@@ -1023,9 +1023,7 @@ function infoNFSconnect( ip ) {
 							$( '#shareddata' ).prop( 'checked', false );
 						}
 						, ok      : function() {
-							setTimeout( function() {
-								infoNFSconnect( ip );
-							},0 );
+							infoNFSconnect( ip );
 						}
 					} );
 				}
