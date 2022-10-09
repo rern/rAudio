@@ -730,6 +730,7 @@ reserved=$reserved" > $dirsystem/powerbutton.conf
 	fi
 	;;
 rebootlist )
+	killall networks-scan.sh &> /dev/null
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot | sort -u
 	;;
 relaysdisable )

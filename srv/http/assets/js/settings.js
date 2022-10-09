@@ -6,7 +6,7 @@ function bash( command, callback, json ) {
 		if ( cmd0 === 'cmd' ) {
 			var filesh = 'cmd';
 			command.shift();
-		} else if ( cmd0 === 'pkgstatus' ) {
+		} else if ( cmd0 === 'pkgstatus' || cmd0 === 'rebootlist' ) {
 			var filesh = 'settings/system';
 		} else {
 			var filesh = 'settings/'+ page;
@@ -416,32 +416,28 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
-	if ( page === 'networks' ) {
-		clearTimeout( G.timeoutScan );
-		bash( 'killall networks-scan.sh &> /dev/null' );
-	} else if ( page === 'system' ) {
-		bash( [ 'rebootlist' ], function( list ) {
-			if ( !list ) {
+	bash( [ 'rebootlist' ], function( list ) {
+		if ( !list ) {
+			location.href = '/';
+			return
+		}
+		
+		info( {
+			  icon    : page
+			, title   : 'System Setting'
+			, message : 'Reboot required for:<br><br>'
+						+'<pre><wh>'+ list +'</wh></pre>'
+			, cancel  : function() {
+				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
 				location.href = '/';
-			} else {
-				info( {
-					  icon    : page
-					, title   : 'System Setting'
-					, message : 'Reboot required for:<br><br>'
-								+'<pre><wh>'+ list +'</wh></pre>'
-					, cancel  : function() {
-						bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
-						location.href = '/';
-					}
-					, okcolor : orange
-					, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-					, ok      : function() {
-						bash( [ 'cmd', 'power', 'reboot' ] );
-					}
-				} );
+			}
+			, okcolor : orange
+			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+			, ok      : function() {
+				bash( [ 'cmd', 'power', 'reboot' ] );
 			}
 		} );
-	}
+	} );
 } );
 $( '#button-data' ).click( function() {
 	if ( !G ) return
