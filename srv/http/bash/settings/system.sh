@@ -867,7 +867,10 @@ systemconfig )
 $( cat /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( cat /boot/config.txt )"
+$( cat /boot/config.txt )
+
+<bll># bootloader and firmware</bll>
+$( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( cat $file )
 	if [[ $raspberrypiconf ]]; then
