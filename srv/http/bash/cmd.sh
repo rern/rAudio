@@ -232,6 +232,7 @@ stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio dab
 		rm -f $dirshm/{radio,status}
+		sleep 1
 	fi
 }
 urldecode() { # for webradio url to filename
@@ -873,12 +874,12 @@ mpcplayback )
 			command=play
 		fi
 	fi
+	stopRadio
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
 	else
-		stopRadio
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
