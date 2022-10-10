@@ -4,7 +4,6 @@ var G = {
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
 	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
 	, bioartist     : []
-	, bookmarkedit  : 0
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
 	, covervu       : '/assets/img/vu.svg'
