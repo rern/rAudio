@@ -573,8 +573,8 @@ function getPlaybackStatus( withdisplay ) {
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
-			if ( !$( '#lib-search-close' ).text() && !G.librarylist ) {
-				$.post( 'index-body.php', { modelist: 1 }, function( html ) {
+			if ( !G.librarylist ) {
+				$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
 					$( '#lib-mode-list' ).html( html );
 					renderLibrary();
 				} );

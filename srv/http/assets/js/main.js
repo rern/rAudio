@@ -437,15 +437,18 @@ $( '#addons' ).click( function () {
 	loader();
 } );
 $( '#library, #button-library' ).click( function() {
-	$( '#lib-path span' ).removeClass( 'hide' );
-	if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
-	if ( G.library ) {
-		if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-		renderLibrary();
-	} else {
-		switchPage( 'library' );
-		if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
-	}
+	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
+		$( '#lib-mode-list' ).html( html );
+		$( '#lib-path span' ).removeClass( 'hide' );
+		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
+		if ( G.library ) {
+			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+			renderLibrary();
+		} else {
+			switchPage( 'library' );
+			if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
+		}
+	} );
 } );
 $( '#playback' ).click( function() {
 	if ( G.playback && ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
@@ -1313,7 +1316,9 @@ $( '#button-lib-back' ).click( function() {
 		}
 	}
 } );
-$( '.mode' ).click( function() {
+$( '#lib-mode-list' ).click( function( e ) {
+	if ( !G.press && $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
+} ).on( 'click', '.mode', function() {
 	var $this = $( this );
 	G.mode = $this.data( 'mode' );
 	$( '#lib-search-close' ).click();
@@ -1385,11 +1390,7 @@ $( '.mode' ).click( function() {
 	query.path = G.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	if ( query.query !== 'ls' ) G.query.push( query );
-} );
-$( '#lib-mode-list' ).click( function( e ) {
-	if ( !G.press && $( '.bkedit' ).length && !$( e.target ).hasClass( 'bkedit' ) ) setBookmarkEdit();
-} );
-$( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( G.press || $( '.bkedit' ).length ) return
 	
@@ -1502,7 +1503,7 @@ $( '#lib-mode-list' ).on( 'click', '.mode-bookmark', function( e ) { // delegate
 		}
 	} );
 } )
-$( '.mode-bookmark' ).press( setBookmarkEdit );
+$( '#lib-mode-list' ).press( '.mode-bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'

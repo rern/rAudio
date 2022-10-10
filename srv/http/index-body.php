@@ -47,51 +47,6 @@ $( '#pwd' ).keypress( function( e ) {
 	exit;
 }
 
-
-// library home blocks
-$modes = [ 'Album', 'Artist', 'Album Artist', 'Composer', 'Conductor', 'Date', 'Genre', 'Latest', 'NAS', 'SD', 'USB', 'Playlists', 'Web Radio', 'DAB Radio' ];
-$htmlmode = '';
-foreach( $modes as $mode ) {
-	$lipath = str_replace( ' ', '', $mode );
-	$modeLC = strtolower( $lipath );
-	$htmlmode.=
-		  '<div class="lib-mode">'
-			.'<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">'
-				.'<a class="lipath">'.$modeLC.'</a>'
-				.'<i class="fa fa-'.$modeLC.'"></i>'
-				.'<gr></gr>'
-				.'<a class="label">'.$mode.'</a>'
-			.'</div>'
-		.'</div>';
-}
-// bookmarks
-$dir = '/srv/http/data/bookmarks';
-$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
-if ( count( $files ) ) {
-	foreach( $files as $name ) {
-		$data = file( $dir.'/'.str_replace( '|', '/', $name ), FILE_IGNORE_NEW_LINES );
-		$bkpath = $data[ 0 ];
-		$coverart = $data[ 1 ] ?? '';
-		if ( $coverart ) {
-			$coverart = substr( $coverart, 0, -3 ).time().substr( $coverart, -4 );
-			$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'" data-label="'.$name.'">';
-		} else {
-			$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
-		}
-		$htmlmode.=
-			  '<div class="lib-mode bookmark">'
-				.'<div class="mode mode-bookmark" data-mode="bookmark">'
-					.'<a class="lipath">'.$bkpath.'</a>'
-					.$icon
-				.'</div>'
-			.'</div>';
-	}
-}
-if ( $_POST[ 'modelist' ] ) { // for refresh on page visible
-	echo $htmlmode;
-	exit;
-}
-
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
@@ -365,7 +320,7 @@ foreach( $settinglist as $l ) {
 			<span class="lipath"></span>
 		</div>
 	</div>
-	<div id="lib-mode-list"><?=$htmlmode?></div>
+	<div id="lib-mode-list"></div>
 </div>
 
 <div id="page-playlist" class="page hide">
