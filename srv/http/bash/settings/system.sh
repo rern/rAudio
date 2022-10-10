@@ -91,7 +91,7 @@ sharedDataSet() {
 	systemctl restart mpd
 	sharedDataIPlist
 	pushRefresh
-	pusrstream refresh '{"page":"features","shareddata":true}'
+	pushstream refresh '{"page":"features","shareddata":true}'
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
@@ -512,6 +512,7 @@ mirrorlist )
 }'
 	;;
 mount )
+	['mount', 'cifs', 'data', '192.168.1.9', 'data', '', '', '', true]
 	protocol=${args[1]}
 	mountpoint="/mnt/MPD/NAS/${args[2]}"
 	ip=${args[3]}
@@ -519,17 +520,14 @@ mount )
 	user=${args[5]}
 	password=${args[6]}
 	extraoptions=${args[7]}
-	update=${args[8]}
-	shareddata=${args[9]}
+	shareddata=${args[8]}
 
 	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 
-	if [[ -e $mountpoint ]]; then
-		[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
-		
-	else
-		mkdir "$mountpoint"
-	fi
+	[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
+	
+	umount -ql "$mountpoint"
+	mkdir -p "$mountpoint"
 	chown mpd:audio "$mountpoint"
 	if [[ $protocol == cifs ]]; then
 		source="//$ip/$directory"
@@ -565,7 +563,7 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		sleep 1
 		mount | grep -q "$mountpoint" && break
 	done
-	[[ $shareddata ]] && sharedDataSet || pushRefresh
+	[[ $shareddata == true ]] && sharedDataSet || pushRefresh
 	;;
 mpdoleddisable )
 	rm $dirsystem/mpdoled
@@ -817,6 +815,7 @@ shareddataconnect )
 		dir="/mnt/MPD/NAS/$( basename "$path" )"
 		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
 		
+		umount -ql "$dir"
 	done
 	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	fstab=$( cat /etc/fstab )
@@ -855,13 +854,18 @@ shareddatadisconnect )
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
-	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-	readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
+		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
+	else
+		fstab=$( sed "/^$dirshareddata/ d" /etc/fstab )
+		dirs=( dirshareddata )
+	fi
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir"
 		rmdir "$dir" &> /dev/null
 	done
-	fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
