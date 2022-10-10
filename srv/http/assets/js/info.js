@@ -203,12 +203,11 @@ Note:
 }
 function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
-	if ( !O.buttonnoreset ) {
-		$( '#infoOverlay' )
-			.addClass( 'hide' )
-			.empty();
-	}
-	if ( typeof fn === 'function' ) setTimeout( fn, 0 );
+	if ( !O.buttonnoreset ) $( '#infoOverlay' ).addClass( 'hide' );
+	setTimeout( function() {
+		if ( typeof fn === 'function' ) fn();
+		$( '#infoOverlay' ).empty();
+	}, 0 );
 }
 
 O = {}
