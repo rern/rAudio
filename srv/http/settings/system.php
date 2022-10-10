@@ -204,7 +204,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-I</wh>arning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
