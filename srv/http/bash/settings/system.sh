@@ -870,7 +870,7 @@ shareddatadisconnect )
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
-	pusrstream refresh '{"page":"features","shareddata":false}'
+	pushstream refresh '{"page":"features","shareddata":false}'
 	if [[ ! $disable ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		pushstreamNotify 'Server rAudio' 'Offline ...' rserver
