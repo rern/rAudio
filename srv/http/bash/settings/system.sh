@@ -860,7 +860,7 @@ shareddatadisconnect )
 		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	else
 		fstab=$( sed "/^$dirshareddata/ d" /etc/fstab )
-		dirs=( dirshareddata )
+		dirs=( $dirshareddata )
 	fi
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir"
