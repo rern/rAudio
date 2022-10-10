@@ -856,10 +856,10 @@ shareddatadisconnect )
 	mpc -q clear
 	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
+		fstab=$( grep -v ^$ipserver /etc/fstab )
 		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
 	else
-		fstab=$( sed "/^$dirshareddata/ d" /etc/fstab )
+		fstab=$( grep -v $dirshareddata /etc/fstab )
 		dirs=( $dirshareddata )
 	fi
 	for dir in "${dirs[@]}"; do
