@@ -7,19 +7,6 @@ alias=r1
 # 20221007
 grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
 
-dir=/srv/http/shareddata
-if [[ -e $dir ]]; then
-	echo data > /mnt/MPD/NAS/.mpdignore
-	mkdir -p $dirshareddata
-	mv $dir/iplist > $filesharedip
-	chmod 777 $filesharedip
-	umount -l $dir
-	sed -i "s|$dir|$dirshareddata|" /etc/fstab
-	systemctl daemon-reload
-	mount $dirshareddata
-	rmdir $dir
-fi
-
 [[ -e $dirsystem/hddspindown ]] && mv $dirsystem/{hddspindown,apm}
 
 if [[ ! -e /boot/kernel.img ]]; then
@@ -84,3 +71,6 @@ $dirbash/settings/system.sh dirpermissions
 
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20221010
+[[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
