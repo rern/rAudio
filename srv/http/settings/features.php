@@ -288,9 +288,11 @@ HTML
 	- Must be set to <wh>static IP address</wh> which should be set on router.
 	- Existing list in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once update finished.
 	- On reboot / power off, Shared Data on clients will be temporarily disabled > re-enabled once the server is back online.
+	
  • <wh>rAudio Shared Data clients:</wh>
 	- | I^system^I System | Settings and Data | <wh>Shared Data I^networks^I</wh> | <wh>• rAudio</wh>
 	- Automatically setup: discover, connect shared files and data
+	
  • <wh>Windows NFS clients:</wh>
 	- Windows Features > Services for NFS > Client for NFS - Enable
 	- $fileexplorer

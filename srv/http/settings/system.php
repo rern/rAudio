@@ -92,15 +92,14 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Icon context menu: Unmount / Re-mount / Forget / Info / Share
+	<div class="help-block hide"><gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Context menu available
 
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
 
 <wh>Network shares:</wh>
  • Must be manually configured.
- • If mount failed, try in SSH terminal:
-   (replace <cy>YELLOW</cy> with actual values)
+ • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 <gr># CIFS: (no user - username=guest, no password - password="")</gr>
@@ -295,7 +294,7 @@ HTML
 		, 'help'     => <<< HTML
 I^gear^I
  • NTP server: For time sync
- • Package mirror server: For system upgrade <c>pacman -Syu</c>
+ • Package mirror server
 HTML
 	]
 	, [
@@ -349,10 +348,12 @@ Connect share data as client for:
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
 	- Show / hide items
 	- Display order of Library home
- • <wh>rAudio as server:</wh>
+	
+ • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
 	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
- • <wh>Other servers:</wh> 
+	
+ • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
 		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
 		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
