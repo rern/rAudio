@@ -750,7 +750,8 @@ remove )
 	mountpoint=${args[1]}
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
-	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
+	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
+	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
