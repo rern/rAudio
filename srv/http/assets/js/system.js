@@ -155,11 +155,12 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( title, 'Remount ...', icon );
+			console.log( [ 'mountremount', mountpoint, source ] );
 			bash( [ 'mountremount', mountpoint, source ] );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
-			bash( [ 'mountremount', mountpoint ] );
+			bash( [ 'mountunmount', mountpoint ] );
 			break;
 	}
 } );
