@@ -93,8 +93,8 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="help-block hide">Context menu:
-<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> Info
-<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Unmount, Re-mount, Forget (Not available if Shared Data is enabled)
+<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> USB drives: Info
+<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Network shares: Unmount, Re-mount, Forget (Not available if Shared Data is enabled)
 
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
