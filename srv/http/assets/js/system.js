@@ -85,8 +85,6 @@ $( '.addnas' ).click( function() {
 	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
-	if ( $( this ).find( '.fa-microsd' ).length ) return
-	
 	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
@@ -100,16 +98,23 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	
 	var i = $this.index()
 	var list = G.list[ i ];
-	$this.addClass( 'active' );
 	$( '#menu a' ).addClass( 'hide' );
 	if ( list.icon === 'microsd' ) return
 	
-	var mounted = list.mounted;
-	var usb = list.icon === 'usbdrive';
-	$( '#menu .info' ).toggleClass( 'hide', !usb );
-	$( '#menu .forget' ).removeClass( 'hide', usb );
-	$( '#menu .remount' ).toggleClass( 'hide', mounted );
-	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
+	if ( G.shareddata && list.icon === 'networks' ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Network Storage'
+			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
+		} );
+		return
+	}
+	
+	$this.addClass( 'active' );
+	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
+	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', !list.mounted );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
