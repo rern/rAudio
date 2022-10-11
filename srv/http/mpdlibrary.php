@@ -465,13 +465,15 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
+		$time = time();
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
-			$thumbsrc = rawurlencode( '/data/'.$gmode.'/img/'.$urlname.'-thumb.'.time().'.jpg' );
+			$thumbsrc = '/data/'.$gmode.'/img/'.rawurlencode( $urlname ).'-thumb.';
+			$thumbsrc.= strpos( $urlname, '?' ) ? 'jpg?v='.$time : $time.'.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= '<li class="file"'.$datacharset.' data-index="'.$index.'">

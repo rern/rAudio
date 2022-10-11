@@ -181,7 +181,7 @@ function htmlTrack( $lists, $plname = '' ) {
 				$class = 'file';
 				$discid = '';
 				$path = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg' ; // replaced with icon on load error(faster than existing check)
+				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.'.$time.'.jpg' ; // replaced with icon on load error(faster than existing check)
 				$icon = 'music';
 				$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'" data-target="#menu-filesavedpl">';
 			} else {
@@ -228,7 +228,9 @@ function htmlTrack( $lists, $plname = '' ) {
 			}
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="/data/'.$type.'/img/'.$urlname.'-thumb.jpg" data-icon="webradio" data-target="#menu-filesavedpl">';
+				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.';
+				$thumbsrc.= strpos( $urlname, '?' ) ? 'jpg?v='.$time : $time.'.jpg';
+				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'" data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';

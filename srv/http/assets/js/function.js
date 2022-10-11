@@ -1248,9 +1248,7 @@ function renderPlaylist( data ) {
 		setPlaylistScroll();
 	} else {
 		G.htmlplaylist = data.html;
-		var timestamp = Math.floor( Date.now() / 1000 );
-		var html = data.html.replaceAll( 'thumb.jpg', 'thumb.'+ timestamp +'.jpg' );
-		$( '#pl-list' ).html( html +'<p></p>' ).promise().done( function() {
+		$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
 			G.status.pllength = $( '#pl-list li' ).length;
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );

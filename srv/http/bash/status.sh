@@ -336,10 +336,12 @@ $radiosampling" > $dirshm/radio
 			elif [[ -e $pathnoext.gif ]]; then
 				type=gif
 			fi
-			if [[ $urlname == *\?* ]]; then # cannot bust: url with ?param=123...
-				stationcover=${filenoext//\?/%3F}.$type?v=$date
-			else
-				stationcover=$filenoext.$date.$type
+			if [[ $type ]]; then
+				if [[ $urlname == *\?* ]]; then # cannot bust: url with ?param=...
+					stationcover=${filenoext//\?/%3F}.$type?v=$date
+				else
+					stationcover=$filenoext.$date.$type
+				fi
 			fi
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
