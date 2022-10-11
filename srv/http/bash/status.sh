@@ -315,12 +315,15 @@ $radiosampling" > $dirshm/radio
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
-				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
-				Artist=${radioname[0]}
-				Title=${radioname[1]}
+				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title' (extra tag)
+					readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
+					Artist=${radioname[0]}
+					Title=${radioname[1]}
+				else
+					Artist=$station
+				fi
 				# fetched coverart
-				covername=$( echo "$Artist${Title/ (*}" | tr -d ' "`?/#&'"'" ) # remove ' (extra tag)'
+				covername=$( echo "$Artist${Title/ (*}" | tr -d ' "`?/#&'"'" ) # remove '... (extra tag)'
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart=${coverfile:9}
@@ -331,10 +334,17 @@ $radiosampling" > $dirshm/radio
 		if [[ $displaycover ]]; then
 			filenoext=/data/webradio/img/$urlname
 			pathnoext=/srv/http$filenoext
-			if [[ -e $pathnoext.gif ]]; then
-				stationcover=$filenoext.$date.gif
-			elif [[ -e $pathnoext.jpg ]]; then
-				stationcover=$filenoext.$date.jpg
+			if [[ -e $pathnoext.jpg ]]; then
+				type=jpg
+			elif [[ -e $pathnoext.gif ]]; then
+				type=gif
+			fi
+			if [[ $type ]]; then
+				if [[ $urlname == *\?* ]]; then # cannot bust: url with ?param=...
+					stationcover=${filenoext//\?/%3F}.$type?v=$date
+				else
+					stationcover=$filenoext.$date.$type
+				fi
 			fi
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )

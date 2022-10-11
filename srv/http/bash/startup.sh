@@ -107,7 +107,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdcharinit.py
 	$dirbash/lcdchar.py logo
 fi
-[[ -e $dirsystem/mpdoled ]] && $dirbash/cmd.sh mpdoledlogo
+[[ -e $dirsystem/mpdoled ]] && $dirbash/settings/system.sh mpdoledlogo
 
 [[ -e $dirsystem/soundprofile ]] && $dirbash/settings/system.sh soundprofile
 

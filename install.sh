@@ -2,8 +2,12 @@
 
 alias=r1
 
-# 20221005
-[[ -e /srv/http/data/system/hddspindown ]] && mv /srv/http/data/system/{hddspindown,apm}
+. /srv/http/bash/addons.sh
+
+# 20221007
+grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
+
+[[ -e $dirsystem/hddspindown ]] && mv $dirsystem/{hddspindown,apm}
 
 if [[ ! -e /boot/kernel.img ]]; then
 	dir=/etc/systemd/system
@@ -43,11 +47,10 @@ fi
 systemctl daemon-reload
 
 # 20220916
-dirmpd=/srv/http/data/mpd
 if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
 	echo '{
-  "playlists" : '$( ls -1 /srv/http/data/playlists | wc -l )'
-, "webradio"  : '$( find -L /srv/http/data/webradio -type f ! -path '*/img/*' | wc -l )'
+  "playlists" : '$( ls -1 $dirplaylists | wc -l )'
+, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
 }' > $dirmpd/counts
 fi
 
@@ -58,15 +61,16 @@ fi
 rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
 
 #-------------------------------------------------------------------------------
-. /srv/http/bash/addons.sh
-
 installstart "$1"
 
 getinstallzip
 
-chmod +x $dirbash/cmd.sh
-$dirbash/cmd.sh dirpermissions
+chmod +x $dirbash/settings/system.sh
+$dirbash/settings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20221010
+[[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."

@@ -131,6 +131,15 @@ $( '#menu a' ).click( function() {
 		var icon = 'usbdrive';
 		var title = 'Local Mount';
 	}
+	if ( G.shareddata && mountpoint === '/mnt/MPD/NAS/data' ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Network Storage'
+			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
+		} );
+		return
+	}
+	
 	switch ( cmd ) {
 		case 'forget':
 			notify( title, 'Forget ...', icon );
@@ -512,9 +521,9 @@ $( '#setting-mpdoled' ).click( function() {
 		, cancel       : function() {
 			$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 		}
-		, buttonlabel  : '<i class="fa fa-plus-r"></i>Logo'
+		, buttonlabel  : !G.mpdoled ? '' : '<i class="fa fa-plus-r"></i>Logo'
 		, button       : !G.mpdoled ? '' : function() {
-			bash( '/srv/http/bash/cmd.sh mpdoledlogo' );
+			bash( [ 'mpdoledlogo' ] );
 		}
 		, ok           : function() {
 			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
@@ -911,6 +920,7 @@ function infoMount( values ) {
 		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
+		, checkblank : [ 0, 1, 2 ]
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
@@ -952,7 +962,7 @@ function infoMount( values ) {
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( function() {
-					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\//g;
+					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\/g;
 					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
@@ -1023,9 +1033,7 @@ function infoNFSconnect( ip ) {
 							$( '#shareddata' ).prop( 'checked', false );
 						}
 						, ok      : function() {
-							setTimeout( function() {
-								infoNFSconnect( ip );
-							},0 );
+							infoNFSconnect( ip );
 						}
 					} );
 				}

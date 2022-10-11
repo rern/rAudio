@@ -92,15 +92,16 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Icon context menu: Unmount / Re-mount / Forget / Info / Share
+	<div class="help-block hide">Context menu:
+<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> Info
+<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Unmount, Re-mount, Forget (Hidden if Shared Data is enabled)
 
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
 
 <wh>Network shares:</wh>
  • Must be manually configured.
- • If mount failed, try in SSH terminal:
-   (replace <cy>YELLOW</cy> with actual values)
+ • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 <gr># CIFS: (no user - username=guest, no password - password="")</gr>
@@ -113,7 +114,7 @@ mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</y
 <pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-	  'label'    => 'HDD Sleep'
+	  'label'    => 'Hard Drive Sleep'
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
@@ -124,7 +125,7 @@ HTML
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
 	, 'id'       => 'usbautoupdate'
-	, 'sublabel' => 'USB drives data'
+	, 'sublabel' => 'data on USB'
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
@@ -203,7 +204,7 @@ HTML
 		, 'help'     => <<< HTML
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
-I</wh>arning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 HTML
 	]
 	, [
@@ -295,7 +296,7 @@ HTML
 		, 'help'     => <<< HTML
 I^gear^I
  • NTP server: For time sync
- • Package mirror server: For system upgrade <c>pacman -Syu</c>
+ • Package mirror server
 HTML
 	]
 	, [
@@ -349,10 +350,12 @@ Connect share data as client for:
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
 	- Show / hide items
 	- Display order of Library home
- • <wh>rAudio as server:</wh>
+	
+ • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
 	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
- • <wh>Other servers:</wh> 
+	
+ • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
 		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
 		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)

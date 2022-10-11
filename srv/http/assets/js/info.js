@@ -163,26 +163,6 @@ info( {                                       // default
 	
 	order         : [ TYPE, ... ]             // (sequence)     (order of *** inputs)
 	
-	filelabel     : 'LABEL'                   // ***            (browse button label)
-	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
-	filetype      : '.EXT, ...'               // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
-	
-	buttonlabel   : [ 'LABEL', ... ]          // ***            (label array)
-	button        : [ FUNCTION, ... ]         // (none)         (function array)
-	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
-	buttonfit     : 1                         // (none)         (fit buttons width to label)
-	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked)
-	
-	okno          : 1                         // (show)         (no ok button)
-	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
-	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
-	ok            : FUNCTION                  // (reset)        (ok click function)
-	
-	cancellabel   : 'LABEL'                   // ***            (cancel button label)
-	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
-	cancelshow    : 1                         // (hide)         (show cancel button)
-	cancel        : FUNCTION                  // (reset)        (cancel click function)
-	
 	values        : [ 'VALUE', ... ]          // (none)         (default values - in layout order)
 	checkchanged  : 1                         // (none)         (check values changed)
 	checkblank    : 1 or [ i, ... ]           // (none)         (check values not blank /  [ partial ] )
@@ -191,6 +171,26 @@ info( {                                       // default
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
 	noreload      : 1                         // (none)         (do not reset content - for update value)
+	
+	filelabel     : 'LABEL'                   // ***            (browse button label)
+	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
+	filetype      : '.EXT, ...'               // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
+	
+	buttonlabel   : [ 'LABEL', ... ]          // ***            (extra buttons - label array)
+	button        : [ FUNCTION, ... ]         // (none)         (function array)
+	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
+	buttonfit     : 1                         // (none)         (fit buttons width to label)
+	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked) - player.js
+	
+	cancellabel   : 'LABEL'                   // ***            (cancel button label)
+	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
+	cancelshow    : 1                         // (hide)         (show cancel button)
+	cancel        : FUNCTION                  // (reset)        (cancel click function)
+
+	okno          : 1                         // (show)         (no ok button)
+	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
+	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
+	ok            : FUNCTION                  // (reset)        (ok click function)
 } );
 
 Get values: infoVal()
@@ -201,12 +201,13 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
-function infoReset() {
+function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
-	$( '#infoOverlay' )
-		.addClass( 'hide' )
-		.empty();
-	O = {}
+	if ( !O.buttonnoreset ) $( '#infoOverlay' ).addClass( 'hide' );
+	setTimeout( function() {
+		if ( typeof fn === 'function' ) fn();
+		$( '#infoOverlay' ).empty();
+	}, 0 );
 }
 
 O = {}
@@ -222,15 +223,14 @@ function info( json ) {
 </div>
 ` );
 	O.infoscroll = $( window ).scrollTop();
-	// simple use as info( 'message' )
-	setTimeout( function() { // allow consecutive infos
-	//////////////////////////////////////////////////////////////////////////
+	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
 	} );*/
+	
 	$( '#infoX' ).click( function() {
-		if ( O.cancel ) O.cancel();
-		infoReset();
+		delete O.buttonnoreset;
+		infoReset( O.cancel );
 	} );
 	if ( typeof O !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
@@ -286,18 +286,14 @@ function info( json ) {
 	if ( O.button ) {
 		if ( typeof O.button !== 'object' ) O.button = [ O.button ];
 		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
-			var fn = O.button[ $( this ).index( '.extrabtn' ) ];
-			if ( fn ) fn();
-			if ( !O.buttonnoreset ) infoReset();
+			infoReset( O.button[ $( this ).index( '.extrabtn' ) ] );
 		} );
 	}
 	$( '#infoCancel' ).one( 'click', function() {
-		if ( typeof O.cancel === 'function' ) O.cancel();
-		infoReset();
+		infoReset( O.cancel );
 	} );
 	$( '#infoOk' ).one( 'click', function() {
-		if ( typeof O.ok === 'function' ) O.ok();
-		if ( !O.buttonnoreset ) infoReset();
+		infoReset( O.ok );
 	} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
@@ -568,8 +564,6 @@ function info( json ) {
 	O.nochange = O.values && O.checkchanged ? true : false;
 	$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ); // initial check
 	infoCheckSet();
-	//////////////////////////////////////////////////////////////////////////
-	}, 0 );
 }
 
 function checkBlank() {
