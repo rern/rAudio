@@ -315,10 +315,13 @@ $radiosampling" > $dirshm/radio
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
-				# split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
-				readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
-				Artist=${radioname[0]}
-				Title=${radioname[1]}
+				if [[ $Title == *" - "* ]]; then # split Artist - Title: Artist - Title (extra tag) or Artist: Title (extra tag)
+					readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
+					Artist=${radioname[0]}
+					Title=${radioname[1]}
+				else
+					Artist=$station
+				fi
 				# fetched coverart
 				covername=$( echo "$Artist${Title/ (*}" | tr -d ' "`?/#&'"'" ) # remove ' (extra tag)'
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
