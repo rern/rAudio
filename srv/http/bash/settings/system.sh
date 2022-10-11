@@ -565,6 +565,35 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 	done
 	[[ $shareddata == true ]] && sharedDataSet || pushRefresh
 	;;
+mountremount )
+	mountpoint=${args[1]}
+	source=${args[2]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		mount "$mountpoint"
+	else
+		udevil mount "$source"
+	fi
+	pushRefresh
+	;;
+mountforget )
+	mountpoint=${args[1]}
+	umount -l "$mountpoint"
+	rmdir "$mountpoint" &> /dev/null
+	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
+	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
+	$dirbash/cmd.sh mpcupdate$'\n'NAS
+	pushRefresh
+	;;
+mountunmount )
+	mountpoint=${args[1]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		umount -l "$mountpoint"
+	else
+		udevil umount -l "$mountpoint"
+	fi
+	pushRefresh
+	;;
 mpdoleddisable )
 	rm $dirsystem/mpdoled
 	I2Cset
@@ -735,26 +764,6 @@ relaysdisable )
 	rm -f $dirsystem/relays
 	pushRefresh
 	pushstream display '{"submenu":"relays","value":false}'
-	;;
-remount )
-	mountpoint=${args[1]}
-	source=${args[2]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		mount "$mountpoint"
-	else
-		udevil mount "$source"
-	fi
-	pushRefresh
-	;;
-remove )
-	mountpoint=${args[1]}
-	umount -l "$mountpoint"
-	rmdir "$mountpoint" &> /dev/null
-	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
-	echo "$fstab" | column -t > /etc/fstab
-	systemctl daemon-reload
-	$dirbash/cmd.sh mpcupdate$'\n'NAS
-	pushRefresh
 	;;
 rfkilllist )
 	echo "\
@@ -986,15 +995,6 @@ timedate )
 timezone )
 	timezone=${args[1]}
 	timedatectl set-timezone $timezone
-	pushRefresh
-	;;
-unmount )
-	mountpoint=${args[1]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		umount -l "$mountpoint"
-	else
-		udevil umount -l "$mountpoint"
-	fi
 	pushRefresh
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
