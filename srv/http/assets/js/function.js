@@ -539,7 +539,20 @@ function getDirectory( path ) {
 }	
 function getPlaybackStatus( withdisplay ) {
 	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
-		if ( !list ) return
+		if ( list == -1 ) {
+			loaderHide();
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : '<i class="fa fa-warning yl"></i> Server offline'
+							+'<br><br>Open <wh><i class="fa fa-system"></i> System</wh> settings?'
+				, cancel  : loader
+				, ok      : function() {
+					$( '#system' ).click();
+				}
+			} );
+			return
+		}
 		
 		try {
 			var status = JSON.parse( list );

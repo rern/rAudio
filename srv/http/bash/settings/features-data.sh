@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ $( readlink $dirshareddata ) == $dirdata ]]    = server
-#    [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] = clients
-#    [[ -e $filesharedip ]]                            = server + clients
+#    [[ $( readlink $dirshareddata ) == $dirdata ]] = server
+#    [[ -L $dirmpd ]]                               = clients
+#    [[ -e $filesharedip ]]                         = server + clients
 
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
@@ -36,7 +36,7 @@ data+='
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
-, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
+, "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
