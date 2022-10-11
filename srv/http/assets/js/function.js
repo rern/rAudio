@@ -545,10 +545,12 @@ function getPlaybackStatus( withdisplay ) {
 				  icon    : 'networks'
 				, title   : 'Shared Data'
 				, message : '<i class="fa fa-warning yl"></i> Server offline'
-							+'<br><br>Open <wh><i class="fa fa-system"></i> System</wh> settings?'
+							+'<br><br>Disable <wh>Shared Data <i class="fa fa-networks"></i></wh> ?'
 				, cancel  : loader
 				, ok      : function() {
-					$( '#system' ).click();
+					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', function() {
+						location.reload();
+					} );
 				}
 			} );
 			return
