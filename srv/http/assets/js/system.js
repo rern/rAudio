@@ -99,16 +99,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var i = $this.index()
 	var list = G.list[ i ];
 	$( '#menu a' ).addClass( 'hide' );
-	if ( list.icon === 'microsd' ) return
-	
-	if ( G.shareddata && list.icon === 'networks' ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Network Storage'
-			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
-		} );
-		return
-	}
+	if ( list.icon === 'microsd' || ( G.shareddata && list.icon === 'networks' ) ) return
 	
 	$this.addClass( 'active' );
 	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
