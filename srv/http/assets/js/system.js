@@ -139,7 +139,7 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( title, 'Forget ...', icon );
-			bash( [ 'remove', mountpoint ] );
+			bash( [ 'mountremove', mountpoint ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
@@ -155,11 +155,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( title, 'Remount ...', icon );
-			bash( [ 'remount', mountpoint, source ] );
+			bash( [ 'mountremount', mountpoint, source ] );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
-			bash( [ 'unmount', mountpoint ] );
+			bash( [ 'mountremount', mountpoint ] );
 			break;
 	}
 } );
