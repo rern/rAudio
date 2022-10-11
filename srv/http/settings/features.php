@@ -82,7 +82,7 @@ HTML
 		- Name: <cy>USER</cy>
 		- Spotify Account: <cy>EMAIL</cy>
 • | <wh>Spotify I^spotify^I</wh> | Enable
-	- Paste <cy>CLIENT_ID</cy> and <cy>CLIENT_SECRET</cy> from the app
+	- Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
