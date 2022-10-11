@@ -13,9 +13,9 @@ $( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wi
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - detected now <code>$throttled</code>"
+	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - detected now <code>0x1</code>"
 elif [[ $throttled == 0x10000 ]]; then
-	status+="<br><i class='fa fa-warning'></i>&ensp;Voltage under 4.7V - occurred <code>$throttled</code>"
+	status+="<br><i class='fa fa-warning yl'></i>&ensp;Voltage under 4.7V - occurred <code>0x10000</code>"
 fi
 # for interval refresh
 [[ $1 == status ]] && echo $status && exit
@@ -104,7 +104,9 @@ if [[ $usb ]]; then
 			[[ ! $label ]] && label=?
 			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
 		fi
-		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source | grep -m1 APM_level | awk '{print $NF}' )
+		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
+										| grep -m1 APM_level \
+										| tr -d -c 0-9 )
 	done
 fi
 nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
