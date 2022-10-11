@@ -119,7 +119,7 @@ htmlSetting( [
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => <<< HTML
-Sleep timer for hard drives.
+Sleep timer for USB hard drives.
 HTML
 ] );
 htmlSetting( [
