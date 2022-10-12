@@ -394,7 +394,7 @@ $( '#nfsserver' ).click( function() {
 		return
 	}
 	
-	bash( [ 'nfssharelist', G.nfsserver ], function( list ) {
+	bash( [ 'nfssharelist' ], function( list ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Server rAudio'

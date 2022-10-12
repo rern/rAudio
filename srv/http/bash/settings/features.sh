@@ -329,7 +329,7 @@ nfsserver )
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 nfssharelist )
-	[[ ${args[1]} == true ]] && showmount --no-headers -e localhost | awk 'NF{NF-=1};1' | sort || nfsShareList
+	nfsShareList
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
