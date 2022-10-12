@@ -1029,9 +1029,11 @@ power )
 		
 		cp $filesharedip{,.backup}
 		ips=$( grep -v $( ipGet ) $filesharedip )
-		for ip in $ips; do
-			sshCommand $ip $dirbash/settings/system.sh shareddatadisconnect
-		done
+		if [[ $ips ]]; then
+			for ip in $ips; do
+				sshCommand $ip $dirbash/settings/system.sh shareddatadisconnect
+			done
+		fi
 	elif [[ -e $filesharedip ]]; then # rclient
 		sed -i "/$( ipGet )/ d" $filesharedip
 	fi
