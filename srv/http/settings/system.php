@@ -102,12 +102,15 @@ htmlHead( [ //////////////////////////////////
 <wh>Network shares:</wh>
  • Must be manually configured.
  • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+ • <wh>CIFS:</wh>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-<gr># CIFS: (no user - username=guest, no password - password="")</gr>
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
-<gr># NFS:</gr>
+<gr>#	 (no user - username=guest, no password - password="")</gr>
+</pre> • <wh>NFS:</wh>
+<pre>
+mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
