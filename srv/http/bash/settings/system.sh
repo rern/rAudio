@@ -564,16 +564,6 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 	done
 	[[ $shareddata == true ]] && sharedDataSet || pushRefresh
 	;;
-mountremount )
-	mountpoint=${args[1]}
-	source=${args[2]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		mount "$mountpoint"
-	else
-		udevil mount "$source"
-	fi
-	pushRefresh
-	;;
 mountforget )
 	mountpoint=${args[1]}
 	umount -l "$mountpoint"
@@ -582,6 +572,16 @@ mountforget )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
+	pushRefresh
+	;;
+mountremount )
+	mountpoint=${args[1]}
+	source=${args[2]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		mount "$mountpoint"
+	else
+		udevil mount "$source"
+	fi
 	pushRefresh
 	;;
 mountunmount )
