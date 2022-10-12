@@ -139,7 +139,7 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( title, 'Forget ...', icon );
-			bash( [ 'mountremove', mountpoint ] );
+			bash( [ 'mountforget', mountpoint ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );

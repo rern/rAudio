@@ -512,7 +512,6 @@ mirrorlist )
 }'
 	;;
 mount )
-	['mount', 'cifs', 'data', '192.168.1.9', 'data', '', '', '', true]
 	protocol=${args[1]}
 	mountpoint="/mnt/MPD/NAS/${args[2]}"
 	ip=${args[3]}
