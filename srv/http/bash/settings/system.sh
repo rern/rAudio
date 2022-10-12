@@ -71,12 +71,12 @@ sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not rserver - initial setup
+		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not server rAudio - initial setup
 		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
-	if [[ ! -e $dirshareddata/system ]]; then # not rserver - initial setup
+	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
 	fi
@@ -829,12 +829,13 @@ shareddataconnect )
 	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
-		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		name=$( basename "$path" )
+		[[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB/data ]] && name=usb$name
+		dir="/mnt/MPD/NAS/$name"
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
-		source=${path// /\\040}
-		mountpoint=/mnt/MPD/NAS/$( basename $source )
-		fstab+=$'\n'"$ip:$source  $mountpoint  $options"
+		fstab+="
+$ip:${path// /\\040}  ${dir// /\\040}  $options"
 	done
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
@@ -848,7 +849,7 @@ shareddataconnect )
 	fi
 	;;
 shareddatadisconnect )
-	disable=${args[1]} # null - sshpass from rserver to disconnect
+	disable=${args[1]} # null - sshpass from server rAudio to disconnect
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
@@ -863,18 +864,21 @@ shareddatadisconnect )
 	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
-	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+	if grep -q ':/mnt/MPD/SD ' /etc/fstab; then # shared with server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 		fstab=$( grep -v ^$ipserver /etc/fstab )
-		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
-	else
+		readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ipserver 2> /dev/null | awk 'NF{NF-=1};1' )
+		for path in "${paths[@]}"; do
+			name=$( basename "$path" )
+			[[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB/data ]] && name=usb$name
+			dir="/mnt/MPD/NAS/$name"
+			umount -l "$dir"
+			rmdir "$dir" &> /dev/null
+	else # other servers
 		fstab=$( grep -v $dirshareddata /etc/fstab )
-		dirs=( $dirshareddata )
+		umount -l $dirshareddata
+		rmdir $dirshareddata
 	fi
-	for dir in "${dirs[@]}"; do
-		umount -l "$dir"
-		rmdir "$dir" &> /dev/null
-	done
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd

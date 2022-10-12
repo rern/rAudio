@@ -285,7 +285,7 @@ nfsserver )
 		for dir in "${dirs[@]}"; do
 			chmod 777 "$dir"
 			list+="${dir// /\\040} $options"$'\n'
-			dirname=$( basename "$dir" )
+			[[ $dir != /mnt/MPD/USB/data ]] && dirname=$( basename "$dir" ) || dirname=usbdata
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
 		done
 		echo "$list" | column -t > /etc/exports

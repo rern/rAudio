@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ $( readlink $dirshareddata ) == $dirdata ]] = server
+#    [[ $( readlink $dirshareddata ) == $dirdata ]] = server rAudio
 #    [[ -L $dirmpd ]]                               = clients
+#    grep -q ':/mnt/MPD/SD ' /etc/fstab             = clients with server rAudio
 #    [[ -e $filesharedip ]]                         = server + clients
 
 . /srv/http/bash/common.sh
