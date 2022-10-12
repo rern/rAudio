@@ -286,6 +286,7 @@ nfsserver )
 			chmod 777 "$dir"
 			list+="${dir// /\\040} $options"$'\n'
 			dirname=$( basename "$dir" )
+			[[ $dirname == data ]] && dirname=usbdata
 			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
 		done
 		echo "$list" | column -t > /etc/exports
