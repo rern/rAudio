@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ $( readlink $dirshareddata ) == $dirdata ]] = server rAudio
-#    [[ -L $dirmpd ]]                               = clients
-#    grep -q ':/mnt/MPD/SD ' /etc/fstab             = clients with server rAudio
-#    [[ -e $filesharedip ]]                         = server + clients
+#    [[ -L $dirshareddata ]]              = server rAudio
+#    [[ -L $dirmpd ]]                    = clients
+#    grep -q ':/mnt/MPD/SD ' /etc/fstab  = clients with server rAudio
+#    [[ -e $filesharedip ]]              = server + clients
 
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
@@ -31,7 +31,7 @@ data+='
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
-, "nfsserver"        : '$( [[ $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server && echo true )'
+, "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "playing"          : '$( mpc | grep -q '\[playing]' && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
