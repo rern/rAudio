@@ -77,7 +77,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q /mnt/MPD/SD /etc/exports && echo true )'
+, "nfs"        : '$( grep -q $dirsd /etc/exports && echo true )'
 , "smb"        : '$smb'
 }'
 fi
@@ -97,12 +97,12 @@ if [[ $usb ]]; then
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
 , "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
-, "smb"        : '$( [[ $smb == true && $mountpoint == /mnt/MPD/USB ]] && echo true )'
+, "smb"        : '$( [[ $smb == true && $mountpoint == $dirusb ]] && echo true )'
 }'
 		else
 			label=$( e2label $source )
 			[[ ! $label ]] && label=?
-			list+=',{"icon":"usbdrive","mountpoint":"/mnt/MPD/USB/'$label'","mounted":false,"source":"'$source'"}'
+			list+=',{"icon":"usbdrive","mountpoint":"'$dirusb/$label'","mounted":false,"source":"'$source'"}'
 		fi
 		[[ ! $hddapm ]] && hddapm=$( hdparm -B $source \
 										| grep -m1 APM_level \

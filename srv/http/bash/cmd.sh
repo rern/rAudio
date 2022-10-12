@@ -1060,8 +1060,8 @@ power )
 	fi
 	systemctl -q is-active camilladsp && $dirbash/settings/camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
-	if mount | grep -q /mnt/MPD/NAS; then
-		umount -l /mnt/MPD/NAS/* &> /dev/null
+	if mount | grep -q $dirnas; then
+		umount -l $dirnas/* &> /dev/null
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh

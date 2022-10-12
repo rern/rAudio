@@ -68,7 +68,7 @@ $( basename "$devprofile" )"
 fi
 
 if [[ $connected  ]]; then
-	readarray -t nas <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
 			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \

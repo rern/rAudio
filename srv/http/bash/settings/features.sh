@@ -29,8 +29,8 @@ localbrowserXset() {
 }
 nfsShareList() {
 	echo "\
-/mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+$dirsd
+$( find $dirusb -mindepth 1 -maxdepth 1 -type d )
 $dirdata" | awk NF
 }
 spotifyReset() {
@@ -277,24 +277,27 @@ EOF
 	;;
 nfsserver )
 	active=${args[1]}
-	readarray -t dirs <<< $( nfsShareList )
+	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
-		for dir in "${dirs[@]}"; do
-			chmod 777 "$dir"
-			list+="${dir// /\\040} $options"$'\n'
-			[[ $dir != /mnt/MPD/USB/data ]] && dirname=$( basename "$dir" ) || dirname=usbdata
-			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
+		for path in "${paths[@]}"; do
+			chmod 777 "$path"
+			list+="${path// /\\040} $options"$'\n'
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			ln -s "$path" "$dirnas/$name"
 		done
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $filesharedip
 		cp -f $dirsystem/{display,order} $dirbackup
 		touch $dirshareddata/system/order # in case not exist
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
-		echo SD$'\n'USB > /mnt/MPD/.mpdignore
-		echo data > /mnt/MPD/NAS/.mpdignore
+		echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+		echo data > $dirnas/.mpdignore
 		if [[ -e $dirbackup/mpdnfs ]]; then
 			mv -f $dirmpd $dirbackup
 			mv -f $dirbackup/mpdnfs $dirdata/mpd
@@ -310,13 +313,14 @@ nfsserver )
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
-			/mnt/MPD/NAS/.mpdignore \
+			$dirnas/.mpdignore \
 			$filesharedip \
 			$dirmpd/{listing,updating}
-		for dir in "${dirs[@]}"; do
-			chmod 755 "$dir"
-			link="/mnt/MPD/NAS/$( basename "$dir" )"
-			[[ -L "$link" ]] && rm "$link"
+		for path in "${paths[@]}"; do
+			chmod 755 "$path"
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
 		done
 		> /etc/exports
 		mkdir -p $dirbackup

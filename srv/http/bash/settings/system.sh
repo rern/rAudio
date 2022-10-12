@@ -86,7 +86,7 @@ sharedDataSet() {
 		mv $dirsystem/$file $dirbackup
 		ln -s $dirshareddata/system/$file $dirsystem
 	done
-	echo data > /mnt/MPD/NAS/.mpdignore
+	echo data > $dirnas/.mpdignore
 	mpc -q clear
 	systemctl restart mpd
 	sharedDataIPlist
@@ -273,7 +273,7 @@ datarestore )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
-	readarray -t dirs <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir" &> /dev/null
 		rmdir "$dir" &> /dev/null
@@ -283,13 +283,13 @@ datarestore )
 		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 		echo "$fstab" | column -t > /etc/fstab
 	fi
-	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
+	readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"
 		done
 	fi
-	grep -q /mnt/MPD/SD /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
+	grep -q $dirsd /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 dirpermissions )
@@ -513,7 +513,7 @@ mirrorlist )
 	;;
 mount )
 	protocol=${args[1]}
-	mountpoint="/mnt/MPD/NAS/${args[2]}"
+	mountpoint="$dirnas/${args[2]}"
 	ip=${args[3]}
 	directory=${args[4]}
 	user=${args[5]}
@@ -821,7 +821,7 @@ shareddataconnect )
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
 	for path in "${paths[@]}"; do
-		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		dir="$dirnas/$( basename "$path" )"
 		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
 		
 		umount -ql "$dir"
@@ -830,8 +830,8 @@ shareddataconnect )
 	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
 		name=$( basename "$path" )
-		[[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB/data ]] && name=usb$name
-		dir="/mnt/MPD/NAS/$name"
+		[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+		dir="$dirnas/$name"
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
 		fstab+="
@@ -861,17 +861,17 @@ shareddatadisconnect )
 	rm $dirsystem/{display,order}
 	mv -f $dirbackup/{display,order} $dirsystem
 	rmdir $dirbackup &> /dev/null
-	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
+	rm -f $dirshareddata $dirnas/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
-	if grep -q ':/mnt/MPD/SD ' /etc/fstab; then # shared with server rAudio
+	if grep -q ":$dirsd " /etc/fstab; then # client of server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 		fstab=$( grep -v ^$ipserver /etc/fstab )
 		readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ipserver 2> /dev/null | awk 'NF{NF-=1};1' )
 		for path in "${paths[@]}"; do
 			name=$( basename "$path" )
-			[[ $path == /mnt/MPD/SD || $path == /mnt/MPD/USB/data ]] && name=usb$name
-			dir="/mnt/MPD/NAS/$name"
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			dir="$dirnas/$name"
 			umount -l "$dir"
 			rmdir "$dir" &> /dev/null
 		done

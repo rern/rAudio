@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ -L $dirshareddata ]]              = server rAudio
-#    [[ -L $dirmpd ]]                    = clients
-#    grep -q ':/mnt/MPD/SD ' /etc/fstab  = clients with server rAudio
-#    [[ -e $filesharedip ]]              = server + clients
+#    [[ -L $dirshareddata ]]       = server rAudio
+#    [[ -L $dirmpd ]]              = clients
+#    grep -q ":$dirsd" /etc/fstab  = clients with server rAudio
+#    [[ -e $filesharedip ]]        = server + clients
 
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
@@ -86,8 +86,8 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
-	grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
-	grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
+	grep -A1 $dirsd /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
+	grep -A1 $dirusb /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
 , "smb"              : '$( isactive smb )'
