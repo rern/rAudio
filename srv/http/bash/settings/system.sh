@@ -874,6 +874,7 @@ shareddatadisconnect )
 			dir="/mnt/MPD/NAS/$name"
 			umount -l "$dir"
 			rmdir "$dir" &> /dev/null
+		done
 	else # other servers
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		umount -l $dirshareddata
