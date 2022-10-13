@@ -29,8 +29,8 @@ localbrowserXset() {
 }
 nfsShareList() {
 	echo "\
-/mnt/MPD/SD
-$( find /mnt/MPD/USB -mindepth 1 -maxdepth 1 -type d )
+$dirsd
+$( find $dirusb -mindepth 1 -maxdepth 1 -type d )
 $dirdata" | awk NF
 }
 spotifyReset() {
@@ -46,7 +46,7 @@ autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	[[ $feature == streaming ]] && $dirbash/settings/player-conf.sh
+	[[ $feature == streaming ]] && player-conf.sh
 	pushRefresh
 	;;
 autoplaydisable )
@@ -60,11 +60,11 @@ autoplayset )
 	pushRefresh
 	;;
 camilladspdisable )
-	$dirbash/settings/camilladsp-gain.py
+	camilladsp-gain.py
 	systemctl stop camilladsp
 	rm $dirsystem/camilladsp
 	rmmod snd-aloop &> /dev/null
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu camilladsp false
 	;;
@@ -88,7 +88,7 @@ camillaguiset )
 	sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
 	touch $dirsystem/camilladsp
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu camilladsp true
 	;;
@@ -96,7 +96,7 @@ dabradio )
 	if [[ ${args[1]} == true ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
-			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
+			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && player.sh ffmpeg$'\n'true
 		else
 			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dabradio 5000
 		fi
@@ -113,7 +113,7 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu equalizer $enabled
 	;;
@@ -193,7 +193,7 @@ cursor=$newcursor
 	fi
 
 	if [[ $changedrotate ]]; then
-		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
+		cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
@@ -277,24 +277,27 @@ EOF
 	;;
 nfsserver )
 	active=${args[1]}
-	readarray -t dirs <<< $( nfsShareList )
+	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $active == true ]]; then
 		ip=$( ipGet )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
-		for dir in "${dirs[@]}"; do
-			chmod 777 "$dir"
-			list+="${dir// /\\040} $options"$'\n'
-			dirname=$( basename "$dir" )
-			ln -s "$dir" "/mnt/MPD/NAS/$dirname"
+		for path in "${paths[@]}"; do
+			chmod 777 "$path"
+			list+="${path// /\\040} $options"$'\n'
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			ln -s "$path" "$dirnas/$name"
 		done
 		echo "$list" | column -t > /etc/exports
 		echo $ip > $filesharedip
 		cp -f $dirsystem/{display,order} $dirbackup
 		touch $dirshareddata/system/order # in case not exist
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
-		echo SD$'\n'USB > /mnt/MPD/.mpdignore
-		echo data > /mnt/MPD/NAS/.mpdignore
+		echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+		echo data > $dirnas/.mpdignore
 		if [[ -e $dirbackup/mpdnfs ]]; then
 			mv -f $dirmpd $dirbackup
 			mv -f $dirbackup/mpdnfs $dirdata/mpd
@@ -304,19 +307,20 @@ nfsserver )
 			mkdir -p $dirbackup
 			cp -r $dirmpd $dirbackup
 			systemctl restart mpd
-			$dirbash/cmd.sh mpcupdate$'\n'rescan
+			cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
-			/mnt/MPD/NAS/.mpdignore \
+			$dirnas/.mpdignore \
 			$filesharedip \
 			$dirmpd/{listing,updating}
-		for dir in "${dirs[@]}"; do
-			chmod 755 "$dir"
-			link="/mnt/MPD/NAS/$( basename "$dir" )"
-			[[ -L "$link" ]] && rm "$link"
+		for path in "${paths[@]}"; do
+			chmod 755 "$path"
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
 		done
 		> /etc/exports
 		mkdir -p $dirbackup
@@ -329,7 +333,7 @@ nfsserver )
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 nfssharelist )
-	[[ ${args[1]} == true ]] && showmount --no-headers -e localhost | awk 'NF{NF-=1};1' | sort || nfsShareList
+	nfsShareList
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
@@ -431,7 +435,7 @@ snapserver )
 	else
 		systemctl disable --now snapserver
 	fi
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	;;
 spotifyddisable )
@@ -443,7 +447,7 @@ spotifytoken )
 	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
-	spotifyredirect=$( grep ^spotifyredirect $dirbash/settings/features-data.sh | cut -d= -f2 )
+	spotifyredirect=$( grep ^spotifyredirect features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
@@ -470,7 +474,7 @@ stoptimerdisable )
 	if [[ -e $dirshm/relayson ]]; then
 		. $dirsystem/relays.conf
 		echo $timer > $timerfile
-		$dirbash/settings/relays-timer.sh &> /dev/null &
+		relays-timer.sh &> /dev/null &
 	fi
 	pushRefresh
 	;;
@@ -481,7 +485,7 @@ stoptimerset )
 	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
-		$dirbash/settings/features-stoptimer.sh $min $off &> /dev/null &
+		features-stoptimer.sh $min $off &> /dev/null &
 		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
 	fi
 	pushRefresh

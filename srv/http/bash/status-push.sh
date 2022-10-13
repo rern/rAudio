@@ -12,9 +12,9 @@ timestamp=$( date +%s%3N )
 webradio=true
 player=mpd
 EOF
-	$dirbash/cmd.sh coverfileslimit
+	cmd.sh coverfileslimit
 else
-	status=$( $dirbash/status.sh )
+	status=$( status.sh )
 	statusnew=$( echo "$status" \
 		| sed '/^, "counts"/,/}/ d' \
 		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
@@ -55,13 +55,13 @@ fi
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
 	killall lcdchar.py &> /dev/null
-	$dirbash/lcdchar.py &
+	lcdchar.py &
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	if [[ $state == play ]]; then
 		if ! pgrep cava &> /dev/null; then
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+			cava -p /etc/cava.conf | vu.sh &> /dev/null &
 		fi
 	else
 		killall cava &> /dev/null
@@ -76,7 +76,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 fi
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ipGet )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
+	[[ ! $status ]] && status=$( status.sh ) # status-radio.sh
 	status=$( echo "$status" \
 				| sed -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/
@@ -89,7 +89,7 @@ if [[ -e $dirshm/clientip ]]; then
 	done
 fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
+[[ -e $dirsystem/librandom && $webradio == false ]] && cmd.sh mpcaddrandom
 
 [[ $state == play ]] && playing=true || playing=false
 pushstream refresh '{"page":"features","playing":'$playing'}'
@@ -101,7 +101,7 @@ pushstream refresh '{"page":"features","playing":'$playing'}'
 	&& ( $player == mpd || -e $dirsystem/scrobble.conf/$player ) \
 	&& $Artist && $Title ]] \
 	&& (( $Time > 30 )) \
-	&& $dirbash/scrobble.sh "\
+	&& scrobble.sh "\
 $Artist
 $Title
 $Album" &> /dev/null &

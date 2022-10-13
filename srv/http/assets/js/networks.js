@@ -35,7 +35,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 $( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
-$( '#wlscan' ).click( function() {
+$( '.wlscan' ).click( function() {
 	if ( G.hostapd ) {
 		infoAccesspoint();
 	} else {
@@ -508,7 +508,7 @@ function renderQR() {
 	}
 }
 function scanBluetooth() {
-	bash( '/srv/http/bash/settings/networks-scan.sh', function( data ) {
+	bash( dirbash +'networks-scan.sh', function( data ) {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt = '';
@@ -521,7 +521,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( '/srv/http/bash/settings/networks-scan.sh wlan', function( data ) {
+	bash( dirbash +'networks-scan.sh wlan', function( data ) {
 		if ( data ) {
 			G.listwlscan = data;
 			var htmlwl = '';

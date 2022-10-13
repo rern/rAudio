@@ -21,19 +21,19 @@ disconnectRemove() {
 	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
 		icon=btsender
-		$dirbash/cmd.sh playerstop
+		cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
-		$dirbash/cmd.sh mpcplayback$'\n'stop
-		$dirbash/settings/player-conf.sh
+		cmd.sh mpcplayback$'\n'stop
+		player-conf.sh
 	fi
 	pushstreamNotify "$name" $msg $icon
 	pushstreamList
 }
 pushstreamList() {
-	$dirbash/settings/features-data.sh pushrefresh
-	$dirbash/settings/networks-data.sh pushbt
+	features-data.sh pushrefresh
+	networks-data.sh pushbt
 	exit
 }
 #-------------------------------------------------------------------------------------------
@@ -144,8 +144,8 @@ if [[ $action == connect || $action == pair ]]; then
 		echo $btmixer > $dirshm/btreceiver
 		echo $mac Sink $name >> $dirshm/btconnected
 		pushstream btreceiver true
-		$dirbash/cmd.sh playerstop
-		$dirbash/settings/player-conf.sh
+		cmd.sh playerstop
+		player-conf.sh
 	fi
 	pushstreamList
 elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only

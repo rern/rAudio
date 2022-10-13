@@ -13,7 +13,7 @@ dirPermissions() {
 	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	chown -R http:http /srv/http/{assets,bash,data,settings}
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
-	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+	if [[ -L $dirshareddata ]]; then # server rAudio
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
 		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
 		for dir in "${dirs[@]}"; do
@@ -61,7 +61,7 @@ sharedDataIPlist() {
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-			[[ $1 ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			[[ $1 ]] && sshCommand $ip system.sh shareddatarestart & >/dev/null &
 			list+=$'\n'$ip
 		fi
 	done
@@ -71,12 +71,12 @@ sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not rserver - initial setup
+		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not server rAudio - initial setup
 		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
-	if [[ ! -e $dirshareddata/system ]]; then # not rserver - initial setup
+	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
 	fi
@@ -86,7 +86,7 @@ sharedDataSet() {
 		mv $dirsystem/$file $dirbackup
 		ln -s $dirshareddata/system/$file $dirsystem
 	done
-	echo data > /mnt/MPD/NAS/.mpdignore
+	echo data > $dirnas/.mpdignore
 	mpc -q clear
 	systemctl restart mpd
 	sharedDataIPlist
@@ -126,7 +126,7 @@ bluetoothdisable )
 		systemctl stop bluetooth
 		killall bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+		grep -q 'device.*bluealsa' /etc/mpd.conf && player-conf.sh
 	fi
 	pushRefresh
 	;;
@@ -143,14 +143,14 @@ bluetoothset )
 	sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 	if ls -l /sys/class/bluetooth | grep -q serial; then
 		systemctl start bluetooth
-		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+		! grep -q 'device.*bluealsa' /etc/mpd.conf && player-conf.sh
 	else
 		pushReboot Bluetooth
 	fi
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
+	[[ $btformat != $prevbtformat ]] && player-conf.sh bton
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -251,7 +251,7 @@ datarestore )
 	fi
 	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	dirPermissions
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	[[ -e $dirsystem/color ]] && cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
@@ -273,7 +273,7 @@ datarestore )
 	timedatectl set-timezone $( cat $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
 	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
-	readarray -t dirs <<< $( find /mnt/MPD/NAS -mindepth 1 -maxdepth 1 -type d )
+	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir" &> /dev/null
 		rmdir "$dir" &> /dev/null
@@ -283,14 +283,14 @@ datarestore )
 		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
 		echo "$fstab" | column -t > /etc/fstab
 	fi
-	readarray -t mountpoints <<< $( grep /mnt/MPD/NAS /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
+	readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
 		for mountpoint in $mountpoints; do
 			mkdir -p "$mountpoint"
 		done
 	fi
-	grep -q /mnt/MPD/SD /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
-	$dirbash/cmd.sh power$'\n'reboot
+	grep -q $dirsd /etc/exports && features.sh nfsserver$'\n'true
+	cmd.sh power$'\n'reboot
 	;;
 dirpermissions )
 	dirPermissions
@@ -406,13 +406,13 @@ lcdcalibrate )
 	;;
 lcdchar )
 	killall lcdchar.py &> /dev/null
-	$dirbash/lcdcharinit.py
-	$dirbash/lcdchar.py ${args[1]}
+	lcdcharinit.py
+	lcdchar.py ${args[1]}
 	;;
 lcdchardisable )
 	rm $dirsystem/lcdchar
 	I2Cset
-	$dirbash/lcdchar.py clear
+	lcdchar.py clear
 	pushRefresh
 	;;
 lcdcharset )
@@ -443,14 +443,14 @@ backlight=${args[13]^}"
 	if [[ $reboot ]]; then
 		pushReboot 'Character LCD'
 	else
-		$dirbash/lcdchar.py logo
+		lcdchar.py logo
 		pushRefresh
 	fi
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
+	sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	pushRefresh
@@ -468,7 +468,7 @@ lcdset )
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+	sed -i '/disable-software-rasterizer/ d' xinitrc
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
@@ -512,9 +512,8 @@ mirrorlist )
 }'
 	;;
 mount )
-	['mount', 'cifs', 'data', '192.168.1.9', 'data', '', '', '', true]
 	protocol=${args[1]}
-	mountpoint="/mnt/MPD/NAS/${args[2]}"
+	mountpoint="$dirnas/${args[2]}"
 	ip=${args[3]}
 	directory=${args[4]}
 	user=${args[5]}
@@ -558,17 +557,46 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		exit
 	fi
 	
-	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	[[ $update == true ]] && cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 	for i in {1..5}; do
 		sleep 1
 		mount | grep -q "$mountpoint" && break
 	done
 	[[ $shareddata == true ]] && sharedDataSet || pushRefresh
 	;;
+mountforget )
+	mountpoint=${args[1]}
+	umount -l "$mountpoint"
+	rmdir "$mountpoint" &> /dev/null
+	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
+	echo "$fstab" | column -t > /etc/fstab
+	systemctl daemon-reload
+	cmd.sh mpcupdate$'\n'NAS
+	pushRefresh
+	;;
+mountremount )
+	mountpoint=${args[1]}
+	source=${args[2]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		mount "$mountpoint"
+	else
+		udevil mount "$source"
+	fi
+	pushRefresh
+	;;
+mountunmount )
+	mountpoint=${args[1]}
+	if [[ ${mountpoint:9:3} == NAS ]]; then
+		umount -l "$mountpoint"
+	else
+		udevil umount -l "$mountpoint"
+	fi
+	pushRefresh
+	;;
 mpdoleddisable )
 	rm $dirsystem/mpdoled
 	I2Cset
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	;;
 mpdoledlogo )
@@ -736,25 +764,6 @@ relaysdisable )
 	pushRefresh
 	pushstream display '{"submenu":"relays","value":false}'
 	;;
-remount )
-	mountpoint=${args[1]}
-	source=${args[2]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		mount "$mountpoint"
-	else
-		udevil mount "$source"
-	fi
-	pushRefresh
-	;;
-remove )
-	mountpoint=${args[1]}
-	umount -l "$mountpoint"
-	rmdir "$mountpoint" &> /dev/null
-	sed -i "\|${mountpoint// /\\\\040}| d" /etc/fstab
-	systemctl daemon-reload
-	$dirbash/cmd.sh mpcupdate$'\n'NAS
-	pushRefresh
-	;;
 rfkilllist )
 	echo "\
 <bll># rfkill</bll>
@@ -812,7 +821,7 @@ shareddataconnect )
 	
 	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
 	for path in "${paths[@]}"; do
-		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		dir="$dirnas/$( basename "$path" )"
 		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
 		
 		umount -ql "$dir"
@@ -820,12 +829,13 @@ shareddataconnect )
 	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	fstab=$( cat /etc/fstab )
 	for path in "${paths[@]}"; do
-		dir="/mnt/MPD/NAS/$( basename "$path" )"
+		name=$( basename "$path" )
+		[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+		dir="$dirnas/$name"
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
-		source=${path// /\\040}
-		mountpoint=/mnt/MPD/NAS/$( basename $source )
-		fstab+=$'\n'"$ip:$source  $mountpoint  $options"
+		fstab+="
+$ip:${path// /\\040}  ${dir// /\\040}  $options"
 	done
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
@@ -839,7 +849,7 @@ shareddataconnect )
 	fi
 	;;
 shareddatadisconnect )
-	disable=${args[1]} # null - sshpass from rserver to disconnect
+	disable=${args[1]} # null - sshpass from server rAudio to disconnect
 	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
@@ -851,21 +861,25 @@ shareddatadisconnect )
 	rm $dirsystem/{display,order}
 	mv -f $dirbackup/{display,order} $dirsystem
 	rmdir $dirbackup &> /dev/null
-	rm -f $dirshareddata /mnt/MPD/NAS/.mpdignore
+	rm -f $dirshareddata $dirnas/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
-	if [[ $( readlink $dirshareddata ) == $dirdata ]]; then
+	if grep -q ":$dirsd " /etc/fstab; then # client of server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 		fstab=$( grep -v ^$ipserver /etc/fstab )
-		readarray -t dirs <<< $( awk '/^'$ipserver'/ {print $2}' /etc/fstab | sed 's/\\040/ /g' )
-	else
+		readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ipserver 2> /dev/null | awk 'NF{NF-=1};1' )
+		for path in "${paths[@]}"; do
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			dir="$dirnas/$name"
+			umount -l "$dir"
+			rmdir "$dir" &> /dev/null
+		done
+	else # other servers
 		fstab=$( grep -v $dirshareddata /etc/fstab )
-		dirs=( $dirshareddata )
+		umount -l $dirshareddata
+		rmdir $dirshareddata
 	fi
-	for dir in "${dirs[@]}"; do
-		umount -l "$dir"
-		rmdir "$dir" &> /dev/null
-	done
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
@@ -987,15 +1001,6 @@ timezone )
 	timedatectl set-timezone $timezone
 	pushRefresh
 	;;
-unmount )
-	mountpoint=${args[1]}
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		umount -l "$mountpoint"
-	else
-		udevil umount -l "$mountpoint"
-	fi
-	pushRefresh
-	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit # is-active mpd - suppress on startup
 	
@@ -1009,7 +1014,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	pushstreamNotify "$name" $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
@@ -1023,22 +1028,22 @@ vuleddisable )
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done
 	if [[ -e $dirsystem/vumeter ]]; then
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		cava -p /etc/cava.conf | vu.sh &> /dev/null &
 	else
-		$dirbash/settings/player-conf.sh
+		player-conf.sh
 	fi
 	pushRefresh
 	;;
 vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	! grep -q mpd.fifo /etc/mpd.conf && player-conf.sh
 	killall cava &> /dev/null
-	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+	cava -p /etc/cava.conf | vu.sh &> /dev/null &
 	pushRefresh
 	;;
 wlandisable )
-	systemctl -q is-active hostapd && $dirbash/settings/features.sh hostapddisable
+	systemctl -q is-active hostapd && features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

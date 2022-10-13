@@ -18,7 +18,7 @@ input {\
 }\
 ' /etc/mpd.conf
 	systemctl restart mpd
-	$dirbash/settings/player-data.sh pushrefresh
+	player-data.sh pushrefresh
 	exit
 	
 elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
@@ -38,7 +38,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
 		sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
 		systemctl restart mpd
-		$dirbash/settings/player-data.sh pushrefresh
+		player-data.sh pushrefresh
 	elif [[ $1 == ejectwithicon ]]; then
 		eject
 	fi
@@ -108,7 +108,7 @@ eject -x 4
 
 if [[ $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
-	$dirbash/cmd.sh "mpcplayback
+	cmd.sh "mpcplayback
 play
 $cdtrack1"
 fi
@@ -126,4 +126,4 @@ $artist
 $album
 audiocd
 $discid"
-$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+status-coverartonline.sh "$args" &> /dev/null &

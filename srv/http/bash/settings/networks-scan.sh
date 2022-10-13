@@ -31,10 +31,11 @@ if [[ $1 == wlan ]]; then
 	
 	# omit saved profile
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
-	for profile in "${profiles[@]}"; do
-		scan=$( grep -v "ssid.*$profile" <<< "$scan"  )
-	done
-	
+	if [[ $profiles ]]; then
+		for profile in "${profiles[@]}"; do
+			scan=$( grep -v "ssid.*$profile" <<< "$scan"  )
+		done
+	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
 	exit
 fi

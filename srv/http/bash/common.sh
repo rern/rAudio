@@ -1,10 +1,14 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
+export PATH=$PATH:/srv/http/bash:/srv/http/bash/settings
+
 dirdata=/srv/http/data
-dirbackup=/srv/http/data/backup
-dirshareddata=/mnt/MPD/NAS/data
-filesharedip=/mnt/MPD/NAS/data/sharedip
+dirbackup=$dirdata/backup
+dirnas=/mnt/MPD/NAS
+dirsd=/mnt/MPD/SD
+dirusb=/mnt/MPD/USB
+dirshareddata=$dirnas/data
+filesharedip=$dirshareddata/sharedip
 dirs=$( ls $dirdata | grep -v 'backup$' )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
@@ -53,7 +57,7 @@ pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
-	$dirbash/settings/$page-data.sh $push
+	$page-data.sh $push
 }
 pushstream() {
 	channel=$1
@@ -69,7 +73,9 @@ pushstream() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # rserver reboot / off
+	[[ ! -e $filesharedip ]] && return
+	
+	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # server rAudio
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"

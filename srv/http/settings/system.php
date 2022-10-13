@@ -93,8 +93,8 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="help-block hide">Context menu:
-<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> Info
-<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Unmount, Re-mount, Forget (Hidden if Shared Data is enabled)
+<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> USB drives: Info
+<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Network shares: Unmount, Re-mount, Forget (Not available if Shared Data is enabled)
 
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
@@ -102,12 +102,15 @@ htmlHead( [ //////////////////////////////////
 <wh>Network shares:</wh>
  • Must be manually configured.
  • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+ • <wh>CIFS:</wh>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-<gr># CIFS: (no user - username=guest, no password - password="")</gr>
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
-<gr># NFS:</gr>
+<gr>#	 (no user - username=guest, no password - password="")</gr>
+</pre> • <wh>NFS:</wh>
+<pre>
+mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre></div>
@@ -119,7 +122,7 @@ htmlSetting( [
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => <<< HTML
-Sleep timer for hard drives.
+Sleep timer for USB hard drives.
 HTML
 ] );
 htmlSetting( [

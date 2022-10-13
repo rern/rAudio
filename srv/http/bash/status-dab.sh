@@ -35,7 +35,7 @@ while true; do
 , "Time"     : false
 , "Title"    : "'$( cat $filetitle )'"
 }'
-		$dirbash/status-push.sh statusradio "$data" &
+		status-push.sh statusradio "$data" &
 	fi
 	# coverart
 	[[ ! $( awk NF $filecover ) ]] && sleep 10 && continue

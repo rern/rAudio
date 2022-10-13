@@ -85,8 +85,6 @@ $( '.addnas' ).click( function() {
 	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
-	if ( $( this ).find( '.fa-microsd' ).length ) return
-	
 	e.stopPropagation();
 	var $this = $( this );
 	G.li = $this;
@@ -100,16 +98,14 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	
 	var i = $this.index()
 	var list = G.list[ i ];
-	$this.addClass( 'active' );
 	$( '#menu a' ).addClass( 'hide' );
-	if ( list.icon === 'microsd' ) return
+	if ( list.icon === 'microsd' || ( G.shareddata && list.icon === 'networks' ) ) return
 	
-	var mounted = list.mounted;
-	var usb = list.icon === 'usbdrive';
-	$( '#menu .info' ).toggleClass( 'hide', !usb );
-	$( '#menu .forget' ).removeClass( 'hide', usb );
-	$( '#menu .remount' ).toggleClass( 'hide', mounted );
-	$( '#menu .unmount' ).toggleClass( 'hide', !mounted );
+	$this.addClass( 'active' );
+	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
+	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
+	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', !list.mounted );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
@@ -143,7 +139,7 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( title, 'Forget ...', icon );
-			bash( [ 'remove', mountpoint ] );
+			bash( [ 'mountforget', mountpoint ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
@@ -159,11 +155,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( title, 'Remount ...', icon );
-			bash( [ 'remount', mountpoint, source ] );
+			bash( [ 'mountremount', mountpoint, source ] );
 			break;
 		case 'unmount':
 			notify( title, 'Unmount ...', icon )
-			bash( [ 'unmount', mountpoint ] );
+			bash( [ 'mountunmount', mountpoint ] );
 			break;
 	}
 } );
@@ -376,7 +372,7 @@ $( '#setting-lcdchar' ).click( function() {
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'"+ action )
+					bash( dirbash +"system.sh lcdchar$'\n'"+ action )
 				} );
 			}
 		}
@@ -783,7 +779,7 @@ $( '#restore' ).click( function() {
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
 			if ( infoVal() === 'reset' ) {
-				bash( '/srv/http/bash/settings/system-datareset.sh', bannerHide );
+				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
 				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 				var formData = new FormData();
@@ -1104,7 +1100,7 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
+	bash( dirbash +'system-data.sh status', function( status ) {
 		$( '#status' ).html( status );
 	} );
 }

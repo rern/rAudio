@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ $( readlink $dirshareddata ) == $dirdata ]]    = server
-#    [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] = clients
-#    [[ -e $filesharedip ]]                            = server + clients
+#    [[ -L $dirshareddata ]]       = server rAudio
+#    [[ -L $dirmpd ]]              = clients
+#    grep -q ":$dirsd" /etc/fstab  = clients with server rAudio
+#    [[ -e $filesharedip ]]        = server + clients
 
 . /srv/http/bash/common.sh
 spotifyredirect=https://rern.github.io/raudio/spotify
@@ -30,19 +31,19 @@ data+='
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
-, "nfsserver"        : '$( [[ $( readlink $dirshareddata ) == $dirdata ]] && systemctl -q is-active nfs-server && echo true )'
+, "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "playing"          : '$( mpc | grep -q '\[playing]' && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
-, "shareddata"       : '$( [[ $( readlink $dirmpd ) == $dirshareddata/mpd ]] && echo true )'
+, "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
 , "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
-, "hostapdconf"      : '$( $dirbash/settings/features.sh hostapdget )'
+, "hostapdconf"      : '$( features.sh hostapdget )'
 , "ssid"             : "'$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )'"
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
@@ -85,8 +86,8 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
-	grep -A1 /mnt/MPD/SD /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
-	grep -A1 /mnt/MPD/USB /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
+	grep -A1 $dirsd /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
+	grep -A1 $dirusb /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
 , "smb"              : '$( isactive smb )'

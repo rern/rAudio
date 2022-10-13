@@ -94,7 +94,7 @@ if systemctl -q is-active hostapd; then
   "ssid"       : "'${ssid//\"/\\\"}'"
 , "passphrase" : "'${passphrase//\"/\\\"}'"
 , "ip"         : "'$ip'"
-, "conf"       : '$( $dirbash/settings/features.sh hostapdget )'
+, "conf"       : '$( features.sh hostapdget )'
 }'
 fi
 

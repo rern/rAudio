@@ -391,7 +391,7 @@ function psMpdUpdate( data ) {
 function psNotify( data ) {
 	var title = data.title;
 	var text = data.text;
-	if ( text === 'Online ...' || text === 'Offline ...' ) { // rserver power on/off
+	if ( text === 'Online ...' || text === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( function() {
 			location.href = '/';
 		}, 3000 );
