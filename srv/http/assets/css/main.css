@@ -2098,6 +2098,13 @@ li.active .li2 bl {
 @media (max-width: 340px)  { .mode gr { display: none } }
 /************************************************************************************/
 @media ( orientation: landscape ) {
+	@media ( max-width: 768px ) { #page-playback { --scale: 0.95 } }
+	@media ( max-width: 700px ) { #page-playback { --scale: 0.9 } }
+	@media ( max-width: 670px ) { #page-playback { --scale: 0.85 } }
+	@media ( max-width: 630px ) { #page-playback { --scale: 0.8 } }
+	@media ( max-width: 590px ) { #page-playback { --scale: 0.75 } }
+	@media ( max-width: 550px ) { #page-playback { --scale: 0.7 } }
+	@media ( max-width: 510px ) { #page-playback { --scale: 0.65 } }
 	@media ( max-height: 540px ) {
 		#page-playback { padding: 40px 0 !important; }
 		#page-playback.barsalways { padding: 60px 0 60px !important }
@@ -2140,13 +2147,6 @@ li.active .li2 bl {
 		#bar-bottom,
 		#page-playback { padding-top: 20px !important }
 	}
-	@media ( max-width: 768px ) { #page-playback { --scale: 0.95 } }
-	@media ( max-width: 700px ) { #page-playback { --scale: 0.9 } }
-	@media ( max-width: 670px ) { #page-playback { --scale: 0.85 } }
-	@media ( max-width: 630px ) { #page-playback { --scale: 0.8 } }
-	@media ( max-width: 590px ) { #page-playback { --scale: 0.75 } }
-	@media ( max-width: 550px ) { #page-playback { --scale: 0.7 } }
-	@media ( max-width: 510px ) { #page-playback { --scale: 0.65 } }
 /*----------------------------------------------------------------------------------*/
 	#coverart-block, #divcover { max-width: 50vh }
 	@media ( max-height: 540px ) {
@@ -2157,10 +2157,7 @@ li.active .li2 bl {
 		#playback-row { margin-top: 10px }
 		#time-knob,
 		#coverart-block,
-		#volume-knob {
-			min-width: 30%;
-			margin: 0 10px;
-		}
+		#volume-knob { min-width: 30% }
 		#play-group,
 		#vol-group { display: none }
 	}
@@ -2205,7 +2202,6 @@ li.active .li2 bl {
 		#volume-knob { width: auto }
 		#coverart-block,
 		#divcover { max-width: 100vw }
-		#coverTL { color: var( --cg60 ) }
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }

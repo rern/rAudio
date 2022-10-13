@@ -912,7 +912,7 @@ $( '.map' ).click( function( e ) {
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', G.status.stream && G.status.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
 		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', !G.status.pllength );
-		$( '#coverTL, #coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.pllength );
+		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
@@ -945,10 +945,6 @@ $( '.map' ).click( function( e ) {
 	switch ( cmd ) {
 		case 'cover':
 			$( '#bar-bottom' ).removeClass( 'translucent' );
-			if ( G.status.player === 'mpd' && !G.status.pllength
-				|| $( '#page-playback' ).css( 'transform' ) !== 'none'
-			) return
-			
 			if ( !( 'coverTL' in G )
 				&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 				&& !G.display.volumenone
@@ -962,8 +958,6 @@ $( '.map' ).click( function( e ) {
 				}
 				return
 			}
-			
-			if ( G.wW < 545 && G.wW < G.wH ) return
 			
 			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
 			if ( 'coverTL' in G ) {
