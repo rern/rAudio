@@ -2,8 +2,6 @@
 $sudo = '/usr/bin/sudo ';
 $sudobin = $sudo.'/usr/bin/';
 $dirdata = '/srv/http/data/';
-$dirbookmarks = $dirdata.'bookmarks/';
-$dirsystem = $dirdata.'system/';
 
 switch( $_POST[ 'cmd' ] ) {
 
@@ -61,7 +59,7 @@ case 'imagereplace':
 	shell_exec( $script );
 	break;
 case 'login':
-	$passwordfile = $dirsystem.'loginset';
+	$passwordfile = $dirdata.'system/loginset';
 	if ( file_exists( $passwordfile ) ) {
 		$hash = file_get_contents( $passwordfile );
 		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die( -1 );
