@@ -66,7 +66,7 @@ installstart "$1"
 getinstallzip
 
 chmod +x $dirbash/settings/system.sh
-$dirbash/settings/system.sh dirpermissions
+/srv/http/bash/settings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
