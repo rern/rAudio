@@ -1,6 +1,7 @@
 #!/bin/bash
 
-dirbash=/srv/http/bash
+export PATH=$PATH:/srv/http/bash:/srv/http/bash/settings
+
 dirdata=/srv/http/data
 dirbackup=$dirdata/backup
 dirnas=/mnt/MPD/NAS
@@ -56,7 +57,7 @@ pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
-	$dirbash/settings/$page-data.sh $push
+	$page-data.sh $push
 }
 pushstream() {
 	channel=$1

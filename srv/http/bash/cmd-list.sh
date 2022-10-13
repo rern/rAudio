@@ -94,7 +94,7 @@ for mode in album albumartist artist composer conductor genre date; do
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi
-	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $filemode
+	(( $mode > 0 )) && php cmd-listsort.php $filemode
 done
 
 ##### latest album #############################################
@@ -146,7 +146,7 @@ if [[ $toolarge ]]; then
 	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
 fi
 
-[[ -e $filesharedip ]] && $dirbash/settings/system.sh shareddataiplist$'\n'reload
+[[ -e $filesharedip ]] && system.sh shareddataiplist$'\n'reload
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

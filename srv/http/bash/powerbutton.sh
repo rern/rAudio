@@ -2,9 +2,8 @@
 
 # output : mode in  > write 0/1
 # input  : mode out > mode  up/down
-dirsystem=/srv/http/data/system
 
-if [[ -e $dirsystem/audiophonics ]]; then
+if [[ -e /srv/http/data/system/audiophonics ]]; then
 	gpio -1 mode 7 out  # atx
 	gpio -1 write 7 0
 	
@@ -19,7 +18,7 @@ if [[ -e $dirsystem/audiophonics ]]; then
 	sleep 1
 	gpio -1 write 7 0
 else
-	. $dirsystem/powerbutton.conf
+	. /srv/http/data/system/powerbutton.conf
 	gpio -1 mode $led out
 	gpio -1 write $led 1
 	

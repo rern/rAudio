@@ -133,7 +133,7 @@ installfinish() {
 		path=$( cat $dirmpd/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-		$dirbash/cmd-list.sh &> /dev/null &
+		cmd-list.sh &> /dev/null &
 	fi
 }
 uninstallstart() {

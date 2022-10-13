@@ -11,7 +11,7 @@ volumeBtGet() {
 		| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 }
 restartMPD() {
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 }
 
 case ${args[0]} in
@@ -277,7 +277,7 @@ soxrset )
 	;;
 volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
-	level=$( $dirbash/cmd.sh volumeget )
+	level=$( cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumebt0db )
@@ -295,7 +295,7 @@ volumebtsave )
 	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
-	$dirbash/cmd.sh volumeget$'\n'${args[1]}
+	cmd.sh volumeget$'\n'${args[1]}
 	;;
 	
 esac

@@ -90,7 +90,7 @@ metadataGet() {
 			curl -s $coverurl -o $dirshm/webradio/$name.jpg
 		else
 			coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
-			[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
+			[[ ! $coverart ]] && status-coverartonline.sh "\
 $artist
 title
 webradio" &> /dev/null &
@@ -114,7 +114,7 @@ webradio" &> /dev/null &
 , "Time"     : false
 , "Title"    : "'$title'"
 }'
-	$dirbash/status-push.sh statusradio "$data" & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	status-push.sh statusradio "$data" & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

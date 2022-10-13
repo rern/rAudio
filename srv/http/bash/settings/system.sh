@@ -61,7 +61,7 @@ sharedDataIPlist() {
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-			[[ $1 ]] && sshCommand $ip $dirbash/settings/system.sh shareddatarestart & >/dev/null &
+			[[ $1 ]] && sshCommand $ip system.sh shareddatarestart & >/dev/null &
 			list+=$'\n'$ip
 		fi
 	done
@@ -126,7 +126,7 @@ bluetoothdisable )
 		systemctl stop bluetooth
 		killall bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+		grep -q 'device.*bluealsa' /etc/mpd.conf && player-conf.sh
 	fi
 	pushRefresh
 	;;
@@ -143,14 +143,14 @@ bluetoothset )
 	sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 	if ls -l /sys/class/bluetooth | grep -q serial; then
 		systemctl start bluetooth
-		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirbash/settings/player-conf.sh
+		! grep -q 'device.*bluealsa' /etc/mpd.conf && player-conf.sh
 	else
 		pushReboot Bluetooth
 	fi
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $btformat != $prevbtformat ]] && $dirbash/settings/player-conf.sh bton
+	[[ $btformat != $prevbtformat ]] && player-conf.sh bton
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -251,7 +251,7 @@ datarestore )
 	fi
 	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	dirPermissions
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+	[[ -e $dirsystem/color ]] && cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 	uuid2=${uuid1:0:-1}2
 	sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
@@ -289,8 +289,8 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	grep -q $dirsd /etc/exports && $dirbash/settings/features.sh nfsserver$'\n'true
-	$dirbash/cmd.sh power$'\n'reboot
+	grep -q $dirsd /etc/exports && features.sh nfsserver$'\n'true
+	cmd.sh power$'\n'reboot
 	;;
 dirpermissions )
 	dirPermissions
@@ -406,13 +406,13 @@ lcdcalibrate )
 	;;
 lcdchar )
 	killall lcdchar.py &> /dev/null
-	$dirbash/lcdcharinit.py
-	$dirbash/lcdchar.py ${args[1]}
+	lcdcharinit.py
+	lcdchar.py ${args[1]}
 	;;
 lcdchardisable )
 	rm $dirsystem/lcdchar
 	I2Cset
-	$dirbash/lcdchar.py clear
+	lcdchar.py clear
 	pushRefresh
 	;;
 lcdcharset )
@@ -443,14 +443,14 @@ backlight=${args[13]^}"
 	if [[ $reboot ]]; then
 		pushReboot 'Character LCD'
 	else
-		$dirbash/lcdchar.py logo
+		lcdchar.py logo
 		pushRefresh
 	fi
 	;;
 lcddisable )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-	sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
+	sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	pushRefresh
@@ -468,7 +468,7 @@ lcdset )
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
 	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-	sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+	sed -i '/disable-software-rasterizer/ d' xinitrc
 	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	I2Cset
 	if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
@@ -557,7 +557,7 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		exit
 	fi
 	
-	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+	[[ $update == true ]] && cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 	for i in {1..5}; do
 		sleep 1
 		mount | grep -q "$mountpoint" && break
@@ -571,7 +571,7 @@ mountforget )
 	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
-	$dirbash/cmd.sh mpcupdate$'\n'NAS
+	cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 mountremount )
@@ -596,7 +596,7 @@ mountunmount )
 mpdoleddisable )
 	rm $dirsystem/mpdoled
 	I2Cset
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	;;
 mpdoledlogo )
@@ -1014,7 +1014,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	pushstreamNotify "$name" $action usbdrive
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
@@ -1028,22 +1028,22 @@ vuleddisable )
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done
 	if [[ -e $dirsystem/vumeter ]]; then
-		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		cava -p /etc/cava.conf | vu.sh &> /dev/null &
 	else
-		$dirbash/settings/player-conf.sh
+		player-conf.sh
 	fi
 	pushRefresh
 	;;
 vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	! grep -q mpd.fifo /etc/mpd.conf && $dirbash/settings/player-conf.sh
+	! grep -q mpd.fifo /etc/mpd.conf && player-conf.sh
 	killall cava &> /dev/null
-	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+	cava -p /etc/cava.conf | vu.sh &> /dev/null &
 	pushRefresh
 	;;
 wlandisable )
-	systemctl -q is-active hostapd && $dirbash/settings/features.sh hostapddisable
+	systemctl -q is-active hostapd && features.sh hostapddisable
 	rmmod brcmfmac &> /dev/null
 	pushRefresh
 	;;

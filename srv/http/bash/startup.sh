@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 # wifi - on-board or usb
-wlandev=$( $dirbash/settings/networks.sh wlandevice )
+wlandev=$( networks.sh wlandevice )
 
 # pre-configure --------------------------------------------------------------
 if [[ -e /boot/expand ]]; then # run once
@@ -23,7 +23,7 @@ fi
 if [[ -e /boot/backup.gz ]]; then
 	if bsdtar tf backup.gz | grep -q ^data/system/$; then
 		mv /boot/backup.gz $dirdata/tmp
-		$dirbash/settings/system.sh datarestore
+		system.sh datarestore
 	else
 		restorefailed='Restore Settings' '<code>/boot/backup.gz</code> is not rAudio backup.'
 	fi
@@ -34,7 +34,7 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
 	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
 	mv -f /boot/wifi "/etc/netctl/$ssid"
-	$dirbash/settings/networks.sh profileconnect$'\n'"$ssid"
+	networks.sh profileconnect$'\n'"$ssid"
 fi
 # ----------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ connectedCheck 5 1
 if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	devprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
 	if [[ $devprofile ]]; then
-		$dirbash/settings/networks.sh "profileconnect
+		networks.sh "profileconnect
 $( basename "$devprofile" )"
 		connectedCheck 30 3
 	fi
@@ -90,28 +90,28 @@ if [[ $connected  ]]; then
 		mv -f $filesharedip{.backup,}
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
-			sshCommand $ip $dirbash/settings/system.sh shareddataconnect
+			sshCommand $ip system.sh shareddataconnect
 		done
 	elif [[ -e $filesharedip ]]; then # rclient
-		$dirbash/settings/system.sh shareddataiplist
+		system.sh shareddataiplist
 	fi
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
 
-$dirbash/settings/player-conf.sh # mpd.service started by this script
+player-conf.sh # mpd.service started by this script
 
 # after all sources connected
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	$dirbash/lcdcharinit.py
-	$dirbash/lcdchar.py logo
+	lcdcharinit.py
+	lcdchar.py logo
 fi
-[[ -e $dirsystem/mpdoled ]] && $dirbash/settings/system.sh mpdoledlogo
+[[ -e $dirsystem/mpdoled ]] && system.sh mpdoledlogo
 
-[[ -e $dirsystem/soundprofile ]] && $dirbash/settings/system.sh soundprofile
+[[ -e $dirsystem/soundprofile ]] && system.sh soundprofile
 
-[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
+[[ -e $dirsystem/autoplay ]] && mpc play || status-push.sh
 
 file=/sys/class/backlight/rpi_backlight/brightness
 if [[ -e $file ]]; then
@@ -120,21 +120,21 @@ if [[ -e $file ]]; then
 fi
 
 if [[ $connected ]]; then
-	: >/dev/tcp/8.8.8.8/53 && $dirbash/cmd.sh addonsupdates
+	: >/dev/tcp/8.8.8.8/53 && cmd.sh addonsupdates
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	$dirbash/settings/features.sh hostapdset
+	features.sh hostapdset
 	systemctl -q disable hostapd
 fi
 
-[[ -e $dirsystem/hddsleep ]] && $dirbash/settings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
+[[ -e $dirsystem/hddsleep ]] && system.sh hddsleep$'\n'$( cat $dirsystem/apm )
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh mpcupdate$'\n'rescan
+	cmd.sh mpcupdate$'\n'rescan
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( cat $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
+	cmd-list.sh &> dev/null &
 fi
 
 if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then

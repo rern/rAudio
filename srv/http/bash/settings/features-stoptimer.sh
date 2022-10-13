@@ -12,12 +12,12 @@ sleep $(( min * 60 ))
 
 rm -f $dirshm/stoptimer
 
-$dirbash/cmd.sh volume # mute
-[[ $( cat $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop || $dirbash/cmd.sh playerstop
-$dirbash/cmd.sh volume # unmute
+cmd.sh volume # mute
+[[ $( cat $dirshm/player ) == mpd ]] && cmd.sh mpcplayback$'\n'stop || cmd.sh playerstop
+cmd.sh volume # unmute
 
 if [[ $poweroff ]]; then
-	$dirbash/cmd.sh power$'\n'off
+	cmd.sh power$'\n'off
 elif [[ -e $dirshm/relayson ]]; then
-	$dirbash/settings/relays.sh off
+	relays.sh off
 fi

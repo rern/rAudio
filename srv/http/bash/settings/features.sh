@@ -46,7 +46,7 @@ autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	[[ $feature == streaming ]] && $dirbash/settings/player-conf.sh
+	[[ $feature == streaming ]] && player-conf.sh
 	pushRefresh
 	;;
 autoplaydisable )
@@ -60,11 +60,11 @@ autoplayset )
 	pushRefresh
 	;;
 camilladspdisable )
-	$dirbash/settings/camilladsp-gain.py
+	camilladsp-gain.py
 	systemctl stop camilladsp
 	rm $dirsystem/camilladsp
 	rmmod snd-aloop &> /dev/null
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu camilladsp false
 	;;
@@ -88,7 +88,7 @@ camillaguiset )
 	sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 	systemctl restart camillagui
 	touch $dirsystem/camilladsp
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu camilladsp true
 	;;
@@ -96,7 +96,7 @@ dabradio )
 	if [[ ${args[1]} == true ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
-			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirbash/settings/player.sh ffmpeg$'\n'true
+			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && player.sh ffmpeg$'\n'true
 		else
 			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dabradio 5000
 		fi
@@ -113,7 +113,7 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	pushSubmenu equalizer $enabled
 	;;
@@ -193,7 +193,7 @@ cursor=$newcursor
 	fi
 
 	if [[ $changedrotate ]]; then
-		$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
+		cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
 			case $newrotate in
 				NORMAL ) degree=0;;
@@ -307,7 +307,7 @@ USB" > /mnt/MPD/.mpdignore
 			mkdir -p $dirbackup
 			cp -r $dirmpd $dirbackup
 			systemctl restart mpd
-			$dirbash/cmd.sh mpcupdate$'\n'rescan
+			cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
 	else
@@ -435,7 +435,7 @@ snapserver )
 	else
 		systemctl disable --now snapserver
 	fi
-	$dirbash/settings/player-conf.sh
+	player-conf.sh
 	pushRefresh
 	;;
 spotifyddisable )
@@ -447,7 +447,7 @@ spotifytoken )
 	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
-	spotifyredirect=$( grep ^spotifyredirect $dirbash/settings/features-data.sh | cut -d= -f2 )
+	spotifyredirect=$( grep ^spotifyredirect features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
@@ -474,7 +474,7 @@ stoptimerdisable )
 	if [[ -e $dirshm/relayson ]]; then
 		. $dirsystem/relays.conf
 		echo $timer > $timerfile
-		$dirbash/settings/relays-timer.sh &> /dev/null &
+		relays-timer.sh &> /dev/null &
 	fi
 	pushRefresh
 	;;
@@ -485,7 +485,7 @@ stoptimerset )
 	killall features-stoptimer.sh &> /dev/null
 	rm -f $dirshm/stoptimer
 	if [[ $min != false ]]; then
-		$dirbash/settings/features-stoptimer.sh $min $off &> /dev/null &
+		features-stoptimer.sh $min $off &> /dev/null &
 		echo "[ $min, $poweroff ]" > $dirshm/stoptimer
 	fi
 	pushRefresh

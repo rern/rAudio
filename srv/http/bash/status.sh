@@ -32,7 +32,7 @@ else
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
-		ccv=$( $dirbash/cmd.sh volumecontrolget )
+		ccv=$( cmd.sh volumecontrolget )
 		card=${ccv/^*}
 		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
 		volume=${ccv/*^}
@@ -117,13 +117,13 @@ if [[ $player != mpd && $player != upnp ]]; then
 	bluetooth )
 ########
 		status+="
-$( $dirbash/status-bluetooth.sh )"
+$( status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( cat $dirshm/serverip )
 ########
 		status+="
-$( sshCommand $serverip $dirbash/status.sh snapclient \
+$( sshCommand $serverip status.sh snapclient \
 	| sed -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
 		' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
@@ -513,7 +513,7 @@ fi
 
 if [[ $ext != CD && ! $stream ]]; then
 	getcover=1
-	coverart=$( $dirbash/status-coverart.sh "\
+	coverart=$( status-coverart.sh "\
 $AlbumArtist
 $Album
 $filenoesc" )
@@ -542,5 +542,5 @@ $Album"
 fi
 if [[ $args ]]; then
 	killall status-coverartonline.sh &> /dev/null
-	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+	status-coverartonline.sh "$args" &> /dev/null &
 fi
