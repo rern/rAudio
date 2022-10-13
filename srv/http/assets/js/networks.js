@@ -35,7 +35,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 $( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
 } );
-$( '#wlscan' ).click( function() {
+$( '.wlscan' ).click( function() {
 	if ( G.hostapd ) {
 		infoAccesspoint();
 	} else {
