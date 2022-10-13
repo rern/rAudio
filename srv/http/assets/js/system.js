@@ -372,7 +372,7 @@ $( '#setting-lcdchar' ).click( function() {
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( "/srv/http/bash/settings/system.sh lcdchar$'\n'"+ action )
+					bash( dirbash +"system.sh lcdchar$'\n'"+ action )
 				} );
 			}
 		}
@@ -779,7 +779,7 @@ $( '#restore' ).click( function() {
 		, ok          : function() {
 			notify( 'Restore Settings', 'Restore ...', 'sd' );
 			if ( infoVal() === 'reset' ) {
-				bash( '/srv/http/bash/settings/system-datareset.sh', bannerHide );
+				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
 				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 				var formData = new FormData();
@@ -1100,7 +1100,7 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( '/srv/http/bash/settings/system-data.sh status', function( status ) {
+	bash( dirbash +'system-data.sh status', function( status ) {
 		$( '#status' ).html( status );
 	} );
 }
