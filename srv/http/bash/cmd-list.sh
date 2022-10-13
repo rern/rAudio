@@ -94,7 +94,7 @@ for mode in album albumartist artist composer conductor genre date; do
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi
-	(( $mode > 0 )) && php cmd-listsort.php $filemode
+	(( $mode > 0 )) && php /srv/http/bash/cmd-listsort.php $filemode
 done
 
 ##### latest album #############################################
