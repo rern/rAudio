@@ -3,7 +3,6 @@ include '/srv/http/common.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $add = $argv[ 2 ] ? true : false;
-$dirplaylists = '/srv/http/data/playlists/';
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current playlist
@@ -104,7 +103,6 @@ function currentPlaylist() {
 }
 function htmlSavedPlaylist() {
 	include '/srv/http/bash/cmd-listsort.php';
-	global $dirplaylists;
 	exec( 'mpc lsplaylists'
 		, $lists );
 	$count = count( $lists );
