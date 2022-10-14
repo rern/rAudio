@@ -50,6 +50,8 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
+	<div class="help-block hide">
+<?=( echoSetIcon( '| I^power^I |' ) )?> Reboot, Power off</div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
