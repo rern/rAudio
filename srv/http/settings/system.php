@@ -38,7 +38,6 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
-	, 'nohelp' => true
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
