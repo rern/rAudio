@@ -119,7 +119,7 @@ plAddPlay() {
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
-		status-push.sh
+		$dirbash/status-push.sh
 	fi
 }
 plAddPosition() {
@@ -209,7 +209,7 @@ scrobbleOnStop() {
 	. $dirshm/scrobble
 	elapsed=$1
 	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ $Artist && $Title ]]; then
-		scrobble.sh "\
+		$dirbash/scrobble.sh "\
 $Artist
 $Title
 $Album" &> /dev/null &
@@ -218,9 +218,9 @@ $Album" &> /dev/null &
 }
 snapclientStop() {
 	systemctl stop snapclient
-	player-conf.sh
+	$dirsettings/player-conf.sh
 	ip=$( ipGet )
-	sshCommand $( cat $dirshm/serverip ) snapcast.sh remove $ip
+	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
 stopRadio() {
@@ -545,7 +545,7 @@ coverartreset )
 		filename=$( basename "$coverfile" )
 		id=${filename/.*}
 		rm -f "$coverfile"
-		status-coverartonline.sh "\
+		$dirbash/status-coverartonline.sh "\
 $artist
 $album
 audiocd
@@ -571,7 +571,7 @@ $id" &> /dev/null &
 			gifsicle -O3 --resize-fit 80x80 "$restorefile" > "$dir/thumb.gif"
 		fi
 	fi
-	url=$( status-coverart.sh "\
+	url=$( $dirbash/status-coverart.sh "\
 $artist
 $album
 $mpdpath" )
@@ -597,7 +597,7 @@ coverfileslimit )
 	;;
 dabscan )
 	touch $dirshm/updatingdab
-	dab-scan.sh &> /dev/null &
+	$dirbash/dab-scan.sh &> /dev/null &
 	pushstream mpdupdate '{"type":"dabradio"}'
 	;;
 displaysave )
@@ -609,15 +609,15 @@ displaysave )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | vu.sh &> /dev/null &
+		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
 		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
 	fi
-	player-conf.sh
-	status=$( status.sh )
+	$dirsettings/player-conf.sh
+	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
 equalizer )
@@ -776,7 +776,7 @@ mpccrop )
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
-	status-push.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 mpcfindadd )
@@ -836,7 +836,7 @@ mpcplayback )
 	if [[ ! $command ]]; then
 		player=$( cat $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
-			cmd.sh playerstop
+			$dirbash/cmd.sh playerstop
 			exit
 		fi
 		
@@ -868,7 +868,7 @@ mpcprevnext )
 		state=${args[4]}
 		elapsed=${args[5]}
 	else
-		status=( $( status.sh | jq -r .song,.pllength,.state,.elapsed ) )
+		status=( $( $dirbash/status.sh | jq -r .song,.pllength,.state,.elapsed ) )
 		current=${status[0]}
 		length=${status[1]}
 		state=${status[2]}
@@ -912,7 +912,7 @@ mpcremove )
 	else
 		mpc -q clear
 	fi
-	status-push.sh
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 mpcseek )
@@ -931,7 +931,7 @@ mpcseek )
 mpcsetcurrent )
 	mpc -q play ${args[1]}
 	mpc -q stop
-	status-push.sh
+	$dirbash/status-push.sh
 	;;
 mpcshuffle )
 	mpc -q shuffle
@@ -991,7 +991,7 @@ playerstop )
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && status-push.sh
+	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
 			systemctl stop shairport-meta
@@ -1014,7 +1014,7 @@ playerstop )
 			for i in $tracks; do
 				mpc -q del $i
 			done
-			status-push.sh
+			$dirbash/status-push.sh
 			systemctl restart upmpdcli
 			;;
 	esac
@@ -1031,7 +1031,7 @@ power )
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		if [[ $ips ]]; then
 			for ip in $ips; do
-				sshCommand $ip system.sh shareddatadisconnect
+				sshCommand $ip $dirsettings/system.sh shareddatadisconnect
 			done
 		fi
 	elif [[ -e $filesharedip ]]; then # rclient
@@ -1049,13 +1049,13 @@ power )
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( cat $dirshm/clientip )
 		for ip in $clientip; do
-			sshCommand $ip cmd.sh playerstop
+			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
 	if [[ -e $dirshm/relayson ]]; then
-		relays.sh
+		$dirsettings/relays.sh
 		sleep 2
 	fi
 	systemctl -q is-active camilladsp && camilladsp-gain.py
@@ -1078,7 +1078,7 @@ radiorestart )
 	;;
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null
-	relays-timer.sh &> /dev/null &
+	$dirsettings/relays-timer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotatesplash )
@@ -1155,7 +1155,7 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 scrobble )
-	scrobble.sh "\
+	$dirbash/scrobble.sh "\
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &

@@ -1,7 +1,7 @@
 #!/bin/bash
 
-export PATH=$PATH:/srv/http/bash:/srv/http/bash/settings
-
+dirbash=/srv/http/bash
+dirsettings=$dirbash/settings
 dirdata=/srv/http/data
 dirbackup=$dirdata/backup
 dirnas=/mnt/MPD/NAS
@@ -57,7 +57,7 @@ pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
 	[[ $2 ]] && push=$2 || push=push
 	[[ $page == networks ]] && sleep 2
-	$page-data.sh $push
+	$dirsettings/$page-data.sh $push
 }
 pushstream() {
 	channel=$1
@@ -79,6 +79,7 @@ pushstream() {
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
+			[[ $channel == radiolist ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
 		done
 	fi
 }

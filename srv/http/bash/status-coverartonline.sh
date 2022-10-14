@@ -73,4 +73,4 @@ if [[ $type == webradio ]]; then
 , "Album" : "'$Album'"'
 fi
 pushstream coverart "{$data}"
-/srv/http/bash/cmd.sh coverfileslimit
+$dirbash/cmd.sh coverfileslimit

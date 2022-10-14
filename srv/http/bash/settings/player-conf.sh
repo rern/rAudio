@@ -11,8 +11,8 @@
 usbdac=$1
 
 . /srv/http/bash/common.sh
-. player-devices.sh
-. player-asound.sh
+. $dirsettings/player-devices.sh
+. $dirsettings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
 output= # reset var from player-devices.sh
@@ -151,7 +151,7 @@ $btoutput" > /etc/mpd.conf
 
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $usbdac == add || $usbdac == remove ]]; then
-	cmd.sh playerstop
+	$dirbash/cmd.sh playerstop
 	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
@@ -168,11 +168,11 @@ if [[ -e $dirmpd/updating ]]; then
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
-	mpc | grep -q '\[playing' || cmd.sh mpcplayback$'\n'play
+	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
-data=$( status.sh )
+data=$( $dirbash/status.sh )
 pushstream mpdplayer "$data"
-player-data.sh pushrefresh
+$dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
 [[ ! $Acard && ! $btmixer ]] && exit
