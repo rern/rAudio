@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-[[ -L $dirmpd && ! -e $dirmpd/mpd.db ]] && echo -1 && exit
+[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit
 
 date=$( date +%s )
 
