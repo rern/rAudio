@@ -1258,6 +1258,12 @@ $charset" > "$file"
 	webradioCount
 	webRadioSampling $url "$file" &
 	;;
+webradiocopybackup )
+	if [[ -e $filesharedip ]]; then
+		rm -rf $dirbackup/webradio
+		cp -r $dirwebradio $dirbackup
+	fi
+	;;
 webradiocoverreset )
 	coverart=${args[1]}
 	type=${args[2]}
