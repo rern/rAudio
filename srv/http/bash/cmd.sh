@@ -186,6 +186,9 @@ pushstreamPlaylist() {
 	data=$( php /srv/http/mpdplaylist.php current $1 )
 	pushstream playlist "$data"
 }
+pushstreamRadioList() {
+	pushstream radiolist '{"type":"webradio"}'
+}
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
 }
@@ -1290,14 +1293,14 @@ wrdirdelete )
 		echo -1
 	else
 		rm -rf "$dirdata/$mode/$path"
-		pushstream radiolist '{"type":"webradio"}'
+		pushstreamRadioList
 	fi
 	;;
 wrdirnew )
 	dir=${args[1]}
 	sub=${args[2]}
 	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 wrdirrename )
 	path=${args[1]}
@@ -1305,7 +1308,7 @@ wrdirrename )
 	newname=${args[3]}
 	mode=${args[4]}
 	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 webradioedit )
 	dir=${args[1]}
@@ -1335,7 +1338,7 @@ $charset" > "$file"
 		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
 		webRadioSampling $url "$file" &
 	fi
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 	
 esac
