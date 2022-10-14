@@ -15,6 +15,8 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
+<?=( echoSetIcon( '| I^play^I | I^pause^I | Playback control' ) )?>
+<br>
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
@@ -59,8 +61,9 @@ HTML
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< HTML
+| I^volume^I | Control current mixer device.
+
 Available hardware mixers of current device.
-I^volume^I Control current mixer device.
 HTML
 	]
 	, [

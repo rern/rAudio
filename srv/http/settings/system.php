@@ -70,7 +70,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
-<?=i( 'refresh' )?> <gr>Toggle refresh every 10 seconds.</gr>
+<?=( echoSetIcon( '| I^refresh^I |' ) )?> Refresh every 10 seconds
 
 <wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
@@ -92,10 +92,9 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Context menu:
-<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> USB drives: Info
-<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Network shares: Unmount, Re-mount, Forget (Not available if Shared Data is enabled)
-
+	<div class="help-block hide"><?=( echoSetIcon( '| I^usbdrive^I | I^networks^I | Context menu
+| I^plus-circle^I | Add network storage' ) )?>
+<br>
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
 

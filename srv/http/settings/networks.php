@@ -9,7 +9,10 @@ htmlHead( [ //////////////////////////////////
 $html = <<< HTML
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide"><wh>rAudio as sender:</wh> (or pairing non-audio devices)
+	<div class="help-block hide">| I^bluetooth^I | I^btsender^I | Context menu
+| I^search^I | Scan to connect
+
+<wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	- On receiver: Turn on Discovery / Pairing mode
 	- On rAudio: | Bluetooth I^search wh^I | Select to pair
@@ -38,10 +41,11 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="help-block hide">
- • Connect: <g>|</g> Wi-Fi &nbsp;<?=i( 'search wh' )?>Search <g>|</g> Select to connect
- • Avoid connecting to access points which signal is less than 2 bars.
-</div>
+	<div class="help-block hide"><?=( echoSetIcon( '| I^wifi^I | Context menu
+| I^plus-circle^I | Manually connect
+| I^search^I | Scan to connect
+
+ • Avoid connecting to access points which signal is less than 2 bars' ) )?></div>
 </div>
 <div id="divlan" class="section">
 <?php
@@ -49,10 +53,10 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
 	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
-	, 'nohelp'  => true
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
+	<div class="help-block hide"><?=( echoSetIcon( '| I^lan^I | Context menu' ) )?></div>
 </div>
 </div>
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
