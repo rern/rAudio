@@ -49,8 +49,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="help-block hide">
-<?=( echoSetIcon( '| I^power^I |' ) )?> Reboot, Power off</div>
+	<div class="help-block hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
@@ -71,8 +70,8 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="help-block hide">
-<?=( echoSetIcon( '| I^refresh^I |' ) )?> Refresh every 10 seconds
-
+<?=( echoSetIcon( '| I^refresh^I | Refresh every 10 seconds' ) )?>
+<br>
 <wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
  • calculated over 1, 5 and 15 minutes.
@@ -93,15 +92,17 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide"><?=( echoSetIcon( '| I^usbdrive^I | I^networks^I | Context menu
-| I^plus-circle^I | Add network storage' ) )?>
-<br>
+	<div class="help-block hide"><?=( echoSetIcon( 
+'| I^usbdrive^I | I^networks^I | Context menu
+| I^plus-circle^I | Add network storage
+
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
 
 <wh>Network shares:</wh>
- • If add network storage with GUI failed, SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+ • If | Storage I^plus-circle^I | failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 	<wh>CIFS:</wh>
+' ) )?>
 <pre style="margin-left: 30px">
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
