@@ -99,17 +99,16 @@ htmlHead( [ //////////////////////////////////
  • Will be found and mounted automatically.
 
 <wh>Network shares:</wh>
- • Must be manually configured.
- • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
- • <wh>CIFS:</wh>
-<pre>
+ • If add network storage with GUI failed, SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+	<wh>CIFS:</wh>
+<pre style="margin-left: 30px">
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr>#	 (no user - username=guest, no password - password="")</gr>
 </pre><!--
---> • <wh>NFS:</wh>
-<pre>
+-->	<wh>NFS:</wh>
+<pre style="margin-left: 30px">
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
@@ -152,8 +151,7 @@ $body = [
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
 		, 'help'     => <<< HTML
-I^gear^I
- • | Sampling 16bit | Only for Bluetooth receivers with fixed sampling
+| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling
 HTML
 	]
 	, [
@@ -164,11 +162,11 @@ HTML
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< HTML
-I^gear^I
- • | Auto start Access Point | On failed connection or no router
- • Country of Wi-Fi regulatory domain:
+| I^gear^I |
+Country of Wi-Fi regulatory domain:
 	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
 	- The connected router may override it to a certain country.
+| • Auto start Access Point | On failed connection or no router
 HTML
 	]
 ];
@@ -297,9 +295,7 @@ HTML
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
-I^gear^I
- • NTP server: For time sync
- • Package mirror server
+| I^gear^I | Servers for time sync and package mirror
 HTML
 	]
 	, [
@@ -348,7 +344,7 @@ HTML
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
-Connect share data as client for:
+Connect shared data as client for:
 	- Library database
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
 	- Show / hide items
