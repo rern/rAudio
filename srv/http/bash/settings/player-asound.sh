@@ -86,11 +86,11 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
 	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
-	player-wm5102.sh $wm5102card $output
+	$dirsettings/player-wm5102.sh $wm5102card $output
 fi
 
 if [[ $dsp ]]; then
-	camilladsp-setformat.sh
+	$dirsettings/camilladsp-setformat.sh
 else
 	if [[ $btmixer ]]; then
 		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
@@ -100,7 +100,7 @@ else
 	else
 		systemctl stop bluetoothbutton
 	fi
-	[[ $preset ]] && cmd.sh "equalizer
+	[[ $preset ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
 fi

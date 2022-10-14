@@ -15,7 +15,7 @@ mpc idleloop | while read changed; do
 						echo $s > $dirshm/vol
 					else
 						rm -f $dirshm/vol
-						pushstream volume '{"val":'$( cmd.sh volumeget )'}'
+						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
 					fi
 				done ) &> /dev/null &
 			fi
@@ -31,12 +31,12 @@ mpc idleloop | while read changed; do
 		player )
 			if [[ ! -e $dirshm/radio && ! -e $dirshm/prevnextseek ]]; then
 				killall status-push.sh &> /dev/null
-				status-push.sh & # need to run in background for snapcast ssh
+				$dirbash/status-push.sh & # need to run in background for snapcast ssh
 			fi
 			;;
 		update )
 			sleep 1
-			! mpc | grep -q '^Updating' && cmd-list.sh
+			! mpc | grep -q '^Updating' && $dirbash/cmd-list.sh
 			;;
 	esac
 done

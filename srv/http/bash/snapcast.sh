@@ -20,7 +20,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		touch $dirshm/snapclientactive
 		pushstream display '{"snapclientactive":true,"volumenone":false}'
 		pushstream refresh '{"page":"features","snapclientactive",true}'
-		player-data.sh pushrefresh
+		$dirsettings/player-data.sh pushrefresh
 		exit
 	fi
 	
@@ -29,10 +29,10 @@ if [[ $1 == start ]]; then # client start - save server ip
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
 		echo $serverip > $dirshm/serverip
-		cmd.sh playerstart$'\n'snapcast
-		status-push.sh
+		$dirbash/cmd.sh playerstart$'\n'snapcast
+		$dirbash/status-push.sh
 		clientip=$( ipGet )
-		sshCommand $serverip snapcast.sh $clientip
+		sshCommand $serverip $dirbash/snapcast.sh $clientip
 	else
 		systemctl stop snapclient
 		echo -1
@@ -40,7 +40,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 elif [[ $1 == stop ]]; then # server + client on same device
 	systemctl stop snapclient
 	rm $dirshm/snapclientactive
-	player-conf.sh
+	$dirsettings/player-conf.sh
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else

@@ -13,9 +13,9 @@
 . /srv/http/bash/common.sh
 
 ##### start
-[[ $( cat $dirshm/player ) != spotify ]] && cmd.sh playerstart$'\n'spotify && exit
+[[ $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
 
-[[ $PLAYER_EVENT == volumeset ]] && cmd.sh volumepushstream
+[[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
 
 dirspotify=$dirshm/spotify
 for key in elapsed expire start state status token; do # var fileKEY=$dirspotify/KEY
@@ -75,4 +75,4 @@ state=$state
 Time=$Time
 EOF
 
-status-push.sh
+$dirbash/status-push.sh

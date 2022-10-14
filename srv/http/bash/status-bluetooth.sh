@@ -34,7 +34,7 @@ onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
 	coverart=/data/shm/online/$name.$( date +%s ).${onlinefile/*.}
 else
-	status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
+	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
 elapsed=$( [[ ! $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
 Time=$( [[ ! $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )

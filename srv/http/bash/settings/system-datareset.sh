@@ -160,7 +160,7 @@ usermod -a -G root http # add user http to group root to allow /dev/gpiomem acce
 systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
 
 # set ownership and permissions
-system.sh dirpermissions
+$dirsettings/system.sh dirpermissions
 
 [[ $version ]] && exit
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-. player-devices.sh
+. $dirsettings/player-devices.sh
 
 active=$( mpc &> /dev/null && echo true )
 if [[ -e $dirsystem/soxr.conf ]]; then

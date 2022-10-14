@@ -12,7 +12,7 @@ if [[ $cmd == relaysset ]]; then
 	data=${args[1]}
 	echo -e "$data" > $dirsystem/relays.conf
 	touch $dirsystem/relays
-	relays-data.sh pushrefresh
+	$dirsettings/relays-data.sh pushrefresh
 	pushstream display '{"submenu":"relays","value":true}'
 	exit
 fi
@@ -37,7 +37,7 @@ if [[ $cmd == true ]]; then
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
-		relays-timer.sh &> /dev/null &
+		$dirsettings/relays-timer.sh &> /dev/null &
 	fi
 else
 	rm -f $dirshm/relayson $timerfile
@@ -55,5 +55,5 @@ fi
 
 alsactl store
 sleep 1
-status-push.sh
+$dirbash/status-push.sh
 pushstreamRelays '{"done":1}'
