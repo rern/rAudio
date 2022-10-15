@@ -1,7 +1,7 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).click( function() {
-	$( '#menu' ).addClass( 'hide' );
+	$( '#menu, #codebluetooth' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
 } );
 $( '.back' ).click( function() {
@@ -30,7 +30,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	if ( list.connected ) return
 	
 	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bluetoothcommand( 'pair', list );
+	bluetoothCommand( 'pair', list );
 } );
 $( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
@@ -60,13 +60,14 @@ $( '.entries' ).on( 'click', 'li', function( e ) {
 	G.li = $( this );
 	G.liindex = G.li.index();
 	G.list = G.li.parent().prop( 'id' );
-	$( 'li' ).removeClass( 'active' );
-	G.li.addClass( 'active' );
+	G.liactive = G.li.hasClass( 'active' );
 	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu' ).addClass( 'hide' );
-		return
+		if ( G.liactive ) return
 	}
 	
+	$( 'li' ).removeClass( 'active' );
+	G.li.addClass( 'active' );
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
@@ -96,7 +97,7 @@ $( '.connect' ).click( function() {
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
 		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
-		bluetoothcommand( 'connect', list );
+		bluetoothCommand( 'connect', list );
 		return
 	}
 	
@@ -112,7 +113,7 @@ $( '.connect' ).click( function() {
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
 		var list = G.listbt[ G.liindex ];
-		bluetoothcommand( 'disconnect', list );
+		bluetoothCommand( 'disconnect', list );
 		return
 	}
 	
@@ -146,7 +147,7 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : function() {
 				notify( list.name, 'Forget ...', 'bluetooth' );
-				bluetoothcommand( 'remove', list );
+				bluetoothCommand( 'remove', list );
 			}
 		} );
 		return
@@ -167,11 +168,11 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+	if ( G.liactive && !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		$( '#codebluetooth' ).addClass( 'hide' );
 	} else {
 		var list = G.listbt[ G.li.index() ]
-		infoBluetooth( list.mac );
+		bluetoothInfo( list.mac );
 	}
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
@@ -244,8 +245,22 @@ $( '.hostapdset' ).click( function() {
 
 } );
 
-function bluetoothcommand( cmd, list ) {
+function bluetoothCommand( cmd, list ) {
 	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.type +' "'+ list.name +'"' );
+}
+function bluetoothInfo( mac ) {
+	bash( [ 'bluetoothinfo', mac ], function( data ) {
+		if ( !data ) {
+			$( '#codebluetooth' )
+				.empty()
+				.addClass( 'hide' );
+		} else {
+			$( '#codebluetooth' )
+				.html( data )
+				.data( 'mac', mac )
+				.removeClass( 'hide' );
+		}
+	} );
 }
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
@@ -340,20 +355,6 @@ function infoAccesspoint() {
 		, message : 'Access Point is currently active.'
 	} );
 }
-function infoBluetooth( mac ) {
-	bash( [ 'bluetoothinfo', mac ], function( data ) {
-		if ( !data ) {
-			$( '#codebluetooth' )
-				.empty()
-				.addClass( 'hide' );
-		} else {
-			$( '#codebluetooth' )
-				.html( data )
-				.data( 'mac', mac )
-				.removeClass( 'hide' );
-		}
-	} );
-}
 function infoWiFi( values ) {
 	if ( values ) {
 		var add = false;
@@ -433,7 +434,7 @@ function renderBluetooth() {
 	}
 	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		var mac = $( '#codebluetooth' ).data( 'mac' );
-		infoBluetooth( mac );
+		bluetoothInfo( mac );
 	}
 }
 function renderPage() {
