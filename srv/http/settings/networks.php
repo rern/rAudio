@@ -22,11 +22,11 @@ $html = <<< HTML
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | <wh>• Discoverable by senders</wh> |
-	- On sender: | Search | Select <wh>rAudio</wh> to pair
+	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | • Discoverable by senders |
+	- On sender: Search > Select <wh>rAudio</wh> to pair
 	- Forget / remove should be done on both rAudio and sender
  • Connect:
-	- On sender: Select rAudio | Connect | / | Disconnect |
+	- On sender: Select rAudio > Connect / Disconnect
 </div>
 HTML;
 echoSetIcon( $html );
@@ -45,7 +45,7 @@ htmlHead( [ //////////////////////////////////
 | I^plus-circle^I | Manually connect
 | I^search^I | Scan to connect
 
- • Avoid connecting to access points which signal is less than 2 bars' ) )?></div>
+(Access points with 1 bar icon I^wifi1^I might be unstable.)' ) )?></div>
 </div>
 <div id="divlan" class="section">
 <?php

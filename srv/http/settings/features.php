@@ -71,16 +71,17 @@ HTML
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  • Require Premium account. (No Spotify password saved on rAudio.)
  • Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
-	• <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> | LOGIN | with normal Spotify account
-		(Replace <cy>YELLOW</cy> with actual values)
-	• | CREATE AN APP |
-		- App name: <cy>NAME</cy>
-		- App description: <cy>DESCRIPTION</cy>
-	• | EDIT SETTINGS |
+	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <cy>YELLOW</cy> with actual values)
+	<cg>LOG IN</cg>
+		- with normal Spotify account
+	<cg>CREATE AN APP</cg>
+		- App name: <cy>Name</cy>
+		- App description: <cy>Description</cy>
+	<cg>EDIT SETTINGS</cg>
 		- Redirect URIs: <span id="redirecturi"></span>
-	• | USERS AND ACCESS | ADD NEW USER |
-		- Name: <cy>USER</cy>
-		- Spotify Account: <cy>EMAIL</cy>
+	<cg>USERS AND ACCESS</cg> <c>ADD NEW USER</c>
+		- Name: <cy>user</cy>
+		- Spotify Account: <cy>email</cy>
 • | <wh>Spotify I^spotify^I</wh> | Enable
 	- Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 HTML
@@ -163,8 +164,8 @@ HTML
 Control: <a class="menu-sub">I^features^I Features</a>I^equalizer sub^I
 Presets:
  • <c>Flat</c>: All bands at 0dB
- • New: | Adjust | I^plus-circle^I Add | <c>&lt;Name&gt;</c> | I^save^I Save |
- • Existing: | Adjust | I^save^I Save |
+ • New: Adjust | I^plus-circle^I Add | I^save^I Save |
+ • Existing: Adjust | I^save^I Save |
  • Adjusted values will be listed as <c>(unnamed)</c> until saved.
  • If distortions occurred, lower all bands collectively and increase volume
 HTML
@@ -223,7 +224,7 @@ HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  • Windows: $fileexplorer
- • | Server rAudio I^rserver^I | NFS share should yeild better performance.
+ ( | Server rAudio I^rserver^I | NFS share should yeild better performance.)
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -246,7 +247,8 @@ HTML
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
 Switch: <a class="menu-sub">I^playlist^I Playlist</a>I^raudiobox sub^I
- • SSH passwords must be default.
+
+(SSH password must be default.)
 HTML
 	]
 	, [
@@ -298,7 +300,7 @@ HTML
 	- Windows Features > Services for NFS > Client for NFS - Enable
 	- $fileexplorer
 	
-<wh>Note:</wh> SSH passwords must be default.
+(SSH password must be default.)
 HTML
 	]
 	, [

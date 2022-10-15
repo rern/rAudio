@@ -193,10 +193,11 @@ $body = [
 </div>
 HTML
 	, 'help'     => <<< HTML
-I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected.
-	(See | I^player^I Player | Output | if it's already set as Output device.)
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I^gear^I next to it.
+| I^gear^I | Disable I²S EEPROM read for HAT with obsolete EEPROM
+
+I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+HAT with EEPROM could be automatically detected.
+(See | I^player^I Player | Output | if it's already set as Output device.)
 HTML
 	]
 	, [
@@ -358,14 +359,18 @@ Connect shared data as client for:
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
-		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
-		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
+		- Linux:
+			NFS: <c>777</c>
+			CIFS/SMB: <c>read only = no</c>
+		- Windows:
+			Sharing tab > Permission: Everyone - Full Control
+			Security tab: Everyone - Full Control
 	Clients:
 		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
 		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
 		- Data on 1st connected client will be used as initial shared.
 		
-<wh>Note:</wh> SSH passwords must be default.
+(SSH passwords must be default.)
 HTML
 	]
 ];

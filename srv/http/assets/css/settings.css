@@ -306,6 +306,7 @@ heading .disabled {
 	color: var( --cm );
 }
 c,
+cg,
 cy,
 code {
 	font-family: 'Inconsolata';
@@ -314,6 +315,10 @@ code {
 	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: 3px;
+}
+cg {
+	padding: 0 5px;
+	background: green;
 }
 cy {
 	color:yellow;
