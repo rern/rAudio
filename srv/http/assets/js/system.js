@@ -825,7 +825,7 @@ $( '#shareddata' ).click( function() {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Shared Data'
-			, message : 'Disable and disconnect all shares?'
+			, message : 'Disable and restore local data?'
 			, cancel  : function() {
 				$this.prop( 'checked', true );
 			}
