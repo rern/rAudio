@@ -312,7 +312,7 @@ HTML
 		, 'disabled' => 'Nothing is playing.'
 		, 'help'     => <<< HTML
 Stop timer:
- • Lower volume to 0 (Mute).
+ • Gradually lower volume to 0 (Mute).
  • Stop player.
  • Restore volume to previous level.
  • If set, power off.
