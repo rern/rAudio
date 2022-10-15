@@ -72,14 +72,14 @@ HTML
  • Require Premium account. (No Spotify password saved on rAudio.)
  • Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
 	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <cy>YELLOW</cy> with actual values)
-	<cg>LOG IN</cg>
+	| LOG IN |
 		- with normal Spotify account
-	<cg>CREATE AN APP</cg>
+	| CREATE AN APP |
 		- App name: <cy>Name</cy>
 		- App description: <cy>Description</cy>
-	<cg>EDIT SETTINGS</cg>
-		- Redirect URIs: <span id="redirecturi"></span>
-	<cg>USERS AND ACCESS</cg> <c>ADD NEW USER</c>
+	| EDIT SETTINGS |
+		- Redirect URIs: <c id="redirecturi"></c>
+	| USERS AND ACCESS | ADD NEW USER |
 		- Name: <cy>user</cy>
 		- Spotify Account: <cy>email</cy>
 • | <wh>Spotify I^spotify^I</wh> &#9704; | Enable
