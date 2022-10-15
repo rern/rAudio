@@ -73,9 +73,11 @@ sharedDataSet() {
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not server rAudio - initial setup
 		rm -rf $dirbackup/$dir
-		[[ $dir != webradio ]] && mv -f $dirdata/$dir $dirbackup || cp -rf $dirshareddata/$dir $dirbackup
+		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
+	rm -rf $dirbackup/webradio
+	cp -rf $dirshareddata/webradio $dirbackup
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
