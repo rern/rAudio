@@ -587,6 +587,7 @@ function psVolume( data ) {
 			G.status.volumemute = 0;
 		}
 		setVolume();
+		$( '#volume-knob, #vol-group i' ).removeClass( 'disabled' );
 	}, G.debouncems );
 }
 function psVUmeter( data ) {
