@@ -82,7 +82,7 @@ HTML
 	<cg>USERS AND ACCESS</cg> <c>ADD NEW USER</c>
 		- Name: <cy>user</cy>
 		- Spotify Account: <cy>email</cy>
-• | <wh>Spotify I^spotify^I</wh> | Enable
+• | <wh>Spotify I^spotify^I</wh> &#9704; | Enable
 	- Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -224,7 +224,7 @@ HTML
 <a href="https://www.samba.org">Samba</a> - Share files on network.
  • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  • Windows: $fileexplorer
- ( | Server rAudio I^rserver^I | NFS share should yeild better performance.)
+ ( | Server rAudio I^rserver^I &#9704; | NFS share should yeild better performance.)
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -286,14 +286,16 @@ HTML
 		, 'status'      => 'nfs-server'
 		, 'disabled'    => $disablednfs
 		, 'help'        => <<< HTML
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for music files and | <wh>Shared Data I^networks^I</wh> |
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
  • <wh>rAudio Shared Data server:</wh>
 	- Must be set to <wh>static IP address</wh> which should be set on router.
-	- Existing list in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once update finished.
-	- On reboot / power off, Shared Data on clients will be temporarily disabled > re-enabled once the server is back online.
+	- Items in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once updated.
+	- On reboot / power off:
+		- Shared Data on clients will be temporarily disabled
+		- Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	- | I^system^I System | Settings and Data | <wh>Shared Data I^networks^I</wh> | <wh>• rAudio</wh>
+	- | I^system^I System | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
 	- Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
