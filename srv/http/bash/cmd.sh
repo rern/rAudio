@@ -295,6 +295,7 @@ volumeSet() {
 			sleep 0.2
 		done
 	fi
+	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
