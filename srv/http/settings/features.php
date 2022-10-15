@@ -56,7 +56,7 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • SnapClient and SnapServer can be enabled on the same device.
- • Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
+ • Connect: A^I^networks^I Networks^AI^snapcast sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/snapserver' )
 	]
@@ -128,7 +128,7 @@ HTML
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
 	- Enable SnapClient
-	- Connect: <a class="menu-sub">I^networks^I Networks</a>I^snapcast sub^I
+	- Connect: A^I^networks^I Networks^AI^snapcast sub^I
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
@@ -148,7 +148,7 @@ $body = [
 		, 'disabled' => $disableddsp
 		, 'help'     => <<< HTML
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: <a class="menu-sub">I^features^I Features</a>I^camilladsp sub^I
+Settings: A^I^features^I Features^AI^camilladsp sub^I
 HTML
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -161,7 +161,7 @@ HTML
 		, 'disabled' => '<wh>DSP I^camilladsp^I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control: <a class="menu-sub">I^features^I Features</a>I^equalizer sub^I
+Control: A^I^features^I Features^AI^equalizer sub^I
 Presets:
  • <c>Flat</c>: All bands at 0dB
  • New: Adjust | I^plus-circle^I Add | I^save^I Save |
@@ -207,7 +207,7 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: <a class="menu-sub">I^power^I Power</a>I^screenoff sub^I&emsp;or timer
+ • Screen off: A^I^power^I Power^AI^screenoff sub^I&emsp;or timer
 	(Backlight still on - no energy saved)
  • HDMI display: Must be connected before boot.
 HTML
@@ -246,7 +246,7 @@ HTML
 		, 'icon'    => 'raudiobox'
 		, 'help'    => <<< HTML
 Switch between multiple rAudio devices.
-Switch: <a class="menu-sub">I^playlist^I Playlist</a>I^raudiobox sub^I
+Switch: A^I^playlist^I Playlist^AI^raudiobox sub^I
 
 (SSH password must be default.)
 HTML
@@ -259,7 +259,7 @@ HTML
 		, 'setting'  => 'custom'
 		, 'help'     => <<< HTML
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
-Lock: <a class="menu-sub">I^player^I Player</a>I^lock sub^I
+Lock: A^I^player^I Player^AI^lock sub^I
 HTML
 	]
 	, [

@@ -231,7 +231,7 @@ HTML
 		, 'icon'    => 'relays'
 		, 'help'    => <<< HTML
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: <a class="menu-sub">I^plus-r^I System</a>I^relays sub^I
+On/Off: A^I^plus-r^I System^AI^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 HTML
