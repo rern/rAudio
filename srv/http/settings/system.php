@@ -363,14 +363,14 @@ Connect shared data as client for:
 			NFS: <c>777</c>
 			CIFS/SMB: <c>read only = no</c>
 		- Windows:
-			Sharing tab > Permission: Everyone - Full Control
-			Security tab: Everyone - Full Control
+			| Sharing | Permissions | Everyone - Full Control
+			| Security | Everyone - Full Control
 	Clients:
 		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
 		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
 		- Data on 1st connected client will be used as initial shared.
 		
-(SSH passwords must be default.)
+(SSH password must be default.)
 HTML
 	]
 ];
