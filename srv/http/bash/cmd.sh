@@ -188,6 +188,7 @@ pushstreamPlaylist() {
 }
 pushstreamRadioList() {
 	pushstream radiolist '{"type":"webradio"}'
+	webradioCopyBackup
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -309,6 +310,12 @@ volumeSetAt() {
 		amixer -c $card -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
+	fi
+}
+webradioCopyBackup() {
+	if [[ -e $dirbackup/webradio ]]; then
+		rm -rf $dirbackup/webradio
+		cp -r $dirwebradio $dirbackup
 	fi
 }
 webradioCount() {
@@ -1262,10 +1269,7 @@ $charset" > "$file"
 	webRadioSampling $url "$file" &
 	;;
 webradiocopybackup )
-	if [[ -e $filesharedip ]]; then
-		rm -rf $dirbackup/webradio
-		cp -r $dirwebradio $dirbackup
-	fi
+	webradioCopyBackup
 	;;
 webradiocoverreset )
 	coverart=${args[1]}

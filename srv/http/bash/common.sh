@@ -73,13 +73,14 @@ pushstream() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	[[ ! -e $filesharedip ]] && return
+	[[ ! -e $filesharedip || $( cat $filesharedip | wc -l ) == 1 ]] && return # no shared data / no other cilents
 	
-	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # server rAudio
+	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # 'Server rAudio' 'Online/Offline ...' rserver
+		[[ $channel == radiolist && $data == *webradio* ]] && webradiocopy=1 || webradiocopy=
 		ips=$( grep -v $( ipGet ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
-			[[ $channel == radiolist && $data == *webradio* ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
+			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
 		done
 	fi
 }
