@@ -314,7 +314,7 @@ HTML
 Stop timer:
  • Mute
  • Stop player
- • Restore volume to previous level
+ • Set volume back as before mute
  • If set, power off.
 HTML
 	]
