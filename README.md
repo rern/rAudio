@@ -16,7 +16,9 @@ Audio player for
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
 	- Live data update - refresh across all rAudios
-- Control via GUI on any browsers
+- Control via GUI
+	- Remote with any browsers or Android app
+	- Local screen if connected (not for legacy `1` or `Zero`)
 - Live display update - refresh across multiple GUI clients
 - Metadata Tag Editor - `kid3-cli`
 - Album mode with coverarts
