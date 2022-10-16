@@ -350,7 +350,7 @@ HTML
 Connect shared data as client for:
 	- Library database
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	- Show / hide items (| I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
+	- Show / hide items (Library | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
 	- Display order of Library home
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
