@@ -310,6 +310,7 @@ USB" > /mnt/MPD/.mpdignore
 			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
+		pushstream display "$( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )"
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
@@ -328,6 +329,7 @@ USB" > /mnt/MPD/.mpdignore
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
+		pushstream display "$( cat $dirsystem/display )"
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'
