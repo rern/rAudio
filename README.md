@@ -11,9 +11,10 @@ Audio player for
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
-- Based on Arch Linux Arm OS
+- Based on [Arch Linux Arm](https://archlinuxarm.org) OS
 - Control via GUI
-	- Remote with any browsers or Android app
+	- Remote with any browsers
+	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
 	- Local screen if connected (Not applicable on Raspberry Pi `1` or `Zero`)
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
