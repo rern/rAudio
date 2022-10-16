@@ -11,14 +11,14 @@ Audio player for
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
-- Based on Arch Linux Arm - `mpd` `nginx`
+- Based on Arch Linux Arm OS
+- Control via GUI
+	- Remote with any browsers or Android app
+	- Local screen if connected (Not applicable on Raspberry Pi `1` or `Zero`)
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
 	- Live data update - refresh across all rAudios
-- Control via GUI
-	- Remote with any browsers or Android app
-	- Local screen if connected (not for legacy `1` or `Zero`)
 - Live display update - refresh across multiple GUI clients
 - Metadata Tag Editor - `kid3-cli`
 - Album mode with coverarts
