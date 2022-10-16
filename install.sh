@@ -4,6 +4,13 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221021
+if [[ -L /srv/http/data/mpd  && ! -e /mnt/MPD/.mpdignore ]]; then
+	echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+fi
+
 # 20221007
 grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
 

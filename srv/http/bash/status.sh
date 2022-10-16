@@ -52,6 +52,7 @@ else
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
+, "shareddata"   : '$( exists $filesharedip )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
@@ -68,6 +69,9 @@ if [[ $1 == withdisplay ]]; then
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
 	fi
 	display=$( head -n -1 $dirsystem/display )
+	[[ -e $filesharedip ]] && display+='
+, "sd"  : false
+, "usb" : false'
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'

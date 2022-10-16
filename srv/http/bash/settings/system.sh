@@ -89,6 +89,9 @@ sharedDataSet() {
 		ln -s $dirshareddata/system/$file $dirsystem
 	done
 	echo data > $dirnas/.mpdignore
+	echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
 	mpc -q clear
 	systemctl restart mpd
 	sharedDataIPlist
@@ -863,7 +866,7 @@ shareddatadisconnect )
 	rm $dirsystem/{display,order}
 	mv -f $dirbackup/{display,order} $dirsystem
 	rmdir $dirbackup &> /dev/null
-	rm -f $dirshareddata $dirnas/.mpdignore
+	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
 	sed -i "/$( ipGet )/ d" $filesharedip
 	mpc -q clear
 	if grep -q ":$dirsd " /etc/fstab; then # client of server rAudio

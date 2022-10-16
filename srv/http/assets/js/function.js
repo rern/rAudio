@@ -739,13 +739,13 @@ function infoLibrary( page2 ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : function() {
+			var $chk = $( '#infoContent input' );
+			keys.forEach( function( k, i ) {
+				window[ '$'+ k ] = $chk.eq( i );
+				window[ k ] = i;
+			} );
 			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
-				var $chk = $( '#infoContent input' );
-				keys.forEach( function( k, i ) {
-					window[ '$'+ k ] = $chk.eq( i );
-					window[ k ] = i;
-				} );
 				$tapaddplay.add( $tapreplaceplay ).click( function() {
 					var i = $chk.index( this ) === tapaddplay ? tapreplaceplay : tapaddplay;
 					if ( $( this ).prop( 'checked' ) ) $chk.eq( i ).prop( 'checked', 0 );
@@ -758,6 +758,8 @@ function infoLibrary( page2 ) {
 					}
 				} );
 				$fixedcover.prop( 'disabled', G.display.hidecover );
+			} else {
+				$sd.add( $usb ).prop( 'disabled', G.status.shareddata );
 			}
 		}
 		, ok           : function () {

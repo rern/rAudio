@@ -289,7 +289,9 @@ HTML
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
  • <wh>rAudio Shared Data server:</wh>
 	- Must be set to <wh>static IP address</wh> which should be set on router.
-	- Items in | I^library^I | <wh>I^usb^I USB</wh> | will display in | <wh>I^networks^I NAS</wh> | once updated.
+	- In | I^library^I | Library:
+		- | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.
+		- | I^usb^I USB | items will be displayed in | I^networks^I NAS | instead.
 	- On reboot / power off:
 		- Shared Data on clients will be temporarily disabled
 		- Re-enabled by itself once the server is back online.
