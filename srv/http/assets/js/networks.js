@@ -1,7 +1,11 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).click( function() {
-	$( '#menu, #codebluetooth' ).addClass( 'hide' );
+	$( '#menu' ).addClass( 'hide' );
+	$( '#codebluetooth' )
+		.addClass( 'hide' )
+		.data( 'mac', '' )
+		.empty();
 	$( 'li' ).removeClass( 'active' );
 } );
 $( '.back' ).click( function() {
@@ -71,9 +75,10 @@ $( '.entries' ).on( 'click', 'li', function( e ) {
 	if ( G.list === 'listbt' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
-		var list = G.listbt[ G.liindex ];
-		$( '#menu .connect' ).toggleClass( 'hide', list.connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !list.connected );
+		G.listbtli = G.listbt[ G.liindex ];
+		$( '#menu .connect' ).toggleClass( 'hide', G.listbtli.connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', !G.listbtli.connected );
+		$( '#menu .info' ).toggleClass( 'hide', G.listbtli.mac === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -168,12 +173,7 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	if ( G.liactive && !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
-		$( '#codebluetooth' ).addClass( 'hide' );
-	} else {
-		var list = G.listbt[ G.li.index() ]
-		bluetoothInfo( list.mac );
-	}
+	bluetoothInfo( G.listbtli.mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
