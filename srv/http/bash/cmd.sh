@@ -179,8 +179,7 @@ ${target/\/srv\/http}" > "$bkfile"
 	fi
 	coverart=${target:0:-4}.$( date +%s ).${target: -3};
 	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	data='{"url":"'$coverart'","type":"'$type'"}'
-	pushstream coverart "$data"
+	pushstream coverart '{"url":"'$coverart'","type":"'$type'"}'
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -589,8 +588,7 @@ $mpdpath" )
 	else
 		url=/mnt/MPD/$mpdpath/reset
 	fi
-	data='{"url":"'$url'","type":"coverart"}'
-	pushstream coverart "$data"
+	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverartsave )
 	source=${args[1]}
