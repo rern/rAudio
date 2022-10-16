@@ -2,13 +2,14 @@
 include '/srv/http/common.php';
 
 $cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
-$add = $argv[ 2 ] ? true : false;
+$add = $cmd === 'add' ? true : false;
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current playlist
 // saved playlists: delete, edit, get, list, load, rename, save
 switch( $cmd ) {
 	
+case 'add':
 case 'current':
 	currentPlaylist();
 	break;

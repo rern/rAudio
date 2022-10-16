@@ -183,8 +183,8 @@ ${target/\/srv\/http}" > "$bkfile"
 	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
-	data=$( php /srv/http/mpdplaylist.php current $1 )
-	pushstream playlist "$data"
+	[[ $1 ]] && arg=$1 || arg=current
+	pushstream playlists "$( php /srv/http/mpdplaylist.php $arg )"
 }
 pushstreamRadioList() {
 	pushstream radiolist '{"type":"webradio"}'
@@ -1098,8 +1098,7 @@ savedpldelete )
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	pushstreamPlaylist list
 	;;
 savedpledit )
 	name=${args[1]}
@@ -1139,8 +1138,7 @@ savedplrename )
 	fi
 	
 	mv "$dirplaylists/$oldname.m3u" "$plfile"
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	pushstreamPlaylist list
 	;;
 savedplsave )
 	name=${args[1]}
@@ -1157,8 +1155,7 @@ savedplsave )
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	pushstreamPlaylist list
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}

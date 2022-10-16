@@ -3,8 +3,7 @@
 . /srv/http/bash/common.sh
 
 pushstreamPlaylist() {
-	data=$( php /srv/http/mpdplaylist.php current )
-	pushstream playlist "$data"
+	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
 }
 
 [[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd

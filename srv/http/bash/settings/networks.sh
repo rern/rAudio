@@ -110,8 +110,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
-		data='{ "ssid": "'"$ESSID"'" }'
-		pushstream wifi "$data"
+		pushstream wifi '{"ssid":"'$ESSID'"}'
 		exit
 	fi
 	
