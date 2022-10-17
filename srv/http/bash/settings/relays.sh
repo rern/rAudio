@@ -21,14 +21,14 @@ fi
 
 if [[ $cmd == true ]]; then
 	touch $dirshm/relayson
-	pushstream relays '{"state": true, "order": '$onorder'}'
+	pushstream relays '{"state":true,"order":'"$onorder"'}' # quoted for spaces in [ ..., ... ]
 	for i in 0 1 2 3; do
 		pin=${on[$i]}
 		(( $pin == 0 )) && break
 		
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
-		(( $i > 0 )) && pushstream relays '{"on": '$(( i + 1 ))'}'
+		(( $i > 0 )) && pushstream relays '{"on":'$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
@@ -38,13 +38,13 @@ if [[ $cmd == true ]]; then
 else
 	rm -f $dirshm/relayson $timerfile
 	killall relays-timer.sh &> /dev/null
-	pushstream relays '{"state": false, "order": '$offorder'}'
+	pushstream relays '{"state":false,"order":'"$offorder"'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
 		(( $pin == 0 )) && break
 		
 		gpio -1 write $pin 0
-		(( $i > 0 )) && pushstream relays '{"off": '$(( i + 1 ))'}'
+		(( $i > 0 )) && pushstream relays '{"off":'$(( i + 1 ))'}'
 		sleep ${offd[$i]} &> /dev/null
 	done
 fi
