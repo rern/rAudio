@@ -187,7 +187,7 @@ pushstreamPlaylist() {
 }
 pushstreamRadioList() {
 	pushstream radiolist '{"type":"webradio"}'
-	webradioCopyBackup
+	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
 	pushstream volume '{"type":"'$1'", "val":'$2' }'
@@ -314,6 +314,8 @@ webradioCopyBackup() {
 	if [[ -e $dirbackup/webradio ]]; then
 		rm -rf $dirbackup/webradio
 		cp -r $dirwebradio $dirbackup
+		webradio=$( grep webradio $dirmpd/counts )
+		sed -i "s/.*webradio.*/$webradio/" $dirbackup/mpd/counts
 	fi
 }
 webradioCount() {
@@ -1263,7 +1265,7 @@ $charset" > "$file"
 	webRadioSampling $url "$file" &
 	;;
 webradiocopybackup )
-	webradioCopyBackup
+	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
 	coverart=${args[1]}
