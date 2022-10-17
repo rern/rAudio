@@ -59,7 +59,10 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushstream() { # "$data" - use predefine var - do not use inline directly to avoid spaces issue
+# pushstream channel "$data"
+#  - use predefine "$data"
+#  - do not use inline directly instead of "$data" to avoid spaces issue
+pushstream() {
 	channel=$1
 	data=$2
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
