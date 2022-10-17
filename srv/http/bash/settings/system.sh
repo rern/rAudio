@@ -76,8 +76,6 @@ sharedDataSet() {
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
-	rm -rf $dirbackup/webradio
-	cp -rf $dirshareddata/webradio $dirbackup
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
@@ -97,6 +95,7 @@ USB" > /mnt/MPD/.mpdignore
 	sharedDataIPlist
 	pushRefresh
 	pushstream refresh '{"page":"features","shareddata":true}'
+	$dirbash/cmd.sh webradiocopybackup &> /dev/null &
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then
@@ -112,6 +111,14 @@ soundProfile() {
 	if ifconfig | grep -q eth0; then
 		ip link set eth0 mtu $mtu
 		ip link set eth0 txqueuelen $txqueuelen
+	fi
+}
+webradioCopyBackup() {
+	if [[ -e $dirbackup/webradio ]]; then
+		rm -rf $dirbackup/webradio
+		cp -r $dirwebradio $dirbackup
+		webradio=$( grep webradio $dirmpd/counts )
+		sed -i "s/.*webradio.*/$webradio/" $dirbackup/mpd/counts
 	fi
 }
 
