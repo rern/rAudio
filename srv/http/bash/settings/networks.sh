@@ -110,7 +110,8 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
 		echo "$profile" > /boot/wifi
-		pushstream wifi '{"ssid":"'$ESSID'"}'
+		data='{"ssid":"'$ESSID'"}'
+		pushstream wifi "$data"
 		exit
 	fi
 	
@@ -232,11 +233,13 @@ usbwifion )
 	wlandev=$( wlanDevice )
 	! systemctl -q is-active mpd && exit # suppress on startup
 	
-	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
+	data='{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
+	pushstreamNotify "$data"
 	pushRefresh
 	;;
 usbwifioff )
-	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
+	data='{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
+	pushstreamNotify "$data"
 	pushRefresh
 	;;
 wlandevice )

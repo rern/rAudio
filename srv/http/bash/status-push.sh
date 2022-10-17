@@ -65,7 +65,8 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	else
 		killall cava &> /dev/null
-		pushstream vumeter '{"val":0}'
+		data='{"val":0}'
+		pushstream vumeter "$data"
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( cat $dirsystem/vuled.conf )
 			for i in $p; do
@@ -92,7 +93,8 @@ fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
 
 [[ $state == play ]] && playing=true || playing=false
-pushstream refresh '{"page":"features","playing":'$playing'}'
+data='{"page":"features","playing":'$playing'}'
+pushstream refresh "$data"
 
 [[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
 

@@ -3,7 +3,8 @@
 . /srv/http/bash/common.sh
 
 pushstreamPlaylist() {
-	pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+	data=$( php /srv/http/mpdplaylist.php current )
+	pushstream playlist "$data"
 }
 
 [[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
@@ -92,7 +93,8 @@ fi
 # suppress getPlaybackStatus in passive.js
 if [[ -e $dirsystem/autoplaycd ]]; then
 	autoplaycd=1
-	pushstream playlist '{"autoplaycd":1}'
+	data='{"autoplaycd":1}'
+	pushstream playlist "$data"
 fi
 # add tracks to playlist
 grep -q 'audiocdplclear.*true' $dirsystem/display && mpc -q clear

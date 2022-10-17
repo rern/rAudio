@@ -15,7 +15,8 @@ mpc idleloop | while read changed; do
 						echo $s > $dirshm/vol
 					else
 						rm -f $dirshm/vol
-						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
+						vol='{"val":'$( $dirbash/cmd.sh volumeget )'}'
+						pushstream volume "$vol"
 					fi
 				done ) &> /dev/null &
 			fi
@@ -23,7 +24,8 @@ mpc idleloop | while read changed; do
 		playlist )
 			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					pushstream playlist "$( php /srv/http/mpdplaylist.php current )"
+					data=$( php /srv/http/mpdplaylist.php current )
+					pushstream playlist "$data"
 				) &> /dev/null &
 			fi
 			;;

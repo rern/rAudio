@@ -18,7 +18,8 @@ if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
 	devices=false
 	touch $dirshm/nosound
-	pushstream display '{"volumenone":false}'
+	data='{"ssid":"'$ESSID'"}'
+	pushstream display "$data"
 	return
 fi
 

@@ -152,7 +152,10 @@ $btoutput" > /etc/mpd.conf
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $usbdac == add || $usbdac == remove ]]; then
 	$dirbash/cmd.sh playerstop
-	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
+	if [[ $mixertype == none ]]; then
+		data='{"volumenone":'$volumenone'}'
+		pushstream display "$data"
+	fi
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 
@@ -170,7 +173,8 @@ fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
 	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
-pushstream mpdplayer "$( $dirbash/status.sh )"
+data=$( $dirbash/status.sh )
+pushstream mpdplayer "$data"
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
@@ -197,7 +201,8 @@ alsa = {"
 }'
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
-	pushstream airplay '{"stop":"switchoutput"}'
+	data='{"stop":"switchoutput"}'
+	pushstream airplay "$data"
 	systemctl try-restart shairport-sync
 fi
 

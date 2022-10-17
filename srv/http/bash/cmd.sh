@@ -179,18 +179,22 @@ ${target/\/srv\/http}" > "$bkfile"
 	fi
 	coverart=${target:0:-4}.$( date +%s ).${target: -3};
 	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverart'","type":"'$type'"}'
+	data='{"url":"'$coverart'","type":"'$type'"}'
+	pushstream coverart "$data"
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
-	pushstream playlists "$( php /srv/http/mpdplaylist.php $arg )"
+	data=$( php /srv/http/mpdplaylist.php $arg )
+	pushstream playlists "$data"
 }
 pushstreamRadioList() {
-	pushstream radiolist '{"type":"webradio"}'
+	data='{"type":"webradio"}'
+	pushstream radiolist "$data"
 	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
-	pushstream volume '{"type":"'$1'", "val":'$2' }'
+	data='{"type":"'$1'", "val":'$2' }'
+	pushstream volume "$data"
 }
 rotateSplash() {
 	case $1 in
@@ -321,7 +325,8 @@ webradioCopyBackup() {
 webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
+	data='{"type":"'$type'", "count":'$count'}'
+	pushstream radiolist "$data"
 	grep -q "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
@@ -391,7 +396,8 @@ addonsupdates )
 		fi
 	done
 	if [[ $count ]]; then
-		pushstream option '{"addons":1}'
+		data='{"addons":1}'
+		pushstream option "$data"
 		touch $diraddons/update
 	else
 		rm -f $diraddons/update
@@ -590,7 +596,8 @@ $mpdpath" )
 	else
 		url=/mnt/MPD/$mpdpath/reset
 	fi
-	pushstream coverart '{"url":"'$url'","type":"coverart"}'
+	data='{"url":"'$url'","type":"coverart"}'
+	pushstream coverart "$data"
 	;;
 coverartsave )
 	source=${args[1]}
@@ -607,7 +614,8 @@ coverfileslimit )
 dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &
-	pushstream mpdupdate '{"type":"dabradio"}'
+	data='{"type":"dabradio"}'
+	pushstream mpdupdate "$data"
 	;;
 displaysave )
 	data=${args[1]}
@@ -698,7 +706,8 @@ ignoredir )
 	dir=$( basename "$path" )
 	mpdpath=$( dirname "$path" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushstream mpdupdate '{"type":"mpd"}'
+	data='{"type":"mpd"}'
+	pushstream mpdupdate "$data"
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
@@ -723,7 +732,8 @@ librandom )
 		plAddRandom
 		[[ $play ]] && mpc -q play $playnext
 	fi
-	pushstream option '{ "librandom": '$enable' }'
+	data='{ "librandom": '$enable' }'
+	pushstream option "$data"
 	;;
 lyrics )
 	artist=${args[1]}
@@ -837,7 +847,8 @@ mpcoption )
 	option=${args[1]}
 	onoff=${args[2]}
 	mpc -q $option $onoff
-	pushstream option '{"'$option'":'$onoff'}'
+	data='{"'$option'":'$onoff'}'
+	pushstream option "$data"
 	;;
 mpcplayback )
 	command=${args[1]}
@@ -866,7 +877,8 @@ mpcplayback )
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
-	pushstream state '{"state":"'$command'"}'
+	data='{"state":"'$command'"}'
+	pushstream state "$data"
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -969,7 +981,8 @@ mpcupdate )
 	path=${args[1]}
 	echo $path > $dirmpd/updating
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-	pushstream mpdupdate '{"type":"mpd"}'
+	data='{"type":"mpd"}'
+	pushstream mpdupdate "$data"
 	;;
 ordersave )
 	data=$( jq <<< ${args[1]} )
@@ -992,7 +1005,8 @@ playerstart )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	pushstream player '{"player":"'$player'","active":true}'
+	data='{"player":"'$player'","active":true}'
+	pushstream player "$data"
 	;;
 playerstop )
 	elapsed=${args[1]}
@@ -1027,7 +1041,8 @@ playerstop )
 			systemctl restart upmpdcli
 			;;
 	esac
-	pushstream player '{"player":"'$player'","active":false}'
+	data='{"player":"'$player'","active":false}'
+	pushstream player "$data"
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
 power )
@@ -1088,7 +1103,8 @@ radiorestart )
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null
 	$dirsettings/relays-timer.sh &> /dev/null &
-	pushstream relays '{"state":"RESET"}'
+	data='{"state":"RESET"}'
+	pushstream relays "$data"
 	;;
 rotatesplash )
 	rotateSplash ${args[1]}
@@ -1123,7 +1139,8 @@ savedpledit )
 		sed -i "$from d" "$plfile"
 		sed -i "$to a$file" "$plfile"
 	fi
-	pushstream playlist '{"playlist":"'${name//\"/\\\"}'"}'
+	data='{"playlist":"'${name//\"/\\\"}'"}'
+	pushstream playlist "$data"
 	;;
 savedplrename )
 	oldname=${args[1]}
@@ -1215,7 +1232,8 @@ volumeget )
 	if [[ $type == db ]]; then
 		echo $volume $db
 	elif [[ $type == push ]]; then
-		pushstream volume '{"val":'$volume',"db":"'$db'"}'
+		data='{"val":'$volume',"db":"'$db'"}'
+		pushstream volume "$data"
 	else
 		echo $volume
 	fi
@@ -1223,7 +1241,8 @@ volumeget )
 volumepushstream )
 	[[ -e $dirshm/btreceiver ]] && sleep 1
 	volumeGet
-	pushstream volume '{"val":'$volume'}'
+	data='{"val":'$volume'}'
+	pushstream volume "$data"
 	[[ $control ]] && alsactl store
 	;;
 volumesave )
@@ -1272,7 +1291,8 @@ webradiocoverreset )
 	type=${args[2]}
 	cover=${coverart:0:-15} # remove .1234567890.jpg
 	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"type":"'$type'"}'
+	data='{"type":"'$type'"}'
+	pushstream coverart "$data"
 	;;
 webradiodelete )
 	dir=${args[1]}

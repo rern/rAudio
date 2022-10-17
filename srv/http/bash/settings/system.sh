@@ -94,7 +94,8 @@ USB" > /mnt/MPD/.mpdignore
 	systemctl restart mpd
 	sharedDataIPlist
 	pushRefresh
-	pushstream refresh '{"page":"features","shareddata":true}'
+	data='{"page":"features","shareddata":true}'
+	pushstream refresh "$data"
 	$dirbash/cmd.sh webradiocopybackup &> /dev/null &
 }
 soundProfile() {
@@ -774,7 +775,8 @@ rebootlist )
 relaysdisable )
 	rm -f $dirsystem/relays
 	pushRefresh
-	pushstream display '{"submenu":"relays","value":false}'
+	data='{"submenu":"relays","value":false}'
+	pushstream display "$data"
 	;;
 rfkilllist )
 	echo "\
@@ -896,7 +898,8 @@ shareddatadisconnect )
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
-	pushstream refresh '{"page":"features","shareddata":false}'
+	data='{"page":"features","shareddata":false}'
+	pushstream refresh "$data"
 	if [[ ! $disable ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		pushstreamNotify 'Server rAudio' 'Offline ...' rserver
@@ -907,7 +910,8 @@ shareddataiplist )
 	;;
 shareddatarestart )
 	systemctl restart mpd
-	pushstream mpdupdate "$( cat $dirmpd/counts )"
+	data=$( cat $dirmpd/counts )
+	pushstream mpdupdate "$data"
 	;;
 sharelist )
 	ip=${args[1]}

@@ -278,12 +278,14 @@ soxrset )
 volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
-	pushstream volume '{"val":'$level',"db":"0.00"}'
+	data='{"val":'$level',"db":"0.00"}'
+	pushstream volume "$data"
 	;;
 volumebt0db )
 	amixer -D bluealsa -q sset "${args[1]}" 0dB 2> /dev/null
 	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
+	data='{"val":'${voldb/ *}',"db":"0.00"}'
+	pushstream volumebt "$data"
 	;;
 volumebtget )
 	volumeBtGet
@@ -292,7 +294,8 @@ volumebtget )
 volumebtsave )
 	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
 	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
+	data='{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
+	pushstream volumebt "$data"
 	;;
 volumeget )
 	$dirbash/cmd.sh volumeget$'\n'${args[1]}

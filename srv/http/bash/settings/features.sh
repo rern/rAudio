@@ -6,7 +6,8 @@
 readarray -t args <<< "$1"
 
 pushSubmenu() {
-	pushstream display '{"submenu":"'$1'","value":'$2'}'
+	data='{"submenu":"'$1'","value":'$2'}'
+	pushstream display "$data"
 }
 featureSet() {
 	systemctl restart $@
@@ -121,7 +122,8 @@ hostapddisable )
 	systemctl disable --now hostapd
 	ifconfig wlan0 0.0.0.0
 	pushRefresh
-	pushstream refresh '{"page":"system","hostapd":false}'
+	data='{"page":"system","hostapd":false}'
+	pushstream refresh "$data"
 	pushRefresh networks
 	;;
 hostapdget )
@@ -153,7 +155,8 @@ hostapdset )
 	fi
 	ifconfig $wlandev $router
 	featureSet hostapd
-	pushstream refresh '{"page":"system","hostapd":true}'
+	data='{"page":"system","hostapd":true}'
+	pushstream refresh "$data"
 	pushRefresh networks
 	;;
 localbrowserdisable )
@@ -310,7 +313,8 @@ USB" > /mnt/MPD/.mpdignore
 			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
-		pushstream display "$( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )"
+		data=$( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )
+		pushstream display "$data"
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
@@ -329,10 +333,12 @@ USB" > /mnt/MPD/.mpdignore
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
-		pushstream display "$( cat $dirsystem/display )"
+		data=$( cat $dirsystem/display )
+		pushstream display "$data"
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","nfsserver":'$active'}'
+	data='{"page":"system","nfsserver":'$active'}'
+	pushstream refresh "$data"
 	;;
 nfssharelist )
 	nfsShareList

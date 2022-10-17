@@ -59,7 +59,7 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-pushstream() {
+pushstream() { # "$data" - use predefine var - do not use inline directly to avoid spaces issue
 	channel=$1
 	data=$2
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
@@ -86,10 +86,12 @@ pushstream() {
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
-	pushstream notify '{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
+	data='{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
+	pushstream notify "$data"
 }
 pushstreamNotifyBlink() { # title text icon [hide]
-	pushstream notify '{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
+	data='{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
+	pushstream notify "$data"
 }
 sshCommand() { # $1-ip, ${@:2}-commands
 	if ping -c 1 -w 1 $1 &> /dev/null; then

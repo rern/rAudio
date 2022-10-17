@@ -49,7 +49,8 @@ while true; do
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
+		data='{"type":"coverartplayback","url":"'$coverart'"}'
+		pushstream coverart "$data"
 	fi
 	sleep 10
 done

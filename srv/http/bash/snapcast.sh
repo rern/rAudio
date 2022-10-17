@@ -18,8 +18,10 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl restart mpd
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
-		pushstream display '{"snapclientactive":true,"volumenone":false}'
-		pushstream refresh '{"page":"features","snapclientactive",true}'
+		data='{"snapclientactive":true,"volumenone":false}'
+		pushstream display "$data"
+		data='{"page":"features","snapclientactive",true}'
+		pushstream refresh "$data"
 		$dirsettings/player-data.sh pushrefresh
 		exit
 	fi
@@ -46,8 +48,10 @@ elif [[ $1 == stop ]]; then # server + client on same device
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
 	fi
-	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
-	pushstream refresh '{"page":"features","snapclientactive",false}'
+	data='{"snapclientactive":false,"volumenone":'$volumenone'}'
+	pushstream display "$data"
+	data='{"page":"features","snapclientactive",false}'
+	pushstream refresh "$data"
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
