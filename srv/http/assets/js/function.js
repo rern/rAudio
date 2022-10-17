@@ -508,15 +508,11 @@ function getBio( artist ) {
 					data.artistthumb.forEach( function( el ) {
 						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
-					$( '#biocontent .artist' ).addClass( 'hide' );
 					$( '#bioimg' )
 						.html( images )
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
 					$( '#bioimg img' ).last().one( 'load', function() {
-						setTimeout( function() { // fix: a lot of images need some times
-							$( '#biocontent .artist' ).removeClass( 'hide' );
-						}, 0 );
 						var imgbottom = this.getBoundingClientRect().bottom;
 						$( '#bio' ).scroll( function() {
 							if ( this.scrollTop > imgbottom ) {
