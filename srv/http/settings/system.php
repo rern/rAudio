@@ -299,7 +299,7 @@ HTML
 	]
 ];
 htmlSection( $head, $body );
-$head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
+$head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
@@ -307,11 +307,11 @@ $body = [
 		, 'icon'    => 'sd'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-Backup all settings and data:
+Backup all data and settings:
+ • Library: Database, Bookmarks, DAB Radio, Web Radio
+ • Playback: Lyrics
+ • Playlist: Audio CD, Saved playlists
  • Settings
- • Library: Database, Bookmarks, Web Radio
- • Lyrics
- • Saved playlists
 HTML
 	]
 	, [
@@ -319,7 +319,7 @@ HTML
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
 		, 'setting' => 'custom'
-		, 'help'    => 'Restore all settings and Library database from a backup file.'
+		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [
 		  'label'    => 'Shared Data'
