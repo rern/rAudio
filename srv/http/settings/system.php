@@ -307,13 +307,11 @@ $body = [
 		, 'icon'    => 'sd'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-Backup all settings and Library database:
+Backup all settings and data:
  • Settings
- • Library database
- • Saved playlists
- • Bookmarks
+ • Library: Database, Bookmarks, Web Radio
  • Lyrics
- • Web Radio
+ • Saved playlists
 HTML
 	]
 	, [
