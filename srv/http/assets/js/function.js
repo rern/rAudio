@@ -494,9 +494,7 @@ function getBio( artist ) {
 			$( '.bioback' ).toggleClass( 'hide', G.bioartist.length === 1 );
 			loaderHide();
 			
-			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart, function( data ) {
-				if ( 'error message' in data ) return
-				
+			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( function( data ) {
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
 					$( '#biobanner' )
 						.attr( 'src', data.musicbanner[ 0 ].url )
