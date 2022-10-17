@@ -187,7 +187,7 @@ $body = [
 </div>
 HTML
 		, 'help'     => <<< HTML
-| I^gear^I | Disable I²S EEPROM read for HAT with obsolete EEPROM
+| I^gear^I | Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 HAT with EEPROM could be automatically detected.

@@ -78,7 +78,7 @@ HTML
 	| USERS AND ACCESS | ADD NEW USER |
 		- Name: <cy>user</cy>
 		- Spotify Account: <cy>email</cy>
-• | <wh>Spotify I^spotify^I</wh> &#9704; | Enable
+• | <wh>Spotify I^spotify^I</wh> &#9704; |
 	- Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 HTML
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -121,7 +121,7 @@ HTML
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Set SnapServer as a client to sync:
-	- Enable SnapClient
+	- Enable | SnapClient I^snapcast^I &#9704; |
 	- Connect: A^I^networks^I Networks^AI^snapcast sub^I
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
@@ -201,8 +201,9 @@ HTML
 		, 'help'     => <<< HTML
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: A^I^power^I Power^AI^screenoff sub^I&emsp;or timer
-	(Backlight still on - no energy saved)
+ • Screen off: A^I^power^I Power^AI^screenoff sub^I
+	- Also by timer in | I^gear^I |
+	- Backlight still on - no energy saved
  • HDMI display: Must be connected before boot.
 HTML
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
