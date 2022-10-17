@@ -70,11 +70,12 @@ HTML
 		, 'input'   => '<select id="mixertype"></select>'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-Volume control for each device. The later in the signal chain the better sound quality.
+Volume control for each device.
+The later in the signal chain the better sound quality.
 <pre>
-| None / 0dB   | Best sound quality.  (Amplifier volume)
-| Mixer device | Good and convenient. (DAC hardware via GUI)
-| MPD software | Software volume.     (GUI)
+| None / 0dB   | Best  - Amplifier volume - GUI knob hidden
+| Mixer device | Good  - DAC hardware via GUI knob
+| MPD software | Basic - GUI knob
 </pre>
 HTML
 	]
