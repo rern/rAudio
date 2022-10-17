@@ -50,9 +50,7 @@ HTML
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
 		, 'setting' => false
-		, 'help'    => <<< HTML
-HDMI device available only when connected before boot.
-HTML
+		, 'help'    => 'HDMI device available only when connected before boot.'
 	]
 	, [
 		  'label'       => 'Mixer Device'
@@ -72,10 +70,10 @@ HTML
 		, 'input'   => '<select id="mixertype"></select>'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-Volume control for each device.
+Volume control for each device. The later in the signal chain the better sound quality.
 <pre>
-| None / 0dB   | Best sound quality. (Use amplifier volume)
-| Mixer device | Good and convenient. (Device hardware volume)
+| None / 0dB   | Best sound quality.  (Amplifier volume)
+| Mixer device | Good and convenient. (DAC hardware volume)
 | MPD software | Software volume.
 </pre>
 HTML
@@ -135,7 +133,7 @@ HTML
 		, 'id'      => 'replaygain'
 		, 'help'    => <<< HTML
 <c>replaygain "N"</c>
-Set gain control to setting in replaygain tag.
+Set gain control for replaygain tag.
 Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
 HTML
 	]
@@ -150,8 +148,7 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>audio_buffer_size "kB"</c>
-Default buffer size: 4096 kB (24 seconds of CD-quality audio)
+<c>audio_buffer_size "kB"</c> (default: 4096 kB - 24s of CD-quality audio)
 Increase to fix intermittent audio.
 HTML
 	]
@@ -160,8 +157,7 @@ HTML
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>max_output_buffer_size "kB"</c>
-Default buffer size: 8192 kB
+<c>max_output_buffer_size "kB"</c> (default: 8192 kB)
 Increase to fix missing Album list with large Library.
 HTML
 	]
@@ -214,9 +210,7 @@ HTML
 	, [
 		  'label'   => "User's Configurations"
 		, 'id'      => 'custom'
-		, 'help'    => <<< HTML
-Insert custom configurations into <c>/etc/mpd.conf</c>.
-HTML
+		, 'help'    => 'Insert custom configurations into <c>/etc/mpd.conf</c>.'
 	]
 ];
 htmlSection( $head, $body );
@@ -255,9 +249,7 @@ htmlHead( [
 	, 'id'      => 'nonutf8'
 	, 'subhead' => true
 	, 'status'  => 'nonutf8'
-	, 'help'    => <<< HTML
-List of files with metadata is not UTF-8 encoding which must be corrected.
-HTML
+	, 'help'    => 'List of files with metadata is not UTF-8 encoding which must be corrected.'
 ] );
 echo '
 </div>';

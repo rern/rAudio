@@ -122,9 +122,7 @@ htmlSetting( [
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
-	, 'help'     => <<< HTML
-Sleep timer for USB hard drives.
-HTML
+	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
@@ -133,9 +131,7 @@ htmlSetting( [
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
-	, 'help'     => <<< HTML
-Auto update Library database on insert/remove USB drives.
-HTML
+	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
@@ -152,9 +148,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'status'   => 'bluetooth'
 		, 'disabled' => $disabledbt
-		, 'help'     => <<< HTML
-| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling
-HTML
+		, 'help'     => '| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -192,7 +186,7 @@ $body = [
 	I^gear^I
 </div>
 HTML
-	, 'help'     => <<< HTML
+		, 'help'     => <<< HTML
 | I^gear^I | Disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
@@ -250,17 +244,13 @@ HTML
 		  'label'    => 'Spectrum OLED'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
-		, 'help'     => <<< HTML
-<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-HTML
+		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
 		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
-		, 'help'     => <<< HTML
-<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
-HTML
+		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
@@ -297,9 +287,7 @@ HTML
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
-		, 'help'     => <<< HTML
-| I^gear^I | Servers for time sync and package mirror
-HTML
+		, 'help'     => '| I^gear^I | Servers for time sync and package mirror'
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -307,9 +295,7 @@ HTML
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
 		, 'status'   => 'soundprofile'
-		, 'help'     => <<< HTML
-Tweak kernel parameters for sound profiles.
-HTML
+		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
 ];
 htmlSection( $head, $body );
@@ -335,9 +321,7 @@ HTML
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
 		, 'setting' => 'custom'
-		, 'help'    => <<< HTML
-Restore all settings and Library database from a backup file.
-HTML
+		, 'help'    => 'Restore all settings and Library database from a backup file.'
 	]
 	, [
 		  'label'    => 'Shared Data'

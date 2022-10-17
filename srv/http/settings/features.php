@@ -27,9 +27,7 @@ $body = [
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
 		, 'disabled' => '<wh>AirPlay I^airplay^I</wh> is currently active.'
-		, 'help'     => <<< HTML
-<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.
-HTML
+		, 'help'     => '<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
@@ -40,9 +38,7 @@ HTML
 		, 'setting'  => false
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
-		, 'help'     => <<< HTML
-Digital Audio Broadcasting radio for USB RTL-SDR devices.
-HTML
+		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
 	]
 	, [
@@ -94,9 +90,7 @@ HTML
 		, 'icon'     => 'upnp'
 		, 'status'   => 'upmpdcli'
 		, 'disabled' => '<wh>UPnP I^upnp^I</wh> is currently active.'
-		, 'help'     => <<< HTML
-<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.
-HTML
+		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
