@@ -73,8 +73,8 @@ HTML
 Volume control for each device. The later in the signal chain the better sound quality.
 <pre>
 | None / 0dB   | Best sound quality.  (Amplifier volume)
-| Mixer device | Good and convenient. (DAC hardware volume)
-| MPD software | Software volume.
+| Mixer device | Good and convenient. (DAC hardware via GUI)
+| MPD software | Software volume.     (GUI)
 </pre>
 HTML
 	]
