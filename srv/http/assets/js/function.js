@@ -495,6 +495,8 @@ function getBio( artist ) {
 			loaderHide();
 			
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( function( data ) {
+				if ( 'error message' in data ) return
+				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
 					$( '#biobanner' )
 						.attr( 'src', data.musicbanner[ 0 ].url )
