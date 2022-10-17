@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 timerfile=$dirshm/relaystimer
-timer=$( cat $timerfile )
+timer=$( < $timerfile )
 i=$timer
 while sleep 60; do
 	playing=
@@ -15,7 +15,7 @@ while sleep 60; do
 	if [[ $playing ]]; then
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
-		i=$( cat $timerfile )
+		i=$( < $timerfile )
 		(( $i == 1 )) && $dirsettings/relays.sh && exit
 		
 		(( i-- ))

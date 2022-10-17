@@ -66,7 +66,7 @@ data+='
 , "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
-	[[ -e $brightnessfile ]] && brightness=$( cat $brightnessfile )
+	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
 		conf=$( awk NF $dirsystem/localbrowser.conf \
 				| sed 's/^/,"/; s/=/":/' \

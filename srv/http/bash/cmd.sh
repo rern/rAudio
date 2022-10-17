@@ -243,7 +243,7 @@ urldecode() { # for webradio url to filename
 }
 volumeGet() {
 	if [[ -e $dirshm/btreceiver ]]; then
-		control=$( cat $dirshm/btreceiver )
+		control=$( < $dirshm/btreceiver )
 		for i in {1..5}; do # takes some seconds to be ready
 			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
 			[[ $volume ]] && break
@@ -260,11 +260,11 @@ volumeGet() {
 	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( cat $dirsystem/asoundcard )
+		card=$( < $dirsystem/asoundcard )
 		if [[ ! -e $dirshm/amixercontrol ]]; then
 			volume=100
 		else
-			control=$( cat $dirshm/amixercontrol )
+			control=$( < $dirshm/amixercontrol )
 			voldb=$( amixer -c $card -M sget "$control" \
 				| grep -m1 '%.*dB' \
 				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
@@ -389,7 +389,7 @@ addonsupdates )
 	addonsListGet
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
+		verinstalled=$( < $diraddons/$addon )
 		if (( ${#verinstalled} > 1 )); then
 			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
 			[[ $verinstalled != $verlist ]] && count=1 && break
@@ -854,7 +854,7 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
 	if [[ ! $command ]]; then
-		player=$( cat $dirshm/player )
+		player=$( < $dirshm/player )
 		if [[ $( cat $dirshm/player ) != mpd ]]; then
 			$dirbash/cmd.sh playerstop
 			exit
@@ -1010,7 +1010,7 @@ playerstart )
 	;;
 playerstop )
 	elapsed=${args[1]}
-	player=$( cat $dirshm/player )
+	player=$( < $dirshm/player )
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
@@ -1071,7 +1071,7 @@ power )
 	mpc -q stop
 	pushstream btreceiver false
 	if [[ -e $dirshm/clientip ]]; then
-		clientip=$( cat $dirshm/clientip )
+		clientip=$( < $dirshm/clientip )
 		for ip in $clientip; do
 			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
@@ -1210,7 +1210,7 @@ volume ) # no args = toggle mute / unmute
 			echo $current > $filevolumemute
 			pushstreamVolume mute $current
 		else                        # unmute
-			target=$( cat $filevolumemute )
+			target=$( < $filevolumemute )
 			rm -f $filevolumemute
 			pushstreamVolume unmute $target
 		fi
@@ -1218,7 +1218,7 @@ volume ) # no args = toggle mute / unmute
 	volumeSet $current $target $card "$control"
 	;;
 volume0db )
-	player=$( cat $dirshm/player )
+	player=$( < $dirshm/player )
 	volumeGet
 	amixer -c $card -Mq sset "$control" 0dB
 	;;

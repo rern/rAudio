@@ -18,7 +18,7 @@ Album=${args[2]}
 keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 apikey=${keys[0]}
 sharedsecret=${keys[1]}
-sk=$( cat $dirsystem/scrobble.conf/key )
+sk=$( < $dirsystem/scrobble.conf/key )
 timestamp=$( date +%s )
 if [[ $album ]]; then
 	sigalbum="album${Album}"

@@ -167,7 +167,7 @@ for pid in $( pgrep mpd ); do # set priority
 done
 
 if [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
+	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then

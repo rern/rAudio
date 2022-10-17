@@ -5,7 +5,7 @@
 
 . /srv/http/bash/common.sh
 
-dest=$( cat $dirshm/bluetoothdest )
+dest=$( < $dirshm/bluetoothdest )
 data=$( dbus-send \
 			--system \
 			--type=method_call \

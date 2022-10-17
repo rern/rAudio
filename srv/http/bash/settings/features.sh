@@ -148,7 +148,7 @@ hostapdset )
 		sed -i -E '/^wpa|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
 	fi
 	netctl stop-all
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q brcmfmac; then
 		modprobe brcmfmac
 		iw wlan0 set power_save off
@@ -333,7 +333,7 @@ USB" > /mnt/MPD/.mpdignore
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
-		data=$( cat $dirsystem/display )
+		data=$( < $dirsystem/display )
 		pushstream display "$data"
 	fi
 	pushRefresh

@@ -23,7 +23,7 @@ for key in elapsed expire start state status token; do # var fileKEY=$dirspotify
 done
 # token
 if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
-	token=$( cat $filetoken )
+	token=$( < $filetoken )
 else
 	. $dirsystem/spotify # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \

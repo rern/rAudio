@@ -21,7 +21,7 @@ else
 		| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
-		statusprev=$( cat $dirshm/status )
+		statusprev=$( < $dirshm/status )
 		compare='^Artist|^Title|^Album'
 		[[ "$( grep -E "$compare" <<< "$statusnew" | sort )" != "$( grep -E "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
@@ -68,7 +68,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		data='{"val":0}'
 		pushstream vumeter "$data"
 		if [[ -e $dirsystem/vuled ]]; then
-			p=$( cat $dirsystem/vuled.conf )
+			p=$( < $dirsystem/vuled.conf )
 			for i in $p; do
 				echo 0 > /sys/class/gpio/gpio$i/value
 			done
@@ -84,7 +84,7 @@ if [[ -e $dirshm/clientip ]]; then
 					' -e '/^, "icon" *:/ d
 					' -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
 					' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
-	clientip=$( cat $dirshm/clientip )
+	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
 	done

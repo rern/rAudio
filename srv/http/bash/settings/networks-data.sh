@@ -53,7 +53,7 @@ if [[ $ipeth ]]; then
 }'
 fi
 if [[ -e $dirshm/wlan ]]; then
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	ifconfig $wlandev up &> /dev/null # force up
 	
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )

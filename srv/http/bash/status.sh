@@ -26,7 +26,7 @@ if [[ $1 == snapclient ]]; then # snapclient
 	snapclient=1
 	player=mpd
 else
-	player=$( cat $dirshm/player )
+	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
@@ -96,13 +96,13 @@ if [[ $player != mpd && $player != upnp ]]; then
 
 	airplay )
 		dirairplay=$dirshm/airplay
-		state=$( cat $dirairplay/state 2> /dev/null )
+		[[ -e $dirairplay/state ]] && state=$( < $dirairplay/state ) || state=stop
 		Time=$( cat $dirairplay/Time 2> /dev/null )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
 			elapsedms=$( cat $dirairplay/elapsed 2> /dev/null )
 		else
-			start=$( cat $dirairplay/start 2> /dev/null )
+			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
 			elapsedms=$(( timestamp - start ))
 		fi
 		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
@@ -124,7 +124,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
-		serverip=$( cat $dirshm/serverip )
+		serverip=$( < $dirshm/serverip )
 ########
 		status+="
 $( sshCommand $serverip $dirbash/status.sh snapclient \
@@ -229,8 +229,8 @@ fi
 if [[ $fileheader == cdda ]]; then
 	ext=CD
 	icon=audiocd
-	discid=$( cat $dirshm/audiocd 2> /dev/null )
-	if [[ $discid && -e $diraudiocd/$discid ]]; then
+	if [[ -e $dirshm/audiocd && -e $diraudiocd/$discid ]]; then
+		discid=$( < $dirshm/audiocd )
 		track=${file/*\/}
 		readarray -t audiocd <<< $( sed -n ${track}p $diraudiocd/$discid | tr ^ '\n' )
 		Artist=${audiocd[0]}
@@ -472,7 +472,7 @@ else
 		sampling="$radiosampling"
 	else
 		if [[ -e $samplingfile ]]; then
-			sampling=$( cat $samplingfile )
+			sampling=$( < $samplingfile )
 		else
 			if [[ $ext == DSF || $ext == DFF ]]; then
 				# DSF: byte# 56+4 ? DSF: byte# 60+4

@@ -43,7 +43,7 @@ getControls() {
 rm -f $dirshm/nosound
 #aplay+=$'\ncard 1: sndrpiwsp [snd_rpi_wsp], device 0: WM5102 AiFi wm5102-aif1-0 []'
 
-audioaplayname=$( cat $dirsystem/audio-aplayname 2> /dev/null )
+[[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
 
 cards=$( echo "$aplay" \
 			| cut -d: -f1 \
@@ -66,17 +66,17 @@ for card in $cards; do
 	else
 		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
 		if [[ $aplayname == $audioaplayname ]]; then
-			name=$( cat $dirsystem/audio-output )
+			name=$( < $dirsystem/audio-output )
 		else
-			name=$( echo $aplayname | sed 's/bcm2835/On-board/' )
+			name=$( sed 's/bcm2835/On-board/' <<< $aplayname )
 		fi
-		mixertype=$( cat "$dirsystem/mixertype-$aplayname" 2> /dev/null || echo hardware )
+		[[ -e "$dirsystem/mixertype-$aplayname" ]] && mixertype=$( < "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
 		getControls $card
 		if [[ ! $controls ]]; then
 			mixerdevices=['"( not available )"']
 			mixers=0
 		else
-			readarray -t controls <<< $( echo "$controls" | sort -u )
+			readarray -t controls <<< $( sort -u <<< "$controls" )
 			mixerdevices=
 			for control in "${controls[@]}"; do
 				mixerdevices+=',"'$control'"'
@@ -89,7 +89,7 @@ for card in $cards; do
 		hwmixerfile=$dirsystem/hwmixer-$aplayname
 		if [[ -e $hwmixerfile ]]; then # manual
 			mixermanual=true
-			hwmixer=$( cat "$hwmixerfile" )
+			hwmixer=$( < "$hwmixerfile" )
 		elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 			mixers=4
 			hwmixer='HPOUT2 Digital'
@@ -135,12 +135,12 @@ if [[ $usbdac == add ]]; then
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then
-	asoundcard=$( cat $dirsystem/asoundcard )
+	asoundcard=$( < $dirsystem/asoundcard )
 	! echo "$aplay" | grep -v Loopback | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
 else
 	echo ${Acard[0]} > $dirsystem/asoundcard
 fi
-i=$( cat $dirsystem/asoundcard )
+i=$( < $dirsystem/asoundcard )
 
 echo Ahwmixer[i] > $dirshm/amixercontrol
 

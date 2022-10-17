@@ -7,7 +7,7 @@ readarray -t args <<< "$1"
 
 netctlSwitch() {
 	ssid=$1
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
@@ -84,7 +84,7 @@ connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	profile="\
 Interface=$wlandev
 Connection=wireless
@@ -119,7 +119,7 @@ Gateway=$( jq -r .Gateway <<< $data )
 	netctlSwitch "$ESSID"
 	;;
 disconnect )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
 	netctl stop "$connected"
 	netctl disable "$connected"
@@ -169,7 +169,7 @@ ifconfigeth )
 $( ifconfig eth0 | grep -E -v 'RX|TX' | awk NF )"
 	;;
 ifconfigwlan )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	echo "\
 <bll># ifconfig $wlandev; iwconfig $wlandev</bll>
 $( ifconfig $wlandev | grep -E -v 'RX|TX')
@@ -186,7 +186,7 @@ iwlist )
 	iw list
 	;;
 profileconnect )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
 		ifconfig $wlandev 0.0.0.0
@@ -195,7 +195,7 @@ profileconnect )
 	netctlSwitch "${args[1]}"
 	;;
 profileget )
-	netctl=$( cat "/etc/netctl/${args[1]}" )
+	netctl=$( < "/etc/netctl/${args[1]}" )
 	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
 	static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
 	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )

@@ -169,7 +169,7 @@ bluetoothset )
 bluetoothstatus )
 	if rfkill -no type | grep -q bluetooth; then
 		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
-		mac=$( cat /sys/kernel/debug/bluetooth/$hci/identity | cut -d' ' -f1 )
+		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
 	fi
 	echo "\
 <bll># bluetoothctl show</bll>
@@ -279,7 +279,7 @@ datarestore )
 	fi
 	hostnamectl set-hostname $( cat $dirsystem/hostname )
 	if [[ -e $dirsystem/mirror ]]; then
-		mirror=$( cat $dirsystem/mirror )
+		mirror=$( < $dirsystem/mirror )
 		sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
 	fi
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
@@ -826,9 +826,9 @@ servers )
 	;;
 shareddataconnect )
 	ip=${args[1]}
-	if [[ ! $ip ]]; then # sshpass from server to reconnect
-		ip=$( cat $dirsystem/sharedipserver 2> /dev/null )
-		[[ ! $ip ]] || ! ping -c 1 -w 1 $ip &> /dev/null && exit
+	if [[ ! $ip && -e $dirsystem/sharedipserver ]]; then # sshpass from server to reconnect
+		ip=$( < $dirsystem/sharedipserver )
+		! ping -c 1 -w 1 $ip &> /dev/null && exit
 		
 		reconnect=1
 	fi
@@ -841,7 +841,7 @@ shareddataconnect )
 		umount -ql "$dir"
 	done
 	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
-	fstab=$( cat /etc/fstab )
+	fstab=$( < /etc/fstab )
 	for path in "${paths[@]}"; do
 		name=$( basename "$path" )
 		[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
@@ -910,7 +910,7 @@ shareddataiplist )
 	;;
 shareddatarestart )
 	systemctl restart mpd
-	data=$( cat $dirmpd/counts )
+	data=$( < $dirmpd/counts )
 	pushstream mpdupdate "$data"
 	;;
 sharelist )
@@ -993,7 +993,7 @@ $( cat /boot/config.txt )
 <bll># bootloader and firmware</bll>
 $( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
 	file=/etc/modules-load.d/raspberrypi.conf
-	raspberrypiconf=$( cat $file )
+	raspberrypiconf=$( < $file )
 	if [[ $raspberrypiconf ]]; then
 		config+="
 
@@ -1038,7 +1038,7 @@ usbautoupdate )
 vuleddisable )
 	rm -f $dirsystem/vuled
 	killall cava &> /dev/null
-	p=$( cat $dirsystem/vuled.conf )
+	p=$( < $dirsystem/vuled.conf )
 	for i in $p; do
 		echo 0 > /sys/class/gpio/gpio$i/value
 	done

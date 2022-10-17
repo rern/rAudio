@@ -78,12 +78,10 @@ customdisable )
 	restartMPD
 	;;
 customget )
-	global=$( cat $dirsystem/custom-global 2> /dev/null )
-	output=$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )
 	echo "\
-$global
+$( cat $dirsystem/custom-global 2> /dev/null )
 ^^
-$output"
+$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )"
 	;;
 customset )
 	file=$dirsystem/custom
@@ -119,7 +117,7 @@ $bluealsa
 $( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
 
 <bll># amixer scontrols</bll>"
-	card=$( cat $dirsystem/asoundcard )
+	card=$( < $dirsystem/asoundcard )
 	aplayname=$( aplay -l \
 					| grep "^card $card" \
 					| awk -F'[][]' '{print $2}' )

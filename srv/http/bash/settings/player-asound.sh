@@ -42,7 +42,7 @@ ctl.camilladsp {
 }'
 else
 	if [[ -e $dirshm/btreceiver ]]; then
-		btmixer=$( cat $dirshm/btreceiver )
+		btmixer=$( < $dirshm/btreceiver )
 ########
 		asound+='
 pcm.bluealsa {
@@ -85,7 +85,7 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 # ----------------------------------------------------------------------------
 wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
-	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
+	[[ -e $dirsystem/hwmixer-wsp ]] && output=$( < $dirsystem/hwmixer-wsp ) || output='HPOUT2 Digital'
 	$dirsettings/player-wm5102.sh $wm5102card $output
 fi
 
@@ -93,8 +93,10 @@ if [[ $dsp ]]; then
 	$dirsettings/camilladsp-setformat.sh
 else
 	if [[ $btmixer ]]; then
-		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then
+			btvolume=$( < "$dirsystem/btvolume-$btmixer" )
+			amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		fi
 		systemctl -q is-active localbrowser && action=stop || action=start
 		systemctl $action bluetoothbutton
 	else

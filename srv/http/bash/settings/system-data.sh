@@ -47,7 +47,7 @@ else
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-version=$( cat $dirsystem/version )
+version=$( < $dirsystem/version )
 system="\
 rAudio $( cat $diraddons/r$version 2> /dev/null )<br>\
 $( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\

@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 if [[ $1 == wlan ]]; then
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up
 
 	# ESSID:"NAME"
