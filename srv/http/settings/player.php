@@ -115,7 +115,7 @@ $body = [
 	[	  'label'   => 'Crossfade'
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
-<c>mpc crossfade N</c>
+<c>mpc crossfade <yl>sec</yl></c>
 Fade-out to fade-in between songs.
 HTML
 	]
@@ -129,12 +129,12 @@ Normalize the volume level of songs as they play.
 HTML
 	] 
 	, [
-		  'label'   => 'Replay Gain'
+		  'label'   => 'ReplayGain'
 		, 'id'      => 'replaygain'
 		, 'help'    => <<< HTML
-<c>replaygain "N"</c>
-Set gain control for replaygain tag.
-Currently support: FLAC, Ogg Vorbis, Musepack, and MP3 (through ID3v2 ReplayGain tags, not APEv2)
+<c>replaygain "<yl>type</yl>"</c>
+<a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
+Support: FLAC, Ogg Vorbis, Musepack and MP3
 HTML
 	]
 ];
@@ -148,7 +148,7 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>audio_buffer_size "kB"</c> (default: 4096 kB - 24s of CD-quality audio)
+<c>audio_buffer_size "<yl>kB</yl>"</c> (default: 4096 kB - 24s of CD-quality audio)
 Increase to fix intermittent audio.
 HTML
 	]
@@ -157,7 +157,7 @@ HTML
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>max_output_buffer_size "kB"</c> (default: 8192 kB)
+<c>max_output_buffer_size "<yl>kB</yl>"</c> (default: 8192 kB)
 Increase to fix missing Album list with large Library.
 HTML
 	]
