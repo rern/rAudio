@@ -66,47 +66,19 @@ ln -sf /srv/http/assets/fonts $dircamillagui
 ln -sf /srv/http/assets/css/colors.css $dircamillagui
 ln -sf /srv/http/assets/img/icon.png $dircamillagui
 # display
-cat << EOF > $dirsystem/display
-{
-  "album": true,
-  "albumartist": true,
-  "albumbyartist": false,
-  "artist": true,
-  "audiocdplclear": false,
-  "backonleft": false,
-  "bars": true,
-  "barsalways": false,
-  "buttons": true,
-  "camilladsp": false,
-  "composer": true,
-  "conductor": true,
-  "count": true,
-  "cover": true,
-  "covervu": false,
-  "date": true,
-  "fixedcover": true,
-  "genre": true,
-  "hidecover": false,
-  "label": true,
-  "latest": true,
-  "multiraudio": false,
-  "nas": true,
-  "noswipe": false,
-  "playbackswitch": true,
-  "playlists": true,
-  "plclear": true,
-  "plsimilar": true,
-  "radioelapsed": false,
-  "sd": true,
-  "tapaddplay": false,
-  "tapreplaceplay": false,
-  "time": true,
-  "usb": true,
-  "volume": true,
-  "vumeter": false,
-  "webradio": true
-}
-EOF
+true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
+	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
+false='albumbyartist audiocdplclear backonleft barsalways camilladsp covervu hidecover
+	multiraudio noswipe radioelapsed tapaddplay tapreplaceplay vumeter'
+for i in $true; do
+	lines+='
+, "'$i'": true'
+done
+for i in $false; do
+	lines+='
+, "'$i'": false'
+done
+jq -S <<< {${lines:2}} > $dirsystem/display
 # localbrowser
 if [[ -e /usr/bin/chromium ]]; then
 	rm -rf /root/.config/chromium
