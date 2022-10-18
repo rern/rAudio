@@ -17,7 +17,6 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<link rel="icon" href="/assets/img/icon.png">
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/addons.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
 </head>

@@ -19,7 +19,6 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body>

@@ -21,7 +21,6 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 	<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
 	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/info.<?=$time?>.css">
 	<link rel="stylesheet" href="/assets/css/roundslider-1.6.1.min.css">
 	<link rel="stylesheet" href="/assets/css/main.<?=$time?>.css">
 </head>
