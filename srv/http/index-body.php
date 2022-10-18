@@ -6,7 +6,7 @@ if ( $login && !$_SESSION[ 'login' ] ) { ?>
 	<a id="login" class="btn btn-primary">Login</a>
 </div>
 <script src="assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="assets/js/info.<?=$time?>.js"></script>
+<script src="assets/js/common.<?=$time?>.js"></script>
 <script>
 $( '#divlogin' ).prepend( $( '#loader' ).html() );
 $( '#loader' ).remove();

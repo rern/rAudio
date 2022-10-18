@@ -175,7 +175,7 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/common.<?=$time?>.js"></script>
 <script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
 	<?php if ( $page === 'relays' ) { ?>
 <link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">

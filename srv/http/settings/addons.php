@@ -147,7 +147,7 @@ foreach( $arrayalias as $alias ) {
 ?>
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/common.<?=$time?>.js"></script>
 <script src="/assets/js/addons.<?=$time?>.js"></script>
 	<?php if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
 <script>

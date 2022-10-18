@@ -37,7 +37,7 @@ $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 <script src="/assets/js/plugin/qrcode.min.js"></script>
 <script src="/assets/js/plugin/roundslider-1.6.1.min.js"></script>
 <script src="/assets/js/plugin/Sortable-1.15.0.min.js"></script>
-<script src="/assets/js/info.<?=$time?>.js"></script>
+<script src="/assets/js/common.<?=$time?>.js"></script>
 <script src="/assets/js/context.<?=$time?>.js"></script>
 <script src="/assets/js/function.<?=$time?>.js"></script>
 <script src="/assets/js/main.<?=$time?>.js"></script>
