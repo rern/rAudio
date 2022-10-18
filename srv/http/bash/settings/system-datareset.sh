@@ -35,7 +35,7 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on"
-	[[ -e /boot/kernel8.img || $BB =~ ^(08|0c|0d|0e|11|12)$ ]] && config+="
+	[[ $BB =~ ^(08|0c|0d|0e|11|12)$ ]] && config+="
 dtparam=krnbt=on"
 	[[ $BB =~ ^(09|0c)$ ]] && config+="
 force_turbo=1
