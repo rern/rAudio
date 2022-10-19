@@ -113,11 +113,11 @@ HTML
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'label'   => 'Crossfade'
+	[	  'label'   => 'Cross-fading'
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
-<c>mpc crossfade <yl>sec</yl></c>
-Fade-out to fade-in between songs.
+<c>mpc crossfade <yl>N</yl></c>
+Fade-out to fade-in between adjacent songs (same audio format only)
 HTML
 	]
 	, [
@@ -126,7 +126,7 @@ HTML
 		, 'setting' => false
 		, 'help'    => <<< HTML
 <c>volume_normalization "yes"</c>
-Normalize the volume level of songs as they play.
+Normalize the volume level of songs as they play. (16 bit PCM only)
 HTML
 	] 
 	, [
@@ -149,7 +149,7 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>audio_buffer_size "<yl>kB</yl>"</c> (default: 4096 kB - 24s of CD-quality audio)
+<c>audio_buffer_size "<yl>N</yl>"</c> (default: 4096 kB - 24s of CD-quality audio)
 Increase to fix intermittent audio.
 HTML
 	]
@@ -158,7 +158,7 @@ HTML
 		, 'id'       => 'bufferoutput'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>max_output_buffer_size "<yl>kB</yl>"</c> (default: 8192 kB)
+<c>max_output_buffer_size "<yl>N</yl>"</c> (default: 8192 kB)
 Increase to fix missing Album list with large Library.
 HTML
 	]
