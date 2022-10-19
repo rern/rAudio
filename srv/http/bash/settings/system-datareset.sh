@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 systemctl stop mpd
-rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
+rm -f $dirsystem/{audiocd,buffer,bufferoutput,crossfade,custom,dop-*,ffmpeg,listing,relays,replaygain,soundprofile,soxr,updating}
 
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf
@@ -112,12 +112,8 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-sed -i -e -E '/^auto_update|^audio_buffer_size| #custom$/ d
-' -e '/quality/,/}/ d
-' -e '/soxr/ a\
-	quality        "very high"\
-}
-' /etc/mpd.conf
+sed -i -e -E '/^auto_update|^audio_buffer_size|^replaygain|^volume_normalization/ d' $mpdconf
+mpc -q crossfade 0
 curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
 	echo '{
@@ -136,6 +132,6 @@ $dirsettings/system.sh dirpermissions
 
 [[ $version ]] && exit
 
-systemctl start mpd
+$dirsettings/player-conf.sh
 
 curl -s -X POST http://127.0.0.1/pub?id=restore -d '{"restore":"reload"}' &> /dev/null

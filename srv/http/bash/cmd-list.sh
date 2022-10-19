@@ -31,11 +31,11 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 
 if (( $? != 0 )); then # very large database
 	eachkb=8192
-	existing=$( grep max_output_buffer /etc/mpd.conf | cut -d'"' -f2 )
+	existing=$( grep max_output_buffer $mpdconf | cut -d'"' -f2 )
 	for (( i=1; i < 11; i++ )); do
 		buffer=$(( $existing + ( i * $eachkb ) ))
-		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
-		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
+		sed -i '/^max_output_buffer/ d' $mpdconf
+		sed -i '1 i\max_output_buffer_size "'$buffer'"' $mpdconf
 		systemctl restart mpd
 		albums=$( mpc list album )
 		(( $? == 0 )) && break
@@ -45,7 +45,7 @@ if (( $? != 0 )); then # very large database
 		echo $buffer > $dirsystem/bufferoutput.conf
 	else
 		toolarge=1
-		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
+		sed -i '/^max_output_buffer/ d' $mpdconf
 	fi
 fi
 ##### wav list #############################################

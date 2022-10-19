@@ -302,7 +302,7 @@ $( '#setting-soxr' ).click( function() {
 } );
 var custominfo = `\
 <table width="100%">
-<tr><td><code>/etc/mpd.conf</code></td></tr>
+<tr><td><code>mpd.conf</code></td></tr>
 <tr><td><pre>
 ...
 user                   "mpd"</pre></td></tr>
@@ -407,7 +407,7 @@ function renderPage() {
 			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
 			$( '#novolume' ).prop( 'checked', G.novolume );
 			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-			$( '#dop' ).prop( 'checked', device.dop == 1 );
+			$( '#dop' ).prop( 'checked', G.dop );
 			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
 		}
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );

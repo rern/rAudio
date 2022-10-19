@@ -58,7 +58,7 @@ for card in $cards; do
 					| awk -F'[][]' '{print $2}' \
 					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
-		device=; dop=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
+		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
@@ -102,12 +102,10 @@ for card in $cards; do
 				hwmixer=${controls[0]}
 			fi
 		fi
-		[[ -e "$dirsystem/dop-$aplayname" ]] && dop=1 || dop=0
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
 , "device"       : '$device'
-, "dop"          : '$dop'
 , "hw"           : "'$hw'"
 , "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
@@ -120,7 +118,6 @@ for card in $cards; do
 	Aaplayname[card]=$aplayname
 	Acard[card]=$card
 	Adevice[card]=$device
-	Adop[card]=$dop
 	Ahw[card]=$hw
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers

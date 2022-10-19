@@ -13,6 +13,7 @@ dirs=$( ls $dirdata | grep -v 'backup$' )
 for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
+mpdconf=$dirmpd/mpd.conf
 
 cpuInfo() {
 	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )

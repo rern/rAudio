@@ -11,12 +11,9 @@ pushstreamPlaylist() {
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
-	sed -i '/^user/ a\
-input {\
-	plugin         "cdio_paranoia"\
-	speed          "12"\
-}\
-' /etc/mpd.conf
+	sed -i '/mpd-soxr/ a\
+include "mpd-cdio.conf"
+' $dirmpd/mpd.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit
@@ -35,14 +32,13 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
-		linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
-		sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
+		sed -i '/mpd-cdio/ d' $dirmpd/mpd.conf
+		rm $dirshm/audiocd
 		systemctl restart mpd
-		$dirsettings/player-data.sh pushrefresh
-	elif [[ $1 == ejectwithicon ]]; then
-		eject
+	else
+		[[ $1 == ejectwithicon ]] && eject
+		( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	fi
-	( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	exit
 	
 fi

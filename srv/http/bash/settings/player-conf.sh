@@ -6,7 +6,6 @@
 # - mixer_type    - from file if manually set | hardware if hwmixer | software
 # - mixer_control - from file if manually set | hwmixer | null
 # - mixer_device  - card index
-# - dop           - if set
 
 usbdac=$1
 
@@ -15,10 +14,8 @@ usbdac=$1
 . $dirsettings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
-output= # reset var from player-devices.sh
 if [[ $i != -1 ]]; then # $i - current card number
 	aplayname=${Aaplayname[i]}
-	dop=${Adop[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
@@ -27,7 +24,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------<
-		output+='
+		audiooutput+='
 	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
@@ -37,7 +34,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------<
-		output+='
+		audiooutput+='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
@@ -47,19 +44,17 @@ if [[ $i != -1 ]]; then # $i - current card number
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
 #---------------<
-		output+='
+		audiooutput+='
 	name           "'$btmixer'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
-		if [[ -e $dirsystem/btformat ]]; then
-			output+='
+		[[ -e $dirsystem/btformat ]] && audiooutput+='
 	format         "44100:16:2"'
-		fi
 #--------------->
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
 #---------------<
-		output+='
+		audiooutput+='
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -67,40 +62,35 @@ if [[ $i != -1 ]]; then # $i - current card number
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-			output+='
+			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$i'"'
-			if ! grep -q replaygain.*off /etc/mpd.conf; then
-				output+='
+			grep -q replaygain $mpdconf && audiooutput+='
 	replay_gain_handler "mixer"'
-			fi
 		fi
-		if [[ $dop == 1 ]]; then
-			output+='
+		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
 	dop            "yes"'
-		fi
-		mpdcustom=$dirsystem/custom
-		customfile="$mpdcustom-output-$aplayname"
-		if [[ -e $mpdcustom && -e "$customfile" ]]; then
-			output+="
-$( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
+		if [[ $dirsystem/custom ]]; then
+			customfile="$dirsystem/custom-output-$aplayname"
+			[[ -e "$customfile" ]] && audiooutput+="
+$( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 fi
-if [[ $output ]]; then
+if [[ $audiooutput ]]; then
 ########
-	output="
-audio_output {\
-$output
+	audiooutput="\
+audio_output {
+$( echo "$audiooutput" | sed 's/  *"/@"/' | column -t -s@ )
 }"
 #-------
 fi
 
 if systemctl -q is-active snapserver; then
 ########
-	output+='
+	audiooutput+='
 audio_output {
 	name           "Snapcast"
 	type           "fifo"
@@ -112,7 +102,7 @@ audio_output {
 fi
 if [[ -e $dirsystem/streaming ]]; then
 ########
-	output+='
+	audiooutput+='
 audio_output {
 	type           "httpd"
 	name           "Streaming"
@@ -124,11 +114,11 @@ audio_output {
 }'
 #-------
 fi
-if [[ ! $output || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 ########
-		output+='
+		audiooutput+='
 audio_output {
-	name           "'$( [[ ! $output ]] && echo '(no sound device)' || echo '(visualizer)' )'"
+	name           "'$( [[ ! $audiooutput ]] && echo '(no sound device)' || echo '(visualizer)' )'"
 	type           "fifo"
 	path           "/tmp/mpd.fifo"
 	format         "44100:16:1"
@@ -136,22 +126,23 @@ audio_output {
 #-------
 fi
 
-linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
-[[ $linecdio ]] && sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
-
-lastline=$(( $( sed -n '/^audio_output/ =' /etc/mpd.conf | head -1 ) - 1 ))
-global=$( sed -n "1,$lastline p" /etc/mpd.conf | sed '/# custom0/,/# custom1/ d' )
-if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
-	custom=$( echo "
-# custom0
-$( cat $dirsystem/custom-global )
-# custom1" | sed '$!s/$/\\/' )
-	global=$( echo "$global" | sed "/^user/ a$custom" )
-fi
-echo "\
+global=$( sed -n '1,/^user/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
+[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && custom='include "mpd-custom.conf"'
+[[ -e $dirsystem/soxr ]] && soxrcustom='-custom'
+soxr='include "mpd-soxr'$soxrcustom'.conf"'
+[[ -e $dirshm/audiocd ]] && cdio='include "mpd-cdio.conf"'
+[[ -e $dirsystem/ffmpeg ]] && ffmpeg='include "mpd-ffmpeg.conf"'
+cat << EOF | awk NF > $mpdconf
 $global
-$output
-$btoutput" > /etc/mpd.conf
+$custom
+input {
+	plugin         "curl"
+}
+$soxr
+$cdio
+$ffmpeg
+$audiooutput
+EOF
 
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $usbdac == add || $usbdac == remove ]]; then
@@ -163,7 +154,7 @@ if [[ $usbdac == add || $usbdac == remove ]]; then
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 
-### mpd start ##########################################################################
+### mpd restart ##########################################################################
 systemctl restart mpd
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
@@ -207,7 +198,7 @@ alsa = {"
 	echo "$conf" > /etc/shairport-sync.conf
 	data='{"stop":"switchoutput"}'
 	pushstream airplay "$data"
-	systemctl try-restart shairport-sync
+	systemctl try-restart shairport-sync shairport-meta
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then

@@ -97,7 +97,7 @@ dabradio )
 	if [[ ${args[1]} == true ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
-			! grep -q 'plugin.*ffmpeg' /etc/mpd.conf && $dirsettings/player.sh ffmpeg$'\n'true
+			! grep -q 'mpd-ffmpeg' $mpdconf && $dirsettings/player.sh ffmpeg$'\n'true
 		else
 			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dabradio 5000
 		fi
@@ -242,14 +242,14 @@ localbrowserxset )
 	;;
 logindisable )
 	rm -f $dirsystem/login*
-	sed -i '/^bind_to_address/ s/".*"/"0.0.0.0"/' /etc/mpd.conf
+	sed -i '/^bind_to_address/ s/".*"/"0.0.0.0"/' $mpdconf
 	systemctl restart mpd
 	pushRefresh
 	pushSubmenu lock false
 	;;
 loginset )
 	touch $dirsystem/login
-	sed -i '/^bind_to_address/ s/".*"/"127.0.0.1"/' /etc/mpd.conf
+	sed -i '/^bind_to_address/ s/".*"/"127.0.0.1"/' $mpdconf
 	systemctl restart mpd
 	pushRefresh
 	pushSubmenu lock true

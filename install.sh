@@ -5,7 +5,35 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221021
-if [[ -L /srv/http/data/mpd  && ! -e /mnt/MPD/.mpdignore ]]; then
+grep -q plugin.*ffmpeg /etc/mpd.conf && touch $dirsystem/ffmpeg
+grep -q quality.*custom /etc/mpd.conf && touch $dirsystem/soxr
+file=$dirsystem/soxr.conf
+if [[ -e $file ]]; then
+	sed -i '1 i\
+resampler {\
+	plugin         "soxr"
+' $file
+	mv $file $dirmpd/mpd-soxr-custom.conf
+fi
+
+grep -q volume_normalization /etc/mpd.conf && sed -i -e '/volume_normalization/ d' -i '/^user/ i\volume_normalization   "yes"' /etc/mpd.conf
+
+sed -i '/replaygain.*off/ d' /etc/mpd.conf
+
+mv $dirsystem/custom-global $dirmpd/mpd-custom.conf &> /dev/null
+
+sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
+
+cp /etc/mpd.conf $dirmpd
+
+file=/etc/systemd/system/mpd.service.d/override.conf
+if ! grep -q ExecStart $file; then
+	echo "\
+ExecStart=
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
+fi
+
+if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
 	echo "\
 SD
 USB" > /mnt/MPD/.mpdignore
@@ -69,12 +97,15 @@ installstart "$1"
 
 getinstallzip
 
-chmod +x /srv/http/bash/settings/system.sh
-/srv/http/bash/settings/system.sh dirpermissions
-[[ -e /srv/http/data/system/color ]] && /srv/http/bash/cmd.sh color
+chmod +x $dirsettings/system.sh
+$dirsettings/system.sh dirpermissions
+[[ -e $dirsystem/color ]] && $dirbashbash/cmd.sh color
 
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20221021
+$dirsettings/player-conf.sh
 
 # 20221010
 [[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."

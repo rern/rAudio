@@ -40,7 +40,7 @@ data+='
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )'
-, "streaming"        : '$( grep -q 'type.*"httpd"' /etc/mpd.conf && echo true )
+, "streaming"        : '$( grep -q 'type.*"httpd"' $mpdconf && echo true )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'

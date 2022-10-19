@@ -12,9 +12,9 @@ fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then # client start - save server ip
 	if systemctl -q is-active snapserver; then # server + client on same device
-		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
+		line=$( sed -n '/auto_format/ =' $mpdconf )
 		line0=$(( line - 5 ))
-		sed -i "$line0,/}/ d" /etc/mpd.conf
+		sed -i "$line0,/}/ d" $mpdconf
 		systemctl restart mpd
 		systemctl start snapclient
 		touch $dirshm/snapclientactive

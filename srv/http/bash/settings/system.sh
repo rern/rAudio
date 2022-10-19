@@ -139,7 +139,7 @@ bluetoothdisable )
 		systemctl stop bluetooth
 		killall bluetooth
 		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		grep -q 'device.*bluealsa' /etc/mpd.conf && $dirsettings/player-conf.sh
+		grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
 	fi
 	pushRefresh
 	;;
@@ -156,7 +156,7 @@ bluetoothset )
 	sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 	if ls -l /sys/class/bluetooth | grep -q serial; then
 		systemctl start bluetooth
-		! grep -q 'device.*bluealsa' /etc/mpd.conf && $dirsettings/player-conf.sh
+		! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
 	else
 		pushReboot Bluetooth
 	fi
@@ -195,7 +195,6 @@ databackup )
 /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 /etc/exports
 /etc/fstab
-/etc/mpd.conf
 /etc/mpdscribble.conf
 /etc/upmpdcli.conf
 /var/lib/alsa/asound.state
@@ -385,7 +384,7 @@ dtparam=audio=on"
 		cpuInfo
 		[[ $BB == 09 || $BB == 0c ]] && output='HDMI 1' || output=Headphones
 		aplayname="bcm2835 $output"
-		output="On-board - $output"
+		output="On-board $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
 	sed -i -E '/dtparam=|dtoverlay=|force_eeprom_read=0|gpio=25=op,dh|^$/ d' $fileconfig
@@ -685,6 +684,9 @@ $( cat /etc/hostapd/hostapd.conf )
 		localbrowser )
 			pkg=chromium
 			fileconf=$dirsystem/localbrowser.conf
+			;;
+		mpd )
+			fileconf=$mpdconf
 			;;
 		nfs-server )
 			pkg=nfs-utils
@@ -1052,7 +1054,7 @@ vuleddisable )
 vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	! grep -q mpd.fifo /etc/mpd.conf && $dirsettings/player-conf.sh
+	! grep -q mpd.fifo $mpdconf && $dirsettings/player-conf.sh
 	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh
