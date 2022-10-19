@@ -127,16 +127,16 @@ audio_output {
 fi
 
 global=$( sed -n '1,/^user/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
-[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && custom='include "mpd-custom.conf"'
+[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && custom='include             "mpd-custom.conf"'
 [[ -e $dirsystem/soxr ]] && soxrcustom='-custom'
-soxr='include "mpd-soxr'$soxrcustom'.conf"'
-[[ -e $dirshm/audiocd ]] && cdio='include "mpd-cdio.conf"'
-[[ -e $dirsystem/ffmpeg ]] && ffmpeg='include "mpd-ffmpeg.conf"'
+soxr='include             "mpd-soxr'$soxrcustom'.conf"'
+[[ -e $dirshm/audiocd ]] && cdio='include             "mpd-cdio.conf"'
+[[ -e $dirsystem/ffmpeg ]] && ffmpeg='include             "mpd-ffmpeg.conf"'
 cat << EOF | awk NF > $mpdconf
 $global
 $custom
 input {
-	plugin         "curl"
+	plugin          "curl"
 }
 $soxr
 $cdio
