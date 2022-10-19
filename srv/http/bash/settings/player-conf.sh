@@ -161,8 +161,6 @@ for pid in $( pgrep mpd ); do # set priority
 	renice -n -19 -p $pid &> /dev/null
 done
 
-[[ -e $dirsystem/crossfade ]] && mpc -q crossfade $( cat $dirsystem/crossfade.conf )
-
 if [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"

@@ -112,7 +112,7 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-sed -i -e -E '/^auto_update|^audio_buffer_size|^replaygain|^volume_normalization/ d' $mpdconf
+cp -f /etc/mpd.conf $dirmpd
 mpc -q crossfade 0
 curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
