@@ -100,7 +100,7 @@ HTML
 	, [
 		  'label'   => 'DSD over PCM'
 		, 'id'      => 'dop'
-		, 'setting' => false
+		, 'setting' => 'custom'
 		, 'help'    => <<< HTML
 For DSD-capable devices without drivers dedicated for native DSD.
  • Enable if there's static/no sound from the DAC which means not support as native DSD.
