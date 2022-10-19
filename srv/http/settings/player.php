@@ -211,7 +211,7 @@ HTML
 	, [
 		  'label'   => "User's Configurations"
 		, 'id'      => 'custom'
-		, 'help'    => 'Insert custom configurations into <c>/etc/mpd.conf</c>.'
+		, 'help'    => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
 htmlSection( $head, $body );
