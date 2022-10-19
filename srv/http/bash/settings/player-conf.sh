@@ -70,6 +70,10 @@ if [[ $i != -1 ]]; then # $i - current card number
 			output+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$i'"'
+			if ! grep -q replaygain.*off /etc/mpd.conf; then
+				output+='
+	replay_gain_handler "mixer"'
+			fi
 		fi
 		if [[ $dop == 1 ]]; then
 			output+='
