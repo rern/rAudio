@@ -11,7 +11,7 @@ pushstreamPlaylist() {
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
-	sed -i '/^decoder/ i\
+	sed -i '/^user/ a\
 input {\
 	plugin         "cdio_paranoia"\
 	speed          "12"\
