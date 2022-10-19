@@ -117,7 +117,7 @@ $body = [
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
 <c>mpc crossfade <yl>N</yl></c>
-Fade-out to fade-in between adjacent songs (same audio format only)
+Fade-out to fade-in between playing tracks (same audio format only)
 HTML
 	]
 	, [
