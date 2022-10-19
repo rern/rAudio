@@ -94,7 +94,7 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • Mixer device volume: 0dB (No amplitude manipulations)
  • Volume Control: | None / 0db | (Hidden volume in Playback)
  • Signal Processors: Disabled
- • Crossfade, Normalization and Replay Gain: Disabled
+ • Cross-fading, Normalization and ReplayGain: Disabled
 HTML
 	]
 	, [
