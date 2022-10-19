@@ -126,23 +126,21 @@ audio_output {
 #-------
 fi
 
-global=$( sed -n '1,/^user/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
-[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && custom='include             "mpd-custom.conf"'
+config=$( sed -n '1,/^user/ p' $mpdconf )
+[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && config+='
+include  "mpd-custom.conf"'
+config+='
+include  "mpd-curl.conf"'
 [[ -e $dirsystem/soxr ]] && soxrcustom='-custom'
-soxr='include             "mpd-soxr'$soxrcustom'.conf"'
-[[ -e $dirshm/audiocd ]] && cdio='include             "mpd-cdio.conf"'
-[[ -e $dirsystem/ffmpeg ]] && ffmpeg='include             "mpd-ffmpeg.conf"'
-cat << EOF | awk NF > $mpdconf
-$global
-$custom
-input {
-	plugin          "curl"
-}
-$soxr
-$cdio
-$ffmpeg
-$audiooutput
-EOF
+config+='
+include  "mpd-soxr'$soxrcustom'.conf"'
+[[ -e $dirshm/audiocd ]] && config+='
+include  "mpd-cdio.conf"'
+[[ -e $dirsystem/ffmpeg ]] && config+='
+include  "mpd-ffmpeg.conf"'
+echo "\
+$( sed 's/  *"/@"/' <<< "$config" | column -t -s@ )
+$audiooutput" | awk NF > $mpdconf
 
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $usbdac == add || $usbdac == remove ]]; then
