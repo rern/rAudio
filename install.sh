@@ -16,14 +16,12 @@ resampler {\
 	mv $file $dirmpd/mpd-soxr-custom.conf
 fi
 
-grep -q volume_normalization /etc/mpd.conf && sed -i -e '/volume_normalization/ d' -i '/^user/ i\volume_normalization   "yes"' /etc/mpd.conf
-
-sed -i '/replaygain.*off/ d' /etc/mpd.conf
-
 mv $dirsystem/custom-global $dirmpd/mpd-custom.conf &> /dev/null
 
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 
+grep -q volume_normalization /etc/mpd.conf && sed -i -e '/volume_normalization/ d' -i '/^user/ i\volume_normalization   "yes"' /etc/mpd.conf
+sed -i '/replaygain.*off/ d' /etc/mpd.conf
 cp /etc/mpd.conf $dirmpd
 
 file=/etc/systemd/system/mpd.service.d/override.conf
