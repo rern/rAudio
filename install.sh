@@ -73,13 +73,19 @@ chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbashbash/cmd.sh color
 
-installfinish
+#installfinish
 #-------------------------------------------------------------------------------
 
-# 20221021
-$mpdconf=$dirmpd/mpd.conf
-[[ -e $mpdconf ]] && exit
+# 20221010
+[[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
 
+# 20221021
+file=/etc/systemd/system/mpd.service.d/override.conf
+grep -q ExecStart $file && installfinish && exit
+
+echo -e "$bar Reconfigure MPD ..."
+
+$mpdconf=$dirmpd/mpd.conf
 cp $dirmpd/conf/mpd.conf $dirmpd
 rm -f $dirsystem/streaming
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
@@ -110,15 +116,11 @@ if ! grep -q replaygain.*off /etc/mpd.conf; then
 	sed -i '/^user/ i\replaygain          "'$replaygain'"' $mpdconf
 fi
 
-file=/etc/systemd/system/mpd.service.d/override.conf
-if ! grep -q ExecStart $file; then
-	echo "\
+echo "\
 ExecStart=
 ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
-	systemctl daemon-reload
-fi
+systemctl daemon-reload
 
 $dirsettings/player-conf.sh
 
-# 20221010
-[[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
+installfinish

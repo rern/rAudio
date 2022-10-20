@@ -45,6 +45,7 @@ over_voltage=2"
 fi
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
+[[ ! -e $mpdconf ]] && cp $dirmpd/conf/mpd.conf $dirmpd
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 if [[ -e /usr/bin/camilladsp ]]; then
