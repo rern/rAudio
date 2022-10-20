@@ -4,12 +4,7 @@
 . $dirsettings/player-devices.sh
 
 active=$( mpc &> /dev/null && echo true )
-if [[ -e $dirmpd/mpd-soxr-custom ]]; then
-	conf=$( sed -E -e '/resampler|plugin|quality|}/ d' -e 's/.*"(.*)"/\1/' $dirmpd/mpd-soxr-custom | tr '\n' , )
-	soxrconf="[ ${conf:0:-1} ]"
-else
-	soxrconf='[ 20, 50, 91.3, 100, 0, 0 ]'
-fi
+conf=$( sed -E -e '/resampler|plugin|quality|}/ d' -e 's/.*"(.*)"/\1/' $dirmpd/conf/mpd-soxr-custom.conf | tr '\n' , )
 state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
 [[ ! $state ]] && state=stop
 
@@ -41,7 +36,7 @@ data='
 , "replaygain"       : '$( exists $dirmpd/mpd-replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpd/conf/mpd-replaygain.conf )'"
 , "soxr"             : '$( grep -q quality.*custom $dirmpd/mpd-soxr.conf && echo true )'
-, "soxrconf"         : '$soxrconf'
+, "soxrconf"         : ['${conf:0:-1}']
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
