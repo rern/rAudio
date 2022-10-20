@@ -32,7 +32,7 @@ data='
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirmpd/mpd-custom.conf )'
 , "dabradio"         : '$( isactive rtsp-simple-server )'
-, "dop"              : '$( exists "$dirsystem/dop-$output" )'
+, "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpd/mpd-ffmpeg.conf )'
 , "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
