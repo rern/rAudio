@@ -177,10 +177,11 @@ Decoder for audio filetypes: I^help filetype^I
 HTML
 	]
 	, [
-		  'label'   => 'Library Auto Update'
-		, 'id'      => 'autoupdate'
-		, 'setting' => false
-		, 'help'    => <<< HTML
+		  'label'       => 'Library Auto Update'
+		, 'id'          => 'autoupdate'
+		, 'setting'     => 'custom'
+		, 'settingicon' => false
+		, 'help'        => <<< HTML
 <c>auto_update "yes"</c>
 Automatic update MPD database when files changed.
 HTML

@@ -163,7 +163,7 @@ bluetoothset )
 	bluetoothctl discoverable $yesno &
 	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh bton
+	[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -688,6 +688,10 @@ $( cat /etc/hostapd/hostapd.conf )
 			;;
 		mpd )
 			fileconf=$mpdconf
+			conf="\
+<bll># $dirmpd/mpd.conf</bll>
+$( sed -E '/mpd-output/ s/^(include_optional) /<gr>#\1/; s|$|</gr>|' $mpdconf )
+$( cat $dirmpd/mpd-output.conf 2> /dev/null )"
 			;;
 		nfs-server )
 			pkg=nfs-utils

@@ -1,20 +1,20 @@
 #!/bin/bash
 
-# remove all output the reinstate each output:
-# - get devices data from 'playerdevices.sh'
-# - assign common paramters
+# output:
+# - get devices data - player-devices.sh
+# - set asound.conf  - player-asound.sh
 # - mixer_type    - from file if manually set | hardware if hwmixer | software
 # - mixer_control - from file if manually set | hwmixer | null
 # - mixer_device  - card index
-
-usbdac=$1
 
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 . $dirsettings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
-if [[ $i != -1 ]]; then # $i - current card number
+if [[ $i == -1 ]]; then # $i - current card number
+	rm -f $dirmpd/mpd-output.conf
+else
 	aplayname=${Aaplayname[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
@@ -23,7 +23,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
-#---------------<
+#---------------< 1 dsp
 		audiooutput+='
 	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
@@ -33,7 +33,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 #--------------->
 	elif [[ -e $dirsystem/equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
-#---------------<
+#---------------< 2 equalizer
 		audiooutput+='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
@@ -43,7 +43,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 #--------------->
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
-#---------------<
+#---------------< 3 bluetooth
 		audiooutput+='
 	name           "'$btmixer'"
 	device         "bluealsa"
@@ -53,7 +53,7 @@ if [[ $i != -1 ]]; then # $i - current card number
 	format         "44100:16:2"'
 #--------------->
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
-#---------------<
+#---------------< 4 normal
 		audiooutput+='
 	name           "'$name'"
 	device         "'$hw'"
@@ -78,14 +78,13 @@ $( sed 's/^/\t/' "$customfile" )"
 #--------------->
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
-fi
-if [[ $audiooutput ]]; then
 ########
-	audiooutput="\
+	echo "\
 audio_output {
-$( echo "$audiooutput" | sed 's/  *"/@"/' | column -t -s@ )
-}"
-#-------
+$( sed 's/  *"/@"/' <<< "$audiooutput" | column -t -s@ )
+}
+" > $dirmpd/mpd-output.conf
+########
 fi
 
 if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
@@ -94,18 +93,10 @@ else
 	rm -f $dirmpd/mpd-fifo.conf
 fi
 
-config=$( sed -n '1,/mpd-soxr/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
-echo "\
-$config
-$audiooutput" | awk NF > $mpdconf
-
 # usbdac.rules -------------------------------------------------------------------------
-if [[ $usbdac == add || $usbdac == remove ]]; then
+if [[ $1 ]]; then
 	$dirbash/cmd.sh playerstop
-	if [[ $mixertype == none ]]; then
-		data='{"volumenone":'$volumenone'}'
-		pushstream display "$data"
-	fi
+	[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
 	pushstreamNotify 'Audio Output' "$name" output
 fi
 

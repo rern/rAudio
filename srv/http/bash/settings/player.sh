@@ -9,6 +9,13 @@
 readarray -t args <<< "$1"
 
 restartMPD() {
+	if [[ $1 ]]; then
+		file=$dirmpd/$1.conf
+		conf=$( sed 's/  *"/@"/' $file | column -t -s@ )
+		echo "\
+$( grep -v ^i <<< "$conf" | sort )
+$( grep ^i <<< "$conf" )" > $file
+	fi
 	systemctl restart mpd
 	pushRefresh
 }
@@ -26,18 +33,18 @@ audiooutput )
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '1 i\auto_update            "yes"' $mpdconf
+		echo 'auto_update            "yes"' >> $mpdconf
 	else
 		sed -i '/^auto_update/ d' $mpdconf
 	fi
-	restartMPD
+	restartMPD mpd
 	;;
 albumignore )
 	cat $dirmpd/albumignore
 	;;
 bufferdisable )
 	sed -i '/^audio_buffer_size/ d' $mpdconf
-	restartMPD
+	restartMPD mpd
 	;;
 bufferset )
 	buffer=${args[1]}
@@ -45,14 +52,14 @@ bufferset )
 	if (( $buffer == 4096 )); then
 		rm -f $dirsystem/buffer.conf
 	else
-		sed -i '1 i\audio_buffer_size      "'$buffer'"' $mpdconf
+		echo 'audio_buffer_size      "'$buffer'"' >> $mpdconf
 		echo $buffer > $dirsystem/buffer.conf
 	fi
-	restartMPD
+	restartMPD mpd
 	;;
 bufferoutputdisable )
 	sed -i '/^max_output_buffer_size/ d' $mpdconf
-	restartMPD
+	restartMPD mpd
 	;;
 bufferoutputset )
 	buffer=${args[1]}
@@ -60,10 +67,10 @@ bufferoutputset )
 	if (( $buffer == 8192 )); then
 		rm -f $dirsystem/bufferoutput.conf
 	else
-		sed -i '1 i\max_output_buffer_size "'$buffer'"' $mpdconf
+		echo 'max_output_buffer_size "'$buffer'"' >> $mpdconf
 		echo $buffer > $dirsystem/bufferoutput.conf
 	fi
-	restartMPD
+	restartMPD mpd
 	;;
 crossfadedisable )
 	mpc -q crossfade 0
@@ -144,17 +151,15 @@ $( cat /etc/asound.conf )"
 	;;
 dop )
 	dop=${args[1]}
-	aplayname=${args[2]}
+	file="$dirsystem/dop-${args[2]}"
 	if [[ $dop == true ]]; then
-		name=${aplayname/bcm2835/On-board}
-		line=$( sed -n "/name.*$name/,/}/ =" $mpdconf | tail -1 )
-		sed -i "$line i\	dop            \"yes\"" $mpdconf
-		touch "$dirsystem/dop-$aplayname"
+		sed -i '/}/ i\	dop            "yes"' $dirmpd/mpd-output.conf
+		touch "$file"
 	else
-		sed -i '/dop.*yes/ d' $mpdconf
-		rm -f "$dirsystem/dop-$aplayname"
+		sed -i '/dop.*yes/ d' $dirmpd/mpd-output.conf
+		rm -f "$file"
 	fi
-	restartMPD
+	restartMPD mpd-output
 	;;
 ffmpeg )
 	[[ ${args[1]} == true ]] && $dirmpd/conf/mpd-ffmpeg.conf $dirmpd || rm $dirmpd/mpd-ffmpeg.conf
@@ -215,11 +220,11 @@ nonutf8 )
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/^user/ i\volume_normalization  "yes"' $mpdconf
+		echo 'volume_normalization  "yes"' >> $mpdconf
 	else
 		sed -i '/^volume_normalization/ d' $mpdconf
 	fi
-	restartMPD
+	restartMPD mpd
 	;;
 novolume )
 	aplayname=${args[1]}
@@ -236,13 +241,13 @@ novolume )
 	;;
 replaygaindisable )
 	sed -i '/^replaygain/ d' $mpdconf
-	restartMPD
+	restartMPD mpd
 	;;
 replaygainset )
 	replaygain=${args[1]}
-	sed -i '/^user/ i\replaygain          "'$replaygain'"' $mpdconf
+	echo 'replaygain          "'$replaygain'"' >> $mpdconf
 	echo $replaygain > $dirsystem/replaygain.conf
-	restartMPD
+	restartMPD mpd
 	;;
 soxrdisable )
 	ln -sf $dirmpd/conf/mpd-soxr.conf $dirmpd

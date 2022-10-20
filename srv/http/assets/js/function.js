@@ -513,7 +513,7 @@ function getBio( artist ) {
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
 					$( '#bioimg img' ).last().one( 'load', function() {
-						var imgbottom = this.getBoundingClientRect().bottom;
+						var imgbottom = $( '#bioimg' )[ 0 ].getBoundingClientRect().bottom;
 						$( '#bio' ).scroll( function() {
 							if ( this.scrollTop > imgbottom ) {
 								$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );

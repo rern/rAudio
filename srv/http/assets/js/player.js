@@ -242,6 +242,11 @@ $( '#setting-bufferoutput' ).click( function() {
 		}
 	} );
 } );
+$( '#autoupdate' ).click( function() {
+	var checked = $( this ).prop( 'checked' );
+	notify( 'Library Auto Update', checked, 'mpd' );
+	bash( [ 'autoupdate', checked ] );
+} );
 var soxrinfo = `\
 <table>
 <tr><td>Precision</td>
