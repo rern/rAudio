@@ -371,9 +371,10 @@ function playbackIcon() {
 function renderPage() {
 	if ( 'dead' in G ) {
 		bash( 'systemctl status mpd', function(status) {
+			var html = '<i class="fa fa-warning red"></i> MPD not running <a id="restart" class="infobtn infobtn-primary">Restart</a><br><br>'
+					  + status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
 			$( '#data' )
-				.html( '<i class="fa fa-warning red"></i> MPD not running <a id="restart" class="infobtn infobtn-primary">Restart</a><br><br>'
-					  + status.replace( 'inactive (dead)', '<red>inactive (dead)</red>' ) )
+				.html( html )
 				.removeClass( 'hide' );
 			$( '#restart' ).click( function() {
 				bash( 'systemctl start mpd', function() {
