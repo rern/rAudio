@@ -11,7 +11,7 @@ pushstreamPlaylist() {
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
-	ln -s $dirmpd/mpd-cdio{,.conf}
+	ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit

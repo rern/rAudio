@@ -80,24 +80,29 @@ installfinish
 $mpdconf=$dirmpd/mpd.conf
 [[ -e $mpdconf ]] && exit
 
+cp $dirmpd/conf/mpd.conf $dirmpd
 rm -f $dirsystem/streaming
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
-mv $dirsystem/custom-global $dirmpd/mpd-custom &> /dev/null
+mv $dirsystem/custom-global $dirmpd/conf/mpd-custom.conf &> /dev/null
 file=$dirsystem/soxr.conf
 if [[ -e $file ]]; then
 	sed -i '1 i\
 resampler {\
 	plugin         "soxr"
 ' $file
-	mv $file $dirmpd/mpd-soxr-custom
+	mv $file $dirmpd/conf/mpd-soxr-custom.conf
 fi
 
-[[ -e $dirshm/audiocd ]] && ln -s $dirmpd/mpd-cdio{,.conf}
-[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom ]] && ln -s $dirmpd/mpd-custom{,.conf}
-grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpd/mpd-ffmpeg{,.conf}
-grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpd/mpd-httpd{,.conf}
-systemctl -q is-active snapserver && ln -s $dirmpd/mpd-snapserver{,.conf}
-grep -q quality.*custom /etc/mpd.conf && ln -sf $dirmpd/mpd-soxr{-custom,.conf}
+[[ -e $dirshm/audiocd ]] && ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
+[[ -e $dirsystem/custom && -e $dirmpd/conf/mpd-custom.conf ]] && ln -s $dirmpd/conf/mpd-custom.conf $dirmpd
+grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpd/conf/mpd-ffmpeg.conf $dirmpd
+grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpd/conf/mpd-httpd.conf $dirmpd
+systemctl -q is-active snapserver && ln -s $dirmpd/conf/mpd-snapserver.conf $dirmpd
+if grep -q quality.*custom /etc/mpd.conf; then
+	ln -s $dirmpd/conf/mpd-soxr-custom.conf $dirmpd/mpd-soxr.conf
+else
+	ln -s $dirmpd/conf/mpd-soxr.conf $dirmpd
+fi
 
 grep -q volume_normalization /etc/mpd.conf && sed -i '/^user/ i\volume_normalization   "yes"' $mpdconf
 if ! grep -q replaygain.*off /etc/mpd.conf; then

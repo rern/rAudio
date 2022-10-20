@@ -157,7 +157,7 @@ dop )
 	restartMPD
 	;;
 ffmpeg )
-	[[ ${args[1]} == true ]] && ln -s $dirmpd/mpd-ffmpeg{,.conf} || rm $dirmpd/mpd-ffmpeg.conf
+	[[ ${args[1]} == true ]] && $dirmpd/conf/mpd-ffmpeg.conf $dirmpd || rm $dirmpd/mpd-ffmpeg.conf
 	restartMPD
 	;;
 filetype )
@@ -245,11 +245,11 @@ replaygainset )
 	restartMPD
 	;;
 soxrdisable )
-	ln -sf $dirmpd/mpd-soxr{,.conf}
+	ln -sf $dirmpd/conf/mpd-soxr.conf $dirmpd
 	restartMPD
 	;;
 soxrset )
-cat << EOF > $dirmod/mpd-soxr-custom
+cat << EOF > $dirmpd/conf/mpd-soxr-custom.conf
 resampler {
 	plugin         "soxr"
 	quality        "custom"
@@ -261,7 +261,7 @@ resampler {
 	flags          "${args[6]}"
 }
 EOF
-	ln -sf $dirmpd/mpd-soxr{-custom,.conf}
+	ln -sf $dirmpd/conf/mpd-soxr-custom.conf $dirmpd/mpd-soxr.conf
 	restartMPD
 	;;
 volume0db )

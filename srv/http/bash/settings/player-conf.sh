@@ -88,7 +88,11 @@ $( echo "$audiooutput" | sed 's/  *"/@"/' | column -t -s@ )
 #-------
 fi
 
-[[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]] && ln -s $dirmpd/mpd-fifo{,.conf} || rm -f $dirmpd/mpd-fifo.conf
+if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+	ln -sf $dirmpd/conf/mpd-fifo.conf $dirmpd
+else
+	rm -f $dirmpd/mpd-fifo.conf
+fi
 
 config=$( sed -n '1,/mpd-soxr/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
 echo "\
