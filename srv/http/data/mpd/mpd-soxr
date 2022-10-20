@@ -1,0 +1,4 @@
+resampler {
+	plugin         "soxr"
+	quality        "very high"
+}

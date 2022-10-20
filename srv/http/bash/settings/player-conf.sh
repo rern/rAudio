@@ -88,58 +88,11 @@ $( echo "$audiooutput" | sed 's/  *"/@"/' | column -t -s@ )
 #-------
 fi
 
-if systemctl -q is-active snapserver; then
-########
-	audiooutput+='
-audio_output {
-	name           "Snapcast"
-	type           "fifo"
-	path           "/tmp/snapfifo"
-	format         "48000:16:2"
-	mixer_type     "software"
-}'
-#-------
-fi
-if [[ -e $dirsystem/streaming ]]; then
-########
-	audiooutput+='
-audio_output {
-	type           "httpd"
-	name           "Streaming"
-	encoder        "flac"
-	port           "8000"
-	quality        "5.0"
-	format         "44100:16:2"
-	always_on      "yes"
-}'
-#-------
-fi
-if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
-########
-		audiooutput+='
-audio_output {
-	name           "'$( [[ ! $audiooutput ]] && echo '(no sound device)' || echo '(visualizer)' )'"
-	type           "fifo"
-	path           "/tmp/mpd.fifo"
-	format         "44100:16:1"
-}'
-#-------
-fi
+[[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]] && ln -s $dirmpd/mpd-fifo{,.conf} || rm -f $dirmpd/mpd-fifo.conf
 
-config=$( sed -n '1,/^user/ p' $mpdconf )
-[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom.conf ]] && config+='
-include  "mpd-custom.conf"'
-config+='
-include  "mpd-curl.conf"'
-[[ -e $dirsystem/soxr ]] && soxrcustom='-custom'
-config+='
-include  "mpd-soxr'$soxrcustom'.conf"'
-[[ -e $dirshm/audiocd ]] && config+='
-include  "mpd-cdio.conf"'
-[[ -e $dirsystem/ffmpeg ]] && config+='
-include  "mpd-ffmpeg.conf"'
+config=$( sed -n '1,/mpd-soxr/ p' $mpdconf | sed 's/  *"/@"/' | column -t -s@ )
 echo "\
-$( sed 's/  *"/@"/' <<< "$config" | column -t -s@ )
+$config
 $audiooutput" | awk NF > $mpdconf
 
 # usbdac.rules -------------------------------------------------------------------------

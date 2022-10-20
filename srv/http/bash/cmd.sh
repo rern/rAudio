@@ -628,14 +628,14 @@ displaysave )
 	if [[ $vumeter ]]; then
 		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
+		[[ -e $dirmpd/mpd-fifo.conf ]] && exit
+		
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
 		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
 	fi
 	$dirsettings/player-conf.sh
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
 	;;
 equalizer )
 	type=${args[1]} # preset, delete, rename, new, save

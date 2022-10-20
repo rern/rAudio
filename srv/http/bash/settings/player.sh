@@ -77,7 +77,7 @@ crossfadeset )
 	pushRefresh
 	;;
 customdisable )
-	rm -f $dirsystem/custom
+	rm -f $dirmpd/mpd-custom.conf $dirsystem/custom
 	$dirsettings/player-conf.sh
 	;;
 customget )
@@ -90,14 +90,19 @@ customset )
 	global=${args[1]}
 	output=${args[2]}
 	aplayname=${args[3]}
-	fileglobal=$dirmpd/mpd-custom.conf
+	fileglobal=$dirmpd/mpd-custom
 	fileoutput="$dirsystem/custom-output-$aplayname"
-	[[ $global ]] && echo -e "$global" > $fileglobal || rm -f $fileglobal
+	if [[ $global ]]; then
+		echo -e "$global" > $fileglobal
+		ln -sf $fileglobal{,.conf}
+	else
+		rm -f $fileglobal*
+	fi
 	[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
-	[[ $global || $output ]] && touch $dirsystem/custom
+	[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
 	$dirsettings/player-conf.sh
 	if ! systemctl -q is-active mpd; then # config errors
-		rm -f $file*
+		rm -f $fileglobal* "$fileoutput" $dirsystem/custom
 		$dirsettings/player-conf.sh
 		echo -1
 	fi
@@ -152,15 +157,7 @@ dop )
 	restartMPD
 	;;
 ffmpeg )
-	if [[ ${args[1]} == true ]]; then
-		sed -i '/mpd-soxr/ a\
-include "mpd-ffmpeg.conf"
-' $mpdconf
-		touch $dirsystem/ffmpeg
-	else
-		sed -i '/mpd-ffmpeg/ d' $mpdconf
-		rm $dirsystem/ffmpeg
-	fi
+	[[ ${args[1]} == true ]] && ln -s $dirmpd/mpd-ffmpeg{,.conf} || rm $dirmpd/mpd-ffmpeg.conf
 	restartMPD
 	;;
 filetype )
@@ -248,12 +245,11 @@ replaygainset )
 	restartMPD
 	;;
 soxrdisable )
-	sed -i 's/mpd-soxr-custom.conf/mpd-soxr.conf/' $mpdconf
-	rm $dirsystem/soxr
+	ln -sf $dirmpd/mpd-soxr{,.conf}
 	restartMPD
 	;;
 soxrset )
-cat << EOF > $dirmod/mpd-soxr-custom.conf
+cat << EOF > $dirmod/mpd-soxr-custom
 resampler {
 	plugin         "soxr"
 	quality        "custom"
@@ -265,8 +261,7 @@ resampler {
 	flags          "${args[6]}"
 }
 EOF
-	sed -i 's/mpd-soxr.conf/mpd-soxr-custom.conf/' $mpdconf
-	touch $dirsystem/soxr
+	ln -sf $dirmpd/mpd-soxr{-custom,.conf}
 	restartMPD
 	;;
 volume0db )

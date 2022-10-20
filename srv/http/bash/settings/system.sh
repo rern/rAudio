@@ -634,6 +634,7 @@ mpdoledset )
 	if [[ $reboot ]]; then
 		pushReboot 'Spectrum OLED'
 	else
+		[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
 		pushRefresh
 	fi
 	;;
@@ -1054,7 +1055,7 @@ vuleddisable )
 vuledset )
 	echo ${args[@]:1} > $dirsystem/vuled.conf
 	touch $dirsystem/vuled
-	! grep -q mpd.fifo $mpdconf && $dirsettings/player-conf.sh
+	[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
 	killall cava &> /dev/null
 	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	pushRefresh

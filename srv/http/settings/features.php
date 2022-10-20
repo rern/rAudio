@@ -101,7 +101,7 @@ $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
 	  'label'    => 'For browsers'
-	, 'id'       => 'streaming'
+	, 'id'       => 'httpd'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
 	, 'setting'  => false

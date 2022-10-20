@@ -43,11 +43,10 @@ spotifyReset() {
 
 case ${args[0]} in
 
-autoplay|autoplaybt|autoplaycd|lyricsembedded|streaming )
+autoplay|autoplaybt|autoplaycd|lyricsembedded )
 	feature=${args[0]}
 	filefeature=$dirsystem/$feature
 	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	[[ $feature == streaming ]] && $dirsettings/player-conf.sh
 	pushRefresh
 	;;
 autoplaydisable )
@@ -158,6 +157,12 @@ hostapdset )
 	data='{"page":"system","hostapd":true}'
 	pushstream refresh "$data"
 	pushRefresh networks
+	;;
+httpd )
+	[[ ${args[1]} == true ]] && ln -s $dirmpd/mpd-httpd{,.conf} || rm -f $dirmpd/mpd-httpd.conf
+	systemctl restart mpd
+	$dirsettings/player-data.sh pushrefresh
+	pushRefresh
 	;;
 localbrowserdisable )
 	ply-image /srv/http/assets/img/splash.png
@@ -440,10 +445,13 @@ snapserver )
 		fi
 		
 		systemctl enable --now snapserver
+		ln -s $dirmpd/mpd-snapsever{,.conf}
 	else
 		systemctl disable --now snapserver
+		rm -f $dirmpd/mpd-snapsever.conf
 	fi
-	$dirsettings/player-conf.sh
+	systemctl restart mpd
+	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
 	;;
 spotifyddisable )

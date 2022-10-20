@@ -5,32 +5,6 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221021
-grep -q plugin.*ffmpeg /etc/mpd.conf && touch $dirsystem/ffmpeg
-grep -q quality.*custom /etc/mpd.conf && touch $dirsystem/soxr
-file=$dirsystem/soxr.conf
-if [[ -e $file ]]; then
-	sed -i '1 i\
-resampler {\
-	plugin         "soxr"
-' $file
-	mv $file $dirmpd/mpd-soxr-custom.conf
-fi
-
-mv $dirsystem/custom-global $dirmpd/mpd-custom.conf &> /dev/null
-
-sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
-
-grep -q volume_normalization /etc/mpd.conf && sed -i -e '/volume_normalization/ d' -i '/^user/ i\volume_normalization   "yes"' /etc/mpd.conf
-sed -i '/replaygain.*off/ d' /etc/mpd.conf
-cp /etc/mpd.conf $dirmpd
-
-file=/etc/systemd/system/mpd.service.d/override.conf
-if ! grep -q ExecStart $file; then
-	echo "\
-ExecStart=
-ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
-fi
-
 if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
 	echo "\
 SD
@@ -75,9 +49,9 @@ Description=DAB Radio metadata
 Type=simple
 ExecStart=/srv/http/bash/status-dab.sh
 " > $file
+	systemctl daemon-reload
 fi
 
-systemctl daemon-reload
 
 # 20220916
 if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
@@ -103,6 +77,42 @@ installfinish
 #-------------------------------------------------------------------------------
 
 # 20221021
+$mpdconf=$dirmpd/mpd.conf
+[[ -e $mpdconf ]] && exit
+
+rm -f $dirsystem/streaming
+sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
+mv $dirsystem/custom-global $dirmpd/mpd-custom &> /dev/null
+file=$dirsystem/soxr.conf
+if [[ -e $file ]]; then
+	sed -i '1 i\
+resampler {\
+	plugin         "soxr"
+' $file
+	mv $file $dirmpd/mpd-soxr-custom
+fi
+
+[[ -e $dirshm/audiocd ]] && ln -s $dirmpd/mpd-cdio{,.conf}
+[[ -e $dirsystem/custom && -e $dirmpd/mpd-custom ]] && ln -s $dirmpd/mpd-custom{,.conf}
+grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpd/mpd-ffmpeg{,.conf}
+grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpd/mpd-httpd{,.conf}
+systemctl -q is-active snapserver && ln -s $dirmpd/mpd-snapserver{,.conf}
+grep -q quality.*custom /etc/mpd.conf && ln -sf $dirmpd/mpd-soxr{-custom,.conf}
+
+grep -q volume_normalization /etc/mpd.conf && sed -i '/^user/ i\volume_normalization   "yes"' $mpdconf
+if ! grep -q replaygain.*off /etc/mpd.conf; then
+	replaygain=$( < $dirsystem/replaygain.conf )
+	sed -i '/^user/ i\replaygain          "'$replaygain'"' $mpdconf
+fi
+
+file=/etc/systemd/system/mpd.service.d/override.conf
+if ! grep -q ExecStart $file; then
+	echo "\
+ExecStart=
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
+	systemctl daemon-reload
+fi
+
 $dirsettings/player-conf.sh
 
 # 20221010
