@@ -694,7 +694,7 @@ $( cat /etc/dnsmasq.conf )"
 			fileconf=$mpdconf
 			conf="\
 <bll># $dirmpd/mpd.conf</bll>
-$( sed -E '/mpd-output/ s/^(include_optional) /<gr>#\1/; s|$|</gr>|' $mpdconf )
+$( sed -E '/mpd-output.conf/ {s/^(include_optional) /<gr>#\1/; s|$|</gr>|}' $mpdconf )
 $( cat $dirmpd/mpd-output.conf 2> /dev/null )"
 			;;
 		nfs-server )
@@ -1072,7 +1072,7 @@ vuled )
 	pushRefresh
 	;;
 wlan )
-	if [[ ${args[1]} == true ]] then
+	if [[ ${args[1]} == true ]]; then
 		regdom=${args[2]}
 		apauto=${args[3]}
 		! lsmod | grep -q brcmfmac && modprobe brcmfmac
