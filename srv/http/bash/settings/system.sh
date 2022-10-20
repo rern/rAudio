@@ -729,7 +729,7 @@ $( grep -v ^# $fileconf )"
 	fi
 	status=$( systemctl status $service \
 					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
-					| sed -E '/^\s*Active:/ s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig' )
+					| sed -E '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig}' )
 	if [[ $pkg == chromium ]]; then
 		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
 	elif [[ $pkg == nfs-utils ]]; then
