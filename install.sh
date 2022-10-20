@@ -85,11 +85,10 @@ $dirsettings/system.sh dirpermissions
 file=/etc/systemd/system/mpd.service.d/override.conf
 grep -q ExecStart $file && installfinish && exit
 
-echo -e "$bar Reconfigure MPD ..."
+echo -e "$bar Rearrange MPD Configuration..."
 
 $mpdconf=$dirmpd/mpd.conf
 cp $dirmpd/conf/mpd.conf $dirmpd
-rm -f $dirsystem/streaming
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 mv $dirsystem/custom-global $dirmpd/conf/mpd-custom.conf &> /dev/null
 file=$dirsystem/soxr.conf
@@ -100,6 +99,22 @@ resampler {\
 ' $file
 	mv $file $dirmpd/conf/mpd-soxr-custom.conf
 fi
+
+grep -q auto_update /etc/mpd.conf && ln -s $dirmpd/conf/mpd-autoupdate.conf $dirmpd
+if grep -q audio_buffer /etc/mpd.conf; then
+	echo 'audio_buffer_size "'$( cat $dirsystem/buffer.conf )'"' > $dirmpd/conf/mpd-buffer.conf
+	ln -s $dirmpd/conf/mpd-buffer.conf $dirmpd
+fi
+if grep -q output_buffer /etc/mpd.conf; then
+	echo 'max_output_buffer_size "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpd/conf/mpd-outputbuffer.conf
+	ln -s $dirmpd/conf/mpd-outputbuffer.conf $dirmpd
+fi
+grep -q volume_normalization /etc/mpd.conf && ln -s $dirmpd/conf/mpd-normalization.conf $dirmpd
+if ! grep -q replaygain.*off /etc/mpd.conf; then
+	echo 'replaygain          "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpd/conf/mpd-replaygain.conf
+	ln -s $dirmpd/conf/mpd-replaygain.conf $dirmpd
+fi
+rm -f $dirsystem/{buffer,bufferoutput,replaygain}.conf $dirsystem/streaming
 
 [[ -e $dirshm/audiocd ]] && ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
 [[ -e $dirsystem/custom && -e $dirmpd/conf/mpd-custom.conf ]] && ln -s $dirmpd/conf/mpd-custom.conf $dirmpd
@@ -112,12 +127,6 @@ else
 	ln -s $dirmpd/conf/mpd-soxr.conf $dirmpd
 fi
 
-grep -q volume_normalization /etc/mpd.conf && sed -i '/^user/ i\volume_normalization   "yes"' $mpdconf
-if ! grep -q replaygain.*off /etc/mpd.conf; then
-	replaygain=$( < $dirsystem/replaygain.conf )
-	sed -i '/^user/ i\replaygain          "'$replaygain'"' $mpdconf
-fi
-
 echo "\
 ExecStart=
 ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
@@ -126,3 +135,8 @@ systemctl daemon-reload
 $dirsettings/player-conf.sh
 
 installfinish
+
+lcolor -
+echo -e "$info Backup of Data and Settings:"
+echo If any, run again to include this configuration.
+lcolor -

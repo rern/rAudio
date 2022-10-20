@@ -20,12 +20,12 @@ data='
 , "asoundcard"       : '$i'
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
-, "autoupdate"       : '$( grep -q '^auto_update.*yes' $mpdconf && echo true )'
+, "autoupdate"       : '$( exists $dirmpd/mpd-autoupdate.conf )'
 , "btaplayname"      : "'$( cat $dirshm/btreceiver 2> /dev/null )'"
-, "buffer"           : '$( grep -q '^audio_buffer_size' $mpdconf && echo true )'
-, "bufferconf"       : '$( cat $dirsystem/buffer.conf 2> /dev/null || echo 4096 )'
-, "bufferoutput"     : '$( grep -q '^max_output_buffer_size' $mpdconf && echo true )'
-, "bufferoutputconf" : '$( cat $dirsystem/bufferoutput.conf 2> /dev/null || echo 8192 )'
+, "buffer"           : '$( exists $dirmpd/mpd-buffer.conf )'
+, "bufferconf"       : '$( cut -d'"' -f2 $dirmpd/conf/mpd-buffer.conf )'
+, "bufferoutput"     : '$( exists $dirmpd/mpd-outputbuffer.conf )'
+, "bufferoutputconf" : '$( cut -d'"' -f2 $dirmpd/conf/mpd-outputbuffer.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
 , "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
@@ -36,10 +36,10 @@ data='
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "ffmpeg"           : '$( exists $dirmpd/mpd-ffmpeg.conf )'
 , "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
-, "normalization"    : '$( grep -q '^volume_normalization' $mpdconf && echo true )'
+, "normalization"    : '$( exists $dirmpd/mpd-normalization.conf )'
 , "player"           : "'$( cat $dirshm/player )'"
-, "replaygain"       : '$( grep -q '^replaygain' $mpdconf && echo true )'
-, "replaygainconf"   : "'$( cat $dirsystem/replaygain.conf 2> /dev/null || echo auto )'"
+, "replaygain"       : '$( exists $dirmpd/mpd-replaygain.conf )'
+, "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpd/conf/mpd-replaygain.conf )'"
 , "soxr"             : '$( grep -q quality.*custom $dirmpd/mpd-soxr.conf && echo true )'
 , "soxrconf"         : '$soxrconf'
 , "state"            : "'$state'"

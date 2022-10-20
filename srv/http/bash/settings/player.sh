@@ -33,9 +33,9 @@ audiooutput )
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
-		echo 'auto_update            "yes"' >> $mpdconf
+		ln -s $dirmpd/conf/mpd-autoupdate.conf $dirmpd
 	else
-		sed -i '/^auto_update/ d' $mpdconf
+		rm $dirmpd/mpd-autoupdate.conf
 	fi
 	restartMPD mpd
 	;;
@@ -44,31 +44,19 @@ albumignore )
 	;;
 buffer )
 	if [[ ${args[1]} == true ]]; then
-		buffer=${args[2]}
-		sed -i '/^audio_buffer_size/ d' $mpdconf
-		if (( $buffer == 4096 )); then
-			rm -f $dirsystem/buffer.conf
-		else
-			echo 'audio_buffer_size      "'$buffer'"' >> $mpdconf
-			echo $buffer > $dirsystem/buffer.conf
-		fi
+		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpd/conf/mpd-buffer.conf
+		ln -s $dirmpd/conf/mpd-buffer.conf $dirmpd
 	else
-		sed -i '/^audio_buffer_size/ d' $mpdconf
+		rm $dirmpd/conf/mpd-buffer.conf
 	fi
 	restartMPD mpd
 	;;
 bufferoutput )
 	if [[ ${args[1]} == true ]]; then
-		buffer=${args[2]}
-		sed -i '/^max_output_buffer_size/ d' $mpdconf
-		if (( $buffer == 8192 )); then
-			rm -f $dirsystem/bufferoutput.conf
-		else
-			echo 'max_output_buffer_size "'$buffer'"' >> $mpdconf
-			echo $buffer > $dirsystem/bufferoutput.conf
-		fi
+		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpd/conf/mpd-outputbuffer.conf
+		ln -s $dirmpd/conf/mpd-outputbuffer.conf $dirmpd
 	else
-		sed -i '/^max_output_buffer_size/ d' $mpdconf
+		rm $dirmpd/conf/mpd-outputbuffer.conf
 	fi
 	restartMPD mpd
 	;;
@@ -225,9 +213,9 @@ nonutf8 )
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
-		echo 'volume_normalization  "yes"' >> $mpdconf
+		ln -s $dirmpd/conf/mpd-normalization.conf $dirmpd
 	else
-		sed -i '/^volume_normalization/ d' $mpdconf
+		rm $dirmpd/mpd-normalization.conf
 	fi
 	restartMPD mpd
 	;;
@@ -246,11 +234,10 @@ novolume )
 	;;
 replaygain )
 	if [[ ${args[1]} == true ]]; then
-		replaygain=${args[2]}
-		echo 'replaygain          "'$replaygain'"' >> $mpdconf
-		echo $replaygain > $dirsystem/replaygain.conf
+		echo 'replaygain          "'${args[2]}'"' > $dirmpd/conf/mpd-replaygain.conf
+		ln -s $dirmpd/conf/mpd-replaygain.conf $dirmpd
 	else
-		sed -i '/^replaygain/ d' $mpdconf
+		rm $dirmpd/mpd-replaygain.conf
 	fi
 	restartMPD mpd
 	;;
