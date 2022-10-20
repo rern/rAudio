@@ -91,7 +91,7 @@ $( '#setting-snapclient' ).click( function() {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
 		, ok           : function() {
-			bash( [ 'snapclientset', infoVal() ] );
+			bash( [ 'snapclient', true, infoVal() ] );
 			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
 		}
 	} );
@@ -107,7 +107,7 @@ $( '#setting-upmpdcli' ).click( function() {
 			$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 		}
 		, ok           : function() {
-			bash( [ 'upmpdcliset', infoVal() ] );
+			bash( [ 'upmpdcli', true, infoVal() ] );
 			notify( 'UPnP', G.upmpdcli ? 'Change ...' : 'Enable ...', 'upnp' );
 		}
 	} );
@@ -126,7 +126,7 @@ $( '#setting-camilladsp' ).click( function() {
 			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
 		}
 		, ok           : function() {
-			bash( [ 'camillaguiset', infoVal() ] );
+			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( 'CamillaDSP', G.camilladsp ? 'Change ...' : 'Enable ...', 'camilladsp' );
 		}
 	} );
@@ -152,23 +152,24 @@ $( '#setting-hostapd' ).click( function() {
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
-			bash( [ 'hostapdset', iprange, ip, pwd ] );
+			bash( [ 'hostapd', true, iprange, ip, pwd ] );
 			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
 		}
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
+	var val = G.autoplayconf[ 0 ] || G.autoplayconf[ 1 ] || G.autoplayconf[ 2 ];
 	info( {
 		  icon         : 'play'
 		, title        : 'AutoPlay'
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
-		, values       : G.autoplayconf
+		, values       : val ? G.autoplayconf : [ false, false, true ]
 		, checkchanged : ( G.autoplay ? 1 : 0 )
 		, cancel       : function() {
 			$( '#autoplay' ).prop( 'checked', G.autoplay );
 		}
 		, ok           : function() {
-			bash( [ 'autoplayset', ...infoVal() ] );
+			bash( [ 'autoplay', true, ...infoVal() ] );
 			notify( 'AutoPlay', G.autoplay ? 'Change ...' : 'Enable ...', 'play' );
 		}
 	} );
@@ -254,7 +255,7 @@ ${ brightness }
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
 		, ok           : function() {
-			bash( [ 'localbrowserset', ...infoVal() ] );
+			bash( [ 'localbrowser', true, ...infoVal() ] );
 			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  'chromium' );
 		}
 	} );
@@ -271,7 +272,7 @@ $( '#setting-smb' ).click( function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
 		, ok           : function() {
-			bash( [ 'smbset', ...infoVal() ] );
+			bash( [ 'smb', true, ...infoVal() ] );
 			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'networks' );
 		}
 	} );
@@ -328,7 +329,7 @@ $( '#setting-multiraudio' ).click( function() {
 		}
 		, ok           : function() {
 			O.inputs = $( '#infoContent input' );
-			bash( [ 'multiraudioset', ...infoVal() ] );
+			bash( [ 'multiraudio', true, ...infoVal() ] );
 			notify( 'Multiple rAudios', G.multiraudio ? 'Change ...' : 'Enable ...', 'raudiobox' );
 		}
 	} );
@@ -382,36 +383,6 @@ $( '#setting-login' ).click( function() {
 		}
 	} );
 } );
-$( '#nfsserver' ).click( function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Server rAudio'
-			, message : $this.prev().html()
-		} );
-		$this.prop( 'checked', G.nfsserver );
-		return
-	}
-	
-	bash( [ 'nfssharelist' ], function( list ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Server rAudio'
-			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
-						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
-						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : function() {
-				$this.prop( 'checked', G.nfsserver );
-			}
-			, okcolor : G.nfsserver ? orange : ''
-			, ok      : function() {
-				bash( [ 'nfsserver', !G.nfsserver ] );
-				notify( 'Server rAudio', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
-			}
-		} );
-	} );
-} );
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
 <table>
@@ -451,7 +422,7 @@ $( '#setting-scrobble' ).click( function() {
 			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}
 		, ok            : function() {
-			bash( [ 'scrobbleset', ...infoVal() ], function( response ) {
+			bash( [ 'scrobble', true, ...infoVal() ], function( response ) {
 				if ( 'error' in response ) {
 					info( {
 						  icon    : 'lastfm'
@@ -463,6 +434,36 @@ $( '#setting-scrobble' ).click( function() {
 			}, 'json' );
 			notify( 'Scrobbler', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
 		}
+	} );
+} );
+$( '#nfsserver' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Server rAudio'
+			, message : $this.prev().html()
+		} );
+		$this.prop( 'checked', G.nfsserver );
+		return
+	}
+	
+	bash( [ 'nfssharelist' ], function( list ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Server rAudio'
+			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
+						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
+						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
+			, cancel  : function() {
+				$this.prop( 'checked', G.nfsserver );
+			}
+			, okcolor : G.nfsserver ? orange : ''
+			, ok      : function() {
+				bash( [ 'nfsserver', !G.nfsserver ] );
+				notify( 'Server rAudio', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+			}
+		} );
 	} );
 } );
 $( '#setting-stoptimer' ).click( function() {
@@ -484,7 +485,7 @@ $( '#setting-stoptimer' ).click( function() {
 			} );
 		}
 		, ok           : function() {
-			bash( [ 'stoptimerset', ...infoVal() ] );
+			bash( [ 'stoptimer', true, ...infoVal() ] );
 			notify( 'Stop Timer', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
 		}
 	} );

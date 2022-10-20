@@ -132,38 +132,38 @@ bluetooth )
 	bluetoothctl discoverable-timeout 0 &
 	bluetoothctl pairable yes &
 	;;
-bluetoothdisable )
-	sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-	pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
-	if ! rfkill -no type | grep -q bluetooth; then
-		systemctl stop bluetooth
-		killall bluetooth
-		rm -f $dirshm/{btdevice,btreceiver,btsender}
-		grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
-	fi
-	pushRefresh
-	;;
-bluetoothset )
-	btdiscoverable=${args[1]}
-	btformat=${args[2]}
-	if [[ $btdiscoverable == true ]]; then
-		yesno=yes
-		touch $dirsystem/btdiscoverable
+bluetooth )
+	if [[ ${args[1]} == true ]]; then
+		btdiscoverable=${args[2]}
+		btformat=${args[3]}
+		if [[ $btdiscoverable == true ]]; then
+			yesno=yes
+			touch $dirsystem/btdiscoverable
+		else
+			yesno=no
+			rm $dirsystem/btdiscoverable
+		fi
+		sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
+		if ls -l /sys/class/bluetooth | grep -q serial; then
+			systemctl start bluetooth
+			! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
+		else
+			pushReboot Bluetooth
+		fi
+		bluetoothctl discoverable $yesno &
+		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
+		[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
+		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		yesno=no
-		rm $dirsystem/btdiscoverable
+		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
+		pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
+		if ! rfkill -no type | grep -q bluetooth; then
+			systemctl stop bluetooth
+			killall bluetooth
+			rm -f $dirshm/{btdevice,btreceiver,btsender}
+			grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
+		fi
 	fi
-	sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
-	if ls -l /sys/class/bluetooth | grep -q serial; then
-		systemctl start bluetooth
-		! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
-	else
-		pushReboot Bluetooth
-	fi
-	bluetoothctl discoverable $yesno &
-	[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
-	[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-	[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	pushRefresh
 	;;
 bluetoothstatus )
@@ -314,31 +314,31 @@ hddinfo )
 $( hdparm -I $dev | sed '1,3 d' )
 "
 	;;
-hddsleepdisable )
-	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
-	if [[ $devs ]]; then
-		for dev in $devs; do
-			! hdparm -B $dev | grep -q 'APM_level' && continue
-			
-			hdparm -q -B 128 $dev &> /dev/null
-			hdparm -q -S 0 $dev &> /dev/null
-		done
-		pushRefresh
-	fi
-	rm -f $dirsystem/hddsleep
-	;;
 hddsleep )
-	apm=${args[1]}
-	devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
-	for dev in $devs; do
-		! hdparm -B $dev | grep -q 'APM_level' && notsupport+="$dev"$'\n' && continue
+	if [[ ${args[1]} == true ]]; then
+		apm=${args[2]}
+		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+		for dev in $devs; do
+			! hdparm -B $dev | grep -q 'APM_level' && notsupport+="$dev"$'\n' && continue
 
-		hdparm -q -B $apm $dev
-		hdparm -q -S $apm $dev
-		support=1
-	done
-	[[ $notsupport ]] && echo -e "$notsupport"
-	[[ $support ]] && echo $apm > $dirsystem/apm
+			hdparm -q -B $apm $dev
+			hdparm -q -S $apm $dev
+			support=1
+		done
+		[[ $notsupport ]] && echo -e "$notsupport"
+		[[ $support ]] && echo $apm > $dirsystem/apm
+	else
+		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
+		if [[ $devs ]]; then
+			for dev in $devs; do
+				! hdparm -B $dev | grep -q 'APM_level' && continue
+				
+				hdparm -q -B 128 $dev &> /dev/null
+				hdparm -q -S 0 $dev &> /dev/null
+			done
+		fi
+		rm -f $dirsystem/hddsleep
+	fi
 	pushRefresh
 	;;
 hostname )
@@ -416,78 +416,80 @@ lcdcalibrate )
 		systemctl start localbrowser
 	fi
 	;;
-lcdchar )
+lcdcharset )
 	killall lcdchar.py &> /dev/null
 	lcdcharinit.py
 	lcdchar.py ${args[1]}
 	;;
-lcdchardisable )
-	rm $dirsystem/lcdchar
-	I2Cset
-	lcdchar.py clear
-	pushRefresh
-	;;
-lcdcharset )
-	# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
-	conf="\
+lcdchar )
+	if [[ ${args[1]} == true ]]; then
+		# 0cols 1charmap 2inf 3i2caddress 4i2cchip 5pin_rs 6pin_rw 7pin_e 8pins_data 9backlight
+		conf="\
 [var]
-cols=${args[1]}
-charmap=${args[2]}"
-	if [[ ${args[3]} == i2c ]]; then
-		conf+="
+cols=${args[2]}
+charmap=${args[3]}"
+		if [[ ${args[4]} == i2c ]]; then
+			conf+="
 inf=i2c
-address=${args[4]}
-chip=${args[5]}"
-		! ls /dev/i2c* &> /dev/null && reboot=1
-	else
-		conf+="
+address=${args[5]}
+chip=${args[6]}"
+			! ls /dev/i2c* &> /dev/null && reboot=1
+		else
+			conf+="
 inf=gpio
-pin_rs=${args[6]}
-pin_rw=${args[7]}
-pin_e=${args[8]}
-pins_data=[$( echo ${args[@]:9:4} | tr ' ' , )]"
-	fi
-	conf+="
-backlight=${args[13]^}"
-	echo "$conf" > $dirsystem/lcdchar.conf
-	touch $dirsystem/lcdchar
-	I2Cset
-	if [[ $reboot ]]; then
-		pushReboot 'Character LCD'
+pin_rs=${args[7]}
+pin_rw=${args[8]}
+pin_e=${args[9]}
+pins_data=[$( echo ${args[@]:10:4} | tr ' ' , )]"
+		fi
+		conf+="
+backlight=${args[14]^}"
+		echo "$conf" > $dirsystem/lcdchar.conf
+		touch $dirsystem/lcdchar
+		I2Cset
+		if [[ $reboot ]]; then
+			pushReboot 'Character LCD'
+		else
+			lcdchar.py logo
+			pushRefresh
+		fi
 	else
-		lcdchar.py logo
+		rm $dirsystem/lcdchar
+		I2Cset
+		lcdchar.py clear
 		pushRefresh
 	fi
 	;;
-lcddisable )
-	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-	sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
-	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	I2Cset
-	pushRefresh
-	;;
-lcdset )
-	model=${args[1]}
-	if [[ $model != tft35a ]]; then
-		echo $model > $dirsystem/lcdmodel
-	else
-		rm $dirsystem/lcdmodel
-	fi
-	sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-	sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-	echo "\
+lcd )
+	if [[ ${args[1]} == true ]]; then
+		model=${args[2]}
+		if [[ $model != tft35a ]]; then
+			echo $model > $dirsystem/lcdmodel
+		else
+			rm $dirsystem/lcdmodel
+		fi
+		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		echo "\
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
-	cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-	sed -i '/disable-software-rasterizer/ d' xinitrc
-	sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-	I2Cset
-	if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
-		sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
+		sed -i '/disable-software-rasterizer/ d' xinitrc
+		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		I2Cset
+		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
+			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+		fi
+		systemctl enable localbrowser
+		pushReboot 'TFT 3.5" LCD'
+	else
+		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
+		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		I2Cset
+		pushRefresh
 	fi
-	systemctl enable localbrowser
-	pushReboot 'TFT 3.5" LCD'
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -605,36 +607,37 @@ mountunmount )
 	fi
 	pushRefresh
 	;;
-mpdoleddisable )
-	rm $dirsystem/mpdoled
-	I2Cset
-	$dirsettings/player-conf.sh
-	pushRefresh
-	;;
 mpdoledlogo )
 	systemctl stop mpd_oled
 	type=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 	mpd_oled -o $type -L
 	;;
-mpdoledset )
-	chip=${args[1]}
-	baud=${args[2]}
-	if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $chip ]]; then
-		sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
-		systemctl daemon-reload
-	fi
-	if [[ $chip != 1 && $chip != 7 ]]; then
-		[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
-		! ls /dev/i2c* &> /dev/null && reboot=1
+mpdoled )
+	if [[ ${args[1]} == true ]]; then
+		chip=${args[2]}
+		baud=${args[3]}
+		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $chip ]]; then
+			sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
+			systemctl daemon-reload
+		fi
+		if [[ $chip != 1 && $chip != 7 ]]; then
+			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
+			! ls /dev/i2c* &> /dev/null && reboot=1
+		else
+			! grep -q dtparam=spi=on $fileconfig && reboot=1
+		fi
+		touch $dirsystem/mpdoled
+		I2Cset
+		if [[ $reboot ]]; then
+			pushReboot 'Spectrum OLED'
+		else
+			[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
+			pushRefresh
+		fi
 	else
-		! grep -q dtparam=spi=on $fileconfig && reboot=1
-	fi
-	touch $dirsystem/mpdoled
-	I2Cset
-	if [[ $reboot ]]; then
-		pushReboot 'Spectrum OLED'
-	else
-		[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
+		rm $dirsystem/mpdoled
+		I2Cset
+		$dirsettings/player-conf.sh
 		pushRefresh
 	fi
 	;;
@@ -680,7 +683,8 @@ pkgstatus )
 <bll># cat /etc/hostapd/hostapd.conf</bll>
 $( cat /etc/hostapd/hostapd.conf )
 
-<bll># cat /etc/dnsmasq.conf"
+<bll># cat /etc/dnsmasq.conf</bll>
+$( cat /etc/dnsmasq.conf )"
 			;;
 		localbrowser )
 			pkg=chromium
@@ -736,50 +740,52 @@ $config
 
 $status"
 	;;
-powerbuttondisable )
-	if [[ -e $dirsystem/audiophonics ]]; then
-		rm $dirsystem/audiophonics
-	else
-		systemctl disable --now powerbutton
-		gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
-	fi
-	sed -i -E '/gpio-poweroff|gpio-shutdown/ d' $fileconfig
-	pushRefresh
-	;;
-powerbuttonset )
-	if [[ ${args[4]} == true ]]; then
-		sed -i '/disable_overscan/ a\
+powerbutton )
+	if [[ ${args[1]} == true ]]; then
+		if [[ ${args[5]} == true ]]; then
+			sed -i '/disable_overscan/ a\
 dtoverlay=gpio-poweroff,gpiopin=22\
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
 ' $fileconfig
-		touch $dirsystem/audiophonics
-		pushReboot 'Power Button'
-		exit
-	fi
-	
-	sw=${args[1]}
-	led=${args[2]}
-	reserved=${args[3]}
-	echo "\
+			touch $dirsystem/audiophonics
+			pushReboot 'Power Button'
+			exit
+		fi
+		
+		sw=${args[2]}
+		led=${args[3]}
+		reserved=${args[4]}
+		echo "\
 sw=$sw
 led=$led
-reserved=$reserved" > $dirsystem/powerbutton.conf
-	prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
-	sed -i '/gpio-shutdown/ d' $fileconfig
-	systemctl restart powerbutton
-	systemctl enable powerbutton
-	if [[ $sw == 5 ]]; then
-		pushRefresh
+reserved=$reserved
+" > $dirsystem/powerbutton.conf
+		prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
+		sed -i '/gpio-shutdown/ d' $fileconfig
+		systemctl restart powerbutton
+		systemctl enable powerbutton
+		if [[ $sw == 5 ]]; then
+			pushRefresh
+		else
+			sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
+			[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
+		fi
 	else
-		sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-		[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
+		if [[ -e $dirsystem/audiophonics ]]; then
+			rm $dirsystem/audiophonics
+		else
+			systemctl disable --now powerbutton
+			gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
+		fi
+		sed -i -E '/gpio-poweroff|gpio-shutdown/ d' $fileconfig
+		pushRefresh
 	fi
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot | sort -u
 	;;
-relaysdisable )
+relays )
 	rm -f $dirsystem/relays
 	pushRefresh
 	data='{"submenu":"relays","value":false}'
@@ -790,18 +796,19 @@ rfkilllist )
 <bll># rfkill</bll>
 $( rfkill )"
 	;;
-rotaryencoderdisable )
-	systemctl disable --now rotaryencoder
-	pushRefresh
-	;;
-rotaryencoderset )
-	echo "\
-pina=${args[1]}
-pinb=${args[2]}
-pins=${args[3]}
-step=${args[4]}" > $dirsystem/rotaryencoder.conf
-	systemctl restart rotaryencoder
-	systemctl enable rotaryencoder
+rotaryencoder )
+	if [[ ${args[1]} == true ]]; then
+		echo "\
+pina=${args[2]}
+pinb=${args[3]}
+pins=${args[4]}
+step=${args[5]}
+" > $dirsystem/rotaryencoder.conf
+		systemctl restart rotaryencoder
+		systemctl enable rotaryencoder
+	else
+		systemctl disable --now rotaryencoder
+	fi
 	pushRefresh
 	;;
 servers )
@@ -942,12 +949,8 @@ Server rAudio @<wh>$ip</wh> :
 sharelistsmb )
 	timeout 10 smbclient -NL ${args[1]} | sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//'
 	;;
-soundprofile )
+soundprofileset )
 	soundProfile
-	;;
-soundprofiledisable )
-	soundProfile reset
-	pushRefresh
 	;;
 soundprofileget )
 	echo "\
@@ -959,17 +962,21 @@ $( ifconfig eth0 \
 	| grep -E 'mtu|txq' \
 	| sed -E 's/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /' )"
 	;;
-soundprofileset )
-	if [[ ${args[@]:1:4} == '60 1500 1000' ]]; then
-		rm -f $dirsystem/soundprofile.conf
-		soundProfile reset
-	else
-		echo -n "\
+soundprofile )
+	if [[ ${args[1]} == true ]]; then
+		if [[ ${args[@]:2:3} == '60 1500 1000' ]]; then
+			rm -f $dirsystem/soundprofile.conf
+			soundProfile reset
+		else
+			echo -n "\
 swappiness=${args[2]}
 mtu=${args[3]}
 txqueuelen=${args[4]}
 " > $dirsystem/soundprofile.conf
-		soundProfile
+			soundProfile
+		fi
+	else
+		soundProfile reset
 	fi
 	pushRefresh
 	;;
@@ -1042,43 +1049,43 @@ usbautoupdate )
 	[[ ${args[1]} == true ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
 	pushRefresh
 	;;
-vuleddisable )
-	rm -f $dirsystem/vuled
-	killall cava &> /dev/null
-	p=$( < $dirsystem/vuled.conf )
-	for i in $p; do
-		echo 0 > /sys/class/gpio/gpio$i/value
-	done
-	if [[ -e $dirsystem/vumeter ]]; then
-		cava -p /etc/cava.conf | $dirsettings/vu.sh &> /dev/null &
+vuled )
+	if [[ ${args[1]} == true ]]; then
+		echo ${args[@]:2} > $dirsystem/vuled.conf
+		touch $dirsystem/vuled
+		[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
+		killall cava &> /dev/null
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	else
-		$dirsettings/player-conf.sh
+		rm -f $dirsystem/vuled
+		killall cava &> /dev/null
+		p=$( < $dirsystem/vuled.conf )
+		for i in $p; do
+			echo 0 > /sys/class/gpio/gpio$i/value
+		done
+		if [[ -e $dirsystem/vumeter ]]; then
+			cava -p /etc/cava.conf | $dirsettings/vu.sh &> /dev/null &
+		else
+			$dirsettings/player-conf.sh
+		fi
 	fi
 	pushRefresh
 	;;
-vuledset )
-	echo ${args[@]:1} > $dirsystem/vuled.conf
-	touch $dirsystem/vuled
-	[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
-	killall cava &> /dev/null
-	cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-	pushRefresh
-	;;
-wlandisable )
-	systemctl -q is-active hostapd && $dirsettings/features.sh hostapddisable
-	rmmod brcmfmac &> /dev/null
-	pushRefresh
-	;;
-wlanset )
-	regdom=${args[1]}
-	apauto=${args[2]}
-	! lsmod | grep -q brcmfmac && modprobe brcmfmac
-	echo wlan0 > $dirshm/wlan
-	iw wlan0 set power_save off
-	[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
-	if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
-		sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
-		iw reg set $regdom
+wlan )
+	if [[ ${args[1]} == true ]] then
+		regdom=${args[2]}
+		apauto=${args[3]}
+		! lsmod | grep -q brcmfmac && modprobe brcmfmac
+		echo wlan0 > $dirshm/wlan
+		iw wlan0 set power_save off
+		[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
+		if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
+			sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
+			iw reg set $regdom
+		fi
+	else
+		systemctl -q is-active hostapd && $dirsettings/features.sh hostapddisable
+		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
 	;;

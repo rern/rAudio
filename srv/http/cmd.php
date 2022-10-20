@@ -74,7 +74,7 @@ case 'login':
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
-		exec( $sudo.'/srv/http/bash/settings/features.sh loginset' );
+		exec( $sudo.'/srv/http/bash/settings/features.sh login' );
 	} else {
 		echo 1;
 		session_start();

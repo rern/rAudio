@@ -237,7 +237,7 @@ $( '.hostapdset' ).click( function() {
 			var ip3 = ips.pop();
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
-			bash( [ 'hostapdset', iprange, ip, pwd ] );
+			bash( [ 'hostapd', true, iprange, ip, pwd ] );
 			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
 		}
 	} );

@@ -42,50 +42,46 @@ autoupdate )
 albumignore )
 	cat $dirmpd/albumignore
 	;;
-bufferdisable )
-	sed -i '/^audio_buffer_size/ d' $mpdconf
-	restartMPD mpd
-	;;
-bufferset )
-	buffer=${args[1]}
-	sed -i '/^audio_buffer_size/ d' $mpdconf
-	if (( $buffer == 4096 )); then
-		rm -f $dirsystem/buffer.conf
+buffer )
+	if [[ ${args[1]} == true ]]; then
+		buffer=${args[2]}
+		sed -i '/^audio_buffer_size/ d' $mpdconf
+		if (( $buffer == 4096 )); then
+			rm -f $dirsystem/buffer.conf
+		else
+			echo 'audio_buffer_size      "'$buffer'"' >> $mpdconf
+			echo $buffer > $dirsystem/buffer.conf
+		fi
 	else
-		echo 'audio_buffer_size      "'$buffer'"' >> $mpdconf
-		echo $buffer > $dirsystem/buffer.conf
+		sed -i '/^audio_buffer_size/ d' $mpdconf
 	fi
 	restartMPD mpd
 	;;
-bufferoutputdisable )
-	sed -i '/^max_output_buffer_size/ d' $mpdconf
-	restartMPD mpd
-	;;
-bufferoutputset )
-	buffer=${args[1]}
-	sed -i '/^max_output_buffer_size/ d' $mpdconf
-	if (( $buffer == 8192 )); then
-		rm -f $dirsystem/bufferoutput.conf
+bufferoutput )
+	if [[ ${args[1]} == true ]]; then
+		buffer=${args[2]}
+		sed -i '/^max_output_buffer_size/ d' $mpdconf
+		if (( $buffer == 8192 )); then
+			rm -f $dirsystem/bufferoutput.conf
+		else
+			echo 'max_output_buffer_size "'$buffer'"' >> $mpdconf
+			echo $buffer > $dirsystem/bufferoutput.conf
+		fi
 	else
-		echo 'max_output_buffer_size "'$buffer'"' >> $mpdconf
-		echo $buffer > $dirsystem/bufferoutput.conf
+		sed -i '/^max_output_buffer_size/ d' $mpdconf
 	fi
 	restartMPD mpd
 	;;
-crossfadedisable )
-	mpc -q crossfade 0
+crossfade )
+	if [[ ${args[1]} == true ]]; then
+		crossfade=${args[2]}
+		mpc -q crossfade $crossfade
+		echo $crossfade > $dirsystem/crossfade.conf
+		touch $dirsystem/crossfade
+	else
+		mpc -q crossfade 0
+	fi
 	pushRefresh
-	;;
-crossfadeset )
-	crossfade=${args[1]}
-	mpc -q crossfade $crossfade
-	echo $crossfade > $dirsystem/crossfade.conf
-	touch $dirsystem/crossfade
-	pushRefresh
-	;;
-customdisable )
-	rm -f $dirmpd/mpd-custom.conf $dirsystem/custom
-	$dirsettings/player-conf.sh
 	;;
 customget )
 	echo "\
@@ -93,25 +89,30 @@ $( cat $dirmpd/mpd-custom.conf 2> /dev/null )
 ^^
 $( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )"
 	;;
-customset )
-	global=${args[1]}
-	output=${args[2]}
-	aplayname=${args[3]}
-	fileglobal=$dirmpd/mpd-custom
-	fileoutput="$dirsystem/custom-output-$aplayname"
-	if [[ $global ]]; then
-		echo -e "$global" > $fileglobal
-		ln -sf $fileglobal{,.conf}
-	else
-		rm -f $fileglobal*
-	fi
-	[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
-	[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
-	$dirsettings/player-conf.sh
-	if ! systemctl -q is-active mpd; then # config errors
-		rm -f $fileglobal* "$fileoutput" $dirsystem/custom
+custom )
+	if [[ ${args[1]} == true ]]; then
+		global=${args[2]}
+		output=${args[3]}
+		aplayname=${args[4]}
+		fileglobal=$dirmpd/mpd-custom
+		fileoutput="$dirsystem/custom-output-$aplayname"
+		if [[ $global ]]; then
+			echo -e "$global" > $fileglobal
+			ln -sf $fileglobal{,.conf}
+		else
+			rm -f $fileglobal*
+		fi
+		[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
+		[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
 		$dirsettings/player-conf.sh
-		echo -1
+		if ! systemctl -q is-active mpd; then # config errors
+			rm -f $fileglobal* "$fileoutput" $dirsystem/custom
+			$dirsettings/player-conf.sh
+			echo -1
+		fi
+	else
+		rm -f $dirmpd/mpd-custom.conf $dirsystem/custom
+		$dirsettings/player-conf.sh
 	fi
 	;;
 devices )
@@ -162,7 +163,11 @@ dop )
 	restartMPD mpd-output
 	;;
 ffmpeg )
-	[[ ${args[1]} == true ]] && $dirmpd/conf/mpd-ffmpeg.conf $dirmpd || rm $dirmpd/mpd-ffmpeg.conf
+	if [[ ${args[1]} == true ]]; then
+		ln -s $dirmpd/conf/mpd-ffmpeg.conf $dirmpd
+	else
+		rm $dirmpd/mpd-ffmpeg.conf
+	fi
 	restartMPD
 	;;
 filetype )
@@ -239,34 +244,34 @@ novolume )
 	data='{"volumenone":true}'
 	pushstream display "$data"
 	;;
-replaygaindisable )
-	sed -i '/^replaygain/ d' $mpdconf
+replaygain )
+	if [[ ${args[1]} == true ]]; then
+		replaygain=${args[2]}
+		echo 'replaygain          "'$replaygain'"' >> $mpdconf
+		echo $replaygain > $dirsystem/replaygain.conf
+	else
+		sed -i '/^replaygain/ d' $mpdconf
+	fi
 	restartMPD mpd
 	;;
-replaygainset )
-	replaygain=${args[1]}
-	echo 'replaygain          "'$replaygain'"' >> $mpdconf
-	echo $replaygain > $dirsystem/replaygain.conf
-	restartMPD mpd
-	;;
-soxrdisable )
-	ln -sf $dirmpd/conf/mpd-soxr.conf $dirmpd
-	restartMPD
-	;;
-soxrset )
-cat << EOF > $dirmpd/conf/mpd-soxr-custom.conf
+soxr )
+	if [[ ${args[1]} == true ]]; then
+		cat << EOF > $dirmpd/conf/mpd-soxr-custom.conf
 resampler {
 	plugin         "soxr"
 	quality        "custom"
-	precision      "${args[1]}"
-	phase_response "${args[2]}"
-	passband_end   "${args[3]}"
-	stopband_begin "${args[4]}"
-	attenuation    "${args[5]}"
-	flags          "${args[6]}"
+	precision      "${args[2]}"
+	phase_response "${args[3]}"
+	passband_end   "${args[4]}"
+	stopband_begin "${args[5]}"
+	attenuation    "${args[6]}"
+	flags          "${args[7]}"
 }
 EOF
-	ln -sf $dirmpd/conf/mpd-soxr-custom.conf $dirmpd/mpd-soxr.conf
+		ln -sf $dirmpd/conf/mpd-soxr-custom.conf $dirmpd/mpd-soxr.conf
+	else
+		ln -sf $dirmpd/conf/mpd-soxr.conf $dirmpd
+	fi
 	restartMPD
 	;;
 volume0db )

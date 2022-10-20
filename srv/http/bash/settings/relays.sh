@@ -8,7 +8,7 @@ readarray -t args <<< "$1"
 
 cmd=${args[0]}
 
-if [[ $cmd == relaysset ]]; then
+if [[ $cmd == save ]]; then
 	data=${args[1]}
 	echo -e "$data" > $dirsystem/relays.conf
 	touch $dirsystem/relays

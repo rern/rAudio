@@ -118,7 +118,7 @@ $( '#save' ).off( 'click' ).click( function() {
 				+'off=( '+ D.val.off.join( ' ' ) +' )\\n'
 				+'offd=( '+ D.val.offd.join( ' ' ) +' )\\n'
 				+'timer='+ D.val.timer;
-	bash( [ 'relaysset', values ] );
+	bash( [ 'save', values ] );
 	banner( 'Relays', 'Change ...', 'relays' );
 } );
 

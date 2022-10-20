@@ -177,7 +177,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, ok           : function() {
 			var val = infoVal()
 			notify( 'HDD Sleep', ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
-			bash( [ 'hddsleep', val ], function( devices ) {
+			bash( [ 'hddsleep', true, val ], function( devices ) {
 				if ( devices ) {
 					info( {
 						  icon         : 'usbdrive'
@@ -203,7 +203,7 @@ $( '#setting-bluetooth' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );
-			bash( [ 'bluetoothset', ...infoVal() ] );
+			bash( [ 'bluetooth', true, ...infoVal() ] );
 		}
 	} );
 } );
@@ -230,7 +230,7 @@ $( '#setting-wlan' ).click( function() {
 			}
 			, ok           : function() {
 				notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
-				bash( [ 'wlanset', ...infoVal() ] );
+				bash( [ 'wlan', true, ...infoVal() ] );
 			}
 		} );
 	}, 'json' );
@@ -372,7 +372,7 @@ $( '#setting-lcdchar' ).click( function() {
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( dirbash +"system.sh lcdchar$'\n'"+ action )
+					bash( dirbash +"system.sh lcdcharset$'\n'"+ action )
 				} );
 			}
 		}
@@ -380,7 +380,7 @@ $( '#setting-lcdchar' ).click( function() {
 			$( '#lcdchar' ).prop( 'checked', G.lcdchar );
 		}
 		, ok           : function() {
-			bash( [ 'lcdcharset', ...infoVal() ] );
+			bash( [ 'lcdchar', true, ...infoVal() ] );
 			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
 		}
 	} );
@@ -438,7 +438,7 @@ $( '#setting-powerbutton' ).click( function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			bash( [ 'powerbuttonset', ...infoVal().slice( 1 ) ] );
+			bash( [ 'powerbutton', true, ...infoVal().slice( 1 ) ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );
@@ -476,7 +476,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 			$( '#rotaryencoder' ).prop( 'checked', G.rotaryencoder );
 		}
 		, ok           : function() {
-			bash( [ 'rotaryencoderset', ...infoVal() ] );
+			bash( [ 'rotaryencoder', true, ...infoVal() ] );
 			notify( 'Rotary Encoder', G.rotaryencoder ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );
@@ -523,7 +523,7 @@ $( '#setting-mpdoled' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
-			bash( [ 'mpdoledset', ...infoVal() ] );
+			bash( [ 'mpdoled', true, ...infoVal() ] );
 		}
 	} );
 } );
@@ -560,7 +560,7 @@ $( '#setting-lcd' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
-			bash( [ 'lcdset', infoVal() ] );
+			bash( [ 'lcd', true, infoVal() ] );
 		}
 	} );
 } );
@@ -586,7 +586,7 @@ $( '#setting-vuled' ).click( function() {
 		}
 		, ok           : function() {
 			notify( 'VU LED', 'Change ...', 'led' );
-			bash( [ 'vuledset', ...infoVal() ] );
+			bash( [ 'vuled', true, ...infoVal() ] );
 		}
 	} );
 } );
@@ -697,7 +697,7 @@ $( '#setting-soundprofile' ).click( function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
 		}
 		, ok           : function() {
-			bash( [ 'soundprofileset', ...infoVal() ] );
+			bash( [ 'soundprofile', true, ...infoVal() ] );
 			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
 		}
 	} );

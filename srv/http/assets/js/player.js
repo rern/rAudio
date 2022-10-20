@@ -168,7 +168,7 @@ $( '#setting-crossfade' ).click( function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
 		, ok           : function() {
-			bash( [ 'crossfadeset', infoVal() ] );
+			bash( [ 'crossfade', true, infoVal() ] );
 			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -184,7 +184,7 @@ $( '#setting-replaygain' ).click( function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
 		, ok           : function() {
-			bash( [ 'replaygainset', infoVal() ] );
+			bash( [ 'replaygain', true, infoVal() ] );
 			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -210,13 +210,13 @@ $( '#setting-buffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : G.bufferconf
-		, checkchanged : ( G.buffer ? 1 : 0 )
+		, checkchanged : 1
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
 		, ok           : function() {
-			bash( [ 'bufferset', infoVal() ] );
+			bash( [ 'buffer', true, infoVal() ] );
 			notify( 'Custom Audio Buffer', G.buffer ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -231,13 +231,13 @@ $( '#setting-bufferoutput' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : G.bufferoutputconf
-		, checkchanged : ( G.bufferoutput ? 1 : 0 )
+		, checkchanged : 1
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
 		}
 		, ok           : function() {
-			bash( [ 'bufferoutputset', infoVal() ] );
+			bash( [ 'bufferoutput', true, infoVal() ] );
 			notify( 'Custom Output Buffer', G.bufferoutput ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -300,7 +300,7 @@ $( '#setting-soxr' ).click( function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			bash( [ 'soxrset', ...infoVal() ] );
+			bash( [ 'soxr', true, ...infoVal() ] );
 			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
@@ -343,7 +343,7 @@ $( '#setting-custom' ).click( function() {
 					return
 				}
 				
-				bash( [ 'customset', values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
+				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {

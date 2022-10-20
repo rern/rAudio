@@ -163,6 +163,9 @@ editwifidhcp )
 	netctl start "$ssid"
 	pushRefresh
 	;;
+hostapd )
+	echo $dirsettings/features.sh "$1"
+	;;
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>

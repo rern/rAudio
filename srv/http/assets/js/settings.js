@@ -506,7 +506,7 @@ $( '.switch:not( .custom )' ).click( function() {
 			$( '#setting-'+ id ).click();
 		} else {
 			notify( label, 'Disable ...', icon );
-			bash( [ id +'disable' ] );
+			bash( [ id, false ] );
 		}
 	} else {
 		notify( label, checked, icon );

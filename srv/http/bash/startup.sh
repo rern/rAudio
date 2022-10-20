@@ -109,7 +109,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
 
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofile
+[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
 [[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
 
