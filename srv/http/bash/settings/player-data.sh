@@ -1,9 +1,10 @@
 #!/bin/bash
 
+! mpc &> /dev/null && echo '{"page":"player","dead":1}' && exit
+
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
-active=$( mpc &> /dev/null && echo true )
 conf=$( sed -E -e '/resampler|plugin|quality|}/ d' -e 's/.*"(.*)"/\1/' $dirmpd/conf/mpd-soxr-custom.conf | tr '\n' , )
 state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
 [[ ! $state ]] && state=stop
@@ -11,7 +12,6 @@ state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
 data='
   "page"             : "player"
 , "devices"          : '$devices'
-, "active"           : '$active'
 , "asoundcard"       : '$i'
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
@@ -23,7 +23,7 @@ data='
 , "bufferoutputconf" : '$( cut -d'"' -f2 $dirmpd/conf/mpd-outputbuffer.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
-, "crossfade"        : '$( [[ $active == true && $( mpc crossfade | cut -d' ' -f2 ) != 0 ]] && echo true )'
+, "crossfade"        : '$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )'
 , "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
 , "custom"           : '$( exists $dirmpd/mpd-custom.conf )'
 , "dabradio"         : '$( isactive rtsp-simple-server )'
