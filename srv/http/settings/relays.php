@@ -28,22 +28,22 @@ On/Off:  <?=( i( 'plus-r' ).'System | '.i( 'relays wh' ) )?>
 	<div class="column" id="gpio-num">
 		<span class="gpio-text"><?=( i( 'gpiopins bl' ) )?>Pin</span>
 		<?=$htmlpin?>
-		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?>Idle</span>
+		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?> Idle</span>
 		<select id="timer" class="timer"></select>
 	</div>
 	<div class="column" id="gpio-name">
-		<span class="gpio-text"><?=( i( 'tag bl' ) )?>Name</span>
+		<span class="gpio-text"><?=( i( 'tag bl' ) )?> Name</span>
 		<?=$htmlname?>
 		<span class="timer">&nbsp;min. to <?=( i( 'power red' ) )?></span>
 	</div>
 </div>
 <div class="gpio-float-r">
 	<div class="column">
-		<span class="gpio-text"><?=( i( 'power grn' ) )?>On Sequence</span>
+		<span class="gpio-text"><?=( i( 'power grn' ) )?> On Sequence</span>
 		<div id="on"></div>
 	</div>
 	<div class="column">
-		<span class="gpio-text"><?=( i( 'power red' ) )?>Off Sequence</span>
+		<span class="gpio-text"><?=( i( 'power red' ) )?> Off Sequence</span>
 		<div id="off"></div>
 		<br>
 		<a id="undo" class="infobtn infobtn disabled"><?=( i( 'undo' ) )?>Undo</a>
