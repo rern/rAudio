@@ -88,16 +88,13 @@ grep -q ExecStart $file && installfinish && exit
 echo -e "$bar Rearrange MPD Configuration..."
 
 $mpdconf=$dirmpd/mpd.conf
-cp $dirmpd/conf/mpd.conf $dirmpd
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 mv $dirsystem/custom-global $dirmpd/conf/mpd-custom.conf &> /dev/null
-file=$dirsystem/soxr.conf
-if [[ -e $file ]]; then
-	sed -i '1 i\
-resampler {\
-	plugin         "soxr"
-' $file
-	mv $file $dirmpd/conf/mpd-soxr-custom.conf
+if [[ -e $dirsystem/soxr.conf ]]; then
+	echo "\
+resampler {
+	plugin         \"soxr\"
+$( cat $dirsystem/soxr.conf )" > $dirmpd/conf/mpd-soxr-custom.conf
 fi
 
 grep -q auto_update /etc/mpd.conf && ln -s $dirmpd/conf/mpd-autoupdate.conf $dirmpd
@@ -114,7 +111,6 @@ if ! grep -q replaygain.*off /etc/mpd.conf; then
 	echo 'replaygain          "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpd/conf/mpd-replaygain.conf
 	ln -s $dirmpd/conf/mpd-replaygain.conf $dirmpd
 fi
-rm -f $dirsystem/{buffer,bufferoutput,replaygain}.conf $dirsystem/streaming
 
 [[ -e $dirshm/audiocd ]] && ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
 [[ -e $dirsystem/custom && -e $dirmpd/conf/mpd-custom.conf ]] && ln -s $dirmpd/conf/mpd-custom.conf $dirmpd
@@ -126,6 +122,8 @@ if grep -q quality.*custom /etc/mpd.conf; then
 else
 	ln -s $dirmpd/conf/mpd-soxr.conf $dirmpd
 fi
+
+rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/streaming
 
 echo "\
 ExecStart=
