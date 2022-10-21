@@ -123,16 +123,9 @@ function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
 	} catch( e ) {
-		if ( list.trim() !== 'mpddead' ) {
-			var msg = e.message.split( ' ' );
-			var pos = msg.pop();
-			var error =  '<i class="fa fa-warning red"></i> Errors: '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			listError( error );
-		} else {
-			bash( 'systemctl status mpd', function(status) {
-				var error =  '<i class="fa fa-warning red"></i> MPD not running '
+		if ( list.trim() === 'mpdnotrunning' ) {
+			bash( 'systemctl status mpd', function( status ) {
+				var error =  '<i class="fa fa-warning red"></i> MPD is not running '
 							+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
 							+'<hr>'
 							+ status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
@@ -143,6 +136,13 @@ function list2JSON( list ) {
 					} );
 				} );
 			} );
+		} else {
+			var msg = e.message.split( ' ' );
+			var pos = msg.pop();
+			var error =  '<i class="fa fa-warning red"></i> Errors: '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+						+'<hr>'
+						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+			listError( error );
 		}
 		return false
 	}

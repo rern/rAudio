@@ -43,13 +43,14 @@ heading,
 #button-data {
 	position: fixed;
 	top: 0;
-	width: 40px;
 	height: 40px;
-	margin: 5px 0;
 	font-size: 30px;
 	text-align: center;
-	color: var( --cm );
 	z-index: 10;
+}
+#button-data i {
+	width: 40px;
+	color: var( --cm );
 }
 #loader {
 	background: #000000;

@@ -5,6 +5,8 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 }
 $time = time();
 $page = $_GET[ 'p' ];
+$pagehead = $page !== 'relays' ? $page : 'system';
+$title = strtoupper( $pagehead );
 $sudo = '/usr/bin/sudo /usr/bin';
 ?>
 <!DOCTYPE html>
@@ -22,11 +24,10 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body>
-<i id="button-data" class="fa fa-times"></i>
+<div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?></span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
-	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
-	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=( strtoupper( $pagehead ) )?></span>
+	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=$title?></span>
 	<?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
 <div class="container hide">
