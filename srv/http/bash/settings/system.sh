@@ -692,8 +692,8 @@ $( cat /etc/dnsmasq.conf )"
 			;;
 		mpd )
 			conf="\
-<bll># $dirmpd/mpd.conf</bll>
-$( grep -v ^i $dirmpd/mpd.conf )
+<bll># $mpdconf</bll>
+$( grep -v ^i $mpdconf )
 $( ls $dirmpdconf/mpd-*.conf | grep -v output.conf | sed 's|^.*/|include             "|; s|$|"|' )
 $( cat $dirmpdconf/mpd-output.conf 2> /dev/null )"
 			;;
