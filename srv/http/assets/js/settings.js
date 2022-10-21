@@ -169,7 +169,10 @@ function refreshData() {
 			G = list;
 		}
 		setSwitch();
-		if ( list2G ) renderPage();
+		if ( list2G ) {
+			$( '#bar-bottom' ).removeClass( 'hide' );
+			renderPage();
+		}
 	} );
 }
 function resetLocal() {
