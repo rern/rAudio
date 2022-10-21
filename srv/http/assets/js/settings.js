@@ -96,6 +96,23 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
+function highlightJSON( json ) {
+	var json = JSON.stringify( json, null, '\t' );
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
+		var cls = 'number';
+		if ( /^"/.test( match ) ) {
+			if ( /:$/.test( match ) ) {             // key
+				return match
+			} else {                                // string
+				return '<yl>'+ match +'</yl>'
+			}
+		} else if ( /true|false/.test( match ) ) { // boolean
+			return '<grn>'+ match +'</grn>'
+		} else if ( /[0-9]/.test( match ) ) {      // number
+			return '<red>'+ match +'</red>'
+		}
+	} );
+}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
@@ -461,13 +478,8 @@ $( '.close' ).click( function() {
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( G ) ) return
 	
-	var html = JSON.stringify( G, null, '\t' )
-//				.replace( /(".*"):/g, '<bll>$1</bll>:' )
-				.replace( /: (true|false),/g, ': <grn>$1</grn>,' )
-				.replace( /: ([0-9]+),/g, ': <red>$1</red>,' )
-				.replace( /: (".*"),/g, ': <yl>$1</yl>,' )
 	$( '#data' )
-		.html( html )
+		.html( highlightJSON( G ) )
 		.removeClass( 'hide' );
 	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
 } );
