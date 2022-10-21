@@ -101,17 +101,21 @@ function highlightJSON( json ) {
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
 	json = JSON.stringify( json, null, '\t' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
-		if ( /^"/.test( match ) ) {                // string
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
+		if ( /^"/.test( match ) ) {              // string
 			if ( /:$/.test( match ) ) { // key
 				return match
 			} else {                    // value
 				return '<yl>'+ match +'</yl>'
 			}
-		} else if ( /true|false/.test( match ) ) { // boolean
+		} else if ( /true/.test( match ) ) {     // true
 			return '<grn>'+ match +'</grn>'
-		} else if ( /[0-9]/.test( match ) ) {      // number
+		} else if ( /false/.test( match ) ) {    // false
 			return '<red>'+ match +'</red>'
+		} else if ( /[0-9]/.test( match ) ) {    // number
+			return '<ora>'+ match +'</ora>'
+		} else if ( /[{}\[\]]/.test( match ) ) { // braces
+			return '<pur>'+ match +'</pur>'
 		}
 	} ); // source: https://stackoverflow.com/a/7220510
 }

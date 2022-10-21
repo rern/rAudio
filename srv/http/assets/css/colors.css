@@ -19,6 +19,8 @@ bll       { color : var( --cml ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
 grn, .grn { color : #0f0 }
+ora, .ora { color : #f80 }
+pur, .pur { color : #f0f }
 red, .red { color : #f00 }
 yl,  .yl  { color : #ff0 }
 wh,  .wh  { color : var( --cw ) !important }
