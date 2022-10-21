@@ -348,7 +348,7 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobble )
+scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 	if [[ ${args[1]} == true ]]; then
 		conf=( ${args[@]:2:5} )
 		username=${args[7]}

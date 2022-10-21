@@ -96,8 +96,11 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
-function highlightJSON( json ) { // source: https://stackoverflow.com/a/7220510
-	var json = JSON.stringify( json, null, '\t' );
+function highlightJSON( json ) {
+	var json = Object.keys( json )
+					.sort()
+					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
+	json = JSON.stringify( json, null, '\t' );
 	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
 		if ( /^"/.test( match ) ) {                // string
 			if ( /:$/.test( match ) ) { // key
@@ -110,7 +113,7 @@ function highlightJSON( json ) { // source: https://stackoverflow.com/a/7220510
 		} else if ( /[0-9]/.test( match ) ) {      // number
 			return '<red>'+ match +'</red>'
 		}
-	} );
+	} ); // source: https://stackoverflow.com/a/7220510
 }
 function list2JSON( list ) {
 	try {
