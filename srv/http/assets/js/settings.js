@@ -101,9 +101,9 @@ function highlightJSON( json ) {
 	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
 		var cls = 'number';
 		if ( /^"/.test( match ) ) {
-			if ( /:$/.test( match ) ) {             // key
+			if ( /:$/.test( match ) ) {            // key
 				return match
-			} else {                                // string
+			} else {                               // string
 				return '<yl>'+ match +'</yl>'
 			}
 		} else if ( /true|false/.test( match ) ) { // boolean
