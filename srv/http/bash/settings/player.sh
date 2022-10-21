@@ -8,14 +8,15 @@
 # convert each line to each args
 readarray -t args <<< "$1"
 
+columnFileOutput() {
+	fileoutput=$dirmpd/mpd-output.conf
+	conf=$( sed '/{\|}/ d; s/  *"/@"/' $fileoutput | column -t -s@ )
+	echo "\
+audio_output {
+$conf
+}" > $fileoutput
+}
 restartMPD() {
-	if [[ $1 ]]; then
-		file=$dirmpd/$1.conf
-		conf=$( sed 's/  *"/@"/' $file | column -t -s@ )
-		echo "\
-$( grep -v ^i <<< "$conf" | sort )
-$( grep ^i <<< "$conf" )" > $file
-	fi
 	systemctl restart mpd
 	pushRefresh
 }
@@ -37,7 +38,7 @@ autoupdate )
 	else
 		rm $dirmpd/mpd-autoupdate.conf
 	fi
-	restartMPD mpd
+	restartMPD
 	;;
 albumignore )
 	cat $dirmpd/albumignore
@@ -45,20 +46,20 @@ albumignore )
 buffer )
 	if [[ ${args[1]} == true ]]; then
 		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpd/conf/mpd-buffer.conf
-		ln -s $dirmpd/conf/mpd-buffer.conf $dirmpd
+		ln -sf $dirmpd/conf/mpd-buffer.conf $dirmpd
 	else
 		rm $dirmpd/conf/mpd-buffer.conf
 	fi
-	restartMPD mpd
+	restartMPD
 	;;
 bufferoutput )
 	if [[ ${args[1]} == true ]]; then
 		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpd/conf/mpd-outputbuffer.conf
-		ln -s $dirmpd/conf/mpd-outputbuffer.conf $dirmpd
+		ln -sf $dirmpd/conf/mpd-outputbuffer.conf $dirmpd
 	else
 		rm $dirmpd/conf/mpd-outputbuffer.conf
 	fi
-	restartMPD mpd
+	restartMPD
 	;;
 crossfade )
 	if [[ ${args[1]} == true ]]; then
@@ -141,14 +142,16 @@ $( cat /etc/asound.conf )"
 dop )
 	dop=${args[1]}
 	file="$dirsystem/dop-${args[2]}"
+	fileoutput=$dirmpd/mpd-output.conf
 	if [[ $dop == true ]]; then
-		sed -i '/}/ i\	dop            "yes"' $dirmpd/mpd-output.conf
+		sed -i '/}/ i\	dop  "yes"' $dirmpd/mpd-output.conf
 		touch "$file"
 	else
 		sed -i '/dop.*yes/ d' $dirmpd/mpd-output.conf
 		rm -f "$file"
 	fi
-	restartMPD mpd-output
+	columnFileOutput
+	restartMPD
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
@@ -217,7 +220,7 @@ normalization )
 	else
 		rm $dirmpd/mpd-normalization.conf
 	fi
-	restartMPD mpd
+	restartMPD
 	;;
 novolume )
 	aplayname=${args[1]}
@@ -233,13 +236,16 @@ novolume )
 	pushstream display "$data"
 	;;
 replaygain )
+	sed -i '/replay_gain_handler/ d' $dirmpd/mpd-output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain          "'${args[2]}'"' > $dirmpd/conf/mpd-replaygain.conf
-		ln -s $dirmpd/conf/mpd-replaygain.conf $dirmpd
+		grep -q mixer_type.*hardware $mpdconf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpd/mpd-output.conf
+		ln -sf $dirmpd/conf/mpd-replaygain.conf $dirmpd
 	else
 		rm $dirmpd/mpd-replaygain.conf
 	fi
-	restartMPD mpd
+	columnFileOutput
+	restartMPD
 	;;
 soxr )
 	if [[ ${args[1]} == true ]]; then

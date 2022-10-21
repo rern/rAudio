@@ -691,10 +691,10 @@ $( cat /etc/dnsmasq.conf )"
 			fileconf=$dirsystem/localbrowser.conf
 			;;
 		mpd )
-			fileconf=$mpdconf
 			conf="\
 <bll># $dirmpd/mpd.conf</bll>
-$( sed -E '/mpd-output.conf/ {s/^(include_optional) /<gr>#\1/; s|$|</gr>|}' $mpdconf )
+$( grep -v ^i $dirmpd/mpd.conf )
+$( ls $dirmpd/mpd-*.conf | grep -v output.conf | sed 's|^.*/|include             "|; s|$|"|' )
 $( cat $dirmpd/mpd-output.conf 2> /dev/null )"
 			;;
 		nfs-server )

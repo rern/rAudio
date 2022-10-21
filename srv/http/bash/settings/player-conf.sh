@@ -65,7 +65,7 @@ else
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$i'"'
-			grep -q replaygain $mpdconf && audiooutput+='
+			[[ -e $dirmpd/mpd-replaygain.conf ]] && audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
 		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
