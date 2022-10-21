@@ -459,20 +459,19 @@ $( '.close' ).click( function() {
 		} );
 	} );
 } );
-$( '#button-data' ).click( function() {
+$( '.page-icon' ).click( function() {
 	if ( !G ) return
 	
-	if( $( '#data' ).hasClass( 'hide' ) ) {
-		$( '.container' ).addClass( 'hide' );
-		$( '#data' )
-			.html( JSON.stringify( G, null, 2 ) )
-			.removeClass( 'hide' );
-		$( '#button-data' ).addClass( 'fa fa-times' );
-	} else {
-		$( '.container' ).removeClass( 'hide' );
-		$( '#data' ).addClass( 'hide' );
-		$( '#button-data' ).removeClass( 'fa fa-times' );
-	}
+	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
+	$( '#data' )
+		.html( JSON.stringify( G, null, 2 ) )
+		.removeClass( 'hide' );
+	$( '#button-data' ).addClass( 'fa fa-times' );
+} );
+$( '#button-data' ).click( function() {
+	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
+	$( '#data' ).addClass( 'hide' );
+	$( '#button-data' ).removeClass( 'fa fa-times' );
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( function() {
 		location.reload();

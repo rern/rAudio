@@ -45,11 +45,11 @@ heading,
 	top: 0;
 	width: 40px;
 	height: 40px;
-	margin: 0;
+	margin: 5px 0;
 	font-size: 30px;
 	text-align: center;
 	color: var( --cm );
-	z-index: 112;
+	z-index: 10;
 }
 #loader {
 	background: #000000;
