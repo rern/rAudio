@@ -126,7 +126,7 @@ function list2JSON( list ) {
 		if ( list.trim() !== 'mpddead' ) {
 			var msg = e.message.split( ' ' );
 			var pos = msg.pop();
-			var error =  '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+			var error =  '<red><i class="fa fa-warning"></i> Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			listError( error );
