@@ -460,7 +460,7 @@ $( '.close' ).click( function() {
 	} );
 } );
 $( '.page-icon' ).click( function() {
-	if ( !G ) return
+	if ( $.isEmptyObject( G ) ) return
 	
 	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
 	$( '#data' )
