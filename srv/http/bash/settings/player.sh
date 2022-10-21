@@ -239,7 +239,7 @@ replaygain )
 	sed -i '/replay_gain_handler/ d' $dirmpd/mpd-output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain          "'${args[2]}'"' > $dirmpd/conf/mpd-replaygain.conf
-		grep -q mixer_type.*hardware $mpdconf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpd/mpd-output.conf
+		grep -q mixer_type.*hardware $dirmpd/mpd-output.conf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpd/mpd-output.conf
 		ln -sf $dirmpd/conf/mpd-replaygain.conf $dirmpd
 	else
 		rm $dirmpd/mpd-replaygain.conf
