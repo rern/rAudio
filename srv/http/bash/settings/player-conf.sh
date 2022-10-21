@@ -92,6 +92,7 @@ if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirs
 else
 	rm -f $dirmpdconf/fifo.conf
 fi
+[[ ! -e $dirmpdconf/soxr.conf ]] && ln -s $dirmpdconf/{conf/,}soxr.conf
 
 # usbdac.rules -------------------------------------------------------------------------
 if [[ $1 ]]; then
