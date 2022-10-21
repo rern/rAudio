@@ -126,7 +126,7 @@ function list2JSON( list ) {
 		if ( list.trim() !== 'mpddead' ) {
 			var msg = e.message.split( ' ' );
 			var pos = msg.pop();
-			var error =  '<red><i class="fa fa-warning"></i> Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+			var error =  '<i class="fa fa-warning red"></i> Errors: '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			listError( error );
@@ -146,10 +146,12 @@ function list2JSON( list ) {
 		}
 		return false
 	}
-	if ( $( '#data' ).hasClass( 'hide' ) ) $( '#data' ).empty().addClass( 'hide' );
+	// no errors
+	if ( $( '#data .fa-warning' ).length ) $( '#data' ).empty().addClass( 'hide' );
 	return true
 }
 function listError( error ) {
+	$( '.container' ).addClass( 'hide' );
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
