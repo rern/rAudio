@@ -24,7 +24,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <body>
 <i id="button-data"></i>
 <pre id="data" class="hide"></pre>
-<div class="head hide">
+<div class="head">
 	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
 	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=( strtoupper( $pagehead ) )?></span>
 	<?=( i( 'times close' ).i( 'help help-head' ) )?>

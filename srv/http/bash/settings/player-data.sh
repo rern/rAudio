@@ -1,6 +1,6 @@
 #!/bin/bash
 
-! mpc &> /dev/null && echo '{"page":"player","dead":1}' && exit
+! mpc &> /dev/null && echo mpddead && exit
 
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh

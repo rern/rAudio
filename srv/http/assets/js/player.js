@@ -369,22 +369,6 @@ function playbackIcon() {
 		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
 }
 function renderPage() {
-	if ( 'dead' in G ) {
-		bash( 'systemctl status mpd', function(status) {
-			var html = '<i class="fa fa-warning red"></i> MPD not running <a id="restart" class="infobtn infobtn-primary">Restart</a><br><br>'
-					  + status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
-			$( '#data' )
-				.html( html )
-				.removeClass( 'hide' );
-			$( '#restart' ).click( function() {
-				bash( 'systemctl start mpd', function() {
-					location.reload();
-				} );
-			} );
-		} );
-		return
-	}
-	
 	playbackIcon();
 	var htmlstatus =  G.version +'<br>'
 					+'<i class="fa fa-song gr"></i>&ensp;'+ ( G.counts.song || 0 ).toLocaleString() +'&emsp; '

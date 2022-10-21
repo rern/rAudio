@@ -100,17 +100,38 @@ function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
 	} catch( e ) {
-		var msg = e.message.split( ' ' );
-		var pos = msg.pop();
-		var errors = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
-					+'<hr>'
-					+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-		$( '#data' ).html( errors ).removeClass( 'hide' );
+		if ( list.trim() !== 'mpddead' ) {
+			var msg = e.message.split( ' ' );
+			var pos = msg.pop();
+			var error = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+						+'<hr>'
+						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+			listError( error );
+		} else {
+			bash( 'systemctl status mpd', function(status) {
+				var error = '<i class="fa fa-warning red"></i> MPD not running '
+							+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
+							+'<hr>'
+							+ status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
+				listError( error );
+				$( '#data' ).on( 'click', '.restart', function() {
+					bash( 'systemctl start mpd', function() {
+						location.reload();
+					} );
+				} );
+			} );
+		}
 		return false
 	}
 	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
 	return true
+}
+function listError( error ) {
+	$( '#data' )
+		.html( error )
+		.removeClass( 'hide' );
+	loaderHide();
 }
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
@@ -128,12 +149,11 @@ function refreshData() {
 	bash( dirbash + page +'-data.sh', function( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
-			if ( !list2G ) return
 		} else {
 			G = list;
 		}
 		setSwitch();
-		renderPage();
+		if ( list2G ) renderPage();
 	} );
 }
 function resetLocal() {
