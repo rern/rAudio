@@ -11,7 +11,7 @@ pushstreamPlaylist() {
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
-	ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
+	ln -s $dirmpdconf/{conf/,}mpd-cdio.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit
@@ -30,7 +30,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
-		rm -f $dirshm/audiocd $dirmpd/mpd-cdio.conf
+		rm -f $dirshm/audiocd $dirmpdconf/mpd-cdio.conf
 		systemctl restart mpd
 		$dirsettings/player-data.sh pushrefresh
 	else

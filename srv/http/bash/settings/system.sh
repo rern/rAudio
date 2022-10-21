@@ -631,7 +631,7 @@ mpdoled )
 		if [[ $reboot ]]; then
 			pushReboot 'Spectrum OLED'
 		else
-			[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
+			[[ ! -e $dirmpdconf/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
 			pushRefresh
 		fi
 	else
@@ -694,8 +694,8 @@ $( cat /etc/dnsmasq.conf )"
 			conf="\
 <bll># $dirmpd/mpd.conf</bll>
 $( grep -v ^i $dirmpd/mpd.conf )
-$( ls $dirmpd/mpd-*.conf | grep -v output.conf | sed 's|^.*/|include             "|; s|$|"|' )
-$( cat $dirmpd/mpd-output.conf 2> /dev/null )"
+$( ls $dirmpdconf/mpd-*.conf | grep -v output.conf | sed 's|^.*/|include             "|; s|$|"|' )
+$( cat $dirmpdconf/mpd-output.conf 2> /dev/null )"
 			;;
 		nfs-server )
 			pkg=nfs-utils
@@ -1053,7 +1053,7 @@ vuled )
 	if [[ ${args[1]} == true ]]; then
 		echo ${args[@]:2} > $dirsystem/vuled.conf
 		touch $dirsystem/vuled
-		[[ ! -e $dirmpd/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
+		[[ ! -e $dirmpdconf/mpd-fifo.conf ]] && $dirsettings/player-conf.sh
 		killall cava &> /dev/null
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	else

@@ -154,7 +154,7 @@ hostapd )
 	pushRefresh networks
 	;;
 httpd )
-	[[ ${args[1]} == true ]] && ln -s $dirmpd/conf/mpd-httpd.conf $dirmpd || rm -f $dirmpd/mpd-httpd.conf
+	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}mpd-httpd.conf || rm -f $dirmpdconf/mpd-httpd.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
@@ -437,10 +437,10 @@ snapserver )
 		fi
 		
 		systemctl enable --now snapserver
-		ln -s $dirmpd/conf/mpd-snapserver.conf $dirmpd
+		ln -s $dirmpdconf/{conf/,}mpd-snapserver.conf
 	else
 		systemctl disable --now snapserver
-		rm -f $dirmpd/mpd-snapserver.conf
+		rm -f $dirmpdconf/mpd-snapserver.conf
 	fi
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh

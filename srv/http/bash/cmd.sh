@@ -628,7 +628,7 @@ displaysave )
 	if [[ $vumeter ]]; then
 		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
-		[[ -e $dirmpd/mpd-fifo.conf ]] && exit
+		[[ -e $dirmpdconf/mpd-fifo.conf ]] && exit
 		
 	else
 		killall cava &> /dev/null

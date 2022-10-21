@@ -127,7 +127,7 @@ rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/streaming
 
 echo "\
 ExecStart=
-ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpd/mpd.conf" >> $file
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf" >> $file
 systemctl daemon-reload
 
 $dirsettings/player-conf.sh

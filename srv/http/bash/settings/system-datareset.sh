@@ -45,7 +45,6 @@ over_voltage=2"
 fi
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,tmp,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
-[[ ! -e $mpdconf ]] && cp $dirmpd/conf/mpd.conf $dirmpd
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 if [[ -e /usr/bin/camilladsp ]]; then
@@ -113,7 +112,6 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-cp -f /etc/mpd.conf $dirmpd
 mpc -q crossfade 0
 curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
