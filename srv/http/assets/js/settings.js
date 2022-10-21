@@ -123,7 +123,6 @@ function list2JSON( list ) {
 		}
 		return false
 	}
-	$( '#button-data' ).removeAttr( 'class' );
 	$( '#data' ).empty().addClass( 'hide' );
 	return true
 }
@@ -462,16 +461,19 @@ $( '.close' ).click( function() {
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( G ) ) return
 	
-	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
+	var html = JSON.stringify( G, null, '\t' )
+//				.replace( /(".*"):/g, '<bll>$1</bll>:' )
+				.replace( /: (true|false),/g, ': <grn>$1</grn>,' )
+				.replace( /: ([0-9]+),/g, ': <red>$1</red>,' )
+				.replace( /: (".*"),/g, ': <yl>$1</yl>,' )
 	$( '#data' )
-		.html( JSON.stringify( G, null, 2 ) )
+		.html( html )
 		.removeClass( 'hide' );
-	$( '#button-data' ).addClass( 'fa fa-times' );
+	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
 } );
 $( '#button-data' ).click( function() {
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	$( '#data' ).addClass( 'hide' );
-	$( '#button-data' ).removeClass( 'fa fa-times' );
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( function() {
 		location.reload();

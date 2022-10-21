@@ -22,7 +22,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body>
-<i id="button-data"></i>
+<i id="button-data" class="fa fa-times"></i>
 <pre id="data" class="hide"></pre>
 <div class="head">
 	<?php $pagehead = $page !== 'relays' ? $page : 'system';?>
