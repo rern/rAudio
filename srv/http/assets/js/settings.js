@@ -96,10 +96,9 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
-function highlightJSON( json ) {
+function highlightJSON( json ) { // source: https://stackoverflow.com/a/7220510
 	var json = JSON.stringify( json, null, '\t' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
-		var cls = 'number';
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function( match ) {
 		if ( /^"/.test( match ) ) {                // string
 			if ( /:$/.test( match ) ) { // key
 				return match
@@ -120,13 +119,13 @@ function list2JSON( list ) {
 		if ( list.trim() !== 'mpddead' ) {
 			var msg = e.message.split( ' ' );
 			var pos = msg.pop();
-			var error = '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+			var error =  '<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			listError( error );
 		} else {
 			bash( 'systemctl status mpd', function(status) {
-				var error = '<i class="fa fa-warning red"></i> MPD not running '
+				var error =  '<i class="fa fa-warning red"></i> MPD not running '
 							+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
 							+'<hr>'
 							+ status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
