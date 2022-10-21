@@ -27,8 +27,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?></span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
-	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=$title?></span>
-	<?=( i( 'times close' ).i( 'help help-head' ) )?>
+	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
 <div class="container hide">
 <?php
@@ -52,13 +51,13 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default  = '.common'           > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable > [ id/iddisable ]
-		                                // false    = no icon, no setting > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'custom' = custom script       > $( '#id' ).click( ...     > [ command ]
+		, 'setting'     => (none)       // default  = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
+		                                // false    = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
+		                                // 'custom' = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
 		, 'settingicon' => (none)       // default = 'gear' 
-		                                // false   = omit
+		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
-		, 'disable'     => 'MESSAGE'    // set data-diabled
+		, 'disable'     => 'MESSAGE'    // set data-diabled - prompt on click
 		, 'help'        => <<<html
 HELP - PHP heredoc
 html
