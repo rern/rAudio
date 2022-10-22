@@ -454,6 +454,7 @@ input::-moz-focus-inner {
 	border: none;
 	border-radius: 4px;
 	white-space: nowrap;
+	font-family: Lato;
 	font-size: 14px;
 	text-align: center;
 	color: var( --cw ) !important;
