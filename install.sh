@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221021
-[[ ! -e l/lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8}
+[[ ! -e /lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8}
 
 if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
 	echo "\
