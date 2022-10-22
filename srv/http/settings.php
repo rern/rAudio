@@ -24,7 +24,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
 </head>
 <body>
-<div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?></span></div>
+<div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
 	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
