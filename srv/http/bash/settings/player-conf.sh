@@ -81,7 +81,7 @@ $( sed 's/^/\t/' "$customfile" )"
 ########
 	echo "\
 audio_output {
-$( sed 's/  *"/@"/' <<< "$audiooutput" | column -t -s@ )
+$( sed 's/  *"/^"/' <<< "$audiooutput" | column -t -s^ )
 }
 " > $dirmpdconf/output.conf
 ########

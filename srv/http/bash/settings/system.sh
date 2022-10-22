@@ -696,7 +696,7 @@ $( cat /etc/dnsmasq.conf )"
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
 			done
-			conf=$( sed 's/  *"/@"/' <<< "$conf" | column -t -s@ )
+			conf=$( sed 's/  *"/^"/' <<< "$conf" | column -t -s^ )
 			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr output; do
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
