@@ -513,6 +513,7 @@ function getBio( artist ) {
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
 					$( '#bioimg img' ).last().one( 'load', function() {
+						setTimeout( function() {
 						var imgbottom = $( '#bioimg' )[ 0 ].getBoundingClientRect().bottom;
 						$( '#bio' ).scroll( function() {
 							if ( this.scrollTop > imgbottom ) {
@@ -523,6 +524,7 @@ function getBio( artist ) {
 								$( '#biocontent .artist img' ).addClass( 'hide' );
 							}
 						} );
+						}, 1000 );
 					} );
 				}
 			} );
