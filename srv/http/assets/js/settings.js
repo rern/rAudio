@@ -137,10 +137,10 @@ function list2JSON( list ) {
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
-					loader();
 					bash( 'systemctl restart mpd', function() {
-						location.reload();
+						refreshData();
 					} );
+					notify( 'MPD', 'Start ...', 'mpd' );
 				} );
 			} );
 		} else {
@@ -153,6 +153,7 @@ function list2JSON( list ) {
 			listError( error );
 			$( '#data' ).on( 'click', '.copy', function() {
 				copy2clipboard( 'Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list );
+				banner( 'Errors', 'Data copied to clipboard.', 'warning' );
 			} );
 		}
 		return false
