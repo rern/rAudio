@@ -139,7 +139,7 @@ function list2JSON( list ) {
 		} else {
 			var msg = e.message.split( ' ' );
 			var pos = msg.pop();
-			var error =  '<i class="fa fa-warning red"></i> Errors: '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
+			var error =  '<red><i class="fa fa-warning"></i> Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			listError( error );
