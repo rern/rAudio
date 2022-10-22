@@ -248,14 +248,14 @@ soxr )
 	if [[ ${args[1]} == true ]]; then
 		cat << EOF > $dirmpdconf/conf/soxr-custom.conf
 resampler {
-	plugin         "soxr"
-	quality        "custom"
-	precision      "${args[2]}"
-	phase_response "${args[3]}"
-	passband_end   "${args[4]}"
-	stopband_begin "${args[5]}"
-	attenuation    "${args[6]}"
-	flags          "${args[7]}"
+	plugin          "soxr"
+	quality         "custom"
+	precision       "${args[2]}"
+	phase_response  "${args[3]}"
+	passband_end    "${args[4]}"
+	stopband_begin  "${args[5]}"
+	attenuation     "${args[6]}"
+	flags           "${args[7]}"
 }
 EOF
 		ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
