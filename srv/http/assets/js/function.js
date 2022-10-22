@@ -513,17 +513,17 @@ function getBio( artist ) {
 						.removeClass( 'hide' );
 					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
 					$( '#bioimg img' ).last().one( 'load', function() {
-						setTimeout( function() {
-						var imgbottom = $( '#bioimg' )[ 0 ].getBoundingClientRect().bottom;
-						$( '#bio' ).scroll( function() {
-							if ( this.scrollTop > imgbottom ) {
-								$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
-								$( '#biocontent .artist img' ).removeClass( 'hide' );
-							} else {
-								$( '#biocontent .artist a' ).css( 'margin-left', '' );
-								$( '#biocontent .artist img' ).addClass( 'hide' );
-							}
-						} );
+						setTimeout( function() { // wait for complete load
+							var imgbottom = $( '#bioimg' )[ 0 ].getBoundingClientRect().bottom;
+							$( '#bio' ).scroll( function() {
+								if ( this.scrollTop > imgbottom ) {
+									$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
+									$( '#biocontent .artist img' ).removeClass( 'hide' );
+								} else {
+									$( '#biocontent .artist a' ).css( 'margin-left', '' );
+									$( '#biocontent .artist img' ).addClass( 'hide' );
+								}
+							} );
 						}, 1000 );
 					} );
 				}
