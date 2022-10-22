@@ -17,7 +17,7 @@ $conf
 }" > $fileoutput
 }
 linkConf() {
-	ln -sf $dirmpdconf/{conf/,}$args[0].conf
+	ln -sf $dirmpdconf/{conf/,}${args[0]}.conf
 }
 restartMPD() {
 	systemctl restart mpd
@@ -217,7 +217,7 @@ novolume )
 replaygain )
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
-		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $dirmpdconf/output.conf ) == 1 )) && ; then
+		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $dirmpdconf/output.conf ) == 1 )); then
 			sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
 		fi
 		linkConf
