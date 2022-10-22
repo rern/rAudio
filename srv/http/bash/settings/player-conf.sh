@@ -8,6 +8,8 @@
 # - mixer_device  - card index
 
 . /srv/http/bash/common.sh
+usbdac=$1 # from usbdac.rules for player-devices.sh
+
 . $dirsettings/player-devices.sh
 . $dirsettings/player-asound.sh
 
@@ -20,6 +22,12 @@ else
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
+	# usbdac.rules
+	if [[ $usbdac ]]; then
+		$dirbash/cmd.sh playerstop
+		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
+		pushstreamNotify 'Audio Output' "$name" output
+	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
@@ -93,13 +101,6 @@ else
 	rm -f $dirmpdconf/fifo.conf
 fi
 [[ ! -e $dirmpdconf/soxr.conf ]] && ln -s $dirmpdconf/{conf/,}soxr.conf
-
-# usbdac.rules -------------------------------------------------------------------------
-if [[ $1 ]]; then
-	$dirbash/cmd.sh playerstop
-	[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
-	pushstreamNotify 'Audio Output' "$name" output
-fi
 
 ### mpd restart ##########################################################################
 systemctl restart mpd
