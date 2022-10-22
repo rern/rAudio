@@ -87,7 +87,7 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "$bar Rearrange MPD Configuration..."
 
-$mpdconf=$dirmpd/mpd.conf
+$dirmpdconf=$dirdata/mpdconf/mpd.conf
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf &> /dev/null
 if [[ -e $dirsystem/soxr.conf ]]; then
