@@ -36,11 +36,7 @@ audiooutput )
 	$dirsettings/player-conf.sh
 	;;
 autoupdate )
-	if [[ ${args[1]} == true ]]; then
-		linkConf
-	else
-		rm $dirmpdconf/autoupdate.conf
-	fi
+	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/autoupdate.conf
 	restartMPD
 	;;
 albumignore )
@@ -151,11 +147,7 @@ dop )
 	restartMPD
 	;;
 ffmpeg )
-	if [[ ${args[1]} == true ]]; then
-		linkConf
-	else
-		rm $dirmpdconf/ffmpeg.conf
-	fi
+	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/ffmpeg.conf
 	restartMPD
 	;;
 filetype )
@@ -212,11 +204,7 @@ nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
 normalization )
-	if [[ ${args[1]} == true ]]; then
-		linkConf
-	else
-		rm $dirmpdconf/normalization.conf
-	fi
+	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/normalization.conf
 	restartMPD
 	;;
 novolume )
