@@ -139,5 +139,5 @@ installfinish
 
 lcolor -
 echo -e "$info Backup of Data and Settings:"
-echo If any, run again to include this configuration.
+echo If there is one, backup again to include this configuration.
 lcolor -
