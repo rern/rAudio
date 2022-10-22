@@ -85,7 +85,7 @@ $dirsettings/system.sh dirpermissions
 file=/etc/systemd/system/mpd.service.d/override.conf
 grep -q ExecStart $file && installfinish && exit
 
-echo -e "$bar Rearrange MPD Configuration..."
+echo -e "\n$bar Rearrange MPD Configuration...\n"
 
 $dirmpdconf=$dirdata/mpdconf/mpd.conf
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
