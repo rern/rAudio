@@ -19,8 +19,6 @@ data='
 , "btaplayname"      : "'$( cat $dirshm/btreceiver 2> /dev/null )'"
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )'
-, "bufferoutput"     : '$( exists $dirmpdconf/outputbuffer.conf )'
-, "bufferoutputconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
 , "crossfade"        : '$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )'
@@ -32,6 +30,8 @@ data='
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
+, "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
+, "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
 , "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"

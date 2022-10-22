@@ -221,7 +221,7 @@ $( '#setting-buffer' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-bufferoutput' ).click( function() {
+$( '#setting-outputbuffer' ).click( function() {
 	info( {
 		  icon         : 'mpd'
 		, title        : 'Custom Output Buffer'
@@ -230,15 +230,15 @@ $( '#setting-bufferoutput' ).click( function() {
 		, footer       : '(default: 8192)'
 		, footeralign  : 'right'
 		, boxwidth     : 110
-		, values       : G.bufferoutputconf
+		, values       : G.outputbufferconf
 		, checkchanged : 1
 		, checkblank   : 1
 		, cancel       : function() {
-			$( '#bufferoutput' ).prop( 'checked', G.bufferoutput );
+			$( '#outputbuffer' ).prop( 'checked', G.outputbuffer );
 		}
 		, ok           : function() {
-			bash( [ 'bufferoutput', true, infoVal() ] );
-			notify( 'Custom Output Buffer', G.bufferoutput ? 'Change ...' : 'Enable ...', 'mpd' );
+			bash( [ 'outputbuffer', true, infoVal() ] );
+			notify( 'Custom Output Buffer', G.outputbuffer ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
 } );

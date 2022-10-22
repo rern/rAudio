@@ -16,6 +16,9 @@ audio_output {
 $conf
 }" > $fileoutput
 }
+linkConf() {
+	ln -sf $dirmpdconf/{conf/,}$args[0].conf
+}
 restartMPD() {
 	systemctl restart mpd
 	pushRefresh
@@ -34,7 +37,7 @@ audiooutput )
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}autoupdate.conf
+		linkConf
 	else
 		rm $dirmpdconf/autoupdate.conf
 	fi
@@ -52,18 +55,9 @@ $( bluetoothctl info $mac )"
 buffer )
 	if [[ ${args[1]} == true ]]; then
 		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/buffer.conf
-		ln -sf $dirmpdconf/{conf/,}buffer.conf
+		linkConf
 	else
 		rm $dirmpdconf/buffer.conf
-	fi
-	restartMPD
-	;;
-bufferoutput )
-	if [[ ${args[1]} == true ]]; then
-		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/outputbuffer.conf
-		ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
-	else
-		rm $dirmpdconf/outputbuffer.conf
 	fi
 	restartMPD
 	;;
@@ -93,7 +87,7 @@ custom )
 		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $global ]]; then
 			echo -e "$global" > $fileglobal
-			ln -sf $dirmpdconf/{conf/,}custom.conf
+			linkConf
 		else
 			rm -f $fileglobal
 		fi
@@ -158,7 +152,7 @@ dop )
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}ffmpeg.conf
+		linkConf
 	else
 		rm $dirmpdconf/ffmpeg.conf
 	fi
@@ -219,7 +213,7 @@ nonutf8 )
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}normalization.conf
+		linkConf
 	else
 		rm $dirmpdconf/normalization.conf
 	fi
@@ -238,12 +232,21 @@ novolume )
 	data='{"volumenone":true}'
 	pushstream display "$data"
 	;;
+outputbuffer )
+	if [[ ${args[1]} == true ]]; then
+		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/outputbuffer.conf
+		linkConf
+	else
+		rm $dirmpdconf/outputbuffer.conf
+	fi
+	restartMPD
+	;;
 replaygain )
 	sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain          "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
 		grep -q mixer_type.*hardware $dirmpdconf/output.conf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
-		ln -sf $dirmpdconf/{conf/,}replaygain.conf
+		linkConf
 	else
 		rm $dirmpdconf/replaygain.conf
 	fi
@@ -266,7 +269,7 @@ resampler {
 EOF
 		ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
 	else
-		ln -sf $dirmpdconf/{conf/,}soxr.conf
+		linkConf
 	fi
 	restartMPD
 	;;

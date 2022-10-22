@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 systemctl stop mpd
-rm -f $dirsystem/{audiocd,buffer,bufferoutput,crossfade,custom,dop-*,ffmpeg,listing,relays,replaygain,soundprofile,soxr,updating}
+rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
 
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf

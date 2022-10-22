@@ -156,7 +156,7 @@ HTML
 	]
 	, [
 		  'label'    => 'Buffer - Output'
-		, 'id'       => 'bufferoutput'
+		, 'id'       => 'outputbuffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
 <c>max_output_buffer_size "<yl>N</yl>"</c> (default: 8192 kB)
