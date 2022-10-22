@@ -691,11 +691,19 @@ $( cat /etc/dnsmasq.conf )"
 			fileconf=$dirsystem/localbrowser.conf
 			;;
 		mpd )
+			conf=$( grep -v ^i $mpdconf )
+			for file in autoupdate buffer outputbuffer replaygain normalization; do
+				fileconf=$dirmpdconf/$file.conf
+				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
+			done
+			conf=$( sed 's/  *"/@"/' <<< "$conf" | column -t -s@ )
+			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr output; do
+				fileconf=$dirmpdconf/$file.conf
+				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
+			done
 			conf="\
 <bll># $mpdconf</bll>
-$( grep -v ^i $mpdconf )
-$( ls $dirmpdconf/*.conf | grep -v output.conf | sed 's|^.*/|include             "|; s|$|"|' )
-$( cat $dirmpdconf/output.conf 2> /dev/null )"
+$conf"
 			;;
 		nfs-server )
 			pkg=nfs-utils
