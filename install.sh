@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221021
-[[ ! -e /lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8}
+[[ ! -e /lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8} # for upgraded snapcast
 
 if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
 	echo "\
@@ -87,40 +87,43 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
+linkConf() {
+	ln -s $dirmpdconf/{conf/,}$1.conf
+}
 $dirmpdconf=$dirdata/mpdconf/mpd.conf
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf &> /dev/null
 if [[ -e $dirsystem/soxr.conf ]]; then
 	echo "\
 resampler {
-	plugin         \"soxr\"
+	plugin          \"soxr\"
 $( cat $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
 
-grep -q auto_update /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}autoupdate.conf
+grep -q auto_update /etc/mpd.conf && linkConf autoupdate
 if grep -q audio_buffer /etc/mpd.conf; then
-	echo 'audio_buffer_size "'$( cat $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
-	ln -s $dirmpdconf/{conf/,}buffer.conf
+	echo 'audio_buffer_size  "'$( cat $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	linkConf buffer
 fi
 if grep -q output_buffer /etc/mpd.conf; then
-	echo 'max_output_buffer_size "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
-	ln -s $dirmpdconf/{conf/,}outputbuffer.conf
+	echo 'max_output_buffer_size  "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+	linkConf outputbuffer
 fi
-grep -q volume_normalization /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}normalization.conf
+grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain          "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/confreplaygain.conf
-	ln -s $dirmpdconf/{conf/,}replaygain.conf
+	echo 'replaygain  "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/confreplaygain.conf
+	linkConf replaygain
 fi
 
-[[ -e $dirshm/audiocd ]] && ln -s $dirmpdconf/{conf/,}cdio.conf
-[[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && ln -s $dirmpdconf/{conf/,}custom.conf
-grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}ffmpeg.conf
-grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}httpd.conf
-systemctl -q is-active snapserver && ln -s $dirmpdconf/{conf/,}snapserver.conf
+[[ -e $dirshm/audiocd ]] && linkConf cdio
+[[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && linkConf custom
+grep -q plugin.*ffmpeg /etc/mpd.conf && linkConf ffmpeg
+grep -q type.*httpd /etc/mpd.conf && linkConf httpd
+systemctl -q is-active snapserver && linkConf snapserver
 if grep -q quality.*custom /etc/mpd.conf; then
 	ln -s $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
 else
-	ln -s $dirmpdconf/{conf/,}soxr.conf
+	linkConf soxr
 fi
 
 rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/streaming
