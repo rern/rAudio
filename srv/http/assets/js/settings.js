@@ -137,6 +137,7 @@ function list2JSON( list ) {
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
+					loader();
 					bash( 'systemctl restart mpd', function() {
 						location.reload();
 					} );
