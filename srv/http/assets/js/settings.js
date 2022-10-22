@@ -124,11 +124,11 @@ function list2JSON( list ) {
 		G = JSON.parse( list );
 	} catch( e ) {
 		if ( list.trim() === 'mpdnotrunning' ) {
-			bash( 'systemctl status mpd', function( status ) {
+			bash( [ 'pkgstatus', 'mpd' ], function( status ) {
 				var error =  '<i class="fa fa-warning red"></i> MPD is not running '
 							+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
 							+'<hr>'
-							+ status.replace( /(Active: )(.*)/, '$1<red>$2</red>' );
+							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
 					bash( 'systemctl start mpd', function() {
