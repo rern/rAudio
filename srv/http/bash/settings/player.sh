@@ -43,6 +43,12 @@ autoupdate )
 albumignore )
 	cat $dirmpd/albumignore
 	;;
+bluetoothinfo )
+	mac=$( cut -d' ' -f1 $dirshm/btconnected )
+	echo "\
+<bll># bluetoothctl info $mac</bll>
+$( bluetoothctl info $mac )"
+	;;
 buffer )
 	if [[ ${args[1]} == true ]]; then
 		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/buffer.conf

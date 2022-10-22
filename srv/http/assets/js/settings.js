@@ -25,22 +25,22 @@ var playersh = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
 var systemsh = dirbash +'system.sh ';
 var cmd = {
-	  albumignore  : playersh +'albumignore'
-	, asound       : playersh +'devices'
+	  albumignore  : playersh   +'albumignore'
+	, asound       : playersh   +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : systemsh +'bluetoothstatus'
+	, bluetooth    : playersh   +'bluetoothinfo'
 	, btcontroller : networkssh +'btcontroller'
 	, iw           : networkssh +'iwlist'
-	, journalctl   : systemsh +'journalctl'
+	, journalctl   : systemsh   +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
-	, mount        : systemsh +'storage'
-	, mpdignore    : playersh +'mpdignorelist'
-	, nonutf8      : playersh +'nonutf8'
-	, rfkill       : systemsh +'rfkilllist'
-	, shareddata   : systemsh +'shareddataname'
-	, soundprofile : systemsh +'soundprofileget'
-	, system       : systemsh +'systemconfig'
-	, timedatectl  : systemsh +'timedate'
+	, mount        : systemsh   +'storage'
+	, mpdignore    : playersh   +'mpdignorelist'
+	, nonutf8      : playersh   +'nonutf8'
+	, rfkill       : systemsh   +'rfkilllist'
+	, shareddata   : systemsh   +'shareddataname'
+	, soundprofile : systemsh   +'soundprofileget'
+	, system       : systemsh   +'systemconfig'
+	, timedatectl  : systemsh   +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
 var services = [
@@ -58,6 +58,12 @@ var services = [
 	, 'upmpdcli'
 ];
 
+function copy2clipboard( txt ) { // for non https which cannot use clipboard API
+	$( 'body' ).append( '<textarea id="error">'+ txt +'</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+}
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( !refresh && !$el.hasClass( 'hide' ) ) {
@@ -126,12 +132,12 @@ function list2JSON( list ) {
 		if ( list.trim() === 'mpdnotrunning' ) {
 			bash( [ 'pkgstatus', 'mpd' ], function( status ) {
 				var error =  '<i class="fa fa-warning red"></i> MPD is not running '
-							+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
+							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
-					bash( 'systemctl start mpd', function() {
+					bash( 'systemctl restart mpd', function() {
 						location.reload();
 					} );
 				} );
@@ -145,10 +151,7 @@ function list2JSON( list ) {
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
 			listError( error );
 			$( '#data' ).on( 'click', '.copy', function() {
-				$( 'body' ).append( '<textarea id="error">Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list +'</textarea>' );
-				$( '#error' ).focus().select();
-				document.execCommand( 'copy' );
-				$( '#error' ).remove();
+				copy2clipboard( 'Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list );
 			} );
 		}
 		return false
