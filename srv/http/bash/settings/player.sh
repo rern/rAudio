@@ -35,8 +35,8 @@ audiooutput )
 	echo ${args[1]} > $dirsystem/asoundcard
 	$dirsettings/player-conf.sh
 	;;
-autoupdate )
-	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/autoupdate.conf
+autoupdate | ffmpeg | normalization )
+	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/${args[0]}.conf
 	restartMPD
 	;;
 albumignore )
@@ -48,12 +48,14 @@ bluetoothinfo )
 <bll># bluetoothctl info $mac</bll>
 $( bluetoothctl info $mac )"
 	;;
-buffer )
+buffer | outputbuffer )
+	type=${args[0]}
 	if [[ ${args[1]} == true ]]; then
-		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/buffer.conf
+		[[ $type == buffer ]] && setting='audio_buffer_size  "'${args[2]}'"' || setting='max_output_buffer_size  "'${args[2]}'"'
+		echo "$setting" > $dirmpdconf/conf/$type.conf
 		linkConf
 	else
-		rm $dirmpdconf/buffer.conf
+		rm $dirmpdconf/$type.conf
 	fi
 	restartMPD
 	;;
@@ -146,10 +148,6 @@ dop )
 	columnFileOutput
 	restartMPD
 	;;
-ffmpeg )
-	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/ffmpeg.conf
-	restartMPD
-	;;
 filetype )
 	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
 	for i in {a..z}; do
@@ -203,10 +201,6 @@ $( cat "$file" | sed 's|^| <grn>●</grn> |' )
 nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
-normalization )
-	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/normalization.conf
-	restartMPD
-	;;
 novolume )
 	aplayname=${args[1]}
 	card=${args[2]}
@@ -220,22 +214,15 @@ novolume )
 	data='{"volumenone":true}'
 	pushstream display "$data"
 	;;
-outputbuffer )
-	if [[ ${args[1]} == true ]]; then
-		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/outputbuffer.conf
-		linkConf
-	else
-		rm $dirmpdconf/outputbuffer.conf
-	fi
-	restartMPD
-	;;
 replaygain )
-	sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
-		echo 'replaygain          "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
-		grep -q mixer_type.*hardware $dirmpdconf/output.conf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
+		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
+		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $dirmpdconf/output.conf ) == 1 )) && ; then
+			sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
+		fi
 		linkConf
 	else
+		sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
 		rm $dirmpdconf/replaygain.conf
 	fi
 	columnFileOutput
