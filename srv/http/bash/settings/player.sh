@@ -9,7 +9,7 @@
 readarray -t args <<< "$1"
 
 columnFileOutput() {
-	fileoutput=$dirmpdconf/mpd-output.conf
+	fileoutput=$dirmpdconf/output.conf
 	conf=$( sed '/{\|}/ d; s/  *"/@"/' $fileoutput | column -t -s@ )
 	echo "\
 audio_output {
@@ -34,9 +34,9 @@ audiooutput )
 	;;
 autoupdate )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}mpd-autoupdate.conf
+		ln -s $dirmpdconf/{conf/,}autoupdate.conf
 	else
-		rm $dirmpdconf/mpd-autoupdate.conf
+		rm $dirmpdconf/autoupdate.conf
 	fi
 	restartMPD
 	;;
@@ -45,19 +45,19 @@ albumignore )
 	;;
 buffer )
 	if [[ ${args[1]} == true ]]; then
-		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/mpd-buffer.conf
-		ln -sf $dirmpdconf/{conf/,}mpd-buffer.conf
+		echo 'audio_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/buffer.conf
+		ln -sf $dirmpdconf/{conf/,}buffer.conf
 	else
-		rm $dirmpdconf/mpd-buffer.conf
+		rm $dirmpdconf/buffer.conf
 	fi
 	restartMPD
 	;;
 bufferoutput )
 	if [[ ${args[1]} == true ]]; then
-		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/mpd-outputbuffer.conf
-		ln -sf $dirmpdconf/{conf/,}mpd-outputbuffer.conf
+		echo 'max_output_buffer_size "'${args[2]}'"' > $dirmpdconf/conf/outputbuffer.conf
+		ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	else
-		rm $dirmpdconf/mpd-outputbuffer.conf
+		rm $dirmpdconf/outputbuffer.conf
 	fi
 	restartMPD
 	;;
@@ -74,7 +74,7 @@ crossfade )
 	;;
 customget )
 	echo "\
-$( cat $dirmpdconf/conf/mpd-custom.conf 2> /dev/null )
+$( cat $dirmpdconf/conf/custom.conf 2> /dev/null )
 ^^
 $( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )"
 	;;
@@ -83,15 +83,15 @@ custom )
 		global=${args[2]}
 		output=${args[3]}
 		aplayname=${args[4]}
-		fileglobal=$dirmpdconf/conf/mpd-custom.conf
+		fileglobal=$dirmpdconf/conf/custom.conf
 		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $global ]]; then
 			echo -e "$global" > $fileglobal
-			ln -sf $dirmpdconf/{conf/,}mpd-custom.conf
+			ln -sf $dirmpdconf/{conf/,}custom.conf
 		else
 			rm -f $fileglobal
 		fi
-		[[ $output ]] && echo "$output" > "$fileoutput" || rm -f "$fileoutput"
+		[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
 		[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
 		$dirsettings/player-conf.sh
 		if ! systemctl -q is-active mpd; then # config errors
@@ -100,7 +100,7 @@ custom )
 			echo -1
 		fi
 	else
-		rm -f $dirmpdconf/mpd-custom.conf $dirsystem/custom
+		rm -f $dirmpdconf/custom.conf $dirsystem/custom
 		$dirsettings/player-conf.sh
 	fi
 	;;
@@ -140,24 +140,21 @@ $( cat /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )
-	dop=${args[1]}
-	file="$dirsystem/dop-${args[2]}"
-	fileoutput=$dirmpdconf/mpd-output.conf
-	if [[ $dop == true ]]; then
-		sed -i '/}/ i\	dop  "yes"' $dirmpdconf/mpd-output.conf
-		touch "$file"
+	if [[ ${args[1]} == true ]]; then
+		sed -i '/}/ i\	dop  "yes"' $dirmpdconf/output.conf
+		touch "$dirsystem/dop-${args[2]}"
 	else
-		sed -i '/dop.*yes/ d' $dirmpdconf/mpd-output.conf
-		rm -f "$file"
+		sed -i '/dop.*yes/ d' $dirmpdconf/output.conf
+		rm -f "$dirsystem/dop-${args[2]}"
 	fi
 	columnFileOutput
 	restartMPD
 	;;
 ffmpeg )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}mpd-ffmpeg.conf
+		ln -s $dirmpdconf/{conf/,}ffmpeg.conf
 	else
-		rm $dirmpdconf/mpd-ffmpeg.conf
+		rm $dirmpdconf/ffmpeg.conf
 	fi
 	restartMPD
 	;;
@@ -216,9 +213,9 @@ nonutf8 )
 	;;
 normalization )
 	if [[ ${args[1]} == true ]]; then
-		ln -s $dirmpdconf/{conf/,}mpd-normalization.conf
+		ln -s $dirmpdconf/{conf/,}normalization.conf
 	else
-		rm $dirmpdconf/mpd-normalization.conf
+		rm $dirmpdconf/normalization.conf
 	fi
 	restartMPD
 	;;
@@ -236,20 +233,20 @@ novolume )
 	pushstream display "$data"
 	;;
 replaygain )
-	sed -i '/replay_gain_handler/ d' $dirmpdconf/mpd-output.conf
+	sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
-		echo 'replaygain          "'${args[2]}'"' > $dirmpdconf/conf/mpd-replaygain.conf
-		grep -q mixer_type.*hardware $dirmpdconf/mpd-output.conf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/mpd-output.conf
-		ln -sf $dirmpdconf/{conf/,}mpd-replaygain.conf
+		echo 'replaygain          "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
+		grep -q mixer_type.*hardware $dirmpdconf/output.conf && sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
+		ln -sf $dirmpdconf/{conf/,}replaygain.conf
 	else
-		rm $dirmpdconf/mpd-replaygain.conf
+		rm $dirmpdconf/replaygain.conf
 	fi
 	columnFileOutput
 	restartMPD
 	;;
 soxr )
 	if [[ ${args[1]} == true ]]; then
-		cat << EOF > $dirmpdconf/conf/mpd-soxr-custom.conf
+		cat << EOF > $dirmpdconf/conf/soxr-custom.conf
 resampler {
 	plugin         "soxr"
 	quality        "custom"
@@ -261,9 +258,9 @@ resampler {
 	flags          "${args[7]}"
 }
 EOF
-		ln -sf $dirmpdconf/conf/mpd-soxr-custom.conf $dirmpdconf/mpd-soxr.conf
+		ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
 	else
-		ln -sf $dirmpdconf/{conf/,}mpd-soxr.conf
+		ln -sf $dirmpdconf/{conf/,}soxr.conf
 	fi
 	restartMPD
 	;;

@@ -13,7 +13,7 @@
 
 # outputs -----------------------------------------------------------------------------
 if [[ $i == -1 ]]; then # $i - current card number
-	rm -f $dirmpdconf/mpd-output.conf
+	rm -f $dirmpdconf/output.conf
 else
 	aplayname=${Aaplayname[i]}
 	hw=${Ahw[i]}
@@ -65,7 +65,7 @@ else
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$i'"'
-			[[ -e $dirmpdconf/mpd-replaygain.conf ]] && audiooutput+='
+			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
 		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
@@ -83,14 +83,14 @@ $( sed 's/^/\t/' "$customfile" )"
 audio_output {
 $( sed 's/  *"/@"/' <<< "$audiooutput" | column -t -s@ )
 }
-" > $dirmpdconf/mpd-output.conf
+" > $dirmpdconf/output.conf
 ########
 fi
 
 if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
-	ln -sf $dirmpdconf/{conf/,}mpd-fifo.conf
+	ln -sf $dirmpdconf/{conf/,}fifo.conf
 else
-	rm -f $dirmpdconf/mpd-fifo.conf
+	rm -f $dirmpdconf/fifo.conf
 fi
 
 # usbdac.rules -------------------------------------------------------------------------

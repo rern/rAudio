@@ -89,38 +89,38 @@ echo -e "$bar Rearrange MPD Configuration..."
 
 $mpdconf=$dirmpd/mpd.conf
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
-mv $dirsystem/custom-global $dirmpd/conf/mpd-custom.conf &> /dev/null
+mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf &> /dev/null
 if [[ -e $dirsystem/soxr.conf ]]; then
 	echo "\
 resampler {
 	plugin         \"soxr\"
-$( cat $dirsystem/soxr.conf )" > $dirmpd/conf/mpd-soxr-custom.conf
+$( cat $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
 
-grep -q auto_update /etc/mpd.conf && ln -s $dirmpd/conf/mpd-autoupdate.conf $dirmpd
+grep -q auto_update /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}autoupdate.conf
 if grep -q audio_buffer /etc/mpd.conf; then
-	echo 'audio_buffer_size "'$( cat $dirsystem/buffer.conf )'"' > $dirmpd/conf/mpd-buffer.conf
-	ln -s $dirmpd/conf/mpd-buffer.conf $dirmpd
+	echo 'audio_buffer_size "'$( cat $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	ln -s $dirmpdconf/{conf/,}buffer.conf
 fi
 if grep -q output_buffer /etc/mpd.conf; then
-	echo 'max_output_buffer_size "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpd/conf/mpd-outputbuffer.conf
-	ln -s $dirmpd/conf/mpd-outputbuffer.conf $dirmpd
+	echo 'max_output_buffer_size "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+	ln -s $dirmpdconf/{conf/,}outputbuffer.conf
 fi
-grep -q volume_normalization /etc/mpd.conf && ln -s $dirmpd/conf/mpd-normalization.conf $dirmpd
+grep -q volume_normalization /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}normalization.conf
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain          "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpd/conf/mpd-replaygain.conf
-	ln -s $dirmpd/conf/mpd-replaygain.conf $dirmpd
+	echo 'replaygain          "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/confreplaygain.conf
+	ln -s $dirmpdconf/{conf/,}replaygain.conf
 fi
 
-[[ -e $dirshm/audiocd ]] && ln -s $dirmpd/conf/mpd-cdio.conf $dirmpd
-[[ -e $dirsystem/custom && -e $dirmpd/conf/mpd-custom.conf ]] && ln -s $dirmpd/conf/mpd-custom.conf $dirmpd
-grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpd/conf/mpd-ffmpeg.conf $dirmpd
-grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpd/conf/mpd-httpd.conf $dirmpd
-systemctl -q is-active snapserver && ln -s $dirmpd/conf/mpd-snapserver.conf $dirmpd
+[[ -e $dirshm/audiocd ]] && ln -s $dirmpdconf/{conf/,}cdio.conf
+[[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && ln -s $dirmpdconf/{conf/,}custom.conf
+grep -q plugin.*ffmpeg /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}ffmpeg.conf
+grep -q type.*httpd /etc/mpd.conf && ln -s $dirmpdconf/{conf/,}httpd.conf
+systemctl -q is-active snapserver && ln -s $dirmpdconf/{conf/,}snapserver.conf
 if grep -q quality.*custom /etc/mpd.conf; then
-	ln -s $dirmpd/conf/mpd-soxr-custom.conf $dirmpd/mpd-soxr.conf
+	ln -s $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
 else
-	ln -s $dirmpd/conf/mpd-soxr.conf $dirmpd
+	ln -s $dirmpdconf/{conf/,}soxr.conf
 fi
 
 rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/streaming

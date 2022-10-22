@@ -93,7 +93,7 @@ dabradio )
 	if [[ ${args[1]} == true ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
-			! grep -q 'mpd-ffmpeg' $mpdconf && $dirsettings/player.sh ffmpeg$'\n'true
+			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg$'\n'true
 		else
 			pushstreamNotify 'DAB Radio' 'No DAB devices found.' dabradio 5000
 		fi
@@ -154,7 +154,7 @@ hostapd )
 	pushRefresh networks
 	;;
 httpd )
-	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}mpd-httpd.conf || rm -f $dirmpdconf/mpd-httpd.conf
+	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
@@ -437,10 +437,10 @@ snapserver )
 		fi
 		
 		systemctl enable --now snapserver
-		ln -s $dirmpdconf/{conf/,}mpd-snapserver.conf
+		ln -s $dirmpdconf/{conf/,}snapserver.conf
 	else
 		systemctl disable --now snapserver
-		rm -f $dirmpdconf/mpd-snapserver.conf
+		rm -f $dirmpdconf/snapserver.conf
 	fi
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
