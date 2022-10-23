@@ -68,11 +68,8 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		conf=$( awk NF $dirsystem/localbrowser.conf \
-				| sed 's/^/,"/; s/=/":/' \
-				| sed -E 's/(.*rotate.*:)(.*)/\1"\2"/' )
-		conf+=', "brightness" : '$brightness
-		localbrowserconf="{${conf:1}}"
+		conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
+		localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
 	else
 		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
 	fi
