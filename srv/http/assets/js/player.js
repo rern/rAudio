@@ -249,6 +249,11 @@ $( '#autoupdate' ).click( function() {
 } );
 var soxrinfo = `\
 <table>
+<tr class="quality"><td>Quality</td>
+	<td><label><input type="radio" name="soxr" value="very high">Default</label></td>
+	<td>&emsp;<label><input type="radio" name="soxr" value="custom">Custom</label></td>
+</tr>
+
 <tr><td>Precision</td>
 	<td><select>
 		<option value="16">16</option>
@@ -270,11 +275,11 @@ var soxrinfo = `\
 <tr><td>Attenuation</td>
 	<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
 </tr>
-<tr><td>Rolloff</td>
+<tr><td>Flag / Extra</td>
 	<td colspan="2"><select>
-			<option value="0">0 - Small</option>
-			<option value="1">1 - Medium</option>
-			<option value="2">2 - None</option>
+			<option value="0">0 - Rolloff - Small</option>
+			<option value="1">1 - Rolloff - Medium</option>
+			<option value="2">2 - Rolloff - None</option>
 			<option value="8">8 - High precision</option>
 			<option value="16">16 - Double precision</option>
 			<option value="32">32 - Variable rate</option>
@@ -285,23 +290,29 @@ var soxrinfo = `\
 $( '#setting-soxr' ).click( function() {
 	info( {
 		  icon          : 'mpd'
-		, title         : 'SoXR Custom Settings'
+		, title         : 'SoXR Resampler'
 		, content       : soxrinfo
 		, values        : G.soxrconf
-		, checkchanged  : ( G.soxr ? 1 : 0 )
+		, checkchanged  : G.soxr ? 1 : 0
 		, checkblank    : 1
 		, beforeshow    : function() {
-			var $extra = $( '#infoContent tr' ).eq( 5 );
+			var $custom = $( '#infoContent tr:not( .quality )' );
+			$custom.toggleClass( 'hide', G.soxrconf[ 0 ] !== 'custom' );
+			var $extra = $( '#infoContent tr' ).eq( 6 );
 			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
 			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
+			$( '#infoContent input:radio' ).change( function() {
+				$custom.toggleClass( 'hide', $( this ).val() !== 'custom' );
+			} );
 		}
-		, boxwidth      : 70
+		, boxwidth      : 85
 		, cancel        : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
 		, ok            : function() {
-			bash( [ 'soxr', true, ...infoVal() ] );
-			notify( 'SoXR Custom Settings', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
+			var values = infoVal();
+			bash( [ 'soxr', true, ...values ] );
+			notify( 'SoXR Resampler', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
 } );
@@ -377,7 +388,8 @@ function renderPage() {
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( G.asoundcard != -1 ) {
 		device = G.devices[ G.asoundcard ];
-		G.novolume = device.mixertype === 'none' && !G.camilladsp && !G.crossfade && !G.equalizer && !G.normalization && !G.replaygain;
+		G.resampled = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
+		G.novolume = device.mixertype === 'none' && !G.resampled;
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';

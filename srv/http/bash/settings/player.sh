@@ -209,7 +209,8 @@ novolume )
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization}
+	rm -f $dirsystem/{camilladsp,equalizer}
+	rm -f $dirmpdconf/{crossfade,normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh
 	data='{"volumenone":true}'
 	pushstream display "$data"
@@ -230,21 +231,25 @@ replaygain )
 	;;
 soxr )
 	if [[ ${args[1]} == true ]]; then
-		cat << EOF > $dirmpdconf/conf/soxr-custom.conf
+		if [[ ${args[2]} == custom ]]; then
+			cat << EOF > $dirmpdconf/conf/soxr-custom.conf
 resampler {
 	plugin          "soxr"
 	quality         "custom"
-	precision       "${args[2]}"
-	phase_response  "${args[3]}"
-	passband_end    "${args[4]}"
-	stopband_begin  "${args[5]}"
-	attenuation     "${args[6]}"
-	flags           "${args[7]}"
+	precision       "${args[3]}"
+	phase_response  "${args[4]}"
+	passband_end    "${args[5]}"
+	stopband_begin  "${args[6]}"
+	attenuation     "${args[7]}"
+	flags           "${args[8]}"
 }
 EOF
-		ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
+			ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
+		else
+			linkConf
+		fi
 	else
-		linkConf
+		rm -f $dirmpdconf/soxr.conf
 	fi
 	restartMPD
 	;;

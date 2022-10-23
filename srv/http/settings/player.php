@@ -187,19 +187,21 @@ Automatic update MPD database when files changed.
 HTML
 	]
 	, [
-		  'label'    => 'SoXR Resampler'
+		  'label'    => 'SoX Resampler'
 		, 'id'       => 'soxr'
-		, 'sublabel' => 'custom settings'
 		, 'help'     => <<< HTML
-<c>quality "custom"</c>
+<a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
-<wh>SoX Resampler custom settings:</wh>
- • Precision - Conversion precision (20 = HQ)
- • Phase Response (50 = Linear)
- • Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
- • Stopband Begin - Aliasing/imaging control
- • Attenuation - Lowers the source to prevent clipping
- • Flags - Extra settings:
+| I^gear^I |
+ • Default quality: Very high
+
+ • Custom quality:
+	 - Precision - Conversion precision (20 = HQ)
+	 - Phase Response (50 = Linear)
+	 - Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
+	 - Stopband Begin - Aliasing/imaging control
+	 - Attenuation - Lowers the source to prevent clipping
+	 - Flags / Extra settings:
 <pre>
 |  0 - Rolloff - small  | (<= 0.01 dB)
 |  1 - Rolloff - medium | (<= 0.35 dB)

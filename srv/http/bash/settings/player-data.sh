@@ -5,7 +5,16 @@
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
-soxrconf=$( sed -E -e '/resampler|plugin|quality|}/ d' -e 's/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )
+if [[ -e $dirmpdconf/soxr.conf ]]; then
+	soxrconf='"'$( grep quality $dirmpdconf/soxr.conf | cut -d'"' -f2 )'",'
+else
+	soxrconf='"very high",'
+fi
+soxrconf+=$( grep -Ev 'resampler|plugin|quality|}' $dirmpdconf/conf/soxr-custom.conf \
+				| sed -E 's/.*"(.*)"/\1/' \
+				| xargs \
+				| tr ' ' , )
+
 state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
 [[ ! $state ]] && state=stop
 
@@ -35,7 +44,7 @@ data='
 , "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"
-, "soxr"             : '$( grep -q quality.*custom $dirmpdconf/soxr.conf && echo true )'
+, "soxr"             : '$( exists $dirmpdconf/soxr.conf )'
 , "soxrconf"         : ['$soxrconf']
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'

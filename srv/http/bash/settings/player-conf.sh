@@ -39,7 +39,7 @@ else
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ -e $dirsystem/equalizer ]]; then
+	elif [[ $equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------< 2 equalizer
 		audiooutput+='
@@ -100,7 +100,6 @@ if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirs
 else
 	rm -f $dirmpdconf/fifo.conf
 fi
-[[ ! -e $dirmpdconf/soxr.conf ]] && ln -s $dirmpdconf/{conf/,}soxr.conf
 
 ### mpd restart ##########################################################################
 systemctl restart mpd

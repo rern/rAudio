@@ -55,6 +55,7 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
+		equalizer=1
 		filepresets=$dirsystem/equalizer.presets
 		if [[ $btmixer ]]; then
 			slavepcm=bluealsa
