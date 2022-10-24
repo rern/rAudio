@@ -211,7 +211,7 @@ profileremove )
 	if [[ $connected == true ]]; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
-		ifconfig $( cat $dirshm/wlan ) up
+		ifconfig $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$ssid"
 	pushRefresh

@@ -137,7 +137,7 @@ $( sshCommand $serverip $dirbash/status.sh snapclient \
 		[[ $state == play ]] && elapsed=$(( $( date +%s ) - start + 1 )) # 1s delayed
 ########
 		status+="
-$( cat $dirshm/spotify/status )"
+$( < $dirshm/spotify/status )"
 	status+='
 , "elapsed"   : '$elapsed'
 , "timestamp" : '$( date +%s%3N )

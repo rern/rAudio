@@ -33,14 +33,14 @@ while true; do
 , "song"     : '$song'
 , "station"  : ""
 , "Time"     : false
-, "Title"    : "'$( cat $filetitle )'"
+, "Title"    : "'$( < $filetitle )'"
 }'
 		$dirbash/status-push.sh statusradio "$data" &
 	fi
 	# coverart
 	[[ ! $( awk NF $filecover ) ]] && sleep 10 && continue
 	
-	name=$( cat $filetitle | tr -d ' \"`?/#&'"'" )
+	name=$( tr -d ' \"`?/#&'"'" < $filetitle )
 	coverfile=/srv/http/data/shm/webradio/$name.jpg
 	if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 		cp -f $filecover $coverfile

@@ -5,7 +5,7 @@
 startup=$( systemd-analyze | grep '^Startup finished' | cut -d' ' -f 4,7 | sed -e 's/\....s/s/g; s/ / + /' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 status="\
-$( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
+$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
 $( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
@@ -27,9 +27,7 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model \
-				| tr -d '\000' \
-				| sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
+rpimodel=$( sed -E 's/ Model |\x0//; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' /proc/device-tree/model )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
@@ -146,47 +144,32 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 						| grep -v UU \
 						| awk NF \
 						| sort -u )
-		i2caddress="[ $(( "0x$i2caddress" )) ]"
-	else
-		i2caddress=false
+		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
 	fi
-else
-	i2caddress='[ 39,63 ]'
 fi
-if [[ -e $dirsystem/lcdchar.conf ]]; then
-	vals=$( cat $dirsystem/lcdchar.conf \
-				| grep -v '\[var]' \
-				| sed -e -E '/charmap|inf|chip/ {s/.*=(.*)/"\1"/; s/.*=//}' \
-					  -e -E 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/' )
+if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
+	vals=$( sed -e '/var]/ d
+			' -E -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
+			' -E -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
+			' $dirsystem/lcdchar.conf )
 	if grep -q i2c <<< "$vals"; then
-		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' )
+		vals=$( sed -E 's/^(true|false)$/15 18 16 21 22 23 24 \1/' <<< "$vals" )
 	else
-		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' )
+		vals=$( sed 's/"gpio"/& 39 "PCF8574"/' <<< "$vals" )
 	fi
 	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
-else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	lcdcharconf='[ 20,"A00","i2c",39,"PCF8574",15,18,16,21,22,23,24,false ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baudrate ]] && baudrate=800000
 mpdoledconf='[ '$oledchip', '$baudrate' ]'
-[[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
-if [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
-else
-	powerbuttonconf='[ 5,40,5,'$audiophonics' ]'
+if [[ -e $dirsystem/audiophonics ]]; then
+	powerbuttonconf='[ 5, 5, 40, 5, true ]'
+elif [[ -e $dirsystem/powerbutton.conf ]]; then
+	powerbuttonconf="[ $( cut -d= -f2 $dirsystem/powerbutton.conf | xargs | tr ' ' , ), false ]"
 fi
-if [[ -e $dirsystem/rotaryencoder.conf ]]; then
-	rotaryencoderconf="[ $( cat $dirsystem/rotaryencoder.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
-else
-	rotaryencoderconf='[ 27,22,23,1 ]'
-fi
-if [[ -e $dirsystem/vuled.conf ]]; then
-	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"
-else
-	vuledconf='[ 14,15,18,23,24,25,8 ]'
-fi
+[[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
+[[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
 
 data+='
   "page"             : "system"
@@ -200,7 +183,7 @@ data+='
 , "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
 , "lcd"              : '$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : '$i2caddress'
+, "lcdcharaddr"      : '$lcdcharaddr'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
 , "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
@@ -226,7 +209,7 @@ data+='
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
 , "wlan"             : '$( lsmod | grep -q brcmfmac && echo true )'
-, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
+, "wlanconf"         : [ "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 	discoverable=true
 	if grep -q ^dtparam=krnbt=on /boot/config.txt; then

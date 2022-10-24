@@ -472,7 +472,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, title        : 'Stop Timer'
 		, radio        : { Disable: 'false', '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
 		, checkbox     : [ 'Power off on stop' ]
-		, values       : G.stoptimerconf
+		, values       : G.stoptimerconf || [ false, false ]
 		, checkchanged : 1
 		, beforeshow   : function() {
 			var $poweroff = $( '#infoContent input:checkbox' );

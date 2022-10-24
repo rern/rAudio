@@ -72,7 +72,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-if [[ $( awk NF $dirmpd/album ) && $( cat $dirmpd/updating ) != rescan ]]; then
+if [[ $( awk NF $dirmpd/album ) && $( < $dirmpd/updating ) != rescan ]]; then
 	cp -f $filealbum{,prev}
 else
 	> $dirmpd/latest
@@ -108,7 +108,7 @@ if [[ -e $filealbumprev ]]; then # latest
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
-	[[ -e $dirmpd/latest ]] && latest=$( cat $dirmpd/latest | wc -l ) || latest=0
+	[[ -e $dirmpd/latest ]] && latest=$( wc -l < $dirmpd/latest ) || latest=0
 fi
 ##### count #############################################
 for mode in NAS SD USB; do

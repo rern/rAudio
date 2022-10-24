@@ -40,7 +40,7 @@ data+='
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
-, "stoptimerconf"    : '$( [[ -e $dirshm/stoptimer ]] && cat $dirshm/stoptimer || echo [ false, false ] )
+, "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
@@ -48,7 +48,7 @@ data+='
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( isactive shairport-sync )'
-, "shairportactive"  : '$( [[ $( cat $dirshm/player ) == airplay ]] && echo true )
+, "shairportactive"  : '$( [[ $( < $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( isactive snapserver )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
@@ -57,12 +57,12 @@ data+='
 , "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( isactive spotifyd )'
-, "spotifydactive"   : '$( [[ $( cat $dirshm/player ) == spotify ]] && echo true )'
+, "spotifydactive"   : '$( [[ $( < $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
-, "upmpdcliactive"   : '$( [[ $( cat $dirshm/player ) == upnp ]] && echo true )'
+, "upmpdcliactive"   : '$( [[ $( < $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness

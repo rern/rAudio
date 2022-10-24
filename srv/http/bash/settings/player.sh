@@ -134,7 +134,7 @@ Simple mixer control 'Speaker Digital',0
 	fi
 	devices+="
 <bll># cat /etc/asound.conf</bll>
-$( cat /etc/asound.conf )"
+$( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )
@@ -193,7 +193,7 @@ mpdignorelist )
 	for file in "${files[@]}"; do
 		list+="\
 $file
-$( cat "$file" | sed 's|^| <grn>●</grn> |' )
+$( sed 's|^| <grn>•</grn> |' "$file" )
 "
 	done
 	echo "$list"

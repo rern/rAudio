@@ -28,7 +28,7 @@ data='
 , "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
-, "player"           : "'$( cat $dirshm/player )'"
+, "player"           : "'$( < $dirshm/player )'"
 , "playing"          : '$( grep -q '^state="play"' $dirshm/status && echo true )'
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"

@@ -215,11 +215,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'displaycolor':
 			G.color = 1;
-			if ( !G.library ) $( '#library' ).click();
-			if ( G.mode !== 'webradio' ) {
-				$( '#mode-webradio' ).click();
+			if ( !G.library ) {
+				$( '#library' ).click();
 			} else {
-				colorSet();
+				G.mode !== 'webradio' && $( '#mode-webradio' ).click() || colorSet();
 			}
 			break;
 		case 'multiraudio':
@@ -447,6 +446,7 @@ $( '#library, #button-library' ).click( function() {
 		} else {
 			switchPage( 'library' );
 			if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
+			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 	} );
 } );

@@ -14,7 +14,7 @@ if (( $# > 0 )); then
 	echo $(( timestamp - start - 7500 )) > $dirairplay/elapsed # delayed 7s
 ##### start
 else
-	[[ $( cat /srv/http/data/shm/player ) != airplay ]] && /srv/http/bash/cmd.sh playerstart$'\n'airplay
+	[[ $( < /srv/http/data/shm/player ) != airplay ]] && /srv/http/bash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport-meta
 	echo play > $dirairplay/state
 fi

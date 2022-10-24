@@ -356,7 +356,7 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 			[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 		done
 		if [[ ! $password ]]; then
-			if [[ -e $dirscrobble/key && $username == $( cat $dirscrobble/user ) ]]; then
+			if [[ -e $dirscrobble/key && $username == $( < $dirscrobble/user ) ]]; then
 				touch $dirsystem/scrobble
 				pushRefresh
 			fi

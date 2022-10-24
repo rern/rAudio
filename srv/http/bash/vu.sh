@@ -5,7 +5,7 @@ dirsystem=/srv/http/data/system
 [[ -e $dirsystem/vumeter ]] && vumeter=1
 if [[ -e $dirsystem/vuled ]]; then
 	vuled=1
-	p=( $( cat $dirsystem/vuled.conf ) )
+	p=( $( < $dirsystem/vuled.conf ) )
 	for i in ${p[@]}; do
 		gpio export $i out
 	done

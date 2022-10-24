@@ -16,7 +16,7 @@ addonsListGet() {
 equalizerGet() { # sudo - mixer equal is user dependent
 	val=$( sudo -u mpd amixer -MD equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
 	
 	if [[ $2 == set ]]; then
@@ -150,7 +150,7 @@ plAddRandom() {
 		
 		mpc add "$file"
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( cat $dirsystem/librandom | wc -l ) ))
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( wc -l < $dirsystem/librandom ) ))
 	if (( $diffcount > 1 )); then
 		echo $file >> $dirsystem/librandom
 	else
@@ -223,7 +223,7 @@ snapclientStop() {
 	systemctl stop snapclient
 	$dirsettings/player-conf.sh
 	ip=$( ipGet )
-	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
+	sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
 stopRadio() {
@@ -253,7 +253,7 @@ volumeGet() {
 	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' $mpdconf \
 					| tail -1 \
 					| cut -d'"' -f2 )
-	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
+	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
 		card=$( < $dirsystem/asoundcard )
@@ -488,7 +488,7 @@ color )
 		[[ $hsl == reset ]] && rm -f $file || echo $hsl > $file
 	fi
 	if [[ -e $file ]]; then
-		hsl=( $( cat $file ) )
+		hsl=( $( < $file ) )
 	else
 		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
 	fi
@@ -634,7 +634,7 @@ equalizer )
 	name=${args[2]}
 	newname=${args[3]}
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
 	if [[ $type == rename ]]; then
 		sed -i -e "1 s/.*/$newname/
 " -e "s/^$name^/$newname^/
@@ -844,7 +844,7 @@ mpcplayback )
 	pos=${args[2]} # if stop = elapsed
 	if [[ ! $command ]]; then
 		player=$( < $dirshm/player )
-		if [[ $( cat $dirshm/player ) != mpd ]]; then
+		if [[ $( < $dirshm/player ) != mpd ]]; then
 			$dirbash/cmd.sh playerstop
 			exit
 		fi

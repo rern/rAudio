@@ -263,21 +263,21 @@ datarestore )
 	sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig/etc/fstab
 	
 	cp -rf $dirconfig/* /
-	[[ -e $dirsystem/enable ]] && systemctl -q enable $( cat $dirsystem/enable )
-	[[ -e $dirsystem/disable ]] && systemctl -q disable $( cat $dirsystem/disable )
+	[[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
+	[[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
 	if systemctl -q is-enabled camilladsp; then
 		modprobe snd-aloop
 		echo snd-aloop > /etc/modules-load.d/loopback.conf
 	fi
-	hostnamectl set-hostname $( cat $dirsystem/hostname )
+	hostnamectl set-hostname $( < $dirsystem/hostname )
 	if [[ -e $dirsystem/mirror ]]; then
 		mirror=$( < $dirsystem/mirror )
 		sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
 	fi
-	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( cat $dirsystem/netctlprofile )"
-	timedatectl set-timezone $( cat $dirsystem/timezone )
+	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
+	timedatectl set-timezone $( < $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
-	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( cat $dirsystem/crossfade.conf )
+	[[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade.conf )
 	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir" &> /dev/null
@@ -396,7 +396,7 @@ journalctl )
 	fi
 	echo "\
 <bll># journalctl -b</bll>
-$( cat $filebootlog )
+$( < $filebootlog )
 "
 	;;
 lcdcalibrate )
@@ -550,7 +550,7 @@ mount )
 	fi
 	[[ $extraoptions ]] && options+=,$extraoptions
 	fstab="\
-$( cat /etc/fstab )
+$( < /etc/fstab )
 ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
@@ -674,10 +674,10 @@ pkgstatus )
 		hostapd )
 			conf="\
 <bll># cat /etc/hostapd/hostapd.conf</bll>
-$( cat /etc/hostapd/hostapd.conf )
+$( < /etc/hostapd/hostapd.conf )
 
 <bll># cat /etc/dnsmasq.conf</bll>
-$( cat /etc/dnsmasq.conf )"
+$( < /etc/dnsmasq.conf )"
 			;;
 		localbrowser )
 			pkg=chromium
@@ -687,12 +687,12 @@ $( cat /etc/dnsmasq.conf )"
 			conf=$( grep -v ^i $mpdconf )
 			for file in autoupdate buffer outputbuffer replaygain normalization; do
 				fileconf=$dirmpdconf/$file.conf
-				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
+				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
 			conf=$( sed 's/  *"/^"/' <<< "$conf" | column -t -s^ )
 			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr output; do
 				fileconf=$dirmpdconf/$file.conf
-				[[ -e $fileconf ]] && conf+=$'\n'$( cat $fileconf )
+				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
 			conf="\
 <bll># $mpdconf</bll>
@@ -743,7 +743,7 @@ $status"
 	;;
 powerbutton )
 	if [[ ${args[1]} == true ]]; then
-		if [[ ${args[5]} == true ]]; then
+		if [[ ${args[6]} == true ]]; then # audiophonics
 			sed -i '/disable_overscan/ a\
 dtoverlay=gpio-poweroff,gpiopin=22\
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
@@ -753,10 +753,12 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
 			exit
 		fi
 		
-		sw=${args[2]}
-		led=${args[3]}
-		reserved=${args[4]}
+		on=${args[2]} # always = 5
+		sw=${args[3]}
+		led=${args[4]}
+		reserved=${args[5]}
 		echo "\
+on=5
 sw=$sw
 led=$led
 reserved=$reserved
@@ -784,7 +786,7 @@ reserved=$reserved
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
-	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot | sort -u
+	[[ -e $dirshm/reboot ]] && sort -u $dirshm/reboot
 	;;
 relays )
 	rm -f $dirsystem/relays
@@ -988,7 +990,7 @@ statusonboard )
 storage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>
-$( cat /etc/fstab )
+$( < /etc/fstab )
 
 <bll># mount | grep ^/dev</bll>
 $( mount | grep ^/dev | sort | column -t )
@@ -997,10 +999,10 @@ $( mount | grep ^/dev | sort | column -t )
 systemconfig )
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
-$( cat /boot/cmdline.txt )
+$( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( cat /boot/config.txt )
+$( < /boot/config.txt )
 
 <bll># bootloader and firmware</bll>
 $( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"

@@ -296,9 +296,10 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 $( '#setting-lcdchar' ).click( function() {
-	var radioaddr = '<td>Address</td>';
+	var i2caddress = '<td>Address</td>';
+	if ( !G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
 	G.lcdcharaddr.forEach( function( el ) {
-		radioaddr += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
+		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
 	var optpins = '<select>';
 	$.each( pin2gpio, function( k, v ) {
@@ -319,7 +320,7 @@ $( '#setting-lcdchar' ).click( function() {
 	<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
 	<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
 </tr>
-<tr id="i2caddress" class="i2c">${ radioaddr }</tr>
+<tr id="i2caddress" class="i2c">${ i2caddress }</tr>
 <tr class="i2c"><td>I&#178;C Chip</td>
 	<td colspan="2">
 	<select id="i2cchip">
@@ -339,13 +340,13 @@ $( '#setting-lcdchar' ).click( function() {
 <tr><td width="63"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c = G.lcdcharconf[ 2 ] === 'i2c';
+	var i2c = G.lcdcharconf[ 2 ] !== 'gpio';
 	info( {
 		  icon         : 'lcdchar'
 		, title        : 'Character LCD'
 		, content      : infolcdchar
 		, boxwidth     : 180
-		, values       : G.lcdcharconf
+		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : G.lcdchar
 		, beforeshow   : function() {
 			$( '#infoContent .gpio td:even' )
@@ -419,7 +420,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : 'Power Button'
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 80
-		, values       : [ 5, ...G.powerbuttonconf ]
+		, values       : G.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : G.powerbutton
 		, beforeshow   : function() {
 			if ( !G.powerbuttonconf[ 3 ] ) {
@@ -438,7 +439,7 @@ $( '#setting-powerbutton' ).click( function() {
 			$( '#powerbutton' ).prop( 'checked', G.powerbutton );
 		}
 		, ok           : function() {
-			bash( [ 'powerbutton', true, ...infoVal().slice( 1 ) ] );
+			bash( [ 'powerbutton', true, ...infoVal() ] );
 			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
 		}
 	} );
@@ -467,7 +468,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, title        : 'Rotary Encoder'
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 90
-		, values       : G.rotaryencoderconf
+		, values       : G.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : G.rotaryencoder
 		, beforeshow   : function() {
 			$( '#infoContent svg .power' ).remove();
@@ -578,7 +579,7 @@ $( '#setting-vuled' ).click( function() {
 		, title        : 'VU LED'
 		, message      : gpiosvg
 		, select       : htmlpins
-		, values       : G.vuledconf
+		, values       : G.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : 1
 		, boxwidth     : 80
 		, cancel        : function() {

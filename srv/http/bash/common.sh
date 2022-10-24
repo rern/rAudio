@@ -77,7 +77,7 @@ pushstream() {
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 	fi
 	
-	[[ ! -e $filesharedip || $( cat $filesharedip | wc -l ) == 1 ]] && return # no shared data / no other cilents
+	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return # no shared data / no other cilents
 	
 	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # 'Server rAudio' 'Online/Offline ...' rserver
 		[[ $channel == radiolist && $data == *webradio* ]] && webradiocopy=1 || webradiocopy=
