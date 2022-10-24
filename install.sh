@@ -100,8 +100,13 @@ resampler {
 $( cat $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
 if [[ ! -e $dirshm/mixernone || $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]
-	touch $dirsystem/soxr
-	grep -q quality.*custom $/etc/mpd.conf && linkConf soxr-custom || linkConf soxr
+	if grep -q quality.*custom $/etc/mpd.conf; then
+		linkConf soxr-custom
+		echo custom > $dirsystem/soxr
+	else
+		linkConf soxr
+		echo 'very high' > $dirsystem/soxr
+	fi
 fi
 
 grep -q auto_update /etc/mpd.conf && linkConf autoupdate
