@@ -5,9 +5,6 @@
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
-state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
-[[ ! $state ]] && state=stop
-
 data='
   "page"             : "player"
 , "devices"          : '$devices'
@@ -38,7 +35,7 @@ data='
 , "soxrconf"         : ['$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
 , "soxrcustomconf"   : ['$( sed -E '/resampler|plugin|quality|}/ d; s/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )']
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$state'"
+, "state"            : "'$( grep ^state $dirshm/status | cut -d'"' -f2 )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data" $1
