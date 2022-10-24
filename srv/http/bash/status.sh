@@ -34,7 +34,7 @@ else
 	else
 		ccv=$( $dirbash/cmd.sh volumecontrolget )
 		card=${ccv/^*}
-		control=$( echo $ccv | cut -d^ -f2 ) # keep trailing space if any
+		control=$( cut -d^ -f2 <<< $ccv ) # keep trailing space if any
 		volume=${ccv/*^}
 	fi
 
@@ -128,8 +128,8 @@ $( $dirbash/status-bluetooth.sh )"
 ########
 		status+="
 $( sshCommand $serverip $dirbash/status.sh snapclient \
-	| sed -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-		' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
+	| sed -E -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+		' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 		' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
 		;;
 	spotify )
@@ -200,7 +200,7 @@ for line in "${lines[@]}"; do
 done
 
 [[ ! $pllength ]] && pllength=$( mpc playlist | wc -l )
-status=$( echo "$status" | grep -v '^, "file"' )
+status=$( grep -v '^, "file"' <<< "$status" )
 ########
 status+='
 , "file"      : "'$file'"
@@ -322,7 +322,7 @@ $radiosampling" > $dirshm/radio
 				fi
 			elif [[ $Title && $displaycover ]]; then
 				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title' (extra tag)
-					readarray -t radioname <<< $( echo $Title | sed -E 's/ - |: /\n/' )
+					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
 				else

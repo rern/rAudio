@@ -560,7 +560,7 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		echo "$fstab" | column -t > /etc/fstab
 		rmdir "$mountpoint"
 		systemctl daemon-reload
-		echo "Mount <code>$source</code> failed:<br>"$( echo "$std" | head -1 | sed 's/.*: //' )
+		echo "Mount <code>$source</code> failed:<br>"$( sed -n '1 {s/.*: //;p}' <<< "$std" )
 		exit
 	fi
 	
@@ -732,9 +732,9 @@ $( grep -v ^# $fileconf )"
 					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
 					| sed -E '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig}' )
 	if [[ $pkg == chromium ]]; then
-		status=$( echo "$status" | grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' )
+		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< "$status" )
 	elif [[ $pkg == nfs-utils ]]; then
-		status=$( echo "$status" | grep -v 'Protocol not supported' )
+		status=$( grep -v 'Protocol not supported' <<< "$status" )
 	fi
 	echo "\
 $config

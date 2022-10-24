@@ -55,8 +55,8 @@ fi
 readarray -t devices <<< "$devices"
 for dev in "${devices[@]}"; do
 	data+=',{
-  "mac"  : "'$( echo $dev | cut -d' ' -f2 )'"
-, "name" : "'$( echo $dev | cut -d' ' -f3- )'"
+  "mac"  : "'$( cut -d' ' -f2 <<< $dev )'"
+, "name" : "'$( cut -d' ' -f3- <<< $dev )'"
 }'
 done
 

@@ -124,12 +124,12 @@ hostapd )
 			iprange=${args[2]}
 			router=${args[3]}
 			password=${args[4]}
-			sed -i -e -E "s/^(dhcp-range=).*/\1$iprange/
-" -e -E "s/^(.*option:router,).*/\1$router/
-" -e -E "s/^(.*option:dns-server,).*/\1$router/
+			sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
+" -e "s/^(.*option:router,).*/\1$router/
+" -e "s/^(.*option:dns-server,).*/\1$router/
 " /etc/dnsmasq.conf
-			sed -i -E '/^#*wpa|^#*rsn/ s/^#*//
-' -e -E "s/(wpa_passphrase=).*/\1$password/
+			sed -i -E -e '/^#*wpa|^#*rsn/ s/^#*//
+' -e "s/(wpa_passphrase=).*/\1$password/
 " /etc/hostapd/hostapd.conf
 		else
 			router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
@@ -381,7 +381,7 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 		[[ $reponse =~ error ]] && echo $reponse && exit
 		
 		echo $username > $dirscrobble/user
-		echo $reponse | sed 's/.*key":"//; s/".*//' > $dirscrobble/key
+		sed 's/.*key":"//; s/".*//' <<< $reponse > $dirscrobble/key
 		touch touch $dirsystem/scrobble
 	else
 		rm -f $dirsystem/scrobble
@@ -426,7 +426,7 @@ snapserver )
 			echo '{
   "icon"    : "snapcast"
 , "title"   : "SnapServer"
-, "message" : "Already running on: '$( echo $avahi | cut -d';' -f8 )'"
+, "message" : "Already running on: '$( cut -d';' -f8 <<< $avahi )'"
 }'
 			exit
 		fi

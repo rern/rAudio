@@ -111,8 +111,8 @@ nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
 if [[ $nas ]]; then
 	readarray -t nas <<< "$nas"
 	for line in "${nas[@]}"; do
-		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
-		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
+		source=$( cut -d' ' -f1 <<< $line | sed 's/\\040/ /g' )
+		mountpoint=$( cut -d' ' -f2 <<< $line | sed 's/\\040/ /g' )
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
@@ -148,10 +148,10 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	fi
 fi
 if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	vals=$( sed -e '/var]/ d
-			' -E -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
-			' -E -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
-			' $dirsystem/lcdchar.conf )
+	vals=$( sed -E -e '/var]/ d
+				' -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
+				' -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
+				' $dirsystem/lcdchar.conf )
 	if grep -q i2c <<< "$vals"; then
 		vals=$( sed -E 's/^(true|false)$/15 18 16 21 22 23 24 \1/' <<< "$vals" )
 	else

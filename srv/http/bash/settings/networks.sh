@@ -61,9 +61,9 @@ $( timeout 1 avahi-browse -arp \
 bluetoothinfo )
 	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
-	echo "$info" | grep -q 'not available' && exit
+	grep -q 'not available' <<< "$info" && exit
 	
-	if (( $( echo "$info" | grep -cE 'Connected: yes|UUID: Audio' ) == 2 )); then
+	if (( $( grep -Ec 'Connected: yes|UUID: Audio' <<< "$info" ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
@@ -152,16 +152,6 @@ Gateway=$gw
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
-editwifidhcp )
-	ssid=${args[1]}
-	netctl stop "$ssid"
-	sed -i -e -E '/^Address|^Gateway/ d
-' -e 's/^IP.*/IP=dhcp/
-' "$file"
-	cp "$file" "/etc/netctl/$ssid"
-	netctl start "$ssid"
-	pushRefresh
-	;;
 hostapd )
 	echo $dirsettings/features.sh "$1"
 	;;
@@ -198,10 +188,10 @@ profileconnect )
 	;;
 profileget )
 	netctl=$( < "/etc/netctl/${args[1]}" )
-	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
-	static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
-	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
-	wep=$( [[ $( echo "$netctl" | grep ^Security | cut -d= -f2 ) == wep ]] && echo true || echo false )
+	password=$( grep ^Key "$netctl" | cut -d= -f2- | tr -d '"' )
+	static=$( grep -q ^IP=dhcp <<< "$netctl" && echo false || echo true )
+	hidden=$( grep -q ^Hidden <<< "$netctl" && echo true || echo false )
+	wep=$( [[ $( grep ^Security <<< "$netctl" | cut -d= -f2 ) == wep ]] && echo true || echo false )
 	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
 	;;
 profileremove )

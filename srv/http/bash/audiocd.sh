@@ -59,17 +59,17 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
 	code=$( echo "$query" | head -c 3 )
 	if (( $code == 210 )); then  # exact match
-	  genre_id=$( echo "$query" | sed -n 2p | cut -d' ' -f1,2 | tr ' ' + )
+	  genre_id=$( sed -n 2p <<< "$query" | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
-	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
+	  genre_id=$( cut -d' ' -f2,3 <<< "$query" | tr ' ' + )
 	fi
 	if [[ $genre_id ]]; then
 		pushstreamNotifyBlink 'Audio CD' 'Fetch CD data ...' audiocd
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
+		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< "$data" )
 		artist=${artist_album[0]}
 		album=${artist_album[1]}
-		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
+		readarray -t titles <<< $( tail -n +1 <<< "$data" | cut -d= -f2 )
 	fi
 	frames=( ${cddiscid[@]:2} )
 	unset 'frames[-1]'
@@ -109,8 +109,8 @@ fi
 # coverart
 if [[ ! $artist || ! $album ]]; then
 	artist_album=$( head -1 $diraudiocd/$discid )
-	artist=$( echo $artist_album | cut -d^ -f1 )
-	album=$( echo $artist_album | cut -d^ -f2 )
+	artist=${artist_album/^*}
+	album=${artist_album/*^}
 fi
 [[ ! $artist || ! $album ]] && exit
 

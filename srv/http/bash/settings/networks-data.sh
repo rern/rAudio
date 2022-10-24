@@ -7,12 +7,12 @@ if systemctl -q is-active bluetooth; then
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
-			mac=$( echo $dev | cut -d' ' -f2 )
+			mac=$( cut -d' ' -f2 <<< $dev )
 			info=$( bluetoothctl info $mac )
 			listbt+=',{
   "mac"       : "'$mac'"
-, "name"      : "'$( echo $dev | cut -d' ' -f3- )'"
-, "connected" : '$( echo "$info" | grep -q 'Connected: yes' && echo true || echo false )'
+, "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
+, "connected" : '$( grep -q 'Connected: yes' <<< "$info" && echo true || echo false )'
 , "type"      : "'$( echo "$info" | awk '/UUID: Audio/ {print $3}' )'"
 }'
 		done
@@ -22,8 +22,8 @@ if systemctl -q is-active bluetooth; then
 	fi
 fi
 
-echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=false
-echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
+grep -q '"type" : "Sink"' <<< "$listbt" && btreceiver=true || btreceiver=false
+grep -q '"connected" : true' <<< "$listbt" && connected=true || connected=false
 pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
 [[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
@@ -32,7 +32,7 @@ ipeth=$( ifconfig eth0 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
 if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
-	gateway=$( echo $ipr | cut -d' ' -f3 )
+	gateway=$( cut -d' ' -f3 <<< $ipr )
 	[[ ! $gateway ]] && gateway=$( ip r \
 									| grep ^default \
 									| head -1 \

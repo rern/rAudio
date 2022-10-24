@@ -7,7 +7,7 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh
 	data=$2
 	pushstream mpdradio "$data"
 	cat << EOF > $dirshm/status
-$( echo "$data" | sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' )
+$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< "$data" )
 timestamp=$( date +%s%3N )
 webradio=true
 player=mpd
@@ -78,11 +78,11 @@ if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ipGet )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( echo "$status" \
-				| sed -e '1,/^, "single" *:/ d
+				| sed -E -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/
 					' -e '/^, "icon" *:/ d
-					' -e -E 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					' -e -E 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
+					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

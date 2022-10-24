@@ -49,8 +49,8 @@ cards=$( echo "$aplay" \
 			| sort -u \
 			| sed 's/card //' )
 for card in $cards; do
-	line=$( echo "$aplay" | sed -n "/^card $card/ p" )
-	hw=$( echo $line | sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' )
+	line=$( sed -n "/^card $card/ p" <<< "$aplay" )
+	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
 	card=${hw:3:1}
 	device=${hw: -1}
 	aplayname=$( echo $line \
@@ -132,7 +132,7 @@ elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then
 	asoundcard=$( < $dirsystem/asoundcard )
-	! echo "$aplay" | grep -v Loopback | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
+	! grep -v Loopback <<< "$aplay" | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
 else
 	echo ${Acard[0]} > $dirsystem/asoundcard
 fi

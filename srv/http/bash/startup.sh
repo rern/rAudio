@@ -126,7 +126,7 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
+[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( < $dirsystem/apm )
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	$dirbash/cmd.sh mpcupdate$'\n'rescan

@@ -527,10 +527,7 @@ coverartget )
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
 						| grep -E -i '\.gif$|\.jpg$|\.png$' \
 						| head -1 ) # full path
-	if [[ $coverartfile ]]; then
-		echo $coverartfile | sed 's|^/srv/http||'
-		exit
-	fi
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
@@ -746,7 +743,7 @@ lyrics )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
-		artist=$( echo $artist | sed -E 's/^A |^The |\///g' )
+		artist=$( sed -E 's/^A |^The |\///g' <<< $artist )
 		title=${title//\/}
 		query=$( echo $artist/$title \
 					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )

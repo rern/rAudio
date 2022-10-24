@@ -47,8 +47,8 @@ if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from pa
 	if [[ $mac ]]; then
 #-----
 		pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
-		type=$( echo $line | cut -d' ' -f2 )
-		name=$( echo $line | cut -d' ' -f3- )
+		type=$( cut -d' ' -f2 <<< $line )
+		name=$( cut -d' ' -f3- <<< $line )
 		disconnectRemove
 	fi
 	exit
@@ -139,7 +139,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		echo $mac Source $name >> $dirshm/btconnected
 	else
-		btmixer=$( echo "$btmixer" | cut -d"'" -f2 )
+		btmixer=$( cut -d"'" -f2 <<< "$btmixer" )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		echo $mac Sink $name >> $dirshm/btconnected
