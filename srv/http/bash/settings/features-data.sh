@@ -34,7 +34,7 @@ data+='
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
-, "playing"          : '$( mpc | grep -q '\[playing]' && echo true )'
+, "playing"          : '$( grep -q '^state="play"' $dirshm/status && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
