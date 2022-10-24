@@ -94,8 +94,7 @@ USB" > /mnt/MPD/.mpdignore
 	systemctl restart mpd
 	sharedDataIPlist
 	pushRefresh
-	data='{"page":"features","shareddata":true}'
-	pushstream refresh "$data"
+	pushstream refresh '{"page":"features","shareddata":true}'
 	$dirbash/cmd.sh webradiocopybackup &> /dev/null &
 }
 soundProfile() {
@@ -920,8 +919,7 @@ shareddatadisconnect )
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
-	data='{"page":"features","shareddata":false}'
-	pushstream refresh "$data"
+	pushstream refresh '{"page":"features","shareddata":false}'
 	if [[ ! $disable ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		pushstreamNotify 'Server rAudio' 'Offline ...' rserver

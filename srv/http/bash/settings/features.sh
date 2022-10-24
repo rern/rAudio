@@ -149,8 +149,7 @@ hostapd )
 		ifconfig wlan0 0.0.0.0
 	fi
 	pushRefresh
-	data='{"page":"system","hostapd":'${args[1]}'}'
-	pushstream refresh "$data"
+	pushstream refresh '{"page":"system","hostapd":'${args[1]}'}'
 	pushRefresh networks
 	;;
 httpd )
@@ -336,8 +335,7 @@ USB" > /mnt/MPD/.mpdignore
 		pushstream display "$data"
 	fi
 	pushRefresh
-	data='{"page":"system","nfsserver":'$active'}'
-	pushstream refresh "$data"
+	pushstream refresh '{"page":"system","nfsserver":'$active'}'
 	;;
 nfssharelist )
 	nfsShareList

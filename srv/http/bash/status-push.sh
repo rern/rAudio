@@ -93,8 +93,7 @@ fi
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
 
 [[ $state == play ]] && playing=true || playing=false
-data='{"page":"features","playing":'$playing'}'
-pushstream refresh "$data"
+pushstream refresh '{"page":"player","playing":'$playing'}'
 
 [[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
 

@@ -48,10 +48,8 @@ elif [[ $1 == stop ]]; then # server + client on same device
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
 	fi
-	data='{"snapclientactive":false,"volumenone":'$volumenone'}'
-	pushstream display "$data"
-	data='{"page":"features","snapclientactive",false}'
-	pushstream refresh "$data"
+	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
+	pushstream refresh '{"page":"features","snapclientactive",false}'
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2

@@ -871,13 +871,11 @@ mpcplayback )
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
-		pushstream refresh '{"page":"player","playing":true}'
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
-		pushstream refresh '{"page":"player","playing":false}'
 	fi
 	;;
 mpcprevnext )
