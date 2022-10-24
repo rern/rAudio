@@ -255,12 +255,6 @@ datarestore )
 	rm -f $dirsystem/{color,relays,soundprofile}                # system
 	
 	bsdtar -xpf $backupfile -C /srv/http
-	# temp 20220808 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	if [[ -e $dirdata/webradios ]]; then
-		mv $dirdata/webradio{s,}
-		mv $dirdata/{webradiosimg,webradio/img}
-	fi
-	# temp 20220808 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	dirPermissions
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 	uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
