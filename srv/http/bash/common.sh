@@ -63,9 +63,6 @@ pushRefresh() {
 	[[ $page == networks ]] && sleep 2
 	$dirsettings/$page-data.sh $push
 }
-# pushstream channel "$data"
-#  - use predefine "$data"
-#  - do not use inline directly instead of "$data" to avoid spaces issue
 pushstream() {
 	channel=$1
 	data=${@:2}
