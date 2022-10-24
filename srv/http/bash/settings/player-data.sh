@@ -35,7 +35,7 @@ data='
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"
 , "soxr"             : '$( exists $dirsystem/soxr )'
-, "soxrconf"         : '$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/[\1/; s/.*thread.*"(.*)"/,\1]/' $dirmpdconf/conf/soxr.conf )'
+, "soxrconf"         : ['$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
 , "soxrcustomconf"   : ['$( sed -E '/resampler|plugin|quality|}/ d; s/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )']
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
