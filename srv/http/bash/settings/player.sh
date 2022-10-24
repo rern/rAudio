@@ -181,8 +181,8 @@ mixertype )
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
 	$dirsettings/player-conf.sh
-	data='{"volumenone":'$( [[ $mixertype == none ]] && echo true || echo false )'}'
-	pushstream display "$data"
+	[[ $mixertype == none ]] && none=true || none=false
+	pushstream display '{"volumenone":'$none'}'
 	;;
 mpdignorelist )
 	file=$dirmpd/mpdignorelist
@@ -212,8 +212,7 @@ novolume )
 	rm -f $dirsystem/{camilladsp,equalizer}
 	rm -f $dirmpdconf/{crossfade,normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh
-	data='{"volumenone":true}'
-	pushstream display "$data"
+	pushstream display '{"volumenone":true}'
 	;;
 replaygain )
 	if [[ ${args[1]} == true ]]; then
@@ -265,14 +264,12 @@ EOF
 volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
 	level=$( $dirbash/cmd.sh volumeget )
-	data='{"val":'$level',"db":"0.00"}'
-	pushstream volume "$data"
+	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumebt0db )
 	amixer -D bluealsa -q sset "${args[1]}" 0dB 2> /dev/null
 	volumeBtGet
-	data='{"val":'${voldb/ *}',"db":"0.00"}'
-	pushstream volumebt "$data"
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
 	;;
 volumebtget )
 	volumeBtGet
@@ -281,8 +278,7 @@ volumebtget )
 volumebtsave )
 	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
 	volumeBtGet
-	data='{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
-	pushstream volumebt "$data"
+	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
 	$dirbash/cmd.sh volumeget$'\n'${args[1]}

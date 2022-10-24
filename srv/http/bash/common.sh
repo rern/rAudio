@@ -68,7 +68,7 @@ pushRefresh() {
 #  - do not use inline directly instead of "$data" to avoid spaces issue
 pushstream() {
 	channel=$1
-	data=$2
+	data=${@:2}
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
 	[[ ! -e $filesharedip  ]] && return
 	
@@ -93,12 +93,10 @@ pushstream() {
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
-	data='{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
-	pushstream notify "$data"
+	pushstream notify '{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
 }
 pushstreamNotifyBlink() { # title text icon [hide]
-	data='{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
-	pushstream notify "$data"
+	pushstream notify '{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
 }
 sshCommand() { # $1-ip, ${@:2}-commands
 	if ping -c 1 -w 1 $1 &> /dev/null; then

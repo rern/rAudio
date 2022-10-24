@@ -6,8 +6,7 @@
 readarray -t args <<< "$1"
 
 pushSubmenu() {
-	data='{"submenu":"'$1'","value":'$2'}'
-	pushstream display "$data"
+	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
 featureSet() {
 	systemctl restart $@
@@ -311,8 +310,7 @@ USB" > /mnt/MPD/.mpdignore
 			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
-		data=$( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )
-		pushstream display "$data"
+		pushstream display $( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
@@ -331,8 +329,7 @@ USB" > /mnt/MPD/.mpdignore
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
-		data=$( < $dirsystem/display )
-		pushstream display "$data"
+		pushstream display $( < $dirsystem/display )
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$active'}'

@@ -65,8 +65,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	else
 		killall cava &> /dev/null
-		data='{"val":0}'
-		pushstream vumeter "$data"
+		pushstream vumeter '{"val":0}'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( < $dirsystem/vuled.conf )
 			for i in $p; do

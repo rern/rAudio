@@ -795,8 +795,7 @@ rebootlist )
 relays )
 	rm -f $dirsystem/relays
 	pushRefresh
-	data='{"submenu":"relays","value":false}'
-	pushstream display "$data"
+	pushstream display '{"submenu":"relays","value":false}'
 	;;
 rfkilllist )
 	echo "\
@@ -930,8 +929,7 @@ shareddataiplist )
 	;;
 shareddatarestart )
 	systemctl restart mpd
-	data=$( < $dirmpd/counts )
-	pushstream mpdupdate "$data"
+	pushstream mpdupdate $( < $dirmpd/counts )
 	;;
 sharelist )
 	ip=${args[1]}

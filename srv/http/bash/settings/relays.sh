@@ -13,8 +13,7 @@ if [[ $cmd == save ]]; then
 	echo -e "$data" > $dirsystem/relays.conf
 	touch $dirsystem/relays
 	$dirsettings/relays-data.sh pushrefresh
-	data='{"submenu":"relays","value":true}'
-	pushstream display "$data"
+	pushstream display '{"submenu":"relays","value":true}'
 	exit
 fi
 
@@ -22,18 +21,14 @@ fi
 
 if [[ $cmd == true ]]; then
 	touch $dirshm/relayson
-	data='{"state":true,"order":'$onorder'}'
-	pushstream relays "$data"
+	pushstream relays '{"state":true,"order":'$onorder'}'
 	for i in 0 1 2 3; do
 		pin=${on[$i]}
 		(( $pin == 0 )) && break
 		
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
-		if (( $i > 0 )); then
-			data='{"on":'$(( i + 1 ))'}'
-			pushstream relays "$data"
-		fi
+		(( $i > 0 )) && pushstream relays '{"on":'$(( i + 1 ))'}'
 		sleep ${ond[$i]} &> /dev/null
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
@@ -43,17 +38,13 @@ if [[ $cmd == true ]]; then
 else
 	rm -f $dirshm/relayson $timerfile
 	killall relays-timer.sh &> /dev/null
-	data='{"state":false,"order":'$offorder'}'
-	pushstream relays "$data"
+	pushstream relays '{"state":false,"order":'$offorder'}'
 	for i in 0 1 2 3; do
 		pin=${off[$i]}
 		(( $pin == 0 )) && break
 		
 		gpio -1 write $pin 0
-		if (( $i > 0 )); then
-			data='{"off":'$(( i + 1 ))'}'
-			pushstream relays "$data"
-		fi
+		(( $i > 0 )) && pushstream relays '{"off":'$(( i + 1 ))'}'
 		sleep ${offd[$i]} &> /dev/null
 	done
 fi
@@ -61,5 +52,4 @@ fi
 alsactl store
 sleep 1
 $dirbash/status-push.sh
-data='{"done":1}'
-pushstream relays "$data"
+pushstream relays '{"done":1}'

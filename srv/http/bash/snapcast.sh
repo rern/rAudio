@@ -18,10 +18,8 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl restart mpd
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
-		data='{"snapclientactive":true,"volumenone":false}'
-		pushstream display "$data"
-		data='{"page":"features","snapclientactive",true}'
-		pushstream refresh "$data"
+		pushstream display '{"snapclientactive":true,"volumenone":false}'
+		pushstream refresh '{"page":"features","snapclientactive",true}'
 		$dirsettings/player-data.sh pushrefresh
 		exit
 	fi

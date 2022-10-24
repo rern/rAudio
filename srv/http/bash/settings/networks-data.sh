@@ -24,8 +24,7 @@ fi
 
 echo "$listbt" | grep -q '"type" : "Sink"' && btreceiver=true || btreceiver=false
 echo "$listbt" | grep -q '"connected" : true' && connected=true || connected=false
-data='{"connected":'$connected',"btreceiver":'$btreceiver'}'
-pushstream bluetooth "$data"
+pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 
 [[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
 
