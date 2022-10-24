@@ -15,8 +15,7 @@ mpc idleloop | while read changed; do
 						echo $s > $dirshm/vol
 					else
 						rm -f $dirshm/vol
-						vol='{"val":'$( $dirbash/cmd.sh volumeget )'}'
-						pushstream volume "$vol"
+						pushstream volume '{"val":'$( $dirbash/cmd.sh volumeget )'}'
 					fi
 				done ) &> /dev/null &
 			fi
