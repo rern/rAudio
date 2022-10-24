@@ -248,7 +248,7 @@ $( '#autoupdate' ).click( function() {
 	bash( [ 'autoupdate', checked ] );
 } );
 $( '#setting-soxr' ).click( function() {
-	infoSoxr( G.soxrquality );
+	infoSoxr( G.soxrquality || 'very high' );
 } );
 var custominfo = `\
 <table width="100%">
@@ -310,13 +310,13 @@ $( '#setting-custom' ).click( function() {
 var soxr = `\
 <table>
 <tr><td>Quality</td>
-	<td style="width: 100px"><select class="quality">
+	<td><select>
 		<option value="very high">Very high</option>
 		<option value="high">High</option>
 		<option value="medium">Medium</option>
 		<option value="low">Low</option>
 		<option value="quick">Quick</option>
-		</select></td>
+	</select></td>
 </tr>
 <tr><td>Threads</td>
 	<td><label><input type="radio" name="soxr" value="0">Auto</label>&emsp;
@@ -364,12 +364,12 @@ function infoSoxr( quality ) {
 		  icon         : 'mpd'
 		, title        : 'SoXR Resampler'
 		, tab          : [ 'Presets', 'Custom' ]
-		, tabfunction  : [ infoSoxr, infoSoxrCustom ]
+		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
 		, tabactive    : custom ? 1 : 0
 		, content      : custom ? soxrcustom : soxr
 		, values       : custom ? G.soxrcustomconf : G.soxrconf
 		, checkblank   : 1
-		, checkchanged : G.soxr
+		, checkchanged : G.soxr && quality === G.soxrquality
 		, beforeshow   : function() {
 			if ( custom ) {
 				var $extra = $( '#infoContent tr' ).last();
@@ -392,7 +392,10 @@ function infoSoxr( quality ) {
 	} );
 }
 function infoSoxrCustom() {
-	infoSoxr( 'custom' )
+	infoSoxr( 'custom' );
+}
+function infoSoxrPreset() {
+	infoSoxr( G.soxrquality === 'custom' ? 'very high' : G.soxrquality );
 }
 function playbackIcon() {
 	$( '.playback' )
