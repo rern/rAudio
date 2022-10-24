@@ -216,10 +216,12 @@ HTML
 		, 'status'   => 'smb'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< HTML
-<a href="https://www.samba.org">Samba</a> - Share files on network.
+<a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
+ • Much faster than SCP / WinSCP when transfer large or a lot of files
  • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  • Windows: $fileexplorer
- ( | Server rAudio I^rserver^I &#9704; | NFS share should yeild better performance.)
+ 
+(for better performance: | Server rAudio I^rserver^I | )
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
