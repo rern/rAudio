@@ -391,10 +391,11 @@ function infoSoxrPreset() {
 	infoSoxr( G.soxrquality === 'custom' ? 'very high' : G.soxrquality );
 }
 function playbackIcon() {
+	var play = G.state === 'play';
 	$( '.playback' )
 		.removeClass( 'fa-pause fa-play' )
-		.addClass( 'fa fa-'+ ( G.state === 'play' ? 'pause' : 'play' ) )
-		.toggleClass( 'disabled', !G.state || ( G.player !== 'mpd' && G.state !== 'play' ) );
+		.addClass( 'fa fa-'+ ( !play ? 'play' : 'pause' ) )
+		.toggleClass( 'disabled', G.player !== 'mpd' && !play );
 }
 function renderPage() {
 	playbackIcon();
