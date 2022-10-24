@@ -230,6 +230,7 @@ replaygain )
 	restartMPD
 	;;
 soxr )
+	rm -f $dirmpdconf/soxr*
 	if [[ ${args[1]} == true ]]; then
 		if [[ ${args[2]} == custom ]]; then
 			cat << EOF > $dirmpdconf/conf/soxr-custom.conf
@@ -257,7 +258,7 @@ EOF
 		fi
 		echo ${args[2]} > $dirsystem/soxr
 	else
-		rm -f $dirmpdconf/soxr* $dirsystem/soxr
+		rm -f $dirsystem/soxr
 	fi
 	restartMPD
 	;;
