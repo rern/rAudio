@@ -197,7 +197,7 @@ $( '#setting-bluetooth' ).click( function() {
 		, title        : 'Bluetooth'
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : G.bluetoothconf
-		, checkchanged : ( G.bluetooth ? 1 : 0 )
+		, checkchanged : G.bluetooth
 		, cancel       : function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
@@ -224,7 +224,7 @@ $( '#setting-wlan' ).click( function() {
 			, content      : infowifi
 			, boxwidth     : 250
 			, values       : G.wlanconf
-			, checkchanged : ( G.wlan ? 1 : 0 )
+			, checkchanged : G.wlan
 			, cancel       : function() {
 				$( '#wlan' ).prop( 'checked', G.wlan );
 			}
@@ -346,7 +346,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, content      : infolcdchar
 		, boxwidth     : 180
 		, values       : G.lcdcharconf
-		, checkchanged : ( G.lcdchar ? 1 : 0 )
+		, checkchanged : G.lcdchar
 		, beforeshow   : function() {
 			$( '#infoContent .gpio td:even' )
 				.css( 'width', 60 )
@@ -420,7 +420,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 80
 		, values       : [ 5, ...G.powerbuttonconf ]
-		, checkchanged : ( G.powerbutton ? 1 : 0 )
+		, checkchanged : G.powerbutton
 		, beforeshow   : function() {
 			if ( !G.powerbuttonconf[ 3 ] ) {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
@@ -468,7 +468,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 90
 		, values       : G.rotaryencoderconf
-		, checkchanged : ( G.rotaryencoder ? 1 : 0 )
+		, checkchanged : G.rotaryencoder
 		, beforeshow   : function() {
 			$( '#infoContent svg .power' ).remove();
 		}
@@ -504,7 +504,7 @@ $( '#setting-mpdoled' ).click( function() {
 </select></td></tr>
 </table>`
 		, values       : G.mpdoledconf
-		, checkchanged : ( G.mpdoled ? 1 : 0 )
+		, checkchanged : G.mpdoled
 		, boxwidth     : 140
 		, beforeshow   : function() {
 			var i2c = !G.mpdoled || ( G.mpdoled && G.mpdoledconf[ 1 ] );
@@ -540,7 +540,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
 		, values       : G.lcdmodel || 'tft35a'
-		, checkchanged : ( G.lcd ? 1 : 0 )
+		, checkchanged : G.lcd
 		, boxwidth     : 190
 		, buttonlabel  : ( !G.lcd ? '' : 'Calibrate' )
 		, button       : ( !G.lcd ? '' : function() {

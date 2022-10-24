@@ -226,7 +226,7 @@ $( '.hostapdset' ).click( function() {
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : G.hostapd.conf
-		, checkchanged : ( G.hostapd ? 1 : 0 )
+		, checkchanged : G.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
 		, ok           : function() {
@@ -371,8 +371,8 @@ function infoWiFi( values ) {
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
 		, values        : values
-		, checkchanged  : add ? 0 : 1
-		, checkblank    : add ? 0 : 1
+		, checkchanged  : !add
+		, checkblank    : !add
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', !values[ 4 ] );

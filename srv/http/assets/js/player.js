@@ -162,7 +162,7 @@ $( '#setting-crossfade' ).click( function() {
 		, focus        : 0
 		, boxwidth     : 60
 		, values       : G.crossfadeconf || 1
-		, checkchanged : ( G.crossfade ? 1 : 0 )
+		, checkchanged : G.crossfade
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
@@ -179,7 +179,7 @@ $( '#setting-replaygain' ).click( function() {
 		, title        : 'ReplayGain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainconf
-		, checkchanged : ( G.replaygain ? 1 : 0 )
+		, checkchanged : G.replaygain
 		, cancel       : function() {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
@@ -276,7 +276,7 @@ $( '#setting-custom' ).click( function() {
 			, title        : "User's Configurations"
 			, content      : custominfo.replace( 'N', G.asoundcard )
 			, values       : [ valglobal, valoutput ]
-			, checkchanged : ( G.custom ? 1 : 0 )
+			, checkchanged : G.custom
 			, cancel       : function() {
 				$( '#custom' ).prop( 'checked', G.custom );
 			}
@@ -361,26 +361,27 @@ var soxrcustom = `
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
 	info( {
-		  icon          : 'mpd'
-		, title         : 'SoXR Resampler'
-		, tab           : [ 'Presets', 'Custom' ]
-		, tabfunction   : [ infoSoxr, infoSoxrCustom ]
-		, tabactive     : custom ? 1 : 0
-		, content       : custom ? soxrcustom : soxr
-		, values        : custom ? G.soxrcustomconf : G.soxrconf
-		, checkblank    : 1
-		, beforeshow    : function() {
+		  icon         : 'mpd'
+		, title        : 'SoXR Resampler'
+		, tab          : [ 'Presets', 'Custom' ]
+		, tabfunction  : [ infoSoxr, infoSoxrCustom ]
+		, tabactive    : custom ? 1 : 0
+		, content      : custom ? soxrcustom : soxr
+		, values       : custom ? G.soxrcustomconf : G.soxrconf
+		, checkblank   : 1
+		, checkchanged : G.soxr
+		, beforeshow   : function() {
 			if ( custom ) {
 				var $extra = $( '#infoContent tr' ).last();
 				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
 				$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
 			}
 		}
-		, boxwidth      : custom ? 85 : 180
-		, cancel        : function() {
+		, boxwidth     : custom ? 85 : 180
+		, cancel       : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
-		, ok            : function() {
+		, ok           : function() {
 			if ( custom ) {
 				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
 			} else {

@@ -81,7 +81,7 @@ $( '#setting-snapclient' ).click( function() {
 		, checkblank   : 1
 		, values       : G.snapcastconf
 		, boxwidth     : 100
-		, checkchanged : ( G.snapclient ? 1 : 0 )
+		, checkchanged : G.snapclient
 		, beforeshow   : function() {
 			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
@@ -102,7 +102,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, title        : 'UPnP'
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ G.upmpdcliownqueue ]
-		, checkchanged : ( G.upmpdcli ? 1 : 0 )
+		, checkchanged : G.upmpdcli
 		, cancel       : function() {
 			$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 		}
@@ -121,7 +121,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, checkblank   : 1
 		, boxwidth     : 100
 		, values       : G.camillarefresh
-		, checkchanged : ( G.camilladsp ? 1 : 0 )
+		, checkchanged : G.camilladsp
 		, cancel       : function() {
 			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
 		}
@@ -138,7 +138,7 @@ $( '#setting-hostapd' ).click( function() {
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : G.hostapdconf
-		, checkchanged : ( G.hostapd ? 1 : 0 )
+		, checkchanged : G.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : function() {
@@ -164,7 +164,7 @@ $( '#setting-autoplay' ).click( function() {
 		, title        : 'AutoPlay'
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? G.autoplayconf : [ false, false, true ]
-		, checkchanged : ( G.autoplay ? 1 : 0 )
+		, checkchanged : G.autoplay
 		, cancel       : function() {
 			$( '#autoplay' ).prop( 'checked', G.autoplay );
 		}
@@ -218,7 +218,7 @@ ${ brightness }
 		, content      : content
 		, boxwidth     : 100
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
-		, checkchanged : ( G.localbrowser ? 1 : 0 )
+		, checkchanged : G.localbrowser
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', !G.localbrowser );
@@ -267,7 +267,7 @@ $( '#setting-smb' ).click( function() {
 		, message      : '<wh>Write</wh> permission:'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
-		, checkchanged : ( G.smb ? 1 : 0 )
+		, checkchanged : G.smb
 		, cancel       : function() {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
@@ -299,7 +299,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, title        : 'Multiple rAudios'
 		, content      : '<table>'+ content +'</table>'
 		, values       : G.multiraudioconf
-		, checkchanged : ( G.multiraudio ? 1 : 0 )
+		, checkchanged : G.multiraudio
 		, beforeshow   : function() {
 			if ( $( '#infoContent input' ).length === 2 ) {
 				setTimeout( function() {
@@ -401,7 +401,7 @@ $( '#setting-scrobble' ).click( function() {
 		, boxwidth      : 170
 		, values        : G.scrobbleconf
 		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
-		, checkchanged  : G.scrobble ? 1 : 0
+		, checkchanged  : G.scrobble
 		, beforeshow    : function() {
 			var $user = $( '#infoContent input[type=text]' );
 			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
