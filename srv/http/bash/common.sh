@@ -48,6 +48,9 @@ ${data:1}
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+getContent() {
+	[[ -e "$1" ]] && cat "$1"
+}
 ipGet() {
 	ifconfig | grep -m1 inet.*broadcast | awk '{print $2}'
 }

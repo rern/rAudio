@@ -5,16 +5,6 @@
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
-if [[ -e $dirmpdconf/soxr.conf ]]; then
-	soxrconf='"'$( grep quality $dirmpdconf/soxr.conf | cut -d'"' -f2 )'",'
-else
-	soxrconf='"very high",'
-fi
-soxrconf+=$( grep -Ev 'resampler|plugin|quality|}' $dirmpdconf/conf/soxr-custom.conf \
-				| sed -E 's/.*"(.*)"/\1/' \
-				| xargs \
-				| tr ' ' , )
-
 state=$( grep ^state $dirshm/status 2> /dev/null | cut -d'"' -f2 )
 [[ ! $state ]] && state=stop
 
@@ -25,13 +15,13 @@ data='
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
-, "btaplayname"      : "'$( cat $dirshm/btreceiver 2> /dev/null )'"
+, "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "counts"           : '$( cat $dirmpd/counts 2> /dev/null )'
+, "counts"           : '$( getContent $dirmpd/counts )'
 , "crossfade"        : '$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )'
-, "crossfadeconf"    : '$( cat $dirsystem/crossfade.conf 2> /dev/null || echo 1 )'
+, "crossfadeconf"    : '$( getContent $dirsystem/crossfade.conf )'
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( isactive rtsp-simple-server )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
@@ -44,8 +34,10 @@ data='
 , "player"           : "'$( cat $dirshm/player )'"
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"
-, "soxr"             : '$( exists $dirmpdconf/soxr.conf )'
-, "soxrconf"         : ['$soxrconf']
+, "soxr"             : '$( exists $dirsystem/soxr )'
+, "soxrconf"         : '$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/[\1/; s/.*thread.*"(.*)"/,\1]/' $dirmpdconf/conf/soxr.conf )'
+, "soxrcustomconf"   : ['$( sed -E '/resampler|plugin|quality|}/ d; s/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )']
+, "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
 , "state"            : "'$state'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 

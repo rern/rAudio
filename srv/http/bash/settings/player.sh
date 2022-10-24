@@ -72,9 +72,9 @@ crossfade )
 	;;
 customget )
 	echo "\
-$( cat $dirmpdconf/conf/custom.conf 2> /dev/null )
+$( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )"
+$( getContent "$dirsystem/custom-output-${args[1]}" )"
 	;;
 custom )
 	if [[ ${args[1]} == true ]]; then
@@ -244,12 +244,20 @@ resampler {
 	flags           "${args[8]}"
 }
 EOF
-			ln -sf $dirmpdconf/conf/soxr-custom.conf $dirmpdconf/soxr.conf
+		ln -sf $dirmpdconf/{conf/,}soxr-custom.conf
 		else
+			cat << EOF > $dirmpdconf/conf/soxr.conf
+resampler {
+	plugin   "soxr"
+	quality  "${args[2]}"
+	thread   "${args[3]}"
+}
+EOF
 			linkConf
 		fi
+		echo ${args[2]} > $dirsystem/soxr
 	else
-		rm -f $dirmpdconf/soxr.conf
+		rm -f $dirmpdconf/soxr* $dirsystem/soxr
 	fi
 	restartMPD
 	;;

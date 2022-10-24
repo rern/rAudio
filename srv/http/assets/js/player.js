@@ -157,11 +157,11 @@ $( '#dop' ).click( function() {
 $( '#setting-crossfade' ).click( function() {
 	info( {
 		  icon         : 'mpd'
-		, title        : 'Crossfade'
+		, title        : 'Cross-Fading'
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
-		, values       : G.crossfadeconf
+		, values       : G.crossfadeconf || 1
 		, checkchanged : ( G.crossfade ? 1 : 0 )
 		, checkblank   : 1
 		, cancel       : function() {
@@ -169,14 +169,14 @@ $( '#setting-crossfade' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'crossfade', true, infoVal() ] );
-			notify( 'Crossfade', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( 'Cross-Fading', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
 	info( {
 		  icon         : 'mpd'
-		, title        : 'Replay Gain'
+		, title        : 'ReplayGain'
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainconf
 		, checkchanged : ( G.replaygain ? 1 : 0 )
@@ -185,7 +185,7 @@ $( '#setting-replaygain' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'replaygain', true, infoVal() ] );
-			notify( 'Replay Gain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( 'ReplayGain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
 		}
 	} );
 } );
@@ -247,74 +247,8 @@ $( '#autoupdate' ).click( function() {
 	notify( 'Library Auto Update', checked, 'mpd' );
 	bash( [ 'autoupdate', checked ] );
 } );
-var soxrinfo = `\
-<table>
-<tr class="quality"><td>Quality</td>
-	<td><label><input type="radio" name="soxr" value="very high">Default</label></td>
-	<td>&emsp;<label><input type="radio" name="soxr" value="custom">Custom</label></td>
-</tr>
-
-<tr><td>Precision</td>
-	<td><select>
-		<option value="16">16</option>
-		<option value="20">20</option>
-		<option value="24">24</option>
-		<option value="28">28</option>
-		<option value="32">32</option>
-		</select></td><td>&nbsp;<gr>bit</gr></td>
-</tr>
-<tr><td>Phase Response</td>
-	<td><input type="text"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
-</tr>
-<tr><td>Passband End</td>
-	<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
-</tr>
-<tr><td>Stopband Begin</td>
-	<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
-</tr>
-<tr><td>Attenuation</td>
-	<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
-</tr>
-<tr><td>Flag / Extra</td>
-	<td colspan="2"><select>
-			<option value="0">0 - Rolloff - Small</option>
-			<option value="1">1 - Rolloff - Medium</option>
-			<option value="2">2 - Rolloff - None</option>
-			<option value="8">8 - High precision</option>
-			<option value="16">16 - Double precision</option>
-			<option value="32">32 - Variable rate</option>
-		</select>
-	</td>
-</tr>
-</table>`;
 $( '#setting-soxr' ).click( function() {
-	info( {
-		  icon          : 'mpd'
-		, title         : 'SoXR Resampler'
-		, content       : soxrinfo
-		, values        : G.soxrconf
-		, checkchanged  : G.soxr ? 1 : 0
-		, checkblank    : 1
-		, beforeshow    : function() {
-			var $custom = $( '#infoContent tr:not( .quality )' );
-			$custom.toggleClass( 'hide', G.soxrconf[ 0 ] !== 'custom' );
-			var $extra = $( '#infoContent tr' ).eq( 6 );
-			$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
-			$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
-			$( '#infoContent input:radio' ).change( function() {
-				$custom.toggleClass( 'hide', $( this ).val() !== 'custom' );
-			} );
-		}
-		, boxwidth      : 85
-		, cancel        : function() {
-			$( '#soxr' ).prop( 'checked', G.soxr );
-		}
-		, ok            : function() {
-			var values = infoVal();
-			bash( [ 'soxr', true, ...values ] );
-			notify( 'SoXR Resampler', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
-		}
-	} );
+	infoSoxr( G.soxrquality );
 } );
 var custominfo = `\
 <table width="100%">
@@ -373,6 +307,92 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+var soxr = `\
+<table>
+<tr><td>Quality</td>
+	<td style="width: 100px"><select class="quality">
+		<option value="very high">Very high</option>
+		<option value="high">High</option>
+		<option value="medium">Medium</option>
+		<option value="low">Low</option>
+		<option value="quick">Quick</option>
+		</select></td>
+</tr>
+<tr><td>Threads</td>
+	<td><label><input type="radio" name="soxr" value="0">Auto</label>&emsp;
+		<label><input type="radio" name="soxr" value="1">Single</label></td>
+</tr>
+<table>`;
+var soxrcustom = `
+<table>
+<tr><td>Precision</td>
+	<td><select>
+		<option value="16">16</option>
+		<option value="20">20</option>
+		<option value="24">24</option>
+		<option value="28">28</option>
+		<option value="32">32</option>
+		</select></td><td>&nbsp;<gr>bit</gr></td>
+</tr>
+<tr><td>Phase Response</td>
+	<td><input type="text"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
+</tr>
+<tr><td>Passband End</td>
+	<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
+</tr>
+<tr><td>Stopband Begin</td>
+	<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
+</tr>
+<tr><td>Attenuation</td>
+	<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
+</tr>
+<tr><td>Bitmask Flag</td>
+	<td colspan="2"><select>
+			<option value="0">0 - Rolloff - Small</option>
+			<option value="1">1 - Rolloff - Medium</option>
+			<option value="2">2 - Rolloff - None</option>
+			<option value="8">8 - High precision</option>
+			<option value="16">16 - Double precision</option>
+			<option value="32">32 - Variable rate</option>
+		</select>
+	</td>
+</tr>
+</table>`;
+function infoSoxr( quality ) {
+	var custom = quality === 'custom';
+	info( {
+		  icon          : 'mpd'
+		, title         : 'SoXR Resampler'
+		, tab           : [ 'Presets', 'Custom' ]
+		, tabfunction   : [ infoSoxr, infoSoxrCustom ]
+		, tabactive     : custom ? 1 : 0
+		, content       : custom ? soxrcustom : soxr
+		, values        : custom ? G.soxrcustomconf : G.soxrconf
+		, checkblank    : 1
+		, beforeshow    : function() {
+			if ( custom ) {
+				var $extra = $( '#infoContent tr' ).last();
+				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
+				$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
+			}
+		}
+		, boxwidth      : custom ? 85 : 180
+		, cancel        : function() {
+			$( '#soxr' ).prop( 'checked', G.soxr );
+		}
+		, ok            : function() {
+			if ( custom ) {
+				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
+			} else {
+				bash( [ 'soxr', true, ...infoVal() ] );
+			}
+			notify( 'SoXR Resampler', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
+		}
+	} );
+}
+function infoSoxrCustom() {
+	infoSoxr( 'custom' )
+}
 function playbackIcon() {
 	$( '.playback' )
 		.removeClass( 'fa-pause fa-play' )

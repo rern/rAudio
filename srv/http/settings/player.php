@@ -114,10 +114,9 @@ HTML
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'label'   => 'Cross-fading'
+	[	  'label'   => 'Cross-Fading'
 		, 'id'      => 'crossfade'
 		, 'help'    => <<< HTML
-<c>mpc crossfade <yl>N</yl></c>
 Fade-out to fade-in between playing tracks (same audio format only)
 HTML
 	]
@@ -126,7 +125,6 @@ HTML
 		, 'id'      => 'normalization'
 		, 'setting' => false
 		, 'help'    => <<< HTML
-<c>volume_normalization "yes"</c>
 Normalize the volume level of songs as they play. (16 bit PCM only)
 HTML
 	] 
@@ -134,7 +132,6 @@ HTML
 		  'label'   => 'ReplayGain'
 		, 'id'      => 'replaygain'
 		, 'help'    => <<< HTML
-<c>replaygain "<yl>type</yl>"</c>
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 HTML
@@ -150,8 +147,9 @@ $body = [
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>audio_buffer_size "<yl>N</yl>"</c> (default: 4096 kB - 24s of CD-quality audio)
 Increase to fix intermittent audio.
+
+(default: 4096 kB - 24s of CD-quality audio)
 HTML
 	]
 	, [
@@ -159,8 +157,9 @@ HTML
 		, 'id'       => 'outputbuffer'
 		, 'sublabel' => 'custom size'
 		, 'help'     => <<< HTML
-<c>max_output_buffer_size "<yl>N</yl>"</c> (default: 8192 kB)
 Increase to fix missing Album list with large Library.
+
+(default: 8192 kB)
 HTML
 	]
 	, [
@@ -170,7 +169,6 @@ HTML
 		, 'setting'  => false
 		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
 		, 'help'     => <<< HTML
-<c>enable "yes"</c>
 Should be disabled if not used for faster Library update.
 Decoder for audio filetypes: I^help filetype^I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
@@ -182,7 +180,6 @@ HTML
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'help'        => <<< HTML
-<c>auto_update "yes"</c>
 Automatic update MPD database when files changed.
 HTML
 	]
@@ -193,14 +190,15 @@ HTML
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
 | I^gear^I |
- • Default quality: Very high
-
+ • Presets:
+	(default: Quality - | Very high |, Threads - | Single |)
+	
  • Custom quality:
-	 - Precision - Conversion precision (20 = HQ)
-	 - Phase Response (50 = Linear)
-	 - Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
-	 - Stopband Begin - Aliasing/imaging control
-	 - Attenuation - Lowers the source to prevent clipping
+	- Precision - Conversion precision (20 = HQ)
+	- Phase Response (50 = Linear)
+	- Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
+	- Stopband Begin - Aliasing/imaging control
+	- Attenuation - Lowers the source to prevent clipping
 	 - Flags / Extra settings:
 <pre>
 |  0 - Rolloff - small  | (<= 0.01 dB)

@@ -99,6 +99,10 @@ resampler {
 	plugin          \"soxr\"
 $( cat $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
+if [[ ! -e $dirshm/mixernone || $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]
+	touch $dirsystem/soxr
+	grep -q quality.*custom $/etc/mpd.conf && linkConf soxr-custom || linkConf soxr
+fi
 
 grep -q auto_update /etc/mpd.conf && linkConf autoupdate
 if grep -q audio_buffer /etc/mpd.conf; then
@@ -111,7 +115,7 @@ if grep -q output_buffer /etc/mpd.conf; then
 fi
 grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain  "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/confreplaygain.conf
+	echo 'replaygain  "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
 	linkConf replaygain
 fi
 
@@ -126,7 +130,7 @@ else
 	linkConf soxr
 fi
 
-rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/streaming
+rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfade,streaming}
 
 echo "\
 ExecStart=

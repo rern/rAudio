@@ -539,7 +539,7 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, values       : G.lcdmodel
+		, values       : G.lcdmodel || 'tft35a'
 		, checkchanged : ( G.lcd ? 1 : 0 )
 		, boxwidth     : 190
 		, buttonlabel  : ( !G.lcd ? '' : 'Calibrate' )

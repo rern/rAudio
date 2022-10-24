@@ -108,7 +108,7 @@ if [[ -e $filealbumprev ]]; then # latest
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
-	latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
+	[[ -e $dirmpd/latest ]] && latest=$( cat $dirmpd/latest | wc -l ) || latest=0
 fi
 ##### count #############################################
 for mode in NAS SD USB; do

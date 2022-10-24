@@ -45,7 +45,7 @@ else
 , "card"         : '$card'
 , "consume"      : '$( mpc | grep -q 'consume: on' && echo true )'
 , "control"      : "'$control'"
-, "counts"       : '$( cat $dirmpd/counts 2> /dev/null )'
+, "counts"       : '$( getContent $dirmpd/counts )'
 , "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
@@ -59,7 +59,7 @@ else
 , "updating_db"  : '$( exists $dirmpd/updating )'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$( cat $dirsystem/volumemute 2> /dev/null || echo 0 )'
+, "volumemute"   : '$( [[ -e $dirsystem/volumemute ]] && cat $dirsystem/volumemute || echo 0 )'
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
@@ -75,12 +75,12 @@ if [[ $1 == withdisplay ]]; then
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "color"            : "'$( cat $dirsystem/color 2> /dev/null )'"
+, "color"            : "'$( getContent $dirsystem/color )'"
 , "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
-, "order"            : '$( cat $dirsystem/order 2> /dev/null )'
+, "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
@@ -97,10 +97,10 @@ if [[ $player != mpd && $player != upnp ]]; then
 	airplay )
 		dirairplay=$dirshm/airplay
 		[[ -e $dirairplay/state ]] && state=$( < $dirairplay/state ) || state=stop
-		Time=$( cat $dirairplay/Time 2> /dev/null )
+		Time=$( getContent $dirairplay/Time )
 		timestamp=$( date +%s%3N )
 		if [[ $state == pause ]]; then
-			elapsedms=$( cat $dirairplay/elapsed 2> /dev/null )
+			elapsedms=$( getContent $dirairplay/elapsed )
 		else
 			[[ -e $dirairplay/start ]] && start=$( < $dirairplay/start ) || start=0
 			elapsedms=$(( timestamp - start ))
@@ -108,9 +108,9 @@ if [[ $player != mpd && $player != upnp ]]; then
 		elapsed=$(( ( elapsedms + 1500 ) / 1000 )) # roundup + 1s
 ########
 		status+='
-, "Album"     : "'$( cat $dirairplay/Album 2> /dev/null )'"
-, "Artist"    : "'$( cat $dirairplay/Artist 2> /dev/null )'"
-, "Title"     : "'$( cat $dirairplay/Title 2> /dev/null )'"
+, "Album"     : "'$( getContent $dirairplay/Album )'"
+, "Artist"    : "'$( getContent $dirairplay/Artist )'"
+, "Title"     : "'$( getContent $dirairplay/Title )'"
 , "coverart"  : "/data/shm/airplay/coverart.'$date'.jpg"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
@@ -333,7 +333,7 @@ $radiosampling" > $dirshm/radio
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart=${coverfile:9}
-					Album=$( cat $dirshm/webradio/$covername 2> /dev/null )
+					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
 		fi

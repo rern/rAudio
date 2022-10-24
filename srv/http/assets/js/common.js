@@ -350,25 +350,25 @@ function info( json ) {
 		} );
 	}
 	
+	if ( O.tab ) {
+		$( '#infoTab' ).remove();
+		htmltab = '<div id="infoTab">';
+		O.tab.forEach( function( l ) {
+			htmltab += '<a>'+ l +'</a>';
+		} );
+		htmltab += '</div>';
+		$( '#infoTopBg' ).after( htmltab );
+		$( '#infoTab a' ).click( function() {
+			if ( !$( this ).hasClass( 'active' ) ) O.tabfunction[ $( this ).index() ]();
+		} );
+		$( '#infoTab a' )
+			.css( 'width', 100 / O.tab.length +'%' )
+			.eq( O.tabactive ).addClass( 'active' );
+	}
 	if ( O.content ) {
 		// custom html content
 		var htmlcontent = O.content;
 	} else {
-		if ( O.tab ) {
-			$( '#infoTab' ).remove();
-			htmltab = '<div id="infoTab">';
-			O.tab.forEach( function( l ) {
-				htmltab += '<a>'+ l +'</a>';
-			} );
-			htmltab += '</div>';
-			$( '#infoTopBg' ).after( htmltab );
-			$( '#infoTab a' ).click( function() {
-				if ( !$( this ).hasClass( 'active' ) ) O.tabfunction[ $( this ).index() ]();
-			} );
-			$( '#infoTab a' )
-				.css( 'width', 100 / O.tab.length +'%' )
-				.eq( O.tabactive ).addClass( 'active' );
-		}
 		var htmls = {}
 		if ( O.message ) {
 			htmls.message = '<div class="infomessage"';

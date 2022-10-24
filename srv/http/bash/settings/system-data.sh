@@ -49,7 +49,7 @@ fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
 version=$( < $dirsystem/version )
 system="\
-rAudio $( cat $diraddons/r$version 2> /dev/null )<br>\
+rAudio $( getContent $diraddons/r$version )<br>\
 $( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
 $rpimodel<br>\
 $soc<br>\
@@ -190,8 +190,8 @@ fi
 
 data+='
   "page"             : "system"
-, "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-, "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+, "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
+, "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
@@ -203,7 +203,7 @@ data+='
 , "lcdcharaddr"      : '$i2caddress'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
-, "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
+, "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "nfsserver"        : '$( isactive nfs-server )'

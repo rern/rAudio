@@ -13,7 +13,7 @@ dirscrobble=$dirsystem/scrobble.conf
 for key in airplay bluetooth spotify upnp notify; do
 	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
 done
-scrobbleconf+='"'$( cat $dirscrobble/user 2> /dev/null )'", ""'
+scrobbleconf+='"'$( getContent $dirscrobble/user )'", ""'
 
 data+='
   "page"             : "features"
@@ -40,7 +40,7 @@ data+='
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
-, "stoptimerconf"    : '$( cat $dirshm/stoptimer 2> /dev/null || echo [ false, false ] )
+, "stoptimerconf"    : '$( [[ -e $dirshm/stoptimer ]] && cat $dirshm/stoptimer || echo [ false, false ] )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'

@@ -60,7 +60,7 @@ elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 else # sshpass add clientip from connected client
 	clientip=$1
 	iplist="\
-$( cat $fileclientip 2> /dev/null )
+$( getContent $fileclientip )
 $clientip"
 	echo "$iplist" | awk NF | sort -u > $fileclientip
 fi
