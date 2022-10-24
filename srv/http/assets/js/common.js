@@ -513,7 +513,7 @@ function info( json ) {
 		} else {
 			O.boxW = 230;
 		}
-		$( '#infoContent' ).find( 'input:text, input:password, textarea select' ).parent().css( 'width', O.boxW );
+		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', O.boxW );
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
@@ -674,8 +674,8 @@ function selectricRender() {
 	$( 'select' ).each( function() {
 		if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
 	} );
-	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
-/*	$( '.selectric-items' ).css( 'min-width', O.boxW );*/
+//	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
+//	$( '.selectric-items' ).css( 'min-width', O.boxW );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
 function setButtonWidth() {

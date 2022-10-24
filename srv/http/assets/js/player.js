@@ -370,13 +370,6 @@ function infoSoxr( quality ) {
 		, values       : custom ? G.soxrcustomconf : G.soxrconf
 		, checkblank   : 1
 		, checkchanged : G.soxr && quality === G.soxrquality
-		, beforeshow   : function() {
-			if ( custom ) {
-				var $extra = $( '#infoContent tr' ).last();
-				$extra.find( '.selectric, .selectric-wrapper' ).css( 'width', '100%' );
-				$extra.find( '.selectric-items' ).css( 'min-width', '100%' );
-			}
-		}
 		, boxwidth     : custom ? 85 : 180
 		, cancel       : function() {
 			$( '#soxr' ).prop( 'checked', G.soxr );

@@ -221,7 +221,7 @@ HTML
  • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  • Windows: $fileexplorer
  
-(for better performance: | Server rAudio I^rserver^I | )
+(For even better performance: | Server rAudio I^rserver^I | )
 HTML
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
