@@ -16,7 +16,7 @@ if [[ $1 == on ]]; then
 	$dirsettings/player-data.sh pushrefresh
 	exit
 	
-elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
+elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
 		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
@@ -34,7 +34,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		systemctl restart mpd
 		$dirsettings/player-data.sh pushrefresh
 	else
-		[[ $1 == ejectwithicon ]] && eject
+		[[ $1 == ejecticonclick ]] && eject
 		( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	fi
 	exit

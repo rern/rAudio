@@ -620,7 +620,7 @@ $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
 		, okcolor : red
 		, ok      : function() {
-			bash( '/srv/http/bash/audiocd.sh ejectwithicon' );
+			bash( '/srv/http/bash/audiocd.sh ejecticonclick' );
 		}
 	} );
 } );
