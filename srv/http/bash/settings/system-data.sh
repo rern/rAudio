@@ -55,13 +55,10 @@ $soccpu"
 
 if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
+		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
-		soundprofileconf="[ \
-$( sysctl vm.swappiness | awk '{print $NF}'  ), \
-$( ifconfig eth0 | awk '/mtu/ {print $NF}' ), \
-$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
-]"
+		mtu_txq=( $( ifconfig eth0 | sed -n '/mtu\|txqueuelen/ {s/.*mtu \|.*txqueuelen \| *(.*//g;p}' ) )
+		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f 3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
 	fi
 fi
 
@@ -200,7 +197,7 @@ data+='
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
-, "soundprofileconf" : '$soundprofileconf'
+, "soundprofileconf" : ['$soundprofileconf']
 , "status"           : "'$status'"
 , "startup"          : '$( [[ $startup ]] && echo true )'
 , "system"           : "'$system'"
