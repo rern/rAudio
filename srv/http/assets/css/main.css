@@ -1419,13 +1419,23 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	margin-left: 15px;
 }
+#button-coverart::after {
+	content: '\f528';
+	font-family: rern;
+	position: relative;
+	margin-left: -32px;
+	font-size: 26px;
+}
+#button-coverart.btnimg::after {
+	margin-left: -10px;
+}
 #button-coverart img {
-	position: absolute;
-	left: 13px;
-	top: 13px;
-	width: 14px;
+	position: relative;
+	left: 10px;
+	width: 18px;
 	border: 1px solid hsl(0,0%,30%);
 }
+.btntitle { margin-left: 20px }
 #mode-title,
 .pl-title {
 	font-size: 24px;
@@ -2225,8 +2235,7 @@ li.active .li2 bl {
 		}
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
-		.button-webradio-new,
-		.button-dab-refresh { margin-left: -10px }
+		.btntitle { margin-left: 0 }
 	}
 	@media ( max-width: 400px ) {
 		#button-settings { right: 10px }

@@ -204,8 +204,8 @@ input::-moz-focus-inner {
 .fa-power::before { content: '\f520' }
 .fa-previous::before { content: '\f501' }
 .fa-radiofrance::before { content: '\f586' }
-.fa-radioparadise::before {content: '\f593'; position: absolute; color: var( --cgl ); }
-.fa-radioparadise::after {content: '\f594'; position: relative; }
+.fa-radioparadise::before { content: '\f593'; position: absolute; color: var( --cgl ); }
+.fa-radioparadise::after { content: '\f594'; position: relative; }
 .fa-random::before { content: '\f512' }
 .fa-raudiobox::before { content: '\f53B' }
 .fa-rserver::before { content: '\f53C' }

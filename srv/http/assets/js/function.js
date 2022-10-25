@@ -1089,16 +1089,21 @@ function renderLibraryList( data ) {
 		.toggleClass( 'back-left', G.display.backonleft )
 		.toggleClass( 'hide', data.modetitle === 'search' );
 	$( '#lib-path .lipath' ).text( data.path );
+	var root = data.modetitle.toLowerCase() === G.mode;
+	var modetitle = !root ? data.modetitle : data.modetitle
+												.replace( 'MARTIST', 'M ARTIST' )
+												.replace( 'BRADIO', 'B RADIO' );
+	var htmlmodetitle = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
 	if ( 'count' in data && G.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
 		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
+		var htmlpath = htmlmodetitle;
 		$( '#lib-path .lipath' ).empty();
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
 	} else if ( ![ 'sd', 'nas', 'usb', 'dabradio', 'webradio' ].includes( G.mode ) ) {
-		var htmlpath = '<i class="fa fa-'+ G.mode +'"></i> <span id="mode-title"></span>';
+		var htmlpath = htmlmodetitle;
 		$( '#button-lib-search' ).addClass( 'hide' );
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir = data.path.split( '/' );
@@ -1113,24 +1118,18 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	var root = data.modetitle.toLowerCase() === G.mode;
-	if ( G.mode === 'webradio' ) {
-		htmlpath += '&emsp;<i class="button-webradio-new fa fa-plus-circle"></i>';
-	} else if ( G.mode === 'dabradio' ) {
-		htmlpath += root ? '&emsp;<i class="button-dab-refresh fa fa-refresh"></i>' : '';
+	if ( G.mode === 'album' ) {
+		htmlpath += '<span class="btntitle" id="button-coverart"><i class="fa fa-coverart"></i></span>';
+	} else if ( G.mode === 'webradio' ) {
+		htmlpath += '<i class="btntitle button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'latest' ) {
-		htmlpath += '&emsp;<i class="button-latest-clear fa fa-minus-circle"></i>';
+		htmlpath += '<i class="btntitle button-latest-clear fa fa-minus-circle"></i>';
+	} else if ( G.mode === 'dabradio' ) {
+		htmlpath += root ? '<i class="btntitle button-dab-refresh fa fa-refresh"></i>' : '';
 	}
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	var modetitle = !root ? data.modetitle : data.modetitle
-												.replace( 'MARTIST', 'M ARTIST' )
-												.replace( 'BRADIO', 'B RADIO' );
-	$( '#mode-title' )
-		.toggleClass( 'spaced', root )
-		.text( modetitle );
-	
 	if ( !data.html ) return // empty radio
 	
 	
@@ -1144,7 +1143,9 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-				$( '#lib-breadcrumbs' ).append( '<span id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"><i class="fa fa-refresh-l"></i></span>' );
+				$( '#button-coverart' )
+					.html( '<img src="'+ $( this ).attr( 'src' ) +'">' )
+					.addClass( 'btnimg' );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
