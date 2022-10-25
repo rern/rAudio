@@ -56,7 +56,7 @@ fi
 
 
 # 20220916
-if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
+if (( $( wc -l < $dirmpd/counts ) == 1 )); then
 	echo '{
   "playlists" : '$( ls -1 $dirplaylists | wc -l )'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
@@ -91,13 +91,12 @@ dirmpdconf=$dirdata/mpdconf
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
-sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
-mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf &> /dev/null
+[[ -e $dirsystem/custom-global ]] && mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf
 if [[ -e $dirsystem/soxr.conf ]]; then
 	echo "\
 resampler {
 	plugin          \"soxr\"
-$( cat $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
+$( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
 if [[ ! -e $dirshm/mixernone || $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]; then
 	if grep -q quality.*custom /etc/mpd.conf; then
@@ -111,16 +110,16 @@ fi
 
 grep -q auto_update /etc/mpd.conf && linkConf autoupdate
 if grep -q audio_buffer /etc/mpd.conf; then
-	echo 'audio_buffer_size  "'$( cat $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	echo 'audio_buffer_size  "'$( < $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
 	linkConf buffer
 fi
 if grep -q output_buffer /etc/mpd.conf; then
-	echo 'max_output_buffer_size  "'$( cat $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+	echo 'max_output_buffer_size  "'$( < $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
 	linkConf outputbuffer
 fi
 grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain  "'$( cat $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
+	echo 'replaygain  "'$( < $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
 	linkConf replaygain
 fi
 
