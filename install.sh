@@ -87,7 +87,7 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
-dirmpdconf=$dirdata/mpdconf/mpd.conf
+dirmpdconf=$dirdata/mpdconf
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
