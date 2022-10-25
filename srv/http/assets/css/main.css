@@ -2225,6 +2225,8 @@ li.active .li2 bl {
 		}
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
+		.button-webradio-new,
+		.button-dab-refresh { margin-left: -10px }
 	}
 	@media ( max-width: 400px ) {
 		#button-settings { right: 10px }
