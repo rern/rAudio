@@ -87,10 +87,10 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
+dirmpdconf=$dirdata/mpdconf/mpd.conf
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
-dirmpdconf=$dirdata/mpdconf/mpd.conf
 sed -i 's/On-board -/On-board/' $dirsystem/audio-output &> /dev/null
 mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf &> /dev/null
 if [[ -e $dirsystem/soxr.conf ]]; then
