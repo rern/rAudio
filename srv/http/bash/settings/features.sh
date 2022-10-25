@@ -114,8 +114,8 @@ equalizer )
 	pushSubmenu equalizer $enabled
 	;;
 hostapdget )
-	hostapdip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	hostapdpwd=$( awk -F'=' '/^#*wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf | sed 's/"/\\"/g' )
+	hostapdip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
+	hostapdpwd=$( sed -E -n '/^wpa_pass/ {s/.*=(.*)/\1/; s/"/\\"/; p}' /etc/hostapd/hostapd.conf )
 	echo '[ "'$hostapdip'","'$hostapdpwd'" ]'
 	;;
 hostapd )

@@ -13,8 +13,14 @@ addonsListGet() {
 	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 }
+equalizerAmixer() { # sudo - mixer equal is user dependent
+	sudo -u mpd amixer -MD equal contents \
+					| grep ': values' \
+					| cut -d, -f2 \
+					| xargs
+}
 equalizerGet() { # sudo - mixer equal is user dependent
-	val=$( sudo -u mpd amixer -MD equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	val=$( equalizerAmixer )
 	filepresets=$dirsystem/equalizer.presets
 	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
@@ -161,7 +167,8 @@ plAddRandom() {
 plLengthSong() {
 	readarray -t status <<< $( { echo status; sleep 0.05; } \
 										| telnet 127.0.0.1 6600 2> /dev/null \
-										| awk '/^playlistlength:|^song:/ {print $NF}' )
+										| grep -E '^playlistlength:|^song:' \
+										| cut -d' ' -f2 )
 	total=${status[0]}
 	pos=$(( ${status[1]} + 1 ))
 	tail=$(( total - pos ))
@@ -241,7 +248,7 @@ volumeGet() {
 	if [[ -e $dirshm/btreceiver ]]; then
 		control=$( < $dirshm/btreceiver )
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			volume=$( amixer -MD bluealsa 2> /dev/null | sed -E -n '/%.*dB/ {s/.*\[(.*)%.*/\1/;p}' )
 			[[ $volume ]] && break
 			sleep 1
 		done
@@ -660,7 +667,7 @@ equalizer )
 			sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
-	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	val=$( equalizerAmixer )
 	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
 	equalizerGet pushstream
 	;;
