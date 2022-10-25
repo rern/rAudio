@@ -107,12 +107,14 @@ if [[ $usb ]]; then
 										| tr -d -c 0-9 )
 	done
 fi
-nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
+nas=$( grep '/mnt/MPD/NAS\|/srv/http/data' /etc/fstab | tr -s ' ' )
 if [[ $nas ]]; then
-	readarray -t nas <<< "$nas"
+	readarray -t nas <<< $( cut -d' ' -f1-2 <<< "$nas" | sort )
 	for line in "${nas[@]}"; do
-		source=$( cut -d' ' -f1 <<< $line | sed 's/\\040/ /g' )
-		mountpoint=$( cut -d' ' -f2 <<< $line | sed 's/\\040/ /g' )
+		source=${line/ *}
+		source=${source//\\040/ }
+		mountpoint=${line/* }
+		mountpoint=${mountpoint//\\040/ }
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
