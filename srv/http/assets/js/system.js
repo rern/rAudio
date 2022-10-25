@@ -973,7 +973,7 @@ function infoMount( values ) {
 				if ( error ) {
 					info( {
 						  icon    : 'networks'
-						, title   : shareddata ? 'Shared Data' : 'Mount Share'
+						, title   : shareddata ? 'Shared Data' : 'Add Network Storage'
 						, message : error
 						, ok      : function() {
 							setTimeout( function() {
@@ -989,7 +989,7 @@ function infoMount( values ) {
 			if ( shareddata ) {
 				notify( 'Shared Data', 'Enable ...', 'networks' );
 			} else {
-				notify( 'Network Mount', 'Mount ...', 'networks' );
+				notify( 'Network Storage', 'Add ...', 'networks' );
 			}
 		}
 	} );

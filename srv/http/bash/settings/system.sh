@@ -552,16 +552,22 @@ mount )
 	fstab="\
 $( < /etc/fstab )
 ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
+	mv /etc/fstab{,.backup}
 	echo "$fstab" | column -t > /etc/fstab
 	systemctl daemon-reload
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? != 0 ]]; then
-		fstab=$( grep -v "${mountpoint// /\\040}" /etc/fstab )
-		echo "$fstab" | column -t > /etc/fstab
+		mv -f /etc/fstab{.backup,}
 		rmdir "$mountpoint"
 		systemctl daemon-reload
-		echo "Mount <code>$source</code> failed:<br>"$( sed -n '1 {s/.*: //;p}' <<< "$std" )
+		echo "\
+Mount failed:
+<br><code>$source</code>
+<br>$( sed -n '1 {s/.*: //;p}' <<< "$std" )"
 		exit
+		
+	else
+		rm /etc/fstab.backup
 	fi
 	
 	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
