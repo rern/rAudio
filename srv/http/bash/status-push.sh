@@ -43,7 +43,7 @@ fi
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if [[ -e $dirsystem/onwhileplay ]]; then
-	[[ ! $state ]] && state=$( awk -F'"' '/^state/ {print $2}' $dirshm/status ) # $1 == statusradio
+	[[ ! $state ]] && state=$( grep ^state $dirshm/status | cut -d'"' -f2 ) # $1 == statusradio
 	export DISPLAY=:0
 	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
