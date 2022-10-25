@@ -23,16 +23,17 @@ if [[ ! $aplay ]]; then
 fi
 
 getControls() {
-	amixer=$( amixer -c $1 scontents \
-				| grep -A1 ^Simple \
-				| sed 's/^\s*Cap.*: /^/' \
-				| tr -d '\n' \
-				| sed 's/--/\n/g' )
+	amixer=$( amixer -c $1 scontents )
 	[[ ! $amixer ]] && controls= && return
 	
+	amixer=$( grep -A1 ^Simple <<< "$amixer" \
+				| sed 's/^\s*Cap.*: /^/' \
+				| tr -d '\n' \
+				| sed 's/--/\n/g' \
+				| grep -v "'Mic'" )
 	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< "$amixer" )
 	[[ ! $controls ]] && controls=$( grep volume <<< "$amixer" )
-	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< "$controls" | grep -v Mic )
+	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< "$controls" )
 }
 
 rm -f $dirshm/nosound
@@ -60,7 +61,7 @@ for card in $cards; do
 		if [[ $aplayname == $audioaplayname ]]; then
 			name=$( < $dirsystem/audio-output )
 		else
-			name=$( sed 's/bcm2835/On-board/' <<< $aplayname )
+			name=${aplayname/bcm2835/On-board}
 		fi
 		[[ -e "$dirsystem/mixertype-$aplayname" ]] && mixertype=$( < "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
 		getControls $card
