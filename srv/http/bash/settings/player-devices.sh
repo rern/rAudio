@@ -30,13 +30,9 @@ getControls() {
 				| sed 's/--/\n/g' )
 	[[ ! $amixer ]] && controls= && return
 	
-	controls=$( echo "$amixer" \
-					| grep -E 'volume.*pswitch|Master.*volume' \
-					| cut -d"'" -f2 )
-	[[ ! $controls ]] && controls=$( echo "$amixer" \
-										| grep volume \
-										| grep -v Mic \
-										| cut -d"'" -f2 )
+	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< "$amixer" )
+	[[ ! $controls ]] && controls=$( grep volume <<< "$amixer" )
+	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< "$controls" | grep -v Mic )
 }
 
 rm -f $dirshm/nosound
@@ -44,8 +40,7 @@ rm -f $dirshm/nosound
 
 [[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
 
-cards=$( echo "$aplay" \
-			| cut -d: -f1 \
+cards=$( cut -d: -f1 <<< "$aplay" \
 			| sort -u \
 			| sed 's/card //' )
 for card in $cards; do
@@ -53,9 +48,7 @@ for card in $cards; do
 	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
 	card=${hw:3:1}
 	device=${hw: -1}
-	aplayname=$( echo $line \
-					| awk -F'[][]' '{print $2}' \
-					| sed 's/^snd_rpi_//; s/_/-/g' ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+	aplayname=$( sed -E 's/.*\[(.*)],.*/\1/; s/^snd_rpi_//; s/_/-/g' <<< $line ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
 		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
 		devices+=',{
@@ -142,10 +135,7 @@ echo Ahwmixer[i] > $dirshm/amixercontrol
 
 getControls $i
 if [[ $controls ]]; then
-	echo "$controls" \
-		| sort -u \
-		| head -1 \
-		> $dirshm/amixercontrol
+	sort -u <<< "$controls" | head -1 > $dirshm/amixercontrol
 else
 	rm -f $dirshm/amixercontrol
 fi
