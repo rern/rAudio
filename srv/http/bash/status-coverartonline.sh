@@ -11,7 +11,7 @@ arg1=${args[1]}
 type=${args[2]}
 discid=${args[3]}
 
-name=$( echo $artist$arg1 | tr -d ' "`?/#&'"'" )
+name=$( tr -d ' "`?/#&'"'" <<< $artist$arg1 )
 
 ### 1 - lastfm ##################################################
 if [[ $type == webradio ]]; then
@@ -48,7 +48,7 @@ if [[ $image && $image != null ]]; then
 		mbid=$( jq -r .mbid <<< "$album" )
 		if [[ $mbid && $mbid != null ]]; then
 			imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
-			[[ $? == 0 ]] && url=$( echo "$imgdata" | jq -r .images[0].image )
+			[[ $? == 0 ]] && url=$( jq -r .images[0].image <<< "$imgdata" )
 		fi
 	fi
 fi

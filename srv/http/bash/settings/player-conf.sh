@@ -10,7 +10,7 @@
 . /srv/http/bash/common.sh
 usbdac=$1 # from usbdac.rules for player-devices.sh
 
-. $dirsettings/player-devices.sh
+. $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------

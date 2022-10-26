@@ -2,11 +2,13 @@
 
 ### included by < player-conf.sh
 
+if [[ $i != -1 ]]; then # from player-devices.sh
 ########
-asound="\
+	asound="\
 defaults.pcm.card $i
 defaults.ctl.card $i
 "
+fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	dsp=1
 	modprobe snd-aloop
@@ -55,17 +57,18 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		equalizer=1
 		filepresets=$dirsystem/equalizer.presets
 		if [[ $btmixer ]]; then
 			slavepcm=bluealsa
 			filepresets+="-$btmixer"
-		else
+		elif [[ $i != -1 ]]; then
 			slavepcm='"plughw:'$i',0"'
 		fi
 		preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+		if [[ $slavepcm ]]; then
+			equalizer=1
 ########
-		asound+='
+			asound+='
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -77,6 +80,7 @@ pcm.plugequal {
 	type equal
 	slave.pcm '$slavepcm'
 }'
+		fi
 	fi
 fi
 
@@ -103,7 +107,7 @@ else
 	else
 		systemctl stop bluetoothbutton
 	fi
-	[[ $preset ]] && $dirbash/cmd.sh "equalizer
+	[[ $equalizer && $preset  ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
 fi

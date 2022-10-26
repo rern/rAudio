@@ -21,7 +21,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		playlist )
-			if mpc | grep -q '^volume:.*consume: on'; then
+			if mpc | grep -q 'consume: on'; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
 					pushstream playlist $( php /srv/http/mpdplaylist.php current )
 				) &> /dev/null &

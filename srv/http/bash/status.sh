@@ -263,7 +263,7 @@ elif [[ $stream ]]; then
 , "Time"   : "'$duration'"
 , "Title"  : "'$Title'"'
 		if [[ $displaycover ]]; then # fetched coverart
-			covername=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
+			covername=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart=${onlinefile:9}
 		fi
@@ -330,7 +330,7 @@ $radiosampling" > $dirshm/radio
 					Artist=$station
 				fi
 				# fetched coverart
-				covername=$( echo "$Artist${Title/ (*}" | tr -d ' "`?/#&'"'" ) # remove '... (extra tag)'
+				covername=$( tr -d ' "`?/#&'"'" <<< "$Artist${Title/ (*}" ) # remove '... (extra tag)'
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart=${coverfile:9}
@@ -404,12 +404,12 @@ else
 , "Title"  : "'$Title'"'
 fi
 
-samplingfile=$dirshm/sampling/$( echo $file | tr -d ' "`?/#&'"'_.\-" )
+samplingfile=$dirshm/sampling/$( tr -d ' "`?/#&'"'_.\-" <<< $file )
 samplingSave() {
 	if [[ $player != upnp ]]; then
 		echo $sampling > $samplingfile
 		files=$( ls -1t $dirshm/sampling 2> /dev/null )
-		(( $( echo "$files" | wc -l ) > 20 )) && rm -f "$( echo "$files" | tail -1 )"
+		(( $( wc -l <<< "$files" ) > 20 )) && rm -f "$( tail -1 <<< "$files" )"
 	fi
 }
 samplingLine() {
