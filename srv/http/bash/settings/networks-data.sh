@@ -3,7 +3,8 @@
 . /srv/http/bash/common.sh
 
 # bluetooth
-if systemctl -q is-active bluetooth; then
+rfkill | grep -q bluetooth && systemctl -q is-active bluetooth && activebt=1
+if [[ $activebt ]]; then
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
@@ -17,16 +18,15 @@ if systemctl -q is-active bluetooth; then
 }'
 		done
 		listbt="[ ${listbt:1} ]"
-	else
-		listbt=false
+		grep -q '"type" : "Sink"' <<< "$listbt" && btreceiver=true || btreceiver=false
+		grep -q '"connected" : true' <<< "$listbt" && connected=true || connected=false
+		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
+		
+		[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit
 	fi
+else
+	listbt=false
 fi
-
-grep -q '"type" : "Sink"' <<< "$listbt" && btreceiver=true || btreceiver=false
-grep -q '"connected" : true' <<< "$listbt" && connected=true || connected=false
-pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
-
-[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit 
 
 ipeth=$( ifconfig eth0 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
 if [[ $ipeth ]]; then
@@ -100,7 +100,7 @@ fi
 
 data='
   "page"       : "networks"
-, "activebt"   : '$( isactive bluetooth )'
+, "activebt"   : '$activebt'
 , "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
 , "activewlan" : '$( rfkill -no type | grep -q wlan && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
