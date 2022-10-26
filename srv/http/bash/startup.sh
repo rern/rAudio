@@ -51,10 +51,12 @@ connectedCheck() {
 	done
 }
 
-echo mpd > $dirshm/player
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
+
+echo mpd > $dirshm/player
+echo 0 > $dirsystem/volumemute
 touch $dirshm/status
 
 lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan # initial status
@@ -153,3 +155,5 @@ fi
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify "$restorefailed" restore 10000
 fi
+
+touch $dirshm/startupdone

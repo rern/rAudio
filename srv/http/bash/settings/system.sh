@@ -1037,7 +1037,8 @@ timezone )
 	pushRefresh
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ -e $dirshm/audiocd ]] || ! systemctl -q is-active mpd && exit # is-active mpd - suppress on startup
+	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
+	[[ -e $dirshm/audiocd ]] && exit
 	
 	if [[ ${args[0]} == usbconnect ]]; then
 		action=Ready

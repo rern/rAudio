@@ -38,13 +38,13 @@ else
 		control=$( cut -d^ -f2 <<< $ccv ) # keep trailing space if any
 		volume=${ccv/*^}
 	fi
-
+	mpc | grep -q 'consume: on' && consume=true
 ########
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
 , "card"         : '$card'
-, "consume"      : '$( mpc | grep -q 'consume: on' && echo true )'
+, "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
 , "file"         : ""
@@ -60,7 +60,7 @@ else
 , "updating_db"  : '$( exists $dirmpd/updating )'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$( [[ -e $dirsystem/volumemute ]] && cat $dirsystem/volumemute || echo 0 )'
+, "volumemute"   : '$( getContent $dirsystem/volumemute )'
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
@@ -69,6 +69,8 @@ if [[ $1 == withdisplay ]]; then
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
 	fi
+	systemctl -q is-active rtsp-simple-server && dabradio=true
+	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	display=$( head -n -1 $dirsystem/display )
 	[[ -e $filesharedip ]] && display+='
 , "sd"  : false
@@ -77,13 +79,13 @@ if [[ $1 == withdisplay ]]; then
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "color"            : "'$( getContent $dirsystem/color )'"
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "lock"             : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "screenoff"        : '$( ! grep -q screenoff=0 $dirsystem/localbrowser.conf 2> /dev/null && echo true )'
+, "screenoff"        : '$screenoff'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( exists $dirshm/snapclientactive )'
 , "volumenone"       : '$volumenone'
@@ -240,7 +242,7 @@ if [[ $fileheader == cdda ]]; then
 		Time=${audiocd[3]}
 		if [[ $displaycover ]]; then
 			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
-			[[ $coverfile ]] && coverart=/data/audiocd/$discid.$( date +%s ).${coverfile/*.}
+			[[ $coverfile ]] && coverart=/data/audiocd/$discid.$date.${coverfile/*.}
 		fi
 	else
 		[[ $state == stop ]] && Time=0
@@ -347,6 +349,7 @@ $radiosampling" > $dirshm/radio
 				type=gif
 			fi
 			if [[ $type ]]; then
+				filenoext=${filenoext/\#/%23}
 				if [[ $urlname == *\?* ]]; then # cannot bust: url with ?param=...
 					stationcover=${filenoext//\?/%3F}.$type?v=$date
 				else
@@ -359,7 +362,7 @@ $radiosampling" > $dirshm/radio
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
-, "stationcover" : "'${stationcover/\#/%23}'"
+, "stationcover" : "'$stationcover'"
 , "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"

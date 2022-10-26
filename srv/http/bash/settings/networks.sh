@@ -206,24 +206,24 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	pushRefresh
 	;;
-usbbluetoothon )
+usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
-	! systemctl -q is-active mpd && exit # suppress on startup
+	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
 	
 	sleep 3
 	pushRefresh features
 	pushRefresh networks pushbt
 	pushstreamNotify 'USB Bluetooth' Ready bluetooth
 	;;
-usbbluetoothoff )
+usbbluetoothoff ) # from usbbluetooth.rules
 	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
 	pushstreamNotify 'USB Bluetooth' Removed bluetooth
 	pushRefresh features
 	pushRefresh networks pushbt
 	;;
 usbwifion )
-	wlandev=$( wlanDevice )
-	! systemctl -q is-active mpd && exit # suppress on startup
+	wlanDevice
+	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
 	
 	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
 	pushRefresh
