@@ -137,7 +137,7 @@ function list2JSON( list ) {
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
-					bash( 'systemctl restart mpd', function() {
+					bash( '/srv/http/bash/settings/player-conf.sh', function() {
 						refreshData();
 					} );
 					notify( 'MPD', 'Start ...', 'mpd' );
