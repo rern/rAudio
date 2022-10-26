@@ -148,7 +148,9 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 
-if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
+if ifconfig eth0 | grep -q inet.*broadcast \
+	|| (( $( grep -c ^w /proc/net/wireless ) > 1 )) \
+	|| ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
 	rmmod brcmfmac &> /dev/null
 fi
 
