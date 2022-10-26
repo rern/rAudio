@@ -125,13 +125,6 @@ webradioCopyBackup() {
 case ${args[0]} in
 
 bluetooth )
-	sleep 3
-	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
-	bluetoothctl discoverable $yesno &
-	bluetoothctl discoverable-timeout 0 &
-	bluetoothctl pairable yes &
-	;;
-bluetooth )
 	if [[ ${args[1]} == true ]]; then
 		btdiscoverable=${args[2]}
 		btformat=${args[3]}
@@ -154,6 +147,7 @@ bluetooth )
 		[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
+		echo xxx
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 		pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
 		if ! rfkill -no type | grep -q bluetooth; then
@@ -164,6 +158,13 @@ bluetooth )
 		fi
 	fi
 	pushRefresh
+	;;
+bluetoothstart )
+	sleep 3
+	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
+	bluetoothctl discoverable $yesno &
+	bluetoothctl discoverable-timeout 0 &
+	bluetoothctl pairable yes &
 	;;
 bluetoothstatus )
 	if rfkill -no type | grep -q bluetooth; then

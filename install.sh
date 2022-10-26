@@ -5,6 +5,12 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221021
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if grep -q bluetooth$ $file; then
+	sed -i 's/bluetooth$/&start/' $file
+	systemctl daemon-reload
+fi
+
 [[ ! -e /lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8} # for upgraded snapcast
 
 if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
