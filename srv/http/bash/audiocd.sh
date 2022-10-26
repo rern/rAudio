@@ -20,7 +20,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	if [[ $tracks ]]; then
 		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
-		tracktop=$( echo "$tracks" | head -1 )
+		tracktop=$( head -1 <<< "$tracks" )
 		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
 			mpc -q play $(( tracktop - 1 ))
@@ -54,10 +54,10 @@ discid=${cddiscid[0]}
 if [[ ! -e $diraudiocd/$discid ]]; then
 	pushstreamNotifyBlink 'Audio CD' 'Search CD data ...' audiocd
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
-	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
+	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
-	code=$( echo "$query" | head -c 3 )
+	code=$( head -c 3 <<< "$query" )
 	if (( $code == 210 )); then  # exact match
 	  genre_id=$( sed -n 2p <<< "$query" | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then

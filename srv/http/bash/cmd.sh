@@ -567,7 +567,7 @@ $id" &> /dev/null &
 		exit
 	fi
 	
-	covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
+	covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 	rm -f "$coverfile" \
 		"$dir/coverart".* \
 		"$dir/thumb".* \
@@ -964,7 +964,7 @@ mpcsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	echo "$list" | awk NF | mpc -q add
+	awk NF <<< "$list" | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;

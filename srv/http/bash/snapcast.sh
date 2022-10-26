@@ -58,5 +58,5 @@ else # sshpass add clientip from connected client
 	iplist="\
 $( getContent $fileclientip )
 $clientip"
-	echo "$iplist" | awk NF | sort -u > $fileclientip
+	awk NF <<< "$iplist" | sort -u > $fileclientip
 fi

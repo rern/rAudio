@@ -7,10 +7,10 @@ data='
   "page"    : "relays"
 , "pin"     : '$pin'
 , "name"    : '$name'
-, "on"      : [ '$( echo ${on[@]} | tr ' ' , )' ]
-, "ond"     : [ '$( echo ${ond[@]} | tr ' ' , )' ]
-, "off"     : [ '$( echo ${off[@]} | tr ' ' , )' ]
-, "offd"    : [ '$( echo ${offd[@]} | tr ' ' , )' ]
+, "on"      : [ '$( tr ' ' , <<< ${on[@]} )' ]
+, "ond"     : [ '$( tr ' ' , <<< ${ond[@]} )' ]
+, "off"     : [ '$( tr ' ' , <<< ${off[@]} )' ]
+, "offd"    : [ '$( tr ' ' , <<< ${offd[@]} )' ]
 , "timer"   : '$timer'
 , "enabled" : '$( [[ -e $dirsystem/relays ]] && echo true || echo false )
 

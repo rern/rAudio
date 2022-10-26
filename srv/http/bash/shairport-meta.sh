@@ -28,7 +28,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ ! $code ]] && continue
 	
 	##### value - base64 decode
-	base64=$( echo ${line/<*} | tr -d '\000' ) # remove tags and null bytes
+	base64=$( tr -d '\000' <<< ${line/<*} ) # remove tags and null bytes
 	# null or not base64 string - reset code= > [next line]
 	if [[ ! $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=

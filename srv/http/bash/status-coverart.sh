@@ -6,7 +6,7 @@ album=${args[1]}
 file=${args[2]}
 type=${args[3]}
 date=$( date +%s )
-covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
+covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 filename=$( basename "$file" )
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" )
@@ -15,7 +15,7 @@ path="/mnt/MPD/$file"
 localfile=/srv/http/data/shm/local/$covername
 [[ -f $localfile ]] && cat $localfile && exit
 # found embedded
-embeddedname=$( echo ${filename%.*} | tr -d ' "`?/#&'"'" )
+embeddedname=$( tr -d ' "`?/#&'"'" <<< ${filename%.*} )
 embeddedfile=/srv/http/data/shm/embedded/$embeddedname.jpg
 [[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online

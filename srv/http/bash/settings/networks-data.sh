@@ -13,7 +13,7 @@ if systemctl -q is-active bluetooth; then
   "mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
 , "connected" : '$( grep -q 'Connected: yes' <<< "$info" && echo true || echo false )'
-, "type"      : "'$( echo "$info" | awk '/UUID: Audio/ {print $3}' )'"
+, "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< "$info" )'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"

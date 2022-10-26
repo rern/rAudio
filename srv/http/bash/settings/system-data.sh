@@ -156,7 +156,7 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs
 	else
 		vals=$( sed 's/"gpio"/& 39 "PCF8574"/' <<< "$vals" )
 	fi
-	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
+	lcdcharconf='[ '$( tr ' ' , <<< $vals )' ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )

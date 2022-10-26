@@ -255,7 +255,7 @@ logindisable )
 multiraudio )
 	if [[ ${args[1]} == true ]]; then
 		data=$( printf "%s\n" "${args[@]:2}" | awk NF )
-		if [[ $( echo "$data" | wc -l ) > 2 ]]; then
+		if [[ $( wc -l <<< "$data" ) > 2 ]]; then
 			touch $dirsystem/multiraudio
 			echo "$data" > $dirsystem/multiraudio.conf
 			ip=$( ipGet )
@@ -289,7 +289,7 @@ nfsserver )
 			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
 			ln -s "$path" "$dirnas/$name"
 		done
-		echo "$list" | column -t > /etc/exports
+		column -t <<< "$list" > /etc/exports
 		echo $ip > $filesharedip
 		cp -f $dirsystem/{display,order} $dirbackup
 		touch $dirshareddata/system/order # in case not exist
@@ -458,11 +458,11 @@ spotifytoken )
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q error <<< "$tokens"; then
-		spotifyReset "Error: $( echo $tokens | jq -r .error )"
+		spotifyReset "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi
 	
-	tokens=( $( echo $tokens | jq -r .refresh_token,.access_token ) )
+	tokens=( $( jq -r .refresh_token,.access_token <<< $tokens ) )
 	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotify
 	echo ${tokens[1]} > $dirshm/spotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire

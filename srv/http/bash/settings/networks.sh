@@ -188,10 +188,10 @@ profileconnect )
 	;;
 profileget )
 	netctl=$( < "/etc/netctl/${args[1]}" )
-	password=$( grep ^Key "$netctl" | cut -d= -f2- | tr -d '"' )
-	static=$( grep -q ^IP=dhcp <<< "$netctl" && echo false || echo true )
-	hidden=$( grep -q ^Hidden <<< "$netctl" && echo true || echo false )
-	wep=$( [[ $( grep ^Security <<< "$netctl" | cut -d= -f2 ) == wep ]] && echo true || echo false )
+	password=$( grep ^Key <<< "$netctl" | cut -d= -f2- | tr -d '"' )
+	grep -q ^IP=dhcp <<< "$netctl" && static=false || static=true
+	grep -q ^Hidden <<< "$netctl" && hidden=true || hidden=false
+	grep -q ^Security=wep <<< "$netctl" && wep=true || wep=false
 	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
 	;;
 profileremove )

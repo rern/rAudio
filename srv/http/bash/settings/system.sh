@@ -65,7 +65,7 @@ sharedDataIPlist() {
 			list+=$'\n'$ip
 		fi
 	done
-	echo "$list" | sort -u > $filesharedip
+	sort -u <<< "$list" > $filesharedip
 }
 sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
@@ -286,7 +286,7 @@ datarestore )
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 	if [[ $ipserver ]]; then
 		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
-		echo "$fstab" | column -t > /etc/fstab
+		column -t <<< "$fstab" > /etc/fstab
 	fi
 	readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
@@ -433,7 +433,7 @@ inf=gpio
 pin_rs=${args[7]}
 pin_rw=${args[8]}
 pin_e=${args[9]}
-pins_data=[$( echo ${args[@]:10:4} | tr ' ' , )]"
+pins_data=[$( tr ' ' , <<< ${args[@]:10:4} )]"
 		fi
 		conf+="
 backlight=${args[14]^}"
@@ -553,7 +553,7 @@ mount )
 $( < /etc/fstab )
 ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
 	mv /etc/fstab{,.backup}
-	echo "$fstab" | column -t > /etc/fstab
+	column -t <<< "$fstab" > /etc/fstab
 	systemctl daemon-reload
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? != 0 ]]; then
@@ -582,7 +582,7 @@ mountforget )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
-	echo "$fstab" | column -t > /etc/fstab
+	column -t <<< "$fstab" > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
@@ -873,7 +873,7 @@ shareddataconnect )
 		fstab+="
 $ip:${path// /\\040}  ${dir// /\\040}  $options"
 	done
-	echo "$fstab" | column -t > /etc/fstab
+	column -t <<< "$fstab" > /etc/fstab
 	systemctl daemon-reload
 	for dir in "${mountpoints[@]}"; do
 		mount "$dir"
@@ -916,7 +916,7 @@ shareddatadisconnect )
 		umount -l $dirshareddata
 		rmdir $dirshareddata
 	fi
-	echo "$fstab" | column -t > /etc/fstab
+	column -t <<< "$fstab" > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
