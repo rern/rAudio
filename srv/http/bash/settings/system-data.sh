@@ -57,7 +57,7 @@ if ifconfig | grep -q eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
-		mtu_txq=( $( ifconfig eth0 | sed -n '/mtu\|txqueuelen/ {s/.*mtu \|.*txqueuelen \| *(.*//g;p}' ) )
+		mtu_txq=( $( ifconfig eth0 | sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g;p}' ) )
 		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f 3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
 	fi
 fi

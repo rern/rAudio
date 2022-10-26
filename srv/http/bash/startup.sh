@@ -30,10 +30,16 @@ if [[ -e /boot/backup.gz ]]; then
 fi
 
 if [[ -e /boot/wifi && $wlandev ]]; then
-	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
-	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
-	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
-	mv -f /boot/wifi "/etc/netctl/$ssid"
+	wifi=$( sed 's/\r//' /boot/wifi ) # remove windows return chars
+	ssid=$( sed -E -n '/^ESSID/ {s/^.*="*|"$//g;p}' <<< "$wifi" )
+	key=$( sed -E -n '/^Key/ {s/^.*="*|"$//g;p}' <<< "$wifi" )
+	filebootwifi="/etc/netctl/$ssid"
+	cat << EOF > "$filebootwifi"
+Interface="$wlandev"
+$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< "$wifi" )
+ESSID="$( sed 's/"/\\"/g' <<< $ssid )"
+Key="$( sed 's/"/\\"/g' <<< $key )"
+EOF
 	$dirsettings/networks.sh profileconnect$'\n'"$ssid"
 fi
 # ----------------------------------------------------------------------------
@@ -68,6 +74,7 @@ $( basename "$devprofile" )"
 fi
 
 if [[ $connected  ]]; then
+	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
@@ -95,6 +102,8 @@ if [[ $connected  ]]; then
 	elif [[ -e $filesharedip ]]; then # rclient
 		$dirsettings/system.sh shareddataiplist
 	fi
+else
+	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh

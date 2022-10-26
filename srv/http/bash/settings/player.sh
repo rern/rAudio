@@ -10,7 +10,7 @@ readarray -t args <<< "$1"
 
 columnFileOutput() {
 	fileoutput=$dirmpdconf/output.conf
-	conf=$( sed '/{\|}/ d; s/  *"/^"/' $fileoutput | column -t -s^ )
+	conf=$( sed -E '/{$|^}/ d; s/  *"/^"/' $fileoutput | column -t -s^ )
 	echo "\
 audio_output {
 $conf
