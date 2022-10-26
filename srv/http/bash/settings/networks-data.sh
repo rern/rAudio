@@ -102,7 +102,7 @@ data='
   "page"       : "networks"
 , "activebt"   : '$activebt'
 , "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
-, "activewlan" : '$( rfkill -no type | grep -q wlan && echo true )'
+, "activewlan" : '$( rfkill | grep -q wlan && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"

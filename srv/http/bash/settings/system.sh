@@ -139,6 +139,7 @@ bluetooth )
 		if ls -l /sys/class/bluetooth | grep -q serial; then
 			systemctl start bluetooth
 			! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
+			rfkill | grep -q bluetooth && pushstream refresh '{"page":"networks","activebt",true}'
 		else
 			pushReboot Bluetooth
 		fi
@@ -149,7 +150,7 @@ bluetooth )
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 		pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
-		if ! rfkill -no type | grep -q bluetooth; then
+		if ! rfkill | grep -q bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
@@ -166,7 +167,7 @@ bluetoothstart )
 	bluetoothctl pairable yes &
 	;;
 bluetoothstatus )
-	if rfkill -no type | grep -q bluetooth; then
+	if rfkill | grep -q bluetooth; then
 		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
 		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
 	fi
@@ -1095,6 +1096,8 @@ wlan )
 		rmmod brcmfmac &> /dev/null
 	fi
 	pushRefresh
+	rfkill | grep -q wlan && active=true || active=false
+	pushstream refresh '{"page":"networks","activewlan",'$active'}'
 	;;
 	
 esac
