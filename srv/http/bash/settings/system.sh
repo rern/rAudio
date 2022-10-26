@@ -1009,7 +1009,7 @@ systemconfig )
 $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( < /boot/config.txt )
+$( grep -v ^# /boot/config.txt )
 
 <bll># bootloader and firmware</bll>
 $( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
