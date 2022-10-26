@@ -36,8 +36,8 @@ if [[ -e $onlinefile ]]; then
 else
 	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
-[[ ! $Position ]] && elapsed=false || elapsed=$( awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
-[[ ! $Duration ]] && Time=false || Time=$( awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )
+[[ ! $Position ]] && elapsed=false || elapsed=$( awk "BEGIN { printf \"%.0f\", $Position / 1000 }" )
+[[ ! $Duration ]] && Time=false || Time=$( awk "BEGIN { printf \"%.0f\", $Duration / 1000 }" )
 timestamp=$( date +%s%3N )
 
 data='
