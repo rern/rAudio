@@ -104,7 +104,7 @@ if [[ $usb ]]; then
 										| tr -d -c 0-9 )
 	done
 fi
-nas=$( grep '/mnt/MPD/NAS\|/srv/http/data' /etc/fstab | tr -s ' ' )
+nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab | tr -s ' ' )
 if [[ $nas ]]; then
 	readarray -t nas <<< $( cut -d' ' -f1-2 <<< "$nas" | sort )
 	for line in "${nas[@]}"; do
