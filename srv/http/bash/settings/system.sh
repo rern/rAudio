@@ -147,7 +147,6 @@ bluetooth )
 		[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		echo xxx
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 		pushstreamNotify 'On-board Bluetooth' 'Disabled after reboot.' bluetooth
 		if ! rfkill -no type | grep -q bluetooth; then
