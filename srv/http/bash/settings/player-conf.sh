@@ -27,6 +27,7 @@ else
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
 		pushstreamNotify 'Audio Output' "$name" output
+		[[ $$usbdac == remove ]] && sleep 2
 	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
