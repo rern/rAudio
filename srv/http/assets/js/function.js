@@ -402,7 +402,7 @@ function displayPlayback() {
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', !G.display.buttons );
 	if ( G.display.vumeter ) {
 		var aligntop = 'stretch';
-	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
+	} else if ( $( '.btn-group' ).hasClass( 'hide' ) ) {
 		var align = 'center';
 	} else if ( time && volume && ( G.wW < 900 && G.wW > 750 ) || G.wW < 600 ) {
 		var align = 'stretch';
@@ -1160,7 +1160,7 @@ function renderLibraryList( data ) {
 		$( '#lib-list' ).css( 'width', $( '#lib-index' ).length ? '' : '100%' );
 		var pH = G.wH - 80;
 		pH -= G.albumlist ? $( '.coverart' ).height() : 49;
-		if ( $( '#bar-top' ).is( ':hidden' ) ) pH += 40;
+		if ( $( '#bar-top' ).hasClass( 'hide' ) ) pH += 40;
 		$( '#lib-list p' )
 			.removeClass( 'bars-on' )
 			.toggleClass( 'fixedcover', G.display.fixedcover && $( '.licover' ).length === 1 )
@@ -1414,7 +1414,7 @@ function setButtonOptions() {
 	}
 	setButtonUpdateAddons();
 	setButtonUpdating();
-	if ( $( '#volume-knob' ).is( ':hidden' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	if ( $( '#volume-knob' ).hasClass( 'hide' ) && G.status.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 }
 function setButtonUpdateAddons() {
 	if ( G.status.updateaddons ) {
@@ -1432,7 +1432,7 @@ function setButtonUpdateAddons() {
 function setButtonUpdating() {
 	clearInterval( G.intBlinkUpdate );
 	if ( G.status.updating_db ) {
-		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
+		if ( $( '#bar-bottom' ).hasClass( 'hide' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 			var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
@@ -1513,7 +1513,7 @@ function setInfo() {
 		$( '#playericon' ).removeAttr( 'class' );
 		if ( G.status.icon ) $( '#playericon' ).addClass( 'fa fa-'+ G.status.icon );
 	}
-	if ( $( '#time-knob' ).is( ':hidden' ) ) setProgressElapsed();
+	if ( $( '#time-knob' ).hasClass( 'hide' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
 	var wW = document.body.clientWidth;
@@ -1572,7 +1572,7 @@ function setPlaybackBlank() {
 		} );
 		$( '#qrwebui' ).html( qr );
 		$( '.qr' ).removeClass( 'hide' );
-		$( '#coverTR' ).toggleClass( 'empty', $( '#bar-top' ).is( ':hidden' ) );
+		$( '#coverTR' ).toggleClass( 'empty', $( '#bar-top' ).hasClass( 'hide' ) );
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#sampling' ).empty();
 	} else {
@@ -1756,7 +1756,7 @@ function setVolume() {
 	$( '#volume-text' )
 		.text( G.status.volumemute || G.status.volume )
 		.toggleClass( 'bl', mute );
-	if ( $( '#time-knob' ).is( ':hidden' ) ) {
+	if ( $( '#time-knob' ).hasClass( 'hide' ) ) {
 		var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 	}
@@ -1914,7 +1914,7 @@ function volumeColorMute() {
 	$( '#volmute' )
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
-	if ( $( '#volume-knob' ).is( ':hidden' ) ) {
+	if ( $( '#volume-knob' ).hasClass( 'hide' ) ) {
 		var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	}
@@ -1928,7 +1928,7 @@ function volumeColorUnmute() {
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
 }
 function vu() {
-	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).is( ':hidden' ) ) {
+	if ( G.status.state !== 'play' || G.display.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
 		clearInterval( G.intVu );
 		$( '#vuneedle' ).css( 'transform', '' );
 		return

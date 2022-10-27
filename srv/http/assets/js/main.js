@@ -915,7 +915,7 @@ $( '.map' ).click( function( e ) {
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
-		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).is( ':hidden' ) );
+		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).hasClass( 'hide' ) );
 		if ( time || volume ) {
 			$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
