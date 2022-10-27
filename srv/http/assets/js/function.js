@@ -191,7 +191,7 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.wredit' ).toggleClass( 'hide', G.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', G.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
-	var barsvisible = $( '#bar-top' ).is( ':visible' );
+	var barsvisible = !$( '#bar-top' ).hasClass( 'hide' );
 	if ( G.list.licover ) {
 		var menutop = barsvisible ? 310 : 270;
 	} else {
@@ -207,7 +207,7 @@ function contextmenuScroll( $menu, menutop ) {
 		.toggleClass( 'fixed', fixedmenu )
 		.removeClass( 'hide' );
 	var targetB = $menu.offset().top + $menu.height();
-	var topH = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
+	var topH = !$( '#bar-top' ).hasClass( 'hide' ) ? 80 : 40;
 	var wT = $( window ).scrollTop();
 	if ( targetB > ( G.wH - topH + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - G.wH + 42 } );
 }
@@ -378,9 +378,9 @@ function displayPlayback() {
 	var $volume = $( '#volume-knob' );
 	$time.toggleClass( 'hide', !G.display.time );
 	$volume.toggleClass( 'hide', !G.display.volume || G.display.volumenone );
-	var time = $time.is( ':visible' );
+	var time = !$time.hasClass( 'hide' );
 	var cover = G.display.cover;
-	var volume = $volume.is( ':visible' );
+	var volume = !$volume.hasClass( 'hide' );
 	$cover.toggleClass( 'hide', !cover );
 	if ( ( !time || !volume ) && G.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
@@ -613,7 +613,7 @@ function getPlaylist( refresh ) {
 function hideGuide() {
 	if ( G.guide ) {
 		G.guide = 0;
-		var barsvisible = $( '#bar-top' ).is( ':visible' );
+		var barsvisible = !$( '#bar-top' ).hasClass( 'hide' );
 		$( '#coverTR' ).toggleClass( 'empty', !G.status.pllength && !barsvisible && G.status.player === 'mpd' );
 		$( '.map' ).removeClass( 'mapshow' );
 		$( '#bar-bottom' ).removeClass( 'translucent' );
@@ -818,7 +818,7 @@ function lyricsShow( data ) {
 		$( '#lyricsartist' ).text( G.lyricsArtist );
 		$( '#lyricstext' ).html( lyricshtml );
 	}
-	if ( $( '#bar-top' ).is( ':visible' ) ) {
+	if ( !$( '#bar-top' ).hasClass( 'hide' ) ) {
 		$( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
 		$( '#lyrics' ).css( { top: '', height: '' } )
 	} else {
@@ -857,7 +857,7 @@ function mpcSeek( elapsed ) {
 	if ( G.status.state !== 'play' ) $( '#elapsed' ).addClass( 'bl' );
 	$( '#elapsed' ).text( second2HMS( elapsed ) );
 	$( '#total' ).text( second2HMS( G.status.Time ) );
-	if ( G.status.state === 'stop' && $( '#bar-top' ).is( ':visible' ) ) {
+	if ( G.status.state === 'stop' && !$( '#bar-top' ).hasClass( 'hide' ) ) {
 		$( '#playback-controls i' ).removeClass( 'active' );
 		$( '#pause' ).addClass( 'active' );
 		$( '#title' ).addClass( 'gr' );
@@ -1065,7 +1065,7 @@ function renderLibrary() {
 	}
 	$( '#lib-list' ).empty().addClass( 'hide' );
 	$( '#lib-mode-list' )
-		.css( 'padding-top', $( '#bar-top' ).is( ':visible' ) ? '' : 50 )
+		.css( 'padding-top', !$( '#bar-top' ).hasClass( 'hide' ) ? '' : 50 )
 		.removeClass( 'hide' );
 	if ( G.display.order ) orderLibrary();
 	$( 'html, body' ).scrollTop( G.modescrolltop );
@@ -1153,7 +1153,7 @@ function renderLibraryList( data ) {
 			G.albumlist = 0;
 			$( '#lib-list p' )
 				.toggleClass( 'fixedcover', G.display.fixedcover )
-				.toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+				.toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 			$( '#lib-list' ).removeClass( 'hide' );
 			G.color ? colorSet() : setTrackCoverart();
 		}
@@ -1269,7 +1269,7 @@ function renderPlaylist( data ) {
 			G.status.pllength = $( '#pl-list li' ).length;
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
-			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 		} );
 	}
 }
@@ -1282,7 +1282,7 @@ function renderPlaylistList( data ) {
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 	$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
-		$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+		$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 		$( '#pl-savedlist' ).css( 'width', '' );
 		$( '#pl-index' ).html( data.index[ 0 ] );
 		$( '#pl-index1' ).html( data.index[ 1 ] );
@@ -1297,7 +1297,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
 			imageLoad( 'pl-savedlist' );
-			$( '.list p' ).toggleClass( 'bars-on', $( '#bar-top' ).is( ':visible' ) );
+			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 			$( 'html, body' ).scrollTop( 0 );
@@ -1367,7 +1367,7 @@ function setBookmarkEdit() {
 function setButtonControl() {
 	if ( ! G.status.state ) return // suppress on reboot
 	
-	if ( $( '#bar-top' ).is( ':visible' ) ) {
+	if ( !$( '#bar-top' ).hasClass( 'hide' ) ) {
 		var mpd_upnp = [ 'mpd', 'upnp' ].includes( G.status.player );
 		var noprevnext = G.status.pllength < 2 || !mpd_upnp;
 		$( '#playback-controls' ).toggleClass( 'hide', G.status.pllength === 0 && mpd_upnp );
@@ -1384,14 +1384,14 @@ function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapcast' || G.display.snapclientactive );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
-	var timevisible = $( '#time-knob' ).is( ':visible' );
+	var timevisible = !$( '#time-knob' ).hasClass( 'hide' );
 	var prefix = timevisible ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !G.status.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', !G.status.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', !G.status.stoptimer );
 	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', !G.display.snapclientactive );
 	if ( !G.status.stream && G.status.player === 'mpd' ) {
-		if ( $( '#play-group' ).is( ':visible' ) ) {
+		if ( !$( '#play-group' ).hasClass( 'hide' ) ) {
 			$( '#random' ).toggleClass( 'active', G.status.random );
 			$( '#repeat' ).toggleClass( 'active', G.status.repeat );
 			$( '#single' ).toggleClass( 'active', G.status.single );
@@ -1420,7 +1420,7 @@ function setButtonUpdateAddons() {
 	if ( G.status.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( !G.display.bars ) {
-			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
@@ -1433,7 +1433,7 @@ function setButtonUpdating() {
 	clearInterval( G.intBlinkUpdate );
 	if ( G.status.updating_db ) {
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
-			var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+			var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
 			$( '#library, #button-library' ).addClass( 'blink' );
@@ -1605,7 +1605,7 @@ function setPlaylistScroll() {
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) return
 	
-	var litop = $( '#bar-top' ).is( ':visible' ) ? 80 : 40;
+	var litop = !$( '#bar-top' ).hasClass( 'hide' ) ? 80 : 40;
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
@@ -1757,7 +1757,7 @@ function setVolume() {
 		.text( G.status.volumemute || G.status.volume )
 		.toggleClass( 'bl', mute );
 	if ( $( '#time-knob' ).is( ':hidden' ) ) {
-		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', !mute );
 	}
 }
@@ -1915,7 +1915,7 @@ function volumeColorMute() {
 		.removeClass( 'fa-volume' )
 		.addClass( 'fa-mute active' );
 	if ( $( '#volume-knob' ).is( ':hidden' ) ) {
-		var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+		var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	}
 }

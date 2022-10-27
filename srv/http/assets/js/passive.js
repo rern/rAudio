@@ -13,10 +13,10 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		if ( G.librarylist ) {
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) );
+					$( '#lib-list p' ).css( 'min-height', ( !$( '#bar-top' ).hasClass( 'hide' ) ? 40 : 0 ) );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 130 : 90 ));
+					$( '#lib-list p' ).css( 'min-height', G.wH - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 130 : 90 ));
 				}
 			}, 0 );
 		}
@@ -25,7 +25,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', G.wH - ( $( '#bar-top' ).is( ':visible' ) ? 277 : 237 ) );
+				$( '#pl-list p' ).css( 'min-height', G.wH - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 277 : 237 ) );
 			}, 0 );
 		}
 	}
@@ -151,7 +151,7 @@ function psAirplay( data ) {
 	if ( G.playback ) renderPlayback();
 }
 function psBtReceiver( connected ) {
-	var prefix = $( '#time-knob' ).is( ':visible' ) ? 'ti' : 'i';
+	var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {

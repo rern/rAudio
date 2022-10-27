@@ -147,7 +147,7 @@ $( '#button-settings' ).click( function( e ) {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		menuHide();
 		$( '#settings' )
-			.css( 'top', ( $( '#bar-top' ).is( ':visible' ) ? 40 : 0 ) )
+			.css( 'top', ( !$( '#bar-top' ).hasClass( 'hide' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
 		setTimeout( function() {
@@ -904,8 +904,8 @@ $( '.map' ).click( function( e ) {
 		}
 		
 		G.guide = 1;
-		var time = $( '#time-knob' ).is( ':visible' );
-		var volume = $( '#volume-knob' ).is( ':visible' );
+		var time = !$( '#time-knob' ).hasClass( 'hide' );
+		var volume = !$( '#volume-knob' ).hasClass( 'hide' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', !G.status.pllength && G.status.player === 'mpd' );
@@ -948,7 +948,7 @@ $( '.map' ).click( function( e ) {
 			if ( !( 'coverTL' in G )
 				&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 				&& !G.display.volumenone
-				&& !$( '#volume-knob' ).is( ':visible' )
+				&& $( '#volume-knob' ).hasClass( 'hide' )
 			) {
 				if ( $( '#info' ).hasClass( 'hide' ) ) {
 					$( '#info' ).removeClass( 'hide' );
@@ -1735,7 +1735,7 @@ $( '.page' ).on( 'click', '.index a', function() {
 		}
 		var scrollT = $( el +'[data-index='+ index +']' ).offset().top;
 	}
-	$( 'html, body' ).scrollTop( scrollT - ( $( '#bar-top' ).is( ':visible' ) ? 80 : 40 ) );
+	$( 'html, body' ).scrollTop( scrollT - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).click( function() {
