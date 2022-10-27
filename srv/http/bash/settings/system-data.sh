@@ -24,7 +24,7 @@ readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
 core=${cpu[1]}
 speed=${cpu[2]/.*}
-(( $speed < 1000 )) && speed+=' MHz' || speed=$( awk "BEGIN { printf \"%.2f\", $speed / 1000 }" )' GHz'
+(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
 rpimodel=$( sed -E 's/ Model |\x0//; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' /proc/device-tree/model )

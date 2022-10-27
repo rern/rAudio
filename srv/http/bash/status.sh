@@ -435,14 +435,14 @@ samplingLine() {
 		rate="$(( bitrate / 1000 )) kbit/s"
 	else
 		[[ $bitdepth == dsd ]] && bitrate=$(( bitrate / 2 ))
-		rate="$( awk "BEGIN { printf \"%.2f\", $bitrate / 1000000 }" ) Mbit/s"
+		rate="$( calc 2 $bitrate/1000000 ) Mbit/s"
 	fi
 	
 	if [[ $bitdepth == dsd ]]; then
 		sampling="${samplerate^^} • $rate"
 	else
 		[[ $bitdepth == 'N/A' && ( $ext == WAV || $ext == AIFF ) ]] && bitdepth=$(( bitrate / samplerate / 2 ))
-		sample="$( awk "BEGIN { printf \"%.1f\", $samplerate / 1000 }" ) kHz"
+		sample="$( calc 1 $samplerate/1000 ) kHz"
 		if [[ $bitdepth && ! $ext =~ ^(AAC|MP3|OGG|Radio)$ ]]; then
 			sampling="$bitdepth bit $sample $rate"
 		else # lossy has no bitdepth
@@ -484,7 +484,7 @@ else
 				[[ $cuesrc ]] && file="$( dirname "$cuefile" )/$cuesrc"
 				hex=( $( hexdump -x -s$byte -n4 "/mnt/MPD/$file" | head -1 | tr -s ' ' ) )
 				dsd=$(( ${hex[1]} / 1100 * 64 )) # hex byte#57-58 - @1100:dsd64
-				bitrate=$( awk "BEGIN { printf \"%.2f\", $dsd * 44100 / 1000000 }" )
+				bitrate=$( calc 2 $dsd*44100/1000000 )
 				sampling="DSD$dsd • $bitrate Mbit/s • $ext"
 			else
 				data=( $( ffprobe -v quiet -select_streams a:0 \

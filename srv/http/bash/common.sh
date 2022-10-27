@@ -15,6 +15,9 @@ for dir in $dirs; do
 done
 mpdconf=$dirmpdconf/mpd.conf
 
+calc() { # $1 - decimal precision, $2 - math without spaces
+	awk 'BEGIN { printf "%.'$1'f", '$2' }'
+}
 cpuInfo() {
 	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
 	BB=${hwrevision: -3:2}

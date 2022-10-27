@@ -46,7 +46,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			start=${progress[0]}
 			current=${progress[1]}
 			end=${progress[2]}
-			elapsedms=$( awk "BEGIN { printf \"%.0f\", $(( current - start )) / 44.1 }" )
+			elapsedms=$( calc 0 $(( current - start ))/44.1 )
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
 			if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then

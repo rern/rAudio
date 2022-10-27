@@ -42,9 +42,6 @@ case 'load': // load saved playlist to current
 	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
 	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc playlist | wc -l' ); // not by import playlists
 	break;
-case 'track':
-	playlistInfo( $_POST[ 'track' ] );
-	break;
 	
 }
 
@@ -271,40 +268,4 @@ function htmlTrack( $lists, $plname = '' ) {
 		, 'elapsed'   => $elapsed
 		, 'add'       => $add
 	], JSON_NUMERIC_CHECK );
-}
-function playlistInfo( $index = '' ) { // mpd protocol
-	// 2nd sleep: varied with length, 1000track/0.1s
-	exec( '{ sleep 0.05;
-				echo playlistinfo '.$index.';
-				sleep $( awk "BEGIN { printf \"%.1f\n\", $( mpc playlist | wc -l ) / 10000 + 0.1 }" ); } \
-			| telnet 127.0.0.1 6600 2> /dev/null \
-			| grep -E "^Album|^Artist|^Composer|^Conductor|^Date|^file|^Genre|^Range|^Time|^Title|^Track" \
-			| sed "s/^\(file:\)/---\n\1/"' // file: as start track set
-		, $lists );
-	if ( !count( $lists ) ) exit( '-1' );
-	
-	global $headers;
-	array_shift( $lists ); // remove 1st track delimiter
-	$lists[] = '---';      // append last track delimiter
-	$each = ( object )[];
-	foreach( $lists as $line ) {
-		if ( $line === '---' ) {
-			$fileheader = strtolower( substr( $each->file, 0, 4 ) );
-			if ( in_array( $fileheader, $headers ) ) {
-				$urlname = str_replace( '/', '|', $each->file );
-				$name = file( '/srv/http/data/webradio/'.$urlname, FILE_IGNORE_NEW_LINES )[ 0 ];
-				$each->Name = explode( '^^', $name )[ 0 ];
-				unset( $each->Title );
-			}
-			$array[] = $each;
-			$each = ( object )[];
-			continue;
-		}
-		$kv = explode( ': ', $line );
-		$key = $kv[ 0 ];
-		$val = $kv[ 1 ];
-		$value = $key === 'Time' ? second2HMS( $val ) : $val;
-		$each->$key = $value;
-	}
-	echo json_encode( $array, JSON_NUMERIC_CHECK );
 }
