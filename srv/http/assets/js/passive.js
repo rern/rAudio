@@ -222,7 +222,6 @@ function psCoverart( data ) {
 				}
 			}
 			bookmarkCover( src, path );
-			getPlaylist();
 			break;
 		case 'coverartplayback':
 			if ( G.playback ) {
