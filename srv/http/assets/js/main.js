@@ -1075,7 +1075,7 @@ $( '.btn-cmd' ).click( function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-				if ( G.status.stream ) {
+				if ( G.playback && G.status.stream ) {
 					G.status.coverart = '';
 					setCoverart();
 				}
