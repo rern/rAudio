@@ -222,7 +222,7 @@ function psCoverart( data ) {
 				}
 			}
 			bookmarkCover( src, path );
-			getPlaylist( 'refresh' );
+			getPlaylist();
 			break;
 		case 'coverartplayback':
 			if ( G.playback ) {
@@ -250,7 +250,7 @@ function psCoverart( data ) {
 			} else if ( G.librarylist && G.mode === data.type ) {
 				radioRefresh();
 			}
-			getPlaylist( 'refresh' );
+			getPlaylist();
 			break;
 	}
 	bannerHide();

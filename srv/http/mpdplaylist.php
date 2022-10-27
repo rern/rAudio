@@ -119,17 +119,19 @@ function htmlSavedPlaylist() {
 	foreach( $array as $each ) {
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$html.= '<li class="pl-folder" data-index="'.$index.'">
-					<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">
-					<a class="liname">'.$each->name.'</a></i>
-					<a class="lipath">'.$each->name.'</a></i>
-					<span class="plname">'.$each->name.'</span>
-			 	</li>';
+		$html.= '
+<li class="pl-folder" data-index="'.$index.'">
+<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">
+<a class="liname">'.$each->name.'</a></i>
+<a class="lipath">'.$each->name.'</a></i>
+<span class="plname">'.$each->name.'</span>
+</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$counthtml = '&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
-				<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-				<i class="fa fa-file-playlist"></i>';
+	$counthtml = '
+&emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
+<wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
+<i class="fa fa-file-playlist"></i>';
 	echo json_encode( [
 		  'html'      => $html
 		, 'index'     => $indexbar
@@ -188,13 +190,14 @@ function htmlTrack( $lists, $plname = '' ) {
 				$icon = 'audiocd';
 				$htmlicon = '<i class="fa fa-audiocd pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
-			$html.= '<li class="'.$class.'" '.$datatrack.'>
-						'.$htmlicon.'
-						<a class="lipath">'.$list->file.'</a>
-						<div class="li1"><span class="name">'.$list->Title.'</span>
-						<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>
-						<div class="li2">'.$li2.'</div>
-					</li>';
+			$html.= '
+<li class="'.$class.'" '.$datatrack.'>
+'.$htmlicon.'
+<a class="lipath">'.$list->file.'</a>
+<div class="li1"><span class="name">'.$list->Title.'</span>
+<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>
+<div class="li2">'.$li2.'</div>
+</li>';
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
@@ -204,12 +207,13 @@ function htmlTrack( $lists, $plname = '' ) {
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
 			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
 			if ( !$artist && !$album ) $li2.= $file;
-			$html.= '<li class="upnp">
-						<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>
-						<div class="li1"><span class="name">'.$list->Title.'</span>
-						<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-						<div class="li2">'.$li2.'</div>
-					</li>';
+			$html.= '
+<li class="upnp">
+<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>
+<div class="li1"><span class="name">'.$list->Title.'</span>
+<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
+<div class="li2">'.$li2.'</div>
+</li>';
 			$countupnp++;
 		} else {
 			if ( str_contains( $file, '://' ) ) { // webradio / dabradio
@@ -231,14 +235,15 @@ function htmlTrack( $lists, $plname = '' ) {
 				$notsaved = 1;
 				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
-			$html.= '<li class="webradio'.( $notsaved ? ' notsaved' : '' ).'">
-						'.$icon.'
-						<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>
-						<a class="liname">'.$stationname.'</a>
-						<div class="li1"><span class="name">'.$stationname.'</span>
-						<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-						<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>
-					</li>';
+			$html.= '
+<li class="webradio'.( $notsaved ? ' notsaved' : '' ).'">
+'.$icon.'
+<a class="lipath">'.preg_replace( '/\?.*$/', '', $file ).'</a>
+<a class="liname">'.$stationname.'</a>
+<div class="li1"><span class="name">'.$stationname.'</span>
+<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
+<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.( $notsaved ? '' : $stationname.' • ' ).'</span>'.preg_replace( '/#charset=.*/', '', $file ).'</div>
+</li>';
 			$countradio++;
 		}
 	}

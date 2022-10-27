@@ -603,11 +603,10 @@ function getPlaybackStatus( withdisplay ) {
 		setButtonUpdating();
 	} );
 }
-function getPlaylist( refresh ) {
+function getPlaylist() {
 	if ( G.local ) return
 			
 	local( 1000 );
-	if ( refresh ) G.htmlplaylist = '';
 	list( { cmd: 'current' }, renderPlaylist, 'json' );
 }
 function hideGuide() {
@@ -1261,17 +1260,12 @@ function renderPlaylist( data ) {
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
-	if ( data.html === G.htmlplaylist ) {
+	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
+		G.status.pllength = $( '#pl-list li' ).length;
 		setPlaylistScroll();
-	} else {
-		G.htmlplaylist = data.html;
-		$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-			G.status.pllength = $( '#pl-list li' ).length;
-			setPlaylistScroll();
-			imageLoad( 'pl-list' );
-			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
-		} );
-	}
+		imageLoad( 'pl-list' );
+		$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
+	} );
 }
 function renderPlaylistList( data ) {
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
