@@ -1118,7 +1118,7 @@ function renderLibraryList( data ) {
 		}
 	}
 	if ( G.mode === 'album' ) {
-		htmlpath += '<span class="btntitle" id="button-coverart"><i class="fa fa-coverart"></i></span>';
+		if ( G.query.length === 1 ) htmlpath += '<span class="btntitle" id="button-coverart"><i class="fa fa-coverart"></i></span>';
 	} else if ( G.mode === 'webradio' ) {
 		htmlpath += '<i class="btntitle button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'latest' ) {
