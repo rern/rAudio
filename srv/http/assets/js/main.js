@@ -1840,9 +1840,9 @@ $( '#button-pl-clear' ).click( function() {
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
 				, function() {
-					$( '#pl-list li:not( .active )' ).remove();
 					if ( !G.status.librandom ) local();
 					bash( [ 'mpccrop' ] );
+					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
 			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
