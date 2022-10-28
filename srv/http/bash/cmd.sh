@@ -497,7 +497,10 @@ color )
 	if [[ -e $file ]]; then
 		hsl=( $( < $file ) )
 	else
-		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css \
+					| sed 's/.*(\(.*\)).*/\1/' \
+					| tr ',' ' ' \
+					| tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
@@ -756,8 +759,10 @@ lyrics )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
 		if [[ $lyrics ]]; then
 			sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' <<< $lyrics \
-				| sed -e '/^\s*$/ d' -e '/\/div>/,/<br>/ {N;d}' -e 's/<br>//' -e 's/&quot;/"/g' \
-				| grep -v '^<' \
+				| sed -e '/^\s*$\|^</ d
+					' -e '/\/div>/,/<br>/ {N;d}
+					' -e 's/<br>//
+					' -e 's/&quot;/"/g' \
 				| tee "$lyricsfile"
 		fi
 	fi

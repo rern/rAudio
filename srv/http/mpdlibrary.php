@@ -173,8 +173,7 @@ case 'ls':
 				, $lists );
 			if ( strpos( $lists[ 0 ],  '.wav^^' ) ) { // MPD not sort *.wav
 				$lists = '';
-				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null \
-						| sort -h | sed "s/^.*__//"'
+				exec( 'mpc ls -f "%track%__'.$format.'" "'.$string.'" 2> /dev/null | sort -h | sed "s/^.*__//"'
 					, $lists );
 			}
 			htmlTrack( $lists, $f, $mode !== 'album' ? 'file' : '' );
@@ -188,8 +187,7 @@ case 'radio':
 	$indexes = [];
 	if ( $mode === 'search' ) {
 		$searchmode = 1;
-		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." \
-				| sed 's|^".$dir."||'"
+		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
 		$searchmode = 0;

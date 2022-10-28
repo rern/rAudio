@@ -39,6 +39,7 @@ else
 		volume=${ccv/*^}
 	fi
 	mpc | grep -q 'consume: on' && consume=true
+	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
   "player"       : "'$player'"
@@ -60,7 +61,7 @@ else
 , "updating_db"  : '$( exists $dirmpd/updating )'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
-, "volumemute"   : '$( getContent $dirsystem/volumemute )'
+, "volumemute"   : '$volumemute'
 , "webradio"     : false'
 fi
 if [[ $1 == withdisplay ]]; then
