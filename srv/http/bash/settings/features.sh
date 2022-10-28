@@ -259,7 +259,7 @@ multiraudio )
 			touch $dirsystem/multiraudio
 			echo "$data" > $dirsystem/multiraudio.conf
 			ip=$( ipGet )
-			iplist=$( sed -n 'n;p' <<< $data | grep -v $ip )
+			iplist=$( sed -n 'n;p' <<< $data | grep -v $ip ) # ip at even lines
 			for ip in $iplist; do
 				sshCommand $ip << EOF
 echo "$data" > $dirsystem/multiraudio.conf 

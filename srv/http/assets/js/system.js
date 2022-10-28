@@ -580,7 +580,7 @@ $( '#setting-vuled' ).click( function() {
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
-		, checkchanged : 1
+		, checkchanged : G.vuled ? 1 : 0
 		, boxwidth     : 80
 		, cancel        : function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
