@@ -25,8 +25,8 @@ restartMPD() {
 }
 volumeBtGet() {
 	voldb=$( amixer -MD bluealsa 2> /dev/null \
-		| grep -m1 '%.*dB' \
-		| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
+				| grep -m1 '%.*dB' \
+				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
 }
 
 case ${args[0]} in
@@ -149,7 +149,10 @@ dop )
 	restartMPD
 	;;
 filetype )
-	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
+	type=$( mpd -V \
+				| sed -n '/\[ffmpeg/ {s/.*ffmpeg. //; s/ rtp.*//; p}' \
+				| tr ' ' '\n' \
+				| sort )
 	for i in {a..z}; do
 		line=$( grep ^$i <<< $type | tr '\n' ' ' )
 		[[ $line ]] && list+=${line:0:-1}'<br>'

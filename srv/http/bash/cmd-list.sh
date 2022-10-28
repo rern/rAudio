@@ -50,8 +50,7 @@ fi
 ##### wav list #############################################
 # mpd not read *.wav albumartist
 readarray -t dirwav <<< $( mpc listall \
-							| grep '\.wav$' \
-							| sed 's|/[^/]*$||' \
+							| sed -n '/\.wav$/ {s|/[^/]*$||;p}' \
 							| sort -u )
 if [[ $dirwav ]]; then
 	for dir in "${dirwav[@]}"; do

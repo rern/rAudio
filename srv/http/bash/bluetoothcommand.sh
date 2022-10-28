@@ -67,7 +67,7 @@ if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. 
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
-			name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+			name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 			bluetoothctl disconnect $mac
 #-----X
 			pushstreamNotify "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' bluetooth 6000
@@ -103,7 +103,7 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 	done
-	name=$( bluetoothctl info $mac | grep '^\s*Alias:' | sed 's/^\s*Alias: //' )
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 #-----X
 	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
@@ -114,7 +114,7 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
-	type=$( bluetoothctl info $mac | grep 'UUID: Audio' | sed -E 's/\s*UUID: Audio (.*) .*/\1/' | xargs )
+	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	if [[ ! $type ]]; then
 ##### non-audio
 		echo $mac Device $name >> $dirshm/btconnected

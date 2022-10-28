@@ -168,7 +168,7 @@ bluetoothstart )
 	;;
 bluetoothstatus )
 	if rfkill | grep -q bluetooth; then
-		hci=$( ls -l /sys/class/bluetooth | grep serial | sed 's|.*/||' )
+		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||;p}' )
 		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
 	fi
 	echo "\
@@ -487,18 +487,14 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	current=$( grep ^Server $file \
-				| head -1 \
-				| sed 's|\.*mirror.*||; s|.*//||' )
+	current=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
 	[[ ! $current ]] && current=0
 	if : >/dev/tcp/8.8.8.8/53; then
 		pushstreamNotifyBlink 'Mirror List' 'Get ...' globe
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
 	fi
-	readarray -t lines <<< $( awk NF $file \
-								| sed -n '/### A/,$ p' \
-								| sed 's/ (not Austria\!)//; s/.mirror.*//; s|.*//||' )
+	readarray -t lines <<< $( awk NF $file | sed -n '/### A/,$ {s/ (not Austria\!)//; s/.mirror.*//; s|.*//||; p}' )
 	clist='"Auto (by Geo-IP)"'
 	codelist=0
 	for line in "${lines[@]}"; do
@@ -735,8 +731,10 @@ $conf"
 $( grep -v ^# $fileconf )"
 	fi
 	status=$( systemctl status $service \
-					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
-					| sed -E '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig}' )
+					| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
+							' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
+												 s|( inactive \(.*\))|<red>\1</red>|
+												 s|(failed)|<red>\1</red>|ig}' )
 	if [[ $pkg == chromium ]]; then
 		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< $status )
 	elif [[ $pkg == nfs-utils ]]; then
@@ -830,9 +828,7 @@ servers )
 	fi
 	if [[ $mirror ]]; then
 		file=/etc/pacman.d/mirrorlist
-		prevmirror=$( grep ^Server $file \
-						| head -1 \
-						| sed 's|\.*mirror.*||; s|.*//||' )
+		prevmirror=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
 		if [[ $mirror != $prevmirror ]]; then
 			if [[ $mirror == 0 ]]; then
 				mirror=
@@ -964,9 +960,7 @@ soundprofileget )
 # ifconfig eth0 | grep -E 'mtu|txq'</bll>
 
 $( sysctl vm.swappiness )
-$( ifconfig eth0 \
-	| grep -E 'mtu|txq' \
-	| sed -E 's/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /' )"
+$( ifconfig eth0 | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ /=/; p}' )"
 	;;
 soundprofile )
 	if [[ ${args[1]} == true ]]; then

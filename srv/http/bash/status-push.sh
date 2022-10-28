@@ -16,8 +16,8 @@ EOF
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
-					| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
-					| sed 's/^,* *"//; s/" *: */=/' )
+					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file|^, "player|^, "station"|^, "state\
+								 |^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/;p}' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( < $dirshm/status )
