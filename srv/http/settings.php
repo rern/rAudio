@@ -39,9 +39,9 @@ $head = [
 	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
 	, 'back'    => true                     // back button
 	, 'nohelp'  => true
-	, 'help'    => <<<html
-HELP
-html
+	, 'help'    => <<< EOF
+HELP - PHP heredoc
+EOF
 ];
 $body = [
 	[
@@ -58,9 +58,9 @@ $body = [
 		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
 		, 'disable'     => 'MESSAGE'    // set data-diabled - prompt on click
-		, 'help'        => <<<html
+		, 'help'        => <<< EOF
 HELP - PHP heredoc
-html
+EOF
 		, 'exist'       => EXIST        // return blank if not EXIST
 	]
 	, [
