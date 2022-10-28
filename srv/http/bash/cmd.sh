@@ -190,7 +190,7 @@ ${target/\/srv\/http}" > "$bkfile"
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
-	pushstream playlists $( php /srv/http/mpdplaylist.php $arg )
+	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
 }
 pushstreamRadioList() {
 	pushstream radiolist '{"type":"webradio"}'
@@ -1126,7 +1126,7 @@ savedpledit )
 		sed -i "$from d" "$plfile"
 		sed -i "$to a$file" "$plfile"
 	fi
-	pushstream playlist '{"playlist":"'${name//\"/\\\"}'"}'
+	pushstream playlists '{"playlist":"'${name//\"/\\\"}'"}'
 	;;
 savedplrename )
 	oldname=${args[1]}
