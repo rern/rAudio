@@ -106,7 +106,7 @@ var pushstream = new PushStream( {
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-				'notify', 'option', 'order', 'playlist', 'playlists', 'radiolist', 'relays', 'reload', 'volume', 'webradio' ];
+				'notify', 'option', 'order', 'playlist', 'radiolist', 'relays', 'reload', 'savedplaylist', 'volume', 'webradio' ];
 if ( !G.localhost ) streams.push( 'vumeter' );
 streams.forEach( stream => {
 	pushstream.addChannel( stream );
@@ -124,26 +124,26 @@ pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - 
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
-		case 'airplay':    psAirplay( data );    break;
-		case 'bookmark':   psBookmark( data );   break;
-		case 'btreceiver': psBtReceiver( data ); break;
-		case 'coverart':   psCoverart( data );   break;
-		case 'display':    psDisplay( data );    break;
-		case 'equalizer':  psEqualizer( data );  break;
-		case 'mpdplayer':  psMpdPlayer( data );  break;
-		case 'mpdradio':   psMpdRadio( data );   break;
-		case 'mpdupdate':  psMpdUpdate( data );  break;
-		case 'notify':     psNotify( data );     break;
-		case 'option':     psOption( data );     break;
-		case 'order':      psOrder( data );      break;
-		case 'playlist':   psPlaylist( data );   break;
-		case 'playlists':  psPlaylists( data );  break;
-		case 'radiolist':  psRadioList( data );  break;
-		case 'relays':     psRelays( data );     break;
-		case 'reload':     location.href = '/';  break;
-		case 'restore':    psRestore( data );    break;
-		case 'volume':     psVolume( data );     break;
-		case 'vumeter':    psVUmeter( data );    break;
+		case 'airplay':       psAirplay( data );        break;
+		case 'bookmark':      psBookmark( data );       break;
+		case 'btreceiver':    psBtReceiver( data );     break;
+		case 'coverart':      psCoverart( data );       break;
+		case 'display':       psDisplay( data );        break;
+		case 'equalizer':     psEqualizer( data );      break;
+		case 'mpdplayer':     psMpdPlayer( data );      break;
+		case 'mpdradio':      psMpdRadio( data );       break;
+		case 'mpdupdate':     psMpdUpdate( data );      break;
+		case 'notify':        psNotify( data );         break;
+		case 'option':        psOption( data );         break;
+		case 'order':         psOrder( data );          break;
+		case 'playlist':      psPlaylist( data );       break;
+		case 'savedplaylist': psSavedPlaylists( data ); break;
+		case 'radiolist':     psRadioList( data );      break;
+		case 'relays':        psRelays( data );         break;
+		case 'reload':        location.href = '/';      break;
+		case 'restore':       psRestore( data );        break;
+		case 'volume':        psVolume( data );         break;
+		case 'vumeter':       psVUmeter( data );        break;
 	}
 }
 function psAirplay( data ) {
@@ -460,17 +460,6 @@ function psPlaylist( data ) {
 		getPlaybackStatus();
 	}, G.debouncems );
 }
-function psPlaylists( data ) {
-	var count = data.count;
-	G.status.counts.playlists = count;
-	if ( G.savedlist ) {
-		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
-	} else if ( G.savedplaylist ) {
-		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
-	}
-	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
-	$( '#mode-playlists gr' ).text( count || '' );
-}
 function psRadioList( data ) {
 	if ( 'count' in data ) {
 		G.status.counts[ data.type ] = data.count;
@@ -565,6 +554,17 @@ function psRestore( data ) {
 		loader();
 		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
 	}
+}
+function psSavedPlaylists( data ) {
+	var count = data.count;
+	G.status.counts.playlists = count;
+	if ( G.savedlist ) {
+		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
+	} else if ( G.savedplaylist ) {
+		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
+	}
+	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
+	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {

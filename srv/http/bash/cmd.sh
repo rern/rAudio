@@ -193,7 +193,7 @@ pushstreamPlaylist() {
 	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
 }
 pushstreamSavedPlaylist() {
-	pushstream playlists $( php /srv/http/mpdplaylist.php list )
+	pushstream savedplaylist $( php /srv/http/mpdplaylist.php list )
 }
 pushstreamRadioList() {
 	pushstream radiolist '{"type":"webradio"}'
