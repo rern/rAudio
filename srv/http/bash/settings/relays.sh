@@ -4,7 +4,7 @@
 timerfile=$dirshm/relaystimer
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 cmd=${args[0]}
 

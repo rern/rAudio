@@ -166,11 +166,11 @@ mpdStatus currentsong
 #     - 'currentsong' has no data
 #     - use 'playlistinfo 0' instead
 #   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
-! grep -q '^file: .\+' <<< "$mpdtelnet" && mpdStatus 'playlistinfo 0'
+! grep -q '^file: .\+' <<< $mpdtelnet && mpdStatus 'playlistinfo 0'
 # 'state:' - missing on webradio track change
-! grep -q '^state' <<< "$mpdtelnet" && mpdStatus currentsong
+! grep -q '^state' <<< $mpdtelnet && mpdStatus currentsong
 
-readarray -t lines <<< "$mpdtelnet"
+readarray -t lines <<< $mpdtelnet
 for line in "${lines[@]}"; do
 	key=${line/:*}
 	val=${line#*: }
@@ -203,7 +203,7 @@ for line in "${lines[@]}"; do
 done
 
 [[ ! $pllength ]] && pllength=$( mpc playlist | wc -l )
-status=$( grep -v '^, "file"' <<< "$status" )
+status=$( grep -v '^, "file"' <<< $status )
 ########
 status+='
 , "file"      : "'$file'"
@@ -357,7 +357,7 @@ $radiosampling" > $dirshm/radio
 				fi
 			fi
 		fi
-		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< "$status" )
+		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
 ########
 		status+='
 , "Album"        : "'$Album'"
@@ -412,7 +412,7 @@ samplingSave() {
 	if [[ $player != upnp ]]; then
 		echo $sampling > $samplingfile
 		files=$( ls -1t $dirshm/sampling 2> /dev/null )
-		(( $( wc -l <<< "$files" ) > 20 )) && rm -f "$( tail -1 <<< "$files" )"
+		(( $( wc -l <<< $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
 	fi
 }
 samplingLine() {

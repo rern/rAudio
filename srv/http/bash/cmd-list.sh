@@ -13,7 +13,7 @@ touch $dirmpd/listing
 
 listAlbums() {
 	albums=$1
-	readarray -t albums <<< "$albums"
+	readarray -t albums <<< $albums
 	for album in "${albums[@]}"; do
 		album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
 								| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
@@ -58,12 +58,11 @@ if [[ $dirwav ]]; then
 		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
 		kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
 		if [[ $kid ]]; then
-			albumwav=$( echo "$kid" \
-									| head -2 \
-									| awk 1 ORS='^^' \
-									| sed "s|$|$dir|" )
+			albumwav=$( head -2 <<< $kid \
+							| awk 1 ORS='^^' \
+							| sed "s|$|$dir|" )
 			if [[ $albumwav ]]; then
-				album_artist_file=$( sed "\|$dir$| d" <<< "$album_artist_file" )
+				album_artist_file=$( sed "\|$dir$| d" <<< $album_artist_file )
 				album_artist_file+=$'\n'$albumwav$'\n'
 			fi
 		fi
@@ -82,14 +81,14 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		album=$( awk NF <<< "$album_artist_file" | sort -uf )
+		album=$( awk NF <<< $album_artist_file | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
 			for line in "${albumignore[@]}"; do
-				album=$( sed "/^$line^/ d" <<< "$album" )
+				album=$( sed "/^$line^/ d" <<< $album )
 			done
 		fi
-		album=$( awk NF <<< "$album" | tee $filealbum | wc -l )
+		album=$( awk NF <<< $album | tee $filealbum | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi

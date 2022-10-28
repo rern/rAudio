@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 netctlSwitch() {
 	ssid=$1
@@ -35,9 +35,7 @@ wlanDevice() {
 		fi
 	fi
 	if [[ $iplinkw ]]; then
-		wlandev=$( echo "$iplinkw" \
-						| tail -1 \
-						| cut -d' ' -f1 )
+		wlandev=$( tail -1 <<< "$iplinkw" | cut -d' ' -f1 )
 		iw $wlandev set power_save off
 		echo $wlandev | tee $dirshm/wlan
 	else
@@ -61,9 +59,9 @@ $( timeout 1 avahi-browse -arp \
 bluetoothinfo )
 	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
-	grep -q 'not available' <<< "$info" && exit
+	grep -q 'not available' <<< $info && exit
 	
-	if (( $( grep -Ec 'Connected: yes|UUID: Audio' <<< "$info" ) == 2 )); then
+	if (( $( grep -Ec 'Connected: yes|UUID: Audio' <<< $info ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
@@ -188,10 +186,10 @@ profileconnect )
 	;;
 profileget )
 	netctl=$( < "/etc/netctl/${args[1]}" )
-	password=$( grep ^Key <<< "$netctl" | cut -d= -f2- | tr -d '"' )
-	grep -q ^IP=dhcp <<< "$netctl" && static=false || static=true
-	grep -q ^Hidden <<< "$netctl" && hidden=true || hidden=false
-	grep -q ^Security=wep <<< "$netctl" && wep=true || wep=false
+	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
+	grep -q ^IP=dhcp <<< $netctl && static=false || static=true
+	grep -q ^Hidden <<< $netctl && hidden=true || hidden=false
+	grep -q ^Security=wep <<< $netctl && wep=true || wep=false
 	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
 	;;
 profileremove )

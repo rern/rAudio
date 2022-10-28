@@ -26,14 +26,14 @@ getControls() {
 	amixer=$( amixer -c $1 scontents )
 	[[ ! $amixer ]] && controls= && return
 	
-	amixer=$( grep -A1 ^Simple <<< "$amixer" \
+	amixer=$( grep -A1 ^Simple <<< $amixer \
 				| sed 's/^\s*Cap.*: /^/' \
 				| tr -d '\n' \
 				| sed 's/--/\n/g' \
 				| grep -v "'Mic'" )
-	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< "$amixer" )
-	[[ ! $controls ]] && controls=$( grep volume <<< "$amixer" )
-	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< "$controls" )
+	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
+	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
+	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
 }
 
 rm -f $dirshm/nosound
@@ -41,11 +41,11 @@ rm -f $dirshm/nosound
 
 [[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
 
-cards=$( cut -d: -f1 <<< "$aplay" \
+cards=$( cut -d: -f1 <<< $aplay \
 			| sort -u \
 			| sed 's/card //' )
 for card in $cards; do
-	line=$( sed -n "/^card $card/ p" <<< "$aplay" )
+	line=$( sed -n "/^card $card/ p" <<< $aplay )
 	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
 	card=${hw:3:1}
 	device=${hw: -1}
@@ -69,7 +69,7 @@ for card in $cards; do
 			mixerdevices=['"( not available )"']
 			mixers=0
 		else
-			readarray -t controls <<< $( sort -u <<< "$controls" )
+			readarray -t controls <<< $( sort -u <<< $controls )
 			mixerdevices=
 			for control in "${controls[@]}"; do
 				mixerdevices+=',"'$control'"'
@@ -126,7 +126,7 @@ elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then
 	asoundcard=$( < $dirsystem/asoundcard )
-	! grep -v Loopback <<< "$aplay" | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
+	! grep -v Loopback <<< $aplay | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
 else
 	echo ${Acard[0]} > $dirsystem/asoundcard
 fi
@@ -136,7 +136,7 @@ echo Ahwmixer[i] > $dirshm/amixercontrol
 
 getControls $i
 if [[ $controls ]]; then
-	sort -u <<< "$controls" | head -1 > $dirshm/amixercontrol
+	sort -u <<< $controls | head -1 > $dirshm/amixercontrol
 else
 	rm -f $dirshm/amixercontrol
 fi

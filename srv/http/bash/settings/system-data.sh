@@ -27,7 +27,7 @@ speed=${cpu[2]/.*}
 (( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( sed -E 's/ Model |\x0//; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' /proc/device-tree/model )
+rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
@@ -78,7 +78,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
-	readarray -t usb <<< "$usb"
+	readarray -t usb <<< $usb
 	for source in "${usb[@]}"; do
 		mountpoint=$( df -l --output=target,source \
 						| grep "$source" \
@@ -106,7 +106,7 @@ if [[ $usb ]]; then
 fi
 nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab | tr -s ' ' )
 if [[ $nas ]]; then
-	readarray -t nas <<< $( cut -d' ' -f1-2 <<< "$nas" | sort )
+	readarray -t nas <<< $( cut -d' ' -f1-2 <<< $nas | sort )
 	for line in "${nas[@]}"; do
 		source=${line/ *}
 		source=${source//\\040/ }
@@ -136,8 +136,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
-		i2caddress=$( echo "$lines" \
-						| grep -v '^\s' \
+		i2caddress=$( grep -v '^\s' <<< $lines \
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
 						| grep -v UU \
@@ -152,9 +151,9 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs
 				' -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
 				' $dirsystem/lcdchar.conf )
 	if grep -q i2c <<< "$vals"; then
-		vals=$( sed -E 's/^(true|false)$/15 18 16 21 22 23 24 \1/' <<< "$vals" )
+		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' ) # echo to remove \n
 	else
-		vals=$( sed 's/"gpio"/& 39 "PCF8574"/' <<< "$vals" )
+		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' ) # echo to remove \n
 	fi
 	lcdcharconf='[ '$( tr ' ' , <<< $vals )' ]'
 fi

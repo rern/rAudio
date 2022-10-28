@@ -39,13 +39,12 @@ ${data:1}
 ]"
 	fi
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	data=$( echo "$data" \
-				| sed  's/:\s*$/: false/
-						s/:\s*}$/: false }/
-						s/^,\s*$/, false/
-						s/\[\s*,/[ false,/g
-						s/,\s*,/, false,/g
-						s/,\s*]/, false ]/g' )
+	data=$( sed 's/:\s*$/: false/
+				s/:\s*}$/: false }/
+				s/^,\s*$/, false/
+				s/\[\s*,/[ false,/g
+				s/,\s*,/, false,/g
+				s/,\s*]/, false ]/g' <<< $data )
 	[[ $2 ]] && pushstream refresh "$data" || echo "$data"
 }
 exists() {
@@ -73,8 +72,7 @@ pushstream() {
 	[[ ! -e $filesharedip  ]] && return
 	
 	if [[ $channel == coverart ]]; then
-		path=$( echo "$data" \
-					| grep '"url"' \
+		path=$( grep '"url"' <<< $data \
 					| sed -E 's/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g' \
 					| cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return

@@ -20,7 +20,7 @@ elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : 
 	if [[ $tracks ]]; then
 		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
-		tracktop=$( head -1 <<< "$tracks" )
+		tracktop=$( head -1 <<< $tracks )
 		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
 			mpc -q play $(( tracktop - 1 ))
@@ -57,19 +57,19 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
-	code=$( head -c 3 <<< "$query" )
+	code=$( head -c 3 <<< $query )
 	if (( $code == 210 )); then  # exact match
-	  genre_id=$( sed -n 2p <<< "$query" | cut -d' ' -f1,2 | tr ' ' + )
+	  genre_id=$( sed -n 2p <<< $query | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
-	  genre_id=$( cut -d' ' -f2,3 <<< "$query" | tr ' ' + )
+	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
 	fi
 	if [[ $genre_id ]]; then
 		pushstreamNotifyBlink 'Audio CD' 'Fetch CD data ...' audiocd
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< "$data" )
+		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
 		artist=${artist_album[0]}
 		album=${artist_album[1]}
-		readarray -t titles <<< $( tail -n +1 <<< "$data" | cut -d= -f2 )
+		readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
 	fi
 	frames=( ${cddiscid[@]:2} )
 	unset 'frames[-1]'

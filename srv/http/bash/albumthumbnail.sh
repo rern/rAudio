@@ -32,7 +32,7 @@ if [[ ! $mpdpathlist ]]; then
 	exit
 fi
 
-readarray -t lines <<< "$mpdpathlist"
+readarray -t lines <<< $mpdpathlist
 
 count=${#lines[@]}
 i=0

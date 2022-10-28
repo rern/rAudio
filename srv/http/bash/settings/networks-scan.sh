@@ -14,8 +14,7 @@ if [[ $1 == wlan ]]; then
 	scan=$( iwlist $wlandev scan )
 	[[ ! $scan ]] && exit
 	
-	scan=$( echo "$scan" \
-				| sed -E 's/^\s*|\s*$//g' \
+	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
 				| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
 				| sed -E 's/^Cell.*/,{/
 						  s/^Quality.*level.(.*)/,"signal":"\1"/
@@ -33,7 +32,7 @@ if [[ $1 == wlan ]]; then
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
-			scan=$( grep -v "ssid.*$profile" <<< "$scan"  )
+			scan=$( grep -v "ssid.*$profile" <<< $scan  )
 		done
 	fi
 	echo "[ ${scan:1} ]" # ,{...} > [ {...} ]
@@ -52,7 +51,7 @@ $paired" \
 	| sort -k3 -fh \
 	| uniq -u )
 fi
-readarray -t devices <<< "$devices"
+readarray -t devices <<< $devices
 for dev in "${devices[@]}"; do
 	data+=',{
   "mac"  : "'$( cut -d' ' -f2 <<< $dev )'"

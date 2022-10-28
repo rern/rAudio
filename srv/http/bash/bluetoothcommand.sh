@@ -139,7 +139,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		echo $mac Source $name >> $dirshm/btconnected
 	else
-		btmixer=$( cut -d"'" -f2 <<< "$btmixer" )
+		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		echo $mac Sink $name >> $dirshm/btconnected

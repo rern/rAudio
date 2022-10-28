@@ -4,7 +4,7 @@
 dirimg=/srv/http/assets/img
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 addonsListGet() {
 	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
@@ -142,7 +142,7 @@ plAddRandom() {
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
-	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
+	cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
 	if [[ $cuefile ]]; then
 		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
@@ -151,7 +151,7 @@ plAddRandom() {
 		
 		mpc --range=$range load "$cuefile"
 	else
-		file=$( shuf -n 1 <<< "$mpcls" )
+		file=$( shuf -n 1 <<< $mpcls )
 		grep -q "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc add "$file"
@@ -197,7 +197,7 @@ pushstreamRadioList() {
 	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
-	pushstream volume '{"type":"'$1'", "val":'$2' }'
+	pushstream volume '{"type":"'$1'","val":'$2'}'
 }
 rotateSplash() {
 	case $1 in
@@ -328,7 +328,7 @@ webradioCopyBackup() {
 webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
+	pushstream radiolist '{"type":"'$type'","count":'$count'}'
 	grep -q "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
@@ -727,7 +727,7 @@ librandom )
 		plAddRandom
 		[[ $play ]] && mpc -q play $playnext
 	fi
-	pushstream option '{ "librandom": '$enable' }'
+	pushstream option '{"librandom":'$enable'}'
 	;;
 lyrics )
 	artist=${args[1]}
@@ -752,12 +752,10 @@ lyrics )
 		
 		artist=$( sed -E 's/^A |^The |\///g' <<< $artist )
 		title=${title//\/}
-		query=$( echo $artist/$title \
-					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )
+		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
 		if [[ $lyrics ]]; then
-			echo "$lyrics" \
-				| sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' \
+			sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' <<< $lyrics \
 				| sed -e '/^\s*$/ d' -e '/\/div>/,/<br>/ {N;d}' -e 's/<br>//' -e 's/&quot;/"/g' \
 				| grep -v '^<' \
 				| tee "$lyricsfile"
@@ -964,7 +962,7 @@ mpcsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	awk NF <<< "$list" | mpc -q add
+	awk NF <<< $list | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;

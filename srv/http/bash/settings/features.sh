@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
@@ -27,10 +27,10 @@ localbrowserXset() {
 	fi
 }
 nfsShareList() {
-	echo "\
+	awk NF <<< "\
 $dirsd
 $( find $dirusb -mindepth 1 -maxdepth 1 -type d )
-$dirdata" | awk NF
+$dirdata"
 }
 spotifyReset() {
 	pushstreamNotifyBlink 'Spotify Client' "$1" spotify
@@ -255,11 +255,11 @@ logindisable )
 multiraudio )
 	if [[ ${args[1]} == true ]]; then
 		data=$( printf "%s\n" "${args[@]:2}" | awk NF )
-		if [[ $( wc -l <<< "$data" ) > 2 ]]; then
+		if [[ $( wc -l <<< $data ) > 2 ]]; then
 			touch $dirsystem/multiraudio
 			echo "$data" > $dirsystem/multiraudio.conf
 			ip=$( ipGet )
-			iplist=$( sed -n 'n;p' <<< "$data" | grep -v $ip )
+			iplist=$( sed -n 'n;p' <<< $data | grep -v $ip )
 			for ip in $iplist; do
 				sshCommand $ip << EOF
 echo "$data" > $dirsystem/multiraudio.conf 
@@ -289,7 +289,7 @@ nfsserver )
 			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
 			ln -s "$path" "$dirnas/$name"
 		done
-		column -t <<< "$list" > /etc/exports
+		column -t <<< $list > /etc/exports
 		echo $ip > $filesharedip
 		cp -f $dirsystem/{display,order} $dirbackup
 		touch $dirshareddata/system/order # in case not exist
@@ -366,8 +366,7 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 		keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 		apikey=${keys[0]}
 		sharedsecret=${keys[1]}
-		apisig=$( echo -n "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
-					| iconv -t utf8 \
+		apisig=$( iconv -t utf8 <<< "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
 					| md5sum \
 					| cut -c1-32 )
 		reponse=$( curl -sX POST \
@@ -457,7 +456,7 @@ spotifytoken )
 				-d "code=$code" \
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
-	if grep -q error <<< "$tokens"; then
+	if grep -q error <<< $tokens; then
 		spotifyReset "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi

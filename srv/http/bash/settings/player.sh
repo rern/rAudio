@@ -6,7 +6,7 @@
 . /srv/http/bash/common.sh
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 columnFileOutput() {
 	fileoutput=$dirmpdconf/output.conf
@@ -151,7 +151,7 @@ dop )
 filetype )
 	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
 	for i in {a..z}; do
-		line=$( grep ^$i <<< "$type" | tr '\n' ' ' )
+		line=$( grep ^$i <<< $type | tr '\n' ' ' )
 		[[ $line ]] && list+=${line:0:-1}'<br>'
 	done
 	echo "${list:0:-4}"

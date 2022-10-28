@@ -13,13 +13,13 @@ if [[ $activebt ]]; then
 			listbt+=',{
   "mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
-, "connected" : '$( grep -q 'Connected: yes' <<< "$info" && echo true || echo false )'
-, "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< "$info" )'"
+, "connected" : '$( grep -q 'Connected: yes' <<< $info && echo true || echo false )'
+, "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info )'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"
-		grep -q '"type" : "Sink"' <<< "$listbt" && btreceiver=true || btreceiver=false
-		grep -q '"connected" : true' <<< "$listbt" && connected=true || connected=false
+		grep -q '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
+		grep -q '"connected" : true' <<< $listbt && connected=true || connected=false
 		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 		
 		[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit

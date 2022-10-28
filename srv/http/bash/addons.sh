@@ -82,12 +82,12 @@ getinstallzip() {
 	echo
 	echo $bar Install new files ...
 	filelist=$( bsdtar tf $installfile )
-	uninstallfile=$( grep uninstall_.*sh <<< "$filelist" )
+	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
 	if [[ $uninstallfile ]]; then
 		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
-	cut -d/ -f2- <<< "$filelist" \
+	cut -d/ -f2- <<< $filelist \
 		| grep / \
 		| grep -v '/$' \
 		| sed 's|^|/|' \
@@ -103,7 +103,7 @@ getinstallzip() {
 installstart() { # $1-'u'=update
 	rm $0
 	
-	readarray -t args <<< "$1" # lines to array: alias type branch opt1 opt2 ...
+	readarray -t args <<< $1 # lines to array: alias type branch opt1 opt2 ...
 
 	alias=${args[0]}
 	type=${args[1]}

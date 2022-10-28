@@ -7,7 +7,7 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh
 	data=$2
 	pushstream mpdradio "$data"
 	cat << EOF > $dirshm/status
-$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< "$data" )
+$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
 timestamp=$( date +%s%3N )
 webradio=true
 player=mpd
@@ -15,22 +15,21 @@ EOF
 	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
-	statusnew=$( echo "$status" \
-		| sed '/^, "counts"/,/}/ d' \
-		| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
-		| sed 's/^,* *"//; s/" *: */=/' )
+	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
+					| grep -E '^, "Artist|^, "Title|^, "Album|^, "station"|^, "file|^, "state|^, "Time|^, "elapsed|^, "timestamp|^, "webradio|^, "player"' \
+					| sed 's/^,* *"//; s/" *: */=/' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( < $dirshm/status )
 		compare='^Artist|^Title|^Album'
-		[[ "$( grep -E "$compare" <<< "$statusnew" | sort )" != "$( grep -E "$compare" <<< "$statusprev" | sort )" ]] && trackchanged=1
+		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
 			[[ ! $trackchanged && $state == play ]] && exit
 			
 		else
 			compare='^state|^elapsed'
-			[[ "$( grep -E "$compare" <<< "$statusnew" | sort )" != "$( grep -E "$compare" <<< "$statusprev" | sort )" ]] && statuschanged=1
+			[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
 			[[ ! $trackchanged && ! $statuschanged ]] && exit
 			
 		fi
@@ -77,12 +76,11 @@ fi
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ipGet )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
-	status=$( echo "$status" \
-				| sed -E -e '1,/^, "single" *:/ d
+	status=$( sed -E -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/
 					' -e '/^, "icon" *:/ d
 					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' )
+					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

@@ -5,7 +5,7 @@ fileconfig=/boot/config.txt
 filemodule=/etc/modules-load.d/raspberrypi.conf
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 dirPermissions() {
 	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
@@ -65,7 +65,7 @@ sharedDataIPlist() {
 			list+=$'\n'$ip
 		fi
 	done
-	sort -u <<< "$list" > $filesharedip
+	sort -u <<< $list > $filesharedip
 }
 sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
@@ -139,7 +139,7 @@ bluetooth )
 		if ls -l /sys/class/bluetooth | grep -q serial; then
 			systemctl start bluetooth
 			! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
-			rfkill | grep -q bluetooth && pushstream refresh '{"page":"networks","activebt",true}'
+			rfkill | grep -q bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
 		else
 			pushReboot Bluetooth
 		fi
@@ -287,7 +287,7 @@ datarestore )
 	ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 	if [[ $ipserver ]]; then
 		fstab=$( sed "/^$ipserver/ d" /etc/fstab )
-		column -t <<< "$fstab" > /etc/fstab
+		column -t <<< $fstab > /etc/fstab
 	fi
 	readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 	if [[ $mountpoints ]]; then
@@ -392,7 +392,7 @@ journalctl )
 	filebootlog=$dirtmp/bootlog
 	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		tail -1 <<< "$journal" | grep -q 'Startup finished' || journal='(Boot ...)'
+		tail -1 <<< $journal | grep -q 'Startup finished' || journal='(Boot ...)'
 		echo "$journal" > $filebootlog
 	fi
 	echo "\
@@ -554,7 +554,7 @@ mount )
 $( < /etc/fstab )
 ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
 	mv /etc/fstab{,.backup}
-	column -t <<< "$fstab" > /etc/fstab
+	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	std=$( mount "$mountpoint" 2>&1 )
 	if [[ $? != 0 ]]; then
@@ -564,7 +564,7 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		echo "\
 Mount failed:
 <br><code>$source</code>
-<br>$( sed -n '1 {s/.*: //;p}' <<< "$std" )"
+<br>$( sed -n '1 {s/.*: //;p}' <<< $std )"
 		exit
 		
 	else
@@ -583,7 +583,7 @@ mountforget )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
 	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
-	column -t <<< "$fstab" > /etc/fstab
+	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
@@ -660,13 +660,12 @@ $description
 "
 ;;
 			esac
-		done <<< "$pacmanqi"
-		echo "$lines" \
-			| sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
-					  s|^Name.*: (.*)|\1</a> |
-					  s|^Vers.*: (.*)|\1|
-					  s|^Desc.*: (.*)|<p>\1</p>|' \
-			> $dirtmp/packages
+		done <<< $pacmanqi
+		sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
+				s|^Name.*: (.*)|\1</a> |
+				s|^Vers.*: (.*)|\1|
+				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
+				> $dirtmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
@@ -696,7 +695,7 @@ $( < /etc/dnsmasq.conf )"
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
-			conf=$( sed 's/  *"/^"/' <<< "$conf" | column -t -s^ )
+			conf=$( sed 's/  *"/^"/' <<< $conf | column -t -s^ )
 			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr output; do
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
@@ -739,9 +738,9 @@ $( grep -v ^# $fileconf )"
 					| sed -E '1 s|^.* (.*service) |<code>\1</code>|' \
 					| sed -E '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|; s|( inactive \(.*\))|<red>\1</red>|; s|(failed)|<red>\1</red>|ig}' )
 	if [[ $pkg == chromium ]]; then
-		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< "$status" )
+		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< $status )
 	elif [[ $pkg == nfs-utils ]]; then
-		status=$( grep -v 'Protocol not supported' <<< "$status" )
+		status=$( grep -v 'Protocol not supported' <<< $status )
 	fi
 	echo "\
 $config
@@ -874,7 +873,7 @@ shareddataconnect )
 		fstab+="
 $ip:${path// /\\040}  ${dir// /\\040}  $options"
 	done
-	column -t <<< "$fstab" > /etc/fstab
+	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	for dir in "${mountpoints[@]}"; do
 		mount "$dir"
@@ -917,7 +916,7 @@ shareddatadisconnect )
 		umount -l $dirshareddata
 		rmdir $dirshareddata
 	fi
-	column -t <<< "$fstab" > /etc/fstab
+	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
@@ -1097,7 +1096,7 @@ wlan )
 	fi
 	pushRefresh
 	rfkill | grep -q wlan && active=true || active=false
-	pushstream refresh '{"page":"networks","activewlan",'$active'}'
+	pushstream refresh '{"page":"networks","activewlan":'$active'}'
 	;;
 	
 esac

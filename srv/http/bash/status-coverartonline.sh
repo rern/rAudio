@@ -4,7 +4,7 @@
 
 : >/dev/tcp/8.8.8.8/53 || exit # online check
 
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 artist=${args[0]}
 arg1=${args[1]}
@@ -32,23 +32,23 @@ data=$( curl -sfG -m 5 \
 [[ $? != 0 || $data =~ error ]] && exit
 
 if [[ $type == webradio ]]; then
-	album=$( jq -r .track.album <<< "$data" )
+	album=$( jq -r .track.album <<< $data )
 else
-	album=$( jq -r .album <<< "$data" )
+	album=$( jq -r .album <<< $data )
 fi
 [[ $album == null ]] && exit
 
-image=$( jq -r .image <<< "$album" )
+image=$( jq -r .image <<< $album )
 if [[ $image && $image != null ]]; then
 	extralarge=$( jq -r '.[3]."#text"' <<<  $image )
 	if [[ $extralarge ]]; then
 		url=$( sed 's|/300x300/|/_/|' <<< $extralarge ) # get larger size than 300x300
 	else
 ### 2 - coverartarchive.org #####################################
-		mbid=$( jq -r .mbid <<< "$album" )
+		mbid=$( jq -r .mbid <<< $album )
 		if [[ $mbid && $mbid != null ]]; then
 			imgdata=$( curl -sfL -m 10 https://coverartarchive.org/release/$mbid )
-			[[ $? == 0 ]] && url=$( jq -r .images[0].image <<< "$imgdata" )
+			[[ $? == 0 ]] && url=$( jq -r .images[0].image <<< $imgdata )
 		fi
 	fi
 fi
@@ -67,7 +67,7 @@ data='
   "url"   : "'${coverfile:9}'"
 , "type"  : "coverart"'
 if [[ $type == webradio ]]; then
-	Album=$( jq -r .title <<< "$album" )
+	Album=$( jq -r .title <<< $album )
 	echo $Album > $dirshm/webradio/$name
 	data+='
 , "Album" : "'$Album'"'

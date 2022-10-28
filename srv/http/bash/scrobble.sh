@@ -10,7 +10,7 @@ sleep 2 # wait - after track change pushstream
 
 . /srv/http/bash/common.sh
 
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 Artist=${args[0]}
 Title=${args[1]}
 Album=${args[2]}
@@ -24,8 +24,7 @@ if [[ $album ]]; then
 	sigalbum="album${Album}"
 	dataalbum="album=$Album"
 fi
-apisig=$( echo -n "${sigalbum}api_key${apikey}artist${Artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${Title}${sharedsecret}" \
-			| iconv -t utf8 \
+apisig=$( iconv -t utf8 <<< "${sigalbum}api_key${apikey}artist${Artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${Title}${sharedsecret}" \
 			| md5sum \
 			| cut -c1-32 )
 reponse=$( curl -sX POST \

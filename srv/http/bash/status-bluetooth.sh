@@ -17,12 +17,12 @@ data=$( dbus-send \
 			| sed -E 's/^\s*string "|^\s*variant\s*string "|^\s*variant\s*uint32 //; s/"$//' \
 			| tr '\n' ^ \
 			| sed 's/\^--\^/\n/g; s/\^$//' )
-Artist=$( grep ^Artist <<< "$data" | cut -d^ -f2 )
-Title=$( grep ^Title <<< "$data" | cut -d^ -f2 )
-Album=$( grep ^Album <<< "$data" | cut -d^ -f2 )
-Position=$( grep ^Position <<< "$data" | cut -d^ -f2 )
-Duration=$( grep ^Duration <<< "$data" | cut -d^ -f2 )
-Status=$( grep ^Status <<< "$data" | cut -d^ -f2 )
+Artist=$( grep ^Artist <<< $data | cut -d^ -f2 )
+Title=$( grep ^Title <<< $data | cut -d^ -f2 )
+Album=$( grep ^Album <<< $data | cut -d^ -f2 )
+Position=$( grep ^Position <<< $data | cut -d^ -f2 )
+Duration=$( grep ^Duration <<< $data | cut -d^ -f2 )
+Status=$( grep ^Status <<< $data | cut -d^ -f2 )
 case $Status in
 	paused )  state=pause;;
 	playing ) state=play;;
