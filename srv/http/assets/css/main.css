@@ -1423,7 +1423,7 @@ i.map.disabled, .map.disabled i {
 	content: '\f528';
 	font-family: rern;
 	position: relative;
-	margin-left: -32px;
+	margin-left: -31px;
 	font-size: 26px;
 }
 #button-coverart.btnimg::after {
@@ -1527,7 +1527,8 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 #lib-path span i {
-	font-size: 24px;
+	font-size: 20px;
+	vertical-align: 2px;
 	color: var( --cw );
 }
 .index {
