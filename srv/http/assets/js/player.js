@@ -210,7 +210,7 @@ $( '#setting-buffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : G.bufferconf
-		, checkchanged : G.buffer
+		, checkchanged : 1
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#buffer' ).prop( 'checked', G.buffer );
@@ -231,7 +231,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : G.outputbufferconf
-		, checkchanged : G.outputbuffer
+		, checkchanged : 1
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#outputbuffer' ).prop( 'checked', G.outputbuffer );
