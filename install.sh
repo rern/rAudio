@@ -104,7 +104,7 @@ resampler {
 	plugin          \"soxr\"
 $( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
-if [[ ! -e $dirshm/mixernone || $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]; then
+if [[ $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]; then
 	if grep -q quality.*custom /etc/mpd.conf; then
 		linkConf soxr-custom
 		echo custom > $dirsystem/soxr
