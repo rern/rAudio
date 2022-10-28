@@ -34,8 +34,7 @@ if [[ $ipeth ]]; then
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
 	[[ ! $gateway ]] && gateway=$( ip r \
-									| grep ^default \
-									| head -1 \
+									| grep -m1 ^default \
 									| cut -d' ' -f3 )
 	if [[ $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )

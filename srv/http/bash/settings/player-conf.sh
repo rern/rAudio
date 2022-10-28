@@ -154,8 +154,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l 2> /dev/null \
-						| grep "^card $i" \
-						| head -1 \
+						| grep -m1 "^card $i" \
 						| cut -d' ' -f3 )
 		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
 	fi

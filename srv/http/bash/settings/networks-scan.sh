@@ -15,17 +15,18 @@ if [[ $1 == wlan ]]; then
 	[[ ! $scan ]] && exit
 	
 	scan=$( sed -E 's/^\s*|\s*$//g' <<< $scan \
-				| grep -E '^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality' \
-				| sed -E 's/^Cell.*/,{/
-						  s/^Quality.*level.(.*)/,"signal":"\1"/
-						  s/^Encryption key:(.*)/,"encrypt":"\1"/
-						  s/^ESSID:/,"ssid":/
-						  s/^IE.*WPA.*/,"wpa":true/
-						  s/\\x00//g' \
+				| sed -E -n '/^Cell|^ESSID|^Encryption|^IE.*WPA|^Quality/ {
+						s/^Cell.*/,{/
+						s/^Quality.*level.(.*)/,"signal":"\1"/
+						s/^Encryption key:(.*)/,"encrypt":"\1"/
+						s/^ESSID:/,"ssid":/
+						s/^IE.*WPA.*/,"wpa":true/
+						s/\\x00//g
+						p}' \
 				| tr -d '\n' \
 				| sed 's/{,/{/g; s/,{/\n&/g' \
-				| sed -E -e '/^$|"ssid":""/ d' \
-						 -e 's/wpa.*wpa/wpa/; s/$/}/' \
+				| grep -E -v '^$|"ssid":""' \
+				| sed 's/wpa.*wpa/wpa/; s/$/}/' \
 				| sort )
 	
 	# omit saved profile

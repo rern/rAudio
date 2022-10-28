@@ -24,9 +24,7 @@ onlinefile=$( ls -1X /srv/http/data/shm/online/$covername.{jpg,png} 2> /dev/null
 
 ##### cover file
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
-[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null \
-										| grep -E -i '/album\....$|cover\....$|/folder\....$|/front\....$' \
-										| head -1 )
+[[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 if [[ $coverfile ]]; then
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - local path only
 	echo $coverfile

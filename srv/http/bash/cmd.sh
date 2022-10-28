@@ -534,17 +534,14 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	;;
 coverartget )
 	path=${args[1]}
-	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| grep -E -i '\.gif$|\.jpg$|\.png$' \
-						| head -1 ) # full path
+	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null | grep -E -i -m1 '\.gif$|\.jpg$|\.png$'  ) # full path
 	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
 	coverfile=$( ls -1X "$path" \
 					| grep -E -i '^cover\.|^folder\.|^front\.|^album\.' \
-					| grep -E -i '\.gif$|\.jpg$|\.png$' \
-					| head -1 ) # filename only
+					| grep -E -i -m1 '\.gif$|\.jpg$|\.png$' ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"

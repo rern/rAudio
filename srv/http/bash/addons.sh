@@ -80,17 +80,12 @@ getinstallzip() {
 	
 	echo
 	echo $bar Install new files ...
-	filelist=$( bsdtar tf $installfile )
+	bsdtar tf $installfile
 	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
 	if [[ $uninstallfile ]]; then
 		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
-	cut -d/ -f2- <<< $filelist \
-		| grep / \
-		| grep -v '/$' \
-		| sed 's|^|/|' \
-		| sort -V
 	tmpdir=/tmp/install
 	rm -rf $tmpdir
 	mkdir -p $tmpdir

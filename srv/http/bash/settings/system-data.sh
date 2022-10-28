@@ -137,8 +137,7 @@ if grep -q dtparam=i2c_arm=on /boot/config.txt; then
 		i2caddress=$( grep -v '^\s' <<< $lines \
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
-						| grep -v UU \
-						| awk NF \
+						| grep -E -v '^\s*$|UU' \
 						| sort -u )
 		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
 	fi
