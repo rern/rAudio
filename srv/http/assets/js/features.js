@@ -473,7 +473,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, radio        : { Disable: 'false', '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
 		, checkbox     : [ 'Power off on stop' ]
 		, values       : G.stoptimerconf || [ false, false ]
-		, checkchanged : 1
+		, checkchanged : G.stoptimer
 		, beforeshow   : function() {
 			var $poweroff = $( '#infoContent input:checkbox' );
 			$poweroff.prop( 'disabled', !G.stoptimerconf[ 1 ] );
@@ -483,6 +483,9 @@ $( '#setting-stoptimer' ).click( function() {
 				if ( valfalse ) $poweroff.prop( 'checked', false );
 				$poweroff.prop( 'disabled', valfalse );
 			} );
+		}
+		, cancel  : function() {
+			$( '#stoptimer' ).prop( 'checked', G.stoptimer );
 		}
 		, ok           : function() {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
