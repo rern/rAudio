@@ -1825,7 +1825,7 @@ $( '#button-pl-clear' ).click( function() {
 			, okcolor     : red
 			, ok          : function() {
 				bash( [ 'mpcremove' ] );
-				banner( 'Playlist', 'Clear ...', 'playlist blink', -1 );
+				renderPlaylist( -1 );
 			}
 		} );
 	} else {
@@ -1850,6 +1850,7 @@ $( '#button-pl-clear' ).click( function() {
 			, ok          : function() {
 				bash( [ 'mpcremove' ] );
 				setPlaybackBlank();
+				renderPlaylist( -1 );
 			}
 		} );
 	}
