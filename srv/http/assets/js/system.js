@@ -170,7 +170,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 		, values       : G.hddsleep || 60
-		, checkchanged : 1
+		, checkchanged : G.hddsleep
 		, cancel        : function() {
 			$( '#hddsleep' ).prop( 'checked', G.hddsleep );
 		}
@@ -273,7 +273,7 @@ $( '#setting-i2smodule' ).click( function() {
 		, title        : 'Audio - I²S'
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : G.i2seeprom
-		, checkchanged : 1
+		, checkchanged : G.i2seeprom
 		, ok           : function() {
 			bash( [ 'i2seeprom', infoVal() ] );
 		}
@@ -580,7 +580,7 @@ $( '#setting-vuled' ).click( function() {
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
-		, checkchanged : G.vuled ? 1 : 0
+		, checkchanged : G.vuled
 		, boxwidth     : 80
 		, cancel        : function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
@@ -692,7 +692,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, textlabel    : [ 'vm.swappiness', 'eth0 mtu', 'eth0 txqueuelen' ]
 		, boxwidth     : 110
 		, values       : G.soundprofileconf
-		, checkchanged : 1
+		, checkchanged : G.soundprofile
 		, checkblank   : 1
 		, cancel       : function() {
 			$( '#soundprofile' ).prop( 'checked', G.soundprofile );
