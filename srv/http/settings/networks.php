@@ -6,7 +6,7 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'btcontroller'
 	, 'button' => [ 'btscan' => 'search' ]
 ] );
-$html = <<< HTML
+$html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
 	<div class="help-block hide">| I^bluetooth^I | I^btsender^I | Context menu
@@ -28,7 +28,7 @@ $html = <<< HTML
  • Connect:
 	- On sender: Select rAudio > Connect / Disconnect
 </div>
-HTML;
+EOF;
 echoSetIcon( $html );
 ?>
 </div>

@@ -38,12 +38,12 @@ $body = [
 			, 'input'       => '<select id="btaplayname"></select>'
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
-			, 'help'        => <<< HTML
+			, 'help'        => <<< EOF
 I^volume^I Volume setting and control:
  • Player: Should be set at 0dB
  • Playback: Should be set at 100%
  • Use device volume to control level
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Device'
@@ -58,18 +58,18 @@ HTML
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
-		, 'help'  => <<< HTML
+		, 'help'  => <<< EOF
 | I^volume^I | Control current mixer device.
 
 Available hardware mixers of current device.
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Volume Control'
 		, 'id'      => 'mixertype'
 		, 'input'   => '<select id="mixertype"></select>'
 		, 'setting' => false
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
 <pre>
@@ -77,7 +77,7 @@ The later in the signal chain the better sound quality.
 | Mixer device | Good  - DAC hardware via GUI knob
 | MPD software | Basic - GUI knob
 </pre>
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -88,27 +88,27 @@ $body = [
 		, 'id'          => 'novolume'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
-		, 'help'        => <<< HTML
+		, 'help'        => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
  • Mixer device volume: 0dB (No amplitude manipulations)
  • Volume Control: | None / 0db | (Hidden volume in Playback)
  • Signal Processors: Disabled
  • Cross-fading, Normalization and ReplayGain: Disabled
-HTML
+EOF
 	]
 	, [
 		  'label'       => 'DSD over PCM'
 		, 'id'          => 'dop'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
-		, 'help'        => <<< HTML
+		, 'help'        => <<< EOF
 For DSD-capable devices without drivers dedicated for native DSD.
  • Enable if there's static/no sound from the DAC which means not support as native DSD.
  • DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
  • PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
  • On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body, 'bitperfect' );
@@ -116,25 +116,25 @@ $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
 	[	  'label'   => 'Cross-Fading'
 		, 'id'      => 'crossfade'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Normalization'
 		, 'id'      => 'normalization'
 		, 'setting' => false
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
-HTML
+EOF
 	] 
 	, [
 		  'label'   => 'ReplayGain'
 		, 'id'      => 'replaygain'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -146,21 +146,21 @@ $body = [
 		  'label'    => 'Buffer - Audio'
 		, 'id'       => 'buffer'
 		, 'sublabel' => 'custom size'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 
 (default: 4096 kB - 24s of CD-quality audio)
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Buffer - Output'
 		, 'id'       => 'outputbuffer'
 		, 'sublabel' => 'custom size'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 
 (default: 8192 kB)
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'FFmpeg'
@@ -168,25 +168,25 @@ HTML
 		, 'sublabel' => 'decoder plugin'
 		, 'setting'  => false
 		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
 Decoder for audio filetypes: I^help filetype^I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
-HTML
+EOF
 	]
 	, [
 		  'label'       => 'Library Auto Update'
 		, 'id'          => 'autoupdate'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
-		, 'help'        => <<< HTML
+		, 'help'        => <<< EOF
 Automatic update MPD database when files changed.
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'SoX Resampler'
 		, 'id'       => 'soxr'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
 | I^gear^I |
@@ -208,7 +208,7 @@ HTML
 | 16 - Double precision | even if Precision <= 20
 | 32 - Variable rate    |
 </pre>
-HTML
+EOF
 	]
 	, [
 		  'label'   => "User's Configurations"
@@ -226,26 +226,26 @@ htmlHead( [
 	, 'id'      => 'albumignore'
 	, 'subhead' => true
 	, 'status'  => 'albumignore'
-	, 'help'    => <<< HTML
+	, 'help'    => <<< EOF
 List of albums excluded from Album page.
 To restore:
  • Edit <c>/srv/http/data/mpd/albumignore</c>
  • Remove albums to restore
  • Update Library
-HTML
+EOF
 ] );
 htmlHead( [
 	  'title'   => 'Ignored Directory'
 	, 'id'      => 'mpdignore'
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
-	, 'help'    => <<< HTML
+	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories excluded from database.
 To restore:
 • Edit <c>.../.mpdignore</c>
 • Remove directories to restore
 • Update Library
-HTML
+EOF
 ] );
 htmlHead( [
 	  'title'   => 'Non UTF-8 Files'

@@ -157,13 +157,13 @@ $body = [
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 | I^gear^I |
 Country of Wi-Fi regulatory domain:
 	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
 	- The connected router may override it to a certain country.
 | • Auto start Access Point | On failed connection or no router
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -176,7 +176,7 @@ $body = [
 	[
 		  'label'    => 'Audio - I²S'
 		, 'icon'     => 'i2saudio'
-		, 'input'    => <<< HTML
+		, 'input'    => <<< EOF
 <div id="divi2smodulesw">
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
@@ -185,60 +185,60 @@ $body = [
 	$selecti2s
 	I^gear^I
 </div>
-HTML
-		, 'help'     => <<< HTML
+EOF
+		, 'help'     => <<< EOF
 | I^gear^I | Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 HAT with EEPROM could be automatically detected.
 (See | I^player^I Player | Output | Device | if it's already set.)
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Character LCD'
 		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
 I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Power Button'
 		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  • On - Fixed to pin 5
  • Off - Default to pin 5 (single pin on+off)
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
  • Off (default: 7)
  • Reserved (default: 29)
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: A^I^plus-r^I System^AI^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
-HTML
+EOF
 	],
 	[
 		  'label'    => 'Rotary Encoder'
 		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  • Turn volume up/down
  • Push to play/pause
-HTML
+EOF
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
@@ -257,10 +257,10 @@ HTML
 		  'label'   => 'VU LED'
 		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  • <bl id="ledcalc">LED resister calculator</bl>
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -272,12 +272,12 @@ $body = [
 		, 'icon'    => 'plus-r'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  • Web Interface URL: <c id="avahiurl"></c>
  • System hostname
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Time Zone'
@@ -306,13 +306,13 @@ $body = [
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
 		, 'setting' => false
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 Backup all data and settings:
  • Library: Database, Bookmarks, DAB Radio, Web Radio
  • Playback: Lyrics
  • Playlist: Audio CD, Saved playlists
  • Settings
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Restore'
@@ -328,7 +328,7 @@ HTML
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 Connect shared data as client for:
 	- Library database
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
@@ -353,7 +353,7 @@ Connect shared data as client for:
 		- Data on 1st connected client will be used as initial shared.
 		
 (SSH password must be default.)
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
