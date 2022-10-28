@@ -79,7 +79,7 @@ getinstallzip
 
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
-[[ -e $dirsystem/color ]] && $dirbashbash/cmd.sh color
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 #installfinish
 #-------------------------------------------------------------------------------
@@ -104,7 +104,11 @@ resampler {
 	plugin          \"soxr\"
 $( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
-if [[ ! -e $dirshm/mixernone || $( grep -Ec 'mixer_type.*none|normalization|replaygain.*off' /etc/mpd.conf ) < 3 ]]; then
+grep -q 'mixer_type.*none' /etc/mpd.conf \
+    && grep -q 'replaygain.*off' /etc/mpd.conf \
+    && ! grep -q normalization /etc/mpd.conf
+    && novolume=1
+if [[ ! $novolume ]]; then
 	if grep -q quality.*custom /etc/mpd.conf; then
 		linkConf soxr-custom
 		echo custom > $dirsystem/soxr
