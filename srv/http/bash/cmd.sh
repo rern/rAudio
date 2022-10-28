@@ -192,7 +192,7 @@ pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
 	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
 }
-pushstreamPlaylists() {
+pushstreamSavedPlaylist() {
 	pushstream playlists $( php /srv/http/mpdplaylist.php list )
 }
 pushstreamRadioList() {
@@ -1104,7 +1104,7 @@ savedpldelete )
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushstreamPlaylists
+	pushstreamSavedPlaylist
 	;;
 savedpledit )
 	name=${args[1]}
@@ -1129,7 +1129,7 @@ savedpledit )
 		sed -i "$from d" "$plfile"
 		sed -i "$to a$file" "$plfile"
 	fi
-	pushstreamPlaylists
+	pushstreamSavedPlaylist
 	;;
 savedplrename )
 	oldname=${args[1]}
@@ -1144,7 +1144,7 @@ savedplrename )
 	fi
 	
 	mv "$dirplaylists/$oldname.m3u" "$plfile"
-	pushstreamPlaylists
+	pushstreamSavedPlaylist
 	;;
 savedplsave )
 	name=${args[1]}
@@ -1161,7 +1161,7 @@ savedplsave )
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
-	pushstreamPlaylists
+	pushstreamSavedPlaylist
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}
