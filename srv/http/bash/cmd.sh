@@ -1101,7 +1101,7 @@ savedpldelete )
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushstreamPlaylist list
+	pushstream playlists $( php /srv/http/mpdplaylist.php list )
 	;;
 savedpledit )
 	name=${args[1]}
@@ -1126,7 +1126,7 @@ savedpledit )
 		sed -i "$from d" "$plfile"
 		sed -i "$to a$file" "$plfile"
 	fi
-	pushstream playlists '{"playlist":"'${name//\"/\\\"}'"}'
+	pushstream playlists $( php /srv/http/mpdplaylist.php list )
 	;;
 savedplrename )
 	oldname=${args[1]}
@@ -1141,7 +1141,7 @@ savedplrename )
 	fi
 	
 	mv "$dirplaylists/$oldname.m3u" "$plfile"
-	pushstreamPlaylist list
+	pushstream playlists $( php /srv/http/mpdplaylist.php list )
 	;;
 savedplsave )
 	name=${args[1]}
@@ -1157,8 +1157,8 @@ savedplsave )
 	mpc -q save "$name"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	pushstreamPlaylist list
+	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
+	pushstream playlists $( php /srv/http/mpdplaylist.php list )
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}
