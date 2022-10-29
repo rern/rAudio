@@ -106,7 +106,7 @@ $( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
 fi
 grep -q 'mixer_type.*none' /etc/mpd.conf \
     && grep -q 'replaygain.*off' /etc/mpd.conf \
-    && ! grep -q normalization /etc/mpd.conf
+    && ! grep -q normalization /etc/mpd.conf \
     && novolume=1
 if [[ ! $novolume ]]; then
 	if grep -q quality.*custom /etc/mpd.conf; then
