@@ -17,8 +17,6 @@ if [[ ! $2 ]]; then
 else
 	action=$1
 	mac=$2
-	type=$3
-	name=$4
 fi
 icon=bluetooth
 
@@ -110,6 +108,7 @@ if [[ $action == connect || $action == pair ]]; then
 		bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 	done
 	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	[[ ! $name ]] && name=Bluetooth
 #-----X
 	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
@@ -144,10 +143,9 @@ if [[ $action == connect || $action == pair ]]; then
 	fi
 	
 #-----
-	[[ $type == Source ]] && icon=btsender
-	pushstreamNotify "$name" Ready $icon
 	if [[ $type == Source ]]; then
 ##### sender
+		icon=btsender
 		echo $mac Source $name >> $dirshm/btconnected
 	else
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
@@ -158,11 +156,13 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
+	pushstreamNotify "$name" Ready $icon
 	$dirsettings/features-data.sh pushrefresh
 	$dirsettings/networks-data.sh pushbt
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do

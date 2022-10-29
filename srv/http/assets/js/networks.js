@@ -62,7 +62,8 @@ $( '.lanadd' ).click( function() {
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	G.li = $( this );
-	G.liindex = G.li.index();
+	if ( G.li.hasClass( 'accesspoint' ) ) return
+	
 	G.list = G.li.parent().prop( 'id' );
 	G.liactive = G.li.hasClass( 'active' );
 	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
@@ -73,12 +74,12 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	$( 'li' ).removeClass( 'active' );
 	G.li.addClass( 'active' );
 	if ( G.list === 'listbt' ) {
+		var connected = G.li.find( 'grn' ).length === 1;
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
-		G.listbtli = G.listbt[ G.liindex ];
-		$( '#menu .connect' ).toggleClass( 'hide', G.listbtli.connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !G.listbtli.connected );
-		$( '#menu .info' ).toggleClass( 'hide', G.listbtli.mac === $( '#codebluetooth' ).data( 'mac' ) );
+		$( '#menu .connect' ).toggleClass( 'hide', connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', !connected );
+		$( '#menu .info' ).toggleClass( 'hide', G.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
@@ -100,9 +101,9 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.liindex ];
-		notify( list.name, 'Connect ...', list.type === 'Source' ? 'btsender' : 'bluetooth', -1 );
-		bluetoothCommand( 'connect', list );
+		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		notify( G.li.data( 'name' ), 'Connect ...', icon, -1 );
+		bluetoothCommand( 'connect', G.li.data( 'mac' ) );
 		return
 	}
 	
@@ -111,28 +112,27 @@ $( '.connect' ).click( function() {
 		return
 	}
 	
-	var name = G.li.data( 'ssid' );
-	notify( name, 'Connect ...', 'wifi blink' );
-	bash( [ 'profileconnect', name ] );
+	var ssid = G.li.data( 'ssid' );
+	notify( ssid, 'Connect ...', 'wifi blink' );
+	bash( [ 'profileconnect', ssid ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.liindex ];
-		bluetoothCommand( 'disconnect', list );
+		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		notify( G.li.data( 'name' ), 'Disconnect ...', icon );
+		bluetoothCommand( 'disconnect', G.li.data( 'mac' ) );
 		return
 	}
 	
-	var list = G.listwl[ G.liindex ];
-	var name = list.ssid;
-	var icon = 'wifi';
+	var ssid = G.li.data( 'ssid' );
 	info( {
-		  icon    : icon
-		, title   : name
+		  icon    : 'wifi'
+		, title   : ssid
 		, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
-			notify( name, 'Disconnect ...', icon );
+			notify( ssid, 'Disconnect ...', 'wifi' );
 			bash( [ 'disconnect' ] )
 		}
 	} );
@@ -143,23 +143,23 @@ $( '.edit' ).click( function() {
 $( '.forget' ).click( function() {
 	var connectedlan = '';
 	if ( G.list === 'listbt' ) {
-		var list = G.listbt[ G.li.index() ]
+		var name = G.li.data( 'name' );
+		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
 		info( {
 			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
-			, title   : list.name
+			, title   : name
 			, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( list.name, 'Forget ...', 'bluetooth' );
-				bluetoothCommand( 'remove', list );
+				notify( name, 'Forget ...', icon );
+				bluetoothCommand( 'remove', G.li.data( 'mac' ) );
 			}
 		} );
 		return
 	}
 	
 	var ssid = G.li.data( 'ssid' );
-	var connected = G.listwl[ G.li.index() ].ip ? true : false;
 	info( {
 		  icon    : 'wifi'
 		, title   : ssid
@@ -168,7 +168,7 @@ $( '.forget' ).click( function() {
 		, okcolor : red
 		, ok      : function() {
 			notify( ssid, 'Forget ...', 'wifi' );
-			bash( [ 'profileremove', ssid, connected ] );
+			bash( [ 'profileremove', ssid ] );
 		}
 	} );
 } );
@@ -342,9 +342,7 @@ function editLANSet( values ) {
 	} );
 }
 function editWiFi() {
-	var list = G.listwl[ G.li.index() ];
-	bash( [ 'profileget', list.ssid ], function( data ) {
-		var values = [ list.ssid, list.ip, list.gateway, ...data ];
+	bash( [ 'profileget', G.li.data( 'ssid' ) ], function( values ) {
 		infoWiFi( values );
 	}, 'json' );
 }
@@ -420,43 +418,44 @@ function qr( msg ) {
 		, pad : 0
 	} );
 }
-function renderBluetooth() {
-	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
-	if ( G.listbt ) {
-		var htmlbt = '';
-		G.listbt.forEach( function( list ) {
-			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
-			htmlbt += '<li class="bt"><i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
-		} );
-		$( '#listbt' ).html( htmlbt );
-	} else {
-		$( '#listbt' ).empty();
-	}
-	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
-		var mac = $( '#codebluetooth' ).data( 'mac' );
-		bluetoothInfo( mac );
-	}
-}
 function renderPage() {
 	$( '.btscan' ).toggleClass( 'disabled', G.camilladsp );
-	if ( G.activebt ) {
-		renderBluetooth();
-		$( '#divbt' ).removeClass( 'hide' );
-	} else {
+	if ( !G.activebt ) {
 		$( '#divbt' ).addClass( 'hide' );
+	} else {
+		if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
+		if ( G.listbt ) {
+			var htmlbt = '';
+			G.listbt.forEach( function( list ) {
+				var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
+				htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
+						+'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
+			} );
+			$( '#listbt' ).html( htmlbt );
+		} else {
+			$( '#listbt' ).empty();
+		}
+		if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+			var mac = $( '#codebluetooth' ).data( 'mac' );
+			bluetoothInfo( mac );
+		}
+		$( '#divbt' ).removeClass( 'hide' );
 	}
-	if ( G.activewlan ) {
+	if ( !G.activewlan ) {
+		$( '#divwl' ).addClass( 'hide' );
+	} else {
 		var htmlwl = '';
 		if ( G.listwl ) {
 			G.listwl.forEach( function( list ) {
 				if ( list.ip ) {
-					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-					var datassid = !G.hostapd ? 'data-ssid="'+ list.ssid +'"' : '';
-					htmlwl += '<li class="wl" '+ datassid +'><i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;';
 					if ( !G.hostapd ) {
-						htmlwl += list.ssid +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+						var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+						htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
+								+'<i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;'+ list.ssid 
+								+'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 					} else {
-						htmlwl += '<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
+						htmlwl += '<li class="wl accesspoint"><i class="fa fa-accesspoint"></i><grn>•</grn>&ensp;'
+								+'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
 					}
 				} else {
 					htmlwl += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
@@ -467,18 +466,16 @@ function renderPage() {
 			$( '#listwl' ).empty();
 		}
 		$( '#divwl' ).removeClass( 'hide' );
-	} else {
-		$( '#divwl' ).addClass( 'hide' );
 	}
-	if ( G.activeeth ) {
+	if ( !G.activeeth ) {
+		$( '#divlan' ).addClass( 'hide' );
+	} else {
 		var htmlwl = '';
 		if ( G.listeth ) htmlwl = '<li data-ip="'+ G.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ G.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ G.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '.lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
-	} else {
-		$( '#divlan' ).addClass( 'hide' );
 	}
 	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
 	if ( !$( '#divinterface' ).hasClass( 'hide' ) ) renderQR();

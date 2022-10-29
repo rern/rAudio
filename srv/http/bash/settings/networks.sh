@@ -185,18 +185,28 @@ profileconnect )
 	netctlSwitch "${args[1]}"
 	;;
 profileget )
-	netctl=$( < "/etc/netctl/${args[1]}" )
+	ssid=${args[1]}
+	data='"'$ssid'"'
+	if netctl is-active "$ssid" &> /dev/null; then
+		status=( $( netctl status Home5GHz \
+					| grep -E 'rebinding lease|default route' \
+					| awk '{print $NF}' ) )
+		data+=',"'${status[0]}'","'${status[1]}'"'
+	else
+		data+=',"",""'
+	fi
+	netctl=$( < "/etc/netctl/$ssid" )
 	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
 	grep -q ^IP=dhcp <<< $netctl && static=false || static=true
 	grep -q ^Hidden <<< $netctl && hidden=true || hidden=false
 	grep -q ^Security=wep <<< $netctl && wep=true || wep=false
-	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
+	data+=',"'$password'", '$static', '$hidden', '$wep
+	echo "[$data]"
 	;;
 profileremove )
 	ssid=${args[1]}
-	connected=${args[2]}
 	netctl disable "$ssid"
-	if [[ $connected == true ]]; then
+	if netctl is-active "$ssid" &> /dev/null; then
 		netctl stop "$ssid"
 		killall wpa_supplicant
 		ifconfig $( < $dirshm/wlan ) up
