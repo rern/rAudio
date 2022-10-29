@@ -23,6 +23,7 @@ icon=bluetooth
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
+	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
 		icon=btsender
