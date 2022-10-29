@@ -173,7 +173,7 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	bluetoothInfo( G.listbtli.mac );
+	bluetoothInfo( G.li.data( 'mac' ) );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var list = G.listwlscan[ $( this ).index() ];
@@ -245,8 +245,8 @@ $( '.hostapdset' ).click( function() {
 
 } );
 
-function bluetoothCommand( cmd, list ) {
-	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ list.mac +' '+ list.type +' "'+ list.name +'"' );
+function bluetoothCommand( cmd, mac ) {
+	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ mac );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac ], function( data ) {
@@ -418,28 +418,31 @@ function qr( msg ) {
 		, pad : 0
 	} );
 }
+function renderBluetooth() {
+	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
+	if ( G.listbt ) {
+		var htmlbt = '';
+		G.listbt.forEach( function( list ) {
+			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
+			htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
+					+'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
+		} );
+		$( '#listbt' ).html( htmlbt );
+	} else {
+		$( '#listbt' ).empty();
+	}
+	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+		var mac = $( '#codebluetooth' ).data( 'mac' );
+		bluetoothInfo( mac );
+	}
+	$( '#divbt' ).removeClass( 'hide' );
+}
 function renderPage() {
 	$( '.btscan' ).toggleClass( 'disabled', G.camilladsp );
 	if ( !G.activebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {
-		if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
-		if ( G.listbt ) {
-			var htmlbt = '';
-			G.listbt.forEach( function( list ) {
-				var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
-				htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
-						+'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
-			} );
-			$( '#listbt' ).html( htmlbt );
-		} else {
-			$( '#listbt' ).empty();
-		}
-		if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
-			var mac = $( '#codebluetooth' ).data( 'mac' );
-			bluetoothInfo( mac );
-		}
-		$( '#divbt' ).removeClass( 'hide' );
+		renderBluetooth();
 	}
 	if ( !G.activewlan ) {
 		$( '#divwl' ).addClass( 'hide' );

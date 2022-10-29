@@ -10,7 +10,7 @@
 
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/btpair ]] && exit # flag - suppress bluetooth.rules fires "connect" too soon
+[[ -e $dirshm/btflag ]] && exit # flag - suppress bluetooth.rules fires "connect" too soon
 
 if [[ ! $2 ]]; then
 	udev=$1
@@ -95,13 +95,13 @@ if [[ $udev == connect ]]; then
 		bluetoothctl agent NoInputNoOutput
 	fi
 fi
+
+# flag - suppress bluetooth.rules fires "connect" too soon
+touch $dirshm/btflag
+( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
-	if [[ $action == pair ]]; then # flag - suppress bluetooth.rules fires "connect" too soon
-		touch $dirshm/btpair
-		( sleep 5; rm $dirshm/btpair ) &> /dev/null &
-	fi
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	for i in {1..5}; do
