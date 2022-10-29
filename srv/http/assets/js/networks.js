@@ -59,7 +59,7 @@ $( '.lanadd' ).click( function() {
 		}
 	} );
 } );
-$( '.entries' ).on( 'click', 'li', function( e ) {
+$( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	G.li = $( this );
 	G.liindex = G.li.index();

@@ -251,7 +251,9 @@ volumeGet() {
 	if [[ -e $dirshm/btreceiver ]]; then
 		control=$( < $dirshm/btreceiver )
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null | sed -E -n '/%.*dB/ {s/.*\[(.*)%.*/\1/;p}' )
+			volume=$( amixer -MD bluealsa 2> /dev/null \
+						| grep -m1 %.*dB \
+						| sed -E 's/.*\[(.*)%.*/\1/' )
 			[[ $volume ]] && break
 			sleep 1
 		done

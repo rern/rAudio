@@ -105,7 +105,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<ul id="listbtscan" class="entries"></ul>
+<ul id="listbtscan" class="entries scan"></ul>
 </div>
 <div id="divwifi" class="section hide">
 <?php
@@ -116,7 +116,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<ul id="listwlscan" class="entries"></ul>
+<ul id="listwlscan" class="entries scan"></ul>
 </div>
 
 <div id="menu" class="menu hide">

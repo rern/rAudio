@@ -41,16 +41,17 @@ if [[ $1 == wlan ]]; then
 fi
 
 bluetoothctl --timeout=10 scan on &> /dev/null
-devices=$( bluetoothctl devices | grep -v ' ..-..-..-..-..-..$' )
+devices=$( bluetoothctl devices \
+			| grep -v ' ..-..-..-..-..-..$' \
+			| sort -k3 -fh )
 [[ ! $devices ]] && exit
 
 # omit paired devices
-paired=$( bluetoothctl devices Paired )
+readarray -t paired <<< $( bluetoothctl devices Paired )
 if [[ $paired ]]; then
-	devices=$( echo "$devices
-$paired" \
-	| sort -k3 -fh \
-	| uniq -u )
+	for dev in "${paired[@]}"; do
+		devices=$( grep -v "$dev" <<< $devices  )
+	done
 fi
 readarray -t devices <<< $devices
 for dev in "${devices[@]}"; do
