@@ -21,9 +21,10 @@ fi
 icon=bluetooth
 
 disconnectRemove() {
+	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
-	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
 		icon=btsender
@@ -49,9 +50,9 @@ if [[ $udev == disconnect ]]; then
 	done
 	if [[ $mac ]]; then
 #-----
-		pushstreamNotifyBlink Bluetooth 'Disconnect ...' bluetooth
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
+		pushstreamNotifyBlink "$name" 'Disconnect ...' bluetooth
 		disconnectRemove
 	fi
 	exit
@@ -69,10 +70,11 @@ if [[ $udev == connect ]]; then
 		fi
 	done
 	# unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	[[ ! $name ]] && name=Bluetooth
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
-			name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 			bluetoothctl disconnect $mac
 #-----X
 			pushstreamNotify "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' bluetooth 6000
@@ -87,7 +89,7 @@ if [[ $udev == connect ]]; then
 	fi
 	
 #-----
-	pushstreamNotifyBlink Bluetooth "$msg" bluetooth
+	pushstreamNotifyBlink "$name" "$msg" bluetooth
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
