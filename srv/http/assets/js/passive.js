@@ -394,8 +394,6 @@ function psNotify( data ) {
 		setTimeout( function() {
 			location.href = '/';
 		}, 3000 );
-	} else if ( text !== 'Connect ...' && $( '#bannerMessage' ).text().includes( 'Reconnect again' ) ) { // bluetooth
-		return
 	}
 	
 	banner( title, text, data.icon, data.delay );

@@ -1,20 +1,27 @@
 #!/bin/bash
 
-# Pair: on connected - Trust > Pair > get device type > Disconnect > notify reconnect
-#   - pair audio devices - mixer not yet ready)
-# Connect: Trust > connect > get device type > notify
+# Pair: on connected - trust > pair > get device type > disconnect > notify paired > reconnect > notify connected
+#	- pair audio devices - mixer not yet ready
+#	- bluetooth.rules fires "connect" too soon > set flag to suppress it
+#	- disconnect > delay > reconnect
+#	- once on pairing only
+# Connect: Trust > connect > get device type > notify connected
 # Disconnect / Remove: Disconnect > notify
 
 . /srv/http/bash/common.sh
 
-udev=$1
+[[ -e $dirshm/btpair ]] && exit # flag - suppress bluetooth.rules fires "connect" too soon
+
+if [[ ! $2 ]]; then
+	udev=$1
+else
+	action=$1
+	mac=$2
+	type=$3
+	name=$4
+fi
 icon=bluetooth
 
-bannerReconnect() {
-	bluetoothctl disconnect $mac
-	pushstreamNotify "$name" "$1<br><wh>Power it off > on / Reconnect again</wh>" $icon 15000
-	pushstreamList
-}
 disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
@@ -29,15 +36,12 @@ disconnectRemove() {
 		$dirsettings/player-conf.sh
 	fi
 	pushstreamNotify "$name" $msg $icon
-	pushstreamList
-}
-pushstreamList() {
 	$dirsettings/features-data.sh pushrefresh
 	$dirsettings/networks-data.sh pushbt
-	exit
 }
 #-------------------------------------------------------------------------------------------
-if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from paired device
+# from bluetooth.rules: disconnect from paired device
+if [[ $udev == disconnect ]]; then
 	sleep 2
 	readarray -t lines < $dirshm/btconnected
 	for line in "${lines[@]}"; do
@@ -54,7 +58,9 @@ if [[ $udev == disconnect ]]; then # >>>> bluetooth.rules: 1. disconnect from pa
 	exit
 fi
 
-if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. connect from paired device
+#-------------------------------------------------------------------------------------------
+# from bluetooth.rules: 1. connect from paired device, 2. pair from sender
+if [[ $udev == connect ]]; then
 	sleep 2
 	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
@@ -90,14 +96,14 @@ if [[ $udev == connect ]]; then # >>>> bluetooth.rules: 1. pair from sender; 2. 
 		action=pair
 		bluetoothctl agent NoInputNoOutput
 	fi
-else # >>>> rAudio: 1. pair to receiver; 2. remove paired device
-	action=$1
-	mac=$2
-	type=$3
-	name=$4
 fi
 #-------------------------------------------------------------------------------------------
+# 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
+	if [[ $action == pair ]]; then # flag - suppress bluetooth.rules fires "connect" too soon
+		touch $dirshm/btpair
+		( sleep 5; rm $dirshm/btpair ) &> /dev/null &
+	fi
 	bluetoothctl trust $mac
 	bluetoothctl pair $mac
 	for i in {1..5}; do
@@ -107,9 +113,12 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
 	
-#-----X
-	[[ $action == pair ]] && bannerReconnect 'Paired successfully'
-	
+	if [[ $action == pair ]]; then
+		bluetoothctl disconnect $mac
+		pushstreamNotify "$name" 'Paired successfully.' $icon -1
+		sleep 3
+		pushstreamNotifyBlink "$name" 'Connecting ...' $icon
+	fi
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
@@ -128,12 +137,14 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ ! $btmixer ]] && sleep 1 || break
 	done
 #-----X
-	[[ $type == Source ]] && icon=btsender
-	uptime -s | date -f - +%s > $dirshm/uptime
-	date +%s >> $dirshm/uptime
-	[[ ! $btmixer ]] && bannerReconnect 'Mixer not ready'
+	if [[ ! $btmixer && $action == connect ]]; then
+		bluetoothctl disconnect $mac
+		pushstreamNotify "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" $icon 15000
+		exit
+	fi
 	
 #-----
+	[[ $type == Source ]] && icon=btsender
 	pushstreamNotify "$name" Ready $icon
 	if [[ $type == Source ]]; then
 ##### sender
@@ -147,8 +158,11 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
-	pushstreamList
-elif [[ $action == disconnect || $action == remove ]]; then # from rAudio only
+	$dirsettings/features-data.sh pushrefresh
+	$dirsettings/networks-data.sh pushbt
+#-------------------------------------------------------------------------------------------
+# from rAudio networks.js
+elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do
