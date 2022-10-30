@@ -1011,6 +1011,7 @@ playerstop )
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
+			systemctl restart bluetooth
 			;;
 		snapcast )
 			snapclientStop

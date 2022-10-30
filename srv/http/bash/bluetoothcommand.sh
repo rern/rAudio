@@ -129,7 +129,7 @@ if [[ $action == connect || $action == pair ]]; then
 	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	if [[ ! $type ]]; then
 ##### non-audio
-		echo $mac Device $name >> $dirshm/btconnected
+		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
 		pushstreamNotify "$name" Ready $icon
 		exit
@@ -149,12 +149,12 @@ if [[ $action == connect || $action == pair ]]; then
 	if [[ $type == Source ]]; then
 ##### sender
 		icon=btsender
-		echo $mac Source $name >> $dirshm/btconnected
+		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
 	else
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
-		echo $mac Sink $name >> $dirshm/btconnected
+		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
