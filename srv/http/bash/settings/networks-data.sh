@@ -33,9 +33,7 @@ if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*eth0 )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
-	[[ ! $gateway ]] && gateway=$( ip r \
-									| grep -m1 ^default \
-									| cut -d' ' -f3 )
+	[[ ! $gateway ]] && gateway=$( ip r | awk '/^default/ {print $3;exit}' )
 	if [[ $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
 		if [[ ! $hostname ]]; then

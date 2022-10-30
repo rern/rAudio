@@ -251,9 +251,7 @@ volumeGet() {
 	if [[ -e $dirshm/btreceiver ]]; then
 		control=$( < $dirshm/btreceiver )
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null \
-						| grep -m1 %.*dB \
-						| sed -E 's/.*\[(.*)%.*/\1/' )
+			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
 			[[ $volume ]] && break
 			sleep 1
 		done
@@ -273,16 +271,12 @@ volumeGet() {
 			volume=100
 		else
 			control=$( < $dirshm/amixercontrol )
-			voldb=$( amixer -c $card -M sget "$control" \
-				| grep -m1 '%.*dB' \
-				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
+			voldb=$( amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
 			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
-				volume=$( amixer -c $card -M sget "$control" \
-							| grep -m1 '%]' \
-							| sed -E 's/.*\[(.*)%].*/\1/' )
+				volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
 				[[ ! $volume ]] && volume=100
 			fi
 		fi

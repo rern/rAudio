@@ -24,9 +24,7 @@ restartMPD() {
 	pushRefresh
 }
 volumeBtGet() {
-	voldb=$( amixer -MD bluealsa 2> /dev/null \
-				| grep -m1 '%.*dB' \
-				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
+	voldb=$( amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
 }
 
 case ${args[0]} in
