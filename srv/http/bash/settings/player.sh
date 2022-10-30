@@ -24,7 +24,7 @@ restartMPD() {
 	pushRefresh
 }
 volumeBtGet() {
-	voldb=$( amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
+	voldb=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
 }
 
 case ${args[0]} in
@@ -115,9 +115,7 @@ $( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
 
 <bll># amixer scontrols</bll>"
 	card=$( < $dirsystem/asoundcard )
-	aplayname=$( aplay -l \
-					| grep "^card $card" \
-					| awk -F'[][]' '{print $2}' )
+	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
 		devices+="
 $( amixer -c $card scontrols )
