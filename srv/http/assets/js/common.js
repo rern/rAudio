@@ -203,10 +203,12 @@ Note:
 }
 function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
-	if ( !O.buttonnoreset ) $( '#infoOverlay' ).addClass( 'hide' );
 	setTimeout( function() {
 		if ( typeof fn === 'function' ) fn();
-		$( '#infoOverlay' ).empty();
+		if ( !O.buttonnoreset ) {
+			$( '#infoOverlay' ).addClass( 'hide' );
+			$( '#infoOverlay' ).empty();
+		}
 	}, 0 );
 }
 
