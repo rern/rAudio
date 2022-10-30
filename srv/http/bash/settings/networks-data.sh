@@ -50,8 +50,6 @@ if [[ $ipeth ]]; then
 fi
 if [[ -e $dirshm/wlan ]]; then
 	wlandev=$( < $dirshm/wlan )
-	ifconfig $wlandev up &> /dev/null # force up
-	
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -99,7 +97,7 @@ data='
   "page"       : "networks"
 , "activebt"   : '$activebt'
 , "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
-, "activewlan" : '$( rfkill | grep -q wlan && echo true )'
+, "activewlan" : '$( ifconfig wlan0 | grep -q wlan0.*UP && echo true )'
 , "camilladsp" : '$( exists $dirsystem/camilladsp )'
 , "ipeth"      : "'$ipeth'"
 , "ipwlan"     : "'$ipwlan'"

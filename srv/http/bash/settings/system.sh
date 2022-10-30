@@ -1077,6 +1077,7 @@ wlan )
 		regdom=${args[2]}
 		apauto=${args[3]}
 		! lsmod | grep -q brcmfmac && modprobe brcmfmac
+		ifconfig wlan0 up
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
@@ -1086,10 +1087,10 @@ wlan )
 		fi
 	else
 		systemctl -q is-active hostapd && $dirsettings/features.sh hostapddisable
-		rmmod brcmfmac &> /dev/null
+		ifconfig wlan0 down
 	fi
 	pushRefresh
-	rfkill | grep -q wlan && active=true || active=false
+	ifconfig wlan0 | grep -q wlan0.*UP && active=true || active=false
 	pushstream refresh '{"page":"networks","activewlan":'$active'}'
 	;;
 	
