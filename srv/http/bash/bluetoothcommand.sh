@@ -23,7 +23,6 @@ disconnectRemove() {
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
-	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
 		icon=btsender
 		$dirbash/cmd.sh playerstop
