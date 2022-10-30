@@ -24,7 +24,7 @@ $( '#setting-btreceiver' ).click( function() {
 			, rangevalue    : vol
 			, footer        : db +' dB'
 			, beforeshow    : function() {
-				$( '#infoButtons a' ).toggleClass( 'hide', db === '0.00' );
+				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
@@ -35,7 +35,6 @@ $( '#setting-btreceiver' ).click( function() {
 			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
 			, button        : function() {
 				bash( [ 'volumebt0db', G.btaplayname ] );
-				$( '#infoButtons a' ).removeClass( 'hide' );
 			}
 			, okno          : 1
 		} );
