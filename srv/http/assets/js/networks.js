@@ -30,11 +30,31 @@ $( '.btscan' ).click( function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	var list = G.listbtscan[ $( this ).index() ];
-	if ( list.connected ) return
-	
-	notify( 'Bluetooth', 'Pair ...', 'bluetooth' );
-	bluetoothCommand( 'pair', list );
+	notify( $( this ).data( 'name' ), 'Pair ...', 'bluetooth' );
+	bluetoothCommand( 'pair', $( this ).data( 'mac' ) );
+} );
+$( '#listwlscan' ).on( 'click', 'li', function() {
+	var ssid = $( this ).data( 'ssid' );
+	var data = {
+		  ESSID     : ssid
+		, IP        : 'dhcp'
+	}
+	if ( $( this ).data( 'encrypt' ) === 'on' ) {
+		info( {
+			  icon          : 'wifi'
+			, title         : ssid
+			, passwordlabel : 'Password'
+			, focus         : 0
+			, oklabel       : 'Connect'
+			, ok            : function() {
+				data.Security = $( this ).data( 'wpa' ) ? 'wpa' : 'wep';
+				data.Key      = infoVal();
+				connectWiFi( data );
+			}
+		} );
+	} else {
+		connectWiFi( data );
+	}
 } );
 $( '.wladd' ).click( function() {
 	G.hostapd ? infoAccesspoint() : infoWiFi();
@@ -141,12 +161,11 @@ $( '.edit' ).click( function() {
 	G.list === 'listwl' ? editWiFi() : editLAN();
 } );
 $( '.forget' ).click( function() {
-	var connectedlan = '';
 	if ( G.list === 'listbt' ) {
 		var name = G.li.data( 'name' );
 		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
 		info( {
-			  icon    : list.type === 'Source' ? 'btsender' : 'bluetooth'
+			  icon    : icon
 			, title   : name
 			, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
@@ -154,6 +173,7 @@ $( '.forget' ).click( function() {
 			, ok      : function() {
 				notify( name, 'Forget ...', icon );
 				bluetoothCommand( 'remove', G.li.data( 'mac' ) );
+				console.log( 'remove', G.li.data( 'mac' ) );
 			}
 		} );
 		return
@@ -174,50 +194,6 @@ $( '.forget' ).click( function() {
 } );
 $( '.info' ).click( function() {
 	bluetoothInfo( G.li.data( 'mac' ) );
-} );
-$( '#listwlscan' ).on( 'click', 'li', function() {
-	var list = G.listwlscan[ $( this ).index() ];
-	var ssid = list.ssid;
-	var data = {
-		  ESSID     : ssid
-		, IP        : 'dhcp'
-	}
-	if ( list.profile ) {
-		var ip = list.ip;
-		info( {
-			  icon    : 'wifi'
-			, title   : ssid
-			, message : ip ? 'Disconnect?' : 'Connect?'
-			, oklabel : ip ? '<i class="fa fa-times"></i>OK' : '<i class="fa fa-check"></i>OK'
-			, okcolor : ip ? orange : ''
-			, ok      : function() {
-				clearTimeout( G.timeoutScan );
-				notify( ssid, ip ? 'Disconnect ...' : 'Connect ...', 'wifi' );
-				if ( ip ) {
-					bash( [ 'disconnect' ] );
-				} else {
-					bash( [ 'profileconnect', ssid ] );
-				}
-			}
-		} );
-	} else {
-		if ( list.encrypt ) {
-			info( {
-				  icon          : 'wifi'
-				, title         : ssid
-				, passwordlabel : 'Password'
-				, focus         : 0
-				, oklabel       : 'Connect'
-				, ok            : function() {
-					data.Security = 'wpa' in list ? 'wpa' : 'wep';
-					data.Key      = infoVal();
-					connectWiFi( data );
-				}
-			} );
-		} else {
-			connectWiFi( data );
-		}
-	}
 } );
 $( '.hostapdset' ).click( function() {
 	info( {
@@ -265,8 +241,8 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
-	var ip = data.Address;
-	if ( ip ) {
+	if ( 'Address' in data ) {
+		var ip = data.Address;
 		if ( $( '#listlan li' ).length ) {
 			notify( ssid, 'Change ...', 'wifi' );
 		} else {
@@ -514,7 +490,7 @@ function scanBluetooth() {
 			G.listbtscan = data;
 			var htmlbt = '';
 			data.forEach( function( list ) {
-				htmlbt += '<li class="btscan"><i class="fa fa-bluetooth"></i><a class="liname wh">'+ list.name +'</a></li>';
+				htmlbt += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
 		}
@@ -534,7 +510,7 @@ function scanWlan() {
 					var dbm = '';
 					var signal = '';
 				}
-				htmlwl += '<li class="wlscan"><i class="fa fa-wifi'+ signal +'"></i>';
+				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'"><i class="fa fa-wifi'+ signal +'"></i>';
 				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
 				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
 				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';

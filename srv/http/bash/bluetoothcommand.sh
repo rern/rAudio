@@ -1,16 +1,13 @@
 #!/bin/bash
 
-# Pair: on connected - trust > pair > get device type > disconnect > notify paired > reconnect > notify connected
-#	- pair audio devices - mixer not yet ready
-#	- bluetooth.rules fires "connect" too soon > set flag to suppress it
-#	- disconnect > delay > reconnect
-#	- once on pairing only
-# Connect: Trust > connect > get device type > notify connected
-# Disconnect / Remove: Disconnect > notify
+# Pair: trust > pair > get device type > disconnect > delay > connect
+#   (delay - connect right after paired > mixer not yet ready)
+# Connect: trust > connect > get device type
+# Disconnect / Remove: disconnect
 
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/btflag ]] && exit # flag - suppress bluetooth.rules fires "connect" too soon
+[[ -e $dirshm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
 
 if [[ ! $2 ]]; then
 	udev=$1
@@ -24,6 +21,7 @@ disconnectRemove() {
 	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
+	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
 	touch $dirshm/$type-$mac
 	if [[ $type == Source ]]; then
@@ -35,6 +33,7 @@ disconnectRemove() {
 		$dirbash/cmd.sh mpcplayback$'\n'stop
 		$dirsettings/player-conf.sh
 	fi
+#-----
 	pushstreamNotify "$name" $msg $icon
 	$dirsettings/features-data.sh pushrefresh
 	$dirsettings/networks-data.sh pushbt
@@ -49,9 +48,9 @@ if [[ $udev == disconnect ]]; then
 		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
 	done
 	if [[ $mac ]]; then
-#-----
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
+#-----
 		pushstreamNotifyBlink "$name" 'Disconnect ...' bluetooth
 		disconnectRemove
 	fi
@@ -62,16 +61,18 @@ fi
 # from bluetooth.rules: 1. connect from paired device, 2. pair from sender
 if [[ $udev == connect ]]; then
 	sleep 2
-	msg='Connect ...'
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
-	for mac in ${macs[@]}; do
-		if bluetoothctl info $mac | grep -q 'Connected: yes'; then
-			grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
-		fi
-	done
-	# unpaired sender only - fix: rAudio triggered to connect by unpaired receivers when power on
-	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	if [[ $macs ]]; then
+		for mac in ${macs[@]}; do
+			if bluetoothctl info $mac | grep -q 'Connected: yes'; then
+				grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
+			fi
+		done
+	fi
+	[[ $mac ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
+	msg='Connect ...'
+	# fix: rAudio triggered to connect by unpaired sender on boot
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
@@ -79,15 +80,15 @@ if [[ $udev == connect ]]; then
 #-----X
 			pushstreamNotify "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' bluetooth 6000
 			exit
+			
 		fi
 	else
 		for i in {1..5}; do
 			! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 		done
-#-----X
 		bluetoothctl info $mac | grep -q 'UUID: Audio Source' && msg='Pair ...' || exit
+		
 	fi
-	
 #-----
 	pushstreamNotifyBlink "$name" "$msg" bluetooth
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
@@ -98,28 +99,28 @@ if [[ $udev == connect ]]; then
 		bluetoothctl agent NoInputNoOutput
 	fi
 fi
-
-# flag - suppress bluetooth.rules fires "connect" too soon
-touch $dirshm/btflag
-( sleep 5; rm $dirshm/btflag ) &> /dev/null &
+# flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
+touch $dirshm/btflag && ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
-	bluetoothctl trust $mac
-	bluetoothctl pair $mac
-	for i in {1..5}; do
-		bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
-	done
 	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
 	[[ ! $name ]] && name=Bluetooth
-#-----X
-	bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
-	
 	if [[ $action == pair ]]; then
+		bluetoothctl trust $mac
+		bluetoothctl pair $mac
+		for i in {1..5}; do
+			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
+		done
+#-----X
+		bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify "$name" 'Pair failed.' bluetooth && exit
+		
 		bluetoothctl disconnect $mac
+#-----
 		pushstreamNotify "$name" 'Paired successfully.' $icon -1
 		sleep 3
-		pushstreamNotifyBlink "$name" 'Connecting ...' $icon
+#-----
+		pushstreamNotifyBlink "$name" 'Connect ...' $icon
 	fi
 	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
@@ -132,8 +133,8 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 		pushstreamNotify "$name" Ready $icon
 		exit
+		
 	fi
-	
 	for i in {1..5}; do
 		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null | grep "$name" )
 		[[ ! $btmixer ]] && sleep 1 || break
@@ -143,9 +144,8 @@ if [[ $action == connect || $action == pair ]]; then
 		bluetoothctl disconnect $mac
 		pushstreamNotify "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" $icon 15000
 		exit
+		
 	fi
-	
-#-----
 	if [[ $type == Source ]]; then
 ##### sender
 		icon=btsender
@@ -159,8 +159,10 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
+#-----
 	pushstreamNotify "$name" Ready $icon
 	$dirsettings/features-data.sh pushrefresh
+	sleep 1
 	$dirsettings/networks-data.sh pushbt
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
