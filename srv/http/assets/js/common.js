@@ -347,7 +347,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( O.filetype === 'image/*' ) setFileImage( G.infofile );
+				if ( O.filetype === 'image/*' ) setFileImage();
 			}
 		} );
 	}
@@ -690,7 +690,8 @@ function setButtonWidth() {
 	} );
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
-function setFileImage( file ) {
+function setFileImage() {
+	var file = G.infofile;
 	var timeout = setTimeout( function() {
 		banner( 'Change Image', 'Load ...', 'refresh blink', -1 );
 	}, 1000 );
