@@ -588,10 +588,7 @@ function getPlaybackStatus( withdisplay ) {
 			displayPlayback();
 		} else if ( G.library ) {
 			if ( !G.librarylist ) {
-				$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
-					$( '#lib-mode-list' ).html( html );
-					renderLibrary();
-				} );
+				libraryHome();
 			}
 		} else if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
 			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
@@ -790,6 +787,25 @@ function infoUpdate( path ) {
 		}
 		, ok         : function() {
 			bash( [ 'mpcupdate', path || infoVal() ] );
+		}
+	} );
+}
+function libraryHome() {
+	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
+		var htmlnew = html.replace( /\.\d{10}(\.jpg"|\.gif")/g, '$1' );
+		if ( htmlnew !== G.libraryhtml ) {
+			G.libraryhtml = htmlnew;
+			$( '#lib-mode-list' ).html( html );
+		}
+		$( '#lib-path span' ).removeClass( 'hide' );
+		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
+		if ( G.library ) {
+			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
+			renderLibrary();
+		} else {
+			switchPage( 'library' );
+			if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
+			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 	} );
 }

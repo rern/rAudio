@@ -435,21 +435,7 @@ $( '#addons' ).click( function () {
 	} );
 	loader();
 } );
-$( '#library, #button-library' ).click( function() {
-	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
-		$( '#lib-mode-list' ).html( html );
-		$( '#lib-path span' ).removeClass( 'hide' );
-		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
-		if ( G.library ) {
-			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
-			renderLibrary();
-		} else {
-			switchPage( 'library' );
-			if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
-			if ( G.color ) $( '#mode-webradio' ).click();
-		}
-	} );
-} );
+$( '#library, #button-library' ).click( libraryHome );
 $( '#playback' ).click( function() {
 	if ( G.playback && ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).click();
