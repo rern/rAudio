@@ -15,7 +15,7 @@ mkdir -p $dirdabradio/img
 mv $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
-readarray -t services <<< $( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g;p}' $dirshm/dabscan )
+readarray -t services <<< $( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' $dirshm/dabscan )
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
 		ensemble=$( cut -d' ' -f2- <<< ${service/;*} | xargs )

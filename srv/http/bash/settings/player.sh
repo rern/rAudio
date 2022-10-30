@@ -204,12 +204,11 @@ novolume )
 	aplayname=${args[1]}
 	card=${args[2]}
 	hwmixer=${args[3]}
-	sed -i -E '/^replaygain|^volume_normalization/ d' $mpdconf
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{camilladsp,equalizer}
-	rm -f $dirmpdconf/{crossfade,normalization,replaygain,soxr}.conf
+	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
+	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh
 	pushstream display '{"volumenone":true}'
 	;;

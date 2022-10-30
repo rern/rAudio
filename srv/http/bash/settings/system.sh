@@ -138,7 +138,7 @@ bluetooth )
 		sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 		if ls -l /sys/class/bluetooth | grep -q serial; then
 			systemctl start bluetooth
-			! grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
+			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 			rfkill | grep -q bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
 		else
 			pushReboot Bluetooth
@@ -154,7 +154,7 @@ bluetooth )
 			systemctl stop bluetooth
 			killall bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			grep -q 'device.*bluealsa' $mpdconf && $dirsettings/player-conf.sh
+			grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
 	fi
 	pushRefresh
@@ -168,7 +168,7 @@ bluetoothstart )
 	;;
 bluetoothstatus )
 	if rfkill | grep -q bluetooth; then
-		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||;p}' )
+		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||; p}' )
 		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
 	fi
 	echo "\
@@ -392,7 +392,7 @@ journalctl )
 	filebootlog=$dirtmp/bootlog
 	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		tail -1 <<< $journal | grep -q 'Startup finished' || journal='(Boot ...)'
+		grep -q 'Startup finished' <<< $journal || journal='(Boot ...)'
 		echo "$journal" > $filebootlog
 	fi
 	echo "\
@@ -560,7 +560,7 @@ ${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0
 		echo "\
 Mount failed:
 <br><code>$source</code>
-<br>$( sed -n '1 {s/.*: //;p}' <<< $std )"
+<br>$( sed -n '1 {s/.*: //; p}' <<< $std )"
 		exit
 		
 	else

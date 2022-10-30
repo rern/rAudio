@@ -156,7 +156,7 @@ hostapd )
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | grep -E -v 'RX|TX' | awk NF )"
+$( ifconfig eth0 | grep -E -v 'RX|TX|^\s*$' )"
 	;;
 ifconfigwlan )
 	wlandev=$( < $dirshm/wlan )

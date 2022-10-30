@@ -13,9 +13,9 @@ if [[ -e $dirsystem/camilladsp ]]; then
 	dsp=1
 	modprobe snd-aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	rate=$( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' )
+	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
+	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml )
+	rate=$( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml )
 ########
 	asound+='
 pcm.!default { 

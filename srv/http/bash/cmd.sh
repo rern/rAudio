@@ -260,9 +260,7 @@ volumeGet() {
 	
 	[[ -e $dirshm/nosound ]] && volume=-1 && return
 	
-	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' $mpdconf \
-					| tail -1 \
-					| cut -d'"' -f2 )
+	mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
 	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else

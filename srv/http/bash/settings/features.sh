@@ -59,10 +59,10 @@ autoplay )
 	;;
 camilladspasound )
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
-	new+=( $( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
-	new+=( $( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' ) )
-	new+=( $( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' ) )
-	old=( $( grep -E 'channels|format|rate' /etc/asound.conf | awk '{print $NF}' ) )
+	new+=( $( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml ) )
+	new+=( $( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml ) )
+	new+=( $( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml ) )
+	old=( $( awk '/channels|format|rate/ {print $NF}' /etc/asound.conf ) )
 	[[ "${new[@]}" == "${old[@]}" ]] && exit
 	
 	list=( channels format rate )
@@ -259,7 +259,7 @@ multiraudio )
 			touch $dirsystem/multiraudio
 			echo "$data" > $dirsystem/multiraudio.conf
 			ip=$( ipAddress )
-			iplist=$( sed -n 'n;p' <<< $data | grep -v $ip ) # ip at even lines
+			iplist=$( sed -n 'n; p' <<< $data | grep -v $ip ) # ip at even lines
 			for ip in $iplist; do
 				sshCommand $ip << EOF
 echo "$data" > $dirsystem/multiraudio.conf 

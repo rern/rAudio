@@ -18,8 +18,8 @@ fi
 icon=bluetooth
 
 disconnectRemove() {
-	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
-	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
+	[[ ! $name ]] && name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
+	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
 	[[ $1 ]] && msg=$1 || msg=Disconnected
@@ -103,7 +103,7 @@ touch $dirshm/btflag && ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
-	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
 	if [[ $action == pair ]]; then
 		bluetoothctl trust $mac
@@ -125,7 +125,7 @@ if [[ $action == connect || $action == pair ]]; then
 	for i in {1..5}; do
 		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
 	done
-	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/;p}' | xargs )
+	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ ! $type ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
@@ -166,7 +166,7 @@ if [[ $action == connect || $action == pair ]]; then
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then
-	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //;p}' )
+	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do

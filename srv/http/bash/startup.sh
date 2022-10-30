@@ -31,8 +31,8 @@ fi
 
 if [[ -e /boot/wifi && $wlandev ]]; then
 	wifi=$( sed 's/\r//' /boot/wifi ) # remove windows return chars
-	ssid=$( sed -E -n '/^ESSID/ {s/^.*="*|"$//g;p}' <<< $wifi )
-	key=$( sed -E -n '/^Key/ {s/^.*="*|"$//g;p}' <<< $wifi )
+	ssid=$( sed -E -n '/^ESSID/ {s/^.*="*|"$//g; p}' <<< $wifi )
+	key=$( sed -E -n '/^Key/ {s/^.*="*|"$//g; p}' <<< $wifi )
 	filebootwifi="/etc/netctl/$ssid"
 	cat << EOF > "$filebootwifi"
 Interface="$wlandev"

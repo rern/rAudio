@@ -31,11 +31,11 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 
 if (( $? != 0 )); then # very large database
 	eachkb=8192
-	existing=$( grep max_output_buffer $mpdconf | cut -d'"' -f2 )
+	existing=$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	for (( i=1; i < 11; i++ )); do
 		buffer=$(( $existing + ( i * $eachkb ) ))
-		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
+		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/conf/outputbuffer.conf
 		systemctl restart mpd
 		albums=$( mpc list album )
 		(( $? == 0 )) && break
@@ -50,7 +50,7 @@ fi
 ##### wav list #############################################
 # mpd not read *.wav albumartist
 readarray -t dirwav <<< $( mpc listall \
-							| sed -n '/\.wav$/ {s|/[^/]*$||;p}' \
+							| sed -n '/\.wav$/ {s|/[^/]*$||; p}' \
 							| sort -u )
 if [[ $dirwav ]]; then
 	for dir in "${dirwav[@]}"; do
