@@ -129,11 +129,10 @@ function htmlSavedPlaylist() {
 EOF;
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$counthtml = <<< EOF
+	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-<i class="fa fa-file-playlist"></i>
-EOF;
+<i class="fa fa-file-playlist"></i>';
 	echo json_encode( [
 		  'html'      => $html
 		, 'index'     => $indexbar
@@ -256,9 +255,10 @@ EOF;
 	$counthtml = '';
 	if ( $plname ) $counthtml.= '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>';
 	if ( $countsong ) {
-		$count = number_format( $countsong );
-		$hms = second2HMS( $counttime );
-		$counthtml.= '<wh id="pl-trackcount">'.$count.'</wh><i class="fa fa-music"></i><gr id="pl-time" data-time="'.$counttime.'">$hms</gr>';
+		$counthtml.= '
+<wh id="pl-trackcount">'.number_format( $countsong ).'</wh>
+<i class="fa fa-music"></i>
+<gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
