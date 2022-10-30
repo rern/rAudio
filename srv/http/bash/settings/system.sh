@@ -57,7 +57,7 @@ I2Cset() {
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
 }
 sharedDataIPlist() {
-	list=$( ipGet )
+	list=$( ipAddress )
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
@@ -894,7 +894,7 @@ shareddatadisconnect )
 	mv -f $dirbackup/{display,order} $dirsystem
 	rmdir $dirbackup &> /dev/null
 	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
-	sed -i "/$( ipGet )/ d" $filesharedip
+	sed -i "/$( ipAddress )/ d" $filesharedip
 	mpc -q clear
 	if grep -q ":$dirsd " /etc/fstab; then # client of server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )

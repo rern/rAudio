@@ -31,7 +31,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		echo $serverip > $dirshm/serverip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh
-		clientip=$( ipGet )
+		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 	else
 		systemctl stop snapclient

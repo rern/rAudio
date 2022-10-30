@@ -53,8 +53,8 @@ exists() {
 getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
-ipGet() {
-	ifconfig | grep -m1 inet.*broadcast | awk '{print $2}'
+ipAddress() {
+	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
 }
 isactive() {
 	systemctl -q is-active $1 && echo true || echo false
@@ -80,7 +80,7 @@ pushstream() {
 	
 	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q 'line.*rserver' <<< $data; then # 'Server rAudio' 'Online/Offline ...' rserver
 		[[ $channel == radiolist && $data == *webradio* ]] && webradiocopy=1 || webradiocopy=
-		ips=$( grep -v $( ipGet ) $filesharedip )
+		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
 			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &

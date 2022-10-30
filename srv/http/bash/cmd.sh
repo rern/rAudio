@@ -232,7 +232,7 @@ $Album" &> /dev/null &
 snapclientStop() {
 	systemctl stop snapclient
 	$dirsettings/player-conf.sh
-	ip=$( ipGet )
+	ip=$( ipAddress )
 	sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
@@ -1045,14 +1045,14 @@ power )
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 		
 		cp $filesharedip{,.backup}
-		ips=$( grep -v $( ipGet ) $filesharedip )
+		ips=$( grep -v $( ipAddress ) $filesharedip )
 		if [[ $ips ]]; then
 			for ip in $ips; do
 				sshCommand $ip $dirsettings/system.sh shareddatadisconnect
 			done
 		fi
 	elif [[ -e $filesharedip ]]; then # rclient
-		sed -i "/$( ipGet )/ d" $filesharedip
+		sed -i "/$( ipAddress )/ d" $filesharedip
 	fi
 	
 	if [[ $action == reboot ]]; then

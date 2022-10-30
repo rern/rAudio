@@ -213,7 +213,7 @@ status+='
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
 if (( $pllength  == 0 )); then
-	ip=$( ipGet )
+	ip=$( ipAddress )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
 	status+='

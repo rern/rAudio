@@ -74,7 +74,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 	fi
 fi
 if [[ -e $dirshm/clientip ]]; then
-	serverip=$( ipGet )
+	serverip=$( ipAddress )
 	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
 	status=$( sed -E -e '1,/^, "single" *:/ d
 					' -e '/^, "file" *:/ s/^,/{/

@@ -258,7 +258,7 @@ multiraudio )
 		if [[ $( wc -l <<< $data ) > 2 ]]; then
 			touch $dirsystem/multiraudio
 			echo "$data" > $dirsystem/multiraudio.conf
-			ip=$( ipGet )
+			ip=$( ipAddress )
 			iplist=$( sed -n 'n;p' <<< $data | grep -v $ip ) # ip at even lines
 			for ip in $iplist; do
 				sshCommand $ip << EOF
@@ -280,7 +280,7 @@ nfsserver )
 	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $active == true ]]; then
-		ip=$( ipGet )
+		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
 			chmod 777 "$path"

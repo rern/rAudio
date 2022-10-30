@@ -97,7 +97,7 @@ if [[ $connected  ]]; then
 	fi
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		mv -f $filesharedip{.backup,}
-		ips=$( grep -v $( ipGet ) $filesharedip )
+		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			sshCommand $ip $dirsettings/system.sh shareddataconnect
 		done
