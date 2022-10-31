@@ -701,7 +701,7 @@ function imageReplace( imagefilenoext, type, covername ) {
 							.pop();
 		$.post( cmdphp, data );
 	}
-	banner( '<i class="iconcover"></i>', O.title, 'Change ...', -1 );
+	banner( '<i class="iconcover blink"></i>', O.title, 'Change ...', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
