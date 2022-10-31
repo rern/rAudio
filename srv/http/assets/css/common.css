@@ -714,13 +714,7 @@ hr {
 	margin-left: 10px;
 }
 .infoimgwh {
-	font-size: 14px;
-}
-.infoimgwh span {
-	float: right;
-	display: inline-block;
 	text-align: right;
-	font-size: 14px;
 }
 .infoimgwh i {
 	font-size: 18px;

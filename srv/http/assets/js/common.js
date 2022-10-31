@@ -701,10 +701,7 @@ function setFileImage() {
 	if ( file.name.slice( -3 ) === 'gif' ) { // no resize, no rotate
 		var img = new Image();
 		img.onload = function() {
-			$( '.infomessage' ).append(
-				 '<img class="infoimgnew" src="'+ URL.createObjectURL( file ) +'">'
-				+'<div class="infoimgwh"><span>'+ this.width +' x '+ this.height +'</span></div>'
-			);
+			setFileImageRender( URL.createObjectURL( file ) );
 			clearTimeout( timeout );
 			bannerHide();
 		}
@@ -738,20 +735,10 @@ function setFileImage() {
 				canvas.width = pxW;
 				canvas.height = pxH;
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					var resizedimg = canvas.toDataURL( 'image/jpeg' ); // canvas -> base64
-					$( '.infomessage' ).append(
-						 '<img class="infoimgnew" src="'+ resizedimg +'">'
-						+'<div class="infoimgwh"><span>'+ pxW +' x '+ pxH
-						+'<br>original: '+ imgW +' x '+ imgH
-						+ htmlrotate
-					);
+					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), pxW, pxH, imgW +' x '+ imgH );
 				} );
 			} else {
-				$( '.infomessage' ).append( 
-					 '<img class="infoimgnew" src="'+ filecanvas.toDataURL( 'image/jpeg' ) +'">'
-					+'<div class="infoimgwh"><span>'+ imgW +' x '+ imgH
-					+ htmlrotate
-				);
+				setFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW, imgH );
 			}
 			clearTimeout( timeout );
 			bannerHide();
@@ -761,6 +748,8 @@ function setFileImage() {
 	$( '#infoContent' )
 		.off( 'click', '.infoimgnew' )
 		.on( 'click', '.infoimgnew', function() {
+		if ( !$( '.infomessage .rotate' ).length ) return
+		
 		G.rotate += 90;
 		if ( G.rotate === 360 ) G.rotate = 0;
 		var canvas = document.createElement( 'canvas' );
@@ -782,6 +771,18 @@ function setFileImage() {
 		ctx.drawImage( img, -cw, -ch );
 		image.src = canvas.toDataURL( 'image/jpeg' );
 	} );
+}
+function setFileImageRender( src, w, h, resize ) {
+	$( '.infomessage .imgnew' ).remove();
+	$( '.infomessage' ).append(
+		 '<span class="imgnew">'
+			+'<img class="infoimgnew" src="'+ src +'">'
+			+ ( w ? '<div class="infoimgwh">'+ w +' x '+ h : '' )
+			+ ( resize ? '<br>original: '+ resize : '' )
+			+'</div>'
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
+		+'</span>'
+	);
 }
 
 // verify password - called from addons.js ///////////////////////////////////////
