@@ -13,14 +13,14 @@ include 'logosvg.php';
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
 	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
 </head>
 <body style="height: 100%; user-select: none;">
 <div class="head" style="top: 0">
 	<i class="page-icon fa fa-help"></i><span class='title'>USER GUIDE</span>
-	<a href="/"><i id="close" class="fa fa-times"></i></a>
+	<a href="/"><i class="fa fa-times close"></i></a>
 </div>
 <div id="guide" style="user-select: none;">
 	<p><a class="gr" href="https://github.com/rern/rAudio-1"><i class="fa fa-github fa-lg bl" style="vertical-align: -2px"></i> Source</a><span id="count" style="float: right"></span></p>
@@ -29,7 +29,7 @@ include 'logosvg.php';
 	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
 	<div id="settings" class="btn btn-default"><i id="settings" class="fa fa-gear"></i></div>
 	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
-	<img id="image" src="/assets/img/guide/1.<?=$time?>.jpg">
+	<img id="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
 </div>
 <script>
 var nlibrary = 23;
@@ -79,7 +79,7 @@ window.addEventListener( 'touchend', function( e ) {
 } );
 
 function renderPage( n ) {
-	image.src = '/assets/img/guide/'+ n +'.<?=$time?>.jpg';
+	image.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
 	count.textContent = n +' / '+ ntotal;
 	Array.from( btn ).forEach( function( el ) {
 		el.classList.remove( 'active' );

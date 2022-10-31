@@ -18,10 +18,10 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.<?=$time?>.png">
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
+	<link rel="icon" href="/assets/img/icon.png">
+	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
 </head>
 <body>
 <div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
@@ -174,20 +174,20 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
-<script src="/assets/js/common.<?=$time?>.js"></script>
-<script src="/assets/js/<?=$page?>.<?=$time?>.js"></script>
+<script src="/assets/js/common.js?v=<?=$time?>"></script>
+<script src="/assets/js/<?=$page?>.js?v=<?=$time?>"></script>
 	<?php if ( $page === 'relays' ) { ?>
-<link rel="stylesheet" href="/assets/css/relays.<?=$time?>.css">
-<script src="/assets/js/relays.<?=$time?>.js"></script>
+<link rel="stylesheet" href="/assets/css/relays.css?v=<?=$time?>">
+<script src="/assets/js/relays.js?v=<?=$time?>"></script>
 	<?php } else if ( $page === 'networks' ) { ?>
 <script src="/assets/js/plugin/qrcode.min.js"></script>
 	<?php }
 		  if ( $page !== 'networks' ) { ?>
-<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
 	<?php }
 		  if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
-<script src="/assets/js/settings.<?=$time?>.js"></script>
+<script src="/assets/js/settings.js?v=<?=$time?>"></script>
 	
 </body>
 </html>

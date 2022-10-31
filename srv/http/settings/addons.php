@@ -15,10 +15,10 @@ $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="msapplication-tap-highlight" content="no">
 	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/addons.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/selectric.<?=$time?>.css">
+	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
 </head>
 <body>
 <div class="head">
@@ -146,8 +146,8 @@ foreach( $arrayalias as $alias ) {
 ?>
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
-<script src="/assets/js/common.<?=$time?>.js"></script>
-<script src="/assets/js/addons.<?=$time?>.js"></script>
+<script src="/assets/js/common.js?v=<?=$time?>"></script>
+<script src="/assets/js/addons.js?v=<?=$time?>"></script>
 	<?php if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
 <script>
 var addons = <?=json_encode( $addonslist )?>;
