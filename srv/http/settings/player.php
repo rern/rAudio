@@ -175,18 +175,15 @@ Decoder for audio filetypes: I^help filetype^I
 EOF
 	]
 	, [
-		  'label'       => 'Library Auto Update'
-		, 'id'          => 'autoupdate'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'help'        => <<< EOF
-Automatic update MPD database when files changed.
-EOF
+		  'label'   => 'Library Auto Update'
+		, 'id'      => 'autoupdate'
+		, 'setting' => false
+		, 'help'    => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		  'label'    => 'SoX Resampler'
-		, 'id'       => 'soxr'
-		, 'help'     => <<< EOF
+		  'label'  => 'SoX Resampler'
+		, 'id'     => 'soxr'
+		, 'help'   => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
 | I^gear^I |
