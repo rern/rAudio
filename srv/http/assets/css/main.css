@@ -1417,8 +1417,8 @@ i.map.disabled, .map.disabled i {
 #button-coverart {
 	position:relative;
 	display: inline-block;
-	margin-left: 15px;
 	width: 40px;
+	padding-left: 13px;
 	text-align: center;
 }
 #button-coverart::after {
