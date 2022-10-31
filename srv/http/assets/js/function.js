@@ -267,7 +267,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
-			banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>' );
+			banner( '<i class="iconcover"></i>', 'Album Cover Art', 'Change ...' );
 		}
 	} );
 }
@@ -691,7 +691,7 @@ function imageReplace( imagefilenoext, type, covername ) {
 							.pop();
 		$.post( cmdphp, data );
 	}
-	banner( $( '#infoTitle' ).text(), 'Change ...', '<i class="iconcover"></i>', -1 );
+	banner( '<i class="iconcover"></i>', O.title, 'Change ...', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
@@ -815,7 +815,7 @@ function libraryHome() {
 			renderLibrary();
 		} else {
 			switchPage( 'library' );
-			if ( G.status.updating_db ) banner( 'Library Database', 'Update ...', 'refresh-library blink' );
+			if ( G.status.updating_db ) banner( 'refresh-library blink', 'Library Database', 'Update ...' );
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 	} );
@@ -1060,7 +1060,7 @@ function power( action ) {
 				, okcolor : off ? red : orange
 				, ok      : function() {
 					bash( [ 'power', action, 1 ] );
-					banner( 'Server rAudio', 'Notify clients ...', 'rserver', -1 );
+					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 				}
 			} );
 		}
@@ -1332,7 +1332,7 @@ function saveToPlaylist( title, album, file ) {
 	local();
 	$( '#button-pl-playlists' ).click();
 	if ( !G.playlist ) $( '#button-playlist' ).click();
-	banner( 'Add to a playlist', 'Select target playlist', 'file-playlist blink', 5000 );
+	banner( 'file-playlist blink', 'Add to a playlist', 'Select target playlist', 5000 );
 }
 function second2HMS( second ) {
 	if ( !second || second < 1 ) return ''

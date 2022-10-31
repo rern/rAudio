@@ -165,7 +165,7 @@ function postcmd() { // post submit with temporary form
 	form += '</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
-	banner( 'Addons', 'Download files ...', 'jigsaw blink', -1 );
+	banner( 'jigsaw blink', 'Addons', 'Download files ...', -1 );
 }
 function sendcommand() {
 	j++;

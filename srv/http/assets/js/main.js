@@ -197,7 +197,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					}
 				} );
 			}
-			banner( 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), 'snapcast blink', -1 );
+			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), -1 );
 			break;
 		case 'relays':
 			$( '#stop' ).click();
@@ -429,7 +429,7 @@ $( '#colorpicker' ).click( function( e ) {
 	if ( e.target.id === 'colorpicker' ) $( '#colorcancel' ).click();
 } );
 $( '#addons' ).click( function () {
-	banner( 'Addons', 'Download database ...', 'jigsaw blink', -1 );
+	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
 	bash( [ 'addonslist' ], function( std ) {
 		addonsdl( std )
 	} );
@@ -576,7 +576,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 					bash( [ 'lyrics', artist, title, file ], function( data ) {
 						lyricsShow( data );
 					} );
-					banner( 'Lyrics', 'Fetch ...', 'search blink', 20000 );
+					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
 				} else if ( $this.hasClass( 'bio' ) ) {
 					if ( $( '#bio legend' ).text() != G.status.Artist ) {
 						getBio( artist );
@@ -588,7 +588,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 					saveToPlaylist( G.status.Title, G.status.Album, G.status.file );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
 					bash( [ 'scrobble', ...values ] );
-					banner( 'Scrobble', 'Send ...', 'lastfm blink' );
+					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).click();
 			} );
@@ -1037,7 +1037,7 @@ $( '.btn-cmd' ).click( function() {
 			elapsedscrobble = G.status.webradio ? '' : G.status.elapsed;
 			if ( G.status.player !== 'mpd' ) {
 				bash( [ 'playerstop', elapsedscrobble ] );
-				banner( icon_player[ G.status.player ], 'Stop ...', G.status.player );
+				banner( G.status.player, icon_player[ G.status.player ], 'Stop ...' );
 				return
 			}
 			
@@ -1756,27 +1756,31 @@ $( '#button-pl-save' ).click( function() {
 	}
 } );
 $( '#button-pl-consume' ).click( function() {
+	var icon = 'playlist';
+	var title = 'Consume Mode';
 	if ( G.status.consume ) {
 		$( this ).removeClass( 'bl' );
-		banner( 'Consume Mode', 'Off', 'playlist' );
+		banner( icon title, 'Off' );
 	} else {
 		$( this ).addClass( 'bl' );
-		banner( 'Consume Mode', 'On - Remove each song after played.', 'playlist' );
+		banner( icon title, 'On - Remove each song after played.' );
 	}
 	G.status.consume = !G.status.consume;
 	bash( [ 'mpcoption', 'consume', G.status.consume ] );
 } );
 $( '#button-pl-librandom' ).click( function() {
 	var $this = $( this );
+	var icon = 'librandom';
+	var title = 'Roll The Dice';
 	if ( G.status.librandom ) {
 		G.status.librandom = false;
 		$this.removeClass( 'bl' );
-		banner( 'Roll The Dice', 'Off ...', 'librandom' );
+		banner( icon, title, 'Off ...' );
 		bash( [ 'librandom', false ] );
 	} else {
 		info( {
-			  icon       : 'librandom'
-			, title      : 'Roll The Dice'
+			  icon       : icon
+			, title      : title
 			, message    : 'Randomly add songs and play continuously.'
 			, checkbox   : [ 'Start playing the random songs' ]
 			, values     : [ true ]
@@ -1786,7 +1790,7 @@ $( '#button-pl-librandom' ).click( function() {
 			, ok         : function() {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
-				banner( 'Roll The Dice', 'On ...', 'librandom' );
+				banner( icon, title, 'On ...' );
 				bash( [ 'librandom', true, infoVal() ] );
 			}
 		} );

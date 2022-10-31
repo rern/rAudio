@@ -138,7 +138,7 @@ $( '#menu a' ).click( function() {
 	
 	switch ( cmd ) {
 		case 'forget':
-			notify( title, 'Forget ...', icon );
+			notify( icon, title, 'Forget ...' );
 			bash( [ 'mountforget', mountpoint ] );
 			break;
 		case 'info':
@@ -154,11 +154,11 @@ $( '#menu a' ).click( function() {
 			}
 			break;
 		case 'remount':
-			notify( title, 'Remount ...', icon );
+			notify( icon, title, 'Remount ...' );
 			bash( [ 'mountremount', mountpoint, source ] );
 			break;
 		case 'unmount':
-			notify( title, 'Unmount ...', icon )
+			notify( icon, title, 'Unmount ...' )
 			bash( [ 'mountunmount', mountpoint ] );
 			break;
 	}
@@ -178,7 +178,7 @@ $( '#setting-hddsleep' ).click( function() {
 		}
 		, ok           : function() {
 			var val = infoVal()
-			notify( title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), icon )
+			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
 			bash( [ 'hddsleep', true, val ], function( devices ) {
 				if ( devices ) {
 					info( {
@@ -206,7 +206,7 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok           : function() {
-			notify( title, G.bluetooth ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.bluetooth ? 'Change ...' : 'Enable ...' );
 			bash( [ 'bluetooth', true, ...infoVal() ] );
 		}
 	} );
@@ -235,7 +235,7 @@ $( '#setting-wlan' ).click( function() {
 				$( '#wlan' ).prop( 'checked', G.wlan );
 			}
 			, ok           : function() {
-				notify( title, G.wlan ? 'Change ...' : 'Enable ...', icon );
+				notify( icon, title, G.wlan ? 'Change ...' : 'Enable ...' );
 				bash( [ 'wlan', true, ...infoVal() ] );
 			}
 		} );
@@ -257,11 +257,11 @@ $( '#i2smodule' ).change( function() {
 	var icon = 'volume';
 	var title = 'Audio I&#178;S';
 	if ( aplayname !== 'none' ) {
-		notify( title, 'Enable ...', icon );
+		notify( icon, title, 'Enable ...' );
 	} else {
 		aplayname = 'onboard';
 		output = '';
-		notify( title, 'Disable ...', icon );
+		notify( icon, title, 'Disable ...' );
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } ).on( 'selectric-close', function() { // fix: toggle switch / select on 'Disable'
@@ -392,7 +392,7 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'lcdchar', true, ...infoVal() ] );
-			notify( title, G.lcdchar ? 'Change ...' : 'Enabled ...', icon );
+			notify( icon, title, G.lcdchar ? 'Change ...' : 'Enabled ...' );
 		}
 	} );
 } );
@@ -452,7 +452,7 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'powerbutton', true, ...infoVal() ] );
-			notify( title, G.powerbutton ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.powerbutton ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -492,7 +492,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'rotaryencoder', true, ...infoVal() ] );
-			notify( title, G.rotaryencoder ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.rotaryencoder ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -539,7 +539,7 @@ $( '#setting-mpdoled' ).click( function() {
 			bash( [ 'mpdoledlogo' ] );
 		}
 		, ok           : function() {
-			notify( title, G.mpdoled ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.mpdoled ? 'Change ...' : 'Enable ...' );
 			bash( [ 'mpdoled', true, ...infoVal() ] );
 		}
 	} );
@@ -569,7 +569,7 @@ $( '#setting-lcd' ).click( function() {
 				, message : 'Calibrate touchscreen?'
 							+'<br>(Get stylus ready.)'
 				, ok      : function() {
-					notify( 'Calibrate Touchscreen', 'Start ...', icon );
+					notify( icon, 'Calibrate Touchscreen', 'Start ...' );
 					bash( [ 'lcdcalibrate' ] );
 				}
 			} );
@@ -578,7 +578,7 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			notify( title, G.lcd ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.lcd ? 'Change ...' : 'Enable ...' );
 			bash( [ 'lcd', true, infoVal() ] );
 		}
 	} );
@@ -606,7 +606,7 @@ $( '#setting-vuled' ).click( function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
 		}
 		, ok           : function() {
-			notify( title, 'Change ...', icon );
+			notify( icon, title, 'Change ...' );
 			bash( [ 'vuled', true, ...infoVal() ] );
 		}
 	} );
@@ -653,13 +653,13 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok           : function() {
-			notify( title, 'Change ...', icon );
+			notify( icon, title, 'Change ...' );
 			bash( [ 'hostname', infoVal() ] );
 		}
 	} );
 } );
 $( '#timezone' ).change( function( e ) {
-	notify( 'Timezone', 'Change ...', 'globe' );
+	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
@@ -675,7 +675,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkchanged : 1
 			, checkblank   : 1
 			, ok           : function() {
-				notify( title, 'Sync ...', icon );
+				notify( icon, title, 'Sync ...' );
 				bash( [ 'servers', infoVal() ], bannerHide );
 			}
 		} );
@@ -702,7 +702,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkblank   : [ 0 ]
 			, ok           : function() {
 				var values = infoVal();
-				if ( values[ 0 ] !== G.ntp ) notify( title, 'Sync ...', icon );
+				if ( values[ 0 ] !== G.ntp ) notify( icon, title, 'Sync ...' );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
@@ -725,17 +725,17 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'soundprofile', true, ...infoVal() ] );
-			notify( title, G.soundprofile ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.soundprofile ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
 $( '#backup' ).click( function() {
 	var icon = 'sd';
 	var title = 'Backup Settings';
-	notify( title, 'Process ...', icon );
+	notify( icon, title, 'Process ...' );
 	bash( [ 'databackup' ], function( data ) {
 		if ( data == 1 ) {
-			notify( title, 'Download ...', icon );
+			notify( icon, title, 'Download ...' );
 			fetch( '/data/tmp/backup.gz' )
 				.then( response => response.blob() )
 				.then( blob => {
@@ -804,7 +804,7 @@ $( '#restore' ).click( function() {
 			} );
 		}
 		, ok          : function() {
-			notify( title, 'Restore ...', icon );
+			notify( icon, title, 'Restore ...' );
 			if ( infoVal() === 'reset' ) {
 				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
@@ -860,7 +860,7 @@ $( '#shareddata' ).click( function() {
 			, okcolor : orange
 			, ok      : function() {
 				bash( [ 'shareddatadisconnect', 'disable' ] );
-				notify( title, 'Disable ...', icon );
+				notify( icon, title, 'Disable ...' );
 			}
 		} );
 	} else {
@@ -1015,7 +1015,7 @@ function infoMount( values ) {
 					refreshData();
 				}
 			} );
-			notify( title, shareddata ? 'Enable ...' : 'Add ...', icon );
+			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 		}
 	} );
 }
@@ -1045,7 +1045,7 @@ function infoNFSconnect( ip ) {
 						}
 						, ok      : function() {
 							bash( [ 'shareddataconnect', ip ] );
-							notify( title, 'Connect Server rAudio ...', icon );
+							notify( icon, title, 'Connect Server rAudio ...' );
 						} 
 					} );
 				} else {

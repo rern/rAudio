@@ -4,7 +4,7 @@ function addReplace( cmd, command, title, msg ) {
 	bash( command, function() {
 		if ( G.display.playbackswitch && play ) $( '#playback' ).click();
 	} );
-	banner( title, msg, 'playlist' );
+	banner( 'playlist', title, msg );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -41,7 +41,7 @@ function bookmarkNew() {
 										+'<br><br><wh>'+ name +'</wh> already exists.'
 						} );
 					} else {
-						banner( 'Bookmark Added', path, 'bookmark' );
+						banner( 'bookmark', 'Bookmark Added', path );
 					}
 				} );
 			}
@@ -71,7 +71,7 @@ function playlistDelete() {
 }
 function playlistLoad( path, play, replace ) {
 	G.local = 1;
-	banner( 'Saved Playlist', 'Load ...', 'file-playlist blink', -1 );
+	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
 	list( {
 		  cmd     : 'load'
 		, name    : path
@@ -81,7 +81,7 @@ function playlistLoad( path, play, replace ) {
 		G.local = 0;
 		G.status.pllength = +data;
 		G.savedlist = 0;
-		banner( ( replace ? 'Playlist Replaced' : 'Playlist Added' ), 'Done', 'playlist' );
+		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
 	} );
 }
 function playlistNew( name ) {
@@ -126,7 +126,7 @@ function playlistSave( name, oldname, replace ) {
 			if ( data == -1 ) {
 				playlistSaveExist( 'save', name );
 			} else {
-				banner( 'Playlist Saved', name, 'playlist' );
+				banner( 'playlist', 'Playlist Saved', name );
 			}
 		} );
 	}
@@ -152,7 +152,7 @@ function playlistSaveExist( type, name, oldname ) {
 	} );
 }
 function addSimilar() {
-	banner( 'Playlist - Add Similar', 'Fetch similar list ...', 'lastfm blink', -1 );
+	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
 	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
 			+'&artist='+ encodeURI( G.list.artist )
 			+'&track='+ encodeURI( G.list.name )
@@ -162,7 +162,7 @@ function addSimilar() {
 	$.post( url, function( data ) {
 		var title = 'Playlist - Add Similar';
 		if ( 'error' in data || !data.similartracks.track.length ) {
-			banner( title, 'Track not found.', 'lastfm' );
+			banner( 'lastfm', title, 'Track not found.' );
 		} else {
 			var val = data.similartracks.track;
 			var iL = val.length;
@@ -170,11 +170,11 @@ function addSimilar() {
 			for ( i = 0; i < iL; i++ ) {
 				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
 			}
-			banner( title, 'Find similar tracks from Library ...', 'library blink',  -1 );
+			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
 			bash( [ 'mpcsimilar', similar ], function( count ) {
 				getPlaylist();
 				setButtonControl();
-				banner( title, count +' tracks added.', 'library' );
+				banner( 'library', title, count +' tracks added.' );
 			} );
 		}
 	}, 'json' );
@@ -332,9 +332,9 @@ function tagEditor() {
 					val = ( v === values[ i ] ) ? '' : ( v || -1 );
 					tag.push( val );
 				} );
-				banner( 'Tag Editor', 'Change tags ...', 'tag blink', -1 );
+				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
 				setTimeout( function() {
-					banner( 'Tag Editor', 'Update Library ...', 'tag blink' );
+					banner( 'tag blink', 'Tag Editor', 'Update Library ...' );
 				}, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
 				if ( G.list.licover ) {
@@ -518,7 +518,7 @@ function webRadioNew( name, url, charset ) {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
-			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'Web Radio', 'Add ...', 'webradio blink',  -1 );
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
 		}
 	} );
 }

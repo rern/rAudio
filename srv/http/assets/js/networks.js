@@ -30,7 +30,7 @@ $( '.btscan' ).click( function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	notify( $( this ).data( 'name' ), 'Pair ...', 'bluetooth' );
+	notify( 'bluetooth', $( this ).data( 'name' ), 'Pair ...' );
 	bluetoothCommand( 'pair', $( this ).data( 'mac' ) );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
@@ -122,7 +122,7 @@ $( '.connect' ).click( function() {
 	clearTimeout( G.timeoutScan );
 	if ( G.list === 'listbt' ) {
 		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( G.li.data( 'name' ), 'Connect ...', icon, -1 );
+		notify( icon, G.li.data( 'name' ), 'Connect ...' );
 		bluetoothCommand( 'connect', G.li.data( 'mac' ) );
 		return
 	}
@@ -133,13 +133,13 @@ $( '.connect' ).click( function() {
 	}
 	
 	var ssid = G.li.data( 'ssid' );
-	notify( ssid, 'Connect ...', 'wifi blink' );
+	notify( 'wifi', ssid, 'Connect ...' );
 	bash( [ 'profileconnect', ssid ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( G.list === 'listbt' ) {
 		var icon = G.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( G.li.data( 'name' ), 'Disconnect ...', icon );
+		notify( icon, G.li.data( 'name' ), 'Disconnect ...' );
 		bluetoothCommand( 'disconnect', G.li.data( 'mac' ) );
 		return
 	}
@@ -153,7 +153,7 @@ $( '.disconnect' ).click( function() {
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
-			notify( ssid, 'Disconnect ...', icon );
+			notify( icon, ssid, 'Disconnect ...' );
 			bash( [ 'disconnect' ] )
 		}
 	} );
@@ -172,7 +172,7 @@ $( '.forget' ).click( function() {
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
-				notify( name, 'Forget ...', icon );
+				notify( icon, name, 'Forget ...' );
 				bluetoothCommand( 'remove', G.li.data( 'mac' ) );
 			}
 		} );
@@ -188,7 +188,7 @@ $( '.forget' ).click( function() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			notify( ssid, 'Forget ...', icon );
+			notify( icon, ssid, 'Forget ...' );
 			bash( [ 'profileremove', ssid ] );
 		}
 	} );
@@ -217,7 +217,7 @@ $( '.hostapdset' ).click( function() {
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapd', true, iprange, ip, pwd ] );
-			notify( title, G.hostapd ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.hostapd ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -248,14 +248,14 @@ function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:...,
 	if ( 'Address' in data ) {
 		var ip = data.Address;
 		if ( $( '#listlan li' ).length ) {
-			notify( ssid, 'Change ...', icon );
+			notify( icon, ssid, 'Change ...' );
 		} else {
 			loader();
 			location.href = 'http://'+ ip +'/settings.php?p=networks';
-			notify( ssid, 'Change URL to '+ ip, icon );
+			notify( icon, ssid, 'Change URL to '+ ip );
 		}
 	} else {
-		notify( ssid, $( '#listwl li' ).length ? 'Change ...' : 'Connect ...', icon );
+		notify( icon, ssid, $( '#listwl li' ).length ? 'Change ...' : 'Connect ...' );
 	}
 	bash( [ 'connect', JSON.stringify( data ) ], function( std ) {
 		if ( std == -1 ) {
@@ -293,7 +293,7 @@ function editLAN() {
 		}
 		, buttonlabel  : ( static ? '<i class="fa fa-undo"></i>DHCP' : '' )
 		, button       : ( static ? function() {
-			notify( title, 'Change URL to '+ G.hostname +'.local ...', icon );
+			notify( icon, title, 'Change URL to '+ G.hostname +'.local ...' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
@@ -306,7 +306,7 @@ function editLAN() {
 function editLANSet( values ) {
 	var ip = values[ 0 ];
 	var gateway = values[ 1 ];
-	notify( 'IP Address', 'Set ...', 'lan' );
+	notify( 'lan', 'IP Address', 'Set ...' );
 	bash( [ 'editlan', ip, gateway ], function( used ) {
 		if ( used == -1 ) {
 			info( {

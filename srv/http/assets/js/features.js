@@ -8,7 +8,7 @@ $( '#setting-spotifyd' ).click( function() {
 	var title = 'Spotify Client';
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
-		notify( title, 'Enable ...', icon );
+		notify( icon, title, 'Enable ...' );
 	} else if ( G.spotifytoken ) {
 		info( {
 			  icon    : icon
@@ -96,7 +96,7 @@ $( '#setting-snapclient' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'snapclient', true, infoVal() ] );
-			notify( title, G.snapclient ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.snapclient ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -114,7 +114,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'upmpdcli', true, infoVal() ] );
-			notify( title, G.upmpdcli ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.upmpdcli ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -135,7 +135,7 @@ $( '#setting-camilladsp' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'camilladsp', true, infoVal() ] );
-			notify( title, G.camilladsp ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.camilladsp ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -163,7 +163,7 @@ $( '#setting-hostapd' ).click( function() {
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapd', true, iprange, ip, pwd ] );
-			notify( title, G.hostapd ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.hostapd ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -182,7 +182,7 @@ $( '#setting-autoplay' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'autoplay', true, ...infoVal() ] );
-			notify( title, G.autoplay ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.autoplay ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -270,7 +270,7 @@ ${ brightness }
 		}
 		, ok           : function() {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
-			notify( title, G.localbrowser ? 'Change ...' : 'Enable ...',  icon );
+			notify( icon, title, G.localbrowser ? 'Change ...' : 'Enable ...', );
 		}
 	} );
 } );
@@ -289,7 +289,7 @@ $( '#setting-smb' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'smb', true, ...infoVal() ] );
-			notify( title, G.smb ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.smb ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -348,7 +348,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, ok           : function() {
 			O.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
-			notify( title, G.multiraudio ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.multiraudio ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -366,7 +366,7 @@ $( '#login' ).click( function() {
 			, focus         : 0
 			, pwdrequired   : 1
 			, ok            : function() {
-				notify( title, 'Disable ...', icon );
+				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
 					, disable  : 1
@@ -393,7 +393,7 @@ $( '#setting-login' ).click( function() {
 		}
 		, ok            : function() {
 			var values = infoVal();
-			notify( title, G.login ? 'Change ...' : 'Enable...', icon );
+			notify( icon, title, G.login ? 'Change ...' : 'Enable...' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : values[ 0 ]
@@ -456,7 +456,7 @@ $( '#setting-scrobble' ).click( function() {
 					$( '#scrobble' ).prop( 'checked', 0 );
 				}
 			}, 'json' );
-			notify( title, G.scrobble ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.scrobble ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -487,7 +487,7 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : function() {
 				bash( [ 'nfsserver', !G.nfsserver ] );
-				notify( title, G.nfsserver ? 'Disable ...' : 'Enable ...', icon );
+				notify( icon, title, G.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -517,7 +517,7 @@ $( '#setting-stoptimer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
-			notify( title, G.stoptimer ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.stoptimer ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );

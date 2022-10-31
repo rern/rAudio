@@ -75,7 +75,7 @@ $( '#infoContent' ).click( function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
 
-function banner( title, message, icon, delay ) {
+function banner( icon, title, message, delay ) {
 	clearTimeout( G.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
@@ -111,7 +111,7 @@ function infoUsage() {
 |      | message              |
 ===============================
 
-banner( 'title', 'message', 'icon', delayms )
+banner( 'icon', 'title', 'message', delayms )
 
 
 ===============================
@@ -694,7 +694,7 @@ function setButtonWidth() {
 function setFileImage() {
 	var file = G.infofile;
 	var timeout = setTimeout( function() {
-		banner( 'Change Image', 'Load ...', 'refresh blink', -1 );
+		banner( 'refresh blink', 'Change Image', 'Load ...', -1 );
 	}, 1000 );
 	G.rotate = 0;
 	$( '.infoimgname' ).addClass( 'hide' );

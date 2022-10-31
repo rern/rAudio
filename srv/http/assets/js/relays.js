@@ -119,7 +119,7 @@ $( '#save' ).off( 'click' ).click( function() {
 				+'offd=( '+ D.val.offd.join( ' ' ) +' )\\n'
 				+'timer='+ D.val.timer;
 	bash( [ 'save', values ] );
-	banner( 'Relays', 'Change ...', 'relays' );
+	banner( 'relays', 'Relays', 'Change ...' );
 } );
 
 } ); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

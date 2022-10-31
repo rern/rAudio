@@ -73,7 +73,7 @@ function currentStatus( id, refresh ) {
 		
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( function() {
-			notify( 'Get Data', id, page );
+			notify( page, 'Get Data', id );
 		}, 1000 );
 	}
 	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
@@ -140,7 +140,7 @@ function list2JSON( list ) {
 					bash( '/srv/http/bash/settings/player-conf.sh', function() {
 						refreshData();
 					} );
-					notify( 'MPD', 'Start ...', 'mpd' );
+					notify( 'mpd', 'MPD', 'Start ...' );
 				} );
 			} );
 		} else {
@@ -153,7 +153,7 @@ function list2JSON( list ) {
 			listError( error );
 			$( '#data' ).on( 'click', '.copy', function() {
 				copy2clipboard( 'Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list );
-				banner( 'Errors', 'Data copied to clipboard.', 'warning' );
+				banner( 'warning', 'Errors', 'Data copied to clipboard.' );
 			} );
 		}
 		return false
@@ -175,9 +175,9 @@ function loader() {
 function loaderHide() {
 	$( '#loader' ).addClass( 'hide' );
 }
-function notify( title, message, icon, delay ) {
+function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
-	banner( title, message, icon +' blink', delay || -1 );
+	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
 	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
@@ -313,7 +313,7 @@ function psBluetooth( data ) {
 }
 function psNotify( data ) {
 	G.bannerhold = data.hold || 0;
-	banner( data.title, data.text, data.icon, data.delay );
+	banner( data.icon, data.title, data.text, data.delay );
 	if ( data.title === 'Power' ) {
 		if ( data.text === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
@@ -550,11 +550,11 @@ $( '.switch:not( .custom )' ).click( function() {
 		if ( checked ) {
 			$( '#setting-'+ id ).click();
 		} else {
-			notify( label, 'Disable ...', icon );
+			notify( icon, label, 'Disable ...' );
 			bash( [ id, false ] );
 		}
 	} else {
-		notify( label, checked, icon );
+		notify( icon, label, checked );
 		bash( [ id, checked ], function( error ) {
 			if ( error ) {
 				bannerHide();

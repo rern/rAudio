@@ -356,7 +356,7 @@ function psMpdUpdate( data ) {
 		G.status.updatingdab = false;
 		renderLibraryCounts();
 		setButtonUpdating();
-		banner( 'Library Update', 'Done', 'library' );
+		banner( 'library', 'Library Update', 'Done' );
 		if ( G.library ) {
 			if ( !G.librarylist ) return
 			
@@ -388,15 +388,17 @@ function psMpdUpdate( data ) {
 	}, 3000 );
 }
 function psNotify( data ) {
+	var icon = data.icon;
 	var title = data.title;
 	var text = data.text;
+	var delay = data.delay;
 	if ( text === 'Online ...' || text === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( function() {
 			location.href = '/';
 		}, 3000 );
 	}
 	
-	banner( title, text, data.icon, data.delay );
+	banner( icon, title, text, delay );
 	if ( title === 'Power' ) {
 		switchPage( 'playback' );
 		loader();
@@ -500,7 +502,7 @@ function psRelays( response ) {
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : function() {
 				bash( [ 'relaystimerreset' ] );
-				banner( 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m', 'relays' );
+				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
 			}
 		} );
 		var delay = 59;
@@ -544,13 +546,13 @@ function psRelays( response ) {
 }
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
-		banner( 'Restore Settings', 'Done', 'sd' );
+		banner( 'restore', 'Restore Settings', 'Done' );
 		setTimeout( function() {
 			location.href = '/';
 		}, 2000 );
 	} else {
 		loader();
-		banner( 'Restore Settings', 'Restart '+ data.restore +' ...', 'sd blink', -1 );
+		banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
 	}
 }
 function psSavedPlaylists( data ) {

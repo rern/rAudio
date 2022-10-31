@@ -41,12 +41,12 @@ $( '#setting-btreceiver' ).click( function() {
 	} );
 } );
 $( '#audiooutput' ).change( function() {
-	notify( 'Audio Output Device', 'Change ...', 'mpd' );
+	notify( 'mpd', 'Audio Output Device', 'Change ...' );
 	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	var hwmixer = $( this ).val();
-	notify( 'Hardware Mixer', 'Change ...', 'mpd' );
+	notify( 'mpd', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', device.aplayname, hwmixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
@@ -134,7 +134,7 @@ $( '#novolume' ).click( function() {
 				$( '#novolume' ).prop( 'checked', G.novolume );
 			}
 			, ok      : function() {
-				notify( title, 'Enable ...', icon );
+				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
 			}
 		} );
@@ -153,7 +153,7 @@ $( '#novolume' ).click( function() {
 } );
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	notify( 'DSP over PCM', checked, 'mpd' );
+	notify( 'mpd', 'DSP over PCM', checked );
 	bash( [ 'dop', checked, device.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
@@ -173,7 +173,7 @@ $( '#setting-crossfade' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'crossfade', true, infoVal() ] );
-			notify( title, G.crossfade ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.crossfade ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -191,7 +191,7 @@ $( '#setting-replaygain' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'replaygain', true, infoVal() ] );
-			notify( title, G.replaygain ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.replaygain ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -225,7 +225,7 @@ $( '#setting-buffer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'buffer', true, infoVal() ] );
-			notify( title, G.buffer ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.buffer ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -248,14 +248,9 @@ $( '#setting-outputbuffer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'outputbuffer', true, infoVal() ] );
-			notify( title, G.outputbuffer ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.outputbuffer ? 'Change ...' : 'Enable ...' );
 		}
 	} );
-} );
-$( '#autoupdate' ).click( function() {
-	var checked = $( this ).prop( 'checked' );
-	notify( 'Library Auto Update', checked, 'mpd' );
-	bash( [ 'autoupdate', checked ] );
 } );
 $( '#setting-soxr' ).click( function() {
 	infoSoxr( G.soxrquality || 'very high' );
@@ -296,7 +291,7 @@ $( '#setting-custom' ).click( function() {
 				var values = infoVal();
 				if ( !values[ 0 ] && !values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
-					notify( title, 'Disable ...', icon );
+					notify( icon, title, 'Disable ...' );
 					return
 				}
 				
@@ -311,7 +306,7 @@ $( '#setting-custom' ).click( function() {
 						} );
 					}
 				} );
-				notify( title, G.custom ? 'Change ...' : 'Enable ...', icon );
+				notify( icon, title, G.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -394,7 +389,7 @@ function infoSoxr( quality ) {
 			} else {
 				bash( [ 'soxr', true, ...infoVal() ] );
 			}
-			notify( title, G.soxr ? 'Change ...' : 'Enable ...', icon );
+			notify( icon, title, G.soxr ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 }
@@ -477,6 +472,6 @@ function renderPage() {
 }
 function setMixerType( mixertype ) {
 	var hwmixer = device.mixers ? device.hwmixer : '';
-	notify( 'Mixer Control', 'Change ...', 'mpd' );
+	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, device.aplayname, hwmixer ] );
 }
