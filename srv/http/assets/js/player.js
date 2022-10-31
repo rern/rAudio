@@ -123,23 +123,25 @@ $( '#mixertype' ).change( function() {
 } );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
+	var icon = 'volume';
+	var title = 'No Volume';
 	if ( checked ) {
 		info( {
-			  icon    : 'volume'
-			, title   : 'No Volume'
+			  icon    : icon
+			, title   : title
 			, message : warning
 			, cancel  : function() {
 				$( '#novolume' ).prop( 'checked', G.novolume );
 			}
 			, ok      : function() {
-				notify( 'No Volume', 'Enable ...', 'mpd' );
+				notify( title, 'Enable ...', icon );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
 			}
 		} );
 	} else {
 		info( {
-			  icon         : 'volume'
-			, title        : 'No Volume'
+			  icon         : icon
+			, title        : title
 			, message      : `\
 <wh>No volume</wh> will be disabled on:
 &emsp; • Select a Mixer Control
@@ -155,9 +157,11 @@ $( '#dop' ).click( function() {
 	bash( [ 'dop', checked, device.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
+	var icon = 'mpd';
+	var title = 'Cross-Fading';
 	info( {
-		  icon         : 'mpd'
-		, title        : 'Cross-Fading'
+		  icon         : icon
+		, title        : title
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
@@ -169,14 +173,16 @@ $( '#setting-crossfade' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'crossfade', true, infoVal() ] );
-			notify( 'Cross-Fading', G.crossfade ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( title, G.crossfade ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
+	var icon = 'mpd';
+	var title = 'ReplayGain';
 	info( {
-		  icon         : 'mpd'
-		, title        : 'ReplayGain'
+		  icon         : icon
+		, title        : title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainconf
 		, checkchanged : G.replaygain
@@ -185,7 +191,7 @@ $( '#setting-replaygain' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'replaygain', true, infoVal() ] );
-			notify( 'ReplayGain', G.replaygain ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( title, G.replaygain ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -201,9 +207,11 @@ $( '.filetype' ).click( function() {
 	}
 } );
 $( '#setting-buffer' ).click( function() {
+	var icon = 'mpd';
+	var title = 'Custom Audio Buffer';
 	info( {
-		  icon         : 'mpd'
-		, title        : 'Custom Audio Buffer'
+		  icon         : icon
+		, title        : title
 		, textlabel    : 'audio_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 4096)'
@@ -217,14 +225,16 @@ $( '#setting-buffer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'buffer', true, infoVal() ] );
-			notify( 'Custom Audio Buffer', G.buffer ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( title, G.buffer ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-outputbuffer' ).click( function() {
+	var icon = 'mpd';
+	var title = 'Custom Output Buffer';
 	info( {
-		  icon         : 'mpd'
-		, title        : 'Custom Output Buffer'
+		  icon         : icon
+		, title        : title
 		, textlabel    : 'max_output_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 8192)'
@@ -238,7 +248,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'outputbuffer', true, infoVal() ] );
-			notify( 'Custom Output Buffer', G.outputbuffer ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( title, G.outputbuffer ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -271,9 +281,11 @@ $( '#setting-custom' ).click( function() {
 		var val = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
+		var icon = 'mpd';
+		var title = "User's Configurations";
 		info( {
-			  icon         : 'mpd'
-			, title        : "User's Configurations"
+			  icon         : icon
+			, title        : title
 			, content      : custominfo.replace( 'N', G.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : G.custom
@@ -284,7 +296,7 @@ $( '#setting-custom' ).click( function() {
 				var values = infoVal();
 				if ( !values[ 0 ] && !values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
-					notify( "User's Custom Settings", 'Disable ...', 'mpd' );
+					notify( title, 'Disable ...', icon );
 					return
 				}
 				
@@ -292,14 +304,14 @@ $( '#setting-custom' ).click( function() {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
-							  icon    : 'mpd'
-							, title   : "User's Configurations"
+							  icon    : icon
+							, title   : title
 							, message : 'MPD failed with the added lines'
 										+'<br>Restored to previous configurations.'
 						} );
 					}
 				} );
-				notify( "User's Custom Settings", G.custom ? 'Change ...' : 'Enable ...', 'mpd' );
+				notify( title, G.custom ? 'Change ...' : 'Enable ...', icon );
 			}
 		} );
 	} );
@@ -360,9 +372,11 @@ var soxrcustom = `
 </table>`;
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
+	var icon = 'mpd';
+	var title = 'SoX Resampler';
 	info( {
-		  icon         : 'mpd'
-		, title        : 'SoXR Resampler'
+		  icon         : icon
+		, title        : title
 		, tab          : [ 'Presets', 'Custom' ]
 		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
 		, tabactive    : custom ? 1 : 0
@@ -380,7 +394,7 @@ function infoSoxr( quality ) {
 			} else {
 				bash( [ 'soxr', true, ...infoVal() ] );
 			}
-			notify( 'SoXR Resampler', G.soxr ? 'Change ...' : 'Enable ...', 'mpd' );
+			notify( title, G.soxr ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 }

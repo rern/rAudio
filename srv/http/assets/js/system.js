@@ -164,9 +164,11 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-hddsleep' ).click( function() {
+	var icon = 'usbdrive';
+	var title = 'HDD Sleep';
 	info( {
-		  icon         : 'usbdrive'
-		, title        : 'HDD Sleep'
+		  icon         : icon
+		, title        : title
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 		, values       : G.hddsleep || 60
@@ -176,12 +178,12 @@ $( '#setting-hddsleep' ).click( function() {
 		}
 		, ok           : function() {
 			var val = infoVal()
-			notify( 'HDD Sleep', ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), 'usbdrive' )
+			notify( title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ), icon )
 			bash( [ 'hddsleep', true, val ], function( devices ) {
 				if ( devices ) {
 					info( {
-						  icon         : 'usbdrive'
-						, title        : 'HDD Sleep'
+						  icon         : icon
+						, title        : title
 						, message      : '<wh>Devices not support sleep:</wh><br>'
 										+ devices
 					} );
@@ -192,9 +194,11 @@ $( '#setting-hddsleep' ).click( function() {
 	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
+	var icon = 'bluetooth';
+	var title = 'Bluetooth';
 	info( {
-		  icon         : 'bluetooth'
-		, title        : 'Bluetooth'
+		  icon         : icon
+		, title        : title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : G.bluetoothconf
 		, checkchanged : G.bluetooth
@@ -202,7 +206,7 @@ $( '#setting-bluetooth' ).click( function() {
 			$( '#bluetooth' ).prop( 'checked', G.bluetooth );
 		}
 		, ok           : function() {
-			notify( 'Bluetooth', G.bluetooth ? 'Change ...' : 'Enable ...', 'bluetooth' );
+			notify( title, G.bluetooth ? 'Change ...' : 'Enable ...', icon );
 			bash( [ 'bluetooth', true, ...infoVal() ] );
 		}
 	} );
@@ -218,9 +222,11 @@ $( '#setting-wlan' ).click( function() {
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
 <tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
 </table>`;
+		var icon = 'wifi';
+		var title = 'Wi-Fi';
 		info( {
-			  icon         : 'wifi'
-			, title        : 'Wi-Fi'
+			  icon         : icon
+			, title        : title
 			, content      : infowifi
 			, boxwidth     : 250
 			, values       : G.wlanconf
@@ -229,7 +235,7 @@ $( '#setting-wlan' ).click( function() {
 				$( '#wlan' ).prop( 'checked', G.wlan );
 			}
 			, ok           : function() {
-				notify( 'Wi-Fi', G.wlan ? 'Change ...' : 'Enable ...', 'wifi' );
+				notify( title, G.wlan ? 'Change ...' : 'Enable ...', icon );
 				bash( [ 'wlan', true, ...infoVal() ] );
 			}
 		} );
@@ -248,12 +254,14 @@ $( '#i2smodulesw' ).click( function() {
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
 	var output = $( this ).find( ':selected' ).text();
+	var icon = 'volume';
+	var title = 'Audio I&#178;S';
 	if ( aplayname !== 'none' ) {
-		notify( 'Audio I&#178;S', 'Enable ...', 'volume' );
+		notify( title, 'Enable ...', icon );
 	} else {
 		aplayname = 'onboard';
 		output = '';
-		notify( 'I&#178;S Module', 'Disable ...', 'volume' );
+		notify( title, 'Disable ...', icon );
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } ).on( 'selectric-close', function() { // fix: toggle switch / select on 'Disable'
@@ -341,9 +349,11 @@ $( '#setting-lcdchar' ).click( function() {
 </table>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c = G.lcdcharconf[ 2 ] !== 'gpio';
+	var icon = 'lcdchar';
+	var title = 'Character LCD';
 	info( {
-		  icon         : 'lcdchar'
-		, title        : 'Character LCD'
+		  icon         : icon
+		, title        : title
 		, content      : infolcdchar
 		, boxwidth     : 180
 		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
@@ -382,7 +392,7 @@ $( '#setting-lcdchar' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'lcdchar', true, ...infoVal() ] );
-			notify( 'Character LCD', G.lcdchar ? 'Change ...' : 'Enabled ...', 'lcdchar' );
+			notify( title, G.lcdchar ? 'Change ...' : 'Enabled ...', icon );
 		}
 	} );
 } );
@@ -415,9 +425,11 @@ $( '#setting-powerbutton' ).click( function() {
 <br>
 <label><input id="audiophonics" type="checkbox"> Audiophonics</label>
 `;
+	var icon = 'power';
+	var title = 'Power Button';
 	info( {
-		  icon         : 'power'
-		, title        : 'Power Button'
+		  icon         : icon
+		, title        : title
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 80
 		, values       : G.powerbuttonconf || [ 5, 5, 40, 5, false ]
@@ -440,7 +452,7 @@ $( '#setting-powerbutton' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'powerbutton', true, ...infoVal() ] );
-			notify( 'Power Button', G.powerbutton ? 'Change ...' : 'Enable ...', 'power' );
+			notify( title, G.powerbutton ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -463,9 +475,11 @@ $( '#setting-rotaryencoder' ).click( function() {
 	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
 </tr>
 </table>`;
+	var icon = 'volume';
+	var title = 'Rotary Encoder';
 	info( {
-		  icon         : 'volume'
-		, title        : 'Rotary Encoder'
+		  icon         : icon
+		, title        : title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 90
 		, values       : G.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
@@ -478,14 +492,16 @@ $( '#setting-rotaryencoder' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'rotaryencoder', true, ...infoVal() ] );
-			notify( 'Rotary Encoder', G.rotaryencoder ? 'Change ...' : 'Enable ...', 'volume' );
+			notify( title, G.rotaryencoder ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
+	var icon = 'mpdoled';
+	var title = 'Spectrum OLED';
 	info( {
-		  icon         : 'mpdoled'
-		, title        : 'Spectrum OLED'
+		  icon         : icon
+		, title        : title
 		, selectlabel  : 'Type'
 		, content      : `\
 <table>
@@ -523,15 +539,17 @@ $( '#setting-mpdoled' ).click( function() {
 			bash( [ 'mpdoledlogo' ] );
 		}
 		, ok           : function() {
-			notify( 'Spectrum OLED', G.mpdoled ? 'Change ...' : 'Enable ...', 'mpdoled' );
+			notify( title, G.mpdoled ? 'Change ...' : 'Enable ...', icon );
 			bash( [ 'mpdoled', true, ...infoVal() ] );
 		}
 	} );
 } );
 $( '#setting-lcd' ).click( function() {
+	var icon = 'lcd';
+	var title = 'TFT 3.5" LCD';
 	info( {
-		  icon         : 'lcd'
-		, title        : 'TFT 3.5" LCD'
+		  icon         : icon
+		, title        : title
 		, selectlabel  : 'Type'
 		, select       : {
 			  'Generic'               : 'tft35a'
@@ -546,12 +564,12 @@ $( '#setting-lcd' ).click( function() {
 		, buttonlabel  : ( !G.lcd ? '' : 'Calibrate' )
 		, button       : ( !G.lcd ? '' : function() {
 			info( {
-				  icon    : 'lcd'
-				, title   : 'TFT LCD'
+				  icon    : icon
+				, title   : title
 				, message : 'Calibrate touchscreen?'
 							+'<br>(Get stylus ready.)'
 				, ok      : function() {
-					notify( 'Calibrate Touchscreen', 'Start ...', 'lcd' );
+					notify( 'Calibrate Touchscreen', 'Start ...', icon );
 					bash( [ 'lcdcalibrate' ] );
 				}
 			} );
@@ -560,7 +578,7 @@ $( '#setting-lcd' ).click( function() {
 			$( '#lcd' ).prop( 'checked', G.lcd );
 		}
 		, ok           : function() {
-			notify( 'TFT 3.5" LCD', G.lcd ? 'Change ...' : 'Enable ...', 'lcd' );
+			notify( title, G.lcd ? 'Change ...' : 'Enable ...', icon );
 			bash( [ 'lcd', true, infoVal() ] );
 		}
 	} );
@@ -574,9 +592,11 @@ $( '#setting-vuled' ).click( function() {
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
+	var icon = 'led';
+	var title = 'VU LED';
 	info( {
-		  icon         : 'led'
-		, title        : 'VU LED'
+		  icon         : icon
+		, title        : title
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : G.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
@@ -586,7 +606,7 @@ $( '#setting-vuled' ).click( function() {
 			$( '#vuled' ).prop( 'checked', G.vuled );
 		}
 		, ok           : function() {
-			notify( 'VU LED', 'Change ...', 'led' );
+			notify( title, 'Change ...', icon );
 			bash( [ 'vuled', true, ...infoVal() ] );
 		}
 	} );
@@ -617,9 +637,11 @@ $( '#ledcalc' ).click( function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
+	var icon = 'plus-r';
+	var title = 'Player Name';
 	info( {
-		  icon         : 'plus-r'
-		, title        : 'Player Name'
+		  icon         : icon
+		, title        : title
 		, textlabel    : 'Name'
 		, focus        : 0
 		, values       : G.hostname
@@ -631,7 +653,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 			} );
 		}
 		, ok           : function() {
-			notify( 'Name', 'Change ...', 'plus-r' );
+			notify( title, 'Change ...', icon );
 			bash( [ 'hostname', infoVal() ] );
 		}
 	} );
@@ -641,17 +663,19 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
+	var icon = 'globe';
+	var title = 'Servers';
 	if ( G.soc === 'BCM2835' || G.soc === 'BCM2836' ) { // rpi 0, 1
 		info( {
-			  icon         : 'globe'
-			, title        : 'Servers'
+			  icon         : icon
+			, title        : title
 			, textlabel    : 'NTP'
 			, boxwidth     : 240
 			, values       : G.ntp
 			, checkchanged : 1
 			, checkblank   : 1
 			, ok           : function() {
-				notify( 'NTP', 'Sync ...', 'globe' );
+				notify( title, 'Sync ...', icon );
 				bash( [ 'servers', infoVal() ], bannerHide );
 			}
 		} );
@@ -669,8 +693,8 @@ $( '#setting-timezone' ).click( function() {
 <tr><td>Package</td><td>${ selecthtml }</td></tr>
 </table>`
 		info( {
-			  icon         : 'globe'
-			, title        : 'Servers'
+			  icon         : icon
+			, title        : title
 			, content      : content
 			, boxwidth     : 240
 			, values       : [ G.ntp, list.current ]
@@ -678,7 +702,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkblank   : [ 0 ]
 			, ok           : function() {
 				var values = infoVal();
-				if ( values[ 0 ] !== G.ntp ) notify( 'NTP', 'Sync ...', 'globe' );
+				if ( values[ 0 ] !== G.ntp ) notify( title, 'Sync ...', icon );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
@@ -686,9 +710,11 @@ $( '#setting-timezone' ).click( function() {
 	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
+	var icon = 'sliders';
+	var title = 'Kernel Sound Profile';
 	info( {
-		  icon         : 'sliders'
-		, title        : 'Kernel Sound Profile'
+		  icon         : icon
+		, title        : title
 		, textlabel    : [ 'vm.swappiness', 'eth0 mtu', 'eth0 txqueuelen' ]
 		, boxwidth     : 110
 		, values       : G.soundprofileconf
@@ -699,17 +725,17 @@ $( '#setting-soundprofile' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'soundprofile', true, ...infoVal() ] );
-			notify( 'Kernel Sound Profile', G.soundprofile ? 'Change ...' : 'Enable ...', 'volume' );
+			notify( title, G.soundprofile ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#backup' ).click( function() {
-	var backuptitle = 'Backup Settings';
 	var icon = 'sd';
-	notify( backuptitle, 'Process ...', 'sd blink' );
+	var title = 'Backup Settings';
+	notify( title, 'Process ...', icon );
 	bash( [ 'databackup' ], function( data ) {
 		if ( data == 1 ) {
-			notify( backuptitle, 'Download ...', icon );
+			notify( title, 'Download ...', icon );
 			fetch( '/data/tmp/backup.gz' )
 				.then( response => response.blob() )
 				.then( blob => {
@@ -728,7 +754,7 @@ $( '#backup' ).click( function() {
 				} ).catch( () => {
 					info( {
 						  icon    : icon
-						, title   : backuptitle
+						, title   : title
 						, message : '<wh>Warning!</wh><br>File download failed.'
 					} );
 					bannerHide();
@@ -736,7 +762,7 @@ $( '#backup' ).click( function() {
 		} else {
 			info( {
 				  icon    : icon
-				, title   : backuptitle
+				, title   : title
 				, message : 'Backup failed.'
 			} );
 			bannerHide();
@@ -778,7 +804,7 @@ $( '#restore' ).click( function() {
 			} );
 		}
 		, ok          : function() {
-			notify( 'Restore Settings', 'Restore ...', 'sd' );
+			notify( title, 'Restore ...', icon );
 			if ( infoVal() === 'reset' ) {
 				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
@@ -810,12 +836,14 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
+	var icon = 'networks';
+	var title = 'Shared Data';
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$( '#shareddata' ).prop( 'checked', false );
 		info( {
-			  icon    : 'networks'
-			, title   : 'Shared Data'
+			  icon    : icon
+			, title   : title
 			, message : $this.prev().html()
 		} );
 		return
@@ -823,8 +851,8 @@ $( '#shareddata' ).click( function() {
 	
 	if ( G.shareddata ) {
 		info( {
-			  icon    : 'networks'
-			, title   : 'Shared Data'
+			  icon    : icon
+			, title   : title
 			, message : 'Disable and restore local data?'
 			, cancel  : function() {
 				$this.prop( 'checked', true );
@@ -832,7 +860,7 @@ $( '#shareddata' ).click( function() {
 			, okcolor : orange
 			, ok      : function() {
 				bash( [ 'shareddatadisconnect', 'disable' ] );
-				notify( 'Shared Data', 'Disable ...', 'networks' );
+				notify( title, 'Disable ...', icon );
 			}
 		} );
 	} else {
@@ -911,9 +939,11 @@ function infoMount( values ) {
 	<td><input type="text"></td>
 </tr>`;
 	htmlmount += '</table>';
+	var icon = 'networks';
+	var title = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	info( {
-		  icon       : 'networks'
-		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
+		  icon       : icon
+		, title      : title
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, checkblank : [ 0, 1, 2 ]
@@ -971,8 +1001,8 @@ function infoMount( values ) {
 			bash( [ 'mount', ...values, shareddata ], function( error ) {
 				if ( error ) {
 					info( {
-						  icon    : 'networks'
-						, title   : shareddata ? 'Shared Data' : 'Add Network Storage'
+						  icon    : icon
+						, title   : title
 						, message : error
 						, ok      : function() {
 							setTimeout( function() {
@@ -985,18 +1015,16 @@ function infoMount( values ) {
 					refreshData();
 				}
 			} );
-			if ( shareddata ) {
-				notify( 'Shared Data', 'Enable ...', 'networks' );
-			} else {
-				notify( 'Network Storage', 'Add ...', 'networks' );
-			}
+			notify( title, shareddata ? 'Enable ...' : 'Add ...', icon );
 		}
 	} );
 }
 function infoNFSconnect( ip ) {
+	var icon = 'networks';
+	var title = 'Shared Data';
 	info( {
-		  icon      : 'networks'
-		, title     : 'Shared Data'
+		  icon      : icon
+		, title     : title
 		, message   : 'Server rAudio <i class="fa fa-rserver wh"></i>'
 		, textlabel : 'IP'
 		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
@@ -1008,8 +1036,8 @@ function infoNFSconnect( ip ) {
 			bash( [ 'sharelist', ip ], function( list ) {
 				if ( list.slice( 0, 6 ) === 'Server' ) {
 					info( {
-						  icon    : 'networks'
-						, title   : 'Shared Data'
+						  icon    : icon
+						, title   : title
 						, message : list
 									+'<br>Connect?'
 						, cancel  : function() {
@@ -1017,13 +1045,13 @@ function infoNFSconnect( ip ) {
 						}
 						, ok      : function() {
 							bash( [ 'shareddataconnect', ip ] );
-							notify( 'Shared Data', 'Connect Server rAudio ...', 'networks' );
+							notify( title, 'Connect Server rAudio ...', icon );
 						} 
 					} );
 				} else {
 					info( {
-						  icon    : 'networks'
-						, title   : 'Shared Data'
+						  icon    : icon
+						, title   : title
 						, message : list
 						, cancel  : function() {
 							$( '#shareddata' ).prop( 'checked', false );

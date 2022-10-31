@@ -145,14 +145,15 @@ $( '.disconnect' ).click( function() {
 	}
 	
 	var ssid = G.li.data( 'ssid' );
+	var icon = 'wifi';
 	info( {
-		  icon    : 'wifi'
+		  icon    : icon
 		, title   : ssid
 		, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
-			notify( ssid, 'Disconnect ...', 'wifi' );
+			notify( ssid, 'Disconnect ...', icon );
 			bash( [ 'disconnect' ] )
 		}
 	} );
@@ -173,21 +174,21 @@ $( '.forget' ).click( function() {
 			, ok      : function() {
 				notify( name, 'Forget ...', icon );
 				bluetoothCommand( 'remove', G.li.data( 'mac' ) );
-				console.log( 'remove', G.li.data( 'mac' ) );
 			}
 		} );
 		return
 	}
 	
 	var ssid = G.li.data( 'ssid' );
+	var icon = 'wifi';
 	info( {
-		  icon    : 'wifi'
+		  icon    : icon
 		, title   : ssid
 		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning wh"></i> Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
-			notify( ssid, 'Forget ...', 'wifi' );
+			notify( ssid, 'Forget ...', icon );
 			bash( [ 'profileremove', ssid ] );
 		}
 	} );
@@ -196,9 +197,11 @@ $( '.info' ).click( function() {
 	bluetoothInfo( G.li.data( 'mac' ) );
 } );
 $( '.hostapdset' ).click( function() {
+	var icon = 'accesspoint';
+	var title = 'Access Point';
 	info( {
-		  icon         : 'accesspoint'
-		, title        : 'Access Point'
+		  icon         : icon
+		, title        : title
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : G.hostapd.conf
@@ -214,7 +217,7 @@ $( '.hostapdset' ).click( function() {
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapd', true, iprange, ip, pwd ] );
-			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+			notify( title, G.hostapd ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -241,23 +244,24 @@ function bluetoothInfo( mac ) {
 function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
+	var icon = 'wifi';
 	if ( 'Address' in data ) {
 		var ip = data.Address;
 		if ( $( '#listlan li' ).length ) {
-			notify( ssid, 'Change ...', 'wifi' );
+			notify( ssid, 'Change ...', icon );
 		} else {
 			loader();
 			location.href = 'http://'+ ip +'/settings.php?p=networks';
-			notify( ssid, 'Change URL to '+ ip, 'wifi' );
+			notify( ssid, 'Change URL to '+ ip, icon );
 		}
 	} else {
-		notify( ssid, $( '#listwl li' ).length ? 'Change ...' : 'Connect ...', 'wifi' );
+		notify( ssid, $( '#listwl li' ).length ? 'Change ...' : 'Connect ...', icon );
 	}
 	bash( [ 'connect', JSON.stringify( data ) ], function( std ) {
 		if ( std == -1 ) {
 			G.wlconnected =  '';
 			info( {
-				  icon      : 'wifi'
+				  icon      : icon
 				, title     : 'Wi-Fi'
 				, message   : 'Connect to <wh>'+ ssid +'</wh> failed.'
 			} );
@@ -270,9 +274,11 @@ function editLAN() {
 	var static = G.listeth.static;
 	var ip = G.ipeth;
 	var gw = G.listeth.gateway;
+	var icon = 'lan';
+	var title = 'Edit LAN Connection';
 	info( {
-		  icon         : 'lan'
-		, title        : 'Edit LAN Connection'
+		  icon         : icon
+		, title        : title
 		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
 		, focus        : 0
 		, values       : [ ip, gw ]
@@ -287,7 +293,7 @@ function editLAN() {
 		}
 		, buttonlabel  : ( static ? '<i class="fa fa-undo"></i>DHCP' : '' )
 		, button       : ( static ? function() {
-			notify( 'LAN IP Address', 'Change URL to '+ G.hostname +'.local ...', 'lan' );
+			notify( title, 'Change URL to '+ G.hostname +'.local ...', icon );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );

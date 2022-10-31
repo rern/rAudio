@@ -4,13 +4,15 @@ $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
 	
+	var icon = 'spotify';
+	var title = 'Spotify Client';
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
-		notify( 'Spotify', 'Enable ...', 'spotify' );
+		notify( title, 'Enable ...', icon );
 	} else if ( G.spotifytoken ) {
 		info( {
-			  icon    : 'spotify'
-			, title   : 'Spotify Client'
+			  icon    : icon
+			, title   : title
 			, message : 'Reset client keys?'
 			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
 			, okcolor : red
@@ -21,8 +23,8 @@ $( '#setting-spotifyd' ).click( function() {
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
 			info( {
-				  icon    : 'spotify'
-				, title   : 'Spotify Client'
+				  icon    : icon
+				, title   : title
 				, message : '<i class="fa fa-warning"></i> Authorization cannot run on <wh>Firefox</wh>.'
 			} );
 			$( '#spotifyd' ).prop( 'checked', false );
@@ -30,8 +32,8 @@ $( '#setting-spotifyd' ).click( function() {
 		}
 		
 		info( {
-			  icon         : 'spotify'
-			, title        : 'Spotify Client'
+			  icon         : icon
+			, title        : title
 			, textlabel    : [ 'ID', 'Secret' ]
 			, focus        : 0
 			, footer       : 'Keys from private app: <i class="help fa fa-help"></i>'
@@ -72,9 +74,11 @@ $( '.screenshot' ).click( function() {
 	} );
 } );
 $( '#setting-snapclient' ).click( function() {
+	var icon = 'snapcast';
+	var title = 'SnapClient';
 	info( {
-		  icon         : 'snapcast'
-		, title        : 'SnapClient'
+		  icon         : icon
+		, title        : title
 		, message      : 'Sync SnapClient with SnapServer:'
 		, textlabel    : 'Latency <gr>(ms)</gr>'
 		, focus        : 0
@@ -92,14 +96,16 @@ $( '#setting-snapclient' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'snapclient', true, infoVal() ] );
-			notify( 'Snapclient', G.snapclient ? 'Change ...' : 'Enable ...', 'snapcast' );
+			notify( title, G.snapclient ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-upmpdcli' ).click( function() {
+	var icon = 'upnp';
+	var title = 'UPnP';
 	info( {
-		  icon         : 'upnp'
-		, title        : 'UPnP'
+		  icon         : icon
+		, title        : title
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ G.upmpdcliownqueue ]
 		, checkchanged : G.upmpdcli
@@ -108,14 +114,16 @@ $( '#setting-upmpdcli' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'upmpdcli', true, infoVal() ] );
-			notify( 'UPnP', G.upmpdcli ? 'Change ...' : 'Enable ...', 'upnp' );
+			notify( title, G.upmpdcli ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-camilladsp' ).click( function() {
+	var icon = 'camilladsp';
+	var title = 'CamillaGUI';
 	info( {
-		  icon         : 'camilladsp'
-		, title        : 'CamillaGUI'
+		  icon         : icon
+		, title        : title
 		, textlabel    : 'VU refresh rate <gr>(ms)</gr>'
 		, focus        : 0
 		, checkblank   : 1
@@ -127,14 +135,16 @@ $( '#setting-camilladsp' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'camilladsp', true, infoVal() ] );
-			notify( 'CamillaDSP', G.camilladsp ? 'Change ...' : 'Enable ...', 'camilladsp' );
+			notify( title, G.camilladsp ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-hostapd' ).click( function() {
+	var icon = 'accesspoint';
+	var title = 'Access Point';
 	info( {
-		  icon         : 'accesspoint'
-		, title        : 'Access Point'
+		  icon         : icon
+		, title        : title
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : G.hostapdconf
@@ -153,15 +163,17 @@ $( '#setting-hostapd' ).click( function() {
 			var ip012 = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapd', true, iprange, ip, pwd ] );
-			notify( 'RPi Access Point', G.hostapd ? 'Change ...' : 'Enable ...', 'wifi' );
+			notify( title, G.hostapd ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
 	var val = G.autoplayconf[ 0 ] || G.autoplayconf[ 1 ] || G.autoplayconf[ 2 ];
+	var icon = 'play';
+	var title = 'AutoPlay';
 	info( {
-		  icon         : 'play'
-		, title        : 'AutoPlay'
+		  icon         : icon
+		, title        : title
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? G.autoplayconf : [ false, false, true ]
 		, checkchanged : G.autoplay
@@ -170,7 +182,7 @@ $( '#setting-autoplay' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'autoplay', true, ...infoVal() ] );
-			notify( 'AutoPlay', G.autoplay ? 'Change ...' : 'Enable ...', 'play' );
+			notify( title, G.autoplay ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -212,9 +224,11 @@ ${ brightness }
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
 </div>`;
+	var icon = 'chromium';
+	var title = 'Browser Display';
 	info( {
-		  icon         : 'chromium'
-		, title        : 'Browser Display'
+		  icon         : icon
+		, title        : title
 		, content      : content
 		, boxwidth     : 100
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
@@ -256,14 +270,16 @@ ${ brightness }
 		}
 		, ok           : function() {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
-			notify( 'Browser on RPi', G.localbrowser ? 'Change ...' : 'Enable ...',  'chromium' );
+			notify( title, G.localbrowser ? 'Change ...' : 'Enable ...',  icon );
 		}
 	} );
 } );
 $( '#setting-smb' ).click( function() {
+	var icon = 'networks';
+	var title = 'Samba File Sharing';
 	info( {
-		  icon         : 'networks'
-		, title        : 'Samba File Sharing'
+		  icon         : icon
+		, title        : title
 		, message      : '<wh>Write</wh> permission:'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
@@ -273,7 +289,7 @@ $( '#setting-smb' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'smb', true, ...infoVal() ] );
-			notify( 'Samba - File Sharing', G.smb ? 'Change ...' : 'Enable ...', 'networks' );
+			notify( title, G.smb ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -294,9 +310,11 @@ $( '#setting-multiraudio' ).click( function() {
 	} else {
 		G.multiraudioconf = [ "rAudio", location.host ];
 	}
+	var icon = 'raudiobox';
+	var title = 'Multiple rAudios';
 	info( {
-		  icon         : 'raudiobox'
-		, title        : 'Multiple rAudios'
+		  icon         : icon
+		, title        : title
 		, content      : '<table>'+ content +'</table>'
 		, values       : G.multiraudioconf
 		, checkchanged : G.multiraudio
@@ -330,7 +348,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, ok           : function() {
 			O.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
-			notify( 'Multiple rAudios', G.multiraudio ? 'Change ...' : 'Enable ...', 'raudiobox' );
+			notify( title, G.multiraudio ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
@@ -338,15 +356,17 @@ $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();
 	} else {
+		var icon = 'lock';
+		var title = 'Password Login';
 		info( {
-			  icon          : 'lock'
-			, title         : 'Password Login'
+			  icon          : icon
+			, title         : title
 			, message       : 'Disable:'
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, pwdrequired   : 1
 			, ok            : function() {
-				notify( 'Password Login', 'Disable ...', 'lock' );
+				notify( title, 'Disable ...', icon );
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
 					, disable  : 1
@@ -359,9 +379,11 @@ $( '#login' ).click( function() {
 	}
 } );
 $( '#setting-login' ).click( function() {
+	var icon = 'lock';
+	var title = 'Password Login';
 	info( {
-		  icon          : 'lock'
-		, title         : 'Password Login'
+		  icon          : icon
+		, title         : title
 		, message       : ( G.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
@@ -371,7 +393,7 @@ $( '#setting-login' ).click( function() {
 		}
 		, ok            : function() {
 			var values = infoVal();
-			notify( 'Password Login', G.login ? 'Change ...' : 'Enable...', 'lock' );
+			notify( title, G.login ? 'Change ...' : 'Enable...', icon );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : values[ 0 ]
@@ -394,9 +416,11 @@ $( '#setting-scrobble' ).click( function() {
 <tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
 <tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
 </table>`;
+	var icon = 'lastfm';
+	var title = 'Scrobbler';
 	info( {
-		  icon          : 'lastfm'
-		, title         : 'Scrobbler'
+		  icon          : icon
+		, title         : title
 		, content       : content
 		, boxwidth      : 170
 		, values        : G.scrobbleconf
@@ -425,23 +449,25 @@ $( '#setting-scrobble' ).click( function() {
 			bash( [ 'scrobble', true, ...infoVal() ], function( response ) {
 				if ( 'error' in response ) {
 					info( {
-						  icon    : 'lastfm'
-						, title   : 'Scrobble'
+						  icon    : icon
+						, title   : title
 						, message : response.message
 					} );
 					$( '#scrobble' ).prop( 'checked', 0 );
 				}
 			}, 'json' );
-			notify( 'Scrobbler', G.scrobble ? 'Change ...' : 'Enable ...', 'lastfm' );
+			notify( title, G.scrobble ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
 $( '#nfsserver' ).click( function() {
 	var $this = $( this );
+	var icon = 'networks';
+	var title = 'Server rAudio';
 	if ( $this.hasClass( 'disabled' ) ) {
 		info( {
-			  icon    : 'networks'
-			, title   : 'Server rAudio'
+			  icon    : icon
+			, title   : title
 			, message : $this.prev().html()
 		} );
 		$this.prop( 'checked', G.nfsserver );
@@ -450,8 +476,8 @@ $( '#nfsserver' ).click( function() {
 	
 	bash( [ 'nfssharelist' ], function( list ) {
 		info( {
-			  icon    : 'networks'
-			, title   : 'Server rAudio'
+			  icon    : icon
+			, title   : title
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
@@ -461,15 +487,17 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : function() {
 				bash( [ 'nfsserver', !G.nfsserver ] );
-				notify( 'Server rAudio', G.nfsserver ? 'Disable ...' : 'Enable ...', 'networks' );
+				notify( title, G.nfsserver ? 'Disable ...' : 'Enable ...', icon );
 			}
 		} );
 	} );
 } );
 $( '#setting-stoptimer' ).click( function() {
+	var icon = 'stopwatch';
+	var title = 'Stop Timer';
 	info( {
-		  icon         : 'stopwatch'
-		, title        : 'Stop Timer'
+		  icon         : icon
+		, title        : title
 		, radio        : { Disable: 'false', '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
 		, checkbox     : [ 'Power off on stop' ]
 		, values       : G.stoptimerconf || [ false, false ]
@@ -489,7 +517,7 @@ $( '#setting-stoptimer' ).click( function() {
 		}
 		, ok           : function() {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
-			notify( 'Stop Timer', G.stoptimer ? 'Change ...' : 'Enable ...', 'stopwatch' );
+			notify( title, G.stoptimer ? 'Change ...' : 'Enable ...', icon );
 		}
 	} );
 } );
