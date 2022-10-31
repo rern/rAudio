@@ -1155,7 +1155,7 @@ function renderLibraryList( data ) {
 		}
 	}
 	if ( G.mode === 'album' ) {
-		if ( G.query.length === 1 ) htmlpath += '<span class="btntitle" id="button-coverart"><i class="fa fa-coverart"></i></span>';
+		if ( G.query.length === 1 ) htmlpath += '<span class="btntitle" id="button-coverart"><img src="/assets/img/iconcover.svg"></span>';
 	} else if ( G.mode === 'webradio' ) {
 		htmlpath += '<i class="btntitle button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'latest' ) {
@@ -1179,9 +1179,7 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-				$( '#button-coverart' )
-					.html( '<img src="'+ $( this ).attr( 'src' ) +'">' )
-					.addClass( 'btnimg' );
+				$( '#button-coverart img' ).attr( 'src', $( this ).attr( 'src' ) );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );

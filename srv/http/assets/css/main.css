@@ -1418,6 +1418,8 @@ i.map.disabled, .map.disabled i {
 	position:relative;
 	display: inline-block;
 	margin-left: 15px;
+	width: 40px;
+	text-align: center;
 }
 #button-coverart::after {
 	content: '\f528';
@@ -1426,12 +1428,9 @@ i.map.disabled, .map.disabled i {
 	margin-left: -31px;
 	font-size: 26px;
 }
-#button-coverart.btnimg::after {
-	margin-left: -10px;
-}
 #button-coverart img {
 	position: relative;
-	left: 10px;
+	left: -10px;
 	width: 18px;
 	border: 1px solid hsl(0,0%,30%);
 }
@@ -1527,9 +1526,9 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 #lib-path span i {
-	font-size: 20px;
-	vertical-align: 2px;
-	color: var( --cw );
+	position: absolute;
+	top: 3px;
+	left: -3px;
 }
 .index {
 	position: fixed;

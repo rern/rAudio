@@ -131,8 +131,6 @@ input::-moz-focus-inner {
 .fa-composer::before { content: '\f558' }
 .fa-conductor::before { content: '\f559' }
 .fa-consume::before { content: '\f566' }
-.fa-coverart::before { content: '\f53D'; position: absolute; color: var( --cg60 ); }
-.fa-coverart::after { content: '\f53E'; position: relative; }
 .fa-crop::before { content: '\f568' }
 .fa-dabradio::before { content: '\f589' }
 .fa-dabupdate::before { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
