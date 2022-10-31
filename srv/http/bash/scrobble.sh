@@ -43,4 +43,4 @@ if [[ $reponse =~ error ]]; then
 else
 	[[ -e $dirsystem/scrobble.conf/notify ]] && msg="${Title//\"/\\\"}"
 fi
-[[ $msg ]] && pushstreamNotify Scrobble "$msg" lastfm
+[[ $msg ]] && pushstreamNotify lastfm Scrobble "$msg"

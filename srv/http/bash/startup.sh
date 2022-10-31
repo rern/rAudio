@@ -89,7 +89,7 @@ if [[ $connected  ]]; then
 				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 					mount "$mountpoint" && break
 				else
-					(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
+					(( i == 10 )) && pushstreamNotifyBlink nas NAS "NAS @$ip cannot be reached."
 					sleep 2
 				fi
 			done
@@ -157,7 +157,7 @@ if ! grep -q dtparam=krnbt=on /boot/config.txt; then # recent kernel: bluetooth 
 fi
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
-	pushstreamNotify "$restorefailed" restore 10000
+	pushstreamNotify restore "$restorefailed" 10000
 fi
 
 touch $dirshm/startupdone

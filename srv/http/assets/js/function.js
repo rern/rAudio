@@ -683,6 +683,16 @@ function imageReplace( imagefilenoext, type, covername ) {
 			, data        : formData
 			, processData : false // FormData - already processData + contentType
 			, contentType : false
+			, success     : function( std ) {
+				if ( std == -1 ) {
+					info( {
+						  icon    : O.icon
+						, title   : O.title
+						, message : '<i class="fa fa-warning"></i> No write permission:'
+									+'<br><br><code>'+ covername +'</code>'
+					} );
+				}
+			}
 		} );
 	} else {
 		data.base64 = $( '.infoimgnew' )

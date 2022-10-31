@@ -89,10 +89,11 @@ pushstream() {
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
-	pushstream notify '{"title":"'$1'","text":"'${2//\"/\\\"}'","icon":"'$3'"'$delay'}'
+	pushstream notify '{"icon":"'$1'""title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'",'$delay'}'
 }
 pushstreamNotifyBlink() { # title text icon [hide]
-	pushstream notify '{"title":"'${1//\"/\\\"}'","text":"'${2//\"/\\\"}'","icon":"'$3' blink","delay":-1}'
+	[[ $4 ]] && delay=$4 || delay=-1
+	pushstream notify '{"icon":"'$1' blink","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'","delay":'$delay'}'
 }
 sshCommand() { # $1-ip, ${@:2}-commands
 	if ping -c 1 -w 1 $1 &> /dev/null; then

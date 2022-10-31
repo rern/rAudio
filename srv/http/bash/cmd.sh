@@ -48,9 +48,6 @@ equalizerGet() { # sudo - mixer equal is user dependent
 }'
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
-gifNotify() {
-	pushstreamNotifyBlink "$1" 'Resize animated GIF ...' coverart
-}
 gifThumbnail() {
 	type=$1
 	source=$2
@@ -61,7 +58,6 @@ gifThumbnail() {
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify 'Bookmark Thumbnail'
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
 			;;
@@ -70,9 +66,8 @@ gifThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
+			[[ ! -e "$target" ]] && echo -1 && exit
 			
-			[[ $animated ]] && gifNotify Coverart
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
@@ -81,7 +76,6 @@ gifThumbnail() {
 		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
-			[[ $animated ]] && gifNotify 'Station Coverart'
 			gifsicle -O3 --resize-fit 200x200 $source > $target
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;
@@ -105,7 +99,7 @@ jpgThumbnail() {
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			cp -f "$source" "$target" # already resized from client
-			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
+			[[ ! -e "$target" ]] && echo -1 && exit
 			
 			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
@@ -349,7 +343,7 @@ webRadioSampling() {
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
 	if [[ ! $( awk NF /tmp/webradio ) ]]; then
-		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
+		pushstreamNotify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
 		exit
 	fi
 	
@@ -359,7 +353,7 @@ webRadioSampling() {
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	if [[ ! $data ]]; then
-		pushstreamNotify 'Web Radio' "URL contains no stream data:<br>$url" webradio 8000
+		pushstreamNotify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
 		exit
 	fi
 	
@@ -626,7 +620,7 @@ displaysave )
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
+		pushstreamNotifyBlink playback Playback 'VU meter disable...'
 	fi
 	$dirsettings/player-conf.sh
 	;;
@@ -706,7 +700,7 @@ ignoredir )
 latestclear )
 	> $dirmpd/latest
 	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
-	pushstreamNotify Latest Cleared. latest
+	pushstreamNotify latest Latest Cleared
 	;;
 librandom )
 	enable=${args[1]}
@@ -860,7 +854,7 @@ mpcplayback )
 	if [[ $command == play ]]; then
 		mpc | grep -q '^\[paused\]' && pause=1
 		mpc -q $command $pos
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink audiocd 'Audio CD' 'Start play ...'
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
@@ -902,7 +896,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -1049,9 +1043,9 @@ power )
 	fi
 	
 	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink Power 'Reboot ...' reboot
+		pushstreamNotifyBlink reboot Power 'Reboot ...'
 	else
-		pushstreamNotify Power 'Off ...' 'power blink' 10000
+		pushstreamNotifyBlink power Power 'Off ...' 10000
 	fi
 	touch $dirshm/power
 	mpc -q stop

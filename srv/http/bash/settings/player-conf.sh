@@ -26,7 +26,7 @@ else
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
-		pushstreamNotify 'Audio Output' "$name" output
+		pushstreamNotify output 'Audio Output' "$name"
 		[[ $$usbdac == remove ]] && sleep 2
 	fi
 	if [[ $dsp ]]; then
