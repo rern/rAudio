@@ -1760,10 +1760,10 @@ $( '#button-pl-consume' ).click( function() {
 	var title = 'Consume Mode';
 	if ( G.status.consume ) {
 		$( this ).removeClass( 'bl' );
-		banner( icon title, 'Off' );
+		banner( icon, title, 'Off' );
 	} else {
 		$( this ).addClass( 'bl' );
-		banner( icon title, 'On - Remove each song after played.' );
+		banner( icon, title, 'On - Remove each song after played.' );
 	}
 	G.status.consume = !G.status.consume;
 	bash( [ 'mpcoption', 'consume', G.status.consume ] );
