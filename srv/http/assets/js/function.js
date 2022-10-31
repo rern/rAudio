@@ -673,14 +673,25 @@ function imageReplace( imagefilenoext, type, covername ) {
 	}
 	if ( ext === 'gif' ) {
 		data.file = G.infofile;
+		var formData = new FormData();
+		$.each( data, function( k, v ) {
+			formData.append( k, v );
+		} );
+		$.ajax( {
+			  url         : 'cmd.php'
+			, type        : 'POST'
+			, data        : formData
+			, processData : false // FormData - already processData + contentType
+			, contentType : false
+		} );
 	} else {
 		data.base64 = $( '.infoimgnew' )
-						.attr( 'src' )
-						.split( ',' )
-						.pop();
+							.attr( 'src' )
+							.split( ',' )
+							.pop();
+		$.post( cmdphp, data );
 	}
-	$.post( cmdphp, data );
-	banner( 'Album Cover Art', 'Change ...', '<i class="iconcover"></i>', -1 );
+	banner( $( '#infoTitle' ).text(), 'Change ...', '<i class="iconcover"></i>', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'

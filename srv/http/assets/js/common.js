@@ -317,10 +317,11 @@ function info( json ) {
 			
 			G.infofile = this.files[ 0 ];
 			var filename = G.infofile.name;
+			var typeimage = G.infofile.type.slice( 0, 5 ) === 'image';
 			O.filechecked = 1;
 			if ( O.filetype ) {
 				if ( O.filetype === 'image/*' ) {
-					O.filechecked = G.infofile.type.slice( 0, 5 ) === 'image';
+					O.filechecked = typeimage;
 				} else {
 					var ext = filename.includes( '.' ) ? filename.split( '.' ).pop() : 'none';
 					O.filechecked = O.filetype.includes( ext );
@@ -347,7 +348,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( O.filetype === 'image/*' ) setFileImage();
+				if ( typeimage ) setFileImage();
 			}
 		} );
 	}

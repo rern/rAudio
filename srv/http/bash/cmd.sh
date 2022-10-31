@@ -49,7 +49,7 @@ equalizerGet() { # sudo - mixer equal is user dependent
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
 gifNotify() {
-	pushstreamNotifyBlink Thumbnail 'Resize animated GIF ...' coverart
+	pushstreamNotifyBlink "$1" 'Resize animated GIF ...' coverart
 }
 gifThumbnail() {
 	type=$1
@@ -61,7 +61,7 @@ gifThumbnail() {
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
+			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify 'Bookmark Thumbnail'
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
 			;;
@@ -72,7 +72,7 @@ gifThumbnail() {
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
 			
-			[[ $animated ]] && gifNotify
+			[[ $animated ]] && gifNotify Coverart
 			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
 			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
 			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
@@ -81,7 +81,7 @@ gifThumbnail() {
 		dabradio|webradio )
 			filenoext=${target:0:-4}
 			rm -f $filenoext.* $filenoext-thumb.*
-			[[ $animated ]] && gifNotify
+			[[ $animated ]] && gifNotify 'Station Coverart'
 			gifsicle -O3 --resize-fit 200x200 $source > $target
 			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
 			;;

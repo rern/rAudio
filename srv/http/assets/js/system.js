@@ -782,16 +782,15 @@ $( '#restore' ).click( function() {
 			if ( infoVal() === 'reset' ) {
 				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
-				var file = $( '#infoFileBox' )[ 0 ].files[ 0 ];
 				var formData = new FormData();
 				formData.append( 'cmd', 'datarestore' );
-				formData.append( 'file', file );
+				formData.append( 'file', G.infofile );
 				$.ajax( {
 					  url         : 'cmd.php'
 					, type        : 'POST'
 					, data        : formData
-					, processData : false  // no - process the data
-					, contentType : false  // no - contentType
+					, processData : false // FormData - already processData + contentType
+					, contentType : false
 					, success     : function( data ) {
 						if ( data == -1 ) {
 							info( {
