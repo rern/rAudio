@@ -44,12 +44,12 @@ while true; do
 	coverfile=/srv/http/data/shm/webradio/$name.jpg
 	if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 		cp -f $filecover $coverfile
-		coverart=/data/shm/webradio/$name.$( date +%s ).jpg
+		coverart=/data/shm/webradio/$name.jpg
 		sed -i -e '/^coverart=/ d
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushstream coverart '{"type":"coverartplayback","url":"'$coverart'"}'
+		pushstream coverart '{"type":"coverartplayback","url":"'$coverart?v=$( date +%s )'"}'
 	fi
 	sleep 10
 done

@@ -115,7 +115,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 , "Album"     : "'$( getContent $dirairplay/Album )'"
 , "Artist"    : "'$( getContent $dirairplay/Artist )'"
 , "Title"     : "'$( getContent $dirairplay/Title )'"
-, "coverart"  : "/data/shm/airplay/coverart.'$date'.jpg"
+, "coverart"  : "/data/shm/airplay/coverart.jpg?v='$date'"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
@@ -243,7 +243,7 @@ if [[ $fileheader == cdda ]]; then
 		Time=${audiocd[3]}
 		if [[ $displaycover ]]; then
 			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
-			[[ $coverfile ]] && coverart=/data/audiocd/$discid.$date.${coverfile/*.}
+			[[ $coverfile ]] && coverart=${coverfile/\/srv\/http}
 		fi
 	else
 		[[ $state == stop ]] && Time=0
@@ -351,11 +351,7 @@ $radiosampling" > $dirshm/radio
 			fi
 			if [[ $type ]]; then
 				filenoext=${filenoext/\#/%23}
-				if [[ $urlname == *\?* ]]; then # cannot bust: url with ?param=...
-					stationcover=${filenoext//\?/%3F}.$type?v=$date
-				else
-					stationcover=$filenoext.$date.$type
-				fi
+				stationcover=${filenoext//\?/%3F}.$type # url with ?param=...
 			fi
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
@@ -363,7 +359,7 @@ $radiosampling" > $dirshm/radio
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
-, "stationcover" : "'$stationcover'"
+, "stationcover" : "'$stationcover?v=$date'"
 , "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"
@@ -375,7 +371,7 @@ $radiosampling" > $dirshm/radio
 		elapsedGet
 ########
 		status+='
-, "coverart"     : "'$coverart'"
+, "coverart"     : "'$coverart?v=$date'"
 , "elapsed"      : '$elapsed'
 , "ext"          : "Radio"
 , "icon"         : "'$icon'"
@@ -508,7 +504,7 @@ pos="$(( song + 1 ))/$pllength"
 sampling="$pos • $sampling"
 status+='
 , "ext"      : "'$ext'"
-, "coverart" : "'$coverart'"
+, "coverart" : "'$coverart?v=$date'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
@@ -526,13 +522,13 @@ if [[ $ext != CD && ! $stream ]]; then
 $AlbumArtist
 $Album
 $filenoesc" )
-	[[ $coverart ]] && coverart="${coverart:0:-4}.$date.${coverart: -3}"
+	[[ $coverart ]] && coverart="$coverart"
 fi
 elapsedGet
 ########
 	status+='
 , "elapsed"  : '$elapsed'
-, "coverart" : "'$coverart'"'
+, "coverart" : "'$coverart?v=$date'"'
 # >>>>>>>>>>
 outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 

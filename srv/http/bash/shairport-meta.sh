@@ -37,8 +37,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		src=/data/shm/airplay/coverart.$( date +%s ).jpg
-		pushstreamAirplay '{"coverart":"'$src'","file":""}'
+		src=/data/shm/airplay/coverart.jpg
+		pushstreamAirplay '{"coverart":"'$src?v=$( date +%s )'","file":""}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s

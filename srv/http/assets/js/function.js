@@ -813,9 +813,10 @@ function infoUpdate( path ) {
 }
 function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
-		var htmlnew = html.replace( /\.\d{10}(\.jpg"|\.gif")/g, '$1' );
-		if ( htmlnew !== G.libraryhtml ) {
-			G.libraryhtml = htmlnew;
+		if ( html !== G.libraryhtml ) {
+			G.libraryhtml = html;
+			var timestamp = Math.round( Date.now() / 1000 );
+			var html = html.replaceAll( '^^^', timestamp );
 			$( '#lib-mode-list' ).html( html );
 		}
 		$( '#lib-path span' ).removeClass( 'hide' );
@@ -1168,8 +1169,9 @@ function renderLibraryList( data ) {
 						.removeClass( 'hide' );
 	if ( !data.html ) return // empty radio
 	
-	
-	$( '#lib-mode-list' ).after( data.html ).promise().done( function() {
+	var timestamp = Math.round( Date.now() / 1000 );
+	var html = data.html.replaceAll( '^^^', timestamp );
+	$( '#lib-mode-list' ).after( html ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
@@ -1295,12 +1297,20 @@ function renderPlaylist( data ) {
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
-	$( '#pl-list' ).html( data.html +'<p></p>' ).promise().done( function() {
-		G.status.pllength = $( '#pl-list li' ).length;
+	if ( data.html !== G.playlisthtml ) {
+		G.playlisthtml = data.html;
+		var timestamp = Math.round( Date.now() / 1000 );
+		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		$( '#pl-list' ).html( html ).promise().done( function() {
+			G.status.pllength = $( '#pl-list li' ).length;
+			setPlaylistScroll();
+			imageLoad( 'pl-list' );
+			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
+		} );
+	} else {
 		setPlaylistScroll();
-		imageLoad( 'pl-list' );
 		$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
-	} );
+	}
 }
 function renderPlaylistList( data ) {
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
@@ -1324,7 +1334,9 @@ function renderSavedPlaylist( name ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
-		$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
+		var timestamp = Math.round( Date.now() / 1000 );
+		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		$( '#pl-savedlist' ).html( data.html ).promise().done( function() {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );

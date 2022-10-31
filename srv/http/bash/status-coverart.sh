@@ -5,7 +5,6 @@ artist=${args[0]}
 album=${args[1]}
 file=${args[2]}
 type=${args[3]}
-date=$( date +%s )
 covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 filename=$( basename "$file" )
 path="/mnt/MPD/$file"

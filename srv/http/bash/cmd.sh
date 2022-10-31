@@ -178,9 +178,8 @@ pushstreamImage() {
 		echo "$( head -1 "$bkfile" )
 ${target/\/srv\/http}" > "$bkfile"
 	fi
-	coverart=${target:0:-4}.$( date +%s ).${target: -3};
-	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverart'","type":"'$type'"}'
+	[[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" ) || coverart=$target
+	pushstream coverart '{"url":"'$coverart?v=$( date +%s )'","type":"'$type'"}'
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -526,7 +525,7 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null | grep -E -i -m1 '\.gif$|\.jpg$|\.png$'  ) # full path
-	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$( date +%s ) && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
@@ -537,7 +536,7 @@ coverartget )
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile
+		[[ -e $coverartfile ]] && echo $coverartfile?v=$( date +%s )
 	fi
 	;;
 coverartreset )
@@ -580,11 +579,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	if [[ $url ]]; then
-		url="${url:0:-4}.$( date +%s ).${url: -3}"
-	else
-		url=/mnt/MPD/$mpdpath/reset
-	fi
+	[[ $url ]] && url=$url?v=$( date +%s ) || url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverartsave )
@@ -669,23 +664,6 @@ equalizerupdn )
 	band=${args[1]}
 	val=${args[2]}
 	sudo -u mpd amixer -D equal sset "$band" $val
-	;;
-hashFiles )
-	path=/srv/http/assets
-	for dir in css fonts js; do
-		[[ $dir == js ]] && d=d
-		files+=$( ls -p$d "$path/$dir/"* | grep -v '/$' )$'\n'
-	done
-	date=$( date +%s )
-	for file in ${files[@]}; do
-		mv $file ${file/.*}.$date.${file/*.}
-		pages=$( grep -rl "assets/js" /srv | grep 'php$' )
-		for page in ${pages[@]}; do
-			name=$( basename $file )
-			newname=${name/.*}.$date.${name/*.}
-			sed -i "s|$name|$newname|" $page
-		done
-	done
 	;;
 ignoredir )
 	touch $dirmpd/updating

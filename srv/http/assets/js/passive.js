@@ -47,12 +47,11 @@ disconnect = () => {
 function bookmarkCover( src, path ) {
 	var path = path.replace( /^\/mnt\/MPD\/|\/srv\/http\/data\//, '' );
 	var src = src.replace( /^\/srv\/http\//, '' );
-	var reset = src.slice( -5 ) === 'reset';
 	$( '.bookmark' ).each( function() {
 		var $this = $( this );
 		if ( $this.find( '.lipath' ).text() === path ) {
 			var htmlbk = '<a class="lipath">'+ path +'</a>';
-			if ( !reset ) {
+			if ( src !== 'reset' ) {
 				htmlbk += '<img class="bkcoverart" src="'+ src +'">';
 			} else {
 				htmlbk += '<i class="fa fa-bookmark"></i>'

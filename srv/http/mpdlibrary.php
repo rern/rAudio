@@ -113,8 +113,7 @@ EOF;
 			$bkpath = $data[ 0 ];
 			$coverart = $data[ 1 ] ?? '';
 			if ( $coverart ) {
-				$coverart = substr( $coverart, 0, -3 ).time().substr( $coverart, -4 );
-				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'" data-label="'.$name.'">';
+				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'?v=^^^" data-label="'.$name.'">';
 			} else {
 				$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
 			}
@@ -282,15 +281,14 @@ function htmlDirectory( $lists ) {
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$time = time();
 	foreach( $array as $each ) {
 		$path = $each->path;
 		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode = strtolower( explode( '/', $path )[ 0 ] );
-			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.'.$time.'.jpg' );
-			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'" data-target="#menu-folder">';
+			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
+			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'?v=^^^" data-target="#menu-folder">';
 		} else {
 			$mode = $gmode;
 			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
@@ -396,19 +394,18 @@ function htmlList( $lists ) { // non-file 'list' command
 EOF;
 		}
 	} else {
-		$time = time();
 		foreach( $lists as $list ) {
 			$data = explode( '^^', $list );
 			$index = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$path = $data[ 3 ];
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
-			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.'.$time.'.jpg' ); // replaced with icon on load error(faster than existing check)
+			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$space = $data[ 2 ] ?: '&nbsp;';
 			$html.= <<< EOF
 <div class="coverart" data-index="$index">
 	<a class="lipath">$path</a>
-	<div><img class="lazyload" data-src="$coverfile"></div>
+	<div><img class="lazyload" data-src="$coverfile?v=^^^"></div>
 	<span class="coverart1">$data[1]</span>
 	<gr class="coverart2">$space</gr>
 </div>
@@ -449,9 +446,9 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$indexes[] = $index;
 				$html.= '<li class="dir" data-index="'.$index.'">';
 			}
-			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.time().jpg" );
+			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.jpg" );
 			$html.= <<< EOF
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc" data-target="#menu-wrdir">
+	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc?v=^^^" data-target="#menu-wrdir">
 	<a class="lipath">$path$subdir</a>
 	<span class="single">$subdir</span>
 </li>
@@ -473,20 +470,18 @@ EOF;
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$time = time();
 		foreach( $array as $each ) {
 			$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[] = $index;
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
 			$url = $each->url;
 			$urlname = str_replace( '/', '|', $url );
-			$thumbsrc = '/data/'.$gmode.'/img/'.rawurlencode( $urlname ).'-thumb.';
-			$thumbsrc.= strpos( $urlname, '?' ) ? 'jpg?v='.$time : $time.'.jpg';
+			$thumbsrc = '/data/'.$gmode.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
 			$liname = $each->name;
 			$name = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html.= <<< EOF
 <li class="file"$datacharset data-index="$index">
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc" data-target="#menu-webradio">
+	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc?v=^^^" data-target="#menu-webradio">
 	<a class="lipath">$url</a>
 	<a class="liname">$liname</a>
 EOF;
@@ -581,7 +576,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$html.= <<< EOF
 <li data-mode="$gmode" class="licover">
 	<a class="lipath">$mpdpath</a>
-	<div class="licoverimg"><img id="liimg" src="$coverart"></div>
+	<div class="licoverimg"><img id="liimg" src="$coverart?v=^^^"></div>
 	<div class="liinfo $gmode">
 	<div class="lialbum$hidealbum">$album</div>
 	<div class="liartist$hideartist"><i class="fa fa-$icon"></i>$artist</div>
@@ -596,7 +591,6 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 </li>
 EOF;
 	}
-	$time = time();
 	$i = 0;
 	foreach( $array as $each ) {
 		if ( !$each->time ) continue;
