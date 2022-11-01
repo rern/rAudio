@@ -524,8 +524,9 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	;;
 coverartget )
 	path=${args[1]}
-	if [[ ${path:0:14} == /data/webradio ]]; then
-		coverartfile=$( ls -1 /srv/http$path.{gif,jpg} 2> /dev/null )
+	radio=${args[2]}
+	if [[ $radio ]]; then
+		coverartfile=$( ls -1 "$path".{gif,jpg} 2> /dev/null )
 		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date
 		exit
 	fi
@@ -1249,9 +1250,9 @@ webradiocopybackup )
 	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
-	filenoext=${args[1]:0:-17}
+	filenoext=${args[1]}
 	type=${args[2]}
-	rm "/srv/http$filenoext".* "/srv/http$filenoext-thumb".*
+	rm "$filenoext".* "$filenoext-thumb".*
 	pushstream coverart '{"type":"'$type'"}'
 	;;
 webradiodelete )

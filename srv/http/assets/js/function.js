@@ -633,20 +633,12 @@ function imageLoad( list ) {
 	if ( list === 'lib-list' ) {
 		if ( G.mode === 'album' || G.mode === 'latest' ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
-				var $this = $( this );
-				var src = $this.attr( 'src' ); // ....jpg?v=1234567890
-				var src = src.slice( -16, -13 ) === 'jpg' ? src.replace( '.jpg?v=', '.gif?v=' ) : '/assets/img/coverart.svg';
-				$this.attr( 'src', src );
+				$( this ).attr( 'src', '/assets/img/coverart.svg' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
 				var src = $this.attr( 'src' );
-				if ( src.slice( -16, -13 ) === 'jpg' ) {
-					$this.attr( 'src', src.replace( '.jpg?v=', '.gif?v=' ) );
-					return
-				}
-				
 				if ( G.mode.slice( -5 ) === 'radio' ) {
 					if ( $this.parent().hasClass( 'dir' ) ) {
 						var icon = 'folder';
