@@ -533,6 +533,9 @@ function getBio( artist ) {
 }
 function getDirectory( path ) {
 	if ( path.slice( 0, 3 ) === '%2F' ) path = decodeURIComponent( path );
+	path = path
+				.replace( /^\/srv\/http/, '' )
+				.replace( /^\/data\//, '' );
 	return path.substring( 0, path.lastIndexOf( '/' ) )
 }	
 function getPlaybackStatus( withdisplay ) {

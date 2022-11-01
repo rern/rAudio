@@ -44,25 +44,6 @@ disconnect = () => {
 		pushstream.disconnect();
 	}
 }
-function bookmarkCover( src, path ) {
-	var path = path.replace( /^\/mnt\/MPD\/|\/srv\/http\/data\//, '' );
-	var src = src.replace( /^\/srv\/http\//, '' );
-	$( '.bookmark' ).each( function() {
-		var $this = $( this );
-		if ( $this.find( '.lipath' ).text() === path ) {
-			var htmlbk = '<a class="lipath">'+ path +'</a>';
-			if ( src !== 'reset' ) {
-				htmlbk += '<img class="bkcoverart" src="'+ src +'">';
-			} else {
-				htmlbk += '<i class="fa fa-bookmark"></i>'
-						 +'<a class="label">'+ path.split( '/' ).pop() +'</a>'
-			}
-			$this.find( '.mode' ).html( htmlbk );
-			return false
-		}
-	} );
-	$( '#lib-mode-list' ).click();
-}
 function radioRefresh() {
 	var query = G.query[ G.query.length - 1 ];
 	if ( query.path ) {
@@ -186,11 +167,11 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	if ( 'url' in data ) {
 		var src = data.url;
-		var path = getDirectory( decodeURIComponent( src ) ).slice( 9 );
+		var path = getDirectory( src );
 	}
 	switch ( data.type ) {
 		case 'bookmark':
-			bookmarkCover( src, path );
+			$( '#button-library' ).click();
 			break;
 		case 'coverart':
 			$( '#coverart, #liimg' ).css( 'opacity', '' );
@@ -203,6 +184,11 @@ function psCoverart( data ) {
 				}
 				$( '#page-playback' ).click()
 			} else if ( G.library ) {
+				if ( !G.librarylist ) {
+					$( '#button-library' ).click();
+					return
+				}
+				
 				if ( path === '/data/audiocd' ) return
 				
 				if ( $( '.licover' ).length ) {

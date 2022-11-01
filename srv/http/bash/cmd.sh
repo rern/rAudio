@@ -439,8 +439,9 @@ bookmarkcoverreset )
 	sed -i '2d' "$dirbookmarks/$name"
 	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
 	data='{
-  "url"  : "'$imagepath/reset'"
-, "type" :"bookmark"
+  "url"   : "'$imagepath/$name'"
+, "type"  : "bookmark"
+, "reset" : 1
 }'
 	pushstream coverart "$data"
 	;;
