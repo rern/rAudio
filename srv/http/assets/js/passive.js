@@ -186,7 +186,7 @@ function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
 	if ( 'url' in data ) {
 		var src = data.url;
-		var path = getDirectory( src );
+		var path = getDirectory( decodeURIComponent( src ) ).slice( 9 );
 	}
 	switch ( data.type ) {
 		case 'bookmark':
