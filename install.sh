@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221031
-sed i '/interfaces/ d' /etc/samba/smb.conf
+sed -i '/interfaces/ d' /etc/samba/smb.conf
 systemctl try-restart smb 
 
 file=/etc/systemd/system/bluetooth.service.d/override.conf
