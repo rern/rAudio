@@ -58,7 +58,7 @@ gifThumbnail() {
 		bookmark )
 			rm -f "$targetnoext".*
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -67,13 +67,13 @@ gifThumbnail() {
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
 			rm -f "$targetnoext".* "$targetnoext-thumb".*
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
@@ -524,7 +524,13 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	;;
 coverartget )
 	path=${args[1]}
-	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null | grep -E -i -m1 '\.gif$|\.jpg$|\.png$'  ) # full path
+	if [[ ${path:0:14} == /data/webradio ]]; then
+		coverartfile=$( ls -1 /srv/http$path.{gif,jpg} 2> /dev/null )
+		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date
+		exit
+	fi
+	
+	coverartfile=$( ls -1X "$path"/coverart.{gif,jpg,png} 2> /dev/null | head -1 )
 	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit

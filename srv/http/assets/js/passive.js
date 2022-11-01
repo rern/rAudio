@@ -206,7 +206,6 @@ function psCoverart( data ) {
 					} );
 				}
 			}
-			bookmarkCover( src, path );
 			break;
 		case 'coverartplayback':
 			if ( G.playback ) {

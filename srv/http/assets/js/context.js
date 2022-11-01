@@ -367,23 +367,28 @@ function webRadioCoverart() {
 		var type = G.status.icon === 'dabradio' ? 'dabradio' : 'webradio';
 	} else {
 		var src = G.list.li.find( '.lib-icon' ).attr( 'src' );
-		var coverart = src ? src.replace( '-thumb.', '.' ) : G.coverdefault;
 		var type = G.mode;
 	}
-	var radioicon = coverart === G.coverdefault;
-	$( '#coverart, #liimg' ).removeAttr( 'style' );
+	$( '#coverart' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	info( {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
-		, message     : '<img class="imgold" src="'+ coverart +'" >'
+		, message     : '<img class="imgold" src="'+ G.coverdefault +'" >'
 						+'<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> '+ ( G.library ? G.list.name : G.status.station ) +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : radioicon ? '' : '<i class="fa fa-'+ G.mode +'"></i>Default'
-		, buttoncolor : radioicon ? '' : orange
-		, button      : radioicon ? '' : function() {
+		, beforeshow  : function() {
+			if ( src ) {
+				bash( [ 'coverartget', decodeURIComponent(src).slice( 0, -23 ) ], function( coverart ) {
+					if ( coverart ) $( '#infoContent .imgold' ).attr( 'src', coverart );
+				} );
+			}
+		}
+		, buttonlabel : !src ? '' : '<i class="fa fa-'+ G.mode +'"></i>Default'
+		, buttoncolor : !src ? '' : orange
+		, button      : !src ? '' : function() {
 			bash( [ 'webradiocoverreset', decodeURIComponent( coverart ), type ] );
 		}
 		, ok          : function() {
