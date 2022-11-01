@@ -72,10 +72,10 @@ gifThumbnail() {
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
-			filenoext=${target:0:-4}
-			rm -f "$filenoext".* "$filenoext-thumb".*
+			targetnoext=${target:0:-4}
+			rm -f "$targetnoext".* "$targetnoext-thumb".*
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$filenoext-thumb.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.gif"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
@@ -88,7 +88,7 @@ jpgThumbnail() {
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			cp -f $source "$target"
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			;;
 		coverart )
@@ -96,18 +96,16 @@ jpgThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f $source "$target" # already resized from client
-			[[ ! -e "$target" ]] && echo -1 && exit
-			
-			convert $source -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			convert "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
-			filenoext=${target:0:-4}
-			rm -f "$filenoext".* "$filenoext-thumb".*
-			cp -f $source "$target"
-			convert $source -thumbnail 80x80\> -unsharp 0x.5 "$filenoext-thumb.jpg"
+			targetnoext=${target:0:-4}
+			rm -f "$targetnoext".* "$targetnoext-thumb".*
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
@@ -561,7 +559,7 @@ $id" &> /dev/null &
 		"$dir/coverart".* \
 		"$dir/thumb".* \
 		$dirshm/embedded/* \
-		$dirshm/local/$covername
+		$dirshm/local/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
@@ -1139,8 +1137,12 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	imgwh=( $( gifsicle -I "${args[2]}" | awk 'NR < 3 {print $NF}' ) ) # check if animated gif
-	[[ ${imgwh[0]} == images ]] && gifThumbnail "${args[@]:1}" || jpgThumbnail "${args[@]:1}"
+	if gifsicle -I "${args[2]}" | grep q 'image #1'; then # if not animated gif, convert to jpg
+		gifThumbnail "${args[@]:1}"
+	else
+		args[3]="${args[3]:0:-4}.jpg" # target.gif > target.jpg
+		jpgThumbnail "${args[@]:1}"
+	fi
 	;;
 thumbjpg )
 	jpgThumbnail "${args[@]:1}"
