@@ -138,7 +138,7 @@ $menu.= menudiv( 'radio', $html );
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'iconcover',    'Change station art' ]
+	, [ 'wrcoverart', 'iconcover',    'Change cover art' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
