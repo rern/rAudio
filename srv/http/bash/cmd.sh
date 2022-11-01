@@ -1241,9 +1241,9 @@ webradiocopybackup )
 	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
-	coverart=${args[1]}
+	filenoext=${args[1]:0:-17}
 	type=${args[2]}
-	rm "/srv/http$coverart" "/srv/http${coverart:0:-4}-thumb".*
+	rm "/srv/http$filenoext".* "/srv/http$filenoext-thumb".*
 	pushstream coverart '{"type":"'$type'"}'
 	;;
 webradiodelete )

@@ -384,7 +384,7 @@ function webRadioCoverart() {
 		, buttonlabel : radioicon ? '' : '<i class="fa fa-'+ G.mode +'"></i>Default'
 		, buttoncolor : radioicon ? '' : orange
 		, button      : radioicon ? '' : function() {
-			bash( [ 'webradiocoverreset', coverart, type ] );
+			bash( [ 'webradiocoverreset', decodeURIComponent( coverart ), type ] );
 		}
 		, ok          : function() {
 			if ( G.library ) {
