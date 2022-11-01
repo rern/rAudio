@@ -191,8 +191,8 @@ function htmlTrack( $lists, $plname = '' ) {
 			$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'?v=^^^" data-target="#menu-filesavedpl">';
 			$html.= <<< EOF
 <li class="$class" $datatrack>
-	<a class="lipath">$list->file</a>
-	$htmlicon<div class="li1"><span class="name">$list->Title</span>
+	<a class="lipath">$file</a>
+	$htmlicon<div class="li1"><span class="name">$title</span>
 	<span class="duration"><a class="elapsed"></a><a class="time" data-time="$sec">$list->Time</a></span></div>
 	<div class="li2">$li2</div>
 </li>
