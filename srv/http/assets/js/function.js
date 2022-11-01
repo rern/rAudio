@@ -834,6 +834,16 @@ function libraryHome() {
 			if ( G.status.updating_db ) banner( 'refresh-library blink', 'Library Database', 'Update ...' );
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
+		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
+			var $this = $( this );
+			var src = $this.attr( 'src' ); // ....jpg?v=1234567890
+			if ( src.slice( -16, -13 ) === 'jpg' ) {
+				src = src.replace( '.jpg?v=', '.gif?v=' );
+				$this.attr( 'src', src );
+			} else {
+				$this.replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
+			}
+		} );
 	} );
 }
 function loader() {

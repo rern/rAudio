@@ -53,9 +53,10 @@ gifThumbnail() {
 	source=$2
 	target=$3
 	covername=$4
+	targetnoext=${target:0:-4}
 	case $type in
 		bookmark )
-			rm -f "${target:0:-4}".*
+			rm -f "$targetnoext".*
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.gif"
 			;;
@@ -64,30 +65,31 @@ gifThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			[[ ! -e "$target" ]] && echo -1 && exit
-			
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
 			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.gif"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
-			targetnoext=${target:0:-4}
 			rm -f "$targetnoext".* "$targetnoext-thumb".*
 			gifsicle -O3 --resize-fit 600x600 $source > "$target"
 			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.gif"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
+	rm -f $source
 }
 jpgThumbnail() {
 	type=$1
 	source=$2
 	target=$3
 	covername=$4
+	gif=$5
+	targetnoext=${target:0:-4}
+	[[ $gif ]] && target="$targetnoext.jpg" # target.gif > target.jpg
 	case $type in
 		bookmark )
-			rm -f "${target:0:-4}".*
+			rm -f "$targetnoext".*
 			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			;;
@@ -102,13 +104,13 @@ jpgThumbnail() {
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
-			targetnoext=${target:0:-4}
 			rm -f "$targetnoext".* "$targetnoext-thumb".*
 			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
+	rm -f $source
 }
 plAddPlay() {
 	pushstreamPlaylist add
@@ -582,9 +584,7 @@ $mpdpath" )
 coverartsave )
 	source=${args[1]}
 	path=${args[2]}
-	coverfile="$path/cover.jpg"
-	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f "$source"
+	jpgThumbnail coverart $source "$path/cover.jpg"
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -1137,11 +1137,10 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	if gifsicle -I "${args[2]}" | grep q 'image #1'; then # if not animated gif, convert to jpg
+	if gifsicle -I "${args[2]}" | grep -q 'image #1'; then # if not animated gif, convert to jpg
 		gifThumbnail "${args[@]:1}"
 	else
-		args[3]="${args[3]:0:-4}.jpg" # target.gif > target.jpg
-		jpgThumbnail "${args[@]:1}"
+		jpgThumbnail "${args[@]:1}" gif
 	fi
 	;;
 thumbjpg )

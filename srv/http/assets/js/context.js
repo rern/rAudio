@@ -30,7 +30,7 @@ function bookmarkNew() {
 			}
 			, ok         : function() {
 				var name = infoVal();
-				bash( [ 'bookmarkadd', name, path, coverart ], function( std ) {
+				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], function( std ) {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
