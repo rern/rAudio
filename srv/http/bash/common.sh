@@ -14,6 +14,7 @@ for dir in $dirs; do
 	printf -v dir$dir '%s' $dirdata/$dir
 done
 mpdconf=$dirmpdconf/mpd.conf
+date=$( date +%s )
 
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'

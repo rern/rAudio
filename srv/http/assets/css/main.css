@@ -1341,6 +1341,9 @@ i.map.disabled, .map.disabled i {
 	margin: 5px;
 	border: 1px solid hsl(0,0%,20%);
 }
+#bannerIcon .iconcover {
+	margin-left: 3px;
+}
 #infoTop .iconcover {
 	margin-top: 5px !important;
 	width: 28px !important;

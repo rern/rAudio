@@ -387,17 +387,13 @@ function webRadioCoverart() {
 			bash( [ 'webradiocoverreset', coverart, type ] );
 		}
 		, ok          : function() {
-			if ( coverart !== G.coverdefault ) {
-				var imagefilenoext = coverart.slice( 0, -15 );
+			if ( G.library ) {
+				var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
+				var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 			} else {
-				if ( G.library ) {
-					var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
-					var url = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-				} else {
-					var url =  G.status.file;
-				}
-				var imagefilenoext = '/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
+				var url =  G.status.file;
 			}
+			var imagefilenoext = '/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 			imageReplace( '/srv/http'+ imagefilenoext, type );
 		}
 	} );

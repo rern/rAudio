@@ -10,8 +10,6 @@
 
 [[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit
 
-date=$( date +%s )
-
 elapsedGet() {
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 								| telnet 127.0.0.1 6600 2> /dev/null \
@@ -243,7 +241,7 @@ if [[ $fileheader == cdda ]]; then
 		Time=${audiocd[3]}
 		if [[ $displaycover ]]; then
 			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
-			[[ $coverfile ]] && coverart=${coverfile/\/srv\/http}
+			[[ $coverfile ]] && coverart="${coverfile:9}?v=$date"
 		fi
 	else
 		[[ $state == stop ]] && Time=0
@@ -268,7 +266,7 @@ elif [[ $stream ]]; then
 		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
-			[[ $onlinefile ]] && coverart=${onlinefile:9}
+			[[ $onlinefile ]] && coverart="${onlinefile:9}?v=$date"
 		fi
 	else
 		ext=Radio
@@ -336,30 +334,21 @@ $radiosampling" > $dirshm/radio
 				covername=$( tr -d ' "`?/#&'"'" <<< "$Artist${Title/ (*}" ) # remove '... (extra tag)'
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
-					coverart=${coverfile:9}
+					coverart="${coverfile:9}?v=$date"
 					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
 		fi
 		if [[ $displaycover ]]; then
-			filenoext=/data/webradio/img/$urlname
-			pathnoext=/srv/http$filenoext
-			if [[ -e $pathnoext.jpg ]]; then
-				type=jpg
-			elif [[ -e $pathnoext.gif ]]; then
-				type=gif
-			fi
-			if [[ $type ]]; then
-				filenoext=${filenoext/\#/%23}
-				stationcover=${filenoext//\?/%3F}.$type # url with ?param=...
-			fi
+			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
+			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )?v=$date"
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
 ########
 		status+='
 , "Album"        : "'$Album'"
 , "Artist"       : "'$Artist'"
-, "stationcover" : "'$stationcover?v=$date'"
+, "stationcover" : "'$stationcover'"
 , "Name"         : "'$Name'"
 , "state"        : "'$state'"
 , "station"      : "'$station'"
@@ -371,7 +360,7 @@ $radiosampling" > $dirshm/radio
 		elapsedGet
 ########
 		status+='
-, "coverart"     : "'$coverart?v=$date'"
+, "coverart"     : "'$coverart'"
 , "elapsed"      : '$elapsed'
 , "ext"          : "Radio"
 , "icon"         : "'$icon'"
@@ -504,7 +493,7 @@ pos="$(( song + 1 ))/$pllength"
 sampling="$pos • $sampling"
 status+='
 , "ext"      : "'$ext'"
-, "coverart" : "'$coverart?v=$date'"
+, "coverart" : "'$coverart'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"'
 
@@ -522,13 +511,13 @@ if [[ $ext != CD && ! $stream ]]; then
 $AlbumArtist
 $Album
 $filenoesc" )
-	[[ $coverart ]] && coverart="$coverart"
+	[[ $coverart ]] && coverart="$coverart?v=$date"
 fi
 elapsedGet
 ########
 	status+='
 , "elapsed"  : '$elapsed'
-, "coverart" : "'$coverart?v=$date'"'
+, "coverart" : "'$coverart'"'
 # >>>>>>>>>>
 outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 

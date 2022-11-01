@@ -832,7 +832,7 @@ $( '#divcover' ).press( function( e ) {
 } ).on( 'click', '.fa-save', function() {
 	coverartSave();
 } ).on( 'click', '.iconcover', function() {
-	G.status.webradio ? webRadioCoverart () : coverartChange();
+	G.status.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {
 	if ( typeof Android === 'object' ) {
@@ -1414,13 +1414,10 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var $img = $this.find( 'img' );
 	if ( $img.length ) {
-		var src = $img.attr( 'src' );
-		var icon = '<img src="'+ src +'">'
-		var ext = src.slice( -4 );
+		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
 	} else {
 		var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
 				  +'<br><a class="bklabel">'+ name +'</a>'
-		var ext = '.txt';
 	}
 	info( {
 		  icon    : 'bookmark'

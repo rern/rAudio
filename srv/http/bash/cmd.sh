@@ -53,13 +53,11 @@ gifThumbnail() {
 	source=$2
 	target=$3
 	covername=$4
-	imgwh=( $( gifsicle -I "$source" | awk 'NR < 3 {print $NF}' ) )
-	[[ ${imgwh[0]} == images ]] && animated=1
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
-			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
+			gifsicle -O3 --resize-fit 200x200 $source > "$target"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.gif"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -68,16 +66,16 @@ gifThumbnail() {
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
 			[[ ! -e "$target" ]] && echo -1 && exit
 			
-			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
-			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
-			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
+			gifsicle -O3 --resize-fit 600x600 $source > "$target"
+			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.gif"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
 			filenoext=${target:0:-4}
-			rm -f $filenoext.* $filenoext-thumb.*
-			gifsicle -O3 --resize-fit 200x200 $source > $target
-			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
+			rm -f "$filenoext".* "$filenoext-thumb".*
+			gifsicle -O3 --resize-fit 600x600 $source > "$target"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$filenoext-thumb.gif"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
@@ -90,7 +88,7 @@ jpgThumbnail() {
 	case $type in
 		bookmark )
 			rm -f "${target:0:-4}".*
-			cp -f "$source" "$target"
+			cp -f $source "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
 			;;
 		coverart )
@@ -98,18 +96,18 @@ jpgThumbnail() {
 			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
 			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
 			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$target" # already resized from client
+			cp -f $source "$target" # already resized from client
 			[[ ! -e "$target" ]] && echo -1 && exit
 			
-			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			convert $source -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 			rm -f $dirshm/embedded/* $dirshm/local/$covername
 			;;
 		dabradio|webradio )
 			filenoext=${target:0:-4}
-			rm -f $filenoext.* $filenoext-thumb.*
-			cp -f $source $target
-			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
+			rm -f "$filenoext".* "$filenoext-thumb".*
+			cp -f $source "$target"
+			convert $source -thumbnail 80x80\> -unsharp 0x.5 "$filenoext-thumb.jpg"
 			;;
 	esac
 	pushstreamImage "$target" $type "$covername"
@@ -173,13 +171,15 @@ pushstreamImage() {
 	
 	type=$2
 	covername=$3
+	coverart=${target/\/srv\/http}
 	if [[ $type == bookmark ]]; then
 		bkfile="$dirbookmarks/$covername"
-		echo "$( head -1 "$bkfile" )
-${target/\/srv\/http}" > "$bkfile"
+		echo "\
+$( head -1 "$bkfile" )
+$coverart" > "$bkfile"
 	fi
-	[[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${target//\'/\\\'}' );" ) || coverart=$target
-	pushstream coverart '{"url":"'$coverart?v=$( date +%s )'","type":"'$type'"}'
+	[[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
+	pushstream coverart '{"url":"'$coverart?v=$date'","type":"'$type'"}'
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -518,14 +518,13 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
-	hash=$( date +%s )
-	sed -i -E 's/\?v=.{10}/?v='$hash'/g' /srv/http/settings/camillagui/build/index.html
+	sed -i -E 's/\?v=.{10}/?v='$date'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartget )
 	path=${args[1]}
 	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null | grep -E -i -m1 '\.gif$|\.jpg$|\.png$'  ) # full path
-	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$( date +%s ) && exit
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
@@ -536,7 +535,7 @@ coverartget )
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile?v=$( date +%s )
+		[[ -e $coverartfile ]] && echo $coverartfile?v=$date
 	fi
 	;;
 coverartreset )
@@ -579,7 +578,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ $url ]] && url=$url?v=$( date +%s ) || url=reset
+	[[ $url ]] && url=$url?v=$date || url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverartsave )
@@ -1140,7 +1139,8 @@ ${args[2]}
 ${args[3]}" &> /dev/null &
 	;;
 thumbgif )
-	gifThumbnail "${args[@]:1}"
+	imgwh=( $( gifsicle -I "${args[2]}" | awk 'NR < 3 {print $NF}' ) ) # check if animated gif
+	[[ ${imgwh[0]} == images ]] && gifThumbnail "${args[@]:1}" || jpgThumbnail "${args[@]:1}"
 	;;
 thumbjpg )
 	jpgThumbnail "${args[@]:1}"
@@ -1243,8 +1243,7 @@ webradiocopybackup )
 webradiocoverreset )
 	coverart=${args[1]}
 	type=${args[2]}
-	cover=${coverart:0:-15} # remove .1234567890.jpg
-	rm -f "/srv/http$cover"{,-thumb}.*
+	rm "/srv/http$coverart" "/srv/http${coverart:0:-4}-thumb".*
 	pushstream coverart '{"type":"'$type'"}'
 	;;
 webradiodelete )
@@ -1255,7 +1254,7 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
 	webradioCount $type
 	;;
 wrdirdelete )
@@ -1307,8 +1306,8 @@ $charset" > "$file"
 	if [[ $urlchanged ]]; then
 		urlprevname=${urlprev//\//|}
 		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
-		mv $dirwebradio/img/{$urlprevname,$urlname}.jpg
-		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
+		mv $dirwebradio/img/{$urlprevname,$urlname}.* # jpg / gif
+		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.*
 		webRadioSampling $url "$file" &
 	fi
 	pushstreamRadioList

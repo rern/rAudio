@@ -32,7 +32,7 @@ esac
 name=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
-	coverart=${onlinefile/\/srv\/http}
+	coverart="${onlinefile:9}?v=$date"
 else
 	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
@@ -44,7 +44,7 @@ data='
 , "Artist"    : "'$Artist'"
 , "Title"     : "'$Title'"
 , "Album"     : "'$Album'"
-, "coverart"  : "'$coverart?v=$( date +%s )'"
+, "coverart"  : "'$coverart'"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "Bluetooth"
 , "state"     : "'$state'"
