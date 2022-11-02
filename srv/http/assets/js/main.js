@@ -435,7 +435,10 @@ $( '#addons' ).click( function () {
 	} );
 	loader();
 } );
-$( '#library, #button-library' ).click( libraryHome );
+$( '#library, #button-library' ).click( function() {
+	switchPage( 'library' );
+	refreshPage();
+} );
 $( '#playback' ).click( function() {
 	if ( G.playback && ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
 		$( '#stop' ).click();
@@ -1230,30 +1233,15 @@ $( '#lib-search-btn' ).click( function() { // search
 	}
 } );
 $( '#lib-search-close' ).click( function() {
-	G.keyword = '';
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-search-close' ).empty();
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
-	if ( !$( '#lib-search-input' ).val() ) return
-	
-	$( '#lib-search-input' ).val( '' );
-	if ( G.mode === 'album' ) {
-		$( '#mode-album' ).click();
-	} else if ( G.query.length ) {
-		var query = G.query[ G.query.length - 1 ];
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : query.path
-			}
-			renderLibraryList( data );
-		} );
-	} else {
-		$( '#button-library' ).click();
+	if ( $( '#lib-search-input' ).val() ) {
+		$( '#lib-search-input' ).val( '' );
+		refreshPage();
 	}
 } );
 $( '#lib-search-input' ).keyup( function( e ) {
@@ -1373,7 +1361,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	} );
 	query.path = G.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
-	if ( query.query !== 'ls' ) G.query.push( query );
+	if ( query.query !== 'ls' && query.query !== 'radio' ) G.query.push( query );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( G.press || $( '.bkedit' ).length ) return

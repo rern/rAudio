@@ -1085,6 +1085,46 @@ function power( action ) {
 		}
 	} );
 }
+function refreshPage( resetdata ) {
+	if ( G.library ) {
+		if ( $( '#lib-search-input' ).val() ) return
+		
+		if ( !G.librarylist ) { // home
+			if ( resetdata ) G.libraryhtml = '';
+			libraryHome();
+		} else {
+			if ( resetdata ) G.librarylisthtml = '';
+			if ( [ 'sd', 'nas', 'usb' ].includes( G.mode ) ) {
+				$( '#lib-breadcrumbs .lidir' ).last().click();
+			} else if ( G.mode === 'album' ) {
+				$( '#mode-album' ).click();
+			} else if ( G.query.length ) {
+				var query = G.query[ G.query.length - 1 ];
+				list( query, function( html ) {
+					var data = {
+						  html      : html
+						, modetitle : query.modetitle
+						, path      : query.path
+					}
+					renderLibraryList( data );
+				} );
+			} else {
+				$( '#mode-'+ G.mode ).click();
+			}
+		}
+	} else if ( G.playback ) {
+		getPlaybackStatus( 'withdisplay' );
+	} else {
+		if ( !$( '#pl-list' ).hasClass( 'hide' ) ) {
+			if ( resetdata ) G.playlisthtml = '';
+			getPlaylist();
+		} else if ( !G.savedplaylist ) {
+			$( '#button-pl-playlists' ).click();
+		} else {
+			renderSavedPlaylist( $( '#pl-path .lipath' ).text() )
+		}
+	}
+}
 function renderLibrary() {
 	G.mode = '';
 	G.librarylist = 0;
@@ -1128,7 +1168,6 @@ function renderLibraryCounts() {
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;
-	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', G.display.backonleft )
@@ -1175,10 +1214,12 @@ function renderLibraryList( data ) {
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( !data.html ) return // empty radio
+	if ( !data.html || data.html === G.librarylisthtml ) return // empty radio
 	
+	G.librarylisthtml = data.html;
 	var timestamp = Math.round( Date.now() / 1000 );
 	var html = data.html.replaceAll( '^^^', timestamp );
+	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	$( '#lib-mode-list' ).after( html ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
@@ -1316,7 +1357,6 @@ function renderPlaylist( data ) {
 			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 		} );
 	} else {
-		setPlaylistScroll();
 		$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
 	}
 }
@@ -1328,13 +1368,20 @@ function renderPlaylistList( data ) {
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
-	$( '#pl-savedlist' ).html( data.html +'<p></p>' ).promise().done( function() {
+	if ( data.html !== G.playlisthtml ) {
+		G.playlistlisthtml = data.html;
+		var timestamp = Math.round( Date.now() / 1000 );
+		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		$( '#pl-savedlist' ).html( html ).promise().done( function() {
+			$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
+			$( '#pl-savedlist' ).css( 'width', '' );
+			$( '#pl-index' ).html( data.index[ 0 ] );
+			$( '#pl-index1' ).html( data.index[ 1 ] );
+			$( 'html, body' ).scrollTop( 0 );
+		} );
+	} else {
 		$( '.list p' ).toggleClass( 'bars-on', !$( '#bar-top' ).hasClass( 'hide' ) );
-		$( '#pl-savedlist' ).css( 'width', '' );
-		$( '#pl-index' ).html( data.index[ 0 ] );
-		$( '#pl-index1' ).html( data.index[ 1 ] );
-		$( 'html, body' ).scrollTop( 0 );
-	} );
+	}
 }
 function renderSavedPlaylist( name ) {
 	menuHide();

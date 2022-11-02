@@ -1253,7 +1253,7 @@ webradiocoverreset )
 	filenoext=${args[1]}
 	type=${args[2]}
 	rm "$filenoext".* "$filenoext-thumb".*
-	pushstream coverart '{"type":"'$type'"}'
+	pushstream coverart '{"type":"radio","url":""}'
 	;;
 webradiodelete )
 	dir=${args[1]}
