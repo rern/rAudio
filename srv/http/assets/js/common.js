@@ -702,7 +702,7 @@ function setFileImage() {
 	if ( file.name.slice( -3 ) === 'gif' ) { // no resize, no rotate
 		var img = new Image();
 		img.onload = function() {
-			setFileImageRender( URL.createObjectURL( file ) );
+			setFileImageRender( img.src );
 			clearTimeout( timeout );
 			bannerHide();
 		}
