@@ -1214,12 +1214,14 @@ function renderLibraryList( data ) {
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( !data.html || data.html === G.librarylisthtml ) return // empty radio
+	if ( data.html === G.librarylisthtml ) return
 	
 	G.librarylisthtml = data.html;
+	$( '#lib-list, #lib-index, #lib-index1' ).remove();
+	if ( !data.html ) return // empty radio
+	
 	var timestamp = Math.round( Date.now() / 1000 );
 	var html = data.html.replaceAll( '^^^', timestamp );
-	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	$( '#lib-mode-list' ).after( html ).promise().done( function() {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
