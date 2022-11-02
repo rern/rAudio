@@ -817,7 +817,6 @@ function libraryHome() {
 			var html = html.replaceAll( '^^^', timestamp );
 			$( '#lib-mode-list' ).html( html );
 		}
-		$( '#lib-path span' ).removeClass( 'hide' );
 		if ( !$( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
 		if ( G.library ) {
 			if ( G.librarylist ) G.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
@@ -837,6 +836,7 @@ function libraryHome() {
 				$this.replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
 			}
 		} );
+		$( '#lib-list, #lib-path span' ).removeClass( 'hide' );
 	} );
 }
 function loader() {
@@ -1148,7 +1148,7 @@ function renderLibrary() {
 		$( '#lib-mode-list a.label' ).hide();
 		$( '.mode:not( .mode-bookmark )' ).addClass( 'nolabel' );
 	}
-	$( '#lib-list' ).empty().addClass( 'hide' );
+	$( '#lib-list' ).addClass( 'hide' );
 	$( '#lib-mode-list' )
 		.css( 'padding-top', !$( '#bar-top' ).hasClass( 'hide' ) ? '' : 50 )
 		.removeClass( 'hide' );

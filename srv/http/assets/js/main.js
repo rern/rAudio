@@ -436,8 +436,12 @@ $( '#addons' ).click( function () {
 	loader();
 } );
 $( '#library, #button-library' ).click( function() {
-	switchPage( 'library' );
-	refreshPage();
+	if ( G.library && G.librarylist ) {
+		libraryHome();
+	} else {
+		switchPage( 'library' );
+		refreshPage();
+	}
 } );
 $( '#playback' ).click( function() {
 	if ( G.playback && ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 30 ) {
