@@ -49,28 +49,27 @@ if [[ $ipeth ]]; then
 }'
 fi
 if [[ -e $dirshm/wlan ]]; then
-	wlandev=$( < $dirshm/wlan )
+	wldev=$( < $dirshm/wlan )
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
-			! grep -q Interface=$wlandev "/etc/netctl/$profile" && continue
-			
+			! grep -q Interface=$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
-					ipwlan=$( ifconfig $wlandev | awk '/inet.*broadcast/ {print $2}' )
-					[[ $ipwlan ]] && break || sleep 1
+					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
+					[[ $ipwl ]] && break || sleep 1
 				done
-				gateway=$( ip r | grep "^default.*$wlandev" | cut -d' ' -f3 )
-				dbm=$( awk '/'$wlandev'/ {print $4}' /proc/net/wireless | tr -d . )
+				gateway=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
+				dbm=$( awk '/'$wldev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
 	  "dbm"      : '$dbm'
 	, "gateway"  : "'$gateway'"
-	, "ip"       : "'$ipwlan'"
+	, "ip"       : "'$ipwl'"
 	, "ssid"     : "'${profile//\"/\\\"}'"
 	}'
 			else
-				listwlnotconnected=',{
+				listwlnotconnected+=',{
 	  "ssid"     : "'${profile//\"/\\\"}'"
 	}'
 			fi
@@ -94,17 +93,18 @@ if systemctl -q is-active hostapd; then
 fi
 
 data='
-  "page"       : "networks"
-, "activebt"   : '$activebt'
-, "activeeth"  : '$( ip -br link | grep -q ^e && echo true )'
-, "activewlan" : '$( ifconfig wlan0 | grep -q wlan0.*UP && echo true )'
-, "camilladsp" : '$( exists $dirsystem/camilladsp )'
-, "ipeth"      : "'$ipeth'"
-, "ipwlan"     : "'$ipwlan'"
-, "listbt"     : '$listbt'
-, "listeth"    : '$listeth'
-, "listwl"     : '$listwl'
-, "hostapd"    : '$ap'
-, "hostname"   : "'$( hostname )'"'
+  "page"        : "networks"
+, "activebt"    : '$activebt'
+, "activeeth"   : '$( ip -br link | grep -q ^e && echo true )'
+, "activewl"    : '$( rfkill | grep -q wlan && echo true )'
+, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
+, "connectedwl" : '$( netctl list | grep -q '^\'* && echo true )'
+, "ipeth"       : "'$ipeth'"
+, "ipwl"        : "'$ipwl'"
+, "listbt"      : '$listbt'
+, "listeth"     : '$listeth'
+, "listwl"      : '$listwl'
+, "hostapd"     : '$ap'
+, "hostname"    : "'$( hostname )'"'
 
 data2json "$data" $1

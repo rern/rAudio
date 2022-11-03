@@ -30,16 +30,20 @@ $( '.btscan' ).click( function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	notify( 'bluetooth', $( this ).data( 'name' ), 'Pair ...' );
-	bluetoothCommand( 'pair', $( this ).data( 'mac' ) );
+	var name = $( this ).data( 'name' );
+	var mac = $( this ).data( 'mac' );
+	notify( 'bluetooth', name, 'Pair ...' );
+	bluetoothCommand( 'pair', mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var ssid = $( this ).data( 'ssid' );
+	var security = $( this ).data( 'wpa' ) ? 'wpa' : 'wep';
+	var encrypt = $( this ).data( 'encrypt' );
 	var data = {
 		  ESSID     : ssid
 		, IP        : 'dhcp'
 	}
-	if ( $( this ).data( 'encrypt' ) === 'on' ) {
+	if ( encrypt === 'on' ) {
 		info( {
 			  icon          : 'wifi'
 			, title         : ssid
@@ -47,7 +51,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, focus         : 0
 			, oklabel       : 'Connect'
 			, ok            : function() {
-				data.Security = $( this ).data( 'wpa' ) ? 'wpa' : 'wep';
+				data.Security = security;
 				data.Key      = infoVal();
 				connectWiFi( data );
 			}
@@ -184,7 +188,7 @@ $( '.forget' ).click( function() {
 	info( {
 		  icon    : icon
 		, title   : ssid
-		, message : G.ipeth || G.ipwlan ? '' : iconwarning +'Current Web interface will be dropped.'
+		, message : G.ipeth || G.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
@@ -241,7 +245,7 @@ function bluetoothInfo( mac ) {
 		}
 	} );
 }
-function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:..., ip:..., gw:... }
+function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., password:..., ssid:..., wpa:... }
 	clearTimeout( G.timeoutScan );
 	var ssid = data.ESSID;
 	var icon = 'wifi';
@@ -255,7 +259,7 @@ function connectWiFi( data ) { // { ssid:..., wpa:..., password:..., hidden:...,
 			notify( icon, ssid, 'Change URL to '+ ip );
 		}
 	} else {
-		notify( icon, ssid, $( '#listwl li' ).length ? 'Change ...' : 'Connect ...' );
+		notify( icon, ssid, G.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
 	bash( [ 'connect', JSON.stringify( data ) ], function( std ) {
 		if ( std == -1 ) {
@@ -363,7 +367,7 @@ function infoWiFi( values ) {
 		, ok            : function() {
 			var k =[ 'ESSID', 'Address', 'Gateway', 'Key', 'IP', 'Hidden', 'Security' ];
 			var v = infoVal();
-			var data = {}
+			var data = { add: add }
 			$.each( v, function( i, v ) {
 				if ( i === 4 ) {
 					v = v ? 'static' : 'dhcp';
@@ -426,7 +430,7 @@ function renderPage() {
 	} else {
 		renderBluetooth();
 	}
-	if ( !G.activewlan ) {
+	if ( !G.activewl ) {
 		$( '#divwl' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
@@ -467,7 +471,7 @@ function renderPage() {
 	showContent();
 }
 function renderQR() {
-	var ip = G.ipeth || G.ipwlan;
+	var ip = G.ipeth || G.ipwl;
 	if ( !ip ) return
 	
 	if ( ip && ip !== G.hostapd.ip ) {

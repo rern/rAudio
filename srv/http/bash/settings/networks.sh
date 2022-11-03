@@ -106,14 +106,18 @@ Hidden=yes
 Address=$( jq -r .Address <<< $data )/24
 Gateway=$( jq -r .Gateway <<< $data )
 "
-	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
-		echo "$profile" > /boot/wifi
+	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
+		echo "$profile" > /boot/wifi                                             # save for next boot
 		pushstream wifi '{"ssid":"'$ESSID'"}'
 		exit
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	netctlSwitch "$ESSID"
+	if [[ $( jq -r .add <<< $data ) == true ]]; then
+		netctlSwitch "$ESSID"
+	else
+		pushRefresh
+	fi
 	;;
 disconnect )
 	wlandev=$( < $dirshm/wlan )

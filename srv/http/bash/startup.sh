@@ -148,12 +148,8 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 
-if ! grep -q dtparam=krnbt=on /boot/config.txt; then # recent kernel: bluetooth also depends on brcmfmac (wlan)
-	if ifconfig eth0 | grep -q inet.*broadcast \
-		|| (( $( grep -c ^w /proc/net/wireless ) > 1 )) \
-		|| ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
-		rmmod brcmfmac &> /dev/null
-	fi
+if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
+	rmmod brcmfmac &> /dev/null
 fi
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here

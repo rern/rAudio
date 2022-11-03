@@ -203,7 +203,7 @@ data+='
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
-, "wlan"             : '$( ifconfig wlan0 | grep -q wlan0.*UP && echo true )'
+, "wlan"             : '$( lsmod | grep -q brcmfmac && echo true )'
 , "wlanconf"         : [ "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
 , "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
 	discoverable=true
