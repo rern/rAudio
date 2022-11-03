@@ -1,7 +1,7 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var warning = `
-<wh><i class="fa fa-warning fa-lg"></i>&ensp;Lower amplifier volume.</wh>
+<wh>${ iconwarning }Lower amplifier volume.</wh>
 
 Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;

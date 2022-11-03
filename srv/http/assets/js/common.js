@@ -1,5 +1,6 @@
 // $.fn.press(), info(), banner(), loader
 
+var iconwarning = '<i class="fa fa-warning yl"></i> ';
 // $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
@@ -209,6 +210,8 @@ function infoReset( fn ) {
 			$( '#infoOverlay' ).addClass( 'hide' );
 			$( '#infoOverlay' ).empty();
 		}
+		delete O.infofile;
+		delete O.infofilegif;
 	}, 0 );
 }
 
@@ -315,9 +318,9 @@ function info( json ) {
 		$( '#infoFileBox' ).change( function() {
 			if ( !this.files.length ) return
 			
-			G.infofile = this.files[ 0 ];
-			var filename = G.infofile.name;
-			var typeimage = G.infofile.type.slice( 0, 5 ) === 'image';
+			O.infofile = this.files[ 0 ];
+			var filename = O.infofile.name;
+			var typeimage = O.infofile.type.slice( 0, 5 ) === 'image';
 			O.filechecked = 1;
 			if ( O.filetype ) {
 				if ( O.filetype === 'image/*' ) {
@@ -677,8 +680,6 @@ function selectricRender() {
 	$( 'select' ).each( function() {
 		if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
 	} );
-//	$( '#infoContent' ).find( '.selectric, .selectric-wrapper' ).css( 'width', O.boxW );
-//	$( '.selectric-items' ).css( 'min-width', O.boxW );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
 function setButtonWidth() {
@@ -692,28 +693,62 @@ function setButtonWidth() {
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function setFileImage() {
-	var file = G.infofile;
-	var timeout = setTimeout( function() {
+	delete O.infofilegif;
+	G.timeoutfile = setTimeout( function() {
 		banner( 'refresh blink', 'Change Image', 'Load ...', -1 );
 	}, 1000 );
 	G.rotate = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
-	if ( file.name.slice( -3 ) === 'gif' ) {
-		var img = new Image();                 // 1 - define image
-		img.onload = function() {              // 3 - to do once image loaded
-			setFileImageRender( img.src );
-			clearTimeout( timeout );
-			bannerHide();
-		}
-		img.src = URL.createObjectURL( file ); // 2 - load image file
-		return
+	if ( O.infofile.name.slice( -3 ) !== 'gif' ) {
+		setFileImageReader();
+	} else { // animated gif or not
+		var formdata = new FormData();
+		formdata.append( 'cmd', 'giftype' );
+		formdata.append( 'file', O.infofile );
+		$.ajax( {
+			  url         : 'cmd.php'
+			, type        : 'POST'
+			, data        : formdata
+			, processData : false
+			, contentType : false
+			, success     : function( animatedtmpfile ) {
+				if ( !animatedtmpfile ) {
+					setFileImageReader();
+				} else {
+					O.infofilegif = animatedtmpfile;
+					var img = new Image();
+					img.src = URL.createObjectURL( O.infofile );
+					img.onload = function() {
+						var imgW = img.width;
+						var imgH = img.height;
+						var resize = setFileImageResize( 'gif', imgW, imgH );
+						setFileImageRender( img.src, imgW +' x '+ imgH, resize );
+						clearTimeout( G.timeoutfile );
+						bannerHide();
+					}
+				}
+			}
+		} );
 	}
-	
+}
+function setFileImageResize( gif, imgW, imgH ) {
+	var maxsize = ( G.library && !G.librarylist ) ? 200 : ( gif ? 600 : 1000 );
+	if ( imgW > maxsize || imgH > maxsize ) {
+		if ( imgW > imgH ) {
+			pxW = maxsize;
+			pxH = Math.round( imgH / imgW * maxsize );
+		} else {
+			pxH = maxsize;
+			pxW = Math.round( imgW / imgH * maxsize );
+		}
+		return pxW +' x '+ pxH
+	}
+}
+function setFileImageReader() {
+	var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
 	var reader = new FileReader();
 	reader.onload = function( e ) {
-		var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
-		var htmlrotate = '<br><i class="fa fa-redo"></i>&ensp;Tap to rotate</span></div>';
 		var img = new Image();
 		img.src = e.target.result;
 		img.onload = function() {
@@ -724,28 +759,22 @@ function setFileImage() {
 			filecanvas.width = imgW;
 			filecanvas.height = imgH;
 			ctx.drawImage( img, 0, 0 );
-			if ( imgW > maxsize || imgH > maxsize ) {
-				if ( imgW > imgH ) {
-					pxW = maxsize;
-					pxH = Math.round( imgH / imgW * maxsize );
-				} else {
-					pxH = maxsize;
-					pxW = Math.round( imgW / imgH * maxsize );
-				}
+			var resize = setFileImageResize( 'gif', imgW, imgH );
+			if ( resize ) {
 				var canvas = document.createElement( 'canvas' );
 				canvas.width = pxW;
 				canvas.height = pxH;
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), pxW, pxH, imgW +' x '+ imgH );
+					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize );
 				} );
 			} else {
-				setFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW, imgH );
+				setFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( timeout );
+			clearTimeout( G.timeoutfile );
 			bannerHide();
 		}
 	}
-	reader.readAsDataURL( file );
+	reader.readAsDataURL( O.infofile );
 	$( '#infoContent' )
 		.off( 'click', '.infoimgnew' )
 		.on( 'click', '.infoimgnew', function() {
@@ -757,10 +786,10 @@ function setFileImage() {
 		var ctx = canvas.getContext( '2d' );
 		var image = $( this )[ 0 ];
 		var img = new Image();
+		img.src = image.src;
 		img.onload = function() {
 			ctx.drawImage( image, 0, 0 );
 		}
-		img.src = image.src;
 		var w = img.width;
 		var h = img.height;
 		var cw = Math.round( w / 2 );
@@ -773,13 +802,13 @@ function setFileImage() {
 		image.src = canvas.toDataURL( 'image/jpeg' );
 	} );
 }
-function setFileImageRender( src, w, h, resize ) {
+function setFileImageRender( src, original, resize ) {
 	$( '.infomessage .imgnew' ).remove();
 	$( '.infomessage' ).append(
 		 '<span class="imgnew">'
 			+'<img class="infoimgnew" src="'+ src +'">'
-			+ ( w ? '<div class="infoimgwh">'+ w +' x '+ h : '' )
-			+ ( resize ? '<br>original: '+ resize : '' )
+			+ ( resize ? '<div class="infoimgwh">'+ resize : '' )
+			+ ( original ? '<br>original: '+ original : '' )
 			+'</div>'
 			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
 		+'</span>'

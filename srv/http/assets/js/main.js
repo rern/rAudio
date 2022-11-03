@@ -45,6 +45,7 @@ var picaOption = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
+var iconcover = '<i class="iconcover"></i>';
 var icoveredit = '<i class="coveredit cover iconcover"></i>';
 var icoversave = '<i class="coveredit fa fa-save cover-save"></i>';
 var orange = '#de810e';
@@ -1182,7 +1183,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					+'<br>  • Create directory icons'
 	}
 	info( {
-		  icon         : '<i class="iconcover"></i>'
+		  icon         : iconcover
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
@@ -1446,7 +1447,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var name = $this.find( '.label' ).text() || path.split( '/' ).pop();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon = '<i class="iconcover"></i>';
+		var icon = iconcover;
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 				  +'<p class="infoimgname">'+ name +'</p>';
 	} else {
@@ -1735,7 +1736,7 @@ $( '#button-pl-save' ).click( function() {
 		info( {
 			  icon    : 'file-playlist'
 			, title   : 'Save Playlist'
-			, message : '<i class="fa fa-warning wh"></i> Saved playlist cannot contain:<br>'
+			, message : iconwarning +'Saved playlist cannot contain:<br>'
 						+ audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''
 						+ upnpL ? upnpL +'&emsp;<i class="fa fa-upnp wh"></i>' : ''
 						+ notsavedL ? notsavedL +'&emsp;<i class="fa fa-save wh"></i>' : ''

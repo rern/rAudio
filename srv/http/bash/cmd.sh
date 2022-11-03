@@ -13,6 +13,70 @@ addonsListGet() {
 	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 }
+coverGif() {
+	type=$1
+	source=$2
+	target=$3
+	covername=$4
+	targetnoext=${target:0:-4}
+	case $type in
+		bookmark )
+			rm -f "$targetnoext".*
+			gifsicle -O3 --resize-fit 200x200 $source > "$target"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+			;;
+		coverart )
+			dir=$( dirname "$target" )
+			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
+			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
+			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
+			gifsicle -O3 --resize-fit 600x600 $source > "$target"
+			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			rm -f $dirshm/embedded/* $dirshm/local/$covername
+			;;
+		dabradio|webradio )
+			rm -f "$targetnoext".* "$targetnoext-thumb".*
+			gifsicle -O3 --resize-fit 600x600 $source > "$target"
+			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
+			;;
+	esac
+	pushstreamImage "$target" $type "$covername"
+	rm -f $source $dirshm/{embedded,local}/*
+}
+coverJpg() {
+	type=$1
+	source=$2
+	target=$3
+	covername=$4
+	gif=$5
+	targetnoext=${target:0:-4}
+	[[ $gif ]] && target="$targetnoext.jpg" # target.gif > target.jpg
+	case $type in
+		bookmark )
+			rm -f "$targetnoext".*
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+			;;
+		coverart )
+			dir=$( dirname "$target" )
+			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
+			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
+			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			convert "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
+			rm -f $dirshm/embedded/* $dirshm/local/$covername
+			;;
+		dabradio|webradio )
+			rm -f "$targetnoext".* "$targetnoext-thumb".*
+			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
+			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
+			;;
+	esac
+	pushstreamImage "$target" $type "$covername"
+	rm -f $source $dirshm/{embedded,local}/*
+}
 equalizerAmixer() { # sudo - mixer equal is user dependent
 	sudo -u mpd amixer -MD equal contents \
 					| grep ': values' \
@@ -47,70 +111,6 @@ equalizerGet() { # sudo - mixer equal is user dependent
 , "nameval" : { '${nameval:1}' }
 }'
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
-}
-gifThumbnail() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	targetnoext=${target:0:-4}
-	case $type in
-		bookmark )
-			rm -f "$targetnoext".*
-			gifsicle -O3 --resize-fit 200x200 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			rm -f "$targetnoext".* "$targetnoext-thumb".*
-			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-	rm -f $source
-}
-jpgThumbnail() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	gif=$5
-	targetnoext=${target:0:-4}
-	[[ $gif ]] && target="$targetnoext.jpg" # target.gif > target.jpg
-	case $type in
-		bookmark )
-			rm -f "$targetnoext".*
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			rm -f "$targetnoext".* "$targetnoext-thumb".*
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-	rm -f $source
 }
 plAddPlay() {
 	pushstreamPlaylist add
@@ -566,8 +566,7 @@ $id" &> /dev/null &
 	
 	rm -f "$coverfile" \
 		"$dir/{coverart,thumb}".* \
-		$dirshm/embedded/$( tr -d ' "`?/#&'"'" <<< $filename ).jpg \
-		$dirshm/local/$( tr -d ' "`?/#&'"'" <<< $dir )
+		$dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
@@ -590,7 +589,7 @@ $mpdpath" )
 coverartsave )
 	source=${args[1]}
 	path=${args[2]}
-	jpgThumbnail coverart $source "$path/cover.jpg"
+	coverJpg coverart $source "$path/cover.jpg"
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -598,6 +597,12 @@ coverfileslimit )
 			| tail -n +10 \
 			| xargs rm -f --
 	done
+	;;
+covergif )
+	coverGif "${args[@]:1}"
+	;;
+coverjpg )
+	coverJpg "${args[@]:1}"
 	;;
 dabscan )
 	touch $dirshm/updatingdab
@@ -1143,16 +1148,6 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
-	;;
-thumbgif )
-	if gifsicle -I "${args[2]}" | grep -q 'image #1'; then # if not animated gif, convert to jpg
-		gifThumbnail "${args[@]:1}"
-	else
-		jpgThumbnail "${args[@]:1}" gif
-	fi
-	;;
-thumbjpg )
-	jpgThumbnail "${args[@]:1}"
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}

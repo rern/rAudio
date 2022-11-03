@@ -246,9 +246,11 @@ function coverartChange() {
 	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	$( '#coverart, #liimg' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
+	var icon = iconcover;
+	var title = 'Change Album Cover Art';
 	info( {
-		  icon        : '<i class="iconcover"></i>'
-		, title       : 'Change Album Cover Art'
+		  icon        : icon
+		, title       : title
 		, message     : '<img class="imgold">'
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
@@ -267,7 +269,7 @@ function coverartChange() {
 		}
 		, ok          : function() {
 			imageReplace( imagefilenoext, type, covername );
-			banner( '<i class="iconcover"></i>', 'Album Cover Art', 'Change ...' );
+			banner( icon, title, 'Change ...' );
 		}
 	} );
 }
@@ -304,14 +306,17 @@ function coverartSave() {
 		var album = $( '.licover .lialbum' ).text();
 	}
 	if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
+	var icon = iconcover;
+	var title = 'Save Album Cover Art';
 	info( {
-		  icon    : '<i class="iconcover"></i>'
-		, title   : 'Save Album Cover Art'
+		  icon    : icon
+		, title   : title
 		, message : '<img src="'+ src +'">'
 					+'<p class="infoimgname">'+ album
 					+'<br>'+ artist +'</p>'
 		, ok      : function() {
 			bash( [ 'coverartsave', '/srv/http'+ src, path ] );
+			banner( icon, title, 'Save ...' );
 		}
 	} );
 }
@@ -541,7 +546,7 @@ function getPlaybackStatus( withdisplay ) {
 			info( {
 				  icon    : 'networks'
 				, title   : 'Shared Data'
-				, message : '<i class="fa fa-warning yl"></i> Server offline'
+				, message : iconwarning +'Server offline'
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
@@ -660,43 +665,22 @@ function imageLoad( list ) {
 	}
 }
 function imageReplace( imagefilenoext, type, covername ) {
-	var ext = G.infofile.name.split( '.' ).pop() === 'gif' ? 'gif' : 'jpg';
 	var data = {
 		  cmd       : 'imagereplace'
 		, type      : type
-		, imagefile : imagefilenoext +'.'+ ext
+		, imagefile : imagefilenoext +'.'+ ( O.infofilegif ? 'gif' : 'jpg' )
 		, covername : covername || ''
+		, imagedata : 'infofilegif' in O ? O.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
-	if ( ext === 'gif' ) {
-		data.file = G.infofile;
-		var formData = new FormData();
-		$.each( data, function( k, v ) {
-			formData.append( k, v );
-		} );
-		$.ajax( {
-			  url         : 'cmd.php'
-			, type        : 'POST'
-			, data        : formData
-			, processData : false // FormData - already processData + contentType
-			, contentType : false
-			, success     : function( std ) {
-				if ( std == -1 ) {
-					info( {
-						  icon    : O.icon
-						, title   : O.title
-						, message : '<i class="fa fa-warning"></i> No write permission:'
-									+'<br><br><code>'+ covername +'</code>'
-					} );
-				}
-			}
-		} );
-	} else {
-		data.base64 = $( '.infoimgnew' )
-							.attr( 'src' )
-							.split( ',' )
-							.pop();
-		$.post( cmdphp, data );
-	}
+	$.post( cmdphp, data, function( std ) {
+		if ( std == -1 ) {
+			info( {
+				  icon    : O.icon
+				, title   : O.title
+				, message : iconwarning +'Target directory not writable.'
+			} );
+		}
+	} );
 	banner( '<i class="iconcover blink"></i>', O.title, 'Change ...', -1 );
 }
 var chklibrary = {
@@ -1917,13 +1901,11 @@ function switchPage( page ) {
 	}
 }
 function thumbUpdate( path ) {
-	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">'
-					+'<input type="hidden" name="opt[]" value="cove">'
-					+'<input type="hidden" name="opt[]" value="Update">'
-					+'<input type="hidden" name="opt[]" value="main">'
-					+'<input type="hidden" name="opt[]" value="'+ ( path || '' ) +'">'
-			  +'</form>';
-	$( 'body' ).append( form );
+	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
+	[ 'cove', 'update', 'main', path || '' ].forEach( function( el ) {
+		form += '<input type="hidden" name="opt[]" value="'+ el +'">';
+	} );
+	$( 'body' ).append( form +'</form>' );
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {

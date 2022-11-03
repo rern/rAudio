@@ -808,25 +808,24 @@ $( '#restore' ).click( function() {
 			if ( infoVal() === 'reset' ) {
 				bash( dirbash +'system-datareset.sh', bannerHide );
 			} else {
-				var formData = new FormData();
-				formData.append( 'cmd', 'datarestore' );
-				formData.append( 'file', G.infofile );
+				var formdata = new FormData();
+				formdata.append( 'cmd', 'datarestore' );
+				formdata.append( 'file', O.infofile );
 				$.ajax( {
 					  url         : 'cmd.php'
 					, type        : 'POST'
-					, data        : formData
+					, data        : formdata
 					, processData : false // FormData - already processData + contentType
 					, contentType : false
-					, success     : function( data ) {
-						if ( data == -1 ) {
+					, success     : function( std ) {
+						if ( std == -1 ) {
 							info( {
 								  icon    : icon
 								, title   : title
-								, message : 'File upload failed.'
+								, message : iconwarning +' File upload failed.'
 							} );
-							bannerHide();
-							loaderHide();
 						}
+						bannerHide();
 					}
 				} );
 			}

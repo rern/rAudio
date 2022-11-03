@@ -25,7 +25,7 @@ $( '#setting-spotifyd' ).click( function() {
 			info( {
 				  icon    : icon
 				, title   : title
-				, message : '<i class="fa fa-warning"></i> Authorization cannot run on <wh>Firefox</wh>.'
+				, message : iconwarning +'Authorization cannot run on <wh>Firefox</wh>.'
 			} );
 			$( '#spotifyd' ).prop( 'checked', false );
 			return
@@ -572,7 +572,7 @@ function renderPage() {
 		info( {
 			  icon    : 'spotify'
 			, title   : 'Spotify'
-			, message : '<i class="fa fa-warning"></i> Authorization failed:'
+			, message : iconwarning +'Authorization failed:'
 						+'<br>'+ error
 		} );
 	}

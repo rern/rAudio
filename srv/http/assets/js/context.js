@@ -380,7 +380,7 @@ function webRadioCoverart() {
 	$( '#coverart' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	info( {
-		  icon        : '<i class="iconcover"></i>'
+		  icon        : iconcover
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">' + G.list.name +'</p>'
@@ -651,7 +651,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon    : '<i class="iconcover"></i>'
+				  icon    : iconcover
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'

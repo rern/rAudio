@@ -149,7 +149,7 @@ $( '.disconnect' ).click( function() {
 	info( {
 		  icon    : icon
 		, title   : ssid
-		, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+		, message : G.listeth ? '' : iconwarning +'No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
 		, ok      : function() {
@@ -168,7 +168,7 @@ $( '.forget' ).click( function() {
 		info( {
 			  icon    : icon
 			, title   : name
-			, message : G.listeth ? '' : '<i class="fa fa-warning"></i> No network connections after this.'
+			, message : G.listeth ? '' : iconwarning +'No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
 			, ok      : function() {
@@ -184,7 +184,7 @@ $( '.forget' ).click( function() {
 	info( {
 		  icon    : icon
 		, title   : ssid
-		, message : G.ipeth || G.ipwlan ? '' : '<i class="fa fa-warning wh"></i> Current Web interface will be dropped.'
+		, message : G.ipeth || G.ipwlan ? '' : iconwarning +'Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
 		, ok      : function() {
