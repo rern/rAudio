@@ -98,7 +98,7 @@ data='
 , "activeeth"   : '$( ip -br link | grep -q ^e && echo true )'
 , "activewl"    : '$( rfkill | grep -q wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "connectedwl" : '$( netctl list | grep -q '^\'* && echo true )'
+, "connectedwl" : '$( netctl list | grep -q '^\*' && echo true )'
 , "ipeth"       : "'$ipeth'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'

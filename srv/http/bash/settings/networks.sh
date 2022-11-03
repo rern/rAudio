@@ -228,7 +228,7 @@ usbbluetoothon ) # from usbbluetooth.rules
 	pushstreamNotify bluetooth 'USB Bluetooth' Ready
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
-	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
+	! rfkill | grep -q bluetooth && systemctl stop bluetooth
 	pushstreamNotify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
 	pushRefresh networks pushbt
