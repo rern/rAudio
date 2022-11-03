@@ -699,14 +699,14 @@ function setFileImage() {
 	G.rotate = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
-	if ( file.name.slice( -3 ) === 'gif' ) { // no resize, no rotate
-		var img = new Image();
-		img.onload = function() {
+	if ( file.name.slice( -3 ) === 'gif' ) {
+		var img = new Image();                 // 1 - define image
+		img.onload = function() {              // 3 - to do once image loaded
 			setFileImageRender( img.src );
 			clearTimeout( timeout );
 			bannerHide();
 		}
-		img.src = URL.createObjectURL( file );
+		img.src = URL.createObjectURL( file ); // 2 - load image file
 		return
 	}
 	

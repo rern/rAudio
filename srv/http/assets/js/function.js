@@ -214,13 +214,13 @@ function contextmenuScroll( $menu, menutop ) {
 function coverartChange() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
-		var path = getDirectory( G.status.file );
+		var path = dirName( G.status.file );
 		var album = G.status.Album;
 		var artist = G.status.Artist;
 	} else {
 		var src = $( '#liimg' ).attr( 'src' );
 		var path = $( '.licover .lipath' ).text();
-		if ( path.split( '.' ).pop() === 'cue' ) path = getDirectory( path );
+		if ( path.split( '.' ).pop() === 'cue' ) path = dirName( path );
 		var album = $( '.licover .lialbum' ).text();
 		var artist = $( '.licover .liartist' ).text();
 	}
@@ -294,7 +294,7 @@ function coverartSave() {
 	if ( G.playback ) {
 		var src = $( '#coverart' ).attr( 'src' );
 		var file = G.status.file;
-		var path = '/mnt/MPD/'+ getDirectory( file );
+		var path = '/mnt/MPD/'+ dirName( file );
 		var artist = G.status.Artist;
 		var album = G.status.Album;
 	} else {
@@ -303,7 +303,7 @@ function coverartSave() {
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
-	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
+	if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
 	info( {
 		  icon    : '<i class="iconcover"></i>'
 		, title   : 'Save Album Cover Art'
@@ -334,6 +334,9 @@ function curl( channel, key, value ) {
 function curlPackage( pkg, active, enabled ) {
 	return 'curl -s -X POST http://127.0.0.1/pub?id=package -d \'[ "'+ pkg +'", '+ active +', '+ enabled +' ]\''
 }
+function dirName( path ) {
+	return path.substring( 0, path.lastIndexOf( '/' ) )
+}	
 function displayBars() {
 	if ( !$( '#bio' ).hasClass( 'hide' ) ) return
 	
@@ -531,11 +534,6 @@ function getBio( artist ) {
 		} );
 	} );
 }
-function getDirectory( path ) {
-	if ( path.slice( 0, 3 ) === '%2F' ) path = decodeURIComponent( path );
-	path = path.replace( /^\/data\/|^\/mnt\/MPD\/|^\/srv\/http/, '' );
-	return path.substring( 0, path.lastIndexOf( '/' ) )
-}	
 function getPlaybackStatus( withdisplay ) {
 	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
 		if ( list == -1 ) {

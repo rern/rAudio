@@ -11,8 +11,11 @@ function bookmarkNew() {
 	// #2 - dir list   - show image from server
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
-	if ( path.slice( -4 ) === '.cue' ) path = getDirectory( path );
-	if ( G.mode.slice( -5 ) === 'radio' ) path = G.mode +'/'+ path;
+	if ( path.slice( -4 ) === '.cue' ) {
+		path = dirName( path );
+	} else if ( G.mode.slice( -5 ) === 'radio' ) {
+		path = G.mode +'/'+ path;
+	}
 	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	bash( [ 'coverartget', bkpath ], function( coverart ) {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
@@ -310,7 +313,7 @@ function tagEditor() {
 						, string : filepath
 						, format : [ 'file' ]
 					}
-					if ( filepath.slice( -4 ) === '.cue' ) filepath = getDirectory( filepath );
+					if ( filepath.slice( -4 ) === '.cue' ) filepath = dirName( filepath );
 					list( query, function( html ) {
 						var data = {
 							  html      : html
@@ -380,7 +383,7 @@ function webRadioCoverart() {
 		  icon        : '<i class="iconcover"></i>'
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
-						+ ( !src ? '' : '<p class="infoimgname"><i class="fa fa-'+ G.mode +' wh"></i> ' + G.list.name +'</p>' )
+					  + '<p class="infoimgname">' + G.list.name +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
@@ -572,7 +575,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'directory':
 			if ( G.mode === 'latest' ) {
-				var path = getDirectory( G.list.path );
+				var path = dirName( G.list.path );
 				var query = {
 					  query  : 'ls'
 					, string : path
@@ -658,7 +661,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'update':
-			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = getDirectory( G.list.path );
+			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = dirName( G.list.path );
 			infoUpdate( G.list.path );
 			return
 		case 'wrdirdelete':
