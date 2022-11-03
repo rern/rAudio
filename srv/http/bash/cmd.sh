@@ -552,8 +552,8 @@ coverartreset )
 	artist=${args[3]}
 	album=${args[4]}
 	dir=$( dirname "$coverfile" )
+	filename=$( basename "$coverfile" )
 	if [[ $( basename "$dir" ) == audiocd ]]; then
-		filename=$( basename "$coverfile" )
 		id=${filename/.*}
 		rm -f "$coverfile"
 		$dirbash/status-coverartonline.sh "\
@@ -564,12 +564,10 @@ $id" &> /dev/null &
 		exit
 	fi
 	
-	covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 	rm -f "$coverfile" \
-		"$dir/coverart".* \
-		"$dir/thumb".* \
-		$dirshm/embedded/* \
-		$dirshm/local/*
+		"$dir/{coverart,thumb}".* \
+		$dirshm/embedded/$( tr -d ' "`?/#&'"'" <<< $filename ).jpg \
+		$dirshm/local/$( tr -d ' "`?/#&'"'" <<< $dir )
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
@@ -579,7 +577,7 @@ $id" &> /dev/null &
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		else
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
-			gifsicle -O3 --resize-fit 80x80 "$restorefile" > "$dir/thumb.gif"
+			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
 	fi
 	url=$( $dirbash/status-coverart.sh "\
@@ -596,7 +594,9 @@ coverartsave )
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
+		ls -t $dirshm/$type/* 2> /dev/null \
+			| tail -n +10 \
+			| xargs rm -f --
 	done
 	;;
 dabscan )

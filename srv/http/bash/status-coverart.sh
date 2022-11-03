@@ -7,19 +7,20 @@ artist=${args[0]}
 album=${args[1]}
 file=${args[2]}
 type=${args[3]}
-covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 filename=$( basename "$file" )
 path="/mnt/MPD/$file"
 [[ -f "$path" ]] && path=$( dirname "$path" )
 
 # found cover file
-localfile=$dirshm/local/$covername
+localname=$( tr -d ' "`?/#&'"'" <<< $path )
+localfile=$dirshm/local/$localname
 [[ -f $localfile ]] && cat $localfile && exit
 # found embedded
-embeddedname=$( tr -d ' "`?/#&'"'" <<< ${filename%.*} )
-embeddedfile=$dirshm/embedded/$embeddedname.jpg
+embeddedname=$( tr -d ' "`?/#&'"'" <<< $filename ).jpg
+embeddedfile=$dirshm/embedded/$embeddedname
 [[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
+covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
 onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 
@@ -28,8 +29,7 @@ coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 if [[ $coverfile ]]; then
 	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - local path only
-	echo $coverfile
-	[[ $covername ]] && echo $coverfile > $localfile
+	echo $coverfile | tee $localfile
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
