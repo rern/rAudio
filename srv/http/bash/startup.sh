@@ -158,3 +158,5 @@ fi
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify restore "$restorefailed" 10000
 fi
+
+touch $dirshm/startup
