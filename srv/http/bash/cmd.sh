@@ -24,6 +24,7 @@ coverGif() {
 			rm -f "$targetnoext".*
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+			sed -i -e 2d -e "1 a$target" "$dirbookmark/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -57,6 +58,7 @@ coverJpg() {
 			rm -f "$targetnoext".*
 			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
 			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
+			sed -i -e 2d -e "1 a$target" "$dirbookmark/$covername"
 			;;
 		coverart )
 			dir=$( dirname "$target" )
@@ -437,7 +439,7 @@ bookmarkcoverreset )
 	imagepath=${args[1]}
 	name=${args[2]}
 	sed -i '2d' "$dirbookmarks/$name"
-	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
+	rm -f "$imagepath/coverart".*
 	data='{
   "url"   : "'$imagepath/$name'"
 , "type"  : "bookmark"

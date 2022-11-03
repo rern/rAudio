@@ -52,8 +52,6 @@ case 'giftype':
 	}
 	break;
 case 'imagereplace':
-	echo -1;
-	exit;
 	$imagefile = $_POST[ 'imagefile' ];
 	$type = $_POST[ 'type' ];
 	if ( $type === 'coverart' && !is_writable( dirname( $imagefile ) ) ) {
