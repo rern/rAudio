@@ -9,7 +9,7 @@ $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
 $( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
-$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo <a class="blink">. . .</a> )"
+$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo '<a class="blink">. . .</a>' )"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
