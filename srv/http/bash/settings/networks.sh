@@ -220,7 +220,7 @@ profileremove )
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
-	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
+	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	
 	sleep 3
 	pushRefresh features
@@ -235,7 +235,7 @@ usbbluetoothoff ) # from usbbluetooth.rules
 	;;
 usbwifion )
 	wlanDevice
-	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
+	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	
 	pushstreamNotify wifi 'USB Wi-Fi' Ready
 	pushRefresh

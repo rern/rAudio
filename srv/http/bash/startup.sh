@@ -151,12 +151,18 @@ fi
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q '^\*' ); then
 	rmmod brcmfmac &> /dev/null
-	pushstream '{"page":"networks","activewl":false}'
-	pushstream '{"page":"system","wlan":false}'
+	pushstream refresh '{"page":"system","wlan":false}'
+	pushstream refresh '{"page":"networks","activewl":false}'
 fi
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify restore "$restorefailed" 10000
 fi
 
-touch $dirshm/startupdone
+startup=$( systemd-analyze \
+				| grep '^Startup finished' \
+				| cut -d' ' -f 4,7 \
+				| sed -e 's/\....s/s/g; s/ / + /' )
+startup+='<wide>&ensp;<gr>(kernel + userspace)</gr></wide>'
+echo $startup > $dirshm/startup
+pushstream refresh '{"page":"system","startup":"'$startup'"}'

@@ -1031,7 +1031,7 @@ timezone )
 	pushRefresh
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ ! -e $dirshm/startupdone ]] && exit # suppress on startup
+	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	[[ -e $dirshm/audiocd ]] && exit
 	
 	if [[ ${args[0]} == usbconnect ]]; then

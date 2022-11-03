@@ -1070,7 +1070,7 @@ function renderPage() {
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( G.system );
 	$( '#status' ).html( G.status );
-	if ( !G.startup ) setTimeout( getStatus, 10000 );
+	if ( G.startup ) $( '#status a' ).html( G.startup );
 	var html = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
