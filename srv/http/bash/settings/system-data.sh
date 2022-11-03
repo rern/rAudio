@@ -165,6 +165,15 @@ elif [[ -e $dirsystem/powerbutton.conf ]]; then
 fi
 [[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
 [[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
+if [[ -e $dirshm/startup ]]; then
+	startup=$( < $dirshm/startup )
+else
+	startup=$( systemd-analyze \
+					| grep '^Startup finished' \
+					| cut -d' ' -f 4,7 \
+					| sed -e 's/\....s/s/g; s/ / + /' )
+	echo $startup > $dirshm/startup
+fi
 
 data+='
   "page"             : "system"
@@ -194,7 +203,7 @@ data+='
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf" : ['$soundprofileconf']
-, "startup"          : "'$( getContent $dirshm/startup )'"
+, "startup"          : "'$startup'"
 , "status"           : "'$status'"
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"

@@ -5,15 +5,6 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221031
-if [[ ! -s $dirshm/startup ]]; then
-	startup=$( systemd-analyze \
-					| grep '^Startup finished' \
-					| cut -d' ' -f 4,7 \
-					| sed -e 's/\....s/s/g; s/ / + /' )
-	startup+='<wide>&ensp;<gr>(kernel + userspace)</gr></wide>'
-	echo $startup > $dirshm/startup
-fi
-
 sed -i '/interfaces/ d' /etc/samba/smb.conf
 systemctl try-restart smb 
 

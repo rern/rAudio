@@ -158,11 +158,3 @@ fi
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify restore "$restorefailed" 10000
 fi
-
-startup=$( systemd-analyze \
-				| grep '^Startup finished' \
-				| cut -d' ' -f 4,7 \
-				| sed -e 's/\....s/s/g; s/ / + /' )
-startup+='<wide>&ensp;<gr>(kernel + userspace)</gr></wide>'
-echo $startup > $dirshm/startup
-pushstream refresh '{"page":"system","startup":"'$startup'"}'
