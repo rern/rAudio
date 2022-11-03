@@ -131,7 +131,7 @@ function list2JSON( list ) {
 	} catch( e ) {
 		if ( list.trim() === 'mpdnotrunning' ) {
 			bash( [ 'pkgstatus', 'mpd' ], function( status ) {
-				var error =  '<i class="fa fa-warning red"></i> MPD is not running '
+				var error =  iconwarning +'MPD is not running '
 							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
 							+ status;
@@ -146,7 +146,7 @@ function list2JSON( list ) {
 		} else {
 			var msg = e.message.split( ' ' );
 			var pos = msg.pop();
-			var error =  '<red><i class="fa fa-warning copy"></i> Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
+			var error = iconwarning +'<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
 						+'<a class="infobtn infobtn-primary copy">Copy</a>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );

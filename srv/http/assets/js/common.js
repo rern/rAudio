@@ -1,6 +1,6 @@
 // $.fn.press(), info(), banner(), loader
 
-var iconwarning = '<i class="fa fa-warning yl"></i> ';
+var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
