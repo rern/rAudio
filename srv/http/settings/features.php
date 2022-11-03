@@ -177,7 +177,8 @@ $body = [
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
-This should be used only when necessary.
+ • This should be used only when necessary.
+ • Avoid double quotes <code>"</code> in password.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	]

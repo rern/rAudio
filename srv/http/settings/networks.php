@@ -45,6 +45,8 @@ htmlHead( [ //////////////////////////////////
 | I^plus-circle^I | Manually connect
 | I^search^I | Scan to connect
 
+ • Avoid double quotes <code>"</code> in Wi-Fi name and password.
+
 (Access points with 1 bar icon I^wifi1^I might be unstable.)' ) )?></div>
 </div>
 <div id="divlan" class="section">
