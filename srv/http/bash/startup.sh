@@ -151,6 +151,8 @@ fi
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q '^\*' ); then
 	rmmod brcmfmac &> /dev/null
+	pushstream '{"page":"networks","activewl":false}'
+	pushstream '{"page":"system","wlan":false}'
 fi
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
