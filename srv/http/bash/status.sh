@@ -527,9 +527,6 @@ outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 [[ $getcover || ! $Artist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
-#	Artist=$( echo $Artist | xargs ) # get rid of trailing spaces
-#	Album=$( echo $Album | xargs )
-#	Title=$( echo $Title | xargs )
 	args="\
 $Artist
 $Title
