@@ -90,7 +90,7 @@ pushstream() {
 }
 pushstreamNotify() { # title text icon [hide]
 	[[ $4 ]] && delay=',"delay":'$4
-	pushstream notify '{"icon":"'$1'""title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'",'$delay'}'
+	pushstream notify '{"icon":"'$1'","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'"'$delay'}'
 }
 pushstreamNotifyBlink() { # title text icon [hide]
 	[[ $4 ]] && delay=$4 || delay=-1
