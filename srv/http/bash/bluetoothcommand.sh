@@ -103,11 +103,11 @@ touch $dirshm/btflag && ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
+	bluetoothctl trust $mac # always trusr + pair to ensure proper connecting process
+	bluetoothctl pair $mac
 	name=$( bluetoothctl info $mac | sed -n '/^\s*Alias:/ {s/^\s*Alias: //; p}' )
 	[[ ! $name ]] && name=Bluetooth
 	if [[ $action == pair ]]; then
-		bluetoothctl trust $mac
-		bluetoothctl pair $mac
 		for i in {1..5}; do
 			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
 		done
