@@ -323,10 +323,13 @@ $radiosampling" > $dirshm/radio
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
-				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title' (extra tag)
+				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title'
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
+					if [[ -e $dirsystem/song_with_trailings ]]; then # Title (... or [... or - ... > Title
+						! grep -q "$Title" $dirsystem/song_with_trailings && Title=$( sed 's/ (.*$\| \[.*$\| - .*$//' <<< $Title )
+					fi
 				else
 					Artist=$station
 				fi
@@ -524,7 +527,9 @@ outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 [[ $getcover || ! $Artist ]] && exit
 
 if [[ $stream && $state == play && $Title ]]; then
-	[[ $ext == Radio ]] && Title=${Title/ (*} # remove ' (extra tag)'
+#	Artist=$( echo $Artist | xargs ) # get rid of trailing spaces
+#	Album=$( echo $Album | xargs )
+#	Title=$( echo $Title | xargs )
 	args="\
 $Artist
 $Title
@@ -535,6 +540,6 @@ $Artist
 $Album"
 fi
 if [[ $args ]]; then
-	killall status-coverartonline.sh &> /dev/null
+#	killall status-coverartonline.sh &> /dev/null
 	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
 fi

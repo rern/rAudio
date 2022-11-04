@@ -46,7 +46,7 @@ fi
 [[ ! $artist || ! $album ]] && exit
 
 ##### online
-killall status-coverartonline.sh &> /dev/null
+#killall status-coverartonline.sh &> /dev/null
 $dirbash/status-coverartonline.sh "\
 $artist
 $album" &> /dev/null &
