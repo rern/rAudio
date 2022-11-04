@@ -1201,7 +1201,7 @@ function renderLibraryList( data ) {
 						.html( htmlpath )
 						.removeClass( 'hide' );
 	if ( data.html === G.librarylisthtml ) {
-		$( '#lib-list' ).removeClass( 'hide' );
+		$( '#lib-list, #lib-index, #lib-index1' ).removeClass( 'hide' );
 		return
 	}
 	
