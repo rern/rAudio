@@ -147,13 +147,16 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-
+# if usb wlan or no hostapd and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
 	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q '^\*' ); then
 	rmmod brcmfmac &> /dev/null
-	pushstream refresh '{"page":"system","wlan":false}'
-	pushstream refresh '{"page":"networks","activewl":false}'
+	wlan=false
+else
+	wlan=true
 fi
+pushstream refresh '{"page":"system","wlan":'$wlan'}'
+pushstream refresh '{"page":"networks","activewl":'$wlan'}'
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	pushstreamNotify restore "$restorefailed" 10000
