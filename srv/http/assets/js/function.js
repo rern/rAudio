@@ -1242,7 +1242,6 @@ function renderLibraryList( data ) {
 			.toggleClass( 'fixedcover', G.display.fixedcover && $( '.licover' ).length === 1 )
 			.css( 'height', pH );
 		$( 'html, body' ).scrollTop( G.scrolltop[ data.path ] || 0 );
-		$( '#lib-list' ).removeClass( 'hide' );
 	} );
 }
 function renderPlayback() {
