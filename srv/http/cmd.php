@@ -46,7 +46,7 @@ case 'giftype':
 	$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animatedgif = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q "image #1" && echo 1' );
 	if ( $animatedgif ) {
-		$animatedtmpfile = $dirdata.'shm/tmp.gif';
+		$animatedtmpfile = $dirdata.'shm/local/tmp.gif';
 		move_uploaded_file( $tmpfile, $animatedtmpfile );
 		echo $animatedtmpfile;
 	}
@@ -59,20 +59,18 @@ case 'imagereplace':
 		exit;
 	}
 	
-	$covername = $_POST[ 'covername' ] ?? '';
+	$bookmarkname = $_POST[ 'bookmarkname' ] ?? '';
 	$imagedata = $_POST[ 'imagedata' ];
 	$jpg = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
 	if ( $jpg ) {
-		$cmd = 'coverjpg';
-		$tmpfile = $dirdata.'shm/binary';
+		$tmpfile = $dirdata.'shm/local/binary';
 		$base64 = preg_replace( '/^.*,/', '', $imagedata ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $tmpfile, base64_decode( $base64 ) );
 	} else {
-		$cmd = 'covergif';
 		$tmpfile = $imagedata;
 	}
-	$sh = [ $cmd, $type, $tmpfile, $imagefile, $covername ];
-	$script = $sudo.'/srv/http/bash/cmd.sh "'.escape( implode( "\n", $sh ) ).'"';
+	$sh = [ $type, $tmpfile, $imagefile, $bookmarkname ];
+	$script = $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
 	shell_exec( $script );
 	break;
 case 'login':
