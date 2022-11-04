@@ -980,6 +980,14 @@ txqueuelen=${args[4]}
 	fi
 	pushRefresh
 	;;
+startupfinish )
+	startup=$( systemd-analyze \
+					| grep '^Startup finished' \
+					| cut -d' ' -f 4,7 \
+					| sed -e 's/\....s/s/g; s/ / + /' \
+					| tee  $dirshm/startup )
+	pushstream refresh '{"page":"system","startup":"'$startup'"}'
+	;;
 statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
