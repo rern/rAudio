@@ -5,7 +5,7 @@ sleep 3 # wait for eventX added to /dev/input/
 mac=$( bluetoothctl show \
 		| head -1 \
 		| cut -d' ' -f2 )
-event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ {/Handlers=/ {s/^.* //; p}}" /proc/bus/input/devices )
+event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ {/Handlers=/ {s/^.*=//; p}}" /proc/bus/input/devices | awk '{print $NF}' )
 
 evtest /dev/input/$event | while read line; do
 	if [[ $line =~ .*EV_KEY.*KEY_NEXT.*1 ]]; then
