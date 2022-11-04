@@ -723,26 +723,13 @@ function setFileImage() {
 						var imgW = img.width;
 						var imgH = img.height;
 						var resize = setFileImageResize( 'gif', imgW, imgH );
-						setFileImageRender( img.src, imgW +' x '+ imgH, resize );
+						setFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
 						clearTimeout( G.timeoutfile );
 						bannerHide();
 					}
 				}
 			}
 		} );
-	}
-}
-function setFileImageResize( gif, imgW, imgH ) {
-	var maxsize = ( G.library && !G.librarylist ) ? 200 : ( gif ? 600 : 1000 );
-	if ( imgW > maxsize || imgH > maxsize ) {
-		if ( imgW > imgH ) {
-			pxW = maxsize;
-			pxH = Math.round( imgH / imgW * maxsize );
-		} else {
-			pxH = maxsize;
-			pxW = Math.round( imgW / imgH * maxsize );
-		}
-		return pxW +' x '+ pxH
 	}
 }
 function setFileImageReader() {
@@ -759,13 +746,13 @@ function setFileImageReader() {
 			filecanvas.width = imgW;
 			filecanvas.height = imgH;
 			ctx.drawImage( img, 0, 0 );
-			var resize = setFileImageResize( 'gif', imgW, imgH );
+			var resize = setFileImageResize( 'jpg', imgW, imgH );
 			if ( resize ) {
 				var canvas = document.createElement( 'canvas' );
-				canvas.width = pxW;
-				canvas.height = pxH;
+				canvas.width = resize.w;
+				canvas.height = resize.h;
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize );
+					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 				} );
 			} else {
 				setFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
@@ -807,12 +794,25 @@ function setFileImageRender( src, original, resize ) {
 	$( '.infomessage' ).append(
 		 '<span class="imgnew">'
 			+'<img class="infoimgnew" src="'+ src +'">'
-			+ ( resize ? '<div class="infoimgwh">'+ resize : '' )
+			+'<div class="infoimgwh">'
+			+ ( resize ? resize : '' )
 			+ ( original ? '<br>original: '+ original : '' )
 			+'</div>'
 			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
 		+'</span>'
 	);
+}
+function setFileImageResize( ext, imgW, imgH ) {
+	var maxsize = ( G.library && !G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+	if ( imgW > maxsize || imgH > maxsize ) {
+		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
+		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
+		return {
+			  w   : w
+			, h   : h
+			, wxh : w +' x '+ h
+		}
+	}
 }
 
 // verify password - called from addons.js ///////////////////////////////////////
