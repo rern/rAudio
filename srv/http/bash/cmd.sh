@@ -13,72 +13,6 @@ addonsListGet() {
 	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 }
-coverGif() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	targetnoext=${target:0:-4}
-	case $type in
-		bookmark )
-			rm -f "$targetnoext".*
-			gifsicle -O3 --resize-fit 200x200 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			sed -i -e 2d -e "1 a$target" "$dirbookmark/$covername"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			gifsicle -O3 --resize-fit 200x200 $source > "$dir/coverart.gif"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			rm -f "$targetnoext".* "$targetnoext-thumb".*
-			gifsicle -O3 --resize-fit 600x600 $source > "$target"
-			convert $source[0] -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-	rm -f $source $dirshm/{embedded,local}/*
-}
-coverJpg() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	gif=$5
-	targetnoext=${target:0:-4}
-	[[ $gif ]] && target="$targetnoext.jpg" # target.gif > target.jpg
-	case $type in
-		bookmark )
-			rm -f "$targetnoext".*
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 200x200\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			sed -i -e 2d -e "1 a$target" "$dirbookmark/$covername"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			rm -f "$targetnoext".* "$targetnoext-thumb".*
-			[[ ! $gif ]] && cp -f $source "$target" || convert $source -thumbnail 1000x1000\> -unsharp 0x.5 "$target"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$targetnoext-thumb.jpg"
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-	rm -f $source $dirshm/{embedded,local}/*
-}
 equalizerAmixer() { # sudo - mixer equal is user dependent
 	sudo -u mpd amixer -MD equal contents \
 					| grep ': values' \
@@ -166,22 +100,6 @@ plLengthSong() {
 	total=${status[0]}
 	pos=$(( ${status[1]} + 1 ))
 	tail=$(( total - pos ))
-}
-pushstreamImage() {
-	target=$1
-	[[ ! -e $target ]] && exit
-	
-	type=$2
-	covername=$3
-	coverart=${target/\/srv\/http}
-	if [[ $type == bookmark ]]; then
-		bkfile="$dirbookmarks/$covername"
-		echo "\
-$( head -1 "$bkfile" )
-$coverart" > "$bkfile"
-	fi
-	[[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	pushstream coverart '{"url":"'$coverart?v=$date'","type":"'$type'"}'
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -588,23 +506,12 @@ $mpdpath" )
 	[[ $url ]] && url=$url?v=$date || url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
-coverartsave )
-	source=${args[1]}
-	path=${args[2]}
-	coverJpg coverart $source "$path/cover.jpg"
-	;;
 coverfileslimit )
 	for type in local online webradio; do
 		ls -t $dirshm/$type/* 2> /dev/null \
 			| tail -n +10 \
 			| xargs rm -f --
 	done
-	;;
-covergif )
-	coverGif "${args[@]:1}"
-	;;
-coverjpg )
-	coverJpg "${args[@]:1}"
 	;;
 dabscan )
 	touch $dirshm/updatingdab

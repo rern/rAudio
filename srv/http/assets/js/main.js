@@ -1473,7 +1473,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 			bash( [ 'bookmarkcoverreset', imagepath, name ] );
 		}
 		, ok          : function() {
-			imageReplace( imagepath +'/coverart', 'bookmark', name ); // no ext
+			imageReplace( 'bookmark', imagepath +'/coverart', name ); // no ext
 		}
 	} );
 } )

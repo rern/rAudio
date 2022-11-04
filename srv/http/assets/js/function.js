@@ -243,7 +243,6 @@ function coverartChange() {
 	var coverartlocal = ( G.playback && !embedded && !pbonlinefetched && !pbcoverdefault )
 						|| ( G.library && !embedded && !lionlinefetched && !licoverdefault )
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
-	var covername = ( artist + album ).replace( /[ '"`?/#&]/g, '' );
 	$( '#coverart, #liimg' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	var icon = iconcover;
@@ -268,7 +267,7 @@ function coverartChange() {
 			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefilenoext, type, covername );
+			imageReplace( type, imagefilenoext );
 			banner( icon, title, 'Change ...' );
 		}
 	} );
@@ -305,20 +304,32 @@ function coverartSave() {
 		var artist = $( '.licover .liartist' ).text();
 		var album = $( '.licover .lialbum' ).text();
 	}
-	if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
-	var icon = iconcover;
-	var title = 'Save Album Cover Art';
-	info( {
-		  icon    : icon
-		, title   : title
-		, message : '<img src="'+ src +'">'
-					+'<p class="infoimgname">'+ album
-					+'<br>'+ artist +'</p>'
-		, ok      : function() {
-			bash( [ 'coverartsave', '/srv/http'+ src, path ] );
-			banner( icon, title, 'Save ...' );
-		}
-	} );
+	var img = new Image();
+	img.src = src;
+	img.onload = function() {
+		var imgW = img.width;
+		var imgH = img.height;
+		var filecanvas = document.createElement( 'canvas' );
+		var ctx = filecanvas.getContext( '2d' );
+		filecanvas.width = imgW;
+		filecanvas.height = imgH;
+		ctx.drawImage( img, 0, 0 );
+		var base64 = filecanvas.toDataURL( 'image/jpeg' );
+		if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
+		var icon = iconcover;
+		var title = 'Save Album Cover Art';
+		info( {
+			  icon    : icon
+			, title   : title
+			, message : '<img src="'+ base64 +'">'
+						+'<p class="infoimgname"><i class="fa fa-folder"></i> '+ album
+						+'<br><i class="fa fa-artist"></i> '+ artist +'</p>'
+			, ok      : function() {
+				imageReplace( 'coverart', path +'/cover' );
+				banner( icon, title, 'Save ...' );
+			}
+		} );
+	}
 }
 function cssKeyframes( name, trx0, trx100 ) {
 	var moz = '-moz-'+ trx0;
@@ -664,13 +675,13 @@ function imageLoad( list ) {
 		} );
 	}
 }
-function imageReplace( imagefilenoext, type, covername ) {
+function imageReplace( type, imagefilenoext, bookmarkname ) {
 	var data = {
-		  cmd       : 'imagereplace'
-		, type      : type
-		, imagefile : imagefilenoext +'.'+ ( O.infofilegif ? 'gif' : 'jpg' )
-		, covername : covername || ''
-		, imagedata : 'infofilegif' in O ? O.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		  cmd          : 'imagereplace'
+		, type         : type
+		, imagefile    : imagefilenoext +'.'+ ( O.infofilegif ? 'gif' : 'jpg' )
+		, bookmarkname : bookmarkname || ''
+		, imagedata    : 'infofilegif' in O ? O.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
 	$.post( cmdphp, data, function( std ) {
 		if ( std == -1 ) {
@@ -809,14 +820,7 @@ function libraryHome() {
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-			var $this = $( this );
-			var src = $this.attr( 'src' ); // ....jpg?v=1234567890
-			if ( src.slice( -16, -13 ) === 'jpg' ) {
-				src = src.replace( '.jpg?v=', '.gif?v=' );
-				$this.attr( 'src', src );
-			} else {
-				$this.replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
-			}
+			$( this ).replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
 		} );
 		$( '#lib-list, #lib-path span' ).removeClass( 'hide' );
 	} );
