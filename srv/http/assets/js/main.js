@@ -102,7 +102,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 		xstart = 0;
 	} );
 } else {
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.'+ ( Math.round( Date.now() / 1000 ) ) +'.css">' );
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css?v='+ ( Math.round( Date.now() / 1000 ) ) +'">' );
 	$.getScript( 'assets/js/shortcut.js' );
 }
 	
