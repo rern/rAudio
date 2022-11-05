@@ -324,10 +324,11 @@ $radiosampling" > $dirshm/radio
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
+				Title=$( sed 's/\s*$//' <<< $Title ) # remove trailing spaces
 				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title'
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
-					Title=$( echo ${radioname[1]} | xargs )
+					Title=${radioname[1]}
 					! grep -q -m1 "$Title" /srv/http/assets/data/songs_with_trailing && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
 				else
 					Artist=$station
