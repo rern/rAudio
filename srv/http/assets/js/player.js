@@ -34,7 +34,7 @@ $( '#setting-btreceiver' ).click( function() {
 			, buttonnoreset : 1
 			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
 			, button        : function() {
-				bash( [ 'volumebt0db', G.btaplayname ] );
+				bash( [ 'volumebt', G.btaplayname, '0dB' ] );
 			}
 			, okno          : 1
 		} );
