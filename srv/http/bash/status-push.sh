@@ -16,8 +16,9 @@ EOF
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
-					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file|^, "player|^, "station"|^, "state\
-								 |^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {s/^,* *"//; s/" *: */=/;p}' )
+					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file|^, "player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
+						s/^,* *"//; s/" *: */=/; s/(state=)"(.*)"/\1\2/; p
+						}' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
 		statusprev=$( < $dirshm/status )
@@ -42,7 +43,7 @@ fi
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if [[ -e $dirsystem/onwhileplay ]]; then
-	[[ ! $state ]] && state=$( grep ^state $dirshm/status | cut -d'"' -f2 ) # $1 == statusradio
+	[[ ! $state ]] && state=$( grep ^state= $dirshm/status | cut -d= -f2 ) # $1 == statusradio
 	export DISPLAY=:0
 	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
