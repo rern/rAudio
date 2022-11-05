@@ -749,7 +749,7 @@ mpcplayback )
 	fi
 	stopRadio
 	if [[ $command == play ]]; then
-		grep -q -m1 ^state=paused $dirshm/status && pause=1
+		grep -q -m1 ^state=pause $dirshm/status && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notifyBlink audiocd 'Audio CD' 'Start play ...'
 	else

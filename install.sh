@@ -4,7 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20221031
+# 20221106
+sed -E -i 's/(state=)"(.*)"/\1\2/' $dirshm/status
+
 sed -i '/interfaces/ d' /etc/samba/smb.conf
 systemctl try-restart smb 
 
