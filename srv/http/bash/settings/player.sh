@@ -261,13 +261,18 @@ EOF
 	;;
 volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
+	alsactl store
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
 volumebt0db )
-	amixer -D bluealsa -q sset "${args[1]}" 0dB 2> /dev/null
+	btdevice=${args[1]}
+	amixer -D bluealsa -q sset "$btdevice" 0dB 2> /dev/null
+	alsactl store
 	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
+	val=${voldb/ *}
+	echo $val > "$dirsystem/btvolume-$btdevice"
+	pushstream volumebt '{"val":'$val',"db":"0.00"}'
 	;;
 volumebtget )
 	volumeBtGet
@@ -275,6 +280,7 @@ volumebtget )
 	;;
 volumebtsave )
 	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
+	alsactl store
 	volumeBtGet
 	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
