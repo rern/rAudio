@@ -6,7 +6,7 @@ pushstreamPlaylist() {
 	pushstream playlist $( php /srv/http/mpdplaylist.php current )
 }
 
-[[ $1 ]] && pushstreamNotify audiocd 'Audio CD' "USB CD $1"
+[[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
@@ -18,7 +18,7 @@ if [[ $1 == on ]]; then
 elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
-		pushstreamNotify audiocd 'Audio CD' 'Removed from Playlist.'
+		notify audiocd 'Audio CD' 'Removed from Playlist.'
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
 		tracktop=$( head -1 <<< $tracks )
 		mpc -q del $tracks
@@ -44,7 +44,7 @@ fi
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 if [[ ! $cddiscid ]]; then
-	pushstreamNotify audiocd 'Audio CD' 'ID of CD not found in database.'
+	notify audiocd 'Audio CD' 'ID of CD not found in database.'
 	exit
 	
 fi
@@ -52,7 +52,7 @@ fi
 discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
-	pushstreamNotifyBlink audiocd 'Audio CD' 'Search CD data ...'
+	notifyBlink audiocd 'Audio CD' 'Search CD data ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
 	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
@@ -64,7 +64,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
 	fi
 	if [[ $genre_id ]]; then
-		pushstreamNotifyBlink audiocd 'Audio CD' 'Fetch CD data ...'
+		notifyBlink audiocd 'Audio CD' 'Fetch CD data ...'
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
 		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
 		artist=${artist_album[0]}
@@ -90,7 +90,7 @@ if [[ -e $dirsystem/autoplaycd ]]; then
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
-pushstreamNotify audiocd 'Audio CD' 'Add tracks to Playlist ...'
+notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc -q add cdda:///$i

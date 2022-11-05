@@ -33,7 +33,7 @@ $( find $dirusb -mindepth 1 -maxdepth 1 -type d )
 $dirdata"
 }
 spotifyReset() {
-	pushstreamNotifyBlink spotify 'Spotify Client' "$1"
+	notifyBlink spotify 'Spotify Client' "$1"
 	rm -f $dirsystem/spotify $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
@@ -94,7 +94,7 @@ dabradio )
 			systemctl enable --now rtsp-simple-server
 			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg$'\n'true
 		else
-			pushstreamNotify dabradio 'DAB Radio' 'No DAB devices found.' 5000
+			notify dabradio 'DAB Radio' 'No DAB devices found.' 5000
 		fi
 		
 	else
@@ -198,7 +198,7 @@ cursor=$newcursor
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 				pushRefresh
 				echo Rotate GPIO LCD screen >> $dirshm/reboot
-				pushstreamNotify chromium 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+				notify chromium 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 				exit
 			fi
 			

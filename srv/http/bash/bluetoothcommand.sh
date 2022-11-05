@@ -33,7 +33,7 @@ disconnectRemove() {
 		$dirsettings/player-conf.sh
 	fi
 #-----
-	pushstreamNotify $icon "$name" $msg
+	notify $icon "$name" $msg
 	$dirsettings/features-data.sh pushrefresh
 	$dirsettings/networks-data.sh pushbt
 }
@@ -50,7 +50,7 @@ if [[ $udev == disconnect ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
 #-----
-		pushstreamNotifyBlink $icon "$name" 'Disconnect ...'
+		notifyBlink $icon "$name" 'Disconnect ...'
 		disconnectRemove
 	fi
 	exit
@@ -77,7 +77,7 @@ if [[ $udev == connect ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q -m1 'UUID: Audio Sink'; then
 			bluetoothctl disconnect $mac
 #-----X
-			pushstreamNotify $icon "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' 6000
+			notify $icon "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' 6000
 			exit
 			
 		fi
@@ -89,7 +89,7 @@ if [[ $udev == connect ]]; then
 		
 	fi
 #-----
-	pushstreamNotifyBlink $icon "$name" "$msg"
+	notifyBlink $icon "$name" "$msg"
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
@@ -113,14 +113,14 @@ if [[ $action == connect || $action == pair ]]; then
 			bluetoothctl info $mac | grep -q -m1 'Paired: no' && sleep 1 || break
 		done
 #-----X
-		bluetoothctl info $mac | grep -q -m1 'Paired: no' && pushstreamNotify $icon "$name" 'Pair failed.' && exit
+		bluetoothctl info $mac | grep -q -m1 'Paired: no' && notify $icon "$name" 'Pair failed.' && exit
 		
 		bluetoothctl disconnect $mac
 #-----
-		pushstreamNotify $icon "$name" 'Paired successfully.' -1
+		notify $icon "$name" 'Paired successfully.' -1
 		sleep 3
 #-----
-		pushstreamNotifyBlink $icon "$name" 'Connect ...'
+		notifyBlink $icon "$name" 'Connect ...'
 	fi
 	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
@@ -131,7 +131,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
-		pushstreamNotify $icon "$name" Ready
+		notify $icon "$name" Ready
 		exit
 		
 	fi
@@ -142,7 +142,7 @@ if [[ $action == connect || $action == pair ]]; then
 #-----X
 	if [[ ! $btmixer && $action == connect ]]; then
 		bluetoothctl disconnect $mac
-		pushstreamNotify $icon "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
+		notify $icon "$name" "Mixer not ready.<br><wh>Power off > on / Reconnect again</wh>" 15000
 		exit
 		
 	fi
@@ -160,7 +160,7 @@ if [[ $action == connect || $action == pair ]]; then
 		$dirsettings/player-conf.sh
 	fi
 #-----
-	pushstreamNotify $icon "$name" Ready
+	notify $icon "$name" Ready
 	$dirsettings/features-data.sh pushrefresh
 	sleep 1
 	$dirsettings/networks-data.sh pushbt

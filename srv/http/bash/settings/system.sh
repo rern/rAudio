@@ -23,7 +23,7 @@ dirPermissions() {
 }
 pushReboot() {
 	pushRefresh
-	pushstreamNotify system "${1//\"/\\\"}" 'Reboot required.' 5000
+	notify system "${1//\"/\\\"}" 'Reboot required.' 5000
 	echo $1 >> $dirshm/reboot
 }
 I2Cset() {
@@ -151,7 +151,7 @@ bluetooth )
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-		pushstreamNotify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
+		notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
@@ -492,7 +492,7 @@ mirrorlist )
 	current=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
 	[[ ! $current ]] && current=0
 	if : >/dev/tcp/8.8.8.8/53; then
-		pushstreamNotifyBlink globe 'Mirror List' 'Get ...'
+		notifyBlink globe 'Mirror List' 'Get ...'
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
 	fi
@@ -642,7 +642,7 @@ mpdoled )
 packagelist )
 	filepackages=$dirtmp/packages
 	if [[ ! -e $filepackages ]]; then
-		pushstreamNotify system Backend 'Package list ...'
+		notify system Backend 'Package list ...'
 		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
 		while read line; do
 			case ${line:0:3} in
@@ -879,7 +879,7 @@ $ip:${path// /\\040}  ${dir// /\\040}  $options"
 	sharedDataSet
 	if [[ $reconnect ]]; then
 		rm $dirsystem/sharedipserver
-		pushstreamNotify rserver 'Server rAudio' 'Online ...'
+		notify rserver 'Server rAudio' 'Online ...'
 	fi
 	;;
 shareddatadisconnect )
@@ -921,7 +921,7 @@ shareddatadisconnect )
 	pushstream refresh '{"page":"features","shareddata":false}'
 	if [[ ! $disable ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
-		pushstreamNotify rserver 'Server rAudio' 'Offline ...'
+		notify rserver 'Server rAudio' 'Offline ...'
 	fi
 	;;
 shareddataiplist )
@@ -1052,7 +1052,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 		action=Removed
 		name='USB Drive'
 	fi
-	pushstreamNotify usbdrive "$name" $action
+	notify usbdrive "$name" $action
 	pushRefresh
 	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;

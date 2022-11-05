@@ -29,7 +29,7 @@ else
 fi
 if [[ $formatok ]]; then
 	if [[ $format ]]; then
-		pushstreamNotify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
+		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
 		defaultyml=$dirconfigs/default_config.yml
 		lineformat=$( sed -n '/playback:/,/format:/ {/format:/ =}' $defaultyml )
 		sed -i -E "$lineformat s/(format: ).*/\1$format/" $defaultyml
@@ -38,5 +38,5 @@ if [[ $formatok ]]; then
 	systemctl start camilladsp
 	camilladsp-gain.py set
 else
-	pushstreamNotify camilladsp CamillaDSP "Playback format: <wh>Setting required</wh>" 10000
+	notify camilladsp CamillaDSP "Playback format: <wh>Setting required</wh>" 10000
 fi

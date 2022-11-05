@@ -4,7 +4,7 @@
 
 script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
 if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
-	pushstreamNotify dabradio 'DAB Radio' 'No stations found.'
+	notify dabradio 'DAB Radio' 'No stations found.'
 	rm $dirshm/{dabscan,updatingdab}
 	exit
 fi

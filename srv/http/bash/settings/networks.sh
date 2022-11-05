@@ -225,11 +225,11 @@ usbbluetoothon ) # from usbbluetooth.rules
 	sleep 3
 	pushRefresh features
 	pushRefresh networks pushbt
-	pushstreamNotify bluetooth 'USB Bluetooth' Ready
+	notify bluetooth 'USB Bluetooth' Ready
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
 	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
-	pushstreamNotify bluetooth 'USB Bluetooth' Removed
+	notify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
 	pushRefresh networks pushbt
 	;;
@@ -237,11 +237,11 @@ usbwifion )
 	wlanDevice
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	
-	pushstreamNotify wifi 'USB Wi-Fi' Ready
+	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh
 	;;
 usbwifioff )
-	pushstreamNotify wifi 'USB Wi-Fi' Removed
+	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
 	;;
 wlandevice )

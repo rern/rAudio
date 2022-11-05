@@ -262,7 +262,7 @@ webRadioSampling() {
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
 	if [[ ! $( awk NF /tmp/webradio ) ]]; then
-		pushstreamNotify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
+		notify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
 		exit
 	fi
 	
@@ -272,7 +272,7 @@ webRadioSampling() {
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	if [[ ! $data ]]; then
-		pushstreamNotify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
+		notify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
 		exit
 	fi
 	
@@ -534,7 +534,7 @@ displaysave )
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		pushstreamNotifyBlink playback Playback 'VU meter disable...'
+		notifyBlink playback Playback 'VU meter disable...'
 	fi
 	$dirsettings/player-conf.sh
 	;;
@@ -597,7 +597,7 @@ ignoredir )
 latestclear )
 	> $dirmpd/latest
 	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
-	pushstreamNotify latest Latest Cleared
+	notify latest Latest Cleared
 	;;
 librandom )
 	enable=${args[1]}
@@ -751,7 +751,7 @@ mpcplayback )
 	if [[ $command == play ]]; then
 		mpc | grep -q -m1 '^\[paused\]' && pause=1
 		mpc -q $command $pos
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink audiocd 'Audio CD' 'Start play ...'
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notifyBlink audiocd 'Audio CD' 'Start play ...'
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
@@ -793,7 +793,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink audiocd 'Audio CD' 'Change track ...'
+		[[ $( mpc | head -c 4 ) == cdda ]] && notifyBlink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -940,9 +940,9 @@ power )
 	fi
 	
 	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink reboot Power 'Reboot ...'
+		notifyBlink reboot Power 'Reboot ...'
 	else
-		pushstreamNotifyBlink power Power 'Off ...' 10000
+		notifyBlink power Power 'Off ...' 10000
 	fi
 	touch $dirshm/power
 	mpc -q stop

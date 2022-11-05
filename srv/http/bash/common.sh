@@ -60,6 +60,20 @@ ipAddress() {
 isactive() {
 	systemctl -q is-active $1 && echo true || echo false
 }
+notify() { # icon title text delay
+	if [[ $1 == blink ]]; then
+		blink=' blink'
+		shift
+		[[ $4 ]] && delay=$4 || delay=-1
+	else
+		blink=
+		[[ $4 ]] && delay=$4 || delay=3000
+	fi
+	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'","delay":'$delay'}'
+}
+notifyBlink() {
+	notify blink "$@"
+}
 pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
 	[[ $2 ]] && push=$2 || push=push
@@ -89,20 +103,6 @@ pushstream() {
 			fi
 		done
 	fi
-}
-pushstreamNotify() { # icon title text delay
-	if [[ $1 == blink ]]; then
-		blink=' blink'
-		shift
-		[[ $4 ]] && delay=$4 || delay=-1
-	else
-		blink=
-		[[ $4 ]] && delay=$4 || delay=3000
-	fi
-	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'","delay":'$delay'}'
-}
-pushstreamNotifyBlink() {
-	pushstreamNotify blink "$@"
 }
 sshCommand() { # $1-ip, ${@:2}-commands
 	if ping -c 1 -w 1 $1 &> /dev/null; then
