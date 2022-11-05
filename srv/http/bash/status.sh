@@ -183,15 +183,16 @@ for line in "${lines[@]}"; do
 			bitrate=$(( val * 1000 ))
 			;;
 		duration | playlistlength | song | state | Time )
-			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json and trim trailing spaces
+			printf -v $key '%s' $val
+			;; # value of $key as "var name" - value of $val as "var value"
+		Album | AlbumArtist | Artist | Name | Title )
 			printf -v $key '%s' "$( sed 's/"/\\"/g; s/\s*$//' <<< $val )"
-			;;
+			;;                   # string to escape " for json and trim trailing spaces (some webradios)
 		file )
-			filenoesc=$val                            # no escape " for coverart and ffprobe
+			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=${val//\"/\\\"}                      # escape " for json
-			;;
+			file=${val//\"/\\\"}
+			;;   # escape " for json
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
 ########
