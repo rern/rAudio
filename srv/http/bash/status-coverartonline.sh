@@ -8,7 +8,8 @@ if [[ $1 ]]; then
 	readarray -t args <<< $1
 
 	Artist=${args[0]}
-	arg1=${args[1]}
+	Album=${args[1]} # album / title
+	Title=$Album
 	type=${args[2]}
 	discid=${args[3]}
 else # debug - no args
@@ -16,15 +17,10 @@ else # debug - no args
 	
 	debug=1
 	. $dirshm/status
-	if [[ $webradio == true ]]; then
-		arg1=$Title
-		type=webradio
-	else
-		arg1=$Album
-	fi
+	[[ $webradio == true ]] && type=webradio
 fi
 
-name=$( tr -d ' "`?/#&'"'" <<< $Artist$arg1 )
+name=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 name=${name,,}
 
 # suppress multiple calls
@@ -36,10 +32,10 @@ touch $dirshm/$name
 
 ### 1 - lastfm ##################################################
 if [[ $type == webradio ]]; then
-	param="track=${arg1//&/ and }"
+	param="track=${Title//&/ and }"
 	method='method=track.getInfo'
 else
-	param="album=${arg1//&/ and }"
+	param="album=${Album//&/ and }"
 	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
