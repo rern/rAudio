@@ -91,8 +91,14 @@ pushstream() {
 	fi
 }
 pushstreamNotify() { # icon title text delay
-	[[ $1 == blink ]] && blink=' blink' && shift
-	[[ $4 ]] && delay=$4 || delay=-1
+	if [[ $1 == blink ]]; then
+		blink=' blink'
+		shift
+		[[ $4 ]] && delay=$4 || delay=-1
+	else
+		blink=
+		[[ $4 ]] && delay=$4 || delay=3000
+	fi
 	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'","delay":'$delay'}'
 }
 pushstreamNotifyBlink() {
