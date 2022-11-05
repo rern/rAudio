@@ -212,7 +212,7 @@ $( '#setting-bluetooth' ).click( function() {
 	} );
 } );
 $( '#setting-wlan' ).click( function() {
-	bash( 'cat /srv/http/settings/regdomcodes.json', function( list ) {
+	bash( 'cat /srv/http/assets/data/regdomcodes.json', function( list ) {
 		var options = '';
 		$.each( list, function( k, v ) {
 			options += '<option value="'+ k +'">'+ v +'</option>';

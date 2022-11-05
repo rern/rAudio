@@ -7,7 +7,7 @@ if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
 } else {
 	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
 }
-$i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
+$i2slist = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
 $selecti2s = '<select id="i2smodule">
 				<option value="none">None / Auto detect</option>';
 foreach( $i2slist as $name => $sysname ) {
