@@ -536,7 +536,4 @@ elif [[ $Album ]]; then
 $Artist
 $Album"
 fi
-if [[ $args ]]; then
-#	killall status-coverartonline.sh &> /dev/null
-	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+[[ $args ]] && $dirbash/status-coverartonline.sh "$args" &> /dev/null &

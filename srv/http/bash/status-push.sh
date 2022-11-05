@@ -53,8 +53,7 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
-	killall lcdchar.py &> /dev/null
-	lcdchar.py &
+	lcdchar.py &> /dev/null &
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then

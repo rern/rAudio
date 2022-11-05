@@ -12,6 +12,11 @@ type=${args[2]}
 discid=${args[3]}
 
 name=$( tr -d ' "`?/#&'"'" <<< $artist$arg1 )
+[[ -e $dirshm/$name ]] && exit
+
+trap "rm -f $dirshm/$name" EXIT
+
+touch $dirshm/$name
 
 ### 1 - lastfm ##################################################
 if [[ $type == webradio ]]; then
