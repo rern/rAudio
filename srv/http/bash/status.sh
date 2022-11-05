@@ -185,7 +185,7 @@ for line in "${lines[@]}"; do
 		duration | playlistlength | song | state | Time )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json and trim trailing spaces
-			printf -v $key '%s' "$( sed 's/\s*$//' <<< ${val//\"/\\\"} )"
+			printf -v $key '%s' "$( sed 's/"/\\"/g; s/\s*$//' <<< $val )"
 			;;
 		file )
 			filenoesc=$val                            # no escape " for coverart and ffprobe
