@@ -327,9 +327,9 @@ $radiosampling" > $dirshm/radio
 				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title'
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
-					Title=${radioname[1]}
+					Title=$( echo ${radioname[1]} | xargs )
 					if [[ -e $dirsystem/song_with_trailings ]]; then # Title (... or [... or - ... > Title
-						! grep -q "$Title" $dirsystem/song_with_trailings && Title=$( sed 's/ *(.*$\| *\[.*$\| *- .*$//' <<< $Title )
+						! grep -q "$Title" $dirsystem/song_with_trailings && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
 					fi
 				else
 					Artist=$station
@@ -538,4 +538,6 @@ elif [[ $Album ]]; then
 $Artist
 $Album"
 fi
-[[ $args ]] && $dirbash/status-coverartonline.sh "$args" &> /dev/null &
+if [[ $args ]]; then # no shorthand for ... &> /dev/null &
+	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+fi

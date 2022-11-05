@@ -61,7 +61,9 @@ sharedDataIPlist() {
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-			[[ $1 ]] && sshCommand $ip $dirsettings/system.sh shareddatarestart & >/dev/null &
+			if [[ $1 ]] ; then
+				sshCommand $ip $dirsettings/system.sh shareddatarestart & >/dev/null &
+			fi
 			list+=$'\n'$ip
 		fi
 	done
@@ -143,7 +145,7 @@ bluetooth )
 		else
 			pushReboot Bluetooth
 		fi
-		bluetoothctl discoverable $yesno &
+		bluetoothctl discoverable $yesno &> /dev/null
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=false
 		[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
@@ -162,9 +164,9 @@ bluetooth )
 bluetoothstart )
 	sleep 3
 	[[ -e $dirsystem/btdiscoverable ]] && yesno=yes || yesno=no
-	bluetoothctl discoverable $yesno &
-	bluetoothctl discoverable-timeout 0 &
-	bluetoothctl pairable yes &
+	bluetoothctl discoverable $yesno &> /dev/null
+	bluetoothctl discoverable-timeout 0 &> /dev/null
+	bluetoothctl pairable yes &> /dev/null
 	;;
 bluetoothstatus )
 	if rfkill | grep -q bluetooth; then

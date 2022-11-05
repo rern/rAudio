@@ -99,7 +99,8 @@ if [[ $udev == connect ]]; then
 	fi
 fi
 # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
-touch $dirshm/btflag && ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
+touch $dirshm/btflag
+( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
 # 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then

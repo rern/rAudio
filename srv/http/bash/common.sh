@@ -84,7 +84,9 @@ pushstream() {
 		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
-			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
+			if [[ $webradiocopy ]]; then
+				sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
+			fi
 		done
 	fi
 }

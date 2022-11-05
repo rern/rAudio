@@ -50,7 +50,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
 			if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
-				touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+				touch $dirshm/scrobble
+				( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 			fi
 			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
 			timestamp=$( date +%s%3N )

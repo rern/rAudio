@@ -7,15 +7,15 @@
 if [[ $1 ]]; then
 	readarray -t args <<< $1
 
-	artist=${args[0]}
+	Artist=${args[0]}
 	arg1=${args[1]}
 	type=${args[2]}
 	discid=${args[3]}
-else
+else # debug - no args
 	grep -q 'Artist=""' $dirshm/status && echo '(no artist)' && exit
 	
+	debug=1
 	. $dirshm/status
-	artist=$Artist
 	if [[ $webradio == true ]]; then
 		arg1=$Title
 		type=webradio
@@ -24,8 +24,10 @@ else
 	fi
 fi
 
-name=$( tr -d ' "`?/#&'"'" <<< $artist$arg1 )
+name=$( tr -d ' "`?/#&'"'" <<< $Artist$arg1 )
 name=${name,,}
+
+# suppress multiple calls
 [[ -e $dirshm/$name ]] && exit
 
 trap "rm -f $dirshm/$name" EXIT
@@ -42,13 +44,24 @@ else
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
-	--data-urlencode "artist=$artist" \
+	--data-urlencode "artist=$Artist" \
 	--data-urlencode "$param" \
 	--data "$method" \
 	--data "api_key=$apikey" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-[[ $? != 0 || $data =~ error ]] && exit
+if [[ $debug ]]; then
+	echo '
+curl -sfG -m 5 \
+	--data-urlencode "artist='$Artist'" \
+	--data-urlencode "'$param'" \
+	--data "'$method'" \
+	--data "api_key='$apikey'" \
+	--data "format=json" \
+	http://ws.audioscrobbler.com/2.0'
+	jq <<< $data
+fi
+[[ $? != 0 || $data =~ '"error":' ]] && exit
 
 if [[ $type == webradio ]]; then
 	album=$( jq -r .track.album <<< $data )
