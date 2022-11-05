@@ -21,7 +21,7 @@ localbrowserXset() {
 	if [[ $off == 0 ]]; then
 		xset -dpms
 	elif [[ -e $dirsystem/onwhileplay ]]; then
-		grep -q '^state="play"' $dirshm/status && xset -dpms || xset +dpms
+		grep -q -m1 '^state="play"' $dirshm/status && xset -dpms || xset +dpms
 	else
 		xset +dpms
 	fi
@@ -137,7 +137,7 @@ hostapd )
 		fi
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
-		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q brcmfmac; then
+		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
 			modprobe brcmfmac
 			iw wlan0 set power_save off
 		fi
@@ -180,7 +180,7 @@ screenoff=$newscreenoff
 onwhileplay=$newonwhileplay
 cursor=$newcursor
 " > $dirsystem/localbrowser.conf
-		if ! grep -q console=tty3 /boot/cmdline.txt; then
+		if ! grep -q -m1 console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
@@ -341,7 +341,7 @@ screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
 #	/opt/vc/bin/vcgencmd display_power $toggle # hdmi
 	export DISPLAY=:0
-	xset q | grep -q 'Monitor is Off' && xset dpms force on || xset dpms force off
+	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
 scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 	if [[ ${args[1]} == true ]]; then
@@ -456,7 +456,7 @@ spotifytoken )
 				-d "code=$code" \
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
-	if grep -q error <<< $tokens; then
+	if grep -q -m1 error <<< $tokens; then
 		spotifyReset "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi

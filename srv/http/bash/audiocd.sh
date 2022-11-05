@@ -89,7 +89,7 @@ if [[ -e $dirsystem/autoplaycd ]]; then
 	pushstream playlist '{"autoplaycd":1}'
 fi
 # add tracks to playlist
-grep -q 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
+grep -q -m1 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
 pushstreamNotify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do

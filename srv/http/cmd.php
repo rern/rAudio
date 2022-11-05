@@ -44,7 +44,7 @@ case 'datarestore':
 	break;
 case 'giftype':
 	$tmpfile = $_FILES[ 'file' ][ 'tmp_name' ];
-	$animatedgif = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q "image #1" && echo 1' );
+	$animatedgif = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1' );
 	if ( $animatedgif ) {
 		$animatedtmpfile = $dirdata.'shm/local/tmp.gif';
 		move_uploaded_file( $tmpfile, $animatedtmpfile );

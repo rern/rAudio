@@ -29,7 +29,7 @@ pushReboot() {
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
-	[[ -e $dirsystem/lcdchar ]] && grep -q inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
+	[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 		if [[ $chip != 1 && $chip != 7 ]]; then
@@ -110,7 +110,7 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	if ifconfig | grep -q eth0; then
+	if ifconfig | grep -q -m1 eth0; then
 		ip link set eth0 mtu $mtu
 		ip link set eth0 txqueuelen $txqueuelen
 	fi
@@ -138,10 +138,10 @@ bluetooth )
 			rm $dirsystem/btdiscoverable
 		fi
 		sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
-		if ls -l /sys/class/bluetooth | grep -q serial; then
+		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
 			systemctl start bluetooth
-			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-			rfkill | grep -q bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
+			! grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			rfkill | grep -q -m1 bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
 		else
 			pushReboot Bluetooth
 		fi
@@ -152,11 +152,11 @@ bluetooth )
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 		pushstreamNotify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
-		if ! rfkill | grep -q bluetooth; then
+		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
-			grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
 	fi
 	pushRefresh
@@ -169,7 +169,7 @@ bluetoothstart )
 	bluetoothctl pairable yes &> /dev/null
 	;;
 bluetoothstatus )
-	if rfkill | grep -q bluetooth; then
+	if rfkill | grep -q -m1 bluetooth; then
 		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||; p}' )
 		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
 	fi
@@ -297,7 +297,7 @@ datarestore )
 			mkdir -p "$mountpoint"
 		done
 	fi
-	grep -q $dirsd /etc/exports && $dirsettings/features.sh nfsserver$'\n'true
+	grep -q -m1 $dirsd /etc/exports && $dirsettings/features.sh nfsserver$'\n'true
 	$dirbash/cmd.sh power$'\n'reboot
 	;;
 dirpermissions )
@@ -315,7 +315,7 @@ hddsleep )
 		apm=${args[2]}
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 		for dev in $devs; do
-			! hdparm -B $dev | grep -q 'APM_level' && notsupport+="$dev"$'\n' && continue
+			! hdparm -B $dev | grep -q -m1 'APM_level' && notsupport+="$dev"$'\n' && continue
 
 			hdparm -q -B $apm $dev
 			hdparm -q -S $apm $dev
@@ -327,7 +327,7 @@ hddsleep )
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 		if [[ $devs ]]; then
 			for dev in $devs; do
-				! hdparm -B $dev | grep -q 'APM_level' && continue
+				! hdparm -B $dev | grep -q -m1 'APM_level' && continue
 				
 				hdparm -q -B 128 $dev &> /dev/null
 				hdparm -q -S 0 $dev &> /dev/null
@@ -373,7 +373,7 @@ dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-		! grep -q gpio-shutdown $fileconfig && systemctl disable --now powerbutton
+		! grep -q -m1 gpio-shutdown $fileconfig && systemctl disable --now powerbutton
 	else
 		dtoverlay+="
 dtparam=audio=on"
@@ -394,7 +394,7 @@ journalctl )
 	filebootlog=$dirtmp/bootlog
 	if [[ ! -e $filebootlog ]]; then
 		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		grep -q 'Startup finished' <<< $journal || journal='(Boot ...)'
+		grep -q -m1 'Startup finished' <<< $journal || journal='(Boot ...)'
 		echo "$journal" > $filebootlog
 	fi
 	echo "\
@@ -473,7 +473,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/disable-software-rasterizer/ d' xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
+		if [[ $( uname -m ) == armv7l ]] && ! grep -q -m1 no-xshm /srv/http/bash/xinitrc; then
 			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
 		fi
 		systemctl enable localbrowser
@@ -572,7 +572,7 @@ Mount failed:
 	[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
 	for i in {1..5}; do
 		sleep 1
-		mount | grep -q "$mountpoint" && break
+		mount | grep -q -m1 "$mountpoint" && break
 	done
 	[[ $shareddata == true ]] && sharedDataSet || pushRefresh
 	;;
@@ -622,7 +622,7 @@ mpdoled )
 			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
 			! ls /dev/i2c* &> /dev/null && reboot=1
 		else
-			! grep -q dtparam=spi=on $fileconfig && reboot=1
+			! grep -q -m1 dtparam=spi=on $fileconfig && reboot=1
 		fi
 		touch $dirsystem/mpdoled
 		I2Cset
@@ -884,7 +884,7 @@ $ip:${path// /\\040}  ${dir// /\\040}  $options"
 	;;
 shareddatadisconnect )
 	disable=${args[1]} # null - sshpass from server rAudio to disconnect
-	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
+	! grep -q -m1 $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
@@ -898,7 +898,7 @@ shareddatadisconnect )
 	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
 	sed -i "/$( ipAddress )/ d" $filesharedip
 	mpc -q clear
-	if grep -q ":$dirsd " /etc/fstab; then # client of server rAudio
+	if grep -q -m1 ":$dirsd " /etc/fstab; then # client of server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
 		fstab=$( grep -v ^$ipserver /etc/fstab )
 		readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ipserver 2> /dev/null | awk 'NF{NF-=1};1' )
@@ -1086,12 +1086,12 @@ wlan )
 	if [[ ${args[1]} == true ]]; then
 		regdom=${args[2]}
 		apauto=${args[3]}
-		! lsmod | grep -q brcmfmac && modprobe brcmfmac
+		! lsmod | grep -q -m1 brcmfmac && modprobe brcmfmac
 		ifconfig wlan0 up
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
-		if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
+		if ! grep -q -m1 $regdom /etc/conf.d/wireless-regdom; then
 			sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 			iw reg set $regdom
 		fi
@@ -1100,7 +1100,7 @@ wlan )
 		ifconfig wlan0 down
 	fi
 	pushRefresh
-	ifconfig wlan0 | grep -q wlan0.*UP && active=true || active=false
+	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
 	pushstream refresh '{"page":"networks","activewlan":'$active'}'
 	;;
 	

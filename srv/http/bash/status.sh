@@ -36,7 +36,7 @@ else
 		control=$( cut -d^ -f2 <<< $ccv ) # keep trailing space if any
 		volume=${ccv/*^}
 	fi
-	mpc | grep -q 'consume: on' && consume=true
+	mpc | grep -q -m1 'consume: on' && consume=true
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
@@ -69,7 +69,7 @@ if [[ $1 == withdisplay ]]; then
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
-	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
+	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q -m1 screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	display=$( head -n -1 $dirsystem/display )
 	[[ -e $filesharedip ]] && display+='
 , "sd"  : false
@@ -165,9 +165,9 @@ mpdStatus currentsong
 #     - 'currentsong' has no data
 #     - use 'playlistinfo 0' instead
 #   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
-! grep -q '^file: .\+' <<< $mpdtelnet && mpdStatus 'playlistinfo 0'
+! grep -q -m1 '^file: .\+' <<< $mpdtelnet && mpdStatus 'playlistinfo 0'
 # 'state:' - missing on webradio track change
-! grep -q '^state' <<< $mpdtelnet && mpdStatus currentsong
+! grep -q -m1 '^state' <<< $mpdtelnet && mpdStatus currentsong
 
 readarray -t lines <<< $mpdtelnet
 for line in "${lines[@]}"; do

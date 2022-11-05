@@ -44,7 +44,7 @@ if [[ $udev == disconnect ]]; then
 	readarray -t lines < $dirshm/btconnected
 	for line in "${lines[@]}"; do
 		mac=${line/ *}
-		bluetoothctl info $mac | grep -q 'Connected: yes' && mac= || break
+		bluetoothctl info $mac | grep -q -m1 'Connected: yes' && mac= || break
 	done
 	if [[ $mac ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
@@ -63,8 +63,8 @@ if [[ $udev == connect ]]; then
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	if [[ $macs ]]; then
 		for mac in ${macs[@]}; do
-			if bluetoothctl info $mac | grep -q 'Connected: yes'; then
-				grep -q $mac $dirshm/btconnected &> /dev/null && mac= || break
+			if bluetoothctl info $mac | grep -q -m1 'Connected: yes'; then
+				grep -q -m1 $mac $dirshm/btconnected &> /dev/null && mac= || break
 			fi
 		done
 	fi
@@ -74,7 +74,7 @@ if [[ $udev == connect ]]; then
 	# fix: rAudio triggered to connect by unpaired sender on boot
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
-		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q 'UUID: Audio Sink'; then
+		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q -m1 'UUID: Audio Sink'; then
 			bluetoothctl disconnect $mac
 #-----X
 			pushstreamNotify $icon "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' 6000
@@ -83,9 +83,9 @@ if [[ $udev == connect ]]; then
 		fi
 	else
 		for i in {1..5}; do
-			! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
+			! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 		done
-		bluetoothctl info $mac | grep -q 'UUID: Audio Source' && msg='Pair ...' || exit
+		bluetoothctl info $mac | grep -q -m1 'UUID: Audio Source' && msg='Pair ...' || exit
 		
 	fi
 #-----
@@ -110,10 +110,10 @@ if [[ $action == connect || $action == pair ]]; then
 	[[ ! $name ]] && name=Bluetooth
 	if [[ $action == pair ]]; then
 		for i in {1..5}; do
-			bluetoothctl info $mac | grep -q 'Paired: no' && sleep 1 || break
+			bluetoothctl info $mac | grep -q -m1 'Paired: no' && sleep 1 || break
 		done
 #-----X
-		bluetoothctl info $mac | grep -q 'Paired: no' && pushstreamNotify $icon "$name" 'Pair failed.' && exit
+		bluetoothctl info $mac | grep -q -m1 'Paired: no' && pushstreamNotify $icon "$name" 'Pair failed.' && exit
 		
 		bluetoothctl disconnect $mac
 #-----
@@ -122,9 +122,9 @@ if [[ $action == connect || $action == pair ]]; then
 #-----
 		pushstreamNotifyBlink $icon "$name" 'Connect ...'
 	fi
-	bluetoothctl info $mac | grep -q 'Connected: no' && bluetoothctl connect $mac
+	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
-		! bluetoothctl info $mac | grep -q 'UUID:' && sleep 1 || break
+		! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 	done
 	type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	if [[ ! $type ]]; then
@@ -171,7 +171,7 @@ elif [[ $action == disconnect || $action == remove ]]; then
 	bluetoothctl disconnect $mac &> /dev/null
 	if [[ $action == disconnect ]]; then
 		for i in {1..5}; do
-			bluetoothctl info $mac | grep -q 'Connected: yes' && sleep 1 || break
+			bluetoothctl info $mac | grep -q -m1 'Connected: yes' && sleep 1 || break
 		done
 		disconnectRemove
 	else

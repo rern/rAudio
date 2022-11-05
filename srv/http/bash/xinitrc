@@ -12,7 +12,7 @@ done
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-if [[ $cursor == true ]] || ! ifconfig | grep -q inet.*broadcast; then  # no network connection
+if [[ $cursor == true ]] || ! ifconfig | grep -q -m1 inet.*broadcast; then  # no network connection
 	cursor=yes
 else
 	cursor=no

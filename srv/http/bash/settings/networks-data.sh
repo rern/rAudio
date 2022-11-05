@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 # bluetooth
-rfkill | grep -q bluetooth && systemctl -q is-active bluetooth && activebt=1
+rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
 if [[ $activebt ]]; then
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
@@ -13,13 +13,13 @@ if [[ $activebt ]]; then
 			listbt+=',{
   "mac"       : "'$mac'"
 , "name"      : "'$( cut -d' ' -f3- <<< $dev )'"
-, "connected" : '$( grep -q 'Connected: yes' <<< $info && echo true || echo false )'
+, "connected" : '$( grep -q -m1 'Connected: yes' <<< $info && echo true || echo false )'
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info )'"
 }'
 		done
 		listbt="[ ${listbt:1} ]"
-		grep -q '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
-		grep -q '"connected" : true' <<< $listbt && connected=true || connected=false
+		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
+		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
 		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
 		
 		[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit
@@ -53,7 +53,7 @@ if [[ -e $dirshm/wlan ]]; then
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
-			! grep -q Interface=$wldev "/etc/netctl/$profile" && continue
+			! grep -q -m1 Interface=$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
 					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
@@ -95,10 +95,10 @@ fi
 data='
   "page"        : "networks"
 , "activebt"    : '$activebt'
-, "activeeth"   : '$( ip -br link | grep -q ^e && echo true )'
-, "activewl"    : '$( rfkill | grep -q wlan && echo true )'
+, "activeeth"   : '$( ip -br link | grep -q -m1 ^e && echo true )'
+, "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "connectedwl" : '$( netctl list | grep -q '^\*' && echo true )'
+, "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "ipeth"       : "'$ipeth'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'

@@ -59,7 +59,7 @@ $( timeout 1 avahi-browse -arp \
 bluetoothinfo )
 	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
-	grep -q 'not available' <<< $info && exit
+	grep -q -m1 'not available' <<< $info && exit
 	
 	if (( $( grep -Ec 'Connected: yes|UUID: Audio' <<< $info ) == 2 )); then
 		data="\
@@ -201,9 +201,9 @@ profileget )
 	fi
 	netctl=$( < "/etc/netctl/$ssid" )
 	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
-	grep -q ^IP=dhcp <<< $netctl && static=false || static=true
-	grep -q ^Hidden <<< $netctl && hidden=true || hidden=false
-	grep -q ^Security=wep <<< $netctl && wep=true || wep=false
+	grep -q -m1 ^IP=dhcp <<< $netctl && static=false || static=true
+	grep -q -m1 ^Hidden <<< $netctl && hidden=true || hidden=false
+	grep -q -m1 ^Security=wep <<< $netctl && wep=true || wep=false
 	data+=',"'$password'", '$static', '$hidden', '$wep
 	echo "[$data]"
 	;;
@@ -228,7 +228,7 @@ usbbluetoothon ) # from usbbluetooth.rules
 	pushstreamNotify bluetooth 'USB Bluetooth' Ready
 	;;
 usbbluetoothoff ) # from usbbluetooth.rules
-	! rfkill | grep -q bluetooth && systemctl stop bluetooth
+	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
 	pushstreamNotify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
 	pushRefresh networks pushbt

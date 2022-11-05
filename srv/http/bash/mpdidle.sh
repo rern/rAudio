@@ -21,7 +21,7 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		playlist )
-			if mpc | grep -q 'consume: on'; then
+			if mpc | grep -q -m1 'consume: on'; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
 					pushstream playlist $( php /srv/http/mpdplaylist.php current )
 				) &> /dev/null &
@@ -35,7 +35,7 @@ mpc idleloop | while read changed; do
 			;;
 		update )
 			sleep 1
-			! mpc | grep -q '^Updating' && $dirbash/cmd-list.sh
+			! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
 			;;
 	esac
 done

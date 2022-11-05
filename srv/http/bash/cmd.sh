@@ -75,12 +75,12 @@ plAddRandom() {
 		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		file="$range $cuefile"
-		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc --range=$range load "$cuefile"
 	else
 		file=$( shuf -n 1 <<< $mpcls )
-		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc add "$file"
 	fi
@@ -239,7 +239,7 @@ webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"'$type'","count":'$count'}'
-	grep -q "$type.*,"$ $dirmpd/counts && count+=,
+	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
@@ -522,12 +522,12 @@ displaysave )
 	data=${args[1]}
 	pushstream display "$data"
 	jq -S <<< $data > $dirsystem/display
-	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
+	grep -q -m1 '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		mpc | grep -q -m1 '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
 		[[ -e $dirmpdconf/fifo.conf ]] && exit
 		
@@ -669,7 +669,7 @@ mpcaddrandom )
 	plAddRandom
 	;;
 mpccrop )
-	if mpc | grep -q '\[playing'; then
+	if mpc | grep -q -m1 '\[playing'; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -741,15 +741,15 @@ mpcplayback )
 			exit
 		fi
 		
-		if mpc | grep -q '\[playing'; then
-			grep -q webradio=true $dirshm/status && command=stop || command=pause
+		if mpc | grep -q -m1 '\[playing'; then
+			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
 		fi
 	fi
 	stopRadio
 	if [[ $command == play ]]; then
-		mpc | grep -q '^\[paused\]' && pause=1
+		mpc | grep -q -m1 '^\[paused\]' && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink audiocd 'Audio CD' 'Start play ...'
 	else
@@ -780,13 +780,13 @@ mpcprevnext )
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
 	fi
-	if mpc | grep -q 'random: on'; then
+	if mpc | grep -q -m1 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc -q play $pos
 	else
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
-			mpc | grep -q 'consume: on' && mpc -q del $current
+			mpc | grep -q -m1 'consume: on' && mpc -q del $current
 			[[ -e $dirsystem/librandom ]] && plAddRandom
 		else
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
@@ -961,7 +961,7 @@ power )
 	fi
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
-	if mount | grep -q $dirnas; then
+	if mount | grep -q -m1 $dirnas; then
 		umount -l $dirnas/* &> /dev/null
 		sleep 3
 	fi

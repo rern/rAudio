@@ -53,7 +53,7 @@ $rpimodel<br>\
 $soc<br>\
 $soccpu"
 
-if ifconfig | grep -q eth0; then
+if ifconfig | grep -q -m1 eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
@@ -64,7 +64,7 @@ fi
 
 # sd, usb and nas
 smb=$( isactive smb )
-if mount | grep -q 'mmcblk0p2 on /'; then
+if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
@@ -72,7 +72,7 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q $dirsd /etc/exports && echo true )'
+, "nfs"        : '$( grep -q -m1 $dirsd /etc/exports && echo true )'
 , "smb"        : '$smb'
 }'
 fi
@@ -89,7 +89,7 @@ if [[ $usb ]]; then
 , "mounted"    : true
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
+, "nfs"        : '$( grep -q -m1 "$mountpoint" /etc/exports && echo true )'
 , "smb"        : '$( [[ $smb == true && $mountpoint == $dirusb ]] && echo true )'
 }'
 		else
@@ -130,7 +130,7 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
-if grep -q dtparam=i2c_arm=on /boot/config.txt; then
+if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
@@ -147,7 +147,7 @@ if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs
 				' -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
 				' -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
 				' $dirsystem/lcdchar.conf )
-	if grep -q i2c <<< "$vals"; then
+	if grep -q -m1 i2c <<< "$vals"; then
 		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' ) # echo to remove \n
 	else
 		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' ) # echo to remove \n
@@ -175,8 +175,8 @@ data+='
 , "hddsleep"         : '${hddapm/128/false}'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
-, "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
-, "lcd"              : '$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$lcdcharaddr'
 , "lcdcharconf"      : '$lcdcharconf'
@@ -203,15 +203,15 @@ data+='
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
-, "wlan"             : '$( lsmod | grep -q brcmfmac && echo true )'
+, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconf"         : [ "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
-	if grep -q ^dtparam=krnbt=on /boot/config.txt; then
+	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetooth=true
 		bluetoothactive=$( isactive bluetooth )
 		if [[ $bluetoothactive == true ]]; then
-			discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
+			discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 		fi
 	fi
 	data+='

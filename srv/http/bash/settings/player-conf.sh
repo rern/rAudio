@@ -114,7 +114,7 @@ if [[ -e $dirmpd/updating ]]; then
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
 if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
-	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
+	mpc | grep -q -m1 '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
 fi
 pushstream mpdplayer $( $dirbash/status.sh )
 $dirsettings/player-data.sh pushrefresh

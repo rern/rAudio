@@ -21,7 +21,7 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	if bsdtar tf backup.gz | grep -q ^data/system/$; then
+	if bsdtar tf backup.gz | grep -q -m1 ^data/system/$; then
 		mv /boot/backup.gz $dirdata/tmp
 		$dirsettings/system.sh datarestore
 	else
@@ -46,7 +46,7 @@ fi
 
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q inet.*broadcast && connected=1 && break
+		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
 		sleep $2
 	done
 }
@@ -59,7 +59,7 @@ echo mpd > $dirshm/player
 echo 0 > $dirsystem/volumemute
 touch $dirshm/status
 
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan # initial status
+lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait 5s max for lan connection
 connectedCheck 5 1
@@ -149,7 +149,7 @@ elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 fi
 # if usb wlan or no hostapd and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
-	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q '^\*' ); then
+	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
 	rmmod brcmfmac &> /dev/null
 	wlan=false
 else

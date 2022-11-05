@@ -3,7 +3,7 @@
 # shareddata:
 #    [[ -L $dirshareddata ]]       = server rAudio
 #    [[ -L $dirmpd ]]              = clients
-#    grep -q ":$dirsd" /etc/fstab  = clients with server rAudio
+#    grep -q -m1 ":$dirsd" /etc/fstab  = clients with server rAudio
 #    [[ -e $filesharedip ]]        = server + clients
 
 . /srv/http/bash/common.sh
@@ -19,7 +19,7 @@ data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
-, "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q Sink && echo true )'
+, "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q -m1 Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
@@ -34,7 +34,7 @@ data+='
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
-, "playing"          : '$( grep -q '^state="play"' $dirshm/status && echo true )'
+, "playing"          : '$( grep -q -m1 '^state="play"' $dirshm/status && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
@@ -44,7 +44,7 @@ data+='
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( isactive shairport-sync )'
 , "shairportactive"  : '$( [[ $( < $dirshm/player ) == airplay ]] && echo true )
@@ -53,16 +53,16 @@ data+='
 , "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( isactive snapclient )'
-, "snapcastconf"     : '$( grep -q latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
+, "snapcastconf"     : '$( grep -q -m1 latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( isactive spotifyd )'
 , "spotifydactive"   : '$( [[ $( < $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
-, "spotifytoken"     : '$( grep -q refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
+, "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
 , "upmpdcliactive"   : '$( [[ $( < $dirshm/player ) == upnp ]] && echo true )'
-, "upmpdcliownqueue" : '$( grep -q 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
+, "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /etc/X11/xinit/xinitrc ]]; then
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
@@ -82,8 +82,8 @@ if [[ -e /etc/X11/xinit/xinitrc ]]; then
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then
-	grep -A1 $dirsd /etc/samba/smb.conf | grep -q 'read only = no' && writesd=true || writesd=false
-	grep -A1 $dirusb /etc/samba/smb.conf | grep -q 'read only = no' && writeusb=true || writeusb=false
+	grep -A1 $dirsd /etc/samba/smb.conf | grep -q -m1 'read only = no' && writesd=true || writesd=false
+	grep -A1 $dirusb /etc/samba/smb.conf | grep -q -m1 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
 , "smb"              : '$( isactive smb )'
