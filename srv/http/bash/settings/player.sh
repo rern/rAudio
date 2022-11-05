@@ -49,7 +49,12 @@ $( bluetoothctl info $mac )"
 buffer | outputbuffer )
 	type=${args[0]}
 	if [[ ${args[1]} == true ]]; then
-		[[ $type == buffer ]] && setting='audio_buffer_size  "'${args[2]}'"' || setting='max_output_buffer_size  "'${args[2]}'"'
+		kb=${args[2]}
+		if [[ $type == buffer ]]; then
+			setting='audio_buffer_size  "'$kb'"'
+		else
+			setting='max_output_buffer_size  "'$kb'"'
+		fi
 		echo "$setting" > $dirmpdconf/conf/$type.conf
 		linkConf
 	else
