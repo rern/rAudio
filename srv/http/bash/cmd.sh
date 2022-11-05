@@ -527,7 +527,7 @@ displaysave )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		mpc | grep -q -m1 '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		grep -q -m1 ^state=play $dirshm/status && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
 		[[ -e $dirmpdconf/fifo.conf ]] && exit
 		
@@ -669,7 +669,7 @@ mpcaddrandom )
 	plAddRandom
 	;;
 mpccrop )
-	if mpc | grep -q -m1 '\[playing'; then
+	if grep -q -m1 ^state=play $dirshm/status; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -741,7 +741,7 @@ mpcplayback )
 			exit
 		fi
 		
-		if mpc | grep -q -m1 '\[playing'; then
+		if grep -q -m1 ^state=play $dirshm/status; then
 			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
@@ -749,7 +749,7 @@ mpcplayback )
 	fi
 	stopRadio
 	if [[ $command == play ]]; then
-		mpc | grep -q -m1 '^\[paused\]' && pause=1
+		grep -q -m1 ^state=paused $dirshm/status && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notifyBlink audiocd 'Audio CD' 'Start play ...'
 	else

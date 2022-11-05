@@ -104,19 +104,18 @@ fi
 
 ### mpd restart ##########################################################################
 systemctl restart mpd
+
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
 done
-
 if [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
-	mpc | grep -q -m1 '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
-fi
-pushstream mpdplayer $( $dirbash/status.sh )
+[[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
+
+$dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
