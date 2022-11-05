@@ -24,7 +24,7 @@ restartMPD() {
 	pushRefresh
 }
 volumeBtGet() {
-	voldb=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
+	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 }
 
 case ${args[0]} in
@@ -265,24 +265,18 @@ volume0db )
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
-volumebt0db )
+volumebt )
 	btdevice=${args[1]}
-	amixer -D bluealsa -q sset "$btdevice" 0dB 2> /dev/null
-	alsactl store
-	volumeBtGet
+	vol=${args[2]}
+	[[ $vol != 0dB ]] && vol+=%
+	amixer -MD bluealsa -q sset "$btdevice" $vol 2> /dev/null
+	voldb=$( volumeBtGet )
 	val=${voldb/ *}
 	echo $val > "$dirsystem/btvolume-$btdevice"
 	pushstream volumebt '{"val":'$val',"db":"0.00"}'
 	;;
 volumebtget )
 	volumeBtGet
-	echo $voldb
-	;;
-volumebtsave )
-	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
-	alsactl store
-	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
 	$dirbash/cmd.sh volumeget$'\n'${args[1]}

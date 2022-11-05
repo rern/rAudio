@@ -25,10 +25,10 @@ $( '#setting-btreceiver' ).click( function() {
 			, footer        : db +' dB'
 			, beforeshow    : function() {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'amixer -D bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
+				$( '#infoRange input' ).on( 'click input', function() {
+					bash( 'amixer -MD bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumebtsave', $( this ).val(), G.btaplayname ] );
+					bash( [ 'volumebt', G.btaplayname, $( this ).val() ] );
 				} );
 			}
 			, buttonnoreset : 1
