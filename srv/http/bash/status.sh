@@ -184,13 +184,13 @@ for line in "${lines[@]}"; do
 			;;
 		duration | playlistlength | song | state | Time )
 			printf -v $key '%s' $val;; # value of $key as "var name" - value of $val as "var value"
-		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json
-			printf -v $key '%s' "${val//\"/\\\"}"
+		Album | AlbumArtist | Artist | Name | Title ) # string to escape " for json and trim trailing spaces
+			printf -v $key '%s' "$( sed 's/\s*$//' <<< ${val//\"/\\\"} )"
 			;;
 		file )
-			filenoesc=$val # no escape " for coverart and ffprobe
+			filenoesc=$val                            # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=${val//\"/\\\"} # escape " for json
+			file=${val//\"/\\\"}                      # escape " for json
 			;;
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
@@ -324,7 +324,6 @@ $radiosampling" > $dirshm/radio
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
-				Title=$( sed 's/\s*$//' <<< $Title ) # remove trailing spaces
 				if [[ $Title == *" - "* ]]; then # split 'Artist - Title' or 'Artist: Title'
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
