@@ -265,6 +265,7 @@ elif [[ $stream ]]; then
 , "Title"  : "'$Title'"'
 		if [[ $displaycover ]]; then # fetched coverart
 			covername=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
+			covername=${covername,,}
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
 			[[ $onlinefile ]] && coverart="${onlinefile:9}?v=$date"
 		fi
@@ -328,13 +329,14 @@ $radiosampling" > $dirshm/radio
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
 					if [[ -e $dirsystem/song_with_trailings ]]; then # Title (... or [... or - ... > Title
-						! grep -q "$Title" $dirsystem/song_with_trailings && Title=$( sed 's/ (.*$\| \[.*$\| - .*$//' <<< $Title )
+						! grep -q "$Title" $dirsystem/song_with_trailings && Title=$( sed 's/ *(.*$\| *\[.*$\| *- .*$//' <<< $Title )
 					fi
 				else
 					Artist=$station
 				fi
 				# fetched coverart
 				covername=$( tr -d ' "`?/#&'"'" <<< "$Artist${Title/ (*}" ) # remove '... (extra tag)'
+				covername=${covername,,}
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
 					coverart="${coverfile:9}?v=$date"

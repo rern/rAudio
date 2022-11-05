@@ -21,7 +21,7 @@ embeddedfile=$dirshm/embedded/$embeddedname
 [[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
 covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
-onlinefile=$( ls -1X $dirshm/online/$covername.{jpg,png} 2> /dev/null | head -1 )
+onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head -1 )
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 
 ##### cover file

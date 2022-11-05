@@ -4,14 +4,28 @@
 
 : >/dev/tcp/8.8.8.8/53 || exit # online check
 
-readarray -t args <<< $1
+if [[ $1 ]]; then
+	readarray -t args <<< $1
 
-artist=${args[0]}
-arg1=${args[1]}
-type=${args[2]}
-discid=${args[3]}
+	artist=${args[0]}
+	arg1=${args[1]}
+	type=${args[2]}
+	discid=${args[3]}
+else
+	grep -q 'Artist=""' $dirshm/status && echo '(no artist)' && exit
+	
+	. $dirshm/status
+	artist=$Artist
+	if [[ $webradio == true ]]; then
+		arg1=$Title
+		type=webradio
+	else
+		arg1=$Album
+	fi
+fi
 
 name=$( tr -d ' "`?/#&'"'" <<< $artist$arg1 )
+name=${name,,}
 [[ -e $dirshm/$name ]] && exit
 
 trap "rm -f $dirshm/$name" EXIT
@@ -20,10 +34,10 @@ touch $dirshm/$name
 
 ### 1 - lastfm ##################################################
 if [[ $type == webradio ]]; then
-	param="track=$arg1"
+	param="track=${arg1//&/ and }"
 	method='method=track.getInfo'
 else
-	param="album=$arg1"
+	param="album=${arg1//&/ and }"
 	method='method=album.getInfo'
 fi
 apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
