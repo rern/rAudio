@@ -147,16 +147,17 @@ elif [[ -e $dirmpd/updating ]]; then
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
-# if usb wlan or no hostapd and no connected wlan, disable wlan
+# if no wlan // usb wlan // no hostapd and no connected wlan, disable wlan
 if (( $( rfkill | grep -c wlan ) > 1 )) \
+	|| ! rfkill | grep -q wlan \
 	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
 	rmmod brcmfmac &> /dev/null
-	wlan=false
+	onboardwlan=false
 else
-	wlan=true
+	onboardwlan=true
 fi
-pushstream refresh '{"page":"system","wlan":'$wlan'}'
-pushstream refresh '{"page":"networks","activewl":'$wlan'}'
+pushstream refresh '{"page":"system","wlan":'$onboardwlan'}'
+pushstream refresh '{"page":"networks","activewl":'$onboardwlan'}'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
