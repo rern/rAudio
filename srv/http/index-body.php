@@ -363,12 +363,7 @@ foreach( $settinglist as $l ) {
 	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
-<div id="bio" class="hide">
-	<div class="container">
-		<img id="biobanner">
-		<div id="biocontent"></div>
-	</div>
-</div>
+<div id="bio" class="hide"></div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
 		<img src="">

@@ -492,16 +492,22 @@ function getBio( artist ) {
 			} );
 			similars = similars.slice( 0, -7 ) +'</span><br><br>';
 		}
-		var html = '<p class="artist"><i class="closebio fa fa-times close-root"></i><a>'+ artist +'</a></p>'
-				+ genre
-				+ similars
-				+'<p>'+ content +'</p>'
-				+'<div style="clear: both;"></div>'
-				+'<br><br>'
-				+'<p id="biosource">'
-					+'<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;'
-					+'<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a></p>';
-		$( '#biocontent' ).html( html ).promise().done( function() {
+		var biohtml = `
+<div class="container">
+<div id="biocontent">
+	<p class="artist"><a>${ artist }<i class="closebio fa fa-times close-root"></i></a></p>
+	${ genre }
+	${ similars }
+	<p>${ content }</p>
+	<div style="clear: both;"></div>
+	<br><br>
+	<p id="biosource">
+		<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
+		<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
+	</p>
+</div>
+</div>`;
+		$( '#bio' ).html( biohtml ).promise().done( function() {
 			$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 			$( '#bio' )
 				.removeClass( 'hide' )
@@ -513,11 +519,7 @@ function getBio( artist ) {
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( function( data ) {
 				if ( 'error message' in data ) return
 				
-				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) {
-					$( '#biobanner' )
-						.attr( 'src', data.musicbanner[ 0 ].url )
-						.removeClass( 'hide' );
-				}
+				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var imageshtml = '<div id="bioimg">';
 					data.artistthumb.forEach( function( el ) {
