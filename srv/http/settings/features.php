@@ -309,7 +309,7 @@ EOF
 		  'label'    => 'Stop Timer'
 		, 'id'       => 'stoptimer'
 		, 'icon'     => 'stopwatch'
-		, 'disabled' => 'Nothing is playing.'
+		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:
  • Mute
