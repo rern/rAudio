@@ -15,8 +15,8 @@ $( '.playback' ).click( function() {
 $( '#setting-btreceiver' ).click( function() {
 	bash( [ 'volumebtget' ], function( voldb ) {
 		var voldb = voldb.split( ' ' );
-		var vol = voldb[ 0 ];
-		var db = voldb[ 1 ];
+		var vol   = voldb[ 0 ];
+		var db    = voldb[ 1 ];
 		info( {
 			  icon          : 'volume'
 			, title         : 'Bluetooth Volume'
@@ -52,10 +52,10 @@ $( '#hwmixer' ).change( function() {
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
 	bash( [ 'volumeget', 'db' ], function( voldb ) {
-		var voldb = voldb.split( ' ' );
-		var vol = voldb[ 0 ];
-		var db = voldb[ 1 ];
-		var card = G.asoundcard;
+		var voldb   = voldb.split( ' ' );
+		var vol     = voldb[ 0 ];
+		var db      = voldb[ 1 ];
+		var card    = G.asoundcard;
 		var control = device.hwmixer;
 		if ( novolume ) {
 			info( {
@@ -123,8 +123,8 @@ $( '#mixertype' ).change( function() {
 } );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	var icon = 'volume';
-	var title = 'No Volume';
+	var icon    = 'volume';
+	var title   = 'No Volume';
 	if ( checked ) {
 		info( {
 			  icon    : icon
@@ -157,7 +157,7 @@ $( '#dop' ).click( function() {
 	bash( [ 'dop', checked, device.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
-	var icon = 'mpd';
+	var icon  = 'mpd';
 	var title = 'Cross-Fading';
 	info( {
 		  icon         : icon
@@ -178,7 +178,7 @@ $( '#setting-crossfade' ).click( function() {
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
-	var icon = 'mpd';
+	var icon  = 'mpd';
 	var title = 'ReplayGain';
 	info( {
 		  icon         : icon
@@ -207,7 +207,7 @@ $( '.filetype' ).click( function() {
 	}
 } );
 $( '#setting-buffer' ).click( function() {
-	var icon = 'mpd';
+	var icon  = 'mpd';
 	var title = 'Custom Audio Buffer';
 	info( {
 		  icon         : icon
@@ -230,7 +230,7 @@ $( '#setting-buffer' ).click( function() {
 	} );
 } );
 $( '#setting-outputbuffer' ).click( function() {
-	var icon = 'mpd';
+	var icon  = 'mpd';
 	var title = 'Custom Output Buffer';
 	info( {
 		  icon         : icon
@@ -273,11 +273,11 @@ audio_output {
 </table>`;
 $( '#setting-custom' ).click( function() {
 	bash( [ 'customget', device.aplayname ], function( val ) {
-		var val = val.split( '^^' );
+		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
-		var icon = 'mpd';
-		var title = "User's Configurations";
+		var icon      = 'mpd';
+		var title     = "User's Configurations";
 		info( {
 			  icon         : icon
 			, title        : title
@@ -314,7 +314,7 @@ $( '#setting-custom' ).click( function() {
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-var soxr = `\
+var soxr       = `\
 <table>
 <tr><td>Quality</td>
 	<td><select>
@@ -367,8 +367,8 @@ var soxrcustom = `
 </table>`;
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
-	var icon = 'mpd';
-	var title = 'SoX Resampler';
+	var icon   = 'mpd';
+	var title   = 'SoX Resampler';
 	info( {
 		  icon         : icon
 		, title        : title
@@ -413,9 +413,9 @@ function renderPage() {
 					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( G.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( G.asoundcard != -1 ) {
-		device = G.devices[ G.asoundcard ];
-		G.resampled = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
-		G.novolume = device.mixertype === 'none' && !G.resampled;
+		device          = G.devices[ G.asoundcard ];
+		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
+		G.novolume      = device.mixertype === 'none' && !G.resampled;
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
@@ -431,7 +431,7 @@ function renderPage() {
 			$( '#audiooutput' )
 				.html( htmldevices )
 				.val( G.asoundcard );
-			var htmlhwmixer = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			var htmlhwmixer   = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			if ( 'mixerdevices' in device ) {
 				device.mixerdevices.forEach( function( mixer ) {
 					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
@@ -442,7 +442,7 @@ function renderPage() {
 				.val( device.hwmixer );
 			var htmlmixertype = '<option value="none">None / 0dB</option>';
 			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-			htmlmixertype += '<option value="software">MPD software</option>';
+			htmlmixertype    += '<option value="software">MPD software</option>';
 			$( '#mixertype' )
 				.html( htmlmixertype )
 				.val( device.mixertype );
@@ -458,8 +458,8 @@ function renderPage() {
 		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
 		bash( cmd, function( voldb ) {
 			var voldb = voldb.split( ' ' );
-			var vol = voldb[ 0 ];
-			var db = voldb[ 1 ];
+			var vol   = voldb[ 0 ];
+			var db    = voldb[ 1 ];
 			$( '#infoRange .value' ).text( vol );
 			$( '#infoRange input' ).val( vol );
 			$( '.infofooter' ).text( db +' dB' );

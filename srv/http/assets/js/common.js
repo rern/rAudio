@@ -8,7 +8,7 @@ pushstream options
 
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // pushstream
-var pushstream = new PushStream( {
+var pushstream  = new PushStream( {
 	  modes                                 : 'websocket'
 	, timeout                               : 10000
 	, reconnectOnChannelUnavailableInterval : 3000
@@ -20,14 +20,14 @@ function pushstreamChannel( channels ) {
 	pushstream.connect();
 }
 // active / inactive window
-var active = 1;
-connect = () => {
+var active      = 1;
+connect         = () => {
 	if ( !active && !G.poweroff ) {
 		active = 1;
 		pushstream.connect();
 	}
 }
-disconnect = () => {
+disconnect      = () => {
 	if ( active ) {
 		active = 0;
 		pushstream.disconnect();
@@ -311,7 +311,7 @@ function info( json ) {
 		}
 	}
 	if ( O.cancelshow || O.cancellabel || O.cancelcolor ) {
-		var color = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
+		var color   = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 		htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 	}
 	if ( !O.okno ) {
@@ -339,12 +339,12 @@ function info( json ) {
 	} );
 	if ( O.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
-				+'<code id="infoFilename" class="hide"></code>'
-				+'<input type="file" class="hide" id="infoFileBox"'
-				+ ( O.filetype ? ' accept="'+ O.filetype +'">' : '>' )
-				+'</div>'
-				+'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-				+ ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
+					  +'<code id="infoFilename" class="hide"></code>'
+					  +'<input type="file" class="hide" id="infoFileBox"'
+					  + ( O.filetype ? ' accept="'+ O.filetype +'">' : '>' )
+					  +'</div>'
+					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
+					  + ( O.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( O.fileoklabel )
@@ -355,8 +355,8 @@ function info( json ) {
 		$( '#infoFileBox' ).change( function() {
 			if ( !this.files.length ) return
 			
-			O.infofile = this.files[ 0 ];
-			var filename = O.infofile.name;
+			O.infofile    = this.files[ 0 ];
+			var filename  = O.infofile.name;
 			var typeimage = O.infofile.type.slice( 0, 5 ) === 'image';
 			O.filechecked = 1;
 			if ( O.filetype ) {
@@ -414,12 +414,12 @@ function info( json ) {
 	} else {
 		var htmls = {}
 		if ( O.message ) {
-			htmls.message = '<div class="infomessage"';
+			htmls.message  = '<div class="infomessage"';
 			if ( O.messagealign ) htmls.message += ' style="text-align:'+ O.messagealign +'"';
 			htmls.message += '>'+ O.message +'</div>';
 		}
 		if ( O.footer ) {
-			htmls.footer = '<div class="infofooter"';
+			htmls.footer  = '<div class="infofooter"';
 			if ( O.footeralign ) htmls.footer += ' style="text-align:'+ O.footeralign +'"';
 			htmls.footer += '>'+ O.footer +'</div>';
 		}
@@ -444,7 +444,7 @@ function info( json ) {
 		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
 		if ( O.radio ) { // single set only
 			var line;
-			var i = 0;
+			var i       = 0;
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
 				line = '<td>'+ ( lbl ? '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>' : '' ) +'</td>';
@@ -464,7 +464,7 @@ function info( json ) {
 		}
 		if ( O.checkbox ) {
 			var line;
-			var i = 0;
+			var i          = 0;
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
@@ -494,20 +494,20 @@ function info( json ) {
 		}
 		if ( O.rangevalue ) {
 			htmls.range = '<div id="infoRange">'
-					+'<div class="value">'+ O.rangevalue +'</div>'
-					+'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
+						 +'<div class="value">'+ O.rangevalue +'</div>'
+						 +'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +O.rangevalue +'"><a class="max">100</a></div>';
 		}
 		var htmlcontent = '';
-		htmlcontent += htmls.tab || '';
-		htmlcontent += htmls.message || '';
+		htmlcontent    += htmls.tab || '';
+		htmlcontent    += htmls.message || '';
 		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
-		var htmlinputs = '';
+		var htmlinputs  = '';
 		O.order.forEach( function( type ) {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
-		htmlcontent += htmls.range || '';
-		htmlcontent += htmls.footer || '';
+		htmlcontent   += htmls.range || '';
+		htmlcontent   += htmls.footer || '';
 	}
 	$( 'html, body' ).scrollTop( 0 );
 	if ( !htmlcontent ) {
@@ -522,9 +522,9 @@ function info( json ) {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields - omit .selectric-input for select
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
-		var $input = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
+		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
-		O.inputs = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
+		O.inputs    = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
 			name = this.name;
 			if ( !name ) {
 				return true
@@ -559,7 +559,7 @@ function info( json ) {
 		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', O.boxW );
 		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
-		var tdL = $( '#infoContent tr:eq( 0 ) td' ).length;
+		var tdL      = $( '#infoContent tr:eq( 0 ) td' ).length;
 		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox
 			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
 		} else { // label - text input
@@ -583,7 +583,7 @@ function info( json ) {
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 		var $this = $( this );
-		var $pwd = $this.parent().prev().find( 'input' );
+		var $pwd  = $this.parent().prev().find( 'input' );
 		if ( $pwd.prop( 'type' ) === 'text' ) {
 			$this.removeClass( 'bl' );
 			$pwd.prop( 'type', 'password' );
@@ -621,10 +621,10 @@ function checkLength() {
 	O.short = false;
 	$.each( O.checklength, function( k, v ) {
 		if ( typeof v !== 'object' ) {
-			var L = v
+			var L    = v
 			var cond = 'equal';
 		} else {
-			var L = v[ 0 ];
+			var L    = v[ 0 ];
 			var cond = v[ 1 ];
 		}
 		var diff = O.inputs.eq( k ).val().trim().length - L;
@@ -641,9 +641,9 @@ function infoCheckSet() {
 			if ( O.checklength ) setTimeout( checkLength, 25 );
 			if ( O.checkchanged ) {
 				var prevval = O.values.join( '' );
-				var values = infoVal();
-				var val = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
-				O.nochange = prevval === val;
+				var values  = infoVal();
+				var val     = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
+				O.nochange  = prevval === val;
 			}
 			setTimeout( function() { // ios: force after checkLength
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
@@ -663,8 +663,8 @@ function infoSetValues() {
 	var $this, type, val;
 	O.inputs.each( function( i, e ) {
 		$this = $( e );
-		type = $this.prop( 'type' );
-		val = O.values[ i ];
+		type  = $this.prop( 'type' );
+		val   = O.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
 			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
 		} else if ( type === 'checkbox' ) {
@@ -677,7 +677,7 @@ function infoSetValues() {
 function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
-	var i = 0;
+	var i      = 0;
 	O.textarea = 0;
 	O.inputs.each( function() {
 		$this = $( this );
@@ -734,7 +734,7 @@ function setFileImage() {
 	G.timeoutfile = setTimeout( function() {
 		banner( 'refresh blink', 'Change Image', 'Load ...', -1 );
 	}, 1000 );
-	G.rotate = 0;
+	G.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( O.infofile.name.slice( -3 ) !== 'gif' ) {
@@ -754,11 +754,11 @@ function setFileImage() {
 					setFileImageReader();
 				} else {
 					O.infofilegif = animatedtmpfile;
-					var img = new Image();
-					img.src = URL.createObjectURL( O.infofile );
+					var img    = new Image();
+					img.src    = URL.createObjectURL( O.infofile );
 					img.onload = function() {
-						var imgW = img.width;
-						var imgH = img.height;
+						var imgW   = img.width;
+						var imgH   = img.height;
 						var resize = setFileImageResize( 'gif', imgW, imgH );
 						setFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
 						clearTimeout( G.timeoutfile );
@@ -770,23 +770,23 @@ function setFileImage() {
 	}
 }
 function setFileImageReader() {
-	var maxsize = ( G.library && !G.librarylist ) ? 200 : 1000;
-	var reader = new FileReader();
+	var maxsize   = ( G.library && !G.librarylist ) ? 200 : 1000;
+	var reader    = new FileReader();
 	reader.onload = function( e ) {
-		var img = new Image();
-		img.src = e.target.result;
+		var img    = new Image();
+		img.src    = e.target.result;
 		img.onload = function() {
-			var imgW = img.width;
-			var imgH = img.height;
-			var filecanvas = document.createElement( 'canvas' );
-			var ctx = filecanvas.getContext( '2d' );
-			filecanvas.width = imgW;
+			var imgW          = img.width;
+			var imgH          = img.height;
+			var filecanvas    = document.createElement( 'canvas' );
+			var ctx           = filecanvas.getContext( '2d' );
+			filecanvas.width  = imgW;
 			filecanvas.height = imgH;
 			ctx.drawImage( img, 0, 0 );
 			var resize = setFileImageResize( 'jpg', imgW, imgH );
 			if ( resize ) {
-				var canvas = document.createElement( 'canvas' );
-				canvas.width = resize.w;
+				var canvas    = document.createElement( 'canvas' );
+				canvas.width  = resize.w;
 				canvas.height = resize.h;
 				pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
@@ -804,26 +804,26 @@ function setFileImageReader() {
 		.on( 'click', '.infoimgnew', function() {
 		if ( !$( '.infomessage .rotate' ).length ) return
 		
-		G.rotate += 90;
+		G.rotate     += 90;
 		if ( G.rotate === 360 ) G.rotate = 0;
-		var canvas = document.createElement( 'canvas' );
-		var ctx = canvas.getContext( '2d' );
-		var image = $( this )[ 0 ];
-		var img = new Image();
-		img.src = image.src;
-		img.onload = function() {
+		var canvas    = document.createElement( 'canvas' );
+		var ctx       = canvas.getContext( '2d' );
+		var image     = $( this )[ 0 ];
+		var img       = new Image();
+		img.src       = image.src;
+		img.onload    = function() {
 			ctx.drawImage( image, 0, 0 );
 		}
-		var w = img.width;
-		var h = img.height;
-		var cw = Math.round( w / 2 );
-		var ch = Math.round( h / 2 );
-		canvas.width = h;
+		var w         = img.width;
+		var h         = img.height;
+		var cw        = Math.round( w / 2 );
+		var ch        = Math.round( h / 2 );
+		canvas.width  = h;
 		canvas.height = w;
 		ctx.translate( ch, cw );
 		ctx.rotate( Math.PI / 2 );
 		ctx.drawImage( img, -cw, -ch );
-		image.src = canvas.toDataURL( 'image/jpeg' );
+		image.src     = canvas.toDataURL( 'image/jpeg' );
 	} );
 }
 function setFileImageRender( src, original, resize ) {

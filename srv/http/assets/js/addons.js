@@ -5,9 +5,9 @@ function branchtest( alias, type, install ) {
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : function() {
-			opt = [ alias, type, infoVal() ];
+			opt    = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;
-			j = 0;
+			j      = 0;
 			if ( install && option ) {
 				getoptions();
 			} else {
@@ -17,10 +17,10 @@ function branchtest( alias, type, install ) {
 	} );
 }
 function getoptions() {
-	okey = Object.keys( option );
+	okey    = Object.keys( option );
 	olength = okey.length;
-	oj = okey[ j ];
-	oj0 = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
+	oj      = okey[ j ];
+	oj0     = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
 	switch ( oj0 ) {
 		case 'wait': // only 1 'Ok' = continue
 			info( {
@@ -158,11 +158,11 @@ function getoptions() {
 	}
 }
 function postcmd() { // post submit with temporary form
-	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
+	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
 	opt.forEach( function( o ) {
 		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
 	} );
-	form += '</form>';
+	form     += '</form>';
 	$( 'body' ).append( form );
 	$( '#formtemp' ).submit();
 	banner( 'jigsaw blink', 'Addons', 'Download files ...', -1 );
@@ -193,11 +193,11 @@ $( '.boxed-group .infobtn' ).click( function () {
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
-	alias = $this.parent().attr( 'alias' );
+	alias   = $this.parent().attr( 'alias' );
 	version = $this.parent().attr( 'version' );
-	title = addons[ alias ].title.replace( / *\**$/, '' );
-	type = $this.text();
-	opt = [ alias, type, version ];
+	title   = addons[ alias ].title.replace( / *\**$/, '' );
+	type    = $this.text();
+	opt     = [ alias, type, version ];
 	if ( $this.attr( 'warning' ) ) {
 		info( {
 			  icon    : 'jigsaw'
@@ -207,8 +207,8 @@ $( '.boxed-group .infobtn' ).click( function () {
 		return
 	}
 	
-	option = addons[ alias ].option;
-	j = 0;
+	option  = addons[ alias ].option;
+	j       = 0;
 	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 		getoptions();
 	} else {
@@ -223,10 +223,10 @@ $( '.boxed-group .infobtn' ).click( function () {
 	}
 } ).press( function( e ) {
 	var $this = $( e.currentTarget );
-	alias = $this.parent().attr( 'alias' );
-	title = addons[ alias ].title.replace( / *\**$/, '' );
-	type = $this.text();
-	rollback = addons[ alias ].rollback || '';
+	alias     = $this.parent().attr( 'alias' );
+	title     = addons[ alias ].title.replace( / *\**$/, '' );
+	type      = $this.text();
+	rollback  = addons[ alias ].rollback || '';
 	if ( rollback ) {
 		info( {
 			  icon      : 'jigsaw'

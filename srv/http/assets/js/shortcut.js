@@ -124,8 +124,8 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 			}
 		}
 		var $menuactive = $contextmenu.find( 'a.active' );
-		var $menufirst = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
-		var $menulast = $contextmenu.find( 'a:not( .hide )' ).last();
+		var $menufirst  = $contextmenu.find( 'a:not( .hide )' ).eq( 0 );
+		var $menulast   = $contextmenu.find( 'a:not( .hide )' ).last();
 		switch ( key ) {
 			case 'ArrowLeft':
 				if ( $( '.submenu.active' ).length ) {
@@ -245,10 +245,10 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 					var $next = arrowR ? $active.next() : $active.prev();
 					$active.removeClass( 'active' );
 					$next.addClass( 'active' );
-					var rect = $next[ 0 ].getBoundingClientRect();
-					var wH = $( window ).height();
-					var eH = $next.height();
-					var top = $next.offset().top;
+					var rect  = $next[ 0 ].getBoundingClientRect();
+					var wH    = $( window ).height();
+					var eH    = $next.height();
+					var top   = $next.offset().top;
 					if ( rect.bottom > 0 && rect.bottom < ( wH - eH ) ) {
 						var scroll = top - ( G.bars ? 80 : 40 );
 					} else if ( rect.top > 0 && rect.top < ( wH - eH ) ) {
@@ -334,7 +334,7 @@ function scrollUpDown( e, $list, key ) {
 	if ( $( '.contextmenu' ).not( '.hide' ).length ) return
 	
 	e.preventDefault();
-	var $li = $list.find( 'li' );
+	var $li       = $list.find( 'li' );
 	var $liactive = $list.find( 'li.active' );
 	if ( !$liactive.length ) {
 		$li.first().addClass( 'active' );
@@ -346,18 +346,18 @@ function scrollUpDown( e, $list, key ) {
 	
 	var classactive = 'active';
 	if ( $list.prop( 'id' ) === 'pl-list' ) {
-		$liactive = $list.find( 'li.updn' );
+		$liactive   = $list.find( 'li.updn' );
 		classactive = 'updn';
 	}
-	var $linext = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
-	var barH = G.display.bars ? 0 : 40;
+	var $linext     = key === 'ArrowUp' ? $liactive.prev( 'li' ) : $liactive.next( 'li' );
+	var barH        = G.display.bars ? 0 : 40;
 	if ( G.library && $( '.licover' ).length && !G.display.hidecover && G.display.fixedcover ) barH += 230;
 	if ( !$linext.length ) $linext = key === 'ArrowUp' ? $li.last() : $li.first();
 	$liactive.removeClass( classactive );
 	$linext.addClass( classactive );
-	var litop = $linext[ 0 ].getBoundingClientRect().top;
-	var libottom = $linext[ 0 ].getBoundingClientRect().bottom;
-	var licount = Math.round( ( G.wH - 120 - ( barH * 2 ) ) / 49 );
+	var litop       = $linext[ 0 ].getBoundingClientRect().top;
+	var libottom    = $linext[ 0 ].getBoundingClientRect().bottom;
+	var licount     = Math.round( ( G.wH - 120 - ( barH * 2 ) ) / 49 );
 	if ( $linext.is( ':first-child' ) ) {
 		$( 'html, body' ).scrollTop( 0 );
 	} else if ( $linext.is( ':last-of-type' ) && libottom > G.wH - 40 - barH ) {

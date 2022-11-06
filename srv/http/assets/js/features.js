@@ -4,8 +4,8 @@ $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
 	
-	var icon = 'spotify';
-	var title = 'Spotify Client';
+	var icon   = 'spotify';
+	var title  = 'Spotify Client';
 	if ( !G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
 		notify( icon, title, 'Enable ...' );
@@ -50,10 +50,10 @@ $( '#setting-spotifyd' ).click( function() {
 			}
 			, ok         : function() {
 				var values = infoVal();
-				var id = values[ 0 ];
+				var id     = values[ 0 ];
 				var secret = values[ 1 ];
 				bash( 'echo "base64client='+ btoa( id +':'+ secret ) +'" > /srv/http/data/system/spotify' );
-				var data = {
+				var data   = {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
@@ -101,7 +101,7 @@ $( '#setting-snapclient' ).click( function() {
 	} );
 } );
 $( '#setting-upmpdcli' ).click( function() {
-	var icon = 'upnp';
+	var icon  = 'upnp';
 	var title = 'UPnP';
 	info( {
 		  icon         : icon
@@ -119,7 +119,7 @@ $( '#setting-upmpdcli' ).click( function() {
 	} );
 } );
 $( '#setting-camilladsp' ).click( function() {
-	var icon = 'camilladsp';
+	var icon  = 'camilladsp';
 	var title = 'CamillaGUI';
 	info( {
 		  icon         : icon
@@ -140,7 +140,7 @@ $( '#setting-camilladsp' ).click( function() {
 	} );
 } );
 $( '#setting-hostapd' ).click( function() {
-	var icon = 'accesspoint';
+	var icon  = 'accesspoint';
 	var title = 'Access Point';
 	info( {
 		  icon         : icon
@@ -155,12 +155,12 @@ $( '#setting-hostapd' ).click( function() {
 			$( '#hostapd' ).prop( 'checked', G.hostapd );
 		}
 		, ok           : function() {
-			var values = infoVal();
-			var ip = values[ 0 ];
-			var pwd = values[ 1 ];
-			var ips = ip.split( '.' );
-			var ip3 = ips.pop();
-			var ip012 = ips.join( '.' );
+			var values  = infoVal();
+			var ip      = values[ 0 ];
+			var pwd     = values[ 1 ];
+			var ips     = ip.split( '.' );
+			var ip3     = ips.pop();
+			var ip012   = ips.join( '.' );
 			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
 			bash( [ 'hostapd', true, iprange, ip, pwd ] );
 			notify( icon, title, G.hostapd ? 'Change ...' : 'Enable ...' );
@@ -168,8 +168,8 @@ $( '#setting-hostapd' ).click( function() {
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
-	var val = G.autoplayconf[ 0 ] || G.autoplayconf[ 1 ] || G.autoplayconf[ 2 ];
-	var icon = 'play';
+	var val   = G.autoplayconf[ 0 ] || G.autoplayconf[ 1 ] || G.autoplayconf[ 2 ];
+	var icon  = 'play';
 	var title = 'AutoPlay';
 	info( {
 		  icon         : icon
@@ -187,9 +187,9 @@ $( '#setting-autoplay' ).click( function() {
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
-	var v = G.localbrowserconf;
-	var brightness =  v.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
-	var content = `
+	var v          = G.localbrowserconf;
+	var brightness = v.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var content    = `
 <table>
 <tr><td style="width:130px">Rotation</td>
 	<td><select>
@@ -224,7 +224,7 @@ ${ brightness }
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
 </div>`;
-	var icon = 'chromium';
+	var icon  = 'chromium';
 	var title = 'Browser Display';
 	info( {
 		  icon         : icon
@@ -237,7 +237,7 @@ ${ brightness }
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', !G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
-				var up = $( this ).hasClass( 'up' );
+				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( !up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
 				$( '#infoOk' ).toggleClass( 'disabled', O.values.join( '' ) === infoVal().join( '' ) );
@@ -275,7 +275,7 @@ ${ brightness }
 	} );
 } );
 $( '#setting-smb' ).click( function() {
-	var icon = 'networks';
+	var icon  = 'networks';
 	var title = 'Samba File Sharing';
 	info( {
 		  icon         : icon
@@ -299,7 +299,7 @@ $( '#setting-multiraudio' ).click( function() {
 	} else {
 		var ipsub = location.host;
 	}
-	var trhtml = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
+	var trhtml  = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
 			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
@@ -310,7 +310,7 @@ $( '#setting-multiraudio' ).click( function() {
 	} else {
 		G.multiraudioconf = [ "rAudio", location.host ];
 	}
-	var icon = 'raudiobox';
+	var icon  = 'raudiobox';
 	var title = 'Multiple rAudios';
 	info( {
 		  icon         : icon
@@ -335,7 +335,7 @@ $( '#setting-multiraudio' ).click( function() {
 			} );
 			$( '#infoContent' ).on( 'click', '.ipremove', function() {
 				$( this ).parents( 'tr' ).remove();
-				O.inputs = $( '#infoContent input' );
+				O.inputs   = $( '#infoContent input' );
 				var values = infoVal();
 				if ( typeof values === 'string' ) values = [ values ];
 				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multiraudioconf.join( ',' ) );
@@ -356,7 +356,7 @@ $( '#login' ).click( function() {
 	if ( $( this ).prop( 'checked' ) ) {
 		$( '#setting-login' ).click();
 	} else {
-		var icon = 'lock';
+		var icon  = 'lock';
 		var title = 'Password Login';
 		info( {
 			  icon          : icon
@@ -379,7 +379,7 @@ $( '#login' ).click( function() {
 	}
 } );
 $( '#setting-login' ).click( function() {
-	var icon = 'lock';
+	var icon  = 'lock';
 	var title = 'Password Login';
 	info( {
 		  icon          : icon
@@ -416,7 +416,7 @@ $( '#setting-scrobble' ).click( function() {
 <tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
 <tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
 </table>`;
-	var icon = 'lastfm';
+	var icon  = 'lastfm';
 	var title = 'Scrobbler';
 	info( {
 		  icon          : icon
@@ -462,7 +462,7 @@ $( '#setting-scrobble' ).click( function() {
 } );
 $( '#nfsserver' ).click( function() {
 	var $this = $( this );
-	var icon = 'networks';
+	var icon  = 'networks';
 	var title = 'Server rAudio';
 	if ( $this.hasClass( 'disabled' ) ) {
 		info( {
@@ -493,7 +493,7 @@ $( '#nfsserver' ).click( function() {
 	} );
 } );
 $( '#setting-stoptimer' ).click( function() {
-	var icon = 'stopwatch';
+	var icon  = 'stopwatch';
 	var title = 'Stop Timer';
 	info( {
 		  icon         : icon
@@ -558,8 +558,8 @@ function renderPage() {
 	}
 	
 	// spotify code
-	var url = new URL( window.location.href );
-	var code = url.searchParams.get( 'code' );
+	var url   = new URL( window.location.href );
+	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( code ) {
 		bash( [ 'spotifytoken', code ], function() {

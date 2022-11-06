@@ -4,25 +4,25 @@ $( '.gpio-no' ).addClass( 'hide' );
 
 renderPage = function( changed ) {
 	if ( typeof D === 'undefined' ) {
-		D = { val : {}, key : {} };
-		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+		D           = { val : {}, key : {} };
+		D.keys      = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
 		D.keys.forEach( function( k ) {
 			D.val[ k ] = G[ k ];
 		} );
 		D.val.timer = G.timer;
-		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
+		D.values    = [].concat.apply( [], Object.values( D.val ) ).toString();
 	}
 	$( '#save' ).toggleClass( 'disabled', G.enabled && !changed )
 	$( '#undo' ).toggleClass( 'disabled', !changed )
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ D.val.pin[ i ] +'">'+ D.val.name[ i ] || '(no name)' +'</option>';
-	var htmlon = '';
-	var htmloff = '';
-	var optsec = '<option value="0">0</option>';
+	var htmlon     = '';
+	var htmloff    = '';
+	var optsec     = '<option value="0">0</option>';
 	for ( i = 1; i < 11; i++ ) optsec += '<option value="'+ i +'">'+ i +'</option>';
-	htmlsec = '</select><span class="sec">sec.</span>';
+	htmlsec        = '</select><span class="sec">sec.</span>';
 	for ( i = 0; i < 4; i++ ) {
-		htmlon +=  '<select id="on'+ i +'" class="on">'+ optnamepin +'</select>';
+		htmlon  +=  '<select id="on'+ i +'" class="on">'+ optnamepin +'</select>';
 		htmloff += '<select id="off'+ i +'" class="off">'+ optnamepin +'</select>';
 		if ( i < 3 ) {
 			htmlon += '<select id="ond'+ i +'" class="on delay">'+ optsec + htmlsec;
@@ -70,7 +70,7 @@ function renderUpdate() {
 		D.val.name.push( $( '#name'+ i ).val() );
 	}
 	[ 'on', 'off' ].forEach( function( k ) {
-		var v0 = [];
+		var v0     = [];
 		for ( i = 0; i < 4; i ++ ) {
 			var v = +$( '#'+ k + i ).val();
 			v ? D.val[ k ].push( v ) : v0.push( 0 );
@@ -82,7 +82,7 @@ function renderUpdate() {
 		D.val.offd.push( D.val.off[ i + 1 ] ? +$( '#offd'+ i ).val() : 0 );
 	}
 	D.val.timer = +$( '#timer' ).val();
-	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
+	var values  = [].concat.apply( [], Object.values( D.val ) ).toString();
 	renderPage( values !== D.values );
 }
 // disable default > re-enable
@@ -99,9 +99,9 @@ $( '#undo' ).click( function() {
 	renderPage( false );
 } );
 $( '#save' ).off( 'click' ).click( function() {
-	var names = {}
+	var names    = {}
 	for ( i = 0; i < 4; i++ ) names[ D.val.pin[ i ] ] = D.val.name[ i ];
-	var onorder = [];
+	var onorder  = [];
 	var offorder = [];
 	for ( i = 0; i < 4; i++ ) {
 		var on = D.val.on[ i ];

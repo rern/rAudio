@@ -186,8 +186,8 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Name | Title )
-			printf -v $key '%s' "$( sed 's/"/\\"/g; s/\s*$//' <<< $val )"
-			;;                   # string to escape " for json and trim trailing spaces (some webradios)
+			printf -v $key '%s' "$( sed 's/"/\\"/g; s/^\s*\|\s*$//g' <<< $val )"
+			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )

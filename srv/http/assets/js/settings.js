@@ -20,11 +20,11 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
-var dirbash = '/srv/http/bash/settings/';
-var playersh = dirbash +'player.sh ';
+var dirbash    = '/srv/http/bash/settings/';
+var playersh   = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
-var systemsh = dirbash +'system.sh ';
-var cmd = {
+var systemsh   = dirbash +'system.sh ';
+var cmd        = {
 	  albumignore  : playersh   +'albumignore'
 	, asound       : playersh   +'devices'
 	, avahi        : networkssh +'avahi'
@@ -43,7 +43,7 @@ var cmd = {
 	, timedatectl  : systemsh   +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services = [
+var services   = [
 	  'camilladsp'
 	, 'rtsp-simple-server'
 	, 'hostapd'
@@ -144,9 +144,9 @@ function list2JSON( list ) {
 				} );
 			} );
 		} else {
-			var msg = e.message.split( ' ' );
-			var pos = msg.pop();
-			var error = iconwarning +'<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
+			var msg   = e.message.split( ' ' );
+			var pos   = msg.pop();
+			var error =  iconwarning +'<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
 						+'<a class="infobtn infobtn-primary copy">Copy</a>'
 						+'<hr>'
 						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
@@ -282,10 +282,10 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
+	var icon     = data.icon;
+	var title    = data.title;
+	var message  = data.message;
+	var delay    = data.delay;
 	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
@@ -359,14 +359,14 @@ function psWifi( data ) {
 //---------------------------------------------------------------------------------------
 G = {}
 var debounce;
-var dirsystem = '/srv/http/data/system';
+var dirsystem    = '/srv/http/data/system';
 var intervalcputime;
-var localhost = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
-var orange = '#de810e';
-var page = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var red = '#bb2828';
+var localhost    = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
+var orange       = '#de810e';
+var page         = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
+var red          = '#bb2828';
 var timer;
-var pagenext = {
+var pagenext     = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
 	, networks : [ 'player', 'system' ]
@@ -375,7 +375,7 @@ var pagenext = {
 var $focus;
 var selectchange = 0;
 
-document.title = page;
+document.title   = page;
 
 if ( localhost ) {
 	$( 'a' ).removeAttr( 'href' );
@@ -415,8 +415,8 @@ $( document ).keyup( function( e ) {
 		case 'ArrowLeft':
 		case 'ArrowRight':
 			var $current = $( '#bar-bottom .bgr' ).length ? $( '#bar-bottom .bgr' ) : $( '#bar-bottom .active' );
-			var id = $current[ 0 ].id;
-			var $next = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
+			var id       = $current[ 0 ].id;
+			var $next    = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
 			$( '#bar-bottom div' ).removeClass( 'bgr' );
 			if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
 			break;
@@ -505,11 +505,11 @@ $( '.help' ).click( function() {
 	$( '.help-head' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 $( '.switch:not( .custom )' ).click( function() {
-	var id = this.id;
-	var $this = $( this );
+	var id      = this.id;
+	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
-	var label = $this.data( 'label' );
-	var icon = $this.data( 'icon' );
+	var label   = $this.data( 'label' );
+	var icon    = $this.data( 'icon' );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', !checked );
 		info( {

@@ -1,10 +1,10 @@
-var freq = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var timeout;
-var band = [];
-var opthz = '';
+var band    = [];
+var opthz   = '';
 freq.forEach( function( hz, i ) {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
-	opthz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
+	opthz  += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
 var content = `
 <div id="eq">
@@ -26,8 +26,8 @@ function equalizer() {
 	}, 'json' );
 }
 function infoEqualizer( update ) {
-	var values = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
-	var optpreset = '';
+	var values     = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
+	var optpreset  = '';
 	G.eq.presets.forEach( function( name ) {
 		optpreset += '<option value="'+ name +'">'+ name +'</option>';
 	} );
@@ -47,21 +47,21 @@ function infoEqualizer( update ) {
 				} );
 			} else {
 				var $this, ystart, val, prevval;
-				var yH = $( '#infoRange input' ).width() - 40;
+				var yH   = $( '#infoRange input' ).width() - 40;
 				var step = yH / 40;
 				$( '#infoRange input' ).on( 'touchstart', function( e ) {
-					$this = $( this );
+					$this  = $( this );
 					ystart = e.changedTouches[ 0 ].pageY;
-					val = +$this.val();
+					val    = +$this.val();
 				} ).on( 'touchmove', function( e ) {
 					var pageY = e.changedTouches[ 0 ].pageY;
-					var diff = ystart - pageY;
+					var diff  = ystart - pageY;
 					if ( Math.abs( diff ) < step ) return
 					
-					var v = val + Math.round( diff / step );
+					var v     = val + Math.round( diff / step );
 					if ( v === prevval || v > 80 || v < 40 ) return
 					
-					prevval = v;
+					prevval   = v;
 					$this.val( v );
 					eqValueSet( band[ $this.index() ], v )
 				} );
@@ -70,8 +70,8 @@ function infoEqualizer( update ) {
 				bash( [ 'equalizer', 'preset', $( this ).val() ] );
 			} );
 			$( '#eqname' ).on( 'keyup paste cut', function( e ) {
-				var val = $( this ).val().trim();
-				var blank = val === '';
+				var val    = $( this ).val().trim();
+				var blank  = val === '';
 				var exists = G.eq.presets.includes( val );
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 					var changed = !blank && !exists && val !== G.eq.current;
@@ -122,13 +122,13 @@ function infoEqualizer( update ) {
 	} );
 }
 function eqButtonSet() {
-	var flat = G.eq.current === 'Flat';
+	var flat    = G.eq.current === 'Flat';
 	var unnamed = G.eq.current === '(unnamed)';
 	if ( flat || unnamed ) {
 		var changed = false;
 	} else {
-		var val = G.eq.nameval[ G.eq.current ].split( ' ' )
-		var vnew = infoVal().slice( 2 );
+		var val     = G.eq.nameval[ G.eq.current ].split( ' ' )
+		var vnew    = infoVal().slice( 2 );
 		var changed = vnew.some( function( v, i ) {
 			return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
 		} );

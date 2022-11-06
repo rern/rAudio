@@ -149,9 +149,9 @@ function psCoverart( data ) {
 	}
 	if ( G.library && data.url.slice( 0, 13 ) === '/data/audiocd' ) return
 	
-	G.libraryhtml = '';
-	G.librarylisthtml = '';
-	G.playlisthtml = '';
+	G.libraryhtml      = '';
+	G.librarylisthtml  = '';
+	G.playlisthtml     = '';
 	G.playlistlisthtml = '';
 	refreshPage();
 	bannerHide();
@@ -253,7 +253,7 @@ function psMpdUpdate( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		G.status.counts = data;
+		G.status.counts      = data;
 		G.status.updating_db = false;
 		G.status.updatingdab = false;
 		renderLibraryCounts();
@@ -360,7 +360,7 @@ function psRelays( response ) {
 	if ( !( 'state' in response ) ) return
 		
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
-	var state = response.state;
+	var state     = response.state;
 	if ( state === 'RESET' ) {
 		$( '#infoX' ).click();
 	} else if ( state === 'IDLE' ) {
@@ -368,7 +368,7 @@ function psRelays( response ) {
 			  icon        : 'relays'
 			, title       : 'Relays Countdown'
 			, message     : stopwatch
-							+'<div class="msg-r wh">60</div>'
+						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
 			, button      : function() {
@@ -431,7 +431,7 @@ function psRestore( data ) {
 	}
 }
 function psSavedPlaylists( data ) {
-	var count = data.count;
+	var count                 = data.count;
 	G.status.counts.playlists = count;
 	if ( G.savedlist ) {
 		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
@@ -454,10 +454,10 @@ function psVolume( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
 		if ( data.type === 'mute' ) {
-			G.status.volume = 0;
+			G.status.volume     = 0;
 			G.status.volumemute = data.val;
 		} else {
-			G.status.volume = data.val;
+			G.status.volume     = data.val;
 			G.status.volumemute = 0;
 		}
 		setVolume();

@@ -1,8 +1,8 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var current = 'alpha';
-var capslock = false;
-var numslock = false;
+var current           = 'alpha';
+var capslock          = false;
+var numslock          = false;
 /*var normal = [
 	  '1 2 3 4 5 6 7 8 9 0 - ='
 	, 'q w e r t y u i o p [ ]'
@@ -17,31 +17,31 @@ var shift = [
 	, 'Z X C V B N M < > ? {enter}'
 	, '{shift} {lock} {space} {bksp}'
 ];*/
-var buttontheme = [
+var buttontheme       = [
 	  { class: 'hgrow1',  buttons: '1 !' }
 	, { class: 'hgrow2',  buttons: 'q Q' }
 	, { class: 'hgrow3',  buttons: 'a A' }
 	, { class: 'hgrow4',  buttons: 'z Z' }
 ]
-var narrow = [
+var narrow            = [
 	  'q w e r t y u i o p'
 	, "a s d f g h j k l '"
 	, 'z x c v b n m . {enter}'
 	, '{shift} {lock} {num} {space} {bksp}'
 ];
-var narrowshift = [
+var narrowshift       = [
 	  'Q W E R T Y U I O P'
 	, 'A S D F G H J K L "'
 	, 'Z X C V B N M , {enter}'
 	, '{shift} {lock} {num} {space} {bksp}'
 ];
-var narrownum = [
+var narrownum         = [
 	  '1 2 3 4 5 6 7 8 9 0'
 	, '! @ # $ % ? & * ( )'
 	, '+ - = / ; : . , {enter}'
 	, '{numshift} {numlock} {alpha} {space} {bksp}'
 ];
-var narrownumshift = [
+var narrownumshift    = [
 	  '1 2 3 4 5 6 7 8 9 0'
 	, '` ~ _ ^ < > [ ] { }'
 	, '+ - = / × ÷ | \\ {enter}'
@@ -53,8 +53,8 @@ var narrowbuttontheme = [
 	, { class: 'hgrow4',  buttons: 'z Z +' }
 ];
 
-var Keyboard = window.SimpleKeyboard.default;
-var keyboard = new Keyboard( {
+var Keyboard          = window.SimpleKeyboard.default;
+var keyboard          = new Keyboard( {
 	  onChange   : value  => onChange( value )
 	, onKeyPress : key => onKeyPress( key )
 	, layout: {
@@ -77,8 +77,9 @@ var keyboard = new Keyboard( {
 	}
 	, buttonTheme: narrowbuttontheme
 } );
-var $kb = $( '#keyboard' );
-var inputs = 'input[type=text], input[type=textarea], input[type=passowrd]';
+var $kb               = $( '#keyboard' );
+var inputs            = 'input[type=text], input[type=textarea], input[type=passowrd]';
+
 $( 'body' ).on( 'click', inputs, function() {
 	$kb.removeClass( 'hide' );
 	$( '#infoContent input' ).removeClass( 'active' );
@@ -105,19 +106,19 @@ function onChange( value ) {
 	}
 }
 function onKeyPress( key ) { // input value not yet changed until onChange
-	var id = $( 'input.active' ).prop( 'id' );
+	var id     = $( 'input.active' ).prop( 'id' );
 	var layout = keyboard.options.layoutName;
 	switch ( key ) {
 		case '{shift}':
-			current = layout !== 'shift' ? 'shift' : 'alpha';
+			current  = layout !== 'shift' ? 'shift' : 'alpha';
 			capslock = false;
 			break;
 		case '{numshift}':
-			current = layout !== 'numshift' ? 'numshift' : 'num';
+			current  = layout !== 'numshift' ? 'numshift' : 'num';
 			numslock = false;
 			break;
 		case '{num}':
-			current = 'num';
+			current  = 'num';
 			capslock = false;
 			break;
 		case '{alpha}':
@@ -125,19 +126,19 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			break;
 		case '{lock}':
 			if ( layout !== 'shift' ) {
-				current = 'shift';
+				current  = 'shift';
 				capslock = true;
 			} else {
-				current = capslock ? 'alpha' : 'shift';
+				current  = capslock ? 'alpha' : 'shift';
 				capslock = current === 'shift' ? true : false;
 			}
 			break;
 		case '{numlock}':
 			if ( layout !== 'numshift' ) {
-				current = 'numshift';
+				current  = 'numshift';
 				numslock = true;
 			} else {
-				current = numslock ? 'num' : 'numshift';
+				current  = numslock ? 'num' : 'numshift';
 				numslock = current === 'numshift' ? true : false;
 			}
 			break;

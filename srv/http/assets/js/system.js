@@ -12,18 +12,18 @@ $( 'body' ).click( function( e ) {
 $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );
-var gpiosvg = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var gpiosvg  = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
 var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
 $( '.img' ).click( function() {
-	var name = $( this ).data( 'name' );
-	var txtlcdchar = `\
+	var name             = $( this ).data( 'name' );
+	var txtlcdchar       = `\
 ${ gpiosvg }<code>GND:(any black pin)</code>
 <wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
 <wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>`;
-	var txtmpdoled = `\
+	var txtmpdoled       = `\
 ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
 <wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
@@ -38,7 +38,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
 		, vuled         : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
 	}
-	var d = title[ name ];
+	var d                = title[ name ];
 	info( {
 		  icon        : d[ 2 ] || name
 		, title       : d[ 0 ]
@@ -87,7 +87,7 @@ $( '.addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
-	G.li = $this;
+	G.li      = $this;
 	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
@@ -96,7 +96,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		if ( active ) return
 	}
 	
-	var i = $this.index()
+	var i    = $this.index()
 	var list = G.list[ i ];
 	$( '#menu a' ).addClass( 'hide' );
 	if ( list.icon === 'microsd' || ( G.shareddata && list.icon === 'networks' ) ) return
@@ -111,20 +111,20 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		.removeClass( 'hide' )
 		.css( 'top', $this.position().top + 48 );
 	var targetB = $( '#menu' ).offset().top + menuH;
-	var wH = window.innerHeight;
+	var wH      = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( '#menu a' ).click( function() {
-	var $this = $( this );
-	var cmd = $this.prop( 'class' );
-	var list = G.list[ G.li.index() ];
+	var $this      = $( this );
+	var cmd        = $this.prop( 'class' );
+	var list       = G.list[ G.li.index() ];
 	var mountpoint = list.mountpoint;
-	var source = list.source;
+	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
-		var icon = 'networks';
+		var icon  = 'networks';
 		var title = 'Network Mount';
 	} else {
-		var icon = 'usbdrive';
+		var icon  = 'usbdrive';
 		var title = 'Local Mount';
 	}
 	if ( G.shareddata && mountpoint === '/mnt/MPD/NAS/data' ) {
@@ -164,7 +164,7 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-hddsleep' ).click( function() {
-	var icon = 'usbdrive';
+	var icon  = 'usbdrive';
 	var title = 'HDD Sleep';
 	info( {
 		  icon         : icon
@@ -194,7 +194,7 @@ $( '#setting-hddsleep' ).click( function() {
 	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var icon = 'bluetooth';
+	var icon  = 'bluetooth';
 	var title = 'Bluetooth';
 	info( {
 		  icon         : icon
@@ -213,7 +213,7 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#setting-wlan' ).click( function() {
 	bash( 'cat /srv/http/assets/data/regdomcodes.json', function( list ) {
-		var options = '';
+		var options  = '';
 		$.each( list, function( k, v ) {
 			options += '<option value="'+ k +'">'+ v +'</option>';
 		} );
@@ -222,7 +222,7 @@ $( '#setting-wlan' ).click( function() {
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
 <tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
 </table>`;
-		var icon = 'wifi';
+		var icon  = 'wifi';
 		var title = 'Wi-Fi';
 		info( {
 			  icon         : icon
@@ -253,9 +253,9 @@ $( '#i2smodulesw' ).click( function() {
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
-	var output = $( this ).find( ':selected' ).text();
-	var icon = 'volume';
-	var title = 'Audio I&#178;S';
+	var output    = $( this ).find( ':selected' ).text();
+	var icon      = 'volume';
+	var title     = 'Audio I&#178;S';
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
@@ -304,16 +304,16 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 $( '#setting-lcdchar' ).click( function() {
-	var i2caddress = '<td>Address</td>';
+	var i2caddress  = '<td>Address</td>';
 	if ( !G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
 	G.lcdcharaddr.forEach( function( el ) {
 		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
-	var optpins = '<select>';
+	var optpins  = '<select>';
 	$.each( pin2gpio, function( k, v ) {
 		optpins += '<option value='+ k +'>'+ k +'</option>';
 	} );
-	optpins += '</select>';
+	optpins     += '</select>';
 	var infolcdchar = `\
 <table>
 <tr id="cols"><td width="135">Size</td>
@@ -348,9 +348,9 @@ $( '#setting-lcdchar' ).click( function() {
 <tr><td width="63"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
 </table>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c = G.lcdcharconf[ 2 ] !== 'gpio';
-	var icon = 'lcdchar';
-	var title = 'Character LCD';
+	var i2c         = G.lcdcharconf[ 2 ] !== 'gpio';
+	var icon        = 'lcdchar';
+	var title       = 'Character LCD';
 	info( {
 		  icon         : icon
 		, title        : title
@@ -425,7 +425,7 @@ $( '#setting-powerbutton' ).click( function() {
 <br>
 <label><input id="audiophonics" type="checkbox"> Audiophonics</label>
 `;
-	var icon = 'power';
+	var icon  = 'power';
 	var title = 'Power Button';
 	info( {
 		  icon         : icon
@@ -475,7 +475,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
 </tr>
 </table>`;
-	var icon = 'volume';
+	var icon  = 'volume';
 	var title = 'Rotary Encoder';
 	info( {
 		  icon         : icon
@@ -497,7 +497,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
-	var icon = 'mpdoled';
+	var icon  = 'mpdoled';
 	var title = 'Spectrum OLED';
 	info( {
 		  icon         : icon
@@ -545,7 +545,7 @@ $( '#setting-mpdoled' ).click( function() {
 	} );
 } );
 $( '#setting-lcd' ).click( function() {
-	var icon = 'lcd';
+	var icon  = 'lcd';
 	var title = 'TFT 3.5" LCD';
 	info( {
 		  icon         : icon
@@ -592,7 +592,7 @@ $( '#setting-vuled' ).click( function() {
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
-	var icon = 'led';
+	var icon  = 'led';
 	var title = 'VU LED';
 	info( {
 		  icon         : icon
@@ -637,7 +637,7 @@ $( '#ledcalc' ).click( function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
-	var icon = 'plus-r';
+	var icon  = 'plus-r';
 	var title = 'Player Name';
 	info( {
 		  icon         : icon
@@ -663,7 +663,7 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	var icon = 'globe';
+	var icon  = 'globe';
 	var title = 'Servers';
 	if ( G.soc === 'BCM2835' || G.soc === 'BCM2836' ) { // rpi 0, 1
 		info( {
@@ -683,11 +683,11 @@ $( '#setting-timezone' ).click( function() {
 	}
 	
 	bash( [ 'mirrorlist' ], function( list ) {
-		var lL = list.code.length;
+		var lL         = list.code.length;
 		var selecthtml = '<select>';
 		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
-		selecthtml += '</select>';
-		var content = `
+		selecthtml    += '</select>';
+		var content    = `
 <table>
 <tr><td>NTP</td><td><input type="text"></td></tr>
 <tr><td>Package</td><td>${ selecthtml }</td></tr>
@@ -710,7 +710,7 @@ $( '#setting-timezone' ).click( function() {
 	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
-	var icon = 'sliders';
+	var icon  = 'sliders';
 	var title = 'Kernel Sound Profile';
 	info( {
 		  icon         : icon
@@ -730,7 +730,7 @@ $( '#setting-soundprofile' ).click( function() {
 	} );
 } );
 $( '#backup' ).click( function() {
-	var icon = 'sd';
+	var icon  = 'sd';
 	var title = 'Backup Settings';
 	notify( icon, title, 'Process ...' );
 	bash( [ 'databackup' ], function( data ) {
@@ -771,7 +771,7 @@ $( '#backup' ).click( function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).click( function() {
-	var icon = 'restore';
+	var icon  = 'restore';
 	var title = 'Restore Settings';
 	info( {
 		  icon        : icon
@@ -835,7 +835,7 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	var icon = 'networks';
+	var icon  = 'networks';
 	var title = 'Shared Data';
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
@@ -867,10 +867,10 @@ $( '#shareddata' ).click( function() {
 	}
 } );
 $( '.listtitle' ).click( function( e ) {
-	var $this = $( this );
+	var $this    = $( this );
 	var $chevron = $this.find( 'i' );
-	var $list = $this.next();
-	var $target = $( e.target );
+	var $list    = $this.next();
+	var $target  = $( e.target );
 	if ( !$this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
@@ -900,17 +900,17 @@ $( '.listtitle' ).click( function( e ) {
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 function infoMount( values ) {
-	var ip = $( '#list' ).data( 'ip' );
+	var ip    = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
 	if ( values === 'shareddata' ) {
 		var shareddata = true;
-		values = [ 'cifs', 'data', ipsub, '', '', '', '', false ];
-		var chktext = 'Use data from this rAudio'
+		values         = [ 'cifs', 'data', ipsub, '', '', '', '', false ];
+		var chktext    = 'Use data from this rAudio'
 	} else {
 		var shareddata = false;
-		var chktext = 'Update Library on mount'
+		var chktext    = 'Update Library on mount'
 	}
-	var htmlmount = `\
+	var htmlmount      = `\
 <table id="tblinfomount">
 <tr><td>Type</td>
 	<td>
@@ -938,8 +938,8 @@ function infoMount( values ) {
 	<td><input type="text"></td>
 </tr>`;
 	htmlmount += '</table>';
-	var icon = 'networks';
-	var title = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+	var icon   = 'networks';
+	var title  = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	info( {
 		  icon       : icon
 		, title      : title
@@ -1019,7 +1019,7 @@ function infoMount( values ) {
 	} );
 }
 function infoNFSconnect( ip ) {
-	var icon = 'networks';
+	var icon  = 'networks';
 	var title = 'Shared Data';
 	info( {
 		  icon      : icon
