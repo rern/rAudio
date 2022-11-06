@@ -529,23 +529,21 @@ function getBio( artist ) {
 					} else {
 						$( '#biocontent .artist' ).after( imageshtml );
 					}
-					$( '#bioimg img' ).last().on( 'load', function() {
-						$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
-						var observer = new IntersectionObserver( function( entries ) {
-							entries.forEach( function( entry ) {
-								if ( window.innerWidth <= 480 ) return
-								
-								if ( entry.isIntersecting ) { // visible = true
-									$( '#biocontent .artist a' ).css( 'margin-left', '' );
-									$( '#biocontent .artist img' ).addClass( 'hide' );
-								} else {
-									$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
-									$( '#biocontent .artist img' ).removeClass( 'hide' );
-								}
-							} );
+					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
+					var observer = new IntersectionObserver( function( entries ) {
+						entries.forEach( function( entry ) {
+							if ( window.innerWidth <= 480 ) return
+							
+							if ( entry.isIntersecting ) { // visible = true
+								$( '#biocontent .artist a' ).css( 'margin-left', '' );
+								$( '#biocontent .artist img' ).addClass( 'hide' );
+							} else {
+								$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
+								$( '#biocontent .artist img' ).removeClass( 'hide' );
+							}
 						} );
-						observer.observe( $( '#bioimg img' ).last()[ 0 ] );
 					} );
+					observer.observe( $( '#bioimg img' ).last()[ 0 ] );
 				}
 			} );
 		} );
