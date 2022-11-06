@@ -35,6 +35,9 @@ G = {
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 }
+$bartop         = $( '#bar-top' );
+$time           = $( '#time-knob' );
+$volume         = $( '#volume-knob' );
 var cmdphp      = 'cmd.php';
 var data        = {}
 var picaOption  = { // pica.js
@@ -148,7 +151,7 @@ $( '#button-settings' ).click( function( e ) {
 	if ( $( '#settings' ).hasClass( 'hide' ) ) {
 		menuHide();
 		$( '#settings' )
-			.css( 'top', ( !$( '#bar-top' ).hasClass( 'hide' ) ? 40 : 0 ) )
+			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
 		setTimeout( function() {
@@ -898,8 +901,8 @@ $( '.map' ).click( function( e ) {
 		}
 		
 		G.guide    = 1;
-		var time   = !$( '#time-knob' ).hasClass( 'hide' );
-		var volume = !$( '#volume-knob' ).hasClass( 'hide' );
+		var time   = $time.is( ':visible' );
+		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
 		$( '.covermap, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', !G.status.pllength && G.status.player === 'mpd' );
@@ -909,7 +912,7 @@ $( '.map' ).click( function( e ) {
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', !G.status.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', !G.display.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
-		$( '#bar-bottom' ).toggleClass( 'translucent', $( '#bar-top' ).hasClass( 'hide' ) );
+		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
 		if ( time || volume ) {
 			$( '#coverTL' )
 				.removeClass( 'fa-scale-dn' )
@@ -942,7 +945,7 @@ $( '.map' ).click( function( e ) {
 			if ( !( 'coverTL' in G )
 				&& ( G.wH - $( '#coverart' )[ 0 ].getBoundingClientRect().bottom ) < 40
 				&& !G.display.volumenone
-				&& $( '#volume-knob' ).hasClass( 'hide' )
+				&& $volume.is( ':hidden' )
 			) {
 				if ( $( '#info' ).hasClass( 'hide' ) ) {
 					$( '#info' ).removeClass( 'hide' );
@@ -1707,7 +1710,7 @@ $( '.page' ).on( 'click', '.index a', function() {
 		}
 		var scrollT = $( el +'[data-index='+ index +']' ).offset().top;
 	}
-	$( 'html, body' ).scrollTop( scrollT - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 80 : 40 ) );
+	$( 'html, body' ).scrollTop( scrollT - ( $bartop.is( ':visible' ) ? 80 : 40 ) );
 } );
 // PLAYLIST /////////////////////////////////////////////////////////////////////////////////////
 $( '#button-pl-back' ).click( function() {

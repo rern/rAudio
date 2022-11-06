@@ -4,7 +4,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	
 	G.wH = window.innerHeight;
 	G.wW = window.innerWidth;
-	displayBars();
+	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
 		displayPlayback();
 		setTimeout( renderPlayback, 50 );
@@ -13,10 +13,10 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		if ( G.librarylist ) {
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
-					$( '#lib-list p' ).css( 'min-height', ( !$( '#bar-top' ).hasClass( 'hide' ) ? 40 : 0 ) );
+					$( '#lib-list p' ).css( 'min-height', ( barvisible ? 40 : 0 ) );
 					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', G.wH - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 130 : 90 ));
+					$( '#lib-list p' ).css( 'min-height', G.wH - ( barvisible ? 130 : 90 ));
 				}
 			}, 0 );
 		}
@@ -25,7 +25,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', G.wH - ( !$( '#bar-top' ).hasClass( 'hide' ) ? 277 : 237 ) );
+				$( '#pl-list p' ).css( 'min-height', G.wH - ( barvisible ? 277 : 237 ) );
 			}, 0 );
 		}
 	}
@@ -106,7 +106,7 @@ function psAirplay( data ) {
 	if ( G.playback ) renderPlayback();
 }
 function psBtReceiver( connected ) {
-	var prefix = !$( '#time-knob' ).hasClass( 'hide' ) ? 'ti' : 'i';
+	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
 }
 function psBookmark( data ) {
