@@ -158,7 +158,12 @@ fi
 pushstream refresh '{"page":"system","wlan":'$wlan'}'
 pushstream refresh '{"page":"networks","activewl":'$wlan'}'
 
-[[ $restorefailed ]] && notify restore "$restorefailed" 10000
-[[ $nasfailed ]] && notify nas NAS "NAS @$ip cannot be reached." -1
+if [[ $restorefailed ]]; then
+	notify restore "$restorefailed" 10000
+elif [[ $nasfailed ]]; then
+	notify nas NAS "NAS @$ip cannot be reached." -1
+else
+	notify plus-r rAudio Ready 6000
+fi
 
 touch $dirshm/startup

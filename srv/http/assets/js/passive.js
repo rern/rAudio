@@ -82,7 +82,7 @@ window.onpageshow = window.onfocus = connect;
 ////////////////////////////////////
 var pushstream = new PushStream( {
 	  modes                                 : 'websocket'
-	, timeout                               : 5000
+	, timeout                               : 10000
 	, reconnectOnChannelUnavailableInterval : 5000
 } );
 var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
