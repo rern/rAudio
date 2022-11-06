@@ -140,7 +140,7 @@ rm -f $dirmpd/{updating,listing}
 
 if [[ $toolarge ]]; then
 	sleep 3
-	notifyBlink refresh-library 'Library Database' 'Library is too large.<br>Album list cannot be created.'
+	notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list cannot be created.'
 fi
 
 [[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
@@ -149,7 +149,7 @@ fi
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
 	if [[ $nonutf8 ]]; then
 		echo "$nonutf8" > $dirmpd/nonutf8
-		notifyBlink library 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
+		notify -blink library 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
 	else
 		rm -f $dirmpd/nonutf8
 	fi

@@ -60,8 +60,8 @@ ipAddress() {
 isactive() {
 	systemctl -q is-active $1 && echo true || echo false
 }
-notify() { # icon title text delay
-	if [[ $1 == blink ]]; then
+notify() { # icon title message delayms
+	if [[ $1 == -blink ]]; then
 		blink=' blink'
 		shift
 		[[ $4 ]] && delay=$4 || delay=-1
@@ -69,10 +69,7 @@ notify() { # icon title text delay
 		blink=
 		[[ $4 ]] && delay=$4 || delay=3000
 	fi
-	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","text":"'${3//\"/\\\"}'","delay":'$delay'}'
-}
-notifyBlink() {
-	notify blink "$@"
+	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","message":"'${3//\"/\\\"}'","delay":'$delay'}'
 }
 pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )

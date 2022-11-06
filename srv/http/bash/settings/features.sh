@@ -33,7 +33,7 @@ $( find $dirusb -mindepth 1 -maxdepth 1 -type d )
 $dirdata"
 }
 spotifyReset() {
-	notifyBlink spotify 'Spotify Client' "$1"
+	notify -blink spotify 'Spotify Client' "$1"
 	rm -f $dirsystem/spotify $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh

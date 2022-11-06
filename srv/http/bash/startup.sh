@@ -89,7 +89,7 @@ if [[ $connected  ]]; then
 				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 					mount "$mountpoint" && break
 				else
-					(( i == 10 )) && notifyBlink nas NAS "NAS @$ip cannot be reached."
+					(( i == 10 )) && nasfailed=1
 					sleep 2
 				fi
 			done
@@ -160,6 +160,9 @@ pushstream refresh '{"page":"networks","activewl":'$wlan'}'
 
 if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
 	notify restore "$restorefailed" 10000
+fi
+if [[ $nasfailed ]]; then
+	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
 touch $dirshm/startup

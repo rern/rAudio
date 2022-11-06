@@ -534,7 +534,7 @@ displaysave )
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		notifyBlink playback Playback 'VU meter disable...'
+		notify -blink playback Playback 'VU meter disable...'
 	fi
 	$dirsettings/player-conf.sh
 	;;
@@ -751,7 +751,7 @@ mpcplayback )
 	if [[ $command == play ]]; then
 		grep -q -m1 ^state=pause $dirshm/status && pause=1
 		mpc -q $command $pos
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notifyBlink audiocd 'Audio CD' 'Start play ...'
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
@@ -793,7 +793,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && notifyBlink audiocd 'Audio CD' 'Change track ...'
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify -blink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -940,9 +940,9 @@ power )
 	fi
 	
 	if [[ $action == reboot ]]; then
-		notifyBlink reboot Power 'Reboot ...'
+		notify -blink reboot Power 'Reboot ...'
 	else
-		notifyBlink power Power 'Off ...' 10000
+		notify -blink power Power 'Off ...' 10000
 	fi
 	touch $dirshm/power
 	mpc -q stop

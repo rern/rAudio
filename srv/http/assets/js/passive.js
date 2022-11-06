@@ -288,21 +288,21 @@ function psMpdUpdate( data ) {
 	}, 3000 );
 }
 function psNotify( data ) {
-	var icon = data.icon;
-	var title = data.title;
-	var text = data.text;
-	var delay = data.delay;
-	if ( text === 'Online ...' || text === 'Offline ...' ) { // server rAudio power on/off
+	var icon    = data.icon;
+	var title   = data.title;
+	var message = data.message;
+	var delay   = data.delay;
+	if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( function() {
 			location.href = '/';
 		}, 3000 );
 	}
 	
-	banner( icon, title, text, delay );
+	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
 		switchPage( 'playback' );
 		loader();
-		if ( text === 'Off ...' ) {
+		if ( message === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
 			setTimeout( function() {
 				$( '#loader .logo' ).css( 'animation', 'none' );
@@ -310,7 +310,7 @@ function psNotify( data ) {
 			pushstream.disconnect();
 			G.poweroff = 1;
 		}
-	} else if ( text === 'Change track ...' ) { // audiocd
+	} else if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {
 		G.status.counts.latest = 0;

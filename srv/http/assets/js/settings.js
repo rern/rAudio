@@ -312,10 +312,14 @@ function psBluetooth( data ) {
 	}
 }
 function psNotify( data ) {
+	var icon    = data.icon;
+	var title   = data.title;
+	var message = data.message;
+	var delay   = data.delay;
 	G.bannerhold = data.hold || 0;
-	banner( data.icon, data.title, data.text, data.delay );
-	if ( data.title === 'Power' ) {
-		if ( data.text === 'Off ...' ) {
+	banner( icon, title, message, delay );
+	if ( title === 'Power' ) {
+		if ( message === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
 			setTimeout( function() {
 				$( '#loader .logo' ).css( 'animation', 'none' );

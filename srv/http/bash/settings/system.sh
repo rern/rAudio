@@ -492,7 +492,7 @@ mirrorlist )
 	current=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
 	[[ ! $current ]] && current=0
 	if : >/dev/tcp/8.8.8.8/53; then
-		notifyBlink globe 'Mirror List' 'Get ...'
+		notify -blink globe 'Mirror List' 'Get ...'
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
 	fi

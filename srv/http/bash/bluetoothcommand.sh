@@ -50,7 +50,7 @@ if [[ $udev == disconnect ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
 #-----
-		notifyBlink $icon "$name" 'Disconnect ...'
+		notify -blink $icon "$name" 'Disconnect ...'
 		disconnectRemove
 	fi
 	exit
@@ -89,7 +89,7 @@ if [[ $udev == connect ]]; then
 		
 	fi
 #-----
-	notifyBlink $icon "$name" "$msg"
+	notify -blink $icon "$name" "$msg"
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
@@ -120,7 +120,7 @@ if [[ $action == connect || $action == pair ]]; then
 		notify $icon "$name" 'Paired successfully.' -1
 		sleep 3
 #-----
-		notifyBlink $icon "$name" 'Connect ...'
+		notify -blink $icon "$name" 'Connect ...'
 	fi
 	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
