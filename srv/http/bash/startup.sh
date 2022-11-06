@@ -158,11 +158,7 @@ fi
 pushstream refresh '{"page":"system","wlan":'$wlan'}'
 pushstream refresh '{"page":"networks","activewl":'$wlan'}'
 
-if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
-	notify restore "$restorefailed" 10000
-fi
-if [[ $nasfailed ]]; then
-	notify nas NAS "NAS @$ip cannot be reached." -1
-fi
+[[ $restorefailed ]] && notify restore "$restorefailed" 10000
+[[ $nasfailed ]] && notify nas NAS "NAS @$ip cannot be reached." -1
 
 touch $dirshm/startup
