@@ -244,7 +244,6 @@ pushstream.onstatuschange = function( status ) {
 			}
 		} else if ( page === 'system' ) {
 			if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-				bash( 'killall -q system-data.sh' );
 				clearInterval( G.intCputime );
 				$( '#refresh' ).removeClass( 'blink' );
 			}
