@@ -1029,6 +1029,7 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cg );
 }
 #biocontent .artist img {
+	/*width: 40px;*/
 	height: 40px;
 	margin-right: 10px;
 	vertical-align: -6px;
@@ -2238,6 +2239,26 @@ li.active .li2 bl {
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
 		.btntitle { margin-left: 0 }
+		#bioimg {
+			float: none;
+			width: 100%;
+			max-width: none;
+			margin: -10px 0 10px 0;
+			z-index: -5;
+		}
+		#bioimg a {
+			display: inline-block;
+			width: 33.3%;
+		}
+		#bioimg a:nth-child( odd ) {
+			margin-left: 0;
+		}
+		#bioimg img {
+			width: 100%;
+		}
+		#biocontent .artist img {
+			display: none;
+		}
 	}
 	@media ( max-width: 400px ) {
 		#button-settings { right: 10px }

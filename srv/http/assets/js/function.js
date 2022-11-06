@@ -519,28 +519,32 @@ function getBio( artist ) {
 						.removeClass( 'hide' );
 				}
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var url    = '';
-					var images = '';
+					var imageshtml = '<div id="bioimg">';
 					data.artistthumb.forEach( function( el ) {
-						images += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
+						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
-					$( '#bioimg' )
-						.html( images )
-						.removeClass( 'hide' );
-					$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
-					$( '#bioimg img' ).last().one( 'load', function() {
-						setTimeout( function() { // wait for complete load
-							var imgbottom = $( '#bioimg' )[ 0 ].getBoundingClientRect().bottom;
-							$( '#bio' ).scroll( function() {
-								if ( this.scrollTop > imgbottom ) {
-									$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
-									$( '#biocontent .artist img' ).removeClass( 'hide' );
-								} else {
+					imageshtml += '</div>';
+					if ( window.innerWidth > 480 ) {
+						$( '#biocontent .artist' ).before( imageshtml );
+					} else {
+						$( '#biocontent .artist' ).after( imageshtml );
+					}
+					$( '#bioimg img' ).last().on( 'load', function() {
+						$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
+						var observer = new IntersectionObserver( entries => {
+							entries.forEach( entry => {
+								if ( window.innerWidth <= 480 ) return
+								
+								if ( entry.isIntersecting ) { // visible = true
 									$( '#biocontent .artist a' ).css( 'margin-left', '' );
 									$( '#biocontent .artist img' ).addClass( 'hide' );
+								} else {
+									$( '#biocontent .artist a' ).css( 'margin-left', '-220px' );
+									$( '#biocontent .artist img' ).removeClass( 'hide' );
 								}
 							} );
-						}, 1000 );
+						} );
+						observer.observe( $( '#bioimg img' ).last()[ 0 ] );
 					} );
 				}
 			} );

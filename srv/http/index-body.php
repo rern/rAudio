@@ -366,7 +366,6 @@ foreach( $settinglist as $l ) {
 <div id="bio" class="hide">
 	<div class="container">
 		<img id="biobanner">
-		<div id="bioimg"></div>
 		<div id="biocontent"></div>
 	</div>
 </div>

@@ -6,9 +6,17 @@ $( window ).on( 'resize', () => { // portrait / landscape
 	G.wW = window.innerWidth;
 	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
-		displayPlayback();
-		setTimeout( renderPlayback, 50 );
-		setButtonControl();
+		if ( $( '#bio' ).hasClass( 'hide' ) ) {
+			displayPlayback();
+			setTimeout( renderPlayback, 50 );
+			setButtonControl();
+		} else {
+			if ( window.innerWidth > 480 ) {
+				$( '#biocontent .artist' ).insertAfter( '#bioimg' );
+			} else {
+				$( '#biocontent .artist' ).insertBefore( '#bioimg' );
+			}
+		}
 	} else if ( G.library ) {
 		if ( G.librarylist ) {
 			setTimeout( () => {
