@@ -1,6 +1,43 @@
-// $.fn.press(), info(), banner(), loader
+/* 
+banner()
+$.fn.press()
+loader
+info()
+pushstream options
+*/
 
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+// pushstream
+var pushstream = new PushStream( {
+	  modes                                 : 'websocket'
+	, timeout                               : 10000
+	, reconnectOnChannelUnavailableInterval : 3000
+} );
+function pushstreamChannel( channels ) {
+	channels.forEach( function( channel ) {
+		pushstream.addChannel( channel );
+	} );
+	pushstream.connect();
+}
+// active / inactive window
+var active = 1;
+connect = () => {
+	if ( !active && !G.poweroff ) {
+		active = 1;
+		pushstream.connect();
+	}
+}
+disconnect = () => {
+	if ( active ) {
+		active = 0;
+		pushstream.disconnect();
+	}
+}
+document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+window.onpageshow = window.onfocus = connect;
+
+
 // $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {

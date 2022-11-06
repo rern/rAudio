@@ -30,20 +30,6 @@ $( window ).on( 'resize', () => { // portrait / landscape
 		}
 	}
 } );
-// active / inactive window /////////
-var active = 1;
-connect = () => {
-	if ( !active && !G.poweroff ) {
-		active = 1;
-		pushstream.connect();
-	}
-}
-disconnect = () => {
-	if ( active ) {
-		active = 0;
-		pushstream.disconnect();
-	}
-}
 function radioRefresh() {
 	var query = G.query[ G.query.length - 1 ];
 	if ( query.path ) {
@@ -76,26 +62,15 @@ function webradioIcon( srcnoext ) {
 		return $( this ).find( '.lipath' ).text() === radiourl;
 	} ).find( '.lib-icon' );
 }
-document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-window.onpageshow = window.onfocus = connect;
-////////////////////////////////////
-var pushstream = new PushStream( {
-	  modes                                 : 'websocket'
-	, timeout                               : 10000
-	, reconnectOnChannelUnavailableInterval : 5000
-} );
-var streams = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
+// pushstreamChannel() in common.js
+var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
 				'notify', 'option', 'order', 'playlist', 'radiolist', 'relays', 'reload', 'savedplaylist', 'volume', 'webradio' ];
-if ( !G.localhost ) streams.push( 'vumeter' );
-streams.forEach( stream => {
-	pushstream.addChannel( stream );
-} );
-pushstream.connect();
+if ( !G.localhost ) channels.push( 'vumeter' );
+pushstreamChannel( channels )
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-	if ( status === 2 && G.disconnected ) { // suppress on 1st load
+	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load
 		getPlaybackStatus( 'withdisplay' );
-	} else if ( status === 0 ) {
+	} else if ( status === 0 ) {            // disconnected
 		G.disconnected = 1;
 		clearIntervalAll();
 		hideGuide();

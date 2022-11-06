@@ -228,56 +228,27 @@ function showContent() {
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
 	loaderHide();
 }
-// active / inactive window /////////
-var active = 1;
-connect = () => {
-	if ( !active && !G.poweroff ) {
-		active = 1;
-		pushstream.connect();
-	}
-}
-disconnect = () => {
-	if ( active ) {
-		active = 0;
-		hiddenSet();
-	}
-}
-hiddenSet = () => {
-	if ( page === 'networks' ) {
-		if ( !$( '#divbluetooth' ).hasClass( 'hide' ) || !$( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( 'killall -q networks-scan.sh &> /dev/null' );
-			clearTimeout( G.timeoutScan );
-			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-			$( '.back' ).click();
-		}
-	} else if ( page === 'system' ) {
-		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			bash( 'killall -q system-data.sh' );
-			clearInterval( G.intCputime );
-			$( '#refresh' ).removeClass( 'blink' );
-		}
-	}
-}
-document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-window.onpageshow = window.onfocus = connect;
-////////////////////////////////////
-var pushstream = new PushStream( {
-	  modes                                 : 'websocket'
-	, timeout                               : 10000
-	, reconnectOnChannelUnavailableInterval : 5000
-} );
-var streams = [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ];
-streams.forEach( function( stream ) {
-	pushstream.addChannel( stream );
-} );
-pushstream.connect();
+// pushstreamChannel() in common.js
+pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ] );
 pushstream.onstatuschange = function( status ) {
-	if ( status === 2 ) {
+	if ( status === 2 ) {        // connected
 		bannerHide();
 		refreshData();
 	} else if ( status === 0 ) { // disconnected
-		hiddenSet();
+		if ( page === 'networks' ) {
+			if ( !$( '#divbluetooth' ).hasClass( 'hide' ) || !$( '#divwifi' ).hasClass( 'hide' ) ) {
+				bash( 'killall -q networks-scan.sh &> /dev/null' );
+				clearTimeout( G.timeoutScan );
+				$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+				$( '.back' ).click();
+			}
+		} else if ( page === 'system' ) {
+			if ( $( '#refresh' ).hasClass( 'blink' ) ) {
+				bash( 'killall -q system-data.sh' );
+				clearInterval( G.intCputime );
+				$( '#refresh' ).removeClass( 'blink' );
+			}
+		}
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
