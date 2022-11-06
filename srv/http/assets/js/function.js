@@ -531,8 +531,8 @@ function getBio( artist ) {
 					}
 					$( '#bioimg img' ).last().on( 'load', function() {
 						$( '#biocontent .artist a' ).prepend( '<img class="hide" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' )
-						var observer = new IntersectionObserver( entries => {
-							entries.forEach( entry => {
+						var observer = new IntersectionObserver( function( entries ) {
+							entries.forEach( function( entry ) {
 								if ( window.innerWidth <= 480 ) return
 								
 								if ( entry.isIntersecting ) { // visible = true
