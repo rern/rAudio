@@ -40,7 +40,7 @@ function infoEqualizer( update ) {
 		, beforeshow : function() {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();
-			if ( !/Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
+			if ( ! /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					var $this = $( this );
 					eqValueSet( band[ $this.index() ], $this.val() )
@@ -74,12 +74,12 @@ function infoEqualizer( update ) {
 				var blank  = val === '';
 				var exists = G.eq.presets.includes( val );
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-					var changed = !blank && !exists && val !== G.eq.current;
+					var changed = ! blank && ! exists && val !== G.eq.current;
 				} else { // new
-					var changed = !blank && !exists;
+					var changed = ! blank && ! exists;
 				}
 				if ( e.key === 'Enter' && changed ) $( '#eqsave' ).click();
-				$( '#eqsave' ).toggleClass( 'disabled', !changed );
+				$( '#eqsave' ).toggleClass( 'disabled', ! changed );
 			} );
 			$( '#eqdelete' ).click( function() {
 				bash( [ 'equalizer', 'delete', G.eq.current ] );
@@ -134,8 +134,8 @@ function eqButtonSet() {
 		} );
 	}
 	$( '#eqrename' ).toggleClass( 'disabled', flat || unnamed || changed );
-	$( '#eqsave' ).toggleClass( 'disabled', flat || unnamed || !changed );
-	$( '#equndo' ).toggleClass( 'disabled', flat || !changed );
+	$( '#eqsave' ).toggleClass( 'disabled', flat || unnamed || ! changed );
+	$( '#equndo' ).toggleClass( 'disabled', flat || ! changed );
 }
 function eqValueSet( band, val ) {
 	clearTimeout( timeout );

@@ -90,7 +90,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	
 	G.list     = G.li.parent().prop( 'id' );
 	G.liactive = G.li.hasClass( 'active' );
-	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
+	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu' ).addClass( 'hide' );
 		if ( G.liactive ) return
 	}
@@ -102,7 +102,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
-		$( '#menu .disconnect' ).toggleClass( 'hide', !connected );
+		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
 		$( '#menu .info' ).toggleClass( 'hide', G.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
 	} else if ( G.list === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
@@ -110,7 +110,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	} else {
 		var notconnected = G.li.hasClass( 'notconnected' );
 		$( '#menu a' ).removeClass( 'hide' );
-		$( '#menu .connect' ).toggleClass( 'hide', !notconnected );
+		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
@@ -233,7 +233,7 @@ function bluetoothCommand( cmd, mac ) {
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac ], function( data ) {
-		if ( !data ) {
+		if ( ! data ) {
 			$( '#codebluetooth' )
 				.empty()
 				.addClass( 'hide' );
@@ -289,7 +289,7 @@ function editLAN() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, beforeshow   : function() {
-			if ( !static ) {
+			if ( ! static ) {
 				$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 					$( '#infoContent gr' ).text( $( this ).val() === ip ? 'DHCP' : 'Static' );
 				} );
@@ -355,13 +355,13 @@ function infoWiFi( values ) {
 		, checkbox      : [ 'Static IP', 'Hidden SSID', 'WEP' ]
 		, passwordlabel : 'Password'
 		, values        : values
-		, checkchanged  : !add
-		, checkblank    : !add
+		, checkchanged  : ! add
+		, checkblank    : ! add
 		, beforeshow    : function() {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
-			$static.toggleClass( 'hide', !values[ 4 ] );
+			$static.toggleClass( 'hide', ! values[ 4 ] );
 			$( '#infoContent input:checkbox' ).eq( 0 ).change( function() {
-				$static.toggleClass( 'hide', !$( this ).prop( 'checked' ) );
+				$static.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 			} );
 		}
 		, ok            : function() {
@@ -405,7 +405,7 @@ function qr( msg ) {
 	} );
 }
 function renderBluetooth() {
-	if ( !$( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
+	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
 		var htmlbt  = '';
 		G.listbt.forEach( function( list ) {
@@ -417,7 +417,7 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
-	if ( !$( '#codebluetooth' ).hasClass( 'hide' ) ) {
+	if ( ! $( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		var mac = $( '#codebluetooth' ).data( 'mac' );
 		bluetoothInfo( mac );
 	}
@@ -425,19 +425,19 @@ function renderBluetooth() {
 }
 function renderPage() {
 	$( '.btscan' ).toggleClass( 'disabled', G.camilladsp );
-	if ( !G.activebt ) {
+	if ( ! G.activebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {
 		renderBluetooth();
 	}
-	if ( !G.activewl ) {
+	if ( ! G.activewl ) {
 		$( '#divwl' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
 		if ( G.listwl ) {
 			G.listwl.forEach( function( list ) {
 				if ( list.ip ) {
-					if ( !G.hostapd ) {
+					if ( ! G.hostapd ) {
 						var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 						htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
 								 +'<i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;'+ list.ssid 
@@ -456,7 +456,7 @@ function renderPage() {
 		}
 		$( '#divwl' ).removeClass( 'hide' );
 	}
-	if ( !G.activeeth ) {
+	if ( ! G.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
@@ -466,13 +466,13 @@ function renderPage() {
 		$( '.lanadd' ).toggleClass( 'hide', G.listeth !== false );
 		$( '#divlan' ).removeClass( 'hide' );
 	}
-	$( '#divaccesspoint' ).toggleClass( 'hide', !G.hostapd );
-	if ( !$( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
+	$( '#divaccesspoint' ).toggleClass( 'hide', ! G.hostapd );
+	if ( ! $( '#divinterface' ).hasClass( 'hide' ) ) renderQR();
 	showContent();
 }
 function renderQR() {
 	var ip = G.ipeth || G.ipwl;
-	if ( !ip ) return
+	if ( ! ip ) return
 	
 	if ( ip && ip !== G.hostapd.ip ) {
 		$( '#qrwebui' ).html( qr( 'http://'+ ip ) );

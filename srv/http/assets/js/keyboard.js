@@ -86,9 +86,9 @@ $( 'body' ).on( 'click', inputs, function() {
 	$( this ).addClass( 'active' );
 	keyboard.setInput( $( this ).val() );
 } ).on( 'click touchstart', function( e ) {
-	if ( !$kb.hasClass( 'hide' )
-		&& !$( e.target ).is( inputs )
-		&& !$( e.target ).parents( '#keyboard' ).length
+	if ( ! $kb.hasClass( 'hide' )
+		&& ! $( e.target ).is( inputs )
+		&& ! $( e.target ).parents( '#keyboard' ).length
 		&& e.target.id !== 'keyboard'
 	)  hideKeyboard();
 } );
@@ -143,7 +143,7 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			}
 			break;
 		case '{enter}':
-			if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) {
+			if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) {
 				$( '#infoOk' ).click();
 			} else {
 				var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';
@@ -152,9 +152,9 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			hideKeyboard();
 			break;
 		default:
-			if ( ( layout === 'shift' && !capslock ) ) {
+			if ( ( layout === 'shift' && ! capslock ) ) {
 				current = 'alpha';
-			} else if ( layout === 'numshift' && !numslock ) {
+			} else if ( layout === 'numshift' && ! numslock ) {
 				current = 'num';
 			}
 	}

@@ -164,7 +164,7 @@ function addSimilar() {
 			+'&autocorrect=1';
 	$.post( url, function( data ) {
 		var title = 'Playlist - Add Similar';
-		if ( 'error' in data || !data.similartracks.track.length ) {
+		if ( 'error' in data || ! data.similartracks.track.length ) {
 			banner( 'lastfm', title, 'Track not found.' );
 		} else {
 			var val = data.similartracks.track;
@@ -225,7 +225,7 @@ function tagEditor() {
 		name[ 1 ] = 'Album Artist';
 		var label = [];
 		format.forEach( function( el, i ) {
-			if ( G.playlist && !values[ i ] ) {
+			if ( G.playlist && ! values[ i ] ) {
 				delete values[ i ];
 				return
 			}
@@ -283,7 +283,7 @@ function tagEditor() {
 					if ( [ 'title', 'track' ].includes( mode ) ) return
 					
 					var string = $this.parent().next().find( 'input' ).val();
-					if ( !string ) return
+					if ( ! string ) return
 					
 					var query  = {
 						  query  : 'find'
@@ -743,7 +743,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case '':
 			if ( G.list.singletrack || G.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'mpcadd', path ];
-			} else if ( $( '.licover' ).length && !$( '.licover .lipath' ).length ) {
+			} else if ( $( '.licover' ).length && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', G.mode, path, 'album', G.list.album ];
 			} else { // directory or album
 				mpccmd = [ 'mpcls', path ];
@@ -776,14 +776,14 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			mpccmd = [ 'mpcadd', path ];
 			break;
 		default:
-			if ( !G.list.name ) {
+			if ( ! G.list.name ) {
 				mpccmd = [ 'mpcfindadd', mode, path ];
 				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
 			} else {
 				mpccmd = [ 'mpcfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
 			}
 	}
-	if ( !mpccmd ) mpccmd = [];
+	if ( ! mpccmd ) mpccmd = [];
 	var sleep = G.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
 	if ( G.status.state === 'play' && G.status.webradio ) sleep += 1;
 	var contextCommand = {

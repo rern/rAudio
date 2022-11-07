@@ -7,7 +7,7 @@ Signal will be set to original level (0dB).
 Beware of too high volume from speakers.`;
 
 $( '.playback' ).click( function() {
-	if ( !$( this ).hasClass( 'disabled' ) ) {
+	if ( ! $( this ).hasClass( 'disabled' ) ) {
 		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
@@ -289,7 +289,7 @@ $( '#setting-custom' ).click( function() {
 			}
 			, ok           : function() {
 				var values = infoVal();
-				if ( !values[ 0 ] && !values[ 1 ] ) {
+				if ( ! values[ 0 ] && ! values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
 					notify( icon, title, 'Disable ...' );
 					return
@@ -402,8 +402,8 @@ function infoSoxrPreset() {
 function playbackIcon() {
 	$( '.playback' )
 		.removeClass( 'fa-pause fa-play' )
-		.addClass( 'fa fa-'+ ( !G.playing ? 'play' : 'pause' ) )
-		.toggleClass( 'disabled', G.player !== 'mpd' && !G.playing );
+		.addClass( 'fa fa-'+ ( ! G.playing ? 'play' : 'pause' ) )
+		.toggleClass( 'disabled', G.player !== 'mpd' && ! G.playing );
 }
 function renderPage() {
 	playbackIcon();
@@ -415,7 +415,7 @@ function renderPage() {
 	if ( G.asoundcard != -1 ) {
 		device          = G.devices[ G.asoundcard ];
 		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
-		G.novolume      = device.mixertype === 'none' && !G.resampled;
+		G.novolume      = device.mixertype === 'none' && ! G.resampled;
 		var htmldevices = '';
 		$.each( G.devices, function() {
 			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';

@@ -66,7 +66,7 @@ function copy2clipboard( txt ) { // for non https which cannot use clipboard API
 }
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
-	if ( !refresh && !$el.hasClass( 'hide' ) ) {
+	if ( ! refresh && ! $el.hasClass( 'hide' ) ) {
 		$el.addClass( 'hide' );
 		return
 	}
@@ -180,7 +180,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	bash( dirbash + page +'-data.sh', function( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -188,7 +188,7 @@ function refreshData() {
 		} else {
 			G = list;
 		}
-		if ( !list2G ) return
+		if ( ! list2G ) return
 		
 		if ( $( '#data' ).hasClass( 'hide' ) )  {
 			setSwitch();
@@ -213,7 +213,7 @@ function setSwitch() {
 			if ( $( this ).prev().is( 'select' ) ) return // not switch
 			
 			var sw = this.id.replace( 'setting-', '' );
-			$( this ).toggleClass( 'hide', !G[ sw ] );
+			$( this ).toggleClass( 'hide', ! G[ sw ] );
 		} );
 	}
 }
@@ -222,7 +222,7 @@ function showContent() {
 	if ( $( 'select' ).length ) selectricRender();
 	if ( page !== 'networks' ) {
 		$( 'pre.status' ).each( function( el ) {
-			if ( !$( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
+			if ( ! $( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
 		} );
 	}
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
@@ -236,7 +236,7 @@ pushstream.onstatuschange = function( status ) {
 		refreshData();
 	} else if ( status === 0 ) { // disconnected
 		if ( page === 'networks' ) {
-			if ( !$( '#divbluetooth' ).hasClass( 'hide' ) || !$( '#divwifi' ).hasClass( 'hide' ) ) {
+			if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
 				bash( 'killall -q networks-scan.sh &> /dev/null' );
 				clearTimeout( G.timeoutScan );
 				$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
@@ -263,7 +263,7 @@ pushstream.onmessage = function( data, id, channel ) {
 	}
 }
 function psBluetooth( data ) {
-	if ( !data ) {
+	if ( ! data ) {
 		if ( page === 'networks' ) {
 			G.listbt = data;
 			renderBluetooth();
@@ -323,7 +323,7 @@ function psReload() {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
-	if ( !$( '#infoRange .value' ).text() ) return
+	if ( ! $( '#infoRange .value' ).text() ) return
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
@@ -337,7 +337,7 @@ function psVolume( data ) {
 	}, 300 );
 }
 function psVolumeBt( data ) {
-	if ( !$( '#infoRange .value' ).text() ) return
+	if ( ! $( '#infoRange .value' ).text() ) return
 	
 	$( '#infoRange .value' ).text( data.val );
 	$( '#infoRange input' ).val( data.val );
@@ -384,7 +384,7 @@ if ( localhost ) {
 }
 
 $( document ).keyup( function( e ) {
-	if ( !$( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
 	switch ( key ) {
@@ -418,7 +418,7 @@ $( document ).keyup( function( e ) {
 			var id       = $current[ 0 ].id;
 			var $next    = key === 'ArrowLeft' ? $( '#'+ pagenext[ id ][ 0 ] ) : $( '#'+ pagenext[ id ][ 1 ] );
 			$( '#bar-bottom div' ).removeClass( 'bgr' );
-			if ( !$next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
+			if ( ! $next.hasClass( 'active' ) ) $next.addClass( 'bgr' );
 			break;
 		case 'Enter':
 			if ( $( '#bar-bottom .bgr' ).length ) {
@@ -434,11 +434,11 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
-	if ( !$this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
+	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
 	bash( [ 'rebootlist' ], function( list ) {
-		if ( !list ) {
+		if ( ! list ) {
 			location.href = '/';
 			return
 		}
@@ -486,7 +486,7 @@ $( '.help-head' ).click( function() {
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
 		var visible = $( this ).hasClass( 'bl' );
-		$( this ).toggleClass( 'bl', !visible );
+		$( this ).toggleClass( 'bl', ! visible );
 		$( '.section' ).each( function() {
 			if ( $( this ).hasClass( 'hide' ) ) return
 			
@@ -511,7 +511,7 @@ $( '.switch:not( .custom )' ).click( function() {
 	var label   = $this.data( 'label' );
 	var icon    = $this.data( 'icon' );
 	if ( $this.hasClass( 'disabled' ) ) {
-		$this.prop( 'checked', !checked );
+		$this.prop( 'checked', ! checked );
 		info( {
 			  icon    : icon
 			, title   : label

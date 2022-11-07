@@ -98,7 +98,7 @@ function getoptions() {
 							sendcommand();
 						} );
 					} else {
-						if ( !ojson.required ) {
+						if ( ! ojson.required ) {
 							opt.push( 0 );
 							sendcommand();
 						} else {

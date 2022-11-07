@@ -13,7 +13,7 @@ var pushstream  = new PushStream( {
 	, timeout                               : 10000
 	, reconnectOnChannelUnavailableInterval : 3000
 } );
-function pushstreamChannel( channels ) {
+var pushstreamChannel = ( channels ) => {
 	channels.forEach( function( channel ) {
 		pushstream.addChannel( channel );
 	} );
@@ -21,13 +21,13 @@ function pushstreamChannel( channels ) {
 }
 // active / inactive window
 var active      = 1;
-connect         = () => {
-	if ( !active && !G.poweroff ) {
+var connect     = () => {
+	if ( ! active && ! G.poweroff ) {
 		active = 1;
 		pushstream.connect();
 	}
 }
-disconnect      = () => {
+var disconnect  = () => {
 	if ( active ) {
 		active = 0;
 		pushstream.disconnect();
@@ -53,7 +53,7 @@ events:
 */
 $.fn.press = function( arg1, arg2 ) {
 	var callback, delegate, timeout;
-	if ( !arg2 ) {
+	if ( ! arg2 ) {
 		delegate = '';
 		callback = arg1;
 	} else {
@@ -95,7 +95,7 @@ select:   [U] [D]     - check
 	var key = e.key;
 	switch ( key ) {
 		case 'Enter':
-			if ( !$( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			if ( ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 			break;
 		case 'Escape':
 			G.local = 1; // prevent toggle setting menu
@@ -243,7 +243,7 @@ function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
 	setTimeout( function() {
 		if ( typeof fn === 'function' ) fn();
-		if ( !O.buttonnoreset ) {
+		if ( ! O.buttonnoreset ) {
 			$( '#infoOverlay' ).addClass( 'hide' );
 			$( '#infoOverlay' ).empty();
 		}
@@ -255,7 +255,7 @@ function infoReset( fn ) {
 O = {}
 function info( json ) {
 	O = json;
-	if ( !O.noreload ) $( '#infoOverlay' ).html(`
+	if ( ! O.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
@@ -314,7 +314,7 @@ function info( json ) {
 		var color   = O.cancelcolor ? ' style="background-color:'+ O.cancelcolor +'"' : '';
 		htmlbutton += '<a id="infoCancel"'+ color +' class="infobtn infobtn-default">'+ ( O.cancellabel || 'Cancel' ) +'</a>';
 	}
-	if ( !O.okno ) {
+	if ( ! O.okno ) {
 		var color = O.okcolor ? ' style="background-color:'+ O.okcolor +'"' : '';
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( O.oklabel || 'OK' ) +'</a>';
 	}
@@ -353,7 +353,7 @@ function info( json ) {
 			$( '#infoFileBox' ).click();
 		} );
 		$( '#infoFileBox' ).change( function() {
-			if ( !this.files.length ) return
+			if ( ! this.files.length ) return
 			
 			O.infofile    = this.files[ 0 ];
 			var filename  = O.infofile.name;
@@ -367,7 +367,7 @@ function info( json ) {
 					O.filechecked = O.filetype.includes( ext );
 				}
 			}
-			if ( !O.filechecked ) {
+			if ( ! O.filechecked ) {
 				var htmlprev = $( '#infoContent' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
 				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
@@ -402,7 +402,7 @@ function info( json ) {
 		htmltab += '</div>';
 		$( '#infoTopBg' ).after( htmltab );
 		$( '#infoTab a' ).click( function() {
-			if ( !$( this ).hasClass( 'active' ) ) O.tabfunction[ $( this ).index() ]();
+			if ( ! $( this ).hasClass( 'active' ) ) O.tabfunction[ $( this ).index() ]();
 		} );
 		$( '#infoTab a' )
 			.css( 'width', 100 / O.tab.length +'%' )
@@ -448,7 +448,7 @@ function info( json ) {
 			htmls.radio = '';
 			$.each( O.radio, function( lbl, val ) {
 				line = '<td>'+ ( lbl ? '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>' : '' ) +'</td>';
-				if ( !O.radiocolumn ) {
+				if ( ! O.radiocolumn ) {
 					htmls.radio += '<tr>'+ td0 + line +'</tr>';
 				} else {
 					i++
@@ -468,7 +468,7 @@ function info( json ) {
 			htmls.checkbox = '';
 			O.checkbox.forEach( function( lbl ) {
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
-				if ( !O.checkcolumn ) {
+				if ( ! O.checkcolumn ) {
 					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
 				} else {
 					i++
@@ -500,7 +500,7 @@ function info( json ) {
 		var htmlcontent = '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
-		if ( !O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
+		if ( ! O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
 		var htmlinputs  = '';
 		O.order.forEach( function( type ) {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
@@ -510,7 +510,7 @@ function info( json ) {
 		htmlcontent   += htmls.footer || '';
 	}
 	$( 'html, body' ).scrollTop( 0 );
-	if ( !htmlcontent ) {
+	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		setButtonWidth();
@@ -526,7 +526,7 @@ function info( json ) {
 		var name, nameprev;
 		O.inputs    = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
 			name = this.name;
-			if ( !name ) {
+			if ( ! name ) {
 				return true
 			} else if (	name !== nameprev ) {
 				nameprev = name;
@@ -610,7 +610,7 @@ function info( json ) {
 }
 
 function checkBlank() {
-	if ( !O.checkblank ) return // suppress error on repeating
+	if ( ! O.checkblank ) return // suppress error on repeating
 	
 	O.blank = false;
 	O.blank = O.checkblank.some( function( i ) {
@@ -750,7 +750,7 @@ function setFileImage() {
 			, processData : false
 			, contentType : false
 			, success     : function( animatedtmpfile ) {
-				if ( !animatedtmpfile ) {
+				if ( ! animatedtmpfile ) {
 					setFileImageReader();
 				} else {
 					O.infofilegif = animatedtmpfile;
@@ -770,7 +770,7 @@ function setFileImage() {
 	}
 }
 function setFileImageReader() {
-	var maxsize   = ( G.library && !G.librarylist ) ? 200 : 1000;
+	var maxsize   = ( G.library && ! G.librarylist ) ? 200 : 1000;
 	var reader    = new FileReader();
 	reader.onload = function( e ) {
 		var img    = new Image();
@@ -802,7 +802,7 @@ function setFileImageReader() {
 	$( '#infoContent' )
 		.off( 'click', '.infoimgnew' )
 		.on( 'click', '.infoimgnew', function() {
-		if ( !$( '.infomessage .rotate' ).length ) return
+		if ( ! $( '.infomessage .rotate' ).length ) return
 		
 		G.rotate     += 90;
 		if ( G.rotate === 360 ) G.rotate = 0;
@@ -840,7 +840,7 @@ function setFileImageRender( src, original, resize ) {
 	);
 }
 function setFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( G.library && !G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+	var maxsize = ( G.library && ! G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
 	if ( imgW > maxsize || imgH > maxsize ) {
 		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
 		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
@@ -854,7 +854,7 @@ function setFileImageResize( ext, imgW, imgH ) {
 
 // verify password - called from addons.js ///////////////////////////////////////
 function verifyPassword( title, pwd, fn ) {
-	if ( !title ) return
+	if ( ! title ) return
 	
 	info( {
 		  title         : title

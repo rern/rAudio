@@ -6,7 +6,7 @@ $( '#setting-spotifyd' ).click( function() {
 	
 	var icon   = 'spotify';
 	var title  = 'Spotify Client';
-	if ( !G.spotifyd && G.spotifytoken ) {
+	if ( ! G.spotifyd && G.spotifytoken ) {
 		bash( [ 'spotifyd', true ] );
 		notify( icon, title, 'Enable ...' );
 	} else if ( G.spotifytoken ) {
@@ -235,11 +235,11 @@ ${ brightness }
 		, checkchanged : G.localbrowser
 		, beforeshow   : function() {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
-			$( '.btnbottom' ).toggleClass( 'hide', !G.localbrowser );
+			$( '.btnbottom' ).toggleClass( 'hide', ! G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
-				if ( ( up && zoom < 300 ) || ( !up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
+				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
 				$( '#infoOk' ).toggleClass( 'disabled', O.values.join( '' ) === infoVal().join( '' ) );
 			} );
 			$( '#infoContent' ).on( 'change', '#screenoff', function() {
@@ -399,7 +399,7 @@ $( '#setting-login' ).click( function() {
 				, password : values[ 0 ]
 				, pwdnew   : G.login ? values[ 1 ] : values
 			}, function( std ) {
-				if ( !std ) passwordWrong();
+				if ( ! std ) passwordWrong();
 				bannerHide();
 			} );
 		}
@@ -431,7 +431,7 @@ $( '#setting-scrobble' ).click( function() {
 			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
 			$user.prop( 'disabled', G.scrobblekey );
 			$pwd.toggleClass( 'hide', G.scrobblekey );
-			$( '.scrobbleuser' ).toggleClass( 'hide', !G.scrobblekey )
+			$( '.scrobbleuser' ).toggleClass( 'hide', ! G.scrobblekey )
 			$( '.scrobbleuser' ).click( function() {
 				$( this ).remove();
 				$user.prop( 'disabled', false );
@@ -486,7 +486,7 @@ $( '#nfsserver' ).click( function() {
 			}
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : function() {
-				bash( [ 'nfsserver', !G.nfsserver ] );
+				bash( [ 'nfsserver', ! G.nfsserver ] );
 				notify( icon, title, G.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
 		} );
@@ -504,7 +504,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, checkchanged : G.stoptimer
 		, beforeshow   : function() {
 			var $poweroff = $( '#infoContent input:checkbox' );
-			$poweroff.prop( 'disabled', !G.stoptimerconf[ 1 ] );
+			$poweroff.prop( 'disabled', ! G.stoptimerconf[ 1 ] );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
 			$( '#infoContent input:radio' ).change( function() {
 				var valfalse = $( this ).val() === 'false';
@@ -534,8 +534,8 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#shairport-sync' ).toggleClass( 'disabled', G.shairportactive );
-	$( '#dabradio' ).toggleClass( 'disabled', !G.dabdevice );
-	$( '#snapclient' ).parent().prev().toggleClass( 'single', !G.snapclientactive );
+	$( '#dabradio' ).toggleClass( 'disabled', ! G.dabdevice );
+	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! G.snapclientactive );
 	$( '#snapclient' ).toggleClass( 'disabled', G.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', G.snapserveractive );
 	$( '#spotifyd' ).toggleClass( 'disabled', G.spotifydactive );
@@ -544,7 +544,7 @@ function renderPage() {
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
 	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
-	$( '#stoptimer' ).toggleClass( 'disabled', !G.playing );
+	$( '#stoptimer' ).toggleClass( 'disabled', ! G.playing );
 	if ( G.nosound ) {
 		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
 	} else {

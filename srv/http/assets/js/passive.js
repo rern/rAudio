@@ -29,7 +29,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			}, 0 );
 		}
 	} else {
-		if ( G.playlist && !G.savedlist && !G.savedplaylist ) {
+		if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) {
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
@@ -57,7 +57,7 @@ function statusUpdate( data ) {
 	$.each( data, function( key, value ) {
 		G.status[ key ] = value;
 	} );
-	if ( !$( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
+	if ( ! $( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
 	if ( G.display.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( G.status ) ] );
@@ -73,7 +73,7 @@ function webradioIcon( srcnoext ) {
 // pushstreamChannel() in common.js
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
 				'notify', 'option', 'order', 'playlist', 'radiolist', 'relays', 'reload', 'savedplaylist', 'volume', 'webradio' ];
-if ( !G.localhost ) channels.push( 'vumeter' );
+if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels )
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load
@@ -115,7 +115,7 @@ function psAirplay( data ) {
 }
 function psBtReceiver( connected ) {
 	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
-	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', !connected );
+	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
 function psBookmark( data ) {
 	if ( data.type === 'add' ) {
@@ -180,14 +180,14 @@ function psDisplay( data ) {
 	$.each( data, function( key, val ) {
 		G.display[ key ] = val;
 	} );
-	G.coverdefault = !G.display.covervu && !G.display.vumeter ? G.coverart : G.covervu;
+	G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {
 		setButtonControl();
 		displayPlayback();
 		renderPlayback();
 	} else if ( G.library ) {
-		if ( !G.librarylist ) {
+		if ( ! G.librarylist ) {
 			renderLibrary();
 		} else if ( $( '.lib-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
 			if ( G.display.hidecover ) {
@@ -208,7 +208,7 @@ function psDisplay( data ) {
 	}
 }
 function psEqualizer( data ) {
-	if ( !$( '#eqpreset' ).length ) return
+	if ( ! $( '#eqpreset' ).length ) return
 	
 	G.eq = data;
 	infoEqualizer( 'update' );
@@ -216,10 +216,10 @@ function psEqualizer( data ) {
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( function() {
-		if ( data.state === 'play' && !data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
+		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
-		if ( !data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
+		if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;
 		}
@@ -320,7 +320,7 @@ function psOrder( data ) {
 	orderLibrary();
 }
 function psPlaylist( data ) {
-	if ( !data.add
+	if ( ! data.add
 		&& ( G.local || G.sortable || $( '.pl-remove' ).length )
 	) return
 	
@@ -335,7 +335,7 @@ function psPlaylist( data ) {
 			setTimeout( function() { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
 			G.status.song = data.song;
-			if ( G.playlist && !G.savedlist && !G.savedplaylist ) renderPlaylist( data );
+			if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) renderPlaylist( data );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( G.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
@@ -350,7 +350,7 @@ function psRadioList( data ) {
 	}
 	if ( G.librarylist && G.mode === data.type ) {
 		radioRefresh();
-	} else if ( G.playlist && !G.local ) {
+	} else if ( G.playlist && ! G.local ) {
 		getPlaylist();
 	}
 	G.status.updatingdab = false;
@@ -365,7 +365,7 @@ function psRelays( response ) {
 	} else if ( 'done' in response ) {
 		$( '#infoX' ).click();
 	}
-	if ( !( 'state' in response ) ) return
+	if ( ! ( 'state' in response ) ) return
 		
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
 	var state     = response.state;
@@ -399,7 +399,7 @@ function psRelays( response ) {
 			}
 		}, 1000 );
 	} else {
-		if ( !state ) $( '#infoX' ).click();
+		if ( ! state ) $( '#infoX' ).click();
 		var devices = '';
 		$.each( response.order, function( i, val ) {
 			if ( i === 0 ) {

@@ -4,7 +4,7 @@ $( 'body' ).click( function( e ) {
 	$( '#menu' ).addClass( 'hide' );
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
-	if ( !$( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
+	if ( ! $( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
 		$( '#divi2smodulesw' ).removeClass( 'hide' );
 		$( '#divi2smodule' ).addClass( 'hide' );
 	}
@@ -91,7 +91,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
-	if ( !$( '#menu' ).hasClass( 'hide' ) ) {
+	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu, #codehddinfo' ).addClass( 'hide' );
 		if ( active ) return
 	}
@@ -105,7 +105,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
 	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
 	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
-	$( '#menu .unmount' ).toggleClass( 'hide', !list.mounted );
+	$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
@@ -305,7 +305,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 $( '#setting-lcdchar' ).click( function() {
 	var i2caddress  = '<td>Address</td>';
-	if ( !G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
+	if ( ! G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
 	G.lcdcharaddr.forEach( function( el ) {
 		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
@@ -370,11 +370,11 @@ $( '#setting-lcdchar' ).click( function() {
 			} );
 			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
 			$( '#infoContent svg .power' ).remove();
-			$( '.i2c' ).toggleClass( 'hide', !i2c );
+			$( '.i2c' ).toggleClass( 'hide', ! i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
 			$( '#infoContent input[name=inf]' ).change( function() {
 				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
-				$( '.i2c' ).toggleClass( 'hide', !i2c );
+				$( '.i2c' ).toggleClass( 'hide', ! i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
 			if ( G.lcdchar ) {
@@ -435,7 +435,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, values       : G.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : G.powerbutton
 		, beforeshow   : function() {
-			if ( !G.powerbuttonconf[ 3 ] ) {
+			if ( ! G.powerbuttonconf[ 3 ] ) {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
 				$( '#infoContent select' ).eq( 0 ).change( function() {
 					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
@@ -524,8 +524,8 @@ $( '#setting-mpdoled' ).click( function() {
 		, checkchanged : G.mpdoled
 		, boxwidth     : 140
 		, beforeshow   : function() {
-			var i2c = !G.mpdoled || ( G.mpdoled && G.mpdoledconf[ 1 ] );
-			$( '.baud' ).toggleClass( 'hide', !i2c );
+			var i2c = ! G.mpdoled || ( G.mpdoled && G.mpdoledconf[ 1 ] );
+			$( '.baud' ).toggleClass( 'hide', ! i2c );
 			$( '.oledchip' ).change( function() {
 				var val = $( this ).val();
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
@@ -534,8 +534,8 @@ $( '#setting-mpdoled' ).click( function() {
 		, cancel       : function() {
 			$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 		}
-		, buttonlabel  : !G.mpdoled ? '' : '<i class="fa fa-plus-r"></i>Logo'
-		, button       : !G.mpdoled ? '' : function() {
+		, buttonlabel  : ! G.mpdoled ? '' : '<i class="fa fa-plus-r"></i>Logo'
+		, button       : ! G.mpdoled ? '' : function() {
 			bash( [ 'mpdoledlogo' ] );
 		}
 		, ok           : function() {
@@ -561,8 +561,8 @@ $( '#setting-lcd' ).click( function() {
 		, values       : G.lcdmodel || 'tft35a'
 		, checkchanged : G.lcd
 		, boxwidth     : 190
-		, buttonlabel  : ( !G.lcd ? '' : 'Calibrate' )
-		, button       : ( !G.lcd ? '' : function() {
+		, buttonlabel  : ( ! G.lcd ? '' : 'Calibrate' )
+		, button       : ( ! G.lcd ? '' : function() {
 			info( {
 				  icon    : icon
 				, title   : title
@@ -755,7 +755,7 @@ $( '#backup' ).click( function() {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : '<wh>Warning!</wh><br>File download failed.'
+						, message : iconwarning +'File download failed.'
 					} );
 					bannerHide();
 				} );
@@ -871,7 +871,7 @@ $( '.listtitle' ).click( function( e ) {
 	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
 	var $target  = $( e.target );
-	if ( !$this.hasClass( 'backend' ) ) { // js
+	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
 		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
 		$chevron
@@ -949,7 +949,7 @@ function infoMount( values ) {
 		, beforeshow : function() {
 			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
 			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
-			if ( !shareddata ) {
+			if ( ! shareddata ) {
 				$( '#infoContent label' ).eq( 2 ).remove();
 			} else {
 				$( '#mountpoint' ).prop( 'disabled', 1 );
@@ -965,7 +965,7 @@ function infoMount( values ) {
 					$( '.guest' ).removeClass( 'hide' );
 					var placeholder = 'sharename on server';
 				}
-				if ( !values ) {
+				if ( ! values ) {
 					$( '#mountpoint' ).attr( 'placeholder', 'for Library > NAS > "Name" ' );
 					$share.attr( 'placeholder', placeholder );
 				}
@@ -1095,18 +1095,18 @@ function renderPage() {
 	} );
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
-	$( '#hddsleep' ).toggleClass( 'disabled', !G.hddapm );
+	$( '#hddsleep' ).toggleClass( 'disabled', ! G.hddapm );
 	$( '#usbautoupdate' ).toggleClass( 'disabled', G.shareddata || G.nfsserver );
 	if ( 'bluetooth' in G || 'wlan' in G ) {
 		if ( 'bluetooth' in G ) {
-			$( '#bluetooth' ).parent().prev().toggleClass( 'single', !G.bluetoothactive );
+			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! G.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
 		if ( 'wlan' in G ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
-				.parent().prev().toggleClass( 'single', !G.wlan );
+				.parent().prev().toggleClass( 'single', ! G.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}
@@ -1120,9 +1120,9 @@ function renderPage() {
 	} ).prop( 'selected', true );
 	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
-	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', !G.i2senabled );
+	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! G.i2senabled );
 	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected );
-	$( '#divsoundprofile' ).toggleClass( 'hide', !G.soundprofileconf );
+	$( '#divsoundprofile' ).toggleClass( 'hide', ! G.soundprofileconf );
 	$( '#hostname' ).val( G.hostname );
 	$( '#avahiurl' ).text( G.hostname +'.local' );
 	$( '#timezone' ).val( G.timezone );
