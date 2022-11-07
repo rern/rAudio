@@ -983,16 +983,8 @@ txqueuelen=${args[4]}
 	pushRefresh
 	;;
 startupfinish )
-	i=0
-	for i in {0..5}; do
-		startup=$( systemd-analyze | grep '^Startup finished' )
-		[[ $startup || $i == 10 ]] && break
-		
-		(( i++ ))
-		sleep 3
-	done
-	[[ ! $startup ]] && exit
-	
+	startup=$( systemd-analyze | grep '^Startup finished' )
+	[[ ! $startup ]] && sleep 2 && startup=$( systemd-analyze | grep '^Startup finished' )
 	startup=$( sed -E 's/^.*in (.*)....s \(k.*+ (.*)....s/\1s + \2s/' <<< $startup | tee  $dirshm/startup )
 	pushstream refresh '{"page":"system","startup":"'$startup'"}'
 	;;
