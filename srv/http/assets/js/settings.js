@@ -175,19 +175,9 @@ function listError( error ) {
 		.removeClass( 'hide' );
 	loaderHide();
 }
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-}
 function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );
-}
-function reboot() {
-	pushstream.timeout = 16000;
-	bash( [ 'cmd', 'power', 'reboot' ] );
 }
 function refreshData() {
 	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
@@ -236,8 +226,12 @@ function showContent() {
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ] );
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
-		pushstream.timeout = 6000; // reset 16000 > 6000 from reboot
-		if ( $( '#bannerTitle' ).text() !== 'Power' ) bannerHide();
+		if ( G.reboot ) {
+			delete G.reboot;
+			return
+		}
+		
+		bannerHide();
 		refreshData();
 	} else if ( status === 0 ) { // disconnected
 		if ( page === 'networks' ) {
@@ -294,15 +288,7 @@ function psNotify( data ) {
 	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
-		if ( message === 'Off ...' ) {
-			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( function() {
-				$( '#loader .logo' ).css( 'animation', 'none' );
-			}, 10000 );
-			pushstream.disconnect();
-			G.poweroff = 1;
-		}
-		loader();
+		pushstreamPower( message );
 	} else if ( title === 'rAudio' && message === 'Ready' ) {
 		G.raudioready = 1;
 		bash( '/srv/http/bash/settings/system.sh startupfinish' );
@@ -463,7 +449,7 @@ $( '.close' ).click( function() {
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 			, ok      : function() {
-				reboot();
+				bash( [ 'cmd', 'power', 'reboot' ] );
 			}
 		} );
 	} );

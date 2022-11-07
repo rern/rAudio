@@ -985,7 +985,7 @@ txqueuelen=${args[4]}
 startupfinish )
 	startup=$( systemd-analyze | grep '^Startup finished' )
 	[[ ! $startup ]] && sleep 2 && startup=$( systemd-analyze | grep '^Startup finished' )
-	startup=$( sed -E 's/^.*in (.*)....s \(k.*+ (.*)....s/\1s + \2s/' <<< $startup | tee  $dirshm/startup )
+	sed -E 's/^.*in (.*)....s \(k.*+ (.*)....s/\1s + \2s/' <<< $startup > $dirshm/startup
 	pushstream refresh '{"page":"system","startup":"'$startup'"}'
 	;;
 statusonboard )

@@ -826,17 +826,6 @@ function libraryHome() {
 		$( '#lib-path span' ).removeClass( 'hide' );
 	} );
 }
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-	if ( ! G.load ) {
-		G.load = 1;
-		$( '#loader' ).removeClass( 'splash' );
-		$( '#volume .rs-transition' ).css( 'transition-property', '' ); // restore animation after load
-	}
-}
 function local( delay ) {
 	G.local = 1;
 	setTimeout( function() { G.local = 0 }, delay || 300 );

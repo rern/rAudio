@@ -122,8 +122,6 @@ fi
 
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
-[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
-
 file=/sys/class/backlight/rpi_backlight/brightness
 if [[ -e $file ]]; then
 	chmod 666 $file
@@ -166,5 +164,7 @@ elif [[ $nasfailed ]]; then
 else
 	notify plus-r rAudio Ready 6000
 fi
+
+[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
 
 touch $dirshm/startup

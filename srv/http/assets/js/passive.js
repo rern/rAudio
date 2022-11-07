@@ -76,8 +76,12 @@ var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'eq
 if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels )
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load
-		pushstream.timeout = 6000; // reset 16000 > 6000 from reboot
+	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load (status-push.sh from startup.sh)
+		if ( G.reboot ) {
+			delete G.reboot;
+			return
+		}
+		
 		getPlaybackStatus( 'withdisplay' );
 	} else if ( status === 0 ) {            // disconnected
 		G.disconnected = 1;
@@ -285,15 +289,7 @@ function psNotify( data ) {
 	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
 		switchPage( 'playback' );
-		loader();
-		if ( message === 'Off ...' ) {
-			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( function() {
-				$( '#loader .logo' ).css( 'animation', 'none' );
-			}, 10000 );
-			pushstream.disconnect();
-			G.poweroff = 1;
-		}
+		pushstreamPower( message );
 	} else if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {

@@ -7,17 +7,31 @@ pushstream options
 */
 
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+
 // pushstream
 var pushstream  = new PushStream( {
 	  modes                                 : 'websocket'
-	, timeout                               : 6000
-	, reconnectOnChannelUnavailableInterval : 2500
+	, timeout                               : 20000
+	, reconnectOnChannelUnavailableInterval : 3000
 } );
 var pushstreamChannel = ( channels ) => {
 	channels.forEach( function( channel ) {
 		pushstream.addChannel( channel );
 	} );
 	pushstream.connect();
+}
+var pushstreamPower = ( message ) => {
+	if ( message === 'Off ...' ) {
+		$( '#loader' ).css( 'background', '#000000' );
+		setTimeout( function() {
+			$( '#loader .logo' ).css( 'animation', 'none' );
+		}, 10000 );
+		pushstream.disconnect();
+		G.poweroff = 1;
+	} else {
+		G.reboot = 1;
+	}
+	loader();
 }
 // active / inactive window
 var active      = 1;
@@ -70,6 +84,13 @@ $.fn.press = function( arg1, arg2 ) {
 		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
+}
+// loader
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
 }
 $( 'body' ).prepend( `
 <div id="infoOverlay" class="hide"></div>
