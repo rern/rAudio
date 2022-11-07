@@ -448,7 +448,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-camilladsp', G.display.camilladsp )
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
-	var submenu = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
+	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
 	submenu.forEach( function( el ) { // submenu toggled by css .settings + .submenu
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );
@@ -486,7 +486,7 @@ function getBio( artist ) {
 		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'<i class="bioback fa fa-arrow-left hide"></i></p>';
 		var similar =  data.similar.artist;
 		if ( similar ) {
-			similars = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
+			var similars  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
 			similar.forEach( function( artist ) {
 				similars += '<a class="biosimilar">'+ artist.name +'</a>,&ensp;';
 			} );
@@ -521,7 +521,7 @@ function getBio( artist ) {
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var imageshtml = '<div id="bioimg">';
+					var imageshtml  = '<div id="bioimg">';
 					data.artistthumb.forEach( function( el ) {
 						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>';
 					} );
@@ -995,7 +995,7 @@ function playlistFilter() {
 	$( '#pl-list li' ).each( function() {
 		var $this = $( this );
 		var match = ( $this.text().search( regex ) !== -1 ) ? true : false;
-		count = match ? ( count + 1 ) : count;
+		count     = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', ! match );
 		if ( ! $this.hasClass( 'hide' ) ) {
 			var name = $this.find( '.name' ).text().replace( regex, function( match ) { return '<bl>'+ match +'</bl>' } );
@@ -1911,7 +1911,7 @@ function switchPage( page ) {
 	}
 }
 function thumbUpdate( path ) {
-	var form = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
+	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
 	[ 'cove', 'update', 'main', path || '' ].forEach( function( el ) {
 		form += '<input type="hidden" name="opt[]" value="'+ el +'">';
 	} );

@@ -1,4 +1,4 @@
-G = {
+G               = {
 	  addplay       : 0
 	, apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
 	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
@@ -35,9 +35,9 @@ G = {
 	, wH            : window.innerHeight
 	, wW            : window.innerWidth
 }
-$bartop         = $( '#bar-top' );
-$time           = $( '#time-knob' );
-$volume         = $( '#volume-knob' );
+var $bartop     = $( '#bar-top' );
+var $time       = $( '#time-knob' );
+var $volume     = $( '#volume-knob' );
 var cmdphp      = 'cmd.php';
 var data        = {}
 var picaOption  = { // pica.js
@@ -286,7 +286,7 @@ $( '#displayplayback' ).click( function() {
 			, noswipe      : 'Disable swipe'
 	}
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
-	var keys = Object.keys( chkplayback );
+	var keys   = Object.keys( chkplayback );
 	var values = [];
 	keys.forEach( function( k, i ) {
 		values.push( G.display[ k ] );
@@ -304,7 +304,7 @@ $( '#displayplayback' ).click( function() {
 			var $chk = $( '#infoContent input' );
 			keys.forEach( function( k, i ) {
 				window[ '$'+ k ] = $chk.eq( i );
-				window[ k ] = i;
+				window[ k ]      = i;
 			} );
 			function toggleBars( t, c ) {
 				if ( ! t && ! c ) {

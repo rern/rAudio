@@ -395,7 +395,7 @@ function info( json ) {
 	
 	if ( O.tab ) {
 		$( '#infoTab' ).remove();
-		htmltab = '<div id="infoTab">';
+		htmltab      = '<div id="infoTab">';
 		O.tab.forEach( function( l ) {
 			htmltab += '<a>'+ l +'</a>';
 		} );
@@ -426,14 +426,14 @@ function info( json ) {
 		// inputs html ///////////////////////////////////////////////////////////
 		if ( O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
-			htmls.text = '';
+			htmls.text      = '';
 			O.textlabel.forEach( function( lbl ) {
 				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
 		if ( O.passwordlabel ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
-			htmls.password = '';
+			htmls.password      = '';
 			O.passwordlabel.forEach( function( lbl ) {
 				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
@@ -483,9 +483,9 @@ function info( json ) {
 		}
 		if ( O.select ) {
 			if ( typeof O.select !== 'object' ) {
-				htmls.select = O.select;
+				htmls.select      = O.select;
 			} else {
-				htmls.select = '<tr><td>'+ O.selectlabel +'</td><td><select>';
+				htmls.select      = '<tr><td>'+ O.selectlabel +'</td><td><select>';
 				$.each( O.select, function( key, val ) {
 					htmls.select += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
 				} );
@@ -525,7 +525,7 @@ function info( json ) {
 		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs    = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
-			name = this.name;
+		name        = this.name;
 			if ( ! name ) {
 				return true
 			} else if (	name !== nameprev ) {
@@ -681,8 +681,8 @@ function infoVal() {
 	O.textarea = 0;
 	O.inputs.each( function() {
 		$this = $( this );
-		type = $this.prop( 'type' );
-		val = '';
+		type  = $this.prop( 'type' );
+		val   = '';
 		switch ( type ) {
 			case 'radio': // radio has only single checked - skip unchecked inputs
 				val = $( '#infoContent input:radio[name='+ this.name +']:checked' ).val();

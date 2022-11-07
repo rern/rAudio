@@ -397,9 +397,9 @@ $( '#setting-lcdchar' ).click( function() {
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var offpin = '';
-	var ledpin = '';
-	var respin = '';
+	var offpin  = '';
+	var ledpin  = '';
+	var respin  = '';
 	$.each( pin2gpio, function( k, v ) {
 		offpin += '<option value='+ k +'>'+ k +'</option>';
 		if ( k != 5 ) {
@@ -460,7 +460,7 @@ $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin = '<td colspan="3"><select >';
+	var pin  = '<td colspan="3"><select >';
 	$.each( pin2gpio, function( k, v ) {
 		pin += '<option value='+ v +'>'+ k +'</option>';
 	} );
@@ -584,7 +584,7 @@ $( '#setting-lcd' ).click( function() {
 	} );
 } );
 $( '#setting-vuled' ).click( function() {
-	var opt = '';
+	var opt  = '';
 	$.each( pin2gpio, function( k, v ) {
 		opt += '<option value="'+ v +'">'+ k +'</option>';
 	} );
@@ -1075,7 +1075,7 @@ function renderPage() {
 	} else {
 		bash( '/srv/http/bash/settings/system.sh startupfinish' );
 	}
-	var html = '';
+	var html  = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {
 			var dataunmounted = '';

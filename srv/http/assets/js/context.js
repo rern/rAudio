@@ -211,7 +211,7 @@ function tagEditor() {
 				values.push( v[ k ] || '' );
 			} );
 		} else {
-			cue = file.includes( '.cue/track' );
+			cue    = file.includes( '.cue/track' );
 		}
 		var parts    = file.split( '/' );
 		var filename = parts.pop();
@@ -222,8 +222,8 @@ function tagEditor() {
 			filename = parts.pop();
 			filepath = parts.join( '/' );
 		}
-		name[ 1 ] = 'Album Artist';
-		var label = [];
+		name[ 1 ]    = 'Album Artist';
+		var label    = [];
 		format.forEach( function( el, i ) {
 			if ( G.playlist && ! values[ i ] ) {
 				delete values[ i ];
@@ -328,7 +328,7 @@ function tagEditor() {
 			}
 			, okno         : G.playlist
 			, ok           : G.playlist ? '' : function() {
-				var tag = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
+				var tag       = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var newvalues = infoVal();
 				var val;
 				newvalues.forEach( function( v, i ) {

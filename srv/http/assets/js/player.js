@@ -431,7 +431,7 @@ function renderPage() {
 			$( '#audiooutput' )
 				.html( htmldevices )
 				.val( G.asoundcard );
-			var htmlhwmixer   = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+			var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			if ( 'mixerdevices' in device ) {
 				device.mixerdevices.forEach( function( mixer ) {
 					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
