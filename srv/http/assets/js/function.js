@@ -1346,11 +1346,12 @@ function renderPlaylist( data ) {
 		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( function() {
 			G.status.pllength = $( '#pl-list li' ).length;
-			setPlaylistScroll();
 			imageLoad( 'pl-list' );
+			setPlaylistScroll();
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 		} );
 	} else {
+		setPlaylistScroll();
 		$( '.list p' ).toggleClass( 'bars-on', barvisible );
 	}
 }
