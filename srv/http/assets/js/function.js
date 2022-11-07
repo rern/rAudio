@@ -539,11 +539,9 @@ function getBio( artist ) {
 							if ( entry.isIntersecting ) { // visible = true
 								$name.css( 'margin-left', '' );
 								$img.addClass( 'hide' );
-							} else {
-								if ( entry.boundingClientRect.top < 0 ) { // above page top
-									$name.css( 'margin-left', '-220px' );
-									$img.removeClass( 'hide' );
-								}
+							} else if ( entry.boundingClientRect.top < 0 ) { // above page top
+								$name.css( 'margin-left', ( -1 * $name[ 0 ].offsetLeft ) +'px' );
+								$img.removeClass( 'hide' );
 							}
 						} );
 					} );
