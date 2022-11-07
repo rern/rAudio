@@ -479,13 +479,12 @@ function getBio( artist, getsimilar ) {
 			return
 		}
 		
-		var data      = data.artist;
-		artistname    = data.name;
-		var content   = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
-		var genre     = data.tags.tag[ 0 ].name;
-		var genrehtml = genre ? '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre : '';
-		var backhtml  = getsimilar ? '<i class="bioback fa fa-arrow-left"></i></p>' : '';
-		var similar   =  data.similar.artist;
+		var data     = data.artist;
+		artistname   = data.name;
+		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
+		var genre    = data.tags.tag[ 0 ].name;
+		var backhtml = getsimilar ? '<i class="bioback fa fa-arrow-left"></i>' : '';
+		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
 			similar.forEach( function( a ) {
@@ -498,7 +497,7 @@ function getBio( artist, getsimilar ) {
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
 	<p class="artist"><a>${ artistname }<i class="closebio fa fa-times close-root"></i></a></p>
-	${ genrehtml }${ backhtml }
+	<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
