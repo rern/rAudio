@@ -363,7 +363,6 @@ foreach( $settinglist as $l ) {
 	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
-<div id="bio" class="hide"></div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
 		<img src="">
@@ -386,3 +385,4 @@ foreach( $settinglist as $l ) {
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces (or display: flex) -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>
+<div id="bio" class="hide"></div>

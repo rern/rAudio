@@ -1123,7 +1123,6 @@ $( '#biocontent' ).on( 'click', '.bioback', function() {
 $( '#bio' ).on( 'click', '.closebio', function() {
 	G.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
-	displayBars();
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
