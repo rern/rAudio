@@ -54,4 +54,4 @@ esac
 coverart=${target/\/srv\/http}
 [[ ${target:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
 pushstream coverart '{"url":"'$coverart?v=$date'","type":"'$type'"}'
-rm -f $dirshm/{embedded,local}/*
+rm -f $dirshm/{embedded,local,online}/*
