@@ -1118,7 +1118,8 @@ $( '#bio' ).on( 'click', '.biosimilar', function() {
 } );
 $( '#bio' ).on( 'click', '.bioback', function() {
 	G.bioartist.pop();
-	getBio( G.bioartist.pop() );
+	var getsimilar = G.bioartist.length > 1 ? 'getsimilar' : '';
+	getBio( G.bioartist.pop(), getsimilar );
 } );
 $( '#bio' ).on( 'click', '.closebio', function() {
 	G.bioartist = [];

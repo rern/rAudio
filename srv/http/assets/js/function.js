@@ -550,6 +550,8 @@ function getBio( artist, getsimilar ) {
 				} else {
 					loaderHide();
 				}
+			} ).fail( function() { // 404 not found
+				loaderHide();
 			} );
 		} );
 	} );
