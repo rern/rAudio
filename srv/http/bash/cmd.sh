@@ -151,8 +151,9 @@ snapclientStop() {
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
-		systemctl stop radio dab
-		rm -f $dirshm/{radio,status}
+		systemctl stop radio
+		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
+		rm -f $dirshm/radio
 		sleep 1
 	fi
 }
@@ -527,7 +528,7 @@ displaysave )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		grep -q -m1 ^state=play $dirshm/status && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		grep -q -m1 '^state.*play' $dirshm/status && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
 		[[ -e $dirmpdconf/fifo.conf ]] && exit
 		
@@ -669,7 +670,7 @@ mpcaddrandom )
 	plAddRandom
 	;;
 mpccrop )
-	if grep -q -m1 ^state=play $dirshm/status; then
+	if grep -q -m1 '^state.*play' $dirshm/status; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -741,7 +742,7 @@ mpcplayback )
 			exit
 		fi
 		
-		if grep -q -m1 ^state=play $dirshm/status; then
+		if grep -q -m1 '^state.*play' $dirshm/status; then
 			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
@@ -749,7 +750,7 @@ mpcplayback )
 	fi
 	stopRadio
 	if [[ $command == play ]]; then
-		grep -q -m1 ^state=pause $dirshm/status && pause=1
+		grep -q -m1 '^state.*pause' $dirshm/status && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else

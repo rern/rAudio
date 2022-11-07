@@ -21,7 +21,7 @@ localbrowserXset() {
 	if [[ $off == 0 ]]; then
 		xset -dpms
 	elif [[ -e $dirsystem/onwhileplay ]]; then
-		grep -q -m1 ^state=play $dirshm/status && xset -dpms || xset +dpms
+		grep -q -m1 '^state.*play' $dirshm/status && xset -dpms || xset +dpms
 	else
 		xset +dpms
 	fi
