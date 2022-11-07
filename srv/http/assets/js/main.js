@@ -1113,10 +1113,10 @@ $( '.btn-cmd' ).click( function() {
 	}
 	if ( $( '#relays' ).hasClass( 'on' ) && cmd === 'play' ) bash( [ 'relaystimerreset' ] );
 } );
-$( '#biocontent' ).on( 'click', '.biosimilar', function() {
-	getBio( $( this ).text() );
+$( '#bio' ).on( 'click', '.biosimilar', function() {
+	getBio( $( this ).text(), 'getsimilar' );
 } );
-$( '#biocontent' ).on( 'click', '.bioback', function() {
+$( '#bio' ).on( 'click', '.bioback', function() {
 	G.bioartist.pop();
 	getBio( G.bioartist.pop() );
 } );

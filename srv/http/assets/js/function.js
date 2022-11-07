@@ -454,10 +454,9 @@ function displaySubMenu() {
 	} );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
-function getBio( artist ) {
+function getBio( artist, getsimilar ) {
 	G.bioartist.push( artist );
 	if ( artist === $( '#biocontent .name' ).text() ) {
-		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 		$( '#bio' ).removeClass( 'hide' );
 		return
 	}
@@ -480,26 +479,27 @@ function getBio( artist ) {
 			return
 		}
 		
-		var data    = data.artist;
-		artistname  = data.name;
-		var content = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
-		var genre   = data.tags.tag[ 0 ].name;
-		if ( genre ) genre = '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre +'<i class="bioback fa fa-arrow-left hide"></i></p>';
-		var similar =  data.similar.artist;
+		var data      = data.artist;
+		artistname    = data.name;
+		var content   = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
+		var genre     = data.tags.tag[ 0 ].name;
+		var genrehtml = genre ? '<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;'+ genre : '';
+		var backhtml  = getsimilar ? '<i class="bioback fa fa-arrow-left"></i></p>' : '';
+		var similar   =  data.similar.artist;
 		if ( similar ) {
-			var similars  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
+			var similarhtml  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
 			similar.forEach( function( a ) {
-				similars += '<a class="biosimilar">'+ a.name +'</a>,&ensp;';
+				similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;';
 			} );
-			similars = similars.slice( 0, -7 ) +'</span><br><br>';
+			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
 		var biohtml = `
 <div class="container">
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
 	<p class="artist"><a>${ artistname }<i class="closebio fa fa-times close-root"></i></a></p>
-	${ genre }
-	${ similars }
+	${ genrehtml }${ backhtml }
+	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
 	<br><br>
@@ -546,6 +546,8 @@ function getBio( artist ) {
 						} );
 					} );
 					observer.observe( $( '#bioimg img' ).last()[ 0 ] );
+					loaderHide();
+				} else {
 					loaderHide();
 				}
 			} );
