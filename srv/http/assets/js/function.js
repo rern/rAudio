@@ -1053,6 +1053,7 @@ function playlistRemove( $li ) {
 }
 function power( action ) {
 	var off = action === 'off';
+	pushstream.timeout = 16000; // temp for reboot
 	bash( [ 'power', action ], function( nfs ) {
 		if ( nfs == -1 ) {
 			info( {

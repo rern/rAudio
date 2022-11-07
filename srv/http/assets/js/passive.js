@@ -77,6 +77,7 @@ if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels )
 pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load
+		pushstream.timeout = 6000; // reset 16000 > 6000 from reboot
 		getPlaybackStatus( 'withdisplay' );
 	} else if ( status === 0 ) {            // disconnected
 		G.disconnected = 1;

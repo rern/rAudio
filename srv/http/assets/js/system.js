@@ -59,7 +59,7 @@ $( '.power' ).click( function() {
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
 		, button      : function() {
-			bash( [ 'cmd', 'power', 'reboot' ] );
+			reboot();
 		}
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
@@ -1070,11 +1070,7 @@ function renderPage() {
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( G.system );
 	$( '#status' ).html( G.status );
-	if ( G.startup ) {
-		$( '#status a' ).html( G.startup +'<wide>&ensp;<gr>(kernel + userspace)</gr></wide>' );
-	} else {
-		bash( '/srv/http/bash/settings/system.sh startupfinish' );
-	}
+	if ( G.startup ) $( '#status a' ).html( G.startup +'<wide>&ensp;<gr>(kernel + userspace)</gr></wide>' );
 	var html  = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {

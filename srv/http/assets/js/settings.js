@@ -58,6 +58,12 @@ var services   = [
 	, 'upmpdcli'
 ];
 
+function bannerReset() {
+	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
+	$( '#bannerIcon i' ).removeClass( 'blink' );
+	clearTimeout( G.timeoutbanner );
+	G.timeoutbanner = setTimeout( bannerHide, delay );
+}
 function copy2clipboard( txt ) { // for non https which cannot use clipboard API
 	$( 'body' ).append( '<textarea id="error">'+ txt +'</textarea>' );
 	$( '#error' ).focus().select();
@@ -88,7 +94,7 @@ function currentStatus( id, refresh ) {
 			}
 			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
 		} );
-		resetLocal();
+		bannerReset();
 	} );
 }
 function infoPlayerActive( $this ) {
@@ -179,6 +185,10 @@ function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );
 }
+function reboot() {
+	pushstream.timeout = 16000;
+	bash( [ 'cmd', 'power', 'reboot' ] );
+}
 function refreshData() {
 	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
@@ -198,12 +208,6 @@ function refreshData() {
 		}
 	} );
 }
-function resetLocal() {
-	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
-	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( G.timeoutbanner );
-	G.timeoutbanner = setTimeout( bannerHide, delay );
-}
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
 		$( '.switch' ).each( function() {
@@ -218,7 +222,7 @@ function setSwitch() {
 	}
 }
 function showContent() {
-	resetLocal();
+	G.raudioready ? delete G.raudioready : bannerReset();
 	if ( $( 'select' ).length ) selectricRender();
 	if ( page !== 'networks' ) {
 		$( 'pre.status' ).each( function( el ) {
@@ -232,7 +236,8 @@ function showContent() {
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ] );
 pushstream.onstatuschange = function( status ) {
 	if ( status === 2 ) {        // connected
-		bannerHide();
+		pushstream.timeout = 6000; // reset 16000 > 6000 from reboot
+		if ( $( '#bannerTitle' ).text() !== 'Power' ) bannerHide();
 		refreshData();
 	} else if ( status === 0 ) { // disconnected
 		if ( page === 'networks' ) {
@@ -298,6 +303,9 @@ function psNotify( data ) {
 			G.poweroff = 1;
 		}
 		loader();
+	} else if ( title === 'rAudio' && message === 'Ready' ) {
+		G.raudioready = 1;
+		bash( '/srv/http/bash/settings/system.sh startupfinish' );
 	}
 }
 function psPlayer( data ) {
@@ -455,7 +463,7 @@ $( '.close' ).click( function() {
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 			, ok      : function() {
-				bash( [ 'cmd', 'power', 'reboot' ] );
+				reboot();
 			}
 		} );
 	} );

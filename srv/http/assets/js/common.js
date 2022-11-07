@@ -10,8 +10,8 @@ var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // pushstream
 var pushstream  = new PushStream( {
 	  modes                                 : 'websocket'
-	, timeout                               : 10000
-	, reconnectOnChannelUnavailableInterval : 3000
+	, timeout                               : 6000
+	, reconnectOnChannelUnavailableInterval : 2500
 } );
 var pushstreamChannel = ( channels ) => {
 	channels.forEach( function( channel ) {
