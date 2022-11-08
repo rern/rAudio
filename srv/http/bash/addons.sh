@@ -80,7 +80,9 @@ getinstallzip() {
 	
 	echo
 	echo $bar Install new files ...
-	filelist=$( bsdtar tf $installfile ) # stdout as a block to avoid blank lines
+	filelist=$( bsdtar tf $installfile \
+					| grep /srv/ \
+					| sed -e '/\/$/ d' -e 's|^.*/srv/|/srv/|' ) # stdout as a block to avoid blank lines
 	echo "$filelist"
 	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
 	if [[ $uninstallfile ]]; then
