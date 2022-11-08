@@ -180,7 +180,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( page === 'addons' || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	bash( dirbash + page +'-data.sh', function( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -473,6 +473,13 @@ $( '#button-data' ).click( function() {
 	clearTimeout( timer );
 } );
 $( '.help-head' ).click( function() {
+	if ( page === 'addons' ) {
+		var hidden = $( '.revisiontext' ).hasClass( 'hide' );
+		$( this ).toggleClass( 'bl', hidden );
+		$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
+		return
+	}
+	
 	var eltop = $( 'heading' ).filter( function() {
 		return this.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element

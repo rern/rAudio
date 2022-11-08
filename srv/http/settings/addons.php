@@ -3,34 +3,11 @@ $time = time();
 $sudo = '/usr/bin/sudo /usr/bin/';
 $diraddons = '/srv/http/data/addons';
 $addons = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true );
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>addons</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
-</head>
-<body>
-<div class="head">
-	<i id="page-icon" class="fa fa-jigsaw"></i><span class="title">ADDONS</span><i id="close" class="fa fa-times"></i>
-</div>
-<div class="container">
-<?php
 // ------------------------------------------------------------------------------------
-$list = '';
-$blocks = '';
 $updates = 0;
 $arrayalias = array_keys( $addons );
+$list = '<ul id="list">';
+$blocks = '';
 foreach( $arrayalias as $alias ) {
 	$addon = $addons[ $alias ];
 	$version = $addon[ 'version' ] ?? '';
@@ -84,7 +61,7 @@ foreach( $arrayalias as $alias ) {
 	if ( $addonrevision ) {
 		if ( is_array( $addonrevision ) ) $addonrevision = implode( '<br><gr>•</gr> ', $addonrevision );
 		$revision = str_replace( '\\', '', $addonrevision ); // remove escaped [ \" ] to [ " ]
-		$revision = '<p class="revisiontext"><gr>•</gr> '.$revision.'</p>';
+		$revision = '<p class="revisiontext hide"><gr>•</gr> '.$revision.'</p>';
 	} else {
 		$revision = '';
 	}
@@ -105,7 +82,7 @@ foreach( $arrayalias as $alias ) {
 	$blocks .= '
 			<legend>
 				<span>'.$check.preg_replace( '/\**$/', '', $title ).'</span>
-				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? '&ensp;<i class="fa fa-chevron-down"></i>' : '' ).'</a>
+				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? ' <i class="fa fa-help"></i>' : '' ).'</a>
 				</p>
 			</legend>
 			'.$revision.'
@@ -126,32 +103,18 @@ if ( $updates ) {
 } else {
 	@unlink( "$diraddons/update" );
 }
-
 // ------------------------------------------------------------------------------------
-echo '
-	<ul id="list">'.
-		$list.'
-	</ul>
-';
-echo $blocks;
-?>
-</div>
-<p id="bottom"></p> <!-- for bottom padding -->
+echo $list.'
+	</ul>'.
+	$blocks.'
+</div>';
 
-<?php
 $keepkey = [ 'title', 'installurl', 'rollback', 'option', 'postinfo' ];
 foreach( $arrayalias as $alias ) {
 	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
 }
 ?>
-<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
-<script src="/assets/js/common.js?v=<?=$time?>"></script>
-<script src="/assets/js/addons.js?v=<?=$time?>"></script>
-	<?php if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
+
 <script>
 var addons = <?=json_encode( $addonslist )?>;
 </script>
-
-</body>
-</html>

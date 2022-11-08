@@ -173,6 +173,7 @@ function sendcommand() {
 }
 
 //---------------------------------------------------------------------------
+$( '.container' ).removeClass( 'hide' );
 $( '#loader' ).addClass( 'hide' );
 G = {}
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
@@ -182,8 +183,10 @@ $( '#close' ).click( function() {
 $( '.revision' ).click( function(e) {
 	e.stopPropagation();
 	var $this = $( this );
-	$this.parent().parent().next().toggle();
-	$this.toggleClass( 'revisionup' );
+	$revisiontext = $this.parent().parent().next();
+	var hidden = $revisiontext.hasClass( 'hide' );
+	$( '.help-head' ).toggleClass( 'bl', hidden );
+	$revisiontext.toggleClass( 'hide', ! hidden );
 } );
 $( '#list li' ).click( function() {
 	var alias = this.getAttribute( 'alias' );

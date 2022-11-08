@@ -158,25 +158,26 @@ function i( $icon, $id = '' ) {
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
 
-
 include "settings/$page.php";
-$htmlbar = '';
-foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
-	$id = strtolower( $name );
-	$active = $id === $pagehead ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
+if ( $page !== 'addons' ) {
+	$htmlbar = '<div id="bar-bottom">';
+	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
+		$id = strtolower( $name );
+		$active = $id === $pagehead ? ' class="active"' : '';
+		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
+	}
+	$htmlbar = '</div>';
+	echo $htmlbar;
 }
+echo '</div>';
 ?>
-</div>
-<div id="bar-bottom">
-	<?=$htmlbar?>
-</div>
-
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
 <script src="/assets/js/common.js?v=<?=$time?>"></script>
 <script src="/assets/js/<?=$page?>.js?v=<?=$time?>"></script>
-	<?php if ( $page === 'relays' ) { ?>
+	<?php if ( $page === 'addons' ) { ?>
+<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
+	<?php } else if ( $page === 'relays' ) { ?>
 <link rel="stylesheet" href="/assets/css/relays.css?v=<?=$time?>">
 <script src="/assets/js/relays.js?v=<?=$time?>"></script>
 	<?php } else if ( $page === 'networks' ) { ?>
