@@ -116,7 +116,7 @@ foreach( $arrayalias as $alias ) {
 			</form>';
 	if ( $thumbnail ) $blocks .= '
 		</div>
-		<img src="'.preg_replace( '/\.(.*)$/', '.'.$time.'.$1', $thumbnail ).'" class="thumbnail">
+		<img src="'.$thumbnail.'?v=<?'.$time.'" class="thumbnail">
 		<div style="clear: both;"></div>';
 	$blocks .= '
 		</div>';
