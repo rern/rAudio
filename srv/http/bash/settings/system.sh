@@ -392,15 +392,22 @@ dtparam=audio=on"
 	;;
 journalctl )
 	filebootlog=$dirtmp/bootlog
-	if [[ ! -e $filebootlog ]]; then
-		journal=$( journalctl -b | sed -n '1,/Startup finished.*kernel/ p' )
-		grep -q -m1 'Startup finished' <<< $journal || journal='(Boot ...)'
-		echo "$journal" > $filebootlog
-	fi
-	echo "\
-<bll># journalctl -b</bll>
-$( < $filebootlog )
+	[[ -e $filebootlog ]] && cat $filebootlog && exit
+	
+	journal="\
+<bll># journalctl -b</bll>"
+	journal+="
+$( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<red>&</red>|; p}' )
 "
+	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
+	if [[ $startupfinished ]]; then
+		echo "\
+$startupfinished
+
+$journal" | tee $filebootlog
+	else
+		echo "$journal"
+	fi
 	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
@@ -981,12 +988,6 @@ txqueuelen=${args[4]}
 		soundProfile reset
 	fi
 	pushRefresh
-	;;
-startupfinish )
-	startup=$( systemd-analyze | grep '^Startup finished' )
-	[[ ! $startup ]] && sleep 2 && startup=$( systemd-analyze | grep '^Startup finished' )
-	sed -E 's/^.*in (.*)....s \(k.*+ (.*)....s/\1s + \2s/' <<< $startup > $dirshm/startup
-	pushstream refresh '{"page":"system","startup":"'$startup'"}'
 	;;
 statusonboard )
 	ifconfig

@@ -291,7 +291,6 @@ function psNotify( data ) {
 		pushstreamPower( message );
 	} else if ( title === 'rAudio' && message === 'Ready' ) {
 		G.raudioready = 1;
-		bash( '/srv/http/bash/settings/system.sh startupfinish' );
 	}
 }
 function psPlayer( data ) {

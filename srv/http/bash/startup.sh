@@ -47,6 +47,7 @@ fi
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
+
 		sleep $2
 	done
 }
@@ -54,10 +55,6 @@ connectedCheck() {
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
-
-echo mpd > $dirshm/player
-echo 0 > $dirsystem/volumemute
-touch $dirshm/status
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 

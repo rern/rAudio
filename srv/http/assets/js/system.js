@@ -1070,7 +1070,6 @@ function renderPage() {
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( G.system );
 	$( '#status' ).html( G.status );
-	if ( G.startup ) $( '#status a' ).html( G.startup +'<wide>&ensp;<gr>(kernel + userspace)</gr></wide>' );
 	var html  = '';
 	$.each( G.list, function( i, val ) {
 		if ( val.mounted ) {

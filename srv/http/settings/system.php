@@ -65,7 +65,6 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
-		<br>Boot Duration
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
