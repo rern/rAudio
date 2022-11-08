@@ -30,14 +30,63 @@ $sudo = '/usr/bin/sudo /usr/bin';
 	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
 	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
 	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
+<?php if ( $page === 'addons' || $page === 'addons-progress' ) { ?>
+	<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
+<?php } ?>
 </head>
 <body>
+<!-- head ........................................................................... -->
 <div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
+<!-- container ...................................................................... -->
 <div class="container hide">
+<?php
+include "settings/$page.php";
+
+echo '</div>';
+//   bottom bar ......................................................................
+if ( ! in_array( $page, [ 'addons', 'addons-progress', 'guide' ] ) ) {
+	$htmlbar = '<div id="bar-bottom">';
+	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
+		$id = strtolower( $name );
+		$active = $id === $pagehead ? ' class="active"' : '';
+		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
+	}
+	$htmlbar.= '</div>';
+	echo $htmlbar;
+}
+//   .................................................................................
+
+	if ( ! in_array( $page, [ 'addons-progress', 'guide' ] ) ) {
+?>
+<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
+	<?php if ( $page !== 'addons' ) { ?>
+<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
+	<?php } ?>
+<script src="/assets/js/common.js?v=<?=$time?>"></script>
+	<?php if ( $page !== 'addons' ) { ?>
+<script src="/assets/js/settings.js?v=<?=$time?>"></script>
+	<?php } ?>
+<script src="/assets/js/<?=$page?>.js?v=<?=$time?>"></script>
+	<?php if ( $page === 'networks' ) { ?>
+<script src="/assets/js/plugin/qrcode.min.js"></script>
+	<?php } else { ?>
+<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
+<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
+	<?php }
+		  if ( $page === 'relays' ) { ?>
+<link rel="stylesheet" href="/assets/css/relays.css?v=<?=$time?>">
+<script src="/assets/js/relays.js?v=<?=$time?>"></script>
+	<?php }
+		  if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';
+	} ?>
+
+</body>
+</html>
+
 <?php
 /*
 $head = [
@@ -165,41 +214,3 @@ function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
-
-include "settings/$page.php";
-if ( $page !== 'addons' && $page !== 'guide' ) {
-	$htmlbar = '<div id="bar-bottom">';
-	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
-		$id = strtolower( $name );
-		$active = $id === $pagehead ? ' class="active"' : '';
-		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
-	}
-	$htmlbar = '</div>';
-	echo $htmlbar;
-}
-echo '</div>';
-
-if ( $page !== 'guide' ) {
-?>
-<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
-<script src="/assets/js/common.js?v=<?=$time?>"></script>
-<script src="/assets/js/<?=$page?>.js?v=<?=$time?>"></script>
-	<?php if ( $page === 'addons' ) { ?>
-<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
-	<?php } else if ( $page === 'relays' ) { ?>
-<link rel="stylesheet" href="/assets/css/relays.css?v=<?=$time?>">
-<script src="/assets/js/relays.js?v=<?=$time?>"></script>
-	<?php } else if ( $page === 'networks' ) { ?>
-<script src="/assets/js/plugin/qrcode.min.js"></script>
-	<?php }
-		  if ( $page !== 'networks' ) { ?>
-<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
-<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
-	<?php }
-		  if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
-<script src="/assets/js/settings.js?v=<?=$time?>"></script>
-<?php } ?>
-
-</body>
-</html>

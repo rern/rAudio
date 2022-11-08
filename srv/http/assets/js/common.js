@@ -1,14 +1,15 @@
 /* 
+pushstream
 banner()
 $.fn.press()
 loader
 info()
-pushstream options
 */
 
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // pushstream
-if ( location.pathname !== '/settings/addons-progress.php' ) {
+var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
+if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
 		, timeout                               : 20000

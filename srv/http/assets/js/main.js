@@ -435,7 +435,19 @@ $( '#colorpicker' ).click( function( e ) {
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
 	bash( [ 'addonslist' ], function( std ) {
-		addonsdl( std )
+		if ( std ) {
+			info( {
+				  icon    : 'jigsaw'
+				, title   : 'Addons'
+				, message : std == -1 ? 'Download from Addons server failed.' : 'No internet connection.'
+						   +'<br>Please try again later.'
+				, ok      : function() {
+					loaderHide();
+				}
+			} );
+		} else {
+			location.href = '/settings.php?p=addons';
+		}
 	} );
 	loader();
 } );

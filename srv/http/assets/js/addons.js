@@ -158,7 +158,7 @@ function getoptions() {
 	}
 }
 function postcmd() { // post submit with temporary form
-	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
+	var form  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
 	opt.forEach( function( o ) {
 		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
 	} );
@@ -174,11 +174,17 @@ function sendcommand() {
 
 //---------------------------------------------------------------------------
 $( '.container' ).removeClass( 'hide' );
-$( '#loader' ).addClass( 'hide' );
-G = {}
+loaderHide();
+document.title = 'Addons';
+
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '#close' ).click( function() {
+$( '.close' ).click( function() {
 	location.href = '/';
+} );
+$( '.help-head' ).click( function() {
+	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
+	$( this ).toggleClass( 'bl', hidden );
+	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
 $( '.revision' ).click( function(e) {
 	e.stopPropagation();

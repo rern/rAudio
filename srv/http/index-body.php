@@ -173,7 +173,7 @@ $settinglist = [
 		'snapclient', 'snapclient' ]
 	, [ 'system', 'settings', 'plus-r', 'System',
 		'relays', 'relays' ]
-	, [ 'addons', 'settings sub', 'jigsaw', 'Addons',
+	, [ 'addons', 'sub', 'jigsaw', 'Addons',
 		'guide', 'help' ]
 	, [ 'power', '', 'power', 'Power',
 		'screenoff', 'screenoff' ]
