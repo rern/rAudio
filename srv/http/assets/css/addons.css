@@ -125,7 +125,6 @@ a:hover {
 }
 .infobtn.disabled {
 	pointer-events: auto;
-	user-select: none;
 }
 #list,
 #list li {

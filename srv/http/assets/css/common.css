@@ -459,6 +459,8 @@ input::-moz-focus-inner {
 	background-color: var( --cg );
 	box-shadow: -2px 2px 3px 1px #000000;
 	cursor: pointer;
+	-webkit-user-select: none;
+	user-select: none;
 }
 .infobtn-primary {
 	background-color: var( --cm );
