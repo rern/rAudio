@@ -48,11 +48,10 @@ if ( location.pathname !== '/settings/addons.php' ) {
 			pushstream.disconnect();
 		}
 	}
+	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+	window.onpageshow = window.onfocus = connect;
 }
-document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-window.onpageshow = window.onfocus = connect;
-
 
 // $.fn.press() ----------------------------------------------------------------------
 /*
