@@ -9,7 +9,7 @@ pushstream options
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 
 // pushstream
-if ( location.pathname.includes( 'addons' ) ) { // addons.php, addons-progress.php
+if ( ! location.pathname.includes( 'addons' ) ) { // addons.php, addons-progress.php
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
 		, timeout                               : 20000
