@@ -8,48 +8,49 @@ pushstream options
 
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // pushstream
-var pushstream  = new PushStream( {
-	  modes                                 : 'websocket'
-	, timeout                               : 20000
-	, reconnectOnChannelUnavailableInterval : 3000
-} );
-var pushstreamChannel = ( channels ) => {
-	channels.forEach( function( channel ) {
-		pushstream.addChannel( channel );
+if ( location.pathname !== '/settings/addons-progress.php' ) {
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, timeout                               : 20000
+		, reconnectOnChannelUnavailableInterval : 3000
 	} );
-	pushstream.connect();
-}
-var pushstreamPower = ( message ) => {
-	if ( message === 'Off ...' ) {
-		$( '#loader' ).css( 'background', '#000000' );
-		setTimeout( function() {
-			$( '#loader .logo' ).css( 'animation', 'none' );
-		}, 10000 );
-		pushstream.disconnect();
-		G.poweroff = 1;
-	} else {
-		G.reboot = 1;
-	}
-	loader();
-}
-// active / inactive window
-var active      = 1;
-var connect     = () => {
-	if ( ! active && ! G.poweroff ) {
-		active = 1;
+	var pushstreamChannel = ( channels ) => {
+		channels.forEach( function( channel ) {
+			pushstream.addChannel( channel );
+		} );
 		pushstream.connect();
 	}
-}
-var disconnect  = () => {
-	if ( active ) {
-		active = 0;
-		pushstream.disconnect();
+	var pushstreamPower = ( message ) => {
+		if ( message === 'Off ...' ) {
+			$( '#loader' ).css( 'background', '#000000' );
+			setTimeout( function() {
+				$( '#loader .logo' ).css( 'animation', 'none' );
+			}, 10000 );
+			pushstream.disconnect();
+			G.poweroff = 1;
+		} else {
+			G.reboot = 1;
+		}
+		loader();
 	}
+	// active / inactive window
+	var active      = 1;
+	var connect     = () => {
+		if ( ! active && ! G.poweroff ) {
+			active = 1;
+			pushstream.connect();
+		}
+	}
+	var disconnect  = () => {
+		if ( active ) {
+			active = 0;
+			pushstream.disconnect();
+		}
+	}
+	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
+	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+	window.onpageshow = window.onfocus = connect;
 }
-document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-window.onpageshow = window.onfocus = connect;
-
 // $.fn.press() ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {

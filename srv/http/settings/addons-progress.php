@@ -10,13 +10,15 @@ $type = $opt[ 1 ];
 $branch = $opt[ 2 ] ?? '';
 $addon = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
-	$heading = 'Addons Progress';
-	$href = '/settings/addons.php';
-	$title = preg_replace( '/\**$/', '', $addon[ 'title' ] );
+	$icon = '<i class="page-icon fa fa-jigsaw"></i>';
+	$title = 'ADDONS PROGRESS';
+	$href = '/settings.php?p=addons';
+	$addontitle = preg_replace( '/\**$/', '', $addon[ 'title' ] );
 } else {
-	$heading = 'Cover Art Thumbnails';
-	$href = '/';
+	$icon = '<i class="page-icon iconcover"></i>';
 	$title = 'Cover Art Thumbnails';
+	$href = '/';
+	$addontitle = 'Cover Art Thumbnails';
 	$opt = array_slice( $opt, 3 );
 }
 $options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
@@ -24,13 +26,12 @@ if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i = array_search( 'password', array_keys( $addon[ 'option' ] ) );
 	$opt[ $i + 3 ] = '***';
 }
-$postinfo = $type." done.<br>See Addons Progress for result.";
+$postinfo = $type." done.";
 $postinfo.= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
 $installurl = $addon[ 'installurl' ];
 $installfile = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
-$blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 ?>
 <!DOCTYPE html>
 <html>
@@ -44,38 +45,30 @@ $blink = $_SERVER["REMOTE_ADDR"] === '127.0.0.1' ? '' : 'blink';
 	<link rel="icon" href="/assets/img/icon.png">
 	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
 	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
 	<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
 </head>
 <body>
 
-<div class="container progress">
-	<heading><?=$heading?><i id="close" class="fa fa-times"></i></heading>
+<div class="head">
+	<?=$icon?><span class='title'><?=$title?></span><i class="fa fa-times close"></i>
+</div>
+<div class="container">
+<BR>
 	<p id="wait">
-		<wh><?=$title?></wh><br>
-		<i class="fa fa-gear <?=$blink?>"></i>&nbsp; <?=$type?> ...
+		<wh><?=$addontitle?></wh><br>
+		<i class="fa fa-gear blink"></i>&nbsp; <?=$type?> ...
 	</p>
+	
+	
+	
 	
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/common.js?v=<?=$time?>"></script>
 <script>
-$( '#loader' ).addClass( 'hide' );
-var blink;
-var $icon = $( '#wait i' );
-if ( !$icon.hasClass( 'blink' ) ) {
-	blink = setInterval( function() {
-		$icon.addClass( 'clear' );
-		setTimeout( function() {
-			$icon.removeClass( 'clear' );
-		}, 1000 );
-	}, 1500 );
-}
-$( '#close' ).click( function() {
-	$.post( '../cmd.php', {
-		  cmd  : 'bash'
-		, bash : 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1'
-	}, function() {
-		location.href = '<?=$href?>';
-	} );
+loaderHide();
+$( '.close' ).click( function() {
+	location.href = '<?=$href?>';
 } );
 var scroll = setInterval( function() {
 	$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
@@ -86,8 +79,8 @@ var scroll = setInterval( function() {
 </script>
 
 	<pre>
-<!-- ...................................................................................... -->
 <?php
+// ......................................................................................
 $getinstall = <<<cmd
 curl -sfLO $installurl
 if [[ $? != 0 ]]; then
@@ -164,7 +157,7 @@ ob_end_flush();            // force flush: current buffer (run after flush start
 echo $fillbuffer;          // fill buffer to force start output
 echo $commandtxt.'<br>';
 if ( $type === 'Uninstall' ) sleep( 1 );
-
+// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $popencmd = popen( "$command 2>&1", 'r' );              // start bash
 while ( !feof( $popencmd ) ) {                          // each line
 	$std = fread( $popencmd, 4096 );                    // read
@@ -185,28 +178,27 @@ while ( !feof( $popencmd ) ) {                          // each line
 	
 	// abort on browser back/close
 	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
-		$sudo = '/usr/bin/sudo /usr/bin';
-		exec( "$sudo/killall $( basename $installfile ) wget pacman &" );
-		exec( "$sudo/rm /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$alias.sh /srv/http/data/addons/$alias &" );
+		$sh = [ 'killaddon', basename( $installfile ), $alias ];
+		$script = '/usr/bin/sudo /srv/http/bash/settings/system.sh "'.implode( "\n", $sh ).'"';
+		shell_exec( $script );
 		pclose( $popencmd );
 		exit;
 	}
 }
 sleep( 1 );
 pclose( $popencmd );
+// ......................................................................................
 ?>
-<!-- ...................................................................................... -->
 	</pre>
 </div>
 
 <script>
-clearInterval( blink );
 clearInterval( scroll );
 $( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
 $( '#wait' ).remove();
 info( {
 	  icon    : 'jigsaw'
-	, title   : '<?=$title?>'
+	, title   : '<?=$addontitle?>'
 	, message : '<?=$postinfo?>'
 } );
 </script>

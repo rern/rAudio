@@ -7,9 +7,6 @@ hr {
 	border: 0;
 	border-top: 1px solid #eee
 }
-.container.progress {
-	padding-top: 0;
-}
 @media (max-width: 540px) {
 	.boxed-group {
 		padding: 10px !important;
@@ -125,6 +122,7 @@ a:hover {
 }
 .infobtn.disabled {
 	pointer-events: auto;
+	user-select: none;
 }
 #list,
 #list li {

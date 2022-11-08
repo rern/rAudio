@@ -1335,12 +1335,6 @@ i.map.disabled, .map.disabled i {
 	outline: 1px solid var( --cg );
 	outline-offset: -8px;
 }
-.iconcover {
-	content: url( '/assets/img/iconcover.svg' );
-	width: 24px !important;
-	margin: 5px;
-	border: 1px solid hsl(0,0%,20%);
-}
 #bannerIcon .iconcover {
 	margin: 3px;
 }

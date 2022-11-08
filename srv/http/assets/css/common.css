@@ -97,6 +97,12 @@ input::-moz-focus-inner {
 	animation: none !important;
 }
 
+.iconcover {
+	content: url( '/assets/img/iconcover.svg' );
+	width: 24px !important;
+	margin: 5px;
+	border: 1px solid hsl(0,0%,20%);
+}
 .fa {
 	display: inline-block;
 	font-family: rern;
@@ -459,8 +465,8 @@ input::-moz-focus-inner {
 	background-color: var( --cg );
 	box-shadow: -2px 2px 3px 1px #000000;
 	cursor: pointer;
-	-webkit-user-select: none;
 	user-select: none;
+	-webkit-user-select: none;
 }
 .infobtn-primary {
 	background-color: var( --cm );

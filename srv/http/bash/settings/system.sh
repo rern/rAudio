@@ -409,6 +409,12 @@ $journal" | tee $filebootlog
 		echo "$journal"
 	fi
 	;;
+killaddon )
+	installfile=${args[1]}
+	addon=${args[2]}
+	killall $installfile wget pacman &> /dev/null
+	rm -f /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$addon.sh /srv/http/data/addons/$addon
+	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
