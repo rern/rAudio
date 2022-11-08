@@ -208,7 +208,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			bash( '/srv/http/bash/settings/relays.sh '+ ! G.status.relayson );
 			break;
 		case 'guide':
-			location.href = 'settings/guide.php';
+			location.href = 'settings.php?p=guide';
 			break;
 		case 'screenoff':
 			bash( [ 'screenoff', 'dpms force off' ] );

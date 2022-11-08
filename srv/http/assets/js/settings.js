@@ -180,7 +180,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'addons' || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( page === 'addons' || page === 'guide' || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	bash( dirbash + page +'-data.sh', function( list ) {
 		if ( typeof list === 'string' ) { // on load, try catching any errors

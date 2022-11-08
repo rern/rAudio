@@ -5,7 +5,15 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 }
 $time = time();
 $page = $_GET[ 'p' ];
-$pagehead = $page !== 'relays' ? $page : 'system';
+$icon = $page;
+if ( $page === 'guide' ) {
+	$icon = 'help';
+	$pagehead = 'user guide';
+} else if ( $page === 'relays' ) {
+	$pagehead = 'system';
+} else {
+	$pagehead = $page;
+}
 $title = strtoupper( $pagehead );
 $sudo = '/usr/bin/sudo /usr/bin';
 ?>
@@ -27,7 +35,7 @@ $sudo = '/usr/bin/sudo /usr/bin';
 <div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
-	<i class="page-icon fa fa-<?=$pagehead?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
+	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
 <div class="container hide">
 <?php
@@ -159,7 +167,7 @@ function i( $icon, $id = '' ) {
 }
 
 include "settings/$page.php";
-if ( $page !== 'addons' ) {
+if ( $page !== 'addons' && $page !== 'guide' ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 		$id = strtolower( $name );
@@ -170,6 +178,8 @@ if ( $page !== 'addons' ) {
 	echo $htmlbar;
 }
 echo '</div>';
+
+if ( $page !== 'guide' ) {
 ?>
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
@@ -189,6 +199,7 @@ echo '</div>';
 	<?php }
 		  if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';?>
 <script src="/assets/js/settings.js?v=<?=$time?>"></script>
-	
+<?php } ?>
+
 </body>
 </html>

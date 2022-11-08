@@ -1,27 +1,3 @@
-<?php
-$time = time();
-include 'logosvg.php';
-?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>rAudio</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
-</head>
-<body style="height: 100%; user-select: none;">
-<div class="head" style="top: 0">
-	<i class="page-icon fa fa-help"></i><span class='title'>USER GUIDE</span>
-	<a href="/"><i class="fa fa-times close"></i></a>
-</div>
 <div id="guide" style="user-select: none;">
 	<p><a class="gr" href="https://github.com/rern/rAudio-1"><i class="fa fa-github fa-lg bl" style="vertical-align: -2px"></i> Source</a><span id="count" style="float: right"></span></p>
 	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
@@ -32,6 +8,12 @@ include 'logosvg.php';
 	<img id="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
 </div>
 <script>
+document.getElementsByClassName( 'container' )[ 0 ].classList.remove( 'hide' );
+var close = document.getElementsByClassName( 'close' )[ 0 ];
+close.addEventListener( 'click', function() {
+	location.href = '/';
+} );
+
 var nlibrary = 23;
 var nplaylist = 40;
 var nsettings = 48;
@@ -96,5 +78,3 @@ function renderPage( n ) {
 	$( id ).classList.add( 'active' );
 }
 </script>
-</body>
-</html>
