@@ -7,7 +7,7 @@ $time = time();
 $page = $_GET[ 'p' ];
 $icon = $page;
 if ( $page === 'guide' ) {
-	$icon = 'help';
+	$icon     = 'help';
 	$pagehead = 'user guide';
 } else if ( $page === 'relays' ) {
 	$pagehead = 'system';
@@ -15,7 +15,7 @@ if ( $page === 'guide' ) {
 	$pagehead = $page;
 }
 $title = strtoupper( $pagehead );
-$sudo = '/usr/bin/sudo /usr/bin';
+$sudo  = '/usr/bin/sudo /usr/bin';
 ?>
 <!DOCTYPE html>
 <html>
@@ -51,8 +51,8 @@ echo '</div>';
 if ( ! in_array( $page, [ 'addons', 'addons-progress', 'guide' ] ) ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
-		$id = strtolower( $name );
-		$active = $id === $pagehead ? ' class="active"' : '';
+		$id      = strtolower( $name );
+		$active  = $id === $pagehead ? ' class="active"' : '';
 		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 	}
 	$htmlbar.= '</div>';
@@ -61,28 +61,27 @@ if ( ! in_array( $page, [ 'addons', 'addons-progress', 'guide' ] ) ) {
 //   .................................................................................
 
 	if ( ! in_array( $page, [ 'addons-progress', 'guide' ] ) ) {
+		$addons   = $page === 'addons';
+		$networks = $page === 'networks';
+		$relays   = $page === 'relays';
+							$script = '<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>';
+		if ( ! $addons )	$script.= '<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>';
+							$script.= '<script src="/assets/js/common.js?v='.$time.'"></script>';
+		if ( ! $addons )	$script.= '<script src="/assets/js/settings.js?v='.$time.'"></script>';
+							$script.= '<script src="/assets/js/'.$page.'.js?v='.$time.'"></script>';
+		if ( $networks ) {
+							$script.= '<script src="/assets/js/plugin/qrcode.min.js"></script>';
+		} else {
+							$script.= '<link rel="stylesheet" href="/assets/css/selectric.css?v='.$time.'">'
+									 .'<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>';
+		}
+		if ( $relays )		$script.= '<link rel="stylesheet" href="/assets/css/relays.css?v='.$time.'">'
+									 .'<script src="/assets/js/relays.js?v='.$time.'"></script>';
+											 
+		if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';
+	}
+	echo $script;
 ?>
-<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
-	<?php if ( $page !== 'addons' ) { ?>
-<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>
-	<?php } ?>
-<script src="/assets/js/common.js?v=<?=$time?>"></script>
-	<?php if ( $page !== 'addons' ) { ?>
-<script src="/assets/js/settings.js?v=<?=$time?>"></script>
-	<?php } ?>
-<script src="/assets/js/<?=$page?>.js?v=<?=$time?>"></script>
-	<?php if ( $page === 'networks' ) { ?>
-<script src="/assets/js/plugin/qrcode.min.js"></script>
-	<?php } else { ?>
-<link rel="stylesheet" href="/assets/css/selectric.css?v=<?=$time?>">
-<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>
-	<?php }
-		  if ( $page === 'relays' ) { ?>
-<link rel="stylesheet" href="/assets/css/relays.css?v=<?=$time?>">
-<script src="/assets/js/relays.js?v=<?=$time?>"></script>
-	<?php }
-		  if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';
-	} ?>
 
 </body>
 </html>
