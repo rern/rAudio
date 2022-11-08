@@ -123,6 +123,10 @@ a:hover {
 .container .infobtn {
 	min-width: 90px;
 }
+.infobtn.disabled {
+	pointer-events: auto;
+	user-select: none;
+}
 #list,
 #list li {
 	width: fit-content;
