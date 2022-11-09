@@ -171,7 +171,7 @@ pclose( $popencmd );
 <script>
 clearInterval( scroll );
 $( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
-//$( '#wait' ).remove();
+$( '#wait' ).remove();
 info( {
 	  icon    : 'jigsaw'
 	, title   : '<?=$name?>'
