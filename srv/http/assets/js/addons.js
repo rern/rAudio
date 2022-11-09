@@ -173,6 +173,7 @@ function sendcommand() {
 }
 
 //---------------------------------------------------------------------------
+G = {} // for $.fn.press()
 $( '.container' ).removeClass( 'hide' );
 loaderHide();
 document.title = 'Addons';
