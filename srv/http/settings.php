@@ -18,24 +18,36 @@ if ( $page === 'guide' ) {
 	$pagehead = $page;
 }
 $title     = strtoupper( $pagehead );
+$addons    = $page === 'addons';
+$addonsprg = $page === 'addons-progress';
+$guide     = $page === 'guide';
+$networks  = $page === 'networks';
+$relays    = $page === 'relays';
 ?>
 <!DOCTYPE html>
 <html>
 <head>
 
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="apple-mobile-web-app-title" content="rAudio">
+<meta name="application-name" content="rAudio">
 <meta name="msapplication-tap-highlight" content="no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link rel="icon" href="/assets/img/icon.png">
-<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
-<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
-<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
-	<?php if ( in_array( $page, [ 'addons', 'addons-progress' ]  ) ) { ?>
-<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
-	<?php } ?>
+<?php
+//   css .............................................................................
+$css = [ 'colors', 'common', 'settings' ];
+if ( $addons || $addonsprg ) $css[] = 'addons';
+if ( ! $networks )           $css[] = 'selectric';
+if ( $relays )               $css[] = 'relays';
+$style = '';
+foreach( $css as $c ) $style.= '
+<link rel="stylesheet" href="/assets/css/'.$c.'.css?v='.$time.'">';
+echo $style;
+?>
 
 </head>
 <body>
@@ -45,24 +57,23 @@ $title     = strtoupper( $pagehead );
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
-<!-- container ...................................................................... -->
-<div class="container hide">
 <?php
+// container ...................................................................... 
+echo '<div class="container hide">';
+
 include "settings/$page.php";
 
 echo '</div>';
-//   .................................................................................
-if ( in_array( $page, [ 'addons-progress', 'guide' ] ) ) {
+// .................................................................................
+if ( $addonsprg || $guide ) {
 	echo '
 </body>
-</html>';
+</html>
+';
 	exit();
 }
 
-$addons   = $page === 'addons';
-$networks = $page === 'networks';
-$relays   = $page === 'relays';
-//   bottom bar ......................................................................
+// bottom bar ......................................................................
 if ( ! $addons ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
@@ -73,24 +84,29 @@ if ( ! $addons ) {
 	$htmlbar.= '</div>';
 	echo $htmlbar;
 }
-//   .................................................................................
-					$script = '<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>';
-if ( ! $addons )	$script.= '<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>';
-					$script.= '<script src="/assets/js/common.js?v='.$time.'"></script>';
-if ( ! $addons )	$script.= '<script src="/assets/js/settings.js?v='.$time.'"></script>';
-					$script.= '<script src="/assets/js/'.$page.'.js?v='.$time.'"></script>';
-if ( $networks ) {
-					$script.= '<script src="/assets/js/plugin/qrcode.min.js"></script>';
-} else {
-					$script.= '<link rel="stylesheet" href="/assets/css/selectric.css?v='.$time.'">
-							   <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>';
-}
-if ( $relays )		$script.= '<link rel="stylesheet" href="/assets/css/relays.css?v='.$time.'">
-							   <script src="/assets/js/relays.js?v='.$time.'"></script>';
-echo "
-$script
+//   js ..............................................................................
+                   $jsp   = [ 'jquery-3.6.1' ];
+				   $js    = [];
+if ( ! $addons )   $jsp[] = 'pushstream-20211210';
+                   $js[]  = 'common';
+if ( ! $addons )   $js[]  = 'settings';
+                   $js[]  = $page;
+if ( ! $networks ) $jsp[] = 'jquery.selectric-1.13.1';
+if ( $networks )   $jsp[] = 'qrcode';
+if ( $relays )     $js[]  = 'relays';
+$script = '';
+foreach( $jsp as $j ) $script.= '
+<script src="/assets/js/plugin/'.$j.'.min.js"></script>';
+// with cache busting
+foreach( $js as $j ) $script.= '
+<script src="/assets/js/'.$j.'.js?v='.$time.'"></script>';
+echo $script;
+echo '
 </body>
-</html>";
+</html>
+';
+
+if ( $addons ) exit();
 
 /*
 $head = [
