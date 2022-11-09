@@ -112,6 +112,7 @@ input::-moz-focus-inner {
 .fa-lg { font-size: 22px !important }
 .fa-accesspoint::before { content: '\f554' }
 .fa-addons::before { content: '\f50D' }
+.fa-addons-progress::before { content: '\f50D' }
 .fa-airplay::before { content: '\f580' }
 .fa-album::before { content: '\f555' }
 .fa-albumartist::before { content: '\f557' }
