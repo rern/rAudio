@@ -350,7 +350,6 @@ function psWifi( data ) {
 	} );
 }
 //---------------------------------------------------------------------------------------
-G = {}
 var debounce;
 var dirsystem    = '/srv/http/data/system';
 var intervalcputime;

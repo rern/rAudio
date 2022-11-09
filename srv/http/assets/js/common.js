@@ -5,7 +5,7 @@ $.fn.press()
 loader
 info()
 */
-
+G               = {}
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // pushstream
 var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
