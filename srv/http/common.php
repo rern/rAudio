@@ -1,54 +1,19 @@
-<?php
-function indexbar( $indexes ) {
-	$indexbar = '<a class="indexed"><wh>#</wh></a>';
-	$chars = range( 'A', 'Z' );
-	for ( $i =0; $i < 26; $i++ ) {
-		$char = $chars[ $i ];
-		if ( in_array( $char, $indexes ) ) {
-			$indexbar.= '<a class="indexed"><wh>'.$char.'</wh></a>';
-		} else {
-			$indexbar.= '<a>'.$char.'</a>';
-		}
-	}
-	$indexbar1 = '<a><wh>#</wh></a>';
-	for ( $i =0; $i < 26; $i++ ) {
-		$char = $chars[ $i ];
-		$char1 = $chars[ $i + 1 ];
-		$indexed = 0;
-		$indexed1 = 0;
-		if ( in_array( $char, $indexes ) ) {
-			$char = '<wh>'.$char.'</wh>';
-			$indexed = 1;
-		}
-		if ( in_array( $char1, $indexes ) ) {
-			$char1 = '<wh>'.$char1.'</wh>';
-			$indexed1 = 1;
-		}
-		if ( $indexed || $indexed1 ) {
-			$indexbar1.= '<a class="indexed">'.$char.$char1.'</a>';
-		} else {
-			$indexbar1.= '<a>'.$char.$char1.'</a>';
-		}
-		$i++;
-	}
-	return [ $indexbar, $indexbar1 ];
-}
-function HMS2second( $time ) {
-	$HMS = explode( ':', $time );
-	$count = count( $HMS );
-	switch( $count ) {
-		case 1: return $HMS[ 0 ]; break;
-		case 2: return $HMS[ 0 ] * 60 + $HMS[ 1 ]; break;
-		case 3: return $HMS[ 0 ] * 60 * 60 + $HMS[ 1 ] * 60 + $HMS[ 0 ]; break;
-	}
-}
-function second2HMS( $second ) {
-	$hh = floor( $second / 3600 );
-	$mm = floor( ( $second % 3600 ) / 60 );
-	$ss = $second % 60;
-	
-	$hh = $hh ? $hh.':' : '';
-	$mm = $hh ? ( $mm > 9 ? $mm.':' : '0'.$mm.':' ) : ( $mm ? $mm.':' : '' );
-	$ss = $mm ? ( $ss > 9 ? $ss : '0'.$ss ) : $ss;
-	return $hh.$mm.$ss;
-}
+<?php $time = time();?>
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>rAudio</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="rAudio">
+<meta name="application-name" content="rAudio">
+<meta name="msapplication-tap-highlight" content="no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
+<link rel="icon" href="/assets/img/icon.png">
+<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
+<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">

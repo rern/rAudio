@@ -1,8 +1,8 @@
 <?php
-$sudo = '/usr/bin/sudo ';
-$sudobin = $sudo.'/usr/bin/';
+$sudo             = '/usr/bin/sudo ';
+$sudobin          = $sudo.'/usr/bin/';
 $sudobashsettings = '/usr/bin/sudo /srv/http/bash/settings/';
-$dirdata = '/srv/http/data/';
+$dirdata          = '/srv/http/data/';
 
 switch( $_POST[ 'cmd' ] ) {
 
@@ -16,7 +16,7 @@ switch( $_POST[ 'cmd' ] ) {
 //    php  -> js   - string / array / json literal( response type 'json' )
 //
 case 'sh': // multiple commands / scripts: no pre-escaped characters - js > php > bash
-	$sh = $_POST[ 'sh' ];                                // php array = js array
+	$sh     = $_POST[ 'sh' ];                                // php array = js array
 	$script = '/srv/http/bash/'.array_shift( $sh ).' "'; // script    = 1st element
 	$script.= escape( implode( "\n", $sh ) ).'"';        // arguments = array > escaped multiline string
 	echo rtrim( shell_exec( $sudo.$script ) );           // bash arguments = multiline string > array by line
@@ -53,31 +53,34 @@ case 'giftype':
 	break;
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
-	$type = $_POST[ 'type' ];
-	if ( $type === 'coverart' && !is_writable( dirname( $imagefile ) ) ) {
+	$type      = $_POST[ 'type' ];
+	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) {
 		echo -1;
 		exit;
 	}
 	
 	$bookmarkname = $_POST[ 'bookmarkname' ] ?? '';
-	$imagedata = $_POST[ 'imagedata' ];
-	$jpg = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
+	$imagedata    = $_POST[ 'imagedata' ];
+	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
 	if ( $jpg ) {
 		$tmpfile = $dirdata.'shm/local/binary';
-		$base64 = preg_replace( '/^.*,/', '', $imagedata ); // data:imgae/jpeg;base64,... > ...
+		$base64  = preg_replace( '/^.*,/', '', $imagedata ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $tmpfile, base64_decode( $base64 ) );
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$sh = [ $type, $tmpfile, $imagefile, $bookmarkname ];
-	$script = $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
+	$sh          = [ $type, $tmpfile, $imagefile, $bookmarkname ];
+	$script      = $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
 	shell_exec( $script );
 	break;
 case 'login':
 	$passwordfile = $dirdata.'system/loginset';
 	if ( file_exists( $passwordfile ) ) {
 		$hash = file_get_contents( $passwordfile );
-		if ( !password_verify( $_POST[ 'password' ], $hash ) ) die( -1 );
+		if ( ! password_verify( $_POST[ 'password' ], $hash ) ) {
+			echo -1;
+			exit;
+		}
 	}
 	
 	if ( isset( $_POST[ 'disable' ] ) ) {

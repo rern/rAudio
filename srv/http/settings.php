@@ -4,9 +4,9 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
 }
 
-$time      = time();
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
+include 'common.php'; // <!DOCTYPE html>
 
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $page      = $_GET[ 'p' ];
 $icon      = $page;
 if ( $page === 'guide' ) {
@@ -17,30 +17,16 @@ if ( $page === 'guide' ) {
 } else {
 	$pagehead = $page;
 }
-$title     = strtoupper( $pagehead );
-$addons    = $page === 'addons';
-$addonsprg = $page === 'addons-progress';
-$guide     = $page === 'guide';
-$networks  = $page === 'networks';
-$relays    = $page === 'relays';
-?>
-<!DOCTYPE html>
-<html>
-<head>
+$title    = strtoupper( $pagehead );
+$addons   = $page === 'addons';
+$progress = $page === 'addons-progress';
+$guide    = $page === 'guide';
+$networks = $page === 'networks';
+$relays   = $page === 'relays';
 
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="rAudio">
-<meta name="application-name" content="rAudio">
-<meta name="msapplication-tap-highlight" content="no">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="icon" href="/assets/img/icon.png">
-<?php
 //   css .............................................................................
 $css = [ 'colors', 'common', 'settings' ];
-if ( $addons || $addonsprg ) $css[] = 'addons';
+if ( $addons || $progress ) $css[] = 'addons';
 if ( ! $networks )           $css[] = 'selectric';
 if ( $relays )               $css[] = 'relays';
 $style = '';
@@ -65,12 +51,12 @@ include "settings/$page.php";
 
 echo '</div>';
 // .................................................................................
-if ( $addonsprg || $guide ) {
+if ( $progress || $guide ) {
 	echo '
 </body>
 </html>
 ';
-	exit();
+	exit;
 }
 
 // bottom bar ......................................................................
@@ -106,7 +92,7 @@ echo '
 </html>
 ';
 
-if ( $addons ) exit();
+if ( $addons ) exit;
 
 /*
 $head = [

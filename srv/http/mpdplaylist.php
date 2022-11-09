@@ -1,8 +1,8 @@
 <?php
-include '/srv/http/common.php';
+include '/srv/http/function.php';
 
-$cmd = $_POST[ 'cmd' ] ?? $argv[ 1 ];
-$add = $cmd === 'add' ? true : false;
+$cmd     = $_POST[ 'cmd' ] ?? $argv[ 1 ];
+$add     = $cmd === 'add' ? true : false;
 $headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current playlist
@@ -14,20 +14,20 @@ case 'current':
 	currentPlaylist();
 	break;
 case 'get':
-	$name = $_POST[ 'name' ];
+	$name    = $_POST[ 'name' ];
 	$nameesc = str_replace( '"', '\"', $name );
 	exec( 'mpc -f "%file%^^%title%^^%artist%^^%album%^^%track%^^%time%" playlist "'.$nameesc.'"'
 		, $values );
 	foreach( $values as $value ) {
-		$v = explode( '^^', $value );
-		$each = ( object )[];
+		$v            = explode( '^^', $value );
+		$each         = ( object )[];
 		$each->file   = $v[ 0 ];
 		$each->Title  = $v[ 1 ];
 		$each->Artist = $v[ 2 ];
 		$each->Album  = $v[ 3 ];
 		$each->Track  = $v[ 4 ];
 		$each->Time   = $v[ 5 ];
-		$lists[] = $each;
+		$lists[]      = $each;
 	}
 	htmlTrack( $lists, $name );
 	break;
@@ -49,7 +49,7 @@ case 'load': // load saved playlist to current
 
 function currentPlaylist() {
 	global $headers;
-	$f = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
+	$f      = [ 'album', 'albumartist', 'artist', 'file', 'time', 'title', 'track' ];
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format
 		, $lists ); // avoid json literal issue with escape double quotes
@@ -59,40 +59,40 @@ function currentPlaylist() {
 	foreach( $lists as $list ) {
 		$list = explode( '^^', $list );
 		if ( substr( $list[ 3 ], 0, 4 ) === 'cdda' ) {
-			$each = ( object )[];
-			$file = $list[ 3 ];
-			$id = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
-			$track = substr( $file, 8 );
-			$content = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
-			$data = $content[ $track - 1 ];
-			$audiocd = explode( '^', $data );
+			$each         = ( object )[];
+			$file         = $list[ 3 ];
+			$id           = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+			$track        = substr( $file, 8 );
+			$content      = file( '/srv/http/data/audiocd/'.$id, FILE_IGNORE_NEW_LINES );
+			$data         = $content[ $track - 1 ];
+			$audiocd      = explode( '^', $data );
 			$each->Artist = $audiocd[ 0 ];
-			$each->Album = $audiocd[ 1 ];
-			$each->Title = $audiocd[ 2 ];
-			$each->Time = second2HMS( $audiocd[ 3 ] );
-			$each->file = $file;
-			$each->Track = $track;
-			$array[] = $each;
+			$each->Album  = $audiocd[ 1 ];
+			$each->Title  = $audiocd[ 2 ];
+			$each->Time   = second2HMS( $audiocd[ 3 ] );
+			$each->file   = $file;
+			$each->Track  = $track;
+			$array[]      = $each;
 			continue;
 		}
 		
 		$each = ( object )[];
 		for ( $i = 0; $i < $fL; $i++ ) {
-			$key = $f[ $i ];
-			$val = $list[ $i ];
+			$key        = $f[ $i ];
+			$val        = $list[ $i ];
 			if ( $key !== 'file' ) $key = ucfirst( $key ); // mpd protocol keys
 			$each->$key = $val;
 		}
 		$fileheader = strtolower( substr( $each->file, 0, 4 ) );
 		if ( in_array( $fileheader, $headers ) ) {
-			$file = preg_replace( '/#charset=.*/', '', $each->file );
-			$urlname = str_replace( '/', '|', $file );
-			$radiofile = '/srv/http/data/webradio/'.$urlname;
+			$file          = preg_replace( '/#charset=.*/', '', $each->file );
+			$urlname       = str_replace( '/', '|', $file );
+			$radiofile     = '/srv/http/data/webradio/'.$urlname;
 			if ( !file_exists( $radiofile ) ) {
 				$radiofile = '';
 				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
 			}
-			$each->Name = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
+			$each->Name    = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
 			$each->urlname = $urlname;
 		}
 		$array[] = $each;
@@ -107,19 +107,19 @@ function htmlSavedPlaylist() {
 	if ( !$count ) return [ 'count' => 0 ];
 	
 	foreach( $lists as $list ) {
-		$each = ( object )[];
+		$each       = ( object )[];
 		$each->name = $list;
 		$each->sort = stripSort( $list );
-		$array[] = $each;
+		$array[]    = $each;
 	}
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
 	$html = '';
 	foreach( $array as $each ) {
-		$index = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
+		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$html.= <<< EOF
+		$html     .= <<< EOF
 <li class="pl-folder" data-index="$index">
 	<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">
 	<a class="liname">$each->name</a></i>
@@ -128,7 +128,7 @@ function htmlSavedPlaylist() {
 </li>
 EOF;
 	}
-	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
+	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
@@ -144,52 +144,52 @@ EOF;
 function htmlTrack( $lists, $plname = '' ) {
 	global $headers;
 	global $add;
-	$count = count( $lists );
+	$count      = count( $lists );
 	if ( !$count ) exit( '-1' );
 	
 	$countradio = 0;
-	$countsong = 0;
-	$counttime = 0;
-	$countupnp = 0;
+	$countsong  = 0;
+	$counttime  = 0;
+	$countupnp  = 0;
 	$i = 0;
 	$html = '';
 	foreach( $lists as $list ) {
-		$sec = 0;
+		$sec        = 0;
 		$i++;
-		$file = $list->file;
+		$file       = $list->file;
 		$fileheader = strtolower( substr( $file, 0, 4 ) );
 		if ( !in_array( $fileheader, $headers ) ) {
-			$sec = HMS2Second( $list->Time );
-			$track = preg_replace( '/^#*0*/', '', $list->Track );
-			$li2 = '<a class="pos">'.$i.'</a> • ';
+			$sec       = HMS2Second( $list->Time );
+			$track     = preg_replace( '/^#*0*/', '', $list->Track );
+			$li2       = '<a class="pos">'.$i.'</a> • ';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
-			$artist = $list->Artist ?: $list->Albumartist;
-			$album = $list->Album;
+			$artist    = $list->Artist ?: $list->Albumartist;
+			$album     = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
-			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
+			if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
 			if ( !$artist && !$album ) $li2.= $file;
 			$datatrack = '';
 			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-				$file = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
+				$file  = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 			}
-			$title = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
-			$ext = '';
+			$title     = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
+			$ext       = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
-				$class = 'file';
-				$discid = '';
-				$path = pathinfo( $file, PATHINFO_DIRNAME );
+				$class    = 'file';
+				$discid   = '';
+				$path     = pathinfo( $file, PATHINFO_DIRNAME );
 				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
-				$icon = 'music';
+				$icon     = 'music';
 			} else {
-				$class = 'audiocd';
-				$discid = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
+				$class     = 'audiocd';
+				$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
 				$datatrack = 'data-discid="'.$discid.'"'; // for cd tag editor
-				$thumbsrc = '/data/audiocd/'.$discid.'.jpg';
-				$icon = 'audiocd';
+				$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
+				$icon      = 'audiocd';
 			}
 			$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'?v=^^^" data-target="#menu-filesavedpl">';
-			$html.= <<< EOF
+			$html    .= <<< EOF
 <li class="$class" $datatrack>
 	<a class="lipath">$file</a>
 	$htmlicon<div class="li1"><span class="name">$title</span>
@@ -200,13 +200,13 @@ EOF;
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
-			$li2 = '<a class="pos">'.$i.'</a> • ';
+			$li2    = '<a class="pos">'.$i.'</a> • ';
 			$artist = $list->Artist;
-			$album = $list->Album;
+			$album  = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
 			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
 			if ( !$artist && !$album ) $li2.= $file;
-			$html.= <<< EOF
+			$html  .= <<< EOF
 <li class="upnp">
 	<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>
 	<div class="li1"><span class="name">$list->Title</span>
@@ -217,28 +217,28 @@ EOF;
 			$countupnp++;
 		} else {
 			if ( str_contains( $file, '://' ) ) { // webradio / dabradio
-				$urlname = str_replace( '/', '|', $file );
-				$type = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
-				$fileradio = '/srv/http/data/'.$type.'/'.$urlname;
+				$urlname     = str_replace( '/', '|', $file );
+				$type        = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
+				$fileradio   = '/srv/http/data/'.$type.'/'.$urlname;
 				if ( !file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.' -name "'.$urlname.'" | head -1' );
 				$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
-				$urlname = str_replace( '#', '%23', $list->urlname );
+				$urlname     = str_replace( '#', '%23', $list->urlname );
 				$stationname = '';
 			}
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
 				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
-				$icon = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'?v=^^^" data-icon="webradio" data-target="#menu-filesavedpl">';
+				$icon     = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'?v=^^^" data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
-				$icon = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon     = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
 			}
 			$classnotsaved = $notsaved ? ' notsaved' : '';
-			$namenotsaved = $notsaved ? '' : $stationname.' • ';
-			$charset = preg_replace( '/#charset=.*/', '', $file );
-			$path = preg_replace( '/\?.*$/', '', $file );
-			$html.= <<< EOF
+			$namenotsaved  = $notsaved ? '' : $stationname.' • ';
+			$charset       = preg_replace( '/#charset=.*/', '', $file );
+			$path          = preg_replace( '/\?.*$/', '', $file );
+			$html         .= <<< EOF
 <li class="webradio $classnotsaved">
 	<a class="lipath">$path</a>
 	$icon<a class="liname">$stationname</a><div class="li1"><span class="name">$stationname</span>
@@ -258,7 +258,7 @@ EOF;
 <gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
-	if ( $countupnp ) $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
+	if ( $countupnp )  $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
 	exec( "{ echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
 				| grep -E '^song:|^elapsed:'"

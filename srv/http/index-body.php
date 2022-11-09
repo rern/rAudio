@@ -1,52 +1,4 @@
 <?php
-if ( $login && !$_SESSION[ 'login' ] ) { ?>
-<div id="divlogin">
-	<br><a style="margin-left: 20px;font-weight: 300; letter-spacing: 20px">rAudio</a>
-	<br><input type="password" id="pwd"><i class="fa fa-eye"></i>
-	<a id="login" class="btn btn-primary">Login</a>
-</div>
-<script src="assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="assets/js/common.js?v=<?=$time?>"></script>
-<script>
-$( '#divlogin' ).prepend( $( '#loader' ).html() );
-$( '#loader' ).remove();
-$( '#pwd' ).focus();
-$( '#divlogin i' ).click( function() {
-	$this = $( this );
-	$pwd = $( '#pwd' );
-	if ( $pwd.prop( 'type' ) === 'text' ) {
-		$this.removeClass( 'bl' );
-		$pwd.prop( 'type', 'password' );
-	} else {
-		$this.addClass( 'bl' );
-		$pwd.prop( 'type', 'text' );
-	}
-} );
-$( '#login' ).click( function() {
-	var pwd = $( '#pwd' ).val().replace( /(["&()\\])/g, '\$1' );
-	$.post( 'cmd.php', { cmd: 'login', password: pwd }, function( data ) {
-		if ( data != -1 ) {
-			location.reload();
-		} else {
-			info( {
-				  icon    : 'lock'
-				, title   : 'Login'
-				, message : 'Wrong password'
-			} );
-		}
-	} );
-} );
-$( '#pwd' ).keypress( function( e ) {
-	if ( e.which == 13 ) $( '#login' ).click();
-});
-</script>
-
-</body>
-</html>
-<?php
-	exit;
-}
-
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
@@ -69,7 +21,7 @@ function htmlmenu( $menulist, $mode ) {
 	global $html;
 	global $kid3;
 	global $menu;
-	if ( !$kid3 ) array_pop( $menulist );
+	if ( ! $kid3 ) array_pop( $menulist );
 	foreach( $menulist as $list ) $html.= menuli( $list );
 	$menu.= menudiv( $mode, $html );
 }

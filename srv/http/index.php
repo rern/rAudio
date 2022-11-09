@@ -1,31 +1,12 @@
 <?php
-$login     = file_exists( '/srv/http/data/system/login' );
-if ( $login ) session_start();
-$time      = time();  // for cache busting
+include 'common.php'; // <!DOCTYPE html>
+
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
-?>
-
-<!DOCTYPE html>
-<html>
-<head>
-
-<title>rAudio</title>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="rAudio">
-<meta name="application-name" content="rAudio">
-<meta name="msapplication-tap-highlight" content="no">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-<link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
-<link rel="icon" href="/assets/img/icon.png">
-<?php
-$css    = [ 'colors', 'common', 'roundslider-1.6.1.min', 'main' ];
+$css       = [ 'roundslider-1.6.1.min', 'main' ];
 if ( $equalizer ) array_push( $css, ...[ 'equalizer', 'selectric' ] );
 if ( $localhost ) array_push( $css, ...[ 'simple-keyboard-3.4.139.min', 'keyboard' ] );                                     
-$style  = '';
+$style     = '';
 foreach( $css as $c ) $style.= '
 <link rel="stylesheet" href="/assets/css/'.$c.'.css?v='.$time.'">';
 echo $style;
@@ -33,6 +14,14 @@ echo '
 </head>
 <body>
 ';
+
+if ( file_exists( '/srv/http/data/system/login' ) ) {
+	session_start();
+	if ( ! $_SESSION[ 'login' ] ) {
+		include 'index-login.php';
+		exit;
+	}
+}
 
 include 'index-body.php';
 
