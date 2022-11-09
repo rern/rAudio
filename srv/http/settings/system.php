@@ -224,7 +224,7 @@ EOF
 		, 'icon'    => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: A^I^plus-r^I System^AI^relays sub^I
+On/Off: A^I^raudio^I System^AI^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 EOF
@@ -268,7 +268,7 @@ $body = [
 	[
 		  'label'   => 'Host Name'
 		, 'id'      => 'hostname'
-		, 'icon'    => 'plus-r'
+		, 'icon'    => 'raudio'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
 		, 'help'    => <<< EOF

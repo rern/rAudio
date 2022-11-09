@@ -159,7 +159,7 @@ if [[ $restorefailed ]]; then
 elif [[ $nasfailed ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 else
-	notify plus-r rAudio Ready 6000
+	notify raudio rAudio Ready 6000
 fi
 
 [[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh

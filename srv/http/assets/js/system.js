@@ -379,7 +379,7 @@ $( '#setting-lcdchar' ).click( function() {
 			} );
 			if ( G.lcdchar ) {
 				$( '#infoOk' )
-					.before( '<gr id="lcdlogo"><i class="fa fa-plus-r wh" style="font-size: 20px"></i>&ensp;Logo</gr>&ensp;' )
+					.before( '<gr id="lcdlogo"><i class="fa fa-raudio wh" style="font-size: 20px"></i>&ensp;Logo</gr>&ensp;' )
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
@@ -534,7 +534,7 @@ $( '#setting-mpdoled' ).click( function() {
 		, cancel       : function() {
 			$( '#mpdoled' ).prop( 'checked', G.mpdoled );
 		}
-		, buttonlabel  : ! G.mpdoled ? '' : '<i class="fa fa-plus-r"></i>Logo'
+		, buttonlabel  : ! G.mpdoled ? '' : '<i class="fa fa-raudio"></i>Logo'
 		, button       : ! G.mpdoled ? '' : function() {
 			bash( [ 'mpdoledlogo' ] );
 		}
@@ -637,7 +637,7 @@ $( '#ledcalc' ).click( function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
-	var icon  = 'plus-r';
+	var icon  = 'raudio';
 	var title = 'Player Name';
 	info( {
 		  icon         : icon

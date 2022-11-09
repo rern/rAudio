@@ -171,7 +171,7 @@ $settinglist = [
 		'lock', 'lock' ]
 	, ['networks', 'settings', 'networks', 'Networks',
 		'snapclient', 'snapclient' ]
-	, [ 'system', 'settings', 'plus-r', 'System',
+	, [ 'system', 'settings', 'raudio', 'System',
 		'relays', 'relays' ]
 	, [ 'addons', 'sub', 'jigsaw', 'Addons',
 		'guide', 'help' ]
@@ -191,7 +191,7 @@ foreach( $settinglist as $l ) {
 }
 ?>
 <div id="bar-top" class="hide">
-	<i id="logo" class="fa fa-plus-r-nobox"></i>
+	<i id="logo" class="fa fa-raudio-nobg"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
 	<div id="playback-controls">
 		<i id="previous" class="btn btn-default btn-cmd fa fa-previous"></i>
