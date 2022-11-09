@@ -22,7 +22,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 </div>
 </div>
 <?php
-if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
+if ( ! file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'

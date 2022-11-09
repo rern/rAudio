@@ -14,18 +14,18 @@ close.addEventListener( 'click', function() {
 	location.href = '/';
 } );
 
-var nlibrary = 23;
+var nlibrary  = 23;
 var nplaylist = 40;
 var nsettings = 48;
-var ntotal = 60;
-var n = 1;
+var ntotal    = 60;
+var n         = 1;
 
-var $ = function( id ) { return document.getElementById( id ) }
-var btn = document.getElementsByClassName( 'btn' );
-var count = $( 'count' ); // not jQuery on this page
-var image = $( 'image' );
-var next = $( 'next' );
-var previous = $( 'previous' );
+var $         = function( id ) { return document.getElementById( id ) }
+var btn       = document.getElementsByClassName( 'btn' );
+var count     = $( 'count' ); // not jQuery on this page
+var image     = $( 'image' );
+var next      = $( 'next' );
+var previous  = $( 'previous' );
 
 count.textContent = n +' / '+ ntotal;
 Array.from( btn ).forEach( function( el ) {
@@ -61,7 +61,7 @@ window.addEventListener( 'touchend', function( e ) {
 } );
 
 function renderPage( n ) {
-	image.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
+	image.src         = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
 	count.textContent = n +' / '+ ntotal;
 	Array.from( btn ).forEach( function( el ) {
 		el.classList.remove( 'active' );

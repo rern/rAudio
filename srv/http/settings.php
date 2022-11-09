@@ -1,11 +1,14 @@
 <?php
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
-	if ( !isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
+	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
 }
-$time = time();
-$page = $_GET[ 'p' ];
-$icon = $page;
+
+$time      = time();
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
+
+$page      = $_GET[ 'p' ];
+$icon      = $page;
 if ( $page === 'guide' ) {
 	$icon     = 'help';
 	$pagehead = 'user guide';
@@ -14,25 +17,26 @@ if ( $page === 'guide' ) {
 } else {
 	$pagehead = $page;
 }
-$title = strtoupper( $pagehead );
-$sudo  = '/usr/bin/sudo /usr/bin';
+$title     = strtoupper( $pagehead );
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
-	<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
-<?php if ( $page === 'addons' || $page === 'addons-progress' ) { ?>
-	<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
-<?php } ?>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="msapplication-tap-highlight" content="no">
+<link rel="icon" href="/assets/img/icon.png">
+<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
+<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+<link rel="stylesheet" href="/assets/css/settings.css?v=<?=$time?>">
+	<?php if ( in_array( $page, [ 'addons', 'addons-progress' ]  ) ) { ?>
+<link rel="stylesheet" href="/assets/css/addons.css?v=<?=$time?>">
+	<?php } ?>
+
 </head>
 <body>
 <!-- head ........................................................................... -->
@@ -47,8 +51,19 @@ $sudo  = '/usr/bin/sudo /usr/bin';
 include "settings/$page.php";
 
 echo '</div>';
+//   .................................................................................
+if ( in_array( $page, [ 'addons-progress', 'guide' ] ) ) {
+	echo '
+</body>
+</html>';
+	exit();
+}
+
+$addons   = $page === 'addons';
+$networks = $page === 'networks';
+$relays   = $page === 'relays';
 //   bottom bar ......................................................................
-if ( ! in_array( $page, [ 'addons', 'addons-progress', 'guide' ] ) ) {
+if ( ! $addons ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 		$id      = strtolower( $name );
@@ -59,34 +74,24 @@ if ( ! in_array( $page, [ 'addons', 'addons-progress', 'guide' ] ) ) {
 	echo $htmlbar;
 }
 //   .................................................................................
-
-	if ( ! in_array( $page, [ 'addons-progress', 'guide' ] ) ) {
-		$addons   = $page === 'addons';
-		$networks = $page === 'networks';
-		$relays   = $page === 'relays';
-							$script = '<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>';
-		if ( ! $addons )	$script.= '<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>';
-							$script.= '<script src="/assets/js/common.js?v='.$time.'"></script>';
-		if ( ! $addons )	$script.= '<script src="/assets/js/settings.js?v='.$time.'"></script>';
-							$script.= '<script src="/assets/js/'.$page.'.js?v='.$time.'"></script>';
-		if ( $networks ) {
-							$script.= '<script src="/assets/js/plugin/qrcode.min.js"></script>';
-		} else {
-							$script.= '<link rel="stylesheet" href="/assets/css/selectric.css?v='.$time.'">'
-									 .'<script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>';
-		}
-		if ( $relays )		$script.= '<link rel="stylesheet" href="/assets/css/relays.css?v='.$time.'">'
-									 .'<script src="/assets/js/relays.js?v='.$time.'"></script>';
-											 
-		if ( in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] ) ) include 'keyboard.php';
-	}
-	echo $script;
-?>
-
+					$script = '<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>';
+if ( ! $addons )	$script.= '<script src="/assets/js/plugin/pushstream-20211210.min.js"></script>';
+					$script.= '<script src="/assets/js/common.js?v='.$time.'"></script>';
+if ( ! $addons )	$script.= '<script src="/assets/js/settings.js?v='.$time.'"></script>';
+					$script.= '<script src="/assets/js/'.$page.'.js?v='.$time.'"></script>';
+if ( $networks ) {
+					$script.= '<script src="/assets/js/plugin/qrcode.min.js"></script>';
+} else {
+					$script.= '<link rel="stylesheet" href="/assets/css/selectric.css?v='.$time.'">
+							   <script src="/assets/js/plugin/jquery.selectric-1.13.1.min.js"></script>';
+}
+if ( $relays )		$script.= '<link rel="stylesheet" href="/assets/css/relays.css?v='.$time.'">
+							   <script src="/assets/js/relays.js?v='.$time.'"></script>';
+echo "
+$script
 </body>
-</html>
+</html>";
 
-<?php
 /*
 $head = [
 	  'title'   => 'TITLE'                  // REQUIRED
@@ -126,71 +131,71 @@ EOF
 htmlSection( $head, $body[, $id] );
 */
 function htmlHead( $data ) {
-	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
+	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
-	$title = $data[ 'title' ];
+	$title   = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
-	$status = $data[ 'status' ] ?? '';
-	$button = $data[ 'button' ] ?? '';
-	$help = $data[ 'help' ] ?? '';
-	$class = $status ? 'status' : '';
-	$class.= $subhead ? ' subhead' : '';
+	$status  = $data[ 'status' ] ?? '';
+	$button  = $data[ 'button' ] ?? '';
+	$help    = $data[ 'help' ] ?? '';
+	$class   = $status ? 'status' : '';
+	$class  .= $subhead ? ' subhead' : '';
 	
-	$html = $status ? '<heading data-status="'.$status.'"' : '<heading';
-	$html.= $class ? ' class="'.$class.'">' : '>';
-	$html.= '<span class="headtitle">'.$title.'</span>';
+	$html    = $status ? '<heading data-status="'.$status.'"' : '<heading';
+	$html   .= $class ? ' class="'.$class.'">' : '>';
+	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );
-	$html.= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
-	$html.= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
-	$html.= '</heading>';
-	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
-	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
+	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
+	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
+	$html   .= '</heading>';
+	$html   .= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echoSetIcon( $html );
 }
 function htmlSetting( $data ) {
-	if ( isset( $data[ 'exist' ] ) && !$data[ 'exist' ] ) return;
+	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	// col-l
-	$label = $data[ 'label' ];
-	$icon = $data[ 'icon' ] ?? '';
-	$sublabel = $data[ 'sublabel' ] ?? '';
-	$status = $data[ 'status' ] ?? '';
-	$id = $data[ 'id' ] ?? '';
-	$input = $data[ 'input' ] ?? '';
+	$label       = $data[ 'label' ];
+	$icon        = $data[ 'icon' ] ?? '';
+	$sublabel    = $data[ 'sublabel' ] ?? '';
+	$status      = $data[ 'status' ] ?? '';
+	$id          = $data[ 'id' ] ?? '';
+	$input       = $data[ 'input' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
-	$setting = $data[ 'setting' ] ?? 'common';
-	$disabled = $data[ 'disabled' ] ?? '';
-	$help = $data[ 'help' ] ?? '';
-	$html = '<div id="div'.$id.'"><div class="col-l';
-	$html.= $sublabel ? '' : ' single';
-	$html.= $status ? ' status" data-status="'.$status.'">' : '">';
+	$setting     = $data[ 'setting' ] ?? 'common';
+	$disabled    = $data[ 'disabled' ] ?? '';
+	$help        = $data[ 'help' ] ?? '';
+	$html        = '<div id="div'.$id.'"><div class="col-l';
+	$html       .= $sublabel ? '' : ' single';
+	$html       .= $status ? ' status" data-status="'.$status.'">' : '">';
 	if ( $sublabel ) {
-		$html.= '<a>'.$label.'<gr>'.$sublabel;
-		$html.= '</gr></a>';
+		$html   .= '<a>'.$label.'<gr>'.$sublabel;
+		$html   .= '</gr></a>';
 	} else {
-		$html.= $label;
+		$html   .= $label;
 	}
-	$html.= $icon ? i( $icon ) : '';
-	$html.= '</div>';
+	$html       .= $icon ? i( $icon ) : '';
+	$html       .= '</div>';
 	// col-r
-	if ( !$icon ) {
+	if ( ! $icon ) {
 		global $page;
-		$icon = $page;
+		$icon    = $page;
 	}
-	$html.= '<div class="col-r">';
-	if ( !$input ) {
-		$html.= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
-		$html.= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"';
-		$html.= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'">';
-		$html.= '</div>';
+	$html       .= '<div class="col-r">';
+	if ( ! $input ) {
+		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"';
+		$html   .= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'">';
+		$html   .= '</div>';
 	} else {
-		$html.= $input;
+		$html   .= $input;
 	}
-	$html.= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
-	$html.= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
-	$html.= '</div>
+	$html       .= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
+	$html       .= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html       .= '</div>
 			 <div style="clear:both"></div>
 			 </div>';
-	$html.= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
+	$html       .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echoSetIcon( $html );
 }
 function htmlSection( $head, $body, $id = '' ) {

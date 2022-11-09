@@ -1,25 +1,25 @@
 <?php
-$hostname = getHostName();
-$ip = getHostByName( $hostname );
+$hostname       = getHostName();
+$ip             = getHostByName( $hostname );
 
 if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
 	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
 } else {
 	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
 }
-$i2slist = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
-$selecti2s = '<select id="i2smodule">
-				<option value="none">None / Auto detect</option>';
+$i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
+$selecti2s      = '<select id="i2smodule">'
+				 .'<option value="none">None / Auto detect</option>';
 foreach( $i2slist as $name => $sysname ) {
-	$selecti2s.= '<option value="'.$sysname.'">'.$name.'</option>';
+	$selecti2s .= '<option value="'.$sysname.'">'.$name.'</option>';
 }
-$selecti2s.= '</select>';
-$timezonelist = timezone_identifiers_list();
+$selecti2s     .= '</select>';
+$timezonelist   = timezone_identifiers_list();
 $selecttimezone = '<select id="timezone">';
 foreach( $timezonelist as $key => $zone ) {
-	$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
-	$offset = $datetime->format( 'P' );
-	$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
+	$datetime       = new DateTime( 'now', new DateTimeZone( $zone ) );
+	$offset         = $datetime->format( 'P' );
+	$zonename       = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
@@ -404,7 +404,7 @@ foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a>';
 	$uihtml.= '<p>'.$ui[ 1 ].'</p>';
 }
-$hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
+$hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';

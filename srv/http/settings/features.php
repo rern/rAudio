@@ -1,6 +1,6 @@
 <?php
-$hostname = getHostName();
-$ip = getHostByName( $hostname );
+$hostname     = getHostName();
+$ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer > Address bar - <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
 	$disableddsp = '<wh>Bluetooth I^bluetooth^I</wh> is currently enabled.';
@@ -15,7 +15,7 @@ if ( is_link( '/srv/http/data/mpd' ) ) {
 	$disablednfs = 'Currently connected by clients';
 }
 
-if ( !file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
+if ( ! file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [

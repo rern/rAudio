@@ -1,11 +1,11 @@
 <?php
-$pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
+$pins      = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
-$htmlpin = '';
-$htmlname = '';
+$htmlpin   = '';
+$htmlname  = '';
 for ( $i = 0; $i < 4; $i++ ) {
-	$htmlpin.= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
+	$htmlpin .= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
 	$htmlname.= '<input id="name'.$i.'" type="text" class="name" placeholder="(no name)">';
 }
 echo '<div class="section">';

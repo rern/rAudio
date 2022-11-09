@@ -173,9 +173,9 @@ function sendcommand() {
 }
 
 //---------------------------------------------------------------------------
+document.title = 'Addons';
 $( '.container' ).removeClass( 'hide' );
 loaderHide();
-document.title = 'Addons';
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '.close' ).click( function() {
