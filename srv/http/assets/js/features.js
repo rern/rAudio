@@ -371,9 +371,10 @@ $( '#login' ).click( function() {
 					  cmd      : 'login'
 					, disable  : 1
 					, password : infoVal()
-				}, function( std ) {
-					if ( std == -1 ) passwordWrong();
-				} );
+				}, function( verified ) {
+					console.log(verified)
+					if ( ! verified ) passwordWrong();
+				}, 'json' );
 			}
 		} );
 	}
@@ -398,10 +399,9 @@ $( '#setting-login' ).click( function() {
 				  cmd      : 'login'
 				, password : values[ 0 ]
 				, pwdnew   : G.login ? values[ 1 ] : values
-			}, function( std ) {
-				if ( ! std ) passwordWrong();
-				bannerHide();
-			} );
+			}, function( verified ) {
+				if ( ! verified ) passwordWrong();
+			}, 'json' );
 		}
 	} );
 } );
@@ -525,6 +525,7 @@ $( '#setting-stoptimer' ).click( function() {
 } );
 
 function passwordWrong() {
+	bannerHide();
 	info( {
 		  icon    : 'lock'
 		, title   : 'Password Login'

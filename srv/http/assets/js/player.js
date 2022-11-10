@@ -291,12 +291,12 @@ $( '#setting-custom' ).click( function() {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
-					notify( icon, title, 'Disable ...' );
+					notify( icon, title, 'Disable ...', 3000 );
 					return
 				}
 				
-				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], function( std ) {
-					if ( std == -1 ) {
+				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], function( mpdstart ) {
+					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
 							  icon    : icon
@@ -305,7 +305,7 @@ $( '#setting-custom' ).click( function() {
 										+'<br>Restored to previous configurations.'
 						} );
 					}
-				} );
+				}, 'json' );
 				notify( icon, title, G.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
@@ -412,7 +412,7 @@ function renderPage() {
 					+'<i class="fa fa-album gr"></i>&ensp;'+ ( G.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
 					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( G.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
-	if ( G.asoundcard != -1 ) {
+	if ( G.asoundcard !== -1 ) {
 		device          = G.devices[ G.asoundcard ];
 		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
 		G.novolume      = device.mixertype === 'none' && ! G.resampled;
