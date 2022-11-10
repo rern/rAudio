@@ -261,8 +261,8 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 	} else {
 		notify( icon, ssid, G.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', JSON.stringify( data ) ], function( std ) {
-		if ( std == -1 ) {
+	bash( [ 'connect', JSON.stringify( data ) ], function( connected ) {
+		if ( ! connected ) {
 			G.wlconnected =  '';
 			info( {
 				  icon      : icon
@@ -272,7 +272,7 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 		} else {
 			$( '.back' ).click();
 		}
-	} );
+	}, 'json' );
 }
 function editLAN() {
 	var static = G.listeth.static;
@@ -312,7 +312,7 @@ function editLANSet( values ) {
 	var gateway = values[ 1 ];
 	notify( 'lan', 'IP Address', 'Set ...' );
 	bash( [ 'editlan', ip, gateway ], function( used ) {
-		if ( used == -1 ) {
+		if ( used === -1 ) {
 			info( {
 				  icon    : 'lan'
 				, title   : 'Duplicate IP'
@@ -325,7 +325,7 @@ function editLANSet( values ) {
 			location.href = 'http://'+ ip +'/settings.php?p=networks';
 		}
 		bannerHide();
-	} );
+	}, 'json' );
 }
 function editWiFi() {
 	bash( [ 'profileget', G.li.data( 'ssid' ) ], function( values ) {
@@ -379,8 +379,8 @@ function infoWiFi( values ) {
 			if ( data.IP === 'dhcp' ) {
 				connectWiFi( data );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( std ) {
-					if ( std == -1 ) {
+				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( used ) {
+					if ( used === -1 ) {
 						info( {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
@@ -392,7 +392,7 @@ function infoWiFi( values ) {
 					} else {
 						connectWiFi( data );
 					}
-				} );
+				}, 'json' );
 			}
 		}
 	} );

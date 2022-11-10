@@ -20,7 +20,12 @@ netctlSwitch() {
 			break
 		fi
 	done
-	[[ ! $active && $connected ]] && netctl switch-to "$connected"
+	if [[ $active ]]; then
+		echo 1
+	else
+		echo 0
+		[[ $connected ]] && netctl switch-to "$connected"
+	fi
 	sleep 3
 	pushRefresh
 }
