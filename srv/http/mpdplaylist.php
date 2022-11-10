@@ -53,7 +53,7 @@ function currentPlaylist() {
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format
 		, $lists ); // avoid json literal issue with escape double quotes
-	if ( !count( $lists ) ) exit( '-1' );
+	if ( ! count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
 	foreach( $lists as $list ) {
@@ -88,7 +88,7 @@ function currentPlaylist() {
 			$file          = preg_replace( '/#charset=.*/', '', $each->file );
 			$urlname       = str_replace( '/', '|', $file );
 			$radiofile     = '/srv/http/data/webradio/'.$urlname;
-			if ( !file_exists( $radiofile ) ) {
+			if ( ! file_exists( $radiofile ) ) {
 				$radiofile = '';
 				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
 			}
@@ -104,7 +104,7 @@ function htmlSavedPlaylist() {
 	exec( 'mpc lsplaylists'
 		, $lists );
 	$count = count( $lists );
-	if ( !$count ) return [ 'count' => 0 ];
+	if ( ! $count ) return [ 'count' => 0 ];
 	
 	foreach( $lists as $list ) {
 		$each       = ( object )[];
@@ -145,7 +145,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	global $headers;
 	global $add;
 	$count      = count( $lists );
-	if ( !$count ) exit( '-1' );
+	if ( ! $count ) exit( '-1' );
 	
 	$countradio = 0;
 	$countsong  = 0;
@@ -158,7 +158,7 @@ function htmlTrack( $lists, $plname = '' ) {
 		$i++;
 		$file       = $list->file;
 		$fileheader = strtolower( substr( $file, 0, 4 ) );
-		if ( !in_array( $fileheader, $headers ) ) {
+		if ( ! in_array( $fileheader, $headers ) ) {
 			$sec       = HMS2Second( $list->Time );
 			$track     = preg_replace( '/^#*0*/', '', $list->Track );
 			$li2       = '<a class="pos">'.$i.'</a> • ';
@@ -167,7 +167,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			$album     = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
 			if ( $album )  $li2.= '<a class="album">'.$album.'</a>';
-			if ( !$artist && !$album ) $li2.= $file;
+			if ( ! $artist && ! $album ) $li2.= $file;
 			$datatrack = '';
 			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
@@ -205,7 +205,7 @@ EOF;
 			$album  = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
 			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
-			if ( !$artist && !$album ) $li2.= $file;
+			if ( ! $artist && ! $album ) $li2.= $file;
 			$html  .= <<< EOF
 <li class="upnp">
 	<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>
@@ -220,7 +220,7 @@ EOF;
 				$urlname     = str_replace( '/', '|', $file );
 				$type        = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
 				$fileradio   = '/srv/http/data/'.$type.'/'.$urlname;
-				if ( !file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.' -name "'.$urlname.'" | head -1' );
+				if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.' -name "'.$urlname.'" | head -1' );
 				$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
 				$urlname     = str_replace( '#', '%23', $list->urlname );
