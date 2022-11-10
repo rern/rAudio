@@ -1,3 +1,6 @@
+body {
+	height: auto;
+}
 #listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
 .container .selectric-wrapper { height: 40px }
 .menu {
