@@ -37,19 +37,19 @@ case 'exec': // single / one-line command - return array of lines to js
 	break;
 	
 case 'datarestore':
-	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
+	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) {
+		echo -1;
+		exit;
+	}
 	
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
-	exec( $sudobashsettings.'system.sh datarestore' );
+	echo exec( $sudobashsettings.'system.sh datarestore' ); // 0 / 1
 	break;
 case 'giftype':
 	$tmpfile     = $_FILES[ 'file' ][ 'tmp_name' ];
-	$animatedgif = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1' );
-	if ( $animatedgif ) {
-		$animatedtmpfile = $dirdata.'shm/local/tmp.gif';
-		move_uploaded_file( $tmpfile, $animatedtmpfile );
-		echo $animatedtmpfile;
-	}
+	$animated = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
+	if ( $animated ) move_uploaded_file( $tmpfile, $dirdata.'shm/local/tmp.gif' );
+	echo $animated; // 0 / 1
 	break;
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
@@ -78,7 +78,7 @@ case 'login':
 	if ( file_exists( $passwordfile ) ) {
 		$hash = file_get_contents( $passwordfile );
 		if ( ! password_verify( $_POST[ 'password' ], $hash ) ) {
-			echo -1;
+			echo 0;
 			exit;
 		}
 	}
@@ -92,11 +92,11 @@ case 'login':
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
 		echo file_put_contents( $passwordfile, $hash );
-		exec( $sudobashsettings.'features.sh login' );
+		if ( ! file_exists( $dirdata.'system/login' ) ) exec( $sudobashsettings.'features.sh login' );
 	} else {
-		echo 1;
 		session_start();
 		$_SESSION[ 'login' ] = 1;
+		echo 1;
 	}
 	break;
 case 'logout':

@@ -764,28 +764,26 @@ function setFileImage() {
 		var formdata = new FormData();
 		formdata.append( 'cmd', 'giftype' );
 		formdata.append( 'file', O.infofile );
-		$.ajax( {
-			  url         : 'cmd.php'
-			, type        : 'POST'
-			, data        : formdata
-			, processData : false
-			, contentType : false
-			, success     : function( animatedtmpfile ) {
-				if ( ! animatedtmpfile ) {
-					setFileImageReader();
-				} else {
-					O.infofilegif = animatedtmpfile;
-					var img    = new Image();
-					img.src    = URL.createObjectURL( O.infofile );
-					img.onload = function() {
-						var imgW   = img.width;
-						var imgH   = img.height;
-						var resize = setFileImageResize( 'gif', imgW, imgH );
-						setFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( G.timeoutfile );
-						bannerHide();
-					}
+		fetch( 'cmd.php', {
+			  method : 'POST'
+			, body   : formdata
+		} ).then( ( response ) => {
+			return response.json(); // set response data to json > animated
+		} ).then( ( animated ) => { // 0 / 1
+			if ( animated ) {
+				O.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+				var img    = new Image();
+				img.src    = URL.createObjectURL( O.infofile );
+				img.onload = function() {
+					var imgW   = img.width;
+					var imgH   = img.height;
+					var resize = setFileImageResize( 'gif', imgW, imgH );
+					setFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
+					clearTimeout( G.timeoutfile );
+					bannerHide();
 				}
+			} else {
+				setFileImageReader();
 			}
 		} );
 	}

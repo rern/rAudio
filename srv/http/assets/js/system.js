@@ -772,7 +772,7 @@ $( '#backup' ).click( function() {
 } );
 $( '#restore' ).click( function() {
 	var icon  = 'restore';
-	var title = 'Restore Settings';
+	var title = 'Restore Data and Settings';
 	info( {
 		  icon        : icon
 		, title       : title
@@ -811,22 +811,26 @@ $( '#restore' ).click( function() {
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', O.infofile );
-				$.ajax( {
-					  url         : 'cmd.php'
-					, type        : 'POST'
-					, data        : formdata
-					, processData : false // FormData - already processData + contentType
-					, contentType : false
-					, success     : function( std ) {
-						if ( std == -1 ) {
-							info( {
-								  icon    : icon
-								, title   : title
-								, message : iconwarning +' File upload failed.'
-							} );
-						}
-						bannerHide();
+				fetch( 'cmd.php', {
+					  method : 'POST'
+					, body   : formdata
+				} ).then( ( response ) => {
+					return response.json(); // set response data to json > result
+				} ).then( ( result ) => {   // -1 / 0 / 1
+					if ( result === -1 ) {
+						info( {
+							  icon    : icon
+							, title   : title
+							, message : iconwarning +' File upload failed.'
+						} );
+					} else if ( ! result ) {
+						info( {
+							  icon    : icon
+							, title   : title
+							, message : iconwarning +' Restore failed.'
+						} );
 					}
+					bannerHide();
 				} );
 			}
 			setTimeout( loader, 0 );
