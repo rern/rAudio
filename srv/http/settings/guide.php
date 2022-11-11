@@ -6,7 +6,9 @@
 	left: 0;
 	right: 0;
 	margin: 0 auto;
+	user-select: none;
 }
+.help-block { margin: 0 }
 #guide .bottom-bar {
 	height: 33px;
 	background: var( --cga );
@@ -37,7 +39,12 @@
 }
 </style>
 
-<div id="guide" style="user-select: none;">
+<p class="help-block" style="display: none">
+Bottom bar:
+ • Icons - Skip to each section
+ • Arrow icons / Swipe - Previous / next page
+</p>
+<div id="guide">
 	<p><span id="count" style="float: right"></span></p>
 	
 	<img src="/assets/img/guide/1.jpg?v=<?=$time?>">
@@ -51,11 +58,6 @@ $html    .= '<a id="prevnext"><i class="prev fa fa-arrow-left"></i><i class="nex
 echo $html;
 ?>
 </div>
-<p class="help-block" style="display: none">
-Bottom bar:
- • Icons - Skip to each section
- • Arrow icons / Swipe - Previous / next page
-</p>
 <script>
 var nlibrary  = 23;
 var nplaylist = 40;
