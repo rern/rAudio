@@ -53,10 +53,7 @@ function currentPlaylist() {
 	$format = '%'.implode( '%^^%', $f ).'%';
 	exec( 'mpc playlist -f '.$format
 		, $lists ); // avoid json literal issue with escape double quotes
-	if ( ! count( $lists ) ) {
-		echo -1;
-		exit;
-	}
+	if ( ! count( $lists ) ) exit( '-1' );
 	
 	$fL = count( $f );
 	foreach( $lists as $list ) {

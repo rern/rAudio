@@ -52,10 +52,7 @@ case 'giftype':
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
 	$type      = $_POST[ 'type' ];
-	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) {
-		echo -1;
-		exit;
-	}
+	if ( $type === 'coverart' && ! is_writable( dirname( $imagefile ) ) ) exit( '-1' );
 	
 	$bookmarkname = $_POST[ 'bookmarkname' ] ?? '';
 	$imagedata    = $_POST[ 'imagedata' ];
