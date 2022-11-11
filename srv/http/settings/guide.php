@@ -8,6 +8,8 @@
 	<img id="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
 </div>
 <script>
+document.getElementsByClassName( 'help-head' )[ 0 ].remove();
+
 document.getElementsByClassName( 'container' )[ 0 ].classList.remove( 'hide' );
 var close = document.getElementsByClassName( 'close' )[ 0 ];
 close.addEventListener( 'click', function() {
