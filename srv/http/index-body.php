@@ -136,21 +136,21 @@ $settinglist = [
 	, [ 'displayplaylist', '', 'playlist', 'Playlist',
 		'multiraudio', 'raudiobox' ]
 ];
-$htmlsettings = '';
+$htmlsettings     = '';
 foreach( $settinglist as $l ) {
 	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>
 					 <i id="'.$l[ 4 ].'" class="submenu fa fa-'.$l[ 5 ].'"></i>';
+}
+$htmlcontrols     = '';
+foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
+	$htmlcontrols.= '<i id="'.$l.'" class="btn btn-default btn-cmd fa fa-'.$l.'"></i>';
 }
 ?>
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-raudio-nobg"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
 	<div id="playback-controls">
-		<i id="previous" class="btn btn-default btn-cmd fa fa-previous"></i>
-		<i id="stop" class="btn btn-default btn-cmd fa fa-stop"></i>
-		<i id="play" class="btn btn-default btn-cmd fa fa-play"></i>
-		<i id="pause" class="btn btn-default btn-cmd fa fa-pause"></i>
-		<i id="next" class="btn btn-default btn-cmd fa fa-next"></i>
+		<?=$htmlcontrols?>
 	</div>
 </div>
 <div id="settings" class="menu hide">
