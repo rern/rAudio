@@ -3,20 +3,40 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 	if ( G.local || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
 	var key = e.key;
-	if ( key === 'Home' ) {
-		if ( G.library ) {
-			$( '#library' ).click();
-		} else if ( G.playlist ) {
-			$( '#playlist' ).click();
-		}
-		return
-	}
-	
 	if ( key === 'Backspace' && ! $( 'input:focus, textarea:focus' ).length ) {
 		if ( G.library ) {
 			$( '#button-lib-back' ).click();
 		} else if ( G.playlist ) {
 			$( '#button-pl-back' ).click();
+		}
+		return
+	}
+	
+	if ( key === 'Enter' ) {
+		if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
+			var $menu = $( '#settings' ).find( 'a.active' );
+			if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
+			var href = $menu.prop( 'href' );
+			href ? location.href = href : $menu.click();
+			return
+		}
+	}
+	
+	if ( key === 'Escape' ) {
+		if ( $( '.menu:not(.hide)' ).length ) {
+			$( '.menu' ).addClass( 'hide' );
+			if ( 'colorpicker' in G ) $( '#colorcancel' ).click();
+		} else {
+			$( '#button-settings' ).click();
+		}
+		return
+	}
+		
+	if ( key === 'Home' ) {
+		if ( G.library ) {
+			$( '#library' ).click();
+		} else if ( G.playlist ) {
+			$( '#playlist' ).click();
 		}
 		return
 	}
@@ -51,28 +71,8 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		return
 	}
 	
-	if ( key === 'Enter' ) {
-		if ( ! $( '#settings' ).hasClass( 'hide' ) ) {
-			var $menu = $( '#settings' ).find( 'a.active' );
-			if ( ! $menu.length ) $menu = $( '#settings' ).find( '.submenu.active' );
-			var href = $menu.prop( 'href' );
-			href ? location.href = href : $menu.click();
-			return
-		}
-	}
-	
 	if ( ! $( '#colorpicker' ).hasClass( 'hide' ) ) return
 
-	if ( key === 'Escape' ) {
-		if ( $( '.menu:not(.hide)' ).length ) {
-			$( '.menu' ).addClass( 'hide' );
-			if ( 'colorpicker' in G ) $( '#colorcancel' ).click();
-		} else {
-			$( '#button-settings' ).click();
-		}
-		return
-	}
-		
 	var keyevent = {
 		  MediaNextTrack     : 'next'
 		, MediaPause         : 'pause'

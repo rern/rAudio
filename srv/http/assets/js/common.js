@@ -116,7 +116,7 @@ select:   [U] [D]     - check
 	var key = e.key;
 	switch ( key ) {
 		case 'Enter':
-			if ( ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 			break;
 		case 'Escape':
 			G.local = 1; // prevent toggle setting menu
