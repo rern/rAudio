@@ -52,7 +52,7 @@ foreach( $arrayalias as $alias ) {
 	
 	// addon list ---------------------------------------------------------------
 	$title         = $addon[ 'title' ];
-	$list         .= '<li alias="'.$alias.'" '.$installed.'>'.$title.'</li>';
+	$list         .= '<li data-alias="'.$alias.'" '.$installed.'>'.$title.'</li>';
 	// addon blocks -------------------------------------------------------------
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
@@ -84,7 +84,7 @@ foreach( $arrayalias as $alias ) {
 				</p>
 			</legend>
 			'.$revision.'
-			<form class="form-horizontal" alias="'.$alias.'" version="'.$version.'">
+			<form class="form-horizontal" data-alias="'.$alias.'" data-vesion="'.$version.'">
 				<p class="detailtext">'.$description.$detail.'</p>';
 	$blocks     .= $uninstallfile ? $btnin.' &nbsp; '.$btnun : $btnin;
 	$blocks     .= '
