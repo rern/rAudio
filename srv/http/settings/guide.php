@@ -1,9 +1,10 @@
 <style>
+.container {
+	padding: 30px 0 100px 0;
+}
 #guide {
-	position: absolute;
 	width: 100%;
 	height: 100%;
-	max-width: 512px;
 	left: 0;
 	right: 0;
 	margin: 0 auto;
@@ -11,7 +12,7 @@
 }
 #guide .bottom-bar {
 	height: 33px;
-	background: var( --cg );
+	background: var( --cga );
 }
 #guide p {
 	margin: 0;
@@ -20,12 +21,13 @@
 #guide p gr {
 	float: right;
 }
-#guide .btn {
+#guide a {
 	display: inline-block;
-	width: 115px;
+	width: 20%;
 	line-height: 33px;
 	padding-right: 5px;
 	text-align: center;
+	cursor: pointer;
 }
 #guide i {
 	width: 33px;
@@ -33,25 +35,14 @@
 	font-size: 20px;
 	text-align: center;
 }
-#guide .btn.active {
+#guide a.active {
 	background-color: var( --cm ) !important;
 }
 #guide img {
 	width: 100%;
 }
-#guide #settings {
-	width: 34px;
-	padding-right: 0;
-}
-#guide #settings i {
-	margin: 3px 0 0 0;
-}
-.prev-next {
-	display: inline-block;
-	float: right;
-	font-size: 24px;
-	line-height: 34px;
-	color: var( --cm );
+#prevnext {
+	padding-right: 0 !important;
 }
 @media (max-width: 515px) {
 	#guide {
@@ -60,8 +51,8 @@
 	}
 }
 @media (max-width: 450px) {
-	#guide .btn {
-		width: 80px;
+	#guide a span {
+		display: none;
 	}
 }
 </style>
@@ -71,11 +62,11 @@
 	<img id="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
 	
 	<div class="bottom-bar">
-		   <a id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></a><!--
-		--><a id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></a><!--
-		--><a id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></a><!--
-		--><i id="settings" class="btn fa fa-gear"></i>&ensp;
-		   <i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i>
+		   <a id="library" class="btn-default"><i class="fa fa-library"></i><span>Library</span></a><!--
+		--><a id="playback" class="btn-default active"><i class="fa fa-playback"></i><span>Playback</span></a><!--
+		--><a id="playlist" class="btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></a><!--
+		--><a id="settings" class="btn-default"><i class="btn fa fa-gear"></i><span>Settings</span></a><!--
+		--><a id="prevnext"><i id="previous" class="fa fa-arrow-left"></i><i id="next" class="fa fa-arrow-right"></i></a>
 	</div>
 </div>
 <script>
@@ -94,7 +85,7 @@ var ntotal    = 60;
 var n         = 1;
 
 var $         = function( id ) { return document.getElementById( id ) }
-var btn       = document.getElementsByClassName( 'btn' );
+var btn       = document.getElementsByTagName( 'a' );
 var count     = $( 'count' ); // not jQuery on this page
 var image     = $( 'image' );
 var next      = $( 'next' );
@@ -102,6 +93,8 @@ var previous  = $( 'previous' );
 
 count.textContent = n +' / '+ ntotal;
 Array.from( btn ).forEach( function( el ) {
+	if ( el.id === 'prevnext' ) return
+	
 	el.addEventListener( 'click', function() {
 		var page = {
 			  playback : 1

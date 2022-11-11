@@ -646,8 +646,7 @@ input.disabled + .switchlabel:after {
 	heading {
 		letter-spacing: 4px;
 	}
-	.selectric-wrapper + .setting,
-	#guide .btn span {
+	.selectric-wrapper + .setting {
 		display: none;
 	}
 	input[type="text"] {
