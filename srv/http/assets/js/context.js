@@ -404,7 +404,7 @@ function webRadioCoverart() {
 			bash( [ 'webradiocoverreset', imagefilenoext, type ] );
 		}
 		, ok          : function() {
-			imageReplace( imagefilenoext, type );
+			imageReplace( type, imagefilenoext );
 		}
 	} );
 }
