@@ -185,43 +185,15 @@ function addSimilar() {
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
-	if ( G.playlist ) {
-		var query = {
-			  cmd      : 'track'
-			, track    : G.list.index
-		}
-	} else {
-		var file  = G.list.path;
-		var fL    = format.length;
-		if ( G.list.licover ) format = format.slice( 0, -2 );
-		var query = {
-			  query  : 'track'
-			, file   : file
-			, format : format
-		}
+	var file   = G.list.path;
+	var cue    = file.slice( -4 ) === '.cue';
+	if ( !G.playlist && G.list.licover ) format = format.slice( 0, -2 );
+	var query = {
+		  query  : 'track'
+		, file   : G.list.path
+		, format : format
 	}
 	list( query, function( values ) {
-		if ( G.playlist ) {
-			v      = values[ 0 ];
-			file   = v.file;
-			cue    = 'Range' in v;
-			if ( cue ) file = file.replace( /\.[^/.]+$/, '.cue' );
-			values = [];
-			name.forEach( function( k ) {
-				values.push( v[ k ] || '' );
-			} );
-		} else {
-			cue    = file.includes( '.cue/track' );
-		}
-		var parts    = file.split( '/' );
-		var filename = parts.pop();
-		var filepath = parts.join( '/' );
-		if ( file.includes( '.cue/track' ) ) {
-			file     = filepath;
-			parts    = file.split( '/' );
-			filename = parts.pop();
-			filepath = parts.join( '/' );
-		}
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( function( el, i ) {
@@ -240,13 +212,13 @@ function tagEditor() {
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
 			values   = values.filter( val => val ); // reindex after deleting blank elements
 		}
-		var fileicon = file.slice( -4 ) !== '.cue' ? 'file-music' : 'file-playlist';
+		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					 +'<div>';
 		if ( G.list.licover ) {
 			message += '<i class="fa fa-folder"></i>'+ file;
 		} else {
-			message += '<i class="fa fa-folder gr"></i><gr>'+ filepath +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ filename;
+			message += '<i class="fa fa-folder gr"></i><gr>'+ file +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ file.split( '/' ).pop();
 		}
 		message     += '</div>';
 		var footer   = '';
@@ -310,17 +282,17 @@ function tagEditor() {
 					
 					var query = {
 						  query  : 'ls'
-						, string : filepath
+						, string : file
 						, format : [ 'file' ]
 					}
-					if ( filepath.slice( -4 ) === '.cue' ) filepath = dirName( filepath );
+					if ( cue ) file = dirName( file );
 					list( query, function( html ) {
 						var data = {
 							  html      : html
-							, modetitle : filepath
-							, path      : filepath
+							, modetitle : file
+							, path      : file
 						}
-						G.mode = filepath.split( '/' )[ 0 ].toLowerCase();
+						G.mode = file.split( '/' )[ 0 ].toLowerCase();
 						tagModeSwitch();
 						renderLibraryList( data );
 					} );

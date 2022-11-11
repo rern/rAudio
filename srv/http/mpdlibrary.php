@@ -212,52 +212,39 @@ case 'search':
 	htmlTrack( $lists, $f, 'search', $string );
 	break;
 case 'track': // for tag editor
-	$track = $_POST[ 'track' ] ?? '';
 	$file  = escape( $_POST[ 'file' ] );
-	if ( $track ) { // cue / info
-		if ( $track === 'cover' ) {
-			$filter = 'head -1';
-		} else {
-			$filter = 'grep "\^\^'.$track.'"';
+	if ( is_dir( '/mnt/MPD/'.$file ) ) {
+		$wav = exec( 'mpc ls "'.$file.'" | grep -m1 "\.wav$"' ); // MPD not read albumartist in *.wav
+		if ( $wav ) {
+			$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
+			if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
 		}
-		$lists = exec( 'mpc playlist -f "'.$format.'" "'.$file.'" \
-					| '.$filter );
-		$array = explode( '^^', $lists );
-		if (  $track === 'cover' && $array[ 1 ] ) $array [ 2 ] = '*'; // if album artist > various artists
+		exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
+			, $lists );
+		// format: [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ]
+		foreach( $lists as $list ) {
+			$each = explode( '^^', $list );
+			$artist[]    = $each[ 2 ];
+			$composer[]  = $each[ 3 ];
+			$conductor[] = $each[ 4 ];
+			$genre[]     = $each[ 5 ];
+			$date[]      = $each[ 6 ];
+			$array[]     = $each;
+		}
+		$array = $array[ 0 ];
+		if ( count( array_unique( $artist ) )    > 1 ) $array[ 2 ] = '*';
+		if ( count( array_unique( $composer ) )  > 1 ) $array[ 3 ] = '*';
+		if ( count( array_unique( $conductor ) ) > 1 ) $array[ 4 ] = '*';
+		if ( count( array_unique( $genre ) )     > 1 ) $array[ 5 ] = '*';
+		if ( count( array_unique( $date ) )      > 1 ) $array[ 6 ] = '*';
 	} else {
-		if ( is_dir( '/mnt/MPD/'.$file ) ) {
-			$wav = exec( 'mpc ls "'.$file.'" | grep -m1 "\.wav$"' ); // MPD not read albumartist in *.wav
-			if ( $wav ) {
-				$albumartist = exec( 'kid3-cli -c "get albumartist" "'.$wav.'"' );
-				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
-			}
-			exec( 'mpc ls -f "'.$format.'" "'.$file.'"'
-				, $lists );
-			// format: [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ]
-			foreach( $lists as $list ) {
-				$each = explode( '^^', $list );
-				$artist[]    = $each[ 2 ];
-				$composer[]  = $each[ 3 ];
-				$conductor[] = $each[ 4 ];
-				$genre[]     = $each[ 5 ];
-				$date[]      = $each[ 6 ];
-				$array[]     = $each;
-			}
-			$array = $array[ 0 ];
-			if ( count( array_unique( $artist ) )    > 1 ) $array[ 2 ] = '*';
-			if ( count( array_unique( $composer ) )  > 1 ) $array[ 3 ] = '*';
-			if ( count( array_unique( $conductor ) ) > 1 ) $array[ 4 ] = '*';
-			if ( count( array_unique( $genre ) )     > 1 ) $array[ 5 ] = '*';
-			if ( count( array_unique( $date ) )      > 1 ) $array[ 6 ] = '*';
-		} else {
-			// MPD not read albumartist in *.wav
-			if ( substr( $file, -3 ) === 'wav' ) {
-				$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file.'"' );
-				if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
-			}
-			$lists = exec( 'mpc ls -f "'.$format.'" "'.$file.'"' );
-			$array = explode( '^^', $lists );
+		// MPD not read albumartist in *.wav
+		if ( substr( $file, -3 ) === 'wav' ) {
+			$albumartist = exec( 'kid3-cli -c "get albumartist" "/mnt/MPD/'.$file.'"' );
+			if ( $albumartist ) $format = str_replace( '%albumartist%', $albumartist, $format );
 		}
+		$lists = exec( 'mpc ls -f "'.$format.'" "'.$file.'"' );
+		$array = explode( '^^', $lists );
 	}
 	echo json_encode( $array );
 	break;
