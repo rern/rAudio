@@ -36,8 +36,8 @@ login.addEventListener( 'click', () => {
 		if ( verified != -1 ) location.reload();
 	} );
 } );
-pwd.addEventListener( 'keypress', ( e ) => {
-	if ( e.which == 13 ) login.click();
+pwd.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'Enter' ) login.click();
 } );
 </script>
 
