@@ -125,8 +125,12 @@ select:   [U] [D]     - check
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
-			var rl = key === 'ArrowLeft' ? 'left' : 'right';
-			$( '#infoArrow .fa-arrow-'+ rl ).click();
+			var $tabactive = $( '#infoTab a.active' );
+			if ( key === 'ArrowLeft' ) {
+				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
+			} else {
+				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
+			}
 			break;
 	}
 } );
