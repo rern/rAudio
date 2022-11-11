@@ -1,11 +1,82 @@
+<style>
+#guide {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	max-width: 512px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	padding: 10px 20px
+}
+#guide .bottom-bar {
+	height: 33px;
+	background: var( --cg );
+}
+#guide p {
+	margin: 0;
+	line-height: 40px;
+}
+#guide p gr {
+	float: right;
+}
+#guide .btn {
+	display: inline-block;
+	width: 115px;
+	line-height: 33px;
+	padding-right: 5px;
+	text-align: center;
+}
+#guide i {
+	width: 33px;
+	vertical-align: -2px;
+	font-size: 20px;
+	text-align: center;
+}
+#guide .btn.active {
+	background-color: var( --cm ) !important;
+}
+#guide img {
+	width: 100%;
+}
+#guide #settings {
+	width: 34px;
+	padding-right: 0;
+}
+#guide #settings i {
+	margin: 3px 0 0 0;
+}
+.prev-next {
+	display: inline-block;
+	float: right;
+	font-size: 24px;
+	line-height: 34px;
+	color: var( --cm );
+}
+@media (max-width: 515px) {
+	#guide {
+		max-width: 100%;
+		padding: 40px 5px;
+	}
+}
+@media (max-width: 450px) {
+	#guide .btn {
+		width: 80px;
+	}
+}
+</style>
 <div id="guide" style="user-select: none;">
-	<p><a class="gr" href="https://github.com/rern/rAudio-1"><i class="fa fa-github fa-lg bl" style="vertical-align: -2px"></i> Source</a><span id="count" style="float: right"></span></p>
-	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
-	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
-	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
-	<div id="settings" class="btn btn-default"><i id="settings" class="fa fa-gear"></i></div>
-	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
+	<p><span id="count" style="float: right"></span></p>
+	
 	<img id="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
+	
+	<div class="bottom-bar">
+		   <a id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></a><!--
+		--><a id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></a><!--
+		--><a id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></a><!--
+		--><i id="settings" class="btn fa fa-gear"></i>&ensp;
+		   <i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i>
+	</div>
 </div>
 <script>
 document.getElementsByClassName( 'help-head' )[ 0 ].remove();
