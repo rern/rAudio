@@ -234,6 +234,7 @@ input::-moz-focus-inner {
 .fa-sd::before              { content: '\f543' }
 .fa-search::before          { content: '\f56A' }
 .fa-set0::before            { content: '\f515' }
+.fa-settings::before        { content: '\f509' }
 .fa-shift:before            { content: '\f606' }
 .fa-shuffle::before         { content: '\f513' }
 .fa-single::before          { content: '\f514' }
