@@ -195,27 +195,18 @@ $( '.revision' ).click( function(e) {
 	$revisiontext.toggleClass( 'hide', ! hidden );
 } );
 $( '#list li' ).click( function() {
-	var alias = this.getAttribute( 'alias' );
+	var alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
 $( '.boxed-group .infobtn' ).click( function () {
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
-	alias   = $this.parent().attr( 'alias' );
-	version = $this.parent().attr( 'version' );
+	alias   = $this.parent().data( 'alias' );
+	version = $this.parent().data( 'version' );
 	title   = addons[ alias ].title.replace( / *\**$/, '' );
 	type    = $this.text();
 	opt     = [ alias, type, version ];
-	if ( $this.attr( 'warning' ) ) {
-		info( {
-			  icon    : 'jigsaw'
-			, title   : title
-			, message : $( this ).attr( 'warning' )
-		} );
-		return
-	}
-	
 	option  = addons[ alias ].option;
 	j       = 0;
 	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
@@ -232,7 +223,7 @@ $( '.boxed-group .infobtn' ).click( function () {
 	}
 } ).press( function( e ) {
 	var $this = $( e.currentTarget );
-	alias     = $this.parent().attr( 'alias' );
+	alias     = $this.parent().data( 'alias' );
 	title     = addons[ alias ].title.replace( / *\**$/, '' );
 	type      = $this.text();
 	rollback  = addons[ alias ].rollback || '';
