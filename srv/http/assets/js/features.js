@@ -364,7 +364,7 @@ $( '#login' ).click( function() {
 			, message       : 'Disable:'
 			, passwordlabel : 'Password'
 			, focus         : 0
-			, pwdrequired   : 1
+			, checkblank    : 1
 			, ok            : function() {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
@@ -372,8 +372,7 @@ $( '#login' ).click( function() {
 					, disable  : 1
 					, password : infoVal()
 				}, function( verified ) {
-					console.log(verified)
-					if ( ! verified ) passwordWrong();
+					if ( verified == -1 ) passwordWrong();
 				}, 'json' );
 			}
 		} );
@@ -400,7 +399,7 @@ $( '#setting-login' ).click( function() {
 				, password : values[ 0 ]
 				, pwdnew   : G.login ? values[ 1 ] : values
 			}, function( verified ) {
-				if ( ! verified ) passwordWrong();
+				if ( verified == -1 ) passwordWrong();
 			}, 'json' );
 		}
 	} );

@@ -31,9 +31,9 @@ login.addEventListener( 'click', () => {
 		  method : 'POST'
 		, body   : formdata
 	} ).then( ( response ) => {
-		return response.json(); // set response data to json > verified
-	} ).then( ( verified ) => { // 0 / 1
-		if ( verified ) location.reload();
+		return response.text(); // set response data as text > verified
+	} ).then( ( verified ) => {
+		if ( verified != -1 ) location.reload();
 	} );
 } );
 pwd.addEventListener( 'keypress', ( e ) => {

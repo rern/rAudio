@@ -815,15 +815,15 @@ $( '#restore' ).click( function() {
 					  method : 'POST'
 					, body   : formdata
 				} ).then( ( response ) => {
-					return response.json(); // set response data to json > result
-				} ).then( ( result ) => {   // -1 / 0 / 1
-					if ( result === -1 ) {
+					return response.text(); //
+				} ).then( ( result ) => {   // -1 / -2 = errors
+					if ( result == -1 ) {
 						info( {
 							  icon    : icon
 							, title   : title
-							, message : iconwarning +' File upload failed.'
+							, message : iconwarning +' Upload failed.'
 						} );
-					} else if ( ! result ) {
+					} else if ( result == -2 ) {
 						info( {
 							  icon    : icon
 							, title   : title

@@ -311,8 +311,8 @@ function editLANSet( values ) {
 	var ip      = values[ 0 ];
 	var gateway = values[ 1 ];
 	notify( 'lan', 'IP Address', 'Set ...' );
-	bash( [ 'editlan', ip, gateway ], function( used ) {
-		if ( used === -1 ) {
+	bash( [ 'editlan', ip, gateway ], function( avail ) {
+		if ( avail == -1 ) {
 			info( {
 				  icon    : 'lan'
 				, title   : 'Duplicate IP'
@@ -325,7 +325,7 @@ function editLANSet( values ) {
 			location.href = 'http://'+ ip +'/settings.php?p=networks';
 		}
 		bannerHide();
-	}, 'json' );
+	} );
 }
 function editWiFi() {
 	bash( [ 'profileget', G.li.data( 'ssid' ) ], function( values ) {
@@ -379,8 +379,8 @@ function infoWiFi( values ) {
 			if ( data.IP === 'dhcp' ) {
 				connectWiFi( data );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( used ) {
-					if ( used === -1 ) {
+				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( avail ) {
+					if ( avail == -1 ) {
 						info( {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
@@ -392,7 +392,7 @@ function infoWiFi( values ) {
 					} else {
 						connectWiFi( data );
 					}
-				}, 'json' );
+				} );
 			}
 		}
 	} );

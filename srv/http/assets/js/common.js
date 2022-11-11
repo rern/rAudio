@@ -768,7 +768,7 @@ function setFileImage() {
 			  method : 'POST'
 			, body   : formdata
 		} ).then( ( response ) => {
-			return response.json(); // set response data to json > animated
+			return response.json(); // set response data as json > animated
 		} ).then( ( animated ) => { // 0 / 1
 			if ( animated ) {
 				O.infofilegif = '/srv/http/data/shm/local/tmp.gif';
