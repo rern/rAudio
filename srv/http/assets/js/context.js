@@ -368,13 +368,15 @@ function webRadioCoverart() {
 	if ( G.playback ) {
 		var coverart  = G.status.stationcover || G.coverdefault;
 		var type      = G.status.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       =  G.status.file;
+		var url       = G.status.file;
+		var name      = G.status.station;
 	} else {
 		var coverart  = G.coverdefault;
 		var src       = G.list.li.find( '.lib-icon' ).attr( 'src' );
 		var type      = G.mode;
 		var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
+		var name      =  G.list.name;
 	}
 	var imagefilenoext = '/srv/http/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 	$( '#coverart' ).removeAttr( 'style' );
@@ -383,7 +385,7 @@ function webRadioCoverart() {
 		  icon        : iconcover
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
-					  + '<p class="infoimgname">' + G.list.name +'</p>'
+					  + '<p class="infoimgname">'+ name +'</p>'
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
