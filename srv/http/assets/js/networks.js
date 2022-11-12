@@ -50,7 +50,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, oklabel       : 'Connect'
-			, ok            : function() {
+			, ok            : () => {
 				data.Security = security;
 				data.Key      = infoVal();
 				connectWiFi( data );
@@ -78,7 +78,7 @@ $( '.lanadd' ).click( function() {
 		, title         : 'New LAN Connection'
 		, textlabel     : [ 'IP', 'Gateway' ]
 		, focus         : 0
-		, ok           : function() {
+		, ok           : () => {
 			editLANSet( infoVal() );
 		}
 	} );
@@ -156,7 +156,7 @@ $( '.disconnect' ).click( function() {
 		, message : G.listeth ? '' : iconwarning +'No network connections after this.'
 		, oklabel : '<i class="fa fa-times"></i>Disconnect'
 		, okcolor : orange
-		, ok      : function() {
+		, ok      : () => {
 			notify( icon, ssid, 'Disconnect ...' );
 			bash( [ 'disconnect' ] )
 		}
@@ -175,7 +175,7 @@ $( '.forget' ).click( function() {
 			, message : G.listeth ? '' : iconwarning +'No network connections after this.'
 			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 			, okcolor : red
-			, ok      : function() {
+			, ok      : () => {
 				notify( icon, name, 'Forget ...' );
 				bluetoothCommand( 'remove', G.li.data( 'mac' ) );
 			}
@@ -191,7 +191,7 @@ $( '.forget' ).click( function() {
 		, message : G.ipeth || G.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
 			bash( [ 'profileremove', ssid ] );
 		}
@@ -212,7 +212,7 @@ $( '.hostapdset' ).click( function() {
 		, checkchanged : G.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, ok           : function() {
+		, ok           : () => {
 			var values  = infoVal();
 			var ip      = values[ 0 ];
 			var pwd     = values[ 1 ];
@@ -288,7 +288,7 @@ function editLAN() {
 		, values       : [ ip, gw ]
 		, checkchanged : 1
 		, checkblank   : 1
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			if ( ! static ) {
 				$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 					$( '#infoContent gr' ).text( $( this ).val() === ip ? 'DHCP' : 'Static' );
@@ -296,13 +296,13 @@ function editLAN() {
 			}
 		}
 		, buttonlabel  : ( static ? '<i class="fa fa-undo"></i>DHCP' : '' )
-		, button       : ( static ? function() {
+		, button       : ( static ? () => {
 			notify( icon, title, 'Change URL to '+ G.hostname +'.local ...' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
 		} : '' )
-		, ok           : function() {
+		, ok           : () => {
 			editLANSet( infoVal() );
 		}
 	} );
@@ -317,7 +317,7 @@ function editLANSet( values ) {
 				  icon    : 'lan'
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : function() {
+				, ok      : () => {
 					editLAN();
 				}
 			} );
@@ -357,18 +357,18 @@ function infoWiFi( values ) {
 		, values        : values
 		, checkchanged  : ! add
 		, checkblank    : ! add
-		, beforeshow    : function() {
+		, beforeshow    : () => {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', ! values[ 4 ] );
 			$( '#infoContent input:checkbox' ).eq( 0 ).change( function() {
 				$static.toggleClass( 'hide', ! $( this ).prop( 'checked' ) );
 			} );
 		}
-		, ok            : function() {
+		, ok            : () => {
 			var k    = [ 'ESSID', 'Address', 'Gateway', 'Key', 'IP', 'Hidden', 'Security' ];
 			var v    = infoVal();
 			var data = { add: add }
-			$.each( v, function( i, v ) {
+			$.each( v, ( i, v ) => {
 				if ( i === 4 ) {
 					v = v ? 'static' : 'dhcp';
 				} else if ( i === 6 ) {
@@ -385,7 +385,7 @@ function infoWiFi( values ) {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
 							, message : 'IP <wh>'+ data.Address +'</wh> already in use.'
-							, ok      : function() {
+							, ok      : () => {
 								editWiFi();
 							}
 						} );
@@ -408,7 +408,7 @@ function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
 		var htmlbt  = '';
-		G.listbt.forEach( function( list ) {
+		G.listbt.forEach( ( list ) => {
 			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
 			htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
 					 +'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
@@ -435,7 +435,7 @@ function renderPage() {
 	} else {
 		var htmlwl = '';
 		if ( G.listwl ) {
-			G.listwl.forEach( function( list ) {
+			G.listwl.forEach( ( list ) => {
 				if ( list.ip ) {
 					if ( ! G.hostapd ) {
 						var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
@@ -499,7 +499,7 @@ function scanBluetooth() {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt   = '';
-			data.forEach( function( list ) {
+			data.forEach( ( list ) => {
 				htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
@@ -512,7 +512,7 @@ function scanWlan() {
 		if ( data ) {
 			G.listwlscan = data;
 			var htmlwl   = '';
-			data.forEach( function( list, i ) {
+			data.forEach( ( list, i ) => {
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
 					var dbm    = parseInt( list.signal.slice( 0, -4 ) );
 					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );

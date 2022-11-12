@@ -2,7 +2,7 @@ var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var timeout;
 var band    = [];
 var opthz   = '';
-freq.forEach( function( hz, i ) {
+freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
 	opthz  += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
@@ -28,7 +28,7 @@ function equalizer() {
 function infoEqualizer( update ) {
 	var values     = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset  = '';
-	G.eq.presets.forEach( function( name ) {
+	G.eq.presets.forEach( ( name ) => {
 		optpreset += '<option value="'+ name +'">'+ name +'</option>';
 	} );
 	info( {
@@ -37,7 +37,7 @@ function infoEqualizer( update ) {
 		, content    : content.replace( 'PRESETS', optpreset )
 		, values     : values
 		, noreload   : update ? 1 : 0
-		, beforeshow : function() {
+		, beforeshow : () => {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();
 			if ( ! /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android cannot drag
@@ -141,7 +141,7 @@ function eqValueSet( band, val ) {
 	clearTimeout( timeout );
 	bash( [ 'equalizerupdn', band, val ] );
 	eqButtonSet();
-	timeout = setTimeout( function() {
+	timeout = setTimeout( () => {
 		bash( [ 'equalizerget', 'pushstream', $( '#eqpreset' ).val() === 'Flat' ? 'set' : '' ] );
 	}, 1000 );
 }

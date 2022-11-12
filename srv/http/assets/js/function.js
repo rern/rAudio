@@ -28,15 +28,15 @@ function blinkDot() {
 	var $d1 = $( '.dot1' );
 	var $d2 = $( '.dot2' );
 	var $d3 = $( '.dot3' );
-	G.intBlinkDot = setInterval( function() {
+	G.intBlinkDot = setInterval( () => {
 		$d1.css( 'opacity', 1 );
 		$d2.css( 'opacity', 0.1 );
 		$d3.css( 'opacity', 0.50 );
-		setTimeout( function() {
+		setTimeout( () => {
 			$d1.css( 'opacity', 0.50 );
 			$d2.css( 'opacity', 1 );
 			$d3.css( 'opacity', 0.1 );
-			setTimeout( function() {
+			setTimeout( () => {
 				$d1.css( 'opacity', 0.1 );
 				$d2.css( 'opacity', 0.50 );
 				$d3.css( 'opacity', 1 );
@@ -47,9 +47,9 @@ function blinkDot() {
 function blinkUpdate() {
 	var $icons = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
 	$icons.removeClass( 'blink' );
-	G.intBlinkUpdate = setInterval( function() {
+	G.intBlinkUpdate = setInterval( () => {
 		$icons.addClass( 'clear' );
-		setTimeout( function() {
+		setTimeout( () => {
 			$icons.removeClass( 'clear' );
 		}, 1500 );
 	}, 2500 );
@@ -63,10 +63,10 @@ function changeIP() { // for android app
 		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			$( '#infoContent input' ).prop( 'type', 'tel' );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			var ip = infoVal();
 			if ( ip === location.host ) {
 				location.reload();
@@ -90,7 +90,7 @@ function changeIP() { // for android app
 function clearIntervalAll() {
 	// .btn-cmd[play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
-	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( function( el ) {
+	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( ( el ) => {
 		clearInterval( el );
 	} );
 	if ( G.status.state === 'play' && ! G.status.stream ) setProgress(); // stop progress animation
@@ -238,7 +238,7 @@ function coverartChange() {
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
 		, footer      : embedded
-		, beforeshow  : function() { // fix direct replace src
+		, beforeshow  : () => { // fix direct replace src
 			$( '.imgold' ).attr( 'src', src );
 		}
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
@@ -246,11 +246,11 @@ function coverartChange() {
 		, filetype    : 'image/*'
 		, buttonlabel : ! coverartlocal ? '' : '<i class="fa fa-minus-circle"></i>Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
-		, button      : ! coverartlocal ? '' : function() {
+		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
 			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album ] );
 		}
-		, ok          : function() {
+		, ok          : () => {
 			imageReplace( type, imagefilenoext );
 			banner( icon, title, 'Change ...' );
 		}
@@ -308,7 +308,7 @@ function coverartSave() {
 			, message :  '<img class="infoimgnew" src="'+ base64 +'">'
 						+'<p class="infoimgname"><i class="fa fa-folder"></i> '+ album
 						+'<br><i class="fa fa-artist"></i> '+ artist +'</p>'
-			, ok      : function() {
+			, ok      : () => {
 				imageReplace( 'coverart', path +'/cover' );
 				banner( icon, title, 'Save ...' );
 			}
@@ -415,10 +415,10 @@ function displayPlayback() {
 function displaySave( keys ) {
 	var values  = infoVal();
 	var display = JSON.parse( JSON.stringify( G.display ) );
-	keys.forEach( function( k, i ) {
+	keys.forEach( ( k, i ) => {
 		display[ k ] = values[ i ];
 	} );
-	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( function( item ) {
+	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( ( item ) => {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
@@ -434,7 +434,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
 	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
-	submenu.forEach( function( el ) { // submenu toggled by css .settings + .submenu
+	submenu.forEach( ( el ) => { // submenu toggled by css .settings + .submenu
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
@@ -472,7 +472,7 @@ function getBio( artist, getsimilar ) {
 		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
-			similar.forEach( function( a ) {
+			similar.forEach( ( a ) => {
 				similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;';
 			} );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
@@ -505,7 +505,7 @@ function getBio( artist, getsimilar ) {
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var img0        = '';
 					var imageshtml  = '<div id="bioimg">';
-					data.artistthumb.forEach( function( el ) {
+					data.artistthumb.forEach( ( el ) => {
 						var src     = el.url.replace( '/fanart/', '/preview/' );
 						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
 						if ( ! img0 ) img0 = src;
@@ -517,7 +517,7 @@ function getBio( artist, getsimilar ) {
 					$name.prepend( '<img class="img0 hide" src="'+ img0 +'">' )
 					var $img       = $( '#biocontent .img0' );
 					var observer   = new IntersectionObserver( function( entries ) {
-						entries.forEach( function( entry ) {
+						entries.forEach( ( entry ) => {
 							if ( window.innerWidth <= 480 ) return
 							
 							if ( entry.isIntersecting ) { // visible = true
@@ -551,8 +551,8 @@ function getPlaybackStatus( withdisplay ) {
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
-				, ok      : function() {
-					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', function() {
+				, ok      : () => {
+					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', () => {
 						location.reload();
 					} );
 				}
@@ -586,8 +586,8 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
-		$.each( status, function( key, value ) {
-			G.status[ key ] = value;
+		$.each( status, ( k, v ) => {
+			G.status[ k ] = v;
 		} );
 		if ( G.playback ) {
 			displayPlayback();
@@ -715,11 +715,11 @@ var chklibrary2 = {
 function infoLibrary( page2 ) {
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
-	keys         = keys.filter( function( k ) {
+	keys         = keys.filter( ( i, k ) => {
 		return k[ 0 ] !== '-'
 	} );
 	var values = [];
-	keys.forEach( function( k, i ) {
+	keys.forEach( ( k, i ) => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -734,9 +734,9 @@ function infoLibrary( page2 ) {
 		, noreload     : ! $( '#infoOverlay' ).hasClass( 'hide' )
 		, values       : values
 		, checkchanged : 1
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
-			keys.forEach( function( k, i ) {
+			keys.forEach( ( k, i ) => {
 				window[ '$'+ k ] = $chk.eq( i );
 				window[ k ]      = i;
 			} );
@@ -781,13 +781,13 @@ function infoUpdate( path ) {
 		, title      : 'Library Database'
 		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
 		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
-		, beforeshow : function() {
+		, beforeshow : () => {
 			if ( ! G.status.counts ) {
 				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
 				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
 			}
 		}
-		, ok         : function() {
+		, ok         : () => {
 			bash( [ 'mpcupdate', path || infoVal() ] );
 		}
 	} );
@@ -817,7 +817,7 @@ function libraryHome() {
 }
 function local( delay ) {
 	G.local = 1;
-	setTimeout( function() { G.local = 0 }, delay || 300 );
+	setTimeout( () => { G.local = 0 }, delay || 300 );
 }
 function lyricsShow( data ) {
 	if ( data !== 'current' ) {
@@ -891,9 +891,9 @@ function mpcSeekBar( pageX ) {
 	if ( ! G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	G.display.order.forEach( function( name ) {
-		var $libmode = $( '.lib-mode' ).filter( function() {
-			return $( this ).find( '.lipath' ).text() === name;
+	G.display.order.forEach( ( name ) => {
+		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => {
+			return $( el ).find( '.lipath' ).text() === name;
 		} );
 		$libmode.detach();
 		$( '#lib-mode-list' ).append( $libmode );
@@ -901,10 +901,10 @@ function orderLibrary() {
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
-	bash( [ 'savedpledit', plname, 'add', indextarget, G.pladd.file ], function() {
+	bash( [ 'savedpledit', plname, 'add', indextarget, G.pladd.file ], () => {
 		renderSavedPlaylist( plname );
 		if ( indextarget === 'last' ) {
-			setTimeout( function() {
+			setTimeout( () => {
 				$( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } );
 			}, 300 );
 		}
@@ -929,13 +929,13 @@ ${ track }
 		, content     : content
 		, values      : [ 1 ]
 		, buttonlabel : '<i class="fa fa-undo"></i>Select'
-		, button  : function() {
+		, button      : () => {
 			playlistInsertTarget();
 		}
-		, cancel      : function() {
+		, cancel      : () => {
 			G.pladd = {}
 		}
-		, ok          : function() {
+		, ok          : () => {
 			playlistInsert( +infoVal() + $this.index() )
 		}
 	} );
@@ -951,16 +951,16 @@ function playlistInsertTarget() {
 					  +'Select where to add:'
 		, radio      : { First : 'first', Select: 'select', Last: 'last' }
 		, values     : 'last'
-		, beforeshow : function() {
+		, beforeshow : () => {
 			$( '#infoContent input' ).eq( 1 ).click( function() {
 				local();
 				$( '#infoX' ).click();
 			} );
 		}
-		, cancel     : function() {
+		, cancel     : () => {
 			if ( ! G.local ) G.pladd = {}
 		}
-		, ok         : function() {
+		, ok         : () => {
 			playlistInsert( infoVal() );
 		}
 	} );
@@ -970,8 +970,8 @@ function playlistFilter() {
 	var keyword = $( '#pl-search-input' ).val();
 	var regex   = new RegExp( keyword, 'i' );
 	var count   = 0;
-	$( '#pl-list li' ).each( function() {
-		var $this = $( this );
+	$( '#pl-list li' ).each( ( i, el ) => {
+		var $this = $( el );
 		var match = ( $this.text().search( regex ) !== -1 ) ? true : false;
 		count     = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', ! match );
@@ -1022,8 +1022,8 @@ function playlistRemove( $li ) {
 			}
 		}
 		bash( [ 'mpcremove', pos, poscurent ] );
-		$( '#pl-list li .pos' ).slice( pos ).each( function() {
-			$( this ).text( pos );
+		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
+			$( el ).text( pos );
 			pos++
 		} );
 		$li.remove();
@@ -1043,7 +1043,7 @@ function power( action ) {
 							+'<br><br>Continue?'
 				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
 				, okcolor : off ? red : orange
-				, ok      : function() {
+				, ok      : () => {
 					bash( [ 'power', action, 1 ] );
 					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 				}
@@ -1103,9 +1103,9 @@ function renderLibrary() {
 	$( '#lib-search-input' ).val( '' );
 	$( '#page-library .content-top, #lib-list' ).addClass( 'hide' );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
-	$( '.mode:not( .mode-bookmark )' ).each( function() {
-		var name = this.id.replace( 'mode-', '' );
-		$( this ).parent().toggleClass( 'hide', ! G.display[ name ] );
+	$( '.mode:not( .mode-bookmark )' ).each( ( i, el ) => {
+		var name = el.id.replace( 'mode-', '' );
+		$( el ).parent().toggleClass( 'hide', ! G.display[ name ] );
 	} );
 	if ( G.display.label ) {
 		$( '#lib-mode-list a.label' ).show();
@@ -1128,8 +1128,8 @@ function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
-	$.each( G.status.counts, function( key, val ) {
-		$( '#mode-'+ key ).find( 'gr' ).text( val ? val.toLocaleString() : '' );
+	$.each( G.status.counts, ( k, v ) => {
+		$( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' );
 	} );
 }
 function renderLibraryList( data ) {
@@ -1277,7 +1277,7 @@ function renderPlayback() {
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
 	} else {
 		$( '#progress' ).html( istate +'<span></span>'+ timehms );
-		setTimeout( function() {
+		setTimeout( () => {
 			$( '#progress span' ).after( ' / ' );
 		}, 1000 );
 	}
@@ -1399,7 +1399,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( function( el ) {
+	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( ( el ) => {
 		clearInterval( el );
 	} );
 	$( '#vuneedle' ).css( 'transform', '' );
@@ -1421,8 +1421,8 @@ function setBookmarkEdit() {
 	}
 	
 	G.bklabel = $( this ).find( '.label' );
-	$( '.mode-bookmark' ).each( function() {
-		var $this      = $( this );
+	$( '.mode-bookmark' ).each( ( i, el ) => {
+		var $this      = $( el );
 		var path       = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( ! $this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
@@ -1471,7 +1471,7 @@ function setButtonOptions() {
 			$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', ! ( G.status.repeat && G.status.single ) );
 			$( '#'+ prefix +'-single' ).toggleClass( 'hide', ! G.status.single || ( G.status.repeat && G.status.single ) );
 		}
-		[ 'consume', 'librandom' ].forEach( function( option ) {
+		[ 'consume', 'librandom' ].forEach( ( option ) => {
 			if ( timevisible ) {
 				$( '#i-'+ option ).addClass( 'hide' );
 				$( '#ti-'+ option ).toggleClass( 'hide', ! G.status[ option ] );
@@ -1599,11 +1599,11 @@ function setInfoScroll() {
 	$el
 		.removeClass( 'scrollleft scrollellipse' )
 		.removeAttr( 'style' );
-	$el.each( function() {
-		var tW = Math.ceil( this.getBoundingClientRect().width );
+	$el.each( ( i, el ) => {
+		var tW = Math.ceil( el.getBoundingClientRect().width );
 		if ( tW > G.wW - 20 ) {
 			if ( tW > tWmax ) tWmax = tW; // same width > scroll together (same speed)
-			$( this ).addClass( 'scrollleft' );
+			$( el ).addClass( 'scrollleft' );
 		}
 	} );
 	if ( ! tWmax ) return
@@ -1715,7 +1715,7 @@ function setPlaylistScroll() {
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
 			if ( G.status.elapsed ) $elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( G.status.elapsed ) + slash );
-			G.intElapsedPl = setInterval( function() {
+			G.intElapsedPl = setInterval( () => {
 				G.status.elapsed++;
 				if ( G.status.elapsed === G.status.Time ) {
 					clearIntervalAll();
@@ -1766,7 +1766,7 @@ function setProgressElapsed() {
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
 		}
-		G.intElapsed = setInterval( function() {
+		G.intElapsed = setInterval( () => {
 			G.status.elapsed++;
 			if ( G.status.elapsed < time ) {
 				if ( G.localhost ) {
@@ -1787,7 +1787,7 @@ function setProgressElapsed() {
 		$( '#elapsed' ).html( blinkdot );
 		$elapsed = $( '#total, #progress span' );
 		$elapsed.text( second2HMS( G.status.elapsed ) );
-		G.intElapsed = setInterval( function() {
+		G.intElapsed = setInterval( () => {
 			G.status.elapsed++;
 			elapsedhms = second2HMS( G.status.elapsed );
 			$elapsed.text( elapsedhms );
@@ -1833,7 +1833,7 @@ function setVolume() {
 }
 function sortPlaylist( pl, iold, inew ) {
 	G.sortable = 1;
-	setTimeout( function() { G.sortable = 0 }, 500 );
+	setTimeout( () => { G.sortable = 0 }, 500 );
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1 ] );
 	} else {
@@ -1841,9 +1841,9 @@ function sortPlaylist( pl, iold, inew ) {
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;
-	$( '#'+ pl +' li .pos' ).slice( i, imax ).each( function() {
+	$( '#'+ pl +' li .pos' ).slice( i, imax ).each( ( i, el ) => {
 		i++
-		$( this ).text( i );
+		$( el ).text( i );
 	} );
 }
 function stopAirplay() {
@@ -1852,7 +1852,7 @@ function stopAirplay() {
 		, title   : 'AirPlay'
 		, message : 'AirPlay is playing.'
 				   +'<br>Stop AirPlay?'
-		, ok      : function() {
+		, ok      : () => {
 			$( '#stop' ).click();
 		}
 	} );
@@ -1892,7 +1892,7 @@ function switchPage( page ) {
 }
 function thumbUpdate( path ) {
 	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	[ 'cove', 'update', 'main', path || '' ].forEach( function( el ) {
+	[ 'cove', 'update', 'main', path || '' ].forEach( ( el ) => {
 		form += '<input type="hidden" name="opt[]" value="'+ el +'">';
 	} );
 	$( 'body' ).append( form +'</form>' );
@@ -1915,7 +1915,7 @@ function urlReachable( url, sec ) {
 		location.href = url;
 	} ).catch( function() {
 		sec++
-		setTimeout( function() {
+		setTimeout( () => {
 			urlReachable( url, sec );
 		}, 1000 );
 	} );
@@ -1945,16 +1945,16 @@ function volumeBarSet( pageX ) {
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
 			, {
-				  duration: ms
-				, easing: 'linear'
-				, complete: function() {
+				  duration : ms
+				, easing   : 'linear'
+				, complete : () => {
 					G.volumebar = setTimeout( volumeBarHide, 3000 );
 				}
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		
-		bash( cmd, function() {
+		bash( cmd, () => {
 			$( '.volumeband' ).removeClass( 'disabled' );
 		} );
 	}
@@ -2002,13 +2002,13 @@ function vu() {
 		return
 	}
 	
-	setTimeout( function() {
+	setTimeout( () => {
 		var range = 8; // -/+
 		var deg   = 0;
 		var inc;
 		clearInterval( G.intVu );
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ Math.random() * range +'deg )' );
-		G.intVu = setInterval( function() {
+		G.intVu = setInterval( () => {
 			inc  = Math.random() * range * 2;
 			deg += inc;
 			if ( deg < -range ) {

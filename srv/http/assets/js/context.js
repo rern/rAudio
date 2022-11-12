@@ -1,7 +1,7 @@
 function addReplace( cmd, command, title, msg ) {
 	var play = cmd === 'addplay' || cmd === 'replaceplay';
 	if ( play || cmd === 'replace' ) $( '#stop' ).click();
-	bash( command, function() {
+	bash( command, () => {
 		if ( G.display.playbackswitch && play ) $( '#playback' ).click();
 	} );
 	banner( 'playlist', title, msg );
@@ -28,10 +28,10 @@ function bookmarkNew() {
 			, focus      : 0
 			, values     : path.split( '/' ).pop()
 			, checkblank : coverart ? '' : 1
-			, beforeshow : function() {
+			, beforeshow : () => {
 				$( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' );
 			}
-			, ok         : function() {
+			, ok         : () => {
 				var name = infoVal();
 				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], function( std ) {
 					if ( std == -1 ) {
@@ -67,7 +67,7 @@ function playlistDelete() {
 				   +'<br><wh>'+ G.list.name +'</wh>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			bash( [ 'savedpldelete', G.list.name ] );
 		}
 	} );
@@ -96,7 +96,7 @@ function playlistNew( name ) {
 		, focus        : 0
 		, values       : name
 		, checkblank   : 1
-		, ok           : function() {
+		, ok           : () => {
 			playlistSave( infoVal() );
 		}
 	} );
@@ -113,7 +113,7 @@ function playlistRename() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : function() {
+		, ok           : () => {
 			var newname = infoVal();
 			playlistSave( newname, name );
 		}
@@ -143,13 +143,13 @@ function playlistSaveExist( type, name, oldname ) {
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
-		, button      : function() {
-			setTimeout( function() { // fix error on repeating
+		, button      : () => {
+			setTimeout( () => { // fix error on repeating
 				rename ? playlistRename() : playlistNew( name );
 			}, 0 );
 		}
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
-		, ok          : function() {
+		, ok          : () => {
 			rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' );
 		}
 	} );
@@ -196,7 +196,7 @@ function tagEditor() {
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
-		format.forEach( function( el, i ) {
+		format.forEach( ( el, i ) => {
 			if ( G.playlist && ! values[ i ] ) {
 				delete values[ i ];
 				return
@@ -236,7 +236,7 @@ function tagEditor() {
 			, boxwidth     : 'max'
 			, values       : values
 			, checkchanged : 1
-			, beforeshow   : function() {
+			, beforeshow   : () => {
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
 				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
@@ -299,16 +299,16 @@ function tagEditor() {
 				} );
 			}
 			, okno         : G.playlist
-			, ok           : G.playlist ? '' : function() {
+			, ok           : G.playlist ? '' : () => {
 				var tag       = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
 				var newvalues = infoVal();
 				var val;
-				newvalues.forEach( function( v, i ) {
+				newvalues.forEach( ( v, i ) => {
 					val = ( v === values[ i ] ) ? '' : ( v || -1 );
 					tag.push( val );
 				} );
 				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
-				setTimeout( function() {
+				setTimeout( () => {
 					banner( 'tag blink', 'Tag Editor', 'Update Library ...' );
 				}, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
@@ -361,7 +361,7 @@ function webRadioCoverart() {
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
-		, beforeshow  : function() {
+		, beforeshow  : () => {
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === G.coverdefault );
 			if ( src ) {
 				bash( [ 'coverartget', imagefilenoext, 'radio' ], function( coverart ) {
@@ -374,10 +374,10 @@ function webRadioCoverart() {
 		}
 		, buttonlabel : '<i class="fa fa-'+ type +'"></i>Default'
 		, buttoncolor : orange
-		, button      : function() {
+		, button      : () => {
 			bash( [ 'webradiocoverreset', imagefilenoext, type ] );
 		}
-		, ok          : function() {
+		, ok          : () => {
 			imageReplace( type, imagefilenoext );
 		}
 	} );
@@ -395,7 +395,7 @@ function webRadioDelete() {
 				   +'<br>'+ url
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			G.list.li.remove();
 			var dir = $( '#lib-path .lipath' ).text();
 			bash( ['webradiodelete', dir, url, G.mode ] );
@@ -428,14 +428,14 @@ function webRadioEdit() {
 		, checkchanged : 1
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			$( '#addwebradiodir' ).remove();
 			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
 				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
 			}
 		}
 		, oklabel      : '<i class="fa fa-save"></i>Save'
-		, ok           : function() {
+		, ok           : () => {
 			var dir        = $( '#lib-path .lipath' ).text();
 			var values     = infoVal();
 			var newname    = values[ 0 ];
@@ -453,8 +453,8 @@ function webRadioExists( error, name, url, charset ) {
 		  icon    : 'webradio'
 		, title   : 'Add Web Radio'
 		, message : '<wh>'+ url +'</wh><br>'+ message
-		, ok      : function() {
-			setTimeout( function() {
+		, ok      : () => {
+			setTimeout( () => {
 				name ? webRadioNew( name, url, charset ) : webRadioEdit();
 			}, 300 );
 		}
@@ -469,7 +469,7 @@ function webRadioNew( name, url, charset ) {
 		, focus        : 0
 		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
@@ -480,7 +480,7 @@ function webRadioNew( name, url, charset ) {
 						, textlabel  : 'Name'
 						, focus      : 0
 						, checkblank : 1
-						, ok         : function() {
+						, ok         : () => {
 							var dir = $( '#lib-path .lipath' ).text();
 							bash( [ 'wrdirnew', dir, infoVal() ] );
 						}
@@ -488,7 +488,7 @@ function webRadioNew( name, url, charset ) {
 				} );
 			}
 		}
-		, ok           : function() {
+		, ok           : () => {
 			var values  = infoVal();
 			var name    = values[ 0 ];
 			var url     = values[ 1 ];
@@ -510,10 +510,10 @@ function webRadioSave( url ) {
 		, textlabel  : 'Name'
 		, focus      : 0
 		, checkblank : 1
-		, ok         : function() {
+		, ok         : () => {
 			G.local     = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioadd', newname, url ], function() {
+			bash( [ 'webradioadd', newname, url ], () => {
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
 				G.list.li.find( '.savewr' ).remove();
@@ -577,8 +577,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title   : 'Exclude Directory'
 				, message : 'Exclude from Library:'
 							+'<br><i class="fa fa-folder"></i>&ensp;<wh>'+ G.list.path +'</wh>'
-				, ok      : function() {
-					bash( [ 'ignoredir', G.list.path ], function() {
+				, ok      : () => {
+					bash( [ 'ignoredir', G.list.path ], () => {
 						G.list.li.remove();
 					} );
 					var dir = G.list.path.split( '/' ).pop();
@@ -587,7 +587,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'remove':
 			G.contextmenu = 1;
-			setTimeout( function() { G.contextmenu = 0 }, 500 );
+			setTimeout( () => { G.contextmenu = 0 }, 500 );
 			playlistRemove( G.list.li );
 			return
 		case 'savedpladd':
@@ -612,7 +612,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					  icon    : 'lastfm'
 					, title   : 'Add Similar'
 					, message : 'Search and add similar tracks from Library?'
-					, ok      : function() {
+					, ok      : () => {
 						addSimilar();
 					}
 				} );
@@ -629,7 +629,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'
-				, ok      : function() {
+				, ok      : () => {
 					thumbUpdate( G.list.path );
 				}
 			} );
@@ -647,7 +647,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 							+'<br><wh>'+ path +'</wh>'
 				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 				, okcolor : red
-				, ok      : function() {
+				, ok      : () => {
 					bash( [ 'wrdirdelete', path, G.mode ], function( std ) {
 						if ( std == -1 ) {
 							info( {
@@ -658,7 +658,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 											+'<br>Confirm delete?'
 								, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 								, okcolor : red
-								, ok      : function() {
+								, ok      : () => {
 									bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] );
 								}
 							} );
@@ -680,7 +680,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkblank  : 1
 				, checkchange : 1
 				, oklabel     : 'Rename'
-				, ok          : function() {
+				, ok          : () => {
 					bash( [ 'wrdirrename', path, name, infoVal(), G.mode ] );
 				}
 			} );
@@ -731,7 +731,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
 				if ( replace && G.display.plclear && G.status.pllength ) {
-					infoReplace( function() {
+					infoReplace( () => {
 						playlistLoad( path, play, replace );
 					} );
 				} else {
@@ -789,7 +789,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
 	if ( G.display.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
-		infoReplace( function() {
+		infoReplace( () => {
 			addReplace( cmd, command, title, msg );
 		} );
 	} else {

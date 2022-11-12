@@ -78,7 +78,7 @@ function currentStatus( id, refresh ) {
 	}
 		
 	if ( $el.hasClass( 'hide' ) ) {
-		var timeoutGet = setTimeout( function() {
+		var timeoutGet = setTimeout( () => {
 			notify( page, 'Get Data', id );
 		}, 1000 );
 	}
@@ -88,7 +88,7 @@ function currentStatus( id, refresh ) {
 		$el.html( status ).promise().done( function() {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
-				setTimeout( function() {
+				setTimeout( () => {
 					$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
 				}, 100 );
 			}
@@ -200,14 +200,14 @@ function refreshData() {
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
-		$( '.switch' ).each( function() {
-			$( this ).prop( 'checked', G[ this.id ] );
+		$( '.switch' ).each( ( i, el ) => {
+			$( el ).prop( 'checked', G[ el.id ] );
 		} );
-		$( '.setting' ).each( function() {
-			if ( $( this ).prev().is( 'select' ) ) return // not switch
+		$( '.setting' ).each( ( i, el ) => {
+			if ( $( el ).prev().is( 'select' ) ) return // not switch
 			
-			var sw = this.id.replace( 'setting-', '' );
-			$( this ).toggleClass( 'hide', ! G[ sw ] );
+			var sw = el.id.replace( 'setting-', '' );
+			$( el ).toggleClass( 'hide', ! G[ sw ] );
 		} );
 	}
 }
@@ -215,8 +215,8 @@ function showContent() {
 	G.raudioready ? delete G.raudioready : bannerReset();
 	if ( $( 'select' ).length ) selectricRender();
 	if ( page !== 'networks' ) {
-		$( 'pre.status' ).each( function( el ) {
-			if ( ! $( this ).hasClass( 'hide' ) ) currentStatus( this.id.replace( 'code', '' ), 'refresh' );
+		$( 'pre.status' ).each( ( i, el ) => {
+			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );
 		} );
 	}
 	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
@@ -305,7 +305,7 @@ function psPlayer( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
-		$.each( data, function( k, v ) {
+		$.each( data, ( k, v ) => {
 			G[ k ] = v;
 		} );
 		setSwitch();
@@ -319,7 +319,7 @@ function psVolume( data ) {
 	if ( ! $( '#infoRange .value' ).text() ) return
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
@@ -344,7 +344,7 @@ function psWifi( data ) {
 		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
-		, ok      : function() {
+		, ok      : () => {
 			bash( [ 'reboot' ] );
 		}
 	} );
@@ -383,7 +383,7 @@ $( document ).keyup( function( e ) {
 		case 'Tab':
 			$( '#bar-bottom div' ).removeClass( 'bgr' );
 			$( '.switchlabel, .setting' ).removeClass( 'focus' );
-			setTimeout( function() {
+			setTimeout( () => {
 				$focus = $( 'input:checkbox:focus' );
 				if ( $focus.length ) {
 					$focus.next().addClass( 'focus' );
@@ -392,7 +392,7 @@ $( document ).keyup( function( e ) {
 			break;
 		case 'Escape':
 			$focus = $( '.switchlabel.focus' );
-			setTimeout( function() {
+			setTimeout( () => {
 				if ( $focus.length ) $focus.prev().focus();
 			}, 300 );
 			if ( $( '.setting.focus' ).length ) {
@@ -440,13 +440,13 @@ $( '.close' ).click( function() {
 			, title   : 'System Setting'
 			, message : 'Reboot required for:<br><br>'
 						+'<pre><wh>'+ list +'</wh></pre>'
-			, cancel  : function() {
+			, cancel  : () => {
 				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
 				location.href = '/';
 			}
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-			, ok      : function() {
+			, ok      : () => {
 				bash( [ 'cmd', 'power', 'reboot' ] );
 			}
 		} );
@@ -465,7 +465,7 @@ $( '#button-data' ).click( function() {
 	setSwitch();
 	renderPage();
 } ).on( 'mousedown touchdown', function() {
-	timer = setTimeout( function() {
+	timer = setTimeout( () => {
 		location.reload();
 	}, 1000 );
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
@@ -479,17 +479,18 @@ $( '.help-head' ).click( function() {
 		return
 	}
 	
-	var eltop = $( 'heading' ).filter( function() {
-		return this.getBoundingClientRect().top > 0
+	var eltop = $( 'heading' ).filter( ( i, el ) => {
+		return el.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
 		var visible = $( this ).hasClass( 'bl' );
 		$( this ).toggleClass( 'bl', ! visible );
-		$( '.section' ).each( function() {
-			if ( $( this ).hasClass( 'hide' ) ) return
+		$( '.section' ).each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.hasClass( 'hide' ) ) return
 			
-			$( this ).find( '.help-block' ).toggleClass( 'hide', visible );
+			$this.find( '.help-block' ).toggleClass( 'hide', visible );
 		} )
 		
 	} else {

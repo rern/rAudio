@@ -6,7 +6,7 @@ renderPage = function( changed ) {
 	if ( typeof D === 'undefined' ) {
 		D           = { val : {}, key : {} };
 		D.keys      = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-		D.keys.forEach( function( k ) {
+		D.keys.forEach( ( k ) => {
 			D.val[ k ] = G[ k ];
 		} );
 		D.val.timer = G.timer;
@@ -50,8 +50,9 @@ renderPage = function( changed ) {
 	}
 	$( '.selectric-ond, .selectric-offd' ).removeClass( 'disabled' );
 	$( '.selectric .label' ).removeClass( 'gr' );
-	var $el0 = $( '.on, .off' ).filter( function() {
-		return ! $( this ).hasClass( 'delay' ) && $( this ).val() == 0;
+	var $el0 = $( '.on, .off' ).filter( ( i, el ) => {
+		var $this = $( el );
+		return ! $this.hasClass( 'delay' ) && $this.val() == 0;
 	} ).parent().parent(); // 2-up: selectric-wrapper
 	if ( $el0.length ) {
 		$el0.find( '.label' ).addClass( 'gr' );
@@ -62,14 +63,14 @@ renderPage = function( changed ) {
 	showContent();
 }
 function renderUpdate() {
-	D.keys.forEach( function( k ) {
+	D.keys.forEach( ( k ) => {
 		D.val[ k ] = [];
 	} );
 	for ( i = 0; i < 4; i ++ ) {
 		D.val.pin.push( +$( '#pin'+ i ).val() );
 		D.val.name.push( $( '#name'+ i ).val() );
 	}
-	[ 'on', 'off' ].forEach( function( k ) {
+	[ 'on', 'off' ].forEach( ( k ) => {
 		var v0     = [];
 		for ( i = 0; i < 4; i ++ ) {
 			var v = +$( '#'+ k + i ).val();

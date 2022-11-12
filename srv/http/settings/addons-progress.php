@@ -43,7 +43,7 @@ loaderHide();
 $( '.close' ).click( function() {
 	location.href = '<?=$href?>';
 } );
-var scroll = setInterval( function() {
+var scroll = setInterval( () => {
 	$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
 }, 500 );
 // js for '<pre>' must be here before start stdout

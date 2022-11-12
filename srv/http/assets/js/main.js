@@ -288,7 +288,7 @@ $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplayback );
 	var values = [];
-	keys.forEach( function( k, i ) {
+	keys.forEach( ( k ) => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -300,9 +300,9 @@ $( '#displayplayback' ).click( function() {
 		, checkcolumn  : 1
 		, values       : values
 		, checkchanged : 1
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
-			keys.forEach( function( k, i ) {
+			keys.forEach( ( k, i ) => {
 				window[ '$'+ k ] = $chk.eq( i );
 				window[ k ]      = i;
 			} );
@@ -381,7 +381,7 @@ $( '#displayplaylist' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplaylist );
 	var values = [];
-	keys.forEach( function( k, i ) {
+	keys.forEach( ( k ) => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -441,7 +441,7 @@ $( '#addons' ).click( function () {
 				, title   : 'Addons'
 				, message : std == -1 ? 'Download from Addons server failed.' : 'No internet connection.'
 						   +'<br>Please try again later.'
-				, ok      : function() {
+				, ok      : () => {
 					loaderHide();
 				}
 			} );
@@ -572,7 +572,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 		, content     : content
 		, boxwidth    : 320
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
-		, beforeshow  : function() {
+		, beforeshow  : () => {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
@@ -628,7 +628,7 @@ $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 		, title   : 'Audio CD'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			bash( '/srv/http/bash/audiocd.sh ejecticonclick' );
 		}
 	} );
@@ -663,7 +663,7 @@ $( '#time' ).roundSlider( {
 		clearIntervalAll();
 		mpcSeek( e.value );
 	}
-	, stop              : function() {
+	, stop              : () => {
 		G.drag = 0;
 	}
 } );
@@ -718,7 +718,7 @@ $( '#volume' ).roundSlider( {
 		var diff  = e.value - G.status.volume || G.status.volume - G.status.volumemute; // change || mute/unmute
 		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
-		setTimeout( function() {
+		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration','' );
 		}, speed * 1000 + 500 );
 	}
@@ -789,7 +789,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var vol   = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 	
-	G.intVolume = setInterval( function() {
+	G.intVolume = setInterval( () => {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 		
 		voldn ? vol-- : vol++;
@@ -826,7 +826,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	var vol   = G.status.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 	
-	G.intVolume = setInterval( function() {
+	G.intVolume = setInterval( () => {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 		
 		voldn ? vol-- : vol++;
@@ -970,13 +970,13 @@ $( '.map' ).click( function( e ) {
 			
 			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
 			if ( 'coverTL' in G ) {
-				list.forEach( function( el ) {
+				list.forEach( ( el ) => {
 					G.display[ el ] = G.coverTL[ el ];
 				} );
 				delete G.coverTL;
 			} else {
 				G.coverTL = {};
-				list.forEach( function( el ) {
+				list.forEach( ( el ) => {
 					G.coverTL[ el ] = G.display[ el ];
 				} );
 				if ( this.id === 'coverTL' ) {
@@ -1175,7 +1175,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		  icon     : 'dabradio'
 		, title    : 'DAB Radio'
 		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
-		, ok       : function() {
+		, ok       : () => {
 			bash( [ 'dabscan' ] );
 		}
 	} );
@@ -1184,7 +1184,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		  icon         : 'latest'
 		, title        : 'Latest'
 		, message      : 'Clear Latest albums list?'
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'latestclear' ] );
 		}
 	} );
@@ -1202,7 +1202,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, ok           : function() {
+		, ok           : () => {
 			thumbUpdate();
 		}
 	} );
@@ -1433,7 +1433,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, message : icon
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			bash( [ 'bookmarkremove', name, path ] );
 		}
 	} );
@@ -1451,7 +1451,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, checkblank   : 1
 		, checkchanged : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : function() {
+		, ok           : () => {
 			var newname = infoVal();
 			bash( [ 'bookmarkrename', name, newname, path ] );
 		}
@@ -1480,10 +1480,10 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, filetype    : 'image/*'
 		, buttonlabel : ! thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : function() {
+		, button      : ! thumbnail ? '' : () => {
 			bash( [ 'bookmarkcoverreset', imagepath, name ] );
 		}
-		, ok          : function() {
+		, ok          : () => {
 			imageReplace( 'bookmark', imagepath +'/coverart', name ); // no ext
 		}
 	} );
@@ -1500,8 +1500,8 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	}
 	, onUpdate      : function () {
 		var order = [];
-		$( '.mode' ).each( function() {
-			order.push( $( this ).find( '.lipath' ).text() );
+		$( '.mode' ).each( ( i, el ) => {
+			order.push( $( el ).find( '.lipath' ).text() );
 		} );
 		bash( [ 'ordersave', JSON.stringify( order ) ] );
 	}
@@ -1546,7 +1546,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 Exclude this thumbnail?`
 		, okcolor : orange
 		, oklabel : '<i class="fa fa-minus-circle"></i> Exclude'
-		, ok      : function() {
+		, ok      : () => {
 			bash( [ 'albumignore', album, artist ] );
 			$this.remove();
 		}
@@ -1631,7 +1631,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	var libpath  = $( '#lib-path .lipath' ).text();
 	var path     = $this.find( '.lipath' ).text();
 	var name     = $this.find( '.liname' ).text();
-	var mode     = $( this ).data( 'mode' );
+	var mode     = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( G.mode );
 	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
 	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // list by directory
@@ -1642,7 +1642,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 		}
 		var modetitle = modefile ? path : $( '#mode-title' ).text();
 	} else if ( G.mode.slice( -5 ) === 'radio' ) {
-		if ( $( this ).hasClass( 'dir' ) ) {
+		if ( $this.hasClass( 'dir' ) ) {
 			var query = {
 				  query  : 'radio'
 				, string : path
@@ -1757,13 +1757,14 @@ $( '#button-pl-save' ).click( function() {
 	}
 } );
 $( '#button-pl-consume' ).click( function() {
+	var $this = $( this );
 	var icon  = 'playlist';
 	var title = 'Consume Mode';
 	if ( G.status.consume ) {
-		$( this ).removeClass( 'bl' );
+		$this.removeClass( 'bl' );
 		banner( icon, title, 'Off' );
 	} else {
-		$( this ).addClass( 'bl' );
+		$this.addClass( 'bl' );
 		banner( icon, title, 'On - Remove each song after played.' );
 	}
 	G.status.consume = ! G.status.consume;
@@ -1785,10 +1786,10 @@ $( '#button-pl-librandom' ).click( function() {
 			, message    : 'Randomly add songs and play continuously.'
 			, checkbox   : [ 'Start playing the random songs' ]
 			, values     : [ true ]
-			, beforeshow : function() {
+			, beforeshow : () => {
 				if ( G.status.song + 1 === G.status.pllength ) $( '#infoContent table' ).addClass( 'hide' );
 			}
-			, ok         : function() {
+			, ok         : () => {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );
 				banner( icon, title, 'On ...' );
@@ -1802,7 +1803,7 @@ $( '#button-pl-shuffle' ).click( function() {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
-		, ok      : function() {
+		, ok      : () => {
 			bash( [ 'mpcshuffle' ] );
 		}
 	} );
@@ -1814,7 +1815,7 @@ $( '#button-pl-clear' ).click( function() {
 			, title       : 'Clear Playlist'
 			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
 			, okcolor     : red
-			, ok          : function() {
+			, ok          : () => {
 				bash( [ 'mpcremove' ] );
 				renderPlaylist( -1 );
 			}
@@ -1826,11 +1827,11 @@ $( '#button-pl-clear' ).click( function() {
 			, buttonlabel : [ '<i class="fa fa-playlist"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [
-				  function() {
+				  () => {
 					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
-				, function() {
+				, () => {
 					if ( ! G.status.librandom ) local();
 					bash( [ 'mpccrop' ] );
 					$( '#pl-list li:not( .active )' ).remove();
@@ -1838,7 +1839,7 @@ $( '#button-pl-clear' ).click( function() {
 			]
 			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
 			, okcolor     : red
-			, ok          : function() {
+			, ok          : () => {
 				bash( [ 'mpcremove' ] );
 				setPlaybackBlank();
 				renderPlaylist( -1 );
@@ -1972,7 +1973,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	var $target  = $( e.target );
 	if ( $target.hasClass( 'savewr' ) ) return
 	
-	$this = $( this );
+	var $this    = $( this );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
@@ -2024,8 +2025,9 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		if ( pladd ) playlistInsertTarget();
 	}
 } ).on( 'click', '.savewr', function() {
-	G.list.li = $( this ).parent();
-	webRadioSave( $( this ).next().next().text() );
+	var $this = $( this );
+	G.list.li = $this.parent();
+	webRadioSave( $this.next().next().text() );
 	menuHide();
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
@@ -2068,7 +2070,7 @@ $( '#lyricsundo' ).click( function() {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
 		, message  : 'Discard changes made to this lyrics?'
-		, ok       : function() {
+		, ok       : () => {
 			$( '#lyricstextarea' ).val( G.lyrics );
 			$( '#lyricsundo, #lyricssave' ).addClass( 'hide' );
 			$( '#lyricsback' ).removeClass( 'hide' );
@@ -2080,7 +2082,7 @@ $( '#lyricssave' ).click( function() {
 		  icon     : 'lyrics'
 		, title    : 'Lyrics'
 		, message  : 'Save this lyrics?'
-		, ok       : function() {
+		, ok       : () => {
 			G.lyrics   = $( '#lyricstextarea' ).val();
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
@@ -2099,7 +2101,7 @@ $( '#lyricsdelete' ).click( function() {
 		, message : 'Delete this lyrics?'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
-		, ok      : function() {
+		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
 			bash( [ 'lyrics', artist, title, 'delete' ] );

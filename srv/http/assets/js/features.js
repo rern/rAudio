@@ -16,7 +16,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, message : 'Reset client keys?'
 			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
 			, okcolor : red
-			, ok      : function() {
+			, ok      : () => {
 				bash( [ 'spotifytokenreset' ] );
 			}
 		} );
@@ -39,16 +39,16 @@ $( '#setting-spotifyd' ).click( function() {
 			, footer       : 'Keys from private app: <i class="help fa fa-help"></i>'
 			, boxwidth     : 320
 			, checklength  : { 0: 32, 1: 32 }
-			, beforeshow   : function() {
+			, beforeshow   : () => {
 				$( '#infoContent .help' ).click( function() {
 					$( '.container .help' ).eq( 0 ).click();
 					$( '#infoX' ).click();
 				} );
 			}
-			, cancel       : function() {
+			, cancel       : () => {
 				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
 			}
-			, ok         : function() {
+			, ok         : () => {
 				var values = infoVal();
 				var id     = values[ 0 ];
 				var secret = values[ 1 ];
@@ -86,15 +86,15 @@ $( '#setting-snapclient' ).click( function() {
 		, values       : G.snapcastconf
 		, boxwidth     : 100
 		, checkchanged : G.snapclient
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#snapclient' ).prop( 'checked', G.snapclient );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'snapclient', true, infoVal() ] );
 			notify( icon, title, G.snapclient ? 'Change ...' : 'Enable ...' );
 		}
@@ -109,10 +109,10 @@ $( '#setting-upmpdcli' ).click( function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ G.upmpdcliownqueue ]
 		, checkchanged : G.upmpdcli
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'upmpdcli', true, infoVal() ] );
 			notify( icon, title, G.upmpdcli ? 'Change ...' : 'Enable ...' );
 		}
@@ -130,10 +130,10 @@ $( '#setting-camilladsp' ).click( function() {
 		, boxwidth     : 100
 		, values       : G.camillarefresh
 		, checkchanged : G.camilladsp
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( icon, title, G.camilladsp ? 'Change ...' : 'Enable ...' );
 		}
@@ -151,10 +151,10 @@ $( '#setting-hostapd' ).click( function() {
 		, checkchanged : G.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#hostapd' ).prop( 'checked', G.hostapd );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			var values  = infoVal();
 			var ip      = values[ 0 ];
 			var pwd     = values[ 1 ];
@@ -177,10 +177,10 @@ $( '#setting-autoplay' ).click( function() {
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? G.autoplayconf : [ false, false, true ]
 		, checkchanged : G.autoplay
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#autoplay' ).prop( 'checked', G.autoplay );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'autoplay', true, ...infoVal() ] );
 			notify( icon, title, G.autoplay ? 'Change ...' : 'Enable ...' );
 		}
@@ -233,7 +233,7 @@ ${ brightness }
 		, boxwidth     : 100
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
 		, checkchanged : G.localbrowser
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! G.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
@@ -265,10 +265,10 @@ ${ brightness }
 				} );
 			}
 		}
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
 			notify( icon, title, G.localbrowser ? 'Change ...' : 'Enable ...', );
 		}
@@ -284,10 +284,10 @@ $( '#setting-smb' ).click( function() {
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
 		, checkchanged : G.smb
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#smb' ).prop( 'checked', G.smb );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'smb', true, ...infoVal() ] );
 			notify( icon, title, G.smb ? 'Change ...' : 'Enable ...' );
 		}
@@ -318,9 +318,9 @@ $( '#setting-multiraudio' ).click( function() {
 		, content      : '<table>'+ content +'</table>'
 		, values       : G.multiraudioconf
 		, checkchanged : G.multiraudio
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			if ( $( '#infoContent input' ).length === 2 ) {
-				setTimeout( function() {
+				setTimeout( () => {
 					$( '.ipremove' ).addClass( 'hide' );
 					$( '#infoOk' ).addClass( 'disabled' );
 				}, 0 );
@@ -342,10 +342,10 @@ $( '#setting-multiraudio' ).click( function() {
 				$( '.ipremove' ).toggleClass( 'hide', O.inputs.length === 2 );
 			} );
 		}
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#multiraudio' ).prop( 'checked', G.multiraudio );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			O.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
 			notify( icon, title, G.multiraudio ? 'Change ...' : 'Enable ...' );
@@ -365,7 +365,7 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, checkblank    : 1
-			, ok            : function() {
+			, ok            : () => {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
@@ -388,10 +388,10 @@ $( '#setting-login' ).click( function() {
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
 		, checkblank    : 1
-		, cancel        : function() {
+		, cancel        : () => {
 			$( '#login' ).prop( 'checked', G.login );
 		}
-		, ok            : function() {
+		, ok            : () => {
 			var values = infoVal();
 			notify( icon, title, G.login ? 'Change ...' : 'Enable...' );
 			$.post( 'cmd.php', {
@@ -425,7 +425,7 @@ $( '#setting-scrobble' ).click( function() {
 		, values        : G.scrobbleconf
 		, checkblank    : G.scrobblekey ? '' : [ 0, 1 ]
 		, checkchanged  : G.scrobble
-		, beforeshow    : function() {
+		, beforeshow    : () => {
 			var $user = $( '#infoContent input[type=text]' );
 			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
 			$user.prop( 'disabled', G.scrobblekey );
@@ -441,10 +441,10 @@ $( '#setting-scrobble' ).click( function() {
 				infoCheckSet();
 			} );
 		}
-		, cancel        : function() {
+		, cancel        : () => {
 			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}
-		, ok            : function() {
+		, ok            : () => {
 			bash( [ 'scrobble', true, ...infoVal() ], function( response ) {
 				if ( 'error' in response ) {
 					info( {
@@ -480,11 +480,11 @@ $( '#nfsserver' ).click( function() {
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : function() {
+			, cancel  : () => {
 				$this.prop( 'checked', G.nfsserver );
 			}
 			, okcolor : G.nfsserver ? orange : ''
-			, ok      : function() {
+			, ok      : () => {
 				bash( [ 'nfsserver', ! G.nfsserver ] );
 				notify( icon, title, G.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
@@ -501,7 +501,7 @@ $( '#setting-stoptimer' ).click( function() {
 		, checkbox     : [ 'Power off on stop' ]
 		, values       : G.stoptimerconf || [ false, false ]
 		, checkchanged : G.stoptimer
-		, beforeshow   : function() {
+		, beforeshow   : () => {
 			var $poweroff = $( '#infoContent input:checkbox' );
 			$poweroff.prop( 'disabled', ! G.stoptimerconf[ 1 ] );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
@@ -511,10 +511,10 @@ $( '#setting-stoptimer' ).click( function() {
 				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
-		, cancel  : function() {
+		, cancel  : () => {
 			$( '#stoptimer' ).prop( 'checked', G.stoptimer );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
 			notify( icon, title, G.stoptimer ? 'Change ...' : 'Enable ...' );
 		}
@@ -562,7 +562,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( code ) {
-		bash( [ 'spotifytoken', code ], function() {
+		bash( [ 'spotifytoken', code ], () => {
 			showContent();
 		} );
 		window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );

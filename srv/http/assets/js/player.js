@@ -23,7 +23,7 @@ $( '#setting-btreceiver' ).click( function() {
 			, message       : G.btaplayname.replace( / - A2DP$/, '' )
 			, rangevalue    : vol
 			, footer        : db +' dB'
-			, beforeshow    : function() {
+			, beforeshow    : () => {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					bash( 'amixer -MD bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
@@ -33,7 +33,7 @@ $( '#setting-btreceiver' ).click( function() {
 			}
 			, buttonnoreset : 1
 			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : function() {
+			, button        : () => {
 				bash( [ 'volumebt', G.btaplayname, '0dB' ] );
 			}
 			, okno          : 1
@@ -64,7 +64,7 @@ $( '#setting-hwmixer' ).click( function() {
 				, message    : control
 				, rangevalue : vol
 				, footer     : '0dB (No Volume)'
-				, beforeshow    : function() {
+				, beforeshow    : () => {
 					$( '#infoRange input' ).prop( 'disabled', 1 );
 				}
 				, okno       : 1
@@ -72,14 +72,14 @@ $( '#setting-hwmixer' ).click( function() {
 			return
 		}
 		
-		var toggle = function() { $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' ) }
+		var toggle = () => { $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' ) }
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'
 			, message       : control
 			, rangevalue    : vol
 			, footer        : db +' dB'
-			, beforeshow    : function() {
+			, beforeshow    : () => {
 				$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
 				$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
@@ -94,7 +94,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
 			, button        : [ toggle, toggle ]
 			, oklabel       : 'OK'
-			, ok            : function() {
+			, ok            : () => {
 				bash( [ 'volume0db', card, control ] );
 				toggle();
 			}
@@ -108,12 +108,12 @@ $( '#mixertype' ).change( function() {
 			  icon    : 'volume'
 			, title   : 'Volume Control'
 			, message : warning
-			, cancel  : function() {
+			, cancel  : () => {
 				$( '#mixertype' )
 					.val( device.mixertype )
 					.selectric( 'refresh' );
 			}
-			, ok      : function() {
+			, ok      : () => {
 				setMixerType( mixertype );
 			}
 		} );
@@ -130,10 +130,10 @@ $( '#novolume' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : warning
-			, cancel  : function() {
+			, cancel  : () => {
 				$( '#novolume' ).prop( 'checked', G.novolume );
 			}
-			, ok      : function() {
+			, ok      : () => {
 				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
 			}
@@ -168,10 +168,10 @@ $( '#setting-crossfade' ).click( function() {
 		, values       : G.crossfadeconf || 1
 		, checkchanged : G.crossfade
 		, checkblank   : 1
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#crossfade' ).prop( 'checked', G.crossfade );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'crossfade', true, infoVal() ] );
 			notify( icon, title, G.crossfade ? 'Change ...' : 'Enable ...' );
 		}
@@ -186,10 +186,10 @@ $( '#setting-replaygain' ).click( function() {
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainconf
 		, checkchanged : G.replaygain
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#replaygain' ).prop( 'checked', G.replaygain );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'replaygain', true, infoVal() ] );
 			notify( icon, title, G.replaygain ? 'Change ...' : 'Enable ...' );
 		}
@@ -220,10 +220,10 @@ $( '#setting-buffer' ).click( function() {
 		, values       : G.bufferconf
 		, checkchanged : G.buffer
 		, checkblank   : 1
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#buffer' ).prop( 'checked', G.buffer );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'buffer', true, infoVal() ] );
 			notify( icon, title, G.buffer ? 'Change ...' : 'Enable ...' );
 		}
@@ -243,10 +243,10 @@ $( '#setting-outputbuffer' ).click( function() {
 		, values       : G.outputbufferconf
 		, checkchanged : G.outputbuffer
 		, checkblank   : 1
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#outputbuffer' ).prop( 'checked', G.outputbuffer );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			bash( [ 'outputbuffer', true, infoVal() ] );
 			notify( icon, title, G.outputbuffer ? 'Change ...' : 'Enable ...' );
 		}
@@ -284,10 +284,10 @@ $( '#setting-custom' ).click( function() {
 			, content      : custominfo.replace( 'N', G.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : G.custom
-			, cancel       : function() {
+			, cancel       : () => {
 				$( '#custom' ).prop( 'checked', G.custom );
 			}
-			, ok           : function() {
+			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
@@ -380,10 +380,10 @@ function infoSoxr( quality ) {
 		, checkblank   : 1
 		, checkchanged : G.soxr && quality === G.soxrquality
 		, boxwidth     : custom ? 85 : 180
-		, cancel       : function() {
+		, cancel       : () => {
 			$( '#soxr' ).prop( 'checked', G.soxr );
 		}
-		, ok           : function() {
+		, ok           : () => {
 			if ( custom ) {
 				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
 			} else {
@@ -417,8 +417,8 @@ function renderPage() {
 		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
 		G.novolume      = device.mixertype === 'none' && ! G.resampled;
 		var htmldevices = '';
-		$.each( G.devices, function() {
-			if ( this.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ this.card +'">'+ this.name +'</option>';
+		$.each( G.devices, ( i, el ) => {
+			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
 		} );
 		if ( G.btaplayname ) {
 			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
@@ -433,7 +433,7 @@ function renderPage() {
 				.val( G.asoundcard );
 			var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			if ( 'mixerdevices' in device ) {
-				device.mixerdevices.forEach( function( mixer ) {
+				device.mixerdevices.forEach( ( mixer ) => {
 					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
 				} );
 			}

@@ -54,8 +54,8 @@ function radioRefresh() {
 	}
 }
 function statusUpdate( data ) {
-	$.each( data, function( key, value ) {
-		G.status[ key ] = value;
+	$.each( data, ( k, v ) => {
+		G.status[ k ] = v;
 	} );
 	if ( ! $( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
@@ -66,8 +66,8 @@ function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
 					.split( '/' ).pop()
 					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( function() {
-		return $( this ).find( '.lipath' ).text() === radiourl;
+	return $( '#lib-list li' ).filter( ( i, el ) => {
+		return $( el ).find( '.lipath' ).text() === radiourl;
 	} ).find( '.lib-icon' );
 }
 // pushstreamChannel() in common.js
@@ -138,8 +138,8 @@ function psBookmark( data ) {
 `;
 		$( '#lib-mode-list' ).append( html );
 	} else {
-		$( '.lib-mode.bookmark' ).each( function() {
-			var $this = $( this );
+		$( '.lib-mode.bookmark' ).each( ( i, el ) => {
+			var $this = $( el );
 			if ( $this.find( '.lipath' ).text() === data.path ) {
 				data.type === 'delete' ? $this.remove() : $this.find( '.label' ).text( data.name );
 				return false
@@ -182,8 +182,8 @@ function psDisplay( data ) {
 		return
 	}
 	
-	$.each( data, function( key, val ) {
-		G.display[ key ] = val;
+	$.each( data, ( k, v ) => {
+		G.display[ k ] = v;
 	} );
 	G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
@@ -220,7 +220,7 @@ function psEqualizer( data ) {
 }
 function psMpdPlayer( data ) {
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
@@ -265,7 +265,7 @@ function psMpdUpdate( data ) {
 	}
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		G.status.counts      = data;
 		G.status.updating_db = false;
 		G.status.updatingdab = false;
@@ -281,7 +281,7 @@ function psNotify( data ) {
 	var message = data.message;
 	var delay   = data.delay;
 	if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
-		setTimeout( function() {
+		setTimeout( () => {
 			location.href = '/';
 		}, 3000 );
 	}
@@ -322,14 +322,14 @@ function psPlaylist( data ) {
 	) return
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
 			bannerHide();
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
-			setTimeout( function() { delete G.autoplaycd }, 5000 );
+			setTimeout( () => { delete G.autoplaycd }, 5000 );
 		} else if ( 'html' in data ) {
 			G.status.song = data.song;
 			if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) renderPlaylist( data );
@@ -376,17 +376,17 @@ function psRelays( response ) {
 						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
-			, button      : function() {
+			, button      : () => {
 				bash( '/srv/http/bash/settings/relays.sh' );
 			}
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
-			, ok          : function() {
+			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
 			}
 		} );
 		var delay = 59;
-		G.intRelaysTimer = setInterval( function() {
+		G.intRelaysTimer = setInterval( () => {
 			if ( delay ) {
 				$( '.infomessage .wh' ).text( delay-- );
 			} else {
@@ -398,7 +398,7 @@ function psRelays( response ) {
 	} else {
 		if ( ! state ) $( '#infoX' ).click();
 		var devices = '';
-		$.each( response.order, function( i, val ) {
+		$.each( response.order, ( i, val ) => {
 			if ( i === 0 ) {
 				var color = state ? '' : 'class="gr"';
 			} else {
@@ -413,7 +413,7 @@ function psRelays( response ) {
 				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
-				, beforeshow : function() {
+				, beforeshow : () => {
 					$( '#infoX' ).addClass( 'hide' );
 				}
 			} );
@@ -427,7 +427,7 @@ function psRelays( response ) {
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
 		banner( 'restore', 'Restore Settings', 'Done' );
-		setTimeout( function() {
+		setTimeout( () => {
 			location.href = '/';
 		}, 2000 );
 	} else {
@@ -457,7 +457,7 @@ function psVolume( data ) {
 	}
 	
 	clearTimeout( G.debounce );
-	G.debounce = setTimeout( function() {
+	G.debounce = setTimeout( () => {
 		if ( data.type === 'mute' ) {
 			G.status.volume     = 0;
 			G.status.volumemute = data.val;

@@ -81,7 +81,7 @@ document.getElementsByClassName( 'help-head' )[ 0 ].addEventListener( 'click', f
 	help.style.display = help.style.display === 'none' ? '' : 'none';
 } );
 
-buttons.forEach( function( el ) {
+buttons.forEach( ( el ) => {
 	if ( el.id === 'prevnext' ) return
 	
 	el.addEventListener( 'click', function() {
@@ -105,10 +105,10 @@ prev.addEventListener( 'click', function() {
 } );
 // swipe
 var xstart;
-window.addEventListener( 'touchstart', function( e ) {
+window.addEventListener( 'touchstart', ( e ) => {
 	xstart = e.changedTouches[ 0 ].pageX;
 } );
-window.addEventListener( 'touchend', function( e ) {
+window.addEventListener( 'touchend', ( e ) => {
 	var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 	if ( Math.abs( xdiff ) > 100 ) {
 		xdiff > 0 ? next.click() : prev.click();
@@ -118,7 +118,7 @@ window.addEventListener( 'touchend', function( e ) {
 function renderPage( n ) {
 	count.textContent = n +' / '+ ntotal;
 	document.getElementsByTagName( 'img' )[ 0 ].src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
-	buttons.forEach( function( el ) {
+	buttons.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );
 	if ( n >= 1 && n < nlibrary ) {
