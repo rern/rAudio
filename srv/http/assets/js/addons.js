@@ -93,7 +93,7 @@ function getoptions() {
 				, ok:          () => {
 					var pwd = infoVal();
 					if ( pwd ) {
-						verifyPassword( title, pwd, () => {
+						verifyPassword( title, pwd, function() {
 							opt.push( pwd );
 							sendcommand();
 						} );
@@ -152,7 +152,7 @@ function getoptions() {
 }
 function postcmd() { // post submit with temporary form
 	var form  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
-	opt.forEach( function( o ) {
+	opt.forEach( ( o ) => {
 		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
 	} );
 	form     += '</form>';
@@ -171,28 +171,28 @@ $( '.container' ).removeClass( 'hide' );
 loaderHide();
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.close' ).click( () => {
+$( '.close' ).click( function() {
 	location.href = '/';
 } );
-$( '.help-head' ).click( ( e ) => {
+$( '.help-head' ).click( function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-	$( e.currentTarget ).toggleClass( 'bl', hidden );
+	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
-$( '.revision' ).click( ( e ) => {
+$( '.revision' ).click( function() {
 	e.stopPropagation();
-	var $this = $( e.currentTarget );
+	var $this = $( this );
 	$revisiontext = $this.parent().parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.help-head' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 } );
-$( '#list li' ).click( ( e ) => {
-	var alias = $( e.currentTarget ).data( 'alias' );
+$( '#list li' ).click( function() {
+	var alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
-$( '.boxed-group .infobtn' ).click( ( e ) => {
-	var $this = $( e.currentTarget );
+$( '.boxed-group .infobtn' ).click( function() {
+	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
 	alias   = $this.parent().data( 'alias' );
@@ -214,8 +214,8 @@ $( '.boxed-group .infobtn' ).click( ( e ) => {
 			}
 		} );
 	}
-} ).press( ( e ) => {
-	var $this = $( e.currentTarget );
+} ).press( function( e ) {
+	var $this = $( e.target );
 	alias     = $this.parent().data( 'alias' );
 	title     = addons[ alias ].title.replace( / *\**$/, '' );
 	type      = $this.text();
@@ -242,6 +242,6 @@ $( '.boxed-group .infobtn' ).click( ( e ) => {
 		branchtest( alias, type );
 	}
 } );
-$( '.thumbnail' ).click( ( e ) => {
-	$( e.currentTarget ).prev().find( '.source' )[ 0 ].click();
+$( '.thumbnail' ).click( function() {
+	$( this ).prev().find( '.source' )[ 0 ].click();
 } );

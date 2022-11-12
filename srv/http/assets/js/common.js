@@ -16,7 +16,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	var pushstreamChannel = ( channels ) => {
-		channels.forEach( function( channel ) {
+		channels.forEach( ( channel ) => {
 			pushstream.addChannel( channel );
 		} );
 		pushstream.connect();
@@ -24,7 +24,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstreamPower = ( message ) => {
 		if ( message === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( function() {
+			setTimeout( () => {
 				$( '#loader .logo' ).css( 'animation', 'none' );
 			}, 10000 );
 			pushstream.disconnect();
@@ -75,13 +75,13 @@ $.fn.press = function( arg1, arg2 ) {
 		callback = arg2;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( function() {
+		timeout = setTimeout( () => {
 			G.press = 1;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( function() { G.press = 0 }, 300 ); // needed for mouse events
+		setTimeout( () => { G.press = 0 }, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
@@ -120,7 +120,7 @@ select:   [U] [D]     - check
 			break;
 		case 'Escape':
 			G.local = 1; // prevent toggle setting menu
-			setTimeout( function() { G.local = 0 }, 300 );
+			setTimeout( () => { G.local = 0 }, 300 );
 			$( '#infoX' ).click();
 			break;
 		case 'ArrowLeft':
@@ -153,7 +153,7 @@ function banner( icon, title, message, delay ) {
 function bannerHide() {
 	if ( $( '#banner' ).hasClass( 'hide' ) ) return
 	if ( G.bannerhold ) {
-		setTimeout( function() {
+		setTimeout( () => {
 			G.bannerhold = 0;
 			bannerHide();
 		}, G.bannerhold );
@@ -266,7 +266,7 @@ Note:
 }
 function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
-	setTimeout( function() {
+	setTimeout( () => {
 		if ( typeof fn === 'function' ) fn();
 		if ( ! O.buttonnoreset ) {
 			$( '#infoOverlay' ).addClass( 'hide' );
@@ -421,8 +421,8 @@ function info( json ) {
 	if ( O.tab ) {
 		$( '#infoTab' ).remove();
 		htmltab      = '<div id="infoTab">';
-		O.tab.forEach( function( l ) {
-			htmltab += '<a>'+ l +'</a>';
+		O.tab.forEach( ( lbl ) => {
+			htmltab += '<a>'+ lbl +'</a>';
 		} );
 		htmltab += '</div>';
 		$( '#infoTopBg' ).after( htmltab );
@@ -452,14 +452,14 @@ function info( json ) {
 		if ( O.textlabel ) {
 			if ( typeof O.textlabel !== 'object' ) O.textlabel = [ O.textlabel ];
 			htmls.text      = '';
-			O.textlabel.forEach( function( lbl ) {
+			O.textlabel.forEach( ( lbl ) => {
 				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
 		if ( O.passwordlabel ) {
 			if ( typeof O.passwordlabel !== 'object' ) O.passwordlabel = [ O.passwordlabel ];
 			htmls.password      = '';
-			O.passwordlabel.forEach( function( lbl ) {
+			O.passwordlabel.forEach( ( lbl ) => {
 				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 		}
@@ -471,8 +471,8 @@ function info( json ) {
 			var line;
 			var i       = 0;
 			htmls.radio = '';
-			$.each( O.radio, function( lbl, val ) {
-				line = '<td>'+ ( lbl ? '<label><input type="radio" name="inforadio" value="'+ val +'">'+ lbl +'</label>' : '' ) +'</td>';
+			$.each( O.radio, ( k, v ) => {
+				line = '<td>'+ ( k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '' ) +'</td>';
 				if ( ! O.radiocolumn ) {
 					htmls.radio += '<tr>'+ td0 + line +'</tr>';
 				} else {
@@ -491,7 +491,7 @@ function info( json ) {
 			var line;
 			var i          = 0;
 			htmls.checkbox = '';
-			O.checkbox.forEach( function( lbl ) {
+			O.checkbox.forEach( ( lbl ) => {
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( ! O.checkcolumn ) {
 					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
@@ -511,8 +511,8 @@ function info( json ) {
 				htmls.select      = O.select;
 			} else {
 				htmls.select      = '<tr><td>'+ O.selectlabel +'</td><td><select>';
-				$.each( O.select, function( key, val ) {
-					htmls.select += '<option value="'+ val.toString().replace( /"/g, '&quot;' ) +'">'+ key +'</option>';
+				$.each( O.select, ( k, v ) => {
+					htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>';
 				} );
 			}
 			htmls.select += '</select></td></tr>';
@@ -527,7 +527,7 @@ function info( json ) {
 		htmlcontent    += htmls.message || '';
 		if ( ! O.order ) O.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
 		var htmlinputs  = '';
-		O.order.forEach( function( type ) {
+		O.order.forEach( ( type ) => {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
@@ -549,8 +549,8 @@ function info( json ) {
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
 		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
-		O.inputs    = $input.filter( function() { // filter each radio per group ( multiple inputs with same name )
-		name        = this.name;
+		O.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
+		name        = el.name;
 			if ( ! name ) {
 				return true
 			} else if (	name !== nameprev ) {
@@ -644,7 +644,7 @@ function checkBlank() {
 }
 function checkLength() {
 	O.short = false;
-	$.each( O.checklength, function( k, v ) {
+	$.each( O.checklength, ( k, v ) => {
 		if ( typeof v !== 'object' ) {
 			var L    = v
 			var cond = 'equal';
@@ -670,7 +670,7 @@ function infoCheckSet() {
 				var val     = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				O.nochange  = prevval === val;
 			}
-			setTimeout( function() { // ios: force after checkLength
+			setTimeout( () => { // ios: force after checkLength
 				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
 			}, 50 );
 		} );
@@ -686,8 +686,8 @@ function infoCheckSet() {
 function infoSetValues() {
 	if ( typeof O.values !== 'object' ) O.values = [ O.values ];
 	var $this, type, val;
-	O.inputs.each( function( i, e ) {
-		$this = $( e );
+	O.inputs.each( ( i, el ) => {
+		$this = $( el );
 		type  = $this.prop( 'type' );
 		val   = O.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
@@ -704,8 +704,8 @@ function infoVal() {
 	var $this, type, name, val, n;
 	var i      = 0;
 	O.textarea = 0;
-	O.inputs.each( function() {
-		$this = $( this );
+	O.inputs.each( ( i, el ) => {
+		$this = $( el );
 		type  = $this.prop( 'type' );
 		val   = '';
 		switch ( type ) {
@@ -739,8 +739,8 @@ function infoVal() {
 }
 function selectricRender() {
 	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
-	$( 'select' ).each( function() {
-		if ( $( this ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
+	$( 'select' ).each( ( i, el ) => {
+		if ( $( el ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
 	} );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
@@ -748,15 +748,15 @@ function setButtonWidth() {
 	if ( O.buttonfit ) return
 	
 	var widest = 0;
-	$( '#infoButtons a' ).each( function() {
-		var w = $( this ).outerWidth();
+	$( '#infoButtons a' ).each( ( i, el ) => {
+		var w = $( el ).outerWidth();
 		if ( w > widest ) widest = w;
 	} );
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function setFileImage() {
 	delete O.infofilegif;
-	G.timeoutfile = setTimeout( function() {
+	G.timeoutfile = setTimeout( () => {
 		banner( 'refresh blink', 'Change Image', 'Load ...', -1 );
 	}, 1000 );
 	G.rotate      = 0;
@@ -883,14 +883,14 @@ function verifyPassword( title, pwd, fn ) {
 		  title         : title
 		, message       : 'Please retype'
 		, passwordlabel : 'Password'
-		, ok            : function() {
+		, ok            : () => {
 			if ( infoVal() === pwd ) {
 				fn();
 			} else {
 				info( {
 					  title   : title
 					, message : 'Passwords not matched. Please try again.'
-					, ok      : function() {
+					, ok      : () => {
 						verifyPassword( title, pwd, fn )
 					}
 				} );
