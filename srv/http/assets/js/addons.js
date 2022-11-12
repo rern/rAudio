@@ -4,7 +4,7 @@ function branchtest( alias, type, install ) {
 		, title     : title
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
-		, ok        : function() {
+		, ok        : () => {
 			opt    = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;
 			j      = 0;
@@ -47,11 +47,11 @@ function getoptions() {
 				, title       : title
 				, message     : ojson.message
 				, buttonlabel : 'No'
-				, button      : function() {
+				, button      : () => {
 					opt.push( 0 );
 					sendcommand();
 				}
-				, ok          : function() {
+				, ok          : () => {
 					opt.push( 1 );
 					sendcommand();
 				}
@@ -77,7 +77,7 @@ function getoptions() {
 				, textlabel : ojson.label
 				, values    : ojson.value
 				, boxwidth  : ojson.width
-				, ok        : function() {
+				, ok        : () => {
 					opt.push( infoVaal() || 0 );
 					sendcommand();
 				}
@@ -90,23 +90,16 @@ function getoptions() {
 				, title         : title
 				, message       : ojson.message
 				, passwordlabel : ojson.label
-				, ok:          function() {
+				, ok:          () => {
 					var pwd = infoVal();
 					if ( pwd ) {
-						verifyPassword( title, pwd, function() {
+						verifyPassword( title, pwd, () => {
 							opt.push( pwd );
 							sendcommand();
 						} );
 					} else {
-						if ( ! ojson.required ) {
-							opt.push( 0 );
-							sendcommand();
-						} else {
-							verifyPasswordblank( title, ojson.message, ojson.label, function() {
-								opt.push( pwd );
-								sendcommand();
-							} );
-						}
+						opt.push( 0 );
+						sendcommand();
 					}
 				}
 			} );
@@ -119,7 +112,7 @@ function getoptions() {
 				, message : ojson.message
 				, radio   : ojson.list
 				, values  : ojson.checked
-				, ok      : function() {
+				, ok      : () => {
 					opt.push( infoVal() );
 					sendcommand();
 				}
@@ -135,7 +128,7 @@ function getoptions() {
 				, select      : ojson.list
 				, values      : ojson.checked
 				, boxwidth    : ojson.width
-				, ok          : function() {
+				, ok          : () => {
 					opt.push( infoVal() );
 					sendcommand();
 				}
@@ -149,7 +142,7 @@ function getoptions() {
 				, message  : ojson.message
 				, checkbox : ojson.list
 				, values   : ojson.checked
-				, ok       : function() {
+				, ok       : () => {
 					opt.push( infoVal() );
 					sendcommand();
 				}
@@ -178,28 +171,28 @@ $( '.container' ).removeClass( 'hide' );
 loaderHide();
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.close' ).click( function() {
+$( '.close' ).click( () => {
 	location.href = '/';
 } );
-$( '.help-head' ).click( function() {
+$( '.help-head' ).click( ( e ) => {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-	$( this ).toggleClass( 'bl', hidden );
+	$( e.currentTarget ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
-$( '.revision' ).click( function(e) {
+$( '.revision' ).click( ( e ) => {
 	e.stopPropagation();
-	var $this = $( this );
+	var $this = $( e.currentTarget );
 	$revisiontext = $this.parent().parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.help-head' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 } );
-$( '#list li' ).click( function() {
-	var alias = $( this ).data( 'alias' );
+$( '#list li' ).click( ( e ) => {
+	var alias = $( e.currentTarget ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } );
-$( '.boxed-group .infobtn' ).click( function () {
-	var $this = $( this );
+$( '.boxed-group .infobtn' ).click( ( e ) => {
+	var $this = $( e.currentTarget );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
 	alias   = $this.parent().data( 'alias' );
@@ -221,7 +214,7 @@ $( '.boxed-group .infobtn' ).click( function () {
 			}
 		} );
 	}
-} ).press( function( e ) {
+} ).press( ( e ) => {
 	var $this = $( e.currentTarget );
 	alias     = $this.parent().data( 'alias' );
 	title     = addons[ alias ].title.replace( / *\**$/, '' );
@@ -234,7 +227,7 @@ $( '.boxed-group .infobtn' ).click( function () {
 			, message   : 'Upgrade / Downgrade ?'
 			, radiohtml : '<label><input type="radio" name="inforadio" value="1" checked>&ensp;Rollback to previous version</label><br>'
 						 +'<label><input type="radio" name="inforadio" value="Branch">&ensp;Tree # / Branch ...</label>'
-			, ok        : function() {
+			, ok        : () => {
 				if ( infoVal() == 1 ) {
 					opt = [ alias, type, rollback ];
 					postcmd();
@@ -249,6 +242,6 @@ $( '.boxed-group .infobtn' ).click( function () {
 		branchtest( alias, type );
 	}
 } );
-$( '.thumbnail' ).click( function() {
-	$( this ).prev().find( '.source' )[ 0 ].click();
+$( '.thumbnail' ).click( ( e ) => {
+	$( e.currentTarget ).prev().find( '.source' )[ 0 ].click();
 } );
