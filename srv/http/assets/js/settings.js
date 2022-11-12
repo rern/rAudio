@@ -204,10 +204,11 @@ function setSwitch() {
 			$( el ).prop( 'checked', G[ el.id ] );
 		} );
 		$( '.setting' ).each( ( i, el ) => {
-			if ( $( el ).prev().is( 'select' ) ) return // not switch
+			var $this = $( el );
+			if ( $this.prev().is( 'select' ) ) return // not switch
 			
 			var sw = el.id.replace( 'setting-', '' );
-			$( el ).toggleClass( 'hide', ! G[ sw ] );
+			$this.toggleClass( 'hide', ! G[ sw ] );
 		} );
 	}
 }
@@ -472,9 +473,10 @@ $( '#button-data' ).click( function() {
 	clearTimeout( timer );
 } );
 $( '.help-head' ).click( function() {
+	var $this = $( this );
 	if ( page === 'addons' ) {
 		var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-		$( this ).toggleClass( 'bl', hidden );
+		$this.toggleClass( 'bl', hidden );
 		$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 		return
 	}
@@ -484,8 +486,8 @@ $( '.help-head' ).click( function() {
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
-		var visible = $( this ).hasClass( 'bl' );
-		$( this ).toggleClass( 'bl', ! visible );
+		var visible = $this.hasClass( 'bl' );
+		$this.toggleClass( 'bl', ! visible );
 		$( '.section' ).each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.hasClass( 'hide' ) ) return

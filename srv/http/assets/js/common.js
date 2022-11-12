@@ -550,7 +550,7 @@ function info( json ) {
 		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
 		O.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
-		name        = el.name;
+			name = el.name;
 			if ( ! name ) {
 				return true
 			} else if (	name !== nameprev ) {
@@ -691,7 +691,7 @@ function infoSetValues() {
 		type  = $this.prop( 'type' );
 		val   = O.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ this.name +']' ).val( [ val ] );
+			$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else { // text, password, textarea, select
@@ -710,7 +710,7 @@ function infoVal() {
 		val   = '';
 		switch ( type ) {
 			case 'radio': // radio has only single checked - skip unchecked inputs
-				val = $( '#infoContent input:radio[name='+ this.name +']:checked' ).val();
+				val = $( '#infoContent input:radio[name='+ el.name +']:checked' ).val();
 				if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
 				break;
 			case 'checkbox':
@@ -740,7 +740,8 @@ function infoVal() {
 function selectricRender() {
 	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
 	$( 'select' ).each( ( i, el ) => {
-		if ( $( el ).find( 'option' ).length === 1 ) $( this ).parents( '.selectric-wrapper' ).addClass( 'disabled' );
+		var $this = $( el );
+		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
 	} );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }

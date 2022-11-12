@@ -719,7 +719,7 @@ function infoLibrary( page2 ) {
 		return k[ 0 ] !== '-'
 	} );
 	var values = [];
-	keys.forEach( ( k, i ) => {
+	keys.forEach( ( k ) => {
 		values.push( G.display[ k ] );
 	} );
 	info( {

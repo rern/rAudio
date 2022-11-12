@@ -210,7 +210,7 @@ function tagEditor() {
 		} else {
 			var $img =  G.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
-			values   = values.filter( val => val ); // reindex after deleting blank elements
+			values   = values.filter( ( val ) => val ); // reindex after deleting blank elements
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'

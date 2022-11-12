@@ -310,8 +310,8 @@ $( '#setting-lcdchar' ).click( function() {
 		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
 	var optpins  = '<select>';
-	$.each( pin2gpio, ( k, v ) => {
-		optpins += '<option value='+ k +'>'+ k +'</option>';
+	$.each( pin2gpio, ( k ) => {
+		optpins += '<option value='+ k +'>'+ k +'</option>'; // only lcdchar uses j8 pin number
 	} );
 	optpins     += '</select>';
 	var infolcdchar = `\
