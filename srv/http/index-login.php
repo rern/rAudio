@@ -30,13 +30,13 @@ login.addEventListener( 'click', () => {
 	fetch( 'cmd.php', {
 		  method : 'POST'
 		, body   : formdata
-	} ).then( response => {
+	} ).then( ( response ) => {
 		return response.text(); // set response data as text > verified
-	} ).then( verified => {
+	} ).then( ( verified ) => {
 		if ( verified != -1 ) location.reload();
 	} );
 } );
-pwd.addEventListener( 'keyup', e => {
+pwd.addEventListener( 'keyup', ( e ) => {
 	if ( e.key === 'Enter' ) login.click();
 } );
 </script>
