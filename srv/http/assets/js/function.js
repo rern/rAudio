@@ -493,9 +493,9 @@ function getBio( artist, getsimilar ) {
 	</p>
 </div>
 </div>`;
-		$( '#bio' ).html( biohtml ).promise().done( function() {
+		$( '#bio' ).html( biohtml ).promise().done( () => {
 			$( '#bio' ).removeClass( 'hide' );
-			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( function( data ) {
+			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( ( data ) => {
 				if ( 'error message' in data ) {
 					loaderHide();
 					return
@@ -541,7 +541,7 @@ function getBio( artist, getsimilar ) {
 	} );
 }
 function getPlaybackStatus( withdisplay ) {
-	bash( '/srv/http/bash/status.sh '+ withdisplay, function( list ) {
+	bash( '/srv/http/bash/status.sh '+ withdisplay, ( list ) => {
 		if ( list == -1 ) {
 			loaderHide();
 			info( {
@@ -1032,7 +1032,7 @@ function playlistRemove( $li ) {
 function power( action ) {
 	var off = action === 'off';
 	pushstream.timeout = 16000; // temp for reboot
-	bash( [ 'power', action ], function( nfs ) {
+	bash( [ 'power', action ], ( nfs ) => {
 		if ( nfs == -1 ) {
 			info( {
 				  icon    : 'power'
@@ -1191,7 +1191,7 @@ function renderLibraryList( data ) {
 	
 	var timestamp = Math.round( Date.now() / 1000 );
 	var html      = data.html.replaceAll( '^^^', timestamp );
-	$( '#lib-mode-list' ).after( html ).promise().done( function() {
+	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
@@ -1322,7 +1322,7 @@ function renderPlaylist( data ) {
 		G.playlisthtml = data.html;
 		var timestamp  = Math.round( Date.now() / 1000 );
 		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
-		$( '#pl-list' ).html( html ).promise().done( function() {
+		$( '#pl-list' ).html( html ).promise().done( () => {
 			G.status.pllength = $( '#pl-list li' ).length;
 			imageLoad( 'pl-list' );
 			setPlaylistScroll();
@@ -1346,7 +1346,7 @@ function renderPlaylistList( data ) {
 		G.playlistlisthtml = data.html;
 		var timestamp      = Math.round( Date.now() / 1000 );
 		var html           = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
-		$( '#pl-savedlist' ).html( html ).promise().done( function() {
+		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
 			$( '#pl-index' ).html( data.index[ 0 ] );
@@ -1365,7 +1365,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var timestamp = Math.round( Date.now() / 1000 );
 		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
-		$( '#pl-savedlist' ).html( data.html ).promise().done( function() {
+		$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );

@@ -20,7 +20,7 @@ var content = `
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
-	bash( [ 'equalizerget' ], function( data ) {
+	bash( [ 'equalizerget' ], ( data ) => {
 		G.eq = data;
 		infoEqualizer();
 	}, 'json' );

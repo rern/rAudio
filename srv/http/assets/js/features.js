@@ -445,7 +445,7 @@ $( '#setting-scrobble' ).click( function() {
 			$( '#scrobble' ).prop( 'checked', G.scrobble );
 		}
 		, ok            : () => {
-			bash( [ 'scrobble', true, ...infoVal() ], function( response ) {
+			bash( [ 'scrobble', true, ...infoVal() ], ( response ) => {
 				if ( 'error' in response ) {
 					info( {
 						  icon    : icon
@@ -473,7 +473,7 @@ $( '#nfsserver' ).click( function() {
 		return
 	}
 	
-	bash( [ 'nfssharelist' ], function( list ) {
+	bash( [ 'nfssharelist' ], ( list ) => {
 		info( {
 			  icon    : icon
 			, title   : title

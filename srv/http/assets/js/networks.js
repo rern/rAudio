@@ -232,7 +232,7 @@ function bluetoothCommand( cmd, mac ) {
 	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ mac );
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac ], function( data ) {
+	bash( [ 'bluetoothinfo', mac ], ( data ) => {
 		if ( ! data ) {
 			$( '#codebluetooth' )
 				.empty()
@@ -261,7 +261,7 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 	} else {
 		notify( icon, ssid, G.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', JSON.stringify( data ) ], function( connected ) {
+	bash( [ 'connect', JSON.stringify( data ) ], ( connected ) => {
 		if ( ! connected ) {
 			G.wlconnected =  '';
 			info( {
@@ -311,7 +311,7 @@ function editLANSet( values ) {
 	var ip      = values[ 0 ];
 	var gateway = values[ 1 ];
 	notify( 'lan', 'IP Address', 'Set ...' );
-	bash( [ 'editlan', ip, gateway ], function( avail ) {
+	bash( [ 'editlan', ip, gateway ], ( avail ) => {
 		if ( avail == -1 ) {
 			info( {
 				  icon    : 'lan'
@@ -328,7 +328,7 @@ function editLANSet( values ) {
 	} );
 }
 function editWiFi() {
-	bash( [ 'profileget', G.li.data( 'ssid' ) ], function( values ) {
+	bash( [ 'profileget', G.li.data( 'ssid' ) ], ( values ) => {
 		infoWiFi( values );
 	}, 'json' );
 }
@@ -379,7 +379,7 @@ function infoWiFi( values ) {
 			if ( data.IP === 'dhcp' ) {
 				connectWiFi( data );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', function( avail ) {
+				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', ( avail ) => {
 					if ( avail == -1 ) {
 						info( {
 							  icon    : 'wifi'
@@ -495,7 +495,7 @@ function renderQR() {
 	}
 }
 function scanBluetooth() {
-	bash( dirbash +'networks-scan.sh', function( data ) {
+	bash( dirbash +'networks-scan.sh', ( data ) => {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt   = '';
@@ -508,7 +508,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( dirbash +'networks-scan.sh wlan', function( data ) {
+	bash( dirbash +'networks-scan.sh wlan', ( data ) => {
 		if ( data ) {
 			G.listwlscan = data;
 			var htmlwl   = '';

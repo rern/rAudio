@@ -13,7 +13,7 @@ $( '.playback' ).click( function() {
 	}
 } );
 $( '#setting-btreceiver' ).click( function() {
-	bash( [ 'volumebtget' ], function( voldb ) {
+	bash( [ 'volumebtget' ], ( voldb ) => {
 		var voldb = voldb.split( ' ' );
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
@@ -51,7 +51,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget', 'db' ], function( voldb ) {
+	bash( [ 'volumeget', 'db' ], ( voldb ) => {
 		var voldb   = voldb.split( ' ' );
 		var vol     = voldb[ 0 ];
 		var db      = voldb[ 1 ];
@@ -197,7 +197,7 @@ $( '#setting-replaygain' ).click( function() {
 } );
 $( '.filetype' ).click( function() {
 	if ( $( '#divfiletype' ).is( ':empty' ) ) {
-		bash( [ 'filetype' ], function( data ) {
+		bash( [ 'filetype' ], ( data ) => {
 			$( '#divfiletype' )
 				.html( data )
 				.toggleClass( 'hide' );
@@ -272,7 +272,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', device.aplayname ], function( val ) {
+	bash( [ 'customget', device.aplayname ], ( val ) => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -295,7 +295,7 @@ $( '#setting-custom' ).click( function() {
 					return
 				}
 				
-				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], function( mpdstart ) {
+				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], ( mpdstart ) => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -456,7 +456,7 @@ function renderPage() {
 	}
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
-		bash( cmd, function( voldb ) {
+		bash( cmd, ( voldb ) => {
 			var voldb = voldb.split( ' ' );
 			var vol   = voldb[ 0 ];
 			var db    = voldb[ 1 ];

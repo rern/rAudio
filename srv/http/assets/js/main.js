@@ -168,7 +168,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
-				bash( [ 'camillagui' ], function() {
+				bash( [ 'camillagui' ], () => {
 					urlReachable( 'http://'+ location.host +':5000' );
 				} );
 				loader();
@@ -190,7 +190,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					$( '#stop' ).click();
 				}
 			} else {
-				bash( '/srv/http/bash/snapcast.sh start', function( data ) {
+				bash( '/srv/http/bash/snapcast.sh start', ( data ) => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
@@ -226,7 +226,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'multiraudio':
-			bash( 'cat /srv/http/data/system/multiraudio.conf', function( data ) {
+			bash( 'cat /srv/http/data/system/multiraudio.conf', ( data ) => {
 				var data  = data.trim().split( '\n' );
 				var dataL = data.length;
 				var radio = {}
@@ -434,7 +434,7 @@ $( '#colorpicker' ).click( function( e ) {
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
-	bash( [ 'addonslist' ], function( std ) {
+	bash( [ 'addonslist' ], ( std ) => {
 		if ( std ) {
 			info( {
 				  icon    : 'jigsaw'
@@ -596,7 +596,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				if ( $this.hasClass( 'lyrics' ) ) {
 					G.lyricsArtist = artist;
 					G.lyricsTitle  = title;
-					bash( [ 'lyrics', artist, title, file ], function( data ) {
+					bash( [ 'lyrics', artist, title, file ], ( data ) => {
 						lyricsShow( data );
 					} );
 					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );

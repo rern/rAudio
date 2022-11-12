@@ -83,9 +83,9 @@ function currentStatus( id, refresh ) {
 		}, 1000 );
 	}
 	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
-	bash( command, function( status ) {
+	bash( command, ( status ) => {
 		clearTimeout( timeoutGet );
-		$el.html( status ).promise().done( function() {
+		$el.html( status ).promise().done( () => {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
 				setTimeout( () => {
@@ -136,14 +136,14 @@ function list2JSON( list ) {
 		G = JSON.parse( list );
 	} catch( e ) {
 		if ( list.trim() === 'mpdnotrunning' ) {
-			bash( [ 'pkgstatus', 'mpd' ], function( status ) {
+			bash( [ 'pkgstatus', 'mpd' ], ( status ) => {
 				var error =  iconwarning +'MPD is not running '
 							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', function() {
+					bash( '/srv/http/bash/settings/player-conf.sh', () => {
 						refreshData();
 					} );
 					notify( 'mpd', 'MPD', 'Start ...' );
@@ -182,7 +182,7 @@ function notify( icon, title, message, delay ) {
 function refreshData() {
 	if ( page === 'addons' || page === 'guide' || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
 	
-	bash( dirbash + page +'-data.sh', function( list ) {
+	bash( dirbash + page +'-data.sh', ( list ) => {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
 		} else {
@@ -429,7 +429,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
-	bash( [ 'rebootlist' ], function( list ) {
+	bash( [ 'rebootlist' ], ( list ) => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -529,7 +529,7 @@ $( '.switch:not( .custom )' ).click( function() {
 		}
 	} else {
 		notify( icon, label, checked );
-		bash( [ id, checked ], function( error ) {
+		bash( [ id, checked ], ( error ) => {
 			if ( error ) {
 				bannerHide();
 				$( '#'+ id ).prop( 'checked', false );

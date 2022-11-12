@@ -144,7 +144,7 @@ $( '#menu a' ).click( function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source ], function( data ) {
+				bash( [ 'hddinfo', source ], ( data ) => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -179,7 +179,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, ok           : () => {
 			var val = infoVal()
 			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
-			bash( [ 'hddsleep', true, val ], function( devices ) {
+			bash( [ 'hddsleep', true, val ], ( devices ) => {
 				if ( devices ) {
 					info( {
 						  icon         : icon
@@ -212,7 +212,7 @@ $( '#setting-bluetooth' ).click( function() {
 	} );
 } );
 $( '#setting-wlan' ).click( function() {
-	bash( 'cat /srv/http/assets/data/regdomcodes.json', function( list ) {
+	bash( 'cat /srv/http/assets/data/regdomcodes.json', ( list ) => {
 		var options  = '';
 		$.each( list, ( k, v ) => {
 			options += '<option value="'+ k +'">'+ v +'</option>';
@@ -383,7 +383,7 @@ $( '#setting-lcdchar' ).click( function() {
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( dirbash +"system.sh lcdcharset$'\n'"+ action )
+					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
 				} );
 			}
 		}
@@ -682,7 +682,7 @@ $( '#setting-timezone' ).click( function() {
 		return
 	}
 	
-	bash( [ 'mirrorlist' ], function( list ) {
+	bash( [ 'mirrorlist' ], ( list ) => {
 		var lL         = list.code.length;
 		var selecthtml = '<select>';
 		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
@@ -733,7 +733,7 @@ $( '#backup' ).click( function() {
 	var icon  = 'sd';
 	var title = 'Backup Settings';
 	notify( icon, title, 'Process ...' );
-	bash( [ 'databackup' ], function( data ) {
+	bash( [ 'databackup' ], ( data ) => {
 		if ( data == 1 ) {
 			notify( icon, title, 'Download ...' );
 			fetch( '/data/tmp/backup.gz' )
@@ -890,7 +890,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text() ], function( list ) {
+		bash( [ 'packagelist', $target.text() ], ( list ) => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -1001,7 +1001,7 @@ function infoMount( values ) {
 		}
 		, ok         : () => {
 			var values = infoVal();
-			bash( [ 'mount', ...values, shareddata ], function( error ) {
+			bash( [ 'mount', ...values, shareddata ], ( error ) => {
 				if ( error ) {
 					info( {
 						  icon    : icon
@@ -1036,7 +1036,7 @@ function infoNFSconnect( ip ) {
 		}
 		, ok        : () => {
 			var ip = infoVal();
-			bash( [ 'sharelist', ip ], function( list ) {
+			bash( [ 'sharelist', ip ], ( list ) => {
 				if ( list.slice( 0, 6 ) === 'Server' ) {
 					info( {
 						  icon    : icon
@@ -1130,7 +1130,7 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( dirbash +'system-data.sh status', function( status ) {
+	bash( dirbash +'system-data.sh status', ( status ) => {
 		$( '#status' ).html( status );
 	} );
 }
