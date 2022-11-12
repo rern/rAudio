@@ -1593,6 +1593,7 @@ function setInfoScroll() {
 		&& $( '#album' ).text() === G.prevalbum
 	) return // suppress multiple fires, skip if same width and same data
 	
+	G.wH = document.body.clientHeight;
 	G.wW = wW;
 	var tWmax = 0;
 	var $el   = $( '#artist, #title, #album' );

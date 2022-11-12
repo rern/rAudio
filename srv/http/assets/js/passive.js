@@ -1,17 +1,17 @@
 $( window ).on( 'resize', () => { // portrait / landscape
 	displayBars();
-	if ( G.wH > G.wW === window.innerHeight > window.innerWidth ) return
+	var wH = document.body.clientHeight;
+	var wW = document.body.clientWidth;
+	if ( G.wH > G.wW === wH > wW ) return
 	
-	G.wH = window.innerHeight;
-	G.wW = window.innerWidth;
 	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
 		if ( $( '#bio' ).hasClass( 'hide' ) ) {
 			displayPlayback();
-			setTimeout( renderPlayback, 50 );
 			setButtonControl();
+			setTimeout( renderPlayback, 50 );
 		} else {
-			if ( window.innerWidth > 480 ) {
+			if ( wW > 480 ) {
 				$( '#biocontent .artist' ).insertAfter( '#bioimg' );
 			} else {
 				$( '#biocontent .artist' ).insertBefore( '#bioimg' );
@@ -22,9 +22,9 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				if ( $( '.licover' ).length ) {
 					$( '#lib-list p' ).css( 'min-height', ( barvisible ? 40 : 0 ) );
-					$( '.liinfo' ).css( 'width', ( document.body.clientWidth - $( '.licoverimg img' ).width() - 50 ) );
+					$( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', G.wH - ( barvisible ? 130 : 90 ));
+					$( '#lib-list p' ).css( 'min-height', wH - ( barvisible ? 130 : 90 ));
 				}
 			}, 0 );
 		}
@@ -33,7 +33,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', G.wH - ( barvisible ? 277 : 237 ) );
+				$( '#pl-list p' ).css( 'min-height', wH - ( barvisible ? 277 : 237 ) );
 			}, 0 );
 		}
 	}
