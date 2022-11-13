@@ -12,7 +12,7 @@ var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
-		, timeout                               : 20000
+		, timeout                               : 10000
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	var pushstreamChannel = ( channels ) => {
@@ -21,16 +21,26 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		} );
 		pushstream.connect();
 	}
-	var pushstreamPower = ( message ) => {
-		if ( message === 'Off ...' ) {
-			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( () => { $( '#loader .logo' ).css( 'animation', 'none' ) }, 10000 );
-			pushstream.disconnect();
-			G.poweroff = 1;
-		} else {
-			G.reboot = 1;
+	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
+		if ( status === 2 ) {        // connected
+			if ( G.reboot ) {
+				delete G.reboot;
+			} else {
+				pushstreamConnect();
+				bannerHide();
+			}
+		} else if ( status === 0 ) { // disconnected
+			pushstreamDisconnect();
+			if ( G.poweroff ) {
+				pushstream.disconnect();
+				$( '#loader .logo' ).css( 'animation', 'none' );
+				$( '#loader' ).css( 'background', '#000000' );
+				setTimeout( () => {
+					bannerHide();
+					loader();
+				}, 10000 );
+			}
 		}
-		loader();
 	}
 	// active / inactive window
 	var active      = 1;

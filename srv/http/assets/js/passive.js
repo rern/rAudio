@@ -74,21 +74,15 @@ function webradioIcon( srcnoext ) {
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
 				'notify', 'option', 'order', 'playlist', 'radiolist', 'relays', 'reload', 'savedplaylist', 'volume', 'webradio' ];
 if ( ! G.localhost ) channels.push( 'vumeter' );
-pushstreamChannel( channels )
-pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-	if ( status === 2 && G.disconnected ) { // connected - suppress on 1st load (status-push.sh from startup.sh)
-		if ( G.reboot ) {
-			delete G.reboot;
-			return
-		}
-		
-		getPlaybackStatus( 'withdisplay' );
-	} else if ( status === 0 ) {            // disconnected
-		G.disconnected = 1;
-		clearIntervalAll();
-		hideGuide();
-		if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
-	}
+pushstreamChannel( channels );
+function pushstreamConnect() {
+	if ( G.disconnected ) getPlaybackStatus( 'withdisplay' ); // G.disconnected - suppress on 1st load (status-push.sh from startup.sh)
+}
+function pushstreamDisconnect() {
+	G.disconnected = 1;
+	clearIntervalAll();
+	hideGuide();
+	if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
@@ -287,7 +281,8 @@ function psNotify( data ) {
 	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
 		switchPage( 'playback' );
-		pushstreamPower( message );
+		message === 'Off ...' ? G.poweroff = 1 : G.reboot = 1;
+		loader();
 	} else if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {

@@ -221,28 +221,21 @@ function showContent() {
 }
 // pushstreamChannel() in common.js
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ] );
-pushstream.onstatuschange = function( status ) {
-	if ( status === 2 ) {        // connected
-		if ( G.reboot ) {
-			delete G.reboot;
-			return
+function pushstreamConnect() {
+	refreshData();
+}
+function pushstreamDisconnect() {
+	if ( page === 'networks' ) {
+		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
+			bash( 'killall -q networks-scan.sh &> /dev/null' );
+			clearTimeout( G.timeoutScan );
+			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+			$( '.back' ).click();
 		}
-		
-		bannerHide();
-		refreshData();
-	} else if ( status === 0 ) { // disconnected
-		if ( page === 'networks' ) {
-			if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
-				bash( 'killall -q networks-scan.sh &> /dev/null' );
-				clearTimeout( G.timeoutScan );
-				$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-				$( '.back' ).click();
-			}
-		} else if ( page === 'system' ) {
-			if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-				clearInterval( G.intCputime );
-				$( '#refresh' ).removeClass( 'blink' );
-			}
+	} else if ( page === 'system' ) {
+		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
+			clearInterval( G.intCputime );
+			$( '#refresh' ).removeClass( 'blink' );
 		}
 	}
 }
@@ -285,7 +278,8 @@ function psNotify( data ) {
 	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' ) {
-		pushstreamPower( message );
+		message === 'Off ...' ? G.poweroff = 1 : G.reboot = 1;
+		loader();
 	} else if ( title === 'rAudio' && message === 'Ready' ) {
 		G.raudioready = 1;
 	}

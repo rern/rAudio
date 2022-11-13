@@ -943,7 +943,7 @@ power )
 	if [[ $action == reboot ]]; then
 		notify -blink reboot Power 'Reboot ...'
 	else
-		notify -blink power Power 'Off ...' 10000
+		notify -blink power Power 'Off ...'
 	fi
 	touch $dirshm/power
 	mpc -q stop
