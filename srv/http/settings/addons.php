@@ -105,6 +105,7 @@ if ( $updates ) {
 echo $list.'
 	</ul>'.
 	$blocks.'
+	<p class="bottom"></p>
 </div>';
 
 $keepkey = [ 'title', 'installurl', 'rollback', 'option', 'postinfo' ];

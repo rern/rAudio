@@ -168,6 +168,7 @@ function sendcommand() {
 //---------------------------------------------------------------------------
 document.title = 'Addons';
 $( '.container' ).removeClass( 'hide' );
+$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
 loaderHide();
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
