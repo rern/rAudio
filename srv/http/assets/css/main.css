@@ -1308,31 +1308,29 @@ i.map.disabled, .map.disabled i {
 	height: 34px;
 }
 .coveredit {
+	position: absolute;
+	bottom: 0;
+	width: 34px;
+	height: 34px;
 	z-index: 17;
 }
 .cover-save {
-	position: absolute;
-	bottom: 4px;
-	left: 4px;
-	width: 30px !important;
+	left: 0;
+}
+.coveredit.cover-save i {
+	width: 30px;
 	height: 30px;
-	border-radius: 50%;
-	padding: 5px;
-	font-size: 24px !important;
-	line-height: 20px !important;
+	margin-left: 2px;
+	font-size: 24px;
+	line-height: 30px;
 	text-align: center;
-	color: #000000 !important;
+	color: #000000;
 	background: var( --cw );
+	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
 }
 .coveredit.cover {
-	position: absolute;
-	width: 30px !important;
-	height: 30px;
-	bottom: 0;
 	right: 0;
-	border: none;
-	border: 1px solid var( --cg );
 }
 #bannerIcon .iconcover {
 	margin: 3px;

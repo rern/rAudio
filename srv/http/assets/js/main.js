@@ -49,8 +49,8 @@ var picaOption  = { // pica.js
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 var iconcover   = '<i class="iconcover"></i>';
-var icoveredit  = '<i class="coveredit cover iconcover"></i>';
-var icoversave  = '<i class="coveredit fa fa-save cover-save"></i>';
+var icoveredit  = '<div class="coveredit cover">'+ iconcover +'</div>';
+var icoversave  = '<div class="coveredit cover-save"><i class="fa fa-save"></i></div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
 $( '.submenu.fa-color' ).html( '<canvas></canvas>' );
@@ -124,7 +124,7 @@ $( '#coverart' ).on( 'load', function() {
 		&& G.status.coverart.slice( 10, 16 ) === 'online'
 		&& [ 'NAS', 'SD/', 'USB' ].includes( G.status.file.slice( 0, 3 ) )
 	) {
-		$( '#divcover' ).append( icoversave );
+		$( '#coverart' ).after( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
@@ -848,9 +848,9 @@ $( '#divcover' ).press( function( e ) {
 	$( '#coverart' )
 		.css( 'opacity', 0.33 )
 		.after( icoveredit );
-} ).on( 'click', '.fa-save', function() {
+} ).on( 'click', '.cover-save', function() {
 	coverartSave();
-} ).on( 'click', '.iconcover', function() {
+} ).on( 'click', '.cover', function() {
 	G.status.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {

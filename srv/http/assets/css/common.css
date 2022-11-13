@@ -100,7 +100,7 @@ input::-moz-focus-inner {
 .iconcover {
 	content : url( '/assets/img/iconcover.svg' );
 	width   : 24px !important;
-	margin  : 5px;
+	margin  : 5px !important;
 	border  : 1px solid hsl(0,0%,20%);
 }
 .fa {
