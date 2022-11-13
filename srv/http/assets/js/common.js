@@ -562,7 +562,7 @@ function info( json ) {
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
 		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
 		var name, nameprev;
-		O.inputs    = $input.filter( ( el ) => { // filter each radio per group ( multiple inputs with same name )
+		O.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
 			name = el.name;
 			if ( ! name ) {
 				return true

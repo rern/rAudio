@@ -66,7 +66,7 @@ function webradioIcon( srcnoext ) {
 	var radiourl = decodeURIComponent( srcnoext )
 					.split( '/' ).pop()
 					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( ( el ) => {
+	return $( '#lib-list li' ).filter( ( i, el ) => {
 		return $( el ).find( '.lipath' ).text() === radiourl;
 	} ).find( '.lib-icon' );
 }

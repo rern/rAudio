@@ -888,7 +888,7 @@ function mpcSeekBar( pageX ) {
 }
 function orderLibrary() {
 	G.display.order.forEach( ( name ) => {
-		var $libmode = $( '.lib-mode' ).filter( ( el ) => {
+		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => {
 			return $( el ).find( '.lipath' ).text() === name;
 		} );
 		$libmode.detach();

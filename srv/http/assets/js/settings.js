@@ -462,7 +462,7 @@ $( '.help-head' ).click( function() {
 		return
 	}
 	
-	var eltop = $( 'heading' ).filter( ( el ) => {
+	var eltop = $( 'heading' ).filter( ( i, el ) => {
 		return el.getBoundingClientRect().top > 0
 	} )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;

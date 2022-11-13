@@ -1109,7 +1109,7 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	$( '#i2smodule' ).val( 'none' );
-	$( '#i2smodule option' ).filter( ( el ) => {
+	$( '#i2smodule option' ).filter( ( i, el ) => {
 		var $this = $( el );
 		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
 	} ).prop( 'selected', true );
