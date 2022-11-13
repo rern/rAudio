@@ -713,10 +713,10 @@ var chklibrary2 = {
 function infoLibrary( page2 ) {
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
-	keys         = keys.filter( ( i, k ) => {
-		return k[ 0 ] !== '-'
+	keys         = keys.filter( ( k ) => {
+		return k !== '-'
 	} );
-	var values = [];
+	var values   = [];
 	keys.forEach( ( k ) => {
 		values.push( G.display[ k ] );
 	} );
