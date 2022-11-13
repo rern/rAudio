@@ -50,7 +50,7 @@ renderPage = function( changed ) {
 	}
 	$( '.selectric-ond, .selectric-offd' ).removeClass( 'disabled' );
 	$( '.selectric .label' ).removeClass( 'gr' );
-	var $el0 = $( '.on, .off' ).filter( ( i, el ) => {
+	var $el0 = $( '.on, .off' ).filter( ( el ) => {
 		var $this = $( el );
 		return ! $this.hasClass( 'delay' ) && $this.val() == 0;
 	} ).parent().parent(); // 2-up: selectric-wrapper

@@ -713,9 +713,7 @@ var chklibrary2 = {
 function infoLibrary( page2 ) {
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
-	keys         = keys.filter( ( k ) => {
-		return k !== '-'
-	} );
+	keys         = keys.filter( ( k ) => k !== '-' );
 	var values   = [];
 	keys.forEach( ( k ) => {
 		values.push( G.display[ k ] );
@@ -890,7 +888,7 @@ function mpcSeekBar( pageX ) {
 }
 function orderLibrary() {
 	G.display.order.forEach( ( name ) => {
-		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => {
+		var $libmode = $( '.lib-mode' ).filter( ( el ) => {
 			return $( el ).find( '.lipath' ).text() === name;
 		} );
 		$libmode.detach();
