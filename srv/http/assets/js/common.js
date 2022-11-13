@@ -21,6 +21,13 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		} );
 		pushstream.connect();
 	}
+	var pushstreamPower = ( message ) => {
+		if ( [ 'Off ...', 'Reboot ...', 'Ready' ].includes( message ) ) {
+			var type = message.replace( ' ...', '' ).toLowerCase();
+			G[ type ] = 1;
+			if ( type !== 'ready' ) loader();
+		}
+	}
 	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( G.reboot ) {
@@ -31,11 +38,11 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		} else if ( status === 0 ) { // disconnected
 			pushstreamDisconnect();
-			if ( G.poweroff ) {
+			if ( G.off ) {
 				pushstream.disconnect();
-				$( '#loader .logo' ).css( 'animation', 'none' );
 				$( '#loader' ).css( 'background', '#000000' );
 				setTimeout( () => {
+					$( '#loader .logo' ).css( 'animation', 'none' );
 					bannerHide();
 					loader();
 				}, 10000 );
@@ -45,7 +52,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	// active / inactive window
 	var active      = 1;
 	var connect     = () => {
-		if ( ! active && ! G.poweroff ) {
+		if ( ! active && ! G.off ) {
 			active = 1;
 			pushstream.connect();
 		}

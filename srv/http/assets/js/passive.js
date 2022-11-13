@@ -76,10 +76,9 @@ var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'eq
 if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamConnect() {
-	if ( G.disconnected ) getPlaybackStatus( 'withdisplay' ); // G.disconnected - suppress on 1st load (status-push.sh from startup.sh)
+	getPlaybackStatus( 'withdisplay' );
 }
 function pushstreamDisconnect() {
-	G.disconnected = 1;
 	clearIntervalAll();
 	hideGuide();
 	if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
@@ -274,22 +273,18 @@ function psNotify( data ) {
 	var title   = data.title;
 	var message = data.message;
 	var delay   = data.delay;
-	if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
-		setTimeout( () => { location.href = '/' }, 3000 );
-	}
 	
 	banner( icon, title, message, delay );
-	if ( title === 'Power' ) {
-		switchPage( 'playback' );
-		message === 'Off ...' ? G.poweroff = 1 : G.reboot = 1;
-		loader();
-	} else if ( message === 'Change track ...' ) { // audiocd
+	if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {
 		G.status.counts.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( G.mode === 'latest' ) $( '#button-library' ).click();
+	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
+		setTimeout( () => { location.href = '/' }, 3000 );
 	}
+	pushstreamPower( message );
 }
 function psOption( data ) {
 	if ( G.local ) return

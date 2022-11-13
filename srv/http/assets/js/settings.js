@@ -209,7 +209,7 @@ function setSwitch() {
 	}
 }
 function showContent() {
-	G.raudioready ? delete G.raudioready : bannerReset();
+	G.ready ? delete G.ready : bannerReset();
 	if ( $( 'select' ).length ) selectricRender();
 	if ( page !== 'networks' ) {
 		$( 'pre.status' ).each( ( i, el ) => {
@@ -277,12 +277,7 @@ function psNotify( data ) {
 	var delay    = data.delay;
 	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
-	if ( title === 'Power' ) {
-		message === 'Off ...' ? G.poweroff = 1 : G.reboot = 1;
-		loader();
-	} else if ( title === 'rAudio' && message === 'Ready' ) {
-		G.raudioready = 1;
-	}
+	pushstreamPower( message );
 }
 function psPlayer( data ) {
 	var player_id = {
