@@ -18,12 +18,12 @@ echo '
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( ! $_SESSION[ 'login' ] ) {
-		include 'index-login.php';
+		include 'login.php';
 		exit;
 	}
 }
 
-include 'index-body.php';
+include 'main.php';
 
 $jsp       = [
 	  'jquery-3.6.1',          'html5kellycolorpicker-1.21', 'lazysizes-5.3.2',   'pica-9.0.1'
