@@ -284,7 +284,7 @@ function psNotify( data ) {
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( () => { location.href = '/' }, 3000 );
 	}
-	if ( icon === 'power' || icon === 'raudio' ) pushstreamPower( message );
+	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
 function psOption( data ) {
 	if ( G.local ) return

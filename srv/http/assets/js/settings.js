@@ -277,7 +277,7 @@ function psNotify( data ) {
 	var delay    = data.delay;
 	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
-	if ( icon === 'power' || icon === 'raudio' ) pushstreamPower( message );
+	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
 function psPlayer( data ) {
 	var player_id = {
