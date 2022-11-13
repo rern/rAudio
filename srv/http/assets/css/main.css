@@ -1290,7 +1290,7 @@ i.map.disabled, .map.disabled i {
 	position: absolute;
 	right: 0;
 	width: 34px !important;
-	line-height: 35px !important;
+	line-height: 34px !important;
 	text-align: center;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
@@ -1305,7 +1305,7 @@ i.map.disabled, .map.disabled i {
 }
 .bk-cover {
 	bottom: 0;
-	width: 24px !important;
+	height: 34px;
 }
 .coveredit {
 	z-index: 17;

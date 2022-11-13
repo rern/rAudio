@@ -1418,7 +1418,7 @@ function setBookmarkEdit() {
 		var path       = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( ! $this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml    += '<i class="bkedit bk-cover iconcover"></i>';
+		buttonhtml    += '<div class="bkedit bk-cover">'+ iconcover +'</div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
