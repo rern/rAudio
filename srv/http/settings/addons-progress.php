@@ -33,7 +33,7 @@ $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 <br>
-<p id="wait"><i class="fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <?=$type?> ...</p>
+<p id="addontitle"><i class="fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> - <?=$type?> ...</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/common.js?v=<?=$time?>"></script>
@@ -169,7 +169,7 @@ pclose( $popencmd );
 
 <script>
 setTimeout( () => { clearInterval( scroll ) }, 1000 );
-$( '#wait i' ).removeClass( 'blink' );
+$( '#addontitle i' ).removeClass( 'blink' );
 info( {
 	  icon    : 'jigsaw'
 	, title   : '<?=$name?>'
