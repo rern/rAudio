@@ -22,11 +22,9 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		pushstream.connect();
 	}
 	var pushstreamPower = ( message ) => {
-		if ( [ 'Off ...', 'Reboot ...', 'Ready' ].includes( message ) ) {
-			var type = message.replace( ' ...', '' ).toLowerCase();
-			G[ type ] = 1;
-			if ( type !== 'ready' ) loader();
-		}
+		var type = message.replace( ' ...', '' ).toLowerCase();
+		G[ type ] = 1;
+		if ( type !== 'ready' ) loader();
 	}
 	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
