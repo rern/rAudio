@@ -154,7 +154,7 @@ $( '#button-settings' ).click( function( e ) {
 			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
-		setTimeout( function() {
+		setTimeout( () => {
 			$( '#settings' ).css( 'pointer-events', '' );
 		}, 300 );
 	} else {
