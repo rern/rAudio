@@ -141,7 +141,5 @@ function eqValueSet( band, val ) {
 	clearTimeout( timeout );
 	bash( [ 'equalizerupdn', band, val ] );
 	eqButtonSet();
-	timeout = setTimeout( () => {
-		bash( [ 'equalizerget', 'pushstream', $( '#eqpreset' ).val() === 'Flat' ? 'set' : '' ] );
-	}, 1000 );
+	timeout = setTimeout( () => { bash( [ 'equalizerget', 'pushstream', $( '#eqpreset' ).val() === 'Flat' ? 'set' : '' ] ) }, 1000 );
 }

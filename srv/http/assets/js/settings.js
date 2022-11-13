@@ -78,9 +78,7 @@ function currentStatus( id, refresh ) {
 	}
 		
 	if ( $el.hasClass( 'hide' ) ) {
-		var timeoutGet = setTimeout( () => {
-			notify( page, 'Get Data', id );
-		}, 1000 );
+		var timeoutGet = setTimeout( () => { notify( page, 'Get Data', id ) }, 1000 );
 	}
 	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, ( status ) => {
@@ -88,9 +86,7 @@ function currentStatus( id, refresh ) {
 		$el.html( status ).promise().done( () => {
 			$el.removeClass( 'hide' );
 			if ( id === 'mpdconf' ) {
-				setTimeout( () => {
-					$( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() );
-				}, 100 );
+				setTimeout( () => { $( '#codempdconf' ).scrollTop( $( '#codempdconf' ).height() ) }, 100 );
 			}
 			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
 		} );
@@ -393,9 +389,7 @@ $( document ).keyup( function( e ) {
 			break;
 		case 'Escape':
 			$focus = $( '.switchlabel.focus' );
-			setTimeout( () => {
-				if ( $focus.length ) $focus.prev().focus();
-			}, 300 );
+			setTimeout( () => { if ( $focus.length ) $focus.prev().focus() }, 300 );
 			if ( $( '.setting.focus' ).length ) {
 				$( '.setting' ).removeClass( 'focus' );
 				return
@@ -466,9 +460,7 @@ $( '#button-data' ).click( function() {
 	setSwitch();
 	renderPage();
 } ).on( 'mousedown touchdown', function() {
-	timer = setTimeout( () => {
-		location.reload();
-	}, 1000 );
+	timer = setTimeout( () => { location.reload() }, 1000 );
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
 	clearTimeout( timer );
 } );

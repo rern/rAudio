@@ -49,9 +49,7 @@ function blinkUpdate() {
 	$icons.removeClass( 'blink' );
 	G.intBlinkUpdate = setInterval( () => {
 		$icons.addClass( 'clear' );
-		setTimeout( () => {
-			$icons.removeClass( 'clear' );
-		}, 1500 );
+		setTimeout( () => { $icons.removeClass( 'clear' ) }, 1500 );
 	}, 2500 );
 }
 function changeIP() { // for android app
@@ -904,9 +902,7 @@ function playlistInsert( indextarget ) {
 	bash( [ 'savedpledit', plname, 'add', indextarget, G.pladd.file ], () => {
 		renderSavedPlaylist( plname );
 		if ( indextarget === 'last' ) {
-			setTimeout( () => {
-				$( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } );
-			}, 300 );
+			setTimeout( () => { $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ) }, 300 );
 		}
 		G.pladd = {}
 	} );
@@ -1277,9 +1273,7 @@ function renderPlayback() {
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
 	} else {
 		$( '#progress' ).html( istate +'<span></span>'+ timehms );
-		setTimeout( () => {
-			$( '#progress span' ).after( ' / ' );
-		}, 1000 );
+		setTimeout( () => { $( '#progress span' ).after( ' / ' ) }, 1000 );
 	}
 	setProgress();
 	if ( G.status.state === 'pause' ) {
@@ -1916,9 +1910,7 @@ function urlReachable( url, sec ) {
 		location.href = url;
 	} ).catch( function() {
 		sec++
-		setTimeout( () => {
-			urlReachable( url, sec );
-		}, 1000 );
+		setTimeout( () => { urlReachable( url, sec ) }, 1000 );
 	} );
 }
 function volumeBarHide() {

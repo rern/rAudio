@@ -24,9 +24,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstreamPower = ( message ) => {
 		if ( message === 'Off ...' ) {
 			$( '#loader' ).css( 'background', '#000000' );
-			setTimeout( () => {
-				$( '#loader .logo' ).css( 'animation', 'none' );
-			}, 10000 );
+			setTimeout( () => { $( '#loader .logo' ).css( 'animation', 'none' ) }, 10000 );
 			pushstream.disconnect();
 			G.poweroff = 1;
 		} else {
@@ -670,9 +668,7 @@ function infoCheckSet() {
 				var val     = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				O.nochange  = prevval === val;
 			}
-			setTimeout( () => { // ios: force after checkLength
-				$( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange );
-			}, 50 );
+			setTimeout( () => { $( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ) }, 50 ); // ios: force after checkLength
 		} );
 	}
 	if ( O.checkchanged ) {
@@ -757,9 +753,7 @@ function setButtonWidth() {
 }
 function setFileImage() {
 	delete O.infofilegif;
-	G.timeoutfile = setTimeout( () => {
-		banner( 'refresh blink', 'Change Image', 'Load ...', -1 );
-	}, 1000 );
+	G.timeoutfile = setTimeout( () => { banner( 'refresh blink', 'Change Image', 'Load ...', -1 ) }, 1000 );
 	G.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();

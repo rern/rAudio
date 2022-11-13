@@ -338,9 +338,7 @@ function scrollUpDown( e, $list, key ) {
 	var $liactive = $list.find( 'li.active' );
 	if ( ! $liactive.length ) {
 		$li.first().addClass( 'active' );
-		setTimeout( () => {
-			$( 'html, body' ).scrollTop( 0 );
-		}, 300 );
+		setTimeout( () => { $( 'html, body' ).scrollTop( 0 ) }, 300 );
 		return
 	}
 	

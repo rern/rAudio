@@ -144,9 +144,7 @@ function playlistSaveExist( type, name, oldname ) {
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
 		, button      : () => {
-			setTimeout( () => { // fix error on repeating
-				rename ? playlistRename() : playlistNew( name );
-			}, 0 );
+			setTimeout( () => { rename ? playlistRename() : playlistNew( name ) }, 0 ); // fix error on repeating
 		}
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : () => {
@@ -308,9 +306,7 @@ function tagEditor() {
 					tag.push( val );
 				} );
 				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
-				setTimeout( () => {
-					banner( 'tag blink', 'Tag Editor', 'Update Library ...' );
-				}, 3000 );
+				setTimeout( () => { banner( 'tag blink', 'Tag Editor', 'Update Library ...' ) }, 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
 				if ( G.list.licover ) {
 					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
@@ -454,9 +450,7 @@ function webRadioExists( error, name, url, charset ) {
 		, title   : 'Add Web Radio'
 		, message : '<wh>'+ url +'</wh><br>'+ message
 		, ok      : () => {
-			setTimeout( () => {
-				name ? webRadioNew( name, url, charset ) : webRadioEdit();
-			}, 300 );
+			setTimeout( () => { name ? webRadioNew( name, url, charset ) : webRadioEdit() }, 300 );
 		}
 	} );
 }

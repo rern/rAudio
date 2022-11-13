@@ -281,9 +281,7 @@ function psNotify( data ) {
 	var message = data.message;
 	var delay   = data.delay;
 	if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
-		setTimeout( () => {
-			location.href = '/';
-		}, 3000 );
+		setTimeout( () => { location.href = '/' }, 3000 );
 	}
 	
 	banner( icon, title, message, delay );
@@ -427,9 +425,7 @@ function psRelays( response ) {
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
 		banner( 'restore', 'Restore Settings', 'Done' );
-		setTimeout( () => {
-			location.href = '/';
-		}, 2000 );
+		setTimeout( () => { location.href = '/' }, 2000 );
 	} else {
 		loader();
 		banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );
