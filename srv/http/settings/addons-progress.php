@@ -1,12 +1,13 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$addons = json_decode( file_get_contents( '/srv/http/data/addons/addons-list.json' ), true );
-$opt    = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
-$alias  = $opt[ 0 ];
-$type   = $opt[ 1 ];
-$branch = $opt[ 2 ] ?? '';
-$addon  = $addons[ $alias ];
+$sudobash = '/usr/bin/sudo /srv/http/bash/';
+$addons   = json_decode( file_get_contents( '/srv/http/data/addons/addons-list.json' ), true );
+$opt      = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
+$alias    = $opt[ 0 ];
+$type     = $opt[ 1 ];
+$branch   = $opt[ 2 ] ?? '';
+$addon    = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
 	$icon  = '<i class="page-icon fa fa-jigsaw"></i>';
 	$title = 'ADDONS PROGRESS';
@@ -55,7 +56,7 @@ var scroll = setInterval( () => {
 <pre id="progress">
 <?php
 // ......................................................................................
-$getinstall = <<<cmd
+$getinstall = <<< EOF
 curl -sfLO $installurl
 if [[ $? != 0 ]]; then
 	echo -e '\e[38;5;7m\e[48;5;1m ! \e[0m Install file download failed.'
@@ -66,41 +67,42 @@ chmod 755 $installfile
 cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
-cmd;
+EOF;
 
 if ( $alias === 'cove' ) {
-	$command    = '/usr/bin/sudo /srv/http/bash/albumthumbnail.sh "'.$options.'"';
+	$command    = $sudobash.'albumthumbnail.sh "'.$options.'"';
 	$commandtxt = '/srv/http/bash/albumthumbnail.sh "'.$options.'"';
 } else if ( $type === 'Uninstall' ) {
 	$command    = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
 } else if ( $type === 'Update' && ! isset( $addon[ 'nouninstall' ] ) ) {
-	$command    = <<<cmd
+	$command    = <<< EOF
 $getinstall
 $uninstall
 /usr/bin/sudo ./$installfile "$options"
-cmd;
-	$commandtxt = <<<cmd
+EOF;
+	$commandtxt = <<< EOF
 curl -sfLO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
 ./$installfile "$options"
-cmd;
+EOF;
 } else {
-	$command    = <<<cmd
+	$command    = <<< EOF
 $getinstall
 /usr/bin/sudo ./$installfile "$options"
-cmd;
-	$commandtxt = <<<cmd
+EOF;
+	$commandtxt = <<< EOF
 curl -sfLO $installurl
 chmod 755 $installfile
 ./$installfile "$options"
-cmd;
+EOF;
 }
 echo $commandtxt.'<br>';
 
 if ( $type !== 'Debug' ) {
-// debug >.......................................................................................................
+// >.......................................................................................................
+copy( '', '' );
 // convert bash stdout to html
 $replace = [
 	'/.\[38;5;8m.\[48;5;8m/' => '<a class="cbgr">',     // bar - gray
@@ -134,43 +136,41 @@ ob_end_flush();            // force flush: current buffer (run after flush start
 echo $fillbuffer;          // fill buffer to force start output
 if ( $type === 'Uninstall' ) sleep( 1 );
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-$popencmd = popen( "$command 2>&1", 'r' );              // start bash
-while ( ! feof( $popencmd ) ) {                         // each line
-	$std = fread( $popencmd, 4096 );                    // read
-	$std = preg_replace(                                // convert to html
+$popencmd = popen( "$command 2>&1", 'r' ); // start bash
+while ( ! feof( $popencmd ) ) {            // get stdout until eof
+	$std = fgets( $popencmd );             // get each line
+	$std = preg_replace(                   // convert to html
 		array_keys( $replace ),
 		array_values( $replace ),
 		$std
 	);
-	foreach( $skip as $find ) {                         // skip line
+	foreach( $skip as $find ) {            // skip line
 		if ( stripos( $std, $find ) !== false ) continue 2;
 	}
-	foreach( $skippacman as $findp ) {                  // skip pacman line after output once
+	foreach( $skippacman as $findp ) {     // skip pacman line after output once
 		if ( stripos( $std, $findp ) !== false ) $skip[] = $findp; // add skip string to $skip array
 	}
-	echo $std;                                          // stdout to screen
-	echo $fillbuffer;                                   // fill buffer to force output line by line
+	echo $std;                             // output to screen
+	echo $fillbuffer;                      // fill buffer after each line
 	
 	// abort on browser back/close
 	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
-		$sh     = [ 'killaddon', basename( $installfile ), $alias ];
-		$script = '/usr/bin/sudo /srv/http/bash/settings/system.sh "'.implode( "\n", $sh ).'"';
-		shell_exec( $script );
 		pclose( $popencmd );
+		exec( $sudobash.'addons.sh abort '.$installfile.' '.$alias );
 		exit;
 	}
 }
 sleep( 1 );
 pclose( $popencmd );
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// debug <........................................................................................................
+// <........................................................................................................
 }
 ?>
 </pre>
 
 <script>
 setTimeout( () => { clearInterval( scroll ) }, 1000 );
-$( '#wait' ).remove();
+$( '#wait i' ).removeClass( 'blink' );
 info( {
 	  icon    : 'jigsaw'
 	, title   : '<?=$name?>'
