@@ -239,16 +239,10 @@ localbrowserxset )
 	localbrowserXset ${args[1]}
 	;;
 login )
-	touch $dirsystem/login
-	sed -i '/^bind_to_address/ s/".*"/"127.0.0.1"/' $mpdconf
-	systemctl restart mpd
 	pushRefresh
 	pushSubmenu lock true
 	;;
 logindisable )
-	rm -f $dirsystem/login*
-	sed -i '/^bind_to_address/ s/".*"/"0.0.0.0"/' $mpdconf
-	systemctl restart mpd
 	pushRefresh
 	pushSubmenu lock false
 	;;

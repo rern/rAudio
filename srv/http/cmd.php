@@ -1,8 +1,8 @@
 <?php
-$sudo             = '/usr/bin/sudo ';
-$sudobin          = $sudo.'/usr/bin/';
-$sudobashsettings = '/usr/bin/sudo /srv/http/bash/settings/';
-$dirdata          = '/srv/http/data/';
+$sudo         = '/usr/bin/sudo ';
+$sudobin      = $sudo.'/usr/bin/';
+$sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$dirdata      = '/srv/http/data/';
 
 switch( $_POST[ 'cmd' ] ) {
 
@@ -40,7 +40,7 @@ case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
-	exec( $sudobashsettings.'system.sh datarestore', $output, $result );
+	exec( $sudosettings.'system.sh datarestore', $output, $result );
 	if ( $result != 0 ) exit( '-2' );
 	break;
 case 'giftype':
@@ -69,22 +69,20 @@ case 'imagereplace':
 	shell_exec( $script );
 	break;
 case 'login':
-	$passwordfile = $dirdata.'system/loginset';
-	if ( file_exists( $passwordfile ) ) {
-		$hash = file_get_contents( $passwordfile );
-		if ( ! password_verify( $_POST[ 'password' ], $hash ) ) exit( '-1' );
-	}
+	$file = $dirdata.'system/login';
+	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 	
 	if ( isset( $_POST[ 'disable' ] ) ) {
-		exec( $sudobashsettings.'features.sh logindisable' );
+		unlink( $file );
+		exec( $sudosettings.'features.sh logindisable' );
 		exit;
 	}
 	
 	$pwdnew = $_POST[ 'pwdnew' ] ?? '';
 	if ( $pwdnew ) {
 		$hash = password_hash( $pwdnew, PASSWORD_BCRYPT, [ 'cost' => 12 ] );
-		file_put_contents( $passwordfile, $hash );
-		if ( ! file_exists( $dirdata.'system/login' ) ) exec( $sudobashsettings.'features.sh login' );
+		file_put_contents( $file, $hash );
+		exec( $sudosettings.'features.sh login' );
 	} else {
 		session_start();
 		$_SESSION[ 'login' ] = 1;
