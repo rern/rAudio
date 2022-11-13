@@ -44,14 +44,15 @@ $( '.close' ).click( function() {
 	location.href = '<?=$href?>';
 } );
 var scroll = setInterval( () => {
-	$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
+	var $progress = $( '#progress' );
+	$progress.scrollTop( $progress.prop( 'scrollHeight' ) );
 }, 500 );
 // js for '<pre>' must be here before start stdout
 // php 'flush' loop waits for all outputs before going to next lines
 // but must 'setTimeout()' for '<pre>' to load to fix 'undefined'
 </script>
 
-<pre>
+<pre id="progress">
 <?php
 // ......................................................................................
 $getinstall = <<<cmd
@@ -134,9 +135,8 @@ echo $fillbuffer;          // fill buffer to force start output
 if ( $type === 'Uninstall' ) sleep( 1 );
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $popencmd = popen( "$command 2>&1", 'r' );              // start bash
-while ( ! feof( $popencmd ) ) {                          // each line
+while ( ! feof( $popencmd ) ) {                         // each line
 	$std = fread( $popencmd, 4096 );                    // read
-
 	$std = preg_replace(                                // convert to html
 		array_keys( $replace ),
 		array_values( $replace ),
@@ -169,8 +169,7 @@ pclose( $popencmd );
 </pre>
 
 <script>
-clearInterval( scroll );
-$( 'pre' ).scrollTop( $( 'pre' ).prop( 'scrollHeight' ) );
+setTimeout( () => { clearInterval( scroll ) }, 1000 );
 $( '#wait' ).remove();
 info( {
 	  icon    : 'jigsaw'
