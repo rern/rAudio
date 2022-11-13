@@ -1305,6 +1305,7 @@ i.map.disabled, .map.disabled i {
 }
 .bk-cover {
 	bottom: 0;
+	width: 25px !important;
 }
 .coveredit {
 	z-index: 17;
@@ -1326,14 +1327,12 @@ i.map.disabled, .map.disabled i {
 }
 .coveredit.cover {
 	position: absolute;
-	width: 40px !important;
-	height: 40px;
+	width: 30px !important;
+	height: 30px;
 	bottom: 0;
 	right: 0;
-	padding: 8px;
 	border: none;
-	outline: 1px solid var( --cg );
-	outline-offset: -8px;
+	border: 1px solid var( --cg );
 }
 #bannerIcon .iconcover {
 	margin: 3px;
