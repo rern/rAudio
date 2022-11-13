@@ -33,7 +33,7 @@ $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 <br>
-<p id="addontitle"><i class="fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> - <?=$type?> ...</p>
+<p id="addontitle"><i class="gr fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
 	
 <script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
 <script src="/assets/js/common.js?v=<?=$time?>"></script>
