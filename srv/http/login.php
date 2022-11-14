@@ -28,18 +28,14 @@
 	border           : 1px solid var( --cg ) !important;
 }
 #login {
-	display          : block;
 	margin           : 0 auto;
-	width            : 60px;
-	line-height      : 34px;
-	background-color : var( --cm );
 }
 </style>
 
 <div id="divlogin">
 	<div id="logintitle">rAudio</div>
 	<input type="password" id="pwd"><i id="toggle" class="fa fa-eye"></i>
-	<a id="login" class="btn btn-primary" style="cursor: pointer">Login</a>
+	<br><a id="login" class="infobtn infobtn-primary">Login</a>
 </div>
 
 <script>
