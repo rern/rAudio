@@ -811,27 +811,24 @@ $( '#restore' ).click( function() {
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
-				fetch( 'cmd.php', {
-					  method : 'POST'
-					, body   : formdata
-				} ).then( ( response ) => {
-					return response.text(); //
-				} ).then( ( result ) => {   // -1 / -2 = errors
-					if ( result == -1 ) {
-						info( {
-							  icon    : icon
-							, title   : title
-							, message : iconwarning +' Upload failed.'
-						} );
-					} else if ( result == -2 ) {
-						info( {
-							  icon    : icon
-							, title   : title
-							, message : iconwarning +' Restore failed.'
-						} );
-					}
-					bannerHide();
-				} );
+				fetch( 'cmd.php', { method: 'POST', body: formdata } )
+					.then( ( response ) => response.text() )
+					.then( ( result ) => { // -1 / -2 = errors
+						if ( result == -1 ) {
+							info( {
+								  icon    : icon
+								, title   : title
+								, message : iconwarning +' Upload failed.'
+							} );
+						} else if ( result == -2 ) {
+							info( {
+								  icon    : icon
+								, title   : title
+								, message : iconwarning +' Restore failed.'
+							} );
+						}
+						bannerHide();
+					} );
 			}
 			setTimeout( loader, 0 );
 		}

@@ -707,28 +707,25 @@ function infoFileImage() {
 		var formdata = new FormData();
 		formdata.append( 'cmd', 'giftype' );
 		formdata.append( 'file', I.infofile );
-		fetch( 'cmd.php', {
-			  method : 'POST'
-			, body   : formdata
-		} ).then( ( response ) => {
-			return response.json(); // set response data as json > animated
-		} ).then( ( animated ) => { // 0 / 1
-			if ( animated ) {
-				I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
-				var img    = new Image();
-				img.src    = URL.createObjectURL( I.infofile );
-				img.onload = function() {
-					var imgW   = img.width;
-					var imgH   = img.height;
-					var resize = infoFileImageResize( 'gif', imgW, imgH );
-					infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-					clearTimeout( G.timeoutfile );
-					bannerHide();
+		fetch( 'cmd.php', { method: 'POST', body: formdata } )
+			.then( ( response ) => response.json() ) // set response data as json > animated
+			.then( ( animated ) => { // 0 / 1
+				if ( animated ) {
+					I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+					var img    = new Image();
+					img.src    = URL.createObjectURL( I.infofile );
+					img.onload = function() {
+						var imgW   = img.width;
+						var imgH   = img.height;
+						var resize = infoFileImageResize( 'gif', imgW, imgH );
+						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
+						clearTimeout( G.timeoutfile );
+						bannerHide();
+					}
+				} else {
+					infoFileImageReader();
 				}
-			} else {
-				infoFileImageReader();
-			}
-		} );
+			} );
 	}
 }
 function infoFileImageReader() {
