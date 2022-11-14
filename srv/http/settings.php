@@ -44,6 +44,8 @@ echo $style;
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
 </div>
 <?php
+include 'info-banner-loader.php';
+
 // container ...................................................................... 
 echo '<div class="container hide">';
 
