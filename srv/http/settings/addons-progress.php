@@ -11,7 +11,7 @@ $addon    = $addons[ $alias ];
 if ( $alias !== 'cove' ) {
 	$icon  = '<i class="page-icon fa fa-jigsaw"></i>';
 	$title = 'ADDONS PROGRESS';
-	$href  = '/settings.php?p=addons';
+	$href  = 'settings.php?p=addons';
 	$name  = preg_replace( '/\**$/', '', $addon[ 'title' ] );
 } else {
 	$icon  = '<i class="page-icon iconcover"></i>';
