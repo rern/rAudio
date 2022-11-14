@@ -78,7 +78,13 @@ document.getElementsByClassName( 'close' )[ 0 ].addEventListener( 'click', funct
 	location.href = '/';
 } );
 document.getElementsByClassName( 'help-head' )[ 0 ].addEventListener( 'click', function() {
-	help.style.display = help.style.display === 'none' ? '' : 'none';
+	if ( help.style.display === 'none' ) {
+		this.classList.add( 'bl' );
+		help.style.display = '';
+	} else {
+		this.classList.remove( 'bl' );
+		help.style.display = 'none';
+	}
 } );
 
 buttons.forEach( ( el ) => {
