@@ -53,45 +53,33 @@
 </div>
 
 <script>
-var info   = document.getElementById( 'infoOverlay' );
-var infook = document.getElementById( 'infoOk' );
-var pwd    = document.getElementById( 'pwd' );
-var toggle = document.getElementById( 'toggle' );
-var login  = document.getElementById( 'login' );
+var id = {};
+[ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => id[ el ] = document.getElementById( el ) );
 
-pwd.focus();
-pwd.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'Enter' ) info.classList.contains( 'hide' ) ? login.click() : infook.click();
+id.pwd.focus();
+id.pwd.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'Enter' ) id.infoOverlay.classList.contains( 'hide' ) ? id.login.click() : id.infoOk.click();
 } );
-toggle.addEventListener( 'click', () => {
-	if ( pwd.type === 'text' ) {
-		pwd.type = 'password';
-		toggle.classList.remove( 'bl' );
+id.toggle.addEventListener( 'click', () => {
+	if ( id.pwd.type === 'text' ) {
+		id.pwd.type = 'password';
+		id.toggle.classList.remove( 'bl' );
 	} else {
-		pwd.type = 'text';
-		toggle.classList.add( 'bl' );
+		id.pwd.type = 'text';
+		id.toggle.classList.add( 'bl' );
 	}
 } );
-login.addEventListener( 'click', () => {
-	if ( ! pwd.value ) return
+id.login.addEventListener( 'click', () => {
+	if ( ! id.pwd.value ) return
 	
 	var formdata = new FormData();
 	formdata.append( 'cmd',      'login' );
 	formdata.append( 'password', pwd.value );
-	fetch( 'cmd.php', {
-		  method : 'POST'
-		, body   : formdata
-	} ).then( ( response ) => {
-		return response.text(); // set response data as text > verified
-	} ).then( ( verified ) => {
-		if ( verified != -1 ) location.reload();
-		
-		info.classList.remove( 'hide' );
-	} );
+	fetch( 'cmd.php', { method: 'POST', body: formdata } )
+		.then( ( response ) => response.text() ) // set response data as text > verified
+		.then( ( verified ) => verified != -1 ? location.reload() : id.infoOverlay.classList.remove( 'hide' ) );
 } );
-infook.addEventListener( 'click', () => {
-	info.classList.add( 'hide' );
-} );
+id.infoOk.addEventListener( 'click', () => id.infoOverlay.classList.add( 'hide' ) );
 </script>
 
 </body>
