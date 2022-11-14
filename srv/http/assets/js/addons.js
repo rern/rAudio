@@ -153,10 +153,9 @@ function getoptions() {
 function postcmd() { // post submit with temporary form
 	var form  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
 	opt.forEach( ( o ) => {
-		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">'
+		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">';
 	} );
-	form     += '</form>';
-	$( 'body' ).append( form );
+	$( 'body' ).append( form +'</form>' );
 	$( '#formtemp' ).submit();
 	banner( 'jigsaw blink', 'Addons', 'Download files ...', -1 );
 }
