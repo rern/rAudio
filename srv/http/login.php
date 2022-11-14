@@ -41,12 +41,17 @@
 </div>
 
 <script>
-document.getElementById( 'divlogin' ).prepend( document.querySelector( '#loader svg' ) ); // use logo from #loader
-document.getElementById( 'loader' ).remove();
-
+var banner = document.getElementById( 'banner' );
 var pwd    = document.getElementById( 'pwd' );
 var toggle = document.getElementById( 'toggle' );
 var login  = document.getElementById( 'login' );
+
+document.getElementById( 'divlogin' ).prepend( document.querySelector( '#loader svg' ) ); // use logo from #loader
+document.getElementById( 'loader' ).remove();
+banner.innerHTML = '<div id="bannerIcon"><i class="fa fa-lock"></i></div>'
+				  +'<div id="bannerTitle">Login</div>'
+				  +'<div id="bannerMessage">Wrong password.</div>';
+
 pwd.focus();
 pwd.addEventListener( 'keyup', ( e ) => {
 	if ( e.key === 'Enter' ) login.click();
@@ -71,6 +76,11 @@ login.addEventListener( 'click', () => {
 		return response.text(); // set response data as text > verified
 	} ).then( ( verified ) => {
 		if ( verified != -1 ) location.reload();
+		
+		banner.classList.remove( 'hide' );
+		setTimeout( () => {
+			banner.classList.add( 'hide' );
+		}, 3000 );
 	} );
 } );
 </script>
