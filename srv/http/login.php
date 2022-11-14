@@ -1,38 +1,38 @@
 <style>
 #divlogin {
-	padding-top: calc( 50vh - 135px );
-	text-align: center;
+	padding-top      : calc( 50vh - 135px );
+	text-align       : center;
 }
 #divlogin svg {
-	width: 45px;
+	width            : 50px;
 }
 #logintitle {
-	margin: 10px 0 10px 20px;
-	font-weight: 300;
-	letter-spacing: 20px;
+	margin           : 10px 0 10px 20px;
+	font-weight      : 300;
+	letter-spacing   : 25px;
 }
 #divlogin i {
-	font-size: 20px;
-	vertical-align: -3px;
+	font-size        : 20px;
+	vertical-align   : -3px;
 }
 #pwd {
-	height: 40px;
-	margin: 30px 10px 10px 25px;
-	padding: 10px;
-	font-family: "Lato";
-	font-size: 15px;
-	text-align: center;
-	color: var( --cw );
-	background-color: #000000 !important;
-	border-radius: 4px;
-	border: 1px solid var( --cg ) !important;
+	height           : 40px;
+	margin           : 30px 10px 10px 25px;
+	padding          : 10px;
+	font-family      : "Lato";
+	font-size        : 15px;
+	text-align       : center;
+	color            : var( --cw );
+	background-color : #000000 !important;
+	border-radius    : 4px;
+	border           : 1px solid var( --cg ) !important;
 }
 #login {
-	display: block;
-	margin: 0 auto;
-	width: 60px;
-	line-height: 34px;
-	background-color: var( --cm );
+	display          : block;
+	margin           : 0 auto;
+	width            : 60px;
+	line-height      : 34px;
+	background-color : var( --cm );
 }
 </style>
 
