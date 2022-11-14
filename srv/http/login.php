@@ -66,6 +66,8 @@ toggle.addEventListener( 'click', () => {
 	}
 } );
 login.addEventListener( 'click', () => {
+	if ( ! pwd.value ) return
+	
 	var formdata = new FormData();
 	formdata.append( 'cmd',      'login' );
 	formdata.append( 'password', pwd.value );
