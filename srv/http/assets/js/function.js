@@ -667,20 +667,20 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	var data = {
 		  cmd          : 'imagereplace'
 		, type         : type
-		, imagefile    : imagefilenoext +'.'+ ( O.infofilegif ? 'gif' : 'jpg' )
+		, imagefile    : imagefilenoext +'.'+ ( I.infofilegif ? 'gif' : 'jpg' )
 		, bookmarkname : bookmarkname || ''
-		, imagedata    : 'infofilegif' in O ? O.infofilegif : $( '.infoimgnew' ).attr( 'src' )
+		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
 	$.post( cmdphp, data, function( std ) {
 		if ( std == -1 ) {
 			info( {
-				  icon    : O.icon
-				, title   : O.title
+				  icon    : I.icon
+				, title   : I.title
 				, message : iconwarning +'Target directory not writable.'
 			} );
 		}
 	} );
-	banner( '<i class="iconcover blink"></i>', O.title, 'Change ...', -1 );
+	banner( '<i class="iconcover blink"></i>', I.title, 'Change ...', -1 );
 }
 var chklibrary = {
 	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
@@ -727,7 +727,7 @@ function infoLibrary( page2 ) {
 		, messagealign : 'left'
 		, checkbox     : checkbox
 		, checkcolumn  : page2 ? '' : 1
-		, noreload     : ! O.infohide
+		, noreload     : ! I.infohide
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : () => {
@@ -1673,7 +1673,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	if ( ! $( '.pl-remove' ).length && O.infohide ) {
+	if ( ! $( '.pl-remove' ).length && I.infohide ) {
 		if ( G.status.pllength < 5 ) {
 			var top = 0;
 		} else {

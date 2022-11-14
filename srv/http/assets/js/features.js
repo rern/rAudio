@@ -240,7 +240,7 @@ ${ brightness }
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
-				$( '#infoOk' ).toggleClass( 'disabled', O.values.join( '' ) === infoVal().join( '' ) );
+				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 			} );
 			$( '#infoContent' ).on( 'change', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
@@ -335,18 +335,18 @@ $( '#setting-multiraudio' ).click( function() {
 			} );
 			$( '#infoContent' ).on( 'click', '.ipremove', function() {
 				$( this ).parents( 'tr' ).remove();
-				O.inputs   = $( '#infoContent input' );
+				I.inputs   = $( '#infoContent input' );
 				var values = infoVal();
 				if ( typeof values === 'string' ) values = [ values ];
 				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === G.multiraudioconf.join( ',' ) );
-				$( '.ipremove' ).toggleClass( 'hide', O.inputs.length === 2 );
+				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
 			} );
 		}
 		, cancel       : () => {
 			$( '#multiraudio' ).prop( 'checked', G.multiraudio );
 		}
 		, ok           : () => {
-			O.inputs = $( '#infoContent input' );
+			I.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
 			notify( icon, title, G.multiraudio ? 'Change ...' : 'Enable ...' );
 		}
@@ -437,7 +437,7 @@ $( '#setting-scrobble' ).click( function() {
 				$pwd.toggleClass( 'hide', false );
 				$( '#infoOk' ).addClass( 'disabled' );
 				$( '#infoContent input' ).off( 'keyup paste cut' );
-				O.checkblank = [ 0, 1 ];
+				I.checkblank = [ 0, 1 ];
 				infoCheckSet();
 			} );
 		}

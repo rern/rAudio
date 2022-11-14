@@ -455,7 +455,7 @@ function renderPage() {
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
 	}
 	if ( $( '#infoRange .value' ).length ) {
-		var cmd = O.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
+		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
 		bash( cmd, ( voldb ) => {
 			var voldb = voldb.split( ' ' );
 			var vol   = voldb[ 0 ];

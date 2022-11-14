@@ -810,7 +810,7 @@ $( '#restore' ).click( function() {
 			} else {
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
-				formdata.append( 'file', O.infofile );
+				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', {
 					  method : 'POST'
 					, body   : formdata

@@ -394,7 +394,7 @@ function psRelays( response ) {
 			}
 			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
-		if ( O.infohide ) {
+		if ( I.infohide ) {
 			info( {
 				  icon       : 'relays'
 				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )
