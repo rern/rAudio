@@ -104,16 +104,18 @@ prev.addEventListener( 'click', function() {
 	renderPage( n );
 } );
 // swipe
-var xstart;
-window.addEventListener( 'touchstart', function( e ) {
-	xstart = e.changedTouches[ 0 ].pageX;
-} );
-window.addEventListener( 'touchend', function( e ) {
-	var xdiff = xstart - e.changedTouches[ 0 ].pageX;
-	if ( Math.abs( xdiff ) > 100 ) {
-		xdiff > 0 ? next.click() : prev.click();
-	}
-} );
+if ( navigator.maxTouchPoints ) { // swipe
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		xstart = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( xdiff ) > 100 ) {
+			xdiff > 0 ? next.click() : prev.click();
+		}
+	} );
+}
 
 function renderPage( n ) {
 	count.textContent = n +' / '+ ntotal;
