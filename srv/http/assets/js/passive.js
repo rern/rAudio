@@ -282,7 +282,7 @@ function psNotify( data ) {
 		$( '#mode-latest gr' ).empty();
 		if ( G.mode === 'latest' ) $( '#button-library' ).click();
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
-		setTimeout( () => { location.href = '/' }, 3000 );
+		setTimeout( () => location.href = '/', 3000 );
 	}
 	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
@@ -317,7 +317,7 @@ function psPlaylist( data ) {
 			bannerHide();
 		} else if ( 'autoplaycd' in data ) {
 			G.autoplaycd = 1;
-			setTimeout( () => { delete G.autoplaycd }, 5000 );
+			setTimeout( () => delete G.autoplaycd, 5000 );
 		} else if ( 'html' in data ) {
 			G.status.song = data.song;
 			if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) renderPlaylist( data );
@@ -415,7 +415,7 @@ function psRelays( response ) {
 function psRestore( data ) {
 	if ( data.restore === 'done' ) {
 		banner( 'restore', 'Restore Settings', 'Done' );
-		setTimeout( () => { location.href = '/' }, 2000 );
+		setTimeout( () => location.href = '/', 2000 );
 	} else {
 		loader();
 		banner( 'restore blink', 'Restore Settings', 'Restart '+ data.restore +' ...', -1 );

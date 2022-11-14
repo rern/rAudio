@@ -70,7 +70,7 @@ $.fn.press = function( arg1, arg2 ) {
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( () => { G.press = 0 }, 300 ); // needed for mouse events
+		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
@@ -684,7 +684,7 @@ function infoCheckSet() {
 				var val     = I.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				I.nochange  = prevval === val;
 			}
-			setTimeout( () => { $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ) }, 50 ); // ios: force after infoCheckLength
+			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ), 50 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( I.checkchanged ) {
@@ -697,7 +697,7 @@ function infoCheckSet() {
 }
 function infoFileImage() {
 	delete I.infofilegif;
-	G.timeoutfile = setTimeout( () => { banner( 'refresh blink', 'Change Image', 'Load ...', -1 ) }, 1000 );
+	G.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	G.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
@@ -905,7 +905,7 @@ select:   [U] [D]     - check
 			break;
 		case 'Escape':
 			G.local = 1; // prevent toggle setting menu
-			setTimeout( () => { G.local = 0 }, 300 );
+			setTimeout( () => G.local = 0, 300 );
 			$( '#infoX' ).click();
 			break;
 		case 'ArrowLeft':

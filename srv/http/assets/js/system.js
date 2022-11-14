@@ -985,7 +985,7 @@ function infoMount( values ) {
 			} );
 			var $mountpoint = $( '#mountpoint' );
 			$mountpoint.on( 'keyup paste', function() {
-				setTimeout( () => { $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ) }, 0 );
+				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
@@ -1006,7 +1006,7 @@ function infoMount( values ) {
 						, title   : title
 						, message : error
 						, ok      : () => {
-							setTimeout( () => { infoMount( values ) }, 0 );
+							setTimeout( () => infoMount( values ), 0 );
 						}
 					} );
 					bannerHide();

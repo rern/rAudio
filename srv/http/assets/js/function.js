@@ -49,7 +49,7 @@ function blinkUpdate() {
 	$icons.removeClass( 'blink' );
 	G.intBlinkUpdate = setInterval( () => {
 		$icons.addClass( 'clear' );
-		setTimeout( () => { $icons.removeClass( 'clear' ) }, 1500 );
+		setTimeout( () => $icons.removeClass( 'clear' ), 1500 );
 	}, 2500 );
 }
 function changeIP() { // for android app
@@ -813,7 +813,7 @@ function libraryHome() {
 }
 function local( delay ) {
 	G.local = 1;
-	setTimeout( () => { G.local = 0 }, delay || 300 );
+	setTimeout( () => G.local = 0, delay || 300 );
 }
 function lyricsShow( data ) {
 	if ( data !== 'current' ) {
@@ -900,7 +900,7 @@ function playlistInsert( indextarget ) {
 	bash( [ 'savedpledit', plname, 'add', indextarget, G.pladd.file ], () => {
 		renderSavedPlaylist( plname );
 		if ( indextarget === 'last' ) {
-			setTimeout( () => { $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ) }, 300 );
+			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
 		}
 		G.pladd = {}
 	} );
@@ -1271,7 +1271,7 @@ function renderPlayback() {
 		$( '#progress' ).html( istate +'<span>'+ elapsedhms +'</span> / '+ timehms );
 	} else {
 		$( '#progress' ).html( istate +'<span></span>'+ timehms );
-		setTimeout( () => { $( '#progress span' ).after( ' / ' ) }, 1000 );
+		setTimeout( () => $( '#progress span' ).after( ' / ' ), 1000 );
 	}
 	setProgress();
 	if ( G.status.state === 'pause' ) {
@@ -1826,7 +1826,7 @@ function setVolume() {
 }
 function sortPlaylist( pl, iold, inew ) {
 	G.sortable = 1;
-	setTimeout( () => { G.sortable = 0 }, 500 );
+	setTimeout( () => G.sortable = 0, 500 );
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1 ] );
 	} else {
@@ -1908,7 +1908,7 @@ function urlReachable( url, sec ) {
 		location.href = url;
 	} ).catch( function() {
 		sec++
-		setTimeout( () => { urlReachable( url, sec ) }, 1000 );
+		setTimeout( () => urlReachable( url, sec ), 1000 );
 	} );
 }
 function volumeBarHide() {

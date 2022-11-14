@@ -154,7 +154,7 @@ $( '#button-settings' ).click( function( e ) {
 			.css( 'top', ( $bartop.is( ':visible' ) ? 40 : 0 ) )
 			.css( 'pointer-events', 'none' ) // suppress coverTR tap on show
 			.removeClass( 'hide' );
-		setTimeout( () => { $( '#settings' ).css( 'pointer-events', '' ) }, 300 );
+		setTimeout( () => $( '#settings' ).css( 'pointer-events', '' ), 300 );
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
@@ -716,7 +716,7 @@ $( '#volume' ).roundSlider( {
 		var diff  = e.value - G.status.volume || G.status.volume - G.status.volumemute; // change || mute/unmute
 		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
-		setTimeout( () => { $volumehandlerotate.css( 'transition-duration','' ) }, speed * 1000 + 500 );
+		setTimeout( () => $volumehandlerotate.css( 'transition-duration','' ), speed * 1000 + 500 );
 	}
 	, drag              : function( e ) {
 		G.status.volume = e.value;
