@@ -176,7 +176,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'addons' || page === 'guide' || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( page === 'addons' || page === 'guide' || ! O.infohide ) return
 	
 	bash( dirbash + page +'-data.sh', ( list ) => {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -362,7 +362,7 @@ if ( localhost ) {
 }
 
 $( document ).keyup( function( e ) {
-	if ( ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( ! O.infohide ) return
 	
 	var key = e.key;
 	switch ( key ) {

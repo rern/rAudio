@@ -727,7 +727,7 @@ function infoLibrary( page2 ) {
 		, messagealign : 'left'
 		, checkbox     : checkbox
 		, checkcolumn  : page2 ? '' : 1
-		, noreload     : ! $( '#infoOverlay' ).hasClass( 'hide' )
+		, noreload     : ! O.infohide
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : () => {
@@ -1673,7 +1673,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
-	if ( ! $( '.pl-remove' ).length && $( '#infoOverlay' ).hasClass( 'hide' ) ) {
+	if ( ! $( '.pl-remove' ).length && O.infohide ) {
 		if ( G.status.pllength < 5 ) {
 			var top = 0;
 		} else {

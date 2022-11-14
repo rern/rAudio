@@ -1,6 +1,6 @@
 // keyboard controls
 $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page scroll
-	if ( G.local || ! $( '#infoOverlay' ).hasClass( 'hide' ) ) return
+	if ( G.local || ! O.infohide ) return
 	
 	var key = e.key;
 	if ( key === 'Backspace' && ! $( 'input:focus, textarea:focus' ).length ) {

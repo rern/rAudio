@@ -253,13 +253,14 @@ Note:
 ` );
 }
 
-O = {}
+O = { infohide: true }
 
 function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
 	setTimeout( () => {
 		if ( typeof fn === 'function' ) fn();
 		if ( ! O.buttonnoreset ) {
+			O.infohide = true;
 			$( '#infoOverlay' ).addClass( 'hide' );
 			$( '#infoOverlay' ).empty();
 		}
@@ -269,6 +270,7 @@ function infoReset( fn ) {
 }
 function info( json ) {
 	O = json;
+	O.infohide = false;
 	if ( ! O.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
