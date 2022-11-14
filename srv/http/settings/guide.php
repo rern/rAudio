@@ -105,10 +105,10 @@ prev.addEventListener( 'click', function() {
 } );
 // swipe
 var xstart;
-window.addEventListener( 'touchstart', ( e ) => {
+window.addEventListener( 'touchstart', function( e ) {
 	xstart = e.changedTouches[ 0 ].pageX;
 } );
-window.addEventListener( 'touchend', ( e ) => {
+window.addEventListener( 'touchend', function( e ) {
 	var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 	if ( Math.abs( xdiff ) > 100 ) {
 		xdiff > 0 ? next.click() : prev.click();
