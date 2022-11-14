@@ -39,6 +39,7 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 <script src="/assets/js/common.js?v=<?=$time?>"></script>
 <script>
 document.title = 'Addons';
+$( '.help-head' ).remove();
 $( '.container' ).removeClass( 'hide' );
 loaderHide();
 $( '.close' ).click( function() {
