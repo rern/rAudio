@@ -1,6 +1,8 @@
 <style>
 #divlogin {
-	padding-top      : calc( 50vh - 135px );
+	position         : relative;
+	top              : 50%;
+	transform        : translateY( -50% );
 	text-align       : center;
 }
 #divlogin svg {
