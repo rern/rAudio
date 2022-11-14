@@ -15,8 +15,6 @@ echo $style;
 <body>
 
 <?php
-include 'info-banner-loader.php';
-
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( ! $_SESSION[ 'login' ] ) {

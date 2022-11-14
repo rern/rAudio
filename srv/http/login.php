@@ -34,27 +34,34 @@
 }
 </style>
 
+<div id="infoOverlay" class="hide">
+	<div id="infoBox">
+		<div id="infoTopBg"><div id="infoTop"><i class="fa fa-lock"></i><a id="infoTitle">Login</a></div></div>
+		<div id="infoContent"><div class="infomessage">Wrong password.</div></div>
+		<div id="infoOk" class="infobtn infobtn-primary">OK</div>
+	</div>
+</div>
+
 <div id="divlogin">
+	<svg class="logo" viewBox="0 0 180 180">
+		<rect width="180" height="180" rx="9"/>
+		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
+	</svg>
 	<div id="logintitle">rAudio</div>
 	<input type="password" id="pwd"><i id="toggle" class="fa fa-eye"></i>
 	<br><a id="login" class="infobtn infobtn-primary">Login</a>
 </div>
 
 <script>
-var banner = document.getElementById( 'banner' );
+var info   = document.getElementById( 'infoOverlay' );
+var infook = document.getElementById( 'infoOk' );
 var pwd    = document.getElementById( 'pwd' );
 var toggle = document.getElementById( 'toggle' );
 var login  = document.getElementById( 'login' );
 
-document.getElementById( 'divlogin' ).prepend( document.querySelector( '#loader svg' ) ); // use logo from #loader
-document.getElementById( 'loader' ).remove();
-banner.innerHTML = '<div id="bannerIcon"><i class="fa fa-lock"></i></div>'
-				  +'<div id="bannerTitle">Login</div>'
-				  +'<div id="bannerMessage">Wrong password.</div>';
-
 pwd.focus();
 pwd.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'Enter' ) login.click();
+	if ( e.key === 'Enter' ) info.classList.contains( 'hide' ) ? login.click() : infook.click();
 } );
 toggle.addEventListener( 'click', () => {
 	if ( pwd.type === 'text' ) {
@@ -79,11 +86,11 @@ login.addEventListener( 'click', () => {
 	} ).then( ( verified ) => {
 		if ( verified != -1 ) location.reload();
 		
-		banner.classList.remove( 'hide' );
-		setTimeout( () => {
-			banner.classList.add( 'hide' );
-		}, 3000 );
+		info.classList.remove( 'hide' );
 	} );
+} );
+infook.addEventListener( 'click', () => {
+	info.classList.add( 'hide' );
 } );
 </script>
 
