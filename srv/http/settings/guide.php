@@ -65,25 +65,26 @@ var nsettings = 48;
 var ntotal    = 60;
 var n         = 1;
 var count     = document.getElementById( 'count' );
+var img       = document.getElementsByTagName( 'img' )[ 0 ];
 var buttons   = Array.from( document.getElementsByTagName( 'a' ) );
-var help      = document.getElementsByClassName( 'help-block' )[ 0 ];
-var next      = document.getElementsByClassName( 'next' )[ 0 ];
-var prev      = document.getElementsByClassName( 'prev' )[ 0 ];
+var cl0 = {};
+[ 'close', 'container', 'help-block', 'help-head', 'next', 'prev' ].forEach( ( el ) => {
+	cl0[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
+} );
 
 count.textContent = n +' / '+ ntotal;
 document.getElementById( 'playback' ).classList.add( 'active' );
-document.getElementsByClassName( 'container' )[ 0 ].classList.remove( 'hide' );
-
-document.getElementsByClassName( 'close' )[ 0 ].addEventListener( 'click', function() {
+cl0.container.classList.remove( 'hide' );
+cl0.close.addEventListener( 'click', function() {
 	location.href = '/';
 } );
-document.getElementsByClassName( 'help-head' )[ 0 ].addEventListener( 'click', function() {
-	if ( help.style.display === 'none' ) {
+cl0.helphead.addEventListener( 'click', function() {
+	if ( cl0.helpblock.style.display === 'none' ) {
 		this.classList.add( 'bl' );
-		help.style.display = '';
+		cl0.helpblock.style.display = '';
 	} else {
 		this.classList.remove( 'bl' );
-		help.style.display = 'none';
+		cl0.helpblock.style.display = 'none';
 	}
 } );
 
@@ -101,13 +102,20 @@ buttons.forEach( ( el ) => {
 		renderPage( n );
 	} );
 } );
-next.addEventListener( 'click', function() {
+cl0.next.addEventListener( 'click', function() {
 	n = n < ntotal ? n + 1 : 1;
 	renderPage( n );
 } );
-prev.addEventListener( 'click', function() {
+cl0.prev.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
+} );
+document.body.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'ArrowLeft' ) {
+		cl0.prev.click();
+	} else if ( e.key === 'ArrowRight' ) {
+		cl0.next.click();
+	}
 } );
 // swipe
 if ( navigator.maxTouchPoints ) { // swipe
@@ -118,14 +126,14 @@ if ( navigator.maxTouchPoints ) { // swipe
 	window.addEventListener( 'touchend', function( e ) {
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) > 100 ) {
-			xdiff > 0 ? next.click() : prev.click();
+			xdiff > 0 ? cl0.next.click() : cl0.prev.click();
 		}
 	} );
 }
 
 function renderPage( n ) {
 	count.textContent = n +' / '+ ntotal;
-	document.getElementsByTagName( 'img' )[ 0 ].src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
+	img.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
 	buttons.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );
