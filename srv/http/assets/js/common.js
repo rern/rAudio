@@ -1,82 +1,45 @@
 /* 
-pushstream
-banner()
-$.fn.press()
 loader
+selectric render
+$.fn.press()
+banner()
+pushstream
 info()
 */
+
 G               = {}
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
-// pushstream
-var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, timeout                               : 10000
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	var pushstreamChannel = ( channels ) => {
-		channels.forEach( ( channel ) => {
-			pushstream.addChannel( channel );
-		} );
-		pushstream.connect();
-	}
-	var pushstreamPower = ( message ) => {
-		var type = message.replace( ' ...', '' ).toLowerCase();
-		G[ type ] = 1;
-		if ( type !== 'ready' ) loader();
-	}
-	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
-		if ( status === 2 ) {        // connected
-			if ( G.reboot ) {
-				delete G.reboot;
-			} else {
-				pushstreamConnect();
-				bannerHide();
-			}
-		} else if ( status === 0 ) { // disconnected
-			pushstreamDisconnect();
-			if ( G.off ) {
-				pushstream.disconnect();
-				$( '#loader' ).css( 'background', '#000000' );
-				setTimeout( () => {
-					$( '#loader .logo' ).css( 'animation', 'none' );
-					bannerHide();
-					loader();
-				}, 10000 );
-			}
-		}
-	}
-	// active / inactive window
-	var active      = 1;
-	var connect     = () => {
-		if ( ! active && ! G.off ) {
-			active = 1;
-			pushstream.connect();
-		}
-	}
-	var disconnect  = () => {
-		if ( active ) {
-			active = 0;
-			pushstream.disconnect();
-		}
-	}
-	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-	window.onpageshow = window.onfocus = connect;
+
+// loader ----------------------------------------------------------------------
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
 }
-// $.fn.press() ----------------------------------------------------------------------
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
+}
+
+// selectric --------------------------------------------------------------------
+function selectricRender() {
+	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
+	$( 'select' ).each( ( i, el ) => {
+		var $this = $( el );
+		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
+	} );
+	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
+}
+
+// $.fn.press() -----------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT: '#id' or '.class'
-	// DELEGATE: optional
-	// $( e.currentTarget ) = $( this );
-	// cannot be attached with on
+	// ELEMENT  : #id or .class
+	// DELEGATE : optional
+	// this     : use $( e.target ) instead of $( this );
+	// .on      : cannot be attached with .on
 } );
 events:
-	- always : mouseenter > mousemove > mouseleave > mouseout
-	- click  : mousedown > mouseup > click
-	- touch  : touchstart > touchmove > touchend
+	- move  : mouseenter > mousemove > mouseleave > mouseout
+	- click : mousedown  > mouseup   > click
+	- touch : touchstart > touchmove > touchend
 */
 $.fn.press = function( arg1, arg2 ) {
 	var callback, delegate, timeout;
@@ -98,59 +61,8 @@ $.fn.press = function( arg1, arg2 ) {
 	} );
 	return this // allow chain
 }
-// loader
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-}
-$( 'body' ).prepend( `
-<div id="infoOverlay" class="hide"></div>
-<div id="banner" class="hide"></div>
-<div id="loader">
-	<svg class="logo" viewBox="0 0 180 180">
-		<rect width="180" height="180" rx="9"/>
-		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
-	</svg>
-</div>
-` );
 
-$( '#banner' ).click( bannerHide );
-
-$( '#infoOverlay' ).keyup( function( e ) {
-/*
-all:      [Tab]       - focus / next input
-		  [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
-	var key = e.key;
-	switch ( key ) {
-		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
-			break;
-		case 'Escape':
-			G.local = 1; // prevent toggle setting menu
-			setTimeout( () => { G.local = 0 }, 300 );
-			$( '#infoX' ).click();
-			break;
-		case 'ArrowLeft':
-		case 'ArrowRight':
-			var $tabactive = $( '#infoTab a.active' );
-			if ( key === 'ArrowLeft' ) {
-				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
-			} else {
-				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
-			}
-			break;
-	}
-} );
-$( '#infoContent' ).click( function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
-
+// banner ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( G.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
@@ -178,7 +90,70 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
-// ------------------------------------------------------------------------------------
+$( '#banner' ).click( bannerHide );
+
+// pushstream -----------------------------------------------------------------
+var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
+if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, timeout                               : 10000
+		, reconnectOnChannelUnavailableInterval : 3000
+	} );
+	function pushstreamChannel( channels ) {
+		channels.forEach( ( channel ) => {
+			pushstream.addChannel( channel );
+		} );
+		pushstream.connect();
+	}
+	function pushstreamPower( message ) {
+		var type  = message.replace( ' ...', '' ).toLowerCase();
+		G[ type ] = 1;
+		if ( type !== 'ready' ) loader();
+	}
+	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
+		if ( status === 2 ) {        // connected
+			if ( G.reboot ) {
+				delete G.reboot;
+			} else {
+				pushstreamConnect();
+				bannerHide();
+			}
+		} else if ( status === 0 ) { // disconnected
+			pushstreamDisconnect();
+			if ( G.off ) {
+				pushstream.disconnect();
+				$( '#loader' ).css( 'background', '#000000' );
+				setTimeout( () => {
+					$( '#loader .logo' ).css( 'animation', 'none' );
+					bannerHide();
+					loader();
+				}, 10000 );
+			}
+		}
+	}
+	// active / inactive window
+	var active      = 1;
+	function connect() {
+		if ( ! active && ! G.off ) {
+			active = 1;
+			pushstream.connect();
+		}
+	}
+	function disconnect() {
+		if ( active ) {
+			active = 0;
+			pushstream.disconnect();
+		}
+	}
+	document.addEventListener( 'visibilitychange', () => {
+		document.hidden ? disconnect() : connect();
+	} ); // invisible
+	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
+	window.onpageshow = window.onfocus = connect;
+}
+
+// info ----------------------------------------------------------------------
 function infoUsage() {
 	console.log( `
 ===============================
@@ -277,6 +252,9 @@ Note:
 - Single value/function - no need to be array
 ` );
 }
+
+O = {}
+
 function infoReset( fn ) {
 	if ( O.infoscroll ) $( 'html, body' ).scrollTop( O.infoscroll );
 	setTimeout( () => {
@@ -289,8 +267,6 @@ function infoReset( fn ) {
 		delete O.infofilegif;
 	}, 0 );
 }
-
-O = {}
 function info( json ) {
 	O = json;
 	if ( ! O.noreload ) $( '#infoOverlay' ).html(`
@@ -426,7 +402,7 @@ function info( json ) {
 				$( '#infoFilename, #infoOk' ).removeClass( 'hide' );
 				$( '.extrabtn' ).addClass( 'hide' );
 				$( '.infobtn.file' ).removeClass( 'infobtn-primary' )
-				if ( typeimage ) setFileImage();
+				if ( typeimage ) infoFileImage();
 			}
 		} );
 	}
@@ -551,7 +527,7 @@ function info( json ) {
 	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		setButtonWidth();
+		infoButtonWidth();
 		return
 	}
 	
@@ -583,7 +559,7 @@ function info( json ) {
 			$( '#infoOverlay' ).focus();
 		}
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
-		setButtonWidth();
+		infoButtonWidth();
 		// set width: text / password / textarea
 		if ( O.boxwidth ) {
 			var widthmax = O.boxwidth === 'max';
@@ -633,12 +609,12 @@ function info( json ) {
 	// check inputs: blank / length / change
 	if ( O.checkblank ) {
 		if ( typeof O.checkblank !== 'object' ) O.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
-		checkBlank();
+		infoCheckBlank();
 	} else {
 		O.blank = false;
 	}
 	if ( O.checklength ) {
-		checkLength();
+		infoCheckLength();
 	} else {
 		O.short = false;
 	}
@@ -647,7 +623,17 @@ function info( json ) {
 	infoCheckSet();
 }
 
-function checkBlank() {
+function infoButtonWidth() {
+	if ( O.buttonfit ) return
+	
+	var widest = 0;
+	$( '#infoButtons a' ).each( ( i, el ) => {
+		var w = $( el ).outerWidth();
+		if ( w > widest ) widest = w;
+	} );
+	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
+}
+function infoCheckBlank() {
 	if ( ! O.checkblank ) return // suppress error on repeating
 	
 	O.blank = false;
@@ -655,7 +641,7 @@ function checkBlank() {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
-function checkLength() {
+function infoCheckLength() {
 	O.short = false;
 	$.each( O.checklength, ( k, v ) => {
 		if ( typeof v !== 'object' ) {
@@ -675,15 +661,15 @@ function checkLength() {
 function infoCheckSet() {
 	if ( O.checkblank || O.checklength || O.checkchanged ) {
 		$inputs_txt.on( 'keyup paste cut', function() {
-			if ( O.checkblank ) setTimeout( checkBlank, 0 ); // ios: wait for value
-			if ( O.checklength ) setTimeout( checkLength, 25 );
+			if ( O.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
+			if ( O.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( O.checkchanged ) {
 				var prevval = O.values.join( '' );
 				var values  = infoVal();
 				var val     = O.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				O.nochange  = prevval === val;
 			}
-			setTimeout( () => { $( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ) }, 50 ); // ios: force after checkLength
+			setTimeout( () => { $( '#infoOk' ).toggleClass( 'disabled', O.blank || O.short || O.nochange ) }, 50 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( O.checkchanged ) {
@@ -692,6 +678,124 @@ function infoCheckSet() {
 			O.nochange = O.values.join( '' ) === values.join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', O.nochange );
 		} );
+	}
+}
+function infoFileImage() {
+	delete O.infofilegif;
+	G.timeoutfile = setTimeout( () => { banner( 'refresh blink', 'Change Image', 'Load ...', -1 ) }, 1000 );
+	G.rotate      = 0;
+	$( '.infoimgname' ).addClass( 'hide' );
+	$( '.infoimgnew, .infoimgwh' ).remove();
+	if ( O.infofile.name.slice( -3 ) !== 'gif' ) {
+		infoFileImageReader();
+	} else { // animated gif or not
+		var formdata = new FormData();
+		formdata.append( 'cmd', 'giftype' );
+		formdata.append( 'file', O.infofile );
+		fetch( 'cmd.php', {
+			  method : 'POST'
+			, body   : formdata
+		} ).then( ( response ) => {
+			return response.json(); // set response data as json > animated
+		} ).then( ( animated ) => { // 0 / 1
+			if ( animated ) {
+				O.infofilegif = '/srv/http/data/shm/local/tmp.gif';
+				var img    = new Image();
+				img.src    = URL.createObjectURL( O.infofile );
+				img.onload = function() {
+					var imgW   = img.width;
+					var imgH   = img.height;
+					var resize = infoFileImageResize( 'gif', imgW, imgH );
+					infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
+					clearTimeout( G.timeoutfile );
+					bannerHide();
+				}
+			} else {
+				infoFileImageReader();
+			}
+		} );
+	}
+}
+function infoFileImageReader() {
+	var maxsize   = ( G.library && ! G.librarylist ) ? 200 : 1000;
+	var reader    = new FileReader();
+	reader.onload = function( e ) {
+		var img    = new Image();
+		img.src    = e.target.result;
+		img.onload = function() {
+			var imgW          = img.width;
+			var imgH          = img.height;
+			var filecanvas    = document.createElement( 'canvas' );
+			var ctx           = filecanvas.getContext( '2d' );
+			filecanvas.width  = imgW;
+			filecanvas.height = imgH;
+			ctx.drawImage( img, 0, 0 );
+			var resize = infoFileImageResize( 'jpg', imgW, imgH );
+			if ( resize ) {
+				var canvas    = document.createElement( 'canvas' );
+				canvas.width  = resize.w;
+				canvas.height = resize.h;
+				pica.resize( filecanvas, canvas, picaOption ).then( function() {
+					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
+				} );
+			} else {
+				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
+			}
+			clearTimeout( G.timeoutfile );
+			bannerHide();
+		}
+	}
+	reader.readAsDataURL( O.infofile );
+	$( '#infoContent' )
+		.off( 'click', '.infoimgnew' )
+		.on( 'click', '.infoimgnew', function() {
+		if ( ! $( '.infomessage .rotate' ).length ) return
+		
+		G.rotate     += 90;
+		if ( G.rotate === 360 ) G.rotate = 0;
+		var canvas    = document.createElement( 'canvas' );
+		var ctx       = canvas.getContext( '2d' );
+		var image     = $( this )[ 0 ];
+		var img       = new Image();
+		img.src       = image.src;
+		img.onload    = function() {
+			ctx.drawImage( image, 0, 0 );
+		}
+		var w         = img.width;
+		var h         = img.height;
+		var cw        = Math.round( w / 2 );
+		var ch        = Math.round( h / 2 );
+		canvas.width  = h;
+		canvas.height = w;
+		ctx.translate( ch, cw );
+		ctx.rotate( Math.PI / 2 );
+		ctx.drawImage( img, -cw, -ch );
+		image.src     = canvas.toDataURL( 'image/jpeg' );
+	} );
+}
+function infoFileImageRender( src, original, resize ) {
+	$( '.infomessage .imgnew' ).remove();
+	$( '.infomessage' ).append(
+		 '<span class="imgnew">'
+			+'<img class="infoimgnew" src="'+ src +'">'
+			+'<div class="infoimgwh">'
+			+ ( resize ? resize : '' )
+			+ ( original ? '<br>original: '+ original : '' )
+			+'</div>'
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
+		+'</span>'
+	);
+}
+function infoFileImageResize( ext, imgW, imgH ) {
+	var maxsize = ( G.library && ! G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+	if ( imgW > maxsize || imgH > maxsize ) {
+		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
+		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
+		return {
+			  w   : w
+			, h   : h
+			, wxh : w +' x '+ h
+		}
 	}
 }
 function infoSetValues() {
@@ -748,145 +852,7 @@ function infoVal() {
 		return values[ 0 ]
 	}
 }
-function selectricRender() {
-	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
-	$( 'select' ).each( ( i, el ) => {
-		var $this = $( el );
-		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
-	} );
-	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
-}
-function setButtonWidth() {
-	if ( O.buttonfit ) return
-	
-	var widest = 0;
-	$( '#infoButtons a' ).each( ( i, el ) => {
-		var w = $( el ).outerWidth();
-		if ( w > widest ) widest = w;
-	} );
-	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
-}
-function setFileImage() {
-	delete O.infofilegif;
-	G.timeoutfile = setTimeout( () => { banner( 'refresh blink', 'Change Image', 'Load ...', -1 ) }, 1000 );
-	G.rotate      = 0;
-	$( '.infoimgname' ).addClass( 'hide' );
-	$( '.infoimgnew, .infoimgwh' ).remove();
-	if ( O.infofile.name.slice( -3 ) !== 'gif' ) {
-		setFileImageReader();
-	} else { // animated gif or not
-		var formdata = new FormData();
-		formdata.append( 'cmd', 'giftype' );
-		formdata.append( 'file', O.infofile );
-		fetch( 'cmd.php', {
-			  method : 'POST'
-			, body   : formdata
-		} ).then( ( response ) => {
-			return response.json(); // set response data as json > animated
-		} ).then( ( animated ) => { // 0 / 1
-			if ( animated ) {
-				O.infofilegif = '/srv/http/data/shm/local/tmp.gif';
-				var img    = new Image();
-				img.src    = URL.createObjectURL( O.infofile );
-				img.onload = function() {
-					var imgW   = img.width;
-					var imgH   = img.height;
-					var resize = setFileImageResize( 'gif', imgW, imgH );
-					setFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-					clearTimeout( G.timeoutfile );
-					bannerHide();
-				}
-			} else {
-				setFileImageReader();
-			}
-		} );
-	}
-}
-function setFileImageReader() {
-	var maxsize   = ( G.library && ! G.librarylist ) ? 200 : 1000;
-	var reader    = new FileReader();
-	reader.onload = function( e ) {
-		var img    = new Image();
-		img.src    = e.target.result;
-		img.onload = function() {
-			var imgW          = img.width;
-			var imgH          = img.height;
-			var filecanvas    = document.createElement( 'canvas' );
-			var ctx           = filecanvas.getContext( '2d' );
-			filecanvas.width  = imgW;
-			filecanvas.height = imgH;
-			ctx.drawImage( img, 0, 0 );
-			var resize = setFileImageResize( 'jpg', imgW, imgH );
-			if ( resize ) {
-				var canvas    = document.createElement( 'canvas' );
-				canvas.width  = resize.w;
-				canvas.height = resize.h;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
-					setFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
-				} );
-			} else {
-				setFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
-			}
-			clearTimeout( G.timeoutfile );
-			bannerHide();
-		}
-	}
-	reader.readAsDataURL( O.infofile );
-	$( '#infoContent' )
-		.off( 'click', '.infoimgnew' )
-		.on( 'click', '.infoimgnew', function() {
-		if ( ! $( '.infomessage .rotate' ).length ) return
-		
-		G.rotate     += 90;
-		if ( G.rotate === 360 ) G.rotate = 0;
-		var canvas    = document.createElement( 'canvas' );
-		var ctx       = canvas.getContext( '2d' );
-		var image     = $( this )[ 0 ];
-		var img       = new Image();
-		img.src       = image.src;
-		img.onload    = function() {
-			ctx.drawImage( image, 0, 0 );
-		}
-		var w         = img.width;
-		var h         = img.height;
-		var cw        = Math.round( w / 2 );
-		var ch        = Math.round( h / 2 );
-		canvas.width  = h;
-		canvas.height = w;
-		ctx.translate( ch, cw );
-		ctx.rotate( Math.PI / 2 );
-		ctx.drawImage( img, -cw, -ch );
-		image.src     = canvas.toDataURL( 'image/jpeg' );
-	} );
-}
-function setFileImageRender( src, original, resize ) {
-	$( '.infomessage .imgnew' ).remove();
-	$( '.infomessage' ).append(
-		 '<span class="imgnew">'
-			+'<img class="infoimgnew" src="'+ src +'">'
-			+'<div class="infoimgwh">'
-			+ ( resize ? resize : '' )
-			+ ( original ? '<br>original: '+ original : '' )
-			+'</div>'
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
-		+'</span>'
-	);
-}
-function setFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( G.library && ! G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
-	if ( imgW > maxsize || imgH > maxsize ) {
-		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
-		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
-		return {
-			  w   : w
-			, h   : h
-			, wxh : w +' x '+ h
-		}
-	}
-}
-
-// verify password - called from addons.js ///////////////////////////////////////
-function verifyPassword( title, pwd, fn ) {
+function infoVerifyPassword( title, pwd, fn ) { // verify password - called from addons.js
 	if ( ! title ) return
 	
 	info( {
@@ -901,10 +867,43 @@ function verifyPassword( title, pwd, fn ) {
 					  title   : title
 					, message : 'Passwords not matched. Please try again.'
 					, ok      : () => {
-						verifyPassword( title, pwd, fn )
+						infoVerifyPassword( title, pwd, fn )
 					}
 				} );
 			}
 		}
 	} );
 }
+
+$( '#infoOverlay' ).keyup( function( e ) {
+/*
+all:      [Tab]       - focus / next input
+		  [Shift+Tab] - previous input
+radio:    [L] [R]     - check
+checkbox: [space]     - check
+select:   [U] [D]     - check
+*/
+	var key = e.key;
+	switch ( key ) {
+		case 'Enter':
+			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			break;
+		case 'Escape':
+			G.local = 1; // prevent toggle setting menu
+			setTimeout( () => { G.local = 0 }, 300 );
+			$( '#infoX' ).click();
+			break;
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			var $tabactive = $( '#infoTab a.active' );
+			if ( key === 'ArrowLeft' ) {
+				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
+			} else {
+				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
+			}
+			break;
+	}
+} );
+$( '#infoContent' ).click( function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} );

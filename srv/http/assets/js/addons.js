@@ -93,7 +93,7 @@ function getoptions() {
 				, ok:          () => {
 					var pwd = infoVal();
 					if ( pwd ) {
-						verifyPassword( title, pwd, function() {
+						infoVerifyPassword( title, pwd, function() {
 							opt.push( pwd );
 							sendcommand();
 						} );

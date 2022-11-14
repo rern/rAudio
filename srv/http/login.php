@@ -1,18 +1,58 @@
+<style>
+#divlogin {
+	padding-top: calc( 50vh - 135px );
+	text-align: center;
+}
+#divlogin svg {
+	width: 45px;
+}
+#logintitle {
+	margin: 10px 0 10px 20px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#divlogin i {
+	font-size: 20px;
+	vertical-align: -3px;
+}
+#pwd {
+	height: 40px;
+	margin: 30px 10px 10px 25px;
+	padding: 10px;
+	font-family: "Lato";
+	font-size: 15px;
+	text-align: center;
+	color: var( --cw );
+	background-color: #000000 !important;
+	border-radius: 4px;
+	border: 1px solid var( --cg ) !important;
+}
+#login {
+	display: block;
+	margin: 0 auto;
+	width: 60px;
+	line-height: 34px;
+	background-color: var( --cm );
+}
+</style>
+
 <div id="divlogin">
-	<svg class="logo" viewBox="0 0 180 180">
-		<rect width="180" height="180" rx="9"/>
-		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
-	</svg>
-	<br><br>
-	<a style="margin-left: 20px;font-weight: 300; letter-spacing: 20px">rAudio</a>
-	<br><input type="password" id="pwd"><i id="toggle" class="fa fa-eye"></i>
+	<div id="logintitle">rAudio</div>
+	<input type="password" id="pwd"><i id="toggle" class="fa fa-eye"></i>
 	<a id="login" class="btn btn-primary" style="cursor: pointer">Login</a>
 </div>
+
 <script>
+document.getElementById( 'divlogin' ).prepend( document.querySelector( '#loader svg' ) ); // use logo from #loader
+document.getElementById( 'loader' ).remove();
+
 var pwd    = document.getElementById( 'pwd' );
 var toggle = document.getElementById( 'toggle' );
 var login  = document.getElementById( 'login' );
 pwd.focus();
+pwd.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'Enter' ) login.click();
+} );
 toggle.addEventListener( 'click', () => {
 	if ( pwd.type === 'text' ) {
 		pwd.type = 'password';
@@ -23,10 +63,9 @@ toggle.addEventListener( 'click', () => {
 	}
 } );
 login.addEventListener( 'click', () => {
-	var password = pwd.value.replace( /(["&()\\])/g, '\$1' );
 	var formdata = new FormData();
 	formdata.append( 'cmd',      'login' );
-	formdata.append( 'password', password );
+	formdata.append( 'password', pwd.value );
 	fetch( 'cmd.php', {
 		  method : 'POST'
 		, body   : formdata
@@ -35,9 +74,6 @@ login.addEventListener( 'click', () => {
 	} ).then( ( verified ) => {
 		if ( verified != -1 ) location.reload();
 	} );
-} );
-pwd.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'Enter' ) login.click();
 } );
 </script>
 
