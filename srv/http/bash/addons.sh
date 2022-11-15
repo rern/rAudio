@@ -130,7 +130,7 @@ installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
-	title -l '=' "$bar Done."
+	title -nt "$bar Done."
 	
 	if [[ -e $dirmpd/updating ]]; then
 		path=$( < $dirmpd/updating )
