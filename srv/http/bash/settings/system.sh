@@ -748,6 +748,8 @@ $( grep -v ^# $fileconf )"
 		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< $status )
 	elif [[ $pkg == nfs-utils ]]; then
 		status=$( grep -v 'Protocol not supported' <<< $status )
+	elif [[ $pkg == upmpdcli ]]; then
+		status=$( grep -v 'not creating entry for' <<< $status )
 	fi
 	echo "\
 $config
