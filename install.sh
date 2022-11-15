@@ -146,11 +146,3 @@ systemctl daemon-reload
 $dirsettings/player-conf.sh
 
 installfinish
-
-# 20221116
-[[ ! $backup ]] && exit
-
-lcolor -
-echo -e "$info Backup of Data and Settings:"
-echo If there is one, backup again to include new configuration.
-lcolor -

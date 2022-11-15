@@ -46,11 +46,11 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 	</div>
 </div>
 <br>
-<p class="addontitle"><i class="gr fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
+<p id="addontitle"><i class="titleicon fa fa-gear gr<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
-[ 'addontitle', 'close', 'container', 'helphead', 'info', 'infobtn', 'progress' ].forEach( ( el ) => {
+[ 'close', 'container', 'helphead', 'info', 'infobtn', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 
@@ -176,7 +176,7 @@ pclose( $popencmd );
 
 <script> // run after php flush end
 setTimeout( () => clearInterval( scroll ), 1000 );
-E.addontitle.classList.remove( 'blink' );
+E.titleicon.classList.remove( 'blink' );
 E.info.classList.remove( 'hide' );
 E.infobtn.addEventListener( 'click', () => E.info.remove() );
 </script>
