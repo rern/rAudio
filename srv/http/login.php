@@ -32,6 +32,9 @@
 #login {
 	margin           : 0 auto;
 }
+#infoOk {
+	margin-top       : 10px;
+}
 </style>
 
 <div id="infoOverlay" class="hide">
@@ -53,33 +56,33 @@
 </div>
 
 <script>
-var id = {};
-[ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => id[ el ] = document.getElementById( el ) );
+var E = {};
+[ 'infoOk', 'infoOverlay', 'login', 'pwd', 'toggle' ].forEach( ( el ) => E[ el ] = document.getElementById( el ) );
 
-id.pwd.focus();
+E.pwd.focus();
 document.body.addEventListener( 'keyup', ( e ) => {
-	if ( e.key === 'Enter' ) id.infoOverlay.classList.contains( 'hide' ) ? id.login.click() : id.infoOk.click();
+	if ( e.key === 'Enter' ) E.infoOverlay.classList.contains( 'hide' ) ? E.login.click() : E.infoOk.click();
 } );
-id.toggle.addEventListener( 'click', () => {
-	if ( id.pwd.type === 'text' ) {
-		id.pwd.type = 'password';
-		id.toggle.classList.remove( 'bl' );
+E.toggle.addEventListener( 'click', () => {
+	if ( E.pwd.type === 'text' ) {
+		E.pwd.type = 'password';
+		E.toggle.classList.remove( 'bl' );
 	} else {
-		id.pwd.type = 'text';
-		id.toggle.classList.add( 'bl' );
+		E.pwd.type = 'text';
+		E.toggle.classList.add( 'bl' );
 	}
 } );
-id.login.addEventListener( 'click', () => {
-	if ( ! id.pwd.value ) return
+E.login.addEventListener( 'click', () => {
+	if ( ! E.pwd.value ) return
 	
 	var formdata = new FormData();
 	formdata.append( 'cmd',      'login' );
 	formdata.append( 'password', pwd.value );
 	fetch( 'cmd.php', { method: 'POST', body: formdata } )
 		.then( ( response ) => response.text() ) // set response data as text > verified
-		.then( ( verified ) => verified != -1 ? location.reload() : id.infoOverlay.classList.remove( 'hide' ) );
+		.then( ( verified ) => verified != -1 ? location.reload() : E.infoOverlay.classList.remove( 'hide' ) );
 } );
-id.infoOk.addEventListener( 'click', () => id.infoOverlay.classList.add( 'hide' ) );
+E.infoOk.addEventListener( 'click', () => E.infoOverlay.classList.add( 'hide' ) );
 </script>
 
 </body>
