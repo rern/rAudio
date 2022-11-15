@@ -13,7 +13,7 @@ $( '.playback' ).click( function() {
 	}
 } );
 $( '#setting-btreceiver' ).click( function() {
-	bash( [ 'volumebtget' ], ( voldb ) => {
+	bash( [ 'volumebtget' ], voldb => {
 		var voldb = voldb.split( ' ' );
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
@@ -49,7 +49,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget', 'db' ], ( voldb ) => {
+	bash( [ 'volumeget', 'db' ], voldb => {
 		var voldb   = voldb.split( ' ' );
 		var vol     = voldb[ 0 ];
 		var db      = voldb[ 1 ];
@@ -185,7 +185,7 @@ $( '#setting-replaygain' ).click( function() {
 } );
 $( '.filetype' ).click( function() {
 	if ( $( '#divfiletype' ).is( ':empty' ) ) {
-		bash( [ 'filetype' ], ( data ) => {
+		bash( [ 'filetype' ], data => {
 			$( '#divfiletype' )
 				.html( data )
 				.toggleClass( 'hide' );
@@ -256,7 +256,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', device.aplayname ], ( val ) => {
+	bash( [ 'customget', device.aplayname ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -277,7 +277,7 @@ $( '#setting-custom' ).click( function() {
 					return
 				}
 				
-				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], ( mpdstart ) => {
+				bash( [ 'custom', true, values[ 0 ], values[ 1 ], device.aplayname ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -413,7 +413,7 @@ function renderPage() {
 				.val( G.asoundcard );
 			var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			if ( 'mixerdevices' in device ) {
-				device.mixerdevices.forEach( ( mixer ) => {
+				device.mixerdevices.forEach( mixer => {
 					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
 				} );
 			}
@@ -436,7 +436,7 @@ function renderPage() {
 	}
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
-		bash( cmd, ( voldb ) => {
+		bash( cmd, voldb => {
 			var voldb = voldb.split( ' ' );
 			var vol   = voldb[ 0 ];
 			var db    = voldb[ 1 ];

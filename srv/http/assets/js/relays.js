@@ -6,7 +6,7 @@ renderPage = function( changed ) {
 	if ( typeof D === 'undefined' ) {
 		D           = { val : {}, key : {} };
 		D.keys      = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-		D.keys.forEach( ( k ) => {
+		D.keys.forEach( k => {
 			D.val[ k ] = G[ k ];
 		} );
 		D.val.timer = G.timer;
@@ -63,14 +63,14 @@ renderPage = function( changed ) {
 	showContent();
 }
 function renderUpdate() {
-	D.keys.forEach( ( k ) => {
+	D.keys.forEach( k => {
 		D.val[ k ] = [];
 	} );
 	for ( i = 0; i < 4; i ++ ) {
 		D.val.pin.push( +$( '#pin'+ i ).val() );
 		D.val.name.push( $( '#name'+ i ).val() );
 	}
-	[ 'on', 'off' ].forEach( ( k ) => {
+	[ 'on', 'off' ].forEach( k => {
 		var v0     = [];
 		for ( i = 0; i < 4; i ++ ) {
 			var v = +$( '#'+ k + i ).val();

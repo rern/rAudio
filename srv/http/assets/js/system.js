@@ -138,7 +138,7 @@ $( '#menu a' ).click( function() {
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source ], ( data ) => {
+				bash( [ 'hddinfo', source ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -171,7 +171,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, ok           : () => {
 			var val = infoVal()
 			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
-			bash( [ 'hddsleep', true, val ], ( devices ) => {
+			bash( [ 'hddsleep', true, val ], devices => {
 				if ( devices ) {
 					info( {
 						  icon         : icon
@@ -202,7 +202,7 @@ $( '#setting-bluetooth' ).click( function() {
 	} );
 } );
 $( '#setting-wlan' ).click( function() {
-	bash( 'cat /srv/http/assets/data/regdomcodes.json', ( list ) => {
+	bash( 'cat /srv/http/assets/data/regdomcodes.json', list => {
 		var options  = '';
 		$.each( list, ( k, v ) => {
 			options += '<option value="'+ k +'">'+ v +'</option>';
@@ -292,11 +292,11 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 $( '#setting-lcdchar' ).click( function() {
 	var i2caddress  = '<td>Address</td>';
 	if ( ! G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
-	G.lcdcharaddr.forEach( ( el ) => {
+	G.lcdcharaddr.forEach( el => {
 		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
 	} );
 	var optpins  = '<select>';
-	$.each( pin2gpio, ( k ) => {
+	$.each( pin2gpio, k => {
 		optpins += '<option value='+ k +'>'+ k +'</option>'; // only lcdchar uses j8 pin number
 	} );
 	optpins     += '</select>';
@@ -652,7 +652,7 @@ $( '#setting-timezone' ).click( function() {
 		return
 	}
 	
-	bash( [ 'mirrorlist' ], ( list ) => {
+	bash( [ 'mirrorlist' ], list => {
 		var lL         = list.code.length;
 		var selecthtml = '<select>';
 		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
@@ -701,7 +701,7 @@ $( '#backup' ).click( function() {
 	var icon  = 'sd';
 	var title = 'Backup Settings';
 	notify( icon, title, 'Process ...' );
-	bash( [ 'databackup' ], ( data ) => {
+	bash( [ 'databackup' ], data => {
 		if ( data == 1 ) {
 			notify( icon, title, 'Download ...' );
 			fetch( '/data/tmp/backup.gz' )
@@ -780,8 +780,8 @@ $( '#restore' ).click( function() {
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( ( response ) => response.text() )
-					.then( ( result ) => { // -1 / -2 = errors
+					.then( response => response.text() )
+					.then( result => { // -1 / -2 = errors
 						if ( result == -1 ) {
 							info( {
 								  icon    : icon
@@ -853,7 +853,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text() ], ( list ) => {
+		bash( [ 'packagelist', $target.text() ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -962,7 +962,7 @@ function infoMount( values ) {
 		}
 		, ok         : () => {
 			var values = infoVal();
-			bash( [ 'mount', ...values, shareddata ], ( error ) => {
+			bash( [ 'mount', ...values, shareddata ], error => {
 				if ( error ) {
 					info( {
 						  icon    : icon
@@ -991,7 +991,7 @@ function infoNFSconnect( ip ) {
 		, cancel    : () => $( '#shareddata' ).prop( 'checked', false )
 		, ok        : () => {
 			var ip = infoVal();
-			bash( [ 'sharelist', ip ], ( list ) => {
+			bash( [ 'sharelist', ip ], list => {
 				if ( list.slice( 0, 6 ) === 'Server' ) {
 					info( {
 						  icon    : icon
@@ -1079,7 +1079,7 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( dirbash +'system-data.sh status', ( status ) => {
+	bash( dirbash +'system-data.sh status', status => {
 		$( '#status' ).html( status );
 	} );
 }

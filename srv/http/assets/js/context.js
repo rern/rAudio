@@ -17,7 +17,7 @@ function bookmarkNew() {
 		path = G.mode +'/'+ path;
 	}
 	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
-	bash( [ 'coverartget', bkpath ], ( coverart ) => {
+	bash( [ 'coverartget', bkpath ], coverart => {
 		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
 		info( {
 			  icon       : 'bookmark'
@@ -33,7 +33,7 @@ function bookmarkNew() {
 			}
 			, ok         : () => {
 				var name = infoVal();
-				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], ( std ) => {
+				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], std => {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
@@ -114,11 +114,11 @@ function playlistRename() {
 }
 function playlistSave( name, oldname, replace ) {
 	if ( oldname ) {
-		bash( [ 'savedplrename', oldname, name, replace ], ( data ) => {
+		bash( [ 'savedplrename', oldname, name, replace ], data => {
 			if ( data == -1 ) playlistSaveExist( 'rename', name, oldname );
 		} );
 	} else {
-		bash( [ 'savedplsave', name, replace ], ( data ) => {
+		bash( [ 'savedplsave', name, replace ], data => {
 			if ( data == -1 ) {
 				playlistSaveExist( 'save', name );
 			} else {
@@ -163,7 +163,7 @@ function addSimilar() {
 				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
 			}
 			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
-			bash( [ 'mpcsimilar', similar ], ( count ) => {
+			bash( [ 'mpcsimilar', similar ], count => {
 				getPlaylist();
 				setButtonControl();
 				banner( 'library', title, count +' tracks added.' );
@@ -199,7 +199,7 @@ function tagEditor() {
 		} else {
 			var $img =  G.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
-			values   = values.filter( ( val ) => val ); // reindex after deleting blank elements
+			values   = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
@@ -351,7 +351,7 @@ function webRadioCoverart() {
 		, beforeshow  : () => {
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === G.coverdefault );
 			if ( src ) {
-				bash( [ 'coverartget', imagefilenoext, 'radio' ], ( coverart ) => {
+				bash( [ 'coverartget', imagefilenoext, 'radio' ], coverart => {
 					if ( coverart ) {
 						$( '#infoContent .imgold' ).attr( 'src', coverart );
 						$( '.extrabtn' ).removeClass( 'hide' );
@@ -424,7 +424,7 @@ function webRadioEdit() {
 			var newname    = values[ 0 ];
 			var newurl     = values[ 1 ];
 			var newcharset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', dir, newname, newurl, newcharset, url ], ( error ) => {
+			bash( [ 'webradioedit', dir, newname, newurl, newcharset, url ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -470,7 +470,7 @@ function webRadioNew( name, url, charset ) {
 			var url     = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var dir     = $( '#lib-path .lipath' ).text();
-			bash( [ 'webradioadd', dir, name, url, charset ], ( error ) => {
+			bash( [ 'webradioadd', dir, name, url, charset ], error => {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
@@ -620,7 +620,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 				, okcolor : red
 				, ok      : () => {
-					bash( [ 'wrdirdelete', path, G.mode ], ( std ) => {
+					bash( [ 'wrdirdelete', path, G.mode ], std => {
 						if ( std == -1 ) {
 							info( {
 								  icon    : 'webradio'

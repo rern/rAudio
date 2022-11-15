@@ -84,7 +84,7 @@ function currentStatus( id, refresh ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
 	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
-	bash( command, ( status ) => {
+	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
 			$el.removeClass( 'hide' );
@@ -135,7 +135,7 @@ function list2JSON( list ) {
 		G = JSON.parse( list );
 	} catch( e ) {
 		if ( list.trim() === 'mpdnotrunning' ) {
-			bash( [ 'pkgstatus', 'mpd' ], ( status ) => {
+			bash( [ 'pkgstatus', 'mpd' ], status => {
 				var error =  iconwarning +'MPD is not running '
 							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
@@ -181,7 +181,7 @@ function notify( icon, title, message, delay ) {
 function refreshData() {
 	if ( page === 'addons' || page === 'guide' || ! I.infohide ) return
 	
-	bash( dirbash + page +'-data.sh', ( list ) => {
+	bash( dirbash + page +'-data.sh', list => {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
 		} else {
@@ -414,7 +414,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
-	bash( [ 'rebootlist' ], ( list ) => {
+	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -511,7 +511,7 @@ $( '.switch:not( .custom )' ).click( function() {
 		}
 	} else {
 		notify( icon, label, checked );
-		bash( [ id, checked ], ( error ) => {
+		bash( [ id, checked ], error => {
 			if ( error ) {
 				bannerHide();
 				$( '#'+ id ).prop( 'checked', false );

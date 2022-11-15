@@ -20,7 +20,7 @@ var content = `
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
-	bash( [ 'equalizerget' ], ( data ) => {
+	bash( [ 'equalizerget' ], data => {
 		G.eq = data;
 		infoEqualizer();
 	}, 'json' );
@@ -28,7 +28,7 @@ function equalizer() {
 function infoEqualizer( update ) {
 	var values     = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset  = '';
-	G.eq.presets.forEach( ( name ) => {
+	G.eq.presets.forEach( name => {
 		optpreset += '<option value="'+ name +'">'+ name +'</option>';
 	} );
 	info( {

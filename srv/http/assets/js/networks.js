@@ -230,7 +230,7 @@ function bluetoothCommand( cmd, mac ) {
 	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ mac );
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac ], ( data ) => {
+	bash( [ 'bluetoothinfo', mac ], data => {
 		if ( ! data ) {
 			$( '#codebluetooth' )
 				.empty()
@@ -259,7 +259,7 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 	} else {
 		notify( icon, ssid, G.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', JSON.stringify( data ) ], ( connected ) => {
+	bash( [ 'connect', JSON.stringify( data ) ], connected => {
 		if ( ! connected ) {
 			G.wlconnected =  '';
 			info( {
@@ -307,7 +307,7 @@ function editLANSet( values ) {
 	var ip      = values[ 0 ];
 	var gateway = values[ 1 ];
 	notify( 'lan', 'IP Address', 'Set ...' );
-	bash( [ 'editlan', ip, gateway ], ( avail ) => {
+	bash( [ 'editlan', ip, gateway ], avail => {
 		if ( avail == -1 ) {
 			info( {
 				  icon    : 'lan'
@@ -322,7 +322,7 @@ function editLANSet( values ) {
 	} );
 }
 function editWiFi() {
-	bash( [ 'profileget', G.li.data( 'ssid' ) ], ( values ) => {
+	bash( [ 'profileget', G.li.data( 'ssid' ) ], values => {
 		infoWiFi( values );
 	}, 'json' );
 }
@@ -373,7 +373,7 @@ function infoWiFi( values ) {
 			if ( data.IP === 'dhcp' ) {
 				connectWiFi( data );
 			} else {
-				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', ( avail ) => {
+				bash( 'ping -c 1 -w 1 '+ data.Address +' &> /dev/null && echo -1', avail => {
 					if ( avail == -1 ) {
 						info( {
 							  icon    : 'wifi'
@@ -402,7 +402,7 @@ function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
 	if ( G.listbt ) {
 		var htmlbt  = '';
-		G.listbt.forEach( ( list ) => {
+		G.listbt.forEach( list => {
 			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
 			htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
 					 +'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
@@ -429,7 +429,7 @@ function renderPage() {
 	} else {
 		var htmlwl = '';
 		if ( G.listwl ) {
-			G.listwl.forEach( ( list ) => {
+			G.listwl.forEach( list => {
 				if ( list.ip ) {
 					if ( ! G.hostapd ) {
 						var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
@@ -489,11 +489,11 @@ function renderQR() {
 	}
 }
 function scanBluetooth() {
-	bash( dirbash +'networks-scan.sh', ( data ) => {
+	bash( dirbash +'networks-scan.sh', data => {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt   = '';
-			data.forEach( ( list ) => {
+			data.forEach( list => {
 				htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>';
 			} );
 			$( '#listbtscan' ).html( htmlbt );
@@ -502,11 +502,11 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( dirbash +'networks-scan.sh wlan', ( data ) => {
+	bash( dirbash +'networks-scan.sh wlan', data => {
 		if ( data ) {
 			G.listwlscan = data;
 			var htmlwl   = '';
-			data.forEach( ( list ) => {
+			data.forEach( list => {
 				if ( list.signal.slice( -3 ) === 'dBm' ) {
 					var dbm    = parseInt( list.signal.slice( 0, -4 ) );
 					var signal = dbm > -60 ? '' : ( dbm < -67 ? 1 : 2 );

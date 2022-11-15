@@ -86,7 +86,7 @@ function changeIP() { // for android app
 function clearIntervalAll() {
 	// .btn-cmd[play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
-	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( ( el ) => {
+	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( el => {
 		clearInterval( el );
 	} );
 	if ( G.status.state === 'play' && ! G.status.stream ) setProgress(); // stop progress animation
@@ -412,7 +412,7 @@ function displaySave( keys ) {
 	keys.forEach( ( k, i ) => {
 		display[ k ] = values[ i ];
 	} );
-	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( ( item ) => {
+	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => {
 		delete display[ item ];
 	} );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
@@ -428,7 +428,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
 	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
-	submenu.forEach( ( el ) => { // submenu toggled by css .settings + .submenu
+	submenu.forEach( el => { // submenu toggled by css .settings + .submenu
 		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
 	} );
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
@@ -466,7 +466,7 @@ function getBio( artist, getsimilar ) {
 		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
-			similar.forEach( ( a ) => {
+			similar.forEach( a => {
 				similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;';
 			} );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
@@ -489,7 +489,7 @@ function getBio( artist, getsimilar ) {
 </div>`;
 		$( '#bio' ).html( biohtml ).promise().done( () => {
 			$( '#bio' ).removeClass( 'hide' );
-			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( ( data ) => {
+			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ G.apikeyfanart ).done( data => {
 				if ( 'error message' in data ) {
 					loaderHide();
 					return
@@ -499,7 +499,7 @@ function getBio( artist, getsimilar ) {
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
 					var img0        = '';
 					var imageshtml  = '<div id="bioimg">';
-					data.artistthumb.forEach( ( el ) => {
+					data.artistthumb.forEach( el => {
 						var src     = el.url.replace( '/fanart/', '/preview/' );
 						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
 						if ( ! img0 ) img0 = src;
@@ -511,7 +511,7 @@ function getBio( artist, getsimilar ) {
 					$name.prepend( '<img class="img0 hide" src="'+ img0 +'">' )
 					var $img       = $( '#biocontent .img0' );
 					var observer   = new IntersectionObserver( function( entries ) {
-						entries.forEach( ( entry ) => {
+						entries.forEach( entry => {
 							if ( window.innerWidth <= 480 ) return
 							
 							if ( entry.isIntersecting ) { // visible = true
@@ -535,7 +535,7 @@ function getBio( artist, getsimilar ) {
 	} );
 }
 function getPlaybackStatus( withdisplay ) {
-	bash( '/srv/http/bash/status.sh '+ withdisplay, ( list ) => {
+	bash( '/srv/http/bash/status.sh '+ withdisplay, list => {
 		if ( list == -1 ) {
 			loaderHide();
 			info( {
@@ -709,9 +709,9 @@ var chklibrary2 = {
 function infoLibrary( page2 ) {
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
-	keys         = keys.filter( ( k ) => k !== '-' );
+	keys         = keys.filter( k => k !== '-' );
 	var values   = [];
-	keys.forEach( ( k ) => {
+	keys.forEach( k => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -879,7 +879,7 @@ function mpcSeekBar( pageX ) {
 	if ( ! G.drag ) mpcSeek( elapsed );
 }
 function orderLibrary() {
-	G.display.order.forEach( ( name ) => {
+	G.display.order.forEach( name => {
 		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => {
 			return $( el ).find( '.lipath' ).text() === name;
 		} );
@@ -1010,7 +1010,7 @@ function playlistRemove( $li ) {
 function power( action ) {
 	var off = action === 'off';
 	pushstream.timeout = 16000; // temp for reboot
-	bash( [ 'power', action ], ( nfs ) => {
+	bash( [ 'power', action ], nfs => {
 		if ( nfs == -1 ) {
 			info( {
 				  icon    : 'power'
@@ -1375,7 +1375,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( ( el ) => {
+	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( el => {
 		clearInterval( el );
 	} );
 	$( '#vuneedle' ).css( 'transform', '' );
@@ -1447,7 +1447,7 @@ function setButtonOptions() {
 			$( '#'+ prefix +'-repeat1' ).toggleClass( 'hide', ! ( G.status.repeat && G.status.single ) );
 			$( '#'+ prefix +'-single' ).toggleClass( 'hide', ! G.status.single || ( G.status.repeat && G.status.single ) );
 		}
-		[ 'consume', 'librandom' ].forEach( ( option ) => {
+		[ 'consume', 'librandom' ].forEach( option => {
 			if ( timevisible ) {
 				$( '#i-'+ option ).addClass( 'hide' );
 				$( '#ti-'+ option ).toggleClass( 'hide', ! G.status[ option ] );
@@ -1867,7 +1867,7 @@ function switchPage( page ) {
 }
 function thumbUpdate( path ) {
 	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	[ 'cove', 'update', 'main', path || '' ].forEach( ( el ) => {
+	[ 'cove', 'update', 'main', path || '' ].forEach( el => {
 		form += '<input type="hidden" name="opt[]" value="'+ el +'">';
 	} );
 	$( 'body' ).append( form +'</form>' );

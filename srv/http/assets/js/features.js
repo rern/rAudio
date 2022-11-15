@@ -422,7 +422,7 @@ $( '#setting-scrobble' ).click( function() {
 		}
 		, cancel        : () => cancelSwitch( 'scrobble' )
 		, ok            : () => {
-			bash( [ 'scrobble', true, ...infoVal() ], ( response ) => {
+			bash( [ 'scrobble', true, ...infoVal() ], response => {
 				if ( 'error' in response ) {
 					info( {
 						  icon    : icon
@@ -450,7 +450,7 @@ $( '#nfsserver' ).click( function() {
 		return
 	}
 	
-	bash( [ 'nfssharelist' ], ( list ) => {
+	bash( [ 'nfssharelist' ], list => {
 		info( {
 			  icon    : icon
 			, title   : title

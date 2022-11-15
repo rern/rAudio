@@ -114,9 +114,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	function pushstreamChannel( channels ) {
-		channels.forEach( ( channel ) => {
-			pushstream.addChannel( channel );
-		} );
+		channels.forEach( channel => pushstream.addChannel( channel ) );
 		pushstream.connect();
 	}
 	function pushstreamPower( message ) {
@@ -124,7 +122,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		G[ type ] = 1;
 		if ( type !== 'ready' ) loader();
 	}
-	pushstream.onstatuschange = ( status ) => { // 0 - disconnected; 1 - reconnect; 2 - connected
+	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( G.reboot ) {
 				delete G.reboot;
@@ -425,7 +423,7 @@ function info( json ) {
 	if ( I.tab ) {
 		$( '#infoTab' ).remove();
 		htmltab      = '<div id="infoTab">';
-		I.tab.forEach( ( lbl ) => {
+		I.tab.forEach( lbl => {
 			htmltab += '<a>'+ lbl +'</a>';
 		} );
 		htmltab += '</div>';
@@ -456,14 +454,14 @@ function info( json ) {
 		if ( I.textlabel ) {
 			if ( typeof I.textlabel !== 'object' ) I.textlabel = [ I.textlabel ];
 			htmls.text      = '';
-			I.textlabel.forEach( ( lbl ) => {
+			I.textlabel.forEach( lbl => {
 				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
 			} );
 		}
 		if ( I.passwordlabel ) {
 			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
 			htmls.password      = '';
-			I.passwordlabel.forEach( ( lbl ) => {
+			I.passwordlabel.forEach( lbl => {
 				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
 			} );
 		}
@@ -495,7 +493,7 @@ function info( json ) {
 			var line;
 			var i          = 0;
 			htmls.checkbox = '';
-			I.checkbox.forEach( ( lbl ) => {
+			I.checkbox.forEach( lbl => {
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
 				if ( ! I.checkcolumn ) {
 					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
@@ -531,7 +529,7 @@ function info( json ) {
 		htmlcontent    += htmls.message || '';
 		if ( ! I.order ) I.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
 		var htmlinputs  = '';
-		I.order.forEach( ( type ) => {
+		I.order.forEach( type => {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
@@ -652,7 +650,7 @@ function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
 	I.blank = false;
-	I.blank = I.checkblank.some( ( i ) => {
+	I.blank = I.checkblank.some( i => {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }
@@ -708,8 +706,8 @@ function infoFileImage() {
 		formdata.append( 'cmd', 'giftype' );
 		formdata.append( 'file', I.infofile );
 		fetch( 'cmd.php', { method: 'POST', body: formdata } )
-			.then( ( response ) => response.json() ) // set response data as json > animated
-			.then( ( animated ) => { // 0 / 1
+			.then( response => response.json() ) // set response data as json > animated
+			.then( animated => { // 0 / 1
 				if ( animated ) {
 					I.infofilegif = '/srv/http/data/shm/local/tmp.gif';
 					var img    = new Image();

@@ -188,7 +188,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					$( '#stop' ).click();
 				}
 			} else {
-				bash( '/srv/http/bash/snapcast.sh start', ( data ) => {
+				bash( '/srv/http/bash/snapcast.sh start', data => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
@@ -224,7 +224,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'multiraudio':
-			bash( 'cat /srv/http/data/system/multiraudio.conf', ( data ) => {
+			bash( 'cat /srv/http/data/system/multiraudio.conf', data => {
 				var data  = data.trim().split( '\n' );
 				var dataL = data.length;
 				var radio = {}
@@ -282,7 +282,7 @@ $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplayback );
 	var values = [];
-	keys.forEach( ( k ) => {
+	keys.forEach( k => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -373,7 +373,7 @@ $( '#displayplaylist' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplaylist );
 	var values = [];
-	keys.forEach( ( k ) => {
+	keys.forEach( k => {
 		values.push( G.display[ k ] );
 	} );
 	info( {
@@ -424,7 +424,7 @@ $( '#colorpicker' ).click( function( e ) {
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
-	bash( [ 'addonslist' ], ( std ) => {
+	bash( [ 'addonslist' ], std => {
 		if ( std ) {
 			info( {
 				  icon    : 'jigsaw'
@@ -584,7 +584,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				if ( $this.hasClass( 'lyrics' ) ) {
 					G.lyricsArtist = artist;
 					G.lyricsTitle  = title;
-					bash( [ 'lyrics', artist, title, file ], ( data ) => {
+					bash( [ 'lyrics', artist, title, file ], data => {
 						lyricsShow( data );
 					} );
 					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
@@ -954,13 +954,13 @@ $( '.map' ).click( function( e ) {
 			
 			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
 			if ( 'coverTL' in G ) {
-				list.forEach( ( el ) => {
+				list.forEach( el => {
 					G.display[ el ] = G.coverTL[ el ];
 				} );
 				delete G.coverTL;
 			} else {
 				G.coverTL = {};
-				list.forEach( ( el ) => {
+				list.forEach( el => {
 					G.coverTL[ el ] = G.display[ el ];
 				} );
 				if ( this.id === 'coverTL' ) {
