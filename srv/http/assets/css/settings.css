@@ -98,10 +98,10 @@ pre {
 	line-height: 20px;
 	overflow-x: auto;
 }
-div.help-block {
+div.helpblock {
 	margin-left: 0;
 }
-.help-block {
+.helpblock {
 	display: block;
 	margin-top: 0;
 	margin-bottom: 20px;
@@ -109,19 +109,19 @@ div.help-block {
 	color: var( --cg75 );
 	white-space: pre-wrap;
 }
-.help-block .fa {
+.helpblock .fa {
 	width: 20px;
 	line-height: 16px;
 	font-size: 16px !important;
 }
-.help-block i {
+.helpblock i {
 	margin-left: 3px;
 	margin-right: -4px;
 }
-.help-block p {
+.helpblock p {
 	margin: 0 0 0 10px;
 }
-.help-block .img {
+.helpblock .img {
 	color: var( --cml );
 }
 .menu-sub {
@@ -225,7 +225,7 @@ heading .disabled {
 	z-index: 95;
 }
 .page-icon,
-.help-head,
+.helphead,
 .close {
 	width: 40px;
 	height: 40px;
@@ -238,11 +238,11 @@ heading .disabled {
 	float: left;
 	background: var( --cm );
 }
-.help-head,
+.helphead,
 .close {
 	float: right;
 }
-.help-head {
+.helphead {
 	margin-right: 5px;
 	color: var( --cg60 )
 }
@@ -597,10 +597,10 @@ input.disabled + .switchlabel:after {
 	background: var( --cw );
 }
 @media (max-height: 570px) {
-	.help-head {
+	.helphead {
 		margin-right: 0;
 	}
-	.help-head::before {
+	.helphead::before {
 		content: '\f509';
 		color: var( --cg60 );
 	}
@@ -625,7 +625,7 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 515px) {
-	.col-r .help-block {
+	.col-r .helpblock {
 		margin-left: -160px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
@@ -716,8 +716,8 @@ input.disabled + .switchlabel:after {
 	.col-l.icon,
 	.entries li,
 	.filetype,
-	.help-head,
-	.help-block bl,
+	.helphead,
+	.helpblock bl,
 	.img,
 	.listtitle,
 	.page-icon,

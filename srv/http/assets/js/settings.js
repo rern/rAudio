@@ -453,7 +453,7 @@ $( '#button-data' ).click( function() {
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
 	clearTimeout( timer );
 } );
-$( '.help-head' ).click( function() {
+$( '.helphead' ).click( function() {
 	var $this = $( this );
 	if ( page === 'addons' ) {
 		var hidden = $( '.revisiontext' ).hasClass( 'hide' );
@@ -473,7 +473,7 @@ $( '.help-head' ).click( function() {
 			var $this = $( el );
 			if ( $this.hasClass( 'hide' ) ) return
 			
-			$this.find( '.help-block' ).toggleClass( 'hide', visible );
+			$this.find( '.helpblock' ).toggleClass( 'hide', visible );
 		} )
 		
 	} else {
@@ -484,8 +484,8 @@ $( '.help-head' ).click( function() {
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
 $( '.help' ).click( function() {
-	$( this ).parents( '.section' ).find( '.help-block' ).toggleClass( 'hide' );
-	$( '.help-head' ).toggleClass( 'bl', $( '.help-block:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
+	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
+	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 $( '.switch:not( .custom )' ).click( function() {
 	var id      = this.id;

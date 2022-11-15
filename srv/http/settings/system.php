@@ -49,7 +49,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="help-block hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
@@ -68,7 +68,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
-	<div class="help-block hide">
+	<div class="helpblock hide">
 <?=( echoSetIcon( '| I^refresh^I | Refresh every 10 seconds' ) )?>
 <br>
 <wh>CPU Load:</wh>
@@ -91,7 +91,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide"><?=( echoSetIcon( 
+	<div class="helpblock hide"><?=( echoSetIcon( 
 '| I^usbdrive^I | I^networks^I | Context menu
 | I^plus-circle^I | Add network storage
 

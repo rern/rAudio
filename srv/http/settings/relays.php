@@ -15,7 +15,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<span class="help-block hide"><img src="/assets/img/relays.jpg">
+<span class="helpblock hide"><img src="/assets/img/relays.jpg">
 Power on/off peripheral equipments
 On/Off:  <?=( i( 'raudio' ).'System | '.i( 'relays wh' ) )?>
 <br> • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>

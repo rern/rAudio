@@ -45,8 +45,8 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
-[ 'addontitle', 'close', 'container', 'help-head', 'info', 'infobtn', 'progress' ].forEach( ( el ) => {
-	E[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
+[ 'addontitle', 'close', 'container', 'helphead', 'info', 'infobtn', 'progress' ].forEach( ( el ) => {
+	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 
 document.title = 'Addons';

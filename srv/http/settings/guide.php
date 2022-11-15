@@ -8,7 +8,7 @@
 	margin: 0 auto;
 	user-select: none;
 }
-.help-block { margin: 0 }
+.helpblock { margin: 0 }
 #guide .bottom-bar {
 	height: 33px;
 	background: var( --cga );
@@ -39,7 +39,7 @@
 }
 </style>
 
-<p class="help-block" style="display: none">
+<p class="helpblock" style="display: none">
 Bottom bar:
  • Icons - Skip to each section
  • Arrow icons / Swipe - Previous / next page
@@ -66,8 +66,8 @@ nsettings = 48;
 ntotal    = 60;
 n         = 1;
 E         = {};
-[ 'close', 'container', 'count', 'help-block', 'help-head', 'image', 'next', 'prev' ].forEach( ( el ) => {
-	E[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
+[ 'close', 'container', 'count', 'helpblock', 'helphead', 'image', 'next', 'prev' ].forEach( ( el ) => {
+	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 E.btns    = Array.from( document.getElementsByClassName( 'btn' ) );
 

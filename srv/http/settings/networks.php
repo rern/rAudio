@@ -9,7 +9,7 @@ htmlHead( [ //////////////////////////////////
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide">| I^bluetooth^I | I^btsender^I | Context menu
+	<div class="helpblock hide">| I^bluetooth^I | I^btsender^I | Context menu
 | I^search^I | Scan to connect
 
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
@@ -41,7 +41,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="help-block hide"><?=( echoSetIcon( '| I^wifi^I | Context menu
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^wifi^I | Context menu
 | I^plus-circle^I | Manually connect
 | I^search^I | Scan to connect
 
@@ -58,7 +58,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="help-block hide"><?=( echoSetIcon( '| I^lan^I | Context menu' ) )?></div>
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^lan^I | Context menu' ) )?></div>
 </div>
 </div>
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
@@ -70,7 +70,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
 	<div id="qrwebui" class="qr"></div>
-	<div class="help-block hide">Use IP address or scan QR code to connect with web user interface.</div>
+	<div class="helpblock hide">Use IP address or scan QR code to connect with web user interface.</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php
@@ -92,7 +92,7 @@ htmlHead( [ //////////////////////////////////
 			<div id="qraccesspoint" class="qr"></div>
 		</div>
 	</div>
-	<div class="help-block hide">
+	<div class="helpblock hide">
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 </div>

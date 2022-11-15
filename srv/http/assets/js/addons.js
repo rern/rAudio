@@ -157,17 +157,17 @@ if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).remov
 $( '.close' ).click( function() {
 	location.href = '/';
 } );
-$( '.help-head' ).click( function() {
+$( '.helphead' ).click( function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
-$( '.revision' ).click( function() {
+$( '.revision' ).click( function( e ) {
 	e.stopPropagation();
 	$this = $( this );
 	$revisiontext = $this.parent().parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
-	$( '.help-head' ).toggleClass( 'bl', hidden );
+	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
 } );
 $( '#list li' ).click( function() {

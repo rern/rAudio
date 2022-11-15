@@ -41,7 +41,7 @@ echo $style;
 <div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
-	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help help-head' ) )?>
+	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
 </div>
 <?php
 // container ...................................................................... 
@@ -150,7 +150,7 @@ function htmlHead( $data ) {
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
 	$html   .= '</heading>';
-	$html   .= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echoSetIcon( $html );
 }
@@ -193,7 +193,7 @@ function htmlSetting( $data ) {
 		$html   .= $input;
 	}
 	$html       .= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
-	$html       .= $help ? '<span class="help-block hide">'.$help.'</span>' : '';
+	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
 			 <div style="clear:both"></div>
 			 </div>';

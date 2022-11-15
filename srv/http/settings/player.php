@@ -14,7 +14,7 @@ htmlHead( [ //////////////////////////////////
 		<div id="statusvalue"></div>
 	</div>
 	<div style="clear:both"></div>
-	<div class="help-block hide">
+	<div class="helpblock hide">
 <?=( echoSetIcon( '| I^play^I | I^pause^I | Playback control' ) )?>
 <br>
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
