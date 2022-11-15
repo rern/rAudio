@@ -652,7 +652,7 @@ function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
 	I.blank = false;
-	I.blank = I.checkblank.some( function( i ) {
+	I.blank = I.checkblank.some( ( i ) => {
 		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
 	} );
 }

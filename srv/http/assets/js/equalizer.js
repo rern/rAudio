@@ -129,7 +129,7 @@ function eqButtonSet() {
 	} else {
 		var val     = G.eq.nameval[ G.eq.current ].split( ' ' )
 		var vnew    = infoVal().slice( 2 );
-		var changed = vnew.some( function( v, i ) {
+		var changed = vnew.some( ( v, i ) => {
 			return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
 		} );
 	}
