@@ -693,6 +693,7 @@ $( < /etc/dnsmasq.conf )"
 		localbrowser )
 			pkg=chromium
 			fileconf=$dirsystem/localbrowser.conf
+			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
 			;;
 		mpd )
 			conf=$( grep -v ^i $mpdconf )
@@ -708,10 +709,12 @@ $( < /etc/dnsmasq.conf )"
 			conf="\
 <bll># $mpdconf</bll>
 $conf"
+			skip='configuration file does not exist'
 			;;
 		nfs-server )
 			pkg=nfs-utils
 			systemctl -q is-active nfs-server && fileconf=/etc/exports
+			skip='Protocol not supported'
 			;;
 		rtsp-simple-server )
 			conf="\
@@ -725,6 +728,9 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 		snapclient|snapserver )
 			pkg=snapcast
 			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			;;
+		upmpdcli )
+			skip='not creating entry for'
 			;;
 		* )
 			fileconf=/etc/$id.conf
@@ -744,13 +750,7 @@ $( grep -v ^# $fileconf )"
 							' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 												 s|( inactive \(.*\))|<red>\1</red>|
 												 s|(failed)|<red>\1</red>|ig}' )
-	if [[ $pkg == chromium ]]; then
-		status=$( grep -E -v 'Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics' <<< $status )
-	elif [[ $pkg == nfs-utils ]]; then
-		status=$( grep -v 'Protocol not supported' <<< $status )
-	elif [[ $pkg == upmpdcli ]]; then
-		status=$( grep -v 'not creating entry for' <<< $status )
-	fi
+	[[ $skip ]] && status=$( grep -E -v "$skip" <<< $status )
 	echo "\
 $config
 
