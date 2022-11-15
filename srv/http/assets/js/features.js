@@ -16,9 +16,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, message : 'Reset client keys?'
 			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
 			, okcolor : red
-			, ok      : () => {
-				bash( [ 'spotifytokenreset' ] );
-			}
+			, ok      : () => bash( [ 'spotifytokenreset' ] )
 		} );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
@@ -45,10 +43,8 @@ $( '#setting-spotifyd' ).click( function() {
 					$( '#infoX' ).click();
 				} );
 			}
-			, cancel       : () => {
-				$( '#spotifyd' ).prop( 'checked', G.spotifyd );
-			}
-			, ok         : () => {
+			, cancel       : () => cancelSwitch( 'spotifyd' )
+			, ok           : () => {
 				var values = infoVal();
 				var id     = values[ 0 ];
 				var secret = values[ 1 ];
@@ -91,9 +87,7 @@ $( '#setting-snapclient' ).click( function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
-		, cancel       : () => {
-			$( '#snapclient' ).prop( 'checked', G.snapclient );
-		}
+		, cancel       : () => cancelSwitch( 'snapclient' )
 		, ok           : () => {
 			bash( [ 'snapclient', true, infoVal() ] );
 			notify( icon, title, G.snapclient ? 'Change ...' : 'Enable ...' );
@@ -109,9 +103,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ G.upmpdcliownqueue ]
 		, checkchanged : G.upmpdcli
-		, cancel       : () => {
-			$( '#upmpdcli' ).prop( 'checked', G.upmpdcli );
-		}
+		, cancel       : () => cancelSwitch( 'upmpdcli' )
 		, ok           : () => {
 			bash( [ 'upmpdcli', true, infoVal() ] );
 			notify( icon, title, G.upmpdcli ? 'Change ...' : 'Enable ...' );
@@ -130,9 +122,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, boxwidth     : 100
 		, values       : G.camillarefresh
 		, checkchanged : G.camilladsp
-		, cancel       : () => {
-			$( '#camilladsp' ).prop( 'checked', G.camilladsp );
-		}
+		, cancel       : () => cancelSwitch( 'camilladsp' )
 		, ok           : () => {
 			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( icon, title, G.camilladsp ? 'Change ...' : 'Enable ...' );
@@ -151,9 +141,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checkchanged : G.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, cancel       : () => {
-			$( '#hostapd' ).prop( 'checked', G.hostapd );
-		}
+		, cancel       : () => cancelSwitch( 'hostapd' )
 		, ok           : () => {
 			var values  = infoVal();
 			var ip      = values[ 0 ];
@@ -177,9 +165,7 @@ $( '#setting-autoplay' ).click( function() {
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? G.autoplayconf : [ false, false, true ]
 		, checkchanged : G.autoplay
-		, cancel       : () => {
-			$( '#autoplay' ).prop( 'checked', G.autoplay );
-		}
+		, cancel       : () => cancelSwitch( 'autoplay' )
 		, ok           : () => {
 			bash( [ 'autoplay', true, ...infoVal() ] );
 			notify( icon, title, G.autoplay ? 'Change ...' : 'Enable ...' );
@@ -265,9 +251,7 @@ ${ brightness }
 				} );
 			}
 		}
-		, cancel       : () => {
-			$( '#localbrowser' ).prop( 'checked', G.localbrowser );
-		}
+		, cancel       : () => cancelSwitch( 'localbrowser' )
 		, ok           : () => {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
 			notify( icon, title, G.localbrowser ? 'Change ...' : 'Enable ...', );
@@ -284,9 +268,7 @@ $( '#setting-smb' ).click( function() {
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : G.smbconf
 		, checkchanged : G.smb
-		, cancel       : () => {
-			$( '#smb' ).prop( 'checked', G.smb );
-		}
+		, cancel       : () => cancelSwitch( 'smb' )
 		, ok           : () => {
 			bash( [ 'smb', true, ...infoVal() ] );
 			notify( icon, title, G.smb ? 'Change ...' : 'Enable ...' );
@@ -342,9 +324,7 @@ $( '#setting-multiraudio' ).click( function() {
 				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
 			} );
 		}
-		, cancel       : () => {
-			$( '#multiraudio' ).prop( 'checked', G.multiraudio );
-		}
+		, cancel       : () => cancelSwitch( 'multiraudio' )
 		, ok           : () => {
 			I.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
@@ -365,6 +345,7 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, checkblank    : 1
+			, cancel        : () => cancelSwitch( 'login' )
 			, ok            : () => {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
@@ -388,9 +369,7 @@ $( '#setting-login' ).click( function() {
 		, passwordlabel : ( G.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
 		, checkblank    : 1
-		, cancel        : () => {
-			$( '#login' ).prop( 'checked', G.login );
-		}
+		, cancel        : () => cancelSwitch( 'login' )
 		, ok            : () => {
 			var values = infoVal();
 			notify( icon, title, G.login ? 'Change ...' : 'Enable...' );
@@ -441,9 +420,7 @@ $( '#setting-scrobble' ).click( function() {
 				infoCheckSet();
 			} );
 		}
-		, cancel        : () => {
-			$( '#scrobble' ).prop( 'checked', G.scrobble );
-		}
+		, cancel        : () => cancelSwitch( 'scrobble' )
 		, ok            : () => {
 			bash( [ 'scrobble', true, ...infoVal() ], ( response ) => {
 				if ( 'error' in response ) {
@@ -480,9 +457,7 @@ $( '#nfsserver' ).click( function() {
 			, message : ( G.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( G.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : () => {
-				$this.prop( 'checked', G.nfsserver );
-			}
+			, cancel  : () => cancelSwitch( 'nfsserver' )
 			, okcolor : G.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', ! G.nfsserver ] );
@@ -511,9 +486,7 @@ $( '#setting-stoptimer' ).click( function() {
 				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
-		, cancel  : () => {
-			$( '#stoptimer' ).prop( 'checked', G.stoptimer );
-		}
+		, cancel  : () => cancelSwitch( 'stoptimer' )
 		, ok           : () => {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
 			notify( icon, title, G.stoptimer ? 'Change ...' : 'Enable ...' );

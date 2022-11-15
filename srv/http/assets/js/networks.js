@@ -78,9 +78,7 @@ $( '.lanadd' ).click( function() {
 		, title         : 'New LAN Connection'
 		, textlabel     : [ 'IP', 'Gateway' ]
 		, focus         : 0
-		, ok           : () => {
-			editLANSet( infoVal() );
-		}
+		, ok           : () => editLANSet( infoVal() )
 	} );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
@@ -302,9 +300,7 @@ function editLAN() {
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
 		} : '' )
-		, ok           : () => {
-			editLANSet( infoVal() );
-		}
+		, ok           : () => editLANSet( infoVal() )
 	} );
 }
 function editLANSet( values ) {
@@ -317,9 +313,7 @@ function editLANSet( values ) {
 				  icon    : 'lan'
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : () => {
-					editLAN();
-				}
+				, ok      : editLAN
 			} );
 		} else {
 			location.href = 'http://'+ ip +'/settings.php?p=networks';

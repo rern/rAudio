@@ -64,6 +64,9 @@ function bannerReset() {
 	clearTimeout( G.timeoutbanner );
 	G.timeoutbanner = setTimeout( bannerHide, delay );
 }
+function cancelSwitch( id ) {
+	$( '#'+ id ).prop( 'checked', G[ id ] );
+}
 function copy2clipboard( txt ) { // for non https which cannot use clipboard API
 	$( 'body' ).append( '<textarea id="error">'+ txt +'</textarea>' );
 	$( '#error' ).focus().select();
@@ -430,9 +433,7 @@ $( '.close' ).click( function() {
 			}
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-			, ok      : () => {
-				bash( [ 'cmd', 'power', 'reboot' ] );
-			}
+			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ] )
 		} );
 	} );
 } );

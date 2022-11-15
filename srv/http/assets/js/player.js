@@ -33,9 +33,7 @@ $( '#setting-btreceiver' ).click( function() {
 			}
 			, buttonnoreset : 1
 			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : () => {
-				bash( [ 'volumebt', G.btaplayname, '0dB' ] );
-			}
+			, button        : () => bash( [ 'volumebt', G.btaplayname, '0dB' ] )
 			, okno          : 1
 		} );
 	} );
@@ -64,9 +62,7 @@ $( '#setting-hwmixer' ).click( function() {
 				, message    : control
 				, rangevalue : vol
 				, footer     : '0dB (No Volume)'
-				, beforeshow    : () => {
-					$( '#infoRange input' ).prop( 'disabled', 1 );
-				}
+				, beforeshow    : () => $( '#infoRange input' ).prop( 'disabled', 1 )
 				, okno       : 1
 			} );
 			return
@@ -113,9 +109,7 @@ $( '#mixertype' ).change( function() {
 					.val( device.mixertype )
 					.selectric( 'refresh' );
 			}
-			, ok      : () => {
-				setMixerType( mixertype );
-			}
+			, ok      : () => setMixerType( mixertype )
 		} );
 	} else {
 		setMixerType( mixertype );
@@ -130,9 +124,7 @@ $( '#novolume' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : warning
-			, cancel  : () => {
-				$( '#novolume' ).prop( 'checked', G.novolume );
-			}
+			, cancel  : () => cancelSwitch( 'novolume' )
 			, ok      : () => {
 				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', device.aplayname, device.card, device.hwmixer ] );
@@ -168,9 +160,7 @@ $( '#setting-crossfade' ).click( function() {
 		, values       : G.crossfadeconf || 1
 		, checkchanged : G.crossfade
 		, checkblank   : 1
-		, cancel       : () => {
-			$( '#crossfade' ).prop( 'checked', G.crossfade );
-		}
+		, cancel       : () => cancelSwitch( 'crossfade' )
 		, ok           : () => {
 			bash( [ 'crossfade', true, infoVal() ] );
 			notify( icon, title, G.crossfade ? 'Change ...' : 'Enable ...' );
@@ -186,9 +176,7 @@ $( '#setting-replaygain' ).click( function() {
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : G.replaygainconf
 		, checkchanged : G.replaygain
-		, cancel       : () => {
-			$( '#replaygain' ).prop( 'checked', G.replaygain );
-		}
+		, cancel       : () => cancelSwitch( 'replaygain' )
 		, ok           : () => {
 			bash( [ 'replaygain', true, infoVal() ] );
 			notify( icon, title, G.replaygain ? 'Change ...' : 'Enable ...' );
@@ -220,9 +208,7 @@ $( '#setting-buffer' ).click( function() {
 		, values       : G.bufferconf
 		, checkchanged : G.buffer
 		, checkblank   : 1
-		, cancel       : () => {
-			$( '#buffer' ).prop( 'checked', G.buffer );
-		}
+		, cancel       : () => cancelSwitch( 'buffer' )
 		, ok           : () => {
 			bash( [ 'buffer', true, infoVal() ] );
 			notify( icon, title, G.buffer ? 'Change ...' : 'Enable ...' );
@@ -243,9 +229,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, values       : G.outputbufferconf
 		, checkchanged : G.outputbuffer
 		, checkblank   : 1
-		, cancel       : () => {
-			$( '#outputbuffer' ).prop( 'checked', G.outputbuffer );
-		}
+		, cancel       : () => cancelSwitch( 'outputbuffer' )
 		, ok           : () => {
 			bash( [ 'outputbuffer', true, infoVal() ] );
 			notify( icon, title, G.outputbuffer ? 'Change ...' : 'Enable ...' );
@@ -284,9 +268,7 @@ $( '#setting-custom' ).click( function() {
 			, content      : custominfo.replace( 'N', G.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : G.custom
-			, cancel       : () => {
-				$( '#custom' ).prop( 'checked', G.custom );
-			}
+			, cancel       : () => cancelSwitch( 'custom' )
 			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
@@ -380,9 +362,7 @@ function infoSoxr( quality ) {
 		, checkblank   : 1
 		, checkchanged : G.soxr && quality === G.soxrquality
 		, boxwidth     : custom ? 85 : 180
-		, cancel       : () => {
-			$( '#soxr' ).prop( 'checked', G.soxr );
-		}
+		, cancel       : () => cancelSwitch( 'soxr' )
 		, ok           : () => {
 			if ( custom ) {
 				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
