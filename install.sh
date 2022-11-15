@@ -5,7 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221116
-[[ $( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c1 ) == 4 ]] && pacman -Sy --noconfirm nqptp
+[[ ! -e /usr/bin/nqptp ]] && pacman -Sy --needed --noconfirm nqptp
 
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
