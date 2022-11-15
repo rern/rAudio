@@ -163,6 +163,7 @@ function psCoverart( data ) {
 	bannerHide();
 }
 function psDisplay( data ) {
+	bannerHide();
 	if ( 'submenu' in data ) {
 		G.display[ data.submenu ] = data.value;
 		displaySubMenu();

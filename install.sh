@@ -20,8 +20,6 @@ if grep -q bluetooth$ $file; then
 	systemctl daemon-reload
 fi
 
-[[ ! -e /lib/libFLAC.so.8 ]] && ln -s /lib/libFLAC.so{,.8} # for upgraded snapcast
-
 if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
 	echo "\
 SD
