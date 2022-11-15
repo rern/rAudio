@@ -257,14 +257,10 @@ $( '#power' ).click( function() {
 		, title       : 'Power'
 		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
 		, buttoncolor : orange
-		, button      : function() {
-			power( 'reboot' );
-		}
+		, button      : () => power( 'reboot' )
 		, oklabel     : '<i class="fa fa-power"></i>Off'
 		, okcolor     : red
-		, ok          : function() {
-			power( 'off' );
-		}
+		, ok          : () => power( 'off' )
 	} );
 } );
 $( '#displaylibrary' ).click( function() {
@@ -365,9 +361,7 @@ $( '#displayplayback' ).click( function() {
 				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
 			} );
 		}
-		, ok           : function () {
-			displaySave( keys );
-		}
+		, ok           : () => displaySave( keys )
 	} );
 } );
 $( '#displayplaylist' ).click( function() {
@@ -390,9 +384,7 @@ $( '#displayplaylist' ).click( function() {
 		, checkbox     : Object.values( chkplaylist )
 		, values       : values
 		, checkchanged : 1
-		, ok           : function () {
-			displaySave( keys );
-		}
+		, ok           : () => displaySave( keys )
 	} );
 } );
 $( '#colorok' ).click( function() {
@@ -439,9 +431,7 @@ $( '#addons' ).click( function () {
 				, title   : 'Addons'
 				, message : std == -1 ? 'Download from Addons server failed.' : 'No internet connection.'
 						   +'<br>Please try again later.'
-				, ok      : () => {
-					loaderHide();
-				}
+				, ok      : loaderHide
 			} );
 		} else {
 			location.href = '/settings.php?p=addons';
@@ -626,9 +616,7 @@ $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 		, title   : 'Audio CD'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
 		, okcolor : red
-		, ok      : () => {
-			bash( '/srv/http/bash/audiocd.sh ejecticonclick' );
-		}
+		, ok      : () => bash( '/srv/http/bash/audiocd.sh ejecticonclick' )
 	} );
 } );
 $( '#elapsed' ).click( function() {
@@ -1171,18 +1159,14 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		  icon     : 'dabradio'
 		, title    : 'DAB Radio'
 		, message  : ( $( '#lib-list li' ).length ? 'Rescan' : 'Scan' ) +' digital radio stations?'
-		, ok       : () => {
-			bash( [ 'dabscan' ] );
-		}
+		, ok       : () => bash( [ 'dabscan' ] )
 	} );
 } ).on( 'click', '.button-latest-clear', function() {
 	info( {
 		  icon         : 'latest'
 		, title        : 'Latest'
 		, message      : 'Clear Latest albums list?'
-		, ok           : () => {
-			bash( [ 'latestclear' ] );
-		}
+		, ok           : () => bash( [ 'latestclear' ] )
 	} );
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
@@ -1198,9 +1182,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, ok           : () => {
-			thumbUpdate();
-		}
+		, ok           : thumbUpdate
 	} );
 } );
 $( '#button-lib-search' ).click( function() { // icon
@@ -1429,9 +1411,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, message : icon
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
-		, ok      : () => {
-			bash( [ 'bookmarkremove', name, path ] );
-		}
+		, ok      : () => bash( [ 'bookmarkremove', name, path ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
@@ -1447,10 +1427,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, checkblank   : 1
 		, checkchanged : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : () => {
-			var newname = infoVal();
-			bash( [ 'bookmarkrename', name, newname, path ] );
-		}
+		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), path ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
@@ -1476,12 +1453,8 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, filetype    : 'image/*'
 		, buttonlabel : ! thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => {
-			bash( [ 'bookmarkcoverreset', imagepath, name ] );
-		}
-		, ok          : () => {
-			imageReplace( 'bookmark', imagepath +'/coverart', name ); // no ext
-		}
+		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', imagepath, name ] )
+		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
 	} );
 } )
 $( '#lib-mode-list' ).press( '.mode-bookmark', setBookmarkEdit );
@@ -1799,9 +1772,7 @@ $( '#button-pl-shuffle' ).click( function() {
 		  icon    : 'shuffle'
 		, title   : 'Shuffle Playlist'
 		, message : 'Shuffle all tracks in playlist?'
-		, ok      : () => {
-			bash( [ 'mpcshuffle' ] );
-		}
+		, ok      : () => bash( [ 'mpcshuffle' ] )
 	} );
 } );
 $( '#button-pl-clear' ).click( function() {

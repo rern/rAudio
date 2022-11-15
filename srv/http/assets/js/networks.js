@@ -281,7 +281,7 @@ function editLAN() {
 	info( {
 		  icon         : icon
 		, title        : title
-		, textlabel    : [ ( static ? '<gr>Static</gr> IP' : '<gr>DHCP</gr> IP' ), 'Gateway' ]
+		, textlabel    : ! static ? [ '<gr>DHCP</gr> IP', 'Gateway' ] : [ '<gr>Static</gr> IP' ]
 		, focus        : 0
 		, values       : [ ip, gw ]
 		, checkchanged : 1
@@ -293,13 +293,13 @@ function editLAN() {
 				} );
 			}
 		}
-		, buttonlabel  : ( static ? '<i class="fa fa-undo"></i>DHCP' : '' )
-		, button       : ( static ? () => {
+		, buttonlabel  : ! static ? '' : '<i class="fa fa-undo"></i>DHCP'
+		, button       : ! static ? '' : () => {
 			notify( icon, title, 'Change URL to '+ G.hostname +'.local ...' );
 			loader();
 			location.href = 'http://'+ G.hostname +'.local/settings.php?p=networks';
 			bash( [ 'editlan' ] );
-		} : '' )
+		}
 		, ok           : () => editLANSet( infoVal() )
 	} );
 }

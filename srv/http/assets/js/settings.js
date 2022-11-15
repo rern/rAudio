@@ -333,9 +333,7 @@ function psWifi( data ) {
 		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
 		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 		, okcolor : orange
-		, ok      : () => {
-			bash( [ 'reboot' ] );
-		}
+		, ok      : () => bash( [ 'reboot' ] )
 	} );
 }
 //---------------------------------------------------------------------------------------

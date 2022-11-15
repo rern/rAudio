@@ -365,9 +365,7 @@ function psRelays( response ) {
 						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : '<i class="fa fa-relays"></i>Off'
 			, buttoncolor : red
-			, button      : () => {
-				bash( '/srv/http/bash/settings/relays.sh' );
-			}
+			, button      : () => bash( '/srv/http/bash/settings/relays.sh' )
 			, oklabel     : '<i class="fa fa-set0"></i>Reset'
 			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );

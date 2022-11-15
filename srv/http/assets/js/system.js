@@ -535,8 +535,8 @@ $( '#setting-lcd' ).click( function() {
 		, values       : G.lcdmodel || 'tft35a'
 		, checkchanged : G.lcd
 		, boxwidth     : 190
-		, buttonlabel  : ( ! G.lcd ? '' : 'Calibrate' )
-		, button       : ( ! G.lcd ? '' : () => {
+		, buttonlabel  : ! G.lcd ? '' : 'Calibrate'
+		, button       : ! G.lcd ? '' : () => {
 			info( {
 				  icon    : icon
 				, title   : title
@@ -547,7 +547,7 @@ $( '#setting-lcd' ).click( function() {
 					bash( [ 'lcdcalibrate' ] );
 				}
 			} );
-		} )
+		}
 		, cancel    : () => cancelSwitch( 'lcd' )
 		, ok           : () => {
 			notify( icon, title, G.lcd ? 'Change ...' : 'Enable ...' );

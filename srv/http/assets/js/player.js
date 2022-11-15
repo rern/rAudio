@@ -68,7 +68,7 @@ $( '#setting-hwmixer' ).click( function() {
 			return
 		}
 		
-		var toggle = () => { $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' ) }
+		var toggle = () => $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' )
 		info( {
 			  icon          : 'volume'
 			, title         : 'Mixer Device Volume'

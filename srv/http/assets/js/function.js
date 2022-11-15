@@ -61,9 +61,7 @@ function changeIP() { // for android app
 		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
-		, beforeshow   : () => {
-			$( '#infoContent input' ).prop( 'type', 'tel' );
-		}
+		, beforeshow   : () => $( '#infoContent input' ).prop( 'type', 'tel' )
 		, ok           : () => {
 			var ip = infoVal();
 			if ( ip === location.host ) {
@@ -236,9 +234,7 @@ function coverartChange() {
 					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
 					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
 		, footer      : embedded
-		, beforeshow  : () => { // fix direct replace src
-			$( '.imgold' ).attr( 'src', src );
-		}
+		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
 		, filelabel   : '<i class="fa fa-folder-open"></i>File'
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
@@ -754,9 +750,7 @@ function infoLibrary( page2 ) {
 				$sd.add( $usb ).prop( 'disabled', G.status.shareddata );
 			}
 		}
-		, ok           : function () {
-			displaySave( keys );
-		}
+		, ok           : () => displaySave( keys )
 	} );
 }
 function infoLibrary2() {
@@ -783,9 +777,7 @@ function infoUpdate( path ) {
 				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
 			}
 		}
-		, ok         : () => {
-			bash( [ 'mpcupdate', path || infoVal() ] );
-		}
+		, ok         : () => bash( [ 'mpcupdate', path || infoVal() ] )
 	} );
 }
 function libraryHome() {
@@ -923,15 +915,9 @@ ${ track }
 		, content     : content
 		, values      : [ 1 ]
 		, buttonlabel : '<i class="fa fa-undo"></i>Select'
-		, button      : () => {
-			playlistInsertTarget();
-		}
-		, cancel      : () => {
-			G.pladd = {}
-		}
-		, ok          : () => {
-			playlistInsert( +infoVal() + $this.index() )
-		}
+		, button      : playlistInsertTarget
+		, cancel      : () => G.pladd = {}
+		, ok          : () => playlistInsert( +infoVal() + $this.index() )
 	} );
 	bannerHide();
 }
@@ -954,9 +940,7 @@ function playlistInsertTarget() {
 		, cancel     : () => {
 			if ( ! G.local ) G.pladd = {}
 		}
-		, ok         : () => {
-			playlistInsert( infoVal() );
-		}
+		, ok         : () => playlistInsert( infoVal() )
 	} );
 	bannerHide();
 }
@@ -1845,9 +1829,7 @@ function stopAirplay() {
 		, title   : 'AirPlay'
 		, message : 'AirPlay is playing.'
 				   +'<br>Stop AirPlay?'
-		, ok      : () => {
-			$( '#stop' ).click();
-		}
+		, ok      : () => $( '#stop' ).click()
 	} );
 }
 function switchPage( page ) {

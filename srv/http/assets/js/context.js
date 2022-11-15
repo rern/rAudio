@@ -67,9 +67,7 @@ function playlistDelete() {
 				   +'<br><wh>'+ G.list.name +'</wh>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
-		, ok      : () => {
-			bash( [ 'savedpldelete', G.list.name ] );
-		}
+		, ok      : () => bash( [ 'savedpldelete', G.list.name ] )
 	} );
 }
 function playlistLoad( path, play, replace ) {
@@ -96,9 +94,7 @@ function playlistNew( name ) {
 		, focus        : 0
 		, values       : name
 		, checkblank   : 1
-		, ok           : () => {
-			playlistSave( infoVal() );
-		}
+		, ok           : () => playlistSave( infoVal() )
 	} );
 }
 function playlistRename() {
@@ -113,10 +109,7 @@ function playlistRename() {
 		, checkchanged : 1
 		, checkblank   : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : () => {
-			var newname = infoVal();
-			playlistSave( newname, name );
-		}
+		, ok           : () => playlistSave( infoVal(), name )
 	} );
 }
 function playlistSave( name, oldname, replace ) {
@@ -147,9 +140,7 @@ function playlistSaveExist( type, name, oldname ) {
 			setTimeout( () => rename ? playlistRename() : playlistNew( name ), 0 ); // fix error on repeating
 		}
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
-		, ok          : () => {
-			rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' );
-		}
+		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
 }
 function addSimilar() {
@@ -370,12 +361,8 @@ function webRadioCoverart() {
 		}
 		, buttonlabel : '<i class="fa fa-'+ type +'"></i>Default'
 		, buttoncolor : orange
-		, button      : () => {
-			bash( [ 'webradiocoverreset', imagefilenoext, type ] );
-		}
-		, ok          : () => {
-			imageReplace( type, imagefilenoext );
-		}
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, type ] )
+		, ok          : () => imageReplace( type, imagefilenoext )
 	} );
 }
 function webRadioDelete() {
@@ -449,9 +436,7 @@ function webRadioExists( error, name, url, charset ) {
 		  icon    : 'webradio'
 		, title   : 'Add Web Radio'
 		, message : '<wh>'+ url +'</wh><br>'+ message
-		, ok      : () => {
-			setTimeout( () => name ? webRadioNew( name, url, charset ) : webRadioEdit(), 300 );
-		}
+		, ok      : () => setTimeout( () => name ? webRadioNew( name, url, charset ) : webRadioEdit(), 300 )
 	} );
 }
 function webRadioNew( name, url, charset ) {
@@ -474,10 +459,7 @@ function webRadioNew( name, url, charset ) {
 						, textlabel  : 'Name'
 						, focus      : 0
 						, checkblank : 1
-						, ok         : () => {
-							var dir = $( '#lib-path .lipath' ).text();
-							bash( [ 'wrdirnew', dir, infoVal() ] );
-						}
+						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
 					} );
 				} );
 			}
@@ -606,9 +588,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 					  icon    : 'lastfm'
 					, title   : 'Add Similar'
 					, message : 'Search and add similar tracks from Library?'
-					, ok      : () => {
-						addSimilar();
-					}
+					, ok      : addSimilar
 				} );
 			} else {
 				addSimilar();
@@ -623,9 +603,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
 							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'
-				, ok      : () => {
-					thumbUpdate( G.list.path );
-				}
+				, ok      : () => thumbUpdate( G.list.path )
 			} );
 			return
 		case 'update':
@@ -652,9 +630,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 											+'<br>Confirm delete?'
 								, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 								, okcolor : red
-								, ok      : () => {
-									bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] );
-								}
+								, ok      : () => bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] )
 							} );
 						}
 					} );
@@ -674,9 +650,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkblank  : 1
 				, checkchange : 1
 				, oklabel     : 'Rename'
-				, ok          : () => {
-					bash( [ 'wrdirrename', path, name, infoVal(), G.mode ] );
-				}
+				, ok          : () => bash( [ 'wrdirrename', path, name, infoVal(), G.mode ] )
 			} );
 			return
 		case 'wrsave':
