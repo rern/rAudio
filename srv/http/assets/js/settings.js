@@ -378,7 +378,7 @@ $( document ).keyup( function( e ) {
 			break;
 		case 'Escape':
 			$focus = $( '.switchlabel.focus' );
-			setTimeout( () => if ( $focus.length ) $focus.prev().focus(), 300 );
+			setTimeout( () => { if ( $focus.length ) $focus.prev().focus() }, 300 );
 			if ( $( '.setting.focus' ).length ) {
 				$( '.setting' ).removeClass( 'focus' );
 				return
