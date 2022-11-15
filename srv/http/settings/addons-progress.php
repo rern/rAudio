@@ -32,29 +32,30 @@ $installfile   = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
-<br>
-<p id="addontitle"><i class="gr fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
-	
-<script src="/assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="/assets/js/common.js?v=<?=$time?>"></script>
-<script>
-document.title = 'Addons';
-$( '.help-head' ).remove();
-$( '.container' ).removeClass( 'hide' );
-loaderHide();
-$( '.close' ).click( function() {
-	location.href = '<?=$href?>';
-} );
-var scroll = setInterval( () => {
-	var $progress = $( '#progress' );
-	$progress.scrollTop( $progress.prop( 'scrollHeight' ) );
-}, 500 );
-// js for '<pre>' must be here before start stdout
-// php 'flush' loop waits for all outputs before going to next lines
-// but must 'setTimeout()' for '<pre>' to load to fix 'undefined'
-</script>
 
-<pre id="progress">
+<div id="infoOverlay" class="info hide">
+	<div id="infoBox">
+		<div id="infoTopBg"><div id="infoTop"><i class="fa fa-jigsaw"></i><a id="infoTitle"><?=$name?></a></div></div>
+		<div id="infoContent"><div class="infomessage"><?=$postinfo?></div></div>
+		<div class="infobtn infobtn-primary" style="min-width: 70px; margin-top: 10px;">OK</div>
+	</div>
+</div>
+<br>
+<p class="addontitle"><i class="gr fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
+<pre class="progress">
+<script> // js must be here before php flush start
+E        = {};
+[ 'addontitle', 'close', 'container', 'help-head', 'info', 'infobtn', 'progress' ].forEach( ( el ) => {
+	E[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
+} );
+
+document.title = 'Addons';
+E.helphead.remove();
+E.container.classList.remove( 'hide' );
+
+E.close.addEventListener( 'click', () => location.href = '<?=$href?>' );
+scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
+</script>
 <?php
 // ......................................................................................
 $getinstall = <<< EOF
@@ -168,14 +169,11 @@ pclose( $popencmd );
 ?>
 </pre>
 
-<script>
-setTimeout( () => { clearInterval( scroll ) }, 1000 );
-$( '#addontitle i' ).removeClass( 'blink' );
-info( {
-	  icon    : 'jigsaw'
-	, title   : '<?=$name?>'
-	, message : '<?=$postinfo?>'
-} );
+<script> // run after php flush end
+setTimeout( () => clearInterval( scroll ), 1000 );
+E.addontitle.classList.remove( 'blink' );
+E.info.classList.remove( 'hide' );
+E.infobtn.addEventListener( 'click', () => E.info.remove() );
 </script>
 
 </body>
