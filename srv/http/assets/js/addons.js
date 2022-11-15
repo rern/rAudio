@@ -1,154 +1,6 @@
-function getOption() {
-	okey    = Object.keys( option );
-	olength = okey.length;
-	oj      = okey[ j ];
-	oj0     = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
-	switch ( oj0 ) {
-		case 'wait': // only 1 'Ok' = continue
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : sendCommand
-			} );
-			break;
-		case 'confirm': // 'Cancel' = close
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : sendCommand
-			} );
-			break;
-		case 'yesno': // 'Cancel' = 0
-			var ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, buttonlabel : 'No'
-				, button      : () => {
-					opt.push( 0 );
-					sendCommand();
-				}
-				, ok          : () => {
-					opt.push( 1 );
-					sendCommand();
-				}
-			} );
-			break;
-		case 'skip': // 'Cancel' = continue, 'Ok' = skip options
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : option[ oj ]
-				, buttonlabel : 'No'
-				, button      : sendCommand
-				, oklabel     : 'Yes'
-				, ok          : postCommand
-			} );
-			break;
-		case 'text':
-			var ojson = option[ oj ];
-			info( {
-				  icon      : icon
-				, title     : title
-				, message   : ojson.message
-				, textlabel : ojson.label
-				, values    : ojson.value
-				, boxwidth  : ojson.width
-				, ok        : () => {
-					opt.push( infoVal() || 0 );
-					sendCommand();
-				}
-			} );
-			break;
-		case 'password':
-			ojson = option[ oj ];
-			info( {
-				  icon          : icon
-				, title         : title
-				, message       : ojson.message
-				, passwordlabel : ojson.label
-				, ok:          () => {
-					var pwd = infoVal();
-					if ( pwd ) {
-						infoVerifyPassword( title, pwd, function() {
-							opt.push( pwd );
-							sendCommand();
-						} );
-					} else {
-						opt.push( 0 );
-						sendCommand();
-					}
-				}
-			} );
-			break;
-		case 'radio': // single value
-			ojson = option[ oj ];
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : ojson.message
-				, radio   : ojson.list
-				, values  : ojson.checked
-				, ok      : () => {
-					opt.push( infoVal() );
-					sendCommand();
-				}
-			} );
-			break;
-		case 'select': // long single value
-			ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, selectlabel : ojson.label
-				, select      : ojson.list
-				, values      : ojson.checked
-				, boxwidth    : ojson.width
-				, ok          : () => {
-					opt.push( infoVal() );
-					sendCommand();
-				}
-			} );
-			break;
-		case 'checkbox': // multiple values
-			ojson = option[ oj ];
-			info( {
-				  icon     : icon
-				, title    : title
-				, message  : ojson.message
-				, checkbox : ojson.list
-				, values   : ojson.checked
-				, ok       : () => {
-					opt.push( infoVal() );
-					sendCommand();
-				}
-			} );
-			break;
-	}
-}
-function postCommand() { // post submit with temporary form
-	var form  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
-	opt.forEach( ( o ) => {
-		form += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">';
-	} );
-	$( 'body' ).append( form +'</form>' );
-	$( '#formtemp' ).submit();
-	banner( 'jigsaw blink', 'Addons', 'Download files ...', -1 );
-}
-function sendCommand() {
-	j++;
-	j < olength ? getOption() : postCommand();
-}
-
-//---------------------------------------------------------------------------
-icon           = 'jigsaw';
 document.title = 'Addons';
+icon           = 'jigsaw';
+
 $( '.container' ).removeClass( 'hide' );
 $( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
 loaderHide();
@@ -192,7 +44,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 			, title   : title
 			, message : type +'?'
 			, ok      : () => {
-				postCommand();
+				formPost();
 			}
 		} );
 	}
@@ -213,7 +65,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 				j = 0;
 				getOption();
 			} else {
-				postCommand();
+				formPost();
 			}
 		}
 	} );
@@ -221,3 +73,129 @@ $( '.boxed-group .infobtn' ).click( function() {
 $( '.thumbnail' ).click( function() {
 	$( this ).prev().find( '.source' )[ 0 ].click();
 } );
+
+function formPost() { // post submit with temporary form
+	var htmlform  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
+	opt.forEach( ( o ) => {
+		htmlform += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">';
+	} );
+	$( 'body' ).append( htmlform +'</form>' );
+	$( '#formtemp' ).submit();
+}
+function getOption() {
+	okey    = Object.keys( option );
+	olength = okey.length;
+	oj      = okey[ j ];
+	oj0     = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
+	switch ( oj0 ) {
+		case 'wait': // only 1 'Ok' = continue
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : option[ oj ]
+				, oklabel : 'Continue'
+				, ok      : setOption
+			} );
+			break;
+		case 'confirm': // 'Cancel' = close
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : option[ oj ]
+				, oklabel : 'Continue'
+				, ok      : setOption
+			} );
+			break;
+		case 'yesno': // 'Cancel' = 0
+			var ojson = option[ oj ];
+			info( {
+				  icon        : icon
+				, title       : title
+				, message     : ojson.message
+				, buttonlabel : 'No'
+				, button      : () => setOption( 0 )
+				, ok          : () => setOption( 1 )
+			} );
+			break;
+		case 'skip': // 'Cancel' = continue, 'Ok' = skip options
+			info( {
+				  icon        : icon
+				, title       : title
+				, message     : option[ oj ]
+				, buttonlabel : 'No'
+				, button      : setOption
+				, oklabel     : 'Yes'
+				, ok          : formPost
+			} );
+			break;
+		case 'text':
+			var ojson = option[ oj ];
+			info( {
+				  icon      : icon
+				, title     : title
+				, message   : ojson.message
+				, textlabel : ojson.label
+				, values    : ojson.value
+				, boxwidth  : ojson.width
+				, ok        : () => setOption( infoVal() || 0 )
+			} );
+			break;
+		case 'password':
+			ojson = option[ oj ];
+			info( {
+				  icon          : icon
+				, title         : title
+				, message       : ojson.message
+				, passwordlabel : ojson.label
+				, ok:          () => {
+					var pwd = infoVal();
+					if ( pwd ) {
+						infoVerifyPassword( title, pwd, () => setOption( pwd ) );
+					} else {
+						setOption( 0 );
+					}
+				}
+			} );
+			break;
+		case 'radio': // single value
+			ojson = option[ oj ];
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : ojson.message
+				, radio   : ojson.list
+				, values  : ojson.checked
+				, ok      : () => setOption( infoVal() )
+			} );
+			break;
+		case 'select': // long single value
+			ojson = option[ oj ];
+			info( {
+				  icon        : icon
+				, title       : title
+				, message     : ojson.message
+				, selectlabel : ojson.label
+				, select      : ojson.list
+				, values      : ojson.checked
+				, boxwidth    : ojson.width
+				, ok          : () => setOption( infoVal() )
+			} );
+			break;
+		case 'checkbox': // multiple values
+			ojson = option[ oj ];
+			info( {
+				  icon     : icon
+				, title    : title
+				, message  : ojson.message
+				, checkbox : ojson.list
+				, values   : ojson.checked
+				, ok       : () => setOption( infoVal() )
+			} );
+			break;
+	}
+}
+function setOption( val ) {
+	if ( val ) opt.push( val );
+	j++;
+	j < olength ? getOption() : formPost();
+}
