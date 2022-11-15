@@ -7,7 +7,7 @@ alias=r1
 # 20221116
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
-sed -E -i 's/(state=)"(.*)"/\1\2/' $dirshm/status
+[[ ! -e $dirdata/mpdconf ]] && backup=1
 
 sed -i '/interfaces/ d' /etc/samba/smb.conf
 systemctl try-restart smb 
@@ -66,18 +66,6 @@ ExecStart=/srv/http/bash/status-dab.sh
 " > $file
 	systemctl daemon-reload
 fi
-
-
-# 20220916
-if (( $( wc -l < $dirmpd/counts ) == 1 )); then
-	echo '{
-  "playlists" : '$( ls -1 $dirplaylists | wc -l )'
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
-}' > $dirmpd/counts
-fi
-
-# 20220907
-[[ $( pacman -Q bluez ) < 'bluez 5.65-3' ]] && pacman -Sy --noconfirm bluez bluez-utils
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -156,6 +144,9 @@ systemctl daemon-reload
 $dirsettings/player-conf.sh
 
 installfinish
+
+# 20221116
+[[ ! $backup ]] && exit
 
 lcolor -
 echo -e "$info Backup of Data and Settings:"
