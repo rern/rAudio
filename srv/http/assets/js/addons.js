@@ -43,9 +43,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : type +'?'
-			, ok      : () => {
-				formPost();
-			}
+			, ok      : formPost
 		} );
 	}
 } ).press( function( e ) {

@@ -878,9 +878,7 @@ function infoVerifyPassword( title, pwd, fn ) { // verify password - called from
 				info( {
 					  title   : title
 					, message : 'Passwords not matched. Please try again.'
-					, ok      : () => {
-						infoVerifyPassword( title, pwd, fn )
-					}
+					, ok      : () => infoVerifyPassword( title, pwd, fn )
 				} );
 			}
 		}
