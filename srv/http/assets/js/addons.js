@@ -182,8 +182,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 	title       = addons[ alias ].title;
 	type        = $this.text();
 	option      = addons[ alias ].option;
-	var version = $this.parent().data( 'version' );
-	opt         = version ? [ alias, type, version ] : [ alias, type ];
+	opt         = [ alias, type, 'main' ];
 	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 		j = 0;
 		getOption();
@@ -202,15 +201,15 @@ $( '.boxed-group .infobtn' ).click( function() {
 	alias = $this.parent().data( 'alias' );
 	title = addons[ alias ].title;
 	type  = $this.text();
-	opt   = [ alias, type ];
 	info( {
 		  icon      : icon
 		, title     : title
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : () => {
+			opt    = [ alias, type, infoVal() ];
 			option = addons[ alias ].option;
-			if ( type === 'Install' && option ) {
+			if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 				j = 0;
 				getOption();
 			} else {
