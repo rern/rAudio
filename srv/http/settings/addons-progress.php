@@ -46,7 +46,7 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 	</div>
 </div>
 <br>
-<p id="addontitle"><i class="titleicon fa fa-gear gr<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<?=$name?> <gr>•</gr> <?=$type?> ...</p>
+<p class="addontitle gr"><i class="titleicon fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$name?></wh> - <?=$type?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
