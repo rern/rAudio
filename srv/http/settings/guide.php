@@ -45,52 +45,48 @@ Bottom bar:
  • Arrow icons / Swipe - Previous / next page
 </p>
 <div id="guide">
-	<p><span id="count" style="float: right"></span></p>
+	<p><span class="count" style="float: right"></span></p>
 	
-	<img src="/assets/img/guide/1.jpg?v=<?=$time?>">
+	<img class="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
 	
 <?php
 $html     = '<div class="bottom-bar">';
 foreach( [ 'library', 'playback', 'playlist', 'settings' ] as $id ) {
-	$html.= '<a id="'.$id.'"><i class="fa fa-'.$id.'"></i><span>'.ucfirst( $id ).'</span></a>';
+	$html.= '<a id="'.$id.'" class="btn"><i class="fa fa-'.$id.'"></i><span>'.ucfirst( $id ).'</span></a>';
 }
-$html    .= '<a id="prevnext"><i class="prev fa fa-arrow-left"></i><i class="next fa fa-arrow-right"></i></a></div>';
+$html    .= '<a id="prevnext"><i class="prev fa fa-arrow-left"></i><i class="next fa fa-arrow-right"></i></a>
+			 </div>';
 echo $html;
 ?>
 </div>
 <script>
-var nlibrary  = 23;
-var nplaylist = 40;
-var nsettings = 48;
-var ntotal    = 60;
-var n         = 1;
-var count     = document.getElementById( 'count' );
-var img       = document.getElementsByTagName( 'img' )[ 0 ];
-var buttons   = Array.from( document.getElementsByTagName( 'a' ) );
-var cl0 = {};
-[ 'close', 'container', 'help-block', 'help-head', 'next', 'prev' ].forEach( ( el ) => {
-	cl0[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
+nlibrary  = 23;
+nplaylist = 40;
+nsettings = 48;
+ntotal    = 60;
+n         = 1;
+E         = {};
+[ 'close', 'container', 'count', 'help-block', 'help-head', 'image', 'next', 'prev' ].forEach( ( el ) => {
+	E[ el.replace( '-', '' ) ] = document.getElementsByClassName( el )[ 0 ];
 } );
+E.btns    = Array.from( document.getElementsByClassName( 'btn' ) );
 
-count.textContent = n +' / '+ ntotal;
-document.getElementById( 'playback' ).classList.add( 'active' );
-cl0.container.classList.remove( 'hide' );
-cl0.close.addEventListener( 'click', function() {
+E.btns[ 1 ].classList.add( 'active' );
+E.count.textContent = n +' / '+ ntotal;
+E.container.classList.remove( 'hide' );
+E.close.addEventListener( 'click', function() {
 	location.href = '/';
 } );
-cl0.helphead.addEventListener( 'click', function() {
-	if ( cl0.helpblock.style.display === 'none' ) {
+E.helphead.addEventListener( 'click', function() {
+	if ( E.helpblock.style.display === 'none' ) {
 		this.classList.add( 'bl' );
-		cl0.helpblock.style.display = '';
+		E.helpblock.style.display = '';
 	} else {
 		this.classList.remove( 'bl' );
-		cl0.helpblock.style.display = 'none';
+		E.helpblock.style.display = 'none';
 	}
 } );
-
-buttons.forEach( ( el ) => {
-	if ( el.id === 'prevnext' ) return
-	
+E.btns.forEach( ( el ) => {
 	el.addEventListener( 'click', function() {
 		var page = {
 			  playback : 1
@@ -102,22 +98,22 @@ buttons.forEach( ( el ) => {
 		renderPage( n );
 	} );
 } );
-cl0.next.addEventListener( 'click', function() {
+E.next.addEventListener( 'click', function() {
 	n = n < ntotal ? n + 1 : 1;
 	renderPage( n );
 } );
-cl0.prev.addEventListener( 'click', function() {
+E.prev.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
 document.body.addEventListener( 'keyup', ( e ) => {
 	if ( e.key === 'ArrowLeft' ) {
-		cl0.prev.click();
+		E.prev.click();
 	} else if ( e.key === 'ArrowRight' ) {
-		cl0.next.click();
+		E.next.click();
 	}
 } );
-// swipe
+
 if ( navigator.maxTouchPoints ) { // swipe
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
@@ -126,15 +122,15 @@ if ( navigator.maxTouchPoints ) { // swipe
 	window.addEventListener( 'touchend', function( e ) {
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) > 100 ) {
-			xdiff > 0 ? cl0.next.click() : cl0.prev.click();
+			xdiff > 0 ? E.next.click() : E.prev.click();
 		}
 	} );
 }
 
 function renderPage( n ) {
-	count.textContent = n +' / '+ ntotal;
-	img.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
-	buttons.forEach( ( el ) => {
+	E.count.textContent = n +' / '+ ntotal;
+	E.image.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
+	E.btns.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );
 	if ( n >= 1 && n < nlibrary ) {
