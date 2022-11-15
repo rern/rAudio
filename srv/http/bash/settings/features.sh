@@ -382,10 +382,11 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 	pushRefresh
 	;;
 shairport-sync )
-	if [[ ${args[1]} == true ]]; then
-		featureSet shairport-sync
+	[[ ${args[1]} == true ]] && enable=1
+	if [[ $( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c1 ) == 4 ]]; then # version 4
+		enable && featureSet nqptp shairport-sync || systemctl disable --now nqptp shairport-sync
 	else
-		systemctl disable --now shairport-sync
+		enable && featureSet shairport-sync || systemctl disable --now shairport-sync
 	fi
 	pushRefresh
 	;;

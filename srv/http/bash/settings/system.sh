@@ -1099,6 +1099,7 @@ wlan )
 	else
 		systemctl -q is-active hostapd && $dirsettings/features.sh hostapddisable
 		ifconfig wlan0 down
+		rmmod brcmfmac
 	fi
 	pushRefresh
 	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
