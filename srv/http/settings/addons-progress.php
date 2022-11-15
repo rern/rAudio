@@ -25,8 +25,13 @@ if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i             = array_search( 'password', array_keys( $addon[ 'option' ] ) );
 	$opt[ $i + 3 ] = '***';
 }
-$postinfo      = $type." done.";
-$postinfo     .= isset( $addon[ 'postinfo' ] ) ? '<br><br><i class="fa fa-info-circle"></i>'.$addon[ 'postinfo' ] : '';
+$postmsg       = $type.' done.';
+$postinfo      = $addon[ 'postinfo' ] ?? '';
+if ( $postinfo ) {
+	$c0 = $postinfo[ 0 ];
+	if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
+	if ( $postinfo ) $postmsg  .= '<br><br><i class="fa fa-info-circle wh"></i>'.$postinfo;
+}
 $installurl    = $addon[ 'installurl' ];
 $installfile   = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
@@ -36,8 +41,8 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
 		<div id="infoTopBg"><div id="infoTop"><i class="fa fa-jigsaw"></i><a id="infoTitle"><?=$name?></a></div></div>
-		<div id="infoContent"><div class="infomessage"><?=$postinfo?></div></div>
-		<div class="infobtn infobtn-primary" style="min-width: 70px; margin-top: 10px;">OK</div>
+		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
+		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 <br>

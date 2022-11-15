@@ -472,6 +472,9 @@ input::-moz-focus-inner {
 	user-select: none;
 	-webkit-user-select: none;
 }
+#infoBox > .infobtn {
+	margin-top: 10px;
+}
 .infobtn-primary {
 	background-color: var( --cm );
 }

@@ -32,9 +32,6 @@
 #login {
 	margin           : 0 auto;
 }
-#infoOk {
-	margin-top       : 10px;
-}
 </style>
 
 <div id="infoOverlay" class="hide">
@@ -80,9 +77,19 @@ E.login.addEventListener( 'click', () => {
 	formdata.append( 'password', pwd.value );
 	fetch( 'cmd.php', { method: 'POST', body: formdata } )
 		.then( ( response ) => response.text() ) // set response data as text > verified
-		.then( ( verified ) => verified != -1 ? location.reload() : E.infoOverlay.classList.remove( 'hide' ) );
+		.then( ( verified ) => {
+			if ( verified != -1 ) {
+				location.reload();
+			} else {
+				E.infoOverlay.classList.remove( 'hide' );
+				E.pwd.style[ 'caret-color' ] = 'transparent'; // fix: hide blinking cursor on focus
+			}
+		} );
 } );
-E.infoOk.addEventListener( 'click', () => E.infoOverlay.classList.add( 'hide' ) );
+E.infoOk.addEventListener( 'click', () => {
+	E.infoOverlay.classList.add( 'hide' );
+	E.pwd.style[ 'caret-color' ] = '';
+} );
 </script>
 
 </body>
