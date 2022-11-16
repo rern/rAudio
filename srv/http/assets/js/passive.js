@@ -437,7 +437,7 @@ function psVolume( data ) {
 		return
 	} else if ( 'volumenone' in data ) {
 		G.display.volumenone = data.volumenone;
-		$volume.toggleClass( 'hide', data.volumenone )
+		$volume.toggleClass( 'hide', ! G.display.volume || G.display.volumenone );
 		return
 	}
 	
