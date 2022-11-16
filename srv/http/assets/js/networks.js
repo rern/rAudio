@@ -322,9 +322,7 @@ function editLANSet( values ) {
 	} );
 }
 function editWiFi() {
-	bash( [ 'profileget', G.li.data( 'ssid' ) ], values => {
-		infoWiFi( values );
-	}, 'json' );
+	bash( [ 'profileget', G.li.data( 'ssid' ) ], values => infoWiFi( values ), 'json' );
 }
 function infoAccesspoint() {
 	info( {
@@ -379,9 +377,7 @@ function infoWiFi( values ) {
 							  icon    : 'wifi'
 							, title   : 'Duplicate IP'
 							, message : 'IP <wh>'+ data.Address +'</wh> already in use.'
-							, ok      : () => {
-								editWiFi();
-							}
+							, ok      : editWiFi
 						} );
 					} else {
 						connectWiFi( data );
@@ -493,9 +489,7 @@ function scanBluetooth() {
 		if ( data ) {
 			G.listbtscan = data;
 			var htmlbt   = '';
-			data.forEach( list => {
-				htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>';
-			} );
+			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>' );
 			$( '#listbtscan' ).html( htmlbt );
 		}
 		G.timeoutScan = setTimeout( scanBluetooth, 12000 );

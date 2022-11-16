@@ -28,9 +28,7 @@ function equalizer() {
 function infoEqualizer( update ) {
 	var values     = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset  = '';
-	G.eq.presets.forEach( name => {
-		optpreset += '<option value="'+ name +'">'+ name +'</option>';
-	} );
+	G.eq.presets.forEach( name => optpreset += '<option value="'+ name +'">'+ name +'</option>' );
 	info( {
 		  icon       : 'equalizer'
 		, title      : 'Equalizer'
@@ -129,9 +127,7 @@ function eqButtonSet() {
 	} else {
 		var val     = G.eq.nameval[ G.eq.current ].split( ' ' )
 		var vnew    = infoVal().slice( 2 );
-		var changed = vnew.some( ( v, i ) => {
-			return Math.abs( v - val[ i ] ) > 1 // fix: resolution not precise
-		} );
+		var changed = vnew.some( ( v, i ) => Math.abs( v - val[ i ] ) > 1 ); // fix: resolution not precise
 	}
 	$( '#eqrename' ).toggleClass( 'disabled', flat || unnamed || changed );
 	$( '#eqsave' ).toggleClass( 'disabled', flat || unnamed || ! changed );

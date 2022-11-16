@@ -142,9 +142,7 @@ function list2JSON( list ) {
 							+ status;
 				listError( error );
 				$( '#data' ).on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', () => {
-						refreshData();
-					} );
+					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
 					notify( 'mpd', 'MPD', 'Start ...' );
 				} );
 			} );
@@ -199,9 +197,7 @@ function refreshData() {
 }
 function setSwitch() {
 	if ( page !== 'networks' && page !== 'relays' ) {
-		$( '.switch' ).each( ( i, el ) => {
-			$( el ).prop( 'checked', G[ el.id ] );
-		} );
+		$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', G[ el.id ] ) );
 		$( '.setting' ).each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.prev().is( 'select' ) ) return // not switch
@@ -461,9 +457,7 @@ $( '.helphead' ).click( function() {
 		return
 	}
 	
-	var eltop = $( 'heading' ).filter( ( i, el ) => {
-		return el.getBoundingClientRect().top > 0
-	} )[ 0 ]; // return 1st element
+	var eltop = $( 'heading' ).filter( ( i, el ) => el.getBoundingClientRect().top > 0 )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
 		var visible = $this.hasClass( 'bl' );

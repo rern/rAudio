@@ -535,9 +535,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( code ) {
-		bash( [ 'spotifytoken', code ], () => {
-			showContent();
-		} );
+		bash( [ 'spotifytoken', code ], () => showContent );
 		window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
 		return
 		

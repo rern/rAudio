@@ -157,9 +157,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			pushstream.disconnect();
 		}
 	}
-	document.addEventListener( 'visibilitychange', () => {
-		document.hidden ? disconnect() : connect();
-	} ); // invisible
+	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
 	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
 	window.onpageshow = window.onfocus = connect;
 }
@@ -423,9 +421,7 @@ function info( json ) {
 	if ( I.tab ) {
 		$( '#infoTab' ).remove();
 		htmltab      = '<div id="infoTab">';
-		I.tab.forEach( lbl => {
-			htmltab += '<a>'+ lbl +'</a>';
-		} );
+		I.tab.forEach( lbl => htmltab += '<a>'+ lbl +'</a>' );
 		htmltab += '</div>';
 		$( '#infoTopBg' ).after( htmltab );
 		$( '#infoTab a' ).click( function() {
@@ -454,16 +450,12 @@ function info( json ) {
 		if ( I.textlabel ) {
 			if ( typeof I.textlabel !== 'object' ) I.textlabel = [ I.textlabel ];
 			htmls.text      = '';
-			I.textlabel.forEach( lbl => {
-				htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>';
-			} );
+			I.textlabel.forEach( lbl => htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
 		}
 		if ( I.passwordlabel ) {
 			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => {
-				htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>';
-			} );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';

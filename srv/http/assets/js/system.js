@@ -292,9 +292,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 $( '#setting-lcdchar' ).click( function() {
 	var i2caddress  = '<td>Address</td>';
 	if ( ! G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
-	G.lcdcharaddr.forEach( el => {
-		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
-	} );
+	G.lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
 	var optpins  = '<select>';
 	$.each( pin2gpio, k => {
 		optpins += '<option value='+ k +'>'+ k +'</option>'; // only lcdchar uses j8 pin number
@@ -1079,7 +1077,5 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( dirbash +'system-data.sh status', status => {
-		$( '#status' ).html( status );
-	} );
+	bash( dirbash +'system-data.sh status', status => $( '#status' ).html( status ) );
 }

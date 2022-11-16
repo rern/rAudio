@@ -413,9 +413,7 @@ function renderPage() {
 				.val( G.asoundcard );
 			var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
 			if ( 'mixerdevices' in device ) {
-				device.mixerdevices.forEach( mixer => {
-					htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>';
-				} );
+				device.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
 			}
 			$( '#hwmixer' )
 				.html( htmlhwmixer )
