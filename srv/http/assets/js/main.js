@@ -92,7 +92,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
 			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| ! O.infohide
+			|| ! I.infohide
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
