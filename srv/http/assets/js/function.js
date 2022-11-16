@@ -563,9 +563,7 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
-		$.each( status, ( k, v ) => { // ??? needs braces here
-			G.status[ k ] = v;
-		} );
+		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
@@ -1085,9 +1083,7 @@ function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
-	$.each( G.status.counts, ( k, v ) => { 
-		$( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' );
-	} );
+	$.each( G.status.counts, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) {
 	G.librarylist = 1;

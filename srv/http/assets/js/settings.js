@@ -290,9 +290,7 @@ function psPlayer( data ) {
 }
 function psRefresh( data ) {
 	if ( data.page === page ) {
-		$.each( data, ( k, v ) => {
-			G[ k ] = v;
-		} );
+		$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
 		setSwitch();
 		renderPage();
 	}

@@ -54,9 +54,7 @@ function radioRefresh() {
 	}
 }
 function statusUpdate( data ) {
-	$.each( data, ( k, v ) => {
-		G.status[ k ] = v;
-	} );
+	$.each( data, ( k, v ) => { G.status[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
@@ -71,8 +69,8 @@ function webradioIcon( srcnoext ) {
 	} ).find( '.lib-icon' );
 }
 // pushstreamChannel() in common.js
-var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart', 'display', 'equalizer', 'mpdplayer', 'mpdradio', 'mpdupdate',
-				'notify', 'option', 'order', 'playlist', 'radiolist', 'relays', 'reload', 'savedplaylist', 'volume', 'webradio' ];
+var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
+				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
 if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamConnect() {
@@ -176,9 +174,7 @@ function psDisplay( data ) {
 		return
 	}
 	
-	$.each( data, ( k, v ) => {
-		G.display[ k ] = v;
-	} );
+	$.each( data, ( k, v ) => { G.display[ k ] = v } ); // need braces
 	G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {

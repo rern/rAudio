@@ -505,9 +505,7 @@ function info( json ) {
 				htmls.select      = I.select;
 			} else {
 				htmls.select      = '<tr><td>'+ I.selectlabel +'</td><td><select>';
-				$.each( I.select, ( k, v ) => {
-					htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>';
-				} );
+				$.each( I.select, ( k, v ) => htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 			}
 			htmls.select += '</select></td></tr>';
 		}

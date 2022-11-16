@@ -204,9 +204,7 @@ $( '#setting-bluetooth' ).click( function() {
 $( '#setting-wlan' ).click( function() {
 	bash( 'cat /srv/http/assets/data/regdomcodes.json', list => {
 		var options  = '';
-		$.each( list, ( k, v ) => {
-			options += '<option value="'+ k +'">'+ v +'</option>';
-		} );
+		$.each( list, ( k, v ) => options += '<option value="'+ k +'">'+ v +'</option>' );
 		var infowifi = `\
 <table>
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
@@ -294,9 +292,7 @@ $( '#setting-lcdchar' ).click( function() {
 	if ( ! G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
 	G.lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
 	var optpins  = '<select>';
-	$.each( pin2gpio, k => {
-		optpins += '<option value='+ k +'>'+ k +'</option>'; // only lcdchar uses j8 pin number
-	} );
+	Object.keys( pin2gpio ).forEach( k => optpins += '<option value='+ k +'>'+ k +'</option>' ); // only lcdchar uses j8 pin number
 	optpins     += '</select>';
 	var infolcdchar = `\
 <table>
@@ -441,9 +437,7 @@ $( '#setting-relays' ).click( function() {
 } );
 $( '#setting-rotaryencoder' ).click( function() {
 	var pin  = '<td colspan="3"><select >';
-	$.each( pin2gpio, ( k, v ) => {
-		pin += '<option value='+ v +'>'+ k +'</option>';
-	} );
+	$.each( pin2gpio, ( k, v ) => pin += '<option value='+ v +'>'+ k +'</option>' );
 	pin += '</select></td>';
 	var inforotaryencoder = `\
 <table>
@@ -555,9 +549,7 @@ $( '#setting-lcd' ).click( function() {
 } );
 $( '#setting-vuled' ).click( function() {
 	var opt  = '';
-	$.each( pin2gpio, ( k, v ) => {
-		opt += '<option value="'+ v +'">'+ k +'</option>';
-	} );
+	$.each( pin2gpio, ( k, v ) => opt += '<option value="'+ v +'">'+ k +'</option>' );
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
