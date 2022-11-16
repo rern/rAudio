@@ -54,7 +54,7 @@ function radioRefresh() {
 	}
 }
 function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { G.status[ k ] = v } ); // need braces
+	jsonRefresh( data, G.status );
 	if ( ! $( '#playback' ).hasClass( 'fa-'+ G.status.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
@@ -174,7 +174,7 @@ function psDisplay( data ) {
 		return
 	}
 	
-	$.each( data, ( k, v ) => { G.display[ k ] = v } ); // need braces
+	jsonRefresh( data, G.display )
 	G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;
 	displayBars();
 	if ( G.playback ) {

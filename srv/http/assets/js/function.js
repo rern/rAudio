@@ -563,7 +563,7 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
-		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
+		jsonRefresh( status, G.status );
 		if ( G.playback ) {
 			displayPlayback();
 		} else if ( G.library ) {
@@ -758,6 +758,9 @@ function infoUpdate( path ) {
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal() ] )
 	} );
+}
+function jsonRefresh( data, json ) {
+	$.each( data, ( k, v ) => { json[ k ] = v } ); // need braces
 }
 function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
