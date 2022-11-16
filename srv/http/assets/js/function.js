@@ -86,9 +86,7 @@ function changeIP() { // for android app
 function clearIntervalAll() {
 	// .btn-cmd[play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
 	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
-	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( el => {
-		clearInterval( el );
-	} );
+	[ G.intBlinkDot, G.intBlinkUpdate, G.intElapsedPl, G.intElapsed, G.intRelaysTimer, G.intVu ].forEach( el => clearInterval( el ) );
 	if ( G.status.state === 'play' && ! G.status.stream ) setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
@@ -363,12 +361,6 @@ function displayBottom() {
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#'+ G.page ).addClass( 'active' );
 }
-function displayCheckboxSet( i, enable, check ) {
-	$( '#infoContent input' ).eq( i )
-		.prop( 'disabled', ! enable )
-		.prop( 'checked', check )
-		.parent().toggleClass( 'gr', ! enable );
-}
 function displayPlayback() {
 	var $cover  = $( '#coverart-block' );
 	$time.toggleClass( 'hide', ! G.display.time );
@@ -409,12 +401,9 @@ function displayPlayback() {
 function displaySave( keys ) {
 	var values  = infoVal();
 	var display = JSON.parse( JSON.stringify( G.display ) );
-	keys.forEach( ( k, i ) => {
-		display[ k ] = values[ i ];
-	} );
-	[ 'audiocd', 'color', 'equalizer', 'lock', 'order', 'relays', 'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => {
-		delete display[ item ];
-	} );
+	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
+	[ 'audiocd', 'color',     'equalizer',  'lock',             'order',
+	  'relays',  'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
@@ -428,9 +417,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
 	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
-	submenu.forEach( el => { // submenu toggled by css .settings + .submenu
-		$( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] );
-	} );
+	submenu.forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {
@@ -466,9 +453,7 @@ function getBio( artist, getsimilar ) {
 		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p><i class="fa fa-artist fa-lg"></i>&ensp;Similar Artists:<p><span>';
-			similar.forEach( a => {
-				similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;';
-			} );
+			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
 		var biohtml = `
@@ -546,9 +531,7 @@ function getPlaybackStatus( withdisplay ) {
 				, cancel  : loader
 				, okcolor : orange
 				, ok      : () => {
-					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', () => {
-						location.reload();
-					} );
+					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', () => location.reload() );
 				}
 			} );
 			return
@@ -580,7 +563,7 @@ function getPlaybackStatus( withdisplay ) {
 			displaySubMenu();
 			bannerHide();
 		}
-		$.each( status, ( k, v ) => {
+		$.each( status, ( k, v ) => { // ??? needs braces here
 			G.status[ k ] = v;
 		} );
 		if ( G.playback ) {
@@ -711,9 +694,7 @@ function infoLibrary( page2 ) {
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
 	keys         = keys.filter( k => k !== '-' );
 	var values   = [];
-	keys.forEach( k => {
-		values.push( G.display[ k ] );
-	} );
+	keys.forEach( k => values.push( G.display[ k ] ) );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
@@ -728,26 +709,26 @@ function infoLibrary( page2 ) {
 		, checkchanged : 1
 		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
-			keys.forEach( ( k, i ) => {
-				window[ '$'+ k ] = $chk.eq( i );
-				window[ k ]      = i;
-			} );
+			var $el  = {}
+			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
 			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
-				$tapaddplay.add( $tapreplaceplay ).click( function() {
-					var i = $chk.index( this ) === tapaddplay ? tapreplaceplay : tapaddplay;
-					if ( $( this ).prop( 'checked' ) ) $chk.eq( i ).prop( 'checked', 0 );
+				$el.tapaddplay.click( function() {
+					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', 0 );
 				} );
-				$hidecover.change( function() {
-					if ( $( this ).prop( 'checked' ) ) {
-						displayCheckboxSet( fixedcover, 0, 0 );
-					} else {
-						displayCheckboxSet( fixedcover, 1 );
-					}
+				$el.tapreplaceplay.click( function() {
+					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', 0 );
 				} );
-				$fixedcover.prop( 'disabled', G.display.hidecover );
+				$el.hidecover.change( function() {
+					var enable = $( this ).prop( 'checked' ) ? 0 : 1;
+					$el.fixedcover
+						.prop( 'disabled', ! enable )
+						.prop( 'checked', 0 )
+						.parent().toggleClass( 'gr', ! enable );
+				} );
+				$el.fixedcover.prop( 'disabled', G.display.hidecover );
 			} else {
-				$sd.add( $usb ).prop( 'disabled', G.status.shareddata );
+				$el.sd.add( $el.usb ).prop( 'disabled', G.status.shareddata );
 			}
 		}
 		, ok           : () => displaySave( keys )
@@ -880,9 +861,7 @@ function mpcSeekBar( pageX ) {
 }
 function orderLibrary() {
 	G.display.order.forEach( name => {
-		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => {
-			return $( el ).find( '.lipath' ).text() === name;
-		} );
+		var $libmode = $( '.lib-mode' ).filter( ( i, el ) => $( el ).find( '.lipath' ).text() === name );
 		$libmode.detach();
 		$( '#lib-mode-list' ).append( $libmode );
 	} );
@@ -1106,7 +1085,7 @@ function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! G.display.count );
 	var songs = G.status.counts.song ? G.status.counts.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
 	$( '#li-count' ).html( songs );
-	$.each( G.status.counts, ( k, v ) => {
+	$.each( G.status.counts, ( k, v ) => { 
 		$( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' );
 	} );
 }
@@ -1375,9 +1354,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( el => {
-		clearInterval( el );
-	} );
+	[ G.intBlinkDot, G.intElapsedPl, G.intElapsed, G.intVu ].forEach( el => clearInterval( el ) );
 	$( '#vuneedle' ).css( 'transform', '' );
 	$( '#elapsed, #total, #progress' ).empty();
 	if ( G.status.state === 'play' ) {
@@ -1867,9 +1844,7 @@ function switchPage( page ) {
 }
 function thumbUpdate( path ) {
 	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	[ 'cove', 'update', 'main', path || '' ].forEach( el => {
-		form += '<input type="hidden" name="opt[]" value="'+ el +'">';
-	} );
+	[ 'cove', 'update', 'main', path || '' ].forEach( el => form += '<input type="hidden" name="opt[]" value="'+ el +'">' );
 	$( 'body' ).append( form +'</form>' );
 	$( '#formtemp' ).submit();
 }
@@ -1920,16 +1895,12 @@ function volumeBarSet( pageX ) {
 			, {
 				  duration : ms
 				, easing   : 'linear'
-				, complete : () => {
-					G.volumebar = setTimeout( volumeBarHide, 3000 );
-				}
+				, complete : () => G.volumebar = setTimeout( volumeBarHide, 3000 )
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
 		
-		bash( cmd, () => {
-			$( '.volumeband' ).removeClass( 'disabled' );
-		} );
+		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
 	}
 	$( '#volume-text' ).text( G.status.volumemute || vol );
 	$( '#i-mute, #ti-mute' ).addClass( 'hide' );

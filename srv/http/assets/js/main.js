@@ -166,9 +166,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
-				bash( [ 'camillagui' ], () => {
-					urlReachable( 'http://'+ location.host +':5000' );
-				} );
+				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5000' ) );
 				loader();
 			} else {
 				equalizer();
@@ -282,9 +280,7 @@ $( '#displayplayback' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplayback );
 	var values = [];
-	keys.forEach( k => {
-		values.push( G.display[ k ] );
-	} );
+	keys.forEach( k => values.push( G.display[ k ] ) );
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback'
@@ -296,69 +292,73 @@ $( '#displayplayback' ).click( function() {
 		, checkchanged : 1
 		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
-			keys.forEach( ( k, i ) => {
-				window[ '$'+ k ] = $chk.eq( i );
-				window[ k ]      = i;
-			} );
-			function toggleBars( t, c ) {
+			var $el  = {}
+			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
+			function displayInfoBars( t, c ) {
 				if ( ! t && ! c ) {
-					displayCheckboxSet( bars, 0, 1 );
-					displayCheckboxSet( barsalways, 0, 1 );
+					displayInfoChk( $el.bars, 0, 1 );
+					displayInfoChk( $el.barsalways, 0, 1 );
 				} else {
-					displayCheckboxSet( bars, 1 );
-					displayCheckboxSet( barsalways, 1, 0 );
+					displayInfoChk( $el.bars, 1, 0 );
+					displayInfoChk( $el.barsalways, 1, 0 );
 				}
 			}
-			if ( ! G.display.bars ) displayCheckboxSet( barsalways );
-			if ( ! G.display.cover ) displayCheckboxSet( vumeter );
-			if ( G.display.volumenone ) displayCheckboxSet( volume, 0, 0 );
+			function displayInfoChk( $ck, enable, check ) {
+				$ck
+					.prop( 'disabled', ! enable )
+					.prop( 'checked', check )
+					.parent().toggleClass( 'gr', ! enable );
+			}
+			if ( ! G.display.bars ) displayInfoChk( $el.barsalways );
+			if ( ! G.display.cover ) displayInfoChk( $el.vumeter );
+			if ( G.display.volumenone ) displayInfoChk( $el.volume, 0, 0 );
 			if ( ! G.display.time && ! G.display.volume ) {
-				displayCheckboxSet( cover );
-				displayCheckboxSet( buttons );
+				displayInfoChk( $el.cover );
+				displayInfoChk( $el.buttons );
 			}
-			if ( ! G.display.time && ! G.display.cover ) displayCheckboxSet( bars, 0, 1 );
-			$time.add( $volume ).change( function() {
-				var t = $time.prop( 'checked' );
-				var c = $cover.prop( 'checked' );
-				var v = $volume.prop( 'checked' );
+			if ( ! G.display.time && ! G.display.cover ) displayInfoChk( $el.bars, 0, 1 );
+			$el.time.add( $el.volume ).change( function() {
+				var t = $el.time.prop( 'checked' );
+				var c = $el.cover.prop( 'checked' );
+				var v = $el.volume.prop( 'checked' );
 				if ( t || v ) {
-					displayCheckboxSet( cover, 1 );
-					displayCheckboxSet( buttons, 1 );
+					displayInfoChk( $el.cover, 1, 0 );
+					displayInfoChk( $el.buttons, 1, 0 );
 				} else {
-					displayCheckboxSet( cover, 0, 1 );
-					displayCheckboxSet( buttons, 0, 0 );
+					displayInfoChk( $el.cover, 0, 1 );
+					displayInfoChk( $el.buttons, 0, 0 );
 				}
-				if ( ! t && ( ! v || G.display.volumenone ) ) displayCheckboxSet( cover, 1, 1 );
-				toggleBars( t, c );
+				if ( ! t && ( ! v || G.display.volumenone ) ) displayInfoChk( $el.cover, 1, 1 );
+				displayInfoBars( t, c );
 			} );
-			$bars.change( function() {
+			$el.bars.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
-					displayCheckboxSet( barsalways, 1 );
+					displayInfoChk( $el.barsalways, 1 );
 				} else {
-					displayCheckboxSet( barsalways, 0, 0 );
+					displayInfoChk( $el.barsalways, 0, 0 );
 				}
 			} );
-			$cover.change( function() {
-				var t = $time.prop( 'checked' );
-				var c = $cover.prop( 'checked' );
-				var v = $volume.prop( 'checked' );
+			$el.cover.change( function() {
+				var t = $el.time.prop( 'checked' );
+				var c = $el.cover.prop( 'checked' );
+				var v = $el.volume.prop( 'checked' );
 				if ( c ) {
-					displayCheckboxSet( vumeter, 1, 0 );
-					$covervu.add( $vumeter ).prop( 'disabled', 0 );
+					displayInfoChk( $el.vumeter, 1, 0 );
+					$el.covervu.add( $el.vumeter ).prop( 'disabled', 0 );
 				} else {
-					displayCheckboxSet( vumeter, 0, 0 );
-					if ( ! t && ( ! v || G.display.volumenone ) ) displayCheckboxSet( time, 1, 1 );
-					displayCheckboxSet( covervu, 0, 0 );
-					displayCheckboxSet( vumeter, 0, 0 );
-					$covervu.add( $vumeter ).prop( 'disabled', 1 );
+					displayInfoChk( $el.vumeter, 0, 0 );
+					if ( ! t && ( ! v || G.display.volumenone ) ) displayInfoChk( $el.time, 1, 1 );
+					displayInfoChk( $el.covervu, 0, 0 );
+					displayInfoChk( $el.vumeter, 0, 0 );
+					$el.covervu.add( $el.vumeter ).prop( 'disabled', 1 );
 				}
-				toggleBars( t, c );
+				displayInfoBars( t, c );
 			} );
-			$covervu.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( vumeter, 1, 0 );
+			$el.covervu.change( function() {
+				if ( $( this ).prop( 'checked' ) ) displayInfoChk( $el.vumeter, 1, 0 );
 			} );
-			$vumeter.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayCheckboxSet( covervu, 1, 0 );
+			$el.vumeter.change( function() {
+				if ( $( this ).prop( 'checked' ) ) displayInfoChk( $el.covervu, 1, 0 );
 			} );
 		}
 		, ok           : () => displaySave( keys )
@@ -373,9 +373,7 @@ $( '#displayplaylist' ).click( function() {
 	if ( 'coverTL' in G ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplaylist );
 	var values = [];
-	keys.forEach( k => {
-		values.push( G.display[ k ] );
-	} );
+	keys.forEach( k => values.push( G.display[ k ] ) );
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Playlist'
@@ -649,7 +647,7 @@ $( '#time' ).roundSlider( {
 		clearIntervalAll();
 		mpcSeek( e.value );
 	}
-	, stop              : () => {
+	, stop        : function() {
 		G.drag = 0;
 	}
 } );
@@ -954,15 +952,11 @@ $( '.map' ).click( function( e ) {
 			
 			var list = [ 'bars', 'time', 'cover', 'volume', 'buttons' ];
 			if ( 'coverTL' in G ) {
-				list.forEach( el => {
-					G.display[ el ] = G.coverTL[ el ];
-				} );
+				list.forEach( el => G.display[ el ] = G.coverTL[ el ] );
 				delete G.coverTL;
 			} else {
 				G.coverTL = {};
-				list.forEach( el => {
-					G.coverTL[ el ] = G.display[ el ];
-				} );
+				list.forEach( el => G.coverTL[ el ] = G.display[ el ] );
 				if ( this.id === 'coverTL' ) {
 					if ( G.display.time || G.display.volume ) {
 						G.display.bars = G.display.time = G.display.volume = G.display.buttons = false;
@@ -1469,9 +1463,7 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	}
 	, onUpdate      : function () {
 		var order = [];
-		$( '.mode' ).each( ( i, el ) => {
-			order.push( $( el ).find( '.lipath' ).text() );
-		} );
+		$( '.mode' ).each( ( i, el ) => order.push( $( el ).find( '.lipath' ).text() ) );
 		bash( [ 'ordersave', JSON.stringify( order ) ] );
 	}
 } );
@@ -1755,9 +1747,7 @@ $( '#button-pl-librandom' ).click( function() {
 			, message    : 'Randomly add songs and play continuously.'
 			, checkbox   : [ 'Start playing the random songs' ]
 			, values     : [ true ]
-			, beforeshow : () => {
-				if ( G.status.song + 1 === G.status.pllength ) $( '#infoContent table' ).addClass( 'hide' );
-			}
+			, beforeshow : () => $( '#infoContent table' ).toggleClass( 'hide', G.status.song + 1 === G.status.pllength )
 			, ok         : () => {
 				G.status.librandom = true;
 				$this.addClass( 'bl' );

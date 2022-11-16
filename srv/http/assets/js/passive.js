@@ -400,9 +400,7 @@ function psRelays( response ) {
 				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
 				, okno       : 1
-				, beforeshow : () => {
-					$( '#infoX' ).addClass( 'hide' );
-				}
+				, beforeshow : () => $( '#infoX' ).addClass( 'hide' )
 			} );
 		} else {
 			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );

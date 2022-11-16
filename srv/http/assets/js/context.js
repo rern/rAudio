@@ -28,9 +28,7 @@ function bookmarkNew() {
 			, focus      : 0
 			, values     : path.split( '/' ).pop()
 			, checkblank : coverart ? '' : 1
-			, beforeshow : () => {
-				$( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' );
-			}
+			, beforeshow : () => $( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' )
 			, ok         : () => {
 				var name = infoVal();
 				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], std => {
@@ -136,9 +134,7 @@ function playlistSaveExist( type, name, oldname ) {
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
-		, button      : () => {
-			setTimeout( () => rename ? playlistRename() : playlistNew( name ), 0 ); // fix error on repeating
-		}
+		, button      : () => setTimeout( () => rename ? playlistRename() : playlistNew( name ), 0 ) // fix error on repeating
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
@@ -554,9 +550,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, message : 'Exclude from Library:'
 							+'<br><i class="fa fa-folder"></i>&ensp;<wh>'+ G.list.path +'</wh>'
 				, ok      : () => {
-					bash( [ 'ignoredir', G.list.path ], () => {
-						G.list.li.remove();
-					} );
+					bash( [ 'ignoredir', G.list.path ], () => G.list.li.remove() );
 					var dir = G.list.path.split( '/' ).pop();
 				}
 			} );
@@ -699,9 +693,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
 				if ( replace && G.display.plclear && G.status.pllength ) {
-					infoReplace( () => {
-						playlistLoad( path, play, replace );
-					} );
+					infoReplace( () => playlistLoad( path, play, replace ) );
 				} else {
 					playlistLoad( path, play, replace );
 				}
@@ -757,9 +749,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
 	}
 	if ( G.display.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
-		infoReplace( () => {
-			addReplace( cmd, command, title, msg );
-		} );
+		infoReplace( () => addReplace( cmd, command, title, msg ) );
 	} else {
 		addReplace( cmd, command, title, msg );
 	}
