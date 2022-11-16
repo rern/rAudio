@@ -2,9 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-# bluetooth
-rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
-if [[ $activebt ]]; then
+listBluetooth() {
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
@@ -18,37 +16,9 @@ if [[ $activebt ]]; then
 }'
 		done
 		listbt="[ ${listbt:1} ]"
-		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
-		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
-		
-		[[ $1 == pushbt ]] && pushstream bluetooth "$listbt" && exit
 	fi
-else
-	listbt=false
-fi
-
-ipeth=$( ifconfig eth0 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
-if [[ $ipeth ]]; then
-	ipr=$( ip r | grep ^default.*eth0 )
-	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
-	gateway=$( cut -d' ' -f3 <<< $ipr )
-	[[ ! $gateway ]] && gateway=$( ip r | awk '/^default/ {print $3;exit}' )
-	if [[ $ipeth ]]; then
-		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-		if [[ ! $hostname ]]; then
-			systemctl restart avahi-daemon
-			hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
-		fi
-	fi
-	listeth='{
-  "gateway"  : "'$gateway'"
-, "hostname" : "'$hostname'"
-, "ip"       : "'$ipeth'"
-, "static"   : '$static'
-}'
-fi
-if [[ -e $dirshm/wlan ]]; then
+}
+listWlan() {
 	wldev=$( < $dirshm/wlan )
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
@@ -75,8 +45,57 @@ if [[ -e $dirshm/wlan ]]; then
 			fi
 		done
 	fi
-	listwl+="$listwlnotconnected"
+	[[ $$listwlnotconnected ]] && listwl+="$listwlnotconnected"
 	[[ $listwl ]] && listwl="[ ${listwl:1} ]"
+}
+
+if [[ $1 == pushbt ]]; then
+	listBluetooth
+	if [[ $listbt ]]; then
+		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
+		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
+		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
+	else
+		listbt=false
+	fi
+	pushstream bluetooth "$listbt"
+	exit
+	
+elif [[ $1 == pushwl ]]; then
+	listWlan
+	[[ ! $listwl ]] && listwl=false
+	pushstream wlan "$listwl"
+	exit
+	
+fi
+
+# bluetooth
+rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
+[[ $activebt ]] && listBluetooth
+
+# wlan
+[[ -e $dirshm/wlan ]] && listWlan
+
+# lan
+ipeth=$( ifconfig eth0 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
+if [[ $ipeth ]]; then
+	ipr=$( ip r | grep ^default.*eth0 )
+	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
+	gateway=$( cut -d' ' -f3 <<< $ipr )
+	[[ ! $gateway ]] && gateway=$( ip r | awk '/^default/ {print $3;exit}' )
+	if [[ $ipeth ]]; then
+		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+		if [[ ! $hostname ]]; then
+			systemctl restart avahi-daemon
+			hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )
+		fi
+	fi
+	listeth='{
+  "gateway"  : "'$gateway'"
+, "hostname" : "'$hostname'"
+, "ip"       : "'$ipeth'"
+, "static"   : '$static'
+}'
 fi
 
 # hostapd

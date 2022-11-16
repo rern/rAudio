@@ -219,7 +219,7 @@ function showContent() {
 	loaderHide();
 }
 // pushstreamChannel() in common.js
-pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wifi' ] );
+pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
 function pushstreamConnect() {
 	refreshData();
 }
@@ -247,7 +247,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
 		case 'volumebt':  psVolumeBt( data );  break;
-		case 'wifi':      psWifi( data );      break;
+		case 'wlan':      psWlan( data );      break;
 	}
 }
 function psBluetooth( data ) {
@@ -291,7 +291,7 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page === page ) {
 		$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
-		setSwitch();
+		page === 'networks' ? $( '.back' ).click() : setSwitch();
 		renderPage();
 	}
 }
@@ -320,15 +320,21 @@ function psVolumeBt( data ) {
 	$( '.infofooter' ).text( data.db +' dB' );
 	$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 }
-function psWifi( data ) {
-	info( {
-		  icon    : 'wifi'
-		, title   : 'Wi-Fi'
-		, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-		, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-		, okcolor : orange
-		, ok      : () => bash( [ 'reboot' ] )
-	} );
+function psWlan( data ) {
+	if ( data && 'reboot' in data ) {
+		info( {
+			  icon    : 'wifi'
+			, title   : 'Wi-Fi'
+			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
+			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+			, okcolor : orange
+			, ok      : () => bash( [ 'reboot' ] )
+		} );
+		return
+	}
+	
+	G.listwl = data;
+	renderWlan();
 }
 //---------------------------------------------------------------------------------------
 var debounce;

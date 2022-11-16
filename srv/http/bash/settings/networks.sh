@@ -21,13 +21,11 @@ netctlSwitch() {
 		fi
 	done
 	if [[ $active ]]; then
-		echo 1
+		$dirsettings/networks-data.sh pushwl
 	else
-		echo 0
+		echo -1
 		[[ $connected ]] && netctl switch-to "$connected"
 	fi
-	sleep 3
-	pushRefresh
 }
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
@@ -113,16 +111,12 @@ Gateway=$( jq -r .Gateway <<< $data )
 "
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
 		echo "$profile" > /boot/wifi                                             # save for next boot
-		pushstream wifi '{"ssid":"'$ESSID'"}'
+		pushstream wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	if [[ $( jq -r .add <<< $data ) == true ]]; then
-		netctlSwitch "$ESSID"
-	else
-		pushRefresh
-	fi
+	[[ $( jq -r .add <<< $data ) == true ]] && netctlSwitch "$ESSID" || pushRefresh
 	;;
 disconnect )
 	wlandev=$( < $dirshm/wlan )
@@ -131,7 +125,7 @@ disconnect )
 	netctl disable "$connected"
 	killall wpa_supplicant
 	ifconfig $wlandev up
-	pushRefresh
+	$dirsettings/networks-data.sh pushwl
 	;;
 editlan )
 	ip=${args[1]}
@@ -217,11 +211,11 @@ profileremove )
 	netctl disable "$ssid"
 	if netctl is-active "$ssid" &> /dev/null; then
 		netctl stop "$ssid"
-		killall wpa_supplicant
+		killall wpa_supplicant &> /dev/null &
 		ifconfig $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$ssid"
-	pushRefresh
+	$dirsettings/networks-data.sh pushwl
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth

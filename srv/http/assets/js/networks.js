@@ -42,6 +42,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 	var data     = {
 		  ESSID : ssid
 		, IP    : 'dhcp'
+		, add   : true
 	}
 	if ( encrypt === 'on' ) {
 		info( {
@@ -260,17 +261,15 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 		notify( icon, ssid, G.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
 	bash( [ 'connect', JSON.stringify( data ) ], connected => {
-		if ( ! connected ) {
+		if ( connected == -1 ) {
 			G.wlconnected =  '';
 			info( {
 				  icon      : icon
 				, title     : 'Wi-Fi'
 				, message   : 'Connect to <wh>'+ ssid +'</wh> failed.'
 			} );
-		} else {
-			$( '.back' ).click();
 		}
-	}, 'json' );
+	} );
 }
 function editLAN() {
 	var static = G.listeth.static;
@@ -423,28 +422,7 @@ function renderPage() {
 	if ( ! G.activewl ) {
 		$( '#divwl' ).addClass( 'hide' );
 	} else {
-		var htmlwl = '';
-		if ( G.listwl ) {
-			G.listwl.forEach( list => {
-				if ( list.ip ) {
-					if ( ! G.hostapd ) {
-						var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
-						htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
-								 +'<i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;'+ list.ssid 
-								 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
-					} else {
-						htmlwl += '<li class="wl accesspoint"><i class="fa fa-accesspoint"></i><grn>•</grn>&ensp;'
-								 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
-					}
-				} else {
-					htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
-				}
-			} );
-			$( '#listwl' ).html( htmlwl );
-		} else {
-			$( '#listwl' ).empty();
-		}
-		$( '#divwl' ).removeClass( 'hide' );
+		renderWlan();
 	}
 	if ( ! G.activeeth ) {
 		$( '#divlan' ).addClass( 'hide' );
@@ -483,6 +461,32 @@ function renderQR() {
 		$( '#ipwebuiap, #ssid, #passphrase, #qraccesspoint, #qrwebuiap' ).empty();
 		$( '#boxqr' ).addClass( 'hide' );
 	}
+}
+function renderWlan() {
+	if ( ! $( '#divwifi' ).hasClass( 'hide' ) ) $( '#divwifi .back' ).click();
+	var htmlwl = '';
+	if ( G.listwl ) {
+		G.listwl.forEach( list => {
+			if ( list.ip ) {
+				if ( ! G.hostapd ) {
+					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
+					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
+							 +'<i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;'+ list.ssid 
+							 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
+				} else {
+					htmlwl += '<li class="wl accesspoint"><i class="fa fa-accesspoint"></i><grn>•</grn>&ensp;'
+							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ G.hostapd.hostapdip +'</li>';
+				}
+			} else {
+				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
+			}
+		} );
+		$( '#listwl' ).html( htmlwl );
+	} else {
+		$( '#listwl' ).empty();
+	}
+	$( '#divwl' ).removeClass( 'hide' );
+	bannerHide();
 }
 function scanBluetooth() {
 	bash( dirbash +'networks-scan.sh', data => {
