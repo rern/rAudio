@@ -324,9 +324,7 @@ $( '#setting-lcdchar' ).click( function() {
 <tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
 <tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
 </table>
-<table>
-<tr><td width="63"></td><td><label><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>
-</table>`;
+<label style="margin-left: 60px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c         = G.lcdcharconf[ 2 ] !== 'gpio';
 	var icon        = 'lcdchar';
