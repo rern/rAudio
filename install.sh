@@ -83,7 +83,7 @@ getinstallzip
 
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
-[[ -e /srv/http/data/system/color ]] && $dirbash/cmd.sh color
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 #installfinish
 #-------------------------------------------------------------------------------
