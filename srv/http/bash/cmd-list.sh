@@ -13,7 +13,7 @@ touch $dirmpd/listing
 
 listAlbums() {
 	albums=$1
-	readarray -t albums <<< "$albums"
+	readarray -t albums <<< $albums
 	for album in "${albums[@]}"; do
 		album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
 								| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
@@ -31,40 +31,37 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 
 if (( $? != 0 )); then # very large database
 	eachkb=8192
-	existing=$( grep max_output_buffer /etc/mpd.conf | cut -d'"' -f2 )
+	existing=$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )
+	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	for (( i=1; i < 11; i++ )); do
 		buffer=$(( $existing + ( i * $eachkb ) ))
-		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
-		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
+		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/conf/outputbuffer.conf
 		systemctl restart mpd
 		albums=$( mpc list album )
 		(( $? == 0 )) && break
 	done
 	if [[ $albums ]]; then
 		listAlbums "$albums"
-		echo $buffer > $dirsystem/bufferoutput.conf
 	else
 		toolarge=1
-		sed -i '/^max_output_buffer/ d' /etc/mpd.conf
+		rm $dirmpdconf/outputbuffer.conf
 	fi
 fi
 ##### wav list #############################################
 # mpd not read *.wav albumartist
 readarray -t dirwav <<< $( mpc listall \
-							| grep '\.wav$' \
-							| sed 's|/[^/]*$||' \
+							| sed -n '/\.wav$/ {s|/[^/]*$||; p}' \
 							| sort -u )
 if [[ $dirwav ]]; then
 	for dir in "${dirwav[@]}"; do
 		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
 		kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
 		if [[ $kid ]]; then
-			albumwav=$( echo "$kid" \
-									| head -2 \
-									| awk 1 ORS='^^' \
-									| sed "s|$|$dir|" )
+			albumwav=$( head -2 <<< $kid \
+							| awk 1 ORS='^^' \
+							| sed "s|$|$dir|" )
 			if [[ $albumwav ]]; then
-				album_artist_file=$( sed "\|$dir$| d" <<< "$album_artist_file" )
+				album_artist_file=$( sed "\|$dir$| d" <<< $album_artist_file )
 				album_artist_file+=$'\n'$albumwav$'\n'
 			fi
 		fi
@@ -73,7 +70,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-if [[ $( awk NF $dirmpd/album ) && $( cat $dirmpd/updating ) != rescan ]]; then
+if [[ $( awk NF $dirmpd/album ) && $( < $dirmpd/updating ) != rescan ]]; then
 	cp -f $filealbum{,prev}
 else
 	> $dirmpd/latest
@@ -83,14 +80,14 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		album=$( echo "$album_artist_file" | awk NF | sort -uf )
+		album=$( awk NF <<< $album_artist_file | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
 			for line in "${albumignore[@]}"; do
-				album=$( sed "/^$line^/ d" <<< "$album" )
+				album=$( sed "/^$line^/ d" <<< $album )
 			done
 		fi
-		album=$( echo "$album" | awk NF | tee $filealbum | wc -l )
+		album=$( awk NF <<< $album | tee $filealbum | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi
@@ -109,7 +106,7 @@ if [[ -e $filealbumprev ]]; then # latest
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
-	latest=$( cat "$dirmpd/latest" 2> /dev/null | wc -l )
+	[[ -e $dirmpd/latest ]] && latest=$( wc -l < $dirmpd/latest ) || latest=0
 fi
 ##### count #############################################
 for mode in NAS SD USB; do
@@ -136,14 +133,14 @@ counts='{
 , "usb"         : '$USB'
 , "webradio"    : '$webradio'
 }'
-echo $counts | jq > $dirmpd/counts
+jq <<< $counts > $dirmpd/counts
 pushstream mpdupdate "$counts"
 chown -R mpd:audio $dirmpd
 rm -f $dirmpd/{updating,listing}
 
 if [[ $toolarge ]]; then
 	sleep 3
-	pushstreamNotifyBlink 'Library Database' 'Library is too large.<br>Album list cannot be created.' 'refresh-library'
+	notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list cannot be created.'
 fi
 
 [[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
@@ -152,7 +149,7 @@ fi
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
 	if [[ $nonutf8 ]]; then
 		echo "$nonutf8" > $dirmpd/nonutf8
-		pushstreamNotifyBlink 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files' library
+		notify -blink library 'Metadata Encoding' 'UTF-8 conversion needed: Player > Non UTF-8 Files'
 	else
 		rm -f $dirmpd/nonutf8
 	fi

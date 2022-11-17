@@ -3,11 +3,11 @@
 . /srv/http/bash/common.sh
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 netctlSwitch() {
 	ssid=$1
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
 	ifconfig $wlandev down
 	netctl switch-to "$ssid"
@@ -20,9 +20,12 @@ netctlSwitch() {
 			break
 		fi
 	done
-	[[ ! $active && $connected ]] && netctl switch-to "$connected"
-	sleep 3
-	pushRefresh
+	if [[ $active ]]; then
+		$dirsettings/networks-data.sh pushwl
+	else
+		echo -1
+		[[ $connected ]] && netctl switch-to "$connected"
+	fi
 }
 wlanDevice() {
 	iplinkw=$( ip -br link | grep ^w )
@@ -35,9 +38,7 @@ wlanDevice() {
 		fi
 	fi
 	if [[ $iplinkw ]]; then
-		wlandev=$( echo "$iplinkw" \
-						| tail -1 \
-						| cut -d' ' -f1 )
+		wlandev=$( tail -1 <<< "$iplinkw" | cut -d' ' -f1 )
 		iw $wlandev set power_save off
 		echo $wlandev | tee $dirshm/wlan
 	else
@@ -61,9 +62,9 @@ $( timeout 1 avahi-browse -arp \
 bluetoothinfo )
 	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
-	echo "$info" | grep -q 'not available' && exit
+	grep -q -m1 'not available' <<< $info && exit
 	
-	if (( $( echo "$info" | grep -cE 'Connected: yes|UUID: Audio' ) == 2 )); then
+	if (( $( grep -Ec 'Connected: yes|UUID: Audio' <<< $info ) == 2 )); then
 		data="\
 <bll># bluealsa-aplay -L</bll>
 $( bluealsa-aplay -L | grep -A2 $mac )
@@ -84,7 +85,7 @@ connect )
 	data=${args[1]}
 	ESSID=$( jq -r .ESSID <<< $data )
 	Key=$( jq -r .Key <<< $data )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	profile="\
 Interface=$wlandev
 Connection=wireless
@@ -108,24 +109,23 @@ Hidden=yes
 Address=$( jq -r .Address <<< $data )/24
 Gateway=$( jq -r .Gateway <<< $data )
 "
-	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then
-		echo "$profile" > /boot/wifi
-		data='{ "ssid": "'"$ESSID"'" }'
-		pushstream wifi "$data"
+	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
+		echo "$profile" > /boot/wifi                                             # save for next boot
+		pushstream wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	netctlSwitch "$ESSID"
+	[[ $( jq -r .add <<< $data ) == true ]] && netctlSwitch "$ESSID" || pushRefresh
 	;;
 disconnect )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
 	netctl stop "$connected"
 	netctl disable "$connected"
 	killall wpa_supplicant
 	ifconfig $wlandev up
-	pushRefresh
+	$dirsettings/networks-data.sh pushwl
 	;;
 editlan )
 	ip=${args[1]}
@@ -153,23 +153,16 @@ Gateway=$gw
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
-editwifidhcp )
-	ssid=${args[1]}
-	netctl stop "$ssid"
-	sed -i -e -E '/^Address|^Gateway/ d
-' -e 's/^IP.*/IP=dhcp/
-' "$file"
-	cp "$file" "/etc/netctl/$ssid"
-	netctl start "$ssid"
-	pushRefresh
+hostapd )
+	echo $dirsettings/features.sh "$1"
 	;;
 ifconfigeth )
 	echo "\
 <bll># ifconfig eth0</bll>
-$( ifconfig eth0 | grep -E -v 'RX|TX' | awk NF )"
+$( ifconfig eth0 | grep -E -v 'RX|TX|^\s*$' )"
 	;;
 ifconfigwlan )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	echo "\
 <bll># ifconfig $wlandev; iwconfig $wlandev</bll>
 $( ifconfig $wlandev | grep -E -v 'RX|TX')
@@ -186,7 +179,7 @@ iwlist )
 	iw list
 	;;
 profileconnect )
-	wlandev=$( cat $dirshm/wlan )
+	wlandev=$( < $dirshm/wlan )
 	if systemctl -q is-active hostapd; then
 		systemctl disable --now hostapd
 		ifconfig $wlandev 0.0.0.0
@@ -195,49 +188,59 @@ profileconnect )
 	netctlSwitch "${args[1]}"
 	;;
 profileget )
-	netctl=$( cat "/etc/netctl/${args[1]}" )
-	password=$( echo "$netctl" | grep ^Key | cut -d= -f2- | tr -d '"' )
-	static=$( echo "$netctl" | grep -q ^IP=dhcp && echo false || echo true )
-	hidden=$( echo "$netctl" | grep -q ^Hidden && echo true || echo false )
-	wep=$( [[ $( echo "$netctl" | grep ^Security | cut -d= -f2 ) == wep ]] && echo true || echo false )
-	echo '[ "'$password'", '$static', '$hidden', '$wep' ]'
+	ssid=${args[1]}
+	data='"'$ssid'"'
+	if netctl is-active "$ssid" &> /dev/null; then
+		status=( $( netctl status Home5GHz \
+					| grep -E 'rebinding lease|default route' \
+					| awk '{print $NF}' ) )
+		data+=',"'${status[0]}'","'${status[1]}'"'
+	else
+		data+=',"",""'
+	fi
+	netctl=$( < "/etc/netctl/$ssid" )
+	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
+	grep -q -m1 ^IP=dhcp <<< $netctl && static=false || static=true
+	grep -q -m1 ^Hidden <<< $netctl && hidden=true || hidden=false
+	grep -q -m1 ^Security=wep <<< $netctl && wep=true || wep=false
+	data+=',"'$password'", '$static', '$hidden', '$wep
+	echo "[$data]"
 	;;
 profileremove )
 	ssid=${args[1]}
-	connected=${args[2]}
 	netctl disable "$ssid"
-	if [[ $connected == true ]]; then
+	if netctl is-active "$ssid" &> /dev/null; then
 		netctl stop "$ssid"
-		killall wpa_supplicant
-		ifconfig $( cat $dirshm/wlan ) up
+		killall wpa_supplicant &> /dev/null &
+		ifconfig $( < $dirshm/wlan ) up
 	fi
 	rm "/etc/netctl/$ssid"
-	pushRefresh
+	$dirsettings/networks-data.sh pushwl
 	;;
-usbbluetoothon )
+usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth
-	! systemctl -q is-active mpd && exit # suppress on startup
+	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	
 	sleep 3
 	pushRefresh features
 	pushRefresh networks pushbt
-	pushstreamNotify 'USB Bluetooth' Ready bluetooth
+	notify bluetooth 'USB Bluetooth' Ready
 	;;
-usbbluetoothoff )
-	! rfkill -no type | grep -q bluetooth && systemctl stop bluetooth
-	pushstreamNotify 'USB Bluetooth' Removed bluetooth
+usbbluetoothoff ) # from usbbluetooth.rules
+	! rfkill | grep -q -m1 bluetooth && systemctl stop bluetooth
+	notify bluetooth 'USB Bluetooth' Removed
 	pushRefresh features
 	pushRefresh networks pushbt
 	;;
 usbwifion )
-	wlandev=$( wlanDevice )
-	! systemctl -q is-active mpd && exit # suppress on startup
+	wlanDevice
+	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	
-	pushstreamNotify '{"title":"USB Wi-Fi","text":"Ready","icon":"wifi"}'
+	notify wifi 'USB Wi-Fi' Ready
 	pushRefresh
 	;;
 usbwifioff )
-	pushstreamNotify '{"title":"USB Wi-Fi","text":"Removed","icon":"wifi"}'
+	notify wifi 'USB Wi-Fi' Removed
 	pushRefresh
 	;;
 wlandevice )

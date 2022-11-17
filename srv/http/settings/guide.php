@@ -1,52 +1,92 @@
+<style>
+.container { padding: 40px 0 0 0 }
+#guide {
+	width: 100%;
+	height: 100%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	user-select: none;
+}
+.helpblock { margin: 0 }
+#guide .bottom-bar {
+	height: 33px;
+	background: var( --cga );
+}
+#guide p {
+	margin: 0;
+	line-height: 40px;
+}
+#guide a {
+	display: inline-block;
+	width: 20%;
+	line-height: 33px;
+	padding-right: 5px;
+	text-align: center;
+	cursor: pointer;
+}
+#guide i {
+	width: 33px;
+	vertical-align: -2px;
+	font-size: 20px;
+	text-align: center;
+}
+#guide a.active { background-color: var( --cm ) !important }
+#guide img { width: 100% }
+#prevnext { padding-right: 0 !important }
+@media ( max-width: 450px ) {
+	#guide a span { display: none }
+}
+</style>
+
+<p class="helpblock" style="display: none">
+Bottom bar:
+ • Icons - Skip to each section
+ • Arrow icons / Swipe - Previous / next page
+</p>
+<div id="guide">
+	<p><span class="count" style="float: right"></span></p>
+	
+	<img class="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
+	
 <?php
-$time = time();
-include 'logosvg.php';
+$html     = '<div class="bottom-bar">';
+foreach( [ 'library', 'playback', 'playlist', 'settings' ] as $id ) {
+	$html.= '<a id="'.$id.'" class="btn"><i class="fa fa-'.$id.'"></i><span>'.ucfirst( $id ).'</span></a>';
+}
+$html    .= '<a id="prevnext"><i class="prev fa fa-arrow-left"></i><i class="next fa fa-arrow-right"></i></a>
+			 </div>';
+echo $html;
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-	<title>rAudio</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="msapplication-tap-highlight" content="no">
-	<link rel="icon" href="/assets/img/icon.png">
-	<link rel="stylesheet" href="/assets/css/colors.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/common.<?=$time?>.css">
-	<link rel="stylesheet" href="/assets/css/settings.<?=$time?>.css">
-</head>
-<body style="height: 100%; user-select: none;">
-<div class="head" style="top: 0">
-	<i class="page-icon fa fa-help"></i><span class='title'>USER GUIDE</span>
-	<a href="/"><i id="close" class="fa fa-times"></i></a>
-</div>
-<div id="guide" style="user-select: none;">
-	<p><a class="gr" href="https://github.com/rern/rAudio-1"><i class="fa fa-github fa-lg bl" style="vertical-align: -2px"></i> Source</a><span id="count" style="float: right"></span></p>
-	<div id="library" class="btn btn-default"><i class="fa fa-library"></i><span>Library</span></div>
-	<div id="playback" class="btn btn-default active"><i class="fa fa-playback"></i><span>Playback</span></div>
-	<div id="playlist" class="btn btn-default"><i class="fa fa-playlist"></i><span>Playlist</span></div>
-	<div id="settings" class="btn btn-default"><i id="settings" class="fa fa-gear"></i></div>
-	<div class="prev-next"><i id="previous" class="fa fa-arrow-left"></i>&emsp;<i id="next" class="fa fa-arrow-right"></i></div>
-	<img id="image" src="/assets/img/guide/1.<?=$time?>.jpg">
 </div>
 <script>
-var nlibrary = 23;
-var nplaylist = 40;
-var nsettings = 48;
-var ntotal = 60;
-var n = 1;
+nlibrary  = 23;
+nplaylist = 40;
+nsettings = 48;
+ntotal    = 60;
+n         = 1;
+E         = {};
+[ 'close', 'container', 'count', 'helpblock', 'helphead', 'image', 'next', 'prev' ].forEach( ( el ) => {
+	E[ el ] = document.getElementsByClassName( el )[ 0 ];
+} );
+E.btns    = Array.from( document.getElementsByClassName( 'btn' ) );
 
-var $ = function( id ) { return document.getElementById( id ) }
-var btn = document.getElementsByClassName( 'btn' );
-var count = $( 'count' ); // not jQuery on this page
-var image = $( 'image' );
-var next = $( 'next' );
-var previous = $( 'previous' );
-
-count.textContent = n +' / '+ ntotal;
-Array.from( btn ).forEach( function( el ) {
+E.btns[ 1 ].classList.add( 'active' );
+E.count.textContent = n +' / '+ ntotal;
+E.container.classList.remove( 'hide' );
+E.close.addEventListener( 'click', function() {
+	location.href = '/';
+} );
+E.helphead.addEventListener( 'click', function() {
+	if ( E.helpblock.style.display === 'none' ) {
+		this.classList.add( 'bl' );
+		E.helpblock.style.display = '';
+	} else {
+		this.classList.remove( 'bl' );
+		E.helpblock.style.display = 'none';
+	}
+} );
+E.btns.forEach( ( el ) => {
 	el.addEventListener( 'click', function() {
 		var page = {
 			  playback : 1
@@ -58,30 +98,39 @@ Array.from( btn ).forEach( function( el ) {
 		renderPage( n );
 	} );
 } );
-next.addEventListener( 'click', function() {
+E.next.addEventListener( 'click', function() {
 	n = n < ntotal ? n + 1 : 1;
 	renderPage( n );
 } );
-previous.addEventListener( 'click', function() {
+E.prev.addEventListener( 'click', function() {
 	n = n > 1 ? n - 1 : ntotal;
 	renderPage( n );
 } );
-// swipe
-var xstart;
-window.addEventListener( 'touchstart', function( e ) {
-	xstart = e.changedTouches[ 0 ].pageX;
-} );
-window.addEventListener( 'touchend', function( e ) {
-	var xdiff = xstart - e.changedTouches[ 0 ].pageX;
-	if ( Math.abs( xdiff ) > 100 ) {
-		xdiff > 0 ? next.click() : previous.click();
+document.body.addEventListener( 'keyup', ( e ) => {
+	if ( e.key === 'ArrowLeft' ) {
+		E.prev.click();
+	} else if ( e.key === 'ArrowRight' ) {
+		E.next.click();
 	}
 } );
 
+if ( navigator.maxTouchPoints ) { // swipe
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		xstart = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( xdiff ) > 100 ) {
+			xdiff > 0 ? E.next.click() : E.prev.click();
+		}
+	} );
+}
+
 function renderPage( n ) {
-	image.src = '/assets/img/guide/'+ n +'.<?=$time?>.jpg';
-	count.textContent = n +' / '+ ntotal;
-	Array.from( btn ).forEach( function( el ) {
+	E.count.textContent = n +' / '+ ntotal;
+	E.image.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
+	E.btns.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );
 	if ( n >= 1 && n < nlibrary ) {
@@ -93,8 +142,6 @@ function renderPage( n ) {
 	} else {
 		var id = 'settings';
 	}
-	$( id ).classList.add( 'active' );
+	document.getElementById( id ).classList.add( 'active' );
 }
 </script>
-</body>
-</html>

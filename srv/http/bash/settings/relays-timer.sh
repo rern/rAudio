@@ -3,26 +3,25 @@
 . /srv/http/bash/common.sh
 
 timerfile=$dirshm/relaystimer
-timer=$( cat $timerfile )
+timer=$( < $timerfile )
 i=$timer
 while sleep 60; do
 	playing=
-	if  aplay -l | grep -q Loopback; then
-		grep -q '^state=.play' $dirshm/status && playing=1
-	elif grep -q RUNNING /proc/asound/card*/pcm*p/sub*/status; then # state: RUNNING
+	if  aplay -l | grep -q -m1 Loopback; then
+		grep -q -m1 '^state.*play' $dirshm/status && playing=1
+	elif grep -q -m1 RUNNING /proc/asound/card*/pcm*p/sub*/status; then # state: RUNNING
 		playing=1
 	fi
 	if [[ $playing ]]; then
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
-		i=$( cat $timerfile )
+		i=$( < $timerfile )
 		(( $i == 1 )) && $dirsettings/relays.sh && exit
 		
 		(( i-- ))
 		echo $i > $timerfile
 		(( $i > 1 )) && continue
 		
-		data='{ "state": "IDLE", "timer": '$timer' }'
-		pushstream relays "$data"
+		pushstream relays '{"state":"IDLE","timer":'$timer'}'
 	fi
 done

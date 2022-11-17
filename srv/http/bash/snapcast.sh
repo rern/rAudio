@@ -12,14 +12,12 @@ fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then # client start - save server ip
 	if systemctl -q is-active snapserver; then # server + client on same device
-		line=$( sed -n '/auto_format/ =' /etc/mpd.conf )
-		line0=$(( line - 5 ))
-		sed -i "$line0,/}/ d" /etc/mpd.conf
+		rm -f $dirmpdconf/output.conf
 		systemctl restart mpd
 		systemctl start snapclient
 		touch $dirshm/snapclientactive
 		pushstream display '{"snapclientactive":true,"volumenone":false}'
-		pushstream refresh '{"page":"features","snapclientactive",true}'
+		pushstream refresh '{"page":"features","snapclientactive":true}'
 		$dirsettings/player-data.sh pushrefresh
 		exit
 	fi
@@ -31,7 +29,7 @@ if [[ $1 == start ]]; then # client start - save server ip
 		echo $serverip > $dirshm/serverip
 		$dirbash/cmd.sh playerstart$'\n'snapcast
 		$dirbash/status-push.sh
-		clientip=$( ipGet )
+		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 	else
 		systemctl stop snapclient
@@ -47,7 +45,7 @@ elif [[ $1 == stop ]]; then # server + client on same device
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
 	fi
 	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
-	pushstream refresh '{"page":"features","snapclientactive",false}'
+	pushstream refresh '{"page":"features","snapclientactive":false}'
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
@@ -56,7 +54,7 @@ elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 else # sshpass add clientip from connected client
 	clientip=$1
 	iplist="\
-$( cat $fileclientip 2> /dev/null )
+$( getContent $fileclientip )
 $clientip"
-	echo "$iplist" | awk NF | sort -u > $fileclientip
+	awk NF <<< $iplist | sort -u > $fileclientip
 fi

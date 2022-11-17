@@ -21,7 +21,7 @@ SECONDS=0
 albumfile=/srv/http/data/mpd/album
 
 if [[ ! $1 ]]; then
-	mpdpathlist=$( cat $albumfile | cut -d^ -f7 )
+	mpdpathlist=$( cut -d^ -f7 $albumfile )
 else
 	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
 fi
@@ -32,7 +32,7 @@ if [[ ! $mpdpathlist ]]; then
 	exit
 fi
 
-readarray -t lines <<< "$mpdpathlist"
+readarray -t lines <<< $mpdpathlist
 
 count=${#lines[@]}
 i=0

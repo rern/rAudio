@@ -4,7 +4,7 @@
 
 script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
 if ! grep -q -m1 ^audioservice $dirshm/dabscan; then
-	pushstreamNotify 'DAB Radio' 'No stations found.' dabradio
+	notify dabradio 'DAB Radio' 'No stations found.'
 	rm $dirshm/{dabscan,updatingdab}
 	exit
 fi
@@ -15,10 +15,10 @@ mkdir -p $dirdabradio/img
 mv $dirshm/img $dirdabradio &> /dev/null
 
 host=$( hostname -f )
-readarray -t services <<< $( grep -E '^Ensemble|^audioservice' $dirshm/dabscan | sed 's/ *;/;/g' )
+readarray -t services <<< $( sed -E -n '/^Ensemble|^audioservice/ {s/ *;/;/g; p}' $dirshm/dabscan )
 for service in "${services[@]}"; do
 	if [[ ${service:0:8} == Ensemble ]]; then
-		ensemble=$( echo ${service/;*} | cut -d' ' -f2- | xargs )
+		ensemble=$( cut -d' ' -f2- <<< ${service/;*} | sed 's/\s*$//' )
 		mkdir "$dirdabradio/$ensemble"
 		continue
 	fi
@@ -48,6 +48,5 @@ echo "$list" >> $fileyml
 chown -R http:http $dirdabradio
 dabradio=$( find -L $dirdabradio -type f ! -path '*/img/*' | wc -l )
 sed -i -E 's/("dabradio": ).*/\1'$dabradio',/' $dirmpd/counts
-data=$( cat $dirmpd/counts )
-pushstream mpdupdate "$data"
+pushstream mpdupdate $( < $dirmpd/counts )
 rm $dirshm/{dabscan,updatingdab}

@@ -1,52 +1,4 @@
 <?php
-if ( $login && !$_SESSION[ 'login' ] ) { ?>
-<div id="divlogin">
-	<br><a style="margin-left: 20px;font-weight: 300; letter-spacing: 20px">rAudio</a>
-	<br><input type="password" id="pwd"><i class="fa fa-eye"></i>
-	<a id="login" class="btn btn-primary">Login</a>
-</div>
-<script src="assets/js/plugin/jquery-3.6.1.min.js"></script>
-<script src="assets/js/info.<?=$time?>.js"></script>
-<script>
-$( '#divlogin' ).prepend( $( '#loader' ).html() );
-$( '#loader' ).remove();
-$( '#pwd' ).focus();
-$( '#divlogin i' ).click( function() {
-	$this = $( this );
-	$pwd = $( '#pwd' );
-	if ( $pwd.prop( 'type' ) === 'text' ) {
-		$this.removeClass( 'bl' );
-		$pwd.prop( 'type', 'password' );
-	} else {
-		$this.addClass( 'bl' );
-		$pwd.prop( 'type', 'text' );
-	}
-} );
-$( '#login' ).click( function() {
-	var pwd = $( '#pwd' ).val().replace( /(["&()\\])/g, '\$1' );
-	$.post( 'cmd.php', { cmd: 'login', password: pwd }, function( data ) {
-		if ( data != -1 ) {
-			location.reload();
-		} else {
-			info( {
-				  icon    : 'lock'
-				, title   : 'Login'
-				, message : 'Wrong password'
-			} );
-		}
-	} );
-} );
-$( '#pwd' ).keypress( function( e ) {
-	if ( e.which == 13 ) $( '#login' ).click();
-});
-</script>
-
-</body>
-</html>
-<?php
-	exit;
-}
-
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
@@ -69,7 +21,7 @@ function htmlmenu( $menulist, $mode ) {
 	global $html;
 	global $kid3;
 	global $menu;
-	if ( !$kid3 ) array_pop( $menulist );
+	if ( ! $kid3 ) array_pop( $menulist );
 	foreach( $menulist as $list ) $html.= menuli( $list );
 	$menu.= menudiv( $mode, $html );
 }
@@ -138,7 +90,7 @@ $menu.= menudiv( 'radio', $html );
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'iconcover',    'Change station art' ]
+	, [ 'wrcoverart', 'iconcover',    'Change cover art' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
@@ -171,7 +123,7 @@ $settinglist = [
 		'lock', 'lock' ]
 	, ['networks', 'settings', 'networks', 'Networks',
 		'snapclient', 'snapclient' ]
-	, [ 'system', 'settings', 'plus-r', 'System',
+	, [ 'system', 'settings', 'raudio', 'System',
 		'relays', 'relays' ]
 	, [ 'addons', 'sub', 'jigsaw', 'Addons',
 		'guide', 'help' ]
@@ -184,21 +136,21 @@ $settinglist = [
 	, [ 'displayplaylist', '', 'playlist', 'Playlist',
 		'multiraudio', 'raudiobox' ]
 ];
-$htmlsettings = '';
+$htmlsettings     = '';
 foreach( $settinglist as $l ) {
 	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>
 					 <i id="'.$l[ 4 ].'" class="submenu fa fa-'.$l[ 5 ].'"></i>';
 }
+$htmlcontrols     = '';
+foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
+	$htmlcontrols.= '<i id="'.$l.'" class="btn btn-default btn-cmd fa fa-'.$l.'"></i>';
+}
 ?>
 <div id="bar-top" class="hide">
-	<i id="logo" class="fa fa-plus-r-nobox"></i>
+	<i id="logo" class="fa fa-raudio-nobg"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
 	<div id="playback-controls">
-		<i id="previous" class="btn btn-default btn-cmd fa fa-previous"></i>
-		<i id="stop" class="btn btn-default btn-cmd fa fa-stop"></i>
-		<i id="play" class="btn btn-default btn-cmd fa fa-play"></i>
-		<i id="pause" class="btn btn-default btn-cmd fa fa-pause"></i>
-		<i id="next" class="btn btn-default btn-cmd fa fa-next"></i>
+		<?=$htmlcontrols?>
 	</div>
 </div>
 <div id="settings" class="menu hide">
@@ -363,13 +315,6 @@ foreach( $settinglist as $l ) {
 	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
-<div id="bio" class="hide">
-	<div class="container">
-		<img id="biobanner">
-		<div id="bioimg"></div>
-		<div id="biocontent"></div>
-	</div>
-</div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
 		<img src="">
@@ -392,3 +337,4 @@ foreach( $settinglist as $l ) {
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces (or display: flex) -->
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>
+<div id="bio" class="hide"></div>

@@ -4,6 +4,29 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221117
+file=/etc/pacman.conf
+! grep -q shairport $file && sed -i '/^#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
+
+[[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
+
+[[ ! -e $dirdata/mpdconf ]] && backup=1
+
+sed -i '/interfaces/ d' /etc/samba/smb.conf
+systemctl try-restart smb 
+
+file=/etc/systemd/system/bluetooth.service.d/override.conf
+if grep -q bluetooth$ $file; then
+	sed -i 's/bluetooth$/&start/' $file
+	systemctl daemon-reload
+fi
+
+if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
+	echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+fi
+
 # 20221007
 grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
 
@@ -42,35 +65,83 @@ Description=DAB Radio metadata
 Type=simple
 ExecStart=/srv/http/bash/status-dab.sh
 " > $file
+	systemctl daemon-reload
 fi
-
-systemctl daemon-reload
-
-# 20220916
-if (( $( cat $dirmpd/counts | wc -l ) == 1 )); then
-	echo '{
-  "playlists" : '$( ls -1 $dirplaylists | wc -l )'
-, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
-}' > $dirmpd/counts
-fi
-
-# 20220907
-[[ $( pacman -Q bluez ) < 'bluez 5.65-3' ]] && pacman -Sy --noconfirm bluez bluez-utils
-
-# 20220826
-rm /srv/http/bash/{camilladsp*,features*,networks*,player*,relays*,system*} &> /dev/null
 
 #-------------------------------------------------------------------------------
 installstart "$1"
 
 getinstallzip
 
-chmod +x /srv/http/bash/settings/system.sh
-/srv/http/bash/settings/system.sh dirpermissions
-[[ -e /srv/http/data/system/color ]] && /srv/http/bash/cmd.sh color
+chmod +x $dirsettings/system.sh
+$dirsettings/system.sh dirpermissions
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-installfinish
+#installfinish
 #-------------------------------------------------------------------------------
 
 # 20221010
 [[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
+
+# 20221021
+file=/etc/systemd/system/mpd.service.d/override.conf
+grep -q ExecStart $file && installfinish && exit
+
+echo -e "\n$bar Rearrange MPD Configuration...\n"
+
+dirmpdconf=$dirdata/mpdconf
+linkConf() {
+	ln -s $dirmpdconf/{conf/,}$1.conf
+}
+[[ -e $dirsystem/custom-global ]] && mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf
+if [[ -e $dirsystem/soxr.conf ]]; then
+	echo "\
+resampler {
+	plugin          \"soxr\"
+$( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
+fi
+grep -q 'mixer_type.*none' /etc/mpd.conf \
+    && grep -q 'replaygain.*off' /etc/mpd.conf \
+    && ! grep -q normalization /etc/mpd.conf \
+    && novolume=1
+if [[ ! $novolume ]]; then
+	if grep -q quality.*custom /etc/mpd.conf; then
+		linkConf soxr-custom
+		echo custom > $dirsystem/soxr
+	else
+		linkConf soxr
+		echo 'very high' > $dirsystem/soxr
+	fi
+fi
+
+grep -q auto_update /etc/mpd.conf && linkConf autoupdate
+if grep -q audio_buffer /etc/mpd.conf; then
+	echo 'audio_buffer_size  "'$( < $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	linkConf buffer
+fi
+if grep -q output_buffer /etc/mpd.conf; then
+	echo 'max_output_buffer_size  "'$( < $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+	linkConf outputbuffer
+fi
+grep -q volume_normalization /etc/mpd.conf && linkConf normalization
+if ! grep -q replaygain.*off /etc/mpd.conf; then
+	echo 'replaygain  "'$( < $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
+	linkConf replaygain
+fi
+
+[[ -e $dirshm/audiocd ]] && linkConf cdio
+[[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && linkConf custom
+grep -q plugin.*ffmpeg /etc/mpd.conf && linkConf ffmpeg
+grep -q type.*httpd /etc/mpd.conf && linkConf httpd
+systemctl -q is-active snapserver && linkConf snapserver
+
+rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfade,streaming}
+
+echo "\
+ExecStart=
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf" >> $file
+systemctl daemon-reload
+
+$dirsettings/player-conf.sh
+
+installfinish

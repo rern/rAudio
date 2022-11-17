@@ -1,43 +1,49 @@
 #!/bin/bash
 
-# remove all output the reinstate each output:
-# - get devices data from 'playerdevices.sh'
-# - assign common paramters
+# output:
+# - get devices data - player-devices.sh
+# - set asound.conf  - player-asound.sh
 # - mixer_type    - from file if manually set | hardware if hwmixer | software
 # - mixer_control - from file if manually set | hwmixer | null
 # - mixer_device  - card index
-# - dop           - if set
-
-usbdac=$1
 
 . /srv/http/bash/common.sh
-. $dirsettings/player-devices.sh
+usbdac=$1 # from usbdac.rules for player-devices.sh
+
+. $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
 
 # outputs -----------------------------------------------------------------------------
-output= # reset var from player-devices.sh
-if [[ $i != -1 ]]; then # $i - current card number
+if [[ $i == -1 ]]; then # $i - current card number
+	rm -f $dirmpdconf/output.conf
+else
 	aplayname=${Aaplayname[i]}
-	dop=${Adop[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
+	# usbdac.rules
+	if [[ $usbdac ]]; then
+		$dirbash/cmd.sh playerstop
+		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
+		notify output 'Audio Output' "$name"
+		[[ $usbdac == remove ]] && sleep 2
+	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
-#---------------<
-		output+='
+#---------------< 1 dsp
+		audiooutput+='
 	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ -e $dirsystem/equalizer ]]; then
+	elif [[ $equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
-#---------------<
-		output+='
+#---------------< 2 equalizer
+		audiooutput+='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
@@ -46,20 +52,18 @@ if [[ $i != -1 ]]; then # $i - current card number
 #--------------->
 	elif [[ $btmixer ]]; then
 		# no mac address needed - bluealsa already includes mac of latest connected device
-#---------------<
-		output+='
+#---------------< 3 bluetooth
+		audiooutput+='
 	name           "'$btmixer'"
 	device         "bluealsa"
 	type           "alsa"
 	mixer_type     "hardware"'
-		if [[ -e $dirsystem/btformat ]]; then
-			output+='
+		[[ -e $dirsystem/btformat ]] && audiooutput+='
 	format         "44100:16:2"'
-		fi
 #--------------->
 	elif [[ ! -e $dirshm/snapclientactive ]]; then
-#---------------<
-		output+='
+#---------------< 4 normal
+		audiooutput+='
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -67,111 +71,51 @@ if [[ $i != -1 ]]; then # $i - current card number
 	auto_format    "no"
 	mixer_type     "'$mixertype'"'
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
-			output+='
+			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$i'"'
+			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
+	replay_gain_handler "mixer"'
 		fi
-		if [[ $dop == 1 ]]; then
-			output+='
+		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
 	dop            "yes"'
-		fi
-		mpdcustom=$dirsystem/custom
-		customfile="$mpdcustom-output-$aplayname"
-		if [[ -e $mpdcustom && -e "$customfile" ]]; then
-			output+="
-$( sed 's/^/\t/; s/$/ # custom/' "$customfile" )"
+		if [[ $dirsystem/custom ]]; then
+			customfile="$dirsystem/custom-output-$aplayname"
+			[[ -e "$customfile" ]] && audiooutput+="
+$( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
-fi
-if [[ $output ]]; then
 ########
-	output="
-audio_output {\
-$output
-}"
-#-------
-fi
-
-if systemctl -q is-active snapserver; then
-########
-	output+='
+	echo "\
 audio_output {
-	name           "Snapcast"
-	type           "fifo"
-	path           "/tmp/snapfifo"
-	format         "48000:16:2"
-	mixer_type     "software"
-}'
-#-------
-fi
-if [[ -e $dirsystem/streaming ]]; then
+$( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
+}
+" > $dirmpdconf/output.conf
 ########
-	output+='
-audio_output {
-	type           "httpd"
-	name           "Streaming"
-	encoder        "flac"
-	port           "8000"
-	quality        "5.0"
-	format         "44100:16:2"
-	always_on      "yes"
-}'
-#-------
-fi
-if [[ ! $output || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
-########
-		output+='
-audio_output {
-	name           "'$( [[ ! $output ]] && echo '(no sound device)' || echo '(visualizer)' )'"
-	type           "fifo"
-	path           "/tmp/mpd.fifo"
-	format         "44100:16:1"
-}'
-#-------
 fi
 
-linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
-[[ $linecdio ]] && sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
-
-lastline=$(( $( sed -n '/^audio_output/ =' /etc/mpd.conf | head -1 ) - 1 ))
-global=$( sed -n "1,$lastline p" /etc/mpd.conf | sed '/# custom0/,/# custom1/ d' )
-if [[ -e $dirsystem/custom && -e $dirsystem/custom-global ]]; then
-	custom=$( echo "
-# custom0
-$( cat $dirsystem/custom-global )
-# custom1" | sed '$!s/$/\\/' )
-	global=$( echo "$global" | sed "/^user/ a$custom" )
-fi
-echo "\
-$global
-$output
-$btoutput" > /etc/mpd.conf
-
-# usbdac.rules -------------------------------------------------------------------------
-if [[ $usbdac == add || $usbdac == remove ]]; then
-	$dirbash/cmd.sh playerstop
-	[[ $mixertype == none ]] && pushstream display '{"volumenone":'$volumenone'}'
-	pushstreamNotify 'Audio Output' "$name" output
+if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+	ln -sf $dirmpdconf/{conf/,}fifo.conf
+else
+	rm -f $dirmpdconf/fifo.conf
 fi
 
-### mpd start ##########################################################################
+### mpd restart ##########################################################################
 systemctl restart mpd
+
 for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
 done
-
 if [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
+	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-if [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]]; then
-	mpc | grep -q '\[playing' || $dirbash/cmd.sh mpcplayback$'\n'play
-fi
-data=$( $dirbash/status.sh )
-pushstream mpdplayer "$data"
+[[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
+
+$dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
 
@@ -199,7 +143,7 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl try-restart shairport-sync
+	systemctl try-restart shairport-sync shairport-meta
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
@@ -208,10 +152,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	elif [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
-		cardname=$( aplay -l 2> /dev/null \
-						| grep "^card $i" \
-						| head -1 \
-						| cut -d' ' -f3 )
+		cardname=$( aplay -l 2> /dev/null | awk '/^card '$1'/ {print $3;exit}' )
 		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
 	fi
 ########

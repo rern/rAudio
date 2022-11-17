@@ -2,18 +2,20 @@
 
 ### included by < player-conf.sh
 
+if [[ $i != -1 ]]; then # from player-devices.sh
 ########
-asound="\
+	asound="\
 defaults.pcm.card $i
 defaults.ctl.card $i
 "
+fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	dsp=1
 	modprobe snd-aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
-	channels=$( sed -n '/capture:/,/channels:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	format=$( sed -n '/capture:/,/format:/ p' $camilladspyml | tail -1 | awk '{print $NF}' )
-	rate=$( grep '^\s*samplerate:' $camilladspyml | awk '{print $NF}' )
+	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
+	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml )
+	rate=$( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml )
 ########
 	asound+='
 pcm.!default { 
@@ -42,7 +44,7 @@ ctl.camilladsp {
 }'
 else
 	if [[ -e $dirshm/btreceiver ]]; then
-		btmixer=$( cat $dirshm/btreceiver )
+		btmixer=$( < $dirshm/btreceiver )
 ########
 		asound+='
 pcm.bluealsa {
@@ -59,12 +61,14 @@ pcm.bluealsa {
 		if [[ $btmixer ]]; then
 			slavepcm=bluealsa
 			filepresets+="-$btmixer"
-		else
+		elif [[ $i != -1 ]]; then
 			slavepcm='"plughw:'$i',0"'
 		fi
 		preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
+		if [[ $slavepcm ]]; then
+			equalizer=1
 ########
-		asound+='
+			asound+='
 pcm.!default {
 	type plug
 	slave.pcm plugequal
@@ -76,6 +80,7 @@ pcm.plugequal {
 	type equal
 	slave.pcm '$slavepcm'
 }'
+		fi
 	fi
 fi
 
@@ -85,7 +90,7 @@ alsactl nrestore &> /dev/null # notify changes to running daemons
 # ----------------------------------------------------------------------------
 wm5102card=$( aplay -l 2> /dev/null | grep snd_rpi_wsp | cut -c 6 )
 if [[ $wm5102card ]]; then
-	output=$( cat $dirsystem/hwmixer-wsp 2> /dev/null || echo HPOUT2 Digital )
+	[[ -e $dirsystem/hwmixer-wsp ]] && output=$( < $dirsystem/hwmixer-wsp ) || output='HPOUT2 Digital'
 	$dirsettings/player-wm5102.sh $wm5102card $output
 fi
 
@@ -93,14 +98,16 @@ if [[ $dsp ]]; then
 	$dirsettings/camilladsp-setformat.sh
 else
 	if [[ $btmixer ]]; then
-		btvolume=$( cat "$dirsystem/btvolume-$btmixer" 2> /dev/null )
-		[[ $btvolume ]] && amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then
+			btvolume=$( < "$dirsystem/btvolume-$btmixer" )
+			amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+		fi
 		systemctl -q is-active localbrowser && action=stop || action=start
 		systemctl $action bluetoothbutton
 	else
 		systemctl stop bluetoothbutton
 	fi
-	[[ $preset ]] && $dirbash/cmd.sh "equalizer
+	[[ $equalizer && $preset  ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
 fi

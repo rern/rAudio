@@ -1,6 +1,6 @@
 #!/bin/bash
 
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 file=${args[0]}
 album=${args[1]}
 cue=${args[2]}

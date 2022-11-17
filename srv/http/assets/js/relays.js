@@ -4,25 +4,23 @@ $( '.gpio-no' ).addClass( 'hide' );
 
 renderPage = function( changed ) {
 	if ( typeof D === 'undefined' ) {
-		D = { val : {}, key : {} };
-		D.keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-		D.keys.forEach( function( k ) {
-			D.val[ k ] = G[ k ];
-		} );
+		D           = { val : {}, key : {} };
+		D.keys      = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+		D.keys.forEach( k => D.val[ k ] = G[ k ] );
 		D.val.timer = G.timer;
-		D.values = [].concat.apply( [], Object.values( D.val ) ).toString();
+		D.values    = [].concat.apply( [], Object.values( D.val ) ).toString();
 	}
-	$( '#save' ).toggleClass( 'disabled', G.enabled && !changed )
-	$( '#undo' ).toggleClass( 'disabled', !changed )
+	$( '#save' ).toggleClass( 'disabled', G.enabled && ! changed )
+	$( '#undo' ).toggleClass( 'disabled', ! changed )
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ D.val.pin[ i ] +'">'+ D.val.name[ i ] || '(no name)' +'</option>';
-	var htmlon = '';
-	var htmloff = '';
-	var optsec = '<option value="0">0</option>';
+	var htmlon     = '';
+	var htmloff    = '';
+	var optsec     = '<option value="0">0</option>';
 	for ( i = 1; i < 11; i++ ) optsec += '<option value="'+ i +'">'+ i +'</option>';
-	htmlsec = '</select><span class="sec">sec.</span>';
+	htmlsec        = '</select><span class="sec">sec.</span>';
 	for ( i = 0; i < 4; i++ ) {
-		htmlon +=  '<select id="on'+ i +'" class="on">'+ optnamepin +'</select>';
+		htmlon  +=  '<select id="on'+ i +'" class="on">'+ optnamepin +'</select>';
 		htmloff += '<select id="off'+ i +'" class="off">'+ optnamepin +'</select>';
 		if ( i < 3 ) {
 			htmlon += '<select id="ond'+ i +'" class="on delay">'+ optsec + htmlsec;
@@ -42,7 +40,7 @@ renderPage = function( changed ) {
 		$( '#ond'+ i ).val( D.val.ond[ i ] )
 		$( '#offd'+ i ).val( D.val.offd[ i ] )
 	}
-	if ( !$( '.selectric-input' ).length ) {
+	if ( ! $( '.selectric-input' ).length ) {
 		$( 'select' ).selectric();
 		$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
 	} else {
@@ -50,27 +48,26 @@ renderPage = function( changed ) {
 	}
 	$( '.selectric-ond, .selectric-offd' ).removeClass( 'disabled' );
 	$( '.selectric .label' ).removeClass( 'gr' );
-	var $el0 = $( '.on, .off' ).filter( function() {
-		return !$( this ).hasClass( 'delay' ) && $( this ).val() == 0;
+	var $el0 = $( '.on, .off' ).filter( ( i, el ) => {
+		var $this = $( el );
+		return ! $this.hasClass( 'delay' ) && $this.val() == 0;
 	} ).parent().parent(); // 2-up: selectric-wrapper
 	if ( $el0.length ) {
 		$el0.find( '.label' ).addClass( 'gr' );
 		$el0.prev().prev() // 1-prv: sec. suffix; 2-prev: selectric-wrapper delay
 			.addClass( 'disabled' );
 	}
-//	if ( !G.enabled ) $( '#undo' ).removeClass( 'disabled' );
+//	if ( ! G.enabled ) $( '#undo' ).removeClass( 'disabled' );
 	showContent();
 }
 function renderUpdate() {
-	D.keys.forEach( function( k ) {
-		D.val[ k ] = [];
-	} );
+	D.keys.forEach( k => D.val[ k ] = [] );
 	for ( i = 0; i < 4; i ++ ) {
 		D.val.pin.push( +$( '#pin'+ i ).val() );
 		D.val.name.push( $( '#name'+ i ).val() );
 	}
-	[ 'on', 'off' ].forEach( function( k ) {
-		var v0 = [];
+	[ 'on', 'off' ].forEach( k => {
+		var v0     = [];
 		for ( i = 0; i < 4; i ++ ) {
 			var v = +$( '#'+ k + i ).val();
 			v ? D.val[ k ].push( v ) : v0.push( 0 );
@@ -82,7 +79,7 @@ function renderUpdate() {
 		D.val.offd.push( D.val.off[ i + 1 ] ? +$( '#offd'+ i ).val() : 0 );
 	}
 	D.val.timer = +$( '#timer' ).val();
-	var values = [].concat.apply( [], Object.values( D.val ) ).toString();
+	var values  = [].concat.apply( [], Object.values( D.val ) ).toString();
 	renderPage( values !== D.values );
 }
 // disable default > re-enable
@@ -99,9 +96,9 @@ $( '#undo' ).click( function() {
 	renderPage( false );
 } );
 $( '#save' ).off( 'click' ).click( function() {
-	var names = {}
+	var names    = {}
 	for ( i = 0; i < 4; i++ ) names[ D.val.pin[ i ] ] = D.val.name[ i ];
-	var onorder = [];
+	var onorder  = [];
 	var offorder = [];
 	for ( i = 0; i < 4; i++ ) {
 		var on = D.val.on[ i ];
@@ -118,8 +115,8 @@ $( '#save' ).off( 'click' ).click( function() {
 				+'off=( '+ D.val.off.join( ' ' ) +' )\\n'
 				+'offd=( '+ D.val.offd.join( ' ' ) +' )\\n'
 				+'timer='+ D.val.timer;
-	bash( [ 'relaysset', values ] );
-	banner( 'Relays', 'Change ...', 'relays' );
+	bash( [ 'save', values ] );
+	banner( 'relays', 'Relays', 'Change ...' );
 } );
 
 } ); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

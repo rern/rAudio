@@ -21,7 +21,7 @@ if [[ -e /boot/expand ]]; then # run once
 fi
 
 if [[ -e /boot/backup.gz ]]; then
-	if bsdtar tf backup.gz | grep -q ^data/system/$; then
+	if bsdtar tf backup.gz | grep -q -m1 ^data/system/$; then
 		mv /boot/backup.gz $dirdata/tmp
 		$dirsettings/system.sh datarestore
 	else
@@ -30,28 +30,33 @@ if [[ -e /boot/backup.gz ]]; then
 fi
 
 if [[ -e /boot/wifi && $wlandev ]]; then
-	! grep -q $wlandev /boot/wifi && sed -i "s/^\(Interface=\).*/\1$wlandev/" /boot/wifi
-	ssid=$( grep '^ESSID' /boot/wifi | cut -d'"' -f2 )
-	sed -i -e '/^#\|^$/ d' -e 's/\r//' /boot/wifi
-	mv -f /boot/wifi "/etc/netctl/$ssid"
+	wifi=$( sed 's/\r//' /boot/wifi ) # remove windows return chars
+	ssid=$( sed -E -n '/^ESSID/ {s/^.*="*|"$//g; p}' <<< $wifi )
+	key=$( sed -E -n '/^Key/ {s/^.*="*|"$//g; p}' <<< $wifi )
+	filebootwifi="/etc/netctl/$ssid"
+	cat << EOF > "$filebootwifi"
+Interface="$wlandev"
+$( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
+ESSID="$( sed 's/"/\\"/g' <<< $ssid )"
+Key="$( sed 's/"/\\"/g' <<< $key )"
+EOF
 	$dirsettings/networks.sh profileconnect$'\n'"$ssid"
 fi
 # ----------------------------------------------------------------------------
 
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
-		ifconfig | grep -q inet.*broadcast && connected=1 && break
+		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
+
 		sleep $2
 	done
 }
 
-echo mpd > $dirshm/player
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
-touch $dirshm/status
 
-lsmod | grep -q brcmfmac && touch $dirshm/onboardwlan # initial status
+lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
 # wait 5s max for lan connection
 connectedCheck 5 1
@@ -68,6 +73,7 @@ $( basename "$devprofile" )"
 fi
 
 if [[ $connected  ]]; then
+	[[ -e $filebootwifi ]] && rm -f /boot/wifi
 	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
@@ -80,7 +86,7 @@ if [[ $connected  ]]; then
 				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
 					mount "$mountpoint" && break
 				else
-					(( i == 10 )) && pushstreamNotifyBlink NAS "NAS @$ip cannot be reached." nas
+					(( i == 10 )) && nasfailed=1
 					sleep 2
 				fi
 			done
@@ -88,13 +94,15 @@ if [[ $connected  ]]; then
 	fi
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		mv -f $filesharedip{.backup,}
-		ips=$( grep -v $( ipGet ) $filesharedip )
+		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			sshCommand $ip $dirsettings/system.sh shareddataconnect
 		done
 	elif [[ -e $filesharedip ]]; then # rclient
 		$dirsettings/system.sh shareddataiplist
 	fi
+else
+	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
@@ -109,9 +117,7 @@ if [[ -e $dirsystem/lcdchar ]]; then
 fi
 [[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
 
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofile
-
-[[ -e $dirsystem/autoplay ]] && mpc play || $dirbash/status-push.sh
+[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
 
 file=/sys/class/backlight/rpi_backlight/brightness
 if [[ -e $file ]]; then
@@ -126,21 +132,36 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( cat $dirsystem/apm )
+[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( < $dirsystem/apm )
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	$dirbash/cmd.sh mpcupdate$'\n'rescan
 elif [[ -e $dirmpd/updating ]]; then
-	path=$( cat $dirmpd/updating )
+	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-	$dirbash/cmd-list.sh &> dev/null &
+	$dirbash/cmd-list.sh &> /dev/null &
 fi
-
-if (( $( grep -c ^w /proc/net/wireless ) > 1 )) || ( ! systemctl -q is-active hostapd && [[ ! $( netctl list ) ]] ); then
+# if no wlan // usb wlan // no hostapd and no connected wlan, disable wlan
+if (( $( rfkill | grep -c wlan ) > 1 )) \
+	|| ! rfkill | grep -q wlan \
+	|| ( ! systemctl -q is-active hostapd && ! netctl list | grep -q -m1 '^\*' ); then
 	rmmod brcmfmac &> /dev/null
+	onboardwlan=false
+else
+	onboardwlan=true
+fi
+pushstream refresh '{"page":"system","wlan":'$onboardwlan'}'
+pushstream refresh '{"page":"networks","activewl":'$onboardwlan'}'
+
+if [[ $restorefailed ]]; then
+	notify restore "$restorefailed" 10000
+elif [[ $nasfailed ]]; then
+	notify nas NAS "NAS @$ip cannot be reached." -1
+else
+	notify raudio rAudio Ready 6000
 fi
 
-if [[ $restorefailed ]]; then # RPi4 cannot use if-else shorthand here
-	pushstreamNotify "$restorefailed" restore 10000
-fi
+[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
+
+touch $dirshm/startup

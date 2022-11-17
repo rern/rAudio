@@ -5,7 +5,7 @@
 
 . /srv/http/bash/common.sh
 
-dest=$( cat $dirshm/bluetoothdest )
+dest=$( < $dirshm/bluetoothdest )
 data=$( dbus-send \
 			--system \
 			--type=method_call \
@@ -17,27 +17,27 @@ data=$( dbus-send \
 			| sed -E 's/^\s*string "|^\s*variant\s*string "|^\s*variant\s*uint32 //; s/"$//' \
 			| tr '\n' ^ \
 			| sed 's/\^--\^/\n/g; s/\^$//' )
-Artist=$( grep ^Artist <<< "$data" | cut -d^ -f2 )
-Title=$( grep ^Title <<< "$data" | cut -d^ -f2 )
-Album=$( grep ^Album <<< "$data" | cut -d^ -f2 )
-Position=$( grep ^Position <<< "$data" | cut -d^ -f2 )
-Duration=$( grep ^Duration <<< "$data" | cut -d^ -f2 )
-Status=$( grep ^Status <<< "$data" | cut -d^ -f2 )
+Artist=$( grep ^Artist <<< $data | cut -d^ -f2 )
+Title=$( grep ^Title <<< $data | cut -d^ -f2 )
+Album=$( grep ^Album <<< $data | cut -d^ -f2 )
+Position=$( grep ^Position <<< $data | cut -d^ -f2 )
+Duration=$( grep ^Duration <<< $data | cut -d^ -f2 )
+Status=$( grep ^Status <<< $data | cut -d^ -f2 )
 case $Status in
 	paused )  state=pause;;
 	playing ) state=play;;
 	stopped ) state=stop;;
 esac
 
-name=$( echo $Artist$Album | tr -d ' "`?/#&'"'" )
+name=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
-	coverart=/data/shm/online/$name.$( date +%s ).${onlinefile/*.}
+	coverart="${onlinefile:9}?v=$date"
 else
 	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi
-elapsed=$( [[ ! $Position ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Position / 1000 }" )
-Time=$( [[ ! $Duration ]] && echo false || awk "BEGIN { printf \"%.0f\n\", $Duration / 1000 }" )
+[[ ! $Position ]] && elapsed=false || elapsed=$( calc 0 $Position/1000 )
+[[ ! $Duration ]] && Time=false || Time=$( calc 0 $Duration/1000 )
 timestamp=$( date +%s%3N )
 
 data='

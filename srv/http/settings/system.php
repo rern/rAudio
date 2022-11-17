@@ -1,25 +1,25 @@
 <?php
-$hostname = getHostName();
-$ip = getHostByName( $hostname );
+$hostname       = getHostName();
+$ip             = getHostByName( $hostname );
 
 if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
 	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
 } else {
 	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
 }
-$i2slist = json_decode( file_get_contents( '/srv/http/settings/system-i2s.json' ) );
-$selecti2s = '<select id="i2smodule">
-				<option value="none">None / Auto detect</option>';
+$i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
+$selecti2s      = '<select id="i2smodule">'
+				 .'<option value="none">None / Auto detect</option>';
 foreach( $i2slist as $name => $sysname ) {
-	$selecti2s.= '<option value="'.$sysname.'">'.$name.'</option>';
+	$selecti2s .= '<option value="'.$sysname.'">'.$name.'</option>';
 }
-$selecti2s.= '</select>';
-$timezonelist = timezone_identifiers_list();
+$selecti2s     .= '</select>';
+$timezonelist   = timezone_identifiers_list();
 $selecttimezone = '<select id="timezone">';
 foreach( $timezonelist as $key => $zone ) {
-	$datetime = new DateTime( 'now', new DateTimeZone( $zone ) );
-	$offset = $datetime->format( 'P' );
-	$zonename = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
+	$datetime       = new DateTime( 'now', new DateTimeZone( $zone ) );
+	$offset         = $datetime->format( 'P' );
+	$zonename       = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
@@ -38,7 +38,6 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
-	, 'nohelp' => true
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -50,6 +49,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div class="section">
@@ -65,13 +65,12 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
-		<br>Boot Duration
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
-	<div class="help-block hide">
-<?=i( 'refresh' )?> <gr>Toggle refresh every 10 seconds.</gr>
-
+	<div class="helpblock hide">
+<?=( echoSetIcon( '| I^refresh^I | Refresh every 10 seconds' ) )?>
+<br>
 <wh>CPU Load:</wh>
  • Average number of processes which are being executed and in waiting.
  • calculated over 1, 5 and 15 minutes.
@@ -92,25 +91,25 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="help-block hide">Context menu:
-<gr>|</gr> <i class="fa fa-usbdrive"></i> <gr>|</gr> USB drives: Info
-<gr>|</gr> <i class="fa fa-networks"></i> <gr>|</gr> Network shares: Unmount, Re-mount, Forget (Not available if Shared Data is enabled)
+	<div class="helpblock hide"><?=( echoSetIcon( 
+'| I^usbdrive^I | I^networks^I | Context menu
+| I^plus-circle^I | Add network storage
 
 <wh>USB drives:</wh>
  • Will be found and mounted automatically.
 
 <wh>Network shares:</wh>
- • Must be manually configured.
- • If mount failed, try in SSH terminal: (replace <cy>YELLOW</cy> with actual values)
- • <wh>CIFS:</wh>
-<pre>
+ • If | Storage I^plus-circle^I | failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+	<wh>CIFS:</wh>
+' ) )?>
+<pre style="margin-left: 30px">
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr>#	 (no user - username=guest, no password - password="")</gr>
 </pre><!--
---> • <wh>NFS:</wh>
-<pre>
+-->	<wh>NFS:</wh>
+<pre style="margin-left: 30px">
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
@@ -122,9 +121,7 @@ htmlSetting( [
 	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
 	, 'disabled' => 'HDD not support sleep'
-	, 'help'     => <<< HTML
-Sleep timer for USB hard drives.
-HTML
+	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
@@ -133,9 +130,7 @@ htmlSetting( [
 	, 'icon'     => 'refresh-library'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
-	, 'help'     => <<< HTML
-Auto update Library database on insert/remove USB drives.
-HTML
+	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
@@ -150,12 +145,9 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
-		, 'status'   => 'bluetooth'
+		, 'status'   => 'btcontroller'
 		, 'disabled' => $disabledbt
-		, 'help'     => <<< HTML
-I^gear^I
- • | Sampling 16bit | Only for Bluetooth receivers with fixed sampling
-HTML
+		, 'help'     => '| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -164,13 +156,13 @@ HTML
 		, 'icon'     => 'wifi'
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
-		, 'help'     => <<< HTML
-I^gear^I
- • | Auto start Access Point | On failed connection or no router
- • Country of Wi-Fi regulatory domain:
+		, 'help'     => <<< EOF
+| I^gear^I |
+Country of Wi-Fi regulatory domain:
 	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
 	- The connected router may override it to a certain country.
-HTML
+| • Auto start Access Point | On failed connection or no router
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -183,7 +175,7 @@ $body = [
 	[
 		  'label'    => 'Audio - I²S'
 		, 'icon'     => 'i2saudio'
-		, 'input'    => <<< HTML
+		, 'input'    => <<< EOF
 <div id="divi2smodulesw">
 	<input id="i2smodulesw" type="checkbox">
 	<div class="switchlabel" for="i2smodulesw"></div>
@@ -192,85 +184,82 @@ $body = [
 	$selecti2s
 	I^gear^I
 </div>
-HTML
-	, 'help'     => <<< HTML
-I²S DAC/audio HAT(Hardware Attached on Top) for high quality audio output.
- • HAT with EEPROM could be automatically detected.
-	(See | I^player^I Player | Output | if it's already set as Output device.)
- • HAT with obsolete EEPROM - After select the HAT, disable I²S EEPROM read with I^gear^I next to it.
-HTML
+EOF
+		, 'help'     => <<< EOF
+| I^gear^I | Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+
+I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+HAT with EEPROM could be automatically detected.
+(See | I^player^I Player | Output | Device | if it's already set.)
+EOF
 	]
 	, [
 		  'label'    => 'Character LCD'
 		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  • Support 16x2 and 20x4 LCD modules.
 I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Power Button'
 		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  • On - Fixed to pin 5
  • Off - Default to pin 5 (single pin on+off)
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
  • Off (default: 7)
  • Reserved (default: 29)
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Relay Module'
 		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: <a class="menu-sub">I^plus-r^I System</a>I^relays sub^I
+On/Off: A^I^raudio^I System^AI^relays sub^I
  • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
-HTML
+EOF
 	],
 	[
 		  'label'    => 'Rotary Encoder'
 		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
-		, 'help'     => <<< HTML
+		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  • Turn volume up/down
  • Push to play/pause
-HTML
+EOF
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
 		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
-		, 'help'     => <<< HTML
-<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum
-HTML
+		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
 		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
-		, 'help'     => <<< HTML
-<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display
-HTML
+		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
 		  'label'   => 'VU LED'
 		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  • <bl id="ledcalc">LED resister calculator</bl>
-HTML
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -279,15 +268,15 @@ $body = [
 	[
 		  'label'   => 'Host Name'
 		, 'id'      => 'hostname'
-		, 'icon'    => 'plus-r'
+		, 'icon'    => 'raudio'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
-		, 'help'    => <<< HTML
+		, 'help'    => <<< EOF
 For:
  • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  • Web Interface URL: <c id="avahiurl"></c>
  • System hostname
-HTML
+EOF
 	]
 	, [
 		  'label'    => 'Time Zone'
@@ -297,11 +286,7 @@ HTML
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
-		, 'help'     => <<< HTML
-I^gear^I
- • NTP server: For time sync
- • Package mirror server
-HTML
+		, 'help'     => '| I^gear^I | Servers for time sync and package mirror'
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -309,37 +294,31 @@ HTML
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
 		, 'status'   => 'soundprofile'
-		, 'help'     => <<< HTML
-Tweak kernel parameters for sound profiles.
-HTML
+		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
 ];
 htmlSection( $head, $body );
-$head = [ 'title' => 'Settings and Data' ]; //////////////////////////////////
+$head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
 		, 'setting' => false
-		, 'help'    => <<< HTML
-Backup all settings and Library database:
+		, 'help'    => <<< EOF
+Backup all data and settings:
+ • Library: Database, Bookmarks, DAB Radio, Web Radio
+ • Playback: Lyrics
+ • Playlist: Audio CD, Saved playlists
  • Settings
- • Library database
- • Saved playlists
- • Bookmarks
- • Lyrics
- • Web Radio
-HTML
+EOF
 	]
 	, [
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
 		, 'setting' => 'custom'
-		, 'help'    => <<< HTML
-Restore all settings and Library database from a backup file.
-HTML
+		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [
 		  'label'    => 'Shared Data'
@@ -348,28 +327,32 @@ HTML
 		, 'icon'     => 'networks'
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
-		, 'help'     => <<< HTML
-Connect share data as client for:
+		, 'help'     => <<< EOF
+Connect shared data as client for:
 	- Library database
 	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	- Show / hide items
+	- Show / hide items (Library | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
 	- Display order of Library home
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> |
-	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
+	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> &#9704; |
+	Clients: | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
-		- Linux: NFS <c>777</c>, CIFS/SMB <c>read only = no</c>
-		- Windows: <c>Everyone - Full Control</c> (Sharing + Security)
+		- Linux:
+			NFS: <c>777</c>
+			CIFS/SMB: <c>read only = no</c>
+		- Windows:
+			| Sharing | Permissions | Everyone - Full Control
+			| Security | Everyone - Full Control
 	Clients:
 		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
-		- | <wh>Shared Data I^networks^I</wh> | Add the created share on server
+		- | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share on server
 		- Data on 1st connected client will be used as initial shared.
 		
-<wh>Note:</wh> SSH passwords must be default.
-HTML
+(SSH password must be default.)
+EOF
 	]
 ];
 htmlSection( $head, $body );
@@ -421,7 +404,7 @@ foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a>';
 	$uihtml.= '<p>'.$ui[ 1 ].'</p>';
 }
-$hdparmhide = !file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
+$hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';

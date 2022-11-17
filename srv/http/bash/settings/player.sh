@@ -1,108 +1,108 @@
 #!/bin/bash
 
+# restartMPD                  - simple changes
+# $dirsettings/player-conf.sh - complex changes
+
 . /srv/http/bash/common.sh
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
-volumeBtGet() {
-	voldb=$( amixer -MD bluealsa 2> /dev/null \
-		| grep -m1 '%.*dB' \
-		| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
+columnFileOutput() {
+	fileoutput=$dirmpdconf/output.conf
+	conf=$( sed -E '/{$|^}/ d; s/  *"/^"/' $fileoutput | column -t -s^ )
+	echo "\
+audio_output {
+$conf
+}" > $fileoutput
+}
+linkConf() {
+	ln -sf $dirmpdconf/{conf/,}${args[0]}.conf
 }
 restartMPD() {
-	$dirsettings/player-conf.sh
+	systemctl restart mpd
+	pushRefresh
+}
+volumeBtGet() {
+	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 }
 
 case ${args[0]} in
 
 audiooutput )
 	echo ${args[1]} > $dirsystem/asoundcard
-	restartMPD
+	$dirsettings/player-conf.sh
 	;;
-autoupdate )
-	if [[ ${args[1]} == true ]]; then
-		sed -i '1 i\auto_update            "yes"' /etc/mpd.conf
-	else
-		sed -i '/^auto_update/ d' /etc/mpd.conf
-	fi
+autoupdate | ffmpeg | normalization )
+	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/${args[0]}.conf
 	restartMPD
 	;;
 albumignore )
 	cat $dirmpd/albumignore
 	;;
-bufferdisable )
-	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
-	restartMPD
+bluetoothinfo )
+	mac=$( cut -d' ' -f1 $dirshm/btconnected )
+	echo "\
+<bll># bluetoothctl info $mac</bll>
+$( bluetoothctl info $mac )"
 	;;
-bufferset )
-	buffer=${args[1]}
-	sed -i '/^audio_buffer_size/ d' /etc/mpd.conf
-	if (( $buffer == 4096 )); then
-		rm -f $dirsystem/buffer.conf
+buffer | outputbuffer )
+	type=${args[0]}
+	if [[ ${args[1]} == true ]]; then
+		kb=${args[2]}
+		if [[ $type == buffer ]]; then
+			setting='audio_buffer_size  "'$kb'"'
+		else
+			setting='max_output_buffer_size  "'$kb'"'
+		fi
+		echo "$setting" > $dirmpdconf/conf/$type.conf
+		linkConf
 	else
-		sed -i '1 i\audio_buffer_size      "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/buffer.conf
+		rm $dirmpdconf/$type.conf
 	fi
 	restartMPD
 	;;
-bufferoutputdisable )
-	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
-	restartMPD
-	;;
-bufferoutputset )
-	buffer=${args[1]}
-	sed -i '/^max_output_buffer_size/ d' /etc/mpd.conf
-	if (( $buffer == 8192 )); then
-		rm -f $dirsystem/bufferoutput.conf
+crossfade )
+	if [[ ${args[1]} == true ]]; then
+		crossfade=${args[2]}
+		mpc -q crossfade $crossfade
+		echo $crossfade > $dirsystem/crossfade.conf
+		touch $dirsystem/crossfade
 	else
-		sed -i '1 i\max_output_buffer_size "'$buffer'"' /etc/mpd.conf
-		echo $buffer > $dirsystem/bufferoutput.conf
+		mpc -q crossfade 0
 	fi
-	restartMPD
-	;;
-crossfadedisable )
-	mpc -q crossfade 0
 	pushRefresh
-	;;
-crossfadeset )
-	crossfade=${args[1]}
-	mpc -q crossfade $crossfade
-	echo $crossfade > $dirsystem/crossfade.conf
-	touch $dirsystem/crossfade
-	pushRefresh
-	;;
-customdisable )
-	sed -i '/ #custom$/ d' /etc/mpd.conf
-	rm -f $dirsystem/custom
-	restartMPD
 	;;
 customget )
-	global=$( cat $dirsystem/custom-global 2> /dev/null )
-	output=$( cat "$dirsystem/custom-output-${args[1]}" 2> /dev/null )
 	echo "\
-$global
+$( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$output"
+$( getContent "$dirsystem/custom-output-${args[1]}" )"
 	;;
-customset )
-	file=$dirsystem/custom
-	global=${args[1]}
-	output=${args[2]}
-	aplayname=${args[3]}
-	[[ $global ]] && echo -e "$global" > $file-global || rm -f $file-global
-	if [[ $output ]]; then
-		echo -e "$output" > "$file-output-$aplayname"
+custom )
+	if [[ ${args[1]} == true ]]; then
+		global=${args[2]}
+		output=${args[3]}
+		aplayname=${args[4]}
+		fileglobal=$dirmpdconf/conf/custom.conf
+		fileoutput="$dirsystem/custom-output-$aplayname"
+		if [[ $global ]]; then
+			echo -e "$global" > $fileglobal
+			linkConf
+		else
+			rm -f $fileglobal
+		fi
+		[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
+		[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
+		$dirsettings/player-conf.sh
+		if ! systemctl -q is-active mpd; then # config errors
+			rm -f $fileglobal "$fileoutput" $dirsystem/custom
+			$dirsettings/player-conf.sh
+			echo 0
+		fi
 	else
-		rm -f "$file-output-$aplayname"
-	fi
-	[[ $global || $output ]] && touch $file
-	restartMPD
-	if ! systemctl -q is-active mpd; then
-		sed -i '/ #custom$/ d' /etc/mpd.conf
-		rm -f $dirsystem/custom
-		restartMPD
-		echo -1
+		rm -f $dirmpdconf/custom.conf $dirsystem/custom
+		$dirsettings/player-conf.sh
 	fi
 	;;
 devices )
@@ -119,10 +119,8 @@ $bluealsa
 $( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
 
 <bll># amixer scontrols</bll>"
-	card=$( cat $dirsystem/asoundcard )
-	aplayname=$( aplay -l \
-					| grep "^card $card" \
-					| awk -F'[][]' '{print $2}' )
+	card=$( < $dirsystem/asoundcard )
+	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
 		devices+="
 $( amixer -c $card scontrols )
@@ -137,37 +135,27 @@ Simple mixer control 'Speaker Digital',0
 	fi
 	devices+="
 <bll># cat /etc/asound.conf</bll>
-$( cat /etc/asound.conf )"
+$( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )
-	dop=${args[1]}
-	aplayname=${args[2]}
-	if [[ $dop == true ]]; then
-		touch "$dirsystem/dop-$aplayname"
-	else
-		rm -f "$dirsystem/dop-$aplayname"
-	fi
-	restartMPD
-	;;
-ffmpeg )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/^resampler/ i\
-decoder {\
-	plugin         "ffmpeg"\
-	enabled        "yes"\
-}\
-
-' /etc/mpd.conf
+		sed -i '/}/ i\	dop  "yes"' $dirmpdconf/output.conf
+		touch "$dirsystem/dop-${args[2]}"
 	else
-		sed -i '/decoder/,+4 d' /etc/mpd.conf
+		sed -i '/dop.*yes/ d' $dirmpdconf/output.conf
+		rm -f "$dirsystem/dop-${args[2]}"
 	fi
+	columnFileOutput
 	restartMPD
 	;;
 filetype )
-	type=$( mpd -V | grep '\[ffmpeg' | sed 's/.*ffmpeg. //; s/ rtp.*//' | tr ' ' '\n' | sort )
+	type=$( mpd -V \
+				| sed -n '/\[ffmpeg/ {s/.*ffmpeg. //; s/ rtp.*//; p}' \
+				| tr ' ' '\n' \
+				| sort )
 	for i in {a..z}; do
-		line=$( grep ^$i <<< "$type" | tr '\n' ' ' )
+		line=$( grep ^$i <<< $type | tr '\n' ' ' )
 		[[ $line ]] && list+=${line:0:-1}'<br>'
 	done
 	echo "${list:0:-4}"
@@ -176,9 +164,7 @@ hwmixer )
 	aplayname=${args[1]}
 	hwmixer=${args[2]}
 	echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
-	sed -i '/mixer_control_name = / s/".*"/"'$hwmixer'"/' /etc/shairport-sync.conf
-	systemctl try-restart shairport-sync shairport-meta
-	restartMPD
+	$dirsettings/player-conf.sh
 	;;
 mixertype )
 	mixertype=${args[1]}
@@ -198,8 +184,9 @@ mixertype )
 	else
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
-	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": '$( [[ $mixertype == none ]] && echo true || echo false )' }'
+	$dirsettings/player-conf.sh
+	[[ $mixertype == none ]] && none=true || none=false
+	pushstream display '{"volumenone":'$none'}'
 	;;
 mpdignorelist )
 	file=$dirmpd/mpdignorelist
@@ -210,7 +197,7 @@ mpdignorelist )
 	for file in "${files[@]}"; do
 		list+="\
 $file
-$( cat "$file" | sed 's|^| <grn>●</grn> |' )
+$( sed 's|^| <grn>•</grn> |' "$file" )
 "
 	done
 	echo "$list"
@@ -218,81 +205,83 @@ $( cat "$file" | sed 's|^| <grn>●</grn> |' )
 nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
-normalization )
-	if [[ ${args[1]} == true ]]; then
-		sed -i '/^user/ a\volume_normalization   "yes"' /etc/mpd.conf
-	else
-		sed -i '/^volume_normalization/ d' /etc/mpd.conf
-	fi
-	restartMPD
-	;;
 novolume )
 	aplayname=${args[1]}
 	card=${args[2]}
 	hwmixer=${args[3]}
-	sed -i -e '/volume_normalization/ d
-	' -e '/^replaygain/ s/".*"/"off"/
-	' /etc/mpd.conf
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
-	rm -f $dirsystem/{camilladsp,crossfade,equalizer,replaygain,normalization}
-	restartMPD
-	curl -s -X POST http://127.0.0.1/pub?id=display -d '{ "volumenone": true }'
+	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
+	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
+	$dirsettings/player-conf.sh
+	pushstream display '{"volumenone":true}'
 	;;
-replaygaindisable )
-	sed -i '/^replaygain/ s/".*"/"off"/' /etc/mpd.conf
+replaygain )
+	if [[ ${args[1]} == true ]]; then
+		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
+		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $dirmpdconf/output.conf ) == 1 )); then
+			sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
+		fi
+		linkConf
+	else
+		sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
+		rm $dirmpdconf/replaygain.conf
+	fi
+	columnFileOutput
 	restartMPD
 	;;
-replaygainset )
-	replaygain=${args[1]}
-	sed -i '/^replaygain/ s/".*"/"'$replaygain'"/' /etc/mpd.conf
-	echo $replaygain > $dirsystem/replaygain.conf
-	restartMPD
-	;;
-restart )
-	restartMPD
-	;;
-soxrdisable )
-	sed -i -e '/quality/,/}/ d
-' -e '/soxr/ a\
-	quality        "very high"\
+soxr )
+	rm -f $dirmpdconf/soxr*
+	if [[ ${args[1]} == true ]]; then
+		if [[ ${args[2]} == custom ]]; then
+			cat << EOF > $dirmpdconf/conf/soxr-custom.conf
+resampler {
+	plugin          "soxr"
+	quality         "custom"
+	precision       "${args[3]}"
+	phase_response  "${args[4]}"
+	passband_end    "${args[5]}"
+	stopband_begin  "${args[6]}"
+	attenuation     "${args[7]}"
+	flags           "${args[8]}"
 }
-' /etc/mpd.conf
-	restartMPD
-	;;
-soxrset )
-	echo '	quality        "custom"
-	precision      "'${args[1]}'"
-	phase_response "'${args[2]}'"
-	passband_end   "'${args[3]}'"
-	stopband_begin "'${args[4]}'"
-	attenuation    "'${args[5]}'"
-	flags          "'${args[6]}'"
-}' > $dirsystem/soxr.conf
-	sed -i -e '/quality/,/}/ d
-' -e "/soxr/ r $dirsystem/soxr.conf
-" /etc/mpd.conf
+EOF
+		ln -sf $dirmpdconf/{conf/,}soxr-custom.conf
+		else
+			cat << EOF > $dirmpdconf/conf/soxr.conf
+resampler {
+	plugin   "soxr"
+	quality  "${args[2]}"
+	thread   "${args[3]}"
+}
+EOF
+			linkConf
+		fi
+		echo ${args[2]} > $dirsystem/soxr
+	else
+		rm -f $dirsystem/soxr
+	fi
 	restartMPD
 	;;
 volume0db )
 	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
+	alsactl store
 	level=$( $dirbash/cmd.sh volumeget )
 	pushstream volume '{"val":'$level',"db":"0.00"}'
 	;;
-volumebt0db )
-	amixer -D bluealsa -q sset "${args[1]}" 0dB 2> /dev/null
-	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"0.00"}'
+volumebt )
+	btdevice=${args[1]}
+	vol=${args[2]}
+	[[ $vol != 0dB ]] && vol+=%
+	amixer -MD bluealsa -q sset "$btdevice" $vol 2> /dev/null
+	voldb=$( volumeBtGet )
+	val=${voldb/ *}
+	echo $val > "$dirsystem/btvolume-$btdevice"
+	pushstream volumebt '{"val":'$val',"db":"0.00"}'
 	;;
 volumebtget )
 	volumeBtGet
-	echo $voldb
-	;;
-volumebtsave )
-	echo ${args[1]} > "$dirsystem/btvolume-${args[2]}"
-	volumeBtGet
-	pushstream volumebt '{"val":'${voldb/ *}',"db":"'${voldb/* }'"}'
 	;;
 volumeget )
 	$dirbash/cmd.sh volumeget$'\n'${args[1]}

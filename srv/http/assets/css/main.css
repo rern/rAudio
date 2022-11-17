@@ -1028,7 +1028,7 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
-#biocontent .artist img {
+#biocontent .img0 {
 	height: 40px;
 	margin-right: 10px;
 	vertical-align: -6px;
@@ -1290,7 +1290,7 @@ i.map.disabled, .map.disabled i {
 	position: absolute;
 	right: 0;
 	width: 34px !important;
-	line-height: 35px !important;
+	line-height: 34px !important;
 	text-align: center;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
@@ -1305,41 +1305,35 @@ i.map.disabled, .map.disabled i {
 }
 .bk-cover {
 	bottom: 0;
+	height: 34px;
 }
 .coveredit {
+	position: absolute;
+	bottom: 0;
+	width: 34px;
+	height: 34px;
 	z-index: 17;
 }
 .cover-save {
-	position: absolute;
-	bottom: 4px;
-	left: 4px;
-	width: 30px !important;
+	left: 0;
+}
+.coveredit.cover-save i {
+	width: 30px;
 	height: 30px;
-	border-radius: 50%;
-	padding: 5px;
-	font-size: 24px !important;
-	line-height: 20px !important;
+	margin-left: 2px;
+	font-size: 24px;
+	line-height: 30px;
 	text-align: center;
-	color: #000000 !important;
+	color: #000000;
 	background: var( --cw );
+	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
 }
 .coveredit.cover {
-	position: absolute;
-	width: 40px !important;
-	height: 40px;
-	bottom: 0;
 	right: 0;
-	padding: 8px;
-	border: none;
-	outline: 1px solid var( --cg );
-	outline-offset: -8px;
 }
-.iconcover {
-	content: url( '/assets/img/iconcover.svg' );
-	width: 24px !important;
-	margin: 5px;
-	border: 1px solid hsl(0,0%,20%);
+#bannerIcon .iconcover {
+	margin: 3px;
 }
 #infoTop .iconcover {
 	margin-top: 5px !important;
@@ -1417,15 +1411,24 @@ i.map.disabled, .map.disabled i {
 #button-coverart {
 	position:relative;
 	display: inline-block;
-	margin-left: 15px;
+	width: 40px;
+	padding-left: 13px;
+	text-align: center;
+}
+#button-coverart::after {
+	content: '\f528';
+	font-family: rern;
+	position: relative;
+	margin-left: -31px;
+	font-size: 26px;
 }
 #button-coverart img {
-	position: absolute;
-	left: 13px;
-	top: 13px;
-	width: 14px;
+	position: relative;
+	left: -10px;
+	width: 18px;
 	border: 1px solid hsl(0,0%,30%);
 }
+.btntitle { margin-left: 20px }
 #mode-title,
 .pl-title {
 	font-size: 24px;
@@ -1517,8 +1520,8 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 }
 #lib-path span i {
-	font-size: 24px;
-	color: var( --cw );
+	top: 3px;
+	left: -3px;
 }
 .index {
 	position: fixed;
@@ -1981,36 +1984,6 @@ li.active .li2 bl {
 	text-shadow: -2px 2px 4px #000000;
 	box-shadow: 0 0 6px 5px #000000;
 }
-#divlogin {
-	padding-top: calc( 50vh - 135px );
-	text-align: center;
-}
-#divlogin svg {
-	width: 45px;
-}
-#divlogin i {
-	font-size: 20px;
-	vertical-align: -3px;
-}
-#pwd {
-	height: 40px;
-	margin: 30px 10px 10px 25px;
-	padding: 10px;
-	font-family: "Lato";
-	font-size: 15px;
-	text-align: center;
-	color: var( --cw );
-	background-color: #000000 !important;
-	border-radius: 4px;
-	border: 1px solid var( --cg ) !important;
-}
-#login {
-	display: block;
-	margin: 0 auto;
-	width: 60px;
-	line-height: 34px;
-	background-color: var( --cm );
-}
 .tagmessage {
 	display: flex;
 	align-items: flex-end;
@@ -2225,6 +2198,27 @@ li.active .li2 bl {
 		}
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
+		.btntitle { margin-left: 0 }
+		#bioimg {
+			float: none;
+			width: 100%;
+			max-width: none;
+			margin: -10px 0 10px 0;
+			z-index: -5;
+		}
+		#bioimg a {
+			display: inline-block;
+			width: 33.3%;
+		}
+		#bioimg a:nth-child( odd ) {
+			margin-left: 0;
+		}
+		#bioimg img {
+			width: 100%;
+		}
+		#biocontent .artist img {
+			display: none;
+		}
 	}
 	@media ( max-width: 400px ) {
 		#button-settings { right: 10px }

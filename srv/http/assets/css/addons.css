@@ -7,74 +7,13 @@ hr {
 	border: 0;
 	border-top: 1px solid #eee
 }
-.container {
-	max-width: 768px;
-	margin: auto;
-	padding: 50px 55px 0 55px;
-	user-select: none;
-	-webkit-user-select: none;
-}
-.container.progress {
-	padding-top: 0;
-}
 @media (max-width: 540px) {
-	.container {
-		padding: 40px 10px 15px 10px;
-	}
 	.boxed-group {
 		padding: 10px !important;
 	}
 }
-.head {
-	position: fixed;
-	width: 100%;
-	height: 40px;
-	padding-right: 10px;
-	background: var( --cga );
-	box-shadow: 0px 4px 10px #000000;
-	z-index: 95;
-}
-#page-icon {
-	float: left;
-	background: var( --cm );
-}
-#page-icon, #close {
-	width: 40px;
-	height: 40px;
-	line-height: 38px;
-	text-align: center;
-	font-size: 24px;
-	text-shadow: -1px 1px 2px #000000;
-}
-.title {
-	margin-left: 15px;
-	line-height: 40px;
-	font-size: 26px;
-	font-weight: 300;
-	letter-spacing: 5px;
-}
-#close {
-	float: right;
-	font-size: 28px;
-	color: var( --cm );
-	cursor: pointer;
-}
-heading {
-	display: inline-block;
-	margin: 20px 0 10px 0;
-	padding-bottom: 5px;
-	width: 100%;
-	line-height: 35px;
-	font-size: 24px;
-	font-weight: 300;
-	border-bottom: 1px solid var( --cg );
-}
-.clear {
-	color: transparent;
-	text-shadow: none;
-}
 #list {
-	padding-left: 25px;
+	padding: 30px 0 0 25px;
 	list-style: none;
 }
 #list li:before {
@@ -97,7 +36,6 @@ heading {
 	font-size: 18px;
 }
 .revisiontext {
-	display:none;
 	padding-left: 20px;
 	line-height: 20px;
 }
@@ -160,22 +98,11 @@ pre {
 	width: 100%;
 	margin: 10px 0 0 0;
 	padding-left: 10px;
-	background-color: var( --cgd );
-	font-family: 'Inconsolata';
-	font-size: 15px;
-	line-height: 20px;
 	white-space: pre-wrap;
 	overflow-x: hidden;
 	overflow-y: auto;
 	user-select: text;
 	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
-}
-code {
-	font-family: 'Inconsolata';
-	font-size: 14px;
-	background-color: var( --cgd );
-	padding: 0 3px;
-	border-radius: 3px;
 }
 .thumbnail {
 	float: right;
@@ -193,8 +120,9 @@ a:hover {
 .container .infobtn {
 	min-width: 90px;
 }
-#bottom {
-	min-height: calc( 100vh - 250px );
+.infobtn.disabled {
+	pointer-events: auto;
+	user-select: none;
 }
 #list,
 #list li {
@@ -218,13 +146,17 @@ strike {
 li i,
 .revision,
 .boxed-group legend i {
-	color: var( --cm );
+	color: var( --cg60 );
 }
 span,
 pre,
 code,
 code i {
 	color: var( --cw );
+}
+.addontitle {
+	font-size: 18px;
+	letter-spacing: 5px;
 }
 .flushdot {
 	height: 0;
@@ -243,12 +175,6 @@ p,
 ul,
 .disabled {
 	color: var( --cw );
-}
-.disabled:hover {
-	cursor: default;
-}
-.infobtn.disabled {
-	pointer-events: auto;
 }
 .cbgr { color: #808080; background: #808080; }
 .cbw  { color: #ffffff; background: #ffffff; }
@@ -270,11 +196,6 @@ ul,
 
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
-	a:hover,
-	.close-root:hover,
-	#list li:hover {
-		color: var( --cml );
-	}
 	pre *:hover {
 		text-decoration: none;
 		cursor: text;
@@ -284,17 +205,5 @@ ul,
 	}
 	pre a.cgr:hover {
 		color: #808080;
-	}
-	/* :active *********************************************************/
-	a:active,
-	.close-root:active,
-	#list li:active {
-		color: var( --cma );
-	}
-	.btn-primary:active {
-		background: var( --cma );
-	}
-	.btn-default:active {
-		background: var( --cga );
 	}
 }

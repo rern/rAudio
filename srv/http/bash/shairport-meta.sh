@@ -13,7 +13,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
 	
 	##### code - hex matched
-	hex=$( echo $line | sed -E 's|.*code>(.*)</code.*|\1|' )
+	hex=$( sed -E 's|.*code>(.*)</code.*|\1|' <<< $line )
 	if [[ $hex ]]; then # found code > [next line]
 		case $hex in
 			61736172 ) code=Artist   && continue;;
@@ -28,7 +28,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	[[ ! $code ]] && continue
 	
 	##### value - base64 decode
-	base64=$( echo ${line/<*} | tr -d '\000' ) # remove tags and null bytes
+	base64=$( tr -d '\000' <<< ${line/<*} ) # remove tags and null bytes
 	# null or not base64 string - reset code= > [next line]
 	if [[ ! $base64 || ! $base64 =~ ^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$ ]]; then
 		code=
@@ -37,8 +37,8 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		src=/data/shm/airplay/coverart.$( date +%s ).jpg
-		pushstreamAirplay '{"coverart":"'$src'","file":""}'
+		src=/data/shm/airplay/coverart.jpg
+		pushstreamAirplay '{"coverart":"'$src?v=$( date +%s )'","file":""}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
@@ -46,11 +46,12 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			start=${progress[0]}
 			current=${progress[1]}
 			end=${progress[2]}
-			elapsedms=$( awk "BEGIN { printf \"%.0f\n\", $(( current - start )) / 44.1 }" )
+			elapsedms=$( calc 0 $(( current - start ))/44.1 )
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
 			if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
-				touch $dirshm/scrobble && ( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
+				touch $dirshm/scrobble
+				( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 			fi
 			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
 			timestamp=$( date +%s%3N )

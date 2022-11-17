@@ -84,7 +84,7 @@ metadataGet() {
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
 	if [[ ! -e $dirsystem/vumeter ]]; then
-		name=$( echo $artist$title | tr -d ' \"`?/#&'"'" )
+		name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
 		if [[ $coverurl ]]; then
 			coverart=/data/shm/webradio/$name.jpg
 			curl -s $coverurl -o $dirshm/webradio/$name.jpg

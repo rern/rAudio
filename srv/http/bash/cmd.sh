@@ -4,7 +4,7 @@
 dirimg=/srv/http/assets/img
 
 # convert each line to each args
-readarray -t args <<< "$1"
+readarray -t args <<< $1
 
 addonsListGet() {
 	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
@@ -13,10 +13,16 @@ addonsListGet() {
 	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
 	[[ $? != 0 ]] && echo -1 && exit
 }
+equalizerAmixer() { # sudo - mixer equal is user dependent
+	sudo -u mpd amixer -MD equal contents \
+					| grep ': values' \
+					| cut -d, -f2 \
+					| xargs
+}
 equalizerGet() { # sudo - mixer equal is user dependent
-	val=$( sudo -u mpd amixer -MD equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	val=$( equalizerAmixer )
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
 	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
 	
 	if [[ $2 == set ]]; then
@@ -42,78 +48,6 @@ equalizerGet() { # sudo - mixer equal is user dependent
 }'
 	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
 }
-gifNotify() {
-	pushstreamNotifyBlink Thumbnail 'Resize animated GIF ...' coverart
-}
-gifThumbnail() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	imgwh=( $( gifsicle -I "$source" | awk 'NR < 3 {print $NF}' ) )
-	[[ ${imgwh[0]} == images ]] && animated=1
-	case $type in
-		bookmark )
-			rm -f "${target:0:-4}".*
-			[[ $animated ]] && (( ${imgwh[1]/x*} > 200 || ${imgwh[1]/*x} > 200 )) && gifNotify
-			gifsicle -O3 --resize-fit 200x200 "$source" > "$target"
-			gifsicle -O3 --resize-fit 80x80 "$source" > "$( dirname "$target" )/thumb.gif"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
-			
-			[[ $animated ]] && gifNotify
-			gifsicle -O3 --resize-fit 1000x1000 "$source" > "$target"
-			gifsicle -O3 --resize-fit 200x200 "$source" > "$dir/coverart.gif"
-			gifsicle -O3 --resize-fit 80x80 "$source" > "$dir/thumb.gif"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			filenoext=${target:0:-4}
-			rm -f $filenoext.* $filenoext-thumb.*
-			[[ $animated ]] && gifNotify
-			gifsicle -O3 --resize-fit 200x200 $source > $target
-			gifsicle -O3 --resize-fit 80x80 $source > $filenoext-thumb.gif
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-}
-jpgThumbnail() {
-	type=$1
-	source=$2
-	target=$3
-	covername=$4
-	case $type in
-		bookmark )
-			rm -f "${target:0:-4}".*
-			cp -f "$source" "$target"
-			convert "$target" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-			;;
-		coverart )
-			dir=$( dirname "$target" )
-			rm -f "$dir/cover".*.backup "$dir/coverart".* "$dir/thumb".*
-			coverfile=$( ls -1 "$dir/cover".* 2> /dev/null | head -1 )
-			[[ -e $coverfile ]] && mv -f "$coverfile" "$coverfile.backup"
-			cp -f "$source" "$target" # already resized from client
-			[[ ! -e "$target" ]] && pushstreamNotify ${type^} 'No write permission.' warning && exit
-			
-			convert "$source" -thumbnail 200x200\> -unsharp 0x.5 "$dir/coverart.jpg"
-			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
-			rm -f $dirshm/embedded/* $dirshm/local/$covername
-			;;
-		dabradio|webradio )
-			filenoext=${target:0:-4}
-			rm -f $filenoext.* $filenoext-thumb.*
-			cp -f $source $target
-			convert $source -thumbnail 80x80\> -unsharp 0x.5 $filenoext-thumb.jpg
-			;;
-	esac
-	pushstreamImage "$target" $type "$covername"
-}
 plAddPlay() {
 	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
@@ -136,21 +70,21 @@ plAddRandom() {
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
 	mpcls=$( mpc ls "$dir" )
-	cuefile=$( grep -m1 '\.cue$' <<< "$mpcls" )
+	cuefile=$( grep -m1 '\.cue$' <<< $mpcls )
 	if [[ $cuefile ]]; then
 		plL=$(( $( grep -c '^\s*TRACK' "/mnt/MPD/$cuefile" ) - 1 ))
 		range=$( shuf -i 0-$plL -n 1 )
 		file="$range $cuefile"
-		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc --range=$range load "$cuefile"
 	else
-		file=$( shuf -n 1 <<< "$mpcls" )
-		grep -q "$file" $dirsystem/librandom && plAddRandom && return
+		file=$( shuf -n 1 <<< $mpcls )
+		grep -q -m1 "$file" $dirsystem/librandom && plAddRandom && return
 		
 		mpc add "$file"
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( cat $dirsystem/librandom | wc -l ) ))
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( wc -l < $dirsystem/librandom ) ))
 	if (( $diffcount > 1 )); then
 		echo $file >> $dirsystem/librandom
 	else
@@ -161,33 +95,25 @@ plAddRandom() {
 plLengthSong() {
 	readarray -t status <<< $( { echo status; sleep 0.05; } \
 										| telnet 127.0.0.1 6600 2> /dev/null \
-										| awk '/^playlistlength:|^song:/ {print $NF}' )
+										| grep -E '^playlistlength:|^song:' \
+										| cut -d' ' -f2 )
 	total=${status[0]}
 	pos=$(( ${status[1]} + 1 ))
 	tail=$(( total - pos ))
 }
-pushstreamImage() {
-	target=$1
-	[[ ! -e $target ]] && exit
-	
-	type=$2
-	covername=$3
-	if [[ $type == bookmark ]]; then
-		bkfile="$dirbookmarks/$covername"
-		echo "$( head -1 "$bkfile" )
-${target/\/srv\/http}" > "$bkfile"
-	fi
-	coverart=${target:0:-4}.$( date +%s ).${target: -3};
-	[[ ${coverart:0:4} == /mnt ]] && coverart=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	data='{"url":"'$coverart'","type":"'$type'"}'
-	pushstream coverart "$data"
-}
 pushstreamPlaylist() {
-	data=$( php /srv/http/mpdplaylist.php current $1 )
-	pushstream playlist "$data"
+	[[ $1 ]] && arg=$1 || arg=current
+	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
+}
+pushstreamSavedPlaylist() {
+	pushstream savedplaylist $( php /srv/http/mpdplaylist.php list )
+}
+pushstreamRadioList() {
+	pushstream radiolist '{"type":"webradio"}'
+	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
-	pushstream volume '{"type":"'$1'", "val":'$2' }'
+	pushstream volume '{"type":"'$1'","val":'$2'}'
 }
 rotateSplash() {
 	case $1 in
@@ -219,14 +145,15 @@ $Album" &> /dev/null &
 snapclientStop() {
 	systemctl stop snapclient
 	$dirsettings/player-conf.sh
-	ip=$( ipGet )
-	sshCommand $( cat $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
+	ip=$( ipAddress )
+	sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
 	rm $dirshm/serverip
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
-		systemctl stop radio dab
-		rm -f $dirshm/{radio,status}
+		systemctl stop radio
+		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
+		rm -f $dirshm/radio
 		sleep 1
 	fi
 }
@@ -236,8 +163,9 @@ urldecode() { # for webradio url to filename
 }
 volumeGet() {
 	if [[ -e $dirshm/btreceiver ]]; then
+		control=$( < $dirshm/btreceiver )
 		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[%[]' '/%.*dB/ {print $2; exit}' )
+			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
 			[[ $volume ]] && break
 			sleep 1
 		done
@@ -246,27 +174,21 @@ volumeGet() {
 	
 	[[ -e $dirshm/nosound ]] && volume=-1 && return
 	
-	mixertype=$( sed -n '/type *"alsa"/,/mixer_type/ p' /etc/mpd.conf \
-					| tail -1 \
-					| cut -d'"' -f2 )
-	if [[ $( cat $dirshm/player ) == mpd && $mixertype == software ]]; then
+	mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
+	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
-		card=$( cat $dirsystem/asoundcard )
+		card=$( < $dirsystem/asoundcard )
 		if [[ ! -e $dirshm/amixercontrol ]]; then
 			volume=100
 		else
-			control=$( cat $dirshm/amixercontrol )
-			voldb=$( amixer -c $card -M sget "$control" \
-				| grep -m1 '%.*dB' \
-				| sed -E 's/.*\[(.*)%\] \[(.*)dB.*/\1 \2/' )
+			control=$( < $dirshm/amixercontrol )
+			voldb=$( amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
 			if [[ $voldb ]]; then
 				volume=${voldb/ *}
 				db=${voldb/* }
 			else
-				volume=$( amixer -c $card -M sget "$control" \
-							| grep -m1 '%]' \
-							| sed -E 's/.*\[(.*)%].*/\1/' )
+				volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
 				[[ ! $volume ]] && volume=100
 			fi
 		fi
@@ -283,13 +205,12 @@ volumeSet() {
 		volumeSetAt $target $card "$control"
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
-		for i in $( seq $current $incr $target ); do
+		values=( $( seq $(( current + incr )) $incr $target ) )
+		(( $diff % 5 )) && values+=( $target )
+		for i in "${values[@]}"; do
 			volumeSetAt $i $card "$control"
 			sleep 0.2
 		done
-		if (( $i != $target )); then
-			volumeSetAt $target $card "$control"
-		fi
 	fi
 	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
@@ -298,21 +219,28 @@ volumeSetAt() {
 	target=$1
 	card=$2
 	control=$3
-	btreceiver=$( cat $dirshm/btreceiver 2> /dev/null )
-	if [[ $btreceiver ]]; then
-		amixer -MqD bluealsa sset "$btreceiver" $target% 2> /dev/null
-		echo $target > "$dirsystem/btvolume-$btreceiver"
+	if [[ -e $dirshm/btreceiver ]]; then
+		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
+		echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
 	fi
 }
+webradioCopyBackup() {
+	if [[ -e $dirbackup/webradio ]]; then
+		rm -rf $dirbackup/webradio
+		cp -r $dirwebradio $dirbackup
+		webradio=$( grep webradio $dirmpd/counts )
+		sed -i "s/.*webradio.*/$webradio/" $dirbackup/mpd/counts
+	fi
+}
 webradioCount() {
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{"type":"'$type'", "count":'$count'}'
-	grep -q "$type.*,"$ $dirmpd/counts && count+=,
+	pushstream radiolist '{"type":"'$type'","count":'$count'}'
+	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
@@ -335,7 +263,7 @@ webRadioSampling() {
 	file=$2
 	timeout 3 wget -q $url -O /tmp/webradio
 	if [[ ! $( awk NF /tmp/webradio ) ]]; then
-		pushstreamNotify 'Web Radio' "URL cannot be streamed:<br>$url" warning 8000
+		notify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
 		exit
 	fi
 	
@@ -345,13 +273,13 @@ webRadioSampling() {
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
 	if [[ ! $data ]]; then
-		pushstreamNotify 'Web Radio' "URL contains no stream data:<br>$url" webradio 8000
+		notify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
 		exit
 	fi
 	
 	samplerate=${data[0]}
 	bitrate=${data[1]}
-	sample="$( awk "BEGIN { printf \"%.1f\n\", $samplerate / 1000 }" ) kHz"
+	sample="$( calc 1 $samplerate/1000 ) kHz"
 	kb=$(( bitrate / 1000 ))
 	rate="$(( ( ( kb + 4 ) / 8 ) * 8 )) kbit/s" # round to modulo 8
 	sed -i "2 s|.*|$sample $rate|" "$file"
@@ -374,7 +302,7 @@ addonsupdates )
 	addonsListGet
 	installed=$( ls "$diraddons" | grep -v addons-list )
 	for addon in $installed; do
-		verinstalled=$( cat $diraddons/$addon )
+		verinstalled=$( < $diraddons/$addon )
 		if (( ${#verinstalled} > 1 )); then
 			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
 			[[ $verinstalled != $verlist ]] && count=1 && break
@@ -430,10 +358,11 @@ bookmarkcoverreset )
 	imagepath=${args[1]}
 	name=${args[2]}
 	sed -i '2d' "$dirbookmarks/$name"
-	rm -f "$imagepath/coverart".* "$imagepath/thumb".*
+	rm -f "$imagepath/coverart".*
 	data='{
-  "url"  : "'$imagepath/reset'"
-, "type" :"bookmark"
+  "url"   : "'$imagepath/$name'"
+, "type"  : "bookmark"
+, "reset" : 1
 }'
 	pushstream coverart "$data"
 	;;
@@ -478,9 +407,12 @@ color )
 		[[ $hsl == reset ]] && rm -f $file || echo $hsl > $file
 	fi
 	if [[ -e $file ]]; then
-		hsl=( $( cat $file ) )
+		hsl=( $( < $file ) )
 	else
-		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css | sed 's/.*(\(.*\)).*/\1/' | tr ',' ' ' | tr -d % ) )
+		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css \
+					| sed 's/.*(\(.*\)).*/\1/' \
+					| tr ',' ' ' \
+					| tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
@@ -508,31 +440,31 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
-	hash=$( date +%s )
-	sed -i -E 's/\?v=.{10}/?v='$hash'/g' /srv/http/settings/camillagui/build/index.html
+	sed -i -E 's/\?v=.{10}/?v='$date'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartget )
 	path=${args[1]}
-	coverartfile=$( ls -1X "$path"/coverart.* 2> /dev/null \
-						| grep -E -i '\.gif$|\.jpg$|\.png$' \
-						| head -1 ) # full path
-	if [[ $coverartfile ]]; then
-		echo $coverartfile | sed 's|^/srv/http||'
+	radio=${args[2]}
+	if [[ $radio ]]; then
+		coverartfile=$( ls -1 "$path".{gif,jpg} 2> /dev/null )
+		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date
 		exit
 	fi
+	
+	coverartfile=$( ls -1X "$path"/coverart.{gif,jpg,png} 2> /dev/null | head -1 )
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
 	coverfile=$( ls -1X "$path" \
 					| grep -E -i '^cover\.|^folder\.|^front\.|^album\.' \
-					| grep -E -i '\.gif$|\.jpg$|\.png$' \
-					| head -1 ) # filename only
+					| grep -E -i -m1 '\.gif$|\.jpg$|\.png$' ) # filename only
 	if [[ $coverfile ]]; then
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile
+		[[ -e $coverartfile ]] && echo $coverartfile?v=$date
 	fi
 	;;
 coverartreset )
@@ -541,8 +473,8 @@ coverartreset )
 	artist=${args[3]}
 	album=${args[4]}
 	dir=$( dirname "$coverfile" )
+	filename=$( basename "$coverfile" )
 	if [[ $( basename "$dir" ) == audiocd ]]; then
-		filename=$( basename "$coverfile" )
 		id=${filename/.*}
 		rm -f "$coverfile"
 		$dirbash/status-coverartonline.sh "\
@@ -553,12 +485,9 @@ $id" &> /dev/null &
 		exit
 	fi
 	
-	covername=$( echo $artist$album | tr -d ' "`?/#&'"'" )
 	rm -f "$coverfile" \
-		"$dir/coverart".* \
-		"$dir/thumb".* \
-		$dirshm/embedded/* \
-		$dirshm/local/$covername
+		"$dir/{coverart,thumb}".* \
+		$dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
@@ -568,31 +497,21 @@ $id" &> /dev/null &
 			convert "$dir/coverart.jpg" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		else
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
-			gifsicle -O3 --resize-fit 80x80 "$restorefile" > "$dir/thumb.gif"
+			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
 	fi
 	url=$( $dirbash/status-coverart.sh "\
 $artist
 $album
 $mpdpath" )
-	if [[ $url ]]; then
-		url="${url:0:-4}.$( date +%s ).${url: -3}"
-	else
-		url=/mnt/MPD/$mpdpath/reset
-	fi
-	data='{"url":"'$url'","type":"coverart"}'
-	pushstream coverart "$data"
-	;;
-coverartsave )
-	source=${args[1]}
-	path=${args[2]}
-	coverfile="$path/cover.jpg"
-	jpgThumbnail coverart "$source" "$coverfile"
-	rm -f "$source"
+	[[ $url ]] && url=$url?v=$date || url=reset
+	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverfileslimit )
 	for type in local online webradio; do
-		ls -t $dirshm/$type/* 2> /dev/null | tail -n +10 | xargs rm -f --
+		ls -t $dirshm/$type/* 2> /dev/null \
+			| tail -n +10 \
+			| xargs rm -f --
 	done
 	;;
 dabscan )
@@ -604,28 +523,28 @@ displaysave )
 	data=${args[1]}
 	pushstream display "$data"
 	jq -S <<< $data > $dirsystem/display
-	grep -q '"vumeter".*true' $dirsystem/display && vumeter=1
+	grep -q -m1 '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		mpc | grep -q '\[playing' && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		grep -q -m1 '^state.*play' $dirshm/status && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		touch $dirsystem/vumeter
+		[[ -e $dirmpdconf/fifo.conf ]] && exit
+		
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		pushstreamNotifyBlink 'Playback' 'VU meter disable...' 'playback'
+		notify -blink playback Playback 'VU meter disable...'
 	fi
 	$dirsettings/player-conf.sh
-	status=$( $dirbash/status.sh )
-	pushstream mpdplayer "$status"
 	;;
 equalizer )
 	type=${args[1]} # preset, delete, rename, new, save
 	name=${args[2]}
 	newname=${args[3]}
 	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( cat $dirshm/btreceiver )"
+	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
 	if [[ $type == rename ]]; then
 		sed -i -e "1 s/.*/$newname/
 " -e "s/^$name^/$newname^/
@@ -654,7 +573,7 @@ equalizer )
 			sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
-	val=$( sudo -u mpd amixer -D equal contents | awk -F ',' '/: value/ {print $NF}' | xargs )
+	val=$( equalizerAmixer )
 	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
 	equalizerGet pushstream
 	;;
@@ -665,23 +584,6 @@ equalizerupdn )
 	band=${args[1]}
 	val=${args[2]}
 	sudo -u mpd amixer -D equal sset "$band" $val
-	;;
-hashFiles )
-	path=/srv/http/assets
-	for dir in css fonts js; do
-		[[ $dir == js ]] && d=d
-		files+=$( ls -p$d "$path/$dir/"* | grep -v '/$' )$'\n'
-	done
-	date=$( date +%s )
-	for file in ${files[@]}; do
-		mv $file ${file/.*}.$date.${file/*.}
-		pages=$( grep -rl "assets/js" /srv | grep 'php$' )
-		for page in ${pages[@]}; do
-			name=$( basename $file )
-			newname=${name/.*}.$date.${name/*.}
-			sed -i "s|$name|$newname|" $page
-		done
-	done
 	;;
 ignoredir )
 	touch $dirmpd/updating
@@ -696,7 +598,7 @@ ignoredir )
 latestclear )
 	> $dirmpd/latest
 	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
-	pushstreamNotify Latest Cleared. latest
+	notify latest Latest Cleared
 	;;
 librandom )
 	enable=${args[1]}
@@ -714,7 +616,7 @@ librandom )
 		plAddRandom
 		[[ $play ]] && mpc -q play $playnext
 	fi
-	pushstream option '{ "librandom": '$enable' }'
+	pushstream option '{"librandom":'$enable'}'
 	;;
 lyrics )
 	artist=${args[1]}
@@ -737,16 +639,16 @@ lyrics )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
-		artist=$( echo $artist | sed -E 's/^A |^The |\///g' )
+		artist=$( sed -E 's/^A |^The |\///g' <<< $artist )
 		title=${title//\/}
-		query=$( echo $artist/$title \
-					| tr -d " '\-\"\!*\(\);:@&=+$,?#[]." )
+		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
 		if [[ $lyrics ]]; then
-			echo "$lyrics" \
-				| sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' \
-				| sed -e '/^\s*$/ d' -e '/\/div>/,/<br>/ {N;d}' -e 's/<br>//' -e 's/&quot;/"/g' \
-				| grep -v '^<' \
+			sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' <<< $lyrics \
+				| sed -e '/^\s*$\|^</ d
+					' -e '/\/div>/,/<br>/ {N;d}
+					' -e 's/<br>//
+					' -e 's/&quot;/"/g' \
 				| tee "$lyricsfile"
 		fi
 	fi
@@ -768,7 +670,7 @@ mpcaddrandom )
 	plAddRandom
 	;;
 mpccrop )
-	if mpc | grep -q '\[playing'; then
+	if grep -q -m1 '^state.*play' $dirshm/status; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -834,30 +736,29 @@ mpcplayback )
 	command=${args[1]}
 	pos=${args[2]} # if stop = elapsed
 	if [[ ! $command ]]; then
-		player=$( cat $dirshm/player )
-		if [[ $( cat $dirshm/player ) != mpd ]]; then
+		player=$( < $dirshm/player )
+		if [[ $( < $dirshm/player ) != mpd ]]; then
 			$dirbash/cmd.sh playerstop
 			exit
 		fi
 		
-		if mpc | grep -q '\[playing'; then
-			grep -q webradio=true $dirshm/status && command=stop || command=pause
+		if grep -q -m1 '^state.*play' $dirshm/status; then
+			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play
 		fi
 	fi
 	stopRadio
 	if [[ $command == play ]]; then
-		mpc | grep -q '^\[paused\]' && pause=1
+		grep -q -m1 '^state.*pause' $dirshm/status && pause=1
 		mpc -q $command $pos
-		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && pushstreamNotifyBlink 'Audio CD' 'Start play ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
-	pushstream state '{"state":"'$command'"}'
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -880,20 +781,20 @@ mpcprevnext )
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
 	fi
-	if mpc | grep -q 'random: on'; then
+	if mpc | grep -q -m1 'random: on'; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc -q play $pos
 	else
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
-			mpc | grep -q 'consume: on' && mpc -q del $current
+			mpc | grep -q -m1 'consume: on' && mpc -q del $current
 			[[ -e $dirsystem/librandom ]] && plAddRandom
 		else
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
 	fi
 	if [[ $state == play ]]; then
-		[[ $( mpc | head -c 4 ) == cdda ]] && pushstreamNotifyBlink 'Audio CD' 'Change track ...' audiocd
+		[[ $( mpc | head -c 4 ) == cdda ]] && notify -blink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
@@ -952,7 +853,7 @@ mpcsimilar )
 		list+="$( mpc find artist "$artist" title "$title" )
 "
 	done
-	echo "$list" | awk NF | mpc -q add
+	awk NF <<< $list | mpc -q add
 	pushstreamPlaylist
 	echo $(( $( mpc playlist | wc -l ) - plLprev ))
 	;;
@@ -987,7 +888,7 @@ playerstart )
 	;;
 playerstop )
 	elapsed=${args[1]}
-	player=$( cat $dirshm/player )
+	player=$( < $dirshm/player )
 	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
@@ -1000,6 +901,7 @@ playerstop )
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
+			systemctl restart bluetooth
 			;;
 		snapcast )
 			snapclientStop
@@ -1028,26 +930,26 @@ power )
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 		
 		cp $filesharedip{,.backup}
-		ips=$( grep -v $( ipGet ) $filesharedip )
+		ips=$( grep -v $( ipAddress ) $filesharedip )
 		if [[ $ips ]]; then
 			for ip in $ips; do
 				sshCommand $ip $dirsettings/system.sh shareddatadisconnect
 			done
 		fi
 	elif [[ -e $filesharedip ]]; then # rclient
-		sed -i "/$( ipGet )/ d" $filesharedip
+		sed -i "/$( ipAddress )/ d" $filesharedip
 	fi
 	
 	if [[ $action == reboot ]]; then
-		pushstreamNotifyBlink Power 'Reboot ...' reboot
+		notify -blink reboot Power 'Reboot ...'
 	else
-		pushstreamNotify Power 'Off ...' 'power blink' 10000
+		notify -blink power Power 'Off ...'
 	fi
 	touch $dirshm/power
 	mpc -q stop
 	pushstream btreceiver false
 	if [[ -e $dirshm/clientip ]]; then
-		clientip=$( cat $dirshm/clientip )
+		clientip=$( < $dirshm/clientip )
 		for ip in $clientip; do
 			sshCommand $ip $dirbash/cmd.sh playerstop
 		done
@@ -1060,7 +962,7 @@ power )
 	fi
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
-	if mount | grep -q $dirnas; then
+	if mount | grep -q -m1 $dirnas; then
 		umount -l $dirnas/* &> /dev/null
 		sleep 3
 	fi
@@ -1089,8 +991,7 @@ savedpldelete )
 	rm "$dirplaylists/$name.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	pushstreamSavedPlaylist
 	;;
 savedpledit )
 	name=${args[1]}
@@ -1115,7 +1016,7 @@ savedpledit )
 		sed -i "$from d" "$plfile"
 		sed -i "$to a$file" "$plfile"
 	fi
-	pushstream playlist '{"playlist":"'${name//\"/\\\"}'"}'
+	pushstreamSavedPlaylist
 	;;
 savedplrename )
 	oldname=${args[1]}
@@ -1130,8 +1031,7 @@ savedplrename )
 	fi
 	
 	mv "$dirplaylists/$oldname.m3u" "$plfile"
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	pushstreamSavedPlaylist
 	;;
 savedplsave )
 	name=${args[1]}
@@ -1147,9 +1047,8 @@ savedplsave )
 	mpc -q save "$name"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
-	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
-	list=$( php /srv/http/mpdplaylist.php list )
-	pushstream playlists "$list"
+	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
+	pushstreamSavedPlaylist
 	;;
 screenoff )
 	DISPLAY=:0 xset ${args[1]}
@@ -1159,12 +1058,6 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
-	;;
-thumbgif )
-	gifThumbnail "${args[@]:1}"
-	;;
-thumbjpg )
-	jpgThumbnail "${args[@]:1}"
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}
@@ -1187,7 +1080,7 @@ volume ) # no args = toggle mute / unmute
 			echo $current > $filevolumemute
 			pushstreamVolume mute $current
 		else                        # unmute
-			target=$( cat $filevolumemute )
+			target=$( < $filevolumemute )
 			rm -f $filevolumemute
 			pushstreamVolume unmute $target
 		fi
@@ -1195,7 +1088,7 @@ volume ) # no args = toggle mute / unmute
 	volumeSet $current $target $card "$control"
 	;;
 volume0db )
-	player=$( cat $dirshm/player )
+	player=$( < $dirshm/player )
 	volumeGet
 	amixer -c $card -Mq sset "$control" 0dB
 	;;
@@ -1225,11 +1118,11 @@ volumesave )
 	;;
 volumeupdown )
 	updn=${args[1]}
+	card=${args[2]}
+	control=${args[3]}
 	if [[ -e $dirshm/btreceiver ]]; then
-		amixer -MqD bluealsa sset "$( cat $dirshm/btreceiver )" 1%$updn 2> /dev/null
+		amixer -MqD bluealsa sset "$control" 1%$updn 2> /dev/null
 	else
-		card=${args[2]}
-		control=${args[3]}
 		if [[ $control ]]; then
 			amixer -c $card -Mq sset "$control" 1%$updn
 		else
@@ -1259,17 +1152,13 @@ $charset" > "$file"
 	webRadioSampling $url "$file" &
 	;;
 webradiocopybackup )
-	if [[ -e $filesharedip ]]; then
-		rm -rf $dirbackup/webradio
-		cp -r $dirwebradio $dirbackup
-	fi
+	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
-	coverart=${args[1]}
+	filenoext=${args[1]}
 	type=${args[2]}
-	cover=${coverart:0:-15} # remove .1234567890.jpg
-	rm -f "/srv/http$cover"{,-thumb}.*
-	pushstream coverart '{"type":"'$type'"}'
+	rm "$filenoext".* "$filenoext-thumb".*
+	pushstream coverart '{"type":"radio","url":""}'
 	;;
 webradiodelete )
 	dir=${args[1]}
@@ -1279,7 +1168,7 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname"{,-thumb}.*
+	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
 	webradioCount $type
 	;;
 wrdirdelete )
@@ -1290,14 +1179,14 @@ wrdirdelete )
 		echo -1
 	else
 		rm -rf "$dirdata/$mode/$path"
-		pushstream radiolist '{"type":"webradio"}'
+		pushstreamRadioList
 	fi
 	;;
 wrdirnew )
 	dir=${args[1]}
 	sub=${args[2]}
 	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 wrdirrename )
 	path=${args[1]}
@@ -1305,7 +1194,7 @@ wrdirrename )
 	newname=${args[3]}
 	mode=${args[4]}
 	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 webradioedit )
 	dir=${args[1]}
@@ -1331,11 +1220,11 @@ $charset" > "$file"
 	if [[ $urlchanged ]]; then
 		urlprevname=${urlprev//\//|}
 		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
-		mv $dirwebradio/img/{$urlprevname,$urlname}.jpg
-		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.jpg
+		mv $dirwebradio/img/{$urlprevname,$urlname}.* # jpg / gif
+		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.*
 		webRadioSampling $url "$file" &
 	fi
-	pushstream radiolist '{"type":"webradio"}'
+	pushstreamRadioList
 	;;
 	
 esac

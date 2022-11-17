@@ -13,7 +13,7 @@
 . /srv/http/bash/common.sh
 
 ##### start
-[[ $( cat $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
+[[ $( < $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
 
 [[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
 
@@ -22,8 +22,8 @@ for key in elapsed expire start state status token; do # var fileKEY=$dirspotify
 	printf -v file$key '%s' $dirspotify/$key
 done
 # token
-if [[ -e $fileexpire && $( cat $fileexpire ) > $( date +%s ) ]]; then
-	token=$( cat $filetoken )
+if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
+	token=$( < $filetoken )
 else
 	. $dirsystem/spotify # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
@@ -33,7 +33,7 @@ else
 				| grep access_token \
 				| cut -d'"' -f4 )
 	if [[ ! $token ]]; then
-		pushstreamNotify Spotify 'Access token renewal failed.' spotify
+		notify spotify Spotify 'Access token renewal failed.'
 		exit
 	fi
 	

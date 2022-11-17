@@ -1,50 +1,50 @@
 @font-face {
-	font-family: rern;
-	src: url( '/assets/fonts/rern.2022101100.woff2' ) format( 'woff2' );
-	font-display: block;
-	font-style: normal;
-	font-weight: normal;
+	font-family  : rern;
+	src          : url( '/assets/fonts/rern.woff2?v.2022102200' ) format( 'woff2' );
+	font-display : block;
+	font-style   : normal;
+	font-weight  : normal;
 }
 @font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
-	font-weight: normal;
-	font-style: normal;
+	font-family  : Lato;
+	src          : url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
+	font-weight  : normal;
+	font-style   : normal;
 }
 @font-face {
-	font-family: Lato;
-	src: url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
-	font-weight: 300;
-	font-style: normal;
+	font-family  : Lato;
+	src          : url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight  : 300;
+	font-style   : normal;
 }
 @font-face {
-	font-family: Inconsolata;
-	src: url('/assets/fonts/Inconsolata.woff2') format('woff2');
-	font-weight: normal;
-	font-style: normal;
+	font-family : Inconsolata;
+	src         : url('/assets/fonts/Inconsolata.woff2') format('woff2');
+	font-weight : normal;
+	font-style  : normal;
 }
 
 html {
-	height: 100%;
-	padding: env( safe-area-inset ); /* disable iPhone X rounded corner padding */
+	height  : 100%;
+	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
-	height: 100%;
-	margin: 0;
-	font-family: "Lato";
-	font-size: 15px;
-	color: var( --cw );
-	background-color: #000;
-	overflow-x: hidden;
-	overscroll-behavior: none; /* disable android pull-down refresh */
-	-webkit-tap-highlight-color: transparent;
+	height      : 100%;
+	margin      : 0;
+	font-family : "Lato";
+	font-size   : 15px;
+	color       : var( --cw );
+	background-color    : #000;
+	overflow-x          : hidden;
+	overscroll-behavior : none; /* disable android pull-down refresh */
+	-webkit-tap-highlight-color : transparent;
 }
 *,
 *::before,
 *::after {
-	-webkit-box-sizing:border-box;
-	-moz-box-sizing:border-box;
-	box-sizing:border-box;
+	-webkit-box-sizing :border-box;
+	-moz-box-sizing    :border-box;
+	box-sizing         :border-box;
 }
 *:focus,
 *:active {
@@ -57,30 +57,30 @@ input:focus-visible {
 	outline: none !important;
 }
 input::-moz-focus-inner {
-	outline: 0 !important;
-	border: 0;
+	outline : 0 !important;
+	border  : 0;
 }
 .hide { display: none !important }
 .hidden { visibility: hidden }
 @keyframes blinkopaque { 50% { opacity: 0 } }
 .blink { animation: blinkopaque 1.5s linear infinite }
 #loader {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	height: 100%;
-	z-index: 110; /* #banner > #loader > # #keyboard > #infoOverlay */
-	background: rgba(0, 0, 0, 0.8);
+	position   : fixed;
+	top        : 0;
+	width      : 100%;
+	height     : 100%;
+	z-index    : 110; /* #banner > #loader > # #keyboard > #infoOverlay */
+	background : rgba(0, 0, 0, 0.8);
 }
 #loader svg {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	margin: auto;
-	width: 50px;
-	animation: blinkopaque 1.5s linear infinite;
+	position  : absolute;
+	top       : 0;
+	bottom    : 0;
+	left      : 0;
+	right     : 0;
+	margin    : auto;
+	width     : 50px;
+	animation : blinkopaque 1.5s linear infinite;
 }
 .logo rect {
 	fill: var( --cm );
@@ -97,168 +97,801 @@ input::-moz-focus-inner {
 	animation: none !important;
 }
 
+.iconcover {
+	content : url( '/assets/img/iconcover.svg' );
+	width   : 24px !important;
+	margin  : 5px !important;
+	border  : 1px solid hsl(0,0%,20%);
+}
 .fa {
-	display: inline-block;
-	font-family: rern;
-	font-style: normal;
+	display     : inline-block;
+	font-family : rern;
+	font-style  : normal;
 }
 .fa90 { transform: rotate( -90deg ) }
 .fa-lg { font-size: 22px !important }
-.fa-accesspoint::before { content: '\f554' }
-.fa-addons::before { content: '\f50D' }
-.fa-airplay::before { content: '\f580' }
-.fa-album::before { content: '\f555' }
-.fa-albumartist::before { content: '\f557' }
-.fa-arrow-left::before { content: '\f602' }
-.fa-arrow-right::before { content: '\f603' }
-.fa-artist::before { content: '\f556' }
-.fa-audiocd::before { content: '\f538' }
-.fa-backspace:before { content: '\f608' }
-.fa-bars::before { content: '\f51C' }
-.fa-bio::before { content: '\f51D' }
-.fa-bookmark::before { content: '\f550' }
-.fa-bluetooth::before { content: '\f595' }
-.fa-btreceiver::before { content: '\f595' }
-.fa-btsender::before { content: '\f596' }
-.fa-brush::before { content: '\f536' }
-.fa-camilladsp::before {content: '\f59D'; position: absolute; color: var( --cg60 ); }
-.fa-camilladsp::after {content: '\f59C'; position: relative; } /* position: relative - fix order */
-.fa-capslock:before { content: '\f607' }
-.fa-check::before { content: '\f51B' }
-.fa-chevron-down::before { content: '\f605' }
-.fa-chevron-up::before { content: '\f604' }
-.fa-chromium::before { content: '\f584' }
-.fa-composer::before { content: '\f558' }
-.fa-conductor::before { content: '\f559' }
-.fa-consume::before { content: '\f566' }
-.fa-coverart-refresh::before { content: '\f53D' }
-.fa-crop::before { content: '\f568' }
-.fa-dabradio::before { content: '\f589' }
-.fa-dabupdate::before { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
-.fa-date::before { content: '\f55C' }
-.fa-edit-circle::before { content: '\f565' }
-.fa-equalizer::before { content: '\f50C' }
-.fa-eye::before { content: '\f567' }
-.fa-features::before { content: '\f50B' }
-.fa-file-music::before { content: '\f549' }
-.fa-file-playlist::before { content: '\f548' }
-.fa-flash::before { content: '\f566' }
-.fa-folder::before { content: '\f540' }
-.fa-folder-cascade::before { content: '\f54A' }
-.fa-folder-forbid::before { content: '\f537' }
-.fa-folder-open::before { content: '\f541' }
-.fa-folder-plus::before { content: '\f54D' }
-.fa-gear::before { content: '\f509' }
-.fa-gears::before { content: '\f50A' }
-.fa-genre::before { content: '\f55A' }
-.fa-github::before { content: '\f583' }
-.fa-globe::before { content: '\f575' }
-.fa-gpiopins::before { content: '\f572' }
-.fa-guide::before { content: '\f579' }
-.fa-hdmi::after { content: '\f58B' }
-.fa-help::before { content: '\f560' }
-.fa-hide:before { content: '\f575' }
-.fa-i2saudio::before { content: '\f571' }
-.fa-info-circle::before { content: '\f561' }
-.fa-input::before { content: '\f529' }
-.fa-jigsaw::before { content: '\f50D' }
-.fa-lan::before { content: '\f552' }
-.fa-lastfm::before { content: '\f585' }
-.fa-latest::before { content: '\f55E' }
-.fa-lcd::before { content: '\f577' }
-.fa-lcdchar::before { content: '\f578' }
-.fa-led::before { content: '\f52B' }
-.fa-librandom::before { content: '\f569' }
-.fa-library::before { content: '\f506' }
-.fa-libupdate::before { content: '\f506'; animation: blinkopaque 1.5s linear infinite; }
-.fa-link::before { content: '\f56B' }
-.fa-lock::before { content: '\f574' }
-.fa-lyrics::before { content: '\f54B' }
-.fa-microsd::before { content: '\f543' }
-.fa-minus::before { content: '\f518' }
-.fa-minus-circle::before { content: '\f563' }
-.fa-mpd::before { content: '\f582' }
-.fa-mpdoled::before { content: '\f57A' }
-.fa-music::before { content: '\f54A' }
-.fa-mute::before { content: '\f517' }
-.fa-nas::before { content: '\f551' }
-.fa-networks::before { content: '\f551' }
-.fa-next::before { content: '\f505' }
-.fa-output::before { content: '\f52A' }
-.fa-pause::before { content: '\f504' }
-.fa-play::before { content: '\f503' }
-.fa-playback::before { content: '\f507' }
-.fa-playlist::before { content: '\f508' }
-.fa-playlists::before { content: '\f548' }
-.fa-player::before { content: '\f582' }
-.fa-play-cd::before { content: '\f539' }
-.fa-play-plus::before { content: '\f532' }
-.fa-play-power::before { content: '\f53A' }
-.fa-play-replace::before { content: '\f533' }
-.fa-plus::before { content: '\f519' }
-.fa-plus-circle::before { content: '\f564' }
-.fa-plus-o::before { content: '\f530' }
-.fa-plus-r::before { content: '\f590' }
-.fa-plus-r-nobox::before { content: '\f500' }
-.fa-power::before { content: '\f520' }
-.fa-previous::before { content: '\f501' }
-.fa-radiofrance::before { content: '\f586' }
-.fa-radioparadise::before {content: '\f593'; position: absolute; color: var( --cgl ); }
-.fa-radioparadise::after {content: '\f594'; position: relative; }
-.fa-random::before { content: '\f512' }
-.fa-raudiobox::before { content: '\f53B' }
-.fa-rserver::before { content: '\f53C' }
-.fa-reboot::before { content: '\f521' }
-.fa-redo::before { content: '\f524' }
-.fa-refresh::before { content: '\f526' }
-.fa-refresh-l::before { content: '\f528' }
+.fa-accesspoint::before     { content: '\f554' }
+.fa-addons::before          { content: '\f50D' }
+.fa-addons-progress::before { content: '\f50D' }
+.fa-airplay::before         { content: '\f580' }
+.fa-album::before           { content: '\f555' }
+.fa-albumartist::before     { content: '\f557' }
+.fa-arrow-left::before      { content: '\f602' }
+.fa-arrow-right::before     { content: '\f603' }
+.fa-artist::before          { content: '\f556' }
+.fa-audiocd::before         { content: '\f538' }
+.fa-backspace:before        { content: '\f608' }
+.fa-bars::before            { content: '\f51C' }
+.fa-bio::before             { content: '\f51D' }
+.fa-bookmark::before        { content: '\f550' }
+.fa-bluetooth::before       { content: '\f595' }
+.fa-btreceiver::before      { content: '\f595' }
+.fa-btsender::before        { content: '\f596' }
+.fa-brush::before           { content: '\f536' }
+.fa-camilladsp::before      { content: '\f59D'; position: absolute; color: var( --cg60 ); }
+.fa-camilladsp::after       { content: '\f59C'; position: relative; } /* position: relative - fix order */
+.fa-capslock:before         { content: '\f607' }
+.fa-check::before           { content: '\f51B' }
+.fa-chevron-down::before    { content: '\f605' }
+.fa-chevron-up::before      { content: '\f604' }
+.fa-chromium::before        { content: '\f584' }
+.fa-composer::before        { content: '\f558' }
+.fa-conductor::before       { content: '\f559' }
+.fa-consume::before         { content: '\f566' }
+.fa-crop::before            { content: '\f568' }
+.fa-dabradio::before        { content: '\f589' }
+.fa-dabupdate::before       { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
+.fa-date::before            { content: '\f55C' }
+.fa-edit-circle::before     { content: '\f565' }
+.fa-equalizer::before       { content: '\f50C' }
+.fa-eye::before             { content: '\f567' }
+.fa-features::before        { content: '\f50B' }
+.fa-file-music::before      { content: '\f549' }
+.fa-file-playlist::before   { content: '\f548' }
+.fa-flash::before           { content: '\f566' }
+.fa-folder::before          { content: '\f540' }
+.fa-folder-cascade::before  { content: '\f54A' }
+.fa-folder-forbid::before   { content: '\f537' }
+.fa-folder-open::before     { content: '\f541' }
+.fa-folder-plus::before     { content: '\f54D' }
+.fa-gear::before            { content: '\f509' }
+.fa-gears::before           { content: '\f50A' }
+.fa-genre::before           { content: '\f55A' }
+.fa-github::before          { content: '\f583' }
+.fa-globe::before           { content: '\f575' }
+.fa-gpiopins::before        { content: '\f572' }
+.fa-guide::before           { content: '\f579' }
+.fa-hdmi::after             { content: '\f58B' }
+.fa-help::before            { content: '\f560' }
+.fa-hide:before             { content: '\f575' }
+.fa-i2saudio::before        { content: '\f571' }
+.fa-info-circle::before     { content: '\f561' }
+.fa-input::before           { content: '\f529' }
+.fa-jigsaw::before          { content: '\f50D' }
+.fa-lan::before             { content: '\f552' }
+.fa-lastfm::before          { content: '\f585' }
+.fa-latest::before          { content: '\f55E' }
+.fa-lcd::before             { content: '\f577' }
+.fa-lcdchar::before         { content: '\f578' }
+.fa-led::before             { content: '\f52B' }
+.fa-librandom::before       { content: '\f569' }
+.fa-library::before         { content: '\f506' }
+.fa-libupdate::before       { content: '\f506'; animation: blinkopaque 1.5s linear infinite; }
+.fa-link::before            { content: '\f56B' }
+.fa-lock::before            { content: '\f574' }
+.fa-lyrics::before          { content: '\f54B' }
+.fa-microsd::before         { content: '\f543' }
+.fa-minus::before           { content: '\f518' }
+.fa-minus-circle::before    { content: '\f563' }
+.fa-mpd::before             { content: '\f582' }
+.fa-mpdoled::before         { content: '\f57A' }
+.fa-music::before           { content: '\f54A' }
+.fa-mute::before            { content: '\f517' }
+.fa-nas::before             { content: '\f551' }
+.fa-networks::before        { content: '\f551' }
+.fa-next::before            { content: '\f505' }
+.fa-output::before          { content: '\f52A' }
+.fa-pause::before           { content: '\f504' }
+.fa-play::before            { content: '\f503' }
+.fa-playback::before        { content: '\f507' }
+.fa-playlist::before        { content: '\f508' }
+.fa-playlists::before       { content: '\f548' }
+.fa-player::before          { content: '\f582' }
+.fa-play-cd::before         { content: '\f539' }
+.fa-play-plus::before       { content: '\f532' }
+.fa-play-power::before      { content: '\f53A' }
+.fa-play-replace::before    { content: '\f533' }
+.fa-plus::before            { content: '\f519' }
+.fa-plus-circle::before     { content: '\f564' }
+.fa-plus-o::before          { content: '\f530' }
+.fa-power::before           { content: '\f520' }
+.fa-previous::before        { content: '\f501' }
+.fa-radiofrance::before     { content: '\f586' }
+.fa-radioparadise::before   { content: '\f593'; position: absolute; color: var( --cgl ); }
+.fa-radioparadise::after    { content: '\f594'; position: relative; }
+.fa-random::before          { content: '\f512' }
+.fa-raudio::before          { content: '\f590' }
+.fa-raudio-nobg::before     { content: '\f500' }
+.fa-raudiobox::before       { content: '\f53B' }
+.fa-rserver::before         { content: '\f53C' }
+.fa-reboot::before          { content: '\f521' }
+.fa-redo::before            { content: '\f524' }
+.fa-refresh::before         { content: '\f526' }
 .fa-refresh-library::before { content: '\f536' }
-.fa-relays::before { content: '\f522' }
-.fa-reload::before { content: '\f525' }
-.fa-repeat::before { content: '\f511' }
-.fa-repeat1::before { content: '\f510' }
-.fa-replace::before { content: '\f531' }
-.fa-reset::before { content: '\f527' }
-.fa-restore::before { content: '\f544' }
-.fa-save::before { content: '\f542' }
-.fa-save-circle::before { content: '\f546' }
-.fa-save-plus::before { content: '\f545' }
-.fa-screenoff::before { content: '\f547' }
-.fa-scale-dn::before { content: '\f591' }
-.fa-scale-up::before { content: '\f592' }
-.fa-sd::before { content: '\f543' }
-.fa-search::before { content: '\f56A' }
-.fa-set0::before { content: '\f515' }
-.fa-shift:before { content: '\f606' }
-.fa-shuffle::before { content: '\f513' }
-.fa-single::before { content: '\f514' }
-.fa-sliders::before { content: '\f50B' }
-.fa-snapcast::before { content: '\f587' }
-.fa-snapclient::before { content: '\f587' }
-.fa-song::before { content: '\f54A' }
-.fa-soundprofile::before { content: '\f576' }
-.fa-source::before { content: '\f529' }
-.fa-spotify::before { content: '\f588' }
-.fa-star::before { content: '\f550' }
-.fa-status::before { content: '\f50A' }
-.fa-stop::before { content: '\f502' }
-.fa-stoptimer::before { content: '\f570' }
-.fa-stopwatch::before { content: '\f570' }
-.fa-system::before { content: '\f590' }
-.fa-tag::before { content: '\f55B' }
-.fa-times::before { content: '\f51A' }
-.fa-title::before { content: '\f54A' }
-.fa-track::before { content: '\f54C' }
-.fa-undo::before { content: '\f523' }
-.fa-update::before { content: '\f526' }
-.fa-upnp::before { content: '\f581' }
-.fa-usb::before { content: '\f553' }
-.fa-usbdrive::before { content: '\f553' }
-.fa-volume::before { content: '\f516' }
-.fa-warning::before { content: '\f562' }
-.fa-webradio::before { content: '\f55D' }
-.fa-wifi::before { content: '\f597' }
-.fa-wifi1::before { content: '\f598'; position: absolute; }
-.fa-wifi1::after { content: '\f599'; color: var( --cga ); }
-.fa-wifi2::before { content: '\f59A'; position: absolute; }
-.fa-wifi2::after { content: '\f59B'; color: var( --cga ); }
+.fa-relays::before          { content: '\f522' }
+.fa-reload::before          { content: '\f525' }
+.fa-repeat::before          { content: '\f511' }
+.fa-repeat1::before         { content: '\f510' }
+.fa-replace::before         { content: '\f531' }
+.fa-reset::before           { content: '\f527' }
+.fa-restore::before         { content: '\f544' }
+.fa-save::before            { content: '\f542' }
+.fa-save-circle::before     { content: '\f546' }
+.fa-save-plus::before       { content: '\f545' }
+.fa-screenoff::before       { content: '\f547' }
+.fa-scale-dn::before        { content: '\f591' }
+.fa-scale-up::before        { content: '\f592' }
+.fa-sd::before              { content: '\f543' }
+.fa-search::before          { content: '\f56A' }
+.fa-set0::before            { content: '\f515' }
+.fa-settings::before        { content: '\f509' }
+.fa-shift:before            { content: '\f606' }
+.fa-shuffle::before         { content: '\f513' }
+.fa-single::before          { content: '\f514' }
+.fa-sliders::before         { content: '\f50B' }
+.fa-snapcast::before        { content: '\f587' }
+.fa-snapclient::before      { content: '\f587' }
+.fa-song::before            { content: '\f54A' }
+.fa-soundprofile::before    { content: '\f576' }
+.fa-source::before          { content: '\f529' }
+.fa-spotify::before         { content: '\f588' }
+.fa-star::before            { content: '\f550' }
+.fa-status::before          { content: '\f50A' }
+.fa-stop::before            { content: '\f502' }
+.fa-stoptimer::before       { content: '\f570' }
+.fa-stopwatch::before       { content: '\f570' }
+.fa-system::before          { content: '\f590' }
+.fa-tag::before             { content: '\f55B' }
+.fa-times::before           { content: '\f51A' }
+.fa-title::before           { content: '\f54A' }
+.fa-track::before           { content: '\f54C' }
+.fa-undo::before            { content: '\f523' }
+.fa-update::before          { content: '\f526' }
+.fa-upnp::before            { content: '\f581' }
+.fa-usb::before             { content: '\f553' }
+.fa-usbdrive::before        { content: '\f553' }
+.fa-volume::before          { content: '\f516' }
+.fa-warning::before         { content: '\f562' }
+.fa-webradio::before        { content: '\f55D' }
+.fa-wifi::before            { content: '\f597' }
+.fa-wifi1::before           { content: '\f598'; position: absolute; }
+.fa-wifi1::after            { content: '\f599'; color: var( --cga ); }
+.fa-wifi2::before           { content: '\f59A'; position: absolute; }
+.fa-wifi2::after            { content: '\f59B'; color: var( --cga ); }
+
+/* banner() */
+#banner .fa-firefox::before { color: #000 }
+#banner {
+	position: fixed;
+	min-width: 230px;
+	max-width: 100%;
+	min-height: 47px;
+	bottom: 50px;
+	padding: 6px 130px 5px 35px;
+	line-height: 18px;
+	z-index: 112; /* #banner > #loader > # #keyboard > #infoOverlay */
+	background: linear-gradient( to right, var( --cm ) calc( 100% - 100px ), rgba( 0,0,0,0 ) 100% );
+}
+#bannerTitle,
+#bannerMessage {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#bannerTitle {
+	font-size: 18px;
+	font-weight: 300;
+}
+#bannerTitle,
+#banner .li2,
+#banner .time {
+	color: var( --cw );
+}
+#bannerIcon {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 30px;
+	height: 100%;
+	font-size: 20px;
+	line-height: 28px;
+	text-align: center;
+	background-color: var( --cg );
+}
+#bannerMessage {
+	font-size: 16px;
+}
+#bannerMessage,
+#banner .time,
+#banner .li2 {
+	color: var( --cga ) !important;
+}
+#banner .time {
+	margin-left: 10px;
+}
+#banner .li1,
+#banner .li2 {
+	display: block;
+}
+#banner .li2 {
+	font-size: 13px;
+}
+
+/* selectric */
+#infoContent .selectric-wrapper {
+	margin: 0;
+	min-width: 60px;
+	max-width: 100%;
+	font-size: 16px;
+}
+#infoContent .selectric-items ul {
+	color: var( --cw );
+}
+#infoContent .selectric {
+	border-radius: 3px;
+}
+#infoContent .selectric,
+#infoContent .selectric .label,
+#infoContent .selectric-items li {
+	height: 35px;
+	text-align: left;
+	line-height: 16px;
+}
+#infoContent .selectric-items {
+	min-width: 100%;
+}
+#infoContent .selectric .label {
+	margin: 1px 0;
+	padding: 0 10px;
+}
+#infoContent .selectric .label,
+#infoContent .selectric .button {
+	line-height: 34px;
+	color: var( --cw );
+}
+#infoRange {
+	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--track: linear-gradient( 90deg, transparent 10px, #000000 10px, #000000 calc( 100% - 10px ), transparent 10px );
+	--trackborder : 1px solid var( --cgd );
+}
+#infoRange input {
+	height: 40px;
+	width: 300px;
+	margin: 0;
+	max-width: 70%;
+	background: transparent;
+	-webkit-appearance: none;
+	cursor: pointer;
+}
+#infoRange input::-webkit-slider-thumb {
+	height: 40px;
+	width: 40px;
+	margin-top: -20px;
+	border: none;
+	border-radius: 4px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	-webkit-appearance: none;
+	box-shadow: -2px 2px 4px #000000;
+}
+#infoRange input::-moz-range-thumb { /* cannot be combined */
+	height: 40px;
+	width: 40px;
+	border: none;
+	border-radius: 4px;
+	background: var( --gloss );
+	background: var( --wkgloss );
+	background-color: var( --cm );
+	box-shadow: -2px 2px 4px #000000;
+}
+#infoRange input:disabled::-webkit-slider-thumb {
+	background-color: var( --cmd );
+}
+#infoRange input:disabled::-moz-range-thumb {
+	background-color: var( --cmd );
+}
+#infoRange input::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 4px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+#infoRange input:focus::-webkit-slider-runnable-track {
+	background: var( --track );
+}
+#infoRange input::-moz-range-track {
+	width: 100%;
+	height: 2px;
+	background: var( --track );
+	border: var( --trackborder );
+}
+#infoRange .value {
+	height: 30px;
+	font-size: 18px;
+	font-weight: 300;
+	text-align: center;
+}
+#infoRange .min,
+#infoRange .max {
+	position: relative;
+	display: inline-block;
+	width: 40px;
+	padding: 0 10px;
+	vertical-align: 16px;
+	text-align: right;
+	color: var( --cg60 );
+	cursor: pointer;
+}
+#infoRange .max {
+	text-align: left;
+}
+#infoRange {
+	text-align: center;
+}
+
+/* info */
+.infobtn,
+#infoOverlay input[type=radio],
+#infoOverlay input[type=checkbox] {
+									  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+									  /* x   y   w    h */
+	box-shadow: -1px 1px 2px 1px #000000;  /* x, y, blurw, shadoww, color */
+}
+.infobtn {
+	display: inline-block;
+	margin: 0 5px;
+	width: fit-content;
+	min-width: 70px;
+	padding: 0 10px;
+	height: 34px !important;
+	line-height: 34px;
+	border: none;
+	border-radius: 4px;
+	white-space: nowrap;
+	font-family: Lato;
+	font-size: 14px;
+	text-align: center;
+	color: var( --cw ) !important;
+	background-color: var( --cg );
+	box-shadow: -2px 2px 3px 1px #000000;
+	cursor: pointer;
+	user-select: none;
+	-webkit-user-select: none;
+}
+#infoBox > .infobtn {
+	margin-top: 10px;
+}
+.infobtn-primary {
+	background-color: var( --cm );
+}
+.infobtn-default {
+	background-color: var( --cg );
+}
+.infobtn.disabled {
+	color: var( --cg60 ) !important;
+	background-color: var( --cgd ) !important;
+	box-shadow: none;
+	pointer-events: none;
+	filter: none !important;
+}
+.infobtn i {
+	font-size: 18px;
+	margin-right: 5px;
+	vertical-align: middle;
+}
+.btnbottom span {
+	color: var( --cg60 );
+	cursor: pointer;
+}
+.btnbottom i,
+.btnicon {
+	width: 40px;
+	font-size: 22px;
+	vertical-align: -3px;
+	text-align: center;
+	color: var( --cw );
+	cursor: pointer;
+}
+
+hr {
+	border: none;
+	border-bottom: 1px solid var( --cg );
+}
+#infoOverlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	min-height: 200vh;
+	background: rgba(0, 0, 0, 0.85);
+	z-index: 107; /* #banner > #loader > # #keyboard > #infoOverlay */
+	text-align: center;
+	overflow: hidden;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	-webkit-overflow-scrolling: touch;
+	user-select: none;
+	-webkit-user-select: none;
+}
+#infoOverlay .fa {
+	vertical-align: -2px;
+}
+#infoOverlay a {
+	height: 40px;
+	text-decoration: none;
+}
+#infoOverlay code {
+	color: var( --cw );
+}
+#infoBox {
+	position: relative;
+	top: 50vh;
+	transform: translateY( -50% ); /* of #infoBox height */
+	width: 400px;
+	max-width: 98%;
+	margin: 0 auto;
+	padding-bottom: 15px;
+	background: var( --cga );
+	border-radius: 10px;
+	box-shadow: 1px -1px 5px var( --cga );
+}
+#bannerIcon i,
+#bannerTitle,
+#infoOverlay a,
+#infoBox i,
+.infobtn {
+	text-shadow: -1px 1px 2px #000000;
+}
+#infoContent .bklabel {
+	height: auto;
+	line-height: 30px;
+}
+#infoTopBg {
+	width: 100%;
+	height: 40px;
+	border-radius: 10px 10px 0 0;
+	border-bottom: none;
+	background: black;
+}
+#infoTop {
+	float: left;
+	width: calc( 100% - 40px );
+	height: 40px;
+	padding: 0 0 0 5px;
+	line-height: 40px;
+	text-align: left;
+	color: var( --cw );
+}
+#infoTop i {
+	float: left;
+	width: 30px;
+	margin-left: 5px;
+	text-align: center;
+	font-size: 28px;
+	line-height: 40px;
+	color: var( --cg60 );
+}
+#infoTop a {
+	color: var( --cw );
+}
+#infoTop .albumrefresh {
+	color: var( --cw );
+	z-index: 1;
+}
+#infoTop .imgicon {
+	position: relative;
+	float: left;
+	margin-top: 4px;
+	width: 35px;
+}
+#infoTop .imgicon i {
+	position: absolute;
+	line-height: 32px;
+}
+#infoTop .imgicon img {
+	width: 30px;
+	vertical-align: -1px;
+}
+#infoX {
+	float: right;
+	width: 40px;
+	line-height: 40px;
+	border-radius: 0 10px 0 0;
+	padding: 0;
+	font-size: 28px;
+	color: var( --cm );
+	cursor: pointer;
+}
+#infoTitle {
+	display: inline-block;
+	width: calc( 100% - 45px );
+	margin-left: 10px;
+	font-size: 20px;
+	font-weight: 300;
+	line-height: 40px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	letter-spacing: 2px;
+}
+#infoTab {
+	width: 100%;
+	height: 39px;
+	font-size: 16px;
+	line-height: 40px;
+	background: var( --cgd );
+}
+#infoTab a {
+	display: inline-block;
+}
+#infoTab a.active {
+	background: var( --cga );
+	border-radius: 6px 6px 0 0;
+}
+#infoContent {
+	padding: 20px 10px 10px 10px;
+	font-size: 16px;
+}
+#infoContent table {
+	margin: 0 auto;
+}
+#infoContent td {
+	height: 32px;
+	padding: 0;
+	text-align: left;
+	white-space: nowrap;
+}
+#infoContent label i {
+	text-align: center;
+	width: 22px;
+	color: var( --cg60 );
+	font-size: 20px;
+	margin-right: 5px;
+}
+#infoContent td:first-child i {
+	font-size: 20px;
+	width: 24px;
+	text-align: center;
+}
+#infoContent pre {
+	margin: 0;
+	padding: 0 10px;
+	text-align: left;
+	color: var( --cg60 );
+	background: none;
+}
+.infomessage {
+	user-select: text;
+	-webkit-user-select: text;
+}
+.infomessage pre {
+	font-size: 16px;
+}
+.infomessage,
+.infofooter {
+	width: fit-content;
+	width: -moz-fit-content;
+	max-width: 100%;
+	max-height: 800px;
+	margin: 0 auto 5px;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow: hidden;
+	color: var( --cg60 );
+}
+.infofooter {
+	padding: 0 5px;
+}
+.infomessage .fa {
+	width: 25px;
+	vertical-align: 0;
+	font-size: 20px;
+}
+.infomessage .fa-bookmark {
+	font-size: 48px;
+	width: 48px;
+}
+.infomessage img {
+	width: auto;
+	height: 100px;
+	margin-bottom: 10px;
+}
+.infomessage object {
+	height: 100px;
+	margin-bottom: 0;
+}
+.infomessage .msg-l,
+.infomessage .msg-r {
+	display: inline-block;
+	vertical-align: middle;
+}
+.infomessage .msg-r {
+	margin-left: 30px;
+	text-align: left;
+}
+.infoimgnew {
+	margin-left: 10px;
+}
+.infoimgwh {
+	text-align: right;
+}
+.infoimgwh i {
+	font-size: 18px;
+	margin: 0;
+}
+#infoContent textarea {
+	width: 100%;
+	height: 100px;
+	margin: 0 !important;
+	padding: 0 10px;
+	border-radius: 4px;
+	border: none;
+	outline: none;
+	font-family: Inconsolata;
+	font-size: 15px;
+	line-height: 20px;
+	tab-size: 4;
+	color: var( --cw );
+	background: var( --cgd );
+	resize: none;
+	white-space: pre;
+}
+#infoContent input[type=text],
+#infoContent input[type=tel],
+#infoContent input[type=number],
+#infoContent input[type=password] {
+	display: inline-block;
+	margin: 0;
+	width: 100%;
+	height: 36px !important;
+	padding: 10px 9px;
+	color: var( --cw );
+	background-color: #000000;
+	border-radius: 5px;
+	border: 1px solid var( --cg );
+	font-size: 16px;
+	font-family: "Lato";
+}
+#infoContent input[type=text]:disabled,
+#infoContent input[type=tel]:disabled,
+#infoContent input[type=number]:disabled {
+	background: none !important;
+	outline: none;
+	opacity: 1;
+}
+#infoPasswordBox {
+	margin-top: 0 !important;
+	outline: none;
+}
+#infoContent .fa-eye {
+	width: 30px;
+	text-align: center;
+	margin-right: -25px;
+}
+#infoOverlay input[type=radio],
+#infoOverlay input[type=checkbox] {
+	-webkit-appearance: none;
+	width: 24px;
+	height: 24px;
+	margin: 3px 6px 3px 1px;
+	vertical-align: -10px;
+	border: none;
+	border-radius: 3px;
+	background-color: var( --cg );
+}
+#infoOverlay input[type=radio] {
+	width: 26px;
+	height: 26px;
+	border-radius: 50%;
+	margin: 2px 7px 2px 1px;
+}
+#infoOverlay input:checked {
+	background-color: var( --cm );
+}
+#infoOverlay input[type=checkbox]:checked:disabled,
+#infoOverlay input[type=radio]:checked:disabled {
+	background-color: var( --cmd );
+	box-shadow: none;
+}
+#infoOverlay input[type=checkbox]:disabled,
+#infoOverlay input[type=radio]:disabled {
+	background-color: var( --cgd );
+	box-shadow: none;
+}
+#infoContent button {
+	height: 40px;
+	margin-left: 5px;
+	padding-right: 25px;
+	font-size: 16px;
+}
+#infoFilename {
+	max-width: 95%;
+	margin-bottom: 10px;
+}
+#infoButtons {
+	padding-top: 10px;
+}
+#infoOverlay code {
+	display: inline-block;
+	padding: 3px;
+	line-height: 14px;
+	border-radius: 3px;
+	background: #000000;
+	font-family: Inconsolata;
+}
+@media ( max-height: 420px ) {
+	#infoContent { padding: 10px 5px }
+}
+@media ( max-width: 420px ) {
+	#infoContent { padding: 20px 5px 10px 5px }
+	.infofooter { padding: 0 5px }
+}
+@media ( max-width: 330px ) {
+	#infoOverlay {
+		transform: scale( 0.9 );
+		transform-origin: top;
+		width: calc( 100% / 0.9 );
+		left: calc( -100% / 18 );
+	}
+}
+@media ( hover:hover ) {
+	/* :hover *********************************************************/
+	#infoTab,
+	#infoContent label,
+	input[type=checkbox],
+	input[type=radio],
+	.fa-eye,
+	.pointer {
+		cursor: pointer;
+	}
+	#infoX:hover,
+	.infobtn-primary:hover,
+	.infobtn-default:hover {
+		filter: brightness( 115% );
+	}
+	/* :active *********************************************************/
+	#infoX:active {
+		color: var( --cma );
+	}
+	input[type=text]:focus,
+	input[type=tel]:focus,
+	input[type=number]:focus,
+	input[type=password]:focus,
+	input[type=radio]:focus,
+	input[type=checkbox]:focus,
+	#infoContent textarea:focus {
+		outline: 2px solid var( --cgl ) !important;
+	}
+	input[type=radio]:focus,
+	input[type=checkbox]:focus {
+		outline-offset: 1px;
+	}
+	.infobtn.active {
+		box-shadow: 0 0 2px 1px var( --cgl ) !important;
+	}
+}
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#infoOverlay input[type=checkbox]:checked:disabled {
+		background-color: var( --cml );
+	}
+	.infobtn {
+		line-height: 32px;
+	}
+	::placeholder {
+		color: var( --cg );
+	}
+}

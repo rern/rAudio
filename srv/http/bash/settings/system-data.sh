@@ -2,14 +2,13 @@
 
 . /srv/http/bash/common.sh
 
-startup=$( systemd-analyze | grep '^Startup finished' | cut -d' ' -f 4,7 | sed -e 's/\....s/s/g; s/ / + /' )
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
+uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
-$( cat /proc/loadavg | cut -d' ' -f1-3 | sed 's| | <gr>•</gr> |g' )<br>\
+$( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
-$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>\
-$( [[ $startup ]] && echo "$startup<wide>&ensp;<gr>(kernel + userspace)</gr></wide>" || echo . . . )"
+$uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
@@ -24,12 +23,10 @@ readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
 core=${cpu[1]}
 speed=${cpu[2]/.*}
-(( $speed < 1000 )) && speed+=' MHz' || speed=$( echo "print $speed / 1000" | perl )' GHz'
+(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 (( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 soccpu+=" @ $speed"
-rpimodel=$( cat /proc/device-tree/model \
-				| tr -d '\000' \
-				| sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
+rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
@@ -47,29 +44,26 @@ else
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-version=$( cat $dirsystem/version )
+version=$( < $dirsystem/version )
 system="\
-rAudio $( cat $diraddons/r$version 2> /dev/null )<br>\
+rAudio $( getContent $diraddons/r$version )<br>\
 $( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
 $rpimodel<br>\
 $soc<br>\
 $soccpu"
 
-if ifconfig | grep -q eth0; then
+if ifconfig | grep -q -m1 eth0; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf="[ $( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , ) ]"
+		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
-		soundprofileconf="[ \
-$( sysctl vm.swappiness | awk '{print $NF}'  ), \
-$( ifconfig eth0 | awk '/mtu/ {print $NF}' ), \
-$( ifconfig eth0 | awk '/txqueuelen/ {print $4}' ) \
-]"
+		mtu_txq=( $( ifconfig eth0 | sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' ) )
+		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f 3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
 	fi
 fi
 
 # sd, usb and nas
 smb=$( isactive smb )
-if mount | grep -q 'mmcblk0p2 on /'; then
+if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
@@ -77,17 +71,15 @@ if mount | grep -q 'mmcblk0p2 on /'; then
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q $dirsd /etc/exports && echo true )'
+, "nfs"        : '$( grep -q -m1 $dirsd /etc/exports && echo true )'
 , "smb"        : '$smb'
 }'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
-	readarray -t usb <<< "$usb"
+	readarray -t usb <<< $usb
 	for source in "${usb[@]}"; do
-		mountpoint=$( df -l --output=target,source \
-						| grep "$source" \
-						| sed "s| *$source||" )
+		mountpoint=$( df -l --output=target,source | sed -n "/$source/ {s| *$source||; p}" )
 		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{
@@ -96,7 +88,7 @@ if [[ $usb ]]; then
 , "mounted"    : true
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q "$mountpoint" /etc/exports && echo true )'
+, "nfs"        : '$( grep -q -m1 "$mountpoint" /etc/exports && echo true )'
 , "smb"        : '$( [[ $smb == true && $mountpoint == $dirusb ]] && echo true )'
 }'
 		else
@@ -109,12 +101,14 @@ if [[ $usb ]]; then
 										| tr -d -c 0-9 )
 	done
 fi
-nas=$( awk '/.mnt.MPD.NAS|.srv.http.data/ {print $1" "$2}' /etc/fstab | sort )
+nas=$( grep -E '/mnt/MPD/NAS|/srv/http/data' /etc/fstab | tr -s ' ' )
 if [[ $nas ]]; then
-	readarray -t nas <<< "$nas"
+	readarray -t nas <<< $( cut -d' ' -f1-2 <<< $nas | sort )
 	for line in "${nas[@]}"; do
-		source=$( echo $line | cut -d' ' -f1 | sed 's/\\040/ /g' )
-		mountpoint=$( echo $line | cut -d' ' -f2 | sed 's/\\040/ /g' )
+		source=${line/ *}
+		source=${source//\\040/ }
+		mountpoint=${line/* }
+		mountpoint=${mountpoint//\\040/ }
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
@@ -135,75 +129,58 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
-if grep -q dtparam=i2c_arm=on /boot/config.txt; then
+if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
-		i2caddress=$( echo "$lines" \
-						| grep -v '^\s' \
+		i2caddress=$( grep -v '^\s' <<< $lines \
 						| cut -d' ' -f2- \
 						| tr -d ' \-' \
-						| grep -v UU \
-						| awk NF \
+						| grep -E -v '^\s*$|UU' \
 						| sort -u )
-		i2caddress="[ $(( "0x$i2caddress" )) ]"
-	else
-		i2caddress=false
+		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
 	fi
-else
-	i2caddress='[ 39,63 ]'
 fi
-if [[ -e $dirsystem/lcdchar.conf ]]; then
-	vals=$( cat $dirsystem/lcdchar.conf \
-				| grep -v '\[var]' \
-				| sed -e -E '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//' \
-					  -e -E 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/' )
-	if grep -q i2c <<< "$vals"; then
-		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' )
+if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
+	vals=$( sed -E -e '/var]/ d
+				' -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
+				' -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
+				' $dirsystem/lcdchar.conf )
+	if grep -q -m1 i2c <<< "$vals"; then
+		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' ) # echo to remove \n
 	else
-		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' )
+		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' ) # echo to remove \n
 	fi
-	lcdcharconf='[ '$( echo $vals | tr ' ' , )' ]'
-else # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	lcdcharconf='[ 20,"A00","i2c",39,"PCF8574",15,18,16,21,22,23,24,false ]'
+	lcdcharconf='[ '$( tr ' ' , <<< $vals )' ]'
 fi
 oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baudrate ]] && baudrate=800000
 mpdoledconf='[ '$oledchip', '$baudrate' ]'
-[[ -e $dirsystem/audiophonics ]] && audiophonics=true || audiophonics=false
-if [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf="[ $( cat $dirsystem/powerbutton.conf | cut -d= -f2 | xargs | tr ' ' , ), $audiophonics ]"
-else
-	powerbuttonconf='[ 5,40,5,'$audiophonics' ]'
+if [[ -e $dirsystem/audiophonics ]]; then
+	powerbuttonconf='[ 5, 5, 40, 5, true ]'
+elif [[ -e $dirsystem/powerbutton.conf ]]; then
+	powerbuttonconf="[ $( cut -d= -f2 $dirsystem/powerbutton.conf | xargs | tr ' ' , ), false ]"
 fi
-if [[ -e $dirsystem/rotaryencoder.conf ]]; then
-	rotaryencoderconf="[ $( cat $dirsystem/rotaryencoder.conf | cut -d= -f2 | xargs | tr ' ' , ) ]"
-else
-	rotaryencoderconf='[ 27,22,23,1 ]'
-fi
-if [[ -e $dirsystem/vuled.conf ]]; then
-	vuledconf="[ $( cat $dirsystem/vuled.conf | tr ' ' , ) ]"
-else
-	vuledconf='[ 14,15,18,23,24,25,8 ]'
-fi
+[[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
+[[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
 
 data+='
   "page"             : "system"
-, "audioaplayname"   : "'$( cat $dirsystem/audio-aplayname 2> /dev/null )'"
-, "audiooutput"      : "'$( cat $dirsystem/audio-output 2> /dev/null )'"
+, "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
+, "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
-, "i2seeprom"        : '$( grep -q force_eeprom_read=0 /boot/config.txt && echo true )'
-, "lcd"              : '$( grep -q 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : '$i2caddress'
+, "lcdcharaddr"      : '$lcdcharaddr'
 , "lcdcharconf"      : '$lcdcharconf'
 , "list"             : '$list'
-, "lcdmodel"         : "'$( cat $dirsystem/lcdmodel 2> /dev/null || echo tft35a )'"
+, "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "nfsserver"        : '$( isactive nfs-server )'
@@ -215,9 +192,8 @@ data+='
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
-, "soundprofileconf" : '$soundprofileconf'
+, "soundprofileconf" : ['$soundprofileconf']
 , "status"           : "'$status'"
-, "startup"          : '$( [[ $startup ]] && echo true )'
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
@@ -225,15 +201,15 @@ data+='
 , "vuledconf"        : '$vuledconf
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
-, "wlan"             : '$( lsmod | grep -q brcmfmac && echo true )'
-, "wlanconf"         : [ "'$( cat /etc/conf.d/wireless-regdom | cut -d'"' -f2 )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
-, "wlanconnected"    : '$( ip r | grep -q "^default.*wlan0" && echo true )
+, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
+, "wlanconf"         : [ "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
+, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
-	if grep -q ^dtparam=krnbt=on /boot/config.txt; then
+	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetooth=true
 		bluetoothactive=$( isactive bluetooth )
 		if [[ $bluetoothactive == true ]]; then
-			discoverable=$( bluetoothctl show | grep -q 'Discoverable: yes' && echo true )
+			discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 		fi
 	fi
 	data+='

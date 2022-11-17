@@ -1,11 +1,11 @@
 <?php
-$pins = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
+$pins      = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
-$htmlpin = '';
-$htmlname = '';
+$htmlpin   = '';
+$htmlname  = '';
 for ( $i = 0; $i < 4; $i++ ) {
-	$htmlpin.= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
+	$htmlpin .= '<select id="pin'.$i.'" class="pin">'.$optionpin.'</select>';
 	$htmlname.= '<input id="name'.$i.'" type="text" class="name" placeholder="(no name)">';
 }
 echo '<div class="section">';
@@ -15,9 +15,9 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<span class="help-block hide"><img src="/assets/img/relays.jpg">
+<span class="helpblock hide"><img src="/assets/img/relays.jpg">
 Power on/off peripheral equipments
-On/Off:  <?=( i( 'plus-r' ).'System | '.i( 'relays wh' ) )?>
+On/Off:  <?=( i( 'raudio' ).'System | '.i( 'relays wh' ) )?>
 <br> • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
 </span>
@@ -28,22 +28,22 @@ On/Off:  <?=( i( 'plus-r' ).'System | '.i( 'relays wh' ) )?>
 	<div class="column" id="gpio-num">
 		<span class="gpio-text"><?=( i( 'gpiopins bl' ) )?>Pin</span>
 		<?=$htmlpin?>
-		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?>Idle</span>
+		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?> Idle</span>
 		<select id="timer" class="timer"></select>
 	</div>
 	<div class="column" id="gpio-name">
-		<span class="gpio-text"><?=( i( 'tag bl' ) )?>Name</span>
+		<span class="gpio-text"><?=( i( 'tag bl' ) )?> Name</span>
 		<?=$htmlname?>
 		<span class="timer">&nbsp;min. to <?=( i( 'power red' ) )?></span>
 	</div>
 </div>
 <div class="gpio-float-r">
 	<div class="column">
-		<span class="gpio-text"><?=( i( 'power grn' ) )?>On Sequence</span>
+		<span class="gpio-text"><?=( i( 'power grn' ) )?> On Sequence</span>
 		<div id="on"></div>
 	</div>
 	<div class="column">
-		<span class="gpio-text"><?=( i( 'power red' ) )?>Off Sequence</span>
+		<span class="gpio-text"><?=( i( 'power red' ) )?> Off Sequence</span>
 		<div id="off"></div>
 		<br>
 		<a id="undo" class="infobtn infobtn disabled"><?=( i( 'undo' ) )?>Undo</a>

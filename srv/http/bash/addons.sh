@@ -1,5 +1,11 @@
 #!/bin/bash
 
+if [[ $1 == abort ]]; then
+	killall $2 wget pacman &> /dev/null
+	rm -f /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$3.sh
+	exit
+fi
+
 . /srv/http/bash/common.sh
 addonsjson=$diraddons/addons-list.json
 
@@ -74,24 +80,21 @@ title() {
 getinstallzip() {
 	echo $bar Get files ...
 	installfile=$branch.tar.gz
-	fileurl=$( jq -r .$alias.installurl $addonsjson \
-					| sed "s|raw/main/install.sh|archive/$installfile|" )
+	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
 	curl -sfLO $fileurl
 	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
 	
 	echo
 	echo $bar Install new files ...
-	filelist=$( bsdtar tf $installfile )
-	uninstallfile=$( grep uninstall_.*sh <<< "$filelist" )
+	filelist=$( bsdtar tf $installfile \
+					| grep /srv/ \
+					| sed -e '/\/$/ d' -e 's|^.*/srv/|/srv/|' ) # stdout as a block to avoid blank lines
+	echo "$filelist"
+	uninstallfile=$( grep uninstall_.*sh <<< $filelist )
 	if [[ $uninstallfile ]]; then
 		bsdtar xf $installfile --strip 1 -C /usr/local/bin $uninstallfile
 		chmod 755 /usr/local/bin/$uninstallfile
 	fi
-	cut -d/ -f2- <<< "$filelist" \
-		| grep / \
-		| grep -v '/$' \
-		| sed 's|^|/|' \
-		| sort -V
 	tmpdir=/tmp/install
 	rm -rf $tmpdir
 	mkdir -p $tmpdir
@@ -103,7 +106,7 @@ getinstallzip() {
 installstart() { # $1-'u'=update
 	rm $0
 	
-	readarray -t args <<< "$1" # lines to array: alias type branch opt1 opt2 ...
+	readarray -t args <<< $1 # lines to array: alias type branch opt1 opt2 ...
 
 	alias=${args[0]}
 	type=${args[1]}
@@ -127,10 +130,10 @@ installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
 	
-	title -l '=' "$bar Done."
+	title -nt "$bar Done."
 	
 	if [[ -e $dirmpd/updating ]]; then
-		path=$( cat $dirmpd/updating )
+		path=$( < $dirmpd/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
 		$dirbash/cmd-list.sh &> /dev/null &

@@ -6,10 +6,13 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'btcontroller'
 	, 'button' => [ 'btscan' => 'search' ]
 ] );
-$html = <<< HTML
+$html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="help-block hide"><wh>rAudio as sender:</wh> (or pairing non-audio devices)
+	<div class="helpblock hide">| I^bluetooth^I | I^btsender^I | Context menu
+| I^search^I | Scan to connect
+
+<wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	- On receiver: Turn on Discovery / Pairing mode
 	- On rAudio: | Bluetooth I^search wh^I | Select to pair
@@ -19,13 +22,13 @@ $html = <<< HTML
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | <wh>• Discoverable by senders</wh> |
-	- On sender: | Search | Select <wh>rAudio</wh> to pair
+	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | • Discoverable by senders |
+	- On sender: Search > Select <wh>rAudio</wh> to pair
 	- Forget / remove should be done on both rAudio and sender
  • Connect:
-	- On sender: Select rAudio | Connect | / | Disconnect |
+	- On sender: Select rAudio > Connect / Disconnect
 </div>
-HTML;
+EOF;
 echoSetIcon( $html );
 ?>
 </div>
@@ -38,10 +41,13 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="help-block hide">
- • Connect: <g>|</g> Wi-Fi &nbsp;<?=i( 'search wh' )?>Search <g>|</g> Select to connect
- • Avoid connecting to access points which signal is less than 2 bars.
-</div>
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^wifi^I | Context menu
+| I^plus-circle^I | Manually connect
+| I^search^I | Scan to connect
+
+ • Avoid double quotes <code>"</code> in Wi-Fi name and password.
+
+(Access points with 1 bar icon I^wifi1^I might be unstable.)' ) )?></div>
 </div>
 <div id="divlan" class="section">
 <?php
@@ -49,10 +55,10 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
 	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
-	, 'nohelp'  => true
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
+	<div class="helpblock hide"><?=( echoSetIcon( '| I^lan^I | Context menu' ) )?></div>
 </div>
 </div>
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
@@ -64,7 +70,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
 	<div id="qrwebui" class="qr"></div>
-	<div class="help-block hide">Use IP address or scan QR code to connect with web user interface.</div>
+	<div class="helpblock hide">Use IP address or scan QR code to connect with web user interface.</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php
@@ -86,7 +92,7 @@ htmlHead( [ //////////////////////////////////
 			<div id="qraccesspoint" class="qr"></div>
 		</div>
 	</div>
-	<div class="help-block hide">
+	<div class="helpblock hide">
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
 </div>
@@ -101,7 +107,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<ul id="listbtscan" class="entries"></ul>
+<ul id="listbtscan" class="entries scan"></ul>
 </div>
 <div id="divwifi" class="section hide">
 <?php
@@ -112,7 +118,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<ul id="listwlscan" class="entries"></ul>
+<ul id="listwlscan" class="entries scan"></ul>
 </div>
 
 <div id="menu" class="menu hide">

@@ -1,3 +1,6 @@
+body {
+	height: auto;
+}
 #listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
 .container .selectric-wrapper { height: 40px }
 .menu {
@@ -43,13 +46,16 @@ heading,
 #button-data {
 	position: fixed;
 	top: 0;
-	width: 40px;
+	width: 100%;
 	height: 40px;
-	margin: 0;
 	font-size: 30px;
+	background: var( --cga );
+	z-index: 10;
+}
+#button-data i {
+	width: 40px;
 	text-align: center;
 	color: var( --cm );
-	z-index: 112;
 }
 #loader {
 	background: #000000;
@@ -92,10 +98,10 @@ pre {
 	line-height: 20px;
 	overflow-x: auto;
 }
-div.help-block {
+div.helpblock {
 	margin-left: 0;
 }
-.help-block {
+.helpblock {
 	display: block;
 	margin-top: 0;
 	margin-bottom: 20px;
@@ -103,19 +109,19 @@ div.help-block {
 	color: var( --cg75 );
 	white-space: pre-wrap;
 }
-.help-block .fa {
+.helpblock .fa {
 	width: 20px;
 	line-height: 16px;
 	font-size: 16px !important;
 }
-.help-block i {
+.helpblock i {
 	margin-left: 3px;
 	margin-right: -4px;
 }
-.help-block p {
+.helpblock p {
 	margin: 0 0 0 10px;
 }
-.help-block .img {
+.helpblock .img {
 	color: var( --cml );
 }
 .menu-sub {
@@ -219,7 +225,7 @@ heading .disabled {
 	z-index: 95;
 }
 .page-icon,
-.help-head,
+.helphead,
 .close {
 	width: 40px;
 	height: 40px;
@@ -232,11 +238,11 @@ heading .disabled {
 	float: left;
 	background: var( --cm );
 }
-.help-head,
+.helphead,
 .close {
 	float: right;
 }
-.help-head {
+.helphead {
 	margin-right: 5px;
 	color: var( --cg60 )
 }
@@ -250,11 +256,11 @@ heading .disabled {
 	width: 100%;
 	height: 100%;
 	max-height: 100%;
-	padding: 40px 10px 10px;
+	padding: 50px 10px;
 	background: #000;
 	overflow-x: hidden;
 	white-space: pre-wrap;
-	z-index: 111;
+	z-index: 5;
 }
 #bar-bottom {
 	position: fixed;
@@ -499,7 +505,7 @@ input.disabled + .switchlabel:after {
 }
 .container {
 	max-width: 768px;
-	min-height: 100vh;
+	height: 100%;
 	padding: 30px 55px 100px 55px;
 }
 .container::after {
@@ -590,58 +596,11 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
-#guide {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	max-width: 512px;
-	left: 0;
-	right: 0;
-	margin: 0 auto;
-	padding: 40px 20px
-}
-#guide p {
-	margin: 0;
-	line-height: 40px;
-}
-#guide p gr {
-	float: right;
-}
-#guide .btn {
-	display: inline-block;
-	width: 110px;
-	height: 34px;
-	margin: 0 5px 10px 0 !important;
-	text-align: center;
-}
-#guide .btn i {
-	margin: 3px 10px 0 0;
-	font-size: 20px;
-	vertical-align: -2px;
-}
-#guide .btn.active {
-	background-color: var( --cm ) !important;
-}
-#guide img {
-	width: 100%;
-}
-#guide #settings {
-	width: 34px;
-}
-#guide #settings i {
-	margin: 3px 0 0 0;
-}
-.prev-next {
-	display: inline-block;
-	float: right;
-	font-size: 24px;
-	color: var( --cm );
-}
 @media (max-height: 570px) {
-	.help-head {
+	.helphead {
 		margin-right: 0;
 	}
-	.help-head::before {
+	.helphead::before {
 		content: '\f509';
 		color: var( --cg60 );
 	}
@@ -666,14 +625,10 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 515px) {
-	.col-r .help-block {
+	.col-r .helpblock {
 		margin-left: -160px;
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
-	}
-	#guide {
-		max-width: 100%;
-		padding: 40px 5px;
 	}
 	#bar-bottom {
 		padding: 0;
@@ -691,14 +646,7 @@ input.disabled + .switchlabel:after {
 	heading {
 		letter-spacing: 4px;
 	}
-	#guide .btn {
-		width: 70px;
-	}
-	#guide .btn i {
-		margin: 3px auto 0;
-	}
-	.selectric-wrapper + .setting,
-	#guide .btn span {
+	.selectric-wrapper + .setting {
 		display: none;
 	}
 	input[type="text"] {
@@ -768,8 +716,8 @@ input.disabled + .switchlabel:after {
 	.col-l.icon,
 	.entries li,
 	.filetype,
-	.help-head,
-	.help-block bl,
+	.helphead,
+	.helpblock bl,
 	.img,
 	.listtitle,
 	.page-icon,

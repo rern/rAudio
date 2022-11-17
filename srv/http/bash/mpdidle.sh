@@ -5,11 +5,11 @@
 mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
-			if [[ $( cat $dirshm/player ) == upnp ]]; then
+			if [[ $( < $dirshm/player ) == upnp ]]; then
 				echo 5 > $dirshm/vol
 				( for (( i=0; i < 5; i++ )); do
 					sleep 0.1
-					s=$(( $( cat $dirshm/vol ) - 1 )) # debounce volume long-press on client
+					s=$(( $( < $dirshm/vol ) - 1 )) # debounce volume long-press on client
 					(( $s == 4 )) && i=0
 					if (( $s > 0 )); then
 						echo $s > $dirshm/vol
@@ -21,10 +21,9 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		playlist )
-			if [[ $( mpc | awk '/^volume:.*consume:/ {print $NF}' ) == on || $pldiff > 0 ]]; then
+			if mpc | grep -q -m1 'consume: on'; then
 				( sleep 0.05 # consume mode: playlist+player at once - run player fisrt
-					data=$( php /srv/http/mpdplaylist.php current )
-					pushstream playlist "$data"
+					pushstream playlist $( php /srv/http/mpdplaylist.php current )
 				) &> /dev/null &
 			fi
 			;;
@@ -36,7 +35,7 @@ mpc idleloop | while read changed; do
 			;;
 		update )
 			sleep 1
-			! mpc | grep -q '^Updating' && $dirbash/cmd-list.sh
+			! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
 			;;
 	esac
 done

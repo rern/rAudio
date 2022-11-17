@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 systemctl stop mpd
-rm -f $dirsystem/{relays,soundprofile,updating,listing,buffer,bufferoutput,crossfade,custom,replaygain,soxr}
+rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
 
 # lcd
 file=/etc/modules-load.d/raspberrypi.conf
@@ -35,7 +35,7 @@ max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on"
-	[[ -e /boot/kernel8.img || $BB =~ ^(08|0c|0d|0e|11|12)$ ]] && config+="
+	[[ $BB =~ ^(08|0c|0d|0e|11|12)$ ]] && config+="
 dtparam=krnbt=on"
 	[[ $BB =~ ^(09|0c)$ ]] && config+="
 force_turbo=1
@@ -66,47 +66,19 @@ ln -sf /srv/http/assets/fonts $dircamillagui
 ln -sf /srv/http/assets/css/colors.css $dircamillagui
 ln -sf /srv/http/assets/img/icon.png $dircamillagui
 # display
-cat << EOF > $dirsystem/display
-{
-  "album": true,
-  "albumartist": true,
-  "albumbyartist": false,
-  "artist": true,
-  "audiocdplclear": false,
-  "backonleft": false,
-  "bars": true,
-  "barsalways": false,
-  "buttons": true,
-  "camilladsp": false,
-  "composer": true,
-  "conductor": true,
-  "count": true,
-  "cover": true,
-  "covervu": false,
-  "date": true,
-  "fixedcover": true,
-  "genre": true,
-  "hidecover": false,
-  "label": true,
-  "latest": true,
-  "multiraudio": false,
-  "nas": true,
-  "noswipe": false,
-  "playbackswitch": true,
-  "playlists": true,
-  "plclear": true,
-  "plsimilar": true,
-  "radioelapsed": false,
-  "sd": true,
-  "tapaddplay": false,
-  "tapreplaceplay": false,
-  "time": true,
-  "usb": true,
-  "volume": true,
-  "vumeter": false,
-  "webradio": true
-}
-EOF
+true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
+	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
+false='albumbyartist audiocdplclear backonleft barsalways camilladsp covervu hidecover
+	multiraudio noswipe radioelapsed tapaddplay tapreplaceplay vumeter'
+for i in $true; do
+	lines+='
+, "'$i'": true'
+done
+for i in $false; do
+	lines+='
+, "'$i'": false'
+done
+jq -S <<< {${lines:2}} > $dirsystem/display
 # localbrowser
 if [[ -e /usr/bin/chromium ]]; then
 	rm -rf /root/.config/chromium
@@ -140,12 +112,7 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-sed -i -e -E '/^auto_update|^audio_buffer_size| #custom$/ d
-' -e '/quality/,/}/ d
-' -e '/soxr/ a\
-	quality        "very high"\
-}
-' /etc/mpd.conf
+mpc -q crossfade 0
 curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
 	echo '{
@@ -164,6 +131,6 @@ $dirsettings/system.sh dirpermissions
 
 [[ $version ]] && exit
 
-systemctl start mpd
+$dirsettings/player-conf.sh
 
 curl -s -X POST http://127.0.0.1/pub?id=restore -d '{"restore":"reload"}' &> /dev/null

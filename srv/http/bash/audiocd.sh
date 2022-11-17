@@ -3,30 +3,24 @@
 . /srv/http/bash/common.sh
 
 pushstreamPlaylist() {
-	data=$( php /srv/http/mpdplaylist.php current )
-	pushstream playlist "$data"
+	pushstream playlist $( php /srv/http/mpdplaylist.php current )
 }
 
-[[ $1 ]] && pushstreamNotify 'Audio CD' "USB CD $1" audiocd
+[[ $1 ]] && notify audiocd 'Audio CD' "USB CD $1"
 
 if [[ $1 == on ]]; then
 	touch $dirshm/audiocd
-	sed -i '/^decoder/ i\
-input {\
-	plugin         "cdio_paranoia"\
-	speed          "12"\
-}\
-' /etc/mpd.conf
+	ln -s $dirmpdconf/{conf/,}cdio.conf
 	systemctl restart mpd
 	$dirsettings/player-data.sh pushrefresh
 	exit
 	
-elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : remove tracks from playlist
+elif [[ $1 == eject || $1 == off || $1 == ejecticonclick ]]; then # eject/off : remove tracks from playlist
 	tracks=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	if [[ $tracks ]]; then
-		pushstreamNotify 'Audio CD' 'Removed from Playlist.' audiocd
+		notify audiocd 'Audio CD' 'Removed from Playlist.'
 		[[ $( mpc | head -c 4 ) == cdda ]] && mpc -q stop
-		tracktop=$( echo "$tracks" | head -1 )
+		tracktop=$( head -1 <<< $tracks )
 		mpc -q del $tracks
 		if (( $tracktop > 1 )); then
 			mpc -q play $(( tracktop - 1 ))
@@ -35,14 +29,13 @@ elif [[ $1 == eject || $1 == off || $1 == ejectwithicon ]]; then # eject/off : r
 		pushstreamPlaylist
 	fi
 	if [[ $1 == off ]]; then
-		linecdio=$( sed -n '/cdio_paranoia/ =' /etc/mpd.conf )
-		sed -i "$(( linecdio - 1 )),/^$/ d" /etc/mpd.conf
+		rm -f $dirshm/audiocd $dirmpdconf/cdio.conf
 		systemctl restart mpd
 		$dirsettings/player-data.sh pushrefresh
-	elif [[ $1 == ejectwithicon ]]; then
-		eject
+	else
+		[[ $1 == ejecticonclick ]] && eject
+		( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	fi
-	( sleep 3 && rm -f $dirshm/audiocd ) &> /dev/null &
 	exit
 	
 fi
@@ -51,7 +44,7 @@ fi
 
 cddiscid=( $( cd-discid 2> /dev/null ) ) # ( id tracks leadinframe frame1 frame2 ... totalseconds )
 if [[ ! $cddiscid ]]; then
-	pushstreamNotify 'Audio CD' 'ID of CD not found in database.' audiocd
+	notify audiocd 'Audio CD' 'ID of CD not found in database.'
 	exit
 	
 fi
@@ -59,24 +52,24 @@ fi
 discid=${cddiscid[0]}
 
 if [[ ! -e $diraudiocd/$discid ]]; then
-	pushstreamNotifyBlink 'Audio CD' 'Search CD data ...' audiocd
+	notify -blink audiocd 'Audio CD' 'Search CD data ...'
 	server='http://gnudb.gnudb.org/~cddb/cddb.cgi?cmd=cddb'
-	discdata=$( echo ${cddiscid[@]} | tr ' ' + )
+	discdata=$( tr ' ' + <<< ${cddiscid[@]} )
 	options='hello=owner+rAudio+rAudio+1&proto=6'
 	query=$( curl -sL "$server+query+$discdata&$options" | head -2 | tr -d '\r' )
-	code=$( echo "$query" | head -c 3 )
+	code=$( head -c 3 <<< $query )
 	if (( $code == 210 )); then  # exact match
-	  genre_id=$( echo "$query" | sed -n 2p | cut -d' ' -f1,2 | tr ' ' + )
+	  genre_id=$( sed -n 2p <<< $query | cut -d' ' -f1,2 | tr ' ' + )
 	elif (( $code == 200 )); then
-	  genre_id=$( echo "$query" | cut -d' ' -f2,3 | tr ' ' + )
+	  genre_id=$( cut -d' ' -f2,3 <<< $query | tr ' ' + )
 	fi
 	if [[ $genre_id ]]; then
-		pushstreamNotifyBlink 'Audio CD' 'Fetch CD data ...' audiocd
+		notify -blink audiocd 'Audio CD' 'Fetch CD data ...'
 		data=$( curl -sL "$server+read+$genre_id&$options" | grep '^.TITLE' | tr -d '\r' ) # contains \r
-		readarray -t artist_album <<< $( echo "$data" | grep '^DTITLE' | sed 's/^DTITLE=//; s| / |\n|' )
+		readarray -t artist_album <<< $( sed -n '/^DTITLE/ {s/^DTITLE=//; s| / |\n|; p}' <<< $data )
 		artist=${artist_album[0]}
 		album=${artist_album[1]}
-		readarray -t titles <<< $( echo "$data" | tail -n +1 | cut -d= -f2 )
+		readarray -t titles <<< $( tail -n +1 <<< $data | cut -d= -f2 )
 	fi
 	frames=( ${cddiscid[@]:2} )
 	unset 'frames[-1]'
@@ -96,8 +89,8 @@ if [[ -e $dirsystem/autoplaycd ]]; then
 	pushstream playlist '{"autoplaycd":1}'
 fi
 # add tracks to playlist
-grep -q 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
-pushstreamNotify 'Audio CD' 'Add tracks to Playlist ...' audiocd
+grep -q -m1 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
+notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
   mpc -q add cdda:///$i
@@ -116,8 +109,8 @@ fi
 # coverart
 if [[ ! $artist || ! $album ]]; then
 	artist_album=$( head -1 $diraudiocd/$discid )
-	artist=$( echo $artist_album | cut -d^ -f1 )
-	album=$( echo $artist_album | cut -d^ -f2 )
+	artist=${artist_album/^*}
+	album=${artist_album/*^}
 fi
 [[ ! $artist || ! $album ]] && exit
 
