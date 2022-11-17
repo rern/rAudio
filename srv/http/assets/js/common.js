@@ -120,7 +120,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	function pushstreamPower( message ) {
 		var type  = message.replace( ' ...', '' ).toLowerCase();
 		G[ type ] = 1;
-		if ( type !== 'ready' ) loader();
+		type === 'ready' ? loaderHide() : loader();
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected

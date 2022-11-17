@@ -947,6 +947,7 @@ power )
 	fi
 	touch $dirshm/power
 	mpc -q stop
+	alsactl store
 	pushstream btreceiver false
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( < $dirshm/clientip )
@@ -1064,10 +1065,7 @@ volume ) # no args = toggle mute / unmute
 	target=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
-	if [[ $current == drag ]]; then
-		volumeSetAt $target $card "$control"
-		exit
-	fi
+	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
 	
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute
