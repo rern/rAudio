@@ -6,7 +6,7 @@ alias=r1
 
 # 20221117
 file=/etc/pacman.conf
-! grep -q shairport $file && sed -i '/IgnorePkg/ a\IgnorePkg = shairport-sync' $file
+! grep -q shairport $file && sed -i '/#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
 
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
