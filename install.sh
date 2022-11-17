@@ -89,7 +89,11 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
+dirdata=/srv/http/data
 dirmpdconf=$dirdata/mpdconf
+dirsettings=/srv/http/bash/settings
+dirshm=$dirdata/shm
+dirsystem=$dirdata/system
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
