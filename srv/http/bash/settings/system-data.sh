@@ -52,11 +52,12 @@ $rpimodel<br>\
 $soc<br>\
 $soccpu"
 
-if ifconfig | grep -q -m1 eth0; then
+ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+if ifconfig | grep -q -m1 $lan; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
-		mtu_txq=( $( ifconfig eth0 | sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' ) )
+		mtu_txq=( $( ifconfig $lan | sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' ) )
 		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f 3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
 	fi
 fi

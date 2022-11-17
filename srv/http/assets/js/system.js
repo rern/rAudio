@@ -673,7 +673,7 @@ $( '#setting-soundprofile' ).click( function() {
 	info( {
 		  icon         : icon
 		, title        : title
-		, textlabel    : [ 'vm.swappiness', 'eth0 mtu', 'eth0 txqueuelen' ]
+		, textlabel    : [ 'vm.swappiness', 'lan mtu', 'lan txqueuelen' ]
 		, boxwidth     : 110
 		, values       : G.soundprofileconf
 		, checkchanged : G.soundprofile

@@ -110,9 +110,10 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	if ifconfig | grep -q -m1 eth0; then
-		ip link set eth0 mtu $mtu
-		ip link set eth0 txqueuelen $txqueuelen
+	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+	if ifconfig | grep -q -m1 $lan; then
+		ip link set $lan mtu $mtu
+		ip link set $lan txqueuelen $txqueuelen
 	fi
 }
 webradioCopyBackup() {
@@ -966,12 +967,13 @@ soundprofileset )
 	soundProfile
 	;;
 soundprofileget )
+	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
 	echo "\
 <bll># sysctl vm.swappiness
-# ifconfig eth0 | grep -E 'mtu|txq'</bll>
+# ifconfig $lan | grep -E 'mtu|txq'</bll>
 
 $( sysctl vm.swappiness )
-$( ifconfig eth0 | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ /=/; p}' )"
+$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ /=/; p}' )"
 	;;
 soundprofile )
 	if [[ ${args[1]} == true ]]; then
