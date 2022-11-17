@@ -5,8 +5,10 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221116
-[[ ! -e /usr/bin/nqptp ]] && pacman -Sy --needed --noconfirm nqptp
-
+if [[ ! -e /usr/bin/nqptp ]]; then
+	echo -e "$bar Install NQPTP for Airplay 2 ..."
+	pacman -Sy --needed --noconfirm nqptp
+fi
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
 [[ ! -e $dirdata/mpdconf ]] && backup=1
