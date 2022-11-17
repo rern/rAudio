@@ -5,6 +5,14 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221117
+dirbash=/srv/http/bash
+dirsettings=$dirbash/settings
+dirdata=/srv/http/data
+dirmpd=$dirdata/mpd
+dirmpdconf=$dirdata/mpdconf
+dirshm=$dirdata/shm
+dirsystem=$dirdata/system
+
 file=/etc/pacman.conf
 ! grep -q shairport $file && sed -i '/^#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
 
@@ -75,7 +83,7 @@ getinstallzip
 
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ -e /srv/http/data/system/color ]] && $dirbash/cmd.sh color
 
 #installfinish
 #-------------------------------------------------------------------------------
@@ -89,11 +97,6 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
-dirdata=/srv/http/data
-dirmpdconf=$dirdata/mpdconf
-dirsettings=/srv/http/bash/settings
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
