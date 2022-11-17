@@ -145,7 +145,7 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
-		, 'status'   => 'bluetooth'
+		, 'status'   => 'btcontroller'
 		, 'disabled' => $disabledbt
 		, 'help'     => '| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
