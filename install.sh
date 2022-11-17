@@ -144,9 +144,14 @@ systemctl -q is-active snapserver && linkConf snapserver
 
 rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfade,streaming}
 
-echo "\
+[[ -e /boot/kernel.img ]] && service='
+[Service]
+'
+service+="\
 ExecStart=
-ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf" >> $file
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf"
+echo "$service" >> $file
+
 systemctl daemon-reload
 
 $dirsettings/player-conf.sh
