@@ -4,11 +4,10 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20221116
-if [[ ! -e /usr/bin/nqptp ]]; then
-	echo -e "$bar Install NQPTP for Airplay 2 ..."
-	pacman -Sy --needed --noconfirm nqptp
-fi
+# 20221117
+file=/etc/pacman.conf
+! grep -q shairport $file && sed -i '/IgnorePkg/ a\IgnorePkg = shairport-sync' $file
+
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
 [[ ! -e $dirdata/mpdconf ]] && backup=1
