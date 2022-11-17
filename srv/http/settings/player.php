@@ -91,10 +91,10 @@ $body = [
 		, 'help'        => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • No changes in data stream until it reaches amplifier volume control.
- • Mixer device volume: 0dB (No amplitude manipulations)
- • Volume Control: | None / 0db | (Hidden volume in Playback)
- • Signal Processors: Disabled
- • Cross-fading, Normalization and ReplayGain: Disabled
+ • Mixer device volume: | 0dB |
+ • Volume Control: | None / 0db |
+ • Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
+ • Disable Signal Processors
 EOF
 	]
 	, [
