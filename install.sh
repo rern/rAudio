@@ -4,6 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221117
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
@@ -12,7 +13,6 @@ dirmpdconf=$dirdata/mpdconf
 dirshm=$dirdata/shm
 dirsystem=$dirdata/system
 
-# 20221117
 file=/etc/pacman.conf
 ! grep -q shairport $file && sed -i '/^#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
 
