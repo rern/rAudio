@@ -1,9 +1,10 @@
-$( window ).on( 'resize', () => { // portrait / landscape
-	displayBars();
-	var wH = document.body.clientHeight;
-	var wW = document.body.clientWidth;
-	if ( G.wH > G.wW === wH > wW ) return
+$( window ).on( 'resize', () => { // or rotate
+	var wH = window.innerHeight;
+	var wW = window.innerWidth;
+	if ( G.wH === wH && G.wW === wW ) return
 	
+	G.wH = wH;
+	G.wW = wW;
 	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
 		if ( $( '#bio' ).hasClass( 'hide' ) ) {
@@ -37,6 +38,7 @@ $( window ).on( 'resize', () => { // portrait / landscape
 			}, 0 );
 		}
 	}
+	displayBars();
 } );
 function radioRefresh() {
 	var query = G.query[ G.query.length - 1 ];
