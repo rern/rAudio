@@ -1799,10 +1799,8 @@ function switchPage( page ) {
 		}
 		if ( G.color ) $( '#colorcancel' ).click();
 	} else if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
+		G.plscrolltop = $( window ).scrollTop();
 	}
-	$( '.page, .menu' ).addClass( 'hide' );
-	$( '#page-'+ page ).removeClass( 'hide' );
 	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
 	G.page    = page;
@@ -1812,14 +1810,10 @@ function switchPage( page ) {
 		$( 'html, body' ).scrollTop( 0 );
 		vu();
 	} else if ( G.library ) {
-		if ( G.librarylist ) {
-			$( 'html, body' ).scrollTop( G.liscrolltop );
-		} else {
-			renderLibrary();
-		}
-	} else {
-		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+		G.librarylist ? $( 'html, body' ).scrollTop( G.liscrolltop ) : renderLibrary();
 	}
+	$( '.page, .menu' ).addClass( 'hide' );
+	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path ) {
 	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
