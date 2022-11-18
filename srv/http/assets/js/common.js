@@ -110,7 +110,7 @@ var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
-		, timeout                               : 10000
+		, timeout                               : 20000
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	function pushstreamChannel( channels ) {
@@ -120,7 +120,11 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	function pushstreamPower( message ) {
 		var type  = message.replace( ' ...', '' ).toLowerCase();
 		G[ type ] = 1;
-		if ( type !== 'ready' ) loader();
+		if ( type !== 'ready' ) {
+			loader();
+		} else {
+			if ( G.display.lock ) location.reload();
+		}
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
