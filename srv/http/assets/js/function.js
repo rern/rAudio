@@ -1799,7 +1799,7 @@ function switchPage( page ) {
 		}
 		if ( G.color ) $( '#colorcancel' ).click();
 	} else if ( G.playlist ) {
-		G.plscrolltop = $( window ).scrollTop();
+		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
 	}
 	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
@@ -1811,6 +1811,8 @@ function switchPage( page ) {
 		vu();
 	} else if ( G.library ) {
 		G.librarylist ? $( 'html, body' ).scrollTop( G.liscrolltop ) : renderLibrary();
+	} else {
+		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
