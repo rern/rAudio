@@ -157,3 +157,5 @@ systemctl daemon-reload
 $dirsettings/player-conf.sh
 
 installfinish
+
+echo -e "$info Backup of Data and Settings: Backup again to include new configuration"
