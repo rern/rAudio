@@ -1606,7 +1606,10 @@ function setPlaylistScroll() {
 		|| ! G.status.pllength || G.sortable
 		|| ! [ 'mpd', 'upnp' ].includes( G.status.player )
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
-	) return
+	) {
+		$( '#page-playlist' ).css( 'visibility', '' );
+		return
+	}
 	
 	var litop = $bartop.is( ':visible' ) ? 80 : 40;
 	$( '#menu-plaction' ).addClass( 'hide' );
@@ -1621,6 +1624,7 @@ function setPlaylistScroll() {
 		}
 		$( 'html, body' ).scrollTop( top );
 	}
+	$( '#page-playlist' ).css( 'visibility', '' );
 	$( '#pl-list .elapsed' ).empty();
 	var $this        = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed     = $this.find( '.elapsed' );
@@ -1799,7 +1803,8 @@ function switchPage( page ) {
 		}
 		if ( G.color ) $( '#colorcancel' ).click();
 	} else if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
+		var savedlist = G.savedlist || G.savedplaylist;
+		if ( savedlist ) G.plscrolltop = $( window ).scrollTop();
 	}
 	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
@@ -1812,7 +1817,8 @@ function switchPage( page ) {
 	} else if ( G.library ) {
 		G.librarylist ? $( 'html, body' ).scrollTop( G.liscrolltop ) : renderLibrary();
 	} else {
-		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+		if ( savedlist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+		$( '#page-playlist' ).css( 'visibility', 'hidden' ); // for scroll
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
