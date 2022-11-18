@@ -1062,7 +1062,11 @@ $( '.btn-cmd' ).click( function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-				if ( G.playback && G.status.stream ) {
+				if ( G.status.stream ) {
+					$( '#artist' ).text( G.status.station );
+					$( '#album' ).text( G.status.file );
+					$( '#sampling' ).html( G.status.sampling +' • '+ G.status.ext );
+					$( '#artist, #title, #album' ).addClass( 'disabled' );
 					G.status.coverart = '';
 					setCoverart();
 				}

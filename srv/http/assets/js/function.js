@@ -1522,7 +1522,8 @@ function setInfo() {
 		if ( G.status.icon === 'dabradio' ) {
 			sampling += ' • DAB';
 		} else if ( G.status.Album && G.status.station ) {
-			sampling += ' • '+ G.status.station;
+			var station = [ 'radiofrance', 'radioparadise' ].includes( G.status.icon ) ? G.status.station.split( ' - ' ).pop() : G.status.station;
+			sampling += ' • '+ station;
 		} else {
 			sampling += ' • '+ G.status.ext;
 		}

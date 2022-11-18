@@ -355,7 +355,6 @@ i.map.disabled, .map.disabled i {
 }
 #album.disabled {
 	font-weight: 300;
-	color: var( --cgl );
 }
 .capitalize {
 	text-transform: capitalize;
