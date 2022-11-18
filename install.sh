@@ -91,7 +91,7 @@ $dirsettings/system.sh dirpermissions
 # 20221010
 [[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
 
-# 20221021
+# 20221117
 file=/etc/systemd/system/mpd.service.d/override.conf
 grep -q ExecStart $file && installfinish && exit
 
