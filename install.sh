@@ -93,13 +93,16 @@ $dirsettings/system.sh dirpermissions
 
 # 20221117
 file=/etc/systemd/system/mpd.service.d/override.conf
-grep -q ExecStart $file && installfinish && exit
+grep -q systemd $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
+
+mkdir -p $dirmpdconf
 
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
+
 [[ -e $dirsystem/custom-global ]] && mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf
 if [[ -e $dirsystem/soxr.conf ]]; then
 	echo "\
