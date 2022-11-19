@@ -92,8 +92,8 @@ $dirsettings/system.sh dirpermissions
 [[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
 
 # 20221117
-file=/etc/systemd/system/mpd.service.d/override.conf
-grep -q ExecStart $file && installfinish && exit
+overrideconf=/etc/systemd/system/mpd.service.d/override.conf
+grep -q systemd $overrideconf && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
@@ -153,7 +153,7 @@ rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfad
 service+="\
 ExecStart=
 ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf"
-echo "$service" >> $file
+echo "$service" >> $overrideconf
 
 systemctl daemon-reload
 
