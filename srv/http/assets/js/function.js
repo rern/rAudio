@@ -402,7 +402,7 @@ function displaySave( keys ) {
 	var values  = infoVal();
 	var display = JSON.parse( JSON.stringify( G.display ) );
 	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
-	[ 'audiocd', 'color',     'equalizer',  'logout',           'order',
+	[ 'audiocd', 'color',     'equalizer',  'lock',             'order',
 	  'relays',  'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
@@ -416,7 +416,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-camilladsp', G.display.camilladsp )
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
-	var submenu   = [ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ];
+	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
 	submenu.forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
