@@ -45,9 +45,6 @@ if [[ ! -e /boot/kernel.img ]]; then
 	for file in $dir/spotifyd.service $dir/upmpdcli.service; do
 		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStartPost/ d' -e 's|/usr/bin/taskset -c 3 ||' $file
 	done
-	for file in $dir/mpd.service.d/override.conf $dir/shairport-sync.service.d/override.conf; do
-		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStart/ d' $file
-	done
 	for file in $dir/bluealsa.service.d/override.conf $dir/bluetooth.service.d/override.conf; do
 		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' $file
 	done
@@ -96,6 +93,17 @@ overrideconf=/etc/systemd/system/mpd.service.d/override.conf
 grep -q systemd $overrideconf && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
+
+cat << EOF > $overrideconf
+[Unit]
+BindsTo=mpdidle.service
+
+[Service]
+CPUAffinity=3
+ExecStart=
+ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf
+EOF
+[[ -e /boot/kernel.img ]] && sed -i '/CPUAffinity/ d' $overrideconf
 
 mkdir -p $dirmpdconf
 
@@ -146,14 +154,6 @@ grep -q type.*httpd /etc/mpd.conf && linkConf httpd
 systemctl -q is-active snapserver && linkConf snapserver
 
 rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfade,streaming}
-
-[[ -e /boot/kernel.img ]] && service='
-[Service]
-'
-service+="\
-ExecStart=
-ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf"
-echo "$service" >> $overrideconf
 
 systemctl daemon-reload
 
