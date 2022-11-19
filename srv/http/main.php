@@ -108,7 +108,8 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$menu.= menudiv( $mode, $html );
 }
 $menu = '<div id="contextmenu">'.$menu.'</div>';
-$ids = [ 'random', 'repeat', 'single', 'repeat1', 'consume', 'librandom', 'mute', 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons', 'relays', 'stoptimer' ];
+$ids = [ 'random',   'repeat',     'single',    'repeat1',   'consume', 'librandom', 'mute'
+	   , 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons',  'relays',    'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
 	$modeicon.= '<i id="i-'.$id.'" class="fa fa-'.$id.' hide"></i>';
@@ -117,24 +118,15 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
 $dsp = file_exists( '/srv/http/data/system/equalizer' ) ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features', 'settings', 'features', 'Features',
-		'dsp', '' ]
-	, ['player', 'settings', 'player', 'Player',
-		'lock', 'lock' ]
-	, ['networks', 'settings', 'networks', 'Networks',
-		'snapclient', 'snapclient' ]
-	, [ 'system', 'settings', 'raudio', 'System',
-		'relays', 'relays' ]
-	, [ 'addons', 'sub', 'jigsaw', 'Addons',
-		'guide', 'help' ]
-	, [ 'power', '', 'power', 'Power',
-		'screenoff', 'screenoff' ]
-	, [ 'displaylibrary', 'sub', 'library', 'Library',
-		'update', 'refresh-library' ]
-	, [ 'displayplayback', 'sub', 'playback', 'Playback',
-		'displaycolor', 'color' ]
-	, [ 'displayplaylist', '', 'playlist', 'Playlist',
-		'multiraudio', 'raudiobox' ]
+	  [ 'features',        'settings', 'features', 'Features', 'dsp',          '' ]
+	, [ 'player',          'settings', 'player',   'Player',   'logout',       'lock' ]
+	, [ 'networks',        'settings', 'networks', 'Networks', 'snapclient',   'snapclient' ]
+	, [ 'system',          'settings', 'raudio',   'System',   'relays',       'relays' ]
+	, [ 'addons',          'sub',      'jigsaw',   'Addons',   'guide',        'help' ]
+	, [ 'power',           '',         'power',    'Power',    'screenoff',    'screenoff' ]
+	, [ 'displaylibrary',  'sub',      'library',  'Library',  'update',       'refresh-library' ]
+	, [ 'displayplayback', 'sub',      'playback', 'Playback', 'displaycolor', 'color' ]
+	, [ 'displayplaylist', '',         'playlist', 'Playlist', 'multiraudio',  'raudiobox' ]
 ];
 $htmlsettings     = '';
 foreach( $settinglist as $l ) {

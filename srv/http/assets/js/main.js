@@ -172,7 +172,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				equalizer();
 			}
 			break;
-		case 'lock':
+		case 'logout':
 			$.post( cmdphp, { cmd: 'logout' }, function() {
 				location.reload();
 			} );
