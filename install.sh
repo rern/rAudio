@@ -97,9 +97,12 @@ grep -q ExecStart $file && installfinish && exit
 
 echo -e "\n$bar Rearrange MPD Configuration...\n"
 
+mkdir -p $dirmpdconf
+
 linkConf() {
 	ln -s $dirmpdconf/{conf/,}$1.conf
 }
+
 [[ -e $dirsystem/custom-global ]] && mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf
 if [[ -e $dirsystem/soxr.conf ]]; then
 	echo "\
