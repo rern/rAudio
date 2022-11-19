@@ -118,7 +118,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		pushstream.connect();
 	}
 	function pushstreamPower( message ) {
-		var type  = message.replace( ' ...', '' ).toLowerCase();
+		var type  = message.split( ' ' )[ 0 ].toLowerCase();
 		G[ type ] = 1;
 		if ( type !== 'ready' ) {
 			loader();
