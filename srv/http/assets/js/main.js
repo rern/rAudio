@@ -1694,9 +1694,7 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-playlists' ).click( function() {
 	G.savedlist     = 1;
 	G.savedplaylist = 0;
-	list( { cmd: 'list' }, function( data ) {
-		renderPlaylistList( data );
-	}, 'json' );
+	list( { cmd: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
 } );
 $( '#button-pl-save' ).click( function() {
 	var audiocdL  = $( '#pl-list .fa-audiocd' ).length;
