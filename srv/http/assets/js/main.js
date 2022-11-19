@@ -173,9 +173,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'logout':
-			$.post( cmdphp, { cmd: 'logout' }, function() {
-				location.reload();
-			} );
+			$.post( cmdphp, { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
@@ -455,11 +453,11 @@ $( '#playback' ).click( function() {
 } );
 $( '#playlist, #button-playlist' ).click( function() {
 	if ( ! G.local ) G.pladd = {}
+	var savedpl = G.savedlist || G.savedplaylist;
 	if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) getPlaylist();
+		if ( savedpl ) getPlaylist();
 	} else {
-		switchPage( 'playlist' );
-		if ( ! G.savedlist && ! G.savedplaylist ) getPlaylist();
+		savedpl ? switchPage( 'playlist' ) : getPlaylist(); // switchPage( 'playlist' ) in setPlaylistScroll()
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
