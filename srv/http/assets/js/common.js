@@ -108,7 +108,7 @@ function selectricRender() {
 }
 
 // pushstream -----------------------------------------------------------------
-var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
+var page        = location.search.replace( '?p=', '' );
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
