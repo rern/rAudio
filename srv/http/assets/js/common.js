@@ -169,7 +169,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	function disconnect() {
 		if ( active ) {
 			active = 0;
-//			pushstream.disconnect();
+			pushstream.disconnect();
 		}
 	}
 	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
