@@ -4,6 +4,10 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221122
+sed -i '/shairport-sync/ d' /etc/pacman.conf
+[[ $( pacman -Q shairport-sync ) != 'shairport-sync 4.1-3' ]]  && pacman -Sy --noconfirm shairport-sync
+
 # 20221117
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
@@ -12,9 +16,6 @@ dirmpd=$dirdata/mpd
 dirmpdconf=$dirdata/mpdconf
 dirshm=$dirdata/shm
 dirsystem=$dirdata/system
-
-file=/etc/pacman.conf
-! grep -q shairport $file && sed -i '/^#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
 
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
