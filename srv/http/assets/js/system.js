@@ -50,18 +50,6 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, okno        : 1
 	} );
 } );
-$( '.power' ).click( function() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : orange
-		, button      : () => bash( [ 'cmd', 'power', 'reboot' ] )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : red
-		, ok          : () => bash( [ 'cmd', 'power', 'off' ] )
-	} );
-} );
 $( '.refresh' ).click( function( e ) {
 	if ( $( e.target ).hasClass( 'help' ) ) return
 	

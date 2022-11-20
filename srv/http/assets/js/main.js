@@ -247,21 +247,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 	}
 } );
-$( '#power' ).click( function() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : orange
-		, button      : () => power( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : red
-		, ok          : () => power( 'off' )
-	} );
-} );
-$( '#displaylibrary' ).click( function() {
-	infoLibrary();
-} );
+$( '#displaylibrary' ).click( infoLibrary );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {
 		  bars             : 'Top-Bottom bars'

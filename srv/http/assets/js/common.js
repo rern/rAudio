@@ -1,9 +1,10 @@
 /* 
-loader
-selectric render
-$.fn.press()
-banner()
+loader    : $( '#loader' )
+power     : $( '#power, .status .power' )
+press     : $.fn.press()
+selectric
 pushstream
+banner()
 info()
 */
 
@@ -31,14 +32,40 @@ function loaderHide() {
 	$( '#loader' ).addClass( 'hide' );
 }
 
-// selectric --------------------------------------------------------------------
-function selectricRender() {
-	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
-	$( 'select' ).each( ( i, el ) => {
-		var $this = $( el );
-		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
+// power ----------------------------------------------------------------------
+$( '#power, .status .power' ).click( infoPower );
+function infoPower() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttoncolor : orange
+		, button      : () => infoPowerCommand( 'reboot' )
+		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, okcolor     : red
+		, ok          : () => infoPowerCommand( 'off' )
 	} );
-	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
+}
+function infoPowerCommand( action ) {
+	var off = action === 'off';
+	bash( [ 'power', action ], nfs => {
+		if ( nfs == -1 ) {
+			info( {
+				  icon    : 'power'
+				, title   : 'Power'
+				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+							+'<br><wh>Shared Data</wh> on clients will stop.'
+							+'<br>(Resume when server online again)'
+							+'<br><br>Continue?'
+				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+				, okcolor : off ? red : orange
+				, ok      : () => {
+					bash( [ 'power', action, 1 ] );
+					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
+				}
+			} );
+		}
+	} );
 }
 
 // $.fn.press() -----------------------------------------------------------------
@@ -75,35 +102,15 @@ $.fn.press = function( arg1, arg2 ) {
 	return this // allow chain
 }
 
-// banner ----------------------------------------------------------------------
-function banner( icon, title, message, delay ) {
-	clearTimeout( G.timeoutbanner );
-	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
-					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#banner' ).html( `
-<div id="bannerIcon">${ iconhtml }</div>
-<div id="bannerTitle">${ title }</div>
-<div id="bannerMessage">${ message }</div>
-` ).removeClass( 'hide' );
-	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+// selectric --------------------------------------------------------------------
+function selectricRender() {
+	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
+	$( 'select' ).each( ( i, el ) => {
+		var $this = $( el );
+		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
+	} );
+	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
-function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	if ( G.bannerhold ) {
-		setTimeout( () => {
-			G.bannerhold = 0;
-			bannerHide();
-		}, G.bannerhold );
-		return
-	}
-	
-	clearTimeout( G.timeoutbanner );
-	$( '#banner' )
-		.addClass( 'hide' )
-		.empty();
-}
-$( '#banner' ).click( bannerHide );
 
 // pushstream -----------------------------------------------------------------
 var page        = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
@@ -169,6 +176,36 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
 	window.onpageshow = window.onfocus = connect;
 }
+
+// banner ----------------------------------------------------------------------
+function banner( icon, title, message, delay ) {
+	clearTimeout( G.timeoutbanner );
+	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
+					? icon 
+					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+	$( '#banner' ).html( `
+<div id="bannerIcon">${ iconhtml }</div>
+<div id="bannerTitle">${ title }</div>
+<div id="bannerMessage">${ message }</div>
+` ).removeClass( 'hide' );
+	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+}
+function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( G.bannerhold ) {
+		setTimeout( () => {
+			G.bannerhold = 0;
+			bannerHide();
+		}, G.bannerhold );
+		return
+	}
+	
+	clearTimeout( G.timeoutbanner );
+	$( '#banner' )
+		.addClass( 'hide' )
+		.empty();
+}
+$( '#banner' ).click( bannerHide );
 
 // info ----------------------------------------------------------------------
 function infoUsage() {

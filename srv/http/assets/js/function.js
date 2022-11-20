@@ -684,7 +684,8 @@ var chklibrary2 = {
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
-function infoLibrary( page2 ) {
+function infoLibrary( page ) {
+	var page2    = page === 2;
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
 	keys         = keys.filter( k => k !== '-' );
@@ -694,7 +695,7 @@ function infoLibrary( page2 ) {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tab          : [ 'Show', 'Options' ]
-		, tabfunction  : [ infoLibrary, infoLibrary2 ]
+		, tabfunction  : [ infoLibrary, () => infoLibrary( 2 ) ]
 		, tabactive    : page2 ? 1 : 0
 		, messagealign : 'left'
 		, checkbox     : checkbox
@@ -728,9 +729,6 @@ function infoLibrary( page2 ) {
 		}
 		, ok           : () => displaySave( keys )
 	} );
-}
-function infoLibrary2() {
-	infoLibrary( 2 );
 }
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
@@ -980,28 +978,6 @@ function playlistRemove( $li ) {
 		} );
 		$li.remove();
 	}
-}
-function power( action ) {
-	var off = action === 'off';
-	pushstream.timeout = 16000; // temp for reboot
-	bash( [ 'power', action ], nfs => {
-		if ( nfs == -1 ) {
-			info( {
-				  icon    : 'power'
-				, title   : 'Power'
-				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will stop.'
-							+'<br>(Resume when server online again)'
-							+'<br><br>Continue?'
-				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
-				, okcolor : off ? red : orange
-				, ok      : () => {
-					bash( [ 'power', action, 1 ] );
-					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-				}
-			} );
-		}
-	} );
 }
 function refreshPage( resetdata ) {
 	if ( G.library ) {
