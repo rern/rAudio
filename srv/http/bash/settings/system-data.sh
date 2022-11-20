@@ -80,7 +80,7 @@ usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
 if [[ $usb ]]; then
 	readarray -t usb <<< $usb
 	for source in "${usb[@]}"; do
-		mountpoint=$( df -l --output=target,source | sed -n "/$source/ {s| *$source||; p}" )
+		mountpoint=$( df -l --output=target,source | sed -n "\|$source| {s| *$source||; p}" )
 		if [[ $mountpoint ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{
