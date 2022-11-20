@@ -5,13 +5,9 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221122
-file=/etc/udev/rules.d/usbdrive.rules
+file=/etc/udev/rules.d/ntfs3.rules
 if [[ ! -e $file ]]; then
-	rm /etc/udev/rules.d/ntfs3.rules
-	cat << EOF > $file
-ACTION=="add", SUBSYSTEM=="block", RUN+="/srv/http/bash/settings/system.sh usbconnect"
-ACTION=="remove", SUBSYSTEM=="block", RUN+="/srv/http/bash/settings/system.sh usbremove"
-EOF
+	rm $file
 	udevadm control --reload-rules
 	udevadm trigger
 fi
