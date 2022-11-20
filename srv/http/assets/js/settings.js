@@ -43,20 +43,8 @@ var cmd        = {
 	, timedatectl  : systemsh   +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services   = [
-	  'camilladsp'
-	, 'rtsp-simple-server'
-	, 'hostapd'
-	, 'localbrowser'
-	, 'mpd'
-	, 'nfs-server'
-	, 'shairport-sync'
-	, 'smb'
-	, 'snapclient'
-	, 'snapserver'
-	, 'spotifyd'
-	, 'upmpdcli'
-];
+var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbrowser', 'mpd',      'nfs-server'
+				 , 'shairport-sync', 'smb',               'snapclient', 'snapserver',   'spotifyd', 'upmpdcli' ];
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -295,7 +283,7 @@ function psRefresh( data ) {
 		renderPage();
 	}
 }
-function psReload() {
+function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {

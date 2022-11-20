@@ -171,6 +171,7 @@ data+='
 , "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
 , "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "display"          : { "logout": '$( exists $dirsystem/login )' }
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
 , "hostapd"          : '$( isactive hostapd )'

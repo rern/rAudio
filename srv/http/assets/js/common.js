@@ -118,9 +118,17 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		pushstream.connect();
 	}
 	function pushstreamPower( message ) {
-		var type  = message.replace( ' ...', '' ).toLowerCase();
+		var type  = message.split( ' ' )[ 0 ].toLowerCase();
 		G[ type ] = 1;
-		type === 'ready' ? loaderHide() : loader();
+		var ready = type === 'ready';
+		if ( G.display.logout ) {
+			if ( ready ) location.reload();
+			
+			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
+			loader();
+		} else {
+			ready ? loaderHide() : loader();
+		}
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
