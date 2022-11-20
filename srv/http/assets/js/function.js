@@ -981,7 +981,7 @@ function refreshData( resetdata ) {
 			if ( resetdata ) G.librarylisthtml = '';
 			if ( [ 'sd', 'nas', 'usb' ].includes( G.mode ) ) {
 				$( '#lib-breadcrumbs .lidir' ).last().click();
-			} else if ( G.mode === 'album' ) {
+			} else if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).click();
 			} else if ( G.query.length ) {
 				var query = G.query[ G.query.length - 1 ];
@@ -1050,6 +1050,8 @@ function renderLibraryCounts() {
 	$.each( G.status.counts, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) {
+	if ( G.librarylist && data.html === G.librarylisthtml ) return
+	
 	G.librarylist = 1;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
@@ -1085,9 +1087,7 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	if ( G.mode === 'album' ) {
-		if ( G.query.length === 1 ) htmlpath += '<span class="btntitle" id="button-coverart"><img src="/assets/img/iconcover.svg"></span>';
-	} else if ( G.mode === 'webradio' ) {
+	if ( G.mode === 'webradio' ) {
 		htmlpath += '<i class="btntitle button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '<i class="btntitle button-latest-clear fa fa-minus-circle"></i>';
@@ -1097,11 +1097,6 @@ function renderLibraryList( data ) {
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( data.html === G.librarylisthtml ) {
-		$( '#lib-list, #lib-index, #lib-index1' ).removeClass( 'hide' );
-		return
-	}
-	
 	G.librarylisthtml = data.html;
 	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	if ( ! data.html ) return // empty radio
@@ -1118,7 +1113,7 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-				$( '#button-coverart img' ).attr( 'src', $( this ).attr( 'src' ) );
+				$( '#lib-breadcrumbs' ).append( '<span class="btntitle" id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
