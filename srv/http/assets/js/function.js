@@ -564,17 +564,8 @@ function getPlaybackStatus( withdisplay ) {
 			bannerHide();
 		}
 		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
-		if ( G.playback ) {
-			displayPlayback();
-		} else if ( G.library ) {
-			if ( ! G.librarylist ) {
-				libraryHome();
-			}
-		} else if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) {
-			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
-			getPlaylist();
-		}
 		displayBars();
+		displayPlayback();
 		renderPlayback();
 		setButtonControl();
 		setButtonUpdating();
@@ -979,7 +970,7 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
-function refreshPage( resetdata ) {
+function refreshData( resetdata ) {
 	if ( G.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
 		

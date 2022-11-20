@@ -208,9 +208,6 @@ function showContent() {
 }
 // pushstreamChannel() in common.js
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
-function pushstreamConnect() {
-	refreshData();
-}
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {

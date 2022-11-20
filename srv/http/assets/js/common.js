@@ -142,7 +142,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			if ( G.reboot ) {
 				delete G.reboot;
 			} else {
-				pushstreamConnect();
+				refreshData();
 				bannerHide();
 			}
 		} else if ( status === 0 ) { // disconnected

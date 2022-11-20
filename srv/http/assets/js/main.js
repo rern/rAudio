@@ -427,7 +427,7 @@ $( '#library, #button-library' ).click( function() {
 		libraryHome();
 	} else {
 		switchPage( 'library' );
-		refreshPage();
+		refreshData();
 	}
 } );
 $( '#playback' ).click( function() {
@@ -1218,7 +1218,7 @@ $( '#lib-search-close' ).click( function() {
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
 	if ( $( '#lib-search-input' ).val() ) {
 		$( '#lib-search-input' ).val( '' );
-		refreshPage();
+		refreshData();
 	}
 } );
 $( '#lib-search-input' ).keyup( function( e ) {
