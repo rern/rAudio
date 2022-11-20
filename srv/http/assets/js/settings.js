@@ -402,6 +402,11 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
+	if ( page !== 'system' ) {
+		location.href = '/';
+		retuirn
+	}
+	
 	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
@@ -419,7 +424,7 @@ $( '.close' ).click( function() {
 			}
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ] )
+			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
 } );

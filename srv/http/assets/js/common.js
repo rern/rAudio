@@ -34,27 +34,27 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
+	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
+}
+function infoPowerNfs( nfs, action ) {
+	if ( nfs != -1 ) return
+	
 	var off = action === 'off';
-	bash( [ 'power', action ], nfs => {
-		if ( nfs == -1 ) {
-			info( {
-				  icon    : 'power'
-				, title   : 'Power'
-				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will stop.'
-							+'<br>(Resume when server online again)'
-							+'<br><br>Continue?'
-				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
-				, okcolor : off ? red : orange
-				, ok      : () => {
-					bash( [ 'power', action, 1 ] );
-					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-				}
-			} );
+	info( {
+		  icon    : 'power'
+		, title   : 'Power'
+		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+					+'<br><wh>Shared Data</wh> on clients will stop.'
+					+'<br>(Resume when server online again)'
+					+'<br><br>Continue?'
+		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+		, okcolor : off ? red : orange
+		, ok      : () => {
+			bash( [ 'power', action, 1 ] );
+			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 		}
 	} );
 }
-
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );
