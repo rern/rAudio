@@ -1,11 +1,7 @@
 /* 
-loader    : $( '#loader' )
-power     : $( '#power, .status .power' )
-press     : $.fn.press()
-selectric
-pushstream
-banner()
-info()
+infoPower(), loader(), $.fn.press()
+pushstream,  selectric
+banner(),    info()
 */
 
 G               = {}
@@ -24,16 +20,7 @@ $( 'body' ).prepend( `
 </div>
 ` );
 
-// loader ----------------------------------------------------------------------
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-}
-
-// power ----------------------------------------------------------------------
-$( '#power, .status .power' ).click( infoPower );
+// ----------------------------------------------------------------------
 function infoPower() {
 	info( {
 		  icon        : 'power'
@@ -68,7 +55,15 @@ function infoPowerCommand( action ) {
 	} );
 }
 
-// $.fn.press() -----------------------------------------------------------------
+// ----------------------------------------------------------------------
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
+}
+
+// ----------------------------------------------------------------------
 /*
 $( ELEMENT ).press( DELEGATE, function( e ) {
 	// ELEMENT  : #id or .class
@@ -134,7 +129,12 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
 			loader();
 		} else {
-			ready ? loaderHide() : loader();
+			if ( ready ) {
+				if ( page === 'system' ) getStatus();
+				loaderHide();
+			} else {
+				loader();
+			}
 		}
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
@@ -169,7 +169,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	function disconnect() {
 		if ( active ) {
 			active = 0;
-			pushstream.disconnect();
+//			pushstream.disconnect();
 		}
 	}
 	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible

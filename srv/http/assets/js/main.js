@@ -247,6 +247,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 	}
 } );
+$( '#power' ).click( infoPower );
 $( '#displaylibrary' ).click( infoLibrary );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {

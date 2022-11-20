@@ -757,6 +757,10 @@ $config
 
 $status"
 	;;
+power )
+	$dirbash/cmd.sh "power
+${args[1]}"
+	;;
 powerbutton )
 	if [[ ${args[1]} == true ]]; then
 		if [[ ${args[6]} == true ]]; then # audiophonics
@@ -992,6 +996,9 @@ txqueuelen=${args[4]}
 		soundProfile reset
 	fi
 	pushRefresh
+	;;
+statuscurrent )
+	$dirsettings/system-data.sh status
 	;;
 statusonboard )
 	ifconfig
