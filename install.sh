@@ -6,7 +6,9 @@ alias=r1
 
 # 20221122
 sed -i '/shairport-sync/ d' /etc/pacman.conf
-[[ $( pacman -Q shairport-sync ) != 'shairport-sync 4.1-3' ]]  && pacman -Sy --noconfirm shairport-sync
+veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
+vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
+[[ $veropenssl == 3 && $vershairport != 4 ]]  && pacman -Sy --noconfirm shairport-sync
 
 # 20221117
 dirbash=/srv/http/bash
