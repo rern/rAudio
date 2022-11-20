@@ -1801,9 +1801,9 @@ function switchPage( page ) {
 	}
 }
 function thumbUpdate( path ) {
-	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	[ 'cove', 'update', 'main', path || '' ].forEach( el => form += '<input type="hidden" name="opt[]" value="'+ el +'">' );
-	$( 'body' ).append( form +'</form>' );
+	var htmlform = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
+	[ 'cove', path ].forEach( el => htmlform += '<input type="hidden" name="opt[]" value="'+ el +'">' );
+	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {

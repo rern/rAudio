@@ -8,17 +8,16 @@ $alias    = $opt[ 0 ];
 $type     = $opt[ 1 ];
 $branch   = $opt[ 2 ] ?? '';
 $addon    = $addons[ $alias ];
-if ( $alias !== 'cove' ) {
-	$icon  = '<i class="page-icon fa fa-jigsaw"></i>';
-	$title = 'ADDONS PROGRESS';
-	$href  = 'settings.php?p=addons';
-	$name  = preg_replace( '/\**$/', '', $addon[ 'title' ] );
+if ( $alias === 'cove' ) {
+	$icon = '<i class="page-icon iconcover"></i>';
+	$href = '/';
+	$name = 'Album Thumbnails';
+	$path = $type === '/' ? '' : $type; // path = $opt[ 1 ]
+	$type = 'Update';
 } else {
-	$icon  = '<i class="page-icon iconcover"></i>';
-	$title = 'Cover Art Thumbnails';
-	$href  = '/';
-	$name  = 'Cover Art Thumbnails';
-	$opt   = array_slice( $opt, 3 );
+	$icon = '<i class="page-icon fa fa-jigsaw"></i>';
+	$href = 'settings.php?p=addons';
+	$name = $addon[ 'title' ];
 }
 $options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
@@ -77,8 +76,8 @@ $uninstall = <<<cmd
 EOF;
 
 if ( $alias === 'cove' ) {
-	$command    = $sudobash.'albumthumbnail.sh "'.$options.'"';
-	$commandtxt = '/srv/http/bash/albumthumbnail.sh "'.$options.'"';
+	$commandtxt = 'albumthumbnail.sh'.( $path ? ' "'.$path.'"' : '' );
+	$command    = $sudobash.$commandtxt;
 } else if ( $type === 'Uninstall' ) {
 	$command    = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
