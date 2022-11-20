@@ -5,6 +5,17 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221122
+file=/etc/udev/rules.d/usbdrive.rules
+if [[ ! -e $file ]]; then
+	rm /etc/udev/rules.d/ntfs3.rules
+	cat << EOF > $file
+ACTION=="add", SUBSYSTEM=="block", RUN+="/srv/http/bash/settings/system.sh usbconnect"
+ACTION=="remove", SUBSYSTEM=="block", RUN+="/srv/http/bash/settings/system.sh usbremove"
+EOF
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
 sed -i '/shairport-sync/ d' /etc/pacman.conf
 veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
 vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
