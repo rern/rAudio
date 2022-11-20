@@ -1248,8 +1248,8 @@ function renderPlaylist( data ) {
 		var timestamp  = Math.round( Date.now() / 1000 );
 		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( () => {
-			imageLoad( 'pl-list' );
 			setPlaylistScroll();
+			imageLoad( 'pl-list' );
 		} );
 	} else {
 		setPlaylistScroll();
