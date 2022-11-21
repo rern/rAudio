@@ -44,7 +44,7 @@ while true; do
 	coverfile=/srv/http/data/shm/webradio/$name.jpg
 	if ! cmp -s $filecover $coverfile; then # change later than title or multiple covers
 		cp -f $filecover $coverfile
-		coverart="${coverfile:9}?v=$date"
+		coverart="${coverfile:9}"
 		sed -i -e '/^coverart=/ d
 ' -e "$ a\
 coverart=$coverart

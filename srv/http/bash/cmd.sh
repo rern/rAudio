@@ -448,12 +448,12 @@ coverartget )
 	radio=${args[2]}
 	if [[ $radio ]]; then
 		coverartfile=$( ls -1 "$path".{gif,jpg} 2> /dev/null )
-		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date
+		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}
 		exit
 	fi
 	
 	coverartfile=$( ls -1X "$path"/coverart.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date && exit
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
@@ -464,7 +464,7 @@ coverartget )
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile?v=$date
+		[[ -e $coverartfile ]] && echo $coverartfile
 	fi
 	;;
 coverartreset )
@@ -504,7 +504,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ $url ]] && url=$url?v=$date || url=reset
+	[[ ! $url ]] && url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverfileslimit )
