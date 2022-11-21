@@ -44,7 +44,7 @@ var cmd        = {
 	, wlan         : networkssh +'ifconfigwlan'
 }
 var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbrowser', 'mpd',      'nfs-server'
-				 , 'shairport-sync', 'smb',               'snapclient', 'snapserver',   'spotifyd', 'upmpdcli' ];
+				 , 'shairport-sync', 'smb',               'snapclient', 'spotifyd',     'upmpdcli' ];
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;

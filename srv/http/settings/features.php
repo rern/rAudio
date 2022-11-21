@@ -54,7 +54,7 @@ $body = [
  • SnapClient and SnapServer can be enabled on the same device.
  • Connect: A^I^networks^I Networks^AI^snapcast sub^I
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapserver' )
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 	, [
 		  'label'    => 'Spotify'
@@ -126,7 +126,7 @@ EOF
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapserver' )
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 ];
 htmlSection( $head, $body );

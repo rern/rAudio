@@ -228,7 +228,7 @@ databackup )
 		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 	fi
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
+	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
