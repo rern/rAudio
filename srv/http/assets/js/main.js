@@ -1049,7 +1049,8 @@ $( '.btn-cmd' ).click( function() {
 					vu();
 				}
 				if ( G.playback && G.status.stream ) {
-					G.status.coverart = '';
+					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => G.status[ el ] = '' );
+					setInfo();
 					setCoverart();
 				}
 			} else if ( G.playlist ) {

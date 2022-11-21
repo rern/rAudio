@@ -388,16 +388,6 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', G.display.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', G.display.cover );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', ! G.display.buttons );
-	if ( G.display.vumeter ) {
-		var aligntop = 'stretch';
-	} else if ( $( '.btn-group' ).is( ':hidden' ) ) {
-		var align = 'center';
-	} else if ( time && volume && ( G.wW < 900 && G.wW > 750 ) || G.wW < 600 ) {
-		var align = 'stretch';
-	} else {
-		var align = 'center';
-	}
-	$( '#playback-row' ).css( 'align-items', align );
 }
 function displaySave( keys ) {
 	var values  = infoVal();
@@ -1481,7 +1471,8 @@ function setInfo() {
 		if ( G.status.icon === 'dabradio' ) {
 			sampling += ' • DAB';
 		} else if ( G.status.Album && G.status.station ) {
-			sampling += ' • '+ G.status.station;
+			var station = [ 'radiofrance', 'radioparadise' ].includes( G.status.icon ) ? G.status.station.split( ' - ' ).pop() : G.status.station
+			sampling += ' • '+ station;
 		} else {
 			sampling += ' • '+ G.status.ext;
 		}
