@@ -91,7 +91,7 @@ foreach( $arrayalias as $alias ) {
 			</form>';
 	if ( $thumbnail ) $blocks .= '
 		</div>
-		<img src="'.$thumbnail.'?v='.$time.'" class="thumbnail">
+		<img src="'.$thumbnail.$hash.'" class="thumbnail">
 		<div style="clear: both;"></div>';
 	$blocks     .= '
 		</div>';

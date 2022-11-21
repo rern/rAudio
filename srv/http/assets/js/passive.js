@@ -141,6 +141,7 @@ function psBookmark( data ) {
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
+	bannerHide();
 	$( '#coverart, #liimg' ).css( 'opacity', '' );
 	data.type === 'coverart' ? G.status.coverart = data.url : G.status.stationcover = data.url;
 	setCoverart();
@@ -154,8 +155,7 @@ function psCoverart( data ) {
 	G.librarylisthtml  = '';
 	G.playlisthtml     = '';
 	G.playlistlisthtml = '';
-	refreshData();
-	bannerHide();
+	if ( ! G.playback ) refreshData();
 }
 function psDisplay( data ) {
 	bannerHide();

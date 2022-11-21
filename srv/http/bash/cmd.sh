@@ -440,7 +440,7 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
-	sed -i -E 's/\?v=.{10}/?v='$date'/g' /srv/http/settings/camillagui/build/index.html
+	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartget )

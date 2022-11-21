@@ -251,16 +251,17 @@ function coverartChange() {
 function coverartDefault() {
 	if ( G.display.vumeter ) return
 	
+	var hash = versionHash();
 	if ( ! G.display.covervu ) {
 		$( '#coverart' )
-			.attr( 'src', G.coverdefault )
+			.attr( 'src', G.coverdefault + hash )
 			.css( 'border', G.coverdefault === G.coverart ? 'none' : '' )
 			.removeClass( 'hide' );
 		$( '#vu' ).addClass( 'hide' );
 	} else {
 		$( '#coverart' )
 			.addClass( 'hide' )
-			.attr( 'src', G.coverdefault );
+			.attr( 'src', G.coverdefault + hash );
 		$( '#vu' ).removeClass( 'hide' );
 		vu();
 	}
@@ -749,8 +750,8 @@ function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
 		if ( html !== G.libraryhtml ) {
 			G.libraryhtml = html;
-			var timestamp = Math.round( Date.now() / 1000 );
-			var html = html.replaceAll( '^^^', timestamp );
+			var hash      = versionHash();
+			var html      = html.replaceAll( '^^^', hash );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -1101,8 +1102,8 @@ function renderLibraryList( data ) {
 	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	if ( ! data.html ) return // empty radio
 	
-	var timestamp = Math.round( Date.now() / 1000 );
-	var html      = data.html.replaceAll( '^^^', timestamp );
+	var hash = versionHash();
+	var html = data.html.replaceAll( '^^^', hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
@@ -1231,8 +1232,8 @@ function renderPlaylist( data ) {
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
 	if ( data.html !== G.playlisthtml ) {
 		G.playlisthtml = data.html;
-		var timestamp  = Math.round( Date.now() / 1000 );
-		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
@@ -1253,8 +1254,8 @@ function renderPlaylistList( data ) {
 	var barvisible = $bartop.is( ':visible' );
 	if ( data.html !== G.playlisthtml ) {
 		G.playlistlisthtml = data.html;
-		var timestamp      = Math.round( Date.now() / 1000 );
-		var html           = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
@@ -1272,8 +1273,8 @@ function renderSavedPlaylist( name ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
-		var timestamp = Math.round( Date.now() / 1000 );
-		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
@@ -1441,7 +1442,7 @@ function setCoverart() {
 		if ( coverart ) {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
-				.attr( 'src', coverart )
+				.attr( 'src', coverart + versionHash() )
 				.removeClass( 'hide' );
 		} else {
 			coverartDefault();
@@ -1820,6 +1821,9 @@ function urlReachable( url, sec ) {
 		sec++
 		setTimeout( () => urlReachable( url, sec ), 1000 );
 	} );
+}
+function versionHash() {
+	return '?v='+ Math.round( Date.now() / 1000 )
 }
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480

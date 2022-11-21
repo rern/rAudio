@@ -1,4 +1,4 @@
-<?php $time = time();?>
+<?php $time = '?v='.time();?>
 
 <!DOCTYPE html>
 <html>
@@ -15,5 +15,5 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/img/icon.png">
 <link rel="icon" href="/assets/img/icon.png">
-<link rel="stylesheet" href="/assets/css/colors.css?v=<?=$time?>">
-<link rel="stylesheet" href="/assets/css/common.css?v=<?=$time?>">
+<link rel="stylesheet" href="/assets/css/colors.css<?=$hash?>">
+<link rel="stylesheet" href="/assets/css/common.css<?=$hash?>">
