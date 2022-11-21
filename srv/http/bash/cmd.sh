@@ -142,13 +142,6 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
-snapclientStop() {
-	systemctl stop snapclient
-	$dirsettings/player-conf.sh
-	ip=$( ipAddress )
-	sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
-	rm $dirshm/serverip
-}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio
@@ -904,7 +897,11 @@ playerstop )
 			systemctl restart bluetooth
 			;;
 		snapcast )
-			snapclientStop
+			systemctl stop snapclient
+			$dirsettings/player-conf.sh
+			ip=$( ipAddress )
+			sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
+			rm $dirshm/serverip
 			;;
 		spotify )
 			rm -f $dirshm/spotify/start
