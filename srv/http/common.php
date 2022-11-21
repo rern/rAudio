@@ -1,4 +1,4 @@
-<?php $time = '?v='.time();?>
+<?php $hash = '?v='.time();?>
 
 <!DOCTYPE html>
 <html>
