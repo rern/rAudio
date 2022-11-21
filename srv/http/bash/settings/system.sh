@@ -726,9 +726,9 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 			pkg=samba
 			fileconf=/etc/samba/smb.conf
 			;;
-		snapclient|snapserver )
+		snapclient )
 			pkg=snapcast
-			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			fileconf=/etc/default/snapclient
 			;;
 		upmpdcli )
 			skip='not creating entry for'

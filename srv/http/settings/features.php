@@ -112,10 +112,9 @@ EOF
 	, [
 		  'label'    => 'SnapServer'
 		, 'id'       => 'snapserver'
-		, 'sublabel' => 'snapserver'
+		, 'sublabel' => 'MPD snapcast'
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
-		, 'status'   => 'snapserver'
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
