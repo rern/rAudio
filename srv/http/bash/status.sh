@@ -53,6 +53,7 @@ else
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
 , "shareddata"   : '$( exists $filesharedip )'
+, "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
@@ -70,7 +71,6 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q -m1 screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	[[ ! -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient && snapclientactive=true
 	display=$( head -n -1 $dirsystem/display )
 	[[ -e $filesharedip ]] && display+='
 , "sd"  : false
@@ -87,7 +87,6 @@ if [[ $1 == withdisplay ]]; then
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
 , "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
-, "snapclientactive" : '$snapclientactive'
 , "volumenone"       : '$volumenone'
 }'
 	status+='

@@ -762,11 +762,14 @@ mpcplayback )
 		action=start
 		active=true
 		sleep 2 # fix stutter
+		touch $dirshm/snapclient
 	else
 		action=stop
 		active=false
+		rm $dirshm/snapclient
 	fi
 	systemctl $action snapclient
+	pushstream option '{"snapclient":'$active'}'
 	pushstream refresh '{"page":"features","snapclientactive":'$active'}'
 	;;
 mpcprevnext )

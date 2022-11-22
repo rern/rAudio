@@ -5,6 +5,9 @@
 # as client - main.js > this:
 #    - connect
 #    - disconnect
+# as client + server - cmd.sh
+#    - play > connect
+#    - stop > disconnect
 
 
 . /srv/http/bash/common.sh
@@ -19,6 +22,8 @@ if [[ $1 == start ]]; then
 		$dirbash/status-push.sh
 		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
+		touch $dirshm/snapclient
+		pushstream option '{"snapclient":true}'
 	else
 		systemctl stop snapclient
 		echo -1
@@ -28,8 +33,8 @@ elif [[ $1 == stop ]]; then
 	serverip=$( < $dirshm/serverip )
 	clientip=$( ipAddress )
 	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
-	rm $dirshm/serverip
-
+	rm $dirshm/{serverip,snapclient}
+	pushstream option '{"snapclient":false}'
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $fileclientip

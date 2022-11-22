@@ -393,7 +393,7 @@ function displaySave( keys ) {
 	var display = JSON.parse( JSON.stringify( G.display ) );
 	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
 	[ 'audiocd', 'color',     'equalizer',  'logout',           'order',
-	  'relays',  'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => delete display[ item ] );
+	  'relays',  'screenoff', 'snapclient', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
@@ -1349,14 +1349,14 @@ function setButtonControl() {
 }
 function setButtonOptions() {
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
-	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapcast' || G.display.snapclientactive );
+	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapcast' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $time.is( ':visible' );
 	var prefix = timevisible ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! G.status.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! G.status.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! G.status.stoptimer );
-	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', ! G.display.snapclientactive );
+	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', ! G.status.snapclient );
 	if ( ! G.status.stream && G.status.player === 'mpd' ) {
 		if ( $( '#play-group' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', G.status.random );
