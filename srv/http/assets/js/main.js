@@ -185,6 +185,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					$( '#stop' ).click();
 				}
 			} else {
+				$( '#stop' ).click();
 				bash( '/srv/http/bash/snapcast.sh start', data => {
 					bannerHide();
 					if ( data == -1 ) {

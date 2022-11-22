@@ -66,10 +66,11 @@ if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q -m1 screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
+	[[ ! -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient && snapclientactive=true
 	display=$( head -n -1 $dirsystem/display )
 	[[ -e $filesharedip ]] && display+='
 , "sd"  : false
@@ -85,8 +86,8 @@ if [[ $1 == withdisplay ]]; then
 , "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
-, "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientactive" : '$( exists $dirshm/snapclientactive )'
+, "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
+, "snapclientactive" : '$snapclientactive'
 , "volumenone"       : '$volumenone'
 }'
 	status+='

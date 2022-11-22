@@ -10,19 +10,7 @@
 . /srv/http/bash/common.sh
 fileclientip=$dirshm/clientip
 
-if [[ $1 == start ]]; then # client start - save server ip
-	if [[ -e $dirmpdconf/snapserver.conf ]]; then # server + client on same device
-		rm -f $dirmpdconf/output.conf
-		systemctl restart mpd
-		systemctl start snapclient
-		touch $dirshm/snapclientactive
-		pushstream display '{"snapclientactive":true,"volumenone":false}'
-		pushstream refresh '{"page":"features","snapclientactive":true}'
-		$dirsettings/player-data.sh pushrefresh
-		exit
-	fi
-	
-	mpc -q stop
+if [[ $1 == start ]]; then
 	systemctl start snapclient
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
@@ -35,17 +23,12 @@ if [[ $1 == start ]]; then # client start - save server ip
 		systemctl stop snapclient
 		echo -1
 	fi
-elif [[ $1 == stop ]]; then # server + client on same device
+elif [[ $1 == stop ]]; then
 	systemctl stop snapclient
-	rm $dirshm/snapclientactive
-	$dirsettings/player-conf.sh
-	if [[ -e $dirshm/nosound ]]; then
-		volumenone=true
-	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver ]] && volumenone=false || volumenone=true
-	fi
-	pushstream display '{"snapclientactive":false,"volumenone":'$volumenone'}'
-	pushstream refresh '{"page":"features","snapclientactive":false}'
+	serverip=$( < $dirshm/serverip )
+	clientip=$( ipAddress )
+	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
+	rm $dirshm/serverip
 
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2

@@ -403,18 +403,31 @@ smb )
 	pushRefresh
 	;;
 snapclient )
+	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ ${args[1]} == true ]]; then
 		echo 'SNAPCLIENT_OPTS="--latency='${args[2]}'"' > /etc/default/snapclient
+		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
+		
 		touch $dirsystem/snapclient
-		systemctl try-restart snapclient
+		if [[ $snapserver ]]; then
+			$dirsettings/player-conf.sh
+			grep -q state.*play $dirshm/status && systemctl start snapclient
+			touch $dirsystem/snapclientserver
+		fi
 	else
 		rm $dirsystem/snapclient
+		systemctl stop snapclient
+		[[ $snapserver ]] && $dirsettings/player-conf.sh && rm $dirsystem/snapclientserver
 	fi
 	pushRefresh
 	pushSubmenu sanpclient ${args[1]}
+	[[ $snapserver ]] && $dirsettings/player-data.sh pushrefresh
+	
 	;;
 snapserver )
-	if [[ ${args[1]} == true ]]; then
+	[[ ${args[1]} == true ]] && enable=1
+	[[ -e $dirsystem/snapclient ]] && snapclient=1
+	if [[ $enable ]]; then
 		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
 		if [[ $avahi ]]; then
 			echo '{
@@ -426,12 +439,15 @@ snapserver )
 		fi
 		
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
+		$dirsettings/player-conf.sh
+		[[ $snapclient ]] && systemctl start snapclient && touch $dirsystem/snapclientserver
 	else
 		rm -f $dirmpdconf/snapserver.conf
+		$dirsettings/player-conf.sh
+		[[ $snapclient ]] && systemctl stop snapclient && rm $dirsystem/snapclientserver
 	fi
-	systemctl restart mpd
-	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
+	$dirsettings/player-data.sh pushrefresh
 	;;
 spotifyd )
 	systemctl disable --now spotifyd

@@ -167,7 +167,11 @@ volumeGet() {
 	
 	[[ -e $dirshm/nosound ]] && volume=-1 && return
 	
-	mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
+	if [[ -e $dirsystem/snapclientserver ]]; then
+		mixertype=
+	else
+		mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
+	fi
 	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
 		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
 	else
@@ -752,6 +756,18 @@ mpcplayback )
 		killall cava &> /dev/null
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
+	[[ ! -e $dirsystem/snapclientserver ]] && exit
+	
+	if [[ $command == play ]]; then
+		action=start
+		active=true
+		sleep 2 # fix stutter
+	else
+		action=stop
+		active=false
+	fi
+	systemctl $action snapclient
+	pushstream refresh '{"page":"features","snapclientactive":'$active'}'
 	;;
 mpcprevnext )
 	command=${args[1]}
@@ -897,11 +913,7 @@ playerstop )
 			systemctl restart bluetooth
 			;;
 		snapcast )
-			systemctl stop snapclient
-			$dirsettings/player-conf.sh
-			ip=$( ipAddress )
-			sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
-			rm $dirshm/serverip
+			$dirbash/snapcast.sh stop
 			;;
 		spotify )
 			rm -f $dirshm/spotify/start
