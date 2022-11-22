@@ -333,9 +333,8 @@ function dirName( path ) {
 function displayBars() {
 	if ( ! $( '#bio' ).hasClass( 'hide' ) ) return
 	
-	var wW          = document.body.clientWidth;
-	var smallscreen = G.wH < 590 ||wW < 500;
-	var lcd         = ( G.wH <= 320 && wW <= 480 ) || ( G.wH <= 480 && wW <= 320 );
+	var smallscreen = G.wH < 590 || G.wW < 500;
+	var lcd         = ( G.wH <= 320 && G.wW <= 480 ) || ( G.wH <= 480 && G.wW <= 320 );
 	if ( ! G.display.bars || ( smallscreen && ! G.display.barsalways ) || lcd ) {
 		$( '#bar-top' ).addClass( 'hide' );
 		$( '#bar-bottom' ).addClass( 'transparent' );
@@ -1471,7 +1470,7 @@ function setInfo() {
 		if ( G.status.icon === 'dabradio' ) {
 			sampling += ' • DAB';
 		} else if ( G.status.Album && G.status.station ) {
-			var station = [ 'radiofrance', 'radioparadise' ].includes( G.status.icon ) ? G.status.station.split( ' - ' ).pop() : G.status.station
+			var station = [ 'radiofrance', 'radioparadise' ].includes( G.status.icon ) ? G.status.station.split( ' - ' ).pop() : G.status.station;
 			sampling += ' • '+ station;
 		} else {
 			sampling += ' • '+ G.status.ext;
@@ -1485,15 +1484,8 @@ function setInfo() {
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
-	var wW = document.body.clientWidth;
-	if ( wW === G.wW
-		&& $( '#artist' ).text() === G.prevartist
-		&& $( '#title' ).text() === G.prevtitle
-		&& $( '#album' ).text() === G.prevalbum
-	) return // suppress multiple fires, skip if same width and same data
+	if ( $( '#artist' ).text() + $( '#title' ).text() + $( '#album' ).text() === G.prevartist + G.prevtitle + G.prevalbum ) return // skip if same data
 	
-	G.wH = document.body.clientHeight;
-	G.wW = wW;
 	var tWmax = 0;
 	var $el   = $( '#artist, #title, #album' );
 	$el
@@ -1564,15 +1556,18 @@ function setPlaylistInfoWidth() {
 	var $title    = $liactive.find( '.name' );
 	var titleW    = $title.scrollWidth;
 	var iWdW      = 40 + 10 + $duration.width() + 9;
-	var wW        = document.body.clientWidth;
-	$title.css(  'max-width', iWdW + titleW < wW ? '' : wW - iWdW );
+	var cW        = document.body.clientWidth;
+	$title.css(  'max-width', iWdW + titleW < cW ? '' : cW - iWdW );
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
 	switchPage( 'playlist' );
 	if ( G.sortable
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
-	) return
+	) {
+		$( '#page-playlist' ).css( 'visibility', '' );
+		return
+	}
 	
 	var litop = $bartop.is( ':visible' ) ? 80 : 40;
 	$( '#menu-plaction' ).addClass( 'hide' );
@@ -1587,6 +1582,7 @@ function setPlaylistScroll() {
 		}
 		$( 'html, body' ).scrollTop( top );
 	}
+	$( '#page-playlist' ).css( 'visibility', '' );
 	$( '#pl-list .elapsed' ).empty();
 	var $this        = $( '#pl-list li' ).eq( G.status.song );
 	var $elapsed     = $this.find( '.elapsed' );
@@ -1765,10 +1761,9 @@ function switchPage( page ) {
 		}
 		if ( G.color ) $( '#colorcancel' ).click();
 	} else if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) G.plscrolltop = $( window ).scrollTop();
+		var savedlist = G.savedlist || G.savedplaylist;
+		if ( savedlist ) G.plscrolltop = $( window ).scrollTop();
 	}
-	$( '.page, .menu' ).addClass( 'hide' );
-	$( '#page-'+ page ).removeClass( 'hide' );
 	G.library = G.playback = G.playlist = 0;
 	G[ page ] = 1;
 	G.page    = page;
@@ -1778,14 +1773,13 @@ function switchPage( page ) {
 		$( 'html, body' ).scrollTop( 0 );
 		vu();
 	} else if ( G.library ) {
-		if ( G.librarylist ) {
-			$( 'html, body' ).scrollTop( G.liscrolltop );
-		} else {
-			renderLibrary();
-		}
+		G.librarylist ? $( 'html, body' ).scrollTop( G.liscrolltop ) : renderLibrary();
 	} else {
-		if ( G.savedlist || G.savedplaylist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+		if ( savedlist ) $( 'html, body' ).scrollTop( G.plscrolltop );
+		$( '#page-playlist' ).css( 'visibility', 'hidden' ); // for scroll
 	}
+	$( '.page, .menu' ).addClass( 'hide' );
+	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path ) {
 	var htmlform = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';

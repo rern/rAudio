@@ -132,7 +132,7 @@ editlan )
 	gw=${args[2]}
 	lan0="\
 [Match]
-Name=eth0
+Name=$lan
 [Network]
 DNSSEC=no
 "

@@ -112,7 +112,7 @@ var page        = location.search.replace( '?p=', '' );
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
-		, timeout                               : 10000
+		, timeout                               : 20000
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	function pushstreamChannel( channels ) {
