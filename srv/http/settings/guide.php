@@ -47,7 +47,7 @@ Bottom bar:
 <div id="guide">
 	<p><span class="count" style="float: right"></span></p>
 	
-	<img class="image" src="/assets/img/guide/1.jpg?v=<?=$time?>">
+	<img class="image" src="/assets/img/guide/1.jpg<?=$hash?>">
 	
 <?php
 $html     = '<div class="bottom-bar">';
@@ -129,7 +129,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 
 function renderPage( n ) {
 	E.count.textContent = n +' / '+ ntotal;
-	E.image.src = '/assets/img/guide/'+ n +'.jpg?v=<?=$time?>';
+	E.image.src = '/assets/img/guide/'+ n +'.jpg<?=$hash?>';
 	E.btns.forEach( ( el ) => {
 		el.classList.remove( 'active' );
 	} );

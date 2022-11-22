@@ -75,9 +75,6 @@ var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'e
 				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
 if ( ! G.localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
-function pushstreamConnect() {
-	getPlaybackStatus( 'withdisplay' );
-}
 function pushstreamDisconnect() {
 	clearIntervalAll();
 	hideGuide();
@@ -146,6 +143,7 @@ function psBookmark( data ) {
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
+	bannerHide();
 	$( '#coverart, #liimg' ).css( 'opacity', '' );
 	data.type === 'coverart' ? G.status.coverart = data.url : G.status.stationcover = data.url;
 	setCoverart();
@@ -159,8 +157,7 @@ function psCoverart( data ) {
 	G.librarylisthtml  = '';
 	G.playlisthtml     = '';
 	G.playlistlisthtml = '';
-	refreshPage();
-	bannerHide();
+	if ( ! G.playback ) refreshData();
 }
 function psDisplay( data ) {
 	bannerHide();
@@ -263,7 +260,7 @@ function psMpdUpdate( data ) {
 		G.status.updatingdab = false;
 		renderLibraryCounts();
 		setButtonUpdating();
-		refreshPage( 'resetdata' );
+		refreshData( 'resetdata' );
 		banner( 'library', 'Library Update', 'Done' );
 	}, 3000 );
 }

@@ -31,7 +31,7 @@ if ( ! $networks )           $css[] = 'selectric';
 if ( $relays )               $css[] = 'relays';
 $style = '';
 foreach( $css as $c ) $style.= '
-<link rel="stylesheet" href="/assets/css/'.$c.'.css?v='.$time.'">';
+<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 echo $style;
 ?>
 
@@ -85,7 +85,7 @@ foreach( $jsp as $j ) $script.= '
 <script src="/assets/js/plugin/'.$j.'.min.js"></script>';
 // with cache busting
 foreach( $js as $j ) $script.= '
-<script src="/assets/js/'.$j.'.js?v='.$time.'"></script>';
+<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 echo $script;
 echo '
 </body>

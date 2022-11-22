@@ -49,7 +49,7 @@ data+='
 , "shairport-sync"   : '$( isactive shairport-sync )'
 , "shairportactive"  : '$( [[ $( < $dirshm/player ) == airplay ]] && echo true )
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapserver"       : '$( isactive snapserver )'
+, "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip || -e $dirshm/snapclientactive ]] && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapclientactive" : '$( isactive snapclient )'

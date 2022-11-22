@@ -105,8 +105,9 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 		xstart = 0;
 	} );
 } else {
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css?v='+ ( Math.round( Date.now() / 1000 ) ) +'">' );
-	$.getScript( 'assets/js/shortcut.js' );
+	var hash = versionHash();
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css'+ hash +'">' );
+	$.getScript( 'assets/js/shortcut.js'+ hash );
 }
 	
 $( 'body' ).click( menuHide );
@@ -172,10 +173,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 				equalizer();
 			}
 			break;
-		case 'lock':
-			$.post( cmdphp, { cmd: 'logout' }, function() {
-				location.reload();
-			} );
+		case 'logout':
+			$.post( cmdphp, { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
@@ -249,21 +248,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 	}
 } );
-$( '#power' ).click( function() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : orange
-		, button      : () => power( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : red
-		, ok          : () => power( 'off' )
-	} );
-} );
-$( '#displaylibrary' ).click( function() {
-	infoLibrary();
-} );
+$( '#power' ).click( infoPower );
+$( '#displaylibrary' ).click( infoLibrary );
 $( '#displayplayback' ).click( function() {
 	var chkplayback = {
 		  bars             : 'Top-Bottom bars'
@@ -442,7 +428,7 @@ $( '#library, #button-library' ).click( function() {
 		libraryHome();
 	} else {
 		switchPage( 'library' );
-		refreshPage();
+		refreshData();
 	}
 } );
 $( '#playback' ).click( function() {
@@ -455,11 +441,11 @@ $( '#playback' ).click( function() {
 } );
 $( '#playlist, #button-playlist' ).click( function() {
 	if ( ! G.local ) G.pladd = {}
+	var savedpl = G.savedlist || G.savedplaylist;
 	if ( G.playlist ) {
-		if ( G.savedlist || G.savedplaylist ) getPlaylist();
+		if ( savedpl ) getPlaylist();
 	} else {
-		switchPage( 'playlist' );
-		if ( ! G.savedlist && ! G.savedplaylist ) getPlaylist();
+		savedpl ? switchPage( 'playlist' ) : getPlaylist(); // switchPage( 'playlist' ) in setPlaylistScroll()
 	}
 } );
 $( '#page-playback' ).click( function( e ) {
@@ -1062,12 +1048,9 @@ $( '.btn-cmd' ).click( function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-				if ( G.status.stream ) {
-					$( '#artist' ).text( G.status.station );
-					$( '#album' ).text( G.status.file );
-					$( '#sampling' ).html( G.status.sampling +' • '+ G.status.ext );
-					$( '#artist, #title, #album' ).addClass( 'disabled' );
-					G.status.coverart = '';
+				if ( G.playback && G.status.stream ) {
+					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => G.status[ el ] = '' );
+					setInfo();
 					setCoverart();
 				}
 			} else if ( G.playlist ) {
@@ -1180,7 +1163,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, ok           : thumbUpdate
+		, ok           : () => thumbUpdate( '/' )
 	} );
 } );
 $( '#button-lib-search' ).click( function() { // icon
@@ -1237,7 +1220,7 @@ $( '#lib-search-close' ).click( function() {
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
 	if ( $( '#lib-search-input' ).val() ) {
 		$( '#lib-search-input' ).val( '' );
-		refreshPage();
+		refreshData();
 	}
 } );
 $( '#lib-search-input' ).keyup( function( e ) {
@@ -1700,9 +1683,7 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-playlists' ).click( function() {
 	G.savedlist     = 1;
 	G.savedplaylist = 0;
-	list( { cmd: 'list' }, function( data ) {
-		renderPlaylistList( data );
-	}, 'json' );
+	list( { cmd: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
 } );
 $( '#button-pl-save' ).click( function() {
 	var audiocdL  = $( '#pl-list .fa-audiocd' ).length;

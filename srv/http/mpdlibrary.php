@@ -113,7 +113,7 @@ EOF;
 			$bkpath   = $data[ 0 ];
 			$coverart = $data[ 1 ] ?? '';
 			if ( $coverart ) {
-				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'?v=^^^" data-label="'.$name.'">';
+				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'^^^" data-label="'.$name.'">';
 			} else {
 				$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
 			}
@@ -275,7 +275,7 @@ function htmlDirectory( $lists ) {
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'?v=^^^" data-target="#menu-folder">';
+			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'^^^" data-target="#menu-folder">';
 		} else {
 			$mode     = $gmode;
 			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
@@ -392,7 +392,7 @@ EOF;
 			$html     .= <<< EOF
 <div class="coverart" data-index="$index">
 	<a class="lipath">$path</a>
-	<div><img class="lazyload" data-src="$coverfile?v=^^^"></div>
+	<div><img class="lazyload" data-src="$coverfile^^^"></div>
 	<span class="coverart1">$data[1]</span>
 	<gr class="coverart2">$space</gr>
 </div>
@@ -435,7 +435,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			}
 			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.jpg" );
 			$html    .= <<< EOF
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc?v=^^^" data-target="#menu-wrdir">
+	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc^^^" data-target="#menu-wrdir">
 	<a class="lipath">$path$subdir</a>
 	<span class="single">$subdir</span>
 </li>
@@ -468,7 +468,7 @@ EOF;
 			$name        = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html       .= <<< EOF
 <li class="file"$datacharset data-index="$index">
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc?v=^^^" data-target="#menu-webradio">
+	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc^^^" data-target="#menu-webradio">
 	<a class="lipath">$url</a>
 	<a class="liname">$liname</a>
 EOF;
@@ -563,7 +563,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$html         .= <<< EOF
 <li data-mode="$gmode" class="licover">
 	<a class="lipath">$mpdpath</a>
-	<div class="licoverimg"><img id="liimg" src="$coverart?v=^^^"></div>
+	<div class="licoverimg"><img id="liimg" src="$coverart^^^"></div>
 	<div class="liinfo $gmode">
 	<div class="lialbum$hidealbum">$album</div>
 	<div class="liartist$hideartist"><i class="fa fa-$icon"></i>$artist</div>

@@ -130,27 +130,26 @@ disconnect )
 editlan )
 	ip=${args[1]}
 	gw=${args[2]}
-	lan=$( ifconfig | grep -m1 ^e | cut -d: -f1 )									   
-	conf="\
+	lan0="\
 [Match]
 Name=$lan
 [Network]
 DNSSEC=no
 "
 	if [[ ! $ip ]];then
-		conf+="\
+		lan0+="\
 DHCP=yes
 "
 	else
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 		
-		conf+="\
+		lan0+="\
 Address=$ip/24
 Gateway=$gw
 "
 	fi
-	file=$( ls -1 /etc/systemd/network/* | head -1 )
-	echo "$conf" > $file
+	file=$( ls -1 /etc/systemd/network/* | head -1 ) # en.network > eth.network > eth0.network
+	echo "$lan0" > $file
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
@@ -158,7 +157,7 @@ hostapd )
 	echo $dirsettings/features.sh "$1"
 	;;
 ifconfigeth )
-	lan=$( ifconfig | grep -m1 ^e | cut -d: -f1 )									  
+	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
 	echo "\
 <bll># ifconfig $lan</bll>
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"

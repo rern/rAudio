@@ -80,7 +80,7 @@ if [[ $1 == withdisplay ]]; then
 , "color"            : "'$( getContent $dirsystem/color )'"
 , "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
-, "lock"             : '$( exists $dirsystem/login )'
+, "logout"           : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
@@ -113,7 +113,7 @@ if [[ $player != mpd && $player != upnp ]]; then
 , "Album"     : "'$( getContent $dirairplay/Album )'"
 , "Artist"    : "'$( getContent $dirairplay/Artist )'"
 , "Title"     : "'$( getContent $dirairplay/Title )'"
-, "coverart"  : "/data/shm/airplay/coverart.jpg?v='$date'"
+, "coverart"  : "/data/shm/airplay/coverart.jpg"
 , "elapsed"   : '$elapsed'
 , "sampling"  : "16 bit 44.1 kHz 1.41 Mbit/s • AirPlay"
 , "state"     : "'$state'"
@@ -146,7 +146,7 @@ $( < $dirshm/spotify/status )"
 		;;
 		
 	esac
-# >>>>>>>>>>
+# >>>>>>>>>> spotify
 	outputStatus
 fi
 
@@ -219,7 +219,7 @@ if (( $pllength  == 0 )); then
 , "coverart" : ""
 , "hostname" : "'$hostname'"
 , "ip"       : "'$ip'"'
-# >>>>>>>>>>
+# >>>>>>>>>> empty playlist
 	outputStatus
 fi
 fileheader=${file:0:4}
@@ -242,7 +242,7 @@ if [[ $fileheader == cdda ]]; then
 		Time=${audiocd[3]}
 		if [[ $displaycover ]]; then
 			coverfile=$( ls $diraudiocd/$discid.* 2> /dev/null | head -1 )
-			[[ $coverfile ]] && coverart="${coverfile:9}?v=$date"
+			[[ $coverfile ]] && coverart="${coverfile:9}"
 		fi
 	else
 		[[ $state == stop ]] && Time=0
@@ -268,7 +268,7 @@ elif [[ $stream ]]; then
 			covername=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 			covername=${covername,,}
 			onlinefile=$( ls $dirshm/online/$covername.* 2> /dev/null | head -1 )
-			[[ $onlinefile ]] && coverart="${onlinefile:9}?v=$date"
+			[[ $onlinefile ]] && coverart="${onlinefile:9}"
 		fi
 	else
 		ext=Radio
@@ -336,14 +336,14 @@ $radiosampling" > $dirshm/radio
 				covername=${covername,,}
 				coverfile=$( ls $dirshm/webradio/$covername.* 2> /dev/null | head -1 )
 				if [[ $coverfile ]]; then
-					coverart="${coverfile:9}?v=$date"
+					coverart="${coverfile:9}"
 					Album=$( getContent $dirshm/webradio/$covername )
 				fi
 			fi
 		fi
 		if [[ $displaycover ]]; then
 			stationcover=$( ls $dirwebradio/img/$urlname.* 2> /dev/null )
-			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )?v=$date"
+			[[ $stationcover ]] && stationcover="$( sed 's|^/srv/http||; s/#/%23/g; s/?/%3F/g' <<< $stationcover )"
 		fi
 		status=$( grep -E -v '^, *"state"|^, *"webradio".*true|^, *"webradio".*false' <<< $status )
 ########
@@ -368,7 +368,7 @@ $radiosampling" > $dirshm/radio
 , "icon"         : "'$icon'"
 , "sampling"     : "'$sampling'"
 , "song"         : '$song
-# >>>>>>>>>>
+# >>>>>>>>>> rp / rf webradio
 		outputStatus
 	fi
 	
@@ -501,7 +501,7 @@ status+='
 
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
 	elapsedGet
-# >>>>>>>>>>
+# >>>>>>>>>> webradio with found coverart
 	status+='
 , "elapsed"  : '$elapsed
 	outputStatus
@@ -513,14 +513,14 @@ if [[ $ext != CD && ! $stream ]]; then
 $AlbumArtist
 $Album
 $filenoesc" )
-	[[ $coverart ]] && coverart="$coverart?v=$date"
+	[[ $coverart ]] && coverart="$coverart"
 fi
 elapsedGet
 ########
 	status+='
 , "elapsed"  : '$elapsed'
 , "coverart" : "'$coverart'"'
-# >>>>>>>>>>
+# >>>>>>>>>> not cd && not stream
 outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 
 [[ $getcover || ! $Artist ]] && exit

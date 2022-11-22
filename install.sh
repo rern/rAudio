@@ -4,6 +4,19 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221122
+file=/etc/udev/rules.d/ntfs3.rules
+if [[ ! -e $file ]]; then
+	rm $file
+	udevadm control --reload-rules
+	udevadm trigger
+fi
+
+sed -i '/shairport-sync/ d' /etc/pacman.conf
+veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
+vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
+[[ $veropenssl == 3 && $vershairport != 4 ]]  && pacman -Sy --noconfirm shairport-sync
+
 # 20221117
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
@@ -12,9 +25,6 @@ dirmpd=$dirdata/mpd
 dirmpdconf=$dirdata/mpdconf
 dirshm=$dirdata/shm
 dirsystem=$dirdata/system
-
-file=/etc/pacman.conf
-! grep -q shairport $file && sed -i '/^#IgnorePkg/ a\IgnorePkg = shairport-sync' $file
 
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 

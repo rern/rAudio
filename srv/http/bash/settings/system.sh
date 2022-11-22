@@ -110,8 +110,8 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	lan=$( ifconfig | grep -m1 ^e | cut -d: -f1 )
-	if [[ $lan ]]; then
+	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+	if ifconfig | grep -q -m1 $lan; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen
 	fi
@@ -228,7 +228,7 @@ databackup )
 		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 	fi
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient snapserver spotifyd upmpdcli'
+	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
@@ -726,9 +726,9 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 			pkg=samba
 			fileconf=/etc/samba/smb.conf
 			;;
-		snapclient|snapserver )
+		snapclient )
 			pkg=snapcast
-			[[ $id == snapclient ]] && fileconf=/etc/default/snapclient
+			fileconf=/etc/default/snapclient
 			;;
 		upmpdcli )
 			skip='not creating entry for'
@@ -756,6 +756,10 @@ $( grep -v ^# $fileconf )"
 $config
 
 $status"
+	;;
+power )
+	$dirbash/cmd.sh "power
+${args[1]}"
 	;;
 powerbutton )
 	if [[ ${args[1]} == true ]]; then
@@ -967,7 +971,7 @@ soundprofileset )
 	soundProfile
 	;;
 soundprofileget )
-	lan=$( ifconfig | grep -m1 ^e | cut -d: -f1 )
+	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
 	echo "\
 <bll># sysctl vm.swappiness
 # ifconfig $lan | grep -E 'mtu|txq'</bll>
@@ -992,6 +996,9 @@ txqueuelen=${args[4]}
 		soundProfile reset
 	fi
 	pushRefresh
+	;;
+statuscurrent )
+	$dirsettings/system-data.sh status
 	;;
 statusonboard )
 	ifconfig

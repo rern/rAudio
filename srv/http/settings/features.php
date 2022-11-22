@@ -54,7 +54,7 @@ $body = [
  • SnapClient and SnapServer can be enabled on the same device.
  • Connect: A^I^networks^I Networks^AI^snapcast sub^I
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapserver' )
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 	, [
 		  'label'    => 'Spotify'
@@ -112,10 +112,9 @@ EOF
 	, [
 		  'label'    => 'SnapServer'
 		, 'id'       => 'snapserver'
-		, 'sublabel' => 'snapserver'
+		, 'sublabel' => 'MPD snapcast'
 		, 'icon'     => 'snapcast'
 		, 'setting'  => false
-		, 'status'   => 'snapserver'
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
@@ -127,7 +126,7 @@ EOF
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapserver' )
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 ];
 htmlSection( $head, $body );

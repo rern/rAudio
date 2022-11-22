@@ -1,5 +1,8 @@
 #!/bin/bash
 
+path=$1
+fullpath="/mnt/MPD/$path"
+
 . /srv/http/bash/addons.sh
 
 warningWrite() {
@@ -14,16 +17,16 @@ warningWrite() {
 
 title "$bar Update Album Thumbnails ..."
 
-[[ ! -w "/mnt/MPD/$1" ]] && warningWrite "$1" && exit
+[[ ! -w "$fullpath" ]] && warningWrite "$fullpath" && exit
 
 SECONDS=0
 
 albumfile=/srv/http/data/mpd/album
 
-if [[ ! $1 ]]; then
+if [[ ! $path ]]; then
 	mpdpathlist=$( cut -d^ -f7 $albumfile )
 else
-	mpdpathlist=$( find "/mnt/MPD/$1" -type d | cut -c10- )
+	mpdpathlist=$( find "$fullpath" -type d | cut -c10- )
 fi
 unsharp=0x.5
 

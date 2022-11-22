@@ -425,10 +425,8 @@ snapserver )
 			exit
 		fi
 		
-		systemctl enable --now snapserver
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 	else
-		systemctl disable --now snapserver
 		rm -f $dirmpdconf/snapserver.conf
 	fi
 	systemctl restart mpd

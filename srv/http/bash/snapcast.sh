@@ -11,7 +11,7 @@
 fileclientip=$dirshm/clientip
 
 if [[ $1 == start ]]; then # client start - save server ip
-	if systemctl -q is-active snapserver; then # server + client on same device
+	if [[ -e $dirmpdconf/snapserver.conf ]]; then # server + client on same device
 		rm -f $dirmpdconf/output.conf
 		systemctl restart mpd
 		systemctl start snapclient

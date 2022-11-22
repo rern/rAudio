@@ -32,7 +32,7 @@ esac
 name=$( tr -d ' "`?/#&'"'" <<< $Artist$Album )
 onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
-	coverart="${onlinefile:9}?v=$date"
+	coverart="${onlinefile:9}"
 else
 	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
 fi

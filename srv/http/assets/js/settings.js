@@ -43,20 +43,8 @@ var cmd        = {
 	, timedatectl  : systemsh   +'timedate'
 	, wlan         : networkssh +'ifconfigwlan'
 }
-var services   = [
-	  'camilladsp'
-	, 'rtsp-simple-server'
-	, 'hostapd'
-	, 'localbrowser'
-	, 'mpd'
-	, 'nfs-server'
-	, 'shairport-sync'
-	, 'smb'
-	, 'snapclient'
-	, 'snapserver'
-	, 'spotifyd'
-	, 'upmpdcli'
-];
+var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbrowser', 'mpd',      'nfs-server'
+				 , 'shairport-sync', 'smb',               'snapclient', 'spotifyd',     'upmpdcli' ];
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -220,9 +208,6 @@ function showContent() {
 }
 // pushstreamChannel() in common.js
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
-function pushstreamConnect() {
-	refreshData();
-}
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
@@ -295,7 +280,7 @@ function psRefresh( data ) {
 		renderPage();
 	}
 }
-function psReload() {
+function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
@@ -414,6 +399,11 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
+	if ( page !== 'system' ) {
+		location.href = '/';
+		retuirn
+	}
+	
 	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
@@ -431,7 +421,7 @@ $( '.close' ).click( function() {
 			}
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
-			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ] )
+			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
 } );

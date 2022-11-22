@@ -188,7 +188,7 @@ function htmlTrack( $lists, $plname = '' ) {
 				$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
 				$icon      = 'audiocd';
 			}
-			$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'?v=^^^" data-target="#menu-filesavedpl">';
+			$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
 			$html    .= <<< EOF
 <li class="$class" $datatrack>
 	<a class="lipath">$file</a>
@@ -229,7 +229,7 @@ EOF;
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
 				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
-				$icon     = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'?v=^^^" data-icon="webradio" data-target="#menu-filesavedpl">';
+				$icon     = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'^^^" data-icon="webradio" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
 				$icon     = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';

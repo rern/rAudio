@@ -50,7 +50,7 @@ readarray -t status <<< $( curl -s -X GET https://api.spotify.com/v1/me/player/c
 								.item.duration_ms,
 								.item.name,
 								.progress_ms,
-								.timestamp' ) # not -r to keep escaped characters
+								.timestamp' ) # not -r: 1-to keep escaped characters 2-already quoted
 [[ ${status[3]} == true ]] && state=play || state=pause
 Time=$(( ( ${status[4]} + 500 ) / 1000 ))
 cat << EOF > $filestatus

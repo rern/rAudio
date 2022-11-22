@@ -142,13 +142,6 @@ $Album" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
-snapclientStop() {
-	systemctl stop snapclient
-	$dirsettings/player-conf.sh
-	ip=$( ipAddress )
-	sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
-	rm $dirshm/serverip
-}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		systemctl stop radio
@@ -440,7 +433,7 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
-	sed -i -E 's/\?v=.{10}/?v='$date'/g' /srv/http/settings/camillagui/build/index.html
+	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartget )
@@ -448,12 +441,12 @@ coverartget )
 	radio=${args[2]}
 	if [[ $radio ]]; then
 		coverartfile=$( ls -1 "$path".{gif,jpg} 2> /dev/null )
-		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date
+		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}
 		exit
 	fi
 	
 	coverartfile=$( ls -1X "$path"/coverart.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}?v=$date && exit
+	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
 	
 	[[ ${path:0:4} == /srv ]] && exit
 	
@@ -464,7 +457,7 @@ coverartget )
 		ext=${coverfile: -3}
 		coverartfile="$path/coverart.${ext,,}"
 		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile?v=$date
+		[[ -e $coverartfile ]] && echo $coverartfile
 	fi
 	;;
 coverartreset )
@@ -504,7 +497,7 @@ $id" &> /dev/null &
 $artist
 $album
 $mpdpath" )
-	[[ $url ]] && url=$url?v=$date || url=reset
+	[[ ! $url ]] && url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
 coverfileslimit )
@@ -904,7 +897,11 @@ playerstop )
 			systemctl restart bluetooth
 			;;
 		snapcast )
-			snapclientStop
+			systemctl stop snapclient
+			$dirsettings/player-conf.sh
+			ip=$( ipAddress )
+			sshCommand $( < $dirshm/serverip ) $dirbash/snapcast.sh remove $ip
+			rm $dirshm/serverip
 			;;
 		spotify )
 			rm -f $dirshm/spotify/start
@@ -947,6 +944,7 @@ power )
 	fi
 	touch $dirshm/power
 	mpc -q stop
+	alsactl store
 	pushstream btreceiver false
 	if [[ -e $dirshm/clientip ]]; then
 		clientip=$( < $dirshm/clientip )
@@ -1064,10 +1062,7 @@ volume ) # no args = toggle mute / unmute
 	target=${args[2]}
 	card=${args[3]}
 	control=${args[4]}
-	if [[ $current == drag ]]; then
-		volumeSetAt $target $card "$control"
-		exit
-	fi
+	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
 	
 	[[ ! $current ]] && volumeGet && current=$volume
 	filevolumemute=$dirsystem/volumemute

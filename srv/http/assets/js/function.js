@@ -251,16 +251,17 @@ function coverartChange() {
 function coverartDefault() {
 	if ( G.display.vumeter ) return
 	
+	var hash = versionHash();
 	if ( ! G.display.covervu ) {
 		$( '#coverart' )
-			.attr( 'src', G.coverdefault )
+			.attr( 'src', G.coverdefault + hash )
 			.css( 'border', G.coverdefault === G.coverart ? 'none' : '' )
 			.removeClass( 'hide' );
 		$( '#vu' ).addClass( 'hide' );
 	} else {
 		$( '#coverart' )
 			.addClass( 'hide' )
-			.attr( 'src', G.coverdefault );
+			.attr( 'src', G.coverdefault + hash );
 		$( '#vu' ).removeClass( 'hide' );
 		vu();
 	}
@@ -391,7 +392,7 @@ function displaySave( keys ) {
 	var values  = infoVal();
 	var display = JSON.parse( JSON.stringify( G.display ) );
 	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
-	[ 'audiocd', 'color',     'equalizer',  'lock',             'order',
+	[ 'audiocd', 'color',     'equalizer',  'logout',           'order',
 	  'relays',  'screenoff', 'snapclient', 'snapclientactive', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
@@ -405,7 +406,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-camilladsp', G.display.camilladsp )
 		.toggleClass( 'fa-equalizer', G.display.equalizer );
 	G.display.dsp = G.display.camilladsp || G.display.equalizer;
-	var submenu   = [ 'dsp', 'lock', 'relays', 'snapclient', 'multiraudio' ];
+	var submenu   = [ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ];
 	submenu.forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', G.display[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( G.localhost ) $( '#power' ).addClass( 'sub' );
 }
@@ -553,27 +554,15 @@ function getPlaybackStatus( withdisplay ) {
 			bannerHide();
 		}
 		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
-		if ( G.playback ) {
-			displayPlayback();
-		} else if ( G.library ) {
-			if ( ! G.librarylist ) {
-				libraryHome();
-			}
-		} else if ( G.playlist && ! G.savedlist && ! G.savedplaylist ) {
-			$( '#pl-list .li1' ).find( '.name' ).css( 'max-width', '' );
-			getPlaylist();
-		}
 		displayBars();
+		displayPlayback();
 		renderPlayback();
 		setButtonControl();
 		setButtonUpdating();
 	} );
 }
 function getPlaylist() {
-	if ( G.local ) return
-			
-	local( 1000 );
-	list( { cmd: 'current' }, renderPlaylist, 'json' );
+	list( { cmd: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
 }
 function hideGuide() {
 	if ( G.guide ) {
@@ -676,7 +665,8 @@ var chklibrary2 = {
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
-function infoLibrary( page2 ) {
+function infoLibrary( page ) {
+	var page2    = page === 2;
 	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
 	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
 	keys         = keys.filter( k => k !== '-' );
@@ -686,7 +676,7 @@ function infoLibrary( page2 ) {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tab          : [ 'Show', 'Options' ]
-		, tabfunction  : [ infoLibrary, infoLibrary2 ]
+		, tabfunction  : [ infoLibrary, () => infoLibrary( 2 ) ]
 		, tabactive    : page2 ? 1 : 0
 		, messagealign : 'left'
 		, checkbox     : checkbox
@@ -721,9 +711,6 @@ function infoLibrary( page2 ) {
 		, ok           : () => displaySave( keys )
 	} );
 }
-function infoLibrary2() {
-	infoLibrary( 2 );
-}
 function infoUpdate( path ) {
 	if ( G.status.updating_db ) {
 		info( {
@@ -752,8 +739,8 @@ function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
 		if ( html !== G.libraryhtml ) {
 			G.libraryhtml = html;
-			var timestamp = Math.round( Date.now() / 1000 );
-			var html = html.replaceAll( '^^^', timestamp );
+			var hash      = versionHash();
+			var html      = html.replaceAll( '^^^', hash );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -973,28 +960,7 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
-function power( action ) {
-	var off = action === 'off';
-	bash( [ 'power', action ], nfs => {
-		if ( nfs == -1 ) {
-			info( {
-				  icon    : 'power'
-				, title   : 'Power'
-				, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-							+'<br><wh>Shared Data</wh> on clients will stop.'
-							+'<br>(Resume when server online again)'
-							+'<br><br>Continue?'
-				, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
-				, okcolor : off ? red : orange
-				, ok      : () => {
-					bash( [ 'power', action, 1 ] );
-					banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-				}
-			} );
-		}
-	} );
-}
-function refreshPage( resetdata ) {
+function refreshData( resetdata ) {
 	if ( G.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
 		
@@ -1005,7 +971,7 @@ function refreshPage( resetdata ) {
 			if ( resetdata ) G.librarylisthtml = '';
 			if ( [ 'sd', 'nas', 'usb' ].includes( G.mode ) ) {
 				$( '#lib-breadcrumbs .lidir' ).last().click();
-			} else if ( G.mode === 'album' ) {
+			} else if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).click();
 			} else if ( G.query.length ) {
 				var query = G.query[ G.query.length - 1 ];
@@ -1074,6 +1040,8 @@ function renderLibraryCounts() {
 	$.each( G.status.counts, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) {
+	if ( G.librarylist && data.html === G.librarylisthtml ) return
+	
 	G.librarylist = 1;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
@@ -1109,9 +1077,7 @@ function renderLibraryList( data ) {
 			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
-	if ( G.mode === 'album' ) {
-		if ( G.query.length === 1 ) htmlpath += '<span class="btntitle" id="button-coverart"><img src="/assets/img/iconcover.svg"></span>';
-	} else if ( G.mode === 'webradio' ) {
+	if ( G.mode === 'webradio' ) {
 		htmlpath += '<i class="btntitle button-webradio-new fa fa-plus-circle"></i>';
 	} else if ( G.mode === 'latest' ) {
 		htmlpath += '<i class="btntitle button-latest-clear fa fa-minus-circle"></i>';
@@ -1121,17 +1087,12 @@ function renderLibraryList( data ) {
 	$( '#lib-breadcrumbs' )
 						.html( htmlpath )
 						.removeClass( 'hide' );
-	if ( data.html === G.librarylisthtml ) {
-		$( '#lib-list, #lib-index, #lib-index1' ).removeClass( 'hide' );
-		return
-	}
-	
 	G.librarylisthtml = data.html;
 	$( '#lib-list, #lib-index, #lib-index1' ).remove();
 	if ( ! data.html ) return // empty radio
 	
-	var timestamp = Math.round( Date.now() / 1000 );
-	var html      = data.html.replaceAll( '^^^', timestamp );
+	var hash = versionHash();
+	var html = data.html.replaceAll( '^^^', hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
@@ -1142,7 +1103,7 @@ function renderLibraryList( data ) {
 		if ( G.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			G.albumlist = 1;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
-				$( '#button-coverart img' ).attr( 'src', $( this ).attr( 'src' ) );
+				$( '#lib-breadcrumbs' ).append( '<span class="btntitle" id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( G.iactive ) $( '#lib-list .coverart' ).eq( G.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
@@ -1236,7 +1197,8 @@ function renderPlaylist( data ) {
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', G.status.counts.playlists === 0 );
-	if ( data == -1 ) {
+	if ( ! G.status.pllength || data == -1 ) {
+		G.playlisthtml = '';
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
@@ -1244,6 +1206,7 @@ function renderPlaylist( data ) {
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
 		$( 'html, body' ).scrollTop( 0 );
+		switchPage( 'playlist' );
 		return
 	}
 	
@@ -1256,21 +1219,18 @@ function renderPlaylist( data ) {
 	$( '#button-pl-librandom' )
 		.toggleClass( 'bl', G.status.librandom )
 		.toggleClass( 'disabled', G.status.counts.song === 0 );
-	var barvisible = $bartop.is( ':visible' );
 	if ( data.html !== G.playlisthtml ) {
 		G.playlisthtml = data.html;
-		var timestamp  = Math.round( Date.now() / 1000 );
-		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( () => {
-			G.status.pllength = $( '#pl-list li' ).length;
-			imageLoad( 'pl-list' );
 			setPlaylistScroll();
-			$( '.list p' ).toggleClass( 'bars-on', barvisible );
+			imageLoad( 'pl-list' );
 		} );
 	} else {
 		setPlaylistScroll();
-		$( '.list p' ).toggleClass( 'bars-on', barvisible );
 	}
+	$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 }
 function renderPlaylistList( data ) {
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
@@ -1283,8 +1243,8 @@ function renderPlaylistList( data ) {
 	var barvisible = $bartop.is( ':visible' );
 	if ( data.html !== G.playlisthtml ) {
 		G.playlistlisthtml = data.html;
-		var timestamp      = Math.round( Date.now() / 1000 );
-		var html           = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
@@ -1302,8 +1262,8 @@ function renderSavedPlaylist( name ) {
 		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
-		var timestamp = Math.round( Date.now() / 1000 );
-		var html = data.html.replaceAll( '^^^', timestamp ) +'<p></p>';
+		var hash = versionHash();
+		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
@@ -1471,7 +1431,7 @@ function setCoverart() {
 		if ( coverart ) {
 			$( '#vu' ).addClass( 'hide' );
 			$( '#coverart' )
-				.attr( 'src', coverart )
+				.attr( 'src', coverart + versionHash() )
 				.removeClass( 'hide' );
 		} else {
 			coverartDefault();
@@ -1601,9 +1561,8 @@ function setPlaylistInfoWidth() {
 }
 function setPlaylistScroll() {
 	clearIntervalAll();
-	if ( ! G.playlist || G.savedlist || G.savedplaylist
-		|| ! G.status.pllength || G.sortable
-		|| ! [ 'mpd', 'upnp' ].includes( G.status.player )
+	switchPage( 'playlist' );
+	if ( G.sortable
 		|| ( G.display.audiocd && $( '#pl-list li' ).length < G.status.song + 1 ) // on eject cd G.status.song not yet refreshed
 	) {
 		$( '#page-playlist' ).css( 'visibility', '' );
@@ -1616,7 +1575,7 @@ function setPlaylistScroll() {
 	$liactive = $( '#pl-list li' ).eq( G.status.song || 0 );
 	$liactive.addClass( 'active' );
 	if ( ! $( '.pl-remove' ).length && I.infohide ) {
-		if ( G.status.pllength < 5 ) {
+		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;
 		} else {
 			var top = $liactive.offset().top - litop - ( 49 * 3 );
@@ -1823,9 +1782,9 @@ function switchPage( page ) {
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path ) {
-	var form  = '<form id="formtemp" action="/settings/addons-progress.php" method="post">';
-	[ 'cove', 'update', 'main', path || '' ].forEach( el => form += '<input type="hidden" name="opt[]" value="'+ el +'">' );
-	$( 'body' ).append( form +'</form>' );
+	var htmlform = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
+	[ 'cove', path ].forEach( el => htmlform += '<input type="hidden" name="opt[]" value="'+ el +'">' );
+	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {
@@ -1847,6 +1806,9 @@ function urlReachable( url, sec ) {
 		sec++
 		setTimeout( () => urlReachable( url, sec ), 1000 );
 	} );
+}
+function versionHash() {
+	return '?v='+ Math.round( Date.now() / 1000 )
 }
 function volumeBarHide() {
 	$( '#info' ).removeClass( 'hide' ); // 320 x 480

@@ -124,7 +124,7 @@ fi
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
 # services
-systemctl -q disable --now bluetooth hostapd shairport-sync smb snapserver spotifyd upmpdcli
+systemctl -q disable --now bluetooth hostapd shairport-sync smb spotifyd upmpdcli
 
 # set ownership and permissions
 $dirsettings/system.sh dirpermissions
