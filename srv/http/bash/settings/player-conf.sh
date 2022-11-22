@@ -119,7 +119,7 @@ fi
 
 $dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
-( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
+( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 [[ ! $Acard && ! $btmixer ]] && exit
 

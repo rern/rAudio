@@ -409,23 +409,23 @@ snapclient )
 		
 		touch $dirsystem/snapclient
 		if [[ $snapserver ]]; then
+			touch $dirsystem/snapclientserver
 			$dirsettings/player-conf.sh
 			grep -q state.*play $dirshm/status && systemctl start snapclient
-			touch $dirsystem/snapclientserver
 		fi
 	else
 		rm $dirsystem/snapclient
 		systemctl stop snapclient
-		[[ $snapserver ]] && $dirsettings/player-conf.sh && rm $dirsystem/snapclientserver
+		if [[ $snapserver ]]; then
+			rm $dirsystem/snapclientserver
+			$dirsettings/player-conf.sh
+		fi
 	fi
 	pushRefresh
 	pushSubmenu sanpclient ${args[1]}
-	[[ $snapserver ]] && $dirsettings/player-data.sh pushrefresh
-	
 	;;
 snapserver )
 	[[ ${args[1]} == true ]] && enable=1
-	[[ -e $dirsystem/snapclient ]] && snapclient=1
 	if [[ $enable ]]; then
 		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
 		if [[ $avahi ]]; then
@@ -438,15 +438,11 @@ snapserver )
 		fi
 		
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
-		$dirsettings/player-conf.sh
-		[[ $snapclient ]] && systemctl start snapclient && touch $dirsystem/snapclientserver
 	else
-		rm -f $dirmpdconf/snapserver.conf
-		$dirsettings/player-conf.sh
-		[[ $snapclient ]] && systemctl stop snapclient && rm $dirsystem/snapclientserver
+		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
+	$dirsettings/player-conf.sh
 	pushRefresh
-	$dirsettings/player-data.sh pushrefresh
 	;;
 spotifyd )
 	systemctl disable --now spotifyd
