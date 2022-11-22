@@ -6,7 +6,7 @@ alias=r1
 
 # 20221122
 file=/etc/udev/rules.d/ntfs3.rules
-if [[ ! -e $file ]]; then
+if [[ -e $file ]]; then
 	rm $file
 	udevadm control --reload-rules
 	udevadm trigger
