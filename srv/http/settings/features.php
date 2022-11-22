@@ -52,8 +52,8 @@ $body = [
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
  • Connect: A^I^networks^I Networks^AI^snapcast sub^I
- • SnapClient and SnapServer can be enabled on the same device.
-	- Auto connect on play
+ • | SnapClient | and | SnapServer | can be enabled on the same device.
+	- Auto connect/disconnect on play/stop
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
