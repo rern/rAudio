@@ -140,13 +140,10 @@ $( < /etc/asound.conf )"
 	;;
 dop )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/}/ i\	dop  "yes"' $dirmpdconf/output.conf
 		touch "$dirsystem/dop-${args[2]}"
 	else
-		sed -i '/dop.*yes/ d' $dirmpdconf/output.conf
 		rm -f "$dirsystem/dop-${args[2]}"
 	fi
-	columnFileOutput
 	restartMPD
 	;;
 filetype )
@@ -284,7 +281,9 @@ volumebtget )
 	volumeBtGet
 	;;
 volumeget )
-	$dirbash/cmd.sh volumeget$'\n'${args[1]}
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 	;;
 	
 esac

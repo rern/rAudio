@@ -392,6 +392,13 @@ function renderPage() {
 					+'<i class="fa fa-album gr"></i>&ensp;'+ ( G.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
 					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( G.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
+	if ( G.btaplayname ) {
+		$( '#divbtreceiver' ).removeClass( 'hide' );
+		$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+		$( '#setting-btreceiver' ).removeClass( 'hide' );
+	} else {
+		$( '#divbtreceiver' ).addClass( 'hide' );
+	}
 	if ( G.asoundcard !== -1 ) {
 		device          = G.devices[ G.asoundcard ];
 		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
@@ -400,36 +407,28 @@ function renderPage() {
 		$.each( G.devices, ( i, el ) => {
 			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
 		} );
-		if ( G.btaplayname ) {
-			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).addClass( 'hide' );
-			$( '#divbtreceiver' ).removeClass( 'hide' );
-			$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
-			$( '#setting-btreceiver' ).removeClass( 'hide' );
-		} else {
-			$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
-			$( '#divbtreceiver' ).addClass( 'hide' );
-			$( '#audiooutput' )
-				.html( htmldevices )
-				.val( G.asoundcard );
-			var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
-			if ( 'mixerdevices' in device ) {
-				device.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
-			}
-			$( '#hwmixer' )
-				.html( htmlhwmixer )
-				.val( device.hwmixer );
-			var htmlmixertype = '<option value="none">None / 0dB</option>';
-			if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
-			htmlmixertype    += '<option value="software">MPD software</option>';
-			$( '#mixertype' )
-				.html( htmlmixertype )
-				.val( device.mixertype );
-			$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
-			$( '#novolume' ).prop( 'checked', G.novolume );
-			$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
-			$( '#dop' ).prop( 'checked', G.dop );
-			$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
+		$( '#audiooutput' )
+			.html( htmldevices )
+			.val( G.asoundcard );
+		var htmlhwmixer      = device.mixermanual ? '<option value="auto">Auto</option>' : '';
+		if ( 'mixerdevices' in device ) {
+			device.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
 		}
+		$( '#hwmixer' )
+			.html( htmlhwmixer )
+			.val( device.hwmixer );
+		var htmlmixertype = '<option value="none">None / 0dB</option>';
+		if ( device.mixers ) htmlmixertype += '<option value="hardware">Mixer device</option>';
+		htmlmixertype    += '<option value="software">MPD software</option>';
+		$( '#mixertype' )
+			.html( htmlmixertype )
+			.val( device.mixertype );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', device.mixers === 0 );
+		$( '#novolume' ).prop( 'checked', G.novolume );
+		$( '#divdop' ).toggleClass( 'disabled', device.aplayname.slice( 0, 7 ) === 'bcm2835' );
+		$( '#dop' ).prop( 'checked', G.dop );
+		$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
 	}
 	if ( $( '#infoRange .value' ).length ) {

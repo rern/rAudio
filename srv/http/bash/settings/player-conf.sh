@@ -13,7 +13,7 @@ usbdac=$1 # from usbdac.rules for player-devices.sh
 . $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
 
-rm -f $dirmpdconf/output.conf
+rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
 if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
@@ -32,7 +32,7 @@ if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
 audio_output {\
 $audiooutputbt
 }
-" > $dirmpdconf/output.conf
+" > $dirmpdconf/bluetooth.conf
 ########
 fi
 
@@ -101,7 +101,7 @@ $( sed 's/^/\t/' "$customfile" )"
 audio_output {
 $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 }
-" >> $dirmpdconf/output.conf
+" > $dirmpdconf/output.conf
 ########
 fi
 

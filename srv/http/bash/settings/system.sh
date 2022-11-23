@@ -703,7 +703,7 @@ $( < /etc/dnsmasq.conf )"
 				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
 			conf=$( sort <<< $conf | sed 's/  *"/^"/' | column -t -s^ )
-			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr output; do
+			for file in cdio curl ffmpeg fifo httpd snapserver soxr-custom soxr bluetooth output; do
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
