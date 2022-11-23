@@ -4,14 +4,28 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20221122
-file=/etc/udev/rules.d/ntfs3.rules
-if [[ -e $file ]]; then
-	rm $file
+# 20221123
+mv /etc/udev/rules.d/ntfs{3,}.rules &> /dev/null
+file=/etc/udev/rules.d/ntfs.rules
+if [[ ! -e $file ]]; then
+	cat << 'EOF' > $file
+ACTION=="add", \
+SUBSYSTEM=="block", \
+ENV{ID_FS_TYPE}=="ntfs", \
+ENV{ID_FS_TYPE}="ntfs3", \
+RUN+="/srv/http/bash/settings/system.sh usbconnect"
+
+ACTION=="remove", \
+SUBSYSTEM=="block", \
+ENV{ID_FS_TYPE}=="ntfs", \
+ENV{ID_FS_TYPE}="ntfs3", \
+RUN+="/srv/http/bash/settings/system.sh usbremove"
+EOF
 	udevadm control --reload-rules
 	udevadm trigger
 fi
 
+# 20221122
 sed -i '/shairport-sync/ d' /etc/pacman.conf
 veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
 vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
