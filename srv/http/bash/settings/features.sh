@@ -382,11 +382,10 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 	pushRefresh
 	;;
 shairport-sync )
-	[[ ${args[1]} == true ]] && enable=1
-	if [[ $( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c1 ) == 4 ]]; then # version 4
-		[[ $enable ]] && featureSet nqptp shairport-sync || systemctl disable --now nqptp shairport-sync
+	if [[ ${args[1]} == true ]]; then
+		featureSet shairport-sync
 	else
-		[[ $enable ]] && featureSet shairport-sync || systemctl disable --now shairport-sync
+		systemctl disable --now shairport-sync
 	fi
 	pushRefresh
 	;;
@@ -403,18 +402,31 @@ smb )
 	pushRefresh
 	;;
 snapclient )
+	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ ${args[1]} == true ]]; then
 		echo 'SNAPCLIENT_OPTS="--latency='${args[2]}'"' > /etc/default/snapclient
+		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
+		
 		touch $dirsystem/snapclient
-		systemctl try-restart snapclient
+		if [[ $snapserver ]]; then
+			touch $dirsystem/snapclientserver
+			$dirsettings/player-conf.sh
+			grep -q state.*play $dirshm/status && systemctl start snapclient
+		fi
 	else
 		rm $dirsystem/snapclient
+		systemctl stop snapclient
+		if [[ $snapserver ]]; then
+			rm $dirsystem/snapclientserver
+			$dirsettings/player-conf.sh
+		fi
 	fi
 	pushRefresh
 	pushSubmenu sanpclient ${args[1]}
 	;;
 snapserver )
-	if [[ ${args[1]} == true ]]; then
+	[[ ${args[1]} == true ]] && enable=1
+	if [[ $enable ]]; then
 		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
 		if [[ $avahi ]]; then
 			echo '{
@@ -427,10 +439,9 @@ snapserver )
 		
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
 	else
-		rm -f $dirmpdconf/snapserver.conf
+		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
-	systemctl restart mpd
-	$dirsettings/player-data.sh pushrefresh
+	$dirsettings/player-conf.sh
 	pushRefresh
 	;;
 spotifyd )

@@ -51,8 +51,10 @@ $body = [
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  • SSH passwords must be default.
- • SnapClient and SnapServer can be enabled on the same device.
  • Connect: A^I^networks^I Networks^AI^snapcast sub^I
+ • SnapClient and SnapServer can be enabled on the same device.
+	- Enable | SnapServer | before | SnapClient |
+	- SnapClient auto connect/disconnect on play/stop
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
@@ -118,10 +120,7 @@ EOF
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
- • SSH passwords must be default.
- • Set SnapServer as a client to sync:
-	- Enable | SnapClient I^snapcast^I &#9704; |
-	- Connect: A^I^networks^I Networks^AI^snapcast sub^I
+ • SSH passwords must be default. (For metadata update)
  • Snapcast control client and player:
 	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
 	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>

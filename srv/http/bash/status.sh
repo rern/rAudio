@@ -28,21 +28,20 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
-	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
+	
+	mpc | grep -q -m1 'consume: on' && consume=true
+	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
 		volume=false
 	else
-		ccv=$( $dirbash/cmd.sh volumecontrolget )
-		card=${ccv/^*}
-		control=$( cut -d^ -f2 <<< $ccv ) # keep trailing space if any
-		volume=${ccv/*^}
+		[[ -e $dirshm/btreceiver ]] && control=$( < $dirshm/btreceiver ) || control=$( getContent $dirshm/amixercontrol )
+		volume=$( $dirbash/cmd.sh volumeget )
 	fi
-	mpc | grep -q -m1 'consume: on' && consume=true
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
-, "card"         : '$card'
+, "card"         : '$( < $dirsystem/asoundcard )'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
@@ -53,6 +52,7 @@ else
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
 , "shareddata"   : '$( exists $filesharedip )'
+, "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "stream"       : false
 , "updateaddons" : '$( exists $diraddons/update )'
@@ -66,7 +66,7 @@ if [[ $1 == withdisplay ]]; then
 	if [[ -e $dirshm/nosound ]]; then
 		volumenone=true
 	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirshm/snapclientactive ]] && volumenone=false || volumenone=true
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q -m1 screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
@@ -85,8 +85,7 @@ if [[ $1 == withdisplay ]]; then
 , "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
-, "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientactive" : '$( exists $dirshm/snapclientactive )'
+, "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
 , "volumenone"       : '$volumenone'
 }'
 	status+='

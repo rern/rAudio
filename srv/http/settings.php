@@ -195,7 +195,6 @@ function htmlSetting( $data ) {
 	$html       .= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
-			 <div style="clear:both"></div>
 			 </div>';
 	$html       .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echoSetIcon( $html );

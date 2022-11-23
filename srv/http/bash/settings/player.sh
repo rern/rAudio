@@ -23,7 +23,12 @@ restartMPD() {
 	systemctl restart mpd
 	pushRefresh
 }
-volumeBtGet() {
+volumeGet() {
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
+}
+volumeGetBt() {
 	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 }
 
@@ -140,13 +145,10 @@ $( < /etc/asound.conf )"
 	;;
 dop )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '/}/ i\	dop  "yes"' $dirmpdconf/output.conf
 		touch "$dirsystem/dop-${args[2]}"
 	else
-		sed -i '/dop.*yes/ d' $dirmpdconf/output.conf
 		rm -f "$dirsystem/dop-${args[2]}"
 	fi
-	columnFileOutput
 	restartMPD
 	;;
 filetype )
@@ -265,26 +267,40 @@ EOF
 	restartMPD
 	;;
 volume0db )
-	amixer -c ${args[1]} -Mq sset "${args[2]}" 0dB
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	amixer -c $card -Mq sset "$control" 0dB
 	alsactl store
-	level=$( $dirbash/cmd.sh volumeget )
-	pushstream volume '{"val":'$level',"db":"0.00"}'
+	voldb=$( volumeGet )
+	pushstream volume '{"val":'${voldb/ *}',"db":"0.00"}'
 	;;
-volumebt )
-	btdevice=${args[1]}
-	vol=${args[2]}
-	[[ $vol != 0dB ]] && vol+=%
-	amixer -MD bluealsa -q sset "$btdevice" $vol 2> /dev/null
-	voldb=$( volumeBtGet )
-	val=${voldb/ *}
-	echo $val > "$dirsystem/btvolume-$btdevice"
-	pushstream volumebt '{"val":'$val',"db":"0.00"}'
-	;;
-volumebtget )
-	volumeBtGet
+volume0dbbt )
+	btdevice=$( < $dirshm/btreceiver )
+	amixer -MD bluealsa -q sset "$btdevice" 0dB 2> /dev/null
+	voldb=$( volumeGetBt )
+	vol=${voldb/ *}
+	echo $vol > "$dirsystem/btvolume-$btdevice"
+	pushstream volumebt '{"val":'$vol',"db":"0.00"}'
 	;;
 volumeget )
-	$dirbash/cmd.sh volumeget$'\n'${args[1]}
+	volumeGet
+	;;
+volumegetbt )
+	volumeGetBt
+	;;
+volumepush )
+	voldb=$( volumeGet )
+	vol=${voldb/ *}
+	db=${voldb/* }
+	pushstream volume '{"val":'$vol',"db":"'$db'"}'
+	;;
+volumepushbt )
+	voldb=$( volumeGetBt )
+	vol=${voldb/ *}
+	db=${voldb/* }
+	pushstream volumebt '{"val":'$vol',"db":"'$db'"}'
+	btdevice=$( < $dirshm/btreceiver )
+	echo $vol > "$dirsystem/btvolume-$btdevice"
 	;;
 	
 esac

@@ -13,10 +13,30 @@ usbdac=$1 # from usbdac.rules for player-devices.sh
 . $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
 
+rm -f $dirmpdconf/{bluetooth,output}.conf
+
 # outputs -----------------------------------------------------------------------------
-if [[ $i == -1 ]]; then # $i - current card number
-	rm -f $dirmpdconf/output.conf
-else
+if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
+	# no mac address needed - bluealsa already includes mac of latest connected device
+#---------------< bluetooth
+	audiooutputbt='
+	name        "'$btmixer'"
+	device      "bluealsa"
+	type        "alsa"
+	mixer_type  "hardware"'
+	[[ -e $dirsystem/btformat ]] && audiooutputbt+='
+	format      "44100:16:2"'
+#--------------->
+########
+	echo "\
+audio_output {\
+$audiooutputbt
+}
+" > $dirmpdconf/bluetooth.conf
+########
+fi
+
+if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
@@ -32,8 +52,8 @@ else
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
-#---------------< 1 dsp
-		audiooutput+='
+#---------------< camilladsp
+		audiooutput='
 	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
@@ -42,28 +62,17 @@ else
 #--------------->
 	elif [[ $equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
-#---------------< 2 equalizer
-		audiooutput+='
+#---------------< equalizer
+		audiooutput='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
 #--------------->
-	elif [[ $btmixer ]]; then
-		# no mac address needed - bluealsa already includes mac of latest connected device
-#---------------< 3 bluetooth
-		audiooutput+='
-	name           "'$btmixer'"
-	device         "bluealsa"
-	type           "alsa"
-	mixer_type     "hardware"'
-		[[ -e $dirsystem/btformat ]] && audiooutput+='
-	format         "44100:16:2"'
-#--------------->
-	elif [[ ! -e $dirshm/snapclientactive ]]; then
-#---------------< 4 normal
-		audiooutput+='
+	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
+#---------------< normal
+		audiooutput='
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -88,7 +97,7 @@ $( sed 's/^/\t/' "$customfile" )"
 		[[ $mixertype == none ]] && touch $dirshm/mixernone || rm -f $dirshm/mixernone
 	fi
 ########
-	echo "\
+	[[ $audiooutput ]] && echo "\
 audio_output {
 $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 }
@@ -96,7 +105,7 @@ $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 ########
 fi
 
-if [[ ! $audiooutput || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
+if [[ ( ! $audiooutput && ! -e $dirsystem/snapclientserver ) || -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 else
 	rm -f $dirmpdconf/fifo.conf
@@ -117,7 +126,7 @@ fi
 
 $dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
-( sleep 2 && systemctl try-restart rotaryencoder snapclient ) &> /dev/null &
+( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 [[ ! $Acard && ! $btmixer ]] && exit
 

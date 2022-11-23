@@ -290,6 +290,13 @@ function psOption( data ) {
 		return
 	}
 	
+	if ( 'snapclient' in data ) {
+		G.status.snapclient = data.snapclient;
+		var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+		$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', ! G.status.snapclient );
+		return
+	}
+	
 	var option = Object.keys( data )[ 0 ];
 	G.status[ option ] = Object.values( data )[ 0 ];
 	setButtonOptions();
