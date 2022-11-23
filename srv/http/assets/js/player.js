@@ -13,7 +13,7 @@ $( '.playback' ).click( function() {
 	}
 } );
 $( '#setting-btreceiver' ).click( function() {
-	bash( [ 'volumebtget' ], voldb => {
+	bash( [ 'volumegetbt' ], voldb => {
 		var voldb = voldb.split( ' ' );
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
@@ -28,12 +28,12 @@ $( '#setting-btreceiver' ).click( function() {
 				$( '#infoRange input' ).on( 'click input', function() {
 					bash( 'amixer -MD bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumebt', G.btaplayname, $( this ).val() ] );
+					bash( [ 'volumepushbt' ] );
 				} );
 			}
 			, buttonnoreset : 1
 			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : () => bash( [ 'volumebt', G.btaplayname, '0dB' ] )
+			, button        : () => bash( [ 'volume0dbbt' ] )
 			, okno          : 1
 		} );
 	} );
@@ -49,7 +49,7 @@ $( '#hwmixer' ).change( function() {
 } );
 $( '#setting-hwmixer' ).click( function() {
 	var novolume = device.mixertype === 'none';
-	bash( [ 'volumeget', 'db' ], voldb => {
+	bash( [ 'volumeget' ], voldb => {
 		var voldb   = voldb.split( ' ' );
 		var vol     = voldb[ 0 ];
 		var db      = voldb[ 1 ];
@@ -81,7 +81,7 @@ $( '#setting-hwmixer' ).click( function() {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumeget', 'push' ] );
+					bash( [ 'volumepush' ] );
 				} );
 				$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
 			}
@@ -91,7 +91,7 @@ $( '#setting-hwmixer' ).click( function() {
 			, button        : [ toggle, toggle ]
 			, oklabel       : 'OK'
 			, ok            : () => {
-				bash( [ 'volume0db', card, control ] );
+				bash( [ 'volume0db' ] );
 				toggle();
 			}
 		} );
@@ -432,7 +432,7 @@ function renderPage() {
 		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
 	}
 	if ( $( '#infoRange .value' ).length ) {
-		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget', 'db' ] : [ 'volumebtget' ];
+		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ];
 		bash( cmd, voldb => {
 			var voldb = voldb.split( ' ' );
 			var vol   = voldb[ 0 ];

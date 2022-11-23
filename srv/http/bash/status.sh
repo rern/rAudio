@@ -28,23 +28,20 @@ else
 	player=$( < $dirshm/player )
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
+	mpc | grep -q -m1 'consume: on' && consume=true
 	if [[ -e $dirshm/nosound && ! $btreceiver ]]; then
 		volume=false
 	else
-		ccv=$( $dirbash/cmd.sh volumecontrolget )
-		card=${ccv/^*}
-		control=$( cut -d^ -f2 <<< $ccv ) # keep trailing space if any
-		volume=${ccv/*^}
+		volume=$( $dirbash/cmd.sh volumeget )
 	fi
-	mpc | grep -q -m1 'consume: on' && consume=true
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
-, "card"         : '$card'
+, "card"         : '$( < $dirsystem/asoundcard )'
 , "consume"      : '$consume'
-, "control"      : "'$control'"
+, "control"      : "'$( getContent $dirshm/amixercontrol )'"
 , "counts"       : '$( getContent $dirmpd/counts )'
 , "file"         : ""
 , "icon"         : "'$icon'"

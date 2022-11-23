@@ -155,17 +155,9 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeGet() {
-	if [[ -e $dirshm/btreceiver ]]; then
-		control=$( < $dirshm/btreceiver )
-		for i in {1..5}; do # takes some seconds to be ready
-			volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
-			[[ $volume ]] && break
-			sleep 1
-		done
-		return
-	fi
+	[[ -e $dirshm/btreceiver ]] && volumeGetBt && return
 	
-	[[ -e $dirshm/nosound ]] && volume=-1 && return
+	[[ -e $dirshm/nosound ]] && echo -1 && return
 	
 	if [[ -e $dirsystem/snapclientserver ]]; then
 		mixertype=
@@ -173,23 +165,24 @@ volumeGet() {
 		mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
 	fi
 	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
-		volume=$( mpc volume | cut -d: -f2 | tr -d ' %n/a' )
+		mpc volume | cut -d: -f2 | tr -d ' %n/a'
 	else
 		card=$( < $dirsystem/asoundcard )
-		if [[ ! -e $dirshm/amixercontrol ]]; then
-			volume=100
+		control=$( cat $dirshm/amixercontrol 2> /dev/null )
+		if [[ ! $control ]]; then
+			echo 100
 		else
-			control=$( < $dirshm/amixercontrol )
-			voldb=$( amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' )
-			if [[ $voldb ]]; then
-				volume=${voldb/ *}
-				db=${voldb/* }
-			else
-				volume=$( amixer -MD bluealsa 2> /dev/null | awk -F'[[%]' '/%.*dB/ {print $2;exit}' )
-				[[ ! $volume ]] && volume=100
-			fi
+			amixer -c $card -M sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
 		fi
 	fi
+}
+volumeGetBt() {
+	control=$( < $dirshm/btreceiver )
+	for i in {1..5}; do # takes some seconds to be ready
+		val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
+		[[ $val ]] && echo $val && break
+		sleep 1
+	done
 }
 volumeSet() {
 	current=$1
@@ -882,7 +875,6 @@ ordersave )
 	;;
 playerstart )
 	player=${args[1]}
-	[[ $player == bluetooth ]] && volumeGet save
 	mpc -q stop
 	stopRadio
 	echo $player > $dirshm/player
@@ -1079,7 +1071,7 @@ volume ) # no args = toggle mute / unmute
 	control=${args[4]}
 	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
 	
-	[[ ! $current ]] && volumeGet && current=$volume
+	[[ ! $current ]] && current=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
 	if [[ $target > 0 ]]; then      # set
 		rm -f $filevolumemute
@@ -1097,34 +1089,11 @@ volume ) # no args = toggle mute / unmute
 	fi
 	volumeSet $current $target $card "$control"
 	;;
-volume0db )
-	player=$( < $dirshm/player )
-	volumeGet
-	amixer -c $card -Mq sset "$control" 0dB
-	;;
-volumecontrolget )
-	volumeGet
-	echo $card^$control^$volume # $control not last - keep trailing space if any
-	;;
 volumeget )
-	type=${args[1]}
 	volumeGet
-	if [[ $type == db ]]; then
-		echo $volume $db
-	elif [[ $type == push ]]; then
-		pushstream volume '{"val":'$volume',"db":"'$db'"}'
-	else
-		echo $volume
-	fi
 	;;
 volumepushstream )
-	[[ -e $dirshm/btreceiver ]] && sleep 1
-	volumeGet
-	pushstream volume '{"val":'$volume'}'
-	[[ $control ]] && alsactl store
-	;;
-volumesave )
-	volumeGet save
+	pushstream volume '{"val":'$( volumeGet )'}'
 	;;
 volumeupdown )
 	updn=${args[1]}
@@ -1139,8 +1108,7 @@ volumeupdown )
 			mpc -q volume ${updn}1
 		fi
 	fi
-	volumeGet
-	pushstreamVolume updn $volume
+	pushstreamVolume updn $( volumeGet )
 	;;
 webradioadd )
 	dir=${args[1]}
