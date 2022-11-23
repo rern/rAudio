@@ -709,7 +709,7 @@ $( < /etc/dnsmasq.conf )"
 			done
 			conf="\
 <bll># $mpdconf</bll>
-$conf"
+$( awk NF <<< $conf )"
 			skip='configuration file does not exist'
 			;;
 		nfs-server )

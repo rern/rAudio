@@ -19,14 +19,21 @@ rm -f $dirmpdconf/output.conf
 if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 #---------------< bluetooth
-	audiooutput+='
-	name           "'$btmixer'"
-	device         "bluealsa"
-	type           "alsa"
-	mixer_type     "hardware"'
-		[[ -e $dirsystem/btformat ]] && audiooutput+='
-	format         "44100:16:2"'
+	audiooutputbt='
+	name        "'$btmixer'"
+	device      "bluealsa"
+	type        "alsa"
+	mixer_type  "hardware"'
+	[[ -e $dirsystem/btformat ]] && audiooutputbt+='
+	format      "44100:16:2"'
 #--------------->
+########
+	echo "\
+audio_output {\
+$audiooutputbt
+}
+" > $dirmpdconf/output.conf
+########
 fi
 
 if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
@@ -46,7 +53,7 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------< camilladsp
-		audiooutput+='
+		audiooutput='
 	name           "CamillaDSP (Loopback)"
 	device         "'$hw'"
 	type           "alsa"
@@ -56,7 +63,7 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 	elif [[ $equalizer ]]; then
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------< equalizer
-		audiooutput+='
+		audiooutput='
 	name           "ALSAEqual"
 	device         "plug:plugequal"
 	type           "alsa"
@@ -65,7 +72,7 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
 #---------------< normal
-		audiooutput+='
+		audiooutput='
 	name           "'$name'"
 	device         "'$hw'"
 	type           "alsa"
@@ -94,7 +101,7 @@ $( sed 's/^/\t/' "$customfile" )"
 audio_output {
 $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 }
-" > $dirmpdconf/output.conf
+" >> $dirmpdconf/output.conf
 ########
 fi
 
