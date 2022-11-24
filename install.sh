@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221123
+grep -q calc /srv/http/bash/xinitrc && restartbrowser=1
+
 mv /etc/udev/rules.d/ntfs{3,}.rules &> /dev/null
 file=/etc/udev/rules.d/ntfs.rules
 if [[ ! -e $file ]]; then
@@ -108,6 +110,9 @@ $dirsettings/system.sh dirpermissions
 
 #installfinish
 #-------------------------------------------------------------------------------
+
+# 20221123
+[[ $restartbrowser ]] && systemctl try-restart localbrowser
 
 # 20221010
 [[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."

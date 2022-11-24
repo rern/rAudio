@@ -1776,7 +1776,6 @@ function switchPage( page ) {
 		G.librarylist ? $( 'html, body' ).scrollTop( G.liscrolltop ) : renderLibrary();
 	} else {
 		if ( savedlist ) $( 'html, body' ).scrollTop( G.plscrolltop );
-		$( '#page-playlist' ).css( 'visibility', 'hidden' ); // for scroll
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
