@@ -48,13 +48,32 @@ $( '#hwmixer' ).change( function() {
 	bash( [ 'hwmixer', device.aplayname, hwmixer ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
-	var novolume = device.mixertype === 'none';
 	bash( [ 'volumeget' ], voldb => {
-		var voldb   = voldb.split( ' ' );
-		var vol     = voldb[ 0 ];
-		var db      = voldb[ 1 ];
-		var card    = G.asoundcard;
-		var control = device.hwmixer;
+		var voldb    = voldb.split( ' ' );
+		var vol      = voldb[ 0 ];
+		var db       = voldb[ 1 ];
+		var nodb     = typeof db === 'undefined';
+		var novolume = device.mixertype === 'none';
+		var card     = G.asoundcard;
+		var control  = device.hwmixer;
+		if ( nodb ) {
+			info( {
+				  icon       : 'volume'
+				, title      : 'Mixer Device Volume'
+				, message    : control
+				, rangevalue : vol
+				, beforeshow : () => {
+					$( '#infoRange input' ).on( 'click input keyup', function() {
+						bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
+					} ).on( 'touchend mouseup keyup', function() {
+						bash( [ 'volumepush' ] );
+					} );
+				}
+				, okno       : 1
+			} );
+			return
+		}
+		
 		if ( novolume ) {
 			info( {
 				  icon       : 'volume'
@@ -62,7 +81,7 @@ $( '#setting-hwmixer' ).click( function() {
 				, message    : control
 				, rangevalue : vol
 				, footer     : '0dB (No Volume)'
-				, beforeshow    : () => $( '#infoRange input' ).prop( 'disabled', 1 )
+				, beforeshow : () => $( '#infoRange input' ).prop( 'disabled', 1 )
 				, okno       : 1
 			} );
 			return

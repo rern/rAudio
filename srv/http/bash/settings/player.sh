@@ -26,7 +26,12 @@ restartMPD() {
 volumeGet() {
 	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
-	amixer -c $card -M sget "$control" | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
+	amixer=$( amixer -c $card -M sget "$control" )
+	if grep -q dB <<< $amixer; then
+		awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' <<< $amixer
+	else
+		grep -m1 % <<< $amixer | sed -E 's/.*\[(.*)%].*/\1/'
+	fi
 }
 volumeGetBt() {
 	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
