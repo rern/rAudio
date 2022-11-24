@@ -105,11 +105,9 @@ else
 	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
-
 $dirsettings/player-conf.sh # mpd.service started by this script
 
-# after all sources connected
+# after all sources connected ........................................................
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	lcdcharinit.py
@@ -163,5 +161,7 @@ else
 fi
 
 [[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
+
+[[ -e /boot/startup.sh ]] && /boot/startup.sh
 
 touch $dirshm/startup
