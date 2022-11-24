@@ -736,7 +736,9 @@ function infoUpdate( path ) {
 	} );
 }
 function libraryHome() {
-	$.post( 'mpdlibrary.php', { query: 'home' }, function( html ) {
+	$.post( 'mpdlibrary.php', { query: 'home' }, function( data ) {
+		G.status.counts = data.counts;
+		var html = data.html
 		if ( html !== G.libraryhtml ) {
 			G.libraryhtml = html;
 			var hash      = versionHash();
@@ -756,7 +758,7 @@ function libraryHome() {
 			$( this ).replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
-	} );
+	}, 'json' );
 }
 function local( delay ) {
 	G.local = 1;

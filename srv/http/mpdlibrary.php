@@ -124,7 +124,8 @@ EOF;
 EOF;
 		}
 	}
-	echo $htmlmode;
+	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
+	echo json_encode( [ 'html' => $htmlmode, 'counts' => $counts ] );
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
