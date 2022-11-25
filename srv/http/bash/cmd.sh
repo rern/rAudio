@@ -899,7 +899,7 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			systemctl stop shairport-meta
+			systemctl stop shairport
 			rm -f $dirshm/airplay/start
 			systemctl restart shairport-sync
 			;;
@@ -1063,6 +1063,20 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
+	;;
+shairport )
+	[[ $( < $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
+	systemctl start shairport
+	echo play > $dirshm/airplay/state
+	$dirbash/status-push.sh
+	;;
+shairportstop )
+	systemctl stop shairport
+	echo pause > $dirshm/airplay/state
+	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
+	timestamp=$( date +%s%3N )
+	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
+	$dirbash/status-push.sh
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}

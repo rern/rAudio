@@ -152,7 +152,7 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl try-restart shairport-sync shairport-meta
+	systemctl try-restart shairport-sync shairport
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then

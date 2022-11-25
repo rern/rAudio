@@ -1142,7 +1142,7 @@ function renderPlayback() {
 	
 	$( '.emptyadd, .qr' ).addClass( 'hide' );
 	$( '#coverart' ).css( 'opacity', '' );
-	$( '#divcover .coveredit.cover' ).remove();
+	$( '#divcover .cover-change' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
 	$( '#qrwebui, #qrip' ).empty();
 	setInfo();

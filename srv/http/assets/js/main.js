@@ -49,7 +49,7 @@ var picaOption  = { // pica.js
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 var iconcover   = '<i class="iconcover"></i>';
-var icoveredit  = '<div class="coveredit cover">'+ iconcover +'</div>';
+var icoveredit  = '<div class="coveredit cover-change">'+ iconcover +'</div>';
 var icoversave  = '<div class="coveredit cover-save"><i class="fa fa-save"></i></div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -453,7 +453,7 @@ $( '#page-playback' ).click( function( e ) {
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
 		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .coveredit.cover' ).remove();
+			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 	}
@@ -470,7 +470,7 @@ $( '#settings' ).click( function() {
 } );
 $( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
 	if ( G.library ) {
-		$( '.licover .coveredit.cover' ).remove();
+		$( '.licover .cover-change' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
@@ -820,7 +820,7 @@ $( '#divcover' ).press( function( e ) {
 		.after( icoveredit );
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
-} ).on( 'click', '.cover', function() {
+} ).on( 'click', '.cover-change', function() {
 	G.status.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {
@@ -860,8 +860,8 @@ $( '.map' ).click( function( e ) {
 		volumeBarHide();
 		return
 		
-	} else if ( $( '.coveredit.cover' ).length ) {
-		$( '#divcover .coveredit.cover' ).remove();
+	} else if ( $( '#divcover .cover-change' ).length ) {
+		$( '#divcover .cover-change' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 		return
 		
@@ -999,7 +999,7 @@ $( '.btn-cmd' ).click( function() {
 		local( 600 );
 	} else {
 		if ( G.status.stream ) {
-			$( '#divcover .coveredit.cover' ).remove();
+			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd === 'play' ) {
@@ -1523,8 +1523,8 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	e.stopPropagation();
 	if ( G.press ) return
 	
-	if ( $( '.licover .coveredit.cover' ).length ) {
-		$( '.licover .coveredit.cover' ).remove();
+	if ( $( '.licover .cover-change' ).length ) {
+		$( '.licover .cover-change' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		return
 	}

@@ -4,6 +4,15 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221128
+if grep -q shairport.sh /etc/shairport-sync.conf; then
+	sed -i 's/shairport.sh/cmd.sh shairport/; s/ stop/stop/' /etc/shairport-sync.conf
+	mv /etc/systemd/system/shairport{-meta,}.service
+	sed -i 's/-meta\|redis.target //' /etc/systemd/system/shairport.service
+	systemctl daemon-reload
+	systemctl try-restart shairport-sync
+fi
+
 # 20221123
 grep -q calc /srv/http/bash/xinitrc && restartbrowser=1
 
