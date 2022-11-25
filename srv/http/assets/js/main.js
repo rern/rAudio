@@ -121,10 +121,7 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( G.status.file
-		&& G.status.coverart.slice( 10, 16 ) === 'online'
-		&& [ 'NAS', 'SD/', 'USB' ].includes( G.status.file.slice( 0, 3 ) )
-	) {
+	if ( G.status.player === 'mpd' && G.status.coverart.slice( 10, 16 ) === 'online' && G.status.file.slice( 0, 4 ) !== 'http' ) {
 		$( '#coverart' ).after( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
