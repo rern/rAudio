@@ -21,7 +21,7 @@ listAlbums() {
 	done
 }
 ##### normal list #############################################
-album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall \
+album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 2> /dev/null \
 						| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
 						| sort -u )$'\n'
 #	-F'/[^/]*$' - truncate %file% to path without filename
@@ -29,22 +29,25 @@ album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 
 #	!/^\^/      - not lines with no album name
 #	!a[$0]++    - not duplicate lines
 
-if (( $? != 0 )); then # very large database
-	eachkb=8192
-	existing=$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )
-	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
-	for (( i=1; i < 11; i++ )); do
-		buffer=$(( $existing + ( i * $eachkb ) ))
-		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/conf/outputbuffer.conf
-		systemctl restart mpd
-		albums=$( mpc list album )
-		(( $? == 0 )) && break
-	done
-	if [[ $albums ]]; then
-		listAlbums "$albums"
+if (( ! $album_artist_file )); then # very large database
+	albums=$( mpc list album 2> /dev/null )
+	if [[ $album ]]; then
+		listAlbums "$albums" 
 	else
-		toolarge=1
-		rm $dirmpdconf/outputbuffer.conf
+		ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
+		buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
+		for (( i=1; i < 11; i++ )); do
+			buffer=$(( buffer + 8192 ))
+			echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
+			systemctl restart mpd
+			albums=$( mpc list album 2> /dev/null )
+			[[ $album ]] && listAlbums "$albums" && break
+		done
+		if [[ ! $albums ]]; then
+			toolarge=1
+			echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
+			rm $dirmpdconf/outputbuffer.conf
+		fi
 	fi
 fi
 ##### wav list #############################################
