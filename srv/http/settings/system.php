@@ -427,12 +427,12 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	
 	<heading class="subhead">Front End</heading>
 	<div class="list">
+		<a href="https://www.php.net">PHP</a>
+		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
 		<a href="https://whatwg.org">HTML</a>
 		<p>Hypertext Markup Language for displaying documents in web browsers</p>
 		<a href="https://www.w3.org/TR/CSS">CSS</a>
 		<p>Cascading Style Sheets for describing the presentation of HTMLs</p>
-		<a href="https://www.php.net">PHP</a>
-		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
 		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
 		<p>A scripting language for working with HTML Document Object Model(DOM) on client side</p>
 		<a href="https://jquery.com/">jQuery</a>
