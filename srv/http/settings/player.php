@@ -139,7 +139,7 @@ Support: FLAC, Ogg Vorbis, Musepack and MP3
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'volume' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ 'title' => 'Options' ]; //////////////////////////////////
@@ -215,7 +215,7 @@ EOF
 		, 'help'    => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'options' );
 
 echo '
 <div id="divlists" class="section">

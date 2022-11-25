@@ -32,7 +32,7 @@ if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
 </div>
-<div class="section">
+<div id="divsystem" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
@@ -52,7 +52,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
-<div class="section">
+<div id="divstatus" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
@@ -82,7 +82,7 @@ htmlHead( [ //////////////////////////////////
  • RPi 3B+: 60°C soft limit (optimized throttling)
 </div>
 </div>
-<div class="section">
+<div id="divstorage" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
@@ -165,7 +165,7 @@ Country of Wi-Fi regulatory domain:
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ //////////////////////////////////
@@ -262,7 +262,7 @@ EOF
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
@@ -297,7 +297,7 @@ EOF
 		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
@@ -355,7 +355,7 @@ Connect shared data as client for:
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'dataandsettings' );
 $listui = [
 	[
 	    'HTML5-Color-Picker'
@@ -411,7 +411,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
 ?>
-<div id="about" class="section">
+<div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>

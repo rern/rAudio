@@ -128,7 +128,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'streamers' );
 $head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
@@ -317,4 +317,4 @@ Stop timer:
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'others' );
