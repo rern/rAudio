@@ -87,6 +87,11 @@ a[href^="http"] {
 ul {
 	margin: 0;
 }
+.section:not( #divoutput )::after { /* not( #divoutput ) - fix last selectric on safari */
+	content: '';
+	display: block;
+	clear: both;
+}
 .section pre {
 	margin-top: 0;
 	padding: 5px;

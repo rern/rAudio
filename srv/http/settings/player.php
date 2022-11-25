@@ -80,7 +80,7 @@ The later in the signal chain the better sound quality.
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
