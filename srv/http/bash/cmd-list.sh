@@ -24,7 +24,7 @@ listAll() {
 album_artist_file=$( listAll )
 
 if [[ ! $album_artist_file ]]; then # very large database
-	notify -blink refresh-library 'Library Database' 'Increase buffer for large Library ...'
+	notify -blink refresh-library 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
 	for (( i=0; i < 10; i++ )); do # increase buffer
@@ -56,7 +56,7 @@ if [[ ! $album_artist_file ]]; then # very large database
 										| sort -u )$'\n'
 			done
 		else
-			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.'
+			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
 	fi
 fi
