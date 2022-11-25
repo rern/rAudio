@@ -76,7 +76,7 @@ The later in the signal chain the better sound quality.
 | None / 0dB   | Best  - Amplifier volume - GUI knob hidden
 | Mixer device | Good  - DAC hardware via GUI knob
 | MPD software | Basic - GUI knob
-</pre>
+</pre>Note: <code>None / 0dB</code> - Not for DACs with on-board amplifier.
 EOF
 	]
 ];
@@ -95,6 +95,8 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • Volume Control: | None / 0db |
  • Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
  • Disable Signal Processors
+
+Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
