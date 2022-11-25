@@ -87,7 +87,7 @@ a[href^="http"] {
 ul {
 	margin: 0;
 }
-.section:not( #divoutput )::after { /* not( #divoutput ) - fix last selectric on safari */
+.section:not( #divoutput )::after { /* not( #divoutput ) - last selectric on safari cannot 'clear: both' */
 	content: '';
 	display: block;
 	clear: both;
