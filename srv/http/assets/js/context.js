@@ -79,7 +79,6 @@ function playlistLoad( path, play, replace ) {
 	}, function( data ) {
 		G.local = 0;
 		G.status.pllength = +data;
-		G.savedlist = 0;
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
 	} );
 }
