@@ -110,7 +110,9 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	$.getScript( 'assets/js/shortcut.js'+ hash );
 }
 	
-$( 'body' ).click( menuHide );
+$( 'body' ).click( function( e ) {
+	if ( ! $( e.target ).hasClass( 'savedlist' ) ) menuHide();
+} );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
 	e.stopPropagation();
@@ -1907,6 +1909,13 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
+} );
+$( '#pl-path' ).click( '.savedlist', function() {
+	G.list.path = $( '#pl-path .lipath' ).text();
+	var $menu   = $( '#menu-playlist' );
+	menuHide();
+	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
+	contextmenuScroll( $menu, 88 );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
