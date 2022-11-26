@@ -1266,7 +1266,7 @@ function renderSavedPlaylist( name ) {
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();
 		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
-		$( '#pl-savedlist' ).html( data.html ).promise().done( () => {
+		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
