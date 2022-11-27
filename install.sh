@@ -5,6 +5,10 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221128
+if (( $( stat --printf="%s" '/srv/http/data/webradio/img/https:||stream.radioparadise.com|flac.jpg' ) > 31198 )); then
+	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C /srv/http/data/webradio
+fi
+
 if grep -q shairport.sh /etc/shairport-sync.conf; then
 	sed -i 's/shairport.sh/cmd.sh shairport/; s/ stop/stop/' /etc/shairport-sync.conf
 	mv /etc/systemd/system/shairport{-meta,}.service
