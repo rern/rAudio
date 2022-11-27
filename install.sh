@@ -5,7 +5,9 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20221128
-if (( $( stat --printf="%s" '/srv/http/data/webradio/img/https:||stream.radioparadise.com|flac.jpg' ) > 31198 )); then
+file='/srv/http/data/webradio/img/https:||stream.radioparadise.com|flac.jpg'
+if [[ -e $file  && $( stat --printf="%s" $file ) > 31198 ]]; then
+	echo -e "$bar Update Radio Paradise station arts ..."
 	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C /srv/http/data/webradio
 fi
 
