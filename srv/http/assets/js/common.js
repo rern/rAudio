@@ -571,7 +571,6 @@ function info( json ) {
 		htmlcontent   += htmls.range || '';
 		htmlcontent   += htmls.footer || '';
 	}
-	$( 'html, body' ).scrollTop( 0 );
 	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
@@ -642,6 +641,8 @@ function info( json ) {
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
+		$( 'html, body' ).scrollTop( 0 );
+		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 		var $this = $( this );
