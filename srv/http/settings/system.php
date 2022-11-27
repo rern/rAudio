@@ -182,7 +182,7 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	I^gear^I
+	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
 </div>
 EOF
 		, 'help'     => <<< EOF

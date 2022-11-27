@@ -160,7 +160,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// active / inactive window
-	var active      = 1;
+	var active = 1; // flag for suppress visible-hidden-visible
 	function connect() {
 		if ( ! active && ! G.off ) {
 			active = 1;
@@ -173,9 +173,9 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			pushstream.disconnect();
 		}
 	}
-	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-	window.onpageshow = window.onfocus = connect;
+	window.addEventListener( 'visibilitychange', () => { // hidden > visible-hidden-visible
+		document.visibilityState === 'hidden' ? disconnect() : connect()
+	} );
 }
 
 // banner ----------------------------------------------------------------------
