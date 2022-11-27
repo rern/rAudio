@@ -160,6 +160,6 @@ fi
 
 touch $dirshm/startup
 
-[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
+[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh

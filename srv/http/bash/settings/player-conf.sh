@@ -124,7 +124,7 @@ if [[ -e $dirmpd/updating ]]; then
 fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
-$dirbash/status-push.sh
+[[ -e $dirshm/startup ]] && $dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
