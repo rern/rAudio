@@ -1911,9 +1911,12 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	playlistRemove( $( this ).parent() );
 } );
 $( '#pl-path' ).click( '.savedlist', function() {
-	G.list.path = $( '#pl-path .lipath' ).text();
 	var $menu   = $( '#menu-playlist' );
+	var active = ! $menu.hasClass( 'hide' );
 	menuHide();
+	if ( active ) return
+	
+	G.list.path = $( '#pl-path .lipath' ).text();
 	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
 	contextmenuScroll( $menu, 88 );
 } );
