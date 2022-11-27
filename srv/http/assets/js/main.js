@@ -1048,11 +1048,11 @@ $( '.btn-cmd' ).click( function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-/*				if ( G.playback && G.status.stream ) {
+				if ( G.playback && G.status.stream ) {
 					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => G.status[ el ] = '' );
 					setInfo();
 					setCoverart();
-				}*/
+				}
 			} else if ( G.playlist ) {
 				$( '#pl-list .song' ).empty();
 				$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
