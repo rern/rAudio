@@ -1261,7 +1261,7 @@ function renderPlaylistList( data ) {
 function renderSavedPlaylist( name ) {
 	menuHide();
 	list( { cmd: 'get', name: name }, function( data ) {
-		$( '#pl-path' ).html( '<i class="savedlist fa fa-file-playlist"></i>'+ data.counthtml );
+		$( '#pl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', G.display.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();
