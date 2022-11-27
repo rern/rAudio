@@ -1002,7 +1002,7 @@ function refreshData( resetdata ) {
 		}
 	}
 }
-function renderLibrary() {
+function renderLibrary() { // home
 	G.mode        = '';
 	G.librarylist = 0;
 	G.query       = [];
@@ -1191,7 +1191,7 @@ function renderPlayback() {
 		setProgressElapsed();
 	}
 }
-function renderPlaylist( data ) {
+function renderPlaylist( data ) { // current playlist
 	G.savedlist      = 0;
 	G.savedplaylist  = 0;
 	G.status.elapsed = data.elapsed;
@@ -1234,7 +1234,7 @@ function renderPlaylist( data ) {
 	}
 	$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 }
-function renderPlaylistList( data ) {
+function renderPlaylistList( data ) { // list of saved playlists
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	
@@ -1258,7 +1258,7 @@ function renderPlaylistList( data ) {
 		$( '.list p' ).toggleClass( 'bars-on', barvisible );
 	}
 }
-function renderSavedPlaylist( name ) {
+function renderSavedPlaylist( name ) { // tracks in a playlist
 	menuHide();
 	list( { cmd: 'get', name: name }, function( data ) {
 		$( '#pl-path' ).html( data.counthtml );
