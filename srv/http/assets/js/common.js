@@ -159,8 +159,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		}
 	}
-	// active / inactive window
-	var active = 1; // flag for suppress visible-hidden-visible
+	var active = 1; // flag to suppress document.hidden = false-true-false on visible
 	function connect() {
 		if ( ! active && ! G.off ) {
 			active = 1;
@@ -173,9 +172,11 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			pushstream.disconnect();
 		}
 	}
-	window.addEventListener( 'visibilitychange', () => { // hidden > visible-hidden-visible
-		document.visibilityState === 'hidden' ? disconnect() : connect()
-	} );
+	window.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() );
+	window.onpagehide = disconnect;
+	window.onpageshow = connect;
+//	window.onblur     = disconnect; // visible but not focused
+//	window.onfocus    = connect;    // focused
 }
 
 // banner ----------------------------------------------------------------------
