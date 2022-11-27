@@ -341,6 +341,19 @@ var selectchange = 0;
 
 document.title   = page;
 
+if ( navigator.maxTouchPoints ) { // swipe
+	var xstart;
+	window.addEventListener( 'touchstart', function( e ) {
+		xstart = e.changedTouches[ 0 ].pageX;
+	} );
+	window.addEventListener( 'touchend', function( e ) {
+		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
+		if ( Math.abs( xdiff ) < 100 ) return
+		
+		xdiff > 0 ? $( '#'+ pagenext[ page ][ 1 ] ).click() : $( '#'+ pagenext[ page ][ 0 ] ).click();
+	} );
+}
+
 if ( localhost ) {
 	$( 'a' ).removeAttr( 'href' );
 } else {
