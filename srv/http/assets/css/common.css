@@ -446,8 +446,8 @@ input::-moz-focus-inner {
 
 /* info */
 .infobtn,
-#infoOverlay input[type=radio],
-#infoOverlay input[type=checkbox] {
+input[type=radio],
+input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -753,10 +753,10 @@ hr {
 	resize: none;
 	white-space: pre;
 }
-#infoContent input[type=text],
-#infoContent input[type=tel],
-#infoContent input[type=number],
-#infoContent input[type=password] {
+input[type=text],
+input[type=tel],
+input[type=number],
+input[type=password] {
 	display: inline-block;
 	margin: 0;
 	width: 100%;
@@ -769,9 +769,9 @@ hr {
 	font-size: 16px;
 	font-family: "Lato";
 }
-#infoContent input[type=text]:disabled,
-#infoContent input[type=tel]:disabled,
-#infoContent input[type=number]:disabled {
+input[type=text]:disabled,
+input[type=tel]:disabled,
+input[type=number]:disabled {
 	background: none !important;
 	outline: none;
 	opacity: 1;
@@ -785,8 +785,8 @@ hr {
 	text-align: center;
 	margin-right: -25px;
 }
-#infoOverlay input[type=radio],
-#infoOverlay input[type=checkbox] {
+input[type=radio],
+input[type=checkbox] {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
@@ -796,22 +796,22 @@ hr {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
-#infoOverlay input[type=radio] {
+input[type=radio] {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
 	margin: 2px 7px 2px 1px;
 }
-#infoOverlay input:checked {
+input:checked {
 	background-color: var( --cm );
 }
-#infoOverlay input[type=checkbox]:checked:disabled,
-#infoOverlay input[type=radio]:checked:disabled {
+input[type=checkbox]:checked:disabled,
+input[type=radio]:checked:disabled {
 	background-color: var( --cmd );
 	box-shadow: none;
 }
-#infoOverlay input[type=checkbox]:disabled,
-#infoOverlay input[type=radio]:disabled {
+input[type=checkbox]:disabled,
+input[type=radio]:disabled {
 	background-color: var( --cgd );
 	box-shadow: none;
 }
@@ -854,7 +854,7 @@ hr {
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
 	#infoTab,
-	#infoContent label,
+	label,
 	input[type=checkbox],
 	input[type=radio],
 	.fa-eye,
@@ -888,7 +888,7 @@ hr {
 	}
 }
 @supports ( -webkit-touch-callout: none ) { /* ios only */
-	#infoOverlay input[type=checkbox]:checked:disabled {
+	input[type=checkbox]:checked:disabled {
 		background-color: var( --cml );
 	}
 	.infobtn {

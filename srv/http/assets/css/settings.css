@@ -72,22 +72,17 @@ a[href^="http"] {
 	text-decoration: none !important;
 }
 .container input[type="text"] {
-	width: 100%;
 	max-width: 230px;
-	height: 40px;
 	margin-bottom: 10px;
-	padding: 0 10px;
-	font-family: "Lato";
-	font-size: 15px;
-	color: var( --cw );
-	background-color: #000000 !important;
-	border-radius: 4px;
-	border: 1px solid var( --cg ) !important;
+}
+label {
+	display: inline-block;
+	margin: 2px 0;
 }
 ul {
 	margin: 0;
 }
-.section:not( #divoutput )::after { /* not( #divoutput ) - last selectric on safari cannot 'clear: both' */
+.section::after {
 	content: '';
 	display: block;
 	clear: both;
