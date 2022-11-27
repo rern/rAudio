@@ -144,6 +144,7 @@ $Album" &> /dev/null &
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
+		mpc -q stop
 		systemctl stop radio
 		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
 		rm -f $dirshm/radio
@@ -750,7 +751,7 @@ mpcplayback )
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
-	
+	# snapclient
 	if [[ $command == play ]]; then
 		action=start
 		active=true
