@@ -193,6 +193,7 @@ input::-moz-focus-inner {
 .fa-nas::before             { content: '\f551' }
 .fa-networks::before        { content: '\f551' }
 .fa-next::before            { content: '\f505' }
+.fa-off::before             { content: '\f520' }
 .fa-output::before          { content: '\f52A' }
 .fa-pause::before           { content: '\f504' }
 .fa-play::before            { content: '\f503' }

@@ -156,12 +156,10 @@ if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
 elif [[ $nasfailed ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
-else
-	notify raudio rAudio Ready 6000
 fi
+
+touch $dirshm/startup
 
 [[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
-
-touch $dirshm/startup

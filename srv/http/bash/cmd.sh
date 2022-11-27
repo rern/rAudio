@@ -944,11 +944,7 @@ power )
 		sed -i "/$( ipAddress )/ d" $filesharedip
 	fi
 	
-	if [[ $action == reboot ]]; then
-		notify -blink reboot Power 'Reboot ...'
-	else
-		notify -blink power Power 'Off ...'
-	fi
+	notify -blink $action Power "${action^} ..."
 	touch $dirshm/power
 	mpc -q stop
 	alsactl store

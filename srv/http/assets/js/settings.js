@@ -344,9 +344,13 @@ document.title   = page;
 if ( navigator.maxTouchPoints ) { // swipe
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
+		if ( $( e.target ).is( 'input' ) ) return
+		
 		xstart = e.changedTouches[ 0 ].pageX;
 	} );
 	window.addEventListener( 'touchend', function( e ) {
+		if ( $( e.target ).is( 'input' ) ) return
+		
 		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
 		if ( Math.abs( xdiff ) < 100 ) return
 		

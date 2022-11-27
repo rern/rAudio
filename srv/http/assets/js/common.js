@@ -108,11 +108,10 @@ function selectricRender() {
 }
 
 // pushstream -----------------------------------------------------------------
-var page        = location.search.replace( '?p=', '' );
+var page = location.search.replace( '?p=', '' );
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
-		, timeout                               : 20000
 		, reconnectOnChannelUnavailableInterval : 3000
 	} );
 	function pushstreamChannel( channels ) {
@@ -141,6 +140,8 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		if ( status === 2 ) {        // connected
 			if ( G.reboot ) {
 				delete G.reboot;
+				banner( 'raudio', 'rAudio', 'Ready', 6000 );
+				loaderHide();
 			} else {
 				refreshData();
 				bannerHide();
