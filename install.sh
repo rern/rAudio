@@ -4,11 +4,21 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221117
+dirbash=/srv/http/bash
+dirsettings=$dirbash/settings
+dirdata=/srv/http/data
+dirmpd=$dirdata/mpd
+dirmpdconf=$dirdata/mpdconf
+dirshm=$dirdata/shm
+dirsystem=$dirdata/system
+dirwebradio=/srv/http/data/webradio
+
 # 20221128
-file='/srv/http/data/webradio/img/https:||stream.radioparadise.com|flac.jpg'
-if [[ -e $file  && $( stat --printf="%s" $file ) > 31198 ]]; then
+if [[ -e "$dirwebradio/https:||stream.radioparadise.com|world-etc-flac" ]]; then
 	echo -e "$bar Update Radio Paradise station arts ..."
-	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C /srv/http/data/webradio
+	rm $dirwebradio/*world-etc-flac $dirwebradio/img/*world-etc-flac*
+	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
 fi
 
 if grep -q shairport.sh /etc/shairport-sync.conf; then
@@ -20,7 +30,7 @@ if grep -q shairport.sh /etc/shairport-sync.conf; then
 fi
 
 # 20221123
-grep -q calc /srv/http/bash/xinitrc && restartbrowser=1
+grep -q calc $dirbash/xinitrc && restartbrowser=1
 
 mv /etc/udev/rules.d/ntfs{3,}.rules &> /dev/null
 file=/etc/udev/rules.d/ntfs.rules
@@ -47,15 +57,6 @@ sed -i '/shairport-sync/ d' /etc/pacman.conf
 veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
 vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
 [[ $veropenssl == 3 && $vershairport != 4 ]]  && pacman -Sy --noconfirm shairport-sync
-
-# 20221117
-dirbash=/srv/http/bash
-dirsettings=$dirbash/settings
-dirdata=/srv/http/data
-dirmpd=$dirdata/mpd
-dirmpdconf=$dirdata/mpdconf
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
 
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
