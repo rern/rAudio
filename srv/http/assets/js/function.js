@@ -1346,6 +1346,7 @@ function setButtonControl() {
 	if ( G.playback ) setTimeout( setButtonOptions, 0 );
 }
 function setButtonOptions() {
+	$( '#dsp' ).toggleClass( 'disabled', [ 'airplay', 'spotify' ].includes( G.status.player ) );
 	$( '#relays' ).toggleClass( 'on', G.status.relayson );
 	$( '#snapclient' ).toggleClass( 'on', G.status.player === 'snapcast' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
