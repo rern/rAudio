@@ -128,17 +128,14 @@ fi
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $btmixer ]] && exit
+[[ $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
 
 # renderers -----------------------------------------------------------------------------
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $dsp ]]; then
-		conf+='
-	output_device = "hw:'$cardloopback',0";'
-	elif [[ $btmixer ]]; then
+	if [[ $btmixer ]]; then
 		conf+='
 	output_device = "bluealsa";'
 	else
@@ -156,9 +153,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $dsp ]]; then
-		device='sysdefault:CARD=Loopback'
-	elif [[ $btmixer ]]; then
+	if [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l 2> /dev/null | awk '/^card '$1'/ {print $3;exit}' )

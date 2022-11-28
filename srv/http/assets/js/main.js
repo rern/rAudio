@@ -166,7 +166,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
-				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5000' ) );
+				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
 				loader();
 			} else {
 				equalizer();
