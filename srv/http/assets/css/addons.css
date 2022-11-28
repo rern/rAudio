@@ -104,6 +104,9 @@ pre {
 	user-select: text;
 	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
 }
+.progress {
+	line-height: 20px;
+}
 .thumbnail {
 	float: right;
 	width: 100px;
