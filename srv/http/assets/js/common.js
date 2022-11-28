@@ -112,7 +112,7 @@ function selectricRender() {
 	} );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
-
+$( 'select' ).on( 'selectric-close', () => local() ); // suppress visibilitychange by selectric
 // pushstream -----------------------------------------------------------------
 var page = location.search.replace( '?p=', '' );
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
@@ -167,9 +167,9 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	}
 /* page visibility -----------------------------------------------------------------
 flag to suppress multiple connect on page visible:
-	active  - suppress multiple events
-	G.local - suppress document.hidden === false > true > false - in sequence
-	G.off   - suppress after power off
+	active  - multiple events
+	G.off   - after power off
+	G.local - document.hidden === false > true > false - in sequence
 	
 	1. document.onvisibilitychange - document.hidden
 		- false > active  = 1, G.local = 1
@@ -177,6 +177,9 @@ flag to suppress multiple connect on page visible:
 		- false > active  = 1, G.local = 0
 	2. window.onpageshow
 	3. window.onfocus
+	
+flag to suppress disconnect:
+	G.local - selectric visibilitychange
 */
 	var active = 1;
 	function connect() {
@@ -187,10 +190,12 @@ flag to suppress multiple connect on page visible:
 		pushstream.connect();
 	}
 	function disconnect() {
-		if ( ! active || G.local ) return
-		
-		active = 0;
-		pushstream.disconnect();
+		setTimeout( () => { // suppress visibilitychange by selectric
+			if ( ! active || G.local ) return
+			
+			active = 0;
+			pushstream.disconnect();
+		}, 300 );
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
