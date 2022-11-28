@@ -449,7 +449,14 @@ function renderPage() {
 		$( '#divdop' ).toggleClass( 'disabled', G.device.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', G.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
-		$( '#divaudiooutput div' ).eq( 0 ).html( G.camilladsp ? '<i class="fa fa-camilladsp"></i>' : 'Device' );
+		if ( G.camilladsp ) {
+			var label = '<i class="fa fa-camilladsp"></i>';
+		} else if ( G.equalizer ) {
+			var label = 'Equalizer<i class="fa fa-equalizer"></i>';
+		} else {
+			var label = 'Device';
+		}
+		$( '#divaudiooutput div' ).eq( 0 ).html( label );
 	}
 	if ( $( '#infoRange .value' ).length ) {
 		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ];
