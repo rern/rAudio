@@ -316,7 +316,11 @@ $file
 $station
 $id
 $radiosampling" > $dirshm/radio
-					systemctl -q is-active $service || systemctl start $service
+					if ! systemctl -q is-active $service; then
+						mpc -q stop
+						mpc -q play
+						systemctl start $service
+					fi
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
