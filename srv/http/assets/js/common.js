@@ -165,7 +165,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		}
 	}
-/*
+/* page visibility -----------------------------------------------------------------
 flag to suppress multiple connect on page visible:
 	active  - suppress multiple events
 	G.local - suppress document.hidden === false > true > false - in sequence
