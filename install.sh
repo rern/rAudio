@@ -179,19 +179,21 @@ fi
 
 grep -q auto_update /etc/mpd.conf && linkConf autoupdate
 if grep -q audio_buffer /etc/mpd.conf; then
-	echo 'audio_buffer_size  "'$( < $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	buffer=$( grep audio_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'audio_buffer_size  "'$buffer'"' > $dirmpdconf/conf/buffer.conf
 	linkConf buffer
 fi
-if grep -q output_buffer /etc/mpd.conf; then
-	echo 'max_output_buffer_size  "'$( < $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+if grep -q max_output_buffer_size /etc/mpd.conf; then
+	outputbuffer=$( grep max_output_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'max_output_buffer_size  "'$outputbuffer'"' > $dirmpdconf/conf/outputbuffer.conf
 	linkConf outputbuffer
 fi
-grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain  "'$( < $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
+	replaygain=$( grep replaygain /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'replaygain  "'$replaygain'"' > $dirmpdconf/conf/replaygain.conf
 	linkConf replaygain
 fi
-
+grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 [[ -e $dirshm/audiocd ]] && linkConf cdio
 [[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && linkConf custom
 grep -q plugin.*ffmpeg /etc/mpd.conf && linkConf ffmpeg
