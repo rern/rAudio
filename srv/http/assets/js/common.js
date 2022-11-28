@@ -1,5 +1,5 @@
 /* 
-infoPower(), loader(), $.fn.press()
+infoPower(), loader(), local(), $.fn.press()
 pushstream,  selectric
 banner(),    info()
 */
@@ -61,6 +61,12 @@ function loader() {
 }
 function loaderHide() {
 	$( '#loader' ).addClass( 'hide' );
+}
+
+// ----------------------------------------------------------------------
+function local( delay ) {
+	G.local = 1;
+	setTimeout( () => G.local = 0, delay || 300 );
 }
 
 // ----------------------------------------------------------------------
@@ -159,24 +165,38 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		}
 	}
-	var active = 1; // flag to suppress document.hidden = false-true-false on visible
+/*
+flag to suppress multiple connect on page visible:
+	active  - suppress multiple events
+	G.local - suppress document.hidden === false > true > false - in sequence
+	G.off   - suppress after power off
+	
+	1. document.onvisibilitychange - document.hidden
+		- false > active  = 1, G.local = 1
+		- true  > G.local = 1  ----------------- suppress disconnect()
+		- false > active  = 1, G.local = 0
+	2. window.onpageshow
+	3. window.onfocus
+*/
+	var active = 1;
 	function connect() {
-		if ( ! active && ! G.off ) {
-			active = 1;
-			pushstream.connect();
-		}
+		if ( active || G.off ) return
+		
+		local( 1000 );
+		active = 1;
+		pushstream.connect();
 	}
 	function disconnect() {
-		if ( active ) {
-			active = 0;
-			pushstream.disconnect();
-		}
+		if ( ! active || G.local ) return
+		
+		active = 0;
+		pushstream.disconnect();
 	}
-	window.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() );
+	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
 	window.onpageshow = connect;
-//	window.onblur     = disconnect; // visible but not focused
-//	window.onfocus    = connect;    // focused
+	window.onblur     = disconnect; // visible but not focused
+	window.onfocus    = connect;    // focused
 }
 
 // banner ----------------------------------------------------------------------
@@ -935,8 +955,7 @@ select:   [U] [D]     - check
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 			break;
 		case 'Escape':
-			G.local = 1; // prevent toggle setting menu
-			setTimeout( () => G.local = 0, 300 );
+			local(); // prevent toggle setting menu
 			$( '#infoX' ).click();
 			break;
 		case 'ArrowLeft':

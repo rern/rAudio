@@ -760,10 +760,6 @@ function libraryHome() {
 		$( '#lib-path span' ).removeClass( 'hide' );
 	}, 'json' );
 }
-function local( delay ) {
-	G.local = 1;
-	setTimeout( () => G.local = 0, delay || 300 );
-}
 function lyricsShow( data ) {
 	if ( data !== 'current' ) {
 		G.lyrics       = data;
