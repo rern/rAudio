@@ -148,6 +148,7 @@ stopRadio() {
 		systemctl stop radio
 		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
 		rm -f $dirshm/radio
+		[[ $1 == stop ]] && $dirbash/status-push.sh
 		sleep 1
 	fi
 }
@@ -739,7 +740,7 @@ mpcplayback )
 			command=play
 		fi
 	fi
-	stopRadio
+	stopRadio $command
 	if [[ $command == play ]]; then
 		grep -q -m1 '^state.*pause' $dirshm/status && pause=1
 		mpc -q $command $pos
