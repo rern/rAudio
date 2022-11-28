@@ -27,8 +27,8 @@ $relays   = $page === 'relays';
 //   css .............................................................................
 $css = [ 'colors', 'common', 'settings' ];
 if ( $addons || $progress ) $css[] = 'addons';
-if ( ! $networks )           $css[] = 'selectric';
-if ( $relays )               $css[] = 'relays';
+if ( ! $networks )          $css[] = 'selectric';
+if ( $relays )              $css[] = 'relays';
 $style = '';
 foreach( $css as $c ) $style.= '
 <link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
