@@ -1,4 +1,4 @@
-$( window ).on( 'resize', () => { // or rotate
+window.onresize = () => { // or rotate
 	var wH = window.innerHeight;
 	var wW = window.innerWidth;
 	if ( G.wH === wH && G.wW === wW ) return
@@ -39,7 +39,7 @@ $( window ).on( 'resize', () => { // or rotate
 		}
 	}
 	displayBars();
-} );
+}
 function radioRefresh() {
 	var query = G.query[ G.query.length - 1 ];
 	if ( query.path ) {
