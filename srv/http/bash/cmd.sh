@@ -1120,7 +1120,7 @@ webradioadd )
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	[[ -e "$file" ]] && echo "<wh>$name</wh> already exists:" && exit
+	[[ -e "$file" ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
 $name
 

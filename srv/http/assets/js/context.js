@@ -6,6 +6,34 @@ function addReplace( cmd, command, title, msg ) {
 	} );
 	banner( 'playlist', title, msg );
 }
+function addSimilar() {
+	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
+	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
+			+'&artist='+ encodeURI( G.list.artist )
+			+'&track='+ encodeURI( G.list.name )
+			+'&api_key='+ G.apikeylastfm
+			+'&format=json'
+			+'&autocorrect=1';
+	$.post( url, function( data ) {
+		var title = 'Playlist - Add Similar';
+		if ( 'error' in data || ! data.similartracks.track.length ) {
+			banner( 'lastfm', title, 'Track not found.' );
+		} else {
+			var val = data.similartracks.track;
+			var iL = val.length;
+			var similar = '';
+			for ( i = 0; i < iL; i++ ) {
+				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			}
+			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
+			bash( [ 'mpcsimilar', similar ], count => {
+				getPlaylist();
+				setButtonControl();
+				banner( 'library', title, count +' tracks added.' );
+			} );
+		}
+	}, 'json' );
+}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from server
@@ -137,34 +165,6 @@ function playlistSaveExist( type, name, oldname ) {
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
-}
-function addSimilar() {
-	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
-	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-			+'&artist='+ encodeURI( G.list.artist )
-			+'&track='+ encodeURI( G.list.name )
-			+'&api_key='+ G.apikeylastfm
-			+'&format=json'
-			+'&autocorrect=1';
-	$.post( url, function( data ) {
-		var title = 'Playlist - Add Similar';
-		if ( 'error' in data || ! data.similartracks.track.length ) {
-			banner( 'lastfm', title, 'Track not found.' );
-		} else {
-			var val = data.similartracks.track;
-			var iL = val.length;
-			var similar = '';
-			for ( i = 0; i < iL; i++ ) {
-				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
-			}
-			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
-			bash( [ 'mpcsimilar', similar ], count => {
-				getPlaylist();
-				setButtonControl();
-				banner( 'library', title, count +' tracks added.' );
-			} );
-		}
-	}, 'json' );
 }
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
@@ -426,7 +426,6 @@ function webRadioEdit() {
 	} );
 }
 function webRadioExists( error, name, url, charset ) {
-	var message = error == -1 ? 'already exists.' : 'contains no valid URL.';
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add Web Radio'
