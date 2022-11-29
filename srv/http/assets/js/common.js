@@ -107,7 +107,7 @@ $.fn.press = function( arg1, arg2 ) {
 function selectricSet() {
 	$( 'select' )
 		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
-		.on( 'selectric-close', () => local() ) // suppress visibilitychange by selectric
+		.on( 'selectric-close', () => local( 1000 ) ) // suppress visibilitychange by selectric
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );

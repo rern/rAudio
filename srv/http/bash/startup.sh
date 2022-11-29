@@ -163,3 +163,5 @@ touch $dirshm/startup
 [[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback
 
 [[ -e /boot/startup.sh ]] && /boot/startup.sh
+
+cp /boot/{cmdline,config}.txt /tmp

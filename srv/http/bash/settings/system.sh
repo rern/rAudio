@@ -22,9 +22,19 @@ dirPermissions() {
 	fi
 }
 pushReboot() {
+	name=$1
+	reboot=$2
 	pushRefresh
-	notify system "${1//\"/\\\"}" 'Reboot required.' 5000
-	echo $1 >> $dirshm/reboot
+	if [[ ! $reboot && -e /tmp/cmdline.txt && -e /tmp/config.txt ]] \
+		&& cmp -s /tmp/config.txt $fileconfig \
+		&& cmp -s /tmp/cmdline.txt /boot/cmdline.txt
+	then
+		sed -i "/$name/ d" $dirshm/reboot
+	else
+		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
+		echo $name >> $dirshm/reboot
+		exit
+	fi
 }
 I2Cset() {
 	# parse finalized settings
@@ -152,7 +162,7 @@ bluetooth )
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-		notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
+		grep -q dtparam=krnbt=on /tmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
@@ -452,7 +462,7 @@ backlight=${args[14]^}"
 		touch $dirsystem/lcdchar
 		I2Cset
 		if [[ $reboot ]]; then
-			pushReboot 'Character LCD'
+			pushReboot 'Character LCD' reboot
 		else
 			lcdchar.py logo
 			pushRefresh
@@ -626,14 +636,14 @@ mpdoled )
 			sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
+		touch $dirsystem/mpdoled
+		I2Cset
 		if [[ $chip != 1 && $chip != 7 ]]; then
+			! ls /dev/i2c* &> /dev/null && pushReboot 'Spectrum OLED' reboot
 			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
-			! ls /dev/i2c* &> /dev/null && reboot=1
 		else
 			! grep -q -m1 dtparam=spi=on $fileconfig && reboot=1
 		fi
-		touch $dirsystem/mpdoled
-		I2Cset
 		if [[ $reboot ]]; then
 			pushReboot 'Spectrum OLED'
 		else
@@ -783,7 +793,6 @@ sw=$sw
 led=$led
 reserved=$reserved
 " > $dirsystem/powerbutton.conf
-		prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 		sed -i '/gpio-shutdown/ d' $fileconfig
 		systemctl restart powerbutton
 		systemctl enable powerbutton
@@ -791,7 +800,7 @@ reserved=$reserved
 			pushRefresh
 		else
 			sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-			[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
+			pushReboot 'Power Button'
 		fi
 	else
 		if [[ -e $dirsystem/audiophonics ]]; then
