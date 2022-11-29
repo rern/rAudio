@@ -416,10 +416,16 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
-	if ( page !== 'system' ) location.href = '/';
+	if ( page !== 'system' ) {
+		location.href = '/'; 
+		return
+	}
 	
 	bash( [ 'rebootlist' ], list => {
-		if ( ! list ) location.href = '/';
+		if ( ! list ) {
+			location.href = '/';
+			return
+		}
 		
 		info( {
 			  icon    : page
