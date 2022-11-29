@@ -827,6 +827,9 @@ rfkilllist )
 <bll># rfkill</bll>
 $( rfkill )"
 	;;
+rmtempfile )
+	rm -f $dirshm/reboot $dirtmp/backup.gz
+	;;
 rotaryencoder )
 	if [[ ${args[1]} == true ]]; then
 		echo "\

@@ -416,16 +416,10 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
 } );
 $( '.close' ).click( function() {
-	if ( page !== 'system' ) {
-		location.href = '/';
-		retuirn
-	}
+	if ( page !== 'system' ) location.href = '/';
 	
 	bash( [ 'rebootlist' ], list => {
-		if ( ! list ) {
-			location.href = '/';
-			return
-		}
+		if ( ! list ) location.href = '/';
 		
 		info( {
 			  icon    : page
@@ -433,7 +427,7 @@ $( '.close' ).click( function() {
 			, message : 'Reboot required for:<br><br>'
 						+'<pre><wh>'+ list +'</wh></pre>'
 			, cancel  : () => {
-				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
+				bash( [ 'rmtempfile' ] );
 				location.href = '/';
 			}
 			, okcolor : orange
