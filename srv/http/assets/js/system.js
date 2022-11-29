@@ -677,40 +677,47 @@ $( '#setting-soundprofile' ).click( function() {
 $( '#backup' ).click( function() {
 	var icon  = 'sd';
 	var title = 'Backup Settings';
-	notify( icon, title, 'Process ...' );
-	bash( [ 'databackup' ], data => {
-		if ( data == 1 ) {
-			notify( icon, title, 'Download ...' );
-			fetch( '/data/tmp/backup.gz' )
-				.then( response => response.blob() )
-				.then( blob => {
-					var url = window.URL.createObjectURL( blob );
-					var a = document.createElement( 'a' );
-					a.style.display = 'none';
-					a.href = url;
-					a.download = 'backup.gz';
-					document.body.appendChild( a );
-					a.click();
-					setTimeout( () => {
-						a.remove();
-						window.URL.revokeObjectURL( url );
-						bannerHide();
-					}, 1000 );
-				} ).catch( () => {
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : 'Save all data and settings to file?'
+		, ok      : () => {
+			notify( icon, title, 'Process ...' );
+			bash( [ 'databackup' ], data => {
+				if ( data == 1 ) {
+					notify( icon, title, 'Download ...' );
+					fetch( '/data/tmp/backup.gz' )
+						.then( response => response.blob() )
+						.then( blob => {
+							var url = window.URL.createObjectURL( blob );
+							var a = document.createElement( 'a' );
+							a.style.display = 'none';
+							a.href = url;
+							a.download = 'backup.gz';
+							document.body.appendChild( a );
+							a.click();
+							setTimeout( () => {
+								a.remove();
+								window.URL.revokeObjectURL( url );
+								bannerHide();
+							}, 1000 );
+						} ).catch( () => {
+							info( {
+								  icon    : icon
+								, title   : title
+								, message : iconwarning +'File download failed.'
+							} );
+							bannerHide();
+						} );
+				} else {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : iconwarning +'File download failed.'
+						, message : 'Backup failed.'
 					} );
 					bannerHide();
-				} );
-		} else {
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : 'Backup failed.'
+				}
 			} );
-			bannerHide();
 		}
 	} );
 	$( '#backup' ).prop( 'checked', 0 );
