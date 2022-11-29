@@ -104,15 +104,17 @@ $.fn.press = function( arg1, arg2 ) {
 }
 
 // selectric --------------------------------------------------------------------
-function selectricRender() {
-	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
-	$( 'select' ).each( ( i, el ) => {
-		var $this = $( el );
-		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
-	} );
+function selectricSet() {
+	$( 'select' )
+		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
+		.on( 'selectric-close', () => local() ) // suppress visibilitychange by selectric
+		.each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
+		} );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
-$( 'select' ).on( 'selectric-close', () => local() ); // suppress visibilitychange by selectric
+
 // pushstream -----------------------------------------------------------------
 var page = location.search.replace( '?p=', '' );
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
@@ -645,7 +647,7 @@ function info( json ) {
 			I.boxW = 230;
 		}
 		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', I.boxW );
-		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
+		if ( $( '#infoContent select' ).length ) selectricSet(); // render selectric to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL      = $( '#infoContent tr:eq( 0 ) td' ).length;
 		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox

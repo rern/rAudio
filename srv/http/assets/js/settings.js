@@ -197,7 +197,7 @@ function setSwitch() {
 }
 function showContent() {
 	G.ready ? delete G.ready : bannerReset();
-	if ( $( 'select' ).length ) selectricRender();
+	if ( $( 'select' ).length ) selectricSet();
 	if ( page !== 'networks' ) {
 		$( 'pre.status' ).each( ( i, el ) => {
 			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );
