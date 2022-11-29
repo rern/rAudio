@@ -285,7 +285,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
 			<i id="button-pl-playlists" class="fa fa-playlists"></i>
-			<i id="button-pl-save" class="fa fa-save pllength"></i>
+			<i id="button-pl-save" class="fa fa-save-plus pllength"></i>
 			<i id="button-pl-consume" class="fa fa-flash"></i>
 			<i id="button-pl-librandom" class="fa fa-librandom"></i>
 			<i id="button-pl-shuffle" class="fa fa-shuffle pllength"></i>
