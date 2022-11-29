@@ -41,8 +41,8 @@ window.onresize = () => { // or rotate
 	displayBars();
 }
 function radioRefresh() {
-	var query = G.query[ G.query.length - 1 ];
-	if ( query.path ) {
+	if ( G.query.length ) {
+		var query = G.query[ G.query.length - 1 ];
 		list( query, function( html ) {
 			var data = {
 				  html      : html
@@ -336,10 +336,10 @@ function psRadioList( data ) {
 		G.status.counts[ data.type ] = data.count;
 		$( '#mode-'+ data.type +' gr' ).text( data.count );
 	}
-	if ( G.librarylist && G.mode === data.type ) {
-		radioRefresh();
-	} else if ( G.playlist && ! G.local ) {
-		getPlaylist();
+	if ( G.library ) {
+		if ( G.librarylist && G.mode === data.type ) radioRefresh();
+	} else if ( G.playlist ) {
+		if ( ! G.local ) getPlaylist();
 	}
 	G.status.updatingdab = false;
 	$( '#i-dabupdate' ).addClass( 'hide' );
