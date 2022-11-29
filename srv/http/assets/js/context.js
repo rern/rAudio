@@ -430,7 +430,8 @@ function webRadioExists( error, name, url, charset ) {
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add Web Radio'
-		, message : '<wh>'+ url +'</wh><br>'+ message
+		, message : iconwarning + error
+					+'<br><br><wh>'+ url +'</wh>'
 		, ok      : () => setTimeout( () => name ? webRadioNew( name, url, charset ) : webRadioEdit(), 300 )
 	} );
 }
@@ -473,18 +474,32 @@ function webRadioNew( name, url, charset ) {
 		}
 	} );
 }
-function webRadioSave( url ) {
+function webRadioSave( name ) {
+	var url = G.list.li.find( '.lipath' ).text();
 	info( {
 		  icon       : 'webradio'
 		, title      : 'Save Web Radio'
 		, message    : url
 		, textlabel  : 'Name'
+		, values     : name || ''
 		, focus      : 0
 		, checkblank : 1
 		, ok         : () => {
 			G.local     = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioadd', newname, url ], () => {
+			bash( [ 'webradioadd', '', newname, url ], error => {
+				if ( error ) {
+					bannerHide();
+					info( {
+						  icon    : 'webradio'
+						, title   : 'Save Web Radio'
+						, message : iconwarning + error
+									+'<br><br><wh>'+ url +'</wh>'
+						, ok      : () => setTimeout( () => webRadioSave( newname ), 300 )
+					} );
+					return
+				}
+				
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
 				G.list.li.find( '.savewr' ).remove();
@@ -647,7 +662,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrsave':
-			webRadioSave( G.list.li.find( '.lipath' ).text() );
+			webRadioSave();
 			return
 	}
 	

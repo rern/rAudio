@@ -243,31 +243,20 @@ webradioPlaylistVerify() {
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	if [[ $url ]]; then
-		urlname=${url//\//|}
-	else
-		echo -2
-		exit
-	fi
+	[[ ! $url ]] && echo 'No valid URL found:' && exit
 }
 webRadioSampling() {
 	url=$1
 	file=$2
-	timeout 3 wget -q $url -O /tmp/webradio
-	if [[ ! $( awk NF /tmp/webradio ) ]]; then
-		notify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
-		exit
-	fi
+	timeout 3 curl -sL $url -o /tmp/webradio
+	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
 	
 	data=( $( ffprobe -v quiet -select_streams a:0 \
 				-show_entries stream=sample_rate \
 				-show_entries format=bit_rate \
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
-	if [[ ! $data ]]; then
-		notify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
-		exit
-	fi
+	[[ ! $data ]] && 'No stream data found:' && exit
 	
 	samplerate=${data[0]}
 	bitrate=${data[1]}
@@ -1131,15 +1120,14 @@ webradioadd )
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	[[ -e "$file" ]] && echo -1 && exit
-	
+	[[ -e "$file" ]] && echo "<wh>$name</wh> already exists:" && exit
 	echo "\
 $name
 
 $charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
-	webRadioSampling $url "$file" &
+	webRadioSampling $url "$file" &> /dev/null &
 	;;
 webradiocopybackup )
 	webradioCopyBackup &> /dev/null &
