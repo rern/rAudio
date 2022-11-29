@@ -1034,8 +1034,8 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -v ^# /boot/config.txt )
 
-<bll># pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware</bll>
-$( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
+<bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
+$( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( < $file )
 	if [[ $raspberrypiconf ]]; then
