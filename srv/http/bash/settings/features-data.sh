@@ -7,6 +7,7 @@
 #    [[ -e $filesharedip ]]        = server + clients
 
 . /srv/http/bash/common.sh
+
 spotifyredirect=https://rern.github.io/raudio/spotify
 
 dirscrobble=$dirsystem/scrobble.conf
@@ -63,7 +64,8 @@ data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
 , "upmpdcliactive"   : '$( [[ $( < $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
-if [[ -e /etc/X11/xinit/xinitrc ]]; then
+if [[ -e /usr/bin/chromium ]]; then
+	[[ ! -e $dirtmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf $dirtmp
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	if [[ -e $dirsystem/localbrowser.conf ]]; then
