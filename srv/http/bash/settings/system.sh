@@ -21,21 +21,6 @@ dirPermissions() {
 		done
 	fi
 }
-pushReboot() {
-	name=$1
-	reboot=$2
-	pushRefresh
-	if [[ ! $reboot && -e /tmp/cmdline.txt && -e /tmp/config.txt ]] \
-		&& cmp -s /tmp/config.txt $fileconfig \
-		&& cmp -s /tmp/cmdline.txt /boot/cmdline.txt
-	then
-		sed -i "/$name/ d" $dirshm/reboot
-	else
-		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
-		echo $name >> $dirshm/reboot
-		exit
-	fi
-}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
@@ -65,6 +50,18 @@ I2Cset() {
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo i2c-dev >> $filemodule
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
+}
+pushReboot() {
+	name=$1
+	reboot=$2
+	pushRefresh
+	if [[ ! $reboot ]] && cmp -s $dirtmp/config.txt $fileconfig && cmp -s $dirtmp/cmdline.txt /boot/cmdline.txt; then
+		sed -i "/$name/ d" $dirshm/reboot
+	else
+		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
+		echo $name >> $dirshm/reboot
+		exit
+	fi
 }
 sharedDataIPlist() {
 	list=$( ipAddress )
@@ -162,7 +159,7 @@ bluetooth )
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-		grep -q dtparam=krnbt=on /tmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
+		grep -q dtparam=krnbt=on $dirtmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
@@ -815,7 +812,7 @@ reserved=$reserved
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
-	[[ -e $dirshm/reboot ]] && sort -u $dirshm/reboot
+	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
 	;;
 relays )
 	rm -f $dirsystem/relays

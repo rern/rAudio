@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-[[ ! -e /tmp/config.txt ]] && cp /boot/{cmdline,config}.txt /tmp
+[[ ! -e $dirtmp/config.txt ]] && cp /boot/{cmdline,config}.txt $dirtmp
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
