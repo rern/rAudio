@@ -162,4 +162,6 @@ touch $dirshm/startup
 
 [[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
+if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
+	/boot/startup.sh
+fi
