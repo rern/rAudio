@@ -304,6 +304,7 @@ $body = [
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
+		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
 Backup all data and settings:
  • Library: Database, Bookmarks, DAB Radio, Web Radio
@@ -316,6 +317,7 @@ EOF
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
+		, 'setting' => 'nobanner'
 		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [

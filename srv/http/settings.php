@@ -114,9 +114,10 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default  = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
-		                                // false    = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'custom' = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
+		, 'setting'     => (none)       // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
+		                                // false      = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
+		                                // 'nobanner' = no icon, no setting, no banner
+		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
