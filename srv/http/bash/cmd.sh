@@ -1017,7 +1017,7 @@ savedpledit )
 		to=${args[4]}
 		file=$( sed -n "$from p" "$plfile" )
 		sed -i "$from d" "$plfile"
-		sed -i "$to a$file" "$plfile"
+		[[ $to == 0 ]] && sed -i "1 i$file" "$plfile" || sed -i "$to a$file" "$plfile"
 	fi
 	pushstreamSavedPlaylist
 	;;
