@@ -322,9 +322,7 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-var debounce;
 var dirsystem    = '/srv/http/data/system';
-var intervalcputime;
 var localhost    = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange       = '#de810e';
 var page         = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
@@ -336,37 +334,15 @@ var pagenext     = {
 	, networks : [ 'player', 'system' ]
 	, system   : [ 'networks', 'features' ]
 }
-var $focus;
-var selectchange = 0;
 
-document.title   = page;
+document.title = page;
 
-if ( navigator.maxTouchPoints ) { // swipe
-	var xstart;
-	window.addEventListener( 'touchstart', function( e ) {
-		if ( $( e.target ).is( 'input' ) ) return
-		
-		xstart = e.changedTouches[ 0 ].pageX;
-	} );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( $( e.target ).is( 'input' ) ) return
-		
-		var xdiff = xstart - e.changedTouches[ 0 ].pageX;
-		if ( Math.abs( xdiff ) < 100 ) return
-		
-		xdiff > 0 ? $( '#'+ pagenext[ page ][ 1 ] ).click() : $( '#'+ pagenext[ page ][ 0 ] ).click();
-	} );
-}
-
-if ( localhost ) {
-	$( 'a' ).removeAttr( 'href' );
-} else {
-	$( 'a[href]' ).attr( 'target', '_blank' );
-}
+localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).keyup( function( e ) {
 	if ( ! I.infohide ) return
 	
+	var $focus;
 	var key = e.key;
 	switch ( key ) {
 		case 'Tab':

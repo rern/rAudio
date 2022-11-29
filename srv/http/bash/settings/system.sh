@@ -410,6 +410,7 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<r
 	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
 	if [[ $startupfinished ]]; then
 		echo "\
+<bll># journalctl -b | sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}'</bll>
 $startupfinished
 
 $journal" | tee $filebootlog
@@ -1033,7 +1034,7 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -v ^# /boot/config.txt )
 
-<bll># bootloader and firmware</bll>
+<bll># pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware</bll>
 $( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( < $file )
