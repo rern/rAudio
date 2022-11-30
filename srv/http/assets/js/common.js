@@ -21,6 +21,14 @@ $( 'body' ).prepend( `
 ` );
 
 // ----------------------------------------------------------------------
+$( '#data' ).on( 'click', '.copy', function() {
+	banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
+	// copy2clipboard - for non https which cannot use clipboard API
+	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+} );
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
@@ -30,14 +38,6 @@ function errorDisplay( msg, list ) {
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
-	$( '#data' ).on( 'click', '.copy', function() {
-		banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
-		// copy2clipboard - for non https which cannot use clipboard API
-		$( 'body' ).prepend( '<textarea id="error">'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'</textarea>' );
-		$( '#error' ).focus().select();
-		document.execCommand( 'copy' );
-		$( '#error' ).remove();
-	} );
 	loaderHide();
 }
 function infoPower() {
