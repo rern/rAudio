@@ -8,14 +8,6 @@
 # convert each line to each args
 readarray -t args <<< $1
 
-columnFileOutput() {
-	fileoutput=$dirmpdconf/output.conf
-	conf=$( sed -E '/{$|^}/ d; s/  *"/^"/' $fileoutput | column -t -s^ )
-	echo "\
-audio_output {
-$conf
-}" > $fileoutput
-}
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}${args[0]}.conf
 }
@@ -225,17 +217,22 @@ novolume )
 	pushstream display '{"volumenone":true}'
 	;;
 replaygain )
+	fileoutput=$dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
-		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $dirmpdconf/output.conf ) == 1 )); then
-			sed -i '/}/ i\	replay_gain_handler  "mixer"' $dirmpdconf/output.conf
+		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $fileoutput ) == 1 )); then
+			sed -i '/}/ i\	replay_gain_handler  "mixer"' $fileoutput
 		fi
 		linkConf
 	else
-		sed -i '/replay_gain_handler/ d' $dirmpdconf/output.conf
+		sed -i '/replay_gain_handler/ d' $fileoutput
 		rm $dirmpdconf/replaygain.conf
 	fi
-	columnFileOutput
+	conf=$( grep -Ev '{$|}$' $fileoutput | column -t -s^ )
+	echo "\
+audio_output {
+$conf
+}" > $fileoutput
 	restartMPD
 	;;
 soxr )
