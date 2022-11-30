@@ -409,7 +409,7 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<r
 	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
 	if [[ $startupfinished ]]; then
 		echo "\
-<bll># journalctl -b -o cat | grep 'Startup finished'</bll>
+<bll># journalctl -b -o cat -g 'Startup finished'</bll>
 $startupfinished
 
 $journal" | tee $filebootlog
