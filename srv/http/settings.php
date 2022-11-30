@@ -3,9 +3,6 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
 }
-
-include 'common.php'; // <!DOCTYPE html>
-
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $page      = $_GET[ 'p' ];
 $icon      = $page;
@@ -32,14 +29,14 @@ if ( $relays )              $css[] = 'relays';
 $style = '';
 foreach( $css as $c ) $style.= '
 <link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-echo $style;
-?>
 
-</head>
-<body>
+include 'common.php';      // <!DOCTYPE html> ---------------------------------------------
+
+echo $style;
+
+include 'common-body.php'; // </head><body> -----------------------------------------------
+?>
 <!-- head ........................................................................... -->
-<div id="button-data" class="hide"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
-<pre id="data" class="hide"></pre>
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
 </div>
@@ -71,18 +68,18 @@ if ( ! $addons ) {
 	echo $htmlbar;
 }
 //   js ..............................................................................
-                   $jsp   = [ 'jquery-3.6.1' ];
+                   $jsp   = [ 'jquery' ];
 				   $js    = [];
-if ( ! $addons )   $jsp[] = 'pushstream-20211210';
+if ( ! $addons )   $jsp[] = 'pushstream';
                    $js[]  = 'common';
 if ( ! $addons )   $js[]  = 'settings';
                    $js[]  = $page;
-if ( ! $networks ) $jsp[] = 'jquery.selectric-1.13.1';
+if ( ! $networks ) $jsp[] = 'jquery.selectric';
 if ( $networks )   $jsp[] = 'qrcode';
 if ( $relays )     $js[]  = 'relays';
 $script = '';
 foreach( $jsp as $j ) $script.= '
-<script src="/assets/js/plugin/'.$j.'.min.js"></script>';
+<script src="/assets/js/plugin/'.$j.'-'.$jlist[ $j ].'"></script>';
 // with cache busting
 foreach( $js as $j ) $script.= '
 <script src="/assets/js/'.$j.'.js'.$hash.'"></script>';

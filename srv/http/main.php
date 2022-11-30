@@ -330,4 +330,3 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
 </div>
 <div id="bio" class="hide"></div>
-<pre id="data" class="hide"></pre>
