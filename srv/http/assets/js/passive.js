@@ -1,4 +1,6 @@
 window.onresize = () => { // or rotate
+	if ( G.local ) return
+	
 	var wH = window.innerHeight;
 	var wW = window.innerWidth;
 	if ( G.wH === wH && G.wW === wW ) return
