@@ -40,6 +40,7 @@ if [[ $i == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
+		systemctl stop camilladsp &> /dev/null
 		notify output 'Audio Output' '(None)'
 	fi
 else # with audio devices (from player-devices.sh)
