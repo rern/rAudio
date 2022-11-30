@@ -59,7 +59,7 @@ function bookmarkNew() {
 			, beforeshow : () => $( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' )
 			, ok         : () => {
 				var name = infoVal();
-				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], std => {
+				bash( [ 'bookmarkadd', name, path, coverart ], std => {
 					if ( std == -1 ) {
 						bannerHide();
 						info( {
