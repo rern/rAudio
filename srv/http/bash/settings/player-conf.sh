@@ -8,7 +8,7 @@
 # - mixer_device  - card index
 
 . /srv/http/bash/common.sh
-usbdac=$1 # from usbdac.rules for player-devices.sh
+usbdac=$1 # from usbdac.rules - player-conf.sh [add|remove]
 
 . $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
@@ -36,7 +36,13 @@ $audiooutputbt
 ########
 fi
 
-if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
+if [[ $i == -1 ]]; then # no audio devices
+	if [[ $usbdac == remove ]]; then
+		pushstream display '{"volumenone":true}'
+		notify output 'Audio Output' '(None)'
+		sleep 2
+	fi
+else # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
@@ -45,7 +51,8 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
-		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
+		[[ $mixertype == none ]] && volumenone=true || volumenone=false
+		pushstream display '{"volumenone":'$volumenone'}'
 		notify output 'Audio Output' "$name"
 		[[ $usbdac == remove ]] && sleep 2
 	fi
