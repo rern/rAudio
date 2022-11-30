@@ -419,7 +419,9 @@ function renderPage() {
 	} else {
 		$( '#divbtreceiver' ).addClass( 'hide' );
 	}
-	if ( G.asoundcard !== -1 ) {
+	if ( G.asoundcard === -1 ) {
+		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
+	} else {
 		G.device        = G.devices[ G.asoundcard ];
 		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
 		G.novolume      = G.device.mixertype === 'none' && ! G.resampled;
@@ -427,7 +429,7 @@ function renderPage() {
 		$.each( G.devices, ( i, el ) => {
 			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
 		} );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype, #divbitperfect' ).removeClass( 'hide' );
+		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.val( G.asoundcard );

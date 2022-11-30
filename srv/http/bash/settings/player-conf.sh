@@ -38,9 +38,9 @@ fi
 
 if [[ $i == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
-		notify output 'Audio Output' '(None)'
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
+		notify output 'Audio Output' '(None)'
 		systemctl stop shairport-sync spotifyd &> /dev/null
 		sleep 2
 	fi
@@ -54,9 +54,9 @@ else # with audio devices (from player-devices.sh)
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		notify output 'Audio Output' "$name"
 		pushstream display '{"volumenone":'$volumenone'}'
 		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
+		notify output 'Audio Output' "$name"
 		[[ $usbdac == remove ]] && sleep 2
 		for pkg in shairport-sync spotifyd; do
 			systemctl -q is-enabled $pkg && systemctl start $pkg
