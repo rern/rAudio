@@ -108,6 +108,10 @@ codered  {
 	color         : var( --cw );
 	background    : #f00;
 }
+#data hr {
+	margin-left  : -20px;
+	margin-right : -20px;
+}
 .splash {
 	background: #000000 !important;
 }
