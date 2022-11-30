@@ -15,7 +15,6 @@ if ( is_link( '/srv/http/data/mpd' ) ) {
 	$disablednfs = 'Currently connected by clients';
 }
 
-if ( ! file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
@@ -98,7 +97,7 @@ EOF
 ];
 htmlSection( $head, $body, 'renderers' );
 // ----------------------------------------------------------------------------------
-}
+
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[

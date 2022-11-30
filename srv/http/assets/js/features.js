@@ -519,9 +519,9 @@ function renderPage() {
 	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
 	$( '#stoptimer' ).toggleClass( 'disabled', ! G.playing );
 	if ( G.nosound ) {
-		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
+		$( '#divdsp' ).addClass( 'hide' );
 	} else {
-		$( '#divdsp, #divsnapserver' ).removeClass( 'hide' );
+		$( '#divdsp' ).removeClass( 'hide' );
 		$( '#camilladsp' ).toggleClass( 'disabled', G.bluetoothsink || G.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
 	}
