@@ -1,5 +1,5 @@
 /* 
-infoPower(), loader(), local(), $.fn.press()
+errorDisplay(), infoPower(), loader(), local(), $.fn.press()
 pushstream,  selectric
 banner(),    info()
 */
@@ -21,6 +21,25 @@ $( 'body' ).prepend( `
 ` );
 
 // ----------------------------------------------------------------------
+function errorDisplay( msg, list ) {
+	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
+	var error =  '<code>Errors:</code> '+ msg.replace( pos, '<code>'+ pos +'</code>' )
+				+'&emsp;<a class="infobtn infobtn-primary copy">Copy</a>'
+				+'<hr>'
+				+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+	$( '#data' )
+		.html( error )
+		.removeClass( 'hide' );
+	$( '#data' ).on( 'click', '.copy', function() {
+		banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
+		// copy2clipboard - for non https which cannot use clipboard API
+		$( 'body' ).prepend( '<textarea id="error">'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'</textarea>' );
+		$( '#error' ).focus().select();
+		document.execCommand( 'copy' );
+		$( '#error' ).remove();
+	} );
+	loaderHide();
+}
 function infoPower() {
 	info( {
 		  icon        : 'power'

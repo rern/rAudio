@@ -530,21 +530,11 @@ function getPlaybackStatus( withdisplay ) {
 		try {
 			var status = JSON.parse( list );
 		} catch( e ) {
-			var msg = e.message;
-			if ( msg.includes( 'position' ) ) {
-				var pos = msg.replace( /.* position /, '' );
-			} else {
-				var pos = msg.replace( /.* column (.*) of .*/, '$1' );
-			}
-			var errors = '<red>Error:</red> '+ msg.replace( pos, '<red>'+ pos +'</red>' )
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			$( '#loader' )
-				.html( '<pre>'+ errors +'</pre>' )
-				.removeClass( 'hide' );
+			errorDisplay( e.message, list );
 			return false
 		}
 		
+		$( '#data' ).empty().addClass( 'hide' );
 		if ( 'display' in status ) {
 			G.display      = status.display;
 			G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;

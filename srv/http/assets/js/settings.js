@@ -55,12 +55,6 @@ function bannerReset() {
 function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', G[ id ] );
 }
-function copy2clipboard( txt ) { // for non https which cannot use clipboard API
-	$( 'body' ).append( '<textarea id="error">'+ txt +'</textarea>' );
-	$( '#error' ).focus().select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-}
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( ! refresh && ! $el.hasClass( 'hide' ) ) {
@@ -128,37 +122,22 @@ function list2JSON( list ) {
 							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
 							+ status;
-				listError( error );
-				$( '#data' ).on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
-					notify( 'mpd', 'MPD', 'Start ...' );
-				} );
+				$( '#data' )
+					.html( error )
+					.removeClass( 'hide' )
+					.on( 'click', '.restart', function() {
+						bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
+						notify( 'mpd', 'MPD', 'Start ...' );
+					} );
 			} );
 		} else {
-			var msg   = e.message.split( ' ' );
-			var pos   = msg.pop();
-			var error =  iconwarning +'<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
-						+'<a class="infobtn infobtn-primary copy">Copy</a>'
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			listError( error );
-			$( '#data' ).on( 'click', '.copy', function() {
-				copy2clipboard( 'Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list );
-				banner( 'warning', 'Errors', 'Data copied to clipboard.' );
-			} );
+			errorDisplay( e.message, list );
 		}
 		return false
 	}
-	// no errors
-	if ( $( '#data .fa-warning' ).length ) $( '#data' ).empty().addClass( 'hide' );
+	
+	$( '#data' ).empty().addClass( 'hide' );
 	return true
-}
-function listError( error ) {
-	$( '.container' ).addClass( 'hide' );
-	$( '#data' )
-		.html( error )
-		.removeClass( 'hide' );
-	loaderHide();
 }
 function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
