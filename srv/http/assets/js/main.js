@@ -104,7 +104,6 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ G.page ][ diff > 0 ? 1 : 0 ] ).click();
 		xstart = 0;
 	} );
-	document.addEventListener( 'scroll', () => local(), true ); // suppress resize on scroll
 } else {
 	var hash = versionHash();
 	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css'+ hash +'">' );

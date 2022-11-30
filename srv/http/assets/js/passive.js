@@ -1,11 +1,10 @@
 window.onresize = () => { // or rotate
-	if ( G.local ) return
+	//return
 	
-	var wH = window.innerHeight;
 	var wW = window.innerWidth;
-	if ( G.wH === wH && G.wW === wW ) return
+	if ( G.wW === wW ) return
 	
-	G.wH = wH;
+	G.wH = window.innerHeight;
 	G.wW = wW;
 	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
