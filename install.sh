@@ -15,6 +15,15 @@ dirsystem=$dirdata/system
 dirwebradio=/srv/http/data/webradio
 
 # 20221130
+readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
+if [[ $bookmarks ]]; then
+	for file in "${bookmarks[@]}"; do
+ 		path=$( head -1 "$file" )
+ 		coverart=$( ls -1 "/mnt/MPD/$path/coverart".* | head -1 )
+ 		[[ $coverart ]] && ! grep -q "$coverart" "$file" && sed -i "2 s|.*|$coverart|" "$file"
+ 	done
+fi
+
 rm -rf /srv/http/data/tmp
 
 sed -i 's/5000/5005/' /srv/http/settings/camillagui/config/camillagui.yml
