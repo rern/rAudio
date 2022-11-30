@@ -41,7 +41,7 @@ if [[ $i == -1 ]]; then # no audio devices
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
 		systemctl stop camilladsp &> /dev/null
-		notify output 'Audio Output' '(None)'
+		outputswitch='(None)'
 	fi
 else # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[i]}
@@ -55,7 +55,7 @@ else # with audio devices (from player-devices.sh)
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
 		pushstream display '{"volumenone":'$volumenone'}'
 		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
-		notify output 'Audio Output' "$name"
+		outputswitch=$name
 		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
 	if [[ $dsp ]]; then # from player-asound.sh
@@ -134,7 +134,11 @@ fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
 [[ -e $dirshm/startup ]] && $dirbash/status-push.sh
+
 $dirsettings/player-data.sh pushrefresh
+
+[[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
+
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 systemctl stop shairport-sync shairport spotifyd &> /dev/null
