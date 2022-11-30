@@ -14,7 +14,7 @@ dirshm=$dirdata/shm
 dirsystem=$dirdata/system
 dirwebradio=/srv/http/data/webradio
 
-# 20221128
+# 20221130
 readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
 if [[ $bookmarks ]]; then
 	for file in "${bookmarks[@]}"; do

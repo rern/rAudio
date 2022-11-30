@@ -41,7 +41,6 @@ if [[ $i == -1 ]]; then # no audio devices
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
 		notify output 'Audio Output' '(None)'
-		sleep 2
 	fi
 else # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[i]}
@@ -56,7 +55,6 @@ else # with audio devices (from player-devices.sh)
 		pushstream display '{"volumenone":'$volumenone'}'
 		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
 		notify output 'Audio Output' "$name"
-		[[ $usbdac == remove ]] && sleep 2
 	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
