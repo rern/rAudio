@@ -41,7 +41,6 @@ if [[ $i == -1 ]]; then # no audio devices
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
 		notify output 'Audio Output' '(None)'
-		systemctl stop shairport-sync spotifyd &> /dev/null
 		sleep 2
 	fi
 else # with audio devices (from player-devices.sh)
@@ -58,9 +57,6 @@ else # with audio devices (from player-devices.sh)
 		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
 		notify output 'Audio Output' "$name"
 		[[ $usbdac == remove ]] && sleep 2
-		for pkg in shairport-sync spotifyd; do
-			systemctl -q is-enabled $pkg && systemctl start $pkg
-		done
 	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
@@ -141,6 +137,8 @@ fi
 $dirsettings/player-data.sh pushrefresh
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
+systemctl stop shairport-sync shairport spotifyd &> /dev/null
+
 [[ $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
 
 # renderers -----------------------------------------------------------------------------
@@ -162,7 +160,7 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl try-restart shairport-sync shairport
+	systemctl -q is-enabled shairport-sync && systemctl start shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
@@ -187,5 +185,5 @@ volume_controller = "alsa"'
 #-------
 	fi
 	echo "$conf" > /etc/spotifyd.conf
-	systemctl try-restart spotifyd
+	systemctl -q is-enabled spotifyd && systemctl start spotifyd
 fi
