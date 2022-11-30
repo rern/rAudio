@@ -228,11 +228,11 @@ replaygain )
 		sed -i '/replay_gain_handler/ d' $fileoutput
 		rm $dirmpdconf/replaygain.conf
 	fi
-	conf=$( grep -Ev '{$|}$' $fileoutput | column -t -s^ )
-	echo "\
+	output="\
 audio_output {
-$conf
-}" > $fileoutput
+$( grep -Ev '{$|}$' $fileoutput | column -t -s^ )
+}"
+	echo "$output" > $fileoutput
 	restartMPD
 	;;
 soxr )
