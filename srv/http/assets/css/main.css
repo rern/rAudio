@@ -416,6 +416,7 @@ i.map.disabled, .map.disabled i {
 	display: flex;
 	flex-flow: row wrap;
 	justify-content: center;
+	align-items: center;
 	margin: 30px auto 0;
 	padding: 0;
 	min-height: 230px;
@@ -2011,9 +2012,6 @@ li.active .li2 bl {
 	float: right;
 }
 /************************************************************************************/
-@media ( min-width: 900px ) {
-	#playback-row { align-items: center }
-}
 @media (min-width: 2038px) {
 	.coverart { width: 200px }
 }
