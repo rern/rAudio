@@ -686,7 +686,7 @@ $( '#backup' ).click( function() {
 			bash( [ 'databackup' ], data => {
 				if ( data == 1 ) {
 					notify( icon, title, 'Download ...' );
-					fetch( '/data/tmp/backup.gz' )
+					fetch( '/data/shm/backup.gz' )
 						.then( response => response.blob() )
 						.then( blob => {
 							var url = window.URL.createObjectURL( blob );

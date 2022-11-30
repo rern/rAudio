@@ -65,7 +65,7 @@ data+='
 , "upmpdcliactive"   : '$( [[ $( < $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /usr/bin/chromium ]]; then
-	[[ ! -e $dirtmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf $dirtmp
+	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	if [[ -e $dirsystem/localbrowser.conf ]]; then

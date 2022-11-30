@@ -52,7 +52,6 @@ connectedCheck() {
 	done
 }
 
-rm $dirtmp/*
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm

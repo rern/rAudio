@@ -55,7 +55,7 @@ pushReboot() {
 	name=$1
 	reboot=$2
 	pushRefresh
-	if [[ ! $reboot ]] && cmp -s $dirtmp/config.txt $fileconfig && cmp -s $dirtmp/cmdline.txt /boot/cmdline.txt; then
+	if [[ ! $reboot ]] && cmp -s /tmp/config.txt $fileconfig && cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		sed -i "/$name/ d" $dirshm/reboot
 	else
 		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
@@ -159,7 +159,7 @@ bluetooth )
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-		grep -q dtparam=krnbt=on $dirtmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
+		grep -q dtparam=krnbt=on /tmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
@@ -187,7 +187,7 @@ $( bluetoothctl show $mac )"
 	;;
 databackup )
 	dirconfig=$dirdata/config
-	backupfile=$dirtmp/backup.gz
+	backupfile=$dirshm/backup.gz
 	rm -f $backupfile
 	alsactl store
 	files=(
@@ -247,7 +247,6 @@ databackup )
 		--exclude './embedded' \
 		--exclude './shm' \
 		--exclude './system/version' \
-		--exclude './tmp' \
 		-czf $backupfile \
 		-C /srv/http \
 		data \
@@ -256,7 +255,7 @@ databackup )
 	rm -rf $dirdata/{config,disable,enable}
 	;;
 datarestore )
-	backupfile=$dirtmp/backup.gz
+	backupfile=$dirshm/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
 	# remove all flags
@@ -399,7 +398,7 @@ dtparam=audio=on"
 	pushReboot 'Audio I&#178;S module'
 	;;
 journalctl )
-	filebootlog=$dirtmp/bootlog
+	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 	
 	journal="\
@@ -656,7 +655,7 @@ mpdoled )
 	fi
 	;;
 packagelist )
-	filepackages=$dirtmp/packages
+	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then
 		notify system Backend 'Package list ...'
 		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
@@ -679,7 +678,7 @@ $description
 				s|^Name.*: (.*)|\1</a> |
 				s|^Vers.*: (.*)|\1|
 				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
-				> $dirtmp/packages
+				> /tmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
@@ -814,6 +813,7 @@ reserved=$reserved
 rebootlist )
 	killall networks-scan.sh &> /dev/null
 	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
+	rm -f $dirshm/{reboot,backup.gz}
 	;;
 relays )
 	rm -f $dirsystem/relays
@@ -824,9 +824,6 @@ rfkilllist )
 	echo "\
 <bll># rfkill</bll>
 $( rfkill )"
-	;;
-rmtempfile )
-	rm -f $dirshm/reboot $dirtmp/backup.gz
 	;;
 rotaryencoder )
 	if [[ ${args[1]} == true ]]; then

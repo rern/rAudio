@@ -15,6 +15,8 @@ dirsystem=$dirdata/system
 dirwebradio=/srv/http/data/webradio
 
 # 20221128
+rm -rf /srv/http/data/tmp
+
 sed -i 's/5000/5005/' /srv/http/settings/camillagui/config/camillagui.yml
 
 if [[ -e "$dirwebradio/https:||stream.radioparadise.com|world-etc-flac" ]]; then

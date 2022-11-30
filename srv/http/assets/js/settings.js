@@ -408,10 +408,7 @@ $( '.close' ).click( function() {
 			, title   : 'System Setting'
 			, message : 'Reboot required for:<br><br>'
 						+'<pre><wh>'+ list +'</wh></pre>'
-			, cancel  : () => {
-				bash( [ 'rmtempfile' ] );
-				location.href = '/';
-			}
+			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )

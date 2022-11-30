@@ -197,7 +197,7 @@ cursor=$newcursor
 				sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 				pushRefresh
-				if ! grep -q "rotate=$newrotate" $dirtmp/localbrowser.conf; then
+				if ! grep -q "rotate=$newrotate" /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
 					notify chromium 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
