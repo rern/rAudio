@@ -23,10 +23,10 @@ $( 'body' ).prepend( `
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
-	var error =  '<code>Errors:</code> '+ msg.replace( pos, '<code>'+ pos +'</code>' )
+	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
 				+'&emsp;<a class="infobtn infobtn-primary copy">Copy</a>'
 				+'<hr>'
-				+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
+				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );

@@ -50,7 +50,7 @@ heading,
 	height: 40px;
 	font-size: 30px;
 	background: var( --cga );
-	z-index: 10;
+	z-index: 115;
 }
 #button-data i {
 	width: 40px;

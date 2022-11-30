@@ -38,7 +38,7 @@ echo $style;
 </head>
 <body>
 <!-- head ........................................................................... -->
-<div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
+<div id="button-data" class="hide"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>

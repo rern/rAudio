@@ -93,7 +93,7 @@ function highlightJSON( json ) {
 	var json = Object.keys( json )
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = JSON.stringify( json, null, '\t' );
+	json = '\n\n'+ JSON.stringify( json, null, '\t' );
 	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
 		if ( /^"/.test( match ) ) {              // string
 			if ( /:$/.test( match ) ) { // key
@@ -136,7 +136,8 @@ function list2JSON( list ) {
 		return false
 	}
 	
-	$( '#data' ).empty().addClass( 'hide' );
+	$( '#data' ).empty();
+	$( '#button-data, #data' ).addClass( 'hide' );
 	return true
 }
 function notify( icon, title, message, delay ) {
@@ -397,13 +398,12 @@ $( '.close' ).click( function() {
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( G ) ) return
 	
-	$( '#data' )
-		.html( highlightJSON( G ) )
-		.removeClass( 'hide' );
+	$( '#data' ).html( highlightJSON( G ) )
+	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
 } );
 $( '#button-data' ).click( function() {
-	$( '#data' ).addClass( 'hide' );
+	$( '#button-data, #data' ).addClass( 'hide' );
 	setSwitch();
 	renderPage();
 } ).on( 'mousedown touchdown', function() {
