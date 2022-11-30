@@ -56,8 +56,9 @@ else # with audio devices (from player-devices.sh)
 		pushstream display '{"volumenone":'$volumenone'}'
 		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
 		notify output 'Audio Output' "$name"
+		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
-	if [[ $dsp ]]; then
+	if [[ $dsp ]]; then # from player-asound.sh
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------< camilladsp
