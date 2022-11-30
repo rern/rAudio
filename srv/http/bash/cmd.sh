@@ -495,14 +495,6 @@ coverfileslimit )
 			| xargs rm -f --
 	done
 	;;
-cssversion )
-	files=$( ls /srv/http/assets/css/*.min.* )
-	for file in $files; do
-		name=$( basename $file )
-		data+=',"'${name/-*}'":"'$name'"'
-	done
-	echo { ${data:1} }
-	;;
 dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &

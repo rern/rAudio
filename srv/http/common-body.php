@@ -18,10 +18,10 @@
 <div id="button-data" class="hide"><i class="fa fa-times"></i><span class="title wh">'.$title.'-DATA</span></div>
 ';
 // js plugin version from filenames
-$plugins = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 ); // remove ., ..
+$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 ); // remove ., ..
 $jlist   = [];
-foreach( $plugins as $file ) {
-	$file_ver               = explode( '-', $file );
-	$jlist[ $file_ver[ 0 ] ] = $file;
+foreach( $jsfiles as $file ) {
+	$name_ver               = explode( '-', $file );
+	$jlist[ $name_ver[ 0 ] ] = $file;
 }
 ?>

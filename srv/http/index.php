@@ -4,11 +4,17 @@ $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $css       = [ 'roundslider', 'main' ];
 if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
-$cssver    =  json_decode( exec( '/srv/http/bash/cmd.sh cssversion' ) );
+$cssfiles  = glob( '/srv/http/assets/css/*.min.*' );
+$clist     = [];
+foreach( $cssfiles as $file ) {
+	$name = basename( $file );
+	$name_ver                = explode( '-', $name );
+	$clist[ $name_ver[ 0 ] ] = $name;
+}
 $style     = '';
 foreach( $css as $c ) {
 	if ( $c === 'roundslider' || $c === 'simplekeyboard' ) {
-		$style.= '<link rel="stylesheet" href="/assets/css/'.$cssver->$c.'">';
+		$style.= '<link rel="stylesheet" href="/assets/css/'.$clist[ $c ].'">';
 	} else {
 		$style.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 	}
