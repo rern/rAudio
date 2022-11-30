@@ -38,8 +38,10 @@ fi
 
 if [[ $i == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
-		pushstream display '{"volumenone":true}'
 		notify output 'Audio Output' '(None)'
+		pushstream display '{"volumenone":true}'
+		pushstream refresh '{"page":"features","nosound":true}'
+		systemctl stop shairport-sync spotifyd &> /dev/null
 		sleep 2
 	fi
 else # with audio devices (from player-devices.sh)
@@ -52,9 +54,13 @@ else # with audio devices (from player-devices.sh)
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		pushstream display '{"volumenone":'$volumenone'}'
 		notify output 'Audio Output' "$name"
+		pushstream display '{"volumenone":'$volumenone'}'
+		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
 		[[ $usbdac == remove ]] && sleep 2
+		for pkg in shairport-sync spotifyd; do
+			systemctl -q is-enabled $pkg && systemctl start $pkg
+		done
 	fi
 	if [[ $dsp ]]; then
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
