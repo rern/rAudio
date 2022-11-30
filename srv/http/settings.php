@@ -79,7 +79,7 @@ if ( $networks )   $jsp[] = 'qrcode';
 if ( $relays )     $js[]  = 'relays';
 $script = '';
 foreach( $jsp as $j ) $script.= '
-<script src="/assets/js/plugin/'.$j.'-'.$jlist[ $j ].'"></script>';
+<script src="/assets/js/plugin/'.$jlist[ $j ].'"></script>';
 // with cache busting
 foreach( $js as $j ) $script.= '
 <script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
