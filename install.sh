@@ -18,9 +18,7 @@ dirwebradio=/srv/http/data/webradio
 readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
 if [[ $bookmarks ]]; then
 	for file in "${bookmarks[@]}"; do
- 		path=$( head -1 "$file" )
- 		coverart=$( ls -1 "/mnt/MPD/$path/coverart".* | head -1 )
- 		[[ $coverart ]] && ! grep -q "$coverart" "$file" && sed -i "2 s|.*|$coverart|" "$file"
+		(( $( wc -l < "$file" ) > 1 )) && sed -i '2,$ d' "$file"
  	done
 fi
 

@@ -745,7 +745,13 @@ function libraryHome() {
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-			$( this ).replaceWith( '<i class="fa fa-bookmark bookmark bl"></i>' );
+			var $this = $( this );
+			var src = $this.attr( 'src' );
+			if ( src.slice( -16, -13 ) === 'jpg' ) {
+				$this.attr( 'src', src.replace( 'jpg?v=', 'gif?v=' ) );
+			} else {
+				$this.replaceWith( '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'+ $this.data( 'label' ) +'</a>' );
+			}
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 	}, 'json' );

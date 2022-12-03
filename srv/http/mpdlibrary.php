@@ -109,17 +109,12 @@ EOF;
 	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$data     = file( $dir.'/'.str_replace( '|', '/', $name ), FILE_IGNORE_NEW_LINES );
-			$bkpath   = $data[ 0 ];
-			$coverart = $data[ 1 ] ?? '';
-			if ( $coverart ) {
-				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'^^^" data-label="'.$name.'">';
-			} else {
-				$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
-			}
+			$path     = trim( file_get_contents( $dir.'/'.$name ) );
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark" data-mode="bookmark"><a class="lipath">$bkpath</a>$icon</div>
+	<div class="mode mode-bookmark" data-mode="bookmark"><a class="lipath">$bkpath</a>
+	<img class="bkcoverart" src="/mnt/MPD/$path/coverart.jpg^^^" data-label="$name">
+	</div>
 </div>
 EOF;
 		}
