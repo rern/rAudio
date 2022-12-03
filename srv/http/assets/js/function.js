@@ -580,7 +580,7 @@ function imageLoad( list ) {
 	if ( list === 'lib-list' ) {
 		if ( G.mode === 'album' || G.mode === 'latest' ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
-				$( this ).attr( 'src', '/assets/img/coverart.svg' );
+				imageOnError( this );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
@@ -607,6 +607,12 @@ function imageLoad( list ) {
 			$this.replaceWith( '<i class="fa fa-'+ $this.data( 'icon' ) +' pl-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
+}
+function imageOnError( el ) {
+	var $this      = $( el );
+	var src        = $this.attr( 'src' );
+	var srcreplace = src.slice( -16, -13 ) === 'jpg' ? src.replace( 'jpg?v=', 'gif?v=' ) : '/assets/img/coverart.svg';
+	$this.attr( 'src', srcreplace );
 }
 function imageReplace( type, imagefilenoext, bookmarkname ) {
 	var data = {
@@ -745,13 +751,7 @@ function libraryHome() {
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-			var $this = $( this );
-			var src = $this.attr( 'src' );
-			if ( src.slice( -16, -13 ) === 'jpg' ) {
-				$this.attr( 'src', src.replace( 'jpg?v=', 'gif?v=' ) );
-			} else {
-				$this.replaceWith( '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'+ $this.data( 'label' ) +'</a>' );
-			}
+			imageOnError( this );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 	}, 'json' );
