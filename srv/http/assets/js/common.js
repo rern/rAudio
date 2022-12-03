@@ -176,43 +176,6 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		}
 	}
-/* page visibility -----------------------------------------------------------------
-flag to suppress multiple connect on page visible:
-	active  - multiple events
-	G.off   - after power off
-	G.local - document.hidden === false > true > false - in sequence
-	
-	1. document.onvisibilitychange - document.hidden
-		- false > active  = 1, G.local = 1
-		- true  > G.local = 1  ----------------- suppress disconnect()
-		- false > active  = 1, G.local = 0
-	2. window.onpageshow
-	3. window.onfocus
-	
-flag to suppress disconnect:
-	G.local - selectric visibilitychange
-*/
-	var active = 1;
-	function connect() {
-		if ( active || G.off ) return
-		
-		local( 1000 );
-		active = 1;
-		pushstream.connect();
-	}
-	function disconnect() {
-		setTimeout( () => { // suppress visibilitychange by selectric
-			if ( ! active || G.local ) return
-			
-			active = 0;
-			pushstream.disconnect();
-		}, 300 );
-	}
-	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-	window.onpagehide = disconnect;
-	window.onpageshow = connect;
-	window.onblur     = disconnect; // visible but not focused
-	window.onfocus    = connect;    // focused
 }
 
 // banner ----------------------------------------------------------------------
