@@ -109,11 +109,11 @@ EOF;
 	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$path     = trim( file_get_contents( $dir.'/'.$name ) );
+			$bkpath     = trim( file_get_contents( $dir.'/'.$name ) );
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
 	<div class="mode mode-bookmark" data-mode="bookmark"><a class="lipath">$bkpath</a>
-	<img class="bkcoverart" src="/mnt/MPD/$path/coverart.jpg^^^" data-label="$name">
+	<img class="bkcoverart" src="/mnt/MPD/$bkpath/coverart.jpg^^^" data-label="$name">
 	</div>
 </div>
 EOF;
