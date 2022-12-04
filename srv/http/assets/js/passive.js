@@ -134,34 +134,8 @@ function psBtReceiver( connected ) {
 	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
-function psBookmark( data ) {
-	if ( data.type === 'add' ) {
-		if ( data.src ) {
-			var icon = '<img class="bkcoverart" src="'+ data.src +'">';
-		} else {
-			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name +'</a>';
-		}
-		var html = `
-<div class="lib-mode bookmark">
-	<div class="mode mode-bookmark">
-	<a class="lipath">${ data.path }</a>
-	${ icon }
-</div></div>
-`;
-		$( '#lib-mode-list' ).append( html );
-	} else {
-		$( '.lib-mode.bookmark' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.find( '.lipath' ).text() === data.path ) {
-				data.type === 'delete' ? $this.remove() : $this.find( '.label' ).text( data.name );
-				return false
-			}
-		} );
-	}
-	if ( data.order ) {
-		G.display.order = data.order;
-		orderLibrary();
-	}
+function psBookmark() {
+	refreshData( 'resetdata' );
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );

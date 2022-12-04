@@ -112,8 +112,10 @@ EOF;
 			$bkpath     = trim( file_get_contents( $dir.'/'.$name ) );
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark" data-mode="bookmark"><a class="lipath">$bkpath</a>
-	<img class="bkcoverart" src="/mnt/MPD/$bkpath/coverart.jpg^^^" data-label="$name">
+	<div class="mode mode-bookmark" data-mode="bookmark">
+	<a class="lipath">$bkpath</a>
+	<a class="bkname hide">$name</a>
+	<img class="bkcoverart" src="/mnt/MPD/$bkpath/coverart.jpg^^^">
 	</div>
 </div>
 EOF;

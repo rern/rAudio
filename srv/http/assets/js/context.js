@@ -36,7 +36,7 @@ function addSimilar() {
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
-	// #2 - dir list   - show image from server
+	// #2 - dir list   - show image from path + coverart.jpg
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) {
@@ -45,36 +45,36 @@ function bookmarkNew() {
 		path = G.mode +'/'+ path;
 	}
 	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
-	bash( [ 'coverartget', bkpath ], coverart => {
-		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
-		info( {
-			  icon       : 'bookmark'
-			, title      : 'Add Bookmark'
-			, message    : icon
-						  +'<br><wh>'+ path +'</wh>'
-			, textlabel  : 'As:'
-			, focus      : 0
-			, values     : path.split( '/' ).pop()
-			, checkblank : coverart ? '' : 1
-			, beforeshow : () => $( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' )
-			, ok         : () => {
-				var name = infoVal();
-				bash( [ 'bookmarkadd', name, path, coverart ], std => {
-					if ( std == -1 ) {
-						bannerHide();
-						info( {
-							  icon    : 'bookmark'
-							, title   : 'Add Bookmark'
-							, message : icon
-										+'<br><wh>'+ path +'</wh>'
-										+'<br><br><wh>'+ name +'</wh> already exists.'
-						} );
-					} else {
-						banner( 'bookmark', 'Bookmark Added', path );
-					}
-				} );
-			}
-		} );
+	info( {
+		  icon       : 'bookmark'
+		, title      : 'Add Bookmark'
+		, message    : '<img src="'+ bkpath +'/coverart.jpg'+ versionHash() +'">'
+					  +'<br><br><wh>'+ path +'</wh>'
+		, textlabel  : 'As:'
+		, focus      : 0
+		, values     : bkpath.split( '/' ).pop()
+		, checkblank : 1
+		, beforeshow : () => {
+			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
+			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
+				imageOnError( this, 'bookmark' );
+			} );
+		}
+		, ok         : () => {
+			var name = infoVal();
+			bash( [ 'bookmarkadd', name, path ], std => {
+				if ( std == -1 ) {
+					bannerHide();
+					info( {
+						  icon    : 'bookmark'
+						, title   : 'Add Bookmark'
+						, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
+					} );
+				} else {
+					banner( 'bookmark', 'Bookmark Added', path );
+				}
+			} );
+		}
 	} );
 }
 function infoReplace( callback ) {

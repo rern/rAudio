@@ -608,11 +608,19 @@ function imageLoad( list ) {
 		} );
 	}
 }
-function imageOnError( el ) {
+function imageOnError( el, bookmark ) {
 	var $this      = $( el );
 	var src        = $this.attr( 'src' );
-	var srcreplace = src.slice( -16, -13 ) === 'jpg' ? src.replace( 'jpg?v=', 'gif?v=' ) : '/assets/img/coverart.svg';
-	$this.attr( 'src', srcreplace );
+	if ( src.slice( -16, -13 ) === 'jpg' ) {
+		$this.attr( 'src', src.replace( 'jpg?v=', 'gif?v=' ) );
+	} else if ( ! bookmark ) {
+		$this.attr( 'src', G.coverart );
+	} else { // bookmark
+		var icon = '<i class="fa fa-bookmark bl"></i>';
+		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) icon += '<br><a class="label">'+ bookmark +'</a>';
+		$this.replaceWith( icon );
+		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
+	}
 }
 function imageReplace( type, imagefilenoext, bookmarkname ) {
 	var data = {
@@ -751,7 +759,7 @@ function libraryHome() {
 			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
-			imageOnError( this );
+			imageOnError( this, $( this ).prev().text() );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
 	}, 'json' );

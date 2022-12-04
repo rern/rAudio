@@ -313,69 +313,38 @@ audiocdtag )
 bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
-	coverart=${args[3]}
 	bkfile="$dirbookmarks/$name"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo "$path
-$coverart" > "$bkfile"
+	echo $path > "$bkfile"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
-	else
-		order=false
 	fi
-	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	data='{
-  "type"  : "add"
-, "path"  : "'$path'"
-, "src"   : "'$src'"
-, "name"  : "'$name'"
-, "order" : '$order'
-}'
-	pushstream bookmark "$data"
+	pushstream bookmark 1
 	;;
 bookmarkcoverreset )
-	imagepath=${args[1]}
-	name=${args[2]}
-	sed -i '2d' "$dirbookmarks/$name"
-	rm -f "$imagepath/coverart".*
-	data='{
-  "url"   : "'$imagepath/$name'"
-, "type"  : "bookmark"
-, "reset" : 1
-}'
-	pushstream coverart "$data"
+	name=${args[1]}
+	path=$( < "$dirbookmarks/$name" )
+	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
+	rm -f "$path/coverart".*
+	pushstream bookmark 1
 	;;
 bookmarkremove )
-	name=${args[1]//\//|}
-	path=${args[2]}
-	rm "$dirbookmarks/$name"
+	file="$dirbookmarks/${args[1]//\//|}"
 	if [[ -e $dirsystem/order ]]; then
+		path=$( < "$file" )
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
-	else
-		order=false
 	fi
-	data='{
-  "type"  : "delete"
-, "path"  : "'$path'"
-, "order" :'$order'
-}'
-	pushstream bookmark "$data"
+	rm "$file"
+	pushstream bookmark 1
 	;;
 bookmarkrename )
 	name=${args[1]//\//|}
 	newname=${args[2]//\//|}
-	path=${args[3]}
 	mv $dirbookmarks/{"$name","$newname"} 
-	data='{
-  "type"  : "rename"
-, "path"  : "'$path'"
-, "name"  : "'$newname'"
-, "order" : false
-}'
-	pushstream bookmark "$data"
+	pushstream bookmark 1
 	;;
 camillagui )
 	systemctl start camillagui

@@ -1377,8 +1377,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	G.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	var $img  = $this.find( 'img' );
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
@@ -1392,12 +1391,11 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, message : icon
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
-		, ok      : () => bash( [ 'bookmarkremove', name, path ] )
+		, ok      : () => bash( [ 'bookmarkremove', name ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	info( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
@@ -1408,15 +1406,14 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, checkblank   : 1
 		, checkchanged : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), path ] )
+		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon = iconcover;
+		var icon    = iconcover;
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
@@ -1424,6 +1421,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
+	var path      = $this.find( '.lipath' ).text();
 	var imagepath = path.slice( 3, 8 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : icon
