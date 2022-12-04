@@ -82,7 +82,6 @@ if [[ $1 == withdisplay ]]; then
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "logout"           : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
-, "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
 , "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'

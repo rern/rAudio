@@ -742,6 +742,7 @@ function infoUpdate( path ) {
 function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( data ) {
 		G.status.counts = data.counts;
+		G.display.order = data.order;
 		var html = data.html
 		if ( html !== G.libraryhtml ) {
 			G.libraryhtml = html;
