@@ -17,12 +17,11 @@
 <?php
 $hash = '?v='.time();
 $page = $_GET[ 'p' ] ?? '';
-echo <<< EOF
-<link rel="stylesheet" href="/assets/css/colors.css$hash">
-<link rel="stylesheet" href="/assets/css/common.css$hash">
-EOF;
-
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
+$css = [ 'colors', 'common' ];
+// login
 if ( file_exists( '/srv/http/data/system/login' ) ) {
+	foreach( [ 'colors', 'common' ] as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 	session_start();
 	if ( ! isset( $_SESSION[ 'login' ] ) ) {
 		$page ? header( 'Location: /' ) : include 'login.php';
@@ -30,19 +29,18 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	}
 }
 
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-
+$cnames  = [];
 if ( ! $page ) { // main
 	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
-	$css       = [ 'roundslider', 'main' ];
+	array_push( $css, ...[ 'roundslider', 'main' ] );
 	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
-	$cssfiles  = glob( '/srv/http/assets/css/*.min.*' );
-	$clist     = [];
+	exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
+	$cfiles    = [];
 	foreach( $cssfiles as $file ) {
-		$name                    = basename( $file );
-		$name_ver                = explode( '-', $name );
-		$clist[ $name_ver[ 0 ] ] = $name;
+		$name            = explode( '-', $file )[ 0 ];
+		$cfiles[ $name ] = $file;
+		$cnames[]        = $name;
 	}
 } else { // settings
 	$icon      = $page;
@@ -60,18 +58,15 @@ if ( ! $page ) { // main
 	$guide     = $page === 'guide';
 	$networks  = $page === 'networks';
 	$relays    = $page === 'relays';
-	if ( $addons || $progress ) $css = [ 'settings', 'addons' ];
-	if ( ! $networks )          $css = [ 'settings', 'selectric' ];
-	if ( $relays )              $css = [ 'settings', 'relays' ];
+	$css[]     = 'settings';
+	if ( $addons || $progress ) $css[] = 'addons';
+	if ( ! $networks )          $css[] = 'selectric';
+	if ( $relays )              $css[] = 'relays';
 }
 // <style> -----------------------------------------------------
-$style     = '';
-foreach( $css as $c ) {
-	if ( $c === 'roundslider' || $c === 'simplekeyboard' ) {
-		$style.= '<link rel="stylesheet" href="/assets/css/'.$clist[ $c ].'">';
-	} else {
-		$style.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-	}
+foreach( $css as $c ) { 
+	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
+	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
 }
 echo $style;
 ?>
@@ -97,9 +92,9 @@ echo $style;
 ';
 // js plugin version from filenames
 $jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
-$jlist   = [];
+$jfiles  = [];
 foreach( $jsfiles as $file ) {
-	$name_ver               = explode( '-', $file );
-	$jlist[ $name_ver[ 0 ] ] = $file;
+	$name            = explode( '-', $file )[ 0 ];
+	$jfiles[ $name ] = $file;
 }
 ?>
