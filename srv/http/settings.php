@@ -1,42 +1,5 @@
-<?php
-// <!DOCTYPE html> ---------------------------------------------
-include 'common.php';
+<?php include 'common.php';?>
 
-if ( file_exists( '/srv/http/data/system/login' ) ) {
-	session_start();
-	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
-}
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-$page      = $_GET[ 'p' ];
-$icon      = $page;
-if ( $page === 'guide' ) {
-	$icon     = 'help';
-	$pagehead = 'user guide';
-} else if ( $page === 'relays' ) {
-	$pagehead = 'system';
-} else {
-	$pagehead = $page;
-}
-$title     = strtoupper( $pagehead );
-$addons    = $page === 'addons';
-$progress  = $page === 'addons-progress';
-$guide     = $page === 'guide';
-$networks  = $page === 'networks';
-$relays    = $page === 'relays';
-$css       = [ 'settings' ];
-if ( $addons || $progress ) $css[] = 'addons';
-if ( ! $networks )          $css[] = 'selectric';
-if ( $relays )              $css[] = 'relays';
-$style     = '';
-foreach( $css as $c ) $style.= '
-<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-
-// <style> -----------------------------------------------------
-echo $style;
-
-// </head><body> -----------------------------------------------
-include 'common-body.php';
-?>
 <!-- head ........................................................................... -->
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
@@ -68,7 +31,7 @@ if ( ! $addons ) {
 	$htmlbar.= '</div>';
 	echo $htmlbar;
 }
-//   js ..............................................................................
+// js
                    $jsp   = [ 'jquery' ];
 				   $js    = [];
 if ( ! $addons )   $jsp[] = 'pushstream';
