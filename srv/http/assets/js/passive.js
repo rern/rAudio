@@ -1,29 +1,7 @@
-// page visibility -----------------------------------------------------------------
-var active = 1;
-function connect() {
-	if ( active || G.off ) return
-	
-	active = 1;
-	pushstream.connect();
-}
-function disconnect() {
-	if ( ! active ) return
-	
-	active = 0;
-	pushstream.disconnect();
-}
-document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-window.onpagehide = disconnect;
-window.onpageshow = connect;
-window.onblur     = disconnect; // visible but not focused
-window.onfocus    = connect;    // focused
-
 // page resize -----------------------------------------------------------------
-window.onresize = () => { // or rotate
-	//return
-	
+window.onresize = () => { // rotate / resize
 	var wW = window.innerWidth;
-	if ( G.wW === wW ) return
+	if ( G.wW === wW ) return // wH changes with address bar toggle on scroll up-down
 	
 	G.wH = window.innerHeight;
 	G.wW = wW;

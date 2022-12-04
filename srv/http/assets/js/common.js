@@ -117,13 +117,30 @@ $.fn.press = function( arg1, arg2 ) {
 function selectricSet() {
 	$( 'select' )
 		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
-		.on( 'selectric-close', () => local( 1000 ) ) // suppress visibilitychange by selectric
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
 		} );
 	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
+
+// page visibility -----------------------------------------------------------------
+var active = 1;
+function connect() {
+	if ( active || G.off ) return
+	
+	active = 1;
+	pushstream.connect();
+}
+function disconnect() {
+	if ( ! active ) return
+	
+	active = 0;
+	pushstream.disconnect();
+}
+document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+window.onpagehide = disconnect;
+window.onpageshow = connect;
 
 // pushstream -----------------------------------------------------------------
 if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
