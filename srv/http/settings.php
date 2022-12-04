@@ -1,4 +1,7 @@
 <?php
+// <!DOCTYPE html> ---------------------------------------------
+include 'common.php';
+
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
 	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
@@ -14,27 +17,25 @@ if ( $page === 'guide' ) {
 } else {
 	$pagehead = $page;
 }
-$title    = strtoupper( $pagehead );
-$addons   = $page === 'addons';
-$progress = $page === 'addons-progress';
-$guide    = $page === 'guide';
-$networks = $page === 'networks';
-$relays   = $page === 'relays';
-
-//   css .............................................................................
-$css = [ 'colors', 'common', 'settings' ];
+$title     = strtoupper( $pagehead );
+$addons    = $page === 'addons';
+$progress  = $page === 'addons-progress';
+$guide     = $page === 'guide';
+$networks  = $page === 'networks';
+$relays    = $page === 'relays';
+$css       = [ 'settings' ];
 if ( $addons || $progress ) $css[] = 'addons';
 if ( ! $networks )          $css[] = 'selectric';
 if ( $relays )              $css[] = 'relays';
-$style = '';
+$style     = '';
 foreach( $css as $c ) $style.= '
 <link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 
-include 'common.php';      // <!DOCTYPE html> ---------------------------------------------
-
+// <style> -----------------------------------------------------
 echo $style;
 
-include 'common-body.php'; // </head><body> -----------------------------------------------
+// </head><body> -----------------------------------------------
+include 'common-body.php';
 ?>
 <!-- head ........................................................................... -->
 <div class="head">

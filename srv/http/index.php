@@ -1,4 +1,7 @@
 <?php
+// <!DOCTYPE html> ---------------------------------------------
+include 'common.php';
+
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $css       = [ 'roundslider', 'main' ];
@@ -7,7 +10,7 @@ if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
 $cssfiles  = glob( '/srv/http/assets/css/*.min.*' );
 $clist     = [];
 foreach( $cssfiles as $file ) {
-	$name = basename( $file );
+	$name                    = basename( $file );
 	$name_ver                = explode( '-', $name );
 	$clist[ $name_ver[ 0 ] ] = $name;
 }
@@ -20,11 +23,11 @@ foreach( $css as $c ) {
 	}
 }
 
-include 'common.php';      // <!DOCTYPE html> ---------------------------------------------
-
+// <style> -----------------------------------------------------
 echo $style;
 
-include 'common-body.php'; // </head><body> -----------------------------------------------
+// </head><body> -----------------------------------------------
+include 'common-body.php';
 
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	session_start();
