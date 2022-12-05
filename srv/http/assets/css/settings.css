@@ -505,8 +505,9 @@ input.disabled + .switchlabel:after {
 }
 .col-l {
 	display: inline-block;
-	width: 160px;
+	width: 165px;
 	height: 40px;
+	font-size: 16px;
 	text-align: right;
 	padding-right: 15px;
 	padding-top: 5px;

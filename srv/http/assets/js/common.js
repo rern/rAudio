@@ -117,6 +117,7 @@ $.fn.press = function( arg1, arg2 ) {
 function selectricSet( $select ) {
 	if ( ! $select ) $select = $( '#infoContent select' );
 	$select
+		.selectric( 'destroy' )
 		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
 		.each( ( i, el ) => {
 			var $this = $( el );
