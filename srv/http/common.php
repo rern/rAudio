@@ -73,6 +73,7 @@ foreach( $jsfiles as $file ) {
 	$jfiles[ $name ] = $file;
 }
 // <style> -----------------------------------------------------
+$style = '';
 foreach( $css as $c ) { 
 	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
 	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
