@@ -119,7 +119,7 @@ foreach( $ids as $id ) {
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
-$dsp = file_exists( '/srv/http/data/system/equalizer' ) ? 'equalizer' : 'camilladsp';
+$dsp = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
 	  [ 'features',        'settings', 'features', 'Features', 'dsp',          '' ]
 	, [ 'player',          'settings', 'player',   'Player',   'logout',       'lock' ]

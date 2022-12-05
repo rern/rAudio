@@ -29,10 +29,11 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	}
 }
 
+$equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
+
 $cnames  = [];
 if ( ! $page ) { // main
-	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
 	array_push( $css, ...[ 'roundslider', 'main' ] );
 	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
