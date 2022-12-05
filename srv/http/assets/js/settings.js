@@ -180,7 +180,7 @@ function showContent() {
 	var $select = $( '.container select' );
 	if ( page === 'system' ) {
 		if ( $select.length && ! $( '.ss-content' ).length ) $select.each( ( i, el ) => new SlimSelect( {  select: el } ) );
-	} else {
+	} else if ( page === 'player' ) {
 		selectricSet( $select );
 	}
 	if ( page !== 'networks' ) {
