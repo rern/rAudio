@@ -1,18 +1,16 @@
 <?php include 'common.php';?>
 
 <div id="button-data" class="hide"><i class="fa fa-times"></i><span class="title wh"><?=$title?>-DATA</span></div>
-<!-- head ........................................................................... -->
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
 </div>
 <?php
-// container ...................................................................... 
 echo '<div class="container hide">';
 
 include "settings/$page.php";
 
 echo '</div>';
-// .................................................................................
+
 if ( $progress || $guide ) {
 	echo '
 </body>
@@ -20,8 +18,9 @@ if ( $progress || $guide ) {
 ';
 	exit;
 }
+// .................................................................................
 
-// bottom bar ......................................................................
+// bottom bar
 if ( ! $addons ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
@@ -42,14 +41,13 @@ if ( ! $addons )   $js[]  = 'settings';
 if ( ! $networks ) $jsp[] = 'jquery.selectric';
 if ( $networks )   $jsp[] = 'qrcode';
 if ( $relays )     $js[]  = 'relays';
+
 $script = '';
-foreach( $jsp as $j ) $script.= '
-<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-// with cache busting
-foreach( $js as $j ) $script.= '
-<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-echo $script;
-echo '
+foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+
+foreach( $js as $j ) $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+
+echo $script.'
 </body>
 </html>
 ';
