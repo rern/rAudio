@@ -70,18 +70,18 @@ if ( ! $page ) { // main
 	$networks = $page === 'networks';
 	$relays   = $page === 'relays';
 	$system   = $page === 'system';
-	$css[]    = 'settings';
 	if ( $addons || $progress ) $css[] = 'addons';
 	if ( ! $networks )          $css[] = 'selectric';
 	if ( $relays )              $css[] = 'relays';
+	$css[]    = 'settings';
 }
 // <style> -----------------------------------------------------
 $style = '';
+if ( $system ) $style.= '<link rel="stylesheet" href="/assets/css/slimselect.min.css'.$hash.'">';
 foreach( $css as $c ) { 
 	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
 	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
 }
-if ( $system ) $style.= '<link rel="stylesheet" href="/assets/css/slimselect.min.css'.$hash.'">';
 echo $style;
 ?>
 

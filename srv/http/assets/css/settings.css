@@ -585,6 +585,81 @@ input.disabled + .switchlabel:after {
 #hostname {
 	height: 40px !important;
 }
+
+/* slimselect */
+.ss-main {
+	max-width: 230px;
+	height: 40px;
+	margin-bottom: 10px;
+	padding: 5px;
+	color: var( --cw );
+	border-radius: 3px;
+}
+.ss-main:focus {
+	box-shadow: none;
+}
+.ss-main.ss-disabled {
+	background-color: var( --cg );
+}
+.ss-main .ss-arrow path {
+	stroke: var( --cw );
+}
+.ss-main, 
+.ss-content {
+	background-color: var( --cg );
+	font-size: 16px;
+	border: none;
+}
+.ss-content {
+	min-width: fit-content !important;
+	border-radius: 0 !important;
+}
+.ss-content .ss-list,
+.ss-content .ss-search {
+	background-color: var( --cga );
+}
+.ss-content .ss-list .ss-option {
+	padding: 9px;
+	color: var( --cw );
+}
+.ss-content .ss-list .ss-option:hover {
+	color: var( --cw );
+	background-color: var( --cg );
+}
+.ss-content .ss-list .ss-option.ss-highlighted, .ss-content .ss-list .ss-option:not(.ss-disabled).ss-selected {
+    color: var(--ss-bg-color);
+	color: var( --cw );
+	background-color: var( --cgl );
+}
+.ss-content .ss-search input {
+	height: 30px;
+	padding: 0 5px !important;
+	color: var( --cw );
+	background-color: #000000;
+	border: none;
+	border-radius: 3px;
+}
+.ss-content .ss-search input:focus {
+	box-shadow: none;
+}
+.ss-content.ss-open-above .ss-search {
+	box-shadow: -2px -2px 5px #000000;
+}
+.ss-content.ss-open-below .ss-search {
+	box-shadow: -2px 2px 5px #000000;
+}
+.ss-main .ss-values {
+	width: 100%
+}
+.ss-main .ss-values .ss-single {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.ss-main.ss-disabled .ss-arrow {
+	display: none;
+}
+
 @media (max-height: 570px) {
 	.helphead {
 		margin-right: 0;
