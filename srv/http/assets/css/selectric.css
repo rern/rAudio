@@ -18,9 +18,9 @@
 }
 .selectric .label {
 	display: block;
-	height: 39px;
+	height: 40px;
 	padding: 0 30px 0 10px;
-	line-height: 40px;
+	line-height: 42px;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -32,7 +32,7 @@
 	bottom: 0;
 	width: 30px;
 	font-size: 20px;
-	line-height: 40px;
+	line-height: 41px;
 	text-align: center;
 }
 .selectric-wrapper.disabled .label {

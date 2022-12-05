@@ -581,6 +581,9 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
+#hostname {
+	height: 40px !important;
+}
 @media (max-height: 570px) {
 	.helphead {
 		margin-right: 0;
