@@ -786,7 +786,7 @@ input[type=password] {
 	background-color: #000000;
 	border-radius: 5px;
 	border: 1px solid var( --cg );
-	font-size: 15px;
+	font-size: 16px;
 	font-family: "Lato";
 }
 input[type=text]:disabled,

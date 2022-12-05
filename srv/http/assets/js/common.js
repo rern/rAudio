@@ -114,8 +114,9 @@ $.fn.press = function( arg1, arg2 ) {
 }
 
 // selectric --------------------------------------------------------------------
-function selectricSet() {
-	$( 'select' )
+function selectricSet( $select ) {
+	if ( ! $select ) $select = $( '#infoContent select' );
+	$select
 		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
 		.each( ( i, el ) => {
 			var $this = $( el );
@@ -182,6 +183,13 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		
 		active = 1;
 		pushstream.connect();
+		if ( $( '.ss-content' ).length ) { // fix slimselect reappear on visibilitychange
+			$( '.ss-content' ).addClass( 'hide' );
+			setTimeout( () => {
+				$( 'body' ).click();
+				$( '.ss-content' ).removeClass( 'hide' );
+			}, 600 );
+		}
 	}
 	function disconnect() {
 		if ( ! active ) return

@@ -12,7 +12,7 @@
 	pointer-events: none;
 }
 .selectric {
-	border-radius: 4px;
+	border-radius: 3px;
 	background: var( --cg );
 	position: relative;
 }

@@ -221,9 +221,8 @@ $( '#i2smodulesw' ).click( function() {
 	setTimeout( () => {
 		$( '#i2smodulesw' ).prop( 'checked', 0 );
 		$( '#divi2smodulesw' ).addClass( 'hide' );
-		$( '#divi2smodule' )
-			.removeClass( 'hide' )
-			.find( '.selectric' ).click();
+		$( '#divi2smodule' ).removeClass( 'hide' );
+		$( '#divi2smodule .ss-arrow' ).click();
 	}, 200 );
 } );
 $( '#i2smodule' ).change( function() {
@@ -237,18 +236,10 @@ $( '#i2smodule' ).change( function() {
 		aplayname = 'onboard';
 		output = '';
 		notify( icon, title, 'Disable ...' );
+		$( '#divi2smodulesw' ).removeClass( 'hide' );
+		$( '#divi2smodule' ).addClass( 'hide' );
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
-} ).on( 'selectric-close', function() { // fix: toggle switch / select on 'Disable'
-	setTimeout( () => {
-		if ( $( '#i2smodule' ).val() !== 'none' ) {
-			$( '#divi2smodulesw' ).addClass( 'hide' );
-			$( '#divi2smodule' ).removeClass( 'hide' );
-		} else {
-			$( '#divi2smodulesw' ).removeClass( 'hide' );
-			$( '#divi2smodule' ).addClass( 'hide' );
-		}
-	}, 300 );
 } );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
@@ -326,16 +317,13 @@ $( '#setting-lcdchar' ).click( function() {
 		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : G.lcdchar
 		, beforeshow   : () => {
-			$( '#infoContent .gpio td:even' )
-				.css( 'width', 60 )
-				.find( '.selectric-wrapper, .selectric' )
-				.css( 'width', 60 );
+			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
 			$( '#infoContent .gpio td:odd' ).css( {
 				  width           : 25
 				, 'padding-right' : 1
 				, 'text-align'    : 'right'
 			} );
-			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
+			$( '.gpio, .gpio .ss-main' ).css( 'font-family', 'Inconsolata' );
 			$( '#infoContent svg .power' ).remove();
 			$( '.i2c' ).toggleClass( 'hide', ! i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );

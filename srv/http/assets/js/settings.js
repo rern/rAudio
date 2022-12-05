@@ -177,7 +177,12 @@ function setSwitch() {
 }
 function showContent() {
 	G.ready ? delete G.ready : bannerReset();
-	if ( $( 'select' ).length ) selectricSet();
+	var $select = $( '.container select' );
+	if ( page === 'system' ) {
+		if ( $select.length && ! $( '.ss-content' ).length ) $select.each( ( i, el ) => new SlimSelect( {  select: el } ) );
+	} else {
+		selectricSet( $select );
+	}
 	if ( page !== 'networks' ) {
 		$( 'pre.status' ).each( ( i, el ) => {
 			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );

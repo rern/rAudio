@@ -32,19 +32,27 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
+// css filename with version
 $cnames  = [];
+exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
+$cfiles = [];
+foreach( $cssfiles as $file ) {
+	$name            = explode( '-', $file )[ 0 ];
+	$cfiles[ $name ] = $file;
+	$cnames[]        = $name;
+}
+// js filename with version
+$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jfiles  = [];
+foreach( $jsfiles as $file ) {
+	$name            = explode( '-', $file )[ 0 ];
+	$jfiles[ $name ] = $file;
+}
+
 if ( ! $page ) { // main
 	array_push( $css, ...[ 'roundslider', 'main' ] );
 	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
-	// css filename with version
-	exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
-	$cfiles = [];
-	foreach( $cssfiles as $file ) {
-		$name            = explode( '-', $file )[ 0 ];
-		$cfiles[ $name ] = $file;
-		$cnames[]        = $name;
-	}
 } else { // settings
 	$icon = $page;
 	if ( $page === 'guide' ) {
@@ -61,17 +69,11 @@ if ( ! $page ) { // main
 	$guide    = $page === 'guide';
 	$networks = $page === 'networks';
 	$relays   = $page === 'relays';
+	$system   = $page === 'system';
 	$css[]    = 'settings';
 	if ( $addons || $progress ) $css[] = 'addons';
 	if ( ! $networks )          $css[] = 'selectric';
 	if ( $relays )              $css[] = 'relays';
-}
-// js filename with version
-$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
-$jfiles  = [];
-foreach( $jsfiles as $file ) {
-	$name            = explode( '-', $file )[ 0 ];
-	$jfiles[ $name ] = $file;
 }
 // <style> -----------------------------------------------------
 $style = '';
@@ -79,6 +81,7 @@ foreach( $css as $c ) {
 	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
 	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
 }
+if ( $system ) $style.= '<link rel="stylesheet" href="/assets/css/slimselect.min.css'.$hash.'">';
 echo $style;
 ?>
 
