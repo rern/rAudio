@@ -13,24 +13,14 @@
 	font-weight      : 300;
 	letter-spacing   : 25px;
 }
-#divlogin i {
+#pwd {
+	width            : 230px;
+	margin           : 30px 10px 10px 25px;
+	text-align       : center;
+}
+#toggle {
 	font-size        : 20px;
 	vertical-align   : -3px;
-}
-#pwd {
-	height           : 40px;
-	margin           : 30px 10px 10px 25px;
-	padding          : 10px;
-	font-family      : "Lato";
-	font-size        : 15px;
-	text-align       : center;
-	color            : var( --cw );
-	background-color : #000000 !important;
-	border-radius    : 4px;
-	border           : 1px solid var( --cg ) !important;
-}
-#login {
-	margin           : 0 auto;
 }
 </style>
 

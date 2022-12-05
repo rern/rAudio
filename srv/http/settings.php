@@ -1,5 +1,6 @@
 <?php include 'common.php';?>
 
+<div id="button-data" class="hide"><i class="fa fa-times"></i><span class="title wh"><?=$title?>-DATA</span></div>
 <!-- head ........................................................................... -->
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>

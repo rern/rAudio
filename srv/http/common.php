@@ -17,11 +17,11 @@
 <?php
 $hash = '?v='.time();
 $page = $_GET[ 'p' ] ?? '';
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $css = [ 'colors', 'common' ];
+
 // login
 if ( file_exists( '/srv/http/data/system/login' ) ) {
-	foreach( [ 'colors', 'common' ] as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+	foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 	session_start();
 	if ( ! isset( $_SESSION[ 'login' ] ) ) {
 		$page ? header( 'Location: /' ) : include 'login.php';
@@ -29,21 +29,23 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	}
 }
 
+$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 $cnames  = [];
 if ( ! $page ) { // main
 	$equalizer = file_exists( '/srv/http/data/system/equalizer' );
 	array_push( $css, ...[ 'roundslider', 'main' ] );
 	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
+	// css filename with version
 	exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
-	$cfiles    = [];
+	$cfiles = [];
 	foreach( $cssfiles as $file ) {
 		$name            = explode( '-', $file )[ 0 ];
 		$cfiles[ $name ] = $file;
 		$cnames[]        = $name;
 	}
 } else { // settings
-	$icon      = $page;
+	$icon = $page;
 	if ( $page === 'guide' ) {
 		$icon     = 'help';
 		$pagehead = 'user guide';
@@ -52,16 +54,23 @@ if ( ! $page ) { // main
 	} else {
 		$pagehead = $page;
 	}
-	$title     = strtoupper( $pagehead );
-	$addons    = $page === 'addons';
-	$progress  = $page === 'addons-progress';
-	$guide     = $page === 'guide';
-	$networks  = $page === 'networks';
-	$relays    = $page === 'relays';
-	$css[]     = 'settings';
+	$title    = strtoupper( $pagehead );
+	$addons   = $page === 'addons';
+	$progress = $page === 'addons-progress';
+	$guide    = $page === 'guide';
+	$networks = $page === 'networks';
+	$relays   = $page === 'relays';
+	$css[]    = 'settings';
 	if ( $addons || $progress ) $css[] = 'addons';
 	if ( ! $networks )          $css[] = 'selectric';
 	if ( $relays )              $css[] = 'relays';
+}
+// js filename with version
+$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jfiles  = [];
+foreach( $jsfiles as $file ) {
+	$name            = explode( '-', $file )[ 0 ];
+	$jfiles[ $name ] = $file;
 }
 // <style> -----------------------------------------------------
 foreach( $css as $c ) { 
@@ -86,15 +95,3 @@ echo $style;
 </div>
 
 <pre id="data" class="hide"></pre>
-
-<?php if ( isset( $page ) ) echo '
-<div id="button-data" class="hide"><i class="fa fa-times"></i><span class="title wh">'.$title.'-DATA</span></div>
-';
-// js plugin version from filenames
-$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
-$jfiles  = [];
-foreach( $jsfiles as $file ) {
-	$name            = explode( '-', $file )[ 0 ];
-	$jfiles[ $name ] = $file;
-}
-?>
