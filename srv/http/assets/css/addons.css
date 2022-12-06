@@ -92,21 +92,6 @@ legend .status {
 i.info {
 	width: 30px;
 }
-pre {
-	display: block;
-	max-height: calc(100vh - 160px);
-	width: 100%;
-	margin: 10px 0 0 0;
-	padding-left: 10px;
-	white-space: pre-wrap;
-	overflow-x: hidden;
-	overflow-y: auto;
-	user-select: text;
-	-webkit-overflow-scrolling: touch; /* ios momentum scroll */
-}
-.progress {
-	line-height: 20px;
-}
 .thumbnail {
 	float: right;
 	width: 100px;
@@ -156,10 +141,6 @@ pre,
 code,
 code i {
 	color: var( --cw );
-}
-.addontitle {
-	font-size: 18px;
-	letter-spacing: 5px;
 }
 .flushdot {
 	height: 0;

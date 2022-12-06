@@ -15,9 +15,9 @@
 <link rel="icon" href="/assets/img/icon.png">
 
 <?php
-$hash = '?v='.time();
-$page = $_GET[ 'p' ] ?? '';
-$css = [ 'colors', 'common' ];
+$hash      = '?v='.time();
+$page      = $_GET[ 'p' ] ?? '';
+$css       = [ 'colors', 'common' ];
 
 // login
 if ( file_exists( '/srv/http/data/system/login' ) ) {
@@ -29,20 +29,26 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	}
 }
 
+$addons    = $page === 'addons';
+$progress  = $page === 'addons-progress';
+$guide     = $page === 'guide';
+$networks  = $page === 'networks';
+$relays    = $page === 'relays';
+$system    = $page === 'system';
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // css / js filename with version
-$cnames  = [];
+$cnames    = [];
 exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
-$cfiles = [];
+$cfiles    = [];
 foreach( $cssfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$cfiles[ $name ] = $file;
 	$cnames[]        = $name;
 }
-$jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
-$jfiles  = [];
+$jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
+$jfiles    = [];
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$jfiles[ $name ] = $file;
@@ -61,23 +67,17 @@ if ( ! $page ) { // main
 		$icon = $pagetitle = 'system';
 	}
 	$title    = strtoupper( $pagetitle );
-	$addons   = $page === 'addons';
-	$progress = $page === 'addons-progress';
-	$guide    = $page === 'guide';
-	$networks = $page === 'networks';
-	$relays   = $page === 'relays';
-	$system   = $page === 'system';
-	if ( $addons || $progress ) $css[] = 'addons';
-	if ( ! $networks )          $css[] = 'selectric';
-	if ( $relays )              $css[] = 'relays';
-	if ( $system )              $css[] = 'slimselect';
-	$css[]    = 'settings';
+	if ( ! $guide && ! $networks && ! $progress ) $css[] = 'selectric';
+	if ( $addons ) $css[] = 'addons';
+	if ( $relays ) $css[] = 'relays';
+	if ( $system ) $css[] = 'slimselect';
+	$css[] = 'settings';
 }
 // <style> -----------------------------------------------------
-$style = '';
+$style     = '';
 foreach( $css as $c ) { 
 	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
-	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
+	$style  .= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
 }
 echo $style;
 ?>

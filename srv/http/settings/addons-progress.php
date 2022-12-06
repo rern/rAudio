@@ -24,8 +24,8 @@ if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
 	$i             = array_search( 'password', array_keys( $addon[ 'option' ] ) );
 	$opt[ $i + 3 ] = '***';
 }
-$postmsg       = $type.' done.';
-$postinfo      = $addon[ 'postinfo' ] ?? '';
+$postmsg  = $type.' done.';
+$postinfo = $addon[ 'postinfo' ] ?? '';
 if ( $postinfo ) {
 	$c0 = $postinfo[ 0 ];
 	if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
@@ -36,6 +36,27 @@ $installfile   = basename( $installurl );
 $uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
+
+<style>
+.addontitle {
+	font-size: 18px;
+	letter-spacing: 5px;
+}
+.progress {
+	display: block;
+	max-height: calc(100vh - 160px);
+	width: 100%;
+	margin: 10px 0 0 0;
+	padding-left: 10px;
+	font-family: Inconsolata;
+	line-height: 20px;
+	white-space: pre-wrap;
+	overflow-x: hidden;
+	overflow-y: auto;
+	user-select: text;
+	-webkit-overflow-scrolling: touch;
+}
+</style>
 
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
