@@ -39,34 +39,35 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 
 <style>
 .addontitle {
-	font-size: 18px;
-	letter-spacing: 5px;
+	font-size      : 18px;
+	letter-spacing : 5px;
 }
 .flushdot {
-	height: 0;
-	margin: 0;
-	color: #1a1a1a;
-	overflow: hidden;
+	height   : 0;
+	margin   : 0;
+	color    : #191a1a;
+	overflow : hidden;
 }
 pre hr {
-	margin: 10px 0 -10px -10px;
-	border: 1px solid #00ffff;
+	margin : 10px 0 -10px -10px;
+	border : 1px solid #00ffff;
 }
 pre hr.hrlight {
 	border-top: none;
 }
 .progress {
-	display: block;
-	max-height: calc(100vh - 160px);
-	width: 100%;
-	margin: 10px 0 0 0;
-	padding-left: 10px;
-	font-family: Inconsolata;
-	line-height: 20px;
-	white-space: pre-wrap;
-	overflow-x: hidden;
-	overflow-y: auto;
-	user-select: text;
+	display      : block;
+	max-height   : calc(100vh - 160px);
+	width        : 100%;
+	margin       : 10px 0 0 0;
+	padding-left : 10px;
+	font-family  : Inconsolata;
+	line-height  : 20px;
+	white-space  : pre-wrap;
+	background   : var( --cgd );
+	overflow-x   : hidden;
+	overflow-y   : auto;
+	user-select  : text;
 	-webkit-overflow-scrolling: touch;
 }
 .cbgr { color: #808080; background: #808080; }
@@ -86,12 +87,6 @@ pre hr.hrlight {
 .cy   { color: #ffff00 }
 .cg   { color: #00ff00 }
 .cr   { color: #ff0000 }
-
-@media ( hover:hover ) {
-	pre *:hover     { text-decoration: none; cursor: text; }
-	pre a.cc:hover  { color: #00ffff }
-	pre a.cgr:hover { color: #808080 }
-}
 </style>
 
 <div id="infoOverlay" class="info hide">
@@ -163,8 +158,22 @@ EOF;
 }
 echo $commandtxt.'<br>';
 
-if ( $type !== 'Debug' ) {
-// >.......................................................................................................
+if ( $type === 'Debug' ) {
+	echo <<< EOF
+<hr>
+<a class="cbc"> . </a> Debug ...
+<hr>
+Install
+
+<a class="cbc"> . </a> Done
+<hr class="hrlight">
+</pre>
+</body>
+</html>
+EOF;
+	exit;
+}
+
 // convert bash stdout to html
 $replace = [
 	'/.\[38;5;8m.\[48;5;8m/' => '<a class="cbgr">',     // bar - gray
@@ -225,8 +234,6 @@ while ( ! feof( $popencmd ) ) {            // get stdout until eof
 sleep( 1 );
 pclose( $popencmd );
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-// <........................................................................................................
-}
 ?>
 </pre>
 
