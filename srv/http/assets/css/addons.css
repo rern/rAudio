@@ -137,57 +137,12 @@ li i,
 	color: var( --cg60 );
 }
 span,
-pre,
 code,
 code i {
 	color: var( --cw );
-}
-.flushdot {
-	height: 0;
-	margin: 0;
-	color: #1a1a1a;
-	overflow: hidden;
-}
-pre hr {
-	margin: 10px 0 -10px -10px;
-	border: 1px solid #00ffff;
-}
-pre hr.hrlight {
-	border-top: none;
 }
 p,
 ul,
 .disabled {
 	color: var( --cw );
-}
-.cbgr { color: #808080; background: #808080; }
-.cbw  { color: #ffffff; background: #ffffff; }
-.cbc  { color: #00ffff; background: #00ffff; }
-.cbm  { color: #ff00ff; background: #ff00ff; }
-.cbb  { color: #0000ff; background: #0000ff; }
-.cby  { color: #ffff00; background: #ffff00; }
-.cbg  { color: #00ff00; background: #00ff00; }
-.cbr  { color: #ff0000; background: #ff0000; }
-.ckby { color: #000000; background: #ffff00; }
-.cwbr { color: #ffffff; background: #ff0000; }
-.cgr  { color: #808080 }
-.cc   { color: #00ffff }
-.cm   { color: #ff00ff }
-.cb   { color: #0000ff }
-.cy   { color: #ffff00 }
-.cg   { color: #00ff00 }
-.cr   { color: #ff0000 }
-
-@media ( hover:hover ) {
-	/* :hover *********************************************************/
-	pre *:hover {
-		text-decoration: none;
-		cursor: text;
-	}
-	pre a.cc:hover {
-		color: #00ffff;
-	}
-	pre a.cgr:hover {
-		color: #808080;
-	}
 }
