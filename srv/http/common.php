@@ -56,9 +56,17 @@ foreach( $jsfiles as $file ) {
 
 if ( ! $page ) { // main
 	array_push( $css, ...[ 'roundslider', 'main' ] );
-	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
+	if ( $equalizer ) {
+		array_unshift( $css, 'select2' );
+		$css[] = 'equalizer';
+	}
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
 } else {         // settings
+	$css[] = 'settings';
+	if ( ! $guide && ! $networks && ! $progress ) array_unshift( $css, 'select2' );
+	if ( $addons ) $css[] = 'addons';
+	if ( $relays ) $css[] = 'relays';
+	
 	$icon = $pagetitle = $page;
 	if ( $page === 'guide' ) {
 		$icon = 'help';
@@ -67,11 +75,6 @@ if ( ! $page ) { // main
 		$icon = $pagetitle = 'system';
 	}
 	$title    = strtoupper( $pagetitle );
-	if ( ! $guide && ! $networks && ! $progress ) $css[] = 'selectric';
-	if ( $addons ) $css[] = 'addons';
-	if ( $relays ) $css[] = 'relays';
-	if ( $system ) $css[] = 'slimselect';
-	$css[] = 'settings';
 }
 // <style> -----------------------------------------------------
 $style     = '';

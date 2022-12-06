@@ -1,6 +1,6 @@
 /* 
 errorDisplay(), infoPower(), loader(), local(), $.fn.press()
-pushstream,     selectric
+pushstream,     select2
 banner(),       info()
 */
 
@@ -138,17 +138,20 @@ $.fn.press = function( arg1, arg2 ) {
 	return this // allow chain
 }
 
-// selectric --------------------------------------------------------------------
-function selectricSet( $select ) {
-	if ( ! $select ) $select = $( '#infoContent select' );
+// select2 --------------------------------------------------------------------
+function selectSet( $select ) {
+	if ( $select ) {
+		var searchbox = page === 'system' ? 1 : 0;
+	} else {
+		$select = $( '#infoContent select' );
+		var searchbox = 0;
+	}
 	$select
-		.selectric( 'destroy' )
-		.selectric( { disableOnMobile: false, nativeOnMobile: false } )
+		.select2( searchbox ? '' : { minimumResultsForSearch: Infinity } )
 		.each( ( i, el ) => {
 			var $this = $( el );
-			if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
+			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
 		} );
-	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
 }
 
 // pushstream -----------------------------------------------------------------
@@ -353,7 +356,7 @@ Get values: infoVal()
 Show usage: infoUsage()
 
 Note:
-- Require fa-font, Selectric.js
+- Require fa-font, Select2.js
 - Single value/function - no need to be array
 ` );
 }
@@ -632,9 +635,9 @@ function info( json ) {
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
-		// get all input fields - omit .selectric-input for select
+		// get all input fields
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
-		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
+		var $input  = $( '#infoContent' ).find( 'input, select, textarea' );
 		var name, nameprev;
 		I.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
 			name = el.name;
@@ -669,7 +672,7 @@ function info( json ) {
 			I.boxW = 230;
 		}
 		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', I.boxW );
-		if ( $( '#infoContent select' ).length ) selectricSet(); // render selectric to set width
+		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL      = $( '#infoContent tr:eq( 0 ) td' ).length;
 		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox

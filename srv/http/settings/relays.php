@@ -31,7 +31,7 @@ On/Off:  <?=( i( 'raudio' ).'System | '.i( 'relays wh' ) )?>
 		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?> Idle</span>
 		<select id="timer" class="timer"></select>
 	</div>
-	<div class="column" id="gpio-name">
+	<div class="column c2" id="gpio-name">
 		<span class="gpio-text"><?=( i( 'tag bl' ) )?> Name</span>
 		<?=$htmlname?>
 		<span class="timer">&nbsp;min. to <?=( i( 'power red' ) )?></span>
@@ -42,7 +42,7 @@ On/Off:  <?=( i( 'raudio' ).'System | '.i( 'relays wh' ) )?>
 		<span class="gpio-text"><?=( i( 'power grn' ) )?> On Sequence</span>
 		<div id="on"></div>
 	</div>
-	<div class="column">
+	<div class="column c2">
 		<span class="gpio-text"><?=( i( 'power red' ) )?> Off Sequence</span>
 		<div id="off"></div>
 		<br>

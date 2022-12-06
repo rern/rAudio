@@ -2,7 +2,6 @@ body {
 	height: auto;
 }
 #listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
-.container .selectric-wrapper { height: 40px }
 .menu {
 	position: absolute;
 	margin-left: 40px;
@@ -468,9 +467,6 @@ input.disabled + .switchlabel:after {
 .setting {
 	position: absolute;
 }
-.selectric-wrapper + .setting {
-	position: static;
-}
 .setting.focus {
 	color: var( --cm );
 }
@@ -541,7 +537,7 @@ input.disabled + .switchlabel:after {
 	display: block;
 	font-weight: 300;
 }
-.col-l.single { padding-top: 9px }
+.col-l.single { padding-top: 11px }
 .col-l.single gr { display: none }
 .col-l.single a { color: var( --cw ) }
 .col-l.single i { vertical-align: -3px }
@@ -710,17 +706,8 @@ input.disabled + .switchlabel:after {
 	heading {
 		letter-spacing: 4px;
 	}
-	.selectric-wrapper + .setting {
-		display: none;
-	}
 	input[type="text"] {
 		padding: 0 7px;
-	}
-	.selectric .label {
-		padding: 0 25px 0 7px !important;
-	}
-	.selectric .button {
-		width: 25px !important;
 	}
 	.listtitle a {
 		width: calc( 100% / 13 );

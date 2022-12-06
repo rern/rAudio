@@ -30,14 +30,11 @@
                         width       : var( --eqSliderH ); }
 #eq input             { height      : var( --eqBandW )    }
 #eq .bottom           { margin-top  : var( --eqBottomT )  }
-#eqname,
-#eq .selectric-wrapper,
-#eq .selectric,
-#eq .selectric-items { 
+#eqname { 
 	width: calc( var( --eqBandW ) * 4 ) !important;
 }
 #eqname,
-#eq .selectric-wrapper { margin: 0 calc( var( --eqBandW ) / 2 ) !important }
+#eq { margin: 0 calc( var( --eqBandW ) / 2 ) !important }
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
 	#eq input::-moz-range-thumb     { width : var( --eqThumbW ) }
@@ -92,7 +89,7 @@
 }
 #eq i {
 	font-size: 24px;
-	vertical-align: bottom !important;
+	vertical-align: middle !important;
 }
 #eq i,
 #eqname {

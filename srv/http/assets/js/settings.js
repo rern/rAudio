@@ -155,16 +155,7 @@ function setSwitch() {
 function showContent() {
 	G.ready ? delete G.ready : bannerReset();
 	var $select = $( '.container select' );
-	if ( page === 'system' ) {
-		if ( $select.length && ! $( '.ss-content' ).length ) $select.each( ( i, el ) => new SlimSelect( {  select: el } ) );
-	} else if ( page === 'player' ) {
-		selectricSet( $select );
-	}
-	if ( page !== 'networks' ) {
-		$( 'pre.status' ).each( ( i, el ) => {
-			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );
-		} );
-	}
+	if ( $select.length ) selectSet( $select );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }

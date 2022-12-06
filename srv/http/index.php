@@ -339,7 +339,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	$jsp   = [ 'jquery', 'html5kellycolorpicker', 'lazysizes', 'pica', 'pushstream', 'qrcode', 'roundslider', 'Sortable' ];
 	$js    = [ 'common', 'context', 'function', 'main', 'passive' ];
 if ( $equalizer ) {
-	$jsp[] = 'jquery.selectric';
+	$jsp[] = 'select2';
 	$js[]  = 'equalizer';
 }
 if ( $localhost ) {

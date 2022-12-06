@@ -124,11 +124,7 @@ $( '#mixertype' ).change( function() {
 			  icon    : 'volume'
 			, title   : 'Volume Control'
 			, message : warning
-			, cancel  : () => {
-				$( '#mixertype' )
-					.val( G.device.mixertype )
-					.selectric( 'refresh' );
-			}
+			, cancel  : () => $( '#mixertype' ).val( G.device.mixertype )
 			, ok      : () => setMixerType( mixertype )
 		} );
 	} else {

@@ -222,8 +222,14 @@ $( '#i2smodulesw' ).click( function() {
 		$( '#i2smodulesw' ).prop( 'checked', 0 );
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#divi2smodule .ss-arrow' ).click();
+		$( '#i2smodule' ).select2( 'open' );
 	}, 200 );
+} );
+$( '#divi2smodule' ).click( '.select2', function() {
+    if ( $( '#i2smodule' ).val() === 'none' ) {
+		$( '#divi2smodulesw' ).removeClass( 'hide' );
+		$( '#divi2smodule' ).addClass( 'hide' );
+	}
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
@@ -605,7 +611,7 @@ $( '#setting-timezone' ).click( function() {
 			  icon         : icon
 			, title        : title
 			, textlabel    : 'NTP'
-			, boxwidth     : 240
+			, boxwidth     : 300
 			, values       : G.ntp
 			, checkchanged : 1
 			, checkblank   : 1
@@ -834,6 +840,18 @@ $( '.listtitle' ).click( function( e ) {
 		$list.add( $chevron ).addClass( 'hide' );
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
+} );
+$( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css for dropdown width
+	$( 'head' ).append( `
+<style class="tmp">
+.select2-results { width: 330px }
+.select2-dropdown {
+	width: fit-content !important;
+	min-width: 100%;
+</style>
+` );
+} ).on( 'select2:close', function () {
+	$( 'style.tmp' ).remove();
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

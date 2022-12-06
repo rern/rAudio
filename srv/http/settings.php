@@ -38,15 +38,16 @@ if ( ! $addons )   $jsp[] = 'pushstream';
                    $js[]  = 'common';
 if ( ! $addons )   $js[]  = 'settings';
                    $js[]  = $page;
-if ( ! $networks ) $jsp[] = 'jquery.selectric';
+if ( ! $networks ) $jsp[] = 'select2';
 if ( $networks )   $jsp[] = 'qrcode';
 if ( $relays )     $js[]  = 'relays';
-if ( $system )     $jsp[] = 'slimselect';
 // <script> -----------------------------------------------------
 $script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $jsp as $j ) $script.= '
+<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 
-foreach( $js as $j ) $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+foreach( $js as $j ) $script.= '
+<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 
 echo $script.'
 </body>

@@ -1,34 +1,16 @@
-.selectric-on,
-.selectric-off {
-	width: 170px !important;
+.select2-container {
 	margin-bottom: 5px !important;
 }
-#on .selectric-items,
-#off .selectric-items {
-	min-width: 170px;
-}
-#gpio-num .selectric-items,
-.selectric-ond .selectric-items,
-.selectric-offd .selectric-items {
-	min-width: 85px !important;
-}
-.selectric-pin,
-.selectric-timer,
-.selectric-delay {
-	width: 85px !important;
-	margin-bottom: 5px !important;
-}
-.selectric-delay .selectric-items {
-	min-width: 85px !important;
+.c2 {
+	margin-left: 5px !important;
 }
 .sec {
 	display: inline-block;
 	margin-left: 5px;
-	vertical-align: 5px;
 }
 span.timer {
 	display: block;
-	margin-top: 48px;
+	margin-top: 54px;
 	margin-left: 0;
 }
 span.timer i {
@@ -63,7 +45,7 @@ svg {
 }
 #gpio-num.column,
 .delay {
-	width: 90px;
+	width: 90px !important;
 }
 .gpio-text {
 	display: block;
@@ -76,7 +58,6 @@ svg {
 	text-align: center;
 }
 #gpio-name {
-	margin: 0 0 5px 0 !important;
 	width: 130px !important;
 }
 input {
@@ -97,7 +78,4 @@ input {
 }
 .column span i {
 	font-size: 20px;
-}
-.selectric-wrapper.disabled .label {
-	color: var( --cg60 );
 }
