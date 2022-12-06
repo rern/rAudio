@@ -91,7 +91,7 @@ echo $style;
 
 <pre id="data" class="hide"></pre>
 
-<?php if ( ! $guide && ! $relays ) { ?>
+<?php if ( ! $guide && ! $progress && ! $relays ) { ?>
 <div id="loader">
 	<svg class="logo" viewBox="0 0 180 180">
 		<rect width="180" height="180" rx="9"/>
