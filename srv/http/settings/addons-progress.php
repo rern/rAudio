@@ -56,6 +56,7 @@ E        = {};
 document.title = 'Addons';
 E.helphead.remove();
 E.container.classList.remove( 'hide' );
+document.getElementById( 'loader' ).remove();
 
 E.close.addEventListener( 'click', () => location.href = '<?=$href?>' );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
