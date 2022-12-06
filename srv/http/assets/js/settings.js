@@ -89,29 +89,6 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
-function highlightJSON( json ) {
-	var json = Object.keys( json )
-					.sort()
-					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = '\n\n'+ JSON.stringify( json, null, '\t' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
-		if ( /^"/.test( match ) ) {              // string
-			if ( /:$/.test( match ) ) { // key
-				return match
-			} else {                    // value
-				return '<yl>'+ match +'</yl>'
-			}
-		} else if ( /true/.test( match ) ) {     // true
-			return '<grn>'+ match +'</grn>'
-		} else if ( /false/.test( match ) ) {    // false
-			return '<red>'+ match +'</red>'
-		} else if ( /[0-9]/.test( match ) ) {    // number
-			return '<ora>'+ match +'</ora>'
-		} else if ( /[{}\[\]]/.test( match ) ) { // braces
-			return '<pur>'+ match +'</pur>'
-		}
-	} ); // source: https://stackoverflow.com/a/7220510
-}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
@@ -188,7 +165,7 @@ function showContent() {
 			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );
 		} );
 	}
-	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
+	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
 // pushstreamChannel() in common.js
@@ -404,8 +381,8 @@ $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( G ) ) return
 	
 	$( '#data' ).html( highlightJSON( G ) )
+	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
-	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
 } );
 $( '#button-data' ).click( function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
