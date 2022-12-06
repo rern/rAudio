@@ -160,10 +160,11 @@ echo $commandtxt.'<br>';
 
 if ( $type === 'Debug' ) {
 	echo <<< EOF
+
 <hr>
 <a class="cbc"> . </a> Debug ...
 <hr>
-Install
+stdout
 
 <a class="cbc"> . </a> Done
 <hr class="hrlight">
