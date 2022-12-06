@@ -73,11 +73,11 @@ if ( ! $page ) { // main
 	if ( $addons || $progress ) $css[] = 'addons';
 	if ( ! $networks )          $css[] = 'selectric';
 	if ( $relays )              $css[] = 'relays';
+	if ( $system )              $css[] = 'slimselect';
 	$css[]    = 'settings';
 }
 // <style> -----------------------------------------------------
 $style = '';
-if ( $system ) $style.= '<link rel="stylesheet" href="/assets/css/slimselect.min.css'.$hash.'">';
 foreach( $css as $c ) { 
 	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
 	$style.= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
