@@ -38,6 +38,9 @@ if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'ra
 ?>
 
 <style>
+body {
+	height: 100vh;
+}
 .addontitle {
 	font-size      : 18px;
 	letter-spacing : 5px;
@@ -157,17 +160,19 @@ EOF;
 echo $commandtxt.'<br>';
 
 if ( $type === 'Debug' ) {
-	$json = json_encode( $addons[ 'r1' ], JSON_PRETTY_PRINT );
+	$json = var_export( $addons[ 'r1' ], true );
 	echo <<< EOF
 
 <hr>
 <a class="cbc"> . </a> Debug ...
 <hr>
 $json
+$json
 
 <a class="cbc"> . </a> Done
 <hr class="hrlight">
 </pre>
+<script>setTimeout( () => clearInterval( scroll ), 1000 );</script>
 </body>
 </html>
 EOF;
