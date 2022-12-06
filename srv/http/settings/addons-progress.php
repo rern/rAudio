@@ -2,7 +2,8 @@
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
 $sudobash = '/usr/bin/sudo /srv/http/bash/';
-$addons   = json_decode( file_get_contents( '/srv/http/data/addons/addons-list.json' ), true );
+$list     = file_get_contents( '/srv/http/data/addons/addons-list.json' );
+$addons   = json_decode( $list, true );
 $opt      = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
 $alias    = $opt[ 0 ];
 $type     = $opt[ 1 ];
@@ -160,14 +161,12 @@ EOF;
 echo $commandtxt.'<br>';
 
 if ( $type === 'Debug' ) {
-	$json = var_export( $addons[ 'r1' ], true );
 	echo <<< EOF
 
 <hr>
-<a class="cbc"> . </a> Debug ...
+<a class="cbc"> . </a> Addons List
 <hr>
-$json
-$json
+$list
 
 <a class="cbc"> . </a> Done
 <hr class="hrlight">
