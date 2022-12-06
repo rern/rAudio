@@ -25,7 +25,7 @@ if ( ! $addons ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 		$id      = strtolower( $name );
-		$active  = $id === $pagehead ? ' class="active"' : '';
+		$active  = $id === $pagetitle ? ' class="active"' : '';
 		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 	}
 	$htmlbar.= '</div>';

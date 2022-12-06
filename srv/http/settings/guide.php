@@ -11,7 +11,7 @@
 .helpblock { margin: 0 }
 #guide .bottom-bar {
 	height: 33px;
-	background: var( --cga );
+	background: var( --cgd );
 }
 #guide p {
 	margin: 0;

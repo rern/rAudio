@@ -32,7 +32,7 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
-// css filename with version
+// css / js filename with version
 $cnames  = [];
 exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
 $cfiles = [];
@@ -41,7 +41,6 @@ foreach( $cssfiles as $file ) {
 	$cfiles[ $name ] = $file;
 	$cnames[]        = $name;
 }
-// js filename with version
 $jsfiles = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
 $jfiles  = [];
 foreach( $jsfiles as $file ) {
@@ -53,17 +52,15 @@ if ( ! $page ) { // main
 	array_push( $css, ...[ 'roundslider', 'main' ] );
 	if ( $equalizer ) array_push( $css, ...[ 'equalizer',      'selectric' ] );
 	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
-} else { // settings
-	$icon = $page;
+} else {         // settings
+	$icon = $pagetitle = $page;
 	if ( $page === 'guide' ) {
-		$icon     = 'help';
-		$pagehead = 'user guide';
+		$icon = 'help';
+		$pagetitle = 'user guide';
 	} else if ( $page === 'relays' ) {
-		$pagehead = 'system';
-	} else {
-		$pagehead = $page;
+		$icon = $pagetitle = 'system';
 	}
-	$title    = strtoupper( $pagehead );
+	$title    = strtoupper( $pagetitle );
 	$addons   = $page === 'addons';
 	$progress = $page === 'addons-progress';
 	$guide    = $page === 'guide';
@@ -92,11 +89,13 @@ echo $style;
 
 <div id="banner" class="hide"></div>
 
+<pre id="data" class="hide"></pre>
+
+<?php if ( ! $guide && ! $relays ) { ?>
 <div id="loader">
 	<svg class="logo" viewBox="0 0 180 180">
 		<rect width="180" height="180" rx="9"/>
 		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
 	</svg>
 </div>
-
-<pre id="data" class="hide"></pre>
+<?php } ?>
