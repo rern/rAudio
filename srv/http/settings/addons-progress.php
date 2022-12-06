@@ -63,10 +63,8 @@ pre hr.hrlight {
 	padding-left : 10px;
 	font-family  : Inconsolata;
 	line-height  : 20px;
-	white-space  : pre-wrap;
 	background   : var( --cgd );
-	overflow-x   : hidden;
-	overflow-y   : auto;
+	overflow     : auto;
 	user-select  : text;
 	-webkit-overflow-scrolling: touch;
 }
@@ -159,12 +157,13 @@ EOF;
 echo $commandtxt.'<br>';
 
 if ( $type === 'Debug' ) {
+	$json = json_encode( $addons[ 'r1' ], JSON_PRETTY_PRINT );
 	echo <<< EOF
 
 <hr>
 <a class="cbc"> . </a> Debug ...
 <hr>
-stdout
+$json
 
 <a class="cbc"> . </a> Done
 <hr class="hrlight">
