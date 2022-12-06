@@ -17,6 +17,8 @@ $( '.page-icon' ).click( function() {
 			$( '.container' ).addClass( 'hide' );
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		} );
+} ).press( function() {
+	location.href = 'settings.php?p=addons-progress';
 } );
 $( '#button-data' ).click( function() {
 	$( '.container' ).removeClass( 'hide' );
