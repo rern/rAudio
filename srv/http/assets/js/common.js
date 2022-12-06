@@ -212,13 +212,6 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		
 		active = 1;
 		pushstream.connect();
-		if ( $( '.ss-content' ).length ) { // fix slimselect reappear on visibilitychange
-			$( '.ss-content' ).addClass( 'hide' );
-			setTimeout( () => {
-				$( 'body' ).click();
-				$( '.ss-content' ).removeClass( 'hide' );
-			}, 600 );
-		}
 	}
 	function disconnect() {
 		if ( ! active ) return

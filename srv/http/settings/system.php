@@ -394,10 +394,6 @@ $listui = [
 	  , 'Virtual Keyboard'
 	  , 'https://github.com/hodgef/simple-keyboard'
 	],[
-	    'sSlim Select 2'
-	  , 'Advanced select dropdown'
-	  , 'https://github.com/brianvoe/slim-select'
-	],[
 	    'Sortable'
 	  , 'Reorderable drag-and-drop lists'
 	  , 'https://github.com/SortableJS/Sortable'
