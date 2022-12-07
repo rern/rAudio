@@ -534,7 +534,8 @@ function getPlaybackStatus( withdisplay ) {
 			return false
 		}
 		
-		$( '#data' ).empty().addClass( 'hide' );
+		$( '#button-data, #data' ).addClass( 'hide' );
+		$( '#data' ).empty();
 		if ( 'display' in status ) {
 			G.display      = status.display;
 			G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;
