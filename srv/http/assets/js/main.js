@@ -93,6 +93,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#volume-knob' ).length
 			|| ! $( '#bio' ).hasClass( 'hide' )
 			|| ! I.infohide
+			|| ! $( '#data' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
@@ -152,7 +153,12 @@ $( '#status' ).click( function() {
 	[ 'apikeyfanart', 'apikeylastfm', 'sharedsecret', 'libraryhtml', 'librarylisthtml', 'playlisthtml', 'playlistlisthtml' ].forEach( el => delete data[ el ] );
 	$( '#data' ).html( highlightJSON( data ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
+	$( '.page' ).addClass( 'hide' );
 	delete data;
+} );
+$( '#button-data' ).click( function() {
+	$( '#page-'+ G.page ).removeClass( 'hide' );
+	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).click( function( e ) {
 	e.stopPropagation();
@@ -166,13 +172,7 @@ $( '#button-settings' ).click( function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} ).press( function() {
-	$( '#data' ).html( highlightJSON( G ) )
-	$( '#button-data, #data' ).removeClass( 'hide' );
-} );
-$( '#button-data' ).click( function() {
-	$( '#button-data, #data' ).addClass( 'hide' );
-} );
+} )
 $( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
