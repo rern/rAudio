@@ -322,13 +322,12 @@ $( '#setting-lcdchar' ).click( function() {
 		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : G.lcdchar
 		, beforeshow   : () => {
-			$( '#infoContent .gpio td:even' ).css( 'width', 60 );
+			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
 			$( '#infoContent .gpio td:odd' ).css( {
-				  width           : 25
-				, 'padding-right' : 1
+				  width           : 35
+				, 'padding-right' : 2
 				, 'text-align'    : 'right'
 			} );
-			$( '.gpio, .gpio .ss-main' ).css( 'font-family', 'Inconsolata' );
 			$( '#infoContent svg .power' ).remove();
 			$( '.i2c' ).toggleClass( 'hide', ! i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
