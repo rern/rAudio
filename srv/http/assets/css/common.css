@@ -119,6 +119,7 @@ codered  {
 	width: 100%;
 	height: 40px;
 	font-size: 30px;
+	line-height: 35px;
 	background: var( --cga );
 	z-index: 115;
 }
