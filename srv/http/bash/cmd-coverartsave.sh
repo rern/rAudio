@@ -25,7 +25,6 @@ case $type in
 			gifsicle -O3 --resize-fit 200x200 $source > "$target"
 		fi
 		convert "$thumbsource" -thumbnail 80x80\> -unsharp 0x.5 "$( dirname "$target" )/thumb.jpg"
-		sed -i -e 2d -e "1 a${target:9}" "$dirbookmarks/$name"
 		;;
 	coverart )
 		dir=$( dirname "$target" )
