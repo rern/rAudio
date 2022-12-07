@@ -72,7 +72,7 @@ if ( ! $page ) { // main
 } else {         // settings
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
-	$js[]  = 'common';
+	$js    = [ 'common' ];
 	if ( ! $guide && ! $networks && ! $progress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
