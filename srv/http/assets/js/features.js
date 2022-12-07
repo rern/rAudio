@@ -180,8 +180,8 @@ $( '#setting-localbrowser' ).click( function() {
 <tr><td style="width:130px">Rotation</td>
 	<td><select>
 		<option value="NORMAL">Normal</option>
-		<option value="CW">90°&ensp;&#xf524;</option>
-		<option value="CCW">90°&ensp;&#xf523;</option>
+		<option value="CW">90° CW</option>
+		<option value="CCW">90° CCW</option>
 		<option value="UD">180°</option>
 		</select>
 	</td><td></td></tr>
