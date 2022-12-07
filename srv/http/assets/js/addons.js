@@ -11,9 +11,9 @@ $( '.close' ).click( function() {
 } );
 $( '.page-icon' ).click( function() {
 	fetch( '/data/addons/addons-list.json' )
-		.then( response => response.json() )
+		.then( response => response.text() )
 		.then( data => {
-			$( '#data' ).html( highlightJSON( data ) );
+			$( '#data' ).text( '\n\n'+ data );
 			$( '.container' ).addClass( 'hide' );
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		} );
