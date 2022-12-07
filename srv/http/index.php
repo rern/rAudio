@@ -336,24 +336,12 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 <div id="bio" class="hide"></div>
 
 <?php
-	$jsp   = [ 'jquery', 'html5kellycolorpicker', 'lazysizes', 'pica', 'pushstream', 'qrcode', 'roundslider', 'Sortable' ];
-	$js    = [ 'common', 'context', 'function', 'main', 'passive' ];
-if ( $equalizer ) {
-	$jsp[] = 'select2';
-	$js[]  = 'equalizer';
-}
-if ( $localhost ) {
-	$jsp[] = 'simplekeyboard';
-	$js[]  = 'keyboard';
-	echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
-}
+if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
-$script = '';
-foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+// <script> -----------------------------------------------------
+foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+?>
 
-foreach( $js as $j ) $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-
-echo $script.'
 </body>
 </html>
-';

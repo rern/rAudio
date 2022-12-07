@@ -4,9 +4,16 @@ $( 'body' ).click( function( e ) {
 	$( '#menu' ).addClass( 'hide' );
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
-	if ( ! $( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
+	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
+		&& ! $( e.target ).parents( '#divi2smodule' ).length 
+		&& $( '#i2smodule' ).val() === 'none'
+	) {
+		i2sSelectHide();
+	}
+} ).keyup( function( e ) {
+	if ( e.key === 'Escape' ) {
+		$( 'select' ).select2( 'close' );
+		i2sSelectHide();
 	}
 } );
 $( '.container' ).on( 'click', '.settings', function() {
@@ -226,10 +233,7 @@ $( '#i2smodulesw' ).click( function() {
 	}, 200 );
 } );
 $( '#divi2smodule' ).click( '.select2', function() {
-    if ( $( '#i2smodule' ).val() === 'none' ) {
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
-	}
+    if ( $( '#i2smodule' ).val() === 'none' ) i2sSelectHide();
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
@@ -242,8 +246,7 @@ $( '#i2smodule' ).change( function() {
 		aplayname = 'onboard';
 		output = '';
 		notify( icon, title, 'Disable ...' );
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
+		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
@@ -856,6 +859,10 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function i2sSelectHide() {
+	$( '#divi2smodulesw' ).removeClass( 'hide' );
+	$( '#divi2smodule' ).addClass( 'hide' );
+}
 function infoMount( values ) {
 	var ip    = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );

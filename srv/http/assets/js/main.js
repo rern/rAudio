@@ -106,7 +106,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	} );
 } else {
 	var hash = versionHash();
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css'+ hash +'">' );
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/hovercursor.css'+ hash +'">' );
 	$.getScript( 'assets/js/shortcut.js'+ hash );
 }
 	

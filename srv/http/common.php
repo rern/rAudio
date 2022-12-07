@@ -39,33 +39,55 @@ $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // css / js filename with version
-$cnames    = [];
-exec( 'basename -a /srv/http/assets/css/*.min.*', $cssfiles );
-$cfiles    = [];
+$cssfiles   = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
 foreach( $cssfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$cfiles[ $name ] = $file;
-	$cnames[]        = $name;
 }
 $jsfiles   = array_slice( scandir( '/srv/http/assets/js/plugin' ), 2 );
-$jfiles    = [];
 foreach( $jsfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$jfiles[ $name ] = $file;
 }
-
 if ( ! $page ) { // main
-	array_push( $css, ...[ 'roundslider', 'main' ] );
+	$cssp[] = 'roundslider';
+	$css[]  = 'main';
+	$jsp    = [ 'jquery', 'html5kellycolorpicker', 'lazysizes', 'pica', 'pushstream', 'qrcode', 'roundslider', 'Sortable' ];
+	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
-		array_unshift( $css, 'select2' );
-		$css[] = 'equalizer';
+		$cssp[] = 'select2';
+		$css[]  = 'select2';
+		$css[]  = 'equalizer';
+		$jsp[]  = 'select2';
+		$js[]   = 'equalizer';
 	}
-	if ( $localhost ) array_push( $css, ...[ 'simplekeyboard', 'keyboard' ] );
+	if ( $localhost ) {
+		$cssp[] = 'simplekeyboard';
+		$css[]  = 'simplekeyboard';
+		$jsp[]  = 'simplekeyboard';
+		$js[]   = 'simplekeyboard';
+	}
+	// hovercursor.css and shortcut.js included by main.js
 } else {         // settings
 	$css[] = 'settings';
-	if ( ! $guide && ! $networks && ! $progress ) array_unshift( $css, 'select2' );
-	if ( $addons ) $css[] = 'addons';
-	if ( $relays ) $css[] = 'relays';
+	$jsp   = [ 'jquery' ];
+	$js[]  = 'common';
+	if ( ! $guide && ! $networks && ! $progress ) {
+		$cssp[] = 'select2';
+		$css[]  = 'select2';
+	}
+	if ( $relays ) {
+		$css[]  = 'relays';
+		$js[]   = 'relays';
+	}
+	if ( $addons ) {
+		$css[] = 'addons';
+	} else {
+		$jsp[] = 'pushstream';
+		$js[]  = 'settings';
+	}
+	$js[]   = $page;
+	$jsp[]  = $networks ? 'qrcode' : 'select2';
 	
 	$icon = $pagetitle = $page;
 	if ( $page === 'guide' ) {
@@ -74,15 +96,11 @@ if ( ! $page ) { // main
 	} else if ( $page === 'relays' ) {
 		$icon = $pagetitle = 'system';
 	}
-	$title    = strtoupper( $pagetitle );
+	$title = strtoupper( $pagetitle );
 }
 // <style> -----------------------------------------------------
-$style     = '';
-foreach( $css as $c ) { 
-	$cssname = in_array( $c, $cnames ) ? $cfiles[ $c ] : $c.'.css'.$hash;
-	$style  .= '<link rel="stylesheet" href="/assets/css/'.$cssname.'">';
-}
-echo $style;
+foreach( $cssp as $c ) echo '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
+foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 ?>
 
 </head>

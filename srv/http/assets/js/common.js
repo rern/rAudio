@@ -1,7 +1,7 @@
 /* 
-errorDisplay(), infoPower(), loader(), local(), $.fn.press()
-pushstream,     select2
-banner(),       info()
+copy,        errorDisplay(), infoPower(), loader(), local(), $.fn.press()
+pushstream,  select2
+banner(),    info()
 */
 
 G               = {}
@@ -17,6 +17,8 @@ $( '#data' ).on( 'click', '.copy', function() {
 	document.execCommand( 'copy' );
 	$( '#error' ).remove();
 } );
+
+// ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )

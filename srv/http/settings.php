@@ -31,25 +31,13 @@ if ( ! $addons ) {
 	$htmlbar.= '</div>';
 	echo $htmlbar;
 }
-// js
-                   $jsp   = [ 'jquery' ];
-				   $js    = [];
-if ( ! $addons )   $jsp[] = 'pushstream';
-                   $js[]  = 'common';
-if ( ! $addons )   $js[]  = 'settings';
-                   $js[]  = $page;
-if ( ! $networks ) $jsp[] = 'select2';
-if ( $networks )   $jsp[] = 'qrcode';
-if ( $relays )     $js[]  = 'relays';
+if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
+
 // <script> -----------------------------------------------------
-$script = '';
-foreach( $jsp as $j ) $script.= '
-<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 
-foreach( $js as $j ) $script.= '
-<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-
-echo $script.'
+echo '
 </body>
 </html>
 ';
