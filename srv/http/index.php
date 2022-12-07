@@ -142,6 +142,8 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 }
 ?>
 
+<div id="refresh"></div><div id="status"></div>
+
 <div id="bar-top" class="hide">
 	<i id="logo" class="fa fa-raudio-nobg"></i>
 	<i id="button-settings" class="fa fa-gear"></i>
@@ -152,6 +154,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
 </div>
+
 <div id="page-playback" class="page">
 	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
 	<i id="guide-bio" class="map guide fa fa-bio hide"></i>
