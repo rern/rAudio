@@ -65,6 +65,7 @@ pre hr.hrlight {
 	width        : 100%;
 	margin       : 10px 0 0 0;
 	padding-left : 10px;
+	tab-size     : 20px;
 	font-family  : Inconsolata;
 	line-height  : 20px;
 	background   : var( --cgd );
@@ -161,12 +162,13 @@ EOF;
 echo $commandtxt.'<br>';
 
 if ( $type === 'Debug' ) {
+	$listtext = htmlspecialchars( $list );
 	echo <<< EOF
 
 <hr>
 <a class="cbc"> . </a> Addons List
 <hr>
-$list
+$listtext
 
 <a class="cbc"> . </a> Done
 <hr class="hrlight">
