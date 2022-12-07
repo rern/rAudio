@@ -148,6 +148,7 @@ $( '#logo, #refresh' ).click( function() {
 } );
 $( '#status' ).click( function() {
 	var data = JSON.parse( JSON.stringify( G ) );
+	delete data.list.li;
 	[ 'apikeyfanart', 'apikeylastfm', 'sharedsecret', 'libraryhtml', 'librarylisthtml', 'playlisthtml', 'playlistlisthtml' ].forEach( el => delete data[ el ] );
 	$( '#data' ).html( highlightJSON( data ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
