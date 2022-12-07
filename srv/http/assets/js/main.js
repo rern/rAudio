@@ -1015,6 +1015,8 @@ $( '.btn-cmd' ).click( function() {
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd === 'play' ) {
+			if ( G.status.state === 'play' ) return
+			
 			G.status.state = cmd;
 			if ( ! G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
 			if ( ! G.status.stream && G.status.elapsed !== false ) setProgressAnimate();
