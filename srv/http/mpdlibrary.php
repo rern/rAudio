@@ -109,13 +109,15 @@ EOF;
 	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$bkpath     = trim( file_get_contents( $dir.'/'.$name ) );
+			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
+			$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
+			$src     .= $bkpath.'/coverart.jpg';
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
 	<div class="mode mode-bookmark" data-mode="bookmark">
 	<a class="lipath">$bkpath</a>
 	<a class="bkname hide">$name</a>
-	<img class="bkcoverart" src="/mnt/MPD/$bkpath/coverart.jpg^^^">
+	<img class="bkcoverart" src="$src^^^">
 	</div>
 </div>
 EOF;
