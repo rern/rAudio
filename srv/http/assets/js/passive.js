@@ -229,7 +229,7 @@ function psMpdUpdate( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( () => {
-		G.status.counts      = data;
+		G.counts             = data;
 		G.status.updating_db = false;
 		G.status.updatingdab = false;
 		renderLibraryCounts();
@@ -248,7 +248,7 @@ function psNotify( data ) {
 	if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {
-		G.status.counts.latest = 0;
+		G.counts.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( G.mode === 'latest' ) $( '#button-library' ).click();
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
@@ -307,7 +307,7 @@ function psPlaylist( data ) {
 }
 function psRadioList( data ) {
 	if ( 'count' in data ) {
-		G.status.counts[ data.type ] = data.count;
+		G.counts[ data.type ] = data.count;
 		$( '#mode-'+ data.type +' gr' ).text( data.count );
 	}
 	if ( G.library ) {
@@ -395,8 +395,8 @@ function psRestore( data ) {
 	}
 }
 function psSavedPlaylists( data ) {
-	var count                 = data.count;
-	G.status.counts.playlists = count;
+	var count          = data.count;
+	G.counts.playlists = count;
 	if ( G.savedlist ) {
 		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
 	} else if ( G.savedplaylist ) {

@@ -68,7 +68,7 @@ if ( ! $page ) { // main
 		$js[]   = 'simplekeyboard';
 	}
 	// hovercursor.css and shortcut.js included by main.js
-	$title = 'MAIN';
+	$title = 'STATUS';
 } else {         // settings
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];

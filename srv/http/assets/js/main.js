@@ -1285,7 +1285,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( ! G.status.counts[ G.mode ] && G.mode.slice( -5 ) !== 'radio' ) {
+	if ( ! G.counts[ G.mode ] && G.mode.slice( -5 ) !== 'radio' ) {
 		if ( G.mode === 'playlists' ) {
 			var message = 'No saved playlists found.';
 		} else if ( G.mode === 'latest' ) {
@@ -1303,7 +1303,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		return
 	}
 	
-	if ( ! G.color && ! G.status.counts[ G.mode ] && G.status.updating_db ) {
+	if ( ! G.color && ! G.counts[ G.mode ] && G.status.updating_db ) {
 		infoUpdate();
 		return
 	}
@@ -1909,7 +1909,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
 	}
-	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.status.counts.playlists === 0 );
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.counts.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', ! audiocd );
