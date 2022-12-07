@@ -19,7 +19,7 @@ if [[ -e /srv/http/assets/css/desktop.css ]]; then
 	rm -f /srv/http/main.php
 	rm -f /srv/http/assets/css/{desktop,keyboard,roundslider,selectric,simple-}*
 	rm -f /srv/http/assets/js/keyboard.js
-	rm -f /srv/http/assets/js/plugin/{jquery.selectric,simple-keyboard}*
+	rm -f /srv/http/assets/js/plugin/{jquery.selectric,simple-}*
 fi
 
 readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
