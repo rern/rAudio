@@ -125,7 +125,11 @@ EOF;
 	}
 	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
 	$order  = file_exists( '/srv/http/data/system/order' ) ? json_decode( file_get_contents( '/srv/http/data/system/order' ) ) : false;
-	echo json_encode( [ 'html' => $htmlmode, 'counts' => $counts, 'order' => $order ] );
+	echo json_encode( [
+		  'html' => $htmlmode
+		, 'counts' => $counts
+		, 'order' => $order
+	] );
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
