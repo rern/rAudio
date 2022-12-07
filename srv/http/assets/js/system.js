@@ -224,16 +224,12 @@ $( '#setting-wlan' ).click( function() {
 	}, 'json' );
 } );
 $( '#i2smodulesw' ).click( function() {
-	// delay to show switch sliding
-	setTimeout( () => {
+	setTimeout( () => { // delay to show switch sliding
 		$( '#i2smodulesw' ).prop( 'checked', 0 );
 		$( '#divi2smodulesw' ).addClass( 'hide' );
 		$( '#divi2smodule' ).removeClass( 'hide' );
 		$( '#i2smodule' ).select2( 'open' );
 	}, 200 );
-} );
-$( '#divi2smodule' ).click( '.select2', function() {
-    if ( $( '#i2smodule' ).val() === 'none' ) i2sSelectHide();
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
@@ -853,8 +849,9 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 	min-width: 100%;
 </style>
 ` );
-} ).on( 'select2:close', function () {
+} ).on( 'select2:close', function ( e ) {
 	$( 'style.tmp' ).remove();
+	if ( this.id === 'i2smodule' && this.value === 'none' ) i2sSelectHide();
 } );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
