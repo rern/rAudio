@@ -7,7 +7,7 @@
 <?php
 echo '<div class="container hide">';
 
-include "settings/$page.php";
+include 'settings/'.$page.'.php';
 
 echo '</div>';
 
@@ -107,6 +107,7 @@ function htmlHead( $data ) {
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
+	
 	// col-l
 	$label       = $data[ 'label' ];
 	$icon        = $data[ 'icon' ] ?? '';
@@ -130,10 +131,6 @@ function htmlSetting( $data ) {
 	$html       .= $icon ? i( $icon ) : '';
 	$html       .= '</div>';
 	// col-r
-	if ( ! $icon ) {
-		global $page;
-		$icon    = $page;
-	}
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';

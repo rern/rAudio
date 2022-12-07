@@ -86,14 +86,14 @@ if ( ! $page ) { // main
 		$jsp[] = 'pushstream';
 		$js[]  = 'settings';
 	}
-	$js[]   = $page;
 	$jsp[]  = $networks ? 'qrcode' : 'select2';
+	$js[]   = $page;
 	
 	$icon = $pagetitle = $page;
-	if ( $page === 'guide' ) {
+	if ( $guide ) {
 		$icon = 'help';
 		$pagetitle = 'user guide';
-	} else if ( $page === 'relays' ) {
+	} else if ( $relays ) {
 		$icon = $pagetitle = 'system';
 	}
 	$title = strtoupper( $pagetitle );
