@@ -520,9 +520,7 @@ function getPlaybackStatus( withdisplay ) {
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
-				, ok      : () => {
-					bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', () => location.reload() );
-				}
+				, ok      : () => bash( '/srv/http/bash/settings/system.sh shareddatadisconnect', () => location.reload() )
 			} );
 			return
 		}
@@ -534,8 +532,6 @@ function getPlaybackStatus( withdisplay ) {
 			return false
 		}
 		
-		$( '#button-data, #data' ).addClass( 'hide' );
-		$( '#data' ).empty();
 		if ( 'display' in status ) {
 			G.display      = status.display;
 			G.coverdefault = ! G.display.covervu && ! G.display.vumeter ? G.coverart : G.covervu;

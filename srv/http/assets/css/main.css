@@ -221,6 +221,18 @@ i.map.disabled, .map.disabled i {
 	-webkit-user-select: none;
 }
 /* ---------------------- bars ----------------------*/
+#refresh,
+#status {
+	width: 40px;
+	height: 40px;
+	position: fixed;
+	z-index: 100;
+}
+#status {
+	width: 20px;
+	right: 0;
+	z-index: 110;
+}
 #bar-top,
 #bar-bottom {
 	position: fixed;

@@ -140,11 +140,15 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #button-library, #button-playlist' ).press( function() { // from info.js
+$( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
 	location.reload();
 } );
-$( '#logo' ).click( function() {
+$( '#logo, #refresh' ).click( function() {
 	if ( ! G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
+} );
+$( '#status' ).click( function() {
+	$( '#data' ).html( highlightJSON( G ) )
+	$( '#button-data, #data' ).removeClass( 'hide' );
 } );
 $( '#button-settings' ).click( function( e ) {
 	e.stopPropagation();
