@@ -148,13 +148,9 @@ $( '#logo, #refresh' ).click( function() {
 	if ( ! G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
 } );
 $( '#status' ).click( function() {
-	var data = JSON.parse( JSON.stringify( G ) );
-	delete data.list.li;
-	[ 'apikeyfanart', 'apikeylastfm', 'sharedsecret', 'libraryhtml', 'librarylisthtml', 'playlisthtml', 'playlistlisthtml' ].forEach( el => delete data[ el ] );
-	$( '#data' ).html( highlightJSON( data ) )
+	$( '#data' ).html( highlightJSON( G.status ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( '.page' ).addClass( 'hide' );
-	delete data;
 } );
 $( '#button-data' ).click( function() {
 	$( '#page-'+ G.page ).removeClass( 'hide' );
