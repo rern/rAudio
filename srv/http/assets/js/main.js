@@ -158,6 +158,12 @@ $( '#button-settings' ).click( function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
+} ).press( function() {
+	$( '#data' ).html( highlightJSON( G ) )
+	$( '#button-data, #data' ).removeClass( 'hide' );
+} );
+$( '#button-data' ).click( function() {
+	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;

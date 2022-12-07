@@ -68,6 +68,7 @@ if ( ! $page ) { // main
 		$js[]   = 'simplekeyboard';
 	}
 	// hovercursor.css and shortcut.js included by main.js
+	$title = 'STATUS';
 } else {         // settings
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
@@ -110,6 +111,7 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 
 <div id="banner" class="hide"></div>
 
+<div id="button-data" class="hide"><i class="fa fa-times"></i><span class="title wh"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 
 <?php if ( ! $guide && ! $progress && ! $relays ) { ?>

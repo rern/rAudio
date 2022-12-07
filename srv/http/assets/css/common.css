@@ -113,6 +113,20 @@ codered  {
 	margin-left  : -20px;
 	margin-right : -20px;
 }
+#button-data {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 40px;
+	font-size: 30px;
+	background: var( --cga );
+	z-index: 115;
+}
+#button-data i {
+	width: 40px;
+	text-align: center;
+	color: var( --cm );
+}
 .splash {
 	background: #000000 !important;
 }
