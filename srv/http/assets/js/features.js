@@ -216,7 +216,7 @@ ${ brightness }
 		  icon         : icon
 		, title        : title
 		, content      : content
-		, boxwidth     : 100
+		, boxwidth     : 110
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
 		, checkchanged : G.localbrowser
 		, beforeshow   : () => {
