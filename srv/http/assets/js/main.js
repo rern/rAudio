@@ -152,6 +152,7 @@ $( '#status' ).click( function() {
 	[ 'apikeyfanart', 'apikeylastfm', 'sharedsecret', 'libraryhtml', 'librarylisthtml', 'playlisthtml', 'playlistlisthtml' ].forEach( el => delete data[ el ] );
 	$( '#data' ).html( highlightJSON( data ) )
 	$( '#button-data, #data' ).removeClass( 'hide' );
+	delete data;
 } );
 $( '#button-settings' ).click( function( e ) {
 	e.stopPropagation();
