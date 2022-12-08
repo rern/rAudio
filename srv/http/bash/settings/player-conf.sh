@@ -133,8 +133,6 @@ if [[ -e $dirmpd/updating ]]; then
 fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
-[[ -e $dirshm/startup ]] && $dirbash/status-push.sh
-
 $dirsettings/player-data.sh pushrefresh
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
