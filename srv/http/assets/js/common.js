@@ -1,7 +1,7 @@
 /* 
-copy,      banner(),   errorDisplay(), 
+copy,     banner(),    errorDisplay(), 
 info(),   infoPower(), infoPowerCommand(), infoPowerNfs(),
-loader(), local(),     $.fn.press(),       pushstream,     select2
+loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 G               = {}
