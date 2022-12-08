@@ -6,6 +6,9 @@
 	font-size     : 16px;
 	line-height   : 24px;
 }
+#infoContent .select2-container {
+	max-width: none;
+}
 .select2-container .select2-selection--single {
 	height     : 40px;
 	background : none;
