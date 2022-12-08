@@ -190,7 +190,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 				delete G.reboot;
 				banner( 'raudio', 'rAudio', 'Ready', 6000 );
 				loaderHide();
-				bash( '/srv/http/bash/status-push.sh' );
+				bash( [ 'autoplaystatus' ] );
 			} else {
 				refreshData();
 				bannerHide();
