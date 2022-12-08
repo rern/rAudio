@@ -98,6 +98,10 @@
 #eqname {
 	position: relative;
 }
+#eqname {
+	padding-right: 21px;
+	text-align: center;
+}
 #eqsave {
 	margin-right: 25px;
 }
