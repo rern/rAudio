@@ -34,7 +34,8 @@
 	border-radius: 0;
 }
 .select2-container--default .select2-results>.select2-results__options {
-	max-height: 215px;
+	height: 360px;
+	max-height: 70vh;
 }
 .select2-container--open .select2-dropdown--above {
 	box-shadow: -2px -2px 5px #000000;
