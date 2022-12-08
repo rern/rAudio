@@ -366,14 +366,6 @@ codered  {
 	font-size: 13px;
 }
 
-#infoContent .select2-results {
-	width: fit-content;
-}
-#infoContent .select2-container {
-	height: 36px;
-	margin-bottom: 5px;
-}
-
 #infoRange {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );

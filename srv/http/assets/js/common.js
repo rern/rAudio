@@ -142,14 +142,17 @@ $.fn.press = function( arg1, arg2 ) {
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
+	var options = {}
 	if ( $select ) {
 		var searchbox = page === 'system' ? 1 : 0;
 	} else {
 		$select = $( '#infoContent select' );
 		var searchbox = 0;
+		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
+	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
-		.select2( searchbox ? '' : { minimumResultsForSearch: Infinity } )
+		.select2( options )
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );

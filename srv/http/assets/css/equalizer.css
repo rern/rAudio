@@ -30,11 +30,15 @@
                         width       : var( --eqSliderH ); }
 #eq input             { height      : var( --eqBandW )    }
 #eq .bottom           { margin-top  : var( --eqBottomT )  }
-#eqname { 
+#eqname,
+#eq .select2-container { 
 	width: calc( var( --eqBandW ) * 4 ) !important;
 }
-#eqname,
-#eq { margin: 0 calc( var( --eqBandW ) / 2 ) !important }
+#eq .select2-results__options li {
+	text-align: center;
+	padding-right: 20px;
+}
+
 @media ( max-width: 530px ) {
 	#eq input::-webkit-slider-thumb { width : var( --eqThumbW ) }
 	#eq input::-moz-range-thumb     { width : var( --eqThumbW ) }
@@ -94,11 +98,10 @@
 #eqname {
 	position: relative;
 }
-#eq i,
-#eq input[type=text] {
-	vertical-align: middle !important;
+#eqsave {
+	margin-right: 25px;
 }
-.select2-container {
-	width: 200px !important;
-	margin: 0 25px;
+#eqnew,
+#eqcancel {
+	margin-left: 25px;
 }
