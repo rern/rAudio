@@ -89,12 +89,16 @@
 }
 #eq i {
 	font-size: 24px;
-	vertical-align: middle !important;
 }
 #eq i,
 #eqname {
 	position: relative;
 }
+#eq i,
 #eq input[type=text] {
-	vertical-align: -5px;
+	vertical-align: middle !important;
+}
+.select2-container {
+	width: 200px !important;
+	margin: 0 25px;
 }

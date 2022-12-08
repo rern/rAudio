@@ -100,14 +100,15 @@ function infoEqualizer( update ) {
 				$( '#eqsave' ).addClass( 'disabled' );
 			} );
 			$( '#eqnew' ).click( function() {
-				$( '#eqnew, #eq' ).addClass( 'hide' );
+				$( '#eqnew, #eq .select2-container' ).addClass( 'hide' );
 				$( '#eqname, #eqcancel' ).removeClass( 'hide' );
+				$( '#eqname' ).css( 'display', 'inline-block' );
 				$( '#eqrename' ).addClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
 				if ( G.eq.current !== 'Flat' && G.eq.current !== '(unnamed)' ) $( '#eqname' ).val( G.eq.current )
 			} );
 			$( '#eqcancel' ).click( function() {
-				$( '#eqrename, #eqnew, #eq' ).removeClass( 'hide' );
+				$( '#eqrename, #eqnew, #eq .select2-container' ).removeClass( 'hide' );
 				$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
 				$( '#eqname' ).val( '' );
 				eqButtonSet();
