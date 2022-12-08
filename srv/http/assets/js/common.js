@@ -1,12 +1,42 @@
 /* 
-copy,        errorDisplay(), infoPower(), loader(), local(), $.fn.press()
-pushstream,  select2
-banner(),    info()
+copy,      banner(),   errorDisplay(), 
+info(),   infoPower(), infoPowerCommand(), infoPowerNfs(),
+loader(), local(),     $.fn.press(),       pushstream,     select2
 */
 
 G               = {}
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+
+// ----------------------------------------------------------------------
+function banner( icon, title, message, delay ) {
+	clearTimeout( G.timeoutbanner );
+	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
+					? icon 
+					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+	$( '#banner' ).html( `
+<div id="bannerIcon">${ iconhtml }</div>
+<div id="bannerTitle">${ title }</div>
+<div id="bannerMessage">${ message }</div>
+` ).removeClass( 'hide' );
+	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+}
+function bannerHide() {
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( G.bannerhold ) {
+		setTimeout( () => {
+			G.bannerhold = 0;
+			bannerHide();
+		}, G.bannerhold );
+		return
+	}
+	
+	clearTimeout( G.timeoutbanner );
+	$( '#banner' )
+		.addClass( 'hide' )
+		.empty();
+}
+$( '#banner' ).click( bannerHide );
 
 // ----------------------------------------------------------------------
 $( '#data' ).on( 'click', '.copy', function() {
@@ -55,210 +85,6 @@ function highlightJSON( json ) {
 		}
 	} ); // source: https://stackoverflow.com/a/7220510
 }
-
-// ----------------------------------------------------------------------
-function infoPower() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : orange
-		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'off' )
-	} );
-}
-function infoPowerCommand( action ) {
-	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
-}
-function infoPowerNfs( nfs, action ) {
-	if ( nfs != -1 ) return
-	
-	var off = action === 'off';
-	info( {
-		  icon    : 'power'
-		, title   : 'Power'
-		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-					+'<br><wh>Shared Data</wh> on clients will stop.'
-					+'<br>(Resume when server online again)'
-					+'<br><br>Continue?'
-		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
-		, okcolor : off ? red : orange
-		, ok      : () => {
-			bash( [ 'power', action, 1 ] );
-			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-		}
-	} );
-}
-
-// ----------------------------------------------------------------------
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-}
-
-// ----------------------------------------------------------------------
-function local( delay ) {
-	G.local = 1;
-	setTimeout( () => G.local = 0, delay || 300 );
-}
-
-// ----------------------------------------------------------------------
-/*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT  : #id or .class
-	// DELEGATE : optional
-	// this     : use $( e.target ) instead of $( this );
-	// .on      : cannot be attached with .on
-} );
-events:
-	- move  : mouseenter > mousemove > mouseleave > mouseout
-	- click : mousedown  > mouseup   > click
-	- touch : touchstart > touchmove > touchend
-*/
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( ! arg2 ) {
-		delegate = '';
-		callback = arg1;
-	} else {
-		delegate = arg1;
-		callback = arg2;
-	}
-	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( () => {
-			G.press = 1;
-			callback( e );
-		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
-		clearTimeout( timeout );
-		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
-	} );
-	return this // allow chain
-}
-
-// select2 --------------------------------------------------------------------
-function selectSet( $select ) {
-	var options = {}
-	if ( $select ) {
-		var searchbox = page === 'system' ? 1 : 0;
-	} else {
-		$select = $( '#infoContent select' );
-		var searchbox = 0;
-		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
-	}
-	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
-	$select
-		.select2( options )
-		.each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
-		} );
-}
-
-// pushstream -----------------------------------------------------------------
-if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
-	function pushstreamPower( message ) {
-		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		G[ type ] = 1;
-		var ready = type === 'ready';
-		if ( G.display.logout ) {
-			if ( ready ) location.reload();
-			
-			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
-			loader();
-		} else {
-			if ( ready ) {
-				if ( page === 'system' ) getStatus();
-				loaderHide();
-			} else {
-				loader();
-			}
-		}
-	}
-	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-		if ( status === 2 ) {        // connected
-			if ( G.reboot ) {
-				delete G.reboot;
-				banner( 'raudio', 'rAudio', 'Ready', 6000 );
-				loaderHide();
-				bash( [ 'autoplaystatus' ] );
-			} else {
-				refreshData();
-				bannerHide();
-			}
-		} else if ( status === 0 ) { // disconnected
-			pushstreamDisconnect();
-			if ( G.off ) {
-				pushstream.disconnect();
-				$( '#loader' ).css( 'background', '#000000' );
-				setTimeout( () => {
-					$( '#loader .logo' ).css( 'animation', 'none' );
-					bannerHide();
-					loader();
-				}, 10000 );
-			}
-		}
-	}
-	// page visibility -----------------------------------------------------------------
-	var active = 1;
-	function connect() {
-		if ( active || G.off ) return
-		
-		active = 1;
-		pushstream.connect();
-	}
-	function disconnect() {
-		if ( ! active ) return
-		
-		active = 0;
-		pushstream.disconnect();
-	}
-	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
-	window.onpagehide = disconnect;
-	window.onpageshow = connect;
-}
-
-// banner ----------------------------------------------------------------------
-function banner( icon, title, message, delay ) {
-	clearTimeout( G.timeoutbanner );
-	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
-					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
-	$( '#banner' ).html( `
-<div id="bannerIcon">${ iconhtml }</div>
-<div id="bannerTitle">${ title }</div>
-<div id="bannerMessage">${ message }</div>
-` ).removeClass( 'hide' );
-	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
-}
-function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	if ( G.bannerhold ) {
-		setTimeout( () => {
-			G.bannerhold = 0;
-			bannerHide();
-		}, G.bannerhold );
-		return
-	}
-	
-	clearTimeout( G.timeoutbanner );
-	$( '#banner' )
-		.addClass( 'hide' )
-		.empty();
-}
-$( '#banner' ).click( bannerHide );
 
 // info ----------------------------------------------------------------------
 function infoUsage() {
@@ -1003,3 +829,177 @@ select:   [U] [D]     - check
 $( '#infoContent' ).click( function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
+
+// common info functions --------------------------------------------------
+function infoPower() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttoncolor : orange
+		, button      : () => infoPowerCommand( 'reboot' )
+		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, okcolor     : red
+		, ok          : () => infoPowerCommand( 'off' )
+	} );
+}
+function infoPowerCommand( action ) {
+	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
+}
+function infoPowerNfs( nfs, action ) {
+	if ( nfs != -1 ) return
+	
+	var off = action === 'off';
+	info( {
+		  icon    : 'power'
+		, title   : 'Power'
+		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+					+'<br><wh>Shared Data</wh> on clients will stop.'
+					+'<br>(Resume when server online again)'
+					+'<br><br>Continue?'
+		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+		, okcolor : off ? red : orange
+		, ok      : () => {
+			bash( [ 'power', action, 1 ] );
+			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
+		}
+	} );
+}
+
+// ----------------------------------------------------------------------
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
+}
+
+// ----------------------------------------------------------------------
+function local( delay ) {
+	G.local = 1;
+	setTimeout( () => G.local = 0, delay || 300 );
+}
+
+// ----------------------------------------------------------------------
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT  : #id or .class
+	// DELEGATE : optional
+	// this     : use $( e.target ) instead of $( this );
+	// .on      : cannot be attached with .on
+} );
+events:
+	- move  : mouseenter > mousemove > mouseleave > mouseout
+	- click : mousedown  > mouseup   > click
+	- touch : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var callback, delegate, timeout;
+	if ( ! arg2 ) {
+		delegate = '';
+		callback = arg1;
+	} else {
+		delegate = arg1;
+		callback = arg2;
+	}
+	this.on( 'touchstart mousedown', delegate, function( e ) {
+		timeout = setTimeout( () => {
+			G.press = 1;
+			callback( e );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
+		clearTimeout( timeout );
+		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
+	} );
+	return this // allow chain
+}
+
+// pushstream -----------------------------------------------------------------
+if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, reconnectOnChannelUnavailableInterval : 3000
+	} );
+	function pushstreamChannel( channels ) {
+		channels.forEach( channel => pushstream.addChannel( channel ) );
+		pushstream.connect();
+	}
+	function pushstreamPower( message ) {
+		var type  = message.split( ' ' )[ 0 ].toLowerCase();
+		G[ type ] = 1;
+		var ready = type === 'ready';
+		if ( G.display.logout ) {
+			if ( ready ) location.reload();
+			
+			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
+			loader();
+		} else {
+			if ( ready ) {
+				if ( page === 'system' ) getStatus();
+				loaderHide();
+			} else {
+				loader();
+			}
+		}
+	}
+	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
+		if ( status === 2 ) {        // connected
+			if ( G.reboot ) {
+				delete G.reboot;
+				banner( 'raudio', 'rAudio', 'Ready', 6000 );
+				loaderHide();
+				bash( [ 'autoplaystatus' ] );
+			} else {
+				refreshData();
+				bannerHide();
+			}
+		} else if ( status === 0 ) { // disconnected
+			pushstreamDisconnect();
+			if ( G.off ) {
+				pushstream.disconnect();
+				$( '#loader' ).css( 'background', '#000000' );
+				setTimeout( () => {
+					$( '#loader .logo' ).css( 'animation', 'none' );
+					bannerHide();
+					loader();
+				}, 10000 );
+			}
+		}
+	}
+	// page visibility -----------------------------------------------------------------
+	var active = 1;
+	function connect() {
+		if ( active || G.off ) return
+		
+		active = 1;
+		pushstream.connect();
+	}
+	function disconnect() {
+		if ( ! active ) return
+		
+		active = 0;
+		pushstream.disconnect();
+	}
+	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+	window.onpagehide = disconnect;
+	window.onpageshow = connect;
+}
+
+// select2 --------------------------------------------------------------------
+function selectSet( $select ) {
+	var options = {}
+	if ( $select ) {
+		var searchbox = page === 'system' ? 1 : 0;
+	} else {
+		$select = $( '#infoContent select' );
+		var searchbox = 0;
+		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
+	}
+	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
+	$select
+		.select2( options )
+		.each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
+		} );
+}
