@@ -1506,8 +1506,12 @@ i.map.disabled, .map.disabled i {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
+.input-group input {
+    height: 32px !important;
+}
 .input-group input:focus {
 	box-shadow: none !important;
+	outline: none !important;
 }
 #lib-search-close,
 #pl-search-close {
