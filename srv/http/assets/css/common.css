@@ -895,6 +895,9 @@ input[type=radio]:disabled {
 	input[type=checkbox]:checked:disabled {
 		background-color: var( --cml );
 	}
+	.input-group input {
+		padding-top: 0 !important;
+	}
 	.infobtn {
 		line-height: 32px;
 	}
