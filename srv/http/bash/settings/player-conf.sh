@@ -69,7 +69,7 @@ else # with audio devices (from player-devices.sh)
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ $equalizer ]]; then
+	elif [[ $equalizer ]]; then # from player-asound.sh
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------< equalizer
 		audiooutput='
@@ -141,7 +141,7 @@ $dirsettings/player-data.sh pushrefresh
 
 systemctl stop shairport-sync shairport spotifyd &> /dev/null
 
-[[ $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
+[[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
 
 # renderers -----------------------------------------------------------------------------
 if [[ -e /usr/bin/shairport-sync ]]; then
