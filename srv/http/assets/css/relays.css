@@ -35,7 +35,7 @@ svg {
 	float: left;
 }
 #gpio-name input {
-	width: 120px;
+	width: 100%;
 }
 .column {
 	float: left;
@@ -45,7 +45,7 @@ svg {
 }
 #gpio-num.column,
 .delay {
-	width: 90px !important;
+	width: 70px !important;
 }
 .gpio-text {
 	display: block;
@@ -58,7 +58,8 @@ svg {
 	text-align: center;
 }
 #gpio-name {
-	width: 130px !important;
+	width: 155px !important;
+	padding-right: 10px;
 }
 input {
 	margin-bottom: 5px !important;
@@ -70,10 +71,12 @@ input {
 	border: 1px solid var( --cg ) !important;
 }
 .infobtn {
-	width: 80px;
-	margin-left: 0;
+	width: 85px;
+	margin: 0;
+	padding: 0;
 }
 #undo {
+	margin-right: 5px;
 	background-color: #de810e;
 }
 .column span i {

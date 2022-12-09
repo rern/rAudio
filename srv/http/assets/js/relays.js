@@ -52,8 +52,8 @@ renderPage = function( changed ) {
 	}
 //	if ( ! G.enabled ) $( '#undo' ).removeClass( 'disabled' );
 	showContent();
-	$( '#on > span.select2' ).odd().css( 'cssText', 'width:90px !important' );
-	$( '#off > span.select2' ).odd().css( 'cssText', 'width:90px !important' );
+	$( '#on > .select2' ).odd().css( 'cssText', 'width:70px !important' );
+	$( '#off > .select2' ).odd().css( 'cssText', 'width:70px !important' );
 }
 function renderUpdate() {
 	D.keys.forEach( k => D.val[ k ] = [] );
