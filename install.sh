@@ -25,7 +25,8 @@ fi
 readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
 if [[ $bookmarks ]]; then
 	for file in "${bookmarks[@]}"; do
-		(( $( wc -l < "$file" ) > 1 )) && sed -i '2,$ d' "$file"
+		path=$( head -1 "$file" )
+		echo $path > "$file"
  	done
 fi
 
