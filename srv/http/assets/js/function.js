@@ -913,7 +913,7 @@ function playlistFilter() {
 		var match  = txt.search( regex ) !== -1 ? true : false;
 		count      = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', ! match );
-		if ( ! $this.hasClass( 'hide' ) ) {
+		if ( match ) {
 			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
 			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
 			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
