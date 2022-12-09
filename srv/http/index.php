@@ -266,8 +266,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		<div id="lib-path">
 			<i id="button-lib-back" class="fa fa-arrow-left"></i>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
-			<div id="lib-breadcrumbs">
-			</div>
+			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
 		</div>
 	</div>

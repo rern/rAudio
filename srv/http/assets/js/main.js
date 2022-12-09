@@ -1212,8 +1212,9 @@ $( '#lib-search-btn' ).click( function() { // search
 				}
 				renderLibraryList( data );
 				$( 'html, body' ).scrollTop( 0 );
-			} else {
 				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>&ensp;' );
+				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
+			} else {
 				info( {
 					  icon    : 'library'
 					, title   : 'Library Database'
@@ -1232,7 +1233,7 @@ $( '#lib-search-close' ).click( function() {
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
 	if ( $( '#lib-search-input' ).val() ) {
 		$( '#lib-search-input' ).val( '' );
-		refreshData();
+		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().click() : $( '#library' ).click();
 	}
 } );
 $( '#lib-search-input' ).keyup( function( e ) {
@@ -1246,9 +1247,9 @@ $( '#button-lib-back' ).click( function() {
 		|| ( bL && bL < 2 )
 		|| ( ! bL && G.query.length === 1 )
 	) {
-		$( '#button-library' ).click();
+		$( '#library' ).click();
 	} else if ( bL && G.mode !== 'latest' && ! backmode ) {
-		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
+		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		G.query.pop();
 		var query    = G.query[ G.query.length - 1 ];
