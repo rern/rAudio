@@ -906,14 +906,20 @@ function playlistFilter() {
 	var count   = 0;
 	$( '#pl-list li' ).each( ( i, el ) => {
 		var $this = $( el );
-		var match = ( $this.text().search( regex ) !== -1 ) ? true : false;
-		count     = match ? ( count + 1 ) : count;
+		var name   = $this.find( '.name' ).text();
+		var artist = $this.find( '.artist' ).text();
+		var album  = $this.find( '.album' ).text();
+		var txt    = name + artist + album;
+		var match  = txt.search( regex ) !== -1 ? true : false;
+		count      = match ? ( count + 1 ) : count;
 		$this.toggleClass( 'hide', ! match );
 		if ( ! $this.hasClass( 'hide' ) ) {
-			var name = $this.find( '.name' ).text().replace( regex, function( match ) { return '<bl>'+ match +'</bl>' } );
-			var li2  = $this.find( '.li2' ).text().replace( regex, function( match ) { return '<bl>'+ match +'</bl>' } );
+			name   = name.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			artist = artist.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
+			album  = album.replace( regex, function( match ) { return '<bll>'+ match +'</bll>' } );
 			$this.find( '.name' ).html( name );
-			$this.find( '.li2' ).html( li2 );
+			$this.find( '.artist' ).html( artist );
+			$this.find( '.album' ).html( album );
 		}
 	} );
 	$( 'html, body' ).scrollTop( 0 );
