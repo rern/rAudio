@@ -1806,7 +1806,7 @@ $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {
-		return $( this ).html().replace( /<bl>|<\/bl>/g, '' );
+		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
 $( '#button-pl-search' ).click( function() {
