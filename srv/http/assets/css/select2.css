@@ -59,7 +59,7 @@
 }
 .select2-results__option--selected {
 	color      : var( --cw ) !important;
-	background : var( --cgd ) !important;
+	background : var( --cg ) !important;
 }
 .select2-results__option--highlighted.select2-results__option--selectable {
 	background: var( --cgl ) !important;
