@@ -1204,15 +1204,15 @@ $( '#lib-search-btn' ).click( function() { // search
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		}
-		list( query, function( html ) {
-			if ( html != -1 ) {
-				var data = {
-					  html      : html
+		list( query, function( data ) {
+			if ( data !== -1 ) {
+				var list = {
+					  html      : data.html
 					, modetitle : 'search'
 				}
-				renderLibraryList( data );
+				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>&ensp;' );
+				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>'+ data.count +' <gr>of</gr> </span>' );
 				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
 				info( {
@@ -1220,8 +1220,9 @@ $( '#lib-search-btn' ).click( function() { // search
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
+				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>' );
 			}
-		} );
+		}, 'json' );
 	}
 } );
 $( '#lib-search-close' ).click( function() {

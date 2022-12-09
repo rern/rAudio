@@ -496,7 +496,10 @@ EOF;
 	echo $html;
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
-	if ( ! count( $lists ) ) exit( '-1' );
+	if ( ! count( $lists ) ) {
+		echo -1;
+		exit;
+	}
 	
 	global $mode;
 	global $gmode;
@@ -610,5 +613,10 @@ EOF;
 </li>
 EOF;
 	}
-	echo $html.'<p></p></ul>';
+	$html.= '<p></p></ul>';
+	if ( $searchmode ) {
+		echo json_encode( [ 'html' => $html, 'count' => $i ] );
+	} else {
+		echo $html;
+	}
 }
