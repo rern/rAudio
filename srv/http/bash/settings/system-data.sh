@@ -9,7 +9,7 @@ uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minut
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
-$( date +'%F <gr>•</gr> %T' )<wide>&emsp;<gr> ${timezone//\// · }</gr></wide><br>\
+$( date +'%F <gr>•</gr> %T' )<wide>&ensp;<gr> ${timezone//\// · }</gr></wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
