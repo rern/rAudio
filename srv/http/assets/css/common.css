@@ -88,9 +88,47 @@ input::-moz-focus-inner {
 .logo path {
 	fill: var( --cg75 );
 }
-#loader pre {
-	white-space: pre-wrap;
-}.splash {
+#data {
+	position    : absolute;
+	top         : 0;
+	width       : 100%;
+	min-height  : 100%;
+	margin      : 0;
+	padding     : 10px 20px;
+	tab-size    : 20px;
+	font-family : Inconsolata;
+	line-height : 20px;
+	overflow    : auto;
+	white-space : pre-wrap;
+	background  : #000;
+	z-index     : 110;
+}
+codered  {
+	padding       : 0px 5px 3px 5px;
+	border-radius : 3px;
+	color         : var( --cw );
+	background    : #f00;
+}
+#data hr {
+	margin-left  : -20px;
+	margin-right : -20px;
+}
+#button-data {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	height: 40px;
+	font-size: 30px;
+	line-height: 35px;
+	background: var( --cga );
+	z-index: 115;
+}
+#button-data i {
+	width: 40px;
+	text-align: center;
+	color: var( --cm );
+}
+.splash {
 	background: #000000 !important;
 }
 .splash svg {
@@ -190,6 +228,7 @@ input::-moz-focus-inner {
 .fa-nas::before             { content: '\f551' }
 .fa-networks::before        { content: '\f551' }
 .fa-next::before            { content: '\f505' }
+.fa-off::before             { content: '\f520' }
 .fa-output::before          { content: '\f52A' }
 .fa-pause::before           { content: '\f504' }
 .fa-play::before            { content: '\f503' }
@@ -327,38 +366,6 @@ input::-moz-focus-inner {
 	font-size: 13px;
 }
 
-/* selectric */
-#infoContent .selectric-wrapper {
-	margin: 0;
-	min-width: 60px;
-	max-width: 100%;
-	font-size: 16px;
-}
-#infoContent .selectric-items ul {
-	color: var( --cw );
-}
-#infoContent .selectric {
-	border-radius: 3px;
-}
-#infoContent .selectric,
-#infoContent .selectric .label,
-#infoContent .selectric-items li {
-	height: 35px;
-	text-align: left;
-	line-height: 16px;
-}
-#infoContent .selectric-items {
-	min-width: 100%;
-}
-#infoContent .selectric .label {
-	margin: 1px 0;
-	padding: 0 10px;
-}
-#infoContent .selectric .label,
-#infoContent .selectric .button {
-	line-height: 34px;
-	color: var( --cw );
-}
 #infoRange {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -443,8 +450,8 @@ input::-moz-focus-inner {
 
 /* info */
 .infobtn,
-#infoOverlay input[type=radio],
-#infoOverlay input[type=checkbox] {
+input[type=radio],
+input[type=checkbox] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -750,14 +757,14 @@ hr {
 	resize: none;
 	white-space: pre;
 }
-#infoContent input[type=text],
-#infoContent input[type=tel],
-#infoContent input[type=number],
-#infoContent input[type=password] {
+input[type=text],
+input[type=tel],
+input[type=number],
+input[type=password] {
 	display: inline-block;
 	margin: 0;
 	width: 100%;
-	height: 36px !important;
+	height: 40px !important;
 	padding: 10px 9px;
 	color: var( --cw );
 	background-color: #000000;
@@ -766,9 +773,9 @@ hr {
 	font-size: 16px;
 	font-family: "Lato";
 }
-#infoContent input[type=text]:disabled,
-#infoContent input[type=tel]:disabled,
-#infoContent input[type=number]:disabled {
+input[type=text]:disabled,
+input[type=tel]:disabled,
+input[type=number]:disabled {
 	background: none !important;
 	outline: none;
 	opacity: 1;
@@ -782,8 +789,8 @@ hr {
 	text-align: center;
 	margin-right: -25px;
 }
-#infoOverlay input[type=radio],
-#infoOverlay input[type=checkbox] {
+input[type=radio],
+input[type=checkbox] {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
@@ -793,22 +800,22 @@ hr {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
-#infoOverlay input[type=radio] {
+input[type=radio] {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
 	margin: 2px 7px 2px 1px;
 }
-#infoOverlay input:checked {
+input:checked {
 	background-color: var( --cm );
 }
-#infoOverlay input[type=checkbox]:checked:disabled,
-#infoOverlay input[type=radio]:checked:disabled {
+input[type=checkbox]:checked:disabled,
+input[type=radio]:checked:disabled {
 	background-color: var( --cmd );
 	box-shadow: none;
 }
-#infoOverlay input[type=checkbox]:disabled,
-#infoOverlay input[type=radio]:disabled {
+input[type=checkbox]:disabled,
+input[type=radio]:disabled {
 	background-color: var( --cgd );
 	box-shadow: none;
 }
@@ -851,7 +858,7 @@ hr {
 @media ( hover:hover ) {
 	/* :hover *********************************************************/
 	#infoTab,
-	#infoContent label,
+	label,
 	input[type=checkbox],
 	input[type=radio],
 	.fa-eye,
@@ -885,8 +892,11 @@ hr {
 	}
 }
 @supports ( -webkit-touch-callout: none ) { /* ios only */
-	#infoOverlay input[type=checkbox]:checked:disabled {
+	input[type=checkbox]:checked:disabled {
 		background-color: var( --cml );
+	}
+	.input-group input {
+		padding-top: 0 !important;
 	}
 	.infobtn {
 		line-height: 32px;

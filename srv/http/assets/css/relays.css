@@ -1,34 +1,16 @@
-.selectric-on,
-.selectric-off {
-	width: 170px !important;
+.select2-container {
 	margin-bottom: 5px !important;
 }
-#on .selectric-items,
-#off .selectric-items {
-	min-width: 170px;
-}
-#gpio-num .selectric-items,
-.selectric-ond .selectric-items,
-.selectric-offd .selectric-items {
-	min-width: 85px !important;
-}
-.selectric-pin,
-.selectric-timer,
-.selectric-delay {
-	width: 85px !important;
-	margin-bottom: 5px !important;
-}
-.selectric-delay .selectric-items {
-	min-width: 85px !important;
+.c2 {
+	margin-left: 5px !important;
 }
 .sec {
 	display: inline-block;
 	margin-left: 5px;
-	vertical-align: 5px;
 }
 span.timer {
 	display: block;
-	margin-top: 48px;
+	margin-top: 54px;
 	margin-left: 0;
 }
 span.timer i {
@@ -53,7 +35,7 @@ svg {
 	float: left;
 }
 #gpio-name input {
-	width: 120px;
+	width: 100%;
 }
 .column {
 	float: left;
@@ -63,7 +45,7 @@ svg {
 }
 #gpio-num.column,
 .delay {
-	width: 90px;
+	width: 70px !important;
 }
 .gpio-text {
 	display: block;
@@ -76,8 +58,8 @@ svg {
 	text-align: center;
 }
 #gpio-name {
-	margin: 0 0 5px 0 !important;
-	width: 130px !important;
+	width: 155px !important;
+	padding-right: 10px;
 }
 input {
 	margin-bottom: 5px !important;
@@ -89,15 +71,14 @@ input {
 	border: 1px solid var( --cg ) !important;
 }
 .infobtn {
-	width: 80px;
-	margin-left: 0;
+	width: 85px;
+	margin: 0;
+	padding: 0;
 }
 #undo {
+	margin-right: 5px;
 	background-color: #de810e;
 }
 .column span i {
 	font-size: 20px;
-}
-.selectric-wrapper.disabled .label {
-	color: var( --cg60 );
 }

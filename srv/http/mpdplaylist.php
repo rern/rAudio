@@ -250,7 +250,10 @@ EOF;
 		}
 	}
 	$counthtml = '';
-	if ( $plname ) $counthtml.= '<a class="lipath">'.$plname.'</a><span class="pl-title name">&ensp;'.$plname.'&ensp;<gr> · </gr></span>';
+	if ( $plname ) {
+		$counthtml.= '
+<a class="lipath">'.$plname.'</a><span class="pl-title name"><i class="savedlist fa fa-file-playlist wh"></i>'.$plname.'&ensp;<gr> · </gr></span>';
+	}
 	if ( $countsong ) {
 		$counthtml.= '
 <wh id="pl-trackcount">'.number_format( $countsong ).'</wh>

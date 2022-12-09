@@ -22,7 +22,6 @@ Through plugins and libraries it can play a variety of sound files while being c
 </div>
 </div>
 <?php
-if ( ! file_exists( '/srv/http/data/shm/nosound' ) || file_exists( '/srv/http/data/shm/btreceiver' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
@@ -76,11 +75,11 @@ The later in the signal chain the better sound quality.
 | None / 0dB   | Best  - Amplifier volume - GUI knob hidden
 | Mixer device | Good  - DAC hardware via GUI knob
 | MPD software | Basic - GUI knob
-</pre>
+</pre>Note: | None / 0dB | - Not for devices which still need volume control, e.g., DACs with on-board amplifier
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
@@ -95,6 +94,8 @@ Disable all manipulations for bit-perfect stream from MPD to DAC output.
  • Volume Control: | None / 0db |
  • Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
  • Disable Signal Processors
+
+Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
@@ -137,9 +138,9 @@ Support: FLAC, Ogg Vorbis, Musepack and MP3
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'volume' );
 // ----------------------------------------------------------------------------------
-}
+
 $head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
@@ -213,7 +214,7 @@ EOF
 		, 'help'    => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'options' );
 
 echo '
 <div id="divlists" class="section">

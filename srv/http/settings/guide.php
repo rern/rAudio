@@ -11,7 +11,7 @@
 .helpblock { margin: 0 }
 #guide .bottom-bar {
 	height: 33px;
-	background: var( --cga );
+	background: var( --cgd );
 }
 #guide p {
 	margin: 0;
@@ -40,9 +40,9 @@
 </style>
 
 <p class="helpblock" style="display: none">
-Bottom bar:
- • Icons - Skip to each section
- • Arrow icons / Swipe - Previous / next page
+Bottom bar :
+ • Arrow icons       - Previous / next page
+ • Icons with label - Skip to each section
 </p>
 <div id="guide">
 	<p><span class="count" style="float: right"></span></p>
@@ -125,6 +125,7 @@ if ( navigator.maxTouchPoints ) { // swipe
 			xdiff > 0 ? E.next.click() : E.prev.click();
 		}
 	} );
+	E.helpblock.prepend( '\nSwipe          : Previous / next page' );
 }
 
 function renderPage( n ) {

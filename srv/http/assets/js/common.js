@@ -1,183 +1,14 @@
 /* 
-infoPower(), loader(), $.fn.press()
-pushstream,  selectric
-banner(),    info()
+copy,     banner(),    errorDisplay(), 
+info(),   infoPower(), infoPowerCommand(), infoPowerNfs(),
+loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 G               = {}
+var page        = location.search.replace( '?p=', '' );
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 
-$( 'body' ).prepend( `
-<div id="infoOverlay" class="hide"></div>
-
-<div id="banner" class="hide"></div>
-
-<div id="loader">
-	<svg class="logo" viewBox="0 0 180 180">
-		<rect width="180" height="180" rx="9"/>
-		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
-	</svg>
-</div>
-` );
-
 // ----------------------------------------------------------------------
-function infoPower() {
-	info( {
-		  icon        : 'power'
-		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
-		, buttoncolor : orange
-		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
-		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'off' )
-	} );
-}
-function infoPowerCommand( action ) {
-	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
-}
-function infoPowerNfs( nfs, action ) {
-	if ( nfs != -1 ) return
-	
-	var off = action === 'off';
-	info( {
-		  icon    : 'power'
-		, title   : 'Power'
-		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
-					+'<br><wh>Shared Data</wh> on clients will stop.'
-					+'<br>(Resume when server online again)'
-					+'<br><br>Continue?'
-		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
-		, okcolor : off ? red : orange
-		, ok      : () => {
-			bash( [ 'power', action, 1 ] );
-			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-		}
-	} );
-}
-// ----------------------------------------------------------------------
-function loader() {
-	$( '#loader' ).removeClass( 'hide' );
-}
-function loaderHide() {
-	$( '#loader' ).addClass( 'hide' );
-}
-
-// ----------------------------------------------------------------------
-/*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT  : #id or .class
-	// DELEGATE : optional
-	// this     : use $( e.target ) instead of $( this );
-	// .on      : cannot be attached with .on
-} );
-events:
-	- move  : mouseenter > mousemove > mouseleave > mouseout
-	- click : mousedown  > mouseup   > click
-	- touch : touchstart > touchmove > touchend
-*/
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( ! arg2 ) {
-		delegate = '';
-		callback = arg1;
-	} else {
-		delegate = arg1;
-		callback = arg2;
-	}
-	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( () => {
-			G.press = 1;
-			callback( e );
-		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
-		clearTimeout( timeout );
-		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
-	} );
-	return this // allow chain
-}
-
-// selectric --------------------------------------------------------------------
-function selectricRender() {
-	$( 'select' ).selectric( { disableOnMobile: false, nativeOnMobile: false } );
-	$( 'select' ).each( ( i, el ) => {
-		var $this = $( el );
-		if ( $this.find( 'option' ).length === 1 ) $this.parents( '.selectric-wrapper' ).addClass( 'disabled' );
-	} );
-	$( '.selectric-input' ).prop( 'readonly', navigator.maxTouchPoints > 0 ); // suppress soft keyboard
-}
-
-// pushstream -----------------------------------------------------------------
-var page        = location.search.replace( '?p=', '' );
-if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, timeout                               : 20000
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
-	function pushstreamPower( message ) {
-		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		G[ type ] = 1;
-		var ready = type === 'ready';
-		if ( G.display.logout ) {
-			if ( ready ) location.reload();
-			
-			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
-			loader();
-		} else {
-			if ( ready ) {
-				if ( page === 'system' ) getStatus();
-				loaderHide();
-			} else {
-				loader();
-			}
-		}
-	}
-	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
-		if ( status === 2 ) {        // connected
-			if ( G.reboot ) {
-				delete G.reboot;
-			} else {
-				refreshData();
-				bannerHide();
-			}
-		} else if ( status === 0 ) { // disconnected
-			pushstreamDisconnect();
-			if ( G.off ) {
-				pushstream.disconnect();
-				$( '#loader' ).css( 'background', '#000000' );
-				setTimeout( () => {
-					$( '#loader .logo' ).css( 'animation', 'none' );
-					bannerHide();
-					loader();
-				}, 10000 );
-			}
-		}
-	}
-	// active / inactive window
-	var active      = 1;
-	function connect() {
-		if ( ! active && ! G.off ) {
-			active = 1;
-			pushstream.connect();
-		}
-	}
-	function disconnect() {
-		if ( active ) {
-			active = 0;
-			pushstream.disconnect();
-		}
-	}
-	document.addEventListener( 'visibilitychange', () => document.hidden ? disconnect() : connect() ); // invisible
-	window.onpagehide = window.onblur = disconnect; // invisible + visible but not active
-	window.onpageshow = window.onfocus = connect;
-}
-
-// banner ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( G.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
@@ -206,6 +37,54 @@ function bannerHide() {
 		.empty();
 }
 $( '#banner' ).click( bannerHide );
+
+// ----------------------------------------------------------------------
+$( '#data' ).on( 'click', '.copy', function() {
+	banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
+	// copy2clipboard - for non https which cannot use clipboard API
+	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
+	$( '#error' ).focus().select();
+	document.execCommand( 'copy' );
+	$( '#error' ).remove();
+} );
+
+// ----------------------------------------------------------------------
+function errorDisplay( msg, list ) {
+	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
+	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
+				+'&emsp;<a class="infobtn infobtn-primary copy">Copy</a>'
+				+'<hr>'
+				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
+	$( '#data' )
+		.html( error )
+		.removeClass( 'hide' );
+	loaderHide();
+}
+
+// ----------------------------------------------------------------------
+function highlightJSON( json ) {
+	var json = Object.keys( json )
+					.sort()
+					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
+	json = '\n\n'+ JSON.stringify( json, null, '\t' );
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
+		if ( /^"/.test( match ) ) {              // string
+			if ( /:$/.test( match ) ) { // key
+				return match
+			} else {                    // value
+				return '<yl>'+ match +'</yl>'
+			}
+		} else if ( /true/.test( match ) ) {     // true
+			return '<grn>'+ match +'</grn>'
+		} else if ( /false/.test( match ) ) {    // false
+			return '<red>'+ match +'</red>'
+		} else if ( /[0-9]/.test( match ) ) {    // number
+			return '<ora>'+ match +'</ora>'
+		} else if ( /[{}\[\]]/.test( match ) ) { // braces
+			return '<pur>'+ match +'</pur>'
+		}
+	} ); // source: https://stackoverflow.com/a/7220510
+}
 
 // info ----------------------------------------------------------------------
 function infoUsage() {
@@ -302,7 +181,7 @@ Get values: infoVal()
 Show usage: infoUsage()
 
 Note:
-- Require fa-font, Selectric.js
+- Require fa-font, Select2.js
 - Single value/function - no need to be array
 ` );
 }
@@ -571,7 +450,6 @@ function info( json ) {
 		htmlcontent   += htmls.range || '';
 		htmlcontent   += htmls.footer || '';
 	}
-	$( 'html, body' ).scrollTop( 0 );
 	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
@@ -582,9 +460,9 @@ function info( json ) {
 	// populate layout //////////////////////////////////////////////////////////////////////////////
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
-		// get all input fields - omit .selectric-input for select
+		// get all input fields
 		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
-		var $input  = $( '#infoContent' ).find( 'input:not( .selectric-input ), select, textarea' );
+		var $input  = $( '#infoContent' ).find( 'input, select, textarea' );
 		var name, nameprev;
 		I.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
 			name = el.name;
@@ -619,7 +497,7 @@ function info( json ) {
 			I.boxW = 230;
 		}
 		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', I.boxW );
-		if ( $( '#infoContent select' ).length ) selectricRender(); // render selectric to set width
+		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
 		var $tdfirst = $( '#infoContent td:first-child' );
 		var tdL      = $( '#infoContent tr:eq( 0 ) td' ).length;
 		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox
@@ -642,6 +520,8 @@ function info( json ) {
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
+		$( 'html, body' ).scrollTop( 0 );
+		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 		var $this = $( this );
@@ -932,8 +812,7 @@ select:   [U] [D]     - check
 			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
 			break;
 		case 'Escape':
-			G.local = 1; // prevent toggle setting menu
-			setTimeout( () => G.local = 0, 300 );
+			local(); // prevent toggle setting menu
 			$( '#infoX' ).click();
 			break;
 		case 'ArrowLeft':
@@ -950,3 +829,177 @@ select:   [U] [D]     - check
 $( '#infoContent' ).click( function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
+
+// common info functions --------------------------------------------------
+function infoPower() {
+	info( {
+		  icon        : 'power'
+		, title       : 'Power'
+		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttoncolor : orange
+		, button      : () => infoPowerCommand( 'reboot' )
+		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, okcolor     : red
+		, ok          : () => infoPowerCommand( 'off' )
+	} );
+}
+function infoPowerCommand( action ) {
+	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
+}
+function infoPowerNfs( nfs, action ) {
+	if ( nfs != -1 ) return
+	
+	var off = action === 'off';
+	info( {
+		  icon    : 'power'
+		, title   : 'Power'
+		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+					+'<br><wh>Shared Data</wh> on clients will stop.'
+					+'<br>(Resume when server online again)'
+					+'<br><br>Continue?'
+		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+		, okcolor : off ? red : orange
+		, ok      : () => {
+			bash( [ 'power', action, 1 ] );
+			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
+		}
+	} );
+}
+
+// ----------------------------------------------------------------------
+function loader() {
+	$( '#loader' ).removeClass( 'hide' );
+}
+function loaderHide() {
+	$( '#loader' ).addClass( 'hide' );
+}
+
+// ----------------------------------------------------------------------
+function local( delay ) {
+	G.local = 1;
+	setTimeout( () => G.local = 0, delay || 300 );
+}
+
+// ----------------------------------------------------------------------
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	// ELEMENT  : #id or .class
+	// DELEGATE : optional
+	// this     : use $( e.target ) instead of $( this );
+	// .on      : cannot be attached with .on
+} );
+events:
+	- move  : mouseenter > mousemove > mouseleave > mouseout
+	- click : mousedown  > mouseup   > click
+	- touch : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var callback, delegate, timeout;
+	if ( ! arg2 ) {
+		delegate = '';
+		callback = arg1;
+	} else {
+		delegate = arg1;
+		callback = arg2;
+	}
+	this.on( 'touchstart mousedown', delegate, function( e ) {
+		timeout = setTimeout( () => {
+			G.press = 1;
+			callback( e );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
+		clearTimeout( timeout );
+		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
+	} );
+	return this // allow chain
+}
+
+// pushstream -----------------------------------------------------------------
+if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, reconnectOnChannelUnavailableInterval : 3000
+	} );
+	function pushstreamChannel( channels ) {
+		channels.forEach( channel => pushstream.addChannel( channel ) );
+		pushstream.connect();
+	}
+	function pushstreamPower( message ) {
+		var type  = message.split( ' ' )[ 0 ].toLowerCase();
+		G[ type ] = 1;
+		var ready = type === 'ready';
+		if ( G.display.logout ) {
+			if ( ready ) location.reload();
+			
+			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
+			loader();
+		} else {
+			if ( ready ) {
+				if ( page === 'system' ) getStatus();
+				loaderHide();
+			} else {
+				loader();
+			}
+		}
+	}
+	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
+		if ( status === 2 ) {        // connected
+			if ( G.reboot ) {
+				delete G.reboot;
+				banner( 'raudio', 'rAudio', 'Ready', 6000 );
+				loaderHide();
+				bash( [ 'autoplaystatus' ] );
+			} else {
+				refreshData();
+				bannerHide();
+			}
+		} else if ( status === 0 ) { // disconnected
+			pushstreamDisconnect();
+			if ( G.off ) {
+				pushstream.disconnect();
+				$( '#loader' ).css( 'background', '#000000' );
+				setTimeout( () => {
+					$( '#loader .logo' ).css( 'animation', 'none' );
+					bannerHide();
+					loader();
+				}, 10000 );
+			}
+		}
+	}
+	// page visibility -----------------------------------------------------------------
+	var active = 1;
+	function connect() {
+		if ( active || G.off ) return
+		
+		active = 1;
+		pushstream.connect();
+	}
+	function disconnect() {
+		if ( ! active ) return
+		
+		active = 0;
+		pushstream.disconnect();
+	}
+	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
+	window.onpagehide = disconnect;
+	window.onpageshow = connect;
+}
+
+// select2 --------------------------------------------------------------------
+function selectSet( $select ) {
+	var options = {}
+	if ( $select ) {
+		var searchbox = page === 'system' ? 1 : 0;
+	} else {
+		$select = $( '#infoContent select' );
+		var searchbox = 0;
+		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
+	}
+	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
+	$select
+		.select2( options )
+		.each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
+		} );
+}

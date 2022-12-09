@@ -6,9 +6,37 @@ function addReplace( cmd, command, title, msg ) {
 	} );
 	banner( 'playlist', title, msg );
 }
+function addSimilar() {
+	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
+	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
+			+'&artist='+ encodeURI( G.list.artist )
+			+'&track='+ encodeURI( G.list.name )
+			+'&api_key='+ G.apikeylastfm
+			+'&format=json'
+			+'&autocorrect=1';
+	$.post( url, function( data ) {
+		var title = 'Playlist - Add Similar';
+		if ( 'error' in data || ! data.similartracks.track.length ) {
+			banner( 'lastfm', title, 'Track not found.' );
+		} else {
+			var val = data.similartracks.track;
+			var iL = val.length;
+			var similar = '';
+			for ( i = 0; i < iL; i++ ) {
+				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+			}
+			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
+			bash( [ 'mpcsimilar', similar ], count => {
+				getPlaylist();
+				setButtonControl();
+				banner( 'library', title, count +' tracks added.' );
+			} );
+		}
+	}, 'json' );
+}
 function bookmarkNew() {
 	// #1 - track list - show image from licover
-	// #2 - dir list   - show image from server
+	// #2 - dir list   - show image from path + coverart.jpg
 	// #3 - no cover   - icon + directory name
 	var path = G.list.path;
 	if ( path.slice( -4 ) === '.cue' ) {
@@ -17,36 +45,36 @@ function bookmarkNew() {
 		path = G.mode +'/'+ path;
 	}
 	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
-	bash( [ 'coverartget', bkpath ], coverart => {
-		var icon = coverart ? '<img src="'+ encodeURI( coverart ) +'">' : '<i class="fa fa-bookmark bookmark bl"></i>';
-		info( {
-			  icon       : 'bookmark'
-			, title      : 'Add Bookmark'
-			, message    : icon
-						  +'<br><wh>'+ path +'</wh>'
-			, textlabel  : 'As:'
-			, focus      : 0
-			, values     : path.split( '/' ).pop()
-			, checkblank : coverart ? '' : 1
-			, beforeshow : () => $( '#infoContent input' ).parents( 'tr' ).toggleClass( 'hide', coverart !== '' )
-			, ok         : () => {
-				var name = infoVal();
-				bash( [ 'bookmarkadd', name, path, coverart.slice( 0, -13 ) ], std => {
-					if ( std == -1 ) {
-						bannerHide();
-						info( {
-							  icon    : 'bookmark'
-							, title   : 'Add Bookmark'
-							, message : icon
-										+'<br><wh>'+ path +'</wh>'
-										+'<br><br><wh>'+ name +'</wh> already exists.'
-						} );
-					} else {
-						banner( 'bookmark', 'Bookmark Added', path );
-					}
-				} );
-			}
-		} );
+	info( {
+		  icon       : 'bookmark'
+		, title      : 'Add Bookmark'
+		, message    : '<img src="'+ bkpath +'/coverart.jpg'+ versionHash() +'">'
+					  +'<br><br><wh>'+ path +'</wh>'
+		, textlabel  : 'As:'
+		, focus      : 0
+		, values     : bkpath.split( '/' ).pop()
+		, checkblank : 1
+		, beforeshow : () => {
+			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
+			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
+				imageOnError( this, 'bookmark' );
+			} );
+		}
+		, ok         : () => {
+			var name = infoVal();
+			bash( [ 'bookmarkadd', name, path ], std => {
+				if ( std == -1 ) {
+					bannerHide();
+					info( {
+						  icon    : 'bookmark'
+						, title   : 'Add Bookmark'
+						, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
+					} );
+				} else {
+					banner( 'bookmark', 'Bookmark Added', path );
+				}
+			} );
+		}
 	} );
 }
 function infoReplace( callback ) {
@@ -79,7 +107,6 @@ function playlistLoad( path, play, replace ) {
 	}, function( data ) {
 		G.local = 0;
 		G.status.pllength = +data;
-		G.savedlist = 0;
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
 	} );
 }
@@ -138,34 +165,6 @@ function playlistSaveExist( type, name, oldname ) {
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
-}
-function addSimilar() {
-	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
-	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-			+'&artist='+ encodeURI( G.list.artist )
-			+'&track='+ encodeURI( G.list.name )
-			+'&api_key='+ G.apikeylastfm
-			+'&format=json'
-			+'&autocorrect=1';
-	$.post( url, function( data ) {
-		var title = 'Playlist - Add Similar';
-		if ( 'error' in data || ! data.similartracks.track.length ) {
-			banner( 'lastfm', title, 'Track not found.' );
-		} else {
-			var val = data.similartracks.track;
-			var iL = val.length;
-			var similar = '';
-			for ( i = 0; i < iL; i++ ) {
-				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
-			}
-			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
-			bash( [ 'mpcsimilar', similar ], count => {
-				getPlaylist();
-				setButtonControl();
-				banner( 'library', title, count +' tracks added.' );
-			} );
-		}
-	}, 'json' );
 }
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
@@ -427,11 +426,11 @@ function webRadioEdit() {
 	} );
 }
 function webRadioExists( error, name, url, charset ) {
-	var message = error == -1 ? 'already exists.' : 'contains no valid URL.';
 	info( {
 		  icon    : 'webradio'
 		, title   : 'Add Web Radio'
-		, message : '<wh>'+ url +'</wh><br>'+ message
+		, message : iconwarning + error
+					+'<br><br><wh>'+ url +'</wh>'
 		, ok      : () => setTimeout( () => name ? webRadioNew( name, url, charset ) : webRadioEdit(), 300 )
 	} );
 }
@@ -474,18 +473,32 @@ function webRadioNew( name, url, charset ) {
 		}
 	} );
 }
-function webRadioSave( url ) {
+function webRadioSave( name ) {
+	var url = G.list.li.find( '.lipath' ).text();
 	info( {
 		  icon       : 'webradio'
 		, title      : 'Save Web Radio'
 		, message    : url
 		, textlabel  : 'Name'
+		, values     : name || ''
 		, focus      : 0
 		, checkblank : 1
 		, ok         : () => {
 			G.local     = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioadd', newname, url ], () => {
+			bash( [ 'webradioadd', '', newname, url ], error => {
+				if ( error ) {
+					bannerHide();
+					info( {
+						  icon    : 'webradio'
+						, title   : 'Save Web Radio'
+						, message : iconwarning + error
+									+'<br><br><wh>'+ url +'</wh>'
+						, ok      : () => setTimeout( () => webRadioSave( newname ), 300 )
+					} );
+					return
+				}
+				
 				G.list.li.find( '.liname, .radioname' ).text( newname );
 				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
 				G.list.li.find( '.savewr' ).remove();
@@ -648,7 +661,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrsave':
-			webRadioSave( G.list.li.find( '.lipath' ).text() );
+			webRadioSave();
 			return
 	}
 	

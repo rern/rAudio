@@ -1,0 +1,79 @@
+.select2-container {
+	max-width     : 230px;
+	width         : 100% !important;
+	height        : 40px;
+	margin-bottom : 10px;
+	font-size     : 16px;
+	line-height   : 24px;
+}
+#infoContent .select2-container {
+	max-width: none;
+}
+.select2-selection--single {
+	height        : 40px;
+	background    : none;
+	background    : none !important;
+	border        :none !important;
+	border-radius : 3px !important;
+}
+.select2-selection__rendered {
+	color         : var( --cw ) !important;
+	background    : var( --cg );;
+	line-height   : 40px !important;
+	border-radius : 3px;
+}
+.select2-results__option {
+	padding-left: 8px;
+}
+.select2-selection__arrow {
+	height : 40px !important;
+	width  : 30px !important;
+}
+.select2-dropdown {
+	background    : var( --cga );
+	border        : none;
+	border-radius : 0;
+}
+.select2-results__options {
+	max-height: 360px !important;
+}
+@media ( max-height: 510px ) {
+	.select2-results__options {
+		max-height: 70vh !important;
+	}
+}
+.select2-dropdown--above {
+	box-shadow: -2px -2px 5px #000000;
+}
+.select2-dropdown--below {
+	box-shadow: -2px 2px 5px #000000;
+}
+.select2-search__field {
+	font-family   : lato;
+	font-size     : 16px;
+	line-height   : 24px;
+	border        : 1px solid var( --cg ) !important;
+	border-radius : 3px;
+	background    : #000;
+	color         : var( --cw );
+}
+.select2-results__option--selected {
+	color      : var( --cw ) !important;
+	background : var( --cg ) !important;
+}
+.select2-results__option--highlighted.select2-results__option--selectable {
+	background: var( --cgl ) !important;
+}
+.select2-selection__arrow b {
+	margin-top   : -4px !important;
+	border-color : var( --cw ) transparent transparent transparent !important;
+	border-width : 5px 5px 0 5px !important;
+}
+.select2-container--open .select2-selection__arrow b {
+	margin-top   : -5px !important;
+	border-color : transparent transparent var( --cw ) transparent !important;
+	border-width : 0 5px 5px 5px !important;
+}
+.select2-container--disabled .select2-selection__arrow {
+	display: none;
+}

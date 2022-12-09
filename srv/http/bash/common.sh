@@ -78,8 +78,8 @@ pushRefresh() {
 }
 pushstream() {
 	channel=$1
-	data=${@:2}
-	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$data"
+	json=${@:2} # $@=( function channel {"data":"value"...} ) > {"data":"value"...}
+	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
 	[[ ! -e $filesharedip  ]] && return
 	
 	if [[ $channel == coverart ]]; then
@@ -89,11 +89,11 @@ pushstream() {
 	
 	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return # no shared data / no other cilents
 	
-	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q -m1 'line.*rserver' <<< $data; then # 'Server rAudio' 'Online/Offline ...' rserver
-		[[ $channel == radiolist && $data == *webradio* ]] && webradiocopy=1 || webradiocopy=
+	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q -m1 'line.*rserver' <<< $json; then # 'Server rAudio' 'Online/Offline ...' rserver
+		[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1 || webradiocopy=
 		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
-			curl -s -X POST http://$ip/pub?id=$channel -d "$data"
+			curl -s -X POST http://$ip/pub?id=$channel -d "$json"
 			if [[ $webradiocopy ]]; then
 				sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
 			fi

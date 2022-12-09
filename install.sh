@@ -4,8 +4,51 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221117
+dirbash=/srv/http/bash
+dirsettings=$dirbash/settings
+dirdata=/srv/http/data
+dirmpd=$dirdata/mpd
+dirmpdconf=$dirdata/mpdconf
+dirshm=$dirdata/shm
+dirsystem=$dirdata/system
+dirwebradio=/srv/http/data/webradio
+
+# 20221208
+if [[ -e /srv/http/assets/css/desktop.css ]]; then
+	rm -f /srv/http/main.php
+	rm -f /srv/http/assets/css/{desktop,keyboard,roundslider,selectric,simple-}*
+	rm -f /srv/http/assets/js/keyboard.js
+	rm -f /srv/http/assets/js/plugin/{jquery.selectric,simple-}*
+fi
+
+readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
+if [[ $bookmarks ]]; then
+	for file in "${bookmarks[@]}"; do
+		(( $( wc -l < "$file" ) > 1 )) && sed -i '2,$ d' "$file"
+ 	done
+fi
+
+rm -rf /srv/http/data/tmp
+
+sed -i 's/5000/5005/' /srv/http/settings/camillagui/config/camillagui.yml
+
+if [[ -e "$dirwebradio/https:||stream.radioparadise.com|world-etc-flac" ]]; then
+	echo -e "$bar Update Radio Paradise station arts ..."
+	rm $dirwebradio/*world-etc-flac $dirwebradio/img/*world-etc-flac*
+	curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
+fi
+
+if grep -q shairport.sh /etc/shairport-sync.conf; then
+	sed -i 's/shairport.sh/cmd.sh shairport/; s/ stop/stop/' /etc/shairport-sync.conf
+	mv /etc/systemd/system/shairport{-meta,}.service
+	sed -i 's/-meta\|redis.target //' /etc/systemd/system/shairport.service
+	systemctl daemon-reload
+	systemctl try-restart shairport-sync
+fi
+
 # 20221123
-grep -q calc /srv/http/bash/xinitrc && restartbrowser=1
+grep -q calc $dirbash/xinitrc && restartbrowser=1
 
 mv /etc/udev/rules.d/ntfs{3,}.rules &> /dev/null
 file=/etc/udev/rules.d/ntfs.rules
@@ -33,15 +76,6 @@ veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
 vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
 [[ $veropenssl == 3 && $vershairport != 4 ]]  && pacman -Sy --noconfirm shairport-sync
 
-# 20221117
-dirbash=/srv/http/bash
-dirsettings=$dirbash/settings
-dirdata=/srv/http/data
-dirmpd=$dirdata/mpd
-dirmpdconf=$dirdata/mpdconf
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
-
 [[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
 
 [[ ! -e $dirdata/mpdconf ]] && backup=1
@@ -61,43 +95,6 @@ SD
 USB" > /mnt/MPD/.mpdignore
 fi
 
-# 20221007
-grep -q hard,intr /etc/fstab && sed -i '/hard,intr/soft/' /etc/fstab
-
-[[ -e $dirsystem/hddspindown ]] && mv $dirsystem/{hddspindown,apm}
-
-if [[ ! -e /boot/kernel.img ]]; then
-	dir=/etc/systemd/system
-	for file in $dir/spotifyd.service $dir/upmpdcli.service; do
-		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' -e '/ExecStartPost/ d' -e 's|/usr/bin/taskset -c 3 ||' $file
-	done
-	for file in $dir/bluealsa.service.d/override.conf $dir/bluetooth.service.d/override.conf; do
-		! grep -q CPUAffinity $file && sed -i -e '/Service/ a\CPUAffinity=3' $file
-	done
-fi
-
-dir=/srv/http/assets/img/guide
-if [[ ! -e $dir/1.jpg ]]; then
-	mkdir -p $dir
-	if [[ -e /srv/http/assets/img/1.jpg ]]; then
-		find /srv/http/assets/img -maxdepth 1 -type f -name '[0-9]*' -exec mv {} $dir \;
-	else
-		curl -skL https://github.com/rern/_assets/raw/master/guide/guide.tar.xz | bsdtar xf - -C $dir
-	fi
-fi
-
-file=/etc/systemd/system/dab.service
-if [[ -e /usr/bin/rtl_sdr && ! -e $file ]]; then
-	echo "\
-[Unit]
-Description=DAB Radio metadata
-
-[Service]
-Type=simple
-ExecStart=/srv/http/bash/status-dab.sh
-" > $file
-	systemctl daemon-reload
-fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -163,19 +160,21 @@ fi
 
 grep -q auto_update /etc/mpd.conf && linkConf autoupdate
 if grep -q audio_buffer /etc/mpd.conf; then
-	echo 'audio_buffer_size  "'$( < $dirsystem/buffer.conf )'"' > $dirmpdconf/conf/buffer.conf
+	buffer=$( grep audio_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'audio_buffer_size  "'$buffer'"' > $dirmpdconf/conf/buffer.conf
 	linkConf buffer
 fi
-if grep -q output_buffer /etc/mpd.conf; then
-	echo 'max_output_buffer_size  "'$( < $dirsystem/bufferoutput.conf )'"' > $dirmpdconf/conf/outputbuffer.conf
+if grep -q max_output_buffer_size /etc/mpd.conf; then
+	outputbuffer=$( grep max_output_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'max_output_buffer_size  "'$outputbuffer'"' > $dirmpdconf/conf/outputbuffer.conf
 	linkConf outputbuffer
 fi
-grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 if ! grep -q replaygain.*off /etc/mpd.conf; then
-	echo 'replaygain  "'$( < $dirsystem/replaygain.conf )'"' > $dirmpdconf/conf/replaygain.conf
+	replaygain=$( grep replaygain /etc/mpd.conf | cut -d'"' -f2 )
+	echo 'replaygain  "'$replaygain'"' > $dirmpdconf/conf/replaygain.conf
 	linkConf replaygain
 fi
-
+grep -q volume_normalization /etc/mpd.conf && linkConf normalization
 [[ -e $dirshm/audiocd ]] && linkConf cdio
 [[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && linkConf custom
 grep -q plugin.*ffmpeg /etc/mpd.conf && linkConf ffmpeg

@@ -180,8 +180,8 @@ $( '#setting-localbrowser' ).click( function() {
 <tr><td style="width:130px">Rotation</td>
 	<td><select>
 		<option value="NORMAL">Normal</option>
-		<option value="CW">90°&ensp;&#xf524;</option>
-		<option value="CCW">90°&ensp;&#xf523;</option>
+		<option value="CW">90° CW</option>
+		<option value="CCW">90° CCW</option>
 		<option value="UD">180°</option>
 		</select>
 	</td><td></td></tr>
@@ -216,7 +216,7 @@ ${ brightness }
 		  icon         : icon
 		, title        : title
 		, content      : content
-		, boxwidth     : 100
+		, boxwidth     : 110
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
 		, checkchanged : G.localbrowser
 		, beforeshow   : () => {
@@ -519,9 +519,9 @@ function renderPage() {
 	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
 	$( '#stoptimer' ).toggleClass( 'disabled', ! G.playing );
 	if ( G.nosound ) {
-		$( '#divdsp, #divsnapserver' ).addClass( 'hide' );
+		$( '#divdsp' ).addClass( 'hide' );
 	} else {
-		$( '#divdsp, #divsnapserver' ).removeClass( 'hide' );
+		$( '#divdsp' ).removeClass( 'hide' );
 		$( '#camilladsp' ).toggleClass( 'disabled', G.bluetoothsink || G.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', G.camilladsp );
 	}

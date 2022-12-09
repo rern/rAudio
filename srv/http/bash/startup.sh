@@ -105,11 +105,9 @@ else
 	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
-[[ -e /boot/startup.sh ]] && /boot/startup.sh
-
 $dirsettings/player-conf.sh # mpd.service started by this script
 
-# after all sources connected
+# after all sources connected ........................................................
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	lcdcharinit.py
@@ -158,10 +156,12 @@ if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
 elif [[ $nasfailed ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
-else
-	notify raudio rAudio Ready 6000
 fi
 
-[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback || $dirbash/status-push.sh
-
 touch $dirshm/startup
+
+[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback$'\n'play
+
+if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
+	/boot/startup.sh
+fi

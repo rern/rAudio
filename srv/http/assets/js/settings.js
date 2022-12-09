@@ -55,12 +55,6 @@ function bannerReset() {
 function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', G[ id ] );
 }
-function copy2clipboard( txt ) { // for non https which cannot use clipboard API
-	$( 'body' ).append( '<textarea id="error">'+ txt +'</textarea>' );
-	$( '#error' ).focus().select();
-	document.execCommand( 'copy' );
-	$( '#error' ).remove();
-}
 function currentStatus( id, refresh ) {
 	var $el = $( '#code'+ id );
 	if ( ! refresh && ! $el.hasClass( 'hide' ) ) {
@@ -95,29 +89,6 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
-function highlightJSON( json ) {
-	var json = Object.keys( json )
-					.sort()
-					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
-	json = JSON.stringify( json, null, '\t' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
-		if ( /^"/.test( match ) ) {              // string
-			if ( /:$/.test( match ) ) { // key
-				return match
-			} else {                    // value
-				return '<yl>'+ match +'</yl>'
-			}
-		} else if ( /true/.test( match ) ) {     // true
-			return '<grn>'+ match +'</grn>'
-		} else if ( /false/.test( match ) ) {    // false
-			return '<red>'+ match +'</red>'
-		} else if ( /[0-9]/.test( match ) ) {    // number
-			return '<ora>'+ match +'</ora>'
-		} else if ( /[{}\[\]]/.test( match ) ) { // braces
-			return '<pur>'+ match +'</pur>'
-		}
-	} ); // source: https://stackoverflow.com/a/7220510
-}
 function list2JSON( list ) {
 	try {
 		G = JSON.parse( list );
@@ -128,37 +99,23 @@ function list2JSON( list ) {
 							+'<a class="infobtn infobtn-primary restart">Start</a>'
 							+'<hr>'
 							+ status;
-				listError( error );
-				$( '#data' ).on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
-					notify( 'mpd', 'MPD', 'Start ...' );
-				} );
+				$( '#data' )
+					.html( error )
+					.removeClass( 'hide' )
+					.on( 'click', '.restart', function() {
+						bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
+						notify( 'mpd', 'MPD', 'Start ...' );
+					} );
 			} );
 		} else {
-			var msg   = e.message.split( ' ' );
-			var pos   = msg.pop();
-			var error =  iconwarning +'<red>Errors:</red> '+ msg.join( ' ' ) +' <red>'+ pos +'</red> '
-						+'<a class="infobtn infobtn-primary copy">Copy</a>'
-						+'<hr>'
-						+ list.slice( 0, pos ) +'<red>&#9646;</red>'+ list.slice( pos );
-			listError( error );
-			$( '#data' ).on( 'click', '.copy', function() {
-				copy2clipboard( 'Errors: '+ msg.join( ' ' ) +' '+ pos +'\n'+ list );
-				banner( 'warning', 'Errors', 'Data copied to clipboard.' );
-			} );
+			errorDisplay( e.message, list );
 		}
 		return false
 	}
-	// no errors
-	if ( $( '#data .fa-warning' ).length ) $( '#data' ).empty().addClass( 'hide' );
+	
+	$( '#data' ).empty();
+	$( '#button-data, #data' ).addClass( 'hide' );
 	return true
-}
-function listError( error ) {
-	$( '.container' ).addClass( 'hide' );
-	$( '#data' )
-		.html( error )
-		.removeClass( 'hide' );
-	loaderHide();
 }
 function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
@@ -197,13 +154,9 @@ function setSwitch() {
 }
 function showContent() {
 	G.ready ? delete G.ready : bannerReset();
-	if ( $( 'select' ).length ) selectricRender();
-	if ( page !== 'networks' ) {
-		$( 'pre.status' ).each( ( i, el ) => {
-			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( 'code', '' ), 'refresh' );
-		} );
-	}
-	$( '.head, .container, #bar-bottom' ).removeClass( 'hide' );
+	var $select = $( '.container select' );
+	if ( $select.length ) selectSet( $select );
+	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
 // pushstreamChannel() in common.js
@@ -322,9 +275,7 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-var debounce;
 var dirsystem    = '/srv/http/data/system';
-var intervalcputime;
 var localhost    = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange       = '#de810e';
 var page         = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
@@ -336,20 +287,15 @@ var pagenext     = {
 	, networks : [ 'player', 'system' ]
 	, system   : [ 'networks', 'features' ]
 }
-var $focus;
-var selectchange = 0;
 
-document.title   = page;
+document.title = page;
 
-if ( localhost ) {
-	$( 'a' ).removeAttr( 'href' );
-} else {
-	$( 'a[href]' ).attr( 'target', '_blank' );
-}
+localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).keyup( function( e ) {
 	if ( ! I.infohide ) return
 	
+	var $focus;
 	var key = e.key;
 	switch ( key ) {
 		case 'Tab':
@@ -400,8 +346,8 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 } );
 $( '.close' ).click( function() {
 	if ( page !== 'system' ) {
-		location.href = '/';
-		retuirn
+		location.href = '/'; 
+		return
 	}
 	
 	bash( [ 'rebootlist' ], list => {
@@ -415,10 +361,7 @@ $( '.close' ).click( function() {
 			, title   : 'System Setting'
 			, message : 'Reboot required for:<br><br>'
 						+'<pre><wh>'+ list +'</wh></pre>'
-			, cancel  : () => {
-				bash( 'rm -f /srv/http/data/shm/reboot /srv/http/data/tmp/backup.*' );
-				location.href = '/';
-			}
+			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
 			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
@@ -428,13 +371,12 @@ $( '.close' ).click( function() {
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( G ) ) return
 	
-	$( '#data' )
-		.html( highlightJSON( G ) )
-		.removeClass( 'hide' );
-	$( '.head, .container, #bar-bottom' ).addClass( 'hide' );
+	$( '#data' ).html( highlightJSON( G ) )
+	$( '.container' ).addClass( 'hide' );
+	$( '#button-data, #data' ).removeClass( 'hide' );
 } );
 $( '#button-data' ).click( function() {
-	$( '#data' ).addClass( 'hide' );
+	$( '#button-data, #data' ).addClass( 'hide' );
 	setSwitch();
 	renderPage();
 } ).on( 'mousedown touchdown', function() {
@@ -474,7 +416,7 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-$( '.switch:not( .custom )' ).click( function() {
+$( '.switch:not( .custom, .nobanner )' ).click( function() {
 	var id      = this.id;
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );

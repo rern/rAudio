@@ -2,12 +2,14 @@
 
 . /srv/http/bash/common.sh
 
+[[ ! -e /tmp/config.txt ]] && cp /boot/{cmdline,config}.txt /tmp
+
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
-$( date +'%F <gr>•</gr> %T' )<wide> <gr>• $timezone</gr></wide><br>\
+$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
@@ -218,7 +220,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetooth"        : '$bluetooth'
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ $( awk NF $dirshm/btconnected ) ]] && echo true )
+, "btconnected"      : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
 
 data2json "$data" $1

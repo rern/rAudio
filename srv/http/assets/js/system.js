@@ -4,9 +4,16 @@ $( 'body' ).click( function( e ) {
 	$( '#menu' ).addClass( 'hide' );
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
-	if ( ! $( e.target ).parents( '#divi2smodule' ).length && $( '#i2smodule' ).val() === 'none' ) {
-		$( '#divi2smodulesw' ).removeClass( 'hide' );
-		$( '#divi2smodule' ).addClass( 'hide' );
+	if ( ! $( e.target ).hasClass( 'select2-search__field' ) 
+		&& ! $( e.target ).parents( '#divi2smodule' ).length 
+		&& $( '#i2smodule' ).val() === 'none'
+	) {
+		i2sSelectHide();
+	}
+} ).keyup( function( e ) {
+	if ( e.key === 'Escape' ) {
+		$( 'select' ).select2( 'close' );
+		i2sSelectHide();
 	}
 } );
 $( '.container' ).on( 'click', '.settings', function() {
@@ -217,13 +224,11 @@ $( '#setting-wlan' ).click( function() {
 	}, 'json' );
 } );
 $( '#i2smodulesw' ).click( function() {
-	// delay to show switch sliding
-	setTimeout( () => {
+	setTimeout( () => { // delay to show switch sliding
 		$( '#i2smodulesw' ).prop( 'checked', 0 );
 		$( '#divi2smodulesw' ).addClass( 'hide' );
-		$( '#divi2smodule' )
-			.removeClass( 'hide' )
-			.find( '.selectric' ).click();
+		$( '#divi2smodule' ).removeClass( 'hide' );
+		$( '#i2smodule' ).select2( 'open' );
 	}, 200 );
 } );
 $( '#i2smodule' ).change( function() {
@@ -237,18 +242,9 @@ $( '#i2smodule' ).change( function() {
 		aplayname = 'onboard';
 		output = '';
 		notify( icon, title, 'Disable ...' );
+		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
-} ).on( 'selectric-close', function() { // fix: toggle switch / select on 'Disable'
-	setTimeout( () => {
-		if ( $( '#i2smodule' ).val() !== 'none' ) {
-			$( '#divi2smodulesw' ).addClass( 'hide' );
-			$( '#divi2smodule' ).removeClass( 'hide' );
-		} else {
-			$( '#divi2smodulesw' ).removeClass( 'hide' );
-			$( '#divi2smodule' ).addClass( 'hide' );
-		}
-	}, 300 );
 } );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
@@ -326,16 +322,12 @@ $( '#setting-lcdchar' ).click( function() {
 		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : G.lcdchar
 		, beforeshow   : () => {
-			$( '#infoContent .gpio td:even' )
-				.css( 'width', 60 )
-				.find( '.selectric-wrapper, .selectric' )
-				.css( 'width', 60 );
+			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
 			$( '#infoContent .gpio td:odd' ).css( {
-				  width           : 25
-				, 'padding-right' : 1
+				  width           : 35
+				, 'padding-right' : 2
 				, 'text-align'    : 'right'
 			} );
-			$( '.gpio, .gpio .selectric-wrapper' ).css( 'font-family', 'Inconsolata' );
 			$( '#infoContent svg .power' ).remove();
 			$( '.i2c' ).toggleClass( 'hide', ! i2c );
 			$( '.gpio' ).toggleClass( 'hide', i2c );
@@ -617,7 +609,7 @@ $( '#setting-timezone' ).click( function() {
 			  icon         : icon
 			, title        : title
 			, textlabel    : 'NTP'
-			, boxwidth     : 240
+			, boxwidth     : 300
 			, values       : G.ntp
 			, checkchanged : 1
 			, checkblank   : 1
@@ -677,40 +669,47 @@ $( '#setting-soundprofile' ).click( function() {
 $( '#backup' ).click( function() {
 	var icon  = 'sd';
 	var title = 'Backup Settings';
-	notify( icon, title, 'Process ...' );
-	bash( [ 'databackup' ], data => {
-		if ( data == 1 ) {
-			notify( icon, title, 'Download ...' );
-			fetch( '/data/tmp/backup.gz' )
-				.then( response => response.blob() )
-				.then( blob => {
-					var url = window.URL.createObjectURL( blob );
-					var a = document.createElement( 'a' );
-					a.style.display = 'none';
-					a.href = url;
-					a.download = 'backup.gz';
-					document.body.appendChild( a );
-					a.click();
-					setTimeout( () => {
-						a.remove();
-						window.URL.revokeObjectURL( url );
-						bannerHide();
-					}, 1000 );
-				} ).catch( () => {
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : 'Save all data and settings to file?'
+		, ok      : () => {
+			notify( icon, title, 'Process ...' );
+			bash( [ 'databackup' ], data => {
+				if ( data == 1 ) {
+					notify( icon, title, 'Download ...' );
+					fetch( '/data/shm/backup.gz' )
+						.then( response => response.blob() )
+						.then( blob => {
+							var url = window.URL.createObjectURL( blob );
+							var a = document.createElement( 'a' );
+							a.style.display = 'none';
+							a.href = url;
+							a.download = 'backup.gz';
+							document.body.appendChild( a );
+							a.click();
+							setTimeout( () => {
+								a.remove();
+								window.URL.revokeObjectURL( url );
+								bannerHide();
+							}, 1000 );
+						} ).catch( () => {
+							info( {
+								  icon    : icon
+								, title   : title
+								, message : iconwarning +'File download failed.'
+							} );
+							bannerHide();
+						} );
+				} else {
 					info( {
 						  icon    : icon
 						, title   : title
-						, message : iconwarning +'File download failed.'
+						, message : 'Backup failed.'
 					} );
 					bannerHide();
-				} );
-		} else {
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : 'Backup failed.'
+				}
 			} );
-			bannerHide();
 		}
 	} );
 	$( '#backup' ).prop( 'checked', 0 );
@@ -840,9 +839,26 @@ $( '.listtitle' ).click( function( e ) {
 		$( '.listtitle a' ).removeAttr( 'class' );
 	}
 } );
+$( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css for dropdown width
+	$( 'head' ).append( `
+<style class="tmp">
+.select2-results { width: 330px }
+.select2-dropdown {
+	width: fit-content !important;
+	min-width: 100%;
+</style>
+` );
+} ).on( 'select2:close', function ( e ) {
+	$( 'style.tmp' ).remove();
+	if ( this.id === 'i2smodule' && this.value === 'none' ) i2sSelectHide();
+} );
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function i2sSelectHide() {
+	$( '#divi2smodulesw' ).removeClass( 'hide' );
+	$( '#divi2smodule' ).addClass( 'hide' );
+}
 function infoMount( values ) {
 	var ip    = $( '#list' ).data( 'ip' );
 	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );

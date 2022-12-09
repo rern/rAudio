@@ -1,56 +1,15 @@
-<?php
-if ( file_exists( '/srv/http/data/system/login' ) ) {
-	session_start();
-	if ( ! isset( $_SESSION[ 'login' ] ) ) header( 'Location: /' );
-}
+<?php include 'common.php';?>
 
-include 'common.php'; // <!DOCTYPE html>
-
-$localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
-$page      = $_GET[ 'p' ];
-$icon      = $page;
-if ( $page === 'guide' ) {
-	$icon     = 'help';
-	$pagehead = 'user guide';
-} else if ( $page === 'relays' ) {
-	$pagehead = 'system';
-} else {
-	$pagehead = $page;
-}
-$title    = strtoupper( $pagehead );
-$addons   = $page === 'addons';
-$progress = $page === 'addons-progress';
-$guide    = $page === 'guide';
-$networks = $page === 'networks';
-$relays   = $page === 'relays';
-
-//   css .............................................................................
-$css = [ 'colors', 'common', 'settings' ];
-if ( $addons || $progress ) $css[] = 'addons';
-if ( ! $networks )           $css[] = 'selectric';
-if ( $relays )               $css[] = 'relays';
-$style = '';
-foreach( $css as $c ) $style.= '
-<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
-echo $style;
-?>
-
-</head>
-<body>
-<!-- head ........................................................................... -->
-<div id="button-data"><i class="fa fa-times"></i><span class='title wh'><?=$title?>-DATA</span></div>
-<pre id="data" class="hide"></pre>
 <div class="head">
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
 </div>
 <?php
-// container ...................................................................... 
 echo '<div class="container hide">';
 
-include "settings/$page.php";
+include 'settings/'.$page.'.php';
 
 echo '</div>';
-// .................................................................................
+
 if ( $progress || $guide ) {
 	echo '
 </body>
@@ -58,35 +17,25 @@ if ( $progress || $guide ) {
 ';
 	exit;
 }
+// .................................................................................
 
-// bottom bar ......................................................................
+// bottom bar
 if ( ! $addons ) {
 	$htmlbar = '<div id="bar-bottom">';
 	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
 		$id      = strtolower( $name );
-		$active  = $id === $pagehead ? ' class="active"' : '';
+		$active  = $id === $pagetitle ? ' class="active"' : '';
 		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 	}
 	$htmlbar.= '</div>';
 	echo $htmlbar;
 }
-//   js ..............................................................................
-                   $jsp   = [ 'jquery-3.6.1' ];
-				   $js    = [];
-if ( ! $addons )   $jsp[] = 'pushstream-20211210';
-                   $js[]  = 'common';
-if ( ! $addons )   $js[]  = 'settings';
-                   $js[]  = $page;
-if ( ! $networks ) $jsp[] = 'jquery.selectric-1.13.1';
-if ( $networks )   $jsp[] = 'qrcode';
-if ( $relays )     $js[]  = 'relays';
-$script = '';
-foreach( $jsp as $j ) $script.= '
-<script src="/assets/js/plugin/'.$j.'.min.js"></script>';
-// with cache busting
-foreach( $js as $j ) $script.= '
-<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-echo $script;
+if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
+
+// <script> -----------------------------------------------------
+foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+
 echo '
 </body>
 </html>
@@ -114,9 +63,10 @@ $body = [
 		, 'icon'        => 'ICON'
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default  = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
-		                                // false    = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'custom' = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
+		, 'setting'     => (none)       // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
+		                                // false      = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
+		                                // 'nobanner' = no icon, no setting, no banner
+		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
@@ -156,6 +106,7 @@ function htmlHead( $data ) {
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
+	
 	// col-l
 	$label       = $data[ 'label' ];
 	$icon        = $data[ 'icon' ] ?? '';
@@ -179,10 +130,6 @@ function htmlSetting( $data ) {
 	$html       .= $icon ? i( $icon ) : '';
 	$html       .= '</div>';
 	// col-r
-	if ( ! $icon ) {
-		global $page;
-		$icon    = $page;
-	}
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';

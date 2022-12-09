@@ -45,7 +45,7 @@ cards=$( cut -d: -f1 <<< $aplay \
 			| sort -u \
 			| sed 's/card //' )
 for card in $cards; do
-	line=$( sed -n "/^card $card/ p" <<< $aplay )
+	line=$( sed -n "/^card $card/ p" <<< $aplay | head -1 )
 	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
 	card=${hw:3:1}
 	device=${hw: -1}

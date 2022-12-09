@@ -109,22 +109,27 @@ EOF;
 	$files = array_slice( scandir( $dir ), 2 ); // remove ., ..
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
-			$data     = file( $dir.'/'.str_replace( '|', '/', $name ), FILE_IGNORE_NEW_LINES );
-			$bkpath   = $data[ 0 ];
-			$coverart = $data[ 1 ] ?? '';
-			if ( $coverart ) {
-				$icon = '<img class="bkcoverart" src="'.rawurlencode( $coverart ).'^^^" data-label="'.$name.'">';
-			} else {
-				$icon = '<i class="fa fa-bookmark bookmark bl"></i><a class="label">'.$name.'</a>';
-			}
+			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
+			$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
+			$src     .= $bkpath.'/coverart.jpg';
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark" data-mode="bookmark"><a class="lipath">$bkpath</a>$icon</div>
+	<div class="mode mode-bookmark" data-mode="bookmark">
+	<a class="lipath">$bkpath</a>
+	<a class="bkname hide">$name</a>
+	<img class="bkcoverart" src="$src^^^">
+	</div>
 </div>
 EOF;
 		}
 	}
-	echo $htmlmode;
+	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
+	$order  = file_exists( '/srv/http/data/system/order' ) ? json_decode( file_get_contents( '/srv/http/data/system/order' ) ) : false;
+	echo json_encode( [
+		  'html' => $htmlmode
+		, 'counts' => $counts
+		, 'order' => $order
+	] );
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
@@ -491,7 +496,10 @@ EOF;
 	echo $html;
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
-	if ( ! count( $lists ) ) exit( '-1' );
+	if ( ! count( $lists ) ) {
+		echo -1;
+		exit;
+	}
 	
 	global $mode;
 	global $gmode;
@@ -605,5 +613,10 @@ EOF;
 </li>
 EOF;
 	}
-	echo $html.'<p></p></ul>';
+	$html.= '<p></p></ul>';
+	if ( $searchmode ) {
+		echo json_encode( [ 'html' => $html, 'count' => $i ] );
+	} else {
+		echo $html;
+	}
 }

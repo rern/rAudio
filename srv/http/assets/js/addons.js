@@ -9,6 +9,21 @@ if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).remov
 $( '.close' ).click( function() {
 	location.href = '/';
 } );
+$( '.page-icon' ).click( function() {
+	fetch( '/data/addons/addons-list.json' )
+		.then( response => response.text() )
+		.then( data => {
+			$( '#data' ).text( '\n\n'+ data );
+			$( '.container' ).addClass( 'hide' );
+			$( '#button-data, #data' ).removeClass( 'hide' );
+		} );
+} ).press( function() {
+	location.href = 'settings.php?p=addons-progress';
+} );
+$( '#button-data' ).click( function() {
+	$( '.container' ).removeClass( 'hide' );
+	$( '#button-data, #data' ).addClass( 'hide' );
+} );
 $( '.helphead' ).click( function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );

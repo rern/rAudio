@@ -8,7 +8,7 @@
 # - mixer_device  - card index
 
 . /srv/http/bash/common.sh
-usbdac=$1 # from usbdac.rules for player-devices.sh
+usbdac=$1 # from usbdac.rules - player-conf.sh [add|remove]
 
 . $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh
@@ -36,7 +36,14 @@ $audiooutputbt
 ########
 fi
 
-if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
+if [[ $i == -1 ]]; then # no audio devices
+	if [[ $usbdac == remove ]]; then
+		pushstream display '{"volumenone":true}'
+		pushstream refresh '{"page":"features","nosound":true}'
+		systemctl stop camilladsp &> /dev/null
+		outputswitch='(None)'
+	fi
+else # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[i]}
 	hw=${Ahw[i]}
 	hwmixer=${Ahwmixer[i]}
@@ -45,11 +52,13 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
-		[[ $mixertype == none ]] && pushstream display '{"volumenone":true}'
-		notify output 'Audio Output' "$name"
-		[[ $usbdac == remove ]] && sleep 2
+		[[ $mixertype == none ]] && volumenone=true || volumenone=false
+		pushstream display '{"volumenone":'$volumenone'}'
+		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
+		outputswitch=$name
+		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
-	if [[ $dsp ]]; then
+	if [[ $dsp ]]; then # from player-asound.sh
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$cardloopback,1
 #---------------< camilladsp
@@ -60,7 +69,7 @@ if [[ $i != -1 ]]; then # with audio devices (from player-devices.sh)
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ $equalizer ]]; then
+	elif [[ $equalizer ]]; then # from player-asound.sh
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
 #---------------< equalizer
 		audiooutput='
@@ -124,21 +133,22 @@ if [[ -e $dirmpd/updating ]]; then
 fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
-$dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
+
+[[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
+
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $btmixer ]] && exit
+systemctl stop shairport-sync shairport spotifyd &> /dev/null
+
+[[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
 
 # renderers -----------------------------------------------------------------------------
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {"
-	if [[ $dsp ]]; then
-		conf+='
-	output_device = "hw:'$cardloopback',0";'
-	elif [[ $btmixer ]]; then
+	if [[ $btmixer ]]; then
 		conf+='
 	output_device = "bluealsa";'
 	else
@@ -152,13 +162,11 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl try-restart shairport-sync shairport-meta
+	systemctl -q is-enabled shairport-sync && systemctl start shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $dsp ]]; then
-		device='sysdefault:CARD=Loopback'
-	elif [[ $btmixer ]]; then
+	if [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
 		cardname=$( aplay -l 2> /dev/null | awk '/^card '$1'/ {print $3;exit}' )
@@ -171,7 +179,7 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 device = "'$device'"'
-	if [[ ! $dsp && ! $btmixer && $hwmixer != '( not available )' ]]; then
+	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
 control = "hw:'$i'"
@@ -179,5 +187,5 @@ volume_controller = "alsa"'
 #-------
 	fi
 	echo "$conf" > /etc/spotifyd.conf
-	systemctl try-restart spotifyd
+	systemctl -q is-enabled spotifyd && systemctl start spotifyd
 fi

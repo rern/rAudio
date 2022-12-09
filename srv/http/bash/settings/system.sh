@@ -21,11 +21,6 @@ dirPermissions() {
 		done
 	fi
 }
-pushReboot() {
-	pushRefresh
-	notify system "${1//\"/\\\"}" 'Reboot required.' 5000
-	echo $1 >> $dirshm/reboot
-}
 I2Cset() {
 	# parse finalized settings
 	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
@@ -55,6 +50,18 @@ I2Cset() {
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo i2c-dev >> $filemodule
 	# i2c-bcm2708
 	[[ $lcd || $I2Clcdchar ]] && echo i2c-bcm2708 >> $filemodule
+}
+pushReboot() {
+	name=$1
+	reboot=$2
+	pushRefresh
+	if [[ ! $reboot ]] && cmp -s /tmp/config.txt $fileconfig && cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+		sed -i "/$name/ d" $dirshm/reboot
+	else
+		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
+		echo $name >> $dirshm/reboot
+		exit
+	fi
 }
 sharedDataIPlist() {
 	list=$( ipAddress )
@@ -152,7 +159,7 @@ bluetooth )
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
-		notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
+		grep -q dtparam=krnbt=on /tmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			killall bluetooth
@@ -180,7 +187,7 @@ $( bluetoothctl show $mac )"
 	;;
 databackup )
 	dirconfig=$dirdata/config
-	backupfile=$dirtmp/backup.gz
+	backupfile=$dirshm/backup.gz
 	rm -f $backupfile
 	alsactl store
 	files=(
@@ -240,7 +247,6 @@ databackup )
 		--exclude './embedded' \
 		--exclude './shm' \
 		--exclude './system/version' \
-		--exclude './tmp' \
 		-czf $backupfile \
 		-C /srv/http \
 		data \
@@ -249,7 +255,7 @@ databackup )
 	rm -rf $dirdata/{config,disable,enable}
 	;;
 datarestore )
-	backupfile=$dirtmp/backup.gz
+	backupfile=$dirshm/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
 	# remove all flags
@@ -345,7 +351,7 @@ hostname )
 	sed -i -E 's/(name = ").*/\1'$hostname'"/' /etc/shairport-sync.conf
 	sed -i -E "s/^(friendlyname = ).*/\1$hostname/" /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
-	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport-meta spotifyd upmpdcli
+	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	pushRefresh
 	;;
 i2seeprom )
@@ -392,7 +398,7 @@ dtparam=audio=on"
 	pushReboot 'Audio I&#178;S module'
 	;;
 journalctl )
-	filebootlog=$dirtmp/bootlog
+	filebootlog=/tmp/bootlog
 	[[ -e $filebootlog ]] && cat $filebootlog && exit
 	
 	journal="\
@@ -403,6 +409,7 @@ $( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<r
 	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
 	if [[ $startupfinished ]]; then
 		echo "\
+<bll># journalctl -b -o cat -g 'Startup finished'</bll>
 $startupfinished
 
 $journal" | tee $filebootlog
@@ -452,7 +459,7 @@ backlight=${args[14]^}"
 		touch $dirsystem/lcdchar
 		I2Cset
 		if [[ $reboot ]]; then
-			pushReboot 'Character LCD'
+			pushReboot 'Character LCD' reboot
 		else
 			lcdchar.py logo
 			pushRefresh
@@ -626,14 +633,14 @@ mpdoled )
 			sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
+		touch $dirsystem/mpdoled
+		I2Cset
 		if [[ $chip != 1 && $chip != 7 ]]; then
+			! ls /dev/i2c* &> /dev/null && pushReboot 'Spectrum OLED' reboot
 			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
-			! ls /dev/i2c* &> /dev/null && reboot=1
 		else
 			! grep -q -m1 dtparam=spi=on $fileconfig && reboot=1
 		fi
-		touch $dirsystem/mpdoled
-		I2Cset
 		if [[ $reboot ]]; then
 			pushReboot 'Spectrum OLED'
 		else
@@ -648,7 +655,7 @@ mpdoled )
 	fi
 	;;
 packagelist )
-	filepackages=$dirtmp/packages
+	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then
 		notify system Backend 'Package list ...'
 		pacmanqi=$( pacman -Qi | grep -E '^Name|^Vers|^Desc|^URL' )
@@ -671,7 +678,7 @@ $description
 				s|^Name.*: (.*)|\1</a> |
 				s|^Vers.*: (.*)|\1|
 				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
-				> $dirtmp/packages
+				> /tmp/packages
 	fi
 	grep -B1 -A2 --no-group-separator "^${args[1],}" $filepackages
 	;;
@@ -783,7 +790,6 @@ sw=$sw
 led=$led
 reserved=$reserved
 " > $dirsystem/powerbutton.conf
-		prevreserved=$( grep gpio-shutdown $fileconfig | cut -d= -f3 )
 		sed -i '/gpio-shutdown/ d' $fileconfig
 		systemctl restart powerbutton
 		systemctl enable powerbutton
@@ -791,7 +797,7 @@ reserved=$reserved
 			pushRefresh
 		else
 			sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
-			[[ $reserved != $prevreserved ]] && pushReboot 'Power Button'
+			pushReboot 'Power Button'
 		fi
 	else
 		if [[ -e $dirsystem/audiophonics ]]; then
@@ -806,7 +812,8 @@ reserved=$reserved
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
-	[[ -e $dirshm/reboot ]] && sort -u $dirshm/reboot
+	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
+	rm -f $dirshm/{reboot,backup.gz}
 	;;
 relays )
 	rm -f $dirsystem/relays
@@ -1024,8 +1031,8 @@ $( < /boot/cmdline.txt )
 <bll># cat /boot/config.txt</bll>
 $( grep -v ^# /boot/config.txt )
 
-<bll># bootloader and firmware</bll>
-$( pacman -Q firmware-raspberrypi linux-firmware raspberrypi-bootloader raspberrypi-firmware )"
+<bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
+$( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
 	file=/etc/modules-load.d/raspberrypi.conf
 	raspberrypiconf=$( < $file )
 	if [[ $raspberrypiconf ]]; then

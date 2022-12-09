@@ -82,7 +82,6 @@ if [[ $1 == withdisplay ]]; then
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "logout"           : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
-, "order"            : '$( getContent $dirsystem/order )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
 , "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
@@ -316,7 +315,11 @@ $file
 $station
 $id
 $radiosampling" > $dirshm/radio
-					systemctl -q is-active $service || systemctl start $service
+					if ! systemctl -q is-active $service; then
+						mpc -q stop
+						mpc -q play
+						systemctl start $service
+					fi
 				else
 					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=

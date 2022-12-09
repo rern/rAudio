@@ -144,9 +144,11 @@ $Album" &> /dev/null &
 }
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
+		mpc -q stop
 		systemctl stop radio
 		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
 		rm -f $dirshm/radio
+		[[ $1 == stop ]] && $dirbash/status-push.sh
 		sleep 1
 	fi
 }
@@ -241,31 +243,20 @@ webradioPlaylistVerify() {
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	if [[ $url ]]; then
-		urlname=${url//\//|}
-	else
-		echo -2
-		exit
-	fi
+	[[ ! $url ]] && echo 'No valid URL found:' && exit
 }
 webRadioSampling() {
 	url=$1
 	file=$2
-	timeout 3 wget -q $url -O /tmp/webradio
-	if [[ ! $( awk NF /tmp/webradio ) ]]; then
-		notify warning 'Web Radio' "URL cannot be streamed:<br>$url" 8000
-		exit
-	fi
+	timeout 3 curl -sL $url -o /tmp/webradio
+	[[ ! $( awk NF /tmp/webradio ) ]] && echo 'Cannot be streamed:' && exit
 	
 	data=( $( ffprobe -v quiet -select_streams a:0 \
 				-show_entries stream=sample_rate \
 				-show_entries format=bit_rate \
 				-of default=noprint_wrappers=1:nokey=1 \
 				/tmp/webradio ) )
-	if [[ ! $data ]]; then
-		notify webradio 'Web Radio' "URL contains no stream data:<br>$url" 8000
-		exit
-	fi
+	[[ ! $data ]] && 'No stream data found:' && exit
 	
 	samplerate=${data[0]}
 	bitrate=${data[1]}
@@ -319,72 +310,44 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
 	pushstreamPlaylist
 	;;
+autoplaystatus )
+	[[ -e $dirsystem/autoplay ]] && $dirbash/status-push.sh
+	;;
 bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
-	coverart=${args[3]}
 	bkfile="$dirbookmarks/$name"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo "$path
-$coverart" > "$bkfile"
+	echo $path > "$bkfile"
 	if [[ -e $dirsystem/order ]]; then
 		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
-	else
-		order=false
 	fi
-	[[ $coverart ]] && src=$( php -r "echo rawurlencode( '${coverart//\'/\\\'}' );" )
-	data='{
-  "type"  : "add"
-, "path"  : "'$path'"
-, "src"   : "'$src'"
-, "name"  : "'$name'"
-, "order" : '$order'
-}'
-	pushstream bookmark "$data"
+	pushstream bookmark 1
 	;;
 bookmarkcoverreset )
-	imagepath=${args[1]}
-	name=${args[2]}
-	sed -i '2d' "$dirbookmarks/$name"
-	rm -f "$imagepath/coverart".*
-	data='{
-  "url"   : "'$imagepath/$name'"
-, "type"  : "bookmark"
-, "reset" : 1
-}'
-	pushstream coverart "$data"
+	name=${args[1]}
+	path=$( < "$dirbookmarks/$name" )
+	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
+	rm -f "$path/coverart".*
+	pushstream bookmark 1
 	;;
 bookmarkremove )
-	name=${args[1]//\//|}
-	path=${args[2]}
-	rm "$dirbookmarks/$name"
+	file="$dirbookmarks/${args[1]//\//|}"
 	if [[ -e $dirsystem/order ]]; then
+		path=$( < "$file" )
 		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
 		echo "$order" > $dirsystem/order
-	else
-		order=false
 	fi
-	data='{
-  "type"  : "delete"
-, "path"  : "'$path'"
-, "order" :'$order'
-}'
-	pushstream bookmark "$data"
+	rm "$file"
+	pushstream bookmark 1
 	;;
 bookmarkrename )
 	name=${args[1]//\//|}
 	newname=${args[2]//\//|}
-	path=${args[3]}
 	mv $dirbookmarks/{"$name","$newname"} 
-	data='{
-  "type"  : "rename"
-, "path"  : "'$path'"
-, "name"  : "'$newname'"
-, "order" : false
-}'
-	pushstream bookmark "$data"
+	pushstream bookmark 1
 	;;
 camillagui )
 	systemctl start camillagui
@@ -738,7 +701,7 @@ mpcplayback )
 			command=play
 		fi
 	fi
-	stopRadio
+	stopRadio $command
 	if [[ $command == play ]]; then
 		grep -q -m1 '^state.*pause' $dirshm/status && pause=1
 		mpc -q $command $pos
@@ -750,7 +713,7 @@ mpcplayback )
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
-	
+	# snapclient
 	if [[ $command == play ]]; then
 		action=start
 		active=true
@@ -899,7 +862,7 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			systemctl stop shairport-meta
+			systemctl stop shairport
 			rm -f $dirshm/airplay/start
 			systemctl restart shairport-sync
 			;;
@@ -944,11 +907,7 @@ power )
 		sed -i "/$( ipAddress )/ d" $filesharedip
 	fi
 	
-	if [[ $action == reboot ]]; then
-		notify -blink reboot Power 'Reboot ...'
-	else
-		notify -blink power Power 'Off ...'
-	fi
+	notify -blink $action Power "${action^} ..."
 	touch $dirshm/power
 	mpc -q stop
 	alsactl store
@@ -1019,7 +978,7 @@ savedpledit )
 		to=${args[4]}
 		file=$( sed -n "$from p" "$plfile" )
 		sed -i "$from d" "$plfile"
-		sed -i "$to a$file" "$plfile"
+		[[ $to == 0 ]] && sed -i "1 i$file" "$plfile" || sed -i "$to a$file" "$plfile"
 	fi
 	pushstreamSavedPlaylist
 	;;
@@ -1063,6 +1022,20 @@ scrobble )
 ${args[1]}
 ${args[2]}
 ${args[3]}" &> /dev/null &
+	;;
+shairport )
+	[[ $( < $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
+	systemctl start shairport
+	echo play > $dirshm/airplay/state
+	$dirbash/status-push.sh
+	;;
+shairportstop )
+	systemctl stop shairport
+	echo pause > $dirshm/airplay/state
+	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
+	timestamp=$( date +%s%3N )
+	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
+	$dirbash/status-push.sh
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}
@@ -1119,15 +1092,14 @@ webradioadd )
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	[[ -e "$file" ]] && echo -1 && exit
-	
+	[[ -e "$file" ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
 $name
 
 $charset" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
-	webRadioSampling $url "$file" &
+	webRadioSampling $url "$file" &> /dev/null &
 	;;
 webradiocopybackup )
 	webradioCopyBackup &> /dev/null &

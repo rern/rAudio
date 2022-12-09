@@ -49,7 +49,7 @@ var picaOption  = { // pica.js
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
 var iconcover   = '<i class="iconcover"></i>';
-var icoveredit  = '<div class="coveredit cover">'+ iconcover +'</div>';
+var icoveredit  = '<div class="coveredit cover-change">'+ iconcover +'</div>';
 var icoversave  = '<div class="coveredit cover-save"><i class="fa fa-save"></i></div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -93,6 +93,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#volume-knob' ).length
 			|| ! $( '#bio' ).hasClass( 'hide' )
 			|| ! I.infohide
+			|| ! $( '#data' ).hasClass( 'hide' )
 		) return
 		
 		xstart = e.changedTouches[ 0 ].pageX;
@@ -106,11 +107,13 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	} );
 } else {
 	var hash = versionHash();
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/desktop.css'+ hash +'">' );
+	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/hovercursor.css'+ hash +'">' );
 	$.getScript( 'assets/js/shortcut.js'+ hash );
 }
 	
-$( 'body' ).click( menuHide );
+$( 'body' ).click( function( e ) {
+	if ( ! $( e.target ).hasClass( 'savedlist' ) ) menuHide();
+} );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
 	e.stopPropagation();
@@ -121,10 +124,7 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( G.status.file
-		&& G.status.coverart.slice( 10, 16 ) === 'online'
-		&& [ 'NAS', 'SD/', 'USB' ].includes( G.status.file.slice( 0, 3 ) )
-	) {
+	if ( G.status.player === 'mpd' && G.status.coverart.slice( 10, 16 ) === 'online' && G.status.file.slice( 0, 4 ) !== 'http' ) {
 		$( '#coverart' ).after( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();
@@ -141,11 +141,20 @@ $( '#coverart' ).on( 'load', function() {
 } ).on( 'error', coverartDefault );
 
 // COMMON /////////////////////////////////////////////////////////////////////////////////////
-$( '#logo, #button-library, #button-playlist' ).press( function() { // from info.js
+$( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
 	location.reload();
 } );
-$( '#logo' ).click( function() {
+$( '#logo, #refresh' ).click( function() {
 	if ( ! G.localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
+} );
+$( '#status' ).click( function() {
+	$( '#data' ).html( highlightJSON( G.status ) )
+	$( '#button-data, #data' ).removeClass( 'hide' );
+	$( '.page' ).addClass( 'hide' );
+} );
+$( '#button-data' ).click( function() {
+	$( '#page-'+ G.page ).removeClass( 'hide' );
+	$( '#button-data, #data' ).addClass( 'hide' );
 } );
 $( '#button-settings' ).click( function( e ) {
 	e.stopPropagation();
@@ -159,7 +168,7 @@ $( '#button-settings' ).click( function( e ) {
 	} else {
 		$( '#settings' ).addClass( 'hide' );
 	}
-} );
+} )
 $( '.settings' ).click( function() {
 	location.href = 'settings.php?p='+ this.id;
 } );
@@ -167,7 +176,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
-				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5000' ) );
+				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
 				loader();
 			} else {
 				equalizer();
@@ -456,7 +465,7 @@ $( '#page-playback' ).click( function( e ) {
 	if ( G.guide ) hideGuide();
 	if ( $( '#divcover .coveredit' ).length ) {
 		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .coveredit.cover' ).remove();
+			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 	}
@@ -473,7 +482,7 @@ $( '#settings' ).click( function() {
 } );
 $( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
 	if ( G.library ) {
-		$( '.licover .coveredit.cover' ).remove();
+		$( '.licover .cover-change' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		$( '#lib-list li' ).removeClass( 'active' );
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
@@ -823,7 +832,7 @@ $( '#divcover' ).press( function( e ) {
 		.after( icoveredit );
 } ).on( 'click', '.cover-save', function() {
 	coverartSave();
-} ).on( 'click', '.cover', function() {
+} ).on( 'click', '.cover-change', function() {
 	G.status.webradio ? webRadioCoverart() : coverartChange();
 } );
 $( '#coverT' ).press( function() {
@@ -863,8 +872,8 @@ $( '.map' ).click( function( e ) {
 		volumeBarHide();
 		return
 		
-	} else if ( $( '.coveredit.cover' ).length ) {
-		$( '#divcover .coveredit.cover' ).remove();
+	} else if ( $( '#divcover .cover-change' ).length ) {
+		$( '#divcover .cover-change' ).remove();
 		$( '#coverart' ).css( 'opacity', '' );
 		return
 		
@@ -1002,10 +1011,12 @@ $( '.btn-cmd' ).click( function() {
 		local( 600 );
 	} else {
 		if ( G.status.stream ) {
-			$( '#divcover .coveredit.cover' ).remove();
+			$( '#divcover .cover-change' ).remove();
 			$( '#coverart' ).css( 'opacity', '' );
 		}
 		if ( cmd === 'play' ) {
+			if ( G.status.state === 'play' ) return
+			
 			G.status.state = cmd;
 			if ( ! G.status.elapsed ) $( '#elapsed' ).empty(); // 0 or false
 			if ( ! G.status.stream && G.status.elapsed !== false ) setProgressAnimate();
@@ -1049,11 +1060,11 @@ $( '.btn-cmd' ).click( function() {
 					$( '#elapsed, #progress' ).empty();
 					vu();
 				}
-/*				if ( G.playback && G.status.stream ) {
+				if ( G.playback && G.status.stream ) {
 					[ 'Artist', 'Title', 'Album', 'coverart' ].forEach( el => G.status[ el ] = '' );
 					setInfo();
 					setCoverart();
-				}*/
+				}
 			} else if ( G.playlist ) {
 				$( '#pl-list .song' ).empty();
 				$( '#pl-list .li1' ).find( '.name, .song' ).css( 'max-width', '' );
@@ -1193,23 +1204,25 @@ $( '#lib-search-btn' ).click( function() { // search
 				, format : [ 'album', 'artist', 'file', 'title', 'time', 'track' ]
 			}
 		}
-		list( query, function( html ) {
-			if ( html != -1 ) {
-				var data = {
-					  html      : html
+		list( query, function( data ) {
+			if ( data !== -1 ) {
+				var list = {
+					  html      : data.html
 					, modetitle : 'search'
 				}
-				renderLibraryList( data );
+				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
+				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>'+ data.count +' <gr>of</gr> </span>' );
+				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>&ensp;' );
 				info( {
 					  icon    : 'library'
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
+				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>' );
 			}
-		} );
+		}, 'json' );
 	}
 } );
 $( '#lib-search-close' ).click( function() {
@@ -1221,7 +1234,7 @@ $( '#lib-search-close' ).click( function() {
 	if ( $( '#lib-path .lipath').text() ) $( '#button-lib-back' ).removeClass( 'hide' );
 	if ( $( '#lib-search-input' ).val() ) {
 		$( '#lib-search-input' ).val( '' );
-		refreshData();
+		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().click() : $( '#library' ).click();
 	}
 } );
 $( '#lib-search-input' ).keyup( function( e ) {
@@ -1235,9 +1248,9 @@ $( '#button-lib-back' ).click( function() {
 		|| ( bL && bL < 2 )
 		|| ( ! bL && G.query.length === 1 )
 	) {
-		$( '#button-library' ).click();
+		$( '#library' ).click();
 	} else if ( bL && G.mode !== 'latest' && ! backmode ) {
-		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#button-library' ).click();
+		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		G.query.pop();
 		var query    = G.query[ G.query.length - 1 ];
@@ -1276,7 +1289,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	$( '#lib-search-close' ).click();
 	if ( G.mode === 'bookmark' ) return
 	
-	if ( ! G.status.counts[ G.mode ] && G.mode.slice( -5 ) !== 'radio' ) {
+	if ( ! G.counts[ G.mode ] && G.mode.slice( -5 ) !== 'radio' ) {
 		if ( G.mode === 'playlists' ) {
 			var message = 'No saved playlists found.';
 		} else if ( G.mode === 'latest' ) {
@@ -1294,7 +1307,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		return
 	}
 	
-	if ( ! G.color && ! G.status.counts[ G.mode ] && G.status.updating_db ) {
+	if ( ! G.color && ! G.counts[ G.mode ] && G.status.updating_db ) {
 		infoUpdate();
 		return
 	}
@@ -1378,8 +1391,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	G.query.push( query );
 } ).on( 'click', '.bk-remove', function() {
 	var $this = $( this ).parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	var $img  = $this.find( 'img' );
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
@@ -1393,12 +1405,11 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, message : icon
 		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
 		, okcolor : red
-		, ok      : () => bash( [ 'bookmarkremove', name, path ] )
+		, ok      : () => bash( [ 'bookmarkremove', name ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	info( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
@@ -1409,15 +1420,14 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, checkblank   : 1
 		, checkchanged : 1
 		, oklabel      : '<i class="fa fa-flash"></i>Rename'
-		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), path ] )
+		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.label' ).text() || path.split( '/' ).pop();
+	var name  = $this.find( '.bkname' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon = iconcover;
+		var icon    = iconcover;
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
@@ -1425,6 +1435,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
+	var path      = $this.find( '.lipath' ).text();
 	var imagepath = path.slice( 3, 8 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
 	info( {
 		  icon        : icon
@@ -1526,8 +1537,8 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	e.stopPropagation();
 	if ( G.press ) return
 	
-	if ( $( '.licover .coveredit.cover' ).length ) {
-		$( '.licover .coveredit.cover' ).remove();
+	if ( $( '.licover .cover-change' ).length ) {
+		$( '.licover .cover-change' ).remove();
 		$( '.licover img' ).css( 'opacity', '' );
 		return
 	}
@@ -1797,7 +1808,7 @@ $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	$( '#pl-manage, #button-pl-search, #pl-list li' ).removeClass( 'hide' );
 	$( '#pl-search-input' ).val( '' );
 	$( '#pl-list' ).html( function() {
-		return $( this ).html().replace( /<bl>|<\/bl>/g, '' );
+		return $( this ).html().replace( /<bll>|<\/bll>/g, '' );
 	} )
 } );
 $( '#button-pl-search' ).click( function() {
@@ -1902,7 +1913,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
 	}
-	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.status.counts.playlists === 0 );
+	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || G.counts.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
 	$menu.find( '.tagcd' ).toggleClass( 'hide', ! audiocd );
@@ -1910,6 +1921,16 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist
 	playlistRemove( $( this ).parent() );
+} );
+$( '#pl-path' ).click( '.savedlist', function() {
+	var $menu   = $( '#menu-playlist' );
+	var active = ! $menu.hasClass( 'hide' );
+	menuHide();
+	if ( active ) return
+	
+	G.list.path = $( '#pl-path .lipath' ).text();
+	$menu.find( '.plrename, .pldelete' ).addClass( 'hide' );
+	contextmenuScroll( $menu, 88 );
 } );
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();

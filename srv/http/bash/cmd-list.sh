@@ -11,40 +11,53 @@
 
 touch $dirmpd/listing
 
-listAlbums() {
-	albums=$1
-	readarray -t albums <<< $albums
-	for album in "${albums[@]}"; do
-		album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
-								| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
-								| sort -u )$'\n'
-	done
-}
 ##### normal list #############################################
-album_artist_file=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall \
-						| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
-						| sort -u )$'\n'
+listAll() {
+	mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 2> /dev/null \
+							| awk -F'/[^/]*$' 'NF && !/^\^/ {print $1}' \
+							| sort -u
 #	-F'/[^/]*$' - truncate %file% to path without filename
 #	NF          - not empty lines
 #	!/^\^/      - not lines with no album name
-#	!a[$0]++    - not duplicate lines
+}
 
-if (( $? != 0 )); then # very large database
-	eachkb=8192
-	existing=$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )
+album_artist_file=$( listAll )
+
+if [[ ! $album_artist_file ]]; then # very large database
+	notify -blink refresh-library 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
-	for (( i=1; i < 11; i++ )); do
-		buffer=$(( $existing + ( i * $eachkb ) ))
-		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/conf/outputbuffer.conf
+	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
+	for (( i=0; i < 10; i++ )); do # increase buffer
+		buffer=$(( buffer + 8192 ))
+		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
-		albums=$( mpc list album )
-		(( $? == 0 )) && break
+		album_artist_file=$( listAll )
+		[[ $album_artist_file ]] && break
 	done
-	if [[ $albums ]]; then
-		listAlbums "$albums"
-	else
-		toolarge=1
-		rm $dirmpdconf/outputbuffer.conf
+	
+	if [[ ! $album_artist_file ]]; then # too large - get by album list instead
+		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
+		systemctl restart mpd
+		readarray -t albums <<< $( mpc list album 2> /dev/null )
+		if [[ ! $albums ]]; then
+			buffer=8192
+			for (( i=0; i < 10; i++ )); do
+				buffer=$(( buffer + 8192 ))
+				echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
+				systemctl restart mpd
+				readarray -t albums <<< $( mpc list album 2> /dev/null )
+				[[ $albums ]] && break
+			done
+		fi
+		if [[ $albums ]]; then
+			for album in "${albums[@]}"; do
+				album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
+										| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
+										| sort -u )$'\n'
+			done
+		else
+			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
+		fi
 	fi
 fi
 ##### wav list #############################################
@@ -70,7 +83,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-if [[ $( awk NF $dirmpd/album ) && $( < $dirmpd/updating ) != rescan ]]; then
+if [[ $( awk NF $dirmpd/album ) && $( getContent $dirmpd/updating ) != rescan ]]; then
 	cp -f $filealbum{,prev}
 else
 	> $dirmpd/latest
@@ -137,11 +150,6 @@ jq <<< $counts > $dirmpd/counts
 pushstream mpdupdate "$counts"
 chown -R mpd:audio $dirmpd
 rm -f $dirmpd/{updating,listing}
-
-if [[ $toolarge ]]; then
-	sleep 3
-	notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list cannot be created.'
-fi
 
 [[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
 

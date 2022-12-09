@@ -32,7 +32,7 @@ if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
 </div>
-<div class="section">
+<div id="divsystem" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
@@ -52,7 +52,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
-<div class="section">
+<div id="divstatus" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
@@ -82,7 +82,7 @@ htmlHead( [ //////////////////////////////////
  • RPi 3B+: 60°C soft limit (optimized throttling)
 </div>
 </div>
-<div class="section">
+<div id="divstorage" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
@@ -165,7 +165,7 @@ Country of Wi-Fi regulatory domain:
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ //////////////////////////////////
@@ -182,7 +182,7 @@ $body = [
 </div>
 <div id="divi2smodule">
 	$selecti2s
-	I^gear^I
+	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
 </div>
 EOF
 		, 'help'     => <<< EOF
@@ -262,7 +262,7 @@ EOF
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
@@ -297,14 +297,14 @@ EOF
 		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
-		, 'setting' => false
+		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
 Backup all data and settings:
  • Library: Database, Bookmarks, DAB Radio, Web Radio
@@ -317,7 +317,7 @@ EOF
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
-		, 'setting' => 'custom'
+		, 'setting' => 'nobanner'
 		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [
@@ -355,7 +355,7 @@ Connect shared data as client for:
 EOF
 	]
 ];
-htmlSection( $head, $body );
+htmlSection( $head, $body, 'dataandsettings' );
 $listui = [
 	[
 	    'HTML5-Color-Picker'
@@ -392,7 +392,11 @@ $listui = [
 	],[
 	    'simple-keyboard'
 	  , 'Virtual Keyboard'
-	  , 'https://github.com/hodgef/simple-keyboard/'
+	  , 'https://github.com/hodgef/simple-keyboard'
+	],[
+	    'Select2'
+	  , 'A replacement for select boxes'
+	  , 'https://github.com/select2/select2'
 	],[
 	    'Sortable'
 	  , 'Reorderable drag-and-drop lists'
@@ -411,7 +415,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
 ?>
-<div id="about" class="section">
+<div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>
@@ -427,12 +431,12 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	
 	<heading class="subhead">Front End</heading>
 	<div class="list">
+		<a href="https://www.php.net">PHP</a>
+		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
 		<a href="https://whatwg.org">HTML</a>
 		<p>Hypertext Markup Language for displaying documents in web browsers</p>
 		<a href="https://www.w3.org/TR/CSS">CSS</a>
 		<p>Cascading Style Sheets for describing the presentation of HTMLs</p>
-		<a href="https://www.php.net">PHP</a>
-		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
 		<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a>
 		<p>A scripting language for working with HTML Document Object Model(DOM) on client side</p>
 		<a href="https://jquery.com/">jQuery</a>

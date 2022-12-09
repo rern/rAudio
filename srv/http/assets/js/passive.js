@@ -1,9 +1,9 @@
-$( window ).on( 'resize', () => { // or rotate
-	var wH = window.innerHeight;
+// page resize -----------------------------------------------------------------
+window.onresize = () => { // rotate / resize
 	var wW = window.innerWidth;
-	if ( G.wH === wH && G.wW === wW ) return
+	if ( G.wW === wW ) return // wH changes with address bar toggle on scroll up-down
 	
-	G.wH = wH;
+	G.wH = window.innerHeight;
 	G.wW = wW;
 	var barvisible = $bartop.is( ':visible' );
 	if ( G.playback ) {
@@ -39,10 +39,10 @@ $( window ).on( 'resize', () => { // or rotate
 		}
 	}
 	displayBars();
-} );
+}
 function radioRefresh() {
-	var query = G.query[ G.query.length - 1 ];
-	if ( query.path ) {
+	if ( G.query.length ) {
+		var query = G.query[ G.query.length - 1 ];
 		list( query, function( html ) {
 			var data = {
 				  html      : html
@@ -112,34 +112,8 @@ function psBtReceiver( connected ) {
 	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
-function psBookmark( data ) {
-	if ( data.type === 'add' ) {
-		if ( data.src ) {
-			var icon = '<img class="bkcoverart" src="'+ data.src +'">';
-		} else {
-			var icon = '<i class="fa fa-bookmark"></i><a class="label">'+ data.name +'</a>';
-		}
-		var html = `
-<div class="lib-mode bookmark">
-	<div class="mode mode-bookmark">
-	<a class="lipath">${ data.path }</a>
-	${ icon }
-</div></div>
-`;
-		$( '#lib-mode-list' ).append( html );
-	} else {
-		$( '.lib-mode.bookmark' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.find( '.lipath' ).text() === data.path ) {
-				data.type === 'delete' ? $this.remove() : $this.find( '.label' ).text( data.name );
-				return false
-			}
-		} );
-	}
-	if ( data.order ) {
-		G.display.order = data.order;
-		orderLibrary();
-	}
+function psBookmark() {
+	refreshData( 'resetdata' );
 }
 function psCoverart( data ) {
 	clearTimeout( G.timeoutCover );
@@ -255,7 +229,7 @@ function psMpdUpdate( data ) {
 	
 	clearTimeout( G.debounce );
 	G.debounce = setTimeout( () => {
-		G.status.counts      = data;
+		G.counts             = data;
 		G.status.updating_db = false;
 		G.status.updatingdab = false;
 		renderLibraryCounts();
@@ -274,7 +248,7 @@ function psNotify( data ) {
 	if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {
-		G.status.counts.latest = 0;
+		G.counts.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( G.mode === 'latest' ) $( '#button-library' ).click();
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
@@ -333,13 +307,13 @@ function psPlaylist( data ) {
 }
 function psRadioList( data ) {
 	if ( 'count' in data ) {
-		G.status.counts[ data.type ] = data.count;
+		G.counts[ data.type ] = data.count;
 		$( '#mode-'+ data.type +' gr' ).text( data.count );
 	}
-	if ( G.librarylist && G.mode === data.type ) {
-		radioRefresh();
-	} else if ( G.playlist && ! G.local ) {
-		getPlaylist();
+	if ( G.library ) {
+		if ( G.librarylist && G.mode === data.type ) radioRefresh();
+	} else if ( G.playlist ) {
+		if ( ! G.local ) getPlaylist();
 	}
 	G.status.updatingdab = false;
 	$( '#i-dabupdate' ).addClass( 'hide' );
@@ -421,8 +395,8 @@ function psRestore( data ) {
 	}
 }
 function psSavedPlaylists( data ) {
-	var count                 = data.count;
-	G.status.counts.playlists = count;
+	var count          = data.count;
+	G.counts.playlists = count;
 	if ( G.savedlist ) {
 		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
 	} else if ( G.savedplaylist ) {

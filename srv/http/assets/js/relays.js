@@ -40,25 +40,20 @@ renderPage = function( changed ) {
 		$( '#ond'+ i ).val( D.val.ond[ i ] )
 		$( '#offd'+ i ).val( D.val.offd[ i ] )
 	}
-	if ( ! $( '.selectric-input' ).length ) {
-		$( 'select' ).selectric();
-		$( '.selectric-input' ).prop( 'readonly', true ); // suppress soft keyboard
-	} else {
-		$( 'select' ).selectric( 'refresh' );
-	}
-	$( '.selectric-ond, .selectric-offd' ).removeClass( 'disabled' );
-	$( '.selectric .label' ).removeClass( 'gr' );
+	selectSet( $( 'select' ) );
+	$( '.ond, .offd' ).prop( 'disabled', 0 );
 	var $el0 = $( '.on, .off' ).filter( ( i, el ) => {
 		var $this = $( el );
 		return ! $this.hasClass( 'delay' ) && $this.val() == 0;
-	} ).parent().parent(); // 2-up: selectric-wrapper
+	} );
 	if ( $el0.length ) {
 		$el0.find( '.label' ).addClass( 'gr' );
-		$el0.prev().prev() // 1-prv: sec. suffix; 2-prev: selectric-wrapper delay
-			.addClass( 'disabled' );
+		$el0.prop( 'disabled', 1 );
 	}
 //	if ( ! G.enabled ) $( '#undo' ).removeClass( 'disabled' );
 	showContent();
+	$( '#on > .select2' ).odd().css( 'cssText', 'width:70px !important' );
+	$( '#off > .select2' ).odd().css( 'cssText', 'width:70px !important' );
 }
 function renderUpdate() {
 	D.keys.forEach( k => D.val[ k ] = [] );
