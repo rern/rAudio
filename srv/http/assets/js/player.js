@@ -397,9 +397,9 @@ function infoSoxrPreset() {
 }
 function playbackIcon() {
 	$( '.playback' )
-		.removeClass( 'fa-pause fa-play' )
-		.addClass( 'fa fa-'+ ( ! G.playing ? 'play' : 'pause' ) )
-		.toggleClass( 'disabled', G.player !== 'mpd' && ! G.playing );
+		.removeClass( 'fa-pause fa-play fa-stop' )
+		.addClass( 'fa fa-'+ G.state )
+		.toggleClass( 'disabled', G.player !== 'mpd' && G.state !== 'play' );
 }
 function renderPage() {
 	playbackIcon();

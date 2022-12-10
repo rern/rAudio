@@ -35,11 +35,11 @@ data+='
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
-, "playing"          : '$( grep -q -m1 '^state.*play' $dirshm/status && echo true )'
 , "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
 , "scrobbleconf"     : ['$scrobbleconf']
 , "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
+, "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
 , "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='

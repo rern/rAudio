@@ -517,7 +517,7 @@ function renderPage() {
 	$( '#hostapd' ).toggleClass( 'disabled', G.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', G.nfsserver );
 	$( '#nfsserver' ).toggleClass( 'disabled', G.smb || G.shareddata || G.nfsconnected );
-	$( '#stoptimer' ).toggleClass( 'disabled', ! G.playing );
+	$( '#stoptimer' ).toggleClass( 'disabled', G.state !== 'play' );
 	if ( G.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {

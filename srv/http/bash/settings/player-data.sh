@@ -29,13 +29,13 @@ data='
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
 , "player"           : "'$( < $dirshm/player )'"
-, "playing"          : '$( grep -q -m1 '^state.*play' $dirshm/status && echo true )'
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
 , "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"
 , "soxr"             : '$( exists $dirsystem/soxr )'
 , "soxrconf"         : ['$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
 , "soxrcustomconf"   : ['$( sed -E '/resampler|plugin|quality|}/ d; s/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )']
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
+, "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data" $1
