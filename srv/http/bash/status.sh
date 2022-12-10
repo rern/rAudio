@@ -33,7 +33,13 @@ else
 	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
 		volume=false
 	else
-		[[ -e $dirshm/btreceiver ]] && control=$( < $dirshm/btreceiver ) || control=$( getContent $dirshm/amixercontrol )
+		if [[ -e $dirshm/btreceiver ]]; then
+			control=$( < $dirshm/btreceiver )
+		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+			control=
+		else
+			control=$( getContent $dirshm/amixercontrol )
+		fi
 		volume=$( $dirbash/cmd.sh volumeget )
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
