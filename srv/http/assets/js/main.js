@@ -1361,6 +1361,11 @@ $( '#lib-mode-list' ).click( function( e ) {
 	
 	var path  = $( this ).find( '.lipath' ).text();
 	if ( path.slice( 0, 4 ) === 'http' ) {
+		if ( G.display.tapaddplay ) {
+			bash( [ 'mpcadd', path, 'addplay' ] );
+			return
+		}
+		
 		var $img = $( this ).find( '.bkcoverart' );
 		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
 		info( {
