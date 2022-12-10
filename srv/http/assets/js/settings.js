@@ -55,13 +55,8 @@ function bannerReset() {
 function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', G[ id ] );
 }
-function currentStatus( id, refresh ) {
+function currentStatus( id ) {
 	var $el = $( '#code'+ id );
-	if ( ! refresh && ! $el.hasClass( 'hide' ) ) {
-		$el.addClass( 'hide' );
-		return
-	}
-		
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
@@ -231,6 +226,9 @@ function psRefresh( data ) {
 		$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
 		page === 'networks' ? $( '.back' ).click() : setSwitch();
 		renderPage();
+		$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
+		} );
 	}
 }
 function psReload( data ) {
@@ -342,7 +340,11 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	if ( $( e.target ).is( 'i' ) ) return
 	
 	var $this = $( this );
-	if ( ! $this.hasClass( 'single' ) ) currentStatus( $this.data( 'status' ) );
+	if ( ! $this.hasClass( 'single' ) ) {
+		var id    = $this.data( 'status' );
+		var $code = $( '#code'+ id );
+		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+	}
 } );
 $( '.close' ).click( function() {
 	if ( page !== 'system' ) {
