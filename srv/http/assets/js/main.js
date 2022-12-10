@@ -1360,6 +1360,24 @@ $( '#lib-mode-list' ).click( function( e ) {
 	if ( G.press || $( '.bkedit' ).length ) return
 	
 	var path  = $( this ).find( '.lipath' ).text();
+	if ( path.slice( 0, 4 ) === 'http' ) {
+		var $img = $( this ).find( '.bkcoverart' );
+		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+		info( {
+			  icon     : 'plus-o'
+			, title    : 'Add to Playlist'
+			, message  : icon
+						+'<br><wh>'+ $( this ).find( '.bkname' ).text() +'</wh><br>&nbsp;'
+			, checkbox : [ 'Add and Play <i class="fa fa-play-plus"></i>' ]
+			, values   : [ 1 ]
+			, ok       : () => {
+				$( '#playback' ).click();
+				bash( [ 'mpcadd', path, infoVal() ? 'addplay' : '' ] );
+			}
+		} );
+		return
+	}
+	
 	var path0 = path.split( '/' )[ 0 ];
 	var mode  = path0.toLowerCase();
 	if ( path0.slice( 3 ) !== 'radio' ) {
