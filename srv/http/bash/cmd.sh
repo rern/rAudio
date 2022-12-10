@@ -162,11 +162,11 @@ volumeGet() {
 	[[ -e $dirshm/nosound ]] && echo -1 && return
 	
 	if [[ -e $dirsystem/snapclientserver ]]; then
-		mixertype=
-	else
-		mixertype=$( sed -E -n '/type *"alsa"/,/mixer_type/ {/mixer_type/ {s/^.*"(.*)"/\1/; p}}' $dirmpdconf/output.conf )
+		mixersoftware=
+	elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		mixersoftware=1
 	fi
-	if [[ $( < $dirshm/player ) == mpd && $mixertype == software ]]; then
+	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
 		mpc volume | cut -d: -f2 | tr -d ' %n/a'
 	else
 		card=$( < $dirsystem/asoundcard )

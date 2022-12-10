@@ -1549,7 +1549,7 @@ $( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( menushow || $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+	if ( ( menushow && G.mode !== 'webradio' ) || $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
