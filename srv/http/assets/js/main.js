@@ -1360,25 +1360,25 @@ $( '#lib-mode-list' ).click( function( e ) {
 	if ( G.press || $( '.bkedit' ).length ) return
 	
 	var path  = $( this ).find( '.lipath' ).text();
-	if ( path.slice( 0, 4 ) === 'http' ) {
+	if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
+		var name = $( this ).find( '.bkname' ).text();
 		if ( G.display.tapaddplay ) {
-			bash( [ 'mpcadd', path, 'addplay' ] );
+			addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name );
 			return
 		}
 		
 		var $img = $( this ).find( '.bkcoverart' );
 		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
 		info( {
-			  icon     : 'plus-o'
-			, title    : 'Add to Playlist'
-			, message  : icon
-						+'<br><wh>'+ $( this ).find( '.bkname' ).text() +'</wh><br>&nbsp;'
-			, checkbox : [ 'Add and Play <i class="fa fa-play-plus"></i>' ]
-			, values   : [ 1 ]
-			, ok       : () => {
-				$( '#playback' ).click();
-				bash( [ 'mpcadd', path, infoVal() ? 'addplay' : '' ] );
-			}
+			  icon        : 'plus-o'
+			, title       : 'Add to Playlist'
+			, message     : icon
+							+'<br><wh>'+ $( this ).find( '.bkname' ).text() +'</wh>'
+			, buttonlabel : '<i class="fa fa-plus-o"></i>Add'
+			, buttoncolor : 'var( --cg )'
+			, button      : () => addReplace( 'add', [ 'mpcadd', path ], 'Add to Playlist', name )
+			, oklabel     : '<i class="fa fa-play-plus"></i>Play'
+			, ok          : () => addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name )
 		} );
 		return
 	}

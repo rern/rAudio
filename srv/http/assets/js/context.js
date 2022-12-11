@@ -38,10 +38,9 @@ function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from path + coverart.jpg
 	// #3 - no cover   - icon + directory name
-	if ( G.list.path.slice( 0, 4 ) === 'http' ) {
-		var urlname = G.list.path.replace( /\//g, '|' );
-		var src     = '/data/'+ G.mode +'/img/'+ urlname +'.jpg';
-		var lipath  = $( '#lib-path .lipath' ).text();
+	if ( [ 'http', 'rtsp' ].includes( G.list.path.slice( 0, 4 ) ) ) {
+		var $img = G.list.li.find( '.iconthumb' );
+		var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
 		var path    = G.list.path;
 		var name    = G.list.name;
 		var msgpath = name;
@@ -82,7 +81,7 @@ function bookmarkNew() {
 						, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
 					} );
 				} else {
-					banner( 'bookmark', 'Bookmark Added', path );
+					banner( 'bookmark', 'Bookmark Added', name );
 				}
 			} );
 		}

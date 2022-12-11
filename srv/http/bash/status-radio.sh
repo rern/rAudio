@@ -14,7 +14,7 @@ case $id in
 	flac )   id=0;;
 	mellow ) id=1;;
 	rock )   id=2;;
-	world )  id=3;;
+	global ) id=3;;
 	fip )           id=7;;
 	fipelectro )    id=74;;
 	fipgroove )     id=66;;
@@ -83,18 +83,10 @@ metadataGet() {
 	elif [[ ${#metadata[@]} == 6 ]]; then
 		countdown=$(( countdown - ${metadata[5]} )) # radiofrance
 	fi
-	if [[ ! -e $dirsystem/vumeter ]]; then
+	if [[ $coverurl && ! -e $dirsystem/vumeter ]]; then
 		name=$( tr -d ' \"`?/#&'"'" <<< $artist$title )
-		if [[ $coverurl ]]; then
-			coverart=/data/shm/webradio/$name.jpg
-			curl -s $coverurl -o $dirshm/webradio/$name.jpg
-		else
-			coverart=$( ls $dirshm/webradio/$name* 2> /dev/null | sed 's|/srv/http||' )
-			[[ ! $coverart ]] && $dirbash/status-coverartonline.sh "\
-$artist
-title
-webradio" &> /dev/null &
-		fi
+		coverart=/data/shm/webradio/$name.jpg
+		curl -s $coverurl -o $dirshm/webradio/$name.jpg
 	fi
 	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
 				| telnet 127.0.0.1 6600 2> /dev/null \
