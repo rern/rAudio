@@ -81,8 +81,6 @@ var icon_player = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-getPlaybackStatus( 'withdisplay' );
-
 if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
