@@ -114,9 +114,6 @@ $dirsettings/system.sh dirpermissions
 # 20221123
 [[ $restartbrowser ]] && systemctl try-restart localbrowser
 
-# 20221010
-[[ -e /srv/http/shareddata ]] && echo -e "$info Shared Data must be disabled and setup again."
-
 # 20221117
 overrideconf=/etc/systemd/system/mpd.service.d/override.conf
 grep -q systemd $overrideconf && installfinish && exit
