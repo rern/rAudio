@@ -40,7 +40,7 @@ $( '#banner' ).click( bannerHide );
 
 // ----------------------------------------------------------------------
 $( '#data' ).on( 'click', '.copy', function() {
-	banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
+	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
 	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
 	$( '#error' ).focus().select();
