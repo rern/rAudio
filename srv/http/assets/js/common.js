@@ -52,7 +52,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
-				+'&emsp;<a class="infobtn infobtn-primary copy">Copy</a>'
+				+'&emsp;<a class="infobtn infobtn-primary copy"><i class="fa fa-copy"></i>Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )

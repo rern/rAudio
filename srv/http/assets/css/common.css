@@ -1,6 +1,6 @@
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2022102200' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2022121000' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -176,6 +176,7 @@ codered  {
 .fa-composer::before        { content: '\f558' }
 .fa-conductor::before       { content: '\f559' }
 .fa-consume::before         { content: '\f566' }
+.fa-copy::before            { content: '\f54E' }
 .fa-crop::before            { content: '\f568' }
 .fa-dabradio::before        { content: '\f589' }
 .fa-dabupdate::before       { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
