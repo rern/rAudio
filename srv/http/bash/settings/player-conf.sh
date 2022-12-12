@@ -133,15 +133,17 @@ if [[ -e $dirmpd/updating ]]; then
 fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
-$dirsettings/player-data.sh pushrefresh
-
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 systemctl stop shairport-sync shairport spotifyd &> /dev/null
 
-[[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
+if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
+	$dirbash/status-push.sh
+	$dirsettings/player-data.sh pushrefresh
+	exit
+fi
 
 # renderers -----------------------------------------------------------------------------
 if [[ -e /usr/bin/shairport-sync ]]; then
@@ -189,3 +191,6 @@ volume_controller = "alsa"'
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl -q is-enabled spotifyd && systemctl start spotifyd
 fi
+
+$dirbash/status-push.sh
+$dirsettings/player-data.sh pushrefresh

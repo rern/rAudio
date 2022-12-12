@@ -63,7 +63,8 @@ for card in $cards; do
 		else
 			name=${aplayname/bcm2835/On-board}
 		fi
-		[[ -e "$dirsystem/mixertype-$aplayname" ]] && mixertype=$( < "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
+		mixertypefile="$dirsystem/mixertype-$aplayname"
+		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
 		getControls $card
 		if [[ ! $controls ]]; then
 			mixerdevices=['"( not available )"']
@@ -79,7 +80,7 @@ for card in $cards; do
 		fi
 		
 		mixermanual=false
-		hwmixerfile=$dirsystem/hwmixer-$aplayname
+		hwmixerfile="$dirsystem/hwmixer-$aplayname"
 		if [[ -e $hwmixerfile ]]; then # manual
 			mixermanual=true
 			hwmixer=$( < "$hwmixerfile" )
