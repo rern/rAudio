@@ -107,9 +107,6 @@ function list2JSON( list ) {
 		}
 		return false
 	}
-	
-	$( '#data' ).empty();
-	$( '#button-data, #data' ).addClass( 'hide' );
 	return true
 }
 function notify( icon, title, message, delay ) {
@@ -127,11 +124,14 @@ function refreshData() {
 		}
 		if ( ! list2G ) return
 		
-		if ( $( '#data' ).hasClass( 'hide' ) )  {
+		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
+			$( '#data' ).empty();
+			$( '#button-data, #data' ).addClass( 'hide' );
 			setSwitch();
 			renderPage();
 		} else {
 			$( '#data' ).html( highlightJSON( G ) )
+			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
 }

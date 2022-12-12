@@ -58,6 +58,7 @@ function errorDisplay( msg, list ) {
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
+	$( '#button-data' ).addClass( 'hide' );
 	loaderHide();
 }
 
