@@ -532,7 +532,6 @@ function getPlaybackStatus( withdisplay ) {
 			return false
 		}
 		
-		if ( $( '#data codered' ).length ) $( '#data' ).empty().addClass( 'hide' );
 		G.counts = status.counts;
 		delete status.counts;
 		if ( 'display' in status ) {
@@ -544,11 +543,21 @@ function getPlaybackStatus( withdisplay ) {
 			bannerHide();
 		}
 		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
-		displayBars();
-		displayPlayback();
-		renderPlayback();
-		setButtonControl();
-		setButtonUpdating();
+		var dataerror = $( '#data .copy' ).length;
+		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
+			if ( dataerror ) {
+				$( '#data' ).empty();
+				$( '#button-data, #data' ).addClass( 'hide' );
+			}
+			displayBars();
+			displayPlayback();
+			renderPlayback();
+			setButtonControl();
+			setButtonUpdating();
+		} else {
+			$( '#data' ).html( highlightJSON( G.status ) )
+			$( '#button-data, #data' ).removeClass( 'hide' );
+		}
 	} );
 }
 function getPlaylist() {
@@ -998,6 +1007,9 @@ function refreshData( resetdata ) {
 		}
 	} else if ( G.playback ) {
 		getPlaybackStatus( 'withdisplay' );
+		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
+			
+		}
 	} else {
 		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
 			if ( resetdata ) G.playlisthtml = '';

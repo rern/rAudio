@@ -124,7 +124,7 @@ function refreshData() {
 		}
 		if ( ! list2G ) return
 		
-		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
+		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length ) {
 			$( '#data' ).empty();
 			$( '#button-data, #data' ).addClass( 'hide' );
 			setSwitch();
