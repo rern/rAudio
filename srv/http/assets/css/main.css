@@ -229,8 +229,8 @@ i.map.disabled, .map.disabled i {
 	z-index: 100;
 }
 #status {
-	width: 20px;
-	right: 0;
+	width: 40px;
+	left: 40px;
 	z-index: 110;
 }
 #bar-top,
