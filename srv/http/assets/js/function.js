@@ -111,7 +111,7 @@ function colorSet() {
 				// background
 				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
 				$( '#playback-controls .active, #library, #button-library, #lib-list li:eq( 0 ), #colorok' ).css( 'background-color', hex );
-				$( '.content-top, #lib-index, #playback, #colorcancel' ).css( 'background-color', hsg +'20%)' );
+				$( '.content-top, #lib-index, #playback' ).css( 'background-color', hsg +'20%)' );
 				// text
 				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
 				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
