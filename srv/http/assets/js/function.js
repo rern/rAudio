@@ -1061,7 +1061,10 @@ function renderLibraryCounts() {
 	$.each( G.counts, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) {
-	if ( G.librarylist && data.html === G.librarylisthtml ) return
+	if ( G.librarylist && data.html === G.librarylisthtml ) {
+		if ( G.color ) colorSet()
+		return
+	}
 	
 	G.librarylist = 1;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
