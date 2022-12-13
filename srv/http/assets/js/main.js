@@ -1210,7 +1210,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				}
 				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>'+ data.count +' <gr>of</gr> </span>' );
+				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i><span>'+ data.count +' <gr>of</gr> </span>' );
 				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
 				info( {
@@ -1218,7 +1218,7 @@ $( '#lib-search-btn' ).click( function() { // search
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>' );
+				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i>' );
 			}
 		}, 'json' );
 	}

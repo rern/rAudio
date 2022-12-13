@@ -208,7 +208,7 @@ function info( json ) {
 	if ( ! I.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
-		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
 	</div>
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>

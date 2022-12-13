@@ -14,7 +14,7 @@ var content = `
 	<i id="eqrename" class="fa fa-edit-circle"></i>
 	<i id="eqsave" class="fa fa-save"></i>
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-times bl hide"></i>
+	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-arrow-left bl hide"></i>
 	<i id="equndo" class="fa fa-undo"></i>
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>

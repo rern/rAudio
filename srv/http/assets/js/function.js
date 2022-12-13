@@ -450,7 +450,7 @@ function getBio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
-	<p class="artist"><a>${ artistname }<i class="closebio fa fa-times close-root"></i></a></p>
+	<p class="artist"><a>${ artistname }<i class="closebio fa fa-close close-root"></i></a></p>
 	<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -766,12 +766,12 @@ function libraryHome() {
 		} else {
 			switchPage( 'library' );
 			if ( G.status.updating_db ) banner( 'refresh-library blink', 'Library Database', 'Update ...' );
-			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
 			imageOnError( this, $( this ).prev().text() );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
+		if ( G.color ) $( '#mode-webradio' ).click();
 	}, 'json' );
 }
 function lyricsShow( data ) {
@@ -933,7 +933,7 @@ function playlistFilter() {
 	} );
 	$( 'html, body' ).scrollTop( 0 );
 	if ( keyword ) {
-		$( '#pl-search-close' ).html( '<i class="fa fa-times"></i><span>'+ count +' <gr>of</gr> </span>' );
+		$( '#pl-search-close' ).html( '<i class="fa fa-close"></i><span>'+ count +' <gr>of</gr> </span>' );
 	} else {
 		$( '#pl-search-close' ).empty();
 	}
@@ -1077,7 +1077,7 @@ function renderLibraryList( data ) {
 	if ( 'count' in data && G.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
-		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
+		$( '#lib-search-close' ).html( '<i class="fa fa-close"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
 		var htmlpath = htmlmodetitle;

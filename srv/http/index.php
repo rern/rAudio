@@ -309,7 +309,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
-	<i id="colorcancel" class="fa fa-times"></i>
+	<i id="colorcancel" class="fa fa-close"></i>
 	<a id="colorreset" class="infobtn"><i class="fa fa-set0"></i> Default</a>&ensp;
 	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
@@ -318,7 +318,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div id="divlyricstitle">
 		<img src="">
 		<span id="lyricstitle"></span>
-		<i id="lyricsclose" class="fa fa-times"></i>
+		<i id="lyricsclose" class="fa fa-close"></i>
 	</div>
 	<div id="divlyricsartist">
 		<span id="lyricsartist"></span><i id="lyricsedit" class="fa fa-edit-circle"></i>

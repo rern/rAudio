@@ -1049,14 +1049,9 @@ i.map.disabled, .map.disabled i {
 #biocontent .bioback {
 	float: right;
 	margin-top: 0;
-	font-size: 28px;
+	font-size: 24px;
 	color: var( --cm ) !important;
 	z-index: 5;
-}
-#biocontent .bioback {
-	width: 24px;
-	line-height: 24px;
-	font-size: 24px;
 }
 #biocontent .genre {
 	text-transform: capitalize;
@@ -1147,7 +1142,7 @@ i.map.disabled, .map.disabled i {
 #lyricsclose {
 	position: absolute;
 	right: 0;
-	font-size: 28px;
+	font-size: 24px;
 	color: var( --cm );
 }
 #lyricsartist {
@@ -1527,7 +1522,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-search-close i,
 #pl-search-close i {
-	width: 20px;
+	width: 30px;
 	vertical-align: -2px;
 	color: var( --cm );
 }
@@ -1993,7 +1988,7 @@ li.active .li2 bl {
 	right: 0;
 	width: 36px;
 	height: 36px;
-	font-size: 28px;
+	font-size: 24px;
 	line-height: 36px;
 	border-radius: 50%;
 	color: var( --cm );
