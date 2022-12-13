@@ -968,8 +968,8 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// page visibility -----------------------------------------------------------------
-	var active  = 1;
-	var select2 = 0;
+	var active  = 1; // fix: multiple firings
+	var select2 = 0; // fix: closing > blur > disconnect
 	function connect() {
 		if ( active || G.off ) return
 		
@@ -977,15 +977,16 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		pushstream.connect();
 	}
 	function disconnect() {
-		if ( ! active || select2 ) return
+		if ( ! active ) return
 		
 		active = 0;
 		pushstream.disconnect();
+		console.log('disconnect')
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
 	window.onpageshow = connect;
-	window.onblur     = disconnect;
+	window.onblur     = () => { if ( ! select2 ) disconnect() }
 	window.onfocus    = connect;
 }
 
@@ -1002,8 +1003,8 @@ function selectSet( $select ) {
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
-		.on( 'select2:open',  () => select2 = 1 ) // fix: on close > blur > disconnect
-		.on( 'select2:close', () => select2 = 0 )
+		.on( 'select2:closing', () => select2 = 1 )
+		.on( 'select2:close',   () => select2 = 0 )
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
