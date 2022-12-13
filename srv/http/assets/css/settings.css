@@ -580,7 +580,7 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 450px) {
-	.title {
+	.head .title {
 		letter-spacing: 12px;
 	}
 	heading {
@@ -602,7 +602,7 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 375px) {
-	.title {
+	.head .title {
 		margin-left: 10px;
 		letter-spacing: 5px;
 	}
