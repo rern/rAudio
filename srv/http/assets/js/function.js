@@ -1077,7 +1077,6 @@ function renderLibraryList( data ) {
 	if ( 'count' in data && G.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
-		$( '#lib-search-close' ).html( '<i class="fa fa-close"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
 		var htmlpath = htmlmodetitle;
