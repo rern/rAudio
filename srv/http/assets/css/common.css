@@ -23,124 +23,6 @@
 	font-weight : normal;
 	font-style  : normal;
 }
-
-html {
-	height  : 100%;
-	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
-}
-body {
-	height      : 100%;
-	margin      : 0;
-	font-family : "Lato";
-	font-size   : 15px;
-	color       : var( --cw );
-	background-color    : #000;
-	overflow-x          : hidden;
-	overscroll-behavior : none; /* disable android pull-down refresh */
-	-webkit-tap-highlight-color : transparent;
-}
-*,
-*::before,
-*::after {
-	-webkit-box-sizing :border-box;
-	-moz-box-sizing    :border-box;
-	box-sizing         :border-box;
-}
-*:focus,
-*:active {
-	outline: none !important;
-}
-input:focus { /* focus - cannot combine with others */
-	outline: none !important;
-}
-input:focus-visible {
-	outline: none !important;
-}
-input::-moz-focus-inner {
-	outline : 0 !important;
-	border  : 0;
-}
-.hide { display: none !important }
-.hidden { visibility: hidden }
-@keyframes blinkopaque { 50% { opacity: 0 } }
-.blink { animation: blinkopaque 1.5s linear infinite }
-#loader {
-	position   : fixed;
-	top        : 0;
-	width      : 100%;
-	height     : 100%;
-	z-index    : 110; /* #banner > #loader > # #keyboard > #infoOverlay */
-	background : rgba(0, 0, 0, 0.8);
-}
-#loader svg {
-	position  : absolute;
-	top       : 0;
-	bottom    : 0;
-	left      : 0;
-	right     : 0;
-	margin    : auto;
-	width     : 50px;
-	animation : blinkopaque 1.5s linear infinite;
-}
-.logo rect {
-	fill: var( --cm );
-}
-.logo path {
-	fill: var( --cg75 );
-}
-#data {
-	position    : absolute;
-	top         : 0;
-	width       : 100%;
-	min-height  : 100%;
-	margin      : 0;
-	padding     : 10px 20px;
-	tab-size    : 20px;
-	font-family : Inconsolata;
-	line-height : 20px;
-	overflow    : auto;
-	white-space : pre-wrap;
-	background  : #000;
-	z-index     : 110;
-}
-codered  {
-	padding       : 0px 5px 3px 5px;
-	border-radius : 3px;
-	color         : var( --cw );
-	background    : #f00;
-}
-#data hr {
-	margin-left  : -20px;
-	margin-right : -20px;
-}
-#button-data {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	height: 40px;
-	font-size: 30px;
-	line-height: 35px;
-	background: var( --cga );
-	z-index: 115;
-}
-#button-data i {
-	width: 40px;
-	text-align: center;
-	color: var( --cm );
-}
-.splash {
-	background: #000000 !important;
-}
-.splash svg {
-	animation: none !important;
-}
-
-.iconcover {
-	content : url( '/assets/img/iconcover.svg' );
-	width   : 24px !important;
-	margin  : 5px !important;
-	border  : 1px solid hsl(0,0%,20%);
-}
 .fa {
 	display     : inline-block;
 	font-family : rern;
@@ -308,6 +190,144 @@ codered  {
 .fa-wifi1::after            { content: '\f599'; color: var( --cga ); }
 .fa-wifi2::before           { content: '\f59A'; position: absolute; }
 .fa-wifi2::after            { content: '\f59B'; color: var( --cga ); }
+
+html {
+	height  : 100%;
+	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
+}
+body {
+	height      : 100%;
+	margin      : 0;
+	font-family : "Lato";
+	font-size   : 15px;
+	color       : var( --cw );
+	background-color    : #000;
+	overflow-x          : hidden;
+	overscroll-behavior : none; /* disable android pull-down refresh */
+	-webkit-tap-highlight-color : transparent;
+}
+*,
+*::before,
+*::after {
+	-webkit-box-sizing :border-box;
+	-moz-box-sizing    :border-box;
+	box-sizing         :border-box;
+}
+*:focus,
+*:active {
+	outline: none !important;
+}
+input:focus { /* focus - cannot combine with others */
+	outline: none !important;
+}
+input:focus-visible {
+	outline: none !important;
+}
+input::-moz-focus-inner {
+	outline : 0 !important;
+	border  : 0;
+}
+.hide { display: none !important }
+.hidden { visibility: hidden }
+@keyframes blinkopaque { 50% { opacity: 0 } }
+.blink { animation: blinkopaque 1.5s linear infinite }
+#loader {
+	position   : fixed;
+	top        : 0;
+	width      : 100%;
+	height     : 100%;
+	z-index    : 110; /* #banner > #loader > # #keyboard > #infoOverlay */
+	background : rgba(0, 0, 0, 0.8);
+}
+#loader svg {
+	position  : absolute;
+	top       : 0;
+	bottom    : 0;
+	left      : 0;
+	right     : 0;
+	margin    : auto;
+	width     : 50px;
+	animation : blinkopaque 1.5s linear infinite;
+}
+.logo rect {
+	fill: var( --cm );
+}
+.logo path {
+	fill: var( --cg75 );
+}
+#data {
+	position    : absolute;
+	top         : 0;
+	width       : 100%;
+	min-height  : 100%;
+	margin      : 0;
+	padding     : 10px 20px;
+	tab-size    : 20px;
+	font-family : Inconsolata;
+	line-height : 20px;
+	overflow    : auto;
+	white-space : pre-wrap;
+	background  : #000;
+	z-index     : 110;
+}
+codered  {
+	padding       : 0px 5px 3px 5px;
+	border-radius : 3px;
+	color         : var( --cw );
+	background    : #f00;
+}
+
+.head {
+	position: fixed;
+	width: 100%;
+	height: 40px;
+	padding-right: 10px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 95;
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: -1px 0 2px #000000;
+}
+.head .fa-times {
+	font-size: 30px;
+	color: var( --cm );
+}
+.head .title {
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#button-data {
+	z-index: 115;
+}
+#button-data i {
+	vertical-align: -2px;
+}
+#data hr {
+	margin-left  : -20px;
+	margin-right : -20px;
+}
+
+.splash {
+	background: #000000 !important;
+}
+.splash svg {
+	animation: none !important;
+}
+
+.iconcover {
+	content : url( '/assets/img/iconcover.svg' );
+	width   : 24px !important;
+	margin  : 5px !important;
+	border  : 1px solid hsl(0,0%,20%);
+}
 
 /* banner() */
 #banner .fa-firefox::before { color: #000 }
@@ -892,7 +912,17 @@ input[type=radio]:disabled {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
 }
+
 @supports ( -webkit-touch-callout: none ) { /* ios only */
+	.head i {
+		line-height: 42px;
+	}
+	.page-icon {
+		vertical-align: 1px;
+	}
+	.head .title {
+		line-height: 36px;
+	}
 	input[type=checkbox]:checked:disabled {
 		background-color: var( --cml );
 	}
