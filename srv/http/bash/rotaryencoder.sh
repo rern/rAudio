@@ -3,7 +3,7 @@
 . /srv/http/data/system/rotaryencoder.conf
 
 card=$( < /srv/http/data/system/asoundcard )
-control=$( < /srv/http/data/shm/amixercontrol )
+control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
 volume() {
 	/srv/http/bash/cmd.sh "volumeupdown
 $1

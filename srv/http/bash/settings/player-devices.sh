@@ -133,15 +133,6 @@ else
 fi
 i=$( < $dirsystem/asoundcard )
 
-echo Ahwmixer[i] > $dirshm/amixercontrol
-
-getControls $i
-if [[ $controls ]]; then
-	sort -u <<< $controls | head -1 > $dirshm/amixercontrol
-else
-	rm -f $dirshm/amixercontrol
-fi
-
 devices="[ ${devices:1} ]"
 aplayname=${Aaplayname[i]}
 output=${Aname[i]}

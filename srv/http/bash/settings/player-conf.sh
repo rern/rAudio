@@ -49,6 +49,7 @@ else # with audio devices (from player-devices.sh)
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
+	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
