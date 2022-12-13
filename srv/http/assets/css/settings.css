@@ -615,7 +615,7 @@ input.disabled + .switchlabel:after {
 	}
 }
 @media (max-width: 320px) {
-	.title {
+	.head .title {
 		letter-spacing: 3px;
 	}
 	#divmpd .help {
