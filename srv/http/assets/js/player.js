@@ -54,66 +54,45 @@ $( '#setting-hwmixer' ).click( function() {
 		var vol      = voldb[ 0 ];
 		var db       = voldb[ 1 ];
 		var nodb     = typeof db === 'undefined';
-		var card     = G.asoundcard;
-		var control  = D.hwmixer;
+		var json0 = {
+			  icon       : 'volume'
+			, title      : 'Mixer Device Volume'
+			, message    : D.hwmixer
+			, rangevalue : vol
+		}
 		if ( D.mixertype === 'none' ) {
-			info( {
-				  icon       : 'volume'
-				, title      : 'Mixer Device Volume'
-				, message    : control
-				, rangevalue : vol
-				, footer     : '0dB (No Volume)'
+			var json1 = {
+				  footer     : '0dB (No Volume)'
 				, beforeshow : () => $( '#infoRange input' ).prop( 'disabled', 1 )
 				, okno       : 1
-			} );
-			return
-		}
-		
-		if ( nodb ) {
-			info( {
-				  icon       : 'volume'
-				, title      : 'Mixer Device Volume'
-				, message    : control
-				, rangevalue : vol
-				, beforeshow : () => {
-					$( '#infoRange input' ).on( 'click input keyup', function() {
-						bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
-					} ).on( 'touchend mouseup keyup', function() {
-						bash( [ 'volumepush' ] );
-					} );
-				}
+			}
+		} else if ( nodb ) {
+			var json1 = {
+				  beforeshow : setVolumeSlider
 				, okno       : 1
-			} );
-			return
+			}
+		} else {
+			var toggle = () => $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' )
+			var json1 = {
+				  footer        : db +' dB'
+				, beforeshow    : () => {
+					$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
+					$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
+					$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
+					setVolumeSlider();
+				}
+				, buttonnoreset : 1
+				, buttonlabel   : [ 'Back', '<i class="fa fa-set0"></i>0dB' ]
+				, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
+				, button        : [ toggle, toggle ]
+				, oklabel       : 'OK'
+				, ok            : () => {
+					bash( [ 'volume0db' ] );
+					toggle();
+				}
+			}
 		}
-		
-		var toggle = () => $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' )
-		info( {
-			  icon          : 'volume'
-			, title         : 'Mixer Device Volume'
-			, message       : control
-			, rangevalue    : vol
-			, footer        : db +' dB'
-			, beforeshow    : () => {
-				$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
-				$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'amixer -c '+ card +' -Mq sset "'+ control +'" '+ $( this ).val() +'%' );
-				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumepush' ] );
-				} );
-				$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
-			}
-			, buttonnoreset : 1
-			, buttonlabel   : [ 'Back', '<i class="fa fa-set0"></i>0dB' ]
-			, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
-			, button        : [ toggle, toggle ]
-			, oklabel       : 'OK'
-			, ok            : () => {
-				bash( [ 'volume0db' ] );
-				toggle();
-			}
-		} );
+		info( { ... json0, ... json1 } );
 	} );
 } );
 $( '#mixertype' ).change( function() {
@@ -475,4 +454,11 @@ function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
+}
+function setVolumeSlider() {
+	$( '#infoRange input' ).on( 'click input keyup', function() {
+		bash( 'amixer -c '+ G.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
+	} ).on( 'touchend mouseup keyup', function() {
+		bash( [ 'volumepush' ] );
+	} );
 }

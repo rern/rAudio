@@ -705,7 +705,7 @@ $( < /etc/dnsmasq.conf )"
 			;;
 		mpd )
 			conf=$( grep -v ^i $mpdconf )
-			for file in autoupdate buffer outputbuffer replaygain normalization; do
+			for file in autoupdate buffer custom outputbuffer replaygain normalization; do
 				fileconf=$dirmpdconf/$file.conf
 				[[ -e $fileconf ]] && conf+=$'\n'$( < $fileconf )
 			done
