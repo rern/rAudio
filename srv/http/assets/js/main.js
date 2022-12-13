@@ -402,7 +402,6 @@ $( '#colorreset' ).click( function() {
 	loader();
 } );
 $( '#colorcancel' ).click( function() {
-	G.color = 0;
 	$( '#colorpicker' ).addClass( 'hide' );
 	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
 	  , .content-top, #button-library, #mode-title, #button-lib-back \

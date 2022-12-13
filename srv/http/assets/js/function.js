@@ -91,6 +91,7 @@ function clearIntervalAll() {
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
+	G.color = 0;
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '#lib-list .lib-icon' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
@@ -176,7 +177,6 @@ function contextmenuLibrary( $li, $target ) {
 		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
-	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
 	var fixedmenu = G.library && ( G.list.licover && G.wH > 767 ) && G.display.fixedcover ? true : false;
