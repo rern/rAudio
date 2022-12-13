@@ -626,7 +626,7 @@ function imageOnError( el, bookmark ) {
 		$this.attr( 'src', G.coverart );
 	} else { // bookmark
 		var icon = '<i class="fa fa-bookmark bl"></i>';
-		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) icon += '<br><a class="label">'+ bookmark +'</a>';
+		if ( I.infohide ) icon += '<br><a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
 		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
