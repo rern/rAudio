@@ -88,6 +88,41 @@ input::-moz-focus-inner {
 .logo path {
 	fill: var( --cg75 );
 }
+
+.head {
+	position: fixed;
+	width: 100%;
+	height: 40px;
+	padding-right: 10px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 95;
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: -1px 0 2px #000000;
+}
+.head .fa-times {
+	font-size: 30px;
+	color: var( --cm );
+}
+.head .title {
+	margin-left: 15px;
+	line-height: 40px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#button-data {
+	z-index: 115;
+}
+#button-data i {
+	vertical-align: -2px;
+}
 #data {
 	position    : absolute;
 	top         : 0;
@@ -113,21 +148,7 @@ codered  {
 	margin-left  : -20px;
 	margin-right : -20px;
 }
-#button-data {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	height: 40px;
-	font-size: 30px;
-	line-height: 35px;
-	background: var( --cga );
-	z-index: 115;
-}
-#button-data i {
-	width: 40px;
-	text-align: center;
-	color: var( --cm );
-}
+
 .splash {
 	background: #000000 !important;
 }
