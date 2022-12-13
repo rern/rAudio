@@ -1408,7 +1408,7 @@ i.map.disabled, .map.disabled i {
 #countradio {
 	margin-left: 10px;
 }
-.title {
+.content-top .title {
 	display: inline-block;
 	margin: 0 0 0 15px;
 	font-size: 26px;
