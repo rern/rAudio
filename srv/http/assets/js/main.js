@@ -81,8 +81,6 @@ var icon_player = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-getPlaybackStatus( 'withdisplay' );
-
 if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
 	var xstart;
 	window.addEventListener( 'touchstart', function( e ) {
@@ -1212,7 +1210,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				}
 				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>'+ data.count +' <gr>of</gr> </span>' );
+				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i><span>'+ data.count +' <gr>of</gr> </span>' );
 				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
 				info( {
@@ -1220,7 +1218,7 @@ $( '#lib-search-btn' ).click( function() { // search
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
-				$( '#lib-search-close' ).html( '<i class="fa fa-times"></i>' );
+				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i>' );
 			}
 		}, 'json' );
 	}
@@ -1360,6 +1358,29 @@ $( '#lib-mode-list' ).click( function( e ) {
 	if ( G.press || $( '.bkedit' ).length ) return
 	
 	var path  = $( this ).find( '.lipath' ).text();
+	if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
+		var name = $( this ).find( '.bkname' ).text();
+		if ( G.display.tapaddplay ) {
+			addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name );
+			return
+		}
+		
+		var $img = $( this ).find( '.bkcoverart' );
+		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+		info( {
+			  icon        : 'plus-o'
+			, title       : 'Add to Playlist'
+			, message     : icon
+							+'<br><wh>'+ $( this ).find( '.bkname' ).text() +'</wh>'
+			, buttonlabel : '<i class="fa fa-plus-o"></i>Add'
+			, buttoncolor : 'var( --cg )'
+			, button      : () => addReplace( 'add', [ 'mpcadd', path ], 'Add to Playlist', name )
+			, oklabel     : '<i class="fa fa-play-plus"></i>Play'
+			, ok          : () => addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name )
+		} );
+		return
+	}
+	
 	var path0 = path.split( '/' )[ 0 ];
 	var mode  = path0.toLowerCase();
 	if ( path0.slice( 3 ) !== 'radio' ) {

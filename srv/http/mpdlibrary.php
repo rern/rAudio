@@ -110,8 +110,12 @@ EOF;
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
-			$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
-			$src     .= $bkpath.'/coverart.jpg';
+			if ( substr( $bkpath, 0, 4 ) === 'http' ) {
+				$src  = '/data/webradio/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
+			} else {
+				$src  = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
+				$src .= $bkpath.'/coverart.jpg';
+			}
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
 	<div class="mode mode-bookmark" data-mode="bookmark">

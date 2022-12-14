@@ -38,21 +38,31 @@ function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from path + coverart.jpg
 	// #3 - no cover   - icon + directory name
-	var path = G.list.path;
-	if ( path.slice( -4 ) === '.cue' ) {
-		path = dirName( path );
-	} else if ( G.mode.slice( -5 ) === 'radio' ) {
-		path = G.mode +'/'+ path;
+	if ( [ 'http', 'rtsp' ].includes( G.list.path.slice( 0, 4 ) ) ) {
+		var $img = G.list.li.find( '.iconthumb' );
+		var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
+		var path    = G.list.path;
+		var name    = G.list.name;
+		var msgpath = name;
+	} else {
+		if ( G.mode.slice( -5 ) === 'radio' ) {
+			var path = G.mode +'/'+ G.list.path;
+			var src  = '/data/'+ path +'/coverart.jpg';
+		} else {
+			var path = G.list.path.slice( -4 ) === '.cue' ? dirName( path ) : G.list.path;
+			var src  = '/mnt/MPD/'+ path +'/coverart.jpg';
+		}
+		var msgpath = path;
+		var name    = path.split( '/' ).pop()
 	}
-	var bkpath = path.slice( 3, 8 ) === 'radio' ? '/srv/http/data/'+ path : '/mnt/MPD/'+ path;
 	info( {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
-		, message    : '<img src="'+ bkpath +'/coverart.jpg'+ versionHash() +'">'
-					  +'<br><br><wh>'+ path +'</wh>'
+		, message    : '<img src="'+ src + versionHash() +'">'
+					  +'<br><br><wh>'+ msgpath +'</wh>'
 		, textlabel  : 'As:'
 		, focus      : 0
-		, values     : bkpath.split( '/' ).pop()
+		, values     : name
 		, checkblank : 1
 		, beforeshow : () => {
 			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
@@ -71,7 +81,7 @@ function bookmarkNew() {
 						, message : 'Bookmark <wh>'+ name +'</wh> already exists.'
 					} );
 				} else {
-					banner( 'bookmark', 'Bookmark Added', path );
+					banner( 'bookmark', 'Bookmark Added', name );
 				}
 			} );
 		}

@@ -19,7 +19,7 @@ equalizerAmixer() { # sudo - mixer equal is user dependent
 					| cut -d, -f2 \
 					| xargs
 }
-equalizerGet() { # sudo - mixer equal is user dependent
+equalizerGet() {
 	val=$( equalizerAmixer )
 	filepresets=$dirsystem/equalizer.presets
 	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
@@ -170,7 +170,7 @@ volumeGet() {
 		mpc volume | cut -d: -f2 | tr -d ' %n/a'
 	else
 		card=$( < $dirsystem/asoundcard )
-		control=$( cat $dirshm/amixercontrol 2> /dev/null )
+		control=$( getContent $dirshm/amixercontrol )
 		if [[ ! $control ]]; then
 			echo 100
 		else

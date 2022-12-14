@@ -462,5 +462,5 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <a class="info"<?=$hdparmhide?>><?=i( 'info-circle' )?>Info</a>
 <a class="forget"><?=i( 'minus-circle' )?>Forget</a>
 <a class="remount"><?=i( 'check' )?>Re-mount</a>
-<a class="unmount"><?=i( 'times' )?>Unmount</a>
+<a class="unmount"><?=i( 'close' )?>Unmount</a>
 </div>

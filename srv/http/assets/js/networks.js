@@ -152,8 +152,7 @@ $( '.disconnect' ).click( function() {
 	info( {
 		  icon    : icon
 		, title   : ssid
-		, message : G.listeth ? '' : iconwarning +'No network connections after this.'
-		, oklabel : '<i class="fa fa-times"></i>Disconnect'
+		, message : ( G.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
 		, okcolor : orange
 		, ok      : () => {
 			notify( icon, ssid, 'Disconnect ...' );

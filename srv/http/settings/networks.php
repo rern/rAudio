@@ -123,7 +123,7 @@ htmlHead( [ //////////////////////////////////
 
 <div id="menu" class="menu hide">
 <a class="connect"><?=i( 'check' )?>Connect</a>
-<a class="disconnect"><?=i( 'times' )?>Disconnect</a>
+<a class="disconnect"><?=i( 'close' )?>Disconnect</a>
 <a class="edit"><?=i( 'edit-circle' )?>Edit</a>
 <a class="forget"><?=i( 'minus-circle' )?>Forget</a>
 <a class="info"><?=i( 'info-circle' )?>Info</a>

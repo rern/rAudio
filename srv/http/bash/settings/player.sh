@@ -17,7 +17,9 @@ restartMPD() {
 }
 volumeGet() {
 	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
+	control=$( getContent $dirshm/amixercontrol )
+	[[ ! $control ]] && exit
+	
 	amixer=$( amixer -c $card -M sget "$control" )
 	if grep -q dB <<< $amixer; then
 		awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' <<< $amixer
@@ -270,7 +272,9 @@ EOF
 	;;
 volume0db )
 	card=$( < $dirsystem/asoundcard )
-	control=$( < $dirshm/amixercontrol )
+	control=$( getContent $dirshm/amixercontrol )
+	[[ ! $control ]] && exit
+	
 	amixer -c $card -Mq sset "$control" 0dB
 	alsactl store
 	voldb=$( volumeGet )

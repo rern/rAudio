@@ -40,7 +40,7 @@ $( '#banner' ).click( bannerHide );
 
 // ----------------------------------------------------------------------
 $( '#data' ).on( 'click', '.copy', function() {
-	banner( 'warning', 'Error Data', 'Errors copied to clipboard.' );
+	banner( 'copy', 'Error Data', 'Errors copied to clipboard.' );
 	// copy2clipboard - for non https which cannot use clipboard API
 	$( 'body' ).prepend( '<textarea id="error">\`\`\`\n'+ $( '#data' ).text().replace( 'Copy{', '\n{' ) +'\`\`\`</textarea>' );
 	$( '#error' ).focus().select();
@@ -52,12 +52,13 @@ $( '#data' ).on( 'click', '.copy', function() {
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
-				+'&emsp;<a class="infobtn infobtn-primary copy">Copy</a>'
+				+'&emsp;<a class="infobtn infobtn-primary copy"><i class="fa fa-copy"></i>Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )
 		.html( error )
 		.removeClass( 'hide' );
+	$( '#button-data' ).addClass( 'hide' );
 	loaderHide();
 }
 
@@ -207,7 +208,7 @@ function info( json ) {
 	if ( ! I.noreload ) $( '#infoOverlay' ).html(`
 <div id="infoBox">
 	<div id="infoTopBg">
-		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-times"></i>
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
 	</div>
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>
@@ -967,7 +968,8 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// page visibility -----------------------------------------------------------------
-	var active = 1;
+	var active  = 1; // fix: multiple firings
+	var select2 = 0; // fix: closing > blur > disconnect
 	function connect() {
 		if ( active || G.off ) return
 		
@@ -979,10 +981,13 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		
 		active = 0;
 		pushstream.disconnect();
+		console.log('disconnect')
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
 	window.onpageshow = connect;
+	window.onblur     = () => { if ( ! select2 ) disconnect() }
+	window.onfocus    = connect;
 }
 
 // select2 --------------------------------------------------------------------
@@ -998,6 +1003,8 @@ function selectSet( $select ) {
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
+		.on( 'select2:closing', () => select2 = 1 )
+		.on( 'select2:close',   () => select2 = 0 )
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );

@@ -1,7 +1,7 @@
 <?php include 'common.php';?>
 
 <div class="head">
-	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'times close' ).i( 'help helphead' ) )?>
+	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
 </div>
 <?php
 echo '<div class="container hide">';

@@ -51,7 +51,7 @@ for card in $cards; do
 	device=${hw: -1}
 	aplayname=$( sed -E 's/.*\[(.*)],.*/\1/; s/^snd_rpi_//; s/_/-/g' <<< $line ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
-		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
+		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
@@ -63,7 +63,8 @@ for card in $cards; do
 		else
 			name=${aplayname/bcm2835/On-board}
 		fi
-		[[ -e "$dirsystem/mixertype-$aplayname" ]] && mixertype=$( < "$dirsystem/mixertype-$aplayname" ) || mixertype=hardware
+		mixertypefile="$dirsystem/mixertype-$aplayname"
+		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
 		getControls $card
 		if [[ ! $controls ]]; then
 			mixerdevices=['"( not available )"']
@@ -78,10 +79,8 @@ for card in $cards; do
 			mixers=${#controls[@]}
 		fi
 		
-		mixermanual=false
-		hwmixerfile=$dirsystem/hwmixer-$aplayname
+		hwmixerfile="$dirsystem/hwmixer-$aplayname"
 		if [[ -e $hwmixerfile ]]; then # manual
-			mixermanual=true
 			hwmixer=$( < "$hwmixerfile" )
 		elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 			mixers=4
@@ -103,7 +102,6 @@ for card in $cards; do
 , "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
 , "mixerdevices" : '$mixerdevices'
-, "mixermanual"  : '$mixermanual'
 , "mixertype"    : "'$mixertype'"
 , "name"         : "'$name'"
 }'
@@ -114,7 +112,6 @@ for card in $cards; do
 	Ahw[card]=$hw
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers
-	Amixermanual[card]=$mixermanual
 	Amixertype[card]=$mixertype
 	Aname[card]=$name
 done
@@ -131,15 +128,6 @@ else
 	echo ${Acard[0]} > $dirsystem/asoundcard
 fi
 i=$( < $dirsystem/asoundcard )
-
-echo Ahwmixer[i] > $dirshm/amixercontrol
-
-getControls $i
-if [[ $controls ]]; then
-	sort -u <<< $controls | head -1 > $dirshm/amixercontrol
-else
-	rm -f $dirshm/amixercontrol
-fi
 
 devices="[ ${devices:1} ]"
 aplayname=${Aaplayname[i]}

@@ -1,6 +1,6 @@
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2022102200' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2022121800' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -23,6 +23,174 @@
 	font-weight : normal;
 	font-style  : normal;
 }
+.fa {
+	display     : inline-block;
+	font-family : rern;
+	font-style  : normal;
+}
+.fa90 { transform: rotate( -90deg ) }
+.fa-lg { font-size: 22px !important }
+.fa-accesspoint::before     { content: '\F554' }
+.fa-addons::before          { content: '\F50D' }
+.fa-addons-progress::before { content: '\F50D' }
+.fa-airplay::before         { content: '\F580' }
+.fa-album::before           { content: '\F555' }
+.fa-albumartist::before     { content: '\F557' }
+.fa-arrow-left::before      { content: '\F602' }
+.fa-arrow-right::before     { content: '\F603' }
+.fa-artist::before          { content: '\F556' }
+.fa-audiocd::before         { content: '\F538' }
+.fa-backspace:before        { content: '\F608' }
+.fa-bars::before            { content: '\F51C' }
+.fa-bio::before             { content: '\F51D' }
+.fa-bookmark::before        { content: '\F550' }
+.fa-bluetooth::before       { content: '\F595' }
+.fa-btreceiver::before      { content: '\F595' }
+.fa-btsender::before        { content: '\F596' }
+.fa-brush::before           { content: '\F536' }
+.fa-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
+.fa-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
+.fa-capslock:before         { content: '\F607' }
+.fa-check::before           { content: '\F51B' }
+.fa-chevron-down::before    { content: '\F605' }
+.fa-chevron-up::before      { content: '\F604' }
+.fa-chromium::before        { content: '\F584' }
+.fa-close::before           { content: '\F56C' }
+.fa-composer::before        { content: '\F558' }
+.fa-conductor::before       { content: '\F559' }
+.fa-consume::before         { content: '\F566' }
+.fa-copy::before            { content: '\F54E' }
+.fa-crop::before            { content: '\F568' }
+.fa-dabradio::before        { content: '\F589' }
+.fa-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
+.fa-date::before            { content: '\F55C' }
+.fa-edit-circle::before     { content: '\F565' }
+.fa-equalizer::before       { content: '\F50C' }
+.fa-eye::before             { content: '\F567' }
+.fa-features::before        { content: '\F50B' }
+.fa-file-music::before      { content: '\F549' }
+.fa-file-playlist::before   { content: '\F548' }
+.fa-flash::before           { content: '\F566' }
+.fa-folder::before          { content: '\F540' }
+.fa-folder-cascade::before  { content: '\F54A' }
+.fa-folder-forbid::before   { content: '\F537' }
+.fa-folder-open::before     { content: '\F541' }
+.fa-folder-plus::before     { content: '\F54D' }
+.fa-gear::before            { content: '\F509' }
+.fa-gears::before           { content: '\F50A' }
+.fa-genre::before           { content: '\F55A' }
+.fa-github::before          { content: '\F583' }
+.fa-globe::before           { content: '\F575' }
+.fa-gpiopins::before        { content: '\F572' }
+.fa-guide::before           { content: '\F579' }
+.fa-hdmi::after             { content: '\F58B' }
+.fa-help::before            { content: '\F560' }
+.fa-hide:before             { content: '\F575' }
+.fa-i2saudio::before        { content: '\F571' }
+.fa-info-circle::before     { content: '\F561' }
+.fa-input::before           { content: '\F529' }
+.fa-jigsaw::before          { content: '\F50D' }
+.fa-lan::before             { content: '\F552' }
+.fa-lastfm::before          { content: '\F585' }
+.fa-latest::before          { content: '\F55E' }
+.fa-lcd::before             { content: '\F577' }
+.fa-lcdchar::before         { content: '\F578' }
+.fa-led::before             { content: '\F52B' }
+.fa-librandom::before       { content: '\F569' }
+.fa-library::before         { content: '\F506' }
+.fa-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
+.fa-link::before            { content: '\F56B' }
+.fa-lock::before            { content: '\F574' }
+.fa-lyrics::before          { content: '\F54B' }
+.fa-microsd::before         { content: '\F543' }
+.fa-minus::before           { content: '\F518' }
+.fa-minus-circle::before    { content: '\F563' }
+.fa-mpd::before             { content: '\F582' }
+.fa-mpdoled::before         { content: '\F57A' }
+.fa-music::before           { content: '\F54A' }
+.fa-mute::before            { content: '\F517' }
+.fa-nas::before             { content: '\F551' }
+.fa-networks::before        { content: '\F551' }
+.fa-next::before            { content: '\F505' }
+.fa-off::before             { content: '\F520' }
+.fa-output::before          { content: '\F52A' }
+.fa-pause::before           { content: '\F504' }
+.fa-play::before            { content: '\F503' }
+.fa-playback::before        { content: '\F507' }
+.fa-playlist::before        { content: '\F508' }
+.fa-playlists::before       { content: '\F548' }
+.fa-player::before          { content: '\F582' }
+.fa-play-cd::before         { content: '\F539' }
+.fa-play-plus::before       { content: '\F532' }
+.fa-play-power::before      { content: '\F53A' }
+.fa-play-replace::before    { content: '\F533' }
+.fa-plus::before            { content: '\F519' }
+.fa-plus-circle::before     { content: '\F564' }
+.fa-plus-o::before          { content: '\F530' }
+.fa-power::before           { content: '\F520' }
+.fa-previous::before        { content: '\F501' }
+.fa-radiofrance::before     { content: '\F586' }
+.fa-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
+.fa-radioparadise::after    { content: '\F594'; position: relative; }
+.fa-random::before          { content: '\F512' }
+.fa-raudio::before          { content: '\F590' }
+.fa-raudio-nobg::before     { content: '\F500' }
+.fa-raudiobox::before       { content: '\F53B' }
+.fa-rserver::before         { content: '\F53C' }
+.fa-reboot::before          { content: '\F521' }
+.fa-redo::before            { content: '\F524' }
+.fa-refresh::before         { content: '\F526' }
+.fa-refresh-library::before { content: '\F536' }
+.fa-relays::before          { content: '\F522' }
+.fa-reload::before          { content: '\F525' }
+.fa-repeat::before          { content: '\F511' }
+.fa-repeat1::before         { content: '\F510' }
+.fa-replace::before         { content: '\F531' }
+.fa-reset::before           { content: '\F527' }
+.fa-restore::before         { content: '\F544' }
+.fa-save::before            { content: '\F542' }
+.fa-save-circle::before     { content: '\F546' }
+.fa-save-plus::before       { content: '\F545' }
+.fa-screenoff::before       { content: '\F547' }
+.fa-scale-dn::before        { content: '\F591' }
+.fa-scale-up::before        { content: '\F592' }
+.fa-sd::before              { content: '\F543' }
+.fa-search::before          { content: '\F56A' }
+.fa-set0::before            { content: '\F515' }
+.fa-settings::before        { content: '\F509' }
+.fa-shift:before            { content: '\F606' }
+.fa-shuffle::before         { content: '\F513' }
+.fa-single::before          { content: '\F514' }
+.fa-sliders::before         { content: '\F50B' }
+.fa-snapcast::before        { content: '\F587' }
+.fa-snapclient::before      { content: '\F587' }
+.fa-song::before            { content: '\F54A' }
+.fa-soundprofile::before    { content: '\F576' }
+.fa-source::before          { content: '\F529' }
+.fa-spotify::before         { content: '\F588' }
+.fa-star::before            { content: '\F550' }
+.fa-status::before          { content: '\F50A' }
+.fa-stop::before            { content: '\F502' }
+.fa-stoptimer::before       { content: '\F570' }
+.fa-stopwatch::before       { content: '\F570' }
+.fa-system::before          { content: '\F590' }
+.fa-tag::before             { content: '\F55B' }
+.fa-times::before           { content: '\F51A' }
+.fa-title::before           { content: '\F54A' }
+.fa-track::before           { content: '\F54C' }
+.fa-undo::before            { content: '\F523' }
+.fa-update::before          { content: '\F526' }
+.fa-upnp::before            { content: '\F581' }
+.fa-usb::before             { content: '\F553' }
+.fa-usbdrive::before        { content: '\F553' }
+.fa-volume::before          { content: '\F516' }
+.fa-warning::before         { content: '\F562' }
+.fa-webradio::before        { content: '\F55D' }
+.fa-wifi::before            { content: '\F597' }
+.fa-wifi1::before           { content: '\F598'; position: absolute; }
+.fa-wifi1::after            { content: '\F599'; color: var( --cga ); }
+.fa-wifi2::before           { content: '\F59A'; position: absolute; }
+.fa-wifi2::after            { content: '\F59B'; color: var( --cga ); }
 
 html {
 	height  : 100%;
@@ -109,25 +277,41 @@ codered  {
 	color         : var( --cw );
 	background    : #f00;
 }
+
+.head {
+	position: fixed;
+	width: 100%;
+	height: 40px;
+	padding-right: 10px;
+	background: var( --cga );
+	box-shadow: 0px 4px 10px #000000;
+	z-index: 95;
+}
+.head i {
+	width: 40px;
+	height: 40px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: -1px 0 2px #000000;
+}
+.head .fa-close {
+	color: var( --cm );
+}
+.head .title {
+	margin-left: 15px;
+	font-size: 26px;
+	font-weight: 300;
+	letter-spacing: 20px;
+}
+#button-data {
+	z-index: 115;
+}
 #data hr {
 	margin-left  : -20px;
 	margin-right : -20px;
 }
-#button-data {
-	position: fixed;
-	top: 0;
-	width: 100%;
-	height: 40px;
-	font-size: 30px;
-	line-height: 35px;
-	background: var( --cga );
-	z-index: 115;
-}
-#button-data i {
-	width: 40px;
-	text-align: center;
-	color: var( --cm );
-}
+
 .splash {
 	background: #000000 !important;
 }
@@ -141,172 +325,6 @@ codered  {
 	margin  : 5px !important;
 	border  : 1px solid hsl(0,0%,20%);
 }
-.fa {
-	display     : inline-block;
-	font-family : rern;
-	font-style  : normal;
-}
-.fa90 { transform: rotate( -90deg ) }
-.fa-lg { font-size: 22px !important }
-.fa-accesspoint::before     { content: '\f554' }
-.fa-addons::before          { content: '\f50D' }
-.fa-addons-progress::before { content: '\f50D' }
-.fa-airplay::before         { content: '\f580' }
-.fa-album::before           { content: '\f555' }
-.fa-albumartist::before     { content: '\f557' }
-.fa-arrow-left::before      { content: '\f602' }
-.fa-arrow-right::before     { content: '\f603' }
-.fa-artist::before          { content: '\f556' }
-.fa-audiocd::before         { content: '\f538' }
-.fa-backspace:before        { content: '\f608' }
-.fa-bars::before            { content: '\f51C' }
-.fa-bio::before             { content: '\f51D' }
-.fa-bookmark::before        { content: '\f550' }
-.fa-bluetooth::before       { content: '\f595' }
-.fa-btreceiver::before      { content: '\f595' }
-.fa-btsender::before        { content: '\f596' }
-.fa-brush::before           { content: '\f536' }
-.fa-camilladsp::before      { content: '\f59D'; position: absolute; color: var( --cg60 ); }
-.fa-camilladsp::after       { content: '\f59C'; position: relative; } /* position: relative - fix order */
-.fa-capslock:before         { content: '\f607' }
-.fa-check::before           { content: '\f51B' }
-.fa-chevron-down::before    { content: '\f605' }
-.fa-chevron-up::before      { content: '\f604' }
-.fa-chromium::before        { content: '\f584' }
-.fa-composer::before        { content: '\f558' }
-.fa-conductor::before       { content: '\f559' }
-.fa-consume::before         { content: '\f566' }
-.fa-crop::before            { content: '\f568' }
-.fa-dabradio::before        { content: '\f589' }
-.fa-dabupdate::before       { content: '\f589'; animation: blinkopaque 1.5s linear infinite; }
-.fa-date::before            { content: '\f55C' }
-.fa-edit-circle::before     { content: '\f565' }
-.fa-equalizer::before       { content: '\f50C' }
-.fa-eye::before             { content: '\f567' }
-.fa-features::before        { content: '\f50B' }
-.fa-file-music::before      { content: '\f549' }
-.fa-file-playlist::before   { content: '\f548' }
-.fa-flash::before           { content: '\f566' }
-.fa-folder::before          { content: '\f540' }
-.fa-folder-cascade::before  { content: '\f54A' }
-.fa-folder-forbid::before   { content: '\f537' }
-.fa-folder-open::before     { content: '\f541' }
-.fa-folder-plus::before     { content: '\f54D' }
-.fa-gear::before            { content: '\f509' }
-.fa-gears::before           { content: '\f50A' }
-.fa-genre::before           { content: '\f55A' }
-.fa-github::before          { content: '\f583' }
-.fa-globe::before           { content: '\f575' }
-.fa-gpiopins::before        { content: '\f572' }
-.fa-guide::before           { content: '\f579' }
-.fa-hdmi::after             { content: '\f58B' }
-.fa-help::before            { content: '\f560' }
-.fa-hide:before             { content: '\f575' }
-.fa-i2saudio::before        { content: '\f571' }
-.fa-info-circle::before     { content: '\f561' }
-.fa-input::before           { content: '\f529' }
-.fa-jigsaw::before          { content: '\f50D' }
-.fa-lan::before             { content: '\f552' }
-.fa-lastfm::before          { content: '\f585' }
-.fa-latest::before          { content: '\f55E' }
-.fa-lcd::before             { content: '\f577' }
-.fa-lcdchar::before         { content: '\f578' }
-.fa-led::before             { content: '\f52B' }
-.fa-librandom::before       { content: '\f569' }
-.fa-library::before         { content: '\f506' }
-.fa-libupdate::before       { content: '\f506'; animation: blinkopaque 1.5s linear infinite; }
-.fa-link::before            { content: '\f56B' }
-.fa-lock::before            { content: '\f574' }
-.fa-lyrics::before          { content: '\f54B' }
-.fa-microsd::before         { content: '\f543' }
-.fa-minus::before           { content: '\f518' }
-.fa-minus-circle::before    { content: '\f563' }
-.fa-mpd::before             { content: '\f582' }
-.fa-mpdoled::before         { content: '\f57A' }
-.fa-music::before           { content: '\f54A' }
-.fa-mute::before            { content: '\f517' }
-.fa-nas::before             { content: '\f551' }
-.fa-networks::before        { content: '\f551' }
-.fa-next::before            { content: '\f505' }
-.fa-off::before             { content: '\f520' }
-.fa-output::before          { content: '\f52A' }
-.fa-pause::before           { content: '\f504' }
-.fa-play::before            { content: '\f503' }
-.fa-playback::before        { content: '\f507' }
-.fa-playlist::before        { content: '\f508' }
-.fa-playlists::before       { content: '\f548' }
-.fa-player::before          { content: '\f582' }
-.fa-play-cd::before         { content: '\f539' }
-.fa-play-plus::before       { content: '\f532' }
-.fa-play-power::before      { content: '\f53A' }
-.fa-play-replace::before    { content: '\f533' }
-.fa-plus::before            { content: '\f519' }
-.fa-plus-circle::before     { content: '\f564' }
-.fa-plus-o::before          { content: '\f530' }
-.fa-power::before           { content: '\f520' }
-.fa-previous::before        { content: '\f501' }
-.fa-radiofrance::before     { content: '\f586' }
-.fa-radioparadise::before   { content: '\f593'; position: absolute; color: var( --cgl ); }
-.fa-radioparadise::after    { content: '\f594'; position: relative; }
-.fa-random::before          { content: '\f512' }
-.fa-raudio::before          { content: '\f590' }
-.fa-raudio-nobg::before     { content: '\f500' }
-.fa-raudiobox::before       { content: '\f53B' }
-.fa-rserver::before         { content: '\f53C' }
-.fa-reboot::before          { content: '\f521' }
-.fa-redo::before            { content: '\f524' }
-.fa-refresh::before         { content: '\f526' }
-.fa-refresh-library::before { content: '\f536' }
-.fa-relays::before          { content: '\f522' }
-.fa-reload::before          { content: '\f525' }
-.fa-repeat::before          { content: '\f511' }
-.fa-repeat1::before         { content: '\f510' }
-.fa-replace::before         { content: '\f531' }
-.fa-reset::before           { content: '\f527' }
-.fa-restore::before         { content: '\f544' }
-.fa-save::before            { content: '\f542' }
-.fa-save-circle::before     { content: '\f546' }
-.fa-save-plus::before       { content: '\f545' }
-.fa-screenoff::before       { content: '\f547' }
-.fa-scale-dn::before        { content: '\f591' }
-.fa-scale-up::before        { content: '\f592' }
-.fa-sd::before              { content: '\f543' }
-.fa-search::before          { content: '\f56A' }
-.fa-set0::before            { content: '\f515' }
-.fa-settings::before        { content: '\f509' }
-.fa-shift:before            { content: '\f606' }
-.fa-shuffle::before         { content: '\f513' }
-.fa-single::before          { content: '\f514' }
-.fa-sliders::before         { content: '\f50B' }
-.fa-snapcast::before        { content: '\f587' }
-.fa-snapclient::before      { content: '\f587' }
-.fa-song::before            { content: '\f54A' }
-.fa-soundprofile::before    { content: '\f576' }
-.fa-source::before          { content: '\f529' }
-.fa-spotify::before         { content: '\f588' }
-.fa-star::before            { content: '\f550' }
-.fa-status::before          { content: '\f50A' }
-.fa-stop::before            { content: '\f502' }
-.fa-stoptimer::before       { content: '\f570' }
-.fa-stopwatch::before       { content: '\f570' }
-.fa-system::before          { content: '\f590' }
-.fa-tag::before             { content: '\f55B' }
-.fa-times::before           { content: '\f51A' }
-.fa-title::before           { content: '\f54A' }
-.fa-track::before           { content: '\f54C' }
-.fa-undo::before            { content: '\f523' }
-.fa-update::before          { content: '\f526' }
-.fa-upnp::before            { content: '\f581' }
-.fa-usb::before             { content: '\f553' }
-.fa-usbdrive::before        { content: '\f553' }
-.fa-volume::before          { content: '\f516' }
-.fa-warning::before         { content: '\f562' }
-.fa-webradio::before        { content: '\f55D' }
-.fa-wifi::before            { content: '\f597' }
-.fa-wifi1::before           { content: '\f598'; position: absolute; }
-.fa-wifi1::after            { content: '\f599'; color: var( --cga ); }
-.fa-wifi2::before           { content: '\f59A'; position: absolute; }
-.fa-wifi2::after            { content: '\f59B'; color: var( --cga ); }
 
 /* banner() */
 #banner .fa-firefox::before { color: #000 }
@@ -619,7 +637,7 @@ hr {
 	line-height: 40px;
 	border-radius: 0 10px 0 0;
 	padding: 0;
-	font-size: 28px;
+	font-size: 24px;
 	color: var( --cm );
 	cursor: pointer;
 }
@@ -891,7 +909,11 @@ input[type=radio]:disabled {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}
 }
+
 @supports ( -webkit-touch-callout: none ) { /* ios only */
+	.head i {
+		line-height: 42px;
+	}
 	input[type=checkbox]:checked:disabled {
 		background-color: var( --cml );
 	}

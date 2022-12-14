@@ -85,31 +85,30 @@ function infoPlayerActive( $this ) {
 	}
 }
 function list2JSON( list ) {
+	if ( list.trim() === 'mpdnotrunning' ) {
+		bash( [ 'pkgstatus', 'mpd' ], status => {
+			var error =  iconwarning +'MPD is not running '
+						+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
+						+'<hr>'
+						+ status;
+			$( '#data' )
+				.html( error )
+				.removeClass( 'hide' )
+				.on( 'click', '.restart', function() {
+					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
+					notify( 'mpd', 'MPD', 'Start ...' );
+				} );
+		loaderHide();
+		} );
+		return
+	}
+	
 	try {
 		G = JSON.parse( list );
 	} catch( e ) {
-		if ( list.trim() === 'mpdnotrunning' ) {
-			bash( [ 'pkgstatus', 'mpd' ], status => {
-				var error =  iconwarning +'MPD is not running '
-							+'<a class="infobtn infobtn-primary restart">Start</a>'
-							+'<hr>'
-							+ status;
-				$( '#data' )
-					.html( error )
-					.removeClass( 'hide' )
-					.on( 'click', '.restart', function() {
-						bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
-						notify( 'mpd', 'MPD', 'Start ...' );
-					} );
-			} );
-		} else {
-			errorDisplay( e.message, list );
-		}
+		errorDisplay( e.message, list );
 		return false
 	}
-	
-	$( '#data' ).empty();
-	$( '#button-data, #data' ).addClass( 'hide' );
 	return true
 }
 function notify( icon, title, message, delay ) {
@@ -127,11 +126,14 @@ function refreshData() {
 		}
 		if ( ! list2G ) return
 		
-		if ( $( '#data' ).hasClass( 'hide' ) )  {
+		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
+			$( '#data' ).empty();
+			$( '#button-data, #data' ).addClass( 'hide' );
 			setSwitch();
 			renderPage();
 		} else {
 			$( '#data' ).html( highlightJSON( G ) )
+			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
 }

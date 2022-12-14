@@ -91,6 +91,7 @@ function clearIntervalAll() {
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
+	G.color = 0;
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '#lib-list .lib-icon' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', G.wH < 590 );
@@ -111,7 +112,7 @@ function colorSet() {
 				// background
 				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
 				$( '#playback-controls .active, #library, #button-library, #lib-list li:eq( 0 ), #colorok' ).css( 'background-color', hex );
-				$( '.content-top, #lib-index, #playback, #colorcancel' ).css( 'background-color', hsg +'20%)' );
+				$( '.content-top, #lib-index, #playback' ).css( 'background-color', hsg +'20%)' );
 				// text
 				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
 				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
@@ -176,7 +177,6 @@ function contextmenuLibrary( $li, $target ) {
 		var menutop = $li.offset().top + 48;
 	}
 	contextmenuScroll( $menu, menutop );
-	G.color = 0; // reset to 0 once show
 }
 function contextmenuScroll( $menu, menutop ) {
 	var fixedmenu = G.library && ( G.list.licover && G.wH > 767 ) && G.display.fixedcover ? true : false;
@@ -450,7 +450,7 @@ function getBio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
-	<p class="artist"><a>${ artistname }<i class="closebio fa fa-times close-root"></i></a></p>
+	<p class="artist"><a>${ artistname }<i class="closebio fa fa-close close-root"></i></a></p>
 	<p class="genre"><i class="fa fa-genre fa-lg"></i>&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -532,7 +532,6 @@ function getPlaybackStatus( withdisplay ) {
 			return false
 		}
 		
-		if ( $( '#data codered' ).length ) $( '#data' ).empty().addClass( 'hide' );
 		G.counts = status.counts;
 		delete status.counts;
 		if ( 'display' in status ) {
@@ -544,11 +543,21 @@ function getPlaybackStatus( withdisplay ) {
 			bannerHide();
 		}
 		$.each( status, ( k, v ) => { G.status[ k ] = v } ); // need braces
-		displayBars();
-		displayPlayback();
-		renderPlayback();
-		setButtonControl();
-		setButtonUpdating();
+		var dataerror = $( '#data .copy' ).length;
+		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
+			if ( dataerror ) {
+				$( '#data' ).empty();
+				$( '#button-data, #data' ).addClass( 'hide' );
+			}
+			displayBars();
+			displayPlayback();
+			renderPlayback();
+			setButtonControl();
+			setButtonUpdating();
+		} else {
+			$( '#data' ).html( highlightJSON( G.status ) )
+			$( '#button-data, #data' ).removeClass( 'hide' );
+		}
 	} );
 }
 function getPlaylist() {
@@ -617,7 +626,7 @@ function imageOnError( el, bookmark ) {
 		$this.attr( 'src', G.coverart );
 	} else { // bookmark
 		var icon = '<i class="fa fa-bookmark bl"></i>';
-		if ( $( '#infoOverlay' ).hasClass( 'hide' ) ) icon += '<br><a class="label">'+ bookmark +'</a>';
+		if ( I.infohide ) icon += '<br><a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
 		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
 	}
@@ -757,12 +766,12 @@ function libraryHome() {
 		} else {
 			switchPage( 'library' );
 			if ( G.status.updating_db ) banner( 'refresh-library blink', 'Library Database', 'Update ...' );
-			if ( G.color ) $( '#mode-webradio' ).click();
 		}
 		$( '#lib-mode-list .bkcoverart' ).off( 'error' ).on( 'error', function() {
 			imageOnError( this, $( this ).prev().text() );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
+		if ( G.color ) $( '#mode-webradio' ).click();
 	}, 'json' );
 }
 function lyricsShow( data ) {
@@ -924,7 +933,7 @@ function playlistFilter() {
 	} );
 	$( 'html, body' ).scrollTop( 0 );
 	if ( keyword ) {
-		$( '#pl-search-close' ).html( '<i class="fa fa-times"></i><span>'+ count +' <gr>of</gr> </span>' );
+		$( '#pl-search-close' ).html( '<i class="fa fa-close"></i><span>'+ count +' <gr>of</gr> </span>' );
 	} else {
 		$( '#pl-search-close' ).empty();
 	}
@@ -998,6 +1007,9 @@ function refreshData( resetdata ) {
 		}
 	} else if ( G.playback ) {
 		getPlaybackStatus( 'withdisplay' );
+		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
+			
+		}
 	} else {
 		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
 			if ( resetdata ) G.playlisthtml = '';
@@ -1049,7 +1061,10 @@ function renderLibraryCounts() {
 	$.each( G.counts, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) {
-	if ( G.librarylist && data.html === G.librarylisthtml ) return
+	if ( G.librarylist && data.html === G.librarylisthtml ) {
+		if ( G.color ) colorSet()
+		return
+	}
 	
 	G.librarylist = 1;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
@@ -1065,7 +1080,6 @@ function renderLibraryList( data ) {
 	if ( 'count' in data && G.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
-		$( '#lib-search-close' ).html( '<i class="fa fa-times"></i><span>' + data.count + ' <gr>of</gr></span>' );
 		var htmlpath = '';
 	} else if ( [ 'DABRADIO', 'WEBRADIO' ].includes( data.path ) ) {
 		var htmlpath = htmlmodetitle;

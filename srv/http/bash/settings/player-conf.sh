@@ -49,6 +49,7 @@ else # with audio devices (from player-devices.sh)
 	hwmixer=${Ahwmixer[i]}
 	mixertype=${Amixertype[i]}
 	name=${Aname[i]}
+	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
@@ -133,17 +134,18 @@ if [[ -e $dirmpd/updating ]]; then
 fi
 [[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
 
-$dirsettings/player-data.sh pushrefresh
-
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-systemctl stop shairport-sync shairport spotifyd &> /dev/null
-
-[[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]] && exit
+if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
+	$dirbash/status-push.sh
+	$dirsettings/player-data.sh pushrefresh
+	exit
+fi
 
 # renderers -----------------------------------------------------------------------------
+
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
@@ -162,7 +164,7 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl -q is-enabled shairport-sync && systemctl start shairport-sync
+	systemctl try-restart shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
@@ -187,5 +189,8 @@ volume_controller = "alsa"'
 #-------
 	fi
 	echo "$conf" > /etc/spotifyd.conf
-	systemctl -q is-enabled spotifyd && systemctl start spotifyd
+	systemctl try-restart spotifyd
 fi
+
+$dirbash/status-push.sh
+$dirsettings/player-data.sh pushrefresh
