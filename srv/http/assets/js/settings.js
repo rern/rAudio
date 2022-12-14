@@ -56,7 +56,6 @@ function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', G[ id ] );
 }
 function currentStatus( id ) {
-	console.log('currentStatus')
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
