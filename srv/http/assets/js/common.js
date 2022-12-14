@@ -981,7 +981,6 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		
 		active = 0;
 		pushstream.disconnect();
-		console.log('disconnect')
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
 	window.onpagehide = disconnect;
