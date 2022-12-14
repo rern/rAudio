@@ -1007,9 +1007,6 @@ function refreshData( resetdata ) {
 		}
 	} else if ( G.playback ) {
 		getPlaybackStatus( 'withdisplay' );
-		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
-			
-		}
 	} else {
 		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
 			if ( resetdata ) G.playlisthtml = '';
