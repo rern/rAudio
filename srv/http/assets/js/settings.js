@@ -56,6 +56,7 @@ function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', G[ id ] );
 }
 function currentStatus( id ) {
+	console.log('currentStatus')
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
@@ -138,16 +139,19 @@ function refreshData() {
 	} );
 }
 function setSwitch() {
-	if ( page !== 'networks' && page !== 'relays' ) {
-		$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', G[ el.id ] ) );
-		$( '.setting' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.prev().is( 'select' ) ) return // not switch
-			
-			var sw = el.id.replace( 'setting-', '' );
-			$this.toggleClass( 'hide', ! G[ sw ] );
-		} );
-	}
+	if ( page === 'networks' || page === 'relays' ) return
+	
+	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', G[ el.id ] ) );
+	$( '.setting' ).each( ( i, el ) => {
+		var $this = $( el );
+		if ( $this.prev().is( 'select' ) ) return // not switch
+		
+		var sw = el.id.replace( 'setting-', '' );
+		$this.toggleClass( 'hide', ! G[ sw ] );
+	} );
+	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
+	} );
 }
 function showContent() {
 	G.ready ? delete G.ready : bannerReset();
@@ -224,14 +228,11 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
-	if ( data.page === page ) {
-		$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
-		page === 'networks' ? $( '.back' ).click() : setSwitch();
-		renderPage();
-		$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
-		} );
-	}
+	if ( data.page !== page ) return
+	
+	$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
+	page === 'networks' ? $( '.back' ).click() : setSwitch();
+	renderPage();
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
