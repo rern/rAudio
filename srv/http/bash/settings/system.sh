@@ -739,6 +739,7 @@ $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 			;;
 		upmpdcli )
 			skip='not creating entry for'
+			fileconf=/etc/$id.conf
 			;;
 		* )
 			fileconf=/etc/$id.conf

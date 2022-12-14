@@ -22,7 +22,7 @@ if [[ -e /srv/http/assets/css/desktop.css ]]; then
 	rm -f /srv/http/assets/js/plugin/{jquery.selectric,simple-}*
 fi
 
-readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
+readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* 2> /dev/null )
 if [[ $bookmarks ]]; then
 	for file in "${bookmarks[@]}"; do
 		if [[ $( sed -n 2p "$file" ) ]]; then
