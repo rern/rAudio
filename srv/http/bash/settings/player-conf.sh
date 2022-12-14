@@ -138,8 +138,6 @@ fi
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-systemctl stop shairport-sync shairport spotifyd &> /dev/null
-
 if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
@@ -147,6 +145,7 @@ if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
 fi
 
 # renderers -----------------------------------------------------------------------------
+
 if [[ -e /usr/bin/shairport-sync ]]; then
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
@@ -165,7 +164,7 @@ alsa = {"
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	pushstream airplay '{"stop":"switchoutput"}'
-	systemctl -q is-enabled shairport-sync && systemctl start shairport-sync
+	systemctl try-restart shairport-sync
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
@@ -190,7 +189,7 @@ volume_controller = "alsa"'
 #-------
 	fi
 	echo "$conf" > /etc/spotifyd.conf
-	systemctl -q is-enabled spotifyd && systemctl start spotifyd
+	systemctl try-restart spotifyd
 fi
 
 $dirbash/status-push.sh

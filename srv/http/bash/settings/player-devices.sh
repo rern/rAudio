@@ -51,7 +51,7 @@ for card in $cards; do
 	device=${hw: -1}
 	aplayname=$( sed -E 's/.*\[(.*)],.*/\1/; s/^snd_rpi_//; s/_/-/g' <<< $line ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
-		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixermanual=; mixertype=; name=;
+		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
@@ -79,10 +79,8 @@ for card in $cards; do
 			mixers=${#controls[@]}
 		fi
 		
-		mixermanual=false
 		hwmixerfile="$dirsystem/hwmixer-$aplayname"
 		if [[ -e $hwmixerfile ]]; then # manual
-			mixermanual=true
 			hwmixer=$( < "$hwmixerfile" )
 		elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
 			mixers=4
@@ -104,7 +102,6 @@ for card in $cards; do
 , "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
 , "mixerdevices" : '$mixerdevices'
-, "mixermanual"  : '$mixermanual'
 , "mixertype"    : "'$mixertype'"
 , "name"         : "'$name'"
 }'
@@ -115,7 +112,6 @@ for card in $cards; do
 	Ahw[card]=$hw
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers
-	Amixermanual[card]=$mixermanual
 	Amixertype[card]=$mixertype
 	Aname[card]=$name
 done
