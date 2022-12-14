@@ -262,9 +262,7 @@ EOF;
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp )  $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
-	exec( "{ echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep -E '^song:|^elapsed:'"
+	exec( "{ echo status; sleep 0.05; } | telnet 127.0.0.1 6600 2> /dev/null | grep -E '^song:|^elapsed:'"
 		, $song_elapsed );
 	$elapsed = '';
 	foreach( $song_elapsed as $se ) {
