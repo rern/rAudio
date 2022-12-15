@@ -347,8 +347,7 @@ Connect shared data as client for:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
-		- | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share on server
+		- | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share
 		- Data on 1st connected client will be used as initial shared.
 		
 (SSH password must be default.)

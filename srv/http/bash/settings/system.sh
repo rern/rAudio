@@ -84,7 +84,9 @@ sharedDataSet() {
 		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
+		chown -h http:http $dirdata/$dir
 	done
+	chown -h mpd:audio $dirdata/{mpd,playlists}
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
@@ -104,7 +106,6 @@ USB" > /mnt/MPD/.mpdignore
 	sharedDataIPlist
 	pushRefresh
 	pushstream refresh '{"page":"features","shareddata":true}'
-	$dirbash/cmd.sh webradiocopybackup &> /dev/null &
 }
 soundProfile() {
 	if [[ $1 == reset ]]; then

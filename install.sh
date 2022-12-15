@@ -14,6 +14,9 @@ dirshm=$dirdata/shm
 dirsystem=$dirdata/system
 dirwebradio=/srv/http/data/webradio
 
+# 20221218
+[[ -L $dirdata/playlists ]] && chown -h mpd:audio $dirdata/playlists
+
 # 20221208
 if [[ -e /srv/http/assets/css/desktop.css ]]; then
 	rm -f /srv/http/main.php

@@ -89,7 +89,16 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var i    = $this.index()
 	var list = G.list[ i ];
 	$( '#menu a' ).addClass( 'hide' );
-	if ( list.icon === 'microsd' || ( G.shareddata && list.icon === 'networks' ) ) return
+	if ( list.icon === 'microsd' ) return
+	
+	if ( G.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
+		info( {
+			  icon    : 'networks'
+			, title   : 'Network Storage'
+			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
+		} );
+		return
+	}
 	
 	$this.addClass( 'active' );
 	$( '#menu .info' ).toggleClass( 'hide', list.icon !== 'usbdrive' );
@@ -117,15 +126,6 @@ $( '#menu a' ).click( function() {
 		var icon  = 'usbdrive';
 		var title = 'Local Mount';
 	}
-	if ( G.shareddata && mountpoint === '/mnt/MPD/NAS/data' ) {
-		info( {
-			  icon    : 'networks'
-			, title   : 'Network Storage'
-			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
-		} );
-		return
-	}
-	
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
