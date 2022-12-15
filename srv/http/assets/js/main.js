@@ -1365,6 +1365,11 @@ $( '#lib-mode-list' ).click( function( e ) {
 			return
 		}
 		
+		if ( G.display.tapreplaceplay ) {
+			addReplace( 'replaceplay', [ 'mpcadd', path, 'replaceplay' ], 'Replace Playlist and play', name );
+			return
+		}
+		
 		var $img = $( this ).find( '.bkcoverart' );
 		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
 		info( {

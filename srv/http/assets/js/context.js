@@ -759,7 +759,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else if ( cmd === 'playnext' ) {
 		var title = 'Add to Playlist to play next';
 	} else {
-		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		var title = 'Replace Playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 	}
 	if ( G.list.li.hasClass( 'licover' ) ) {
 		var msg = G.list.li.find( '.lialbum' ).text()
