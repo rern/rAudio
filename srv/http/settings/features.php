@@ -224,11 +224,12 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label' => 'Lyrics in File'
-		, 'id'    => 'lyricsembedded'
-		, 'icon'  => 'lyrics'
+		  'label'    => 'Lyrics in File'
+		, 'id'       => 'lyricsembedded'
+		, 'sublabel' => 'embedded ID3'
+		, 'icon'     => 'lyrics'
 		, 'setting'  => false
-		, 'help'  => <<< EOF
+		, 'help'     => <<< EOF
  • Get embedded lyrics from local files.
  • Search online if not available.
  • Should be disable if most lyrics are not embedded.
