@@ -151,10 +151,11 @@ if [[ $action == connect || $action == pair ]]; then
 		icon=btsender
 		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
 	else
+		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
-		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
+		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected1
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
