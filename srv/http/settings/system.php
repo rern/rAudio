@@ -335,7 +335,7 @@ Connect shared data as client for:
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> &#9704; |
-	Clients: | <wh>Shared Data I^networks^I</wh> &#9704; | · rAudio |
+	Clients: | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
