@@ -155,7 +155,7 @@ if [[ $action == connect || $action == pair ]]; then
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
-		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected1
+		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
 		pushstream btreceiver true
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
