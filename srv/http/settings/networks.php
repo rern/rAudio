@@ -14,19 +14,19 @@ $html = <<< EOF
 
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
-	- On receiver: Turn on Discovery / Pairing mode
-	- On rAudio: | Bluetooth I^search wh^I | Select to pair
+	· On receiver: Turn on Discovery / Pairing mode
+	· On rAudio: | Bluetooth I^search wh^I | Select to pair
  • Connect:
-	- On receiver: Power on / Power off > Connect / Disconnect
-	- Receiver buttons can be used to control playback
+	· On receiver: Power on / Power off > Connect / Disconnect
+	· Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	- On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | • Discoverable by senders |
-	- On sender: Search > Select <wh>rAudio</wh> to pair
-	- Forget / remove should be done on both rAudio and sender
+	· On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | • Discoverable by senders |
+	· On sender: Search > Select <wh>rAudio</wh> to pair
+	· Forget / remove should be done on both rAudio and sender
  • Connect:
-	- On sender: Select rAudio > Connect / Disconnect
+	· On sender: Select rAudio > Connect / Disconnect
 </div>
 EOF;
 echoSetIcon( $html );
@@ -45,9 +45,9 @@ htmlHead( [ //////////////////////////////////
 | I^plus-circle^I | Manually connect
 | I^search^I | Scan to connect
 
- • Avoid double quotes <code>"</code> in Wi-Fi name and password.
-
-(Access points with 1 bar icon I^wifi1^I might be unstable.)' ) )?></div>
+Note:
+ · Avoid double quotes <code>"</code> in Wi-Fi name and password.
+ · Access points with 1 bar icon I^wifi1^I might be unstable.' ) )?></div>
 </div>
 <div id="divlan" class="section">
 <?php

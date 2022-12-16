@@ -49,11 +49,11 @@ $body = [
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
- • SSH passwords must be default.
- • Connect: A^I^networks^I Networks^AI^snapcast sub^I
- • SnapClient and SnapServer can be enabled on the same device.
-	- Enable | SnapServer | before | SnapClient |
-	- SnapClient auto connect/disconnect on play/stop
+ · SSH passwords must be default.
+ · Connect: A^I^networks^I Networks^AI^snapcast sub^I
+ · SnapClient and SnapServer can be enabled on the same device.
+	· Enable | SnapServer | before | SnapClient |
+	· SnapClient auto connect/disconnect on play/stop
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
@@ -66,21 +66,21 @@ EOF
 		, 'disabled' => '<wh>Spotify I^spotify^I</wh> is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
- • Require Premium account. (No Spotify password saved on rAudio.)
- • Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
+ · Require Premium account. (No Spotify password saved on rAudio.)
+ · Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
 	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <cy>YELLOW</cy> with actual values)
 	| LOG IN |
-		- with normal Spotify account
+		· with normal Spotify account
 	| CREATE AN APP |
-		- App name: <cy>Name</cy>
-		- App description: <cy>Description</cy>
+		· App name: <cy>Name</cy>
+		· App description: <cy>Description</cy>
 	| EDIT SETTINGS |
-		- Redirect URIs: <c id="redirecturi"></c>
+		· Redirect URIs: <c id="redirecturi"></c>
 	| USERS AND ACCESS | ADD NEW USER |
-		- Name: <cy>user</cy>
-		- Spotify Account: <cy>email</cy>
-• | <wh>Spotify I^spotify^I</wh> &#9704; |
-	- Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
+		· Name: <cy>user</cy>
+		· Spotify Account: <cy>email</cy>
+· | <wh>Spotify I^spotify^I</wh> &#9704; |
+	· Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -119,10 +119,10 @@ EOF
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
- • SSH passwords must be default. (For metadata update)
- • Snapcast control client and player:
-	- <a href="https://github.com/badaix/snapweb">Snapweb</a>
-	- <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
+ · SSH passwords must be default. (For metadata update)
+ · Snapcast control client and player:
+	· <a href="https://github.com/badaix/snapweb">Snapweb</a>
+	· <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
@@ -154,11 +154,11 @@ EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: A^I^features^I Features^AI^equalizer sub^I
 Presets:
- • <c>Flat</c>: All bands at 0dB
- • New: Adjust | I^plus-circle^I Add | I^save^I Save |
- • Existing: Adjust | I^save^I Save |
- • Adjusted values will be listed as <c>(unnamed)</c> until saved.
- • If distortions occurred, lower all bands collectively and increase volume
+ · <c>Flat</c>: All bands at 0dB
+ · New: Adjust | I^plus-circle^I Add | I^save^I Save |
+ · Existing: Adjust | I^save^I Save |
+ · Adjusted values will be listed as <c>(unnamed)</c> until saved.
+ · If distortions occurred, lower all bands collectively and increase volume
 EOF
 	]
 ];
@@ -174,8 +174,8 @@ $body = [
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
- • This should be used only when necessary.
- • Avoid double quotes <code>"</code> in password.
+ · This should be used only when necessary.
+ · Avoid double quotes <code>"</code> in password.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	]
@@ -185,9 +185,9 @@ EOF
 		, 'icon'    => 'play'
 		, 'help'    => <<< EOF
 Start playing automatically on:
- • Bluetooth connected
- • Audio CD inserting
- • Power on / Reboot
+ · Bluetooth connected
+ · Audio CD inserting
+ · Power on / Reboot
 EOF
 	]
 	, [
@@ -198,11 +198,11 @@ EOF
 		, 'status'   => 'localbrowser'
 		, 'help'     => <<< EOF
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
- • TFT 3.5" LCD: Rotate needs reboot.
- • Screen off: A^I^power^I Power^AI^screenoff sub^I
-	- Also by timer in | I^gear^I |
-	- Backlight still on - no energy saved
- • HDMI display: Must be connected before boot.
+ · TFT 3.5" LCD: Rotate needs reboot.
+ · Screen off: A^I^power^I Power^AI^screenoff sub^I
+	· Also by timer in | I^gear^I |
+	· Backlight still on - no energy saved
+ · HDMI display must be connected before boot.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
 	]
@@ -215,9 +215,9 @@ EOF
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
- • Much faster than SCP / WinSCP when transfer large or a lot of files
- • Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
- • Windows: $fileexplorer
+ · Much faster than SCP / WinSCP when transfer large or a lot of files
+ · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
+ · Windows: $fileexplorer
  
 (For even better performance: | Server rAudio I^rserver^I | )
 EOF
@@ -230,10 +230,10 @@ EOF
 		, 'icon'     => 'lyrics'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
- • Get embedded lyrics from local files.
- • Search online if not available.
- • Should be disable if most lyrics are not embedded.
- • Online fetched lyrics are saved as separate files, not embedded.
+ · Get embedded lyrics from local files.
+ · Search online if not available.
+ · Should be disable if most lyrics are not embedded.
+ · Online fetched lyrics are saved as separate files, not embedded.
 EOF
 	]
 	, [
@@ -264,12 +264,12 @@ EOF
 		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
 		, 'help'     => <<< EOF
- • Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
- • Require Last.fm account.
- • No Last.fm password saved on rAudio.
- • Option to include renderers - Exclude if already scrobbleed by sender devices.
- • SnapClient already scrobbled by SnapServer.
- • Web Radio must be manually scrobbled: | Playing title | I^lastfm wh^I Scrobble |
+ · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
+ · Require Last.fm account.
+ · No Last.fm password saved on rAudio.
+ · Option to include renderers - Exclude if already scrobbleed by sender devices.
+ · SnapClient already scrobbled by SnapServer.
+ · Web Radio must be manually scrobbled: | Playing title | I^lastfm wh^I Scrobble |
 EOF
 	]
 	, [
@@ -284,21 +284,21 @@ EOF
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
  • <wh>rAudio Shared Data server:</wh>
-	- Must be set to <wh>static IP address</wh> which should be set on router.
-	- In | I^library^I | Library:
-		- | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.
-		- | I^usb^I USB | items will be displayed in | I^networks^I NAS | instead.
-	- On reboot / power off:
-		- Shared Data on clients will be temporarily disabled
-		- Re-enabled by itself once the server is back online.
+	· Must be set to <wh>static IP address</wh> which should be set on router.
+	· In | I^library^I | Library:
+		· | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.
+		· | I^usb^I USB | items will be displayed in | I^networks^I NAS | instead.
+	· On reboot / power off:
+		· Shared Data on clients will be temporarily disabled
+		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	- | I^system^I System | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
-	- Automatically setup: discover, connect shared files and data
+	· | I^system^I System | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
+	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	- Windows Features > Services for NFS > Client for NFS - Enable
-	- $fileexplorer
+	· Windows Features > Services for NFS > Client for NFS - Enable
+	· $fileexplorer
 	
 (SSH password must be default.)
 EOF
@@ -310,10 +310,10 @@ EOF
 		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:
- • Mute
- • Stop player
- • Set volume back as before mute
- • If set, power off.
+ · Mute
+ · Stop player
+ · Set volume back as before mute
+ · If set, power off.
 EOF
 	]
 ];
