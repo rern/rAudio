@@ -88,15 +88,11 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 		curl -s $coverurl -o $dirshm/webradio/$name.jpg
 	fi
-	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep ^elapsed \
-				| cut -d' ' -f2 ) )
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "elapsed"  : '$elapsed'
+, "elapsed"  : '$( getStatus elapsed )'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"

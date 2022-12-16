@@ -52,6 +52,16 @@ function blinkUpdate() {
 		setTimeout( () => $icons.removeClass( 'clear' ), 1500 );
 	}, 2500 );
 }
+function bookmarkRadioAddPlaylist( action, path, name ) {
+	var delay = 1;
+	if ( action === 'add' ) {
+		addReplace( action, [ 'mpcadd', path ], 'Add to Playlist', name )
+	} else if ( action === 'addplay' ) {
+		addReplace( action, [ 'mpcadd', path, action, delay ], 'Add to Playlist and play', name );
+	} else if ( action === 'replaceplay' ) {
+		addReplace( action, [ 'mpcadd', path, action, delay ], 'Replace Playlist and play', name );
+	}
+}
 function changeIP() { // for android app
 	info( {
 		  icon         : 'networks'
@@ -1007,9 +1017,6 @@ function refreshData( resetdata ) {
 		}
 	} else if ( G.playback ) {
 		getPlaybackStatus( 'withdisplay' );
-		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .copy' ).length )  {
-			
-		}
 	} else {
 		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
 			if ( resetdata ) G.playlisthtml = '';

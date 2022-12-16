@@ -107,15 +107,19 @@ EOF;
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
-			if ( substr( $bkpath, 0, 4 ) === 'http' ) {
-				$src  = '/data/webradio/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
+			$prefix = substr( $bkpath, 0, 4 );
+			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
+				$bkradio  = 'bkradio';
+				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
+				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
 			} else {
-				$src  = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
-				$src .= $bkpath.'/coverart.jpg';
+				$bkradio  = '';
+				$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
+				$src     .= $bkpath.'/coverart.jpg';
 			}
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark" data-mode="bookmark">
+	<div class="mode mode-bookmark $bkradio" data-mode="bookmark">
 	<a class="lipath">$bkpath</a>
 	<a class="bkname hide">$name</a>
 	<img class="bkcoverart" src="$src^^^">
@@ -563,7 +567,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
 		$args          = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
-		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
+		$coverart      = exec( '/srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );

@@ -1,9 +1,7 @@
 function addReplace( cmd, command, title, msg ) {
 	var play = cmd === 'addplay' || cmd === 'replaceplay';
 	if ( play || cmd === 'replace' ) $( '#stop' ).click();
-	bash( command, () => {
-		if ( G.display.playbackswitch && play ) $( '#playback' ).click();
-	} );
+	bash( command );
 	banner( 'playlist', title, msg );
 }
 function addSimilar() {

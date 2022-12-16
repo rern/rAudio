@@ -1353,39 +1353,42 @@ $( '#lib-mode-list' ).click( function( e ) {
 	query.path      = G.mode.slice( -5 ) === 'radio' ? '' : path;
 	query.modetitle = path;
 	if ( query.query !== 'ls' && query.query !== 'radio' ) G.query.push( query );
-} ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+} ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	$( '#lib-search-close' ).click();
 	if ( G.press || $( '.bkedit' ).length ) return
 	
-	var path  = $( this ).find( '.lipath' ).text();
-	if ( [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) {
-		var name = $( this ).find( '.bkname' ).text();
-		if ( G.display.tapaddplay ) {
-			addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name );
-			return
-		}
-		
-		if ( G.display.tapreplaceplay ) {
-			addReplace( 'replaceplay', [ 'mpcadd', path, 'replaceplay' ], 'Replace Playlist and play', name );
-			return
-		}
-		
-		var $img = $( this ).find( '.bkcoverart' );
-		var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
-		info( {
-			  icon        : 'plus-o'
-			, title       : 'Add to Playlist'
-			, message     : icon
-							+'<br><wh>'+ $( this ).find( '.bkname' ).text() +'</wh>'
-			, buttonlabel : '<i class="fa fa-plus-o"></i>Add'
-			, buttoncolor : 'var( --cg )'
-			, button      : () => addReplace( 'add', [ 'mpcadd', path ], 'Add to Playlist', name )
-			, oklabel     : '<i class="fa fa-play-plus"></i>Play'
-			, ok          : () => addReplace( 'addplay', [ 'mpcadd', path, 'addplay' ], 'Add to Playlist and play', name )
-		} );
+	var $this = $( this );
+	var path  = $this.find( '.lipath' ).text();
+	var name = $this.find( '.bkname' ).text();
+	if ( G.display.tapaddplay ) {
+		bookmarkRadioAddPlaylist( 'addplay', path, name );
 		return
 	}
 	
+	if ( G.display.tapreplaceplay ) {
+		bookmarkRadioAddPlaylist( 'replaceplay', path, name )
+		return
+	}
+	
+	var $img = $this.find( '.bkcoverart' );
+	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+	info( {
+		  icon        : 'plus-o'
+		, title       : 'Add to Playlist'
+		, message     : icon
+						+'<br><wh>'+ name +'</wh>'
+		, buttonlabel : '<i class="fa fa-plus-o"></i>Add'
+		, buttoncolor : 'var( --cg )'
+		, button      : () => bookmarkRadioAddPlaylist( 'add', path, name )
+		, oklabel     : '<i class="fa fa-play-plus"></i>Play'
+		, ok          : () => bookmarkRadioAddPlaylist( 'addplay', path, name )
+	} );
+} ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
+	var $this = $( this );
+	$( '#lib-search-close' ).click();
+	if ( G.press || $( '.bkedit' ).length || $this.hasClass( 'bkradio' ) ) return
+	
+	var path  = $this.find( '.lipath' ).text();
 	var path0 = path.split( '/' )[ 0 ];
 	var mode  = path0.toLowerCase();
 	if ( path0.slice( 3 ) !== 'radio' ) {

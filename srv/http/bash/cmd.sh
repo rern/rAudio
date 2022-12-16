@@ -65,7 +65,9 @@ plAddPosition() {
 	fi
 }
 plAddRandom() {
-	plLengthSong
+	total=$( getStatus playlistlength )
+	pos=$( getStatus song )
+	tail=$(( total - pos ))
 	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
@@ -91,15 +93,6 @@ plAddRandom() {
 		> $dirsystem/librandom
 	fi
 	(( $tail > 1 )) || plAddRandom
-}
-plLengthSong() {
-	readarray -t status <<< $( { echo status; sleep 0.05; } \
-										| telnet 127.0.0.1 6600 2> /dev/null \
-										| grep -E '^playlistlength:|^song:' \
-										| cut -d' ' -f2 )
-	total=${status[0]}
-	pos=$(( ${status[1]} + 1 ))
-	tail=$(( total - pos ))
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -560,7 +553,9 @@ librandom )
 	else
 		[[ ${args[2]} == true ]] && play=1
 		mpc -q random 0
-		plLengthSong
+		total=$( getStatus playlistlength )
+		pos=$( getStatus song )
+		tail=$(( total - pos ))
 		if [[ $play ]]; then
 			playnext=$(( total + 1 ))
 			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
