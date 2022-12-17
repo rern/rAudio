@@ -105,6 +105,8 @@ fi
 #-------------------------------------------------------------------------------
 installstart "$1"
 
+rm -rf /srv/http/assets/{css,js}
+
 getinstallzip
 
 chmod +x $dirsettings/system.sh
