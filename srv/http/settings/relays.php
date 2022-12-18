@@ -46,7 +46,7 @@ On/Off:  <?=( i( 'raudio' ).'System | '.i( 'relays wh' ) )?>
 		<span class="gpio-text"><?=( i( 'power red' ) )?> Off Sequence</span>
 		<div id="off"></div>
 		<br>
-		<a id="undo" class="infobtn infobtn disabled"><?=( i( 'undo' ) )?>Undo</a><!--
-	 --><a id="save" class="infobtn infobtn-primary disabled"><?=( i( 'save' ) )?>Save</a>
+		<a id="undo" class="infobtn infobtn"><?=( i( 'undo' ) )?>Undo</a><!--
+	 --><a id="save" class="infobtn infobtn-primary"><?=( i( 'save' ) )?>Save</a>
 	</div>
 </div>

@@ -4,13 +4,13 @@ info(),   infoPower(), infoPowerCommand(), infoPowerNfs(),
 loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
-G               = {}
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+var timeoutbanner;
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
-	clearTimeout( G.timeoutbanner );
+	clearTimeout( timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
@@ -19,19 +19,19 @@ function banner( icon, title, message, delay ) {
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
 ` ).removeClass( 'hide' );
-	if ( delay !== -1 ) G.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
 	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	if ( G.bannerhold ) {
+	if ( V.bannerhold ) {
 		setTimeout( () => {
-			G.bannerhold = 0;
+			V.bannerhold = 0;
 			bannerHide();
-		}, G.bannerhold );
+		}, V.bannerhold );
 		return
 	}
 	
-	clearTimeout( G.timeoutbanner );
+	clearTimeout( timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.empty();
@@ -611,8 +611,8 @@ function infoCheckSet() {
 }
 function infoFileImage() {
 	delete I.infofilegif;
-	G.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
-	G.rotate      = 0;
+	V.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
+	V.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
@@ -633,7 +633,7 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( G.timeoutfile );
+						clearTimeout( V.timeoutfile );
 						bannerHide();
 					}
 				} else {
@@ -643,7 +643,7 @@ function infoFileImage() {
 	}
 }
 function infoFileImageReader() {
-	var maxsize   = ( G.library && ! G.librarylist ) ? 200 : 1000;
+	var maxsize   = ( V.library && ! V.librarylist ) ? 200 : 1000;
 	var reader    = new FileReader();
 	reader.onload = function( e ) {
 		var img    = new Image();
@@ -667,7 +667,7 @@ function infoFileImageReader() {
 			} else {
 				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( G.timeoutfile );
+			clearTimeout( V.timeoutfile );
 			bannerHide();
 		}
 	}
@@ -677,8 +677,8 @@ function infoFileImageReader() {
 		.on( 'click', '.infoimgnew', function() {
 		if ( ! $( '.infomessage .rotate' ).length ) return
 		
-		G.rotate     += 90;
-		if ( G.rotate === 360 ) G.rotate = 0;
+		V.rotate     += 90;
+		if ( V.rotate === 360 ) V.rotate = 0;
 		var canvas    = document.createElement( 'canvas' );
 		var ctx       = canvas.getContext( '2d' );
 		var image     = $( this )[ 0 ];
@@ -713,7 +713,7 @@ function infoFileImageRender( src, original, resize ) {
 	);
 }
 function infoFileImageResize( ext, imgW, imgH ) {
-	var maxsize = ( G.library && ! G.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
+	var maxsize = ( V.library && ! V.librarylist ) ? 200 : ( ext === 'gif' ? 600 : 1000 );
 	if ( imgW > maxsize || imgH > maxsize ) {
 		var w = imgW > imgH ? maxsize : Math.round( imgW / imgH * maxsize );
 		var h = imgW > imgH ? Math.round( imgH / imgW * maxsize ) : maxsize;
@@ -877,8 +877,8 @@ function loaderHide() {
 
 // ----------------------------------------------------------------------
 function local( delay ) {
-	G.local = 1;
-	setTimeout( () => G.local = 0, delay || 300 );
+	V.local = 1;
+	setTimeout( () => V.local = 0, delay || 300 );
 }
 
 // ----------------------------------------------------------------------
@@ -905,12 +905,12 @@ $.fn.press = function( arg1, arg2 ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
-			G.press = 1;
+			V.press = 1;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( () => G.press = 0, 300 ); // needed for mouse events
+		setTimeout( () => V.press = 0, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
@@ -927,9 +927,9 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	}
 	function pushstreamPower( message ) {
 		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		G[ type ] = 1;
+		V[ type ] = 1;
 		var ready = type === 'ready';
-		if ( G.display.logout ) {
+		if ( D.logout ) {
 			if ( ready ) location.reload();
 			
 			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
@@ -945,8 +945,8 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
-			if ( G.reboot ) {
-				delete G.reboot;
+			if ( V.reboot ) {
+				delete V.reboot;
 				banner( 'raudio', 'rAudio', 'Ready', 6000 );
 				loaderHide();
 				page === 'system' ? refreshData() : bash( [ 'autoplaystatus' ] );
@@ -956,7 +956,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 			}
 		} else if ( status === 0 ) { // disconnected
 			pushstreamDisconnect();
-			if ( G.off ) {
+			if ( V.off ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );
 				setTimeout( () => {
@@ -971,7 +971,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	var active  = 1; // fix: multiple firings
 	var select2 = 0; // fix: closing > blur > disconnect
 	function connect() {
-		if ( active || G.off ) return
+		if ( active || V.off ) return
 		
 		active = 1;
 		pushstream.connect();
@@ -1000,6 +1000,7 @@ function selectSet( $select ) {
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
+	if ( $( '.select2' ).length ) $( 'select' ).select2( 'destroy' );
 	$select
 		.select2( options )
 		.on( 'select2:closing', () => select2 = 1 )

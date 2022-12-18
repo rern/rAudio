@@ -1,3 +1,4 @@
+E           = {}
 var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var timeout;
 var band    = [];
@@ -21,14 +22,14 @@ var content = `
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		G.eq = data;
+		E = data;
 		infoEqualizer();
 	}, 'json' );
 }
 function infoEqualizer( update ) {
-	var values     = [ '', G.eq.current, ...G.eq.values ]; // [ #eqname, #eqpreset, ... ]
+	var values     = [ '', E.current, ...E.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset  = '';
-	G.eq.presets.forEach( name => optpreset += '<option value="'+ name +'">'+ name +'</option>' );
+	E.presets.forEach( name => optpreset += '<option value="'+ name +'">'+ name +'</option>' );
 	info( {
 		  icon       : 'equalizer'
 		, title      : 'Equalizer'
@@ -70,9 +71,9 @@ function infoEqualizer( update ) {
 			$( '#eqname' ).on( 'keyup paste cut', function( e ) {
 				var val    = $( this ).val().trim();
 				var blank  = val === '';
-				var exists = G.eq.presets.includes( val );
+				var exists = E.presets.includes( val );
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-					var changed = ! blank && ! exists && val !== G.eq.current;
+					var changed = ! blank && ! exists && val !== E.current;
 				} else { // new
 					var changed = ! blank && ! exists;
 				}
@@ -80,19 +81,19 @@ function infoEqualizer( update ) {
 				$( '#eqsave' ).toggleClass( 'disabled', ! changed );
 			} );
 			$( '#eqdelete' ).click( function() {
-				bash( [ 'equalizer', 'delete', G.eq.current ] );
+				bash( [ 'equalizer', 'delete', E.current ] );
 				$( '#eqcancel' ).click();
 			} );
 			$( '#eqrename' ).click( function() {
 				$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
-				$( '#eqname' ).val( G.eq.current );
+				$( '#eqname' ).val( E.current );
 				$( '#eqnew' ).click();
 			} );
 			$( '#eqsave' ).click( function() {
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-					bash( [ 'equalizer', 'rename', G.eq.current, $( '#eqname' ).val() ] );
+					bash( [ 'equalizer', 'rename', E.current, $( '#eqname' ).val() ] );
 				} else {
-					var name = $( '#eqname' ).hasClass( 'hide' ) ? G.eq.current : $( '#eqname' ).val();
+					var name = $( '#eqname' ).hasClass( 'hide' ) ? E.current : $( '#eqname' ).val();
 					bash( [ 'equalizer', 'save', name ] );
 				}
 				$( '#eqcancel' ).click();
@@ -105,7 +106,7 @@ function infoEqualizer( update ) {
 				$( '#eqname' ).css( 'display', 'inline-block' );
 				$( '#eqrename' ).addClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
-				if ( G.eq.current !== 'Flat' && G.eq.current !== '(unnamed)' ) $( '#eqname' ).val( G.eq.current )
+				if ( E.current !== 'Flat' && E.current !== '(unnamed)' ) $( '#eqname' ).val( E.current )
 			} );
 			$( '#eqcancel' ).click( function() {
 				$( '#eqrename, #eqnew, #eq .select2-container' ).removeClass( 'hide' );
@@ -114,19 +115,19 @@ function infoEqualizer( update ) {
 				eqButtonSet();
 			} );
 			$( '#equndo' ).click( function() {
-				bash( [ 'equalizer', 'preset', G.eq.current ] );
+				bash( [ 'equalizer', 'preset', E.current ] );
 			} );
 		}
 		, okno          : 1
 	} );
 }
 function eqButtonSet() {
-	var flat    = G.eq.current === 'Flat';
-	var unnamed = G.eq.current === '(unnamed)';
+	var flat    = E.current === 'Flat';
+	var unnamed = E.current === '(unnamed)';
 	if ( flat || unnamed ) {
 		var changed = false;
 	} else {
-		var val     = G.eq.nameval[ G.eq.current ].split( ' ' )
+		var val     = E.nameval[ E.current ].split( ' ' )
 		var vnew    = infoVal().slice( 2 );
 		var changed = vnew.some( ( v, i ) => Math.abs( v - val[ i ] ) > 1 ); // fix: resolution not precise
 	}

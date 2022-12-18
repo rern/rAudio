@@ -63,12 +63,12 @@ $( '.refresh' ).click( function( e ) {
 	
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( G.intCputime );
+		clearInterval( V.intCputime );
 		bannerHide();
 		$this.removeClass( 'blink wh' );
 	} else {
 		$this.addClass( 'blink wh' );
-		G.intCputime = setInterval( getStatus, 10000 );
+		V.intCputime = setInterval( getStatus, 10000 );
 	}
 } );
 $( '.addnas' ).click( function() {
@@ -77,7 +77,7 @@ $( '.addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
-	G.li      = $this;
+	V.li      = $this;
 	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
@@ -87,11 +87,11 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var i    = $this.index()
-	var list = G.list[ i ];
+	var list = V.list[ i ];
 	$( '#menu a' ).addClass( 'hide' );
 	if ( list.icon === 'microsd' ) return
 	
-	if ( G.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
+	if ( V.shareddata && list.mountpoint === '/mnt/MPD/NAS/data' ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
@@ -116,7 +116,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 $( '#menu a' ).click( function() {
 	var $this      = $( this );
 	var cmd        = $this.prop( 'class' );
-	var list       = G.list[ G.li.index() ];
+	var list       = V.list[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {
@@ -161,8 +161,8 @@ $( '#setting-hddsleep' ).click( function() {
 		, title        : title
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-		, values       : G.hddsleep || 60
-		, checkchanged : G.hddsleep
+		, values       : V.hddsleep || 60
+		, checkchanged : V.hddsleep
 		, cancel       : () => cancelSwitch( 'hddsleep' )
 		, ok           : () => {
 			var val = infoVal()
@@ -188,11 +188,11 @@ $( '#setting-bluetooth' ).click( function() {
 		  icon         : icon
 		, title        : title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : G.bluetoothconf
-		, checkchanged : G.bluetooth
+		, values       : V.bluetoothconf
+		, checkchanged : V.bluetooth
 		, cancel       : () => cancelSwitch( 'bluetooth' )
 		, ok           : () => {
-			notify( icon, title, G.bluetooth ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.bluetooth ? 'Change ...' : 'Enable ...' );
 			bash( [ 'bluetooth', true, ...infoVal() ] );
 		}
 	} );
@@ -213,11 +213,11 @@ $( '#setting-wlan' ).click( function() {
 			, title        : title
 			, content      : infowifi
 			, boxwidth     : 250
-			, values       : G.wlanconf
-			, checkchanged : G.wlan
+			, values       : V.wlanconf
+			, checkchanged : V.wlan
 			, cancel       : () => cancelSwitch( 'wlan' )
 			, ok           : () => {
-				notify( icon, title, G.wlan ? 'Change ...' : 'Enable ...' );
+				notify( icon, title, V.wlan ? 'Change ...' : 'Enable ...' );
 				bash( [ 'wlan', true, ...infoVal() ] );
 			}
 		} );
@@ -251,8 +251,8 @@ $( '#setting-i2smodule' ).click( function() {
 		  icon         : 'i2saudio'
 		, title        : 'Audio - I²S'
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
-		, values       : G.i2seeprom
-		, checkchanged : G.i2seeprom
+		, values       : V.i2seeprom
+		, checkchanged : V.i2seeprom
 		, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
 	} );
 } );
@@ -274,8 +274,8 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 $( '#setting-lcdchar' ).click( function() {
 	var i2caddress  = '<td>Address</td>';
-	if ( ! G.lcdcharaddr ) G.lcdcharaddr = [ 39, 63 ];
-	G.lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
+	if ( ! V.lcdcharaddr ) V.lcdcharaddr = [ 39, 63 ];
+	V.lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
 	var optpins  = '<select>';
 	Object.keys( pin2gpio ).forEach( k => optpins += '<option value='+ k +'>'+ k +'</option>' ); // only lcdchar uses j8 pin number
 	optpins     += '</select>';
@@ -311,7 +311,7 @@ $( '#setting-lcdchar' ).click( function() {
 </table>
 <label style="margin-left: 60px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c         = G.lcdcharconf[ 2 ] !== 'gpio';
+	var i2c         = V.lcdcharconf[ 2 ] !== 'gpio';
 	var icon        = 'lcdchar';
 	var title       = 'Character LCD';
 	info( {
@@ -319,8 +319,8 @@ $( '#setting-lcdchar' ).click( function() {
 		, title        : title
 		, content      : infolcdchar
 		, boxwidth     : 180
-		, values       : G.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
-		, checkchanged : G.lcdchar
+		, values       : V.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
+		, checkchanged : V.lcdchar
 		, beforeshow   : () => {
 			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
 			$( '#infoContent .gpio td:odd' ).css( {
@@ -336,7 +336,7 @@ $( '#setting-lcdchar' ).click( function() {
 				$( '.i2c' ).toggleClass( 'hide', ! i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
-			if ( G.lcdchar ) {
+			if ( V.lcdchar ) {
 				$( '#infoOk' )
 					.before( '<gr id="lcdlogo"><i class="fa fa-raudio wh" style="font-size: 20px"></i>&ensp;Logo</gr>&ensp;' )
 					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
@@ -349,7 +349,7 @@ $( '#setting-lcdchar' ).click( function() {
 		, cancel       : () => cancelSwitch( 'lcdchar' )
 		, ok           : () => {
 			bash( [ 'lcdchar', true, ...infoVal() ] );
-			notify( icon, title, G.lcdchar ? 'Change ...' : 'Enabled ...' );
+			notify( icon, title, V.lcdchar ? 'Change ...' : 'Enabled ...' );
 		}
 	} );
 } );
@@ -389,11 +389,11 @@ $( '#setting-powerbutton' ).click( function() {
 		, title        : title
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 80
-		, values       : G.powerbuttonconf || [ 5, 5, 40, 5, false ]
-		, checkchanged : G.powerbutton
+		, values       : V.powerbuttonconf || [ 5, 5, 40, 5, false ]
+		, checkchanged : V.powerbutton
 		, beforeshow   : () => {
-			if ( ! G.powerbuttonconf[ 3 ] ) {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', G.powerbuttonconf[ 0 ] == 5 );
+			if ( ! V.powerbuttonconf[ 3 ] ) {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', V.powerbuttonconf[ 0 ] == 5 );
 				$( '#infoContent select' ).eq( 0 ).change( function() {
 					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 				} );
@@ -407,7 +407,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, cancel       : () => cancelSwitch( 'powerbutton' )
 		, ok           : () => {
 			bash( [ 'powerbutton', true, ...infoVal() ] );
-			notify( icon, title, G.powerbutton ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.powerbutton ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -435,13 +435,13 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, title        : title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 90
-		, values       : G.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
-		, checkchanged : G.rotaryencoder
+		, values       : V.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
+		, checkchanged : V.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
 		, cancel       : () => cancelSwitch( 'rotaryencoder' )
 		, ok           : () => {
 			bash( [ 'rotaryencoder', true, ...infoVal() ] );
-			notify( icon, title, G.rotaryencoder ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.rotaryencoder ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -469,11 +469,11 @@ $( '#setting-mpdoled' ).click( function() {
 	<option value="1200000">1200000</option>
 </select></td></tr>
 </table>`
-		, values       : G.mpdoledconf
-		, checkchanged : G.mpdoled
+		, values       : V.mpdoledconf
+		, checkchanged : V.mpdoled
 		, boxwidth     : 140
 		, beforeshow   : () => {
-			var i2c = ! G.mpdoled || ( G.mpdoled && G.mpdoledconf[ 1 ] );
+			var i2c = ! V.mpdoled || ( V.mpdoled && V.mpdoledconf[ 1 ] );
 			$( '.baud' ).toggleClass( 'hide', ! i2c );
 			$( '.oledchip' ).change( function() {
 				var val = $( this ).val();
@@ -481,10 +481,10 @@ $( '#setting-mpdoled' ).click( function() {
 			} );
 		}
 		, cancel       : () => cancelSwitch( 'mpdoled' )
-		, buttonlabel  : ! G.mpdoled ? '' : '<i class="fa fa-raudio"></i>Logo'
-		, button       : ! G.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
+		, buttonlabel  : ! V.mpdoled ? '' : '<i class="fa fa-raudio"></i>Logo'
+		, button       : ! V.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
 		, ok           : () => {
-			notify( icon, title, G.mpdoled ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.mpdoled ? 'Change ...' : 'Enable ...' );
 			bash( [ 'mpdoled', true, ...infoVal() ] );
 		}
 	} );
@@ -503,11 +503,11 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, values       : G.lcdmodel || 'tft35a'
-		, checkchanged : G.lcd
+		, values       : V.lcdmodel || 'tft35a'
+		, checkchanged : V.lcd
 		, boxwidth     : 190
-		, buttonlabel  : ! G.lcd ? '' : 'Calibrate'
-		, button       : ! G.lcd ? '' : () => {
+		, buttonlabel  : ! V.lcd ? '' : 'Calibrate'
+		, button       : ! V.lcd ? '' : () => {
 			info( {
 				  icon    : icon
 				, title   : title
@@ -521,7 +521,7 @@ $( '#setting-lcd' ).click( function() {
 		}
 		, cancel    : () => cancelSwitch( 'lcd' )
 		, ok           : () => {
-			notify( icon, title, G.lcd ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.lcd ? 'Change ...' : 'Enable ...' );
 			bash( [ 'lcd', true, infoVal() ] );
 		}
 	} );
@@ -540,8 +540,8 @@ $( '#setting-vuled' ).click( function() {
 		, title        : title
 		, message      : gpiosvg
 		, select       : htmlpins
-		, values       : G.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
-		, checkchanged : G.vuled
+		, values       : V.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
+		, checkchanged : V.vuled
 		, boxwidth     : 80
 		, cancel        : () => cancelSwitch( 'vuled' )
 		, ok           : () => {
@@ -583,7 +583,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : title
 		, textlabel    : 'Name'
 		, focus        : 0
-		, values       : G.hostname
+		, values       : V.hostname
 		, checkblank   : 1
 		, checkchanged : 1
 		, beforeshow   : () => {
@@ -604,13 +604,13 @@ $( '#timezone' ).change( function( e ) {
 $( '#setting-timezone' ).click( function() {
 	var icon  = 'globe';
 	var title = 'Servers';
-	if ( G.soc === 'BCM2835' || G.soc === 'BCM2836' ) { // rpi 0, 1
+	if ( V.soc === 'BCM2835' || V.soc === 'BCM2836' ) { // rpi 0, 1
 		info( {
 			  icon         : icon
 			, title        : title
 			, textlabel    : 'NTP'
 			, boxwidth     : 300
-			, values       : G.ntp
+			, values       : V.ntp
 			, checkchanged : 1
 			, checkblank   : 1
 			, ok           : () => {
@@ -636,12 +636,12 @@ $( '#setting-timezone' ).click( function() {
 			, title        : title
 			, content      : content
 			, boxwidth     : 240
-			, values       : [ G.ntp, list.current ]
+			, values       : [ V.ntp, list.current ]
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
 			, ok           : () => {
 				var values = infoVal();
-				if ( values[ 0 ] !== G.ntp ) notify( icon, title, 'Sync ...' );
+				if ( values[ 0 ] !== V.ntp ) notify( icon, title, 'Sync ...' );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
@@ -656,13 +656,13 @@ $( '#setting-soundprofile' ).click( function() {
 		, title        : title
 		, textlabel    : [ 'vm.swappiness', 'lan mtu', 'lan txqueuelen' ]
 		, boxwidth     : 110
-		, values       : G.soundprofileconf
-		, checkchanged : G.soundprofile
+		, values       : V.soundprofileconf
+		, checkchanged : V.soundprofile
 		, checkblank   : 1
 		, cancel       : () => cancelSwitch( 'soundprofile' )
 		, ok           : () => {
 			bash( [ 'soundprofile', true, ...infoVal() ] );
-			notify( icon, title, G.soundprofile ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, V.soundprofile ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -793,7 +793,7 @@ $( '#shareddata' ).click( function() {
 		return
 	}
 	
-	if ( G.shareddata ) {
+	if ( V.shareddata ) {
 		info( {
 			  icon    : icon
 			, title   : title
@@ -1014,10 +1014,10 @@ function renderPage() {
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-	$( '#systemvalue' ).html( G.system );
-	$( '#status' ).html( G.status );
+	$( '#systemvalue' ).html( V.system );
+	$( '#status' ).html( V.status );
 	var html  = '';
-	$.each( G.list, ( i, val ) => {
+	$.each( V.list, ( i, val ) => {
 		if ( val.mounted ) {
 			var dataunmounted = '';
 			var dot = '<grn>&ensp;•&ensp;</grn>';
@@ -1036,18 +1036,18 @@ function renderPage() {
 	} );
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
-	$( '#hddsleep' ).toggleClass( 'disabled', ! G.hddapm );
-	$( '#usbautoupdate' ).toggleClass( 'disabled', G.shareddata || G.nfsserver );
-	if ( 'bluetooth' in G || 'wlan' in G ) {
-		if ( 'bluetooth' in G ) {
-			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! G.bluetoothactive );
+	$( '#hddsleep' ).toggleClass( 'disabled', ! V.hddapm );
+	$( '#usbautoupdate' ).toggleClass( 'disabled', V.shareddata || V.nfsserver );
+	if ( 'bluetooth' in V || 'wlan' in V ) {
+		if ( 'bluetooth' in V ) {
+			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! V.bluetoothactive );
 		} else {
 			$( '#divbluetooth' ).addClass( 'hide' );
 		}
-		if ( 'wlan' in G ) {
+		if ( 'wlan' in V ) {
 			$( '#wlan' )
-				.toggleClass( 'disabled', G.hostapd || G.wlanconnected )
-				.parent().prev().toggleClass( 'single', ! G.wlan );
+				.toggleClass( 'disabled', V.hostapd || V.wlanconnected )
+				.parent().prev().toggleClass( 'single', ! V.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}
@@ -1057,17 +1057,17 @@ function renderPage() {
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( ( i, el ) => {
 		var $this = $( el );
-		return $this.text() === G.audiooutput && $this.val() === G.audioaplayname;
+		return $this.text() === V.audiooutput && $this.val() === V.audioaplayname;
 	} ).prop( 'selected', true );
-	G.i2senabled = $( '#i2smodule' ).val() !== 'none';
-	$( '#divi2smodulesw' ).toggleClass( 'hide', G.i2senabled );
-	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! G.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', G.btconnected );
-	$( '#divsoundprofile' ).toggleClass( 'hide', ! G.soundprofileconf );
-	$( '#hostname' ).val( G.hostname );
-	$( '#avahiurl' ).text( G.hostname +'.local' );
-	$( '#timezone' ).val( G.timezone );
-	$( '#shareddata' ).toggleClass( 'disabled', G.nfsserver );
+	V.i2senabled = $( '#i2smodule' ).val() !== 'none';
+	$( '#divi2smodulesw' ).toggleClass( 'hide', V.i2senabled );
+	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! V.i2senabled );
+	$( '#bluetooth' ).toggleClass( 'disabled', V.btconnected );
+	$( '#divsoundprofile' ).toggleClass( 'hide', ! V.soundprofileconf );
+	$( '#hostname' ).val( V.hostname );
+	$( '#avahiurl' ).text( V.hostname +'.local' );
+	$( '#timezone' ).val( V.timezone );
+	$( '#shareddata' ).toggleClass( 'disabled', V.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
 }

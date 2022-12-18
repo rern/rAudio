@@ -20,6 +20,7 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+V              = {}
 var dirbash    = '/srv/http/bash/settings/';
 var playersh   = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
@@ -49,11 +50,11 @@ var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbr
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( G.timeoutbanner );
-	G.timeoutbanner = setTimeout( bannerHide, delay );
+	clearTimeout( V.timeoutbanner );
+	V.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function cancelSwitch( id ) {
-	$( '#'+ id ).prop( 'checked', G[ id ] );
+	$( '#'+ id ).prop( 'checked', V[ id ] );
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
@@ -104,7 +105,7 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		G = JSON.parse( list );
+		V = JSON.parse( list );
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -122,7 +123,7 @@ function refreshData() {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
 		} else {
-			G = list;
+			V = list;
 		}
 		if ( ! list2G ) return
 		
@@ -132,7 +133,7 @@ function refreshData() {
 			setSwitch();
 			renderPage();
 		} else {
-			$( '#data' ).html( highlightJSON( G ) )
+			$( '#data' ).html( highlightJSON( V ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
@@ -140,20 +141,20 @@ function refreshData() {
 function setSwitch() {
 	if ( page === 'networks' || page === 'relays' ) return
 	
-	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', G[ el.id ] ) );
+	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', V[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
 		if ( $this.prev().is( 'select' ) ) return // not switch
 		
 		var sw = el.id.replace( 'setting-', '' );
-		$this.toggleClass( 'hide', ! G[ sw ] );
+		$this.toggleClass( 'hide', ! V[ sw ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
 	} );
 }
 function showContent() {
-	G.ready ? delete G.ready : bannerReset();
+	V.ready ? delete V.ready : bannerReset();
 	var $select = $( '.container select' );
 	if ( $select.length ) selectSet( $select );
 	$( '.container' ).removeClass( 'hide' );
@@ -165,13 +166,13 @@ function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
 			bash( 'killall -q networks-scan.sh &> /dev/null' );
-			clearTimeout( G.timeoutScan );
+			clearTimeout( V.timeoutScan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
 	} else if ( page === 'system' ) {
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( G.intCputime );
+			clearInterval( V.intCputime );
 			$( '#refresh' ).removeClass( 'blink' );
 		}
 	}
@@ -191,7 +192,7 @@ pushstream.onmessage = function( data, id, channel ) {
 function psBluetooth( data ) {
 	if ( ! data ) {
 		if ( page === 'networks' ) {
-			G.listbt = data;
+			V.listbt = data;
 			renderBluetooth();
 		} else if ( page === 'system' ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
@@ -203,7 +204,7 @@ function psBluetooth( data ) {
 			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
 		}
 	} else if ( page === 'networks' ) {
-		G.listbt = data;
+		V.listbt = data;
 		renderBluetooth();
 	}
 }
@@ -212,7 +213,7 @@ function psNotify( data ) {
 	var title    = data.title;
 	var message  = data.message;
 	var delay    = data.delay;
-	G.bannerhold = data.hold || 0;
+	V.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
@@ -229,7 +230,7 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
+	$.each( data, ( k, v ) => { V[ k ] = v } ); // need braces
 	page === 'networks' ? $( '.back' ).click() : setSwitch();
 	renderPage();
 }
@@ -239,8 +240,8 @@ function psReload( data ) {
 function psVolume( data ) {
 	if ( ! $( '#infoRange .value' ).text() ) return
 	
-	clearTimeout( G.debounce );
-	G.debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
@@ -271,7 +272,7 @@ function psWlan( data ) {
 		return
 	}
 	
-	G.listwl = data;
+	V.listwl = data;
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
@@ -373,9 +374,9 @@ $( '.close' ).click( function() {
 	} );
 } );
 $( '.page-icon' ).click( function() {
-	if ( $.isEmptyObject( G ) ) return
+	if ( $.isEmptyObject( V ) ) return
 	
-	$( '#data' ).html( highlightJSON( G ) )
+	$( '#data' ).html( highlightJSON( V ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 } );
