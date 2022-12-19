@@ -288,6 +288,7 @@ function tagEditor() {
 						V.mode = file.split( '/' )[ 0 ].toLowerCase();
 						tagModeSwitch();
 						renderLibraryList( data );
+						switchPage( 'library' );
 					} );
 				} );
 			}
