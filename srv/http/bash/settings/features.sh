@@ -109,8 +109,8 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	$dirsettings/player-conf.sh
 	pushRefresh
+	$dirsettings/player-conf.sh
 	pushSubmenu equalizer $enabled
 	;;
 hostapdget )

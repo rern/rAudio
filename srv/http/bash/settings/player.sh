@@ -222,20 +222,11 @@ replaygain )
 	fileoutput=$dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
-		if (( $( grep -Ec 'mixer_type.*hardware|replay_gain_handler' $fileoutput ) == 1 )); then
-			sed -i '/}/ i\	replay_gain_handler  "mixer"' $fileoutput
-		fi
 		linkConf
 	else
-		sed -i '/replay_gain_handler/ d' $fileoutput
 		rm $dirmpdconf/replaygain.conf
 	fi
-	output="\
-audio_output {
-$( grep -Ev '{$|}$' $fileoutput | column -t -s^ )
-}"
-	echo "$output" > $fileoutput
-	restartMPD
+	$dirsettings/player-conf.sh
 	;;
 soxr )
 	rm -f $dirmpdconf/soxr*

@@ -139,8 +139,8 @@ fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
-	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
+	$dirbash/status-push.sh
 	exit
 fi
 
@@ -192,5 +192,5 @@ volume_controller = "alsa"'
 	systemctl try-restart spotifyd
 fi
 
-$dirbash/status-push.sh
 $dirsettings/player-data.sh pushrefresh
+$dirbash/status-push.sh
