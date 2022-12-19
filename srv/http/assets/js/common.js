@@ -6,11 +6,10 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
-var bannerhold, debounce, intervalstatus, timeoutbanner, timeoutfile;
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
-	clearTimeout( timeoutbanner );
+	clearTimeout( I.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
 					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
@@ -19,19 +18,12 @@ function banner( icon, title, message, delay ) {
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
 ` ).removeClass( 'hide' );
-	if ( delay !== -1 ) timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
 	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	if ( bannerhold ) {
-		setTimeout( () => {
-			bannerhold = 0;
-			bannerHide();
-		}, bannerhold );
-		return
-	}
 	
-	clearTimeout( timeoutbanner );
+	clearTimeout( I.timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.empty();
@@ -611,7 +603,7 @@ function infoCheckSet() {
 }
 function infoFileImage() {
 	delete I.infofilegif;
-	timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
+	I.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
 	I.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
@@ -633,7 +625,7 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( timeoutfile );
+						clearTimeout( I.timeoutfile );
 						bannerHide();
 					}
 				} else {
@@ -667,7 +659,7 @@ function infoFileImageReader() {
 			} else {
 				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( timeoutfile );
+			clearTimeout( I.timeoutfile );
 			bannerHide();
 		}
 	}

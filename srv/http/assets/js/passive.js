@@ -182,8 +182,8 @@ function psEqualizer( data ) {
 	infoEqualizer( 'update' );
 }
 function psMpdPlayer( data ) {
-	clearTimeout( debounce );
-	debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
@@ -227,8 +227,8 @@ function psMpdUpdate( data ) {
 		return
 	}
 	
-	clearTimeout( debounce );
-	debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		C             = data;
 		S.updating_db = false;
 		S.updatingdab = false;
@@ -286,8 +286,8 @@ function psPlaylist( data ) {
 		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
 	) return
 	
-	clearTimeout( debounce );
-	debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
@@ -415,8 +415,8 @@ function psVolume( data ) {
 		return
 	}
 	
-	clearTimeout( debounce );
-	debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		if ( data.type === 'mute' ) {
 			S.volume     = 0;
 			S.volumemute = data.val;

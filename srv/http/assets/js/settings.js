@@ -21,8 +21,8 @@ function bash( command, callback, json ) {
 	);
 }
 
+S              = {}
 V              = {}
-var timeoutscan;
 
 var dirbash    = '/srv/http/bash/settings/';
 var playersh   = dirbash +'player.sh ';
@@ -53,11 +53,11 @@ var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbr
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( timeoutbanner );
-	timeoutbanner = setTimeout( bannerHide, delay );
+	clearTimeout( I.timeoutbanner );
+	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function cancelSwitch( id ) {
-	$( '#'+ id ).prop( 'checked', V[ id ] );
+	$( '#'+ id ).prop( 'checked', S[ id ] );
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
@@ -108,7 +108,7 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		V = JSON.parse( list );
+		S = JSON.parse( list );
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -126,7 +126,7 @@ function refreshData() {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
 		} else {
-			V = list;
+			S = list;
 		}
 		if ( ! list2G ) return
 		
@@ -136,7 +136,7 @@ function refreshData() {
 			setSwitch();
 			renderPage();
 		} else {
-			$( '#data' ).html( highlightJSON( V ) )
+			$( '#data' ).html( highlightJSON( S ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
@@ -144,13 +144,13 @@ function refreshData() {
 function setSwitch() {
 	if ( page === 'networks' || page === 'relays' ) return
 	
-	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', V[ el.id ] ) );
+	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );
 		if ( $this.prev().is( 'select' ) ) return // not switch
 		
 		var sw = el.id.replace( 'setting-', '' );
-		$this.toggleClass( 'hide', ! V[ sw ] );
+		$this.toggleClass( 'hide', ! S[ sw ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
@@ -169,13 +169,13 @@ function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
 			bash( 'killall -q networks-scan.sh &> /dev/null' );
-			clearTimeout( timeoutscan );
+			clearTimeout( V.timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
 	} else if ( page === 'system' ) {
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( intervalstatus );
+			clearInterval( V.intStatus );
 			$( '#refresh' ).removeClass( 'blink' );
 		}
 	}
@@ -216,7 +216,6 @@ function psNotify( data ) {
 	var title    = data.title;
 	var message  = data.message;
 	var delay    = data.delay;
-	bannerhold   = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
@@ -233,7 +232,7 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	$.each( data, ( k, v ) => { V[ k ] = v } ); // need braces
+	$.each( data, ( k, v ) => {S[ k ] = v } ); // need braces
 	page === 'networks' ? $( '.back' ).click() : setSwitch();
 	renderPage();
 }
@@ -243,8 +242,8 @@ function psReload( data ) {
 function psVolume( data ) {
 	if ( ! $( '#infoRange .value' ).text() ) return
 	
-	clearTimeout( debounce );
-	debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
@@ -377,9 +376,9 @@ $( '.close' ).click( function() {
 	} );
 } );
 $( '.page-icon' ).click( function() {
-	if ( $.isEmptyObject( V ) ) return
+	if ( $.isEmptyObject( S ) ) return
 	
-	$( '#data' ).html( highlightJSON( V ) )
+	$( '#data' ).html( highlightJSON( S ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 } );

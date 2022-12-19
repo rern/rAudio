@@ -59,14 +59,14 @@ function refreshValues() {
 	$( '.off.delay' ).each(     ( i, el ) => R.offd[ i ] = R.off[ i + 1 ] ? +$( el ).val() : 0 );
 	R.timer = +$( '#timer' ).val();
 	var values  = [].concat.apply( [], Object.values( R ) ).toString();
-	renderPage( values !== V.values );
+	renderPage( values !== values0 );
 }
 function renderPage( changed ) {
 	if ( ! ( 'pin' in R ) ) {
-		R       = JSON.parse( JSON.stringify( V ) );
-		values0 = [].concat.apply( [], Object.values( V ) ).toString();
+		R       = JSON.parse( JSON.stringify( S ) );
+		values0 = [].concat.apply( [], Object.values( S ) ).toString();
 	}
-	$( '#save' ).toggleClass( 'disabled', V.enabled && ! changed )
+	$( '#save' ).toggleClass( 'disabled', S.enabled && ! changed )
 	$( '#undo' ).toggleClass( 'disabled', ! changed )
 	var optnamepin = '<option value="0">--- none ---</option>';
 	for ( i = 0; i < 4; i++ ) optnamepin += '<option value="'+ R.pin[ i ] +'">'+ R.name[ i ] || '(no name)' +'</option>';
