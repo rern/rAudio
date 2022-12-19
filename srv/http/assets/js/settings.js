@@ -50,8 +50,8 @@ var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbr
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( V.timeoutbanner );
-	V.timeoutbanner = setTimeout( bannerHide, delay );
+	clearTimeout( timeoutbanner );
+	timeoutbanner = setTimeout( bannerHide, delay );
 }
 function cancelSwitch( id ) {
 	$( '#'+ id ).prop( 'checked', V[ id ] );
