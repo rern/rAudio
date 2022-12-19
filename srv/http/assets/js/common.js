@@ -992,7 +992,6 @@ function selectSet( $select ) {
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
-	if ( $( '.select2' ).length ) $( 'select' ).select2( 'destroy' );
 	$select
 		.select2( options )
 		.on( 'select2:closing', () => select2 = 1 )
