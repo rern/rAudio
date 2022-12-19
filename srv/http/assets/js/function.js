@@ -1220,8 +1220,7 @@ function renderPlayback() {
 function renderPlaylist( data ) { // current playlist
 	V.savedlist      = 0;
 	V.savedplaylist  = 0;
-	S.elapsed = data.elapsed;
-	S.song    = data.song;
+	S.elapsed        = data.elapsed;
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
@@ -1601,7 +1600,7 @@ function setPlaylistScroll() {
 	var litop = $bartop.is( ':visible' ) ? 80 : 40;
 	$( '#menu-plaction' ).addClass( 'hide' );
 	$( '#pl-list li' ).removeClass( 'active updn' );
-	$liactive = $( '#pl-list li' ).eq( S.song || 0 );
+	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
 	if ( ! $( '.pl-remove' ).length && I.infohide ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
