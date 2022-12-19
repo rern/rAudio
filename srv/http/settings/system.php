@@ -116,16 +116,16 @@ mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</y
 <?php
 htmlSetting( [
 	  'label'    => 'Hard Drive Sleep'
-	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
+	, 'id'       => 'hddsleep'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
-	, 'id'       => 'usbautoupdate'
 	, 'sublabel' => 'data on USB'
 	, 'icon'     => 'refresh-library'
+	, 'id'       => 'usbautoupdate'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
@@ -140,18 +140,18 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Bluetooth'
-		, 'id'       => 'bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
+		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
 		, 'disabled' => $disabledbt
 		, 'help'     => '| I^gear^I | ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
-		, 'id'       => 'wlan'
 		, 'sublabel' => 'iw'
 		, 'icon'     => 'wifi'
+		, 'id'       => 'wlan'
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
@@ -193,9 +193,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Character LCD'
-		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
+		, 'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
@@ -204,9 +204,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Power Button'
-		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
+		, 'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
  · On - Fixed to pin 5
@@ -219,8 +219,8 @@ EOF
 	]
 	, [
 		  'label'   => 'Relay Module'
-		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
+		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: A^I^raudio^I System^AI^relays sub^I
@@ -230,8 +230,8 @@ EOF
 	],
 	[
 		  'label'    => 'Rotary Encoder'
-		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
+		, 'id'       => 'rotaryencoder'
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
@@ -240,21 +240,21 @@ EOF
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
-		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
+		, 'id'       => 'mpdoled'
 		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
-		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
+		, 'id'       => 'lcd'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
 		  'label'   => 'VU LED'
-		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
+		, 'id'      => 'vuled'
 		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
@@ -266,8 +266,8 @@ $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Host Name'
-		, 'id'      => 'hostname'
 		, 'icon'    => 'raudio'
+		, 'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
 		, 'help'    => <<< EOF
@@ -279,9 +279,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Time Zone'
-		, 'id'       => 'timezone'
 		, 'sublabel' => 'timedatectl'
 		, 'icon'     => 'globe'
+		, 'id'       => 'timezone'
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
@@ -289,9 +289,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Sound Profile'
-		, 'id'       => 'soundprofile'
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
+		, 'id'       => 'soundprofile'
 		, 'status'   => 'soundprofile'
 		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
@@ -301,8 +301,8 @@ $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
-		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
+		, 'id'      => 'backup'
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
 Backup all data and settings:
@@ -314,16 +314,16 @@ EOF
 	]
 	, [
 		  'label'   => 'Restore'
-		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
+		, 'id'      => 'restore'
 		, 'setting' => 'nobanner'
 		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [
 		  'label'    => 'Shared Data'
-		, 'id'       => 'shareddata'
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
+		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< EOF

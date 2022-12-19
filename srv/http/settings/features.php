@@ -20,9 +20,9 @@ $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'AirPlay'
-		, 'id'       => 'shairport-sync'
 		, 'sublabel' => 'shairport-sync'
 		, 'icon'     => 'airplay'
+		, 'id'       => 'shairport-sync'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
 		, 'disabled' => '<wh>AirPlay I^airplay^I</wh> is currently active.'
@@ -31,9 +31,9 @@ $body = [
 	]
 	, [
 		  'label'    => 'DAB Radio'
-		, 'id'       => 'dabradio'
 		, 'sublabel' => 'rtsp-server'
 		, 'icon'     => 'dabradio'
+		, 'id'       => 'dabradio'
 		, 'setting'  => false
 		, 'status'   => 'rtsp-simple-server'
 		, 'disabled' => 'No DAB devices found.'
@@ -43,8 +43,8 @@ $body = [
 	, [
 		  'label'    => 'SnapClient'
 		, 'sublabel' => 'snapclient'
-		, 'id'       => 'snapclient'
 		, 'icon'     => 'snapcast'
+		, 'id'       => 'snapclient'
 		, 'status'   => 'snapclient'
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently active.'
 		, 'help'     => <<< EOF
@@ -59,9 +59,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Spotify'
-		, 'id'       => 'spotifyd'
 		, 'sublabel' => 'spotifyd'
 		, 'icon'     => 'spotify'
+		, 'id'       => 'spotifyd'
 		, 'status'   => 'spotifyd'
 		, 'disabled' => '<wh>Spotify I^spotify^I</wh> is currently active.'
 		, 'help'     => <<< EOF
@@ -86,9 +86,9 @@ EOF
 	]
 	, [
 		  'label'    => 'UPnP'
-		, 'id'       => 'upmpdcli'
 		, 'sublabel' => 'upmpdcli'
 		, 'icon'     => 'upnp'
+		, 'id'       => 'upmpdcli'
 		, 'status'   => 'upmpdcli'
 		, 'disabled' => '<wh>UPnP I^upnp^I</wh> is currently active.'
 		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
@@ -102,9 +102,9 @@ $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
 	  'label'    => 'For browsers'
-	, 'id'       => 'httpd'
 	, 'sublabel' => 'MPD httpd'
 	, 'icon'     => 'webradio'
+	, 'id'       => 'httpd'
 	, 'setting'  => false
 	, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
@@ -112,9 +112,9 @@ EOF
 	]
 	, [
 		  'label'    => 'SnapServer'
-		, 'id'       => 'snapserver'
 		, 'sublabel' => 'MPD snapcast'
 		, 'icon'     => 'snapcast'
+		, 'id'       => 'snapserver'
 		, 'setting'  => false
 		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
@@ -132,9 +132,9 @@ $head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'DSP'
-		, 'id'       => 'camilladsp'
 		, 'sublabel' => 'camilladsp'
 		, 'icon'     => 'camilladsp'
+		, 'id'       => 'camilladsp'
 		, 'status'   => 'camilladsp'
 		, 'disabled' => $disableddsp
 		, 'help'     => <<< EOF
@@ -146,8 +146,8 @@ EOF
 	, [
 		  'label'    => 'Equalizer'
 		, 'sublabel' => 'alsaequal'
-		, 'id'       => 'equalizer'
 		, 'icon'     => 'equalizer'
+		, 'id'       => 'equalizer'
 		, 'setting'  => false
 		, 'disabled' => '<wh>DSP I^camilladsp^I</wh> is currently enabled.'
 		, 'help'     => <<< EOF
@@ -167,9 +167,9 @@ $head = [ 'title' => 'Others' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Access Point'
-		, 'id'       => 'hostapd'
 		, 'sublabel' => 'hostapd'
 		, 'icon'     => 'accesspoint'
+		, 'id'       => 'hostapd'
 		, 'status'   => 'hostapd'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
@@ -181,8 +181,8 @@ EOF
 	]
 	, [
 		  'label'   => 'AutoPlay'
-		, 'id'      => 'autoplay'
 		, 'icon'    => 'play'
+		, 'id'      => 'autoplay'
 		, 'help'    => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
@@ -192,9 +192,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Browser on RPi'
-		, 'id'       => 'localbrowser'
 		, 'sublabel' => 'chromium'
 		, 'icon'     => 'chromium'
+		, 'id'       => 'localbrowser'
 		, 'status'   => 'localbrowser'
 		, 'help'     => <<< EOF
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
@@ -208,9 +208,9 @@ EOF
 	]
 	, [
 		  'label'    => 'File Sharing'
-		, 'id'       => 'smb'
 		, 'sublabel' => 'smb'
 		, 'icon'     => 'networks'
+		, 'id'       => 'smb'
 		, 'status'   => 'smb'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< EOF
@@ -225,9 +225,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Lyrics in File'
-		, 'id'       => 'lyricsembedded'
 		, 'sublabel' => 'embedded ID3'
 		, 'icon'     => 'lyrics'
+		, 'id'       => 'lyricsembedded'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
  · Get embedded lyrics from local files.
@@ -238,8 +238,8 @@ EOF
 	]
 	, [
 		  'label'   => 'Multiple rAudios'
-		, 'id'      => 'multiraudio'
 		, 'icon'    => 'raudiobox'
+		, 'id'      => 'multiraudio'
 		, 'help'    => <<< EOF
 Switch between multiple rAudio devices.
 Switch: A^I^playlist^I Playlist^AI^raudiobox sub^I
@@ -249,9 +249,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Password Login'
-		, 'id'       => 'login'
 		, 'sublabel' => 'password_hash'
 		, 'icon'     => 'lock'
+		, 'id'       => 'login'
 		, 'setting'  => 'custom'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
@@ -260,9 +260,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Scrobbler'
-		, 'id'       => 'scrobble'
 		, 'sublabel' => 'Last.fm'
 		, 'icon'     => 'lastfm'
+		, 'id'       => 'scrobble'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
@@ -274,9 +274,9 @@ EOF
 	]
 	, [
 		  'label'       => 'Server rAudio'
-		, 'id'          => 'nfsserver'
 		, 'sublabel'    => 'nfs-server'
 		, 'icon'        => 'rserver'
+		, 'id'          => 'nfsserver'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'status'      => 'nfs-server'
@@ -305,8 +305,8 @@ EOF
 	]
 	, [
 		  'label'    => 'Stop Timer'
-		, 'id'       => 'stoptimer'
 		, 'icon'     => 'stopwatch'
+		, 'id'       => 'stoptimer'
 		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:
