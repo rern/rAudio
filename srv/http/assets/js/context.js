@@ -178,6 +178,7 @@ function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
 	var file   = V.list.path;
+	var dir    = dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
 	if ( !V.playlist && V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
@@ -274,10 +275,10 @@ function tagEditor() {
 					
 					var query = {
 						  query  : 'ls'
-						, string : file
+						, string : V.library ? file : dir
 						, format : [ 'file' ]
 					}
-					if ( cue ) file = dirName( file );
+					if ( cue ) file = dir;
 					list( query, function( html ) {
 						var data = {
 							  html      : html
