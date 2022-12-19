@@ -189,7 +189,7 @@ heading i.fa-status {
 heading.status i.fa-status {
 	display: inline-block;
 }
-heading i.fa-help {
+heading i.help {
 	float: right;
 	width: 40px;
 	font-size: 22px;
@@ -507,7 +507,7 @@ input.disabled + .switchlabel:after {
 	text-align: center;
 }
 .col-r {
-	width: calc( 100% - 170px );
+	width: calc( 100% - 165px );
 	padding-right: 0;
 	padding-left: 0 !important;
 	font-weight: normal;
@@ -559,6 +559,9 @@ input.disabled + .switchlabel:after {
 	}
 	.head {
 		padding-right: 0 !important;
+	}
+	heading i.help {
+		margin-right: -10px;
 	}
 	wide {
 		display: none;
