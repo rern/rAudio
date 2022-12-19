@@ -173,9 +173,9 @@ $( '#setting-autoplay' ).click( function() {
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
-	var v          = V.localbrowserconf;
-	var brightness = v.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
-	var content    = `
+	var val            = V.localbrowserconf;
+	var htmlbrightness = val.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var content        = `
 <table>
 <tr><td style="width:130px">Rotation</td>
 	<td><select>
@@ -205,7 +205,7 @@ $( '#setting-localbrowser' ).click( function() {
 	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
 <tr style="height: 10px"></tr>
 </table>
-${ brightness }
+${ htmlbrightness }
 <div class="btnbottom">
 	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
 	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
@@ -217,10 +217,10 @@ ${ brightness }
 		, title        : title
 		, content      : content
 		, boxwidth     : 110
-		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
+		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.brightness ]
 		, checkchanged : V.localbrowser
 		, beforeshow   : () => {
-			$( '#onwhileplay' ).prop( 'disabled', V.screenoff === 0 );
+			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! V.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up   = $( this ).hasClass( 'up' );
@@ -243,7 +243,7 @@ ${ brightness }
 			$( '.screenoff' ).click( function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
-			if ( v.brightness ) {
+			if ( val.brightness ) {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
 				} ).on( 'touchend mouseup keyup', function() {
