@@ -92,7 +92,7 @@ metadataGet() {
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "elapsed"  : '$( getStatus elapsed )'
+, "elapsed"  : '$( getElapsed )'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"

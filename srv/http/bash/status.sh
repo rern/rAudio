@@ -364,7 +364,7 @@ $radiosampling" > $dirshm/radio
 , "webradio"     : true'
 	if [[ $id ]]; then
 		sampling="$(( song + 1 ))/$pllength • $radiosampling"
-		elapsed=$( getStatus elapsed )
+		elapsed=$( getElapsed )
 ########
 		status+='
 , "coverart"     : "'$coverart'"
@@ -505,7 +505,7 @@ status+='
 , "sampling" : "'$sampling'"'
 
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
-	elapsed=$( getStatus elapsed )
+	elapsed=$( getElapsed )
 # >>>>>>>>>> webradio with found coverart
 	status+='
 , "elapsed"  : '$elapsed
@@ -520,7 +520,7 @@ $Album
 $filenoesc" )
 	[[ $coverart ]] && coverart="$coverart"
 fi
-elapsed=$( getStatus elapsed )
+elapsed=$( getElapsed )
 ########
 	status+='
 , "elapsed"  : '$elapsed'

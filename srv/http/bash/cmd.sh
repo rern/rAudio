@@ -531,6 +531,9 @@ equalizerupdn )
 	val=${args[2]}
 	sudo -u mpd amixer -D equal sset "$band" $val
 	;;
+getelapsed )
+	getElapsed
+	;;
 ignoredir )
 	touch $dirmpd/updating
 	path=${args[1]}
