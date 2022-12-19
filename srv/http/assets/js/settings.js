@@ -195,7 +195,7 @@ pushstream.onmessage = function( data, id, channel ) {
 function psBluetooth( data ) {
 	if ( ! data ) {
 		if ( page === 'networks' ) {
-			V.listbt = data;
+			S.listbt = data;
 			renderBluetooth();
 		} else if ( page === 'system' ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
@@ -207,7 +207,7 @@ function psBluetooth( data ) {
 			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
 		}
 	} else if ( page === 'networks' ) {
-		V.listbt = data;
+		S.listbt = data;
 		renderBluetooth();
 	}
 }
@@ -274,7 +274,7 @@ function psWlan( data ) {
 		return
 	}
 	
-	V.listwl = data;
+	S.listwl = data;
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------

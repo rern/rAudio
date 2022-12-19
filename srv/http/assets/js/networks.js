@@ -1,5 +1,7 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+L = {}
+
 $( 'body' ).click( function() {
 	$( '#menu' ).addClass( 'hide' );
 	$( '#codebluetooth' )
@@ -84,30 +86,29 @@ $( '.lanadd' ).click( function() {
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
-	S.li = $( this );
-	if ( S.li.hasClass( 'accesspoint' ) ) return
+	L.li = $( this );
+	if ( L.li.hasClass( 'accesspoint' ) ) return
 	
-	S.list     = S.li.parent().prop( 'id' );
-	S.liactive = S.li.hasClass( 'active' );
+	L.id       = L.li.parent().prop( 'id' );
 	if ( ! $( '#menu' ).hasClass( 'hide' ) ) {
 		$( '#menu' ).addClass( 'hide' );
-		if ( S.liactive ) return
+		if ( L.li.hasClass( 'active' ) ) return
 	}
 	
 	$( 'li' ).removeClass( 'active' );
-	S.li.addClass( 'active' );
-	if ( S.list === 'listbt' ) {
-		var connected = S.li.find( 'grn' ).length === 1;
+	L.li.addClass( 'active' );
+	if ( L.id === 'listbt' ) {
+		var connected = L.li.find( 'grn' ).length === 1;
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu' ).find( '.forget, .info' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', connected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', ! connected );
-		$( '#menu .info' ).toggleClass( 'hide', S.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
-	} else if ( S.list === 'listlan' ) {
+		$( '#menu .info' ).toggleClass( 'hide', L.li.data( 'mac' ) === $( '#codebluetooth' ).data( 'mac' ) );
+	} else if ( L.id === 'listlan' ) {
 		$( '#menu a' ).addClass( 'hide' );
 		$( '#menu .edit' ).removeClass( 'hide' );
 	} else {
-		var notconnected = S.li.hasClass( 'notconnected' );
+		var notconnected = L.li.hasClass( 'notconnected' );
 		$( '#menu a' ).removeClass( 'hide' );
 		$( '#menu .connect' ).toggleClass( 'hide', ! notconnected );
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
@@ -116,17 +117,17 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	var menuH = $( '#menu' ).height();
 	$( '#menu' )
 		.removeClass( 'hide' )
-		.css( 'top', S.li.position().top + 48 );
+		.css( 'top', L.li.position().top + 48 );
 	var targetB = $( '#menu' ).offset().top + menuH;
 	var wH      = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( '.connect' ).click( function() {
 	clearTimeout( V.timeoutscan );
-	if ( S.list === 'listbt' ) {
-		var icon = S.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( icon, S.li.data( 'name' ), 'Connect ...' );
-		bluetoothCommand( 'connect', S.li.data( 'mac' ) );
+	if ( L.id === 'listbt' ) {
+		var icon = L.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		notify( icon, L.li.data( 'name' ), 'Connect ...' );
+		bluetoothCommand( 'connect', L.li.data( 'mac' ) );
 		return
 	}
 	
@@ -135,19 +136,19 @@ $( '.connect' ).click( function() {
 		return
 	}
 	
-	var ssid = S.li.data( 'ssid' );
+	var ssid = L.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Connect ...' );
 	bash( [ 'profileconnect', ssid ] );
 } );
 $( '.disconnect' ).click( function() {
-	if ( S.list === 'listbt' ) {
-		var icon = S.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( icon, S.li.data( 'name' ), 'Disconnect ...' );
-		bluetoothCommand( 'disconnect', S.li.data( 'mac' ) );
+	if ( L.id === 'listbt' ) {
+		var icon = L.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		notify( icon, L.li.data( 'name' ), 'Disconnect ...' );
+		bluetoothCommand( 'disconnect', L.li.data( 'mac' ) );
 		return
 	}
 	
-	var ssid = S.li.data( 'ssid' );
+	var ssid = L.li.data( 'ssid' );
 	var icon = 'wifi';
 	info( {
 		  icon    : icon
@@ -161,12 +162,12 @@ $( '.disconnect' ).click( function() {
 	} );
 } );
 $( '.edit' ).click( function() {
-	S.list === 'listwl' ? editWiFi() : editLAN();
+	L.id === 'listwl' ? editWiFi() : editLAN();
 } );
 $( '.forget' ).click( function() {
-	if ( S.list === 'listbt' ) {
-		var name = S.li.data( 'name' );
-		var icon = S.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+	if ( L.id === 'listbt' ) {
+		var name = L.li.data( 'name' );
+		var icon = L.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
 		info( {
 			  icon    : icon
 			, title   : name
@@ -175,13 +176,13 @@ $( '.forget' ).click( function() {
 			, okcolor : red
 			, ok      : () => {
 				notify( icon, name, 'Forget ...' );
-				bluetoothCommand( 'remove', S.li.data( 'mac' ) );
+				bluetoothCommand( 'remove', L.li.data( 'mac' ) );
 			}
 		} );
 		return
 	}
 	
-	var ssid = S.li.data( 'ssid' );
+	var ssid = L.li.data( 'ssid' );
 	var icon = 'wifi';
 	info( {
 		  icon    : icon
@@ -196,7 +197,7 @@ $( '.forget' ).click( function() {
 	} );
 } );
 $( '.info' ).click( function() {
-	bluetoothInfo( S.li.data( 'mac' ) );
+	bluetoothInfo( L.li.data( 'mac' ) );
 } );
 $( '.hostapdset' ).click( function() {
 	var icon  = 'accesspoint';
@@ -320,7 +321,7 @@ function editLANSet( values ) {
 	} );
 }
 function editWiFi() {
-	bash( [ 'profileget', S.li.data( 'ssid' ) ], values => infoWiFi( values ), 'json' );
+	bash( [ 'profileget', L.li.data( 'ssid' ) ], values => infoWiFi( values ), 'json' );
 }
 function infoAccesspoint() {
 	info( {
