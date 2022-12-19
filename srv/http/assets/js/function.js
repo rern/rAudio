@@ -402,8 +402,7 @@ function displaySave( keys ) {
 	var values  = infoVal();
 	var display = JSON.parse( JSON.stringify( D ) );
 	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
-	[ 'audiocd', 'color',     'equalizer',  'logout',           'order',
-	  'relays',  'screenoff', 'snapclient', 'volumenone' ].forEach( item => delete display[ item ] );
+	[ 'audiocd', 'color', 'equalizer', 'logout', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
 }
 function displaySubMenu() {
@@ -416,8 +415,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-camilladsp', D.camilladsp )
 		.toggleClass( 'fa-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
-	var submenu   = [ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ];
-	submenu.forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
+	[ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ].forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( V.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {

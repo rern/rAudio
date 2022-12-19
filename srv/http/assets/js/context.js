@@ -338,7 +338,7 @@ function webRadioCoverart() {
 		var type      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-		var name      =  V.list.name;
+		var name      = V.list.name;
 	}
 	var imagefilenoext = '/srv/http/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 	$( '#coverart' ).removeAttr( 'style' );

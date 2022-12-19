@@ -220,7 +220,7 @@ ${ brightness }
 		, values       : [ v.rotate, v.zoom, v.cursor, v.screenoff, v.onwhileplay, v.brightness ]
 		, checkchanged : V.localbrowser
 		, beforeshow   : () => {
-			$( '#onwhileplay' ).prop( 'disabled', v.screenoff === 0 );
+			$( '#onwhileplay' ).prop( 'disabled', V.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! V.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up   = $( this ).hasClass( 'up' );
