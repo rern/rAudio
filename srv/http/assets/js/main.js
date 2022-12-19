@@ -1480,8 +1480,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', imagepath, name ] )
 		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
 	} );
-} )
-$( '#lib-mode-list' ).press( '.mode-bookmark', setBookmarkEdit );
+} ).press( '.mode-bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
@@ -1555,16 +1554,14 @@ Exclude this thumbnail?`
 	} else {
 		coverartChange();
 	}
-} );
-$( '#page-library' ).press( '.licoverimg',  function( e ) {
+} ).press( '.licoverimg',  function( e ) {
 	var $this = $( e.currentTarget );
 	$this.parent().removeClass( 'active' );
 	$( '#menu-album' ).addClass( 'hide' );
 	$this.find( 'img' )
 		.css( 'opacity', '0.33' )
 		.after( icoveredit );
-} );
-$( '#page-library' ).on( 'click', '#lib-list li', function( e ) {
+} ).on( 'click', '#lib-list li', function( e ) {
 	e.stopPropagation();
 	if ( V.press ) return
 	

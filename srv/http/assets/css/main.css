@@ -1351,6 +1351,7 @@ i.map.disabled, .map.disabled i {
 	width: 28px !important;
 }
 .infoimgname {
+	line-height: 25px;
 	clear: both;
 	margin: 0;
 }
