@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# restartMPD                  - simple changes
-# $dirsettings/player-conf.sh - complex changes
-
 . /srv/http/bash/common.sh
 
 # convert each line to each args
@@ -10,10 +7,6 @@ readarray -t args <<< $1
 
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}${args[0]}.conf
-}
-restartMPD() {
-	systemctl restart mpd
-	pushRefresh
 }
 volumeGet() {
 	card=$( < $dirsystem/asoundcard )
@@ -39,7 +32,8 @@ audiooutput )
 	;;
 autoupdate | ffmpeg | normalization )
 	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/${args[0]}.conf
-	restartMPD
+	systemctl restart mpd
+	pushRefresh
 	;;
 albumignore )
 	cat $dirmpd/albumignore
@@ -64,7 +58,7 @@ buffer | outputbuffer )
 	else
 		rm $dirmpdconf/$type.conf
 	fi
-	restartMPD
+	$dirsettings/player-conf.sh
 	;;
 crossfade )
 	if [[ ${args[1]} == true ]]; then
@@ -148,7 +142,7 @@ dop )
 	else
 		rm -f "$dirsystem/dop-${args[2]}"
 	fi
-	restartMPD
+	$dirsettings/player-conf.sh
 	;;
 filetype )
 	type=$( mpd -V \
@@ -259,7 +253,8 @@ EOF
 	else
 		rm -f $dirsystem/soxr
 	fi
-	restartMPD
+	systemctl restart mpd
+	pushRefresh
 	;;
 volume0db )
 	card=$( < $dirsystem/asoundcard )
