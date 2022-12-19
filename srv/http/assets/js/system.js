@@ -63,12 +63,12 @@ $( '.refresh' ).click( function( e ) {
 	
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intCputime );
+		clearInterval( intervalstatus );
 		bannerHide();
 		$this.removeClass( 'blink wh' );
 	} else {
 		$this.addClass( 'blink wh' );
-		V.intCputime = setInterval( getStatus, 10000 );
+		intervalstatus = setInterval( getStatus, 10000 );
 	}
 } );
 $( '.addnas' ).click( function() {

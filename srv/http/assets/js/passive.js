@@ -182,8 +182,8 @@ function psEqualizer( data ) {
 	infoEqualizer( 'update' );
 }
 function psMpdPlayer( data ) {
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( debounce );
+	debounce = setTimeout( () => {
 		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
@@ -198,7 +198,7 @@ function psMpdPlayer( data ) {
 		} else if ( V.playlist ) {
 			setPlaylistScroll();
 		}
-	}, V.debouncems );
+	}, 300 );
 }
 function psMpdRadio( data ) {
 	statusUpdate( data );
@@ -227,8 +227,8 @@ function psMpdUpdate( data ) {
 		return
 	}
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( debounce );
+	debounce = setTimeout( () => {
 		C             = data;
 		S.updating_db = false;
 		S.updatingdab = false;
@@ -286,8 +286,8 @@ function psPlaylist( data ) {
 		&& ( V.local || V.sortable || $( '.pl-remove' ).length )
 	) return
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( debounce );
+	debounce = setTimeout( () => {
 		if ( data == -1 ) {
 			setPlaybackBlank();
 			renderPlaylist( -1 );
@@ -303,7 +303,7 @@ function psPlaylist( data ) {
 			if ( V.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
 		}
 		getPlaybackStatus();
-	}, V.debouncems );
+	}, 300 );
 }
 function psRadioList( data ) {
 	if ( 'count' in data ) {
@@ -415,8 +415,8 @@ function psVolume( data ) {
 		return
 	}
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( debounce );
+	debounce = setTimeout( () => {
 		if ( data.type === 'mute' ) {
 			S.volume     = 0;
 			S.volumemute = data.val;
@@ -425,7 +425,7 @@ function psVolume( data ) {
 			S.volumemute = 0;
 		}
 		setVolume();
-	}, V.debouncems );
+	}, 300 );
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

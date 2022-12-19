@@ -20,7 +20,10 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+
 V              = {}
+var timeoutscan;
+
 var dirbash    = '/srv/http/bash/settings/';
 var playersh   = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
@@ -166,13 +169,13 @@ function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
 			bash( 'killall -q networks-scan.sh &> /dev/null' );
-			clearTimeout( V.timeoutScan );
+			clearTimeout( timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
 	} else if ( page === 'system' ) {
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( V.intCputime );
+			clearInterval( intervalstatus );
 			$( '#refresh' ).removeClass( 'blink' );
 		}
 	}
@@ -213,7 +216,7 @@ function psNotify( data ) {
 	var title    = data.title;
 	var message  = data.message;
 	var delay    = data.delay;
-	V.bannerhold = data.hold || 0;
+	bannerhold   = data.hold || 0;
 	banner( icon, title, message, delay );
 	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
@@ -240,8 +243,8 @@ function psReload( data ) {
 function psVolume( data ) {
 	if ( ! $( '#infoRange .value' ).text() ) return
 	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	clearTimeout( debounce );
+	debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );

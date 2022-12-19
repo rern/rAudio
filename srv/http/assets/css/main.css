@@ -1322,6 +1322,7 @@ i.map.disabled, .map.disabled i {
 }
 .coveredit {
 	position: absolute;
+	right: 0;
 	bottom: 0;
 	width: 34px;
 	height: 34px;
@@ -1341,9 +1342,6 @@ i.map.disabled, .map.disabled i {
 	background: var( --cw );
 	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
-}
-.coveredit.cover {
-	right: 0;
 }
 #bannerIcon .iconcover {
 	margin: 3px;

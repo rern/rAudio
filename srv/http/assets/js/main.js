@@ -11,8 +11,6 @@ V = {   // var global
 	, coverart      : '/assets/img/coverart.svg'
 	, coversave     : 0
 	, covervu       : '/assets/img/vu.svg'
-	, debounce      : ''
-	, debouncems    : 300
 	, guide         : 0
 	, library       : 0
 	, librarylist   : 0

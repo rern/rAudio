@@ -6,7 +6,7 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
-var timeoutbanner;
+var bannerhold, debounce, intervalstatus, timeoutbanner, timeoutfile;
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
@@ -23,11 +23,11 @@ function banner( icon, title, message, delay ) {
 }
 function bannerHide() {
 	if ( $( '#banner' ).hasClass( 'hide' ) ) return
-	if ( V.bannerhold ) {
+	if ( bannerhold ) {
 		setTimeout( () => {
-			V.bannerhold = 0;
+			bannerhold = 0;
 			bannerHide();
-		}, V.bannerhold );
+		}, bannerhold );
 		return
 	}
 	
@@ -611,8 +611,8 @@ function infoCheckSet() {
 }
 function infoFileImage() {
 	delete I.infofilegif;
-	V.timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
-	V.rotate      = 0;
+	timeoutfile = setTimeout( () => banner( 'refresh blink', 'Change Image', 'Load ...', -1 ), 1000 );
+	I.rotate      = 0;
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
@@ -633,7 +633,7 @@ function infoFileImage() {
 						var imgH   = img.height;
 						var resize = infoFileImageResize( 'gif', imgW, imgH );
 						infoFileImageRender( img.src, imgW +' x '+ imgH, resize ? resize.wxh : '' );
-						clearTimeout( V.timeoutfile );
+						clearTimeout( timeoutfile );
 						bannerHide();
 					}
 				} else {
@@ -667,7 +667,7 @@ function infoFileImageReader() {
 			} else {
 				infoFileImageRender( filecanvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH );
 			}
-			clearTimeout( V.timeoutfile );
+			clearTimeout( timeoutfile );
 			bannerHide();
 		}
 	}
@@ -677,8 +677,8 @@ function infoFileImageReader() {
 		.on( 'click', '.infoimgnew', function() {
 		if ( ! $( '.infomessage .rotate' ).length ) return
 		
-		V.rotate     += 90;
-		if ( V.rotate === 360 ) V.rotate = 0;
+		I.rotate     += 90;
+		if ( I.rotate === 360 ) I.rotate = 0;
 		var canvas    = document.createElement( 'canvas' );
 		var ctx       = canvas.getContext( '2d' );
 		var image     = $( this )[ 0 ];

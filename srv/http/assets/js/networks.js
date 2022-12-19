@@ -9,7 +9,7 @@ $( 'body' ).click( function() {
 	$( 'li' ).removeClass( 'active' );
 } );
 $( '.back' ).click( function() {
-	clearTimeout( V.timeoutScan );
+	clearTimeout( timeoutscan );
 	$( '#help, #divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
@@ -122,7 +122,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
 $( '.connect' ).click( function() {
-	clearTimeout( V.timeoutScan );
+	clearTimeout( timeoutscan );
 	if ( V.list === 'listbt' ) {
 		var icon = V.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
 		notify( icon, V.li.data( 'name' ), 'Connect ...' );
@@ -244,7 +244,7 @@ function bluetoothInfo( mac ) {
 	} );
 }
 function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., password:..., ssid:..., wpa:... }
-	clearTimeout( V.timeoutScan );
+	clearTimeout( timeoutscan );
 	var ssid = data.ESSID;
 	var icon = 'wifi';
 	if ( 'Address' in data ) {
@@ -495,7 +495,7 @@ function scanBluetooth() {
 			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>' );
 			$( '#listbtscan' ).html( htmlbt );
 		}
-		V.timeoutScan = setTimeout( scanBluetooth, 12000 );
+		timeoutscan = setTimeout( scanBluetooth, 12000 );
 	}, 'json' );
 }
 function scanWlan() {
@@ -521,6 +521,6 @@ function scanWlan() {
 			var htmlwl = '<li><gr>(no accesspoints found)</gr></li>';
 		}
 		$( '#listwlscan' ).html( htmlwl );
-		V.timeoutScan = setTimeout( scanWlan, 12000 );
+		timeoutscan = setTimeout( scanWlan, 12000 );
 	}, 'json' );
 }
