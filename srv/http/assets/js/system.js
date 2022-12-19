@@ -77,7 +77,7 @@ $( '.addnas' ).click( function() {
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $this = $( this );
-	S.li      = $this;
+	V.li      = $this;
 	var active = $this.hasClass( 'active' );
 	$( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
@@ -116,7 +116,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 $( '#menu a' ).click( function() {
 	var $this      = $( this );
 	var cmd        = $this.prop( 'class' );
-	var list       = S.list[ S.li.index() ];
+	var list       = S.list[ V.li.index() ];
 	var mountpoint = list.mountpoint;
 	var source     = list.source;
 	if ( mountpoint.slice( 9, 12 ) === 'NAS' ) {

@@ -21,8 +21,8 @@ function bash( command, callback, json ) {
 	);
 }
 
-S              = {}
-V              = {}
+S              = {} // status
+V              = {} // var global
 
 var dirbash    = '/srv/http/bash/settings/';
 var playersh   = dirbash +'player.sh ';
