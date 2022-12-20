@@ -1332,13 +1332,13 @@ i.map.disabled, .map.disabled i {
 	left: 0;
 }
 .coveredit.cover-save i {
-	width: 30px;
+	width: 30px !important;
 	height: 30px;
 	margin-left: 2px;
 	font-size: 24px;
-	line-height: 30px;
+	line-height: 30px !important;
 	text-align: center;
-	color: #000000;
+	color: var( --cgd ) !important;
 	background: var( --cw );
 	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;

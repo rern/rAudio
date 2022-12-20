@@ -1549,7 +1549,7 @@ Exclude this thumbnail?`
 	var artist  = $thisli.find( '.liartist' ).text();
 	var lipath  = $thisli.next().find( '.lipath' ).text();
 	var path    = '/mnt/MPD/'+ dirName( lipath );
-	if ( $this.hasClass( 'fa-save' ) ) {
+	if ( $this.hasClass( 'cover-save' ) ) {
 		coverartSave();
 	} else {
 		coverartChange();
