@@ -17,7 +17,7 @@ localfile=$dirshm/local/$localname
 if [[ -f $localfile ]]; then
 	localpath=$( cat $localfile )
 	if [[ -e $localpath ]]; then
-		echo $localpath
+		php -r "echo rawurlencode( '${localpath//\'/\\\'}' );"
 		exit
 	else
 		rm $localfile
