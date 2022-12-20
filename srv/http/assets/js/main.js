@@ -124,7 +124,7 @@ $( '#loader' ).click( function() {
 	loaderHide();
 } );
 $( '#coverart' ).on( 'load', function() {
-	if ( S.player === 'mpd' && S.coverart.slice( 10, 16 ) === 'online' && S.file.slice( 0, 4 ) !== 'http' ) {
+	if ( S.player === 'mpd' && S.coverart.slice( 10, 16 ) === 'online' && ! S.stream ) {
 		$( '#coverart' ).after( icoversave );
 	} else {
 		$( '#divcover .coveredit' ).remove();

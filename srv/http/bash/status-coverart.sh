@@ -14,7 +14,16 @@ path="/mnt/MPD/$file"
 # found cover file
 localname=$( tr -d ' "`?/#&'"'" <<< $path )
 localfile=$dirshm/local/$localname
-[[ -f $localfile ]] && cat $localfile && exit
+if [[ -f $localfile ]]; then
+	localpath=$( cat $localfile )
+	if [[ -e $localpath ]]; then
+		echo $localpath
+		exit
+	else
+		rm $localfile
+	fi
+fi
+
 # found embedded
 embeddedname=$( tr -d ' "`?/#&'"'" <<< $filename ).jpg
 embeddedfile=$dirshm/embedded/$embeddedname
@@ -28,8 +37,8 @@ onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head
 coverfile=$( ls -1X "$path"/cover.{gif,jpg,png} 2> /dev/null | head -1 )
 [[ ! $coverfile ]] && coverfile=$( ls -1X "$path"/*.{gif,jpg,png} 2> /dev/null | grep -E -i -m1 '/album\....$|cover\....$|/folder\....$|/front\....$' )
 if [[ $coverfile ]]; then
-	coverfile=$( php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );" ) # rawurlencode - local path only
-	echo $coverfile | tee $localfile
+	echo $coverfile > $localfile
+	php -r "echo rawurlencode( '${coverfile//\'/\\\'}' );"
 	$dirbash/cmd.sh coverfileslimit
 	exit
 fi
