@@ -1123,7 +1123,7 @@ function renderLibraryList( data ) {
 	var html = data.html.replaceAll( '^^^', hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
-			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 5 ) === '/data' ) $( '.licoverimg ' ).append( icoversave );
+			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( icoversave );
 		} else {
 			imageLoad( 'lib-list' );
 		}
