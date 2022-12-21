@@ -86,6 +86,9 @@ $menulist = [
 	, [ 'pldelete', 'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
+// radio bookmark
+$html = menucommon( 'wradd', 'wrreplace' );
+$menu.= menudiv( 'bkradio', $html );
 // radio
 $html = menucommon( 'add', 'replace' );
 $menu.= menudiv( 'radio', $html );

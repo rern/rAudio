@@ -768,8 +768,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
 				+ V.list.li.find( '.li2' )[ 0 ].outerHTML;
 		msg     = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
+	} else if ( V.list.path.slice( 0, 4 ) === 'http' ) {
+		var msg = V.list.name;
 	} else {
-		var msg = V.list.li.find( '.lipath' ).text() || V.list.li.find( '.liname' ).text();
+		var msg = V.list.path || V.list.li.find( '.liname' ).text();
 	}
 	if ( D.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
 		infoReplace( () => addReplace( cmd, command, title, msg ) );
