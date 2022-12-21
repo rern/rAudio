@@ -930,12 +930,10 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 				}
 				
 				delete V.reboot;
-				refreshData();
 				loaderHide();
-			} else {
-				refreshData();
-				bannerHide();
 			}
+			refreshData();
+			bannerHide();
 		} else if ( status === 0 ) { // disconnected
 			pushstreamDisconnect();
 			if ( V.off ) {
