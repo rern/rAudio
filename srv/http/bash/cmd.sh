@@ -65,7 +65,9 @@ plAddPosition() {
 	fi
 }
 plAddRandom() {
-	plLengthSong
+	total=$( getStatus playlistlength )
+	pos=$( getStatus song )
+	tail=$(( total - pos ))
 	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
@@ -91,15 +93,6 @@ plAddRandom() {
 		> $dirsystem/librandom
 	fi
 	(( $tail > 1 )) || plAddRandom
-}
-plLengthSong() {
-	readarray -t status <<< $( { echo status; sleep 0.05; } \
-										| telnet 127.0.0.1 6600 2> /dev/null \
-										| grep -E '^playlistlength:|^song:' \
-										| cut -d' ' -f2 )
-	total=${status[0]}
-	pos=$(( ${status[1]} + 1 ))
-	tail=$(( total - pos ))
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -309,9 +302,6 @@ audiocdtag )
 	discid=${args[3]}
 	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
 	pushstreamPlaylist
-	;;
-autoplaystatus )
-	[[ -e $dirsystem/autoplay ]] && $dirbash/status-push.sh
 	;;
 bookmarkadd )
 	name=${args[1]//\//|}
@@ -538,6 +528,9 @@ equalizerupdn )
 	val=${args[2]}
 	sudo -u mpd amixer -D equal sset "$band" $val
 	;;
+getelapsed )
+	getElapsed
+	;;
 ignoredir )
 	touch $dirmpd/updating
 	path=${args[1]}
@@ -560,7 +553,9 @@ librandom )
 	else
 		[[ ${args[2]} == true ]] && play=1
 		mpc -q random 0
-		plLengthSong
+		total=$( getStatus playlistlength )
+		pos=$( getStatus song )
+		tail=$(( total - pos ))
 		if [[ $play ]]; then
 			playnext=$(( total + 1 ))
 			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
@@ -920,10 +915,7 @@ power )
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
-	if [[ -e $dirshm/relayson ]]; then
-		$dirsettings/relays.sh
-		sleep 2
-	fi
+	[[ -e $dirshm/relayson ]] && $dirsettings/relays.sh && sleep 2
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q -m1 $dirnas; then
@@ -931,8 +923,10 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-	[[ $action == off && -e $dirsystem/lcdchar ]] && lcdchar.py off
-	[[ $action == reboot ]] && reboot || poweroff
+	[[ $action == reboot ]] && reboot && exit
+	
+	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
+	poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit

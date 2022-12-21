@@ -39,9 +39,9 @@ $body = [
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
 I^volume^I Volume setting and control:
- • Player: Should be set at 0dB
- • Playback: Should be set at 100%
- • Use device volume to control level
+ · Player: Should be set at 0dB
+ · Playback: Should be set at 100%
+ · Use device volume to control level
 EOF
 	]
 	, [
@@ -89,11 +89,11 @@ $body = [
 		, 'settingicon' => false
 		, 'help'        => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
- • No changes in data stream until it reaches amplifier volume control.
- • Mixer device volume: | 0dB |
- • Volume Control: | None / 0db |
- • Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
- • Disable Signal Processors
+ · No changes in data stream until it reaches amplifier volume control.
+ · Mixer device volume: | 0dB |
+ · Volume Control: | None / 0db |
+ · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
+ · Disable Signal Processors
 
 Note: Not for DACs with on-board amplifier.
 EOF
@@ -105,34 +105,37 @@ EOF
 		, 'settingicon' => false
 		, 'help'        => <<< EOF
 For DSD-capable devices without drivers dedicated for native DSD.
- • Enable if there's static/no sound from the DAC which means not support as native DSD.
- • DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
- • PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
- • On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
+ · Enable if there's static/no sound from the DAC which means not support as native DSD.
+ · DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
+ · PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
+ · On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
 EOF
 	]
 ];
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'label'   => 'Cross-Fading'
-		, 'id'      => 'crossfade'
-		, 'help'    => <<< EOF
+	[	  'label'    => 'Cross-Fading'
+		, 'sublabel' => 'crossfade'
+		, 'id'       => 'crossfade'
+		, 'help'     => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
 EOF
 	]
 	, [
-		  'label'   => 'Normalization'
-		, 'id'      => 'normalization'
-		, 'setting' => false
-		, 'help'    => <<< EOF
+		  'label'    => 'Normalization'
+		, 'sublabel' => 'volume_normalization'
+		, 'id'       => 'normalization'
+		, 'setting'  => false
+		, 'help'     => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
 	] 
 	, [
-		  'label'   => 'ReplayGain'
-		, 'id'      => 'replaygain'
-		, 'help'    => <<< EOF
+		  'label'    => 'ReplayGain'
+		, 'sublabel' => 'replaygain'
+		, 'id'       => 'replaygain'
+		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 EOF
@@ -145,8 +148,8 @@ $head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Buffer - Audio'
+		, 'sublabel' => 'audio_buffer'
 		, 'id'       => 'buffer'
-		, 'sublabel' => 'custom size'
 		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 
@@ -155,8 +158,8 @@ EOF
 	]
 	, [
 		  'label'    => 'Buffer - Output'
+		, 'sublabel' => 'max_output_buffer'
 		, 'id'       => 'outputbuffer'
-		, 'sublabel' => 'custom size'
 		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 
@@ -165,8 +168,8 @@ EOF
 	]
 	, [
 		  'label'    => 'FFmpeg'
+		, 'sublabel' => 'decoder'
 		, 'id'       => 'ffmpeg'
-		, 'sublabel' => 'decoder plugin'
 		, 'setting'  => false
 		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
 		, 'help'     => <<< EOF
@@ -176,15 +179,17 @@ Decoder for audio filetypes: I^help filetype^I
 EOF
 	]
 	, [
-		  'label'   => 'Library Auto Update'
-		, 'id'      => 'autoupdate'
-		, 'setting' => false
-		, 'help'    => 'Automatic update MPD database when files changed.'
+		  'label'    => 'Library Auto Update'
+		, 'sublabel' => 'auto_update'
+		, 'id'       => 'autoupdate'
+		, 'setting'  => false
+		, 'help'     => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		  'label'  => 'SoX Resampler'
-		, 'id'     => 'soxr'
-		, 'help'   => <<< EOF
+		  'label'    => 'SoX Resampler'
+		, 'sublabel' => 'resampler'
+		, 'id'       => 'soxr'
+		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
 | I^gear^I |
@@ -192,12 +197,12 @@ EOF
 	(default: Quality - | Very high |, Threads - | Single |)
 	
  • Custom quality:
-	- Precision - Conversion precision (20 = HQ)
-	- Phase Response (50 = Linear)
-	- Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
-	- Stopband Begin - Aliasing/imaging control
-	- Attenuation - Lowers the source to prevent clipping
-	 - Flags / Extra settings:
+	· Precision - Conversion precision (20 = HQ)
+	· Phase Response (50 = Linear)
+	· Passband End - 0dB point bandwidth to preserve (100 = Nyquist)
+	· Stopband Begin - Aliasing/imaging control
+	· Attenuation - Lowers the source to prevent clipping
+	· Flags / Extra settings:
 <pre>
 |  0 - Rolloff - small  | (<= 0.01 dB)
 |  1 - Rolloff - medium | (<= 0.35 dB)
@@ -209,9 +214,10 @@ EOF
 EOF
 	]
 	, [
-		  'label'   => "User's Configurations"
-		, 'id'      => 'custom'
-		, 'help'    => 'Insert custom configurations into <c>mpd.conf</c>.'
+		  'label'    => "User's Configurations"
+		, 'sublabel' => 'custom'
+		, 'id'       => 'custom'
+		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
 htmlSection( $head, $body, 'options' );
@@ -227,9 +233,9 @@ htmlHead( [
 	, 'help'    => <<< EOF
 List of albums excluded from Album page.
 To restore:
- • Edit <c>/srv/http/data/mpd/albumignore</c>
- • Remove albums to restore
- • Update Library
+ · Edit <c>/srv/http/data/mpd/albumignore</c>
+ · Remove albums to restore
+ · Update Library
 EOF
 ] );
 htmlHead( [

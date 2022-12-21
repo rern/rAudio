@@ -9,8 +9,7 @@ readarray -t args <<< $1
 cmd=${args[0]}
 
 if [[ $cmd == save ]]; then
-	data=${args[1]}
-	echo -e "$data" > $dirsystem/relays.conf
+	printf "%s\n" "${args[@]:1}" > $dirsystem/relays.conf
 	touch $dirsystem/relays
 	$dirsettings/relays-data.sh pushrefresh
 	pushstream display '{"submenu":"relays","value":true}'

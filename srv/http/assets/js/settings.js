@@ -20,6 +20,10 @@ function bash( command, callback, json ) {
 		, json || null
 	);
 }
+
+S              = {} // status
+V              = {} // var global
+
 var dirbash    = '/srv/http/bash/settings/';
 var playersh   = dirbash +'player.sh ';
 var networkssh = dirbash +'networks.sh ';
@@ -49,11 +53,11 @@ var services   = [ 'camilladsp',    'rtsp-simple-server', 'hostapd',    'localbr
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
-	clearTimeout( G.timeoutbanner );
-	G.timeoutbanner = setTimeout( bannerHide, delay );
+	clearTimeout( I.timeoutbanner );
+	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
 function cancelSwitch( id ) {
-	$( '#'+ id ).prop( 'checked', G[ id ] );
+	$( '#'+ id ).prop( 'checked', S[ id ] );
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
@@ -104,7 +108,7 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		G = JSON.parse( list );
+		S = JSON.parse( list );
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -122,7 +126,7 @@ function refreshData() {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( list );
 		} else {
-			G = list;
+			S = list;
 		}
 		if ( ! list2G ) return
 		
@@ -132,25 +136,28 @@ function refreshData() {
 			setSwitch();
 			renderPage();
 		} else {
-			$( '#data' ).html( highlightJSON( G ) )
+			$( '#data' ).html( highlightJSON( S ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		}
 	} );
 }
 function setSwitch() {
-	if ( page !== 'networks' && page !== 'relays' ) {
-		$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', G[ el.id ] ) );
-		$( '.setting' ).each( ( i, el ) => {
-			var $this = $( el );
-			if ( $this.prev().is( 'select' ) ) return // not switch
-			
-			var sw = el.id.replace( 'setting-', '' );
-			$this.toggleClass( 'hide', ! G[ sw ] );
-		} );
-	}
+	if ( page === 'networks' || page === 'relays' ) return
+	
+	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
+	$( '.setting' ).each( ( i, el ) => {
+		var $this = $( el );
+		if ( $this.prev().is( 'select' ) ) return // not switch
+		
+		var sw = el.id.replace( 'setting-', '' );
+		$this.toggleClass( 'hide', ! S[ sw ] );
+	} );
+	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
+		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
+	} );
 }
 function showContent() {
-	G.ready ? delete G.ready : bannerReset();
+	V.ready ? delete V.ready : bannerReset();
 	var $select = $( '.container select' );
 	if ( $select.length ) selectSet( $select );
 	$( '.container' ).removeClass( 'hide' );
@@ -162,13 +169,13 @@ function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
 			bash( 'killall -q networks-scan.sh &> /dev/null' );
-			clearTimeout( G.timeoutScan );
+			clearTimeout( V.timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
 	} else if ( page === 'system' ) {
 		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( G.intCputime );
+			clearInterval( V.intStatus );
 			$( '#refresh' ).removeClass( 'blink' );
 		}
 	}
@@ -188,7 +195,7 @@ pushstream.onmessage = function( data, id, channel ) {
 function psBluetooth( data ) {
 	if ( ! data ) {
 		if ( page === 'networks' ) {
-			G.listbt = data;
+			S.listbt = data;
 			renderBluetooth();
 		} else if ( page === 'system' ) {
 			$( '#bluetooth' ).removeClass( 'disabled' );
@@ -200,7 +207,7 @@ function psBluetooth( data ) {
 			$( '#bluetooth' ).toggleClass( 'disabled', data.connected );
 		}
 	} else if ( page === 'networks' ) {
-		G.listbt = data;
+		S.listbt = data;
 		renderBluetooth();
 	}
 }
@@ -209,9 +216,8 @@ function psNotify( data ) {
 	var title    = data.title;
 	var message  = data.message;
 	var delay    = data.delay;
-	G.bannerhold = data.hold || 0;
 	banner( icon, title, message, delay );
-	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
+	if ( title === 'Power' ) pushstreamPower( message );
 }
 function psPlayer( data ) {
 	var player_id = {
@@ -224,14 +230,11 @@ function psPlayer( data ) {
 	$( '#'+ player_id[ data.player ] ).toggleClass( 'disabled', data.active );
 }
 function psRefresh( data ) {
-	if ( data.page === page ) {
-		$.each( data, ( k, v ) => { G[ k ] = v } ); // need braces
-		page === 'networks' ? $( '.back' ).click() : setSwitch();
-		renderPage();
-		$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-			if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
-		} );
-	}
+	if ( data.page !== page ) return
+	
+	$.each( data, ( k, v ) => {S[ k ] = v } ); // need braces
+	page === 'networks' ? $( '.back' ).click() : setSwitch();
+	renderPage();
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
@@ -239,8 +242,8 @@ function psReload( data ) {
 function psVolume( data ) {
 	if ( ! $( '#infoRange .value' ).text() ) return
 	
-	clearTimeout( G.debounce );
-	G.debounce = setTimeout( () => {
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
@@ -271,7 +274,7 @@ function psWlan( data ) {
 		return
 	}
 	
-	G.listwl = data;
+	S.listwl = data;
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
@@ -373,9 +376,9 @@ $( '.close' ).click( function() {
 	} );
 } );
 $( '.page-icon' ).click( function() {
-	if ( $.isEmptyObject( G ) ) return
+	if ( $.isEmptyObject( S ) ) return
 	
-	$( '#data' ).html( highlightJSON( G ) )
+	$( '#data' ).html( highlightJSON( S ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
 } );

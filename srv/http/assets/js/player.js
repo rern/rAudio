@@ -10,7 +10,7 @@ Beware of too high volume from speakers.
 
 $( '.playback' ).click( function() {
 	if ( ! $( this ).hasClass( 'disabled' ) ) {
-		var cmd = G.player === 'mpd' ? 'mpcplayback' : 'playerstop';
+		var cmd = S.player === 'mpd' ? 'mpcplayback' : 'playerstop';
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
@@ -22,13 +22,13 @@ $( '#setting-btreceiver' ).click( function() {
 		info( {
 			  icon          : 'volume'
 			, title         : 'Bluetooth Volume'
-			, message       : G.btaplayname.replace( / - A2DP$/, '' )
+			, message       : S.btaplayname.replace( / - A2DP$/, '' )
 			, rangevalue    : vol
 			, footer        : db +' dB'
 			, beforeshow    : () => {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input', function() {
-					bash( 'amixer -MD bluealsa -q sset "'+ G.btaplayname +'" '+ $( this ).val() +'%' );
+					bash( 'amixer -MD bluealsa -q sset "'+ S.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepushbt' ] );
 				} );
@@ -151,13 +151,13 @@ $( '#setting-crossfade' ).click( function() {
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
-		, values       : G.crossfadeconf || 1
-		, checkchanged : G.crossfade
+		, values       : S.crossfadeconf || 1
+		, checkchanged : S.crossfade
 		, checkblank   : 1
 		, cancel       : () => cancelSwitch( 'crossfade' )
 		, ok           : () => {
 			bash( [ 'crossfade', true, infoVal() ] );
-			notify( icon, title, G.crossfade ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, S.crossfade ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -168,12 +168,12 @@ $( '#setting-replaygain' ).click( function() {
 		  icon         : icon
 		, title        : title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, values       : G.replaygainconf
-		, checkchanged : G.replaygain
+		, values       : S.replaygainconf
+		, checkchanged : S.replaygain
 		, cancel       : () => cancelSwitch( 'replaygain' )
 		, ok           : () => {
 			bash( [ 'replaygain', true, infoVal() ] );
-			notify( icon, title, G.replaygain ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, S.replaygain ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -199,13 +199,13 @@ $( '#setting-buffer' ).click( function() {
 		, footer       : '(default: 4096)'
 		, footeralign  : 'right'
 		, boxwidth     : 110
-		, values       : G.bufferconf
-		, checkchanged : G.buffer
+		, values       : S.bufferconf
+		, checkchanged : S.buffer
 		, checkblank   : 1
 		, cancel       : () => cancelSwitch( 'buffer' )
 		, ok           : () => {
 			bash( [ 'buffer', true, infoVal() ] );
-			notify( icon, title, G.buffer ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, S.buffer ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
@@ -220,18 +220,18 @@ $( '#setting-outputbuffer' ).click( function() {
 		, footer       : '(default: 8192)'
 		, footeralign  : 'right'
 		, boxwidth     : 110
-		, values       : G.outputbufferconf
-		, checkchanged : G.outputbuffer
+		, values       : S.outputbufferconf
+		, checkchanged : S.outputbuffer
 		, checkblank   : 1
 		, cancel       : () => cancelSwitch( 'outputbuffer' )
 		, ok           : () => {
 			bash( [ 'outputbuffer', true, infoVal() ] );
-			notify( icon, title, G.outputbuffer ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, S.outputbuffer ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 } );
 $( '#setting-soxr' ).click( function() {
-	infoSoxr( G.soxrquality || 'very high' );
+	infoSoxr( S.soxrquality || 'very high' );
 } );
 var custominfo = `\
 <table width="100%">
@@ -259,9 +259,9 @@ $( '#setting-custom' ).click( function() {
 		info( {
 			  icon         : icon
 			, title        : title
-			, content      : custominfo.replace( 'N', G.asoundcard )
+			, content      : custominfo.replace( 'N', S.asoundcard )
 			, values       : [ valglobal, valoutput ]
-			, checkchanged : G.custom
+			, checkchanged : S.custom
 			, cancel       : () => cancelSwitch( 'custom' )
 			, ok           : () => {
 				var values = infoVal();
@@ -282,7 +282,7 @@ $( '#setting-custom' ).click( function() {
 						} );
 					}
 				}, 'json' );
-				notify( icon, title, G.custom ? 'Change ...' : 'Enable ...' );
+				notify( icon, title, S.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -352,9 +352,9 @@ function infoSoxr( quality ) {
 		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
 		, tabactive    : custom ? 1 : 0
 		, content      : custom ? soxrcustom : soxr
-		, values       : custom ? G.soxrcustomconf : G.soxrconf
+		, values       : custom ? S.soxrcustomconf : S.soxrconf
 		, checkblank   : 1
-		, checkchanged : G.soxr && quality === G.soxrquality
+		, checkchanged : S.soxr && quality === S.soxrquality
 		, boxwidth     : custom ? 85 : 180
 		, cancel       : () => cancelSwitch( 'soxr' )
 		, ok           : () => {
@@ -363,7 +363,7 @@ function infoSoxr( quality ) {
 			} else {
 				bash( [ 'soxr', true, ...infoVal() ] );
 			}
-			notify( icon, title, G.soxr ? 'Change ...' : 'Enable ...' );
+			notify( icon, title, S.soxr ? 'Change ...' : 'Enable ...' );
 		}
 	} );
 }
@@ -371,42 +371,42 @@ function infoSoxrCustom() {
 	infoSoxr( 'custom' );
 }
 function infoSoxrPreset() {
-	infoSoxr( G.soxrquality === 'custom' ? 'very high' : G.soxrquality );
+	infoSoxr( S.soxrquality === 'custom' ? 'very high' : S.soxrquality );
 }
 function playbackIcon() {
 	$( '.playback' )
 		.removeClass( 'fa-pause fa-play fa-stop' )
-		.addClass( 'fa fa-'+ G.state )
-		.toggleClass( 'disabled', G.player !== 'mpd' && G.state !== 'play' );
+		.addClass( 'fa fa-'+ S.state )
+		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
 }
 function renderPage() {
 	playbackIcon();
-	var htmlstatus =  G.version +'<br>'
-					+'<i class="fa fa-song gr"></i>&ensp;'+ ( G.counts.song || 0 ).toLocaleString() +'&emsp; '
-					+'<i class="fa fa-album gr"></i>&ensp;'+ ( G.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
-					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( G.counts.webradio || 0 ).toLocaleString() +'</wide>';
+	var htmlstatus =  S.version +'<br>'
+					+'<i class="fa fa-song gr"></i>&ensp;'+ ( S.counts.song || 0 ).toLocaleString() +'&emsp; '
+					+'<i class="fa fa-album gr"></i>&ensp;'+ ( S.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
+					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
-	if ( G.btaplayname ) {
+	if ( S.btaplayname ) {
 		$( '#divbtreceiver' ).removeClass( 'hide' );
-		$( '#btaplayname' ).html( '<option>'+ G.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
+		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
 	} else {
 		$( '#divbtreceiver' ).addClass( 'hide' );
 	}
-	if ( G.asoundcard === -1 ) {
+	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
-		D               = G.devices[ G.asoundcard ];
-		G.resampled     = G.crossfade || G.normalization || G.replaygain || G.camilladsp || G.equalizer || G.soxr;
-		G.novolume      = D.mixertype === 'none' && ! G.resampled;
+		D               = S.devices[ S.asoundcard ];
+		S.resampled     = S.crossfade || S.normalization || S.replaygain || S.camilladsp || S.equalizer || S.soxr;
+		S.novolume      = D.mixertype === 'none' && ! S.resampled;
 		var htmldevices = '';
-		$.each( G.devices, ( i, el ) => {
+		$.each( S.devices, ( i, el ) => {
 			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
 		} );
 		$( '#divoutput, #divbitperfect, #divvolume' ).removeClass( 'hide' );
 		$( '#audiooutput' )
 			.html( htmldevices )
-			.val( G.asoundcard );
+			.val( S.asoundcard );
 		var htmlhwmixer      = D.mixermanual ? '<option value="auto">Auto</option>' : '';
 		if ( 'mixerdevices' in D ) {
 			D.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
@@ -421,13 +421,13 @@ function renderPage() {
 			.html( htmlmixertype )
 			.val( D.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 );
-		$( '#novolume' ).prop( 'checked', G.novolume );
+		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#divdop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
-		$( '#dop' ).prop( 'checked', G.dop );
-		$( '#ffmpeg' ).toggleClass( 'disabled', G.dabradio );
-		if ( G.camilladsp ) {
+		$( '#dop' ).prop( 'checked', S.dop );
+		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
+		if ( S.camilladsp ) {
 			var label = '<i class="fa fa-camilladsp"></i>';
-		} else if ( G.equalizer ) {
+		} else if ( S.equalizer ) {
 			var label = 'Equalizer<i class="fa fa-equalizer"></i>';
 		} else {
 			var label = 'Device';
@@ -446,8 +446,8 @@ function renderPage() {
 			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
-	$( '#divlists' ).toggleClass( 'hide', !G.lists.includes( true ) );
-	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', !G.lists[ i ] );
+	$( '#divlists' ).toggleClass( 'hide', ! S.lists.includes( true ) );
+	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', ! S.lists[ i ] );
 	showContent();
 }
 function setMixerType( mixertype ) {
@@ -457,7 +457,7 @@ function setMixerType( mixertype ) {
 }
 function setVolumeSlider() {
 	$( '#infoRange input' ).on( 'click input keyup', function() {
-		bash( 'amixer -c '+ G.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
+		bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
 	} ).on( 'touchend mouseup keyup', function() {
 		bash( [ 'volumepush' ] );
 	} );

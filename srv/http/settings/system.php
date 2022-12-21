@@ -71,15 +71,15 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide">
 <?=( echoSetIcon( '| I^refresh^I | Refresh every 10 seconds' ) )?>
 <br>
-<wh>CPU Load:</wh>
- • Average number of processes which are being executed and in waiting.
- • calculated over 1, 5 and 15 minutes.
- • Each one should not be constantly over 0.75 x CPU cores.
+<wh>• CPU Load:</wh>
+ · Average number of processes which are being executed and in waiting.
+ · calculated over 1, 5 and 15 minutes.
+ · Each one should not be constantly over 0.75 x CPU cores.
  
-<wh>CPU temperature:</wh>
- • 80-84°C: ARM cores throttled.
- • 85°C: ARM cores and GPU throttled.
- • RPi 3B+: 60°C soft limit (optimized throttling)
+<wh>• CPU temperature:</wh>
+ · 80-84°C: ARM cores throttled.
+ · 85°C: ARM cores and GPU throttled.
+ · RPi 3B+: 60°C soft limit (optimized throttling)
 </div>
 </div>
 <div id="divstorage" class="section">
@@ -95,21 +95,19 @@ htmlHead( [ //////////////////////////////////
 '| I^usbdrive^I | I^networks^I | Context menu
 | I^plus-circle^I | Add network storage
 
-<wh>USB drives:</wh>
- • Will be found and mounted automatically.
+<wh>USB drives:</wh> Will be found and mounted automatically.
 
-<wh>Network shares:</wh>
- • If | Storage I^plus-circle^I | failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
-	<wh>CIFS:</wh>
+<wh>Network shares:</wh> If | Storage I^plus-circle^I | failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+<wh>• CIFS:</wh>
 ' ) )?>
-<pre style="margin-left: 30px">
+<pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
 <gr>#	 (no user - username=guest, no password - password="")</gr>
 </pre><!--
--->	<wh>NFS:</wh>
-<pre style="margin-left: 30px">
+--><wh>• NFS:</wh>
+<pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
       -o defaults,noauto,bg,soft,timeo=5
@@ -118,16 +116,16 @@ mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</y
 <?php
 htmlSetting( [
 	  'label'    => 'Hard Drive Sleep'
-	, 'id'       => 'hddsleep'
 	, 'icon'     => 'screenoff'
+	, 'id'       => 'hddsleep'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
-	, 'id'       => 'usbautoupdate'
 	, 'sublabel' => 'data on USB'
 	, 'icon'     => 'refresh-library'
+	, 'id'       => 'usbautoupdate'
 	, 'setting'  => false
 	, 'disabled' => $disabledusbautoupdate
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
@@ -142,26 +140,26 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Bluetooth'
-		, 'id'       => 'bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
+		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
 		, 'disabled' => $disabledbt
-		, 'help'     => '| I^gear^I | • Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => '| I^gear^I | ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
-		, 'id'       => 'wlan'
 		, 'sublabel' => 'iw'
 		, 'icon'     => 'wifi'
+		, 'id'       => 'wlan'
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
 | I^gear^I |
 Country of Wi-Fi regulatory domain:
-	- | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
-	- The connected router may override it to a certain country.
-| • Auto start Access Point | On failed connection or no router
+	· | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
+	· The connected router may override it to a certain country.
+| ⯀ Auto start Access Point | On failed connection or no router
 EOF
 	]
 ];
@@ -195,70 +193,71 @@ EOF
 	]
 	, [
 		  'label'    => 'Character LCD'
-		, 'id'       => 'lcdchar'
 		, 'sublabel' => 'HD44780'
 		, 'icon'     => 'lcdchar'
+		, 'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
- • Support 16x2 and 20x4 LCD modules.
+ · Support 16x2 and 20x4 LCD modules.
 I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
 		  'label'    => 'Power Button'
-		, 'id'       => 'powerbutton'
 		, 'sublabel' => 'Power LED'
 		, 'icon'     => 'power'
+		, 'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
- • On - Fixed to pin 5
- • Off - Default to pin 5 (single pin on+off)
+ · On - Fixed to pin 5
+ · Off - Default to pin 5 (single pin on+off)
+ 
 If pin 5 is used by DAC or LCD - Set 2 unused pins for:
- • Off (default: 7)
- • Reserved (default: 29)
+ · Off (default: 7)
+ · Reserved (default: 29)
 EOF
 	]
 	, [
 		  'label'   => 'Relay Module'
-		, 'id'      => 'relays'
 		, 'icon'    => 'relays'
+		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: A^I^raudio^I System^AI^relays sub^I
- • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
- • Can be enabled and run as a test without a connected relay module.
+ · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
+ · Can be enabled and run as a test without a connected relay module.
 EOF
 	],
 	[
 		  'label'    => 'Rotary Encoder'
-		, 'id'       => 'rotaryencoder'
 		, 'icon'     => 'volume'
+		, 'id'       => 'rotaryencoder'
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
- • Turn volume up/down
- • Push to play/pause
+ · Turn volume up/down
+ · Push to play/pause
 EOF
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
-		, 'id'       => 'mpdoled'
 		, 'icon'     => 'mpdoled'
+		, 'id'       => 'mpdoled'
 		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
-		, 'id'       => 'lcd'
 		, 'icon'     => 'lcd'
+		, 'id'       => 'lcd'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
 		  'label'   => 'VU LED'
-		, 'id'      => 'vuled'
 		, 'icon'    => 'led'
+		, 'id'      => 'vuled'
 		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
- • <bl id="ledcalc">LED resister calculator</bl>
+ · <bl id="ledcalc">LED resister calculator</bl>
 EOF
 	]
 ];
@@ -267,22 +266,22 @@ $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Host Name'
-		, 'id'      => 'hostname'
 		, 'icon'    => 'raudio'
+		, 'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
 		, 'help'    => <<< EOF
 For:
- • Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
- • Web Interface URL: <c id="avahiurl"></c>
- • System hostname
+ · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
+ · Web Interface URL: <c id="avahiurl"></c>
+ · System hostname
 EOF
 	]
 	, [
 		  'label'    => 'Time Zone'
-		, 'id'       => 'timezone'
 		, 'sublabel' => 'timedatectl'
 		, 'icon'     => 'globe'
+		, 'id'       => 'timezone'
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
@@ -290,9 +289,9 @@ EOF
 	]
 	, [
 		  'label'    => 'Sound Profile'
-		, 'id'       => 'soundprofile'
 		, 'sublabel' => 'sysctl'
 		, 'icon'     => 'soundprofile'
+		, 'id'       => 'soundprofile'
 		, 'status'   => 'soundprofile'
 		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
@@ -302,37 +301,37 @@ $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
-		, 'id'      => 'backup'
 		, 'icon'    => 'sd'
+		, 'id'      => 'backup'
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
 Backup all data and settings:
- • Library: Database, Bookmarks, DAB Radio, Web Radio
- • Playback: Lyrics
- • Playlist: Audio CD, Saved playlists
- • Settings
+ · Library: Database, Bookmarks, DAB Radio, Web Radio
+ · Playback: Lyrics
+ · Playlist: Audio CD, Saved playlists
+ · Settings
 EOF
 	]
 	, [
 		  'label'   => 'Restore'
-		, 'id'      => 'restore'
 		, 'icon'    => 'restore'
+		, 'id'      => 'restore'
 		, 'setting' => 'nobanner'
 		, 'help'    => 'Restore all data and settings from a backup file.'
 	]
 	, [
 		  'label'    => 'Shared Data'
-		, 'id'       => 'shareddata'
 		, 'sublabel' => 'client'
 		, 'icon'     => 'networks'
+		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
 		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
-	- Library database
-	- Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	- Show / hide items (Library | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
-	- Display order of Library home
+	· Library database
+	· Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+	· Show / hide items (Library | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
+	· Display order of Library home
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> &#9704; |
@@ -340,16 +339,15 @@ Connect shared data as client for:
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
-		- Linux:
+		· Linux:
 			NFS: <c>777</c>
 			CIFS/SMB: <c>read only = no</c>
-		- Windows:
+		· Windows:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		- | <wh>Storage I^plus-circle^I</wh> | Add music file share with the same name, share path/share name
-		- | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share on server
-		- Data on 1st connected client will be used as initial shared.
+		· | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share
+		· Data on 1st connected client will be used as initial shared.
 		
 (SSH password must be default.)
 EOF

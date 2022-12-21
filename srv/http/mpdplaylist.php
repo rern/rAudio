@@ -262,22 +262,10 @@ EOF;
 	}
 	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp )  $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
-	exec( "{ echo status; sleep 0.05; } \
-				| telnet 127.0.0.1 6600 2> /dev/null \
-				| grep -E '^song:|^elapsed:'"
-		, $song_elapsed );
-	$elapsed = '';
-	foreach( $song_elapsed as $se ) {
-		if ( substr( $se, 0, 4 ) === 'song' ) {
-			$song = str_replace( 'song: ', '', $se );
-		} else {
-			$elapsed = round( str_replace( 'elapsed: ', '', $se ) );
-		}
-	}
+	$elapsed = exec( '/srv/http/bash/cmd.sh getelapsed' );
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
-		, 'song'      => $song
 		, 'elapsed'   => $elapsed
 		, 'add'       => $add
 	], JSON_NUMERIC_CHECK );

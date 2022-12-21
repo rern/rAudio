@@ -151,6 +151,7 @@ if [[ $action == connect || $action == pair ]]; then
 		icon=btsender
 		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
 	else
+		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver

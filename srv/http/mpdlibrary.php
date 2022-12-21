@@ -53,8 +53,8 @@ switch( $_POST[ 'query' ] ) {
 case 'find':
 	$format = str_replace( '%artist%', '[%artist%|%albumartist%]', $format );
 	if ( is_array( $mode ) ) {
-		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." \
-				| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u"
+		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." '
+			 .'| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' | sort -u"
 			, $dirs );
 		if ( count( $dirs ) > 1 ) {
 			htmlDirectory( $dirs );
@@ -63,12 +63,10 @@ case 'find':
 		} else {
 			$file = $dirs[ 0 ];
 			if ( substr( $file, -14, 4 ) !== '.cue' ) {
-				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." \
-						| awk 'NF && !a[$0]++'"
+				exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
 					, $lists );
 				if ( ! count( $lists ) ) { // find with albumartist
-					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." \
-							| awk 'NF && !a[$0]++'"
+					exec( 'mpc find -f "'.$format.'" '.$mode[ 0 ].' "'.$string[ 0 ].'" albumartist "'.$string[ 1 ].'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
 						, $lists );
 				}
 			} else { // $file = '/path/to/file.cue/track0001'
@@ -78,8 +76,7 @@ case 'find':
 			}
 		}
 	} else {
-		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." \
-				| awk 'NF && !a[$0]++'"
+		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null'." | awk 'NF && !a[$0]++'"
 			, $lists );
 	}
 	if ( count( $f ) > 2 ) {
@@ -110,15 +107,19 @@ EOF;
 	if ( count( $files ) ) {
 		foreach( $files as $name ) {
 			$bkpath   = trim( file_get_contents( $dir.'/'.$name ) );
-			if ( substr( $bkpath, 0, 4 ) === 'http' ) {
-				$src  = '/data/webradio/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
+			$prefix = substr( $bkpath, 0, 4 );
+			if ( in_array( $prefix, [ 'http', 'rtsp' ] ) ) {
+				$bkradio  = 'bkradio';
+				$dirradio = $prefix === 'http' ? 'webradio' : 'dabradio';
+				$src      = '/data/'.$dirradio.'/img/'.str_replace( '/', '|', $bkpath ).'.jpg';
 			} else {
-				$src  = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
-				$src .= $bkpath.'/coverart.jpg';
+				$bkradio  = '';
+				$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
+				$src     .= $bkpath.'/coverart.jpg';
 			}
 			$htmlmode.= <<< EOF
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark" data-mode="bookmark">
+	<div class="mode mode-bookmark $bkradio" data-mode="bookmark">
 	<a class="lipath">$bkpath</a>
 	<a class="bkname hide">$name</a>
 	<img class="bkcoverart" src="$src^^^">
@@ -215,8 +216,7 @@ case 'radio':
 	htmlRadio( $subdirs, $files, $dir );
 	break;
 case 'search':
-	exec( 'mpc search -f "'.$format.'" any "'.$string.'" \
-			| awk NF'
+	exec( 'mpc search -f "'.$format.'" any "'.$string.'" | awk NF'
 		, $lists );
 	htmlTrack( $lists, $f, 'search', $string );
 	break;
@@ -566,8 +566,8 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$seconds       = 0;
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
-		$args          = escape( implode( "\n", [ $artist, $album, $mpdpath ] ) );
-		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
+		$args          = escape( implode( "\n", [ $artist, $album, $each0->file ] ) );
+		$coverart      = exec( '/srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );

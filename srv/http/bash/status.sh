@@ -10,12 +10,6 @@
 
 [[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit
 
-elapsedGet() {
-	elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-								| telnet 127.0.0.1 6600 2> /dev/null \
-								| grep ^elapsed \
-								| cut -d' ' -f2 ) )
-}
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
 	[[ $1 != noexit ]] && exit
@@ -86,7 +80,6 @@ if [[ $1 == withdisplay ]]; then
 , "color"            : "'$( getContent $dirsystem/color )'"
 , "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
-, "logout"           : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'
@@ -156,12 +149,15 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
 
-filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
-[[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
+#filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
+#[[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
+filter='Album AlbumArtist Artist audio bitrate duration file Name song state Time Title'
+[[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
+filter=^${filter// /:|^}:
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep -E "$filter" )
+					| grep -E $filter )
 }
 mpdStatus currentsong
 # 'file:' missing / blank
@@ -367,7 +363,7 @@ $radiosampling" > $dirshm/radio
 , "webradio"     : true'
 	if [[ $id ]]; then
 		sampling="$(( song + 1 ))/$pllength • $radiosampling"
-		elapsedGet
+		elapsed=$( getElapsed )
 ########
 		status+='
 , "coverart"     : "'$coverart'"
@@ -508,7 +504,7 @@ status+='
 , "sampling" : "'$sampling'"'
 
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
-	elapsedGet
+	elapsed=$( getElapsed )
 # >>>>>>>>>> webradio with found coverart
 	status+='
 , "elapsed"  : '$elapsed
@@ -523,7 +519,7 @@ $Album
 $filenoesc" )
 	[[ $coverart ]] && coverart="$coverart"
 fi
-elapsedGet
+elapsed=$( getElapsed )
 ########
 	status+='
 , "elapsed"  : '$elapsed'

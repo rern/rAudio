@@ -14,6 +14,9 @@ dirshm=$dirdata/shm
 dirsystem=$dirdata/system
 dirwebradio=/srv/http/data/webradio
 
+# 20221218
+[[ -L $dirdata/playlists ]] && chown -h mpd:audio $dirdata/playlists
+
 # 20221208
 if [[ -e /srv/http/assets/css/desktop.css ]]; then
 	rm -f /srv/http/main.php
@@ -22,7 +25,7 @@ if [[ -e /srv/http/assets/css/desktop.css ]]; then
 	rm -f /srv/http/assets/js/plugin/{jquery.selectric,simple-}*
 fi
 
-readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* )
+readarray -t bookmarks <<< $( ls -1 /srv/http/data/bookmarks/* 2> /dev/null )
 if [[ $bookmarks ]]; then
 	for file in "${bookmarks[@]}"; do
 		if [[ $( sed -n 2p "$file" ) ]]; then
@@ -101,6 +104,8 @@ fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
+
+rm -rf /srv/http/assets/{css,js}
 
 getinstallzip
 

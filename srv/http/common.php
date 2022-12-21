@@ -77,15 +77,12 @@ if ( ! $page ) { // main
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
-	if ( $relays ) {
-		$css[]  = 'relays';
-		$js[]   = 'relays';
-	}
+	if ( $relays ) $css[]  = 'relays';
 	if ( $addons ) {
-		$css[] = 'addons';
+		$css[]  = 'addons';
 	} else {
-		$jsp[] = 'pushstream';
-		$js[]  = 'settings';
+		$jsp[]  = 'pushstream';
+		$js[]   = 'settings';
 	}
 	$jsp[]  = $networks ? 'qrcode' : 'select2';
 	$js[]   = $page;

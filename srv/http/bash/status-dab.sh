@@ -17,15 +17,11 @@ while true; do
 	
 	if ! cmp -s $filelabel $filetitle; then
 		cp -f $filelabel $filetitle
-		elapsed=$( printf '%.0f' $( { echo status; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep ^elapsed \
-					| cut -d' ' -f2 ) )
 		data='{
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
 , "coverart" : ""
-, "elapsed"  : '$elapsed'
+, "elapsed"  : '$( getElapsed )'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
 , "sampling" : "'$pos' • 48 kHz 160 kbit/s • DAB"

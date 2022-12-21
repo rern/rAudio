@@ -1,17 +1,15 @@
 function addReplace( cmd, command, title, msg ) {
 	var play = cmd === 'addplay' || cmd === 'replaceplay';
 	if ( play || cmd === 'replace' ) $( '#stop' ).click();
-	bash( command, () => {
-		if ( G.display.playbackswitch && play ) $( '#playback' ).click();
-	} );
+	bash( command );
 	banner( 'playlist', title, msg );
 }
 function addSimilar() {
 	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
 	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-			+'&artist='+ encodeURI( G.list.artist )
-			+'&track='+ encodeURI( G.list.name )
-			+'&api_key='+ G.apikeylastfm
+			+'&artist='+ encodeURI( V.list.artist )
+			+'&track='+ encodeURI( V.list.name )
+			+'&api_key='+ V.apikeylastfm
 			+'&format=json'
 			+'&autocorrect=1';
 	$.post( url, function( data ) {
@@ -38,18 +36,18 @@ function bookmarkNew() {
 	// #1 - track list - show image from licover
 	// #2 - dir list   - show image from path + coverart.jpg
 	// #3 - no cover   - icon + directory name
-	if ( [ 'http', 'rtsp' ].includes( G.list.path.slice( 0, 4 ) ) ) {
-		var $img = G.list.li.find( '.iconthumb' );
+	if ( [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ) {
+		var $img = V.list.li.find( '.iconthumb' );
 		var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
-		var path    = G.list.path;
-		var name    = G.list.name;
+		var path    = V.list.path;
+		var name    = V.list.name;
 		var msgpath = name;
 	} else {
-		if ( G.mode.slice( -5 ) === 'radio' ) {
-			var path = G.mode +'/'+ G.list.path;
+		if ( V.mode.slice( -5 ) === 'radio' ) {
+			var path = V.mode +'/'+ V.list.path;
 			var src  = '/data/'+ path +'/coverart.jpg';
 		} else {
-			var path = G.list.path.slice( -4 ) === '.cue' ? dirName( path ) : G.list.path;
+			var path = V.list.path.slice( -4 ) === '.cue' ? dirName( path ) : V.list.path;
 			var src  = '/mnt/MPD/'+ path +'/coverart.jpg';
 		}
 		var msgpath = path;
@@ -100,14 +98,14 @@ function playlistDelete() {
 		  icon    : 'file-playlist'
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
-				   +'<br><wh>'+ G.list.name +'</wh>'
+				   +'<br><wh>'+ V.list.name +'</wh>'
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
-		, ok      : () => bash( [ 'savedpldelete', G.list.name ] )
+		, ok      : () => bash( [ 'savedpldelete', V.list.name ] )
 	} );
 }
 function playlistLoad( path, play, replace ) {
-	G.local = 1;
+	V.local = 1;
 	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
 	list( {
 		  cmd     : 'load'
@@ -115,8 +113,8 @@ function playlistLoad( path, play, replace ) {
 		, play    : play
 		, replace : replace
 	}, function( data ) {
-		G.local = 0;
-		G.status.pllength = +data;
+		V.local = 0;
+		S.pllength = +data;
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
 	} );
 }
@@ -133,7 +131,7 @@ function playlistNew( name ) {
 	} );
 }
 function playlistRename() {
-	var name = G.list.name;
+	var name = V.list.name;
 	info( {
 		  icon         : 'file-playlist'
 		, title        : 'Rename Playlist'
@@ -179,37 +177,38 @@ function playlistSaveExist( type, name, oldname ) {
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
-	var file   = G.list.path;
+	var file   = V.list.path;
+	var dir    = dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
-	if ( !G.playlist && G.list.licover ) format = format.slice( 0, -2 );
+	if ( !V.playlist && V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
 		  query  : 'track'
-		, file   : G.list.path
+		, file   : V.list.path
 		, format : format
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
-			if ( G.playlist && ! values[ i ] ) {
+			if ( V.playlist && ! values[ i ] ) {
 				delete values[ i ];
 				return
 			}
 			
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
-		if ( G.library ) {
-			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : G.list.li.find( 'img' );
-			var src  = $img.length ? $img.attr( 'src' ) : G.coverdefault;
+		if ( V.library ) {
+			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
+			var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
 		} else {
-			var $img =  G.list.li.find( 'img' );
-			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : G.coverdefault;
+			var $img =  V.list.li.find( 'img' );
+			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
 			values   = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					 +'<div>';
-		if ( G.list.licover ) {
+		if ( V.list.licover ) {
 			message += '<i class="fa fa-folder"></i>'+ file;
 		} else {
 			message += '<i class="fa fa-folder gr"></i><gr>'+ file +'</gr><br><i class="fa fa-'+ fileicon +'"></i>'+ file.split( '/' ).pop();
@@ -217,10 +216,10 @@ function tagEditor() {
 		message     += '</div>';
 		var footer   = '';
 		footer      += '<div id="taglabel"><i class="fa fa-help fa-lg"></i>&emsp;Label</div>';
-		if ( G.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
+		if ( V.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
-			  icon         : G.playlist ? 'info-circle' : 'tag'
-			, title        : G.playlist ? 'Track Info' : 'Tag Editor'
+			  icon         : V.playlist ? 'info-circle' : 'tag'
+			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, width        : 500
 			, message      : message
 			, messagealign : 'left'
@@ -234,7 +233,7 @@ function tagEditor() {
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
 				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
-				if ( G.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
+				if ( V.playlist ) $( '#infoContent input' ).prop( 'disabled', 1 );
 				var tableW = $( '#infoContent table' ).width();
 				$( '#infoContent' ).on( 'click', '#taglabel', function() {
 					if ( $( '.taglabel' ).hasClass( 'hide' ) ) {
@@ -263,38 +262,39 @@ function tagEditor() {
 							, modetitle : string
 							, path      : string
 						}
-						G.mode = mode;
+						V.mode = mode;
 						renderLibraryList( data );
 						query.gmode = mode;
 						query.modetitle = string;
 						tagModeSwitch();
-						G.query.push( query );
+						V.query.push( query );
 					} );
 				} );
 				$( '.infomessage' ).click( function() {
-					if ( G.library ) return
+					if ( V.library ) return
 					
 					var query = {
 						  query  : 'ls'
-						, string : file
+						, string : V.library ? file : dir
 						, format : [ 'file' ]
 					}
-					if ( cue ) file = dirName( file );
+					if ( cue ) file = dir;
 					list( query, function( html ) {
 						var data = {
 							  html      : html
 							, modetitle : file
 							, path      : file
 						}
-						G.mode = file.split( '/' )[ 0 ].toLowerCase();
+						V.mode = file.split( '/' )[ 0 ].toLowerCase();
 						tagModeSwitch();
 						renderLibraryList( data );
+						switchPage( 'library' );
 					} );
 				} );
 			}
-			, okno         : G.playlist
-			, ok           : G.playlist ? '' : () => {
-				var tag       = [ 'cmd-tageditor.sh', file, G.list.licover, cue ];
+			, okno         : V.playlist
+			, ok           : V.playlist ? '' : () => {
+				var tag       = [ 'cmd-tageditor.sh', file, V.list.licover, cue ];
 				var newvalues = infoVal();
 				var val;
 				newvalues.forEach( ( v, i ) => {
@@ -304,15 +304,15 @@ function tagEditor() {
 				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
 				setTimeout( () => banner( 'tag blink', 'Tag Editor', 'Update Library ...' ), 3000 );
 				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
-				if ( G.list.licover ) {
+				if ( V.list.licover ) {
 					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
 					for ( i = 0; i < 7; i++ ) {
 						var v = newvalues[ i ];
 						if ( v !== '*' ) $( '.li'+ tags[ i ] ).text( v );
 					}
 				} else {
-					G.list.li.find( '.li1' ).text( newvalues[ 7 ] );
-					G.list.li.find( '.track' ).text( newvalues[ 8 ] );
+					V.list.li.find( '.li1' ).text( newvalues[ 7 ] );
+					V.list.li.find( '.track' ).text( newvalues[ 8 ] );
 				}
 			}
 		} );
@@ -320,27 +320,27 @@ function tagEditor() {
 }
 function tagModeSwitch() {
 	$( '#infoX' ).click();
-	if ( G.playlist ) {
+	if ( V.playlist ) {
 		$( '#page-playlist' ).addClass( 'hide' );
 		$( '#page-library' ).removeClass( 'hide' );
-		G.playlist = 0;
-		G.library  = 1;
-		G.page     = 'library';
+		V.playlist = 0;
+		V.library  = 1;
+		V.page     = 'library';
 	}
 }
 function webRadioCoverart() {
-	if ( G.playback ) {
-		var coverart  = G.status.stationcover || G.coverdefault;
-		var type      = G.status.icon === 'dabradio' ? 'dabradio' : 'webradio';
-		var url       = G.status.file;
-		var name      = G.status.station;
+	if ( V.playback ) {
+		var coverart  = S.stationcover || V.coverdefault;
+		var type      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var url       = S.file;
+		var name      = S.station;
 	} else {
-		var coverart  = G.coverdefault;
-		var src       = G.list.li.find( '.lib-icon' ).attr( 'src' );
-		var type      = G.mode;
-		var pathsplit = G.list.li.find( '.lipath' ).text().split( '//' );
+		var coverart  = V.coverdefault;
+		var src       = V.list.li.find( '.lib-icon' ).attr( 'src' );
+		var type      = V.mode;
+		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-		var name      =  G.list.name;
+		var name      = V.list.name;
 	}
 	var imagefilenoext = '/srv/http/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
 	$( '#coverart' ).removeAttr( 'style' );
@@ -354,7 +354,7 @@ function webRadioCoverart() {
 		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
 		, filetype    : 'image/*'
 		, beforeshow  : () => {
-			$( '.extrabtn' ).toggleClass( 'hide', coverart === G.coverdefault );
+			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
 			if ( src ) {
 				bash( [ 'coverartget', imagefilenoext, 'radio' ], coverart => {
 					if ( coverart ) {
@@ -371,12 +371,12 @@ function webRadioCoverart() {
 	} );
 }
 function webRadioDelete() {
-	var name = G.list.name;
-	var img  = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var url  = G.list.li.find( '.li2' ).text();
+	var name = V.list.name;
+	var img  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
+	var url  = V.list.li.find( '.li2' ).text();
 	info( {
-		  icon    : G.mode
-		, title   : 'Delete '+ ( G.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' )
+		  icon    : V.mode
+		, title   : 'Delete '+ ( V.mode === 'webradio' ? 'Web Radio' : 'DAB Radio' )
 		, width   : 500
 		, message : '<br><img src="'+ img +'">'
 				   +'<br><wh>'+ name +'</wh>'
@@ -384,9 +384,9 @@ function webRadioDelete() {
 		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 		, okcolor : red
 		, ok      : () => {
-			G.list.li.remove();
+			V.list.li.remove();
 			var dir = $( '#lib-path .lipath' ).text();
-			bash( ['webradiodelete', dir, url, G.mode ] );
+			bash( ['webradiodelete', dir, url, V.mode ] );
 		}
 	} );
 }
@@ -403,11 +403,11 @@ var htmlwebradio = `\
 </table>
 `;
 function webRadioEdit() {
-	var name      = G.list.name;
-	var img       = G.list.li.find( 'img' ).attr( 'src' ) || G.coverdefault;
-	var pathsplit = G.list.path.split( '//' );
+	var name      = V.list.name;
+	var img       = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
+	var pathsplit = V.list.path.split( '//' );
 	var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-	var charset   = G.list.li.data( 'charset' );
+	var charset   = V.list.li.data( 'charset' );
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
@@ -484,7 +484,7 @@ function webRadioNew( name, url, charset ) {
 	} );
 }
 function webRadioSave( name ) {
-	var url = G.list.li.find( '.lipath' ).text();
+	var url = V.list.li.find( '.lipath' ).text();
 	info( {
 		  icon       : 'webradio'
 		, title      : 'Save Web Radio'
@@ -494,7 +494,7 @@ function webRadioSave( name ) {
 		, focus      : 0
 		, checkblank : 1
 		, ok         : () => {
-			G.local     = 1;
+			V.local     = 1;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', '', newname, url ], error => {
 				if ( error ) {
@@ -509,11 +509,11 @@ function webRadioSave( name ) {
 					return
 				}
 				
-				G.list.li.find( '.liname, .radioname' ).text( newname );
-				G.list.li.find( '.li2 .radioname' ).append( ' • ' );
-				G.list.li.find( '.savewr' ).remove();
-				G.list.li.removeClass( 'notsaved' );
-				G.local = 0;
+				V.list.li.find( '.liname, .radioname' ).text( newname );
+				V.list.li.find( '.li2 .radioname' ).append( ' • ' );
+				V.list.li.find( '.savewr' ).remove();
+				V.list.li.removeClass( 'notsaved' );
+				V.local = 0;
 			} );
 		}
 	} );
@@ -527,11 +527,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	// playback //////////////////////////////////////////////////////////////
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		if ( cmd === 'play' ) {
-			if ( G.status.player !== 'mpd' ) {
+			if ( S.player !== 'mpd' ) {
 				$( '#stop' ).click();
-				G.status.player = 'mpd';
+				S.player = 'mpd';
 			}
-			$( '#pl-list li' ).eq( G.list.li.index() ).click();
+			$( '#pl-list li' ).eq( V.list.li.index() ).click();
 		} else {
 			$( '#'+ cmd ).click();
 		}
@@ -540,28 +540,28 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	
 	switch ( cmd ) {
 		case 'current':
-			bash( [ 'mpcsetcurrent', G.list.index + 1 ] );
+			bash( [ 'mpcsetcurrent', V.list.index + 1 ] );
 			return
 		case 'directory':
-			if ( G.mode === 'latest' ) {
-				var path      = dirName( G.list.path );
+			if ( V.mode === 'latest' ) {
+				var path      = dirName( V.list.path );
 				var query     = {
 					  query  : 'ls'
 					, string : path
 					, format : [ 'file' ]
 				}
 				var modetitle = path;
-				query.gmode   = G.mode;
+				query.gmode   = V.mode;
 				list( query, function( data ) {
-					G.mode         = path.split( '/' )[ 0 ].toLowerCase();
-					G.gmode        = 'latest';
+					V.mode         = path.split( '/' )[ 0 ].toLowerCase();
+					V.gmode        = 'latest';
 					data.path      = path;
 					data.modetitle = modetitle;
 					renderLibraryList( data );
 				}, 'json' );
 				query.path      = path;
 				query.modetitle = modetitle;
-				G.query.push( query );
+				V.query.push( query );
 			} else {
 				$( '#lib-list .liinfopath' ).click();
 			}
@@ -571,36 +571,36 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon    : 'folder-forbid'
 				, title   : 'Exclude Directory'
 				, message : 'Exclude from Library:'
-							+'<br><i class="fa fa-folder"></i>&ensp;<wh>'+ G.list.path +'</wh>'
+							+'<br><i class="fa fa-folder"></i>&ensp;<wh>'+ V.list.path +'</wh>'
 				, ok      : () => {
-					bash( [ 'ignoredir', G.list.path ], () => G.list.li.remove() );
-					var dir = G.list.path.split( '/' ).pop();
+					bash( [ 'ignoredir', V.list.path ], () => V.list.li.remove() );
+					var dir = V.list.path.split( '/' ).pop();
 				}
 			} );
 			return
 		case 'remove':
-			G.contextmenu = 1;
-			setTimeout( () => G.contextmenu = 0, 500 );
-			playlistRemove( G.list.li );
+			V.contextmenu = 1;
+			setTimeout( () => V.contextmenu = 0, 500 );
+			playlistRemove( V.list.li );
 			return
 		case 'savedpladd':
-			if ( G.playlist ) {
-				var album = G.list.li.find( '.album' ).text();
-				var file  = G.list.path;
+			if ( V.playlist ) {
+				var album = V.list.li.find( '.album' ).text();
+				var file  = V.list.path;
 			} else {
 				var album = $( '.licover .lialbum' ).text();
-				var file  = G.list.li.find( '.lipath' ).text();
+				var file  = V.list.li.find( '.lipath' ).text();
 			}
-			saveToPlaylist( G.list.name, album, file );
+			saveToPlaylist( V.list.name, album, file );
 			return
 		case 'savedplremove':
 			local();
 			var plname = $( '#pl-path .lipath' ).text();
-			bash( [ 'savedpledit', plname, 'remove', G.list.li.index() + 1 ] );
-			G.list.li.remove();
+			bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1 ] );
+			V.list.li.remove();
 			return
 		case 'similar':
-			if ( G.display.plsimilar ) {
+			if ( D.plsimilar ) {
 				info( {
 					  icon    : 'lastfm'
 					, title   : 'Add Similar'
@@ -619,25 +619,25 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon    : iconcover
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
-							+'<br><i class="fa fa-folder"></i> <wh>'+ G.list.path +'</wh>'
-				, ok      : () => thumbUpdate( G.list.path )
+							+'<br><i class="fa fa-folder"></i> <wh>'+ V.list.path +'</wh>'
+				, ok      : () => thumbUpdate( V.list.path )
 			} );
 			return
 		case 'update':
-			if ( G.list.path.slice( -3 ) === 'cue' ) G.list.path = dirName( G.list.path );
-			infoUpdate( G.list.path );
+			if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );
+			infoUpdate( V.list.path );
 			return
 		case 'wrdirdelete':
-			var path = G.list.li.find( '.lipath' ).text();
+			var path = V.list.li.find( '.lipath' ).text();
 			info( {
-				  icon    : G.mode
+				  icon    : V.mode
 				, title   : 'Delete Folder'
 				, message : 'Folder:'
 							+'<br><wh>'+ path +'</wh>'
 				, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 				, okcolor : red
 				, ok      : () => {
-					bash( [ 'wrdirdelete', path, G.mode ], std => {
+					bash( [ 'wrdirdelete', path, V.mode ], std => {
 						if ( std == -1 ) {
 							info( {
 								  icon    : 'webradio'
@@ -647,7 +647,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 											+'<br>Confirm delete?'
 								, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
 								, okcolor : red
-								, ok      : () => bash( [ 'wrdirdelete', path, G.mode, 'noconfirm' ] )
+								, ok      : () => bash( [ 'wrdirdelete', path, V.mode, 'noconfirm' ] )
 							} );
 						}
 					} );
@@ -655,11 +655,11 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrdirrename':
-			var path = G.list.li.find( '.lipath' ).text().split( '/' );
+			var path = V.list.li.find( '.lipath' ).text().split( '/' );
 			var name = path.pop();
 			var path = path.join( '/' );
 			info( {
-				  icon        : G.mode
+				  icon        : V.mode
 				, title       : 'Rename Folder'
 				, textlabel   : 'Name'
 				, focus       : 0
@@ -667,7 +667,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkblank  : 1
 				, checkchange : 1
 				, oklabel     : 'Rename'
-				, ok          : () => bash( [ 'wrdirrename', path, name, infoVal(), G.mode ] )
+				, ok          : () => bash( [ 'wrdirrename', path, name, infoVal(), V.mode ] )
 			} );
 			return
 		case 'wrsave':
@@ -690,8 +690,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	
 	// replaceplay|replace|addplay|add //////////////////////////////////////////
-	var path = G.list.path;
-	if ( G.mode.slice( -5 ) === 'radio' ) {
+	var path = V.list.path;
+	if ( V.mode.slice( -5 ) === 'radio' ) {
 		var pathsplit = path.split( '//' );
 		path = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	}
@@ -700,22 +700,22 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
 	switch ( mode ) {
 		case '':
-			if ( G.list.singletrack || G.mode.slice( -5 ) === 'radio' ) { // single track
+			if ( V.list.singletrack || V.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'mpcadd', path ];
 			} else if ( $( '.licover' ).length && ! $( '.licover .lipath' ).length ) {
-				mpccmd = [ 'mpcfindadd', 'multi', G.mode, path, 'album', G.list.album ];
+				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
 			} else { // directory or album
 				mpccmd = [ 'mpcls', path ];
 			}
 			break;
 		case 'pl':
 			cmd = cmd.slice( 2 );
-			if ( G.library ) {
+			if ( V.library ) {
 				mpccmd = [ 'mpcload', path ];
 			} else { // saved playlist
 				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
 				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
-				if ( replace && G.display.plclear && G.status.pllength ) {
+				if ( replace && D.plclear && S.pllength ) {
 					infoReplace( () => playlistLoad( path, play, replace ) );
 				} else {
 					playlistLoad( path, play, replace );
@@ -728,21 +728,21 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
-			var charset = G.list.li.data( 'charset' );
+			var charset = V.list.li.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
 			mpccmd = [ 'mpcadd', path ];
 			break;
 		default:
-			if ( ! G.list.name ) {
+			if ( ! V.list.name ) {
 				mpccmd = [ 'mpcfindadd', mode, path ];
-				if ( G.list.artist ) mpccmd.push( 'artist', G.list.artist );
+				if ( V.list.artist ) mpccmd.push( 'artist', V.list.artist );
 			} else {
-				mpccmd = [ 'mpcfindadd', 'multi', G.mode, $( '#mode-title' ).text(), 'album', G.list.name ];
+				mpccmd = [ 'mpcfindadd', 'multi', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ];
 			}
 	}
 	if ( ! mpccmd ) mpccmd = [];
-	var sleep = G.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
-	if ( G.status.state === 'play' && G.status.webradio ) sleep += 1;
+	var sleep = V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
+	if ( S.state === 'play' && S.webradio ) sleep += 1;
 	var contextCommand = {
 		  add         : mpccmd
 		, playnext    : mpccmd
@@ -759,19 +759,19 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else if ( cmd === 'playnext' ) {
 		var title = 'Add to Playlist to play next';
 	} else {
-		var title = 'Replace playlist'+ ( cmd === 'replace' ? '' : ' and play' );
+		var title = 'Replace Playlist'+ ( cmd === 'replace' ? '' : ' and play' );
 	}
-	if ( G.list.li.hasClass( 'licover' ) ) {
-		var msg = G.list.li.find( '.lialbum' ).text()
-				+'<a class="li2">'+ G.list.li.find( '.liartist' ).text() +'</a>';
-	} else if ( G.list.li.find( '.li1' ).length ) {
-		var msg = G.list.li.find( '.li1' )[ 0 ].outerHTML
-				+ G.list.li.find( '.li2' )[ 0 ].outerHTML;
+	if ( V.list.li.hasClass( 'licover' ) ) {
+		var msg = V.list.li.find( '.lialbum' ).text()
+				+'<a class="li2">'+ V.list.li.find( '.liartist' ).text() +'</a>';
+	} else if ( V.list.li.find( '.li1' ).length ) {
+		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
+				+ V.list.li.find( '.li2' )[ 0 ].outerHTML;
 		msg     = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
 	} else {
-		var msg = G.list.li.find( '.lipath' ).text() || G.list.li.find( '.liname' ).text();
+		var msg = V.list.li.find( '.lipath' ).text() || V.list.li.find( '.liname' ).text();
 	}
-	if ( G.display.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
+	if ( D.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
 		infoReplace( () => addReplace( cmd, command, title, msg ) );
 	} else {
 		addReplace( cmd, command, title, msg );
