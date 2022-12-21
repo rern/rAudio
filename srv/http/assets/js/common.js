@@ -18,10 +18,10 @@ function banner( icon, title, message, delay ) {
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
 ` ).removeClass( 'hide' );
-	if ( delay !== -1 ) setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( $( '#banner' ).hasClass( 'hide' ) ) return
 	
 	$( '#banner' )
 		.addClass( 'hide' )
@@ -930,7 +930,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 				}
 				
 				delete V.reboot;
-				bash( [ 'autoplaystatus' ], () => banner( 'raudio', 'rAudio', 'Ready', 6000 ) );
+				refreshData();
 				loaderHide();
 			} else {
 				refreshData();
