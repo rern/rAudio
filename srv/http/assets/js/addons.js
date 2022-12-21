@@ -1,4 +1,5 @@
 document.title = 'Addons';
+V              = {} // var global
 icon           = 'jigsaw';
 
 $( '.container' ).removeClass( 'hide' );
