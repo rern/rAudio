@@ -918,10 +918,7 @@ power )
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
-	if [[ -e $dirshm/relayson ]]; then
-		$dirsettings/relays.sh
-		sleep 2
-	fi
+	[[ -e $dirshm/relayson ]] && $dirsettings/relays.sh && sleep 2
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q -m1 $dirnas; then
@@ -929,8 +926,10 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-	[[ $action == off && -e $dirsystem/lcdchar ]] && lcdchar.py off
-	[[ $action == reboot ]] && reboot || poweroff
+	[[ $action == reboot ]] && reboot && exit
+	
+	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
+	poweroff
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit
