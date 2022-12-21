@@ -80,7 +80,6 @@ if [[ $1 == withdisplay ]]; then
 , "color"            : "'$( getContent $dirsystem/color )'"
 , "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
-, "logout"           : '$( exists $dirsystem/login )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "relays"           : '$( exists $dirsystem/relays )'
 , "screenoff"        : '$screenoff'

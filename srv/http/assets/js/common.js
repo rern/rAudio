@@ -921,27 +921,25 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		var type  = message.split( ' ' )[ 0 ].toLowerCase();
 		V[ type ] = 1;
 		var ready = type === 'ready';
-		if ( D.logout ) {
-			if ( ready ) location.reload();
-			
-			$( 'body > div, pre' ).not( '#banner, #loader' ).remove();
-			loader();
+		if ( ready ) {
+			if ( page === 'system' ) getStatus();
+			loaderHide();
 		} else {
-			if ( ready ) {
-				if ( page === 'system' ) getStatus();
-				loaderHide();
-			} else {
-				loader();
-			}
+			loader();
 		}
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {
 				delete V.reboot;
-				banner( 'raudio', 'rAudio', 'Ready', 6000 );
-				loaderHide();
-				page === 'system' ? refreshData() : bash( [ 'autoplaystatus' ] );
+				bash( [ 'autoplaystatus' ] );
+				if ( S.login ) {
+					location.href = '/';
+				} else {
+					banner( 'raudio', 'rAudio', 'Ready', 6000 );
+					refreshData();
+					loaderHide();
+				}
 			} else {
 				refreshData();
 				bannerHide();

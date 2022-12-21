@@ -28,24 +28,20 @@ cpuInfo() {
 data2json() {
 	data="$1"
 	if [[ ${data:0:1} != , ]]; then
-		data="\
-{
-$data
-}"
+		data+='
+, "login" : '$( exists $dirsystem/login )
+		json="{ $data }"
 	else
-		data="\
-[
-${data:1}
-]"
+		json="[ ${data:1} ]"
 	fi
 	# "k": > "k": false # "k":} > "k": false} # [, > [false, # ,, > ,false, # ,] > ,false]
-	data=$( sed 's/:\s*$/: false/
+	json=$( sed 's/:\s*$/: false/
 				s/:\s*}$/: false }/
 				s/^,\s*$/, false/
 				s/\[\s*,/[ false,/g
 				s/,\s*,/, false,/g
-				s/,\s*]/, false ]/g' <<< $data )
-	[[ $2 ]] && pushstream refresh "$data" || echo "$data"
+				s/,\s*]/, false ]/g' <<< $json )
+	[[ $2 ]] && pushstream refresh "$json" || echo "$json"
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false
