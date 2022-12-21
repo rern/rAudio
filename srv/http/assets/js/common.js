@@ -924,15 +924,14 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {
-				bash( [ 'autoplaystatus' ] );
 				if ( S.login ) {
 					location.href = '/';
-				} else {
-					banner( 'raudio', 'rAudio', 'Ready', 6000 );
-					refreshData();
-					loaderHide();
+					return
 				}
-				setTimeout( () => delete V.reboot, 3000 );
+				
+				delete V.reboot;
+				bash( [ 'autoplaystatus' ], () => banner( 'raudio', 'rAudio', 'Ready', 6000 ) );
+				loaderHide();
 			} else {
 				refreshData();
 				bannerHide();

@@ -304,7 +304,10 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 autoplaystatus )
-	[[ -e $dirsystem/autoplay ]] && $dirbash/status-push.sh
+	if [[ -e $dirsystem/autoplay ]]; then
+		$dirbash/status-push.sh
+		$dirsettings/system-data.sh pushrefresh
+	fi
 	;;
 bookmarkadd )
 	name=${args[1]//\//|}
