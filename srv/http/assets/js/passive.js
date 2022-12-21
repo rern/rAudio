@@ -253,8 +253,9 @@ function psNotify( data ) {
 		if ( V.mode === 'latest' ) $( '#button-library' ).click();
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( () => location.href = '/', 3000 );
+	} else if ( title === 'Power' ) {
+		pushstreamPower( message );
 	}
-	if ( title === 'Power' || title === 'rAudio' ) pushstreamPower( message );
 }
 function psOption( data ) {
 	if ( V.local ) return

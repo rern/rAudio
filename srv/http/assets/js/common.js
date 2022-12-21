@@ -18,12 +18,11 @@ function banner( icon, title, message, delay ) {
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
 ` ).removeClass( 'hide' );
-	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
+	if ( delay !== -1 ) setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
-	if ( $( '#banner' ).hasClass( 'hide' ) ) return
+	if ( V.reboot || $( '#banner' ).hasClass( 'hide' ) ) return
 	
-	clearTimeout( I.timeoutbanner );
 	$( '#banner' )
 		.addClass( 'hide' )
 		.empty();
@@ -920,18 +919,11 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	function pushstreamPower( message ) {
 		var type  = message.split( ' ' )[ 0 ].toLowerCase();
 		V[ type ] = 1;
-		var ready = type === 'ready';
-		if ( ready ) {
-			if ( page === 'system' ) getStatus();
-			loaderHide();
-		} else {
-			loader();
-		}
+		loader();
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {
-				delete V.reboot;
 				bash( [ 'autoplaystatus' ] );
 				if ( S.login ) {
 					location.href = '/';
@@ -940,6 +932,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 					refreshData();
 					loaderHide();
 				}
+				setTimeout( () => delete V.reboot, 3000 );
 			} else {
 				refreshData();
 				bannerHide();
