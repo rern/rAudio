@@ -303,12 +303,6 @@ audiocdtag )
 	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
 	pushstreamPlaylist
 	;;
-autoplaystatus )
-	if [[ -e $dirsystem/autoplay ]]; then
-		$dirbash/status-push.sh
-		$dirsettings/system-data.sh pushrefresh
-	fi
-	;;
 bookmarkadd )
 	name=${args[1]//\//|}
 	path=${args[2]}
