@@ -184,7 +184,7 @@ function infoReset( fn ) {
 	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
 	setTimeout( () => {
 		if ( typeof fn === 'function' ) fn();
-		if ( ! I.buttonnoreset ) {
+		if ( ! I.buttonnoreset && ! V.local ) {  // V.local: flag for info in sequence
 			I.infohide = true;
 			$( '#infoOverlay' ).addClass( 'hide' );
 			$( '#infoOverlay' ).empty();
@@ -194,7 +194,7 @@ function infoReset( fn ) {
 	}, 0 );
 }
 function info( json ) {
-	I = json;
+	I          = json;
 	I.infohide = false;
 	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -206,12 +206,14 @@ function info( json ) {
 </div>
 ` );
 	I.infoscroll = $( window ).scrollTop();
+	local();
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
 	} );*/
 	
 	$( '#infoX' ).click( function() {
+		I.active = 0;
 		delete I.buttonnoreset;
 		infoReset( I.cancel );
 	} );

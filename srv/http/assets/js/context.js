@@ -28,9 +28,7 @@ function addSimilar() {
 }
 function addToPlaylist( cmd, mpccmd, msg ) {
 	if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
-		setTimeout( () => {
-			infoReplace( () => addToPlaylistCommand( cmd, mpccmd, msg ) );
-		}, 0 );
+		infoReplace( () => addToPlaylistCommand( cmd, mpccmd, msg ) );
 	} else {
 		addToPlaylistCommand( cmd, mpccmd, msg );
 	}
@@ -190,7 +188,7 @@ function playlistSaveExist( type, name, oldname ) {
 					   +'<br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
-		, button      : () => setTimeout( () => rename ? playlistRename() : playlistNew( name ), 0 ) // fix error on repeating
+		, button      : () => rename ? playlistRename() : playlistNew( name )
 		, oklabel     : '<i class="fa fa-flash"></i>Replace'
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
@@ -462,7 +460,7 @@ function webRadioExists( error, name, url, charset ) {
 		, title   : 'Add Web Radio'
 		, message : iconwarning + error
 					+'<br><br><wh>'+ url +'</wh>'
-		, ok      : () => setTimeout( () => name ? webRadioNew( name, url, charset ) : webRadioEdit(), 300 )
+		, ok      : () => name ? webRadioNew( name, url, charset ) : webRadioEdit()
 	} );
 }
 function webRadioNew( name, url, charset ) {
@@ -525,7 +523,7 @@ function webRadioSave( name ) {
 						, title   : 'Save Web Radio'
 						, message : iconwarning + error
 									+'<br><br><wh>'+ url +'</wh>'
-						, ok      : () => setTimeout( () => webRadioSave( newname ), 300 )
+						, ok      : () => webRadioSave( newname )
 					} );
 					return
 				}

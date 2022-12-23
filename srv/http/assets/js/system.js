@@ -961,7 +961,7 @@ function infoMount( values ) {
 						  icon    : icon
 						, title   : title
 						, message : error
-						, ok      : () => setTimeout( () => infoMount( values ), 0 )
+						, ok      : () => infoMount( values )
 					} );
 					bannerHide();
 				} else {
