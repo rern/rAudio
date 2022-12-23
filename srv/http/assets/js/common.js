@@ -180,18 +180,6 @@ Note:
 
 I = { infohide: true }
 
-function infoReset() {
-	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
-	setTimeout( () => {
-		if ( ! I.buttonnoreset && ! V.local ) {  // V.local: flag for info in sequence
-			I.infohide = true;
-			$( '#infoOverlay' ).addClass( 'hide' );
-			$( '#infoOverlay' ).empty();
-		}
-		delete I.infofile;
-		delete I.infofilegif;
-	}, 0 );
-}
 function info( json ) {
 	local( 3000 );
 	I          = json;
@@ -214,8 +202,7 @@ function info( json ) {
 	$( '#infoX' ).click( function() {
 		V.local = 0;
 		delete I.buttonnoreset;
-		if ( typeof I.cancel === 'function' ) I.cancel();
-		infoReset();
+		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
@@ -272,17 +259,14 @@ function info( json ) {
 		if ( typeof I.button !== 'object' ) I.button = [ I.button ];
 		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
 			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
-			if ( typeof buttonfn === 'function' ) buttonfn();
-			infoReset();
+			infoButtonCommand( buttonfn );
 		} );
 	}
 	$( '#infoCancel' ).one( 'click', function() {
-		if ( typeof I.cancel === 'function' ) I.cancel();
-		infoReset();
+		infoButtonCommand( I.cancel );
 	} );
 	$( '#infoOk' ).one( 'click', function() {
-		if ( typeof I.ok === 'function' ) I.ok();
-		infoReset();
+		infoButtonCommand( I.ok );
 	} );
 	if ( I.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
@@ -549,6 +533,19 @@ function info( json ) {
 	infoCheckSet();
 }
 
+function infoButtonCommand( fn ) {
+	if ( typeof fn === 'function' ) fn();
+	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
+	setTimeout( () => {
+		if ( ! I.buttonnoreset && ! V.local ) {  // V.local: flag for info in sequence
+			I.infohide = true;
+			$( '#infoOverlay' ).addClass( 'hide' );
+			$( '#infoOverlay' ).empty();
+		}
+		delete I.infofile;
+		delete I.infofilegif;
+	}, 0 );
+}
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
 	
