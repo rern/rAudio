@@ -40,6 +40,7 @@ function addToPlaylist( cmd, mpccmd, msg ) {
 	var command = cmd_title[ 0 ];
 	var title   = cmd_title[ 1 ];
 	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).click();
+	if ( D.playbackswitch ) $( '#playback' ).click();
 	bash( command );
 	banner( 'playlist', title, msg );
 }
