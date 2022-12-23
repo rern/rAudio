@@ -180,10 +180,9 @@ Note:
 
 I = { infohide: true }
 
-function infoReset( fn ) {
+function infoReset() {
 	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
 	setTimeout( () => {
-		if ( typeof fn === 'function' ) fn();
 		if ( ! I.buttonnoreset && ! V.local ) {  // V.local: flag for info in sequence
 			I.infohide = true;
 			$( '#infoOverlay' ).addClass( 'hide' );
@@ -215,7 +214,8 @@ function info( json ) {
 	$( '#infoX' ).click( function() {
 		V.local = 0;
 		delete I.buttonnoreset;
-		infoReset( I.cancel );
+		if ( typeof I.cancel === 'function' ) I.cancel();
+		infoReset();
 	} );
 	if ( typeof I !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
@@ -271,14 +271,18 @@ function info( json ) {
 	if ( I.button ) {
 		if ( typeof I.button !== 'object' ) I.button = [ I.button ];
 		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
-			infoReset( I.button[ $( this ).index( '.extrabtn' ) ] );
+			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
+			if ( typeof buttonfn === 'function' ) buttonfn();
+			infoReset();
 		} );
 	}
 	$( '#infoCancel' ).one( 'click', function() {
-		infoReset( I.cancel );
+		if ( typeof I.cancel === 'function' ) I.cancel();
+		infoReset();
 	} );
 	$( '#infoOk' ).one( 'click', function() {
-		infoReset( I.ok );
+		if ( typeof I.ok === 'function' ) I.ok();
+		infoReset();
 	} );
 	if ( I.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
