@@ -1360,30 +1360,57 @@ $( '#lib-mode-list' ).click( function( e ) {
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	if ( ! $( '#menu-bkradio' ).hasClass( 'hide' ) ) {
-		$( '#menu-bkradio' ).addClass( 'hide' )
-		return
-	}
-	
 	var $this = $( this );
 	var path  = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bkname' ).text();
+	var msg = $this.find( '.bkname' ).text();
 	if ( D.tapaddplay ) {
-		bookmarkRadioAddPlaylist( 'addplay', path, name );
+		addToPlaylist( 'addplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
 	if ( D.tapreplaceplay ) {
-		bookmarkRadioAddPlaylist( 'replaceplay', path, name )
+		addToPlaylist( 'replaceplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
-	V.list.li   = $this;
-	V.list.name = name;
-	V.list.path = path;
-	var offset  = $this.find( '.bkcoverart' ).offset();
-	$( '#menu-bkradio' ).css( { top: offset.top + 100, left: offset.left } );
-	$( '#menu-bkradio' ).removeClass( 'hide' );
+	var $img = $this.find( '.bkcoverart' );
+	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+	var content = `\
+<div class="infomessage">
+${ icon }
+<wh>${ name }</wh>
+</div>
+<br>
+<table>
+<tr>
+	<td><label><input type="radio" name="add" value="add">Add <i class="fa fa-plus-o"></i></label></td>
+	<td><label><input type="radio" name="add" value="addplay">Add + Play <i class="fa fa-play-plus"></i></label></td>
+</tr>
+<tr>
+	<td><label><input type="radio" name="add" value="replace">Replace <i class="fa fa-replace"></i></label></td>
+	<td><label><input type="radio" name="add" value="replaceplay">Replace + Play <i class="fa fa-play-replace"></i></label></td>
+</tr>
+<tr>
+	<td><label><input type="radio" name="add" value="playnext">Play next <i class="fa fa-plus-circle"></i></label></td>
+</tr>
+</table>`;
+	info( {
+		  icon        : 'plus-o'
+		, title       : 'Add to Playlist'
+		, content     : content
+		, values      : 'addplay'
+		, ok          : () => {
+			var cmd    = infoVal();
+			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
+			if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
+				setTimeout( () => {
+					infoReplace( () => addToPlaylist( cmd, [ action, path ], msg ) );
+				}, 0 );
+			} else {
+				addToPlaylist( cmd, [ action, path ], msg );
+			}
+		}
+	} );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	$( '#lib-search-close' ).click();

@@ -1,9 +1,3 @@
-function addReplace( cmd, command, title, msg ) {
-	var play = cmd === 'addplay' || cmd === 'replaceplay';
-	if ( play || cmd === 'replace' ) $( '#stop' ).click();
-	bash( command );
-	banner( 'playlist', title, msg );
-}
 function addSimilar() {
 	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
 	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
@@ -31,6 +25,23 @@ function addSimilar() {
 			} );
 		}
 	}, 'json' );
+}
+function addToPlaylist( cmd, mpccmd, msg ) {
+	var sleep = V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
+	if ( S.state === 'play' && S.webradio ) sleep += 1;
+	var contextCommand = {
+		  add         : [ mpccmd,                                    'Add to Playlist' ]
+		, playnext    : [ mpccmd,                                    'Add to Playlist to play next' ]
+		, addplay     : [ mpccmd.concat( [ 'addplay', sleep ] ),     'Add to Playlist and play' ]
+		, replace     : [ mpccmd.concat(  'replace' ),               'Replace Playlist' ]
+		, replaceplay : [ mpccmd.concat( [ 'replaceplay', sleep ] ), 'Replace Playlist and play' ]
+	}
+	var cmd_title = contextCommand[ cmd ];
+	var command = cmd_title[ 0 ];
+	var title   = cmd_title[ 1 ];
+	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).click();
+	bash( command );
+	banner( 'playlist', title, msg );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -741,41 +752,22 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			}
 	}
 	if ( ! mpccmd ) mpccmd = [];
-	var sleep = V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
-	if ( S.state === 'play' && S.webradio ) sleep += 1;
-	var contextCommand = {
-		  add         : mpccmd
-		, playnext    : mpccmd
-		, addplay     : mpccmd.concat( [ 'addplay', sleep ] )
-		, replace     : mpccmd.concat(  'replace' )
-		, replaceplay : mpccmd.concat( [ 'replaceplay', sleep ] )
-	}
-	cmd         = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
-	var command = contextCommand[ cmd ];
-	if ( cmd === 'add' ) {
-		var title = 'Add to Playlist';
-	} else if ( cmd === 'addplay' ) {
-		var title = 'Add to Playlist and play';
-	} else if ( cmd === 'playnext' ) {
-		var title = 'Add to Playlist to play next';
-	} else {
-		var title = 'Replace Playlist'+ ( cmd === 'replace' ? '' : ' and play' );
-	}
+	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
 	if ( V.list.li.hasClass( 'licover' ) ) {
 		var msg = V.list.li.find( '.lialbum' ).text()
 				+'<a class="li2">'+ V.list.li.find( '.liartist' ).text() +'</a>';
 	} else if ( V.list.li.find( '.li1' ).length ) {
 		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
-				+ V.list.li.find( '.li2' )[ 0 ].outerHTML;
-		msg     = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
-	} else if ( V.list.path.slice( 0, 4 ) === 'http' ) {
-		var msg = V.list.name;
+				+'<a class="li2">'+ V.list.li.find( '.li2' )[ 0 ].outerHTML +'</a>';
+		msg     = msg
+					.replace( /<span.*span>/, '' )
+					.replace( '<bl>', '' ).replace( '</bl>', '' );
 	} else {
-		var msg = V.list.path || V.list.li.find( '.liname' ).text();
+		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}
-	if ( D.plclear && ( cmd === 'replace' || cmd === 'replaceplay' ) ) {
-		infoReplace( () => addReplace( cmd, command, title, msg ) );
+	if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
+		infoReplace( () => addToPlaylist( cmd, mpccmd, msg ) );
 	} else {
-		addReplace( cmd, command, title, msg );
+		addToPlaylist( cmd, mpccmd, msg );
 	}
 } );
