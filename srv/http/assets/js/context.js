@@ -27,6 +27,15 @@ function addSimilar() {
 	}, 'json' );
 }
 function addToPlaylist( cmd, mpccmd, msg ) {
+	if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
+		setTimeout( () => {
+			infoReplace( () => addToPlaylistCommand( cmd, mpccmd, msg ) );
+		}, 0 );
+	} else {
+		addToPlaylistCommand( cmd, mpccmd, msg );
+	}
+}
+function addToPlaylistCommand( cmd, mpccmd, msg ) {
 	var sleep = V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
 	if ( S.state === 'play' && S.webradio ) sleep += 1;
 	var contextCommand = {
@@ -766,9 +775,5 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else {
 		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}
-	if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
-		infoReplace( () => addToPlaylist( cmd, mpccmd, msg ) );
-	} else {
-		addToPlaylist( cmd, mpccmd, msg );
-	}
+	addToPlaylist( cmd, mpccmd, msg );
 } );

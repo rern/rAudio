@@ -1364,12 +1364,12 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var path  = $this.find( '.lipath' ).text();
 	var msg = $this.find( '.bkname' ).text();
 	if ( D.tapaddplay ) {
-		addToPlaylist( 'addplay', [ 'mpcadd', path ], msg );
+		addToPlaylistCommand( 'addplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
 	if ( D.tapreplaceplay ) {
-		addToPlaylist( 'replaceplay', [ 'mpcadd', path ], msg );
+		addToPlaylistCommand( 'replaceplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
@@ -1402,13 +1402,7 @@ ${ icon }
 		, ok          : () => {
 			var cmd    = infoVal();
 			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
-			if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
-				setTimeout( () => {
-					infoReplace( () => addToPlaylist( cmd, [ action, path ], msg ) );
-				}, 0 );
-			} else {
-				addToPlaylist( cmd, [ action, path ], msg );
-			}
+			addToPlaylist( cmd, [ action, path ], msg );
 		}
 	} );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
