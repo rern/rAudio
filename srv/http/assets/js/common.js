@@ -213,7 +213,7 @@ function info( json ) {
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		I.active = 0;
+		V.local = 0;
 		delete I.buttonnoreset;
 		infoReset( I.cancel );
 	} );
