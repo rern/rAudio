@@ -194,6 +194,7 @@ function infoReset( fn ) {
 	}, 0 );
 }
 function info( json ) {
+	local( 3000 );
 	I          = json;
 	I.infohide = false;
 	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
@@ -206,7 +207,6 @@ function info( json ) {
 </div>
 ` );
 	I.infoscroll = $( window ).scrollTop();
-	local();
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
