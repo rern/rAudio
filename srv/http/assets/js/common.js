@@ -181,8 +181,8 @@ Note:
 I = { infohide: true }
 
 function info( json ) {
-	local( 3000 );
 	I          = json;
+	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
 	I.infohide = false;
 	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -200,8 +200,8 @@ function info( json ) {
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		V.local = 0;
 		delete I.buttonnoreset;
+		I.active = 0;
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
@@ -537,7 +537,7 @@ function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
 	setTimeout( () => {
-		if ( ! I.buttonnoreset && ! V.local ) {  // V.local: flag for info in sequence
+		if ( ! I.buttonnoreset && ! I.active ) { // V.local: flag for info in sequence
 			I.infohide = true;
 			$( '#infoOverlay' ).addClass( 'hide' );
 			$( '#infoOverlay' ).empty();
