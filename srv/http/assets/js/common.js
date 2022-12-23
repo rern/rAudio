@@ -544,7 +544,7 @@ function infoButtonCommand( fn ) {
 		}
 		delete I.infofile;
 		delete I.infofilegif;
-	}, 0 );
+	}, 50 );
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
