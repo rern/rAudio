@@ -52,6 +52,7 @@ function addToPlaylistCommand( cmd, mpccmd, msg ) {
 	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).click();
 	bash( command );
 	banner( 'playlist', title, msg );
+	console.log(msg)
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -764,7 +765,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	if ( ! mpccmd ) mpccmd = [];
 	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
 	if ( V.list.li.hasClass( 'licover' ) ) {
-		var msg = V.list.li.find( '.lialbum' ).text()
+		var msg = '<div class="li1">'+ V.list.li.find( '.lialbum' ).text() +'</div>'
 				+'<a class="li2">'+ V.list.li.find( '.liartist' ).text() +'</a>';
 	} else if ( V.list.li.find( '.li1' ).length ) {
 		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML

@@ -1362,7 +1362,9 @@ $( '#lib-mode-list' ).click( function( e ) {
 	
 	var $this = $( this );
 	var path  = $this.find( '.lipath' ).text();
-	var msg = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.bkname' ).text();
+	var msg   = '<div class="li1">'+ name +'</div>'
+				+'<a class="li2">'+ path +'</a>';
 	if ( D.tapaddplay ) {
 		addToPlaylistCommand( 'addplay', [ 'mpcadd', path ], msg );
 		return
