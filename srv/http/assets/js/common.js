@@ -196,7 +196,7 @@ function infoReset( fn ) {
 function info( json ) {
 	I = json;
 	I.infohide = false;
-	if ( ! I.noreload ) $( '#infoOverlay' ).html(`
+	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
@@ -470,9 +470,7 @@ function info( json ) {
 		// assign values
 		if ( 'values' in I && I.values !== '' ) infoSetValues();
 		
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.attr( 'tabindex', -1 ); // for keyup event
+		$( '#infoOverlay' ).removeClass( 'hide' );
 		if ( 'focus' in I ) {
 			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
 		} else {

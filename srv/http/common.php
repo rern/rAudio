@@ -104,7 +104,7 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 </head>
 <body>
 
-<div id="infoOverlay" class="hide"></div>
+<div id="infoOverlay" class="hide" tabindex="-1"></div>
 
 <div id="banner" class="hide"></div>
 
