@@ -446,6 +446,8 @@ function info( json ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		infoButtonWidth();
+		$( 'html, body' ).scrollTop( 0 );
+		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 		return
 	}
 	
