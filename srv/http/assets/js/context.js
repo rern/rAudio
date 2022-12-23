@@ -52,7 +52,6 @@ function addToPlaylistCommand( cmd, mpccmd, msg ) {
 	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).click();
 	bash( command );
 	banner( 'playlist', title, msg );
-	console.log(msg)
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
