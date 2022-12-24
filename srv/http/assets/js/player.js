@@ -21,7 +21,6 @@ $( '#setting-btreceiver' ).click( function() {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					bash( 'amixer -MD bluealsa -q sset "'+ S.btaplayname +'" '+ $( this ).val() +'%' );
-					$( '#infoOk' ).removeClass( 'hide' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepushbt' ] );
 				} );
@@ -57,7 +56,6 @@ $( '#setting-hwmixer' ).click( function() {
 				$( '#infoRange input' ).prop( 'disabled', D.mixertype === 'none' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
-					$( '#infoOk' ).removeClass( 'hide' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
 				} );

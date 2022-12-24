@@ -272,7 +272,7 @@ volume0dbbt )
 	voldb=$( volumeGetBt )
 	vol=${voldb/ *}
 	echo $vol > "$dirsystem/btvolume-$btdevice"
-	pushstream volumebt '{"val":'$vol',"db":"0.00"}'
+	pushstream volume '{"val":'$vol',"db":"0.00"}'
 	;;
 volumeget )
 	volumeGet
@@ -290,7 +290,7 @@ volumepushbt )
 	voldb=$( volumeGetBt )
 	vol=${voldb/ *}
 	db=${voldb/* }
-	pushstream volumebt '{"val":'$vol',"db":"'$db'"}'
+	pushstream volume '{"val":'$vol',"db":"'$db'"}'
 	btdevice=$( < $dirshm/btreceiver )
 	echo $vol > "$dirsystem/btvolume-$btdevice"
 	;;
