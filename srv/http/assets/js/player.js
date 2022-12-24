@@ -28,7 +28,7 @@ $( '#setting-btreceiver' ).click( function() {
 				$( '#infoOk' ).toggleClass( db === '0.00' );
 			}
 			, oklabel    : '<i class="fa fa-set0"></i>0dB'
-			, ok         : () => volume0db( 'volume0dbbt', 'btreceiver' )
+			, ok         : () => volume0db( 'volume0dbbt', $( '#setting-btreceiver' ) )
 		} );
 	} );
 } );
@@ -64,7 +64,7 @@ $( '#setting-hwmixer' ).click( function() {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 			}
 			, oklabel    : '<i class="fa fa-set0"></i>0dB'
-			, ok         : () => volume0db( 'volume0db', 'hwmixer' )
+			, ok         : () => volume0db( 'volume0db', $( '#setting-hwmixer' ) )
 		} );
 	} );
 } );
@@ -434,22 +434,15 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
 }
-function volume0db( cmd ) {
-	if ( cmd === 'volume0db' ) {
-		var title = 'Mixer Device Volume';
-		var type  = 'hwmixer';
-	} else {
-		var title = 'Bluetooth Volume';
-		var type  = 'btreceiver';
-	}
+function volume0db( cmd, $setting ) {
 	if ( $( '.infofooter' ).text().slice( 0, -3 ) > 0 ) {
-		bash( [ cmd ], () => $( '#setting-'+ type ).click() )
+		bash( [ cmd ], () => $setting.click() )
 	} else {
 		info( {
 			  icon    : 'volume'
-			, title   : title
+			, title   : cmd  === 'volume0db' ? 'Mixer Device Volume' : 'Bluetooth Volume'
 			, message : warning
-			, ok      : () => bash( [ cmd ], () => $( '#setting-'+ type ).click() )
+			, ok      : () => bash( [ cmd ], () => $setting.click() )
 		} );
 	}
 }
