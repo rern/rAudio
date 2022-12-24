@@ -49,7 +49,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="helpblock hide"><?=( echoSetIcon( '| I^power^I | Power' ) )?></div>
+	<div class="helpblock hide"><?=( echoSetIcon( 'I^power btn^I Power' ) )?></div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div id="divstatus" class="section">
@@ -69,7 +69,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( '| I^refresh^I | Refresh every 10 seconds' ) )?>
+<?=( echoSetIcon( 'I^refresh btn^I Refresh every 10 seconds' ) )?>
 <br>
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
@@ -92,12 +92,12 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="helpblock hide"><?=( echoSetIcon( 
-'| I^usbdrive^I | I^networks^I | Context menu
-| I^plus-circle^I | Add network storage
+'I^usbdrive btn^I I^networks btn^I Context menu
+I^plus-circle btn^I Add network storage
 
 <wh>USB drives:</wh> Will be found and mounted automatically.
 
-<wh>Network shares:</wh> If | Storage I^plus-circle^I | failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+<wh>Network shares:</wh> If I^plus-circle btn^I Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 <wh>• CIFS:</wh>
 ' ) )?>
 <pre>
@@ -145,7 +145,7 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
 		, 'disabled' => $disabledbt
-		, 'help'     => '| I^gear^I | ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => 'I^gear btn^I ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -155,7 +155,7 @@ $body = [
 		, 'status'   => 'iw'
 		, 'disabled' => 'Wi-Fi is currently connected.'
 		, 'help'     => <<< EOF
-| I^gear^I |
+I^gear btn^I
 Country of Wi-Fi regulatory domain:
 	· | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
@@ -184,11 +184,11 @@ $body = [
 </div>
 EOF
 		, 'help'     => <<< EOF
-| I^gear^I | Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+I^gear btn^I Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 HAT with EEPROM could be automatically detected.
-(See | I^player^I Player | Output | Device | if it's already set.)
+(See A^I^player^I Player^A Output | Device | if it's already set.)
 EOF
 	]
 	, [
@@ -285,7 +285,7 @@ EOF
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
-		, 'help'     => '| I^gear^I | Servers for time sync and package mirror'
+		, 'help'     => 'I^gear btn^I Servers for time sync and package mirror'
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -330,11 +330,11 @@ EOF
 Connect shared data as client for:
 	· Library database
 	· Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	· Show / hide items (Library | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.)
+	· Show / hide items (I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library.)
 	· Display order of Library home
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: | <wh>I^features^I Features</wh> | <wh>Server rAudio I^rserver^I</wh> &#9704; |
+	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> &#9704; |
 	Clients: | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)

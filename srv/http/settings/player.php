@@ -15,7 +15,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( '| I^play^I | I^pause^I | Playback control' ) )?>
+<?=( echoSetIcon( 'I^stop btn^I I^play btn^I I^pause btn^I Playback control' ) )?>
 <br>
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -58,7 +58,7 @@ EOF
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< EOF
-| I^volume^I | Control current mixer device.
+I^volume btn^I Control current mixer device.
 
 Available hardware mixers of current device.
 EOF
@@ -192,7 +192,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
-| I^gear^I |
+I^gear btn^I
  • Presets:
 	(default: Quality - | Very high |, Threads - | Single |)
 	
