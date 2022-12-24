@@ -185,7 +185,7 @@ function playlistSaveExist( type, name, oldname ) {
 		  icon        : 'file-playlist'
 		, title       : rename ? 'Rename Playlist' : 'Save Playlist'
 		, message     : 'Playlist: <wh>'+ name +'</wh>'
-					   +'<br>Already exists.'
+					   +'<br><br>Already exists.'
 		, buttonlabel : '<i class="fa fa-undo"></i>Rename'
 		, buttoncolor : orange
 		, button      : () => rename ? playlistRename() : playlistNew( name )

@@ -15,28 +15,37 @@ $( '.playback' ).click( function() {
 	}
 } );
 $( '#setting-btreceiver' ).click( function() {
+	var icon  = 'volume';
+	var title = 'Bluetooth Volume';
 	bash( [ 'volumegetbt' ], voldb => {
 		var voldb = voldb.split( ' ' );
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
 		info( {
-			  icon          : 'volume'
-			, title         : 'Bluetooth Volume'
-			, message       : S.btaplayname.replace( / - A2DP$/, '' )
-			, rangevalue    : vol
-			, footer        : db +' dB'
-			, beforeshow    : () => {
+			  icon       : icon
+			, title      : title
+			, message    : S.btaplayname.replace( / - A2DP$/, '' )
+			, rangevalue : vol
+			, footer     : db +' dB'
+			, beforeshow : () => {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					bash( 'amixer -MD bluealsa -q sset "'+ S.btaplayname +'" '+ $( this ).val() +'%' );
+					$( '#infoOk' ).removeClass( 'hide' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepushbt' ] );
 				} );
+				$( '#infoOk' ).toggleClass( db === '0.00' );
 			}
-			, buttonnoreset : 1
-			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : () => bash( [ 'volume0dbbt' ] )
-			, okno          : 1
+			, oklabel   : '<i class="fa fa-set0"></i>0dB'
+			, ok         : () => {
+				info( {
+					  icon    : icon
+					, title   : title
+					, message : warning
+					, ok      : () => bash( [ 'volume0dbbt' ], () => $( '#setting-btreceiver' ).click() )
+				} );
+			}
 		} );
 	} );
 } );
@@ -49,50 +58,40 @@ $( '#hwmixer' ).change( function() {
 	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
+	var icon  = 'volume';
+	var title = 'Mixer Device Volume';
 	bash( [ 'volumeget' ], voldb => {
 		var voldb    = voldb.split( ' ' );
 		var vol      = voldb[ 0 ];
 		var db       = voldb[ 1 ];
 		var nodb     = typeof db === 'undefined';
-		var json0 = {
-			  icon       : 'volume'
-			, title      : 'Mixer Device Volume'
+		var nomixer  = D.mixertype === 'none';
+		info( {
+			  icon       : icon
+			, title      : title
 			, message    : D.hwmixer
 			, rangevalue : vol
-		}
-		if ( D.mixertype === 'none' ) {
-			var json1 = {
-				  footer     : '0dB (No Volume)'
-				, beforeshow : () => $( '#infoRange input' ).prop( 'disabled', 1 )
-				, okno       : 1
+			, footer     : nodb ? '' : ( nomixer ? '0dB (No Volume)' : db +' dB' )
+			, beforeshow : () => {
+				$( '#infoRange input' ).prop( 'disabled', D.mixertype === 'none' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
+					$( '#infoOk' ).removeClass( 'hide' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ 'volumepush' ] );
+				} );
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 			}
-		} else if ( nodb ) {
-			var json1 = {
-				  beforeshow : setVolumeSlider
-				, okno       : 1
+			, oklabel    : '<i class="fa fa-set0"></i>0dB'
+			, ok         : () => {
+				info( {
+					  icon    : icon
+					, title   : title
+					, message : warning
+					, ok      : () => bash( [ 'volume0db' ], () => $( '#setting-hwmixer' ).click() )
+				} );
 			}
-		} else {
-			var toggle = () => $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' )
-			var json1 = {
-				  footer        : db +' dB'
-				, beforeshow    : () => {
-					$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
-					$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
-					$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
-					setVolumeSlider();
-				}
-				, buttonnoreset : 1
-				, buttonlabel   : [ 'Back', '<i class="fa fa-set0"></i>0dB' ]
-				, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
-				, button        : [ toggle, toggle ]
-				, oklabel       : 'OK'
-				, ok            : () => {
-					bash( [ 'volume0db' ] );
-					toggle();
-				}
-			}
-		}
-		info( { ... json0, ... json1 } );
+		} );
 	} );
 } );
 $( '#mixertype' ).change( function() {
@@ -454,11 +453,4 @@ function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
-}
-function setVolumeSlider() {
-	$( '#infoRange input' ).on( 'click input keyup', function() {
-		bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
-	} ).on( 'touchend mouseup keyup', function() {
-		bash( [ 'volumepush' ] );
-	} );
 }

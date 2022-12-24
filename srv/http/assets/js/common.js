@@ -156,7 +156,6 @@ info( {                                       // default
 	button        : [ FUNCTION, ... ]         // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
 	buttonfit     : 1                         // (none)         (fit buttons width to label)
-	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked) - player.js
 	
 	cancellabel   : 'LABEL'                   // ***            (cancel button label)
 	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
@@ -183,7 +182,6 @@ I = { infohide: true }
 function info( json ) {
 	I          = json;
 	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
-	I.infohide = false;
 	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
@@ -200,8 +198,7 @@ function info( json ) {
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		delete I.buttonnoreset;
-		I.active = 0;
+		I.active = false; // force clear for infoButtonCommand()
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
@@ -461,6 +458,7 @@ function info( json ) {
 		if ( 'values' in I && I.values !== '' ) infoSetValues();
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
+		I.infohide = false;
 		if ( 'focus' in I ) {
 			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
 		} else {
@@ -536,15 +534,15 @@ function info( json ) {
 function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
+	delete I.infofile;
+	delete I.infofilegif;
 	setTimeout( () => {
-		if ( ! I.buttonnoreset && ! I.active ) { // V.local: flag for info in sequence
-			I.infohide = true;
-			$( '#infoOverlay' ).addClass( 'hide' );
-			$( '#infoOverlay' ).empty();
-		}
-		delete I.infofile;
-		delete I.infofilegif;
-	}, 50 );
+		if ( I.active ) return // I.active: for info() in sequence
+		
+		I.infohide = true;
+		$( '#infoOverlay' ).addClass( 'hide' );
+		$( '#infoOverlay' ).empty();
+	}, 50 ); // wait for next info() if any
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
