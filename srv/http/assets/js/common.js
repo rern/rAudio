@@ -146,7 +146,6 @@ info( {                                       // default
 	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
-	noreload      : 1                         // (none)         (do not reset content - for update value)
 	
 	filelabel     : 'LABEL'                   // ***            (browse button label)
 	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
@@ -182,7 +181,7 @@ I = { infohide: true }
 function info( json ) {
 	I          = json;
 	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
-	if ( ! I.noreload ) $( '#infoOverlay' ).html( `
+	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>

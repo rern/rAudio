@@ -691,7 +691,6 @@ function infoLibrary( page ) {
 		, messagealign : 'left'
 		, checkbox     : checkbox
 		, checkcolumn  : page2 ? '' : 1
-		, noreload     : ! I.infohide
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : () => {

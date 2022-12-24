@@ -178,8 +178,8 @@ function psDisplay( data ) {
 function psEqualizer( data ) {
 	if ( ! $( '#eqpreset' ).length ) return
 	
-	V.eq = data;
-	infoEqualizer( 'update' );
+	E = data;
+	infoEqualizer();
 }
 function psMpdPlayer( data ) {
 	clearTimeout( V.debounce );
