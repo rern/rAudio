@@ -100,7 +100,7 @@ pushstreamPlaylist
 eject -x 4
 
 if [[ $autoplaycd ]]; then
-	cdtrack1=$(( $( mpc playlist | wc -l ) - $trackL + 1 ))
+	cdtrack1=$(( $( mpc status %length% ) - $trackL + 1 ))
 	$dirbash/cmd.sh "mpcplayback
 play
 $cdtrack1"

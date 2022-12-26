@@ -168,7 +168,7 @@ mixertype )
 	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
 		if [[ $mixertype == hardware ]];then
-			vol=$( mpc volume | cut -d: -f2 | tr -d ' %' )
+			vol=$( mpc status %volume% | tr -d ' %n/a' )
 			amixer -Mq sset "$hwmixer" $vol%
 		else
 			amixer -Mq sset "$hwmixer" 0dB
