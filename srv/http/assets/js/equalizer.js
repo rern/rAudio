@@ -26,7 +26,7 @@ function equalizer() {
 		infoEqualizer();
 	}, 'json' );
 }
-function infoEqualizer( update ) {
+function infoEqualizer() {
 	var values     = [ '', E.current, ...E.values ]; // [ #eqname, #eqpreset, ... ]
 	var optpreset  = '';
 	E.presets.forEach( name => optpreset += '<option value="'+ name +'">'+ name +'</option>' );
@@ -35,7 +35,6 @@ function infoEqualizer( update ) {
 		, title      : 'Equalizer'
 		, content    : content.replace( 'PRESETS', optpreset )
 		, values     : values
-		, noreload   : update ? 1 : 0
 		, beforeshow : () => {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();

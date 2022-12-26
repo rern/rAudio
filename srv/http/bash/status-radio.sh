@@ -6,9 +6,10 @@ readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]//\"/\\\"}
 id=${tmpradio[2]}
-pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-sampling="$pos • ${tmpradio[3]}"
-song=$(( ${pos/\/*} - 1 ))
+pos=$( mpc status %songpos% )
+total=$( mpc status %length% )
+sampling="$pos/$total • ${tmpradio[3]}"
+song=$(( $pos - 1 ))
 
 case $id in
 	flac )   id=0;;

@@ -146,7 +146,6 @@ info( {                                       // default
 	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
 	
 	beforeshow    : FUNCTION                  // (none)         (function after values set)
-	noreload      : 1                         // (none)         (do not reset content - for update value)
 	
 	filelabel     : 'LABEL'                   // ***            (browse button label)
 	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
@@ -156,7 +155,6 @@ info( {                                       // default
 	button        : [ FUNCTION, ... ]         // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
 	buttonfit     : 1                         // (none)         (fit buttons width to label)
-	buttonnoreset : 1                         // (none)         (do not hide/reset content on button clicked) - player.js
 	
 	cancellabel   : 'LABEL'                   // ***            (cancel button label)
 	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
@@ -180,23 +178,10 @@ Note:
 
 I = { infohide: true }
 
-function infoReset( fn ) {
-	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
-	setTimeout( () => {
-		if ( typeof fn === 'function' ) fn();
-		if ( ! I.buttonnoreset ) {
-			I.infohide = true;
-			$( '#infoOverlay' ).addClass( 'hide' );
-			$( '#infoOverlay' ).empty();
-		}
-		delete I.infofile;
-		delete I.infofilegif;
-	}, 0 );
-}
 function info( json ) {
-	I = json;
-	I.infohide = false;
-	if ( ! I.noreload ) $( '#infoOverlay' ).html(`
+	I          = json;
+	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
+	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
@@ -212,8 +197,8 @@ function info( json ) {
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		delete I.buttonnoreset;
-		infoReset( I.cancel );
+		I.active = false; // force clear for infoButtonCommand()
+		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
 		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
@@ -269,14 +254,15 @@ function info( json ) {
 	if ( I.button ) {
 		if ( typeof I.button !== 'object' ) I.button = [ I.button ];
 		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
-			infoReset( I.button[ $( this ).index( '.extrabtn' ) ] );
+			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
+			infoButtonCommand( buttonfn );
 		} );
 	}
 	$( '#infoCancel' ).one( 'click', function() {
-		infoReset( I.cancel );
+		infoButtonCommand( I.cancel );
 	} );
 	$( '#infoOk' ).one( 'click', function() {
-		infoReset( I.ok );
+		infoButtonCommand( I.ok );
 	} );
 	if ( I.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
@@ -446,6 +432,8 @@ function info( json ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		infoButtonWidth();
+		$( 'html, body' ).scrollTop( 0 );
+		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 		return
 	}
 	
@@ -468,9 +456,8 @@ function info( json ) {
 		// assign values
 		if ( 'values' in I && I.values !== '' ) infoSetValues();
 		
-		$( '#infoOverlay' )
-			.removeClass( 'hide' )
-			.attr( 'tabindex', -1 ); // for keyup event
+		$( '#infoOverlay' ).removeClass( 'hide' );
+		I.infohide = false;
 		if ( 'focus' in I ) {
 			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
 		} else {
@@ -543,6 +530,19 @@ function info( json ) {
 	infoCheckSet();
 }
 
+function infoButtonCommand( fn ) {
+	if ( typeof fn === 'function' ) fn();
+	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
+	delete I.infofile;
+	delete I.infofilegif;
+	setTimeout( () => {
+		if ( I.active ) return // I.active: for info() in sequence
+		
+		I.infohide = true;
+		$( '#infoOverlay' ).addClass( 'hide' );
+		$( '#infoOverlay' ).empty();
+	}, 50 ); // wait for next info() if any
+}
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
 	

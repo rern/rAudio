@@ -112,7 +112,8 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 }
 	
 $( 'body' ).click( function( e ) {
-	if ( ! $( e.target ).hasClass( 'savedlist' ) ) menuHide();
+	var $target = $( e.target );
+	if ( ! $target.hasClass( 'savedlist' ) && ! $target.hasClass( 'bkcoverart' ) && ! $target.hasClass( 'bkradio' ) ) menuHide();
 } );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
@@ -1225,7 +1226,8 @@ $( '#lib-search-btn' ).click( function() { // search
 		}, 'json' );
 	}
 } );
-$( '#lib-search-close' ).click( function() {
+$( '#lib-search-close' ).click( function( e ) {
+	e.stopPropagation();
 	$( '#lib-search, #lib-search-btn' ).addClass( 'hide' );
 	$( '#lib-search-close' ).empty();
 	$( '#lib-path span, #button-lib-search' ).removeClass( 'hide' );
@@ -1356,34 +1358,53 @@ $( '#lib-mode-list' ).click( function( e ) {
 	query.modetitle = path;
 	if ( query.query !== 'ls' && query.query !== 'radio' ) V.query.push( query );
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
-	$( '#lib-search-close' ).click();
 	if ( V.press || $( '.bkedit' ).length ) return
 	
 	var $this = $( this );
 	var path  = $this.find( '.lipath' ).text();
-	var name = $this.find( '.bkname' ).text();
+	var name  = $this.find( '.bkname' ).text();
+	var msg   = '<div class="li1">'+ name +'</div>'
+				+'<a class="li2">'+ path +'</a>';
 	if ( D.tapaddplay ) {
-		bookmarkRadioAddPlaylist( 'addplay', path, name );
+		addToPlaylistCommand( 'addplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
 	if ( D.tapreplaceplay ) {
-		bookmarkRadioAddPlaylist( 'replaceplay', path, name )
+		addToPlaylistCommand( 'replaceplay', [ 'mpcadd', path ], msg );
 		return
 	}
 	
 	var $img = $this.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+	var content = `\
+<div class="infomessage">${ icon }
+<wh>${ name }</wh>
+</div>
+<br>
+<table>
+<tr>
+	<td><label><input type="radio" name="add" value="add"><i class="fa fa-plus-o"></i>Add</label></td>
+	<td><label><input type="radio" name="add" value="addplay"><i class="fa fa-play-plus"></i>Add + Play</label></td>
+</tr>
+<tr>
+	<td><label><input type="radio" name="add" value="playnext"><i class="fa fa-plus-circle"></i>Play next</label></td>
+</tr>
+<tr>
+	<td><label><input type="radio" name="add" value="replace"><i class="fa fa-replace"></i>Replace</label></td>
+	<td><label><input type="radio" name="add" value="replaceplay"><i class="fa fa-play-replace"></i>Replace + Play</label></td>
+</tr>
+</table>`;
 	info( {
-		  icon        : 'plus-o'
+		  icon        : 'playlist'
 		, title       : 'Add to Playlist'
-		, message     : icon
-						+'<br><wh>'+ name +'</wh>'
-		, buttonlabel : '<i class="fa fa-plus-o"></i>Add'
-		, buttoncolor : 'var( --cg )'
-		, button      : () => bookmarkRadioAddPlaylist( 'add', path, name )
-		, oklabel     : '<i class="fa fa-play-plus"></i>Play'
-		, ok          : () => bookmarkRadioAddPlaylist( 'addplay', path, name )
+		, content     : content
+		, values      : 'addplay'
+		, ok          : () => {
+			var cmd    = infoVal();
+			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
+			addToPlaylist( cmd, [ action, path ], msg );
+		}
 	} );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );

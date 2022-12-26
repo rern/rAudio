@@ -1,13 +1,5 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var warning = `
-<wh>${ iconwarning }Lower amplifier volume.</wh>
-
-Signal will be set to original level at 0dB.
-Beware of too high volume from speakers.
-
-(Not for DACs with on-board amplifier)`;
-
 $( '.playback' ).click( function() {
 	if ( ! $( this ).hasClass( 'disabled' ) ) {
 		var cmd = S.player === 'mpd' ? 'mpcplayback' : 'playerstop';
@@ -20,23 +12,22 @@ $( '#setting-btreceiver' ).click( function() {
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
 		info( {
-			  icon          : 'volume'
-			, title         : 'Bluetooth Volume'
-			, message       : S.btaplayname.replace( / - A2DP$/, '' )
-			, rangevalue    : vol
-			, footer        : db +' dB'
-			, beforeshow    : () => {
+			  icon       : 'volume'
+			, title      : 'Bluetooth Volume'
+			, message    : S.btaplayname.replace( / - A2DP$/, '' )
+			, rangevalue : vol
+			, footer     : db +' dB'
+			, beforeshow : () => {
 				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
 				$( '#infoRange input' ).on( 'click input', function() {
 					bash( 'amixer -MD bluealsa -q sset "'+ S.btaplayname +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepushbt' ] );
 				} );
+				$( '#infoOk' ).toggleClass( db === '0.00' );
 			}
-			, buttonnoreset : 1
-			, buttonlabel   : '<i class="fa fa-set0"></i>0dB'
-			, button        : () => bash( [ 'volume0dbbt' ] )
-			, okno          : 1
+			, oklabel    : '<i class="fa fa-set0"></i>0dB'
+			, ok         : () => volume0db( 'volume0dbbt', $( '#setting-btreceiver' ) )
 		} );
 	} );
 } );
@@ -54,45 +45,25 @@ $( '#setting-hwmixer' ).click( function() {
 		var vol      = voldb[ 0 ];
 		var db       = voldb[ 1 ];
 		var nodb     = typeof db === 'undefined';
-		var json0 = {
+		var nomixer  = D.mixertype === 'none';
+		info( {
 			  icon       : 'volume'
 			, title      : 'Mixer Device Volume'
 			, message    : D.hwmixer
 			, rangevalue : vol
-		}
-		if ( D.mixertype === 'none' ) {
-			var json1 = {
-				  footer     : '0dB (No Volume)'
-				, beforeshow : () => $( '#infoRange input' ).prop( 'disabled', 1 )
-				, okno       : 1
+			, footer     : nodb ? '' : ( nomixer ? '0dB (No Volume)' : db +' dB' )
+			, beforeshow : () => {
+				$( '#infoRange input' ).prop( 'disabled', D.mixertype === 'none' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ 'volumepush' ] );
+				} );
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 			}
-		} else if ( nodb ) {
-			var json1 = {
-				  beforeshow : setVolumeSlider
-				, okno       : 1
-			}
-		} else {
-			var toggle = () => $( '#infoContent, .warning, #infoButtons a' ).toggleClass( 'hide' )
-			var json1 = {
-				  footer        : db +' dB'
-				, beforeshow    : () => {
-					$( '#infoContent' ).after( '<div class="infomessage warning hide">'+ warning +'</div>' );
-					$( '.extrabtn' ).toggleClass( 'hide', db === '0.00' );
-					$( '.extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );
-					setVolumeSlider();
-				}
-				, buttonnoreset : 1
-				, buttonlabel   : [ 'Back', '<i class="fa fa-set0"></i>0dB' ]
-				, buttoncolor   : [ $( '.switchlabel' ).css( 'background-color' ), '' ]
-				, button        : [ toggle, toggle ]
-				, oklabel       : 'OK'
-				, ok            : () => {
-					bash( [ 'volume0db' ] );
-					toggle();
-				}
-			}
-		}
-		info( { ... json0, ... json1 } );
+			, oklabel    : '<i class="fa fa-set0"></i>0dB'
+			, ok         : () => volume0db( 'volume0db', $( '#setting-hwmixer' ) )
+		} );
 	} );
 } );
 $( '#mixertype' ).change( function() {
@@ -341,6 +312,12 @@ var soxrcustom = `
 	</td>
 </tr>
 </table>`;
+var warning = `
+<wh>${ iconwarning }Lower speakers / headphones volume
+
+<gr>Signal will be set to original level at 0dB.</gr>
+Beware of too high volume.</wh>`;
+
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
 	var icon   = 'mpd';
@@ -455,10 +432,15 @@ function setMixerType( mixertype ) {
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
 }
-function setVolumeSlider() {
-	$( '#infoRange input' ).on( 'click input keyup', function() {
-		bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
-	} ).on( 'touchend mouseup keyup', function() {
-		bash( [ 'volumepush' ] );
-	} );
+function volume0db( cmd, $setting ) {
+	if ( $( '.infofooter' ).text().slice( 0, -3 ) > 0 ) {
+		bash( [ cmd ], () => $setting.click() )
+	} else {
+		info( {
+			  icon    : 'volume'
+			, title   : cmd  === 'volume0db' ? 'Mixer Device Volume' : 'Bluetooth Volume'
+			, message : warning
+			, ok      : () => bash( [ cmd ], () => $setting.click() )
+		} );
+	}
 }

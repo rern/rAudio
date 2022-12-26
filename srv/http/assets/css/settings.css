@@ -97,12 +97,19 @@ div.helpblock {
 }
 .helpblock .fa {
 	width: 20px;
+	margin-left: 3px;
+	margin-right: -4px;
 	line-height: 16px;
 	font-size: 16px !important;
 }
-.helpblock i {
-	margin-left: 3px;
-	margin-right: -4px;
+.helpblock .fa.btn {
+	width: 22px;
+	line-height: 18px;
+	margin-left: 0;
+	margin-right: 0;
+	border: 1px solid var( --cg );
+	text-align: center;
+	border-radius: 2px;
 }
 .helpblock p {
 	margin: 0 0 0 10px;

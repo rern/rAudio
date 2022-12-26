@@ -9,20 +9,20 @@ htmlHead( [ //////////////////////////////////
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="helpblock hide">| I^bluetooth^I | I^btsender^I | Context menu
-| I^search^I | Scan to connect
+	<div class="helpblock hide">I^search btn^I Scan to connect
+I^bluetooth btn^I I^btsender btn^I Context menu
 
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: | Bluetooth I^search wh^I | Select to pair
+	· On rAudio: I^search btn^I Scan to connect | Select to pair
  • Connect:
 	· On receiver: Power on / Power off > Connect / Disconnect
 	· Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: | I^system^I System | Bluetooth I^bluetooth^I | • Discoverable by senders |
+	· On rAudio: A^I^system^I System^A Bluetooth I^bluetooth^I | • Discoverable by senders |
 	· On sender: Search > Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
@@ -41,9 +41,9 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( '| I^wifi^I | Context menu
-| I^plus-circle^I | Manually connect
-| I^search^I | Scan to connect
+	<div class="helpblock hide"><?=( echoSetIcon( 'I^plus-circle btn^I Manual connect
+I^search btn^I Scan to connect
+I^wifi btn^I Context menu
 
 Note:
  · Avoid double quotes <code>"</code> in Wi-Fi name and password.
@@ -58,7 +58,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( '| I^lan^I | Context menu' ) )?></div>
+	<div class="helpblock hide"><?=( echoSetIcon( 'I^lan btn^I Context menu' ) )?></div>
 </div>
 </div>
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->

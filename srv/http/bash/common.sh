@@ -50,13 +50,8 @@ getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
 getElapsed() {
-	getStatus elapsed
-}
-getStatus() {
-	printf '%.0f' $( { echo status; sleep 0.05; } \
-						| telnet 127.0.0.1 6600 2> /dev/null \
-						| grep ^$1: \
-						| cut -d' ' -f2 )
+	mmss=$( mpc status %currenttime% )
+	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
 }
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'

@@ -79,7 +79,7 @@ EOF
 	| USERS AND ACCESS | ADD NEW USER |
 		· Name: <cy>user</cy>
 		· Spotify Account: <cy>email</cy>
-· | <wh>Spotify I^spotify^I</wh> &#9704; |
+· | <wh>Spotify I^spotify^I</wh> |
 	· Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -155,8 +155,8 @@ EOF
 Control: A^I^features^I Features^AI^equalizer sub^I
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust | I^plus-circle^I Add | I^save^I Save |
- · Existing: Adjust | I^save^I Save |
+ · New: Adjust | I^plus-circle btn^I Add | I^save btn^I Save |
+ · Existing: Adjust | I^save btn^I Save |
  · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
@@ -200,7 +200,7 @@ EOF
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: A^I^power^I Power^AI^screenoff sub^I
-	· Also by timer in | I^gear^I |
+	· Also by timer in I^gear btn^I
 	· Backlight still on - no energy saved
  · HDMI display must be connected before boot.
 EOF
@@ -269,7 +269,7 @@ EOF
  · No Last.fm password saved on rAudio.
  · Option to include renderers - Exclude if already scrobbleed by sender devices.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: | Playing title | I^lastfm wh^I Scrobble |
+ · Web Radio must be manually scrobbled: | Playing title | I^lastfm btn^I Scrobble |
 EOF
 	]
 	, [
@@ -285,15 +285,15 @@ EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
-	· In | I^library^I | Library:
-		· | I^microsd^I SD | and | I^usbdrive^I USB | will be hidden.
-		· | I^usb^I USB | items will be displayed in | I^networks^I NAS | instead.
+	· In A^I^library^I Library^A
+		· I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden.
+		· I^usb btn^I USB items will be displayed in I^networks btn^I NAS instead.
 	· On reboot / power off:
 		· Shared Data on clients will be temporarily disabled
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· | I^system^I System | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
+	· A^I^system^I System^A <wh>Shared Data I^networks^I</wh> | • rAudio |
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

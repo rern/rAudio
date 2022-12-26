@@ -61,13 +61,11 @@ plAddPosition() {
 		mpc -q clear
 		pos=1
 	else
-		pos=$(( $( mpc playlist | wc -l ) + 1 ))
+		pos=$(( $( mpc status %length% ) + 1 ))
 	fi
 }
 plAddRandom() {
-	total=$( getStatus playlistlength )
-	pos=$( getStatus song )
-	tail=$(( total - pos ))
+	tail=$( plTail )
 	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
 	dir=$( shuf -n 1 $dirmpd/album | cut -d^ -f7 )
@@ -93,6 +91,11 @@ plAddRandom() {
 		> $dirsystem/librandom
 	fi
 	(( $tail > 1 )) || plAddRandom
+}
+plTail() {
+	total=$( mpc status %length% )
+	pos=$( mpc status %songpos% )
+	echo $(( total - pos ))
 }
 pushstreamPlaylist() {
 	[[ $1 ]] && arg=$1 || arg=current
@@ -160,7 +163,7 @@ volumeGet() {
 		mixersoftware=1
 	fi
 	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
-		mpc volume | cut -d: -f2 | tr -d ' %n/a'
+		mpc status %volume% | tr -d ' %n/a'
 	else
 		card=$( < $dirsystem/asoundcard )
 		control=$( getContent $dirshm/amixercontrol )
@@ -553,9 +556,7 @@ librandom )
 	else
 		[[ ${args[2]} == true ]] && play=1
 		mpc -q random 0
-		total=$( getStatus playlistlength )
-		pos=$( getStatus song )
-		tail=$(( total - pos ))
+		tail=$( plTail )
 		if [[ $play ]]; then
 			playnext=$(( total + 1 ))
 			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
@@ -698,7 +699,7 @@ mpcplayback )
 	fi
 	stopRadio $command
 	if [[ $command == play ]]; then
-		grep -q -m1 '^state.*pause' $dirshm/status && pause=1
+		[[ $( mpc status %state% ) == paused ]] && pause=1
 		mpc -q $command $pos
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
@@ -744,13 +745,13 @@ mpcprevnext )
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
 	fi
-	if mpc | grep -q -m1 'random: on'; then
+	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc -q play $pos
 	else
 		if [[ $command == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
-			mpc | grep -q -m1 'consume: on' && mpc -q del $current
+			[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
 			[[ -e $dirsystem/librandom ]] && plAddRandom
 		else
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
@@ -802,7 +803,7 @@ mpcshuffle )
 	pushstreamPlaylist
 	;;
 mpcsimilar )
-	plLprev=$( mpc playlist | wc -l )
+	plLprev=$( mpc status %length% )
 	linesL=${#args[@]}
 	for (( i=1; i < linesL; i++ )); do
 		artist=${args[$i]}
@@ -818,7 +819,7 @@ mpcsimilar )
 	done
 	awk NF <<< $list | mpc -q add
 	pushstreamPlaylist
-	echo $(( $( mpc playlist | wc -l ) - plLprev ))
+	echo $(( $( mpc status %length% ) - plLprev ))
 	;;
 mpcupdate )
 	path=${args[1]}

@@ -23,7 +23,7 @@ else
 	[[ ! $player ]] && player=mpd && echo mpd > $dirshm/player
 	[[ $player != mpd ]] && icon=$player
 	
-	mpc | grep -q -m1 'consume: on' && consume=true
+	[[ $( mpc status %consume% ) == on ]] && consume=true
 	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
 		volume=false
 	else
@@ -202,7 +202,7 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ ! $pllength ]] && pllength=$( mpc playlist | wc -l )
+[[ ! $pllength ]] && pllength=$( mpc status %length% )
 status=$( grep -v '^, "file"' <<< $status )
 ########
 status+='

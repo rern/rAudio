@@ -2160,6 +2160,9 @@ li.active .li2 bl {
 	@media ( max-width: 900px ) {
 		#coverart-block { max-width: 55vw }
 	}
+	@media ( max-width: 895px ) {
+		#playback-row { align-items: flex-start }
+	}
 	@media ( max-width: 749px ) {
 		#playback-row { align-items: center }
 		#time-knob,
@@ -2172,6 +2175,9 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 700px ) {
 		.liinfo { display: none }
+	}
+	@media ( max-width: 590px ) {
+		#playback-row { align-items: flex-start }
 	}
 	@media ( max-width: 560px ) {
 		#coverart-block { max-width: 50vw }

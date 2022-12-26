@@ -5,7 +5,7 @@ include 'common.php';
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext"><i class="fa fa-plus-o"></i>Play next</a>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext"><i class="fa fa-plus-circle"></i>Play next</a>';
 	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
@@ -86,9 +86,9 @@ $menulist = [
 	, [ 'pldelete', 'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
-// radio
-$html = menucommon( 'add', 'replace' );
-$menu.= menudiv( 'radio', $html );
+// radio bookmark
+$html = menucommon( 'wradd', 'wrreplace' );
+$menu.= menudiv( 'bkradio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [

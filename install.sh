@@ -105,7 +105,7 @@ fi
 #-------------------------------------------------------------------------------
 installstart "$1"
 
-rm -rf /srv/http/assets/{css,js}
+rm -rf /srv/http/assets/{css,fonts,js}
 
 getinstallzip
 

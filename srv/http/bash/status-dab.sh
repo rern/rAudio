@@ -5,8 +5,8 @@
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
 station=${tmpradio[1]//\"/\\\"}
-pos=$( mpc | grep '\[playing' | cut -d' ' -f2 | tr -d '#' )
-song=$(( ${pos/\/*} - 1 ))
+pos=$( mpc status %songpos% )
+total=$( mpc status %length% )
 filelabel=$dirshm/webradio/DABlabel.txt
 filecover=$dirshm/webradio/DABslide.jpg
 filetitle=$dirshm/webradio/DABtitle
@@ -24,9 +24,9 @@ while true; do
 , "elapsed"  : '$( getElapsed )'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
-, "sampling" : "'$pos' • 48 kHz 160 kbit/s • DAB"
+, "sampling" : "'$pos'/'$total' • 48 kHz 160 kbit/s • DAB"
 , "state"    : "play"
-, "song"     : '$song'
+, "song"     : '$(( $pos - 1 ))'
 , "station"  : ""
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"

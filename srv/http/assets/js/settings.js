@@ -188,7 +188,6 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
 		case 'volume':    psVolume( data );    break;
-		case 'volumebt':  psVolumeBt( data );  break;
 		case 'wlan':      psWlan( data );      break;
 	}
 }
@@ -232,7 +231,7 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	$.each( data, ( k, v ) => {S[ k ] = v } ); // need braces
+	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	page === 'networks' ? $( '.back' ).click() : setSwitch();
 	renderPage();
 }
@@ -248,18 +247,8 @@ function psVolume( data ) {
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
-		$( '#infoContent' ).removeClass( 'hide' );
-		$( '.warning, .extrabtn:eq( 0 ), #infoOk' ).addClass( 'hide' );     // ok
-		$( '.extrabtn' ).eq( 1 ).toggleClass( 'hide', data.db === '0.00' ); // 0dB
+		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
-}
-function psVolumeBt( data ) {
-	if ( ! $( '#infoRange .value' ).text() ) return
-	
-	$( '#infoRange .value' ).text( data.val );
-	$( '#infoRange input' ).val( data.val );
-	$( '.infofooter' ).text( data.db +' dB' );
-	$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {

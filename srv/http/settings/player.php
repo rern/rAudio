@@ -15,7 +15,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( '| I^play^I | I^pause^I | Playback control' ) )?>
+<?=( echoSetIcon( 'I^stop btn^I I^play btn^I I^pause btn^I Playback control' ) )?>
 <br>
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -58,7 +58,7 @@ EOF
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< EOF
-| I^volume^I | Control current mixer device.
+I^volume btn^I Control current mixer device.
 
 Available hardware mixers of current device.
 EOF
@@ -72,10 +72,10 @@ EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
 <pre>
-| None / 0dB   | Best  - Amplifier volume - GUI knob hidden
-| Mixer device | Good  - DAC hardware via GUI knob
-| MPD software | Basic - GUI knob
-</pre>Note: | None / 0dB | - Not for devices which still need volume control, e.g., DACs with on-board amplifier
+<code>None / 0dB   </code> Best  Amplifier volume - GUI knob hidden
+<code>Mixer device </code> Good  DAC hardware via GUI knob
+<code>MPD software </code> Basic GUI knob
+</pre>Note: <code>None / 0dB</code> Not for devices which still need volume control, e.g., DACs with on-board amplifier
 EOF
 	]
 ];
@@ -90,8 +90,8 @@ $body = [
 		, 'help'        => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
- · Mixer device volume: | 0dB |
- · Volume Control: | None / 0db |
+ · Mixer device volume: <code>0dB</code>
+ · Volume Control: <code>None / 0db</code>
  · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
  · Disable Signal Processors
 
@@ -153,7 +153,7 @@ $body = [
 		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 
-(default: 4096 kB - 24s of CD-quality audio)
+(default: <code>4096</code> kB - 24s of CD-quality audio)
 EOF
 	]
 	, [
@@ -163,7 +163,7 @@ EOF
 		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 
-(default: 8192 kB)
+(default: <code>8192</code> kB)
 EOF
 	]
 	, [
@@ -192,9 +192,9 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
-| I^gear^I |
+I^gear btn^I
  • Presets:
-	(default: Quality - | Very high |, Threads - | Single |)
+	(default: Quality <code>Very high</code>  Threads <code>Single</code>)
 	
  • Custom quality:
 	· Precision - Conversion precision (20 = HQ)
@@ -204,12 +204,12 @@ EOF
 	· Attenuation - Lowers the source to prevent clipping
 	· Flags / Extra settings:
 <pre>
-|  0 - Rolloff - small  | (<= 0.01 dB)
-|  1 - Rolloff - medium | (<= 0.35 dB)
-|  2 - Rolloff - none   | For Chebyshev bandwidth
-|  8 - High precision   | Increase irrational ratio accuracy
-| 16 - Double precision | even if Precision <= 20
-| 32 - Variable rate    |
+<code> 0 - Rolloff - small </code> (<= 0.01 dB)
+<code> 1 - Rolloff - medium</code> (<= 0.35 dB)
+<code> 2 - Rolloff - none  </code> For Chebyshev bandwidth
+<code> 8 - High precision  </code> Increase irrational ratio accuracy
+<code>16 - Double precision</code> even if Precision <= 20
+<code>32 - Variable rate   </code>
 </pre>
 EOF
 	]
