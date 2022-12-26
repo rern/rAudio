@@ -1378,8 +1378,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var $img = $this.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
 	var content = `\
-<div class="infomessage">
-${ icon }
+<div class="infomessage">${ icon }
 <wh>${ name }</wh>
 </div>
 <br>
