@@ -79,7 +79,7 @@ EOF
 	| USERS AND ACCESS | ADD NEW USER |
 		· Name: <cy>user</cy>
 		· Spotify Account: <cy>email</cy>
-· | <wh>Spotify I^spotify^I</wh> &#9704; |
+· | <wh>Spotify I^spotify^I</wh> |
 	· Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -293,7 +293,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· A^I^system^I System^A <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
+	· A^I^system^I System^A <wh>Shared Data I^networks^I</wh> | • rAudio |
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

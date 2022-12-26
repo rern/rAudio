@@ -334,8 +334,8 @@ Connect shared data as client for:
 	· Display order of Library home
 	
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> &#9704; |
-	Clients: | <wh>Shared Data I^networks^I</wh> &#9704; | • rAudio |
+	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
+	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -346,7 +346,7 @@ Connect shared data as client for:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		· | <wh>Shared Data I^networks^I</wh> &#9704; | Add the created share
+		· | <wh>Shared Data I^networks^I</wh> | Add the created share
 		· Data on 1st connected client will be used as initial shared.
 		
 (SSH password must be default.)
