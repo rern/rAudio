@@ -7,7 +7,8 @@
 	line-height   : 24px;
 }
 #infoContent .select2-container {
-	max-width: none;
+	max-width     : none;
+	margin-bottom : 0;
 }
 .select2-selection--single {
 	height        : 40px;

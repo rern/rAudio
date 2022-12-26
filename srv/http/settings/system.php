@@ -157,7 +157,7 @@ $body = [
 		, 'help'     => <<< EOF
 I^gear btn^I
 Country of Wi-Fi regulatory domain:
-	· | 00 | Least common denominator settings, channels and transmit power are permitted in all countries.
+	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
 | ⯀ Auto start Access Point | On failed connection or no router
 EOF
@@ -209,12 +209,12 @@ EOF
 		, 'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
- · On - Fixed to pin 5
- · Off - Default to pin 5 (single pin on+off)
+ · On - Fixed to pin <code>5</code>
+ · Off - Default: pin <code>5</code> (single pin on+off)
  
-If pin 5 is used by DAC or LCD - Set 2 unused pins for:
- · Off (default: 7)
- · Reserved (default: 29)
+If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
+ · Off - Default: pin <code>7</code>
+ · Reserved - Default: pin <code>29</code>
 EOF
 	]
 	, [
@@ -330,9 +330,12 @@ EOF
 Connect shared data as client for:
 	· Library database
 	· Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	· Show / hide items (I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library.)
 	· Display order of Library home
 	
+Note:
+ · SSH password must be default.
+ · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in I^library btn^I Library.
+
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
 	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
@@ -348,8 +351,6 @@ Connect shared data as client for:
 	Clients:
 		· | <wh>Shared Data I^networks^I</wh> | Add the created share
 		· Data on 1st connected client will be used as initial shared.
-		
-(SSH password must be default.)
 EOF
 	]
 ];
