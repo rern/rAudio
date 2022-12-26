@@ -385,6 +385,7 @@ function displayPlayback() {
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', D.cover );
 	$( '#play-group, #vol-group' ).toggleClass( 'hide', ! D.buttons );
+	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
 }
 function displaySave( keys ) {
 	var values  = infoVal();
