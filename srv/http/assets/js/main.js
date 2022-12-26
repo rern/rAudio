@@ -1385,19 +1385,19 @@ ${ icon }
 <br>
 <table>
 <tr>
-	<td><label><input type="radio" name="add" value="add">Add <i class="fa fa-plus-o"></i></label></td>
-	<td><label><input type="radio" name="add" value="addplay">Add + Play <i class="fa fa-play-plus"></i></label></td>
+	<td><label><input type="radio" name="add" value="add"><i class="fa fa-plus-o"></i>Add</label></td>
+	<td><label><input type="radio" name="add" value="addplay"><i class="fa fa-play-plus"></i>Add + Play</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="replace">Replace <i class="fa fa-replace"></i></label></td>
-	<td><label><input type="radio" name="add" value="replaceplay">Replace + Play <i class="fa fa-play-replace"></i></label></td>
+	<td><label><input type="radio" name="add" value="playnext"><i class="fa fa-plus-circle"></i>Play next</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="playnext">Play next <i class="fa fa-plus-circle"></i></label></td>
+	<td><label><input type="radio" name="add" value="replace"><i class="fa fa-replace"></i>Replace</label></td>
+	<td><label><input type="radio" name="add" value="replaceplay"><i class="fa fa-play-replace"></i>Replace + Play</label></td>
 </tr>
 </table>`;
 	info( {
-		  icon        : 'plus-o'
+		  icon        : 'playlist'
 		, title       : 'Add to Playlist'
 		, content     : content
 		, values      : 'addplay'
