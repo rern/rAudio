@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20221117
+# 20221117 
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings
 dirdata=/srv/http/data
