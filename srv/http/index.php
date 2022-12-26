@@ -89,9 +89,6 @@ htmlmenu( $menulist, 'playlist' );
 // radio bookmark
 $html = menucommon( 'wradd', 'wrreplace' );
 $menu.= menudiv( 'bkradio', $html );
-// radio
-$html = menucommon( 'add', 'replace' );
-$menu.= menudiv( 'radio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
