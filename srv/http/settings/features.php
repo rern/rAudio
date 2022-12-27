@@ -68,19 +68,19 @@ EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  · Require Premium account. (No Spotify password saved on rAudio.)
  · Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
-	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <cy>YELLOW</cy> with actual values)
+	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <code class="yl">YELLOW</code> with actual values)
 	| LOG IN |
 		· with normal Spotify account
 	| CREATE AN APP |
-		· App name: <cy>Name</cy>
-		· App description: <cy>Description</cy>
+		· App name: <code class="yl">Name</code>
+		· App description: <code class="yl">Description</code>
 	| EDIT SETTINGS |
 		· Redirect URIs: <c id="redirecturi"></c>
 	| USERS AND ACCESS | ADD NEW USER |
-		· Name: <cy>user</cy>
-		· Spotify Account: <cy>email</cy>
-· | <wh>Spotify I^spotify^I</wh> |
-	· Paste <cy>Client ID</cy> and <cy>Client Secret</cy> from the created app
+		· Name: <code class="yl">user</code>
+		· Spotify Account: <code class="yl">email</code>
+· | <wh>Spotify I^spotify^I</wh> | Enable
+	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]

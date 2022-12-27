@@ -334,7 +334,7 @@ Connect shared data as client for:
 	
 Note:
  · SSH password must be default.
- · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in I^library btn^I Library.
+ · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
