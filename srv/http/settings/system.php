@@ -365,10 +365,6 @@ $listui = [
 	  , 'A monospace font designed for printed code listings and the like'
 	  , 'https://fonts.google.com/specimen/Inconsolata'
 	],[
-	    'jQuery Selectric'
-	  , 'A plugin for easy manipulation and customization of HTML selects'
-	  , 'https://github.com/lcdsantos/jQuery-Selectric'
-	],[
 	    'Lato-Fonts'
 	  , 'A san-serif typeface family'
 	  , 'http://www.latofonts.com/lato-free-fonts'
