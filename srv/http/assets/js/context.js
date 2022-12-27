@@ -57,17 +57,17 @@ function bookmarkNew() {
 	// #3 - no cover   - icon + directory name
 	if ( [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ) {
 		var $img = V.list.li.find( '.iconthumb' );
-		var src = $img.length ? $img.attr( 'src' ) : '';
+		var src = $img.length ? $img.attr( 'src' ).replace( /-thumb.jpg\?v=.*$/, '.jpg' ) : '';
 		var path    = V.list.path;
 		var name    = V.list.name;
 		var msgpath = name;
 	} else {
 		if ( V.mode.slice( -5 ) === 'radio' ) {
 			var path = V.mode +'/'+ V.list.path;
-			var src  = '/data/'+ path +'/thumb.jpg';
+			var src  = '/data/'+ path +'/coverart.jpg';
 		} else {
 			var path = V.list.path.slice( -4 ) === '.cue' ? dirName( path ) : V.list.path;
-			var src  = '/mnt/MPD/'+ path +'/thumb.jpg';
+			var src  = '/mnt/MPD/'+ path +'/coverart.jpg';
 		}
 		var msgpath = path;
 		var name    = path.split( '/' ).pop()
