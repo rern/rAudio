@@ -624,7 +624,7 @@ function imageOnError( el, bookmark ) {
 		$this.attr( 'src', V.coverart );
 	} else { // bookmark
 		var icon = '<i class="fa fa-bookmark bl"></i>';
-		if ( I.infohide ) icon += '<br><a class="label">'+ bookmark +'</a>';
+		if ( ! V.librarylist ) icon += '<a class="label">'+ bookmark +'</a>';
 		$this.replaceWith( icon );
 		$( '#infoContent input' ).parents( 'tr' ).removeClass( 'hide' );
 	}

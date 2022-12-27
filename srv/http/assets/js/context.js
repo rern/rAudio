@@ -76,7 +76,7 @@ function bookmarkNew() {
 		  icon       : 'bookmark'
 		, title      : 'Add Bookmark'
 		, message    : '<img src="'+ src + versionHash() +'">'
-					  +'<br><br><wh>'+ msgpath +'</wh>'
+					  +'<br><wh>'+ msgpath +'</wh>'
 		, textlabel  : 'As:'
 		, focus      : 0
 		, values     : name
