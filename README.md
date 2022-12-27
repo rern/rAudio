@@ -50,7 +50,7 @@ Audio player for
 - Streamers
 	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- SnapSever - `snapcast` Multiroom audio server
+	- SnapSever - `MPD snapcast`
 	- Web Radio
 	- DAB Radio
 - Digital Signal Processors
