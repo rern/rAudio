@@ -99,15 +99,15 @@ Audio player for
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
 	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
-	- `CHOOSE STORAGE` > select SD card
+	- `CHOOSE STORAGE`:
+		- Select SD card - normal boot
+		- Select USB drive - boot from USB drive without SD card
+			- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
+			- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
+			- Should be used only when USB drive is faster than SD card.
 	- Do not set anything in `Advance options`
 	- `WRITE`
 	- Verify is optional.
-	- Boot from USB drive without SD card
-		- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
-		- Setup [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md)
-		- `CHOOSE STORAGE` > select USB drive > `WRITE`
-		- Should be used only when USB drive is faster than SD card.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
