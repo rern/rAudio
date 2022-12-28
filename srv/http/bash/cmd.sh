@@ -55,7 +55,12 @@ plAddPlay() {
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	else
-		[[ $pos == 1 ]] && mpc-q play && mpc -q stop # fix: add song without play - 'file:' n/a
+		songpos=$( mpc status %songpos% )
+		(( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0
+		file=$( { echo playlistinfo $song; sleep 0.05; } \
+					| telnet 127.0.0.1 6600 2> /dev/null \
+					| grep '^file: .\+' )
+		[[ ! $file ]] && mpc-q play && mpc -q stop # fix: add song without play - 'file:' n/a
 	fi
 }
 plAddPosition() {

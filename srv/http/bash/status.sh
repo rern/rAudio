@@ -157,7 +157,8 @@ mpdStatus() {
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| grep -E $filter )
 }
-song=$(( $( mpc status %songpos% ) - 1 )) # mpd song: start at 0 / mpc songpos: start at 1
+songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
+(( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0 # mpd song    : start at 0
 mpdStatus "playlistinfo $song"
 
 readarray -t lines <<< $mpdtelnet
