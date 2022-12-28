@@ -15,7 +15,7 @@ outputStatus() {
 	[[ $1 != noexit ]] && exit
 }
 
-if [[ $1 == snapclient ]]; then # snapclient
+if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
 else
