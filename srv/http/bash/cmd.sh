@@ -54,6 +54,8 @@ plAddPlay() {
 		sleep $2
 		mpc -q play $pos
 		$dirbash/status-push.sh
+	else
+		[[ $pos == 1 ]] && mpc-q play && mpc -q stop # fix: add song without play - 'file:' n/a
 	fi
 }
 plAddPosition() {

@@ -23,7 +23,7 @@ listWlan() {
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
-			! grep -q -m1 Interface=$wldev "/etc/netctl/$profile" && continue
+			! grep -q Interface=$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
 					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )

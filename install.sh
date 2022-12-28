@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20221228
+file=$( ls /etc/systemd/network/e* )
+! grep -q RequiredForOnline=no $file && echo '
+[Link]
+RequiredForOnline=no' >> $file
+
 # 20221117
 dirbash=/srv/http/bash
 dirsettings=$dirbash/settings

@@ -123,7 +123,7 @@ elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then
 	asoundcard=$( < $dirsystem/asoundcard )
-	! grep -v Loopback <<< $aplay | grep -q -m1 "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
+	! grep -v Loopback <<< $aplay | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
 else
 	echo ${Acard[0]} > $dirsystem/asoundcard
 fi

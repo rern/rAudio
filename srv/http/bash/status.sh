@@ -69,7 +69,7 @@ if [[ $1 == withdisplay ]]; then
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
-	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q -m1 screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
+	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	display=$( head -n -1 $dirsystem/display )
 	[[ -e $filesharedip ]] && display+='
 , "sd"  : false
@@ -149,25 +149,16 @@ fi
 
 (( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
 
-#filter='^Album|^AlbumArtist|^Artist|^audio|^bitrate|^duration|^file|^Name|^song:|^state|^Time|^Title'
-#[[ ! $snapclient ]] && filter+='|^playlistlength|^random|^repeat|^single'
-filter='Album AlbumArtist Artist audio bitrate duration file Name song state Time Title'
+filter='Album AlbumArtist Artist audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
-filter=^${filter// /:|^}:
+filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
 mpdStatus() {
 	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
 					| telnet 127.0.0.1 6600 2> /dev/null \
 					| grep -E $filter )
 }
-mpdStatus currentsong
-# 'file:' missing / blank
-#   - when playlist is empty, add song without play
-#     - 'currentsong' has no data
-#     - use 'playlistinfo 0' instead
-#   - webradio start - blank 'file:' (in case 1 sec delay from cmd.sh not enough)
-! grep -q -m1 '^file: .\+' <<< $mpdtelnet && mpdStatus 'playlistinfo 0'
-# 'state:' - missing on webradio track change
-! grep -q -m1 '^state' <<< $mpdtelnet && mpdStatus currentsong
+song=$(( $( mpc status %songpos% ) - 1 )) # mpd song: start at 0 / mpc songpos: start at 1
+mpdStatus "playlistinfo $song"
 
 readarray -t lines <<< $mpdtelnet
 for line in "${lines[@]}"; do
@@ -182,7 +173,7 @@ for line in "${lines[@]}"; do
 		bitrate )
 			bitrate=$(( val * 1000 ))
 			;;
-		duration | playlistlength | song | state | Time )
+		duration | playlistlength | state | Time )
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Name | Title )
@@ -331,7 +322,7 @@ $radiosampling" > $dirshm/radio
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
-					! grep -q -m1 "$Title" /srv/http/assets/data/songs_with_trailing && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
+					! grep -q "$Title" /srv/http/assets/data/songs_with_trailing && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
 				else
 					Artist=$station
 				fi

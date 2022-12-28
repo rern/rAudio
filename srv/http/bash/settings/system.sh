@@ -149,7 +149,7 @@ bluetooth )
 		sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
 		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
 			systemctl start bluetooth
-			! grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 			rfkill | grep -q -m1 bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
 		else
 			pushReboot Bluetooth
@@ -381,7 +381,7 @@ dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-		! grep -q -m1 gpio-shutdown $fileconfig && systemctl disable --now powerbutton
+		! grep -q gpio-shutdown $fileconfig && systemctl disable --now powerbutton
 	else
 		dtoverlay+="
 dtparam=audio=on"
@@ -489,7 +489,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/disable-software-rasterizer/ d' xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q -m1 no-xshm /srv/http/bash/xinitrc; then
+		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
 			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
 		fi
 		systemctl enable localbrowser
@@ -640,7 +640,7 @@ mpdoled )
 			! ls /dev/i2c* &> /dev/null && pushReboot 'Spectrum OLED' reboot
 			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
 		else
-			! grep -q -m1 dtparam=spi=on $fileconfig && reboot=1
+			! grep -q dtparam=spi=on $fileconfig && reboot=1
 		fi
 		if [[ $reboot ]]; then
 			pushReboot 'Spectrum OLED'
@@ -907,7 +907,7 @@ $ip:${path// /\\040}  ${dir// /\\040}  $options"
 	;;
 shareddatadisconnect )
 	disable=${args[1]} # null - sshpass from server rAudio to disconnect
-	! grep -q -m1 $dirshareddata /etc/fstab && echo -1 && exit
+	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
 	
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
@@ -1110,7 +1110,7 @@ wlan )
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $apauto == false ]] && touch $dirsystem/wlannoap || rm -f $dirsystem/wlannoap
-		if ! grep -q -m1 $regdom /etc/conf.d/wireless-regdom; then
+		if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
 			sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 			iw reg set $regdom
 		fi
