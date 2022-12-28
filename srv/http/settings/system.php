@@ -334,7 +334,7 @@ Connect shared data as client for:
 	
 Note:
  · SSH password must be default.
- · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in I^library btn^I Library.
+ · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
@@ -364,10 +364,6 @@ $listui = [
 	    'Inconsolata font'
 	  , 'A monospace font designed for printed code listings and the like'
 	  , 'https://fonts.google.com/specimen/Inconsolata'
-	],[
-	    'jQuery Selectric'
-	  , 'A plugin for easy manipulation and customization of HTML selects'
-	  , 'https://github.com/lcdsantos/jQuery-Selectric'
 	],[
 	    'Lato-Fonts'
 	  , 'A san-serif typeface family'
