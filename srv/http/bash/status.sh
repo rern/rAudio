@@ -194,7 +194,7 @@ for line in "${lines[@]}"; do
 	esac
 done
 
-[[ ! $pllength ]] && pllength=$( mpc status %length% )
+[[ $playlistlength ]] && pllength=$playlistlength || pllength=0
 status=$( grep -v '^, "file"' <<< $status )
 ########
 status+='
@@ -213,6 +213,7 @@ if (( $pllength  == 0 )); then
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus
+	exit
 fi
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
