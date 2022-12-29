@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20221228
+# 20221229
 files=$( ls /etc/systemd/network/e* )
 for file in $files; do
 	! grep -q RequiredForOnline=no $file && echo '
