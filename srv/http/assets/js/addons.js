@@ -1,6 +1,6 @@
 document.title = 'Addons';
 V              = {} // var global
-icon           = 'jigsaw';
+var icon       = 'jigsaw';
 
 $( '.container' ).removeClass( 'hide' );
 $( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
@@ -46,11 +46,12 @@ $( '.boxed-group .infobtn' ).click( function() {
 	$this       = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
-	alias       = $this.parent().data( 'alias' );
-	title       = addons[ alias ].title;
-	type        = $this.text();
-	option      = addons[ alias ].option;
-	opt         = [ alias, type, 'main' ];
+	alias  = $this.parent().data( 'alias' );
+	addon  = addons[ alias ];
+	title  = addon.title;
+	type   = $this.text();
+	option = addons.option;
+	opt    = [ alias, type, addon.version || 'main' ];
 	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 		j = 0;
 		getOption();
@@ -58,7 +59,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 		info( {
 			  icon    : icon
 			, title   : title
-			, message : type +'?'
+			, message : addon.version ? type +' to <wh>'+ addon.version +'</wh> ?' : type +'?'
 			, ok      : formPost
 		} );
 	}

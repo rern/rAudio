@@ -84,7 +84,7 @@ foreach( $arrayalias as $alias ) {
 				</p>
 			</legend>
 			'.$revision.'
-			<form class="form-horizontal" data-alias="'.$alias.'" data-vesion="'.$version.'">
+			<form class="form-horizontal" data-alias="'.$alias.'">
 				<p class="detailtext">'.$description.$detail.'</p>';
 	$blocks     .= $uninstallfile ? $btnin.' &nbsp; '.$btnun : $btnin;
 	$blocks     .= '
@@ -108,7 +108,7 @@ echo $list.'
 	<p class="bottom"></p>
 </div>';
 
-$keepkey = [ 'title', 'installurl', 'rollback', 'option', 'postinfo' ];
+$keepkey = [ 'title', 'installurl', 'option', 'postinfo', 'version' ];
 foreach( $arrayalias as $alias ) {
 	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
 }

@@ -213,7 +213,6 @@ if (( $pllength  == 0 )); then
 , "ip"       : "'$ip'"'
 # >>>>>>>>>> empty playlist
 	outputStatus
-	exit
 fi
 fileheader=${file:0:4}
 if [[ 'http rtmp rtp: rtsp' =~ ${fileheader,,} ]]; then
