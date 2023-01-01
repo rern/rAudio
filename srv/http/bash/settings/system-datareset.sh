@@ -14,7 +14,7 @@ file=/etc/modules-load.d/raspberrypi.conf
 
 if [[ $1 ]]; then # from create-ros.sh
 	version=$1
-	revision=$2
+	release=$2
 else              # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
@@ -57,7 +57,7 @@ chown -h http:http $dirdata /srv/http/mnt
 # addons - new/restore
 if [[ $version ]]; then # from create-ros.sh
 	echo $version > $dirsystem/version
-	echo $revision > $diraddons/r$version
+	echo $release > $diraddons/r$version
 else
 	mv /tmp/addons $dirdata
 fi
