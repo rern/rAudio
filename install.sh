@@ -109,14 +109,15 @@ SD
 USB" > /mnt/MPD/.mpdignore
 fi
 
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
 rm -rf /srv/http/assets/{css,fonts,js}
+[[ -e $dirmpdconf ]] && mv $dirmpdconf /tmp
 
 getinstallzip
 
+[[ -e /tmp/mpdconf ]] && mv /tmp/mpdconf $dirdata
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
