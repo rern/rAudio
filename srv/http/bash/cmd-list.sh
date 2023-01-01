@@ -9,6 +9,18 @@
 
 . /srv/http/bash/common.sh
 
+song=$( mpc stats | awk '/^Songs/ {print $NF}' )
+webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+
+if [[ $song == 0 ]]; then
+	echo '{
+  "playlists" : 0
+, "webradio"  : '$webradio'
+}' > $dirmpd/counts
+	rm -f $dirmpd/updating
+	exit
+fi
+
 touch $dirmpd/listing
 
 ##### normal list #############################################
@@ -127,8 +139,6 @@ for mode in NAS SD USB; do
 done
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
 playlists=$( ls -1 $dirplaylists | wc -l )
-song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 counts='{
   "album"       : '$album'
 , "albumartist" : '$albumartist'
