@@ -9,11 +9,13 @@ dirsd=/mnt/MPD/SD
 dirusb=/mnt/MPD/USB
 dirshareddata=$dirnas/data
 filesharedip=$dirshareddata/sharedip
-dirs=$( ls $dirdata | grep -v 'backup$' )
-for dir in $dirs; do
-	printf -v dir$dir '%s' $dirdata/$dir
-done
-mpdconf=$dirmpdconf/mpd.conf
+if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
+	dirs=$( ls $dirdata | grep -v 'backup$' )
+	for dir in $dirs; do
+		printf -v dir$dir '%s' $dirdata/$dir
+	done
+	mpdconf=$dirmpdconf/mpd.conf
+fi
 
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'

@@ -2,20 +2,19 @@
 
 . /srv/http/bash/common.sh
 
-mpc -q crossfade 0
-systemctl stop mpd
-rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
+if [[ ! $1 ]]; then # reset
+	reset=1
+	
+	mpc -q crossfade 0
+	systemctl stop mpd
+	rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
 
-# lcd
-file=/etc/modules-load.d/raspberrypi.conf
-[[ -e $file ]] && sed -i -E '/i2c-bcm2708|i2c-dev/ d' $file
-#file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
-#[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
+	# lcd
+	file=/etc/modules-load.d/raspberrypi.conf
+	[[ -e $file ]] && sed -i -E '/i2c-bcm2708|i2c-dev/ d' $file
+	#file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
+	#[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
-if [[ $1 ]]; then # from create-ros.sh
-	. /boot/versions
-	rm /boot/versions
-else              # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
@@ -44,6 +43,7 @@ hdmi_drive=2
 over_voltage=2"
 	echo "$config" > /boot/config.txt
 fi
+
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
@@ -54,12 +54,16 @@ if [[ -e /usr/bin/camilladsp ]]; then
 fi
 chown -h http:http $dirdata /srv/http/mnt
 
-# addons - new/restore
-if [[ $version ]]; then # from create-ros.sh
-	echo $version > $dirsystem/version
-	echo $release > $diraddons/r$version
-else
+# addons - new/reset
+if [[ $reset ]]; then
 	mv /tmp/addons $dirdata
+else
+	dirs=$( ls $dirdata )
+	for dir in $dirs; do
+		printf -v dir$dir '%s' $dirdata/$dir
+	done
+	echo $1 > $dirsystem/version
+	echo $2 > $diraddons/r$version
 fi
 # camillagui
 dircamillagui=/srv/http/settings/camillagui/build
@@ -129,8 +133,4 @@ systemctl -q disable --now bluetooth hostapd shairport-sync smb spotifyd upmpdcl
 # set ownership and permissions
 $dirsettings/system.sh dirpermissions
 
-[[ $version ]] && exit
-
-$dirsettings/player-conf.sh
-
-curl -s -X POST http://127.0.0.1/pub?id=restore -d '{"restore":"reload"}' &> /dev/null
+[[ $reset ]] && $dirbash/cmd.sh power$'\n'reboot
