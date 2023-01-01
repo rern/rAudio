@@ -63,7 +63,7 @@ else
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
 	echo $1 > $dirsystem/version
-	echo $2 > $diraddons/r$version
+	echo $2 > $diraddons/r$1
 fi
 # camillagui
 dircamillagui=/srv/http/settings/camillagui/build
