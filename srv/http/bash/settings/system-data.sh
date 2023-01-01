@@ -46,9 +46,8 @@ else
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-version=$( < $dirsystem/version )
 system="\
-rAudio $( getContent $diraddons/r$version )<br>\
+rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
 $rpimodel<br>\
 $soc<br>\

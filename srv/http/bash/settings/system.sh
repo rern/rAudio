@@ -247,7 +247,6 @@ databackup )
 		--exclude './addons' \
 		--exclude './embedded' \
 		--exclude './shm' \
-		--exclude './system/version' \
 		-czf $backupfile \
 		-C /srv/http \
 		data \
