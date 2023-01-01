@@ -224,19 +224,16 @@ function psMpdUpdate( data ) {
 			S.updatingdab = true;
 		}
 		setButtonUpdating();
-		return
+	} else if ( 'done' in data ) {
+		clearTimeout( V.debounce );
+		V.debounce = setTimeout( () => {
+			S.updating_db = false;
+			S.updatingdab = false;
+			setButtonUpdating();
+			refreshData( 'resetdata' );
+			setTimeout( () => banner( 'refresh-library', 'Library Update', 'Done' ), 2000 );
+		}, 2000 );
 	}
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		C             = data;
-		S.updating_db = false;
-		S.updatingdab = false;
-		renderLibraryCounts();
-		setButtonUpdating();
-		refreshData( 'resetdata' );
-		banner( 'library', 'Library Update', 'Done' );
-	}, 3000 );
 }
 function psNotify( data ) {
 	var icon    = data.icon;
