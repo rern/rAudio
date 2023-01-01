@@ -13,8 +13,8 @@ file=/etc/modules-load.d/raspberrypi.conf
 #[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
 if [[ $1 ]]; then # from create-ros.sh
-	version=$1
-	release=$2
+	. /boot/versions
+	rm /boot/versions
 else              # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
