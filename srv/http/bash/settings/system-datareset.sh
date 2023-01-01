@@ -8,7 +8,10 @@ if [[ ! $1 ]]; then # reset
 	mpc -q crossfade 0
 	systemctl stop mpd
 	rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
-
+	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \;
+	echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
+	echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
+	echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
 	# lcd
 	file=/etc/modules-load.d/raspberrypi.conf
 	[[ -e $file ]] && sed -i -E '/i2c-bcm2708|i2c-dev/ d' $file
