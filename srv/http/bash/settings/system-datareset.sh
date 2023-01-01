@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+mpc -q crossfade 0
 systemctl stop mpd
 rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
 
@@ -14,7 +15,7 @@ file=/etc/modules-load.d/raspberrypi.conf
 if [[ $1 ]]; then # from create-ros.sh
 	version=$1
 	revision=$2
-else                 # restore
+else              # restore
 	mv $diraddons /tmp
 	rm -rf $dirdata
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
@@ -112,7 +113,6 @@ echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-mpc -q crossfade 0
 curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
 	echo '{
