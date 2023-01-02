@@ -117,7 +117,10 @@ rm -rf /srv/http/assets/{css,fonts,js}
 
 getinstallzip
 
-[[ -e /tmp/mpdconf ]] && mv /tmp/mpdconf $dirdata
+if [[ -e /tmp/mpdconf ]]; then
+	rm -rf $dirmpdconf
+	mv /tmp/mpdconf $dirdata
+fi
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
