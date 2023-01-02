@@ -35,7 +35,7 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	key=$( sed -E -n '/^Key/ {s/^.*="*|"$//g; p}' <<< $wifi )
 	filebootwifi="/etc/netctl/$ssid"
 	cat << EOF > "$filebootwifi"
-Interface="$wlandev"
+Interface=$wlandev
 $( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
 ESSID="$( sed 's/"/\\"/g' <<< $ssid )"
 Key="$( sed 's/"/\\"/g' <<< $key )"
