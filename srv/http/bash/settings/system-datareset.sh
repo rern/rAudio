@@ -6,16 +6,20 @@ if [[ ! $1 ]]; then # reset
 	reset=1
 	
 	mpc -q crossfade 0
-	systemctl stop mpd
-	rm -f $dirsystem/{crossfade,custom,dop-*,listing,relays,soundprofile,updating}
-
+	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset
+                    # features        mpd                                      updating_db      system
+	rm -f $dirsystem/{autoplay,login*,crossfade*,custom*,dop*,mixertype*,soxr*,listing,updating,color,relays,soundprofile}
+	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
+	echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
+	echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
+	echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
 	# lcd
 	file=/etc/modules-load.d/raspberrypi.conf
 	[[ -e $file ]] && sed -i -E '/i2c-bcm2708|i2c-dev/ d' $file
 	#file=/usr/share/X11/xorg.conf.d/99-fbturbo.conf
 	#[[ -e $file ]] && sed -i 's/fb1/fb0/' $file
 
-	mv $diraddons /tmp
+	mv $dirdata/{addons,mpdconf} /tmp
 	rm -rf $dirdata
 	partuuidROOT=$( grep ext4 /etc/fstab | cut -d' ' -f1 )
 	cmdline="root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N \
@@ -42,6 +46,21 @@ force_turbo=1
 hdmi_drive=2
 over_voltage=2"
 	echo "$config" > /boot/config.txt
+	systemctl -q disable bluetooth hostapd camilladsp localbrowser nfs-server powerbutton \
+		rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
+	sed -i 's|^Server = http://.*mirror|Server = http://mirror|' /etc/pacman.d/mirrorlist
+	sed -i -E 's/^(ssid=).*/\1rAudio/' /etc/hostapd/hostapd.conf
+	sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf
+	sed -i -E 's/^(friendlyname = ).*/\1rAudio/' /etc/upmpdcli.conf
+	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+	for dir in "${dirs[@]}"; do
+		umount -l "$dir" &> /dev/null
+		rmdir "$dir" &> /dev/null
+	done
+	sed -i '3,$ d' /etc/fstab
+	sed -i '/^#/! d' /etc/exports
+	rm -rf $dirshareddata /mnt/MPD/.mpdignore $dirnas/.mpdignore /etc/modules-load.d/loopback.conf
+	rmmod snd-aloop &> /dev/null
 fi
 
 # data directories
@@ -56,7 +75,7 @@ chown -h http:http $dirdata /srv/http/mnt
 
 # addons - new/reset
 if [[ $reset ]]; then
-	mv /tmp/addons $dirdata
+	mv /tmp/{addons,mpdconf} $dirdata
 else
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
@@ -93,7 +112,7 @@ screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
 fi
-echo mpd > $dirshm/player
+
 # relays
 cat << EOF > $dirsystem/relays.conf
 pin='[ 11,13,15,16 ]'
@@ -107,16 +126,14 @@ offd=( 2 2 2 )
 timer=5
 EOF
 # system
-echo rAudio > $dirsystem/hostname
 hostnamectl set-hostname rAudio
 sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
-echo UTC > $dirsystem/timezone
 touch $dirsystem/usbautoupdate
 
 # mpd
-curl -L https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xvf - -C $dirwebradio # webradio default
+curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio # webradio default
 if [[ ! -e $dirmpd/counts ]]; then
 	echo '{
   "playlists" : '$( ls -1 $dirplaylists | wc -l )'
@@ -125,9 +142,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 fi
 
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-
-# services
-systemctl -q disable --now bluetooth hostapd shairport-sync smb spotifyd upmpdcli
 
 # set ownership and permissions
 $dirsettings/system.sh dirpermissions

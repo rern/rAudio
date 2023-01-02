@@ -9,6 +9,27 @@
 
 . /srv/http/bash/common.sh
 
+updateDone() {
+	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
+	chown -R mpd:audio $dirmpd
+	rm -f $dirmpd/{updating,listing}
+	pushstream mpdupdate '{"done":1}'
+}
+
+trap updateDone EXIT
+
+song=$( mpc stats | awk '/^Songs/ {print $NF}' )
+webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+
+if [[ $song == 0 ]]; then
+	counts='{
+  "playlists" : 0
+, "webradio"  : '$webradio'
+}'
+	updateDone
+	exit
+fi
+
 touch $dirmpd/listing
 
 ##### normal list #############################################
@@ -127,8 +148,6 @@ for mode in NAS SD USB; do
 done
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
 playlists=$( ls -1 $dirplaylists | wc -l )
-song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 counts='{
   "album"       : '$album'
 , "albumartist" : '$albumartist'
@@ -146,10 +165,7 @@ counts='{
 , "usb"         : '$USB'
 , "webradio"    : '$webradio'
 }'
-jq <<< $counts > $dirmpd/counts
-pushstream mpdupdate "$counts"
-chown -R mpd:audio $dirmpd
-rm -f $dirmpd/{updating,listing}
+updateDone
 
 [[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
 

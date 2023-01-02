@@ -199,6 +199,8 @@ databackup )
 /etc/conf.d/wireless-regdom
 /etc/default/snapclient
 /etc/hostapd/hostapd.conf
+/etc/modules-load.d/loopback.conf
+/etc/pacman.d/mirrorlist
 /etc/samba/smb.conf
 /etc/systemd/network/eth.network
 /etc/systemd/timesyncd.conf
@@ -236,7 +238,7 @@ databackup )
 		cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 	fi
 	
-	services='bluetooth hostapd localbrowser mpdscribble@mpd nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
+	services='bluetooth camilladsp hostapd localbrowser nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli'
 	for service in $services; do
 		systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 	done
@@ -258,11 +260,9 @@ datarestore )
 	backupfile=$dirshm/backup.gz
 	dirconfig=$dirdata/config
 	systemctl stop mpd
-	# remove all flags
-	rm -f $dirsystem/{autoplay,login*}                          # features
-	rm -f $dirsystem/{crossfade*,custom*,dop*,mixertype*,soxr*} # mpd
-	rm -f $dirsystem/{updating,listing}                         # updating_db
-	rm -f $dirsystem/{color,relays,soundprofile}                # system
+                    # features        mpd                                      updating_db      system
+	rm -f $dirsystem/{autoplay,login*,crossfade*,custom*,dop*,mixertype*,soxr*,listing,updating,color,relays,soundprofile}
+	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 	
 	bsdtar -xpf $backupfile -C /srv/http
 	dirPermissions
@@ -275,15 +275,7 @@ datarestore )
 	cp -rf $dirconfig/* /
 	[[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
 	[[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
-	if systemctl -q is-enabled camilladsp; then
-		modprobe snd-aloop
-		echo snd-aloop > /etc/modules-load.d/loopback.conf
-	fi
-	hostnamectl set-hostname $( < $dirsystem/hostname )
-	if [[ -e $dirsystem/mirror ]]; then
-		mirror=$( < $dirsystem/mirror )
-		sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" /etc/pacman.d/mirrorlist
-	fi
+	$dirsettings/system.sh hostname$'\n'$( < $dirsystem/hostname )
 	[[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
 	timedatectl set-timezone $( < $dirsystem/timezone )
 	rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
