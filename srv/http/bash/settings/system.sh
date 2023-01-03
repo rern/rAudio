@@ -265,7 +265,7 @@ datarestore )
 	
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
                     # features        mpd                                      updating_db      system
-	rm -f $dirsystem/{autoplay,hddsleep,login*,crossfade*,custom*,dop*,mixertype*,soxr*,listing,updating,color,relays,soundprofile}
+	rm -f $dirsystem/{autoplay,color,hddsleep,listing,login*,crossfade*,custom*,dop*,mixertype*,relays,soundprofile,soxr*,updating}
 	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 	
 	bsdtar -xpf $backupfile -C /srv/http
