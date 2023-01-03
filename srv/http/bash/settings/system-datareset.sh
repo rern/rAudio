@@ -54,7 +54,6 @@ over_voltage=2"
 	mv $dirdata/{addons,mpdconf} /tmp
 	
 # system
-	systemctl -q enable localbrowser
 	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 	sed -i 's|^Server = http://.*mirror|Server = http://mirror|' /etc/pacman.d/mirrorlist
 	sed -i -E 's/^(ssid=).*/\1rAudio/' /etc/hostapd/hostapd.conf
@@ -138,6 +137,7 @@ zoom=100
 screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
+	systemctl -q enable localbrowser
 fi
 
 # relays
