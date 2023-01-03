@@ -12,16 +12,6 @@ for file in $files; do
 RequiredForOnline=no' >> $file
 done
 
-# 20221117
-dirbash=/srv/http/bash
-dirsettings=$dirbash/settings
-dirdata=/srv/http/data
-dirmpd=$dirdata/mpd
-dirmpdconf=$dirdata/mpdconf
-dirshm=$dirdata/shm
-dirsystem=$dirdata/system
-dirwebradio=/srv/http/data/webradio
-
 # 20221218
 [[ -L $dirdata/playlists ]] && chown -h mpd:audio $dirdata/playlists
 
@@ -130,80 +120,3 @@ $dirsettings/system.sh dirpermissions
 
 # 20221123
 [[ $restartbrowser ]] && systemctl try-restart localbrowser
-
-# 20221117
-overrideconf=/etc/systemd/system/mpd.service.d/override.conf
-grep -q systemd $overrideconf && installfinish && exit
-
-echo -e "\n$bar Rearrange MPD Configuration...\n"
-
-cat << EOF > $overrideconf
-[Unit]
-BindsTo=mpdidle.service
-
-[Service]
-CPUAffinity=3
-ExecStart=
-ExecStart=/usr/bin/mpd --systemd /srv/http/data/mpdconf/mpd.conf
-EOF
-[[ -e /boot/kernel.img ]] && sed -i '/CPUAffinity/ d' $overrideconf
-
-mkdir -p $dirmpdconf
-
-linkConf() {
-	ln -s $dirmpdconf/{conf/,}$1.conf
-}
-
-[[ -e $dirsystem/custom-global ]] && mv $dirsystem/custom-global $dirmpdconf/conf/custom.conf
-if [[ -e $dirsystem/soxr.conf ]]; then
-	echo "\
-resampler {
-	plugin          \"soxr\"
-$( < $dirsystem/soxr.conf )" > $dirmpdconf/conf/soxr-custom.conf
-fi
-grep -q 'mixer_type.*none' /etc/mpd.conf \
-    && grep -q 'replaygain.*off' /etc/mpd.conf \
-    && ! grep -q normalization /etc/mpd.conf \
-    && novolume=1
-if [[ ! $novolume ]]; then
-	if grep -q quality.*custom /etc/mpd.conf; then
-		linkConf soxr-custom
-		echo custom > $dirsystem/soxr
-	else
-		linkConf soxr
-		echo 'very high' > $dirsystem/soxr
-	fi
-fi
-
-grep -q auto_update /etc/mpd.conf && linkConf autoupdate
-if grep -q audio_buffer /etc/mpd.conf; then
-	buffer=$( grep audio_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
-	echo 'audio_buffer_size  "'$buffer'"' > $dirmpdconf/conf/buffer.conf
-	linkConf buffer
-fi
-if grep -q max_output_buffer_size /etc/mpd.conf; then
-	outputbuffer=$( grep max_output_buffer_size /etc/mpd.conf | cut -d'"' -f2 )
-	echo 'max_output_buffer_size  "'$outputbuffer'"' > $dirmpdconf/conf/outputbuffer.conf
-	linkConf outputbuffer
-fi
-if ! grep -q replaygain.*off /etc/mpd.conf; then
-	replaygain=$( grep replaygain /etc/mpd.conf | cut -d'"' -f2 )
-	echo 'replaygain  "'$replaygain'"' > $dirmpdconf/conf/replaygain.conf
-	linkConf replaygain
-fi
-grep -q volume_normalization /etc/mpd.conf && linkConf normalization
-[[ -e $dirshm/audiocd ]] && linkConf cdio
-[[ -e $dirsystem/custom && -e $dirmpdconf/conf/custom.conf ]] && linkConf custom
-grep -q plugin.*ffmpeg /etc/mpd.conf && linkConf ffmpeg
-grep -q type.*httpd /etc/mpd.conf && linkConf httpd
-systemctl -q is-active snapserver && linkConf snapserver
-
-rm -f $dirsystem/{buffer,bufferoutput,replaygain,soxr}.conf $dirsystem/{crossfade,streaming}
-
-systemctl daemon-reload
-
-$dirsettings/player-conf.sh
-
-installfinish
-
-echo -e "$info Backup of Data and Settings: Backup again to include new configuration"
