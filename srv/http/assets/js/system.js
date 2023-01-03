@@ -731,27 +731,6 @@ $( '#restore' ).click( function() {
 		, beforeshow  : () => {
 			$( '#infoContent input' ).click( function() {
 				if ( infoVal() === 'reset' ) {
-					if ( S.lcd || S.wlanconnected ) {
-						info( {
-							  icon     : icon
-							, title    : title
-							, checkbox : [ 'TFT 3.5" LCD', 'Wi-Fi connection' ]
-							, beforeshow : () => {
-								[ 'lcd', 'wlanconnected' ].forEach( ( el, i ) => {
-									if ( ! S[ el ] ) $( '#infoContent input' ).eq( i ).parent().parent().addClass( 'hide' );
-								} );
-							}
-							, oklabel  : '<i class="fa fa-reset"></i>Reset'
-							, okcolor  : orange
-							, ok       : () => {
-								bash( [ 'datareset', ...infoVal() ] );
-								notify( icon, title, 'Reset to default ...' );
-								setTimeout( loader, 0 );
-							}
-						} );
-						return
-					}
-					
 					$( '#infoFilename' ).addClass( 'hide' );
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
@@ -770,7 +749,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				bash( [ 'datareset', false, false ] );
+				bash( [ 'datareset' ] );
 				notify( icon, title, 'Reset to default ...' );
 			} else {
 				notify( icon, title, 'Restore ...' );

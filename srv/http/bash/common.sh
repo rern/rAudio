@@ -25,7 +25,7 @@ cpuInfo() {
 	BB=${hwrevision: -3:2}
 	C=${hwrevision: -4:1}
 	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || onboardwireless=1
-	[[ $BB =~ ^(04|08|0d|0e|11|12)$ ]] && core4=1
+	[[ $BB =~ ^(09|0c)$ ]] && rpi0=1
 }
 data2json() {
 	data="$1"

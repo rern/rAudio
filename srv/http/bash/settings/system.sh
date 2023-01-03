@@ -257,16 +257,15 @@ databackup )
 	rm -rf $dirdata/{config,disable,enable}
 	;;
 datareset )
-	lcd=${args[1]}
-	wifi=${args[2]}
-	$dirsettings/system-datareset.sh $lcd $wifi
+	$dirsettings/system-datareset.sh
 	;;
 datarestore )
 	backupfile=$dirshm/backup.gz
 	dirconfig=$dirdata/config
-	systemctl stop mpd
+	
+	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
                     # features        mpd                                      updating_db      system
-	rm -f $dirsystem/{autoplay,login*,crossfade*,custom*,dop*,mixertype*,soxr*,listing,updating,color,relays,soundprofile}
+	rm -f $dirsystem/{autoplay,hddsleep,login*,crossfade*,custom*,dop*,mixertype*,soxr*,listing,updating,color,relays,soundprofile}
 	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 	
 	bsdtar -xpf $backupfile -C /srv/http
@@ -428,18 +427,18 @@ lcd )
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0" >> $fileconfig
 		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-		sed -i '/disable-software-rasterizer/ d' xinitrc
+		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
-			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm $dirbash/xinitrc; then
+			sed -i '/^chromium/ a\	--no-xshm \\' $dirbash/xinitrc
 		fi
 		systemctl enable localbrowser
 		pushReboot 'TFT 3.5" LCD'
 	else
 		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-		sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
+		sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
 		pushRefresh
