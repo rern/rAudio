@@ -716,7 +716,7 @@ $( '#backup' ).click( function() {
 } );
 $( '#restore' ).click( function() {
 	var icon  = 'restore';
-	var title = 'Restore Data and Settings';
+	var title = 'Data and Settings';
 	info( {
 		  icon        : icon
 		, title       : title
@@ -730,7 +730,28 @@ $( '#restore' ).click( function() {
 		, filetype    : '.gz'
 		, beforeshow  : () => {
 			$( '#infoContent input' ).click( function() {
-				if ( infoVal() !== 'restore' ) {
+				if ( infoVal() === 'reset' ) {
+					if ( S.lcd || S.wlanconnected ) {
+						info( {
+							  icon     : icon
+							, title    : title
+							, checkbox : [ 'TFT 3.5" LCD', 'Wi-Fi connection' ]
+							, beforeshow : () => {
+								[ 'lcd', 'wlanconnected' ].forEach( ( el, i ) => {
+									if ( ! S[ el ] ) $( '#infoContent input' ).eq( i ).parent().parent().addClass( 'hide' );
+								} );
+							}
+							, oklabel  : '<i class="fa fa-reset"></i>Reset'
+							, okcolor  : orange
+							, ok       : () => {
+								bash( [ 'datareset', ...infoVal() ] );
+								notify( icon, title, 'Reset to default ...' );
+								setTimeout( loader, 0 );
+							}
+						} );
+						return
+					}
+					
 					$( '#infoFilename' ).addClass( 'hide' );
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
@@ -748,10 +769,11 @@ $( '#restore' ).click( function() {
 			} );
 		}
 		, ok          : () => {
-			notify( icon, title, 'Restore ...' );
 			if ( infoVal() === 'reset' ) {
-				bash( dirbash +'system-datareset.sh', bannerHide );
+				bash( [ 'datareset', false, false ] );
+				notify( icon, title, 'Reset to default ...' );
 			} else {
+				notify( icon, title, 'Restore ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );

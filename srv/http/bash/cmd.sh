@@ -350,6 +350,7 @@ color )
 	hsl=${args[1]}
 	file=$dirsystem/color
 	if [[ $hsl == reset ]]; then
+		reset=1
 		rm -f $file
 		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css \
 					| sed 's/.*(\(.*\)).*/\1/' \
@@ -390,7 +391,7 @@ s|(path.*hsl).*|\1(${hsg}75%);}|
 	[[ ! $rotate ]] && rotate=NORMAL
 	rotateSplash $rotate
 	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
-	pushstream reload 1
+	[[ ! $reset ]] && pushstream reload 1
 	;;
 coverartget )
 	path=${args[1]}

@@ -256,6 +256,11 @@ databackup )
 	
 	rm -rf $dirdata/{config,disable,enable}
 	;;
+datareset )
+	lcd=${args[1]}
+	wifi=${args[2]}
+	$dirsettings/system-datareset.sh $lcd $wifi
+	;;
 datarestore )
 	backupfile=$dirshm/backup.gz
 	dirconfig=$dirdata/config
@@ -409,6 +414,37 @@ $journal" | tee $filebootlog
 		echo "$journal"
 	fi
 	;;
+lcd )
+	if [[ ${args[1]} == true ]]; then
+		model=${args[2]}
+		if [[ $model != tft35a ]]; then
+			echo $model > $dirsystem/lcdmodel
+		else
+			rm $dirsystem/lcdmodel
+		fi
+		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		echo "\
+hdmi_force_hotplug=1
+dtoverlay=$model:rotate=0" >> $fileconfig
+		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
+		sed -i '/disable-software-rasterizer/ d' xinitrc
+		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		I2Cset
+		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
+			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
+		fi
+		systemctl enable localbrowser
+		pushReboot 'TFT 3.5" LCD'
+	else
+		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
+		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
+		I2Cset
+		pushRefresh
+	fi
+	;;
 lcdcalibrate )
 	degree=$( grep rotate $fileconfig | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
@@ -418,11 +454,6 @@ lcdcalibrate )
 		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser
 	fi
-	;;
-lcdcharset )
-	killall lcdchar.py &> /dev/null
-	lcdcharinit.py
-	lcdchar.py ${args[1]}
 	;;
 lcdchar )
 	if [[ ${args[1]} == true ]]; then
@@ -463,36 +494,10 @@ backlight=${args[14]^}"
 		pushRefresh
 	fi
 	;;
-lcd )
-	if [[ ${args[1]} == true ]]; then
-		model=${args[2]}
-		if [[ $model != tft35a ]]; then
-			echo $model > $dirsystem/lcdmodel
-		else
-			rm $dirsystem/lcdmodel
-		fi
-		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-		echo "\
-hdmi_force_hotplug=1
-dtoverlay=$model:rotate=0" >> $fileconfig
-		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-		sed -i '/disable-software-rasterizer/ d' xinitrc
-		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm /srv/http/bash/xinitrc; then
-			sed -i '/^chromium/ a\	--no-xshm \\' /srv/http/bash/xinitrc
-		fi
-		systemctl enable localbrowser
-		pushReboot 'TFT 3.5" LCD'
-	else
-		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
-		sed -i '/incognito/ i\	--disable-software-rasterizer \\' xinitrc
-		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		I2Cset
-		pushRefresh
-	fi
+lcdcharset )
+	killall lcdchar.py &> /dev/null
+	lcdcharinit.py
+	lcdchar.py ${args[1]}
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -1026,12 +1031,11 @@ $( grep -v ^# /boot/config.txt )
 
 <bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
 $( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
-	file=/etc/modules-load.d/raspberrypi.conf
-	raspberrypiconf=$( < $file )
+	raspberrypiconf=$( < $filemodule )
 	if [[ $raspberrypiconf ]]; then
 		config+="
 
-<bll># $file</bll>
+<bll># $filemodule</bll>
 $raspberrypiconf"
 		dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 		[[ $dev ]] && config+="
