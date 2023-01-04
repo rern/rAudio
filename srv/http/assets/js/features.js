@@ -507,9 +507,7 @@ function renderPage() {
 	$( '#spotifyd' ).toggleClass( 'disabled', S.spotifydactive );
 	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
-	$( '#hostapd' )
-		.toggleClass( 'disabled', ! S.wlan || S.wlanconnected )
-		.prev().html( '<wh>Wi-Fi <i class="fa fa-wifi"></i></wh> is currently '+ ( ! S.wlan ? 'disabled.' : 'connected.' ) );
+	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	var disablednfs = '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.';
 	if ( S.smb ) {

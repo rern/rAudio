@@ -159,7 +159,7 @@ $body = [
 		, 'icon'     => 'accesspoint'
 		, 'id'       => 'hostapd'
 		, 'status'   => 'hostapd'
-		, 'disabled' => 'js'
+		, 'disabled' => '<wh>Wi-Fi I^wifi^I</wh> is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.

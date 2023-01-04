@@ -120,6 +120,7 @@ hostapdget )
 	;;
 hostapd )
 	if [[ ${args[1]} == true ]]; then
+		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan$'\n'true
 		ip=${args[2]}
 		password=${args[3]}
 		ip012=${ip%.*}
