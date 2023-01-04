@@ -66,8 +66,6 @@ over_voltage=2"
 		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 	fi
 	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
-	# mirror
-	sed -i -E 's|^(Server = http://).*mirror|\1mirror|' /etc/pacman.d/mirrorlist
 	# nas
 	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	for dir in "${dirs[@]}"; do
@@ -134,6 +132,9 @@ onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
 	systemctl -q enable localbrowser
 fi
+
+# mirror
+sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
 
 # relays
 cat << EOF > $dirsystem/relays.conf
