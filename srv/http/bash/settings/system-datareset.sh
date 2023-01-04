@@ -7,7 +7,43 @@ if [[ ! -e $dirdata/addons ]]; then # create-ros.sh
 else                                # reset
 	reset=1
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
-# config.txt
+	mpc -q clear
+# camilla 
+	sed -i -E "s/(status_update_interval: ).*/\1100/" /srv/http/settings/camillagui/config/gui-config.yml &> /dev/null
+# hostapd
+	sed -i -E -e 's/^(dhcp-range=).*/\1192.168.5.2,192.168.5.254,24h/
+' -e 's/^(.*option:router,).*/\1192.168.5.1/
+' -e 's/^(.*option:dns-server,).*/\1192.168.5.1/
+' /etc/dnsmasq.conf &> /dev/null
+	sed -i -E -e 's/^(ssid=).*/\1rAudio/
+' -e 's/(wpa_passphrase=).*/\1raudioap/
+' /etc/hostapd/hostapd.conf &> /dev/null
+# mpd
+	mpc -q crossfade 0
+	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
+	echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
+	echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
+	echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
+# shairport-sync
+	sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf &> /dev/null
+# smb
+	sed -i '/read only = no/ d' smbconf=/etc/samba/smb.conf &> /dev/null
+# snapclient
+	echo 'SNAPCLIENT_OPTS="--latency=800"' > /etc/default/snapclient &> /dev/null
+# upmpdcli
+	sed -i -E -e 's/^(friendlyname = ).*/\1rAudio/
+' -e 's/(ownqueue = )./\10' /etc/upmpdcli.conf &> /dev/null
+
+# system
+	# cmdline.txt
+	cmdline='root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 ipv6.disable=1 fsck.repair=yes '
+	if [[ -e /boot/kernel.img || ! -e /usr/bin/chromium ]]; then
+		cmdline+=console=tty1
+	else
+		cmdline+='isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
+	fi
+	echo "$cmdline" > /boot/cmdline.txt
+	# config.txt
 	cpuInfo
 	config="\
 gpu_mem=32
@@ -23,25 +59,16 @@ force_turbo=1
 hdmi_drive=2
 over_voltage=2"
 	echo "$config" > /boot/config.txt
-	
-# css color
+	# css color
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset
-	
-# i2c
-	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' /boot/config.txt &> /dev/null
-	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' /etc/modules-load.d/raspberrypi.conf &> /dev/null
-	
-# lcd
-	grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && $dirsettings/system.sh lcd$'\n'false
-	
-# mpd
-	mpc -q crossfade 0
-	find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
-	echo 'audio_buffer_size  "4096"' > $dirmpdconf/conf/buffer.conf
-	echo 'max_output_buffer_size  "8192"' > $dirmpdconf/conf/outputbuffer.conf
-	echo 'replaygain          "album"' > $dirmpdconf/conf/rplaygain.conf
-	
-# nas
+	# lcd
+	if [[ -e $dirbash/xinitrc ]]; then
+		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
+	fi
+	sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf &> /dev/null
+	# mirror
+	sed -i -E 's|^(Server = http://).*mirror|\1mirror|' /etc/pacman.d/mirrorlist
+	# nas
 	readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	for dir in "${dirs[@]}"; do
 		umount -l "$dir" &> /dev/null
@@ -50,16 +77,11 @@ over_voltage=2"
 	sed -i '3,$ d' /etc/fstab
 	sed -i '/^#/! d' /etc/exports
 	
-# strteamer
-	sed -i -E 's/^(ssid=).*/\1rAudio/' /etc/hostapd/hostapd.conf
-	sed -i -E 's/(name = ").*/\1rAudio"/' /etc/shairport-sync.conf
-	sed -i -E 's/^(friendlyname = ).*/\1rAudio/' /etc/upmpdcli.conf
-	
-# system
 	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
-	sed -i 's|^Server = http://.*mirror|Server = http://mirror|' /etc/pacman.d/mirrorlist
 	mv $dirdata/{addons,mpdconf} /tmp
-	rm -rf $dirdata $dirshareddata /mnt/MPD/.mpdignore $dirnas/.mpdignore /etc/modules-load.d/loopback.conf
+	rm -rf $dirdata $dirshareddata \
+			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
+			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 fi
 
 # data directories
