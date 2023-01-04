@@ -42,7 +42,7 @@ else                                # reset
 	else
 		cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
 	fi
-	echo "$cmdline" > /boot/cmdline.txt
+	echo $cmdline > /boot/cmdline.txt
 	# config.txt
 	cpuInfo
 	config="\
