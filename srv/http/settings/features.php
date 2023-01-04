@@ -2,18 +2,6 @@
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer > Address bar - <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-if ( exec( 'systemctl is-active bluetooth' ) === 'active' ) {
-	$disableddsp = '<wh>Bluetooth I^bluetooth^I</wh> is currently enabled.';
-} else {
-	$disableddsp = '<wh>Equalizer I^equalizer^I</wh> is currently enabled.';
-}
-if ( is_link( '/srv/http/data/mpd' ) ) {
-	$disablednfs = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
-} else if ( exec( 'systemctl is-active smb' ) == 'active' ) {
-	$disablednfs = '<wh>File Sharing I^networks^I</wh> is currently active.';
-} else {
-	$disablednfs = 'Currently connected by clients';
-}
 
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
@@ -136,7 +124,7 @@ $body = [
 		, 'icon'     => 'camilladsp'
 		, 'id'       => 'camilladsp'
 		, 'status'   => 'camilladsp'
-		, 'disabled' => $disableddsp
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: A^I^features^I Features^AI^camilladsp sub^I
@@ -171,7 +159,7 @@ $body = [
 		, 'icon'     => 'accesspoint'
 		, 'id'       => 'hostapd'
 		, 'status'   => 'hostapd'
-		, 'disabled' => 'Wi-Fi is currently connected.'
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -280,7 +268,7 @@ EOF
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'status'      => 'nfs-server'
-		, 'disabled'    => $disablednfs
+		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
  • <wh>rAudio Shared Data server:</wh>

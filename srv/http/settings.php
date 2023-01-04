@@ -70,7 +70,8 @@ $body = [
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
-		, 'disable'     => 'MESSAGE'    // set data-diabled - prompt on click
+		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
+										// 'js' = set by js condition
 		, 'help'        => <<< EOF
 HELP - PHP heredoc
 EOF

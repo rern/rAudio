@@ -2,11 +2,6 @@
 $hostname       = getHostName();
 $ip             = getHostByName( $hostname );
 
-if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
-	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
-} else {
-	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
-}
 $i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
 $selecti2s      = '<select id="i2smodule">'
 				 .'<option value="none">None / Auto detect</option>';
@@ -23,11 +18,6 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
-if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
-	$disabledbt = '<wh>DSP I^camilladsp^I</wh> is currently active.';
-} else {
-	$disabledbt = 'Bluetooth is currently connected.';
-}
 ?>
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
@@ -127,7 +117,7 @@ htmlSetting( [
 	, 'icon'     => 'refresh-library'
 	, 'id'       => 'usbautoupdate'
 	, 'setting'  => false
-	, 'disabled' => $disabledusbautoupdate
+	, 'disabled' => 'js'
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
@@ -144,7 +134,7 @@ $body = [
 		, 'icon'     => 'bluetooth'
 		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
-		, 'disabled' => $disabledbt
+		, 'disabled' => 'js'
 		, 'help'     => 'I^gear btn^I ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [

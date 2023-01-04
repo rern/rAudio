@@ -45,6 +45,7 @@ data+='
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
+, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( isactive shairport-sync )'

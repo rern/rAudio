@@ -507,15 +507,27 @@ function renderPage() {
 	$( '#spotifyd' ).toggleClass( 'disabled', S.spotifydactive );
 	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
-	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
+	$( '#hostapd' )
+		.toggleClass( 'disabled', ! S.wlan || S.wlanconnected )
+		.prev().html( '<wh>Wi-Fi <i class="fa fa-wifi"></i></wh> is currently '+ ( ! S.wlan ? 'disabled.' : 'connected.' ) );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	$( '#nfsserver' ).toggleClass( 'disabled', S.smb || S.shareddata || S.nfsconnected );
+	var disablednfs = '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.';
+	if ( S.smb ) {
+		disablednfs = disablednfs.replace( 'Shared Data', 'File Sharing' );
+	} else if ( S.nfsconnected ) {
+		disablednfs = 'Currently connected by clients';
+	}
+	$( '#nfsserver' )
+		.toggleClass( 'disabled', S.nfsconnected || S.shareddata || S.smb )
+		.prev().html( disablednfs );
 	$( '#stoptimer' ).toggleClass( 'disabled', S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {
 		$( '#divdsp' ).removeClass( 'hide' );
-		$( '#camilladsp' ).toggleClass( 'disabled', S.bluetoothsink || S.equalizer );
+		$( '#camilladsp' )
+			.toggleClass( 'disabled', S.bluetoothsink || S.equalizer )
+			.prev().html( ( S.bluetoothsink ? '<wh>Bluetooth <i class="fa fa-bluetooth">' : '<wh>Equalizer <i class="fa fa-equalizer">' ) +'</i></wh> is currently enabled.' );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	if ( ! /code|error/.test( window.location.href ) ) {

@@ -1038,7 +1038,9 @@ function renderPage() {
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	$( '#usbautoupdate' ).toggleClass( 'disabled', S.shareddata || S.nfsserver );
+	$( '#usbautoupdate' )
+		.toggleClass( 'disabled', S.shareddata || S.nfsserver )
+		.prev().html( ( S.shareddata ? '<wh>Server rAudio <i class="fa fa-rserver">' : '<wh>Shared Data <i class="fa fa-networks">' ) +'</i></wh> is currently enabled.' );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! S.bluetoothactive );
@@ -1063,7 +1065,9 @@ function renderPage() {
 	S.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', S.i2senabled );
 	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! S.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', S.btconnected );
+	$( '#bluetooth' )
+		.toggleClass( 'disabled', S.btconnected || S.camilladsp )
+		.prev().html( S.btconnected ? '<wh>Bluetooth <i class="fa fa-bluetooth"></i></wh> is currently connected.' : '<wh>DSP <i class="fa fa-camilladsp"></i></wh> is currently enabled.' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
