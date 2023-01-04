@@ -36,11 +36,11 @@ else                                # reset
 
 # system
 	# cmdline.txt
-	cmdline='root=$partuuidROOT rw rootwait selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 ipv6.disable=1 fsck.repair=yes '
+	cmdline=$( sed -E 's/^(.*repair=yes) .*/\1/' /boot/cmdline.txt )
 	if [[ -e /boot/kernel.img || ! -e /usr/bin/chromium ]]; then
-		cmdline+=console=tty1
+		cmdline+=' console=tty1'
 	else
-		cmdline+='isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
+		cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
 	fi
 	echo "$cmdline" > /boot/cmdline.txt
 	# config.txt
