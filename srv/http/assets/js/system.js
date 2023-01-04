@@ -215,6 +215,10 @@ $( '#setting-wlan' ).click( function() {
 			, boxwidth     : 250
 			, values       : S.wlanconf
 			, checkchanged : S.wlan
+			, beforeshow   : () => {
+				$( '.select2-selection__rendered' ).eq( 0 ).html( '00 <gr>(allowed worldwide)</gr>' );
+				$( '#infoContent select' ).on( 'select2:open', () => setTimeout( () => $( '.select2-results__options li' ).eq( 0 ).html( '00 <gr>(allowed worldwide)</gr>' ), 0 ) );
+			}
 			, cancel       : () => cancelSwitch( 'wlan' )
 			, ok           : () => {
 				notify( icon, title, S.wlan ? 'Change ...' : 'Enable ...' );
@@ -1050,7 +1054,8 @@ function renderPage() {
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.hostapd || S.wlanconnected )
-				.parent().prev().toggleClass( 'single', ! S.wlan );
+				.prev().html( S.hostapd ? '<wh>Access Point <i class="fa fa-accesspoint"></i></wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+			$( '#divwlan .col-l.status' ).toggleClass( 'single', ! S.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}

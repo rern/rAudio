@@ -143,7 +143,7 @@ $body = [
 		, 'icon'     => 'wifi'
 		, 'id'       => 'wlan'
 		, 'status'   => 'iw'
-		, 'disabled' => 'Wi-Fi is currently connected.'
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 I^gear btn^I
 Country of Wi-Fi regulatory domain:
@@ -309,7 +309,7 @@ EOF
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
  · Restore all data and settings from a backup file.
- · Reset to default: Reset everything except Wi-Fi connection and custom LAN
+ · Reset to default - Reset everything except Wi-Fi connection and custom LAN
 EOF
 	]
 	, [

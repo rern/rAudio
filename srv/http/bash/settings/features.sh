@@ -141,7 +141,7 @@ hostapd )
 		featureSet hostapd
 	else
 		systemctl disable --now hostapd
-		ifconfig wlan0 0.0.0.0
+		$dirsettings/system.sh wlan$'\n'false
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","hostapd":'${args[1]}'}'
