@@ -120,21 +120,16 @@ hostapdget )
 	;;
 hostapd )
 	if [[ ${args[1]} == true ]]; then
-		if [[ ${#args[@]} > 2 ]]; then
-			iprange=${args[2]}
-			router=${args[3]}
-			password=${args[4]}
-			sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
-" -e "s/^(.*option:router,).*/\1$router/
-" -e "s/^(.*option:dns-server,).*/\1$router/
+		ip=${args[2]}
+		password=${args[3]}
+		ip012=${ip%.*}
+		ip3=$(( ${ip/*.} + 1 ))
+		iprange=$ip012.$ip3,$ip012.254,24h
+		sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
+" -e "s/^(.*option:router,).*/\1$ip/
+" -e "s/^(.*option:dns-server,).*/\1$ip/
 " /etc/dnsmasq.conf
-			sed -i -E -e '/^#*wpa|^#*rsn/ s/^#*//
-' -e "s/(wpa_passphrase=).*/\1$password/
-" /etc/hostapd/hostapd.conf
-		else
-			router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-			sed -i -E '/^wpa|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
-		fi
+		sed -i -E "s/(wpa_passphrase=).*/\1$password/" /etc/hostapd/hostapd.conf
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
 		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then

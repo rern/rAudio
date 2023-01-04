@@ -143,14 +143,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : () => cancelSwitch( 'hostapd' )
 		, ok           : () => {
-			var values  = infoVal();
-			var ip      = values[ 0 ];
-			var pwd     = values[ 1 ];
-			var ips     = ip.split( '.' );
-			var ip3     = ips.pop();
-			var ip012   = ips.join( '.' );
-			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
-			bash( [ 'hostapd', true, iprange, ip, pwd ] );
+			bash( [ 'hostapd', true, ...infoVal() ] );
 			notify( icon, title, S.hostapd ? 'Change ...' : 'Enable ...' );
 		}
 	} );
