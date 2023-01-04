@@ -309,9 +309,7 @@ EOF
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
  · Restore all data and settings from a backup file.
- · Reset to default
-	 · Reset everything to default settings
-	 · Still keep current network connection
+ · Reset to default: Reset everything except Wi-Fi connection and custom LAN
 EOF
 	]
 	, [
