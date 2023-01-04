@@ -307,7 +307,12 @@ EOF
 		, 'icon'    => 'restore'
 		, 'id'      => 'restore'
 		, 'setting' => 'nobanner'
-		, 'help'    => 'Restore all data and settings from a backup file.'
+		, 'help'    => <<< EOF
+ · Restore all data and settings from a backup file.
+ · Reset to default
+	 · Reset everything to default settings
+	 · Still keep current network connection
+EOF
 	]
 	, [
 		  'label'    => 'Shared Data'
