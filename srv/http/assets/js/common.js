@@ -10,21 +10,12 @@ var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
-	if ( icon[ 0 ] === '<' ) {
-		var iconhtml = icon;
-	} else {
-		if ( icon.slice( -5 ) === 'blink' ) {
-			icon = icon.replace( ' blink' , '' );
-			var iconhtml = ico[ icon ].replace( '"></i>', ' blink"></i>' );
-		} else {
-			var iconhtml = ico[ icon ]
-		}
-	}
+	var iconhtml = icon[ 0 ] === '<' ? icon : '<i class="fa fa-'+ icon +'"></i>';
 	$( '#banner' ).html( `
 <div id="bannerIcon">${ iconhtml }</div>
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
-` ).removeClass( 'hide' );
+`   ).removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
