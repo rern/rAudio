@@ -207,7 +207,7 @@ function psMpdRadio( data ) {
 		setInfo();
 		setCoverart();
 		if ( D.radioelapsed ) {
-			$( '#progress' ).html( '<i class="fa fa-play"></i><span></span>' );
+			$( '#progress' ).html( ico.play +'<span></span>' );
 			setProgressElapsed();
 		} else {
 			setBlinkDot();
@@ -337,10 +337,10 @@ function psRelays( response ) {
 			, title       : 'Relays Countdown'
 			, message     : stopwatch
 						   +'<div class="msg-r wh">60</div>'
-			, buttonlabel : '<i class="fa fa-relays"></i>Off'
+			, buttonlabel : ico.relays +'Off'
 			, buttoncolor : red
 			, button      : () => bash( '/srv/http/bash/settings/relays.sh' )
-			, oklabel     : '<i class="fa fa-set0"></i>Reset'
+			, oklabel     : ico.set0 +'Reset'
 			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );

@@ -229,14 +229,14 @@ function coverartChange() {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold">'
-					   +'<p class="infoimgname"><i class="fa fa-album wh"></i> '+ album
-					   +'<br><i class="fa fa-artist wh"></i> '+ artist +'</p>'
+					   +'<p class="infoimgname">'+ ico.albumwh +' '+ album
+					   +'<br>'+ ico.artistwh +' '+ artist +'</p>'
 		, footer      : embedded
 		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
-		, filelabel   : '<i class="fa fa-folder-open"></i>File'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filelabel   : ico.folderopen +'File'
+		, fileoklabel : ico.flash +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! coverartlocal ? '' : '<i class="fa fa-minus-circle"></i>Remove'
+		, buttonlabel : ! coverartlocal ? '' : ico.minuscircle +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
@@ -299,8 +299,8 @@ function coverartSave() {
 			  icon    : icon
 			, title   : title
 			, message :  '<img class="infoimgnew" src="'+ base64 +'">'
-						+'<p class="infoimgname"><i class="fa fa-folder"></i> '+ album
-						+'<br><i class="fa fa-artist"></i> '+ artist +'</p>'
+						+'<p class="infoimgname">'+ ico.folder +' '+ album
+						+'<br>'+ ico.artist +' '+ artist +'</p>'
 			, ok      : () => {
 				imageReplace( 'coverart', path +'/cover' );
 				banner( icon, title, 'Save ...' );
@@ -649,30 +649,30 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	banner( '<i class="iconcover blink"></i>', I.title, 'Change ...', -1 );
 }
 var chklibrary = {
-	  album          : '<i class="fa fa-album wh"></i><gr>Album</gr>'
-		, nas        : '<i class="fa fa-networks wh"></i><gr>Network</gr>'
-	, albumartist    : '<i class="fa fa-albumartist wh"></i><gr>Album Artist</gr>'
-		, sd         : '<i class="fa fa-microsd wh"></i><gr>SD</gr>'
-	, artist         : '<i class="fa fa-artist wh"></i><gr>Artist</gr>'
-		, usb        : '<i class="fa fa-usbdrive wh"></i><gr>USB</gr>'
-	, composer       : '<i class="fa fa-composer wh"></i><gr>Composer</gr>'
-		, playlists  : '<i class="fa fa-playlists wh"></i><gr>Playlists</gr>'
-	, conductor      : '<i class="fa fa-conductor wh"></i><gr>Conductor</gr>'
-		, webradio   : '<i class="fa fa-webradio wh"></i><gr>Web Radio</gr>'
-	, date           : '<i class="fa fa-date wh"></i><gr>Date</gr>'
+	  album          : ico.albumwh +'<gr>Album</gr>'
+		, nas        : ico.networkswh +'<gr>Network</gr>'
+	, albumartist    : ico.albumartistwh +'<gr>Album Artist</gr>'
+		, sd         : ico.microsdwh +'<gr>SD</gr>'
+	, artist         : ico.artistwh +'<gr>Artist</gr>'
+		, usb        : ico.usbdrivewh +'<gr>USB</gr>'
+	, composer       : ico.composerwh +'<gr>Composer</gr>'
+		, playlists  : ico.playlistswh +'<gr>Playlists</gr>'
+	, conductor      : ico.conductorwh +'<gr>Conductor</gr>'
+		, webradio   : ico.webradiowh +'<gr>Web Radio</gr>'
+	, date           : ico.datewh +'<gr>Date</gr>'
 		, '-'        : ''
-	, genre          : '<i class="fa fa-genre wh"></i><gr>Genre</gr>'
+	, genre          : ico.genrewh +'<gr>Genre</gr>'
 		, count      : 'Count'
-	, latest         : '<i class="fa fa-latest wh"></i><gr>Latest</gr>'
+	, latest         : ico.latestwh +'<gr>Latest</gr>'
 		, label      : 'Label'
 }
 var chklibrary2 = {
-	  albumbyartist  : '<i class="fa fa-album wh"></i>Sort Album by artists'
-	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-plus wh"></i><gr>Add + Play</gr>'
-	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;<i class="fa fa-play-replace wh"></i><gr>Replace + Play</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on <i class="fa fa-play-plus wh"></i>or <i class="fa fa-play-replace wh"></i>'
+	  albumbyartist  : ico.albumwh +'Sort Album by artists'
+	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico.playpluswh +'<gr>Add + Play</gr>'
+	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico.playreplacewh +'<gr>Replace + Play</gr>'
+	, playbackswitch : 'Switch to Playback <gr>on '+ ico.playpluswh +'or '+ ico.playreplacewh
 	, '-'            : ''
-	, backonleft     : '<i class="fa fa-arrow-left wh"></i>Back button on left side'
+	, backonleft     : ico.arrowleftwh +'Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -734,7 +734,7 @@ function infoUpdate( path ) {
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : path ? '<i class="fa fa-folder"></i> <wh>'+ path +'</wh>' : ''
+		, message    : path ? ico.folder +' <wh>'+ path +'</wh>' : ''
 		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : () => {
 			if ( ! C ) {
@@ -837,7 +837,7 @@ function mpcSeekBar( pageX ) {
 	if ( S.elapsed ) {
 		$( '#progress span' ).html( elapsedhms );
 	} else {
-		$( '#progress' ).html( '<i class="fa fa-pause"></i><span>'+ elapsedhms +'</span> / '+ second2HMS( S.Time ) );
+		$( '#progress' ).html( ico.pause +'<span>'+ elapsedhms +'</span> / '+ second2HMS( S.Time ) );
 	}
 	$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
 	if ( ! V.drag ) mpcSeek( elapsed );
@@ -876,7 +876,7 @@ ${ track }
 		, title       : 'Insert'
 		, content     : content
 		, values      : [ 1 ]
-		, buttonlabel : '<i class="fa fa-undo"></i>Select'
+		, buttonlabel : ico.undo +'Select'
 		, button      : playlistInsertTarget
 		, cancel      : () => V.pladd = {}
 		, ok          : () => playlistInsert( +infoVal() + $this.index() )
@@ -930,7 +930,7 @@ function playlistFilter() {
 	} );
 	$( 'html, body' ).scrollTop( 0 );
 	if ( keyword ) {
-		$( '#pl-search-close' ).html( '<i class="fa fa-close"></i><span>'+ count +' <gr>of</gr> </span>' );
+		$( '#pl-search-close' ).html( ico.close +'<span>'+ count +' <gr>of</gr> </span>' );
 	} else {
 		$( '#pl-search-close' ).empty();
 	}
@@ -1050,7 +1050,7 @@ function renderLibrary() { // home
 }
 function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-	var songs = C.song ? C.song.toLocaleString() +'<i class="fa fa-music gr"></i>' : '';
+	var songs = C.song ? C.song.toLocaleString() + ico.music : '';
 	$( '#li-count' ).html( songs );
 	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
@@ -1070,7 +1070,7 @@ function renderLibraryList( data ) {
 	var modetitle = ! root ? data.modetitle : data.modetitle
 												.replace( 'MARTIST', 'M ARTIST' )
 												.replace( 'BRADIO', 'B RADIO' );
-	var htmlmodetitle = '<i class="fa fa-'+ V.mode +'"></i> <span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
+	var htmlmodetitle = ico[ V.mode ] +' <span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
@@ -1084,7 +1084,7 @@ function renderLibraryList( data ) {
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
-		var htmlpath = '<i class="fa fa-'+ V.mode +'"></i>';
+		var htmlpath = ico[ V.mode ];
 		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
 		htmlpath    += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir   = dir0;
@@ -1162,7 +1162,7 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	setInfo();
 	setCoverart();
-	var istate = '<i class="fa fa-'+ S.state +'"></i>';
+	var istate = ico[ S.state ];
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
 		return
@@ -1321,7 +1321,7 @@ function setBlinkDot() {
 		$( '#elapsed' ).html( S.state === 'play' ? blinkdot : '' );
 		blinkDot();
 		if ( D.radioelapsed ) {
-			$( '#progress' ).html( '<i class="fa fa-'+ S.state +'"></i><span></span>' );
+			$( '#progress' ).html( ico[ S.state ] +'<span></span>' );
 			setProgressElapsed();
 		}
 	}
@@ -1616,7 +1616,7 @@ function setPlaylistScroll() {
 		if ( S.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( S.Time ) );
 		if ( S.state === 'pause' ) {
 			elapsedtxt = second2HMS( S.elapsed );
-			$elapsed.html( '<i class="fa fa-pause"></i>'+ elapsedtxt + slash );
+			$elapsed.html( ico.pause + elapsedtxt + slash );
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
 			$stationname.removeClass( 'hide' );
@@ -1626,7 +1626,7 @@ function setPlaylistScroll() {
 			}
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
-			if ( S.elapsed ) $elapsed.html( '<i class="fa fa-play"></i>'+ second2HMS( S.elapsed ) + slash );
+			if ( S.elapsed ) $elapsed.html( ico.play + second2HMS( S.elapsed ) + slash );
 			V.intElapsedPl = setInterval( () => {
 				S.elapsed++;
 				if ( S.elapsed === S.Time ) {
@@ -1636,7 +1636,7 @@ function setPlaylistScroll() {
 					setPlaylistScroll();
 				} else {
 					elapsedtxt = second2HMS( S.elapsed );
-					$elapsed.html( '<i class="fa fa-play"></i>'+ elapsedtxt + slash );
+					$elapsed.html( ico.play + elapsedtxt + slash );
 					elapsedL = elapsedtxt.length;
 					if ( elapsedL > elapsedL0 ) {
 						elapsedL0 = elapsedL;

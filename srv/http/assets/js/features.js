@@ -200,8 +200,8 @@ $( '#setting-localbrowser' ).click( function() {
 </table>
 ${ htmlbrightness }
 <div class="btnbottom">
-	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
-	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
+	&nbsp;<span class="reload">Reload${ ico.redo }</span>
+	<span class="screenoff">${ ico.screenoff }On/Off</span>
 </div>`;
 	var icon  = 'chromium';
 	var title = 'Browser Display';
@@ -213,6 +213,7 @@ ${ htmlbrightness }
 		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.brightness ]
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
+			selectText2Html( { '90° CW': '90°&emsp;'+ ico.redo, '90° CCW': '90°&emsp;'+ ico.undo } );
 			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
@@ -379,13 +380,13 @@ $( '#setting-login' ).click( function() {
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
 <table>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-airplay"></i> AirPlay</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico.airplay } AirPlay</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico.bluetooth } Bluetooth</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico.spotify } Spotify</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"> ${ ico.upnp }UPnP</label></td></tr>
 <tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
 <tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
-<tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
+<tr><td>Password</td><td><input type="password"></td><td>${ ico.eye }</td></tr>
 </table>`;
 	var icon  = 'lastfm';
 	var title = 'Scrobbler';
@@ -509,7 +510,7 @@ function renderPage() {
 	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	var disablednfs = '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.';
+	var disablednfs = '<wh>Shared Data '+ ico.networks +'</wh> is currently enabled.';
 	if ( S.smb ) {
 		disablednfs = disablednfs.replace( 'Shared Data', 'File Sharing' );
 	} else if ( S.nfsconnected ) {
@@ -525,7 +526,7 @@ function renderPage() {
 		$( '#divdsp' ).removeClass( 'hide' );
 		$( '#camilladsp' )
 			.toggleClass( 'disabled', S.bluetoothsink || S.equalizer )
-			.prev().html( ( S.bluetoothsink ? '<wh>Bluetooth <i class="fa fa-bluetooth">' : '<wh>Equalizer <i class="fa fa-equalizer">' ) +'</i></wh> is currently enabled.' );
+			.prev().html( '<wh>'+ ( S.bluetoothsink ? 'Bluetooth '+ ico.bluetooth : 'Equalizer '+ ico.equalizer ) +'</wh> is currently enabled.' );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	if ( ! /code|error/.test( window.location.href ) ) {

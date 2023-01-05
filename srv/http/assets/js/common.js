@@ -12,7 +12,7 @@ function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
 	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
 					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
+					: icon ? ico[ icon ] : '';
 	$( '#banner' ).html( `
 <div id="bannerIcon">${ iconhtml }</div>
 <div id="bannerTitle">${ title }</div>
@@ -43,7 +43,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
-				+'&emsp;<a class="infobtn infobtn-primary copy"><i class="fa fa-copy"></i>Copy</a>'
+				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico.copy +'Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )
@@ -271,7 +271,7 @@ function info( json ) {
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
+					  + ( I.filelabel || ico.folderopen +'File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )
@@ -357,7 +357,7 @@ function info( json ) {
 		if ( I.passwordlabel ) {
 			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td>'+ ico.eye +'</td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
@@ -827,10 +827,10 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttonlabel : ico.reboot +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, oklabel     : ico.power +'Off'
 		, okcolor     : red
 		, ok          : () => infoPowerCommand( 'off' )
 	} );
@@ -845,11 +845,11 @@ function infoPowerNfs( nfs, action ) {
 	info( {
 		  icon    : 'power'
 		, title   : 'Power'
-		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+		, message : 'This <wh>Server rAudio '+ ico.rserver +'</wh> is currently active.'
 					+'<br><wh>Shared Data</wh> on clients will stop.'
 					+'<br>(Resume when server online again)'
 					+'<br><br>Continue?'
-		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+		, oklabel : off ? ico.power +'Off' : ico.reboot +'Reboot'
 		, okcolor : off ? red : orange
 		, ok      : () => {
 			bash( [ 'power', action, 1 ] );
@@ -988,4 +988,18 @@ function selectSet( $select ) {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
 		} );
+}
+function selectText2Html( pattern ) {
+	function htmlSet( $el ) {
+		$.each( pattern, ( k, v ) => {
+			if ( $el.text() === k ) $el.html( v );
+		} );
+	}
+	var $rendered = $( '.select2-selection__rendered' ).eq( 0 );
+	htmlSet( $rendered );
+	$( '#infoContent select' ).on( 'select2:open', () => {
+		setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
+	} ).on( 'select2:select', function() {
+		htmlSet( $rendered );
+	} );
 }
