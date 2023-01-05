@@ -216,8 +216,14 @@ $( '#setting-wlan' ).click( function() {
 			, values       : S.wlanconf
 			, checkchanged : S.wlan
 			, beforeshow   : () => {
-				$( '.select2-selection__rendered' ).eq( 0 ).html( '00 <gr>(allowed worldwide)</gr>' );
-				$( '#infoContent select' ).on( 'select2:open', () => setTimeout( () => $( '.select2-results__options li' ).eq( 0 ).html( '00 <gr>(allowed worldwide)</gr>' ), 0 ) );
+				var html00 = '00 <gr>(allowed worldwide)</gr>';
+				var rendered00 = () => $( '.select2-selection__rendered' ).eq( 0 ).html( html00 );
+				if ( S.wlanconf[ 0 ] === '00' ) rendered00();
+				$( '#infoContent select' ).on( 'select2:open', () => {
+					setTimeout( () => $( '.select2-results__options li' ).eq( 0 ).html( html00 ), 0 );
+				} ).on( 'select2:select', function() {
+					if ( $( this ).val() === '00' ) rendered00();
+				} );
 			}
 			, cancel       : () => cancelSwitch( 'wlan' )
 			, ok           : () => {
