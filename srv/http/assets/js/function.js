@@ -223,7 +223,7 @@ function coverartChange() {
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	$( '#coverart, #liimg' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
-	var icon = iconcover;
+	var icon = ico.cover;
 	var title = 'Change Album Cover Art';
 	info( {
 		  icon        : icon
@@ -293,7 +293,7 @@ function coverartSave() {
 		ctx.drawImage( img, 0, 0 );
 		var base64        = filecanvas.toDataURL( 'image/jpeg' );
 		if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
-		var icon          = iconcover;
+		var icon          = ico.cover;
 		var title         = 'Save Album Cover Art';
 		info( {
 			  icon    : icon
@@ -646,7 +646,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 			} );
 		}
 	} );
-	banner( '<i class="iconcover blink"></i>', I.title, 'Change ...', -1 );
+	banner( 'iconcover', I.title, 'Change ...', -1 );
 }
 var chklibrary = {
 	  album          : ico.albumwh +'<gr>Album</gr>'
@@ -1339,7 +1339,7 @@ function setBookmarkEdit() {
 		var path       = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( ! $this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml    += '<div class="bkedit bk-cover">'+ iconcover +'</div>';
+		buttonhtml    += '<div class="bkedit bk-cover">'+ ico.cover +'</div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )

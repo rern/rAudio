@@ -10,7 +10,7 @@ var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
-	var iconhtml = icon[ 0 ] === '<' ? icon : '<i class="fa fa-'+ icon +'"></i>';
+	var iconhtml = icon === 'iconcover' ? '<i class="iconcover blink"></i>' : '<i class="fa fa-'+ icon +'"></i>';
 	$( '#banner' ).html( `
 <div id="bannerIcon">${ iconhtml }</div>
 <div id="bannerTitle">${ title }</div>

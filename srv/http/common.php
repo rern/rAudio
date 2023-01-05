@@ -101,10 +101,10 @@ foreach( $cssp as $c ) echo '<link rel="stylesheet" href="/assets/css/plugin/'.$
 foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 
 $css = shell_exec( "sed -E -n '/^.fa-.*con/ {s/^.fa-(.*)::.*/\\1/;p}' /srv/http/assets/css/common.css" );
-$fa = json_encode( explode( "\n", $fcss ) );
+$fa = json_encode( explode( "\n", $css ) );
 ?>
 <script>
-	var fa = JSON.parse( '<?=$fa?>' );
+	var fa  = JSON.parse( '<?=$fa?>' );
 	var name;
 	var ico = {}
 	fa.forEach( el => {
@@ -112,6 +112,7 @@ $fa = json_encode( explode( "\n", $fcss ) );
 		ico[ name ] = '<i class="fa fa-'+ el +'"></i>';
 		ico[ name +'wh' ] = '<i class="fa fa-'+ el +' wh"></i>';
 	} );
+	ico.cover = '<i class="iconcover"></i>';
 </script>
 </head>
 <body>
