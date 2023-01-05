@@ -1799,9 +1799,10 @@ li.active .iconthumb {
 #li-count {
 	margin-left: 20px;
 	font-weight: 300;
-}
-#li-count span {
 	color: var( --cw );
+}
+#li-count i {
+	color: var( --cg60 );
 }
 #pl-count,
 #pl-path {
