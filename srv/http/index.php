@@ -2,19 +2,23 @@
 // <!DOCTYPE html> ---------------------------------------------
 include 'common.php';
 
+function i( $id = '', $icon ) {
+	$htmlid = $id ? ' id="'.$id.'"' : '';
+	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
+}
 // context menus
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext"><i class="fa fa-plus-circle"></i>Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'plus-circle' ).'Play next</a>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
 function menuli( $list ) {
 	$command = $list[ 0 ];
 	$icon = $list[ 1 ];
 	$label = $list[ 2 ];
-	if ( $icon !== 'iconcover' ) $icon = 'fa fa-'.$icon;
-	return '<a data-cmd="'.$command.'" class="'.$command.'"><i class="'.$icon.'"></i>'.$label.'</a>';
+	$icon = $icon !== 'iconcover' ? i( '', $icon ) : '<i class="iconcover"></i>';
+	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
 }
 function menudiv( $id, $html ) {
 	return '<div id="menu-'.$id.'" class="menu contextmenu hide">'.$html.'</div>';
@@ -116,7 +120,7 @@ $ids = [ 'random',   'repeat',     'single',    'repeat1',   'consume', 'librand
 	   , 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons',  'relays',    'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
-	$modeicon.= '<i id="i-'.$id.'" class="fa fa-'.$id.' hide"></i>';
+	$modeicon.= i( 'i-'.$id, $id.' hide' );
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'i-', 'ti-', $modeicon );
@@ -134,20 +138,19 @@ $settinglist = [
 ];
 $htmlsettings     = '';
 foreach( $settinglist as $l ) {
-	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'"><i class="fa fa-'.$l[ 2 ].'"></i>'.$l[ 3 ].'</a>
-					 <i id="'.$l[ 4 ].'" class="submenu fa fa-'.$l[ 5 ].'"></i>';
+	$htmlsettings.= '<a id="'.$l[ 0 ].'" class="'.$l[ 1 ].'">'.i( '', $l[ 2 ] ).$l[ 3 ].'</a>'.i( $l[ 4 ], $l[ 5 ].' submenu' );
 }
 $htmlcontrols     = '';
 foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
-	$htmlcontrols.= '<i id="'.$l.'" class="btn btn-default btn-cmd fa fa-'.$l.'"></i>';
+	$htmlcontrols.= i( $l, $l.' btn btn-default btn-cmd' );
 }
 ?>
 
 <div id="refresh"></div><div id="status"></div>
 
 <div id="bar-top" class="hide">
-	<i id="logo" class="fa fa-raudio-nobg"></i>
-	<i id="button-settings" class="fa fa-gear"></i>
+	<?=i( 'logo', 'raudio-nobg' )?>
+	<?=i( 'button-settings', 'gear' )?>
 	<div id="playback-controls">
 		<?=$htmlcontrols?>
 	</div>
@@ -157,10 +160,10 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 </div>
 
 <div id="page-playback" class="page">
-	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
-	<i id="guide-bio" class="map guide fa fa-bio hide"></i>
-	<i id="guide-lyrics" class="map guide fa fa-lyrics hide"></i>
-	<i id="guide-album" class="map guide fa fa-lastfm hide"></i>
+	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
+	<?=i( 'guide-bio', 'bio map guide hide' )?>
+	<?=i( 'guide-lyrics', 'lyrics map guide hide' )?>
+	<?=i( 'guide-album', 'lastfm map guide hide' )?>
 	<div id="info">
 		<div id="divartist">
 			<span id="artist"></span>
@@ -186,20 +189,20 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 			<span id="total" class="controls1"></span>
 			<div id="timemap">
 				<i id="timeTL" class="map timemap"></i>
-				<i id="timeT" class="map timemap fa fa-guide"></i>
-				<i id="timeTR" class="map timemap fa fa-gear"></i>
-				<i id="timeL" class="map timemap fa fa-previous"></i>
-				<div id="timeM" class="map timemap"><i class="fa fa-play"></i>&nbsp;<i class="fa fa-pause"></i></div>
-				<i id="timeR" class="map timemap fa fa-next"></i>
-				<i id="timeBL" class="map timemap fa fa-random"></i>
-				<i id="timeB" class="map timemap fa fa-stop"></i>
-				<i id="timeBR" class="map timemap fa fa-repeat"></i>
+				<?=i( 'timeT', 'guide map timemap' )?>
+				<?=i( 'timeTR', 'gear map timemap' )?>
+				<?=i( 'timeL', 'previous map timemap' )?>
+				<div id="timeM" class="map timemap"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
+				<?=i( 'timeR', 'next map timemap' )?>
+				<?=i( 'timeBL', 'random map timemap' )?>
+				<?=i( 'timeB', 'stop map timemap' )?>
+				<?=i( 'timeBR', 'repeat map timemap' )?>
 			</div>
 			<div id="play-group">
 				<div class="btn-group">
-					<i id="random" class="btn btn-default btn-cmd btn-toggle fa fa-random"></i>
-					<i id="single" class="btn btn-default btn-cmd btn-toggle fa fa-single"></i>
-					<i id="repeat" class="btn btn-default btn-cmd btn-toggle fa fa-repeat"></i>
+					<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )?>
+					<?=i( 'single', 'single btn btn-default btn-cmd btn-toggle' )?>
+					<?=i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
 				</div>
 			</div>
 		</div>
@@ -214,37 +217,37 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="qrwebui" class="qr hide"></div>
 				<div id="qrip" class="qr hide"></div>
 				<div id="covermap">
-					<i id="coverTL" class="map covermap r1 c1 ws hs fa fa-scale-dn"></i>
-					<i id="coverT" class="map covermap r1 c2 wl hs fa fa-guide"></i>
-					<i id="coverTR" class="map covermap r1 c3 ws hs fa fa-gear"></i>
-					<i id="coverL" class="map covermap r2 c1 ws hl fa fa-previous"></i>
-					<div id="coverM" class="map covermap r2 c2 wl hl"><i class="fa fa-play"></i>&emsp;<i class="fa fa-pause"></i></div>
-					<i id="coverR" class="map covermap r2 c3 ws hl fa fa-next"></i>
-					<i id="coverBL" class="map covermap r3 c1 ws hs fa fa-random"></i>
-					<i id="coverB" class="map covermap r3 c2 wl hs fa fa-stop"></i>
-					<i id="coverBR" class="map covermap r3 c3 ws hs fa fa-repeat"></i>
+					<?=i( 'coverTL', 'scale-dn map covermap r1 c1 ws hs' )?>
+					<?=i( 'coverT', 'guide map covermap r1 c2 wl hs' )?>
+					<?=i( 'coverTR', 'gear map covermap r1 c3 ws hs' )?>
+					<?=i( 'coverL', 'previous map covermap r2 c1 ws hl' )?>
+					<div id="coverM" class="map covermap r2 c2 wl hl"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
+					<?=i( 'coverR', 'next map covermap r2 c3 ws hl' )?>
+					<?=i( 'coverBL', 'random map covermap r3 c1 ws hs' )?>
+					<?=i( 'coverB', 'stop map covermap r3 c2 wl hs' )?>
+					<?=i( 'coverBR', 'repeat map covermap r3 c3 ws hs' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
-				<i id="volume-band" class="volumeband band fa fa-volume transparent"></i>
-				<i id="volume-band-dn" class="volumeband band fa fa-minus transparent"></i>
-				<i id="volume-band-up" class="volumeband band fa fa-plus transparent"></i>
+				<?=i( 'volume-band', 'volume transparent volumeband band' )?>
+				<?=i( 'volume-band-dn', 'minus transparent volumeband band' )?>
+				<?=i( 'volume-band-up', 'plus transparent volumeband band' )?>
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="volmap">
-				<i id="volT" class="map volmap fa fa-plus"></i>
-				<i id="volL" class="map volmap fa fa-minus"></i>
-				<i id="volM" class="map volmap fa fa-volume"></i>
-				<i id="volR" class="map volmap fa fa-plus"></i>
-				<i id="volB" class="map volmap fa fa-minus"></i>
+				<?=i( 'volT', 'plus map volmap' )?>
+				<?=i( 'volL', 'minus map volmap' )?>
+				<?=i( 'volM', 'volume map volmap' )?>
+				<?=i( 'volR', 'plus map volmap' )?>
+				<?=i( 'volB', 'minus map volmap' )?>
 			</div>
 			<div id="vol-group">
 				<div class="btn-group">
-					<i id="voldn" class="btn btn-default fa fa-minus"></i>
-					<i id="volmute" class="btn btn-default fa fa-volume"></i>
-					<i id="volup" class="btn btn-default fa fa-plus"></i>
+					<?=i( 'voldn', 'minus btn btn-default' )?>
+					<?=i( 'volmute', 'volume btn btn-default' )?>
+					<?=i( 'volup', 'plus btn btn-default' )?>
 				</div>
 			</div>
 		</div>
@@ -253,19 +256,19 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<i id="button-library" class="fa fa-library active"></i>
-		<i id="button-lib-search" class="fa fa-search"></i>
+		<?=i( 'button-library', 'library active' )?>
+		<?=i( 'button-lib-search', 'search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
 				<span class="input-group-btn">
-					<button id="lib-search-btn" class="btn btn-default"><i class="fa fa-search"></i></button>
+					<button id="lib-search-btn" class="btn btn-default"><?=i( '', 'search' )?></button>
 				</span>
 			</div>
 		</div>
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
-			<i id="button-lib-back" class="fa fa-arrow-left"></i>
+			<?=i( 'button-lib-back', 'arrow-left' )?>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
@@ -275,28 +278,28 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 </div>
 
 <div id="page-playlist" class="page hide">
-	<div class="emptyadd hide"><i class="fa fa-plus-circle"></i></div>
+	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
 	<div class="content-top">
 		<span id="pl-path"></span>
-		<i id="button-playlist" class="fa fa-playlist active"></i>
-		<i id="button-pl-back" class="fa fa-arrow-left hide"></i>
-		<i id="button-pl-search" class="fa fa-search pllength"></i>
+		<?=i( 'button-playlist', 'playlist active' )?>
+		<?=i( 'button-pl-back', 'arrow-left hide' )?>
+		<?=i( 'button-pl-search', '-search pllength' )?>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">
 				<span class="input-group-btn">
-					<button id="pl-search-btn" class="btn btn-default" type="button"><i class="fa fa-search"></i></button>
+					<button id="pl-search-btn" class="btn btn-default" type="button"><?=i( '', 'search' )?></button>
 				</span>
 			</div>
 		</form>
 		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
-			<i id="button-pl-playlists" class="fa fa-playlists"></i>
-			<i id="button-pl-save" class="fa fa-save-plus pllength"></i>
-			<i id="button-pl-consume" class="fa fa-flash"></i>
-			<i id="button-pl-librandom" class="fa fa-librandom"></i>
-			<i id="button-pl-shuffle" class="fa fa-shuffle pllength"></i>
-			<i id="button-pl-clear" class="fa fa-minus-circle pllength"></i>
+			<?=i( 'button-pl-playlists', 'playlists' )?>
+			<?=i( 'button-pl-save', 'save-plus pllength' )?>
+			<?=i( 'button-pl-consume', 'flash' )?>
+			<?=i( 'button-pl-librandom', 'librandom' )?>
+			<?=i( 'button-pl-shuffle', 'shuffle pllength' )?>
+			<?=i( 'button-pl-clear', 'minus-circle pllength' )?>
 		</div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
@@ -309,8 +312,8 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="colorpicker" class="hide">
 	<div id="divcolor">
-	<i id="colorcancel" class="fa fa-close"></i>
-	<a id="colorreset" class="infobtn"><i class="fa fa-set0"></i> Default</a>&ensp;
+	<?=i( 'colorcancel', 'close' )?>
+	<a id="colorreset" class="infobtn"><?=i( '', 'set0' )?> Default</a>&ensp;
 	<a id="colorok" class="infobtn infobtn-primary">OK</a>
 	</div>
 </div>
@@ -318,15 +321,15 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div id="divlyricstitle">
 		<img src="">
 		<span id="lyricstitle"></span>
-		<i id="lyricsclose" class="fa fa-close"></i>
+		<?=i( 'lyricsclose', 'close' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><i id="lyricsedit" class="fa fa-edit-circle"></i>
+		<span id="lyricsartist"></span><?=i( 'lyricsedit', 'edit-circle' )?>
 		<div id="lyricseditbtngroup" class="hide">
-			<i id="lyricsundo" class="fa fa-undo hide"></i>
-			<i id="lyricssave" class="fa fa-save hide"></i>
-			<i id="lyricsdelete" class="fa fa-minus-circle"></i>
-			<i id="lyricsback" class="fa fa-arrow-left bl"></i>
+			<?=i( 'lyricsundo', 'undo hide' )?>
+			<?=i( 'lyricssave', 'save hide' )?>
+			<?=i( 'lyricsdelete', 'minus-circle' )?>
+			<?=i( 'lyricsback', 'arrow-left bl' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext"></div>
@@ -334,7 +337,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div id="lyricsfade"></div>
 </div>
 <div id="bar-bottom" class="transparent"> <!-- keep single line to suppress spaces (or display: flex) -->
-	<i id="library" class="fa fa-library"></i><i id="playback" class="fa fa-playback"></i><i id="playlist" class="fa fa-playlist"></i>
+	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
 </div>
 <div id="bio" class="hide"></div>
 

@@ -1398,7 +1398,7 @@ function setButtonOptions() {
 	}
 	setButtonUpdateAddons();
 	setButtonUpdating();
-	if ( $volume.is( ':hidden' ) && S.volumemute ) $( '#'+ prefix +'-mute' ).removeClass( 'hide' );
+	if ( $volume.is( ':hidden' ) ) $( '#'+ prefix +'-mute' ).toggleClass( 'hide', S.volumemute === 0 );
 }
 function setButtonUpdateAddons() {
 	if ( S.updateaddons ) {
