@@ -543,8 +543,8 @@ input.disabled + .switchlabel:after {
 	height: 40px !important;
 }
 #statusvalue i {
+	margin: 0 5px 0 12px;
 	color: var( --cg60 );
-	margin: 0 5px 0 10px;
 }
 #statusvalue .fa-song {
     margin-left: 0;
