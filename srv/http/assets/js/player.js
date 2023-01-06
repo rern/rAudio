@@ -158,6 +158,7 @@ $( '.filetype' ).click( function() {
 	} else {
 		$( '#divfiletype' ).toggleClass( 'hide' );
 	}
+	$( this ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
 $( '#setting-buffer' ).click( function() {
 	var icon  = 'mpd';

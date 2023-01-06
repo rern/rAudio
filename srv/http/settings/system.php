@@ -413,7 +413,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
 	</div>
-	<div class="listtitle backend">P a c k a g e s :</i>
+	<div class="listtitle backend">Packages:</i>
 	<br><?=$indexhtml?></div>
 	<div class="list"></div>
 	
@@ -430,7 +430,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://jquery.com/">jQuery</a>
 		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
 	</div>
-	<div class="listtitle">P l u g i n s : <?=i( 'chevron-down bl' )?></div>
+	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>

@@ -174,7 +174,7 @@ EOF
 		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
 		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes: I^help filetype^I
+Decoder for audio filetypes: I^chevron-down bl filetype^I
 <div id="divfiletype" class="hide" style="margin-left: 20px"></div>
 EOF
 	]

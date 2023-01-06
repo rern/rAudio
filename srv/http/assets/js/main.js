@@ -50,7 +50,7 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-var icoveredit  = '<div class="coveredit cover-change">'+ ico.cover +'</div>';
+var icoveredit  = '<div class="coveredit cover-change">'+ ico.coverart +'</div>';
 var icoversave  = '<div class="coveredit cover-save">'+ ico.save +'</div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -1175,7 +1175,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					 +'<br>  • Create directory icons'
 	}
 	info( {
-		  icon         : ico.cover
+		  icon         : ico.coverart
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
@@ -1482,7 +1482,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var name  = $this.find( '.bkname' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon    = ico.cover;
+		var icon    = ico.coverart;
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {

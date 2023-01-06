@@ -261,14 +261,11 @@ $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
 		$( '#gpiopin' ).slideToggle();
 		$( '#fliptxt, #close-img' ).toggle();
-		$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' )
 	} else {
 		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
 		$( '#fliptxt' ).hide();
-		$( this ).find( 'i' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-chevron-down' );
 	}
+	$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
@@ -818,10 +815,7 @@ $( '.listtitle' ).click( function( e ) {
 	var $target  = $( e.target );
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
-		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
-		$chevron
-			.removeClass( 'fa-chevron-up fa-chevron-down' )
-			.addClass( 'fa-chevron-'+ updn );
+		$chevron.toggleClass( 'fa-chevron-down fa-chevron-up' );
 		if ( localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) { // package
 		var active = $target.hasClass( 'wh' );

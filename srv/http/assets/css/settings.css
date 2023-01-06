@@ -351,6 +351,10 @@ input[type=image] {
 .list p {
 	margin: 0 0 0 12px;
 }
+.listtitle {
+	margin-top: 10px;
+	letter-spacing: 5px;
+}
 .listtitle a {
 	display: inline-block;
 	width: calc( 100% / 26 );
