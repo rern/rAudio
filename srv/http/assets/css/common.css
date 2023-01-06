@@ -61,7 +61,7 @@
 .fa-consume::before         { content: '\F566' }
 .fa-copy::before            { content: '\F54E' }
 .fa-coverart::before        { content: '\F58A'; position: absolute; }
-.fa-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 50% }
+.fa-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 60%; text-shadow: none; }
 .fa-crop::before            { content: '\F568' }
 .fa-dabradio::before        { content: '\F589' }
 .fa-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
