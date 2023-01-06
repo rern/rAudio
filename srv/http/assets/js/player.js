@@ -359,9 +359,10 @@ function playbackIcon() {
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>'
-					+ ico.song +'&ensp;'+ ( S.counts.song || 0 ).toLocaleString() +'&emsp; '
-					+ ico.album +'&ensp;'+ ( S.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
-					+ ico.webradio +'&ensp;'+ ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
+					+ ico.song + ( S.counts.song || 0 ).toLocaleString()
+					+ ico.album + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
+					+ ico.artist + ( S.counts.arttist || 0 ).toLocaleString()
+					+ ico.webradio + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		$( '#divbtreceiver' ).removeClass( 'hide' );
