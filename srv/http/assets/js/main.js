@@ -112,7 +112,11 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	
 $( 'body' ).click( function( e ) {
 	var $target = $( e.target );
-	if ( ! $target.hasClass( 'savedlist' ) && ! $target.hasClass( 'bkcoverart' ) && ! $target.hasClass( 'bkradio' ) ) menuHide();
+	if ( ! $target.hasClass( 'savedlist' )
+		&& ! $target.hasClass( 'bkcoverart' )
+		&& ! $target.hasClass( 'bkradio' )
+		&& $( '#infoOverlay' ).hasClass( 'hide' )
+	) menuHide();
 } );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
