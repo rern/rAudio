@@ -542,6 +542,9 @@ input.disabled + .switchlabel:after {
 #hostname {
 	height: 40px !important;
 }
+#statusvalue i {
+	color: var( --cg60 );
+}
 
 @media (max-height: 570px) {
 	.helphead {
