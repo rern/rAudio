@@ -84,6 +84,9 @@ ul {
 	line-height: 20px;
 	overflow-x: auto;
 }
+#prefiletype {
+	white-space: pre-wrap;
+}
 div.helpblock {
 	margin-left: 0;
 }

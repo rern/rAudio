@@ -149,14 +149,15 @@ $( '#setting-replaygain' ).click( function() {
 	} );
 } );
 $( '.filetype' ).click( function() {
-	if ( $( '#divfiletype' ).is( ':empty' ) ) {
+	var $pre = $( '#prefiletype' );
+	if ( $pre.is( ':empty' ) ) {
 		bash( [ 'filetype' ], data => {
-			$( '#divfiletype' )
+			$pre
 				.html( data )
 				.toggleClass( 'hide' );
 		} );
 	} else {
-		$( '#divfiletype' ).toggleClass( 'hide' );
+		$pre.toggleClass( 'hide' );
 	}
 	$( this ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
