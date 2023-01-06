@@ -164,10 +164,6 @@ i.map.disabled, .map.disabled i {
 .submenu.active {
 	background: var( --cgl );
 }
-.menu .iconcover {
-	margin: -2px 8px 0 !important;
-	vertical-align: middle;
-}
 #settings .gr {
 	font-size: 22px;
 }
@@ -1340,13 +1336,6 @@ i.map.disabled, .map.disabled i {
 	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
 }
-#bannerIcon .iconcover {
-	margin: 3px;
-}
-#infoTop .iconcover {
-	margin-top: 5px !important;
-	width: 28px !important;
-}
 .infoimgname {
 	line-height: 25px;
 	clear: both;
@@ -2268,7 +2257,7 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .iconcover,
+	#divcover .fa-coverart,
 	#divcover .fa-save { top: 5px; }
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {

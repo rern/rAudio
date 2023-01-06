@@ -1,6 +1,6 @@
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2022122700' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2023010200' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -60,6 +60,8 @@
 .fa-conductor::before       { content: '\F559' }
 .fa-consume::before         { content: '\F566' }
 .fa-copy::before            { content: '\F54E' }
+.fa-coverart::before        { content: '\F58A'; position: absolute; }
+.fa-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 50% }
 .fa-crop::before            { content: '\F568' }
 .fa-dabradio::before        { content: '\F589' }
 .fa-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
@@ -317,13 +319,6 @@ codered  {
 }
 .splash svg {
 	animation: none !important;
-}
-
-.iconcover {
-	content : url( '/assets/img/iconcover.svg' );
-	width   : 24px !important;
-	margin  : 5px !important;
-	border  : 1px solid hsl(0,0%,20%);
 }
 
 /* banner() */

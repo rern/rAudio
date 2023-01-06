@@ -112,7 +112,6 @@ $fa = json_encode( explode( "\n", $css ) );
 		ico[ name ] = '<i class="fa fa-'+ el +'"></i>';
 		ico[ name +'wh' ] = '<i class="fa fa-'+ el +' wh"></i>';
 	} );
-	ico.cover = '<i class="iconcover"></i>';
 </script>
 </head>
 <body>

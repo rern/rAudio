@@ -17,7 +17,7 @@ function menuli( $list ) {
 	$command = $list[ 0 ];
 	$icon = $list[ 1 ];
 	$label = $list[ 2 ];
-	$icon = $icon !== 'iconcover' ? i( '', $icon ) : '<i class="iconcover"></i>';
+	$icon = i( '', $icon );
 	return '<a data-cmd="'.$command.'" class="'.$command.'">'.$icon.$label.'</a>';
 }
 function menudiv( $id, $html ) {
@@ -63,7 +63,7 @@ $menulist = [
 	  [ 'bookmark',  'star',            'Bookmark' ]
 	, [ 'exclude',   'folder-forbid',   'Exclude directory' ]
 	, [ 'update',    'refresh-library', 'Update database' ]
-	, [ 'thumb',     'iconcover',       'Update thumbnails' ]
+	, [ 'thumb',     'coverart',        'Update thumbnails' ]
 	, [ 'directory', 'folder',          'Browse directory' ]
 	, [ 'tag',       'tag',             'Tag Editor' ]
 ];
@@ -98,7 +98,7 @@ $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
 	  [ 'bookmark',   'star',         'Bookmark' ]
 	, [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'iconcover',    'Change cover art' ]
+	, [ 'wrcoverart', 'coverart',     'Change cover art' ]
 	, [ 'wrdelete',   'minus-circle', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );

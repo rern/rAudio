@@ -10,7 +10,7 @@ $type     = $opt[ 1 ];
 $branch   = $opt[ 2 ] ?? '';
 $addon    = $addons[ $alias ];
 if ( $alias === 'cove' ) {
-	$icon = '<i class="page-icon iconcover"></i>';
+	$icon = '<i class="page-icon fa fa-coverart"></i>';
 	$href = '/';
 	$name = 'Album Thumbnails';
 	$path = $type === '/' ? '' : $type; // path = $opt[ 1 ]
