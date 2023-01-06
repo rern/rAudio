@@ -544,8 +544,11 @@ input.disabled + .switchlabel:after {
 }
 #statusvalue i {
 	color: var( --cg60 );
+	margin: 0 5px 0 10px;
 }
-
+#statusvalue .fa-song {
+    margin-left: 0;
+}
 @media (max-height: 570px) {
 	.helphead {
 		margin-right: 0;
