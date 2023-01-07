@@ -115,8 +115,38 @@ $( 'body' ).click( function( e ) {
 	if ( ! $target.hasClass( 'savedlist' )
 		&& ! $target.hasClass( 'bkcoverart' )
 		&& ! $target.hasClass( 'bkradio' )
-		&& $( '#infoOverlay' ).hasClass( 'hide' )
 	) menuHide();
+	if ( $( '.pl-remove' ).length
+		&& ! $target.hasClass( 'pl-remove' )
+		&& $( '#infoOverlay' ).hasClass( 'hide' )
+	) $( '.pl-remove' ).remove();
+
+} );
+$( '#page-library' ).on( 'click', 'p', function() {
+	$( '.licover .cover-change' ).remove();
+	$( '.licover img' ).css( 'opacity', '' );
+	$( '#lib-list li' ).removeClass( 'active' );
+	if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
+} );
+$( '#page-playback' ).click( function( e ) {
+	if ( V.press
+		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
+	
+	if ( V.guide ) hideGuide();
+	if ( $( '#divcover .coveredit' ).length ) {
+		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
+			$( '#divcover .cover-change' ).remove();
+			$( '#coverart' ).css( 'opacity', '' );
+		}
+	}
+} );
+$( '#page-playlist' ).on( 'click', 'p', function() {
+	if ( V.savedlist || V.savedplaylist ) return
+	
+	$( '#pl-savedlist li' ).removeClass( 'active' );
+	$( '#pl-list li' ).removeClass( 'updn' );
+	$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( ! $( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
 } );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
@@ -462,18 +492,6 @@ $( '#playlist, #button-playlist' ).click( function() {
 		savedpl ? switchPage( 'playlist' ) : getPlaylist(); // switchPage( 'playlist' ) in setPlaylistScroll()
 	}
 } );
-$( '#page-playback' ).click( function( e ) {
-	if ( V.press
-		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
-	
-	if ( V.guide ) hideGuide();
-	if ( $( '#divcover .coveredit' ).length ) {
-		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
-	}
-} );
 $( '#bar-top, #bar-bottom, #page-library' ).click( function() {
 	if ( V.guide ) hideGuide();
 	if ( ! $( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
@@ -483,19 +501,6 @@ $( '#bar-top' ).click( function( e ) {
 } );
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
-} );
-$( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
-	if ( V.library ) {
-		$( '.licover .cover-change' ).remove();
-		$( '.licover img' ).css( 'opacity', '' );
-		$( '#lib-list li' ).removeClass( 'active' );
-		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
-	} else if ( V.playlist && ! V.savedlist && ! V.savedplaylist ) {
-		$( '#pl-savedlist li' ).removeClass( 'active' );
-		$( '#pl-list li' ).removeClass( 'updn' );
-		$( '#pl-list .name' ).css( 'max-width', '' );
-		if ( ! $( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
-	}
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
@@ -1826,6 +1831,8 @@ $( '#button-pl-clear' ).click( function() {
 				renderPlaylist( -1 );
 			}
 		} );
+	} else if ( $( '.pl-remove' ).length ) {
+		$( '.pl-remove' ).remove();
 	} else {
 		info( {
 			  icon        : 'playlist'

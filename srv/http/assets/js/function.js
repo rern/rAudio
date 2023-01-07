@@ -806,7 +806,6 @@ function lyricsHide() {
 function menuHide() {
 	$( '.menu' ).addClass( 'hide' );
 	$( '.contextmenu ' ).find( 'a, i' ).removeClass( 'hide' );
-	$( '.pl-remove' ).remove();
 	$( '#lib-list li, #pl-savedlist li' ).removeClass( 'active' );
 	$( '#pl-list li' ).removeClass( 'updn' );
 }
