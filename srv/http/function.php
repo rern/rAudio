@@ -4,8 +4,11 @@ function i( $class, $target = '' ) {
 	$icon.= $target ? ' li-icon" data-target="#menu-'.$target.'"></i>' : '"></i>';
 	return $icon;
 }
-function iconImg( $src, $target ) {
-	return '<img class="lazyload iconthumb li-icon" data-src="'.$src.'^^^" data-target="#menu-'.$target.'">';
+function imgIcon( $thumbsrc, $target, $icon = '' ) {
+	$img = '<img class="lazyload iconthumb li-icon '.$icon.'"';
+	$img.= $icon ? ' data-icon="'.$icon.'"' : '';
+	$img.= ' data-src="'.$thumbsrc.'^^^" data-target="#menu-'.$target.'">';
+	return $img;
 }
 function indexbar( $indexes ) {
 	$indexbar = '<a class="indexed"><wh>#</wh></a>';

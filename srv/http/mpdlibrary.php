@@ -282,7 +282,7 @@ function htmlDirectory( $lists ) {
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$htmlicon = iconImg( $thumbsrc, 'folder' );
+			$htmlicon = imgIcon( $thumbsrc, 'folder' );
 		} else {
 			$mode     = $gmode;
 			$htmlicon = i( 'music ', 'file' );
@@ -435,7 +435,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			}
 			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.jpg" );
 			$html    .= '
-	'.iconImg( $thumbsrc, 'wrdir' ).'
+	'.imgIcon( $thumbsrc, 'wrdir' ).'
 	<a class="lipath">'.$path.$subdir.'</a>
 	<span class="single">'.$subdir.'</span>
 </li>';
@@ -467,7 +467,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			$name        = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html       .= '
 <li class="file"'.$datacharset.' data-index="'.$index.'">
-	'.iconImg( $thumbsrc, 'webradio' ).'
+	'.imgIcon( $thumbsrc, 'webradio' ).'
 	<a class="lipath">'.$url.'</a>
 	<a class="liname">'.$liname.'</a>';
 			if ( $gmode === 'webradio' ) {
