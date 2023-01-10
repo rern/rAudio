@@ -171,7 +171,7 @@ EOF
 		, 'sublabel' => 'decoder'
 		, 'id'       => 'ffmpeg'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
+		, 'disabled' => 'W_DAB Radio I^dabradio^I_W is currently enabled.'
 		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
 Decoder for audio filetypes: I^chevron-down bl filetype^I

@@ -85,10 +85,10 @@ htmlHead( [ //////////////////////////////////
 'I^usbdrive btn^I I^networks btn^I Context menu
 I^plus-circle btn^I Add network storage
 
-<wh>USB drives:</wh> Will be found and mounted automatically.
+W_USB drives:_W Will be found and mounted automatically.
 
-<wh>Network shares:</wh> If I^plus-circle btn^I Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
-<wh>• CIFS:</wh>
+W_Network shares:_W If I^plus-circle btn^I Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+W_• CIFS:_W
 ' ) )?>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
@@ -178,7 +178,7 @@ I^gear btn^I Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 HAT with EEPROM could be automatically detected.
-(See A^I^player^I Player^A Output | Device | if it's already set.)
+(See A*I^player^I Player*A Output | Device | if it's already set.)
 EOF
 	]
 	, [
@@ -213,7 +213,7 @@ EOF
 		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: A^I^raudio^I System^AI^relays sub^I
+On/Off: A*I^raudio^I System*AI^relays sub^I
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -318,7 +318,7 @@ EOF
 		, 'icon'     => 'networks'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
-		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
+		, 'disabled' => 'W_Server rAudio I^rserver^I_W is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
 	· Library database
@@ -329,11 +329,11 @@ Note:
  · SSH password must be default.
  · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library home
 
- • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
-	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
+ • W_rAudio as server:_W (Alternative 1)
+	Server: A*I^features^I Features*A W_Server rAudio I^rserver^I_W |
+	Clients: | W_Shared Data I^networks^I_W | • rAudio |
 	
- • <wh>Other servers:</wh> (Alternative 2)
+ • W_Other servers:_W (Alternative 2)
 	Server: Create a share for data with full permissions
 		· Linux:
 			NFS: <c>777</c>
@@ -342,7 +342,7 @@ Note:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		· | <wh>Shared Data I^networks^I</wh> | Add the created share
+		· | W_Shared Data I^networks^I_W | Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]

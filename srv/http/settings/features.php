@@ -13,7 +13,7 @@ $body = [
 		, 'id'       => 'shairport-sync'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => '<wh>AirPlay I^airplay^I</wh> is currently active.'
+		, 'disabled' => 'W_AirPlay I^airplay^I_W is currently active.'
 		, 'help'     => '<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
@@ -34,11 +34,11 @@ $body = [
 		, 'icon'     => 'snapcast'
 		, 'id'       => 'snapclient'
 		, 'status'   => 'snapclient'
-		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently active.'
+		, 'disabled' => 'W_SnapClient I^snapcast^I_W is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
- · Connect: A^I^networks^I Networks^AI^snapcast sub^I
+ · Connect: A*I^networks^I Networks*AI^snapcast sub^I
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable | SnapServer | before | SnapClient |
 	· SnapClient auto connect/disconnect on play/stop
@@ -51,11 +51,11 @@ EOF
 		, 'icon'     => 'spotify'
 		, 'id'       => 'spotifyd'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => '<wh>Spotify I^spotify^I</wh> is currently active.'
+		, 'disabled' => 'W_Spotify I^spotify^I_W is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  · Require Premium account. (No Spotify password saved on rAudio.)
- · Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
+ · Get credential from W_Spotify private app_W: ( <bll class="screenshot pointer">Screenshots</bll> )
 	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <code class="yl">YELLOW</code> with actual values)
 	| LOG IN |
 		· with normal Spotify account
@@ -67,7 +67,7 @@ EOF
 	| USERS AND ACCESS | ADD NEW USER |
 		· Name: <code class="yl">user</code>
 		· Spotify Account: <code class="yl">email</code>
-· | <wh>Spotify I^spotify^I</wh> | Enable
+· | W_Spotify I^spotify^I_W | Enable
 	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -78,7 +78,7 @@ EOF
 		, 'icon'     => 'upnp'
 		, 'id'       => 'upmpdcli'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => '<wh>UPnP I^upnp^I</wh> is currently active.'
+		, 'disabled' => 'W_UPnP I^upnp^I_W is currently active.'
 		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
@@ -104,7 +104,7 @@ EOF
 		, 'icon'     => 'snapcast'
 		, 'id'       => 'snapserver'
 		, 'setting'  => false
-		, 'disabled' => '<wh>SnapClient I^snapcast^I</wh> is currently connected.'
+		, 'disabled' => 'W_SnapClient I^snapcast^I_W is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default. (For metadata update)
@@ -127,7 +127,7 @@ $body = [
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
-Settings: A^I^features^I Features^AI^camilladsp sub^I
+Settings: A*I^features^I Features*AI^camilladsp sub^I
 EOF
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -137,10 +137,10 @@ EOF
 		, 'icon'     => 'equalizer'
 		, 'id'       => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DSP I^camilladsp^I</wh> is currently enabled.'
+		, 'disabled' => 'W_DSP I^camilladsp^I_W is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
-Control: A^I^features^I Features^AI^equalizer sub^I
+Control: A*I^features^I Features*AI^equalizer sub^I
 Presets:
  · <c>Flat</c>: All bands at 0dB
  · New: Adjust | I^plus-circle btn^I Add | I^save btn^I Save |
@@ -159,7 +159,7 @@ $body = [
 		, 'icon'     => 'accesspoint'
 		, 'id'       => 'hostapd'
 		, 'status'   => 'hostapd'
-		, 'disabled' => '<wh>Wi-Fi I^wifi^I</wh> is currently connected.'
+		, 'disabled' => 'W_Wi-Fi I^wifi^I_W is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -187,7 +187,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
- · Screen off: A^I^power^I Power^AI^screenoff sub^I
+ · Screen off: A*I^power^I Power*AI^screenoff sub^I
 	· Also by timer in I^gear btn^I
 	· Backlight still on - no energy saved
  · HDMI display must be connected before boot.
@@ -200,7 +200,7 @@ EOF
 		, 'icon'     => 'networks'
 		, 'id'       => 'smb'
 		, 'status'   => 'smb'
-		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
+		, 'disabled' => 'W_Server rAudio I^rserver^I_W is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
@@ -230,7 +230,7 @@ EOF
 		, 'id'      => 'multiraudio'
 		, 'help'    => <<< EOF
 Switch between multiple rAudio devices.
-Switch: A^I^playlist^I Playlist^AI^raudiobox sub^I
+Switch: A*I^playlist^I Playlist*AI^raudiobox sub^I
 
 (SSH password must be default.)
 EOF
@@ -243,7 +243,7 @@ EOF
 		, 'setting'  => 'custom'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
-Lock: A^I^player^I Player^AI^lock sub^I
+Lock: A*I^player^I Player*AI^lock sub^I
 EOF
 	]
 	, [
@@ -271,20 +271,20 @@ EOF
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data I^networks^I |
- • <wh>rAudio Shared Data server:</wh>
-	· Must be set to <wh>static IP address</wh> which should be set on router.
-	· In A^I^library^I Library^A
+ • W_rAudio Shared Data server:_W
+	· Must be set to W_static IP address_W which should be set on router.
+	· In A*I^library^I Library*A
 		· I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden.
 		· I^usb btn^I USB items will be displayed in I^networks btn^I NAS instead.
 	· On reboot / power off:
 		· Shared Data on clients will be temporarily disabled
 		· Re-enabled by itself once the server is back online.
 	
- • <wh>rAudio Shared Data clients:</wh>
-	· A^I^system^I System^A <wh>Shared Data I^networks^I</wh> | • rAudio |
+ • W_rAudio Shared Data clients:_W
+	· A*I^system^I System*A W_Shared Data I^networks^I_W | • rAudio |
 	· Automatically setup: discover, connect shared files and data
 	
- • <wh>Windows NFS clients:</wh>
+ • W_Windows NFS clients:_W
 	· Windows Features > Services for NFS > Client for NFS - Enable
 	· $fileexplorer
 	

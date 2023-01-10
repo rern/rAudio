@@ -12,7 +12,7 @@ $html = <<< EOF
 	<div class="helpblock hide">I^search btn^I Scan to connect
 I^bluetooth btn^I I^btsender btn^I Context menu
 
-<wh>rAudio as sender:</wh> (or pairing non-audio devices)
+W_rAudio as sender:_W (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
 	· On rAudio: I^search btn^I Scan to connect | Select to pair
@@ -20,10 +20,10 @@ I^bluetooth btn^I I^btsender btn^I Context menu
 	· On receiver: Power on / Power off > Connect / Disconnect
 	· Receiver buttons can be used to control playback
 
-<wh>rAudio as receiver:</wh>
+W_rAudio as receiver:_W
  • Pair:
-	· On rAudio: A^I^system^I System^A Bluetooth I^bluetooth^I | • Discoverable by senders |
-	· On sender: Search > Select <wh>rAudio</wh> to pair
+	· On rAudio: A*I^system^I System*A Bluetooth I^bluetooth^I | • Discoverable by senders |
+	· On sender: Search > Select W_rAudio_W to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
 	· On sender: Select rAudio > Connect / Disconnect

@@ -158,8 +158,8 @@ function htmlSection( $head, $body, $id = '' ) {
 }
 function echoSetIcon( $html ) { // only within: htmlHead(), htmlSetting()
 	echo str_replace(
-		  [ '|',        'I^',               '^I',     'A^',                   '^A'   ]
-		, [ '<g>|</g>', '<i class="fa fa-', '"></i>', '<a class="menu-sub">', '</a>' ]
+		  [ '|',        'A*',                   '*A',   'I^',               '^I',     'W_',   '_W' ]
+		, [ '<g>|</g>', '<a class="menu-sub">', '</a>', '<i class="fa fa-', '"></i>', '<wh>', '</wh>' ]
 		, $html
 	);
 }
