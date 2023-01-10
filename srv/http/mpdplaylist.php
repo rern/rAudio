@@ -1,4 +1,5 @@
 <?php
+$GLOBALS[ 'iconli' ] = 'pl-icon';
 include '/srv/http/function.php';
 
 $cmd     = $_POST[ 'cmd' ] ?? $argv[ 1 ];

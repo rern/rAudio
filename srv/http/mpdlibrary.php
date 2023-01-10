@@ -36,6 +36,7 @@ File
 search
 			track list: mpc search -f %*% any $keyword
 */
+$GLOBALS[ 'iconli' ] = 'lib-icon';
 include '/srv/http/function.php';
 include '/srv/http/bash/cmd-listsort.php';
 

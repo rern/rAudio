@@ -1,11 +1,8 @@
 <?php
 function i( $class, $target = '' ) {
-	if ( ! $target ) {
-		return '<i class="fa fa-'.$class.'"></i>';
-	} else {
-		$lipl = $target === 'playlist' || $target === 'filesavedpl' ? 'pl' : 'li';
-		return '<i class="fa fa-'.$class.' '.$lipl.'-icon" data-target="#menu-'.$target.'"></i>';
-	}
+	$icon = '<i class="fa fa-'.$class;
+	$icon.= $target ? ' '.$GLOBALS[ 'iconli' ].'" data-target="#menu-'.$target.'"></i>' : '"></i>';
+	return $icon;
 }
 function iconImg( $src, $target ) {
 	return '<img class="lazyload iconthumb lib-icon" data-src="'.$src.'^^^" data-target="#menu-'.$target.'">';
