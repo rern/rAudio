@@ -1,4 +1,16 @@
 <?php
+function icon( $class, $target = '' ) {
+	if ( ! $target ) {
+		return '<i class="fa fa-'.$class.'"></i>';
+	} else if ( $target === 'playlist' || $target === 'filesavedpl' ) {
+		return '<i class="fa fa-'.$class.' pl-icon" data-target="#menu-'.$target.'">';
+	} else {
+		return '<i class="fa fa-'.$class.' lib-icon" data-target="#menu-'.$target.'"></i>';
+	}
+}
+function iconImg( $src, $target ) {
+	return '<img class="lazyload iconthumb lib-icon" data-src="'.$src.'^^^" data-target="#menu-'.$target.'">';
+}
 function indexbar( $indexes ) {
 	$indexbar = '<a class="indexed"><wh>#</wh></a>';
 	$chars    = range( 'A', 'Z' );

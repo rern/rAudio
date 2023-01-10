@@ -92,14 +92,13 @@ case 'home':
 	foreach( $modes as $mode ) {
 		$lipath   = str_replace( ' ', '', $mode );
 		$modeLC   = strtolower( $lipath );
-		$htmlmode.= <<< EOF
+		$htmlmode.= '
 <div class="lib-mode">
-	<div id="mode-$modeLC" class="mode" data-mode="$modeLC">
-	<a class="lipath">$modeLC</a>
-	<i class="fa fa-$modeLC"></i><gr></gr><a class="label">$mode</a>
+	<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
+	<a class="lipath">'.$modeLC.'</a>
+	<i class="fa fa-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 	</div>
-</div>
-EOF;
+</div>';
 	}
 	// bookmarks
 	$dir   = '/srv/http/data/bookmarks';
@@ -117,15 +116,14 @@ EOF;
 				$src      = substr( $bkpath, 0, 8 ) === 'webradio' ? '/data/' : '/mnt/MPD/';
 				$src     .= $bkpath.'/coverart.jpg';
 			}
-			$htmlmode.= <<< EOF
+			$htmlmode.= '
 <div class="lib-mode bookmark">
 	<div class="mode mode-bookmark $bkradio" data-mode="bookmark">
-	<a class="lipath">$bkpath</a>
-	<a class="bkname hide">$name</a>
-	<img class="bkcoverart" src="$src^^^">
+	<a class="lipath">'.$bkpath.'</a>
+	<a class="bkname hide">'.$name.'</a>
+	<img class="bkcoverart" src="'.$src.'^^^">
 	</div>
-</div>
-EOF;
+</div>';
 		}
 	}
 	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
@@ -284,25 +282,23 @@ function htmlDirectory( $lists ) {
 		if ( is_dir( '/mnt/MPD/'.$path ) ) {
 			$mode     = strtolower( explode( '/', $path )[ 0 ] );
 			$thumbsrc = rawurlencode( '/mnt/MPD/'.$path.'/thumb.jpg' );
-			$htmlicon = '<img class="lazyload iconthumb lib-icon" data-src="'.$thumbsrc.'^^^" data-target="#menu-folder">';
+			$htmlicon = iconImg( $thumbsrc, 'folder' );
 		} else {
 			$mode     = $gmode;
-			$htmlicon = '<i class="lib-icon fa fa-music" data-target="#menu-file"></i>';
+			$htmlicon = icon( 'music ', 'file' );
 		}
-		$html.= <<< EOF
-<li data-mode="$mode" data-index="$index">$htmlicon
-<a class="lipath">$path</a>
-<span class="single">$each->dir</span>
-</li>
-EOF;
+		$html.= '
+<li data-mode="'.$mode.'" data-index="'.$index.'">'.$htmlicon.'
+<a class="lipath">'.$path.'</a>
+<span class="single">'.$each->dir.'</span>
+</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$html    .= <<< EOF
+	$html    .= '
 	<p></p>
 </ul>
-<div id="lib-index" class="index index0">$indexbar[0]</div>
-<div id="lib-index1" class="index index1">$indexbar[1]</div>
-EOF;
+<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
+<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
 function htmlFind( $lists, $f ) { // non-file 'find' command
@@ -353,20 +349,18 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 			$path     = $val1;
 			$datamode = 'album';
 		} // cue //////////////////////////////////////////////////////////////////
-		$html     .= <<< EOF
-<li data-mode="$datamode" data-index="$index">
-	<a class="liname">$val0</a>
-	<i class="fa fa-album lib-icon" data-target="#menu-album"></i><span class="single">$name</span>
-</li>
-EOF;
+		$html     .= '
+<li data-mode="'.$datamode.'" data-index="'.$index.'">
+	<a class="liname">'.$val0.'</a>
+	'.icon( 'album', 'album' ).'<span class="single">'.$name.'</span>
+</li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-	$html    .= <<< EOF
+	$html    .= '
 	<p></p>
 </ul>
-<div id="lib-index" class="index index0">$indexbar[0]</div>
-<div id="lib-index1" class="index index1">$indexbar[1]</div>
-EOF;
+<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
+<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
@@ -382,12 +376,11 @@ function htmlList( $lists ) { // non-file 'list' command
 			$index     = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
 			$name      = $data[ 1 ];
-			$html     .= <<< EOF
-<li data-mode="$mode" data-index="$index">
-	<a class="lipath">$name</a>
-	<i class="fa fa-$gmode lib-icon" data-target="#menu-$mode"></i><span class="single">$name</span>
-</li>
-EOF;
+			$html     .= '
+<li data-mode="'.$mode.'" data-index="'.$index.'">
+	<a class="lipath">'.$name.'</a>
+	'.icon( $gmode, $mode ).'<span class="single">'.$name.'</span>
+</li>';
 		}
 	} else {
 		foreach( $lists as $list ) {
@@ -398,23 +391,21 @@ EOF;
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$space     = $data[ 2 ] ?: '&nbsp;';
-			$html     .= <<< EOF
-<div class="coverart" data-index="$index">
-	<a class="lipath">$path</a>
-	<div><img class="lazyload" data-src="$coverfile^^^"></div>
-	<span class="coverart1">$data[1]</span>
-	<gr class="coverart2">$space</gr>
-</div>
-EOF;
+			$html     .= '
+<div class="coverart" data-index="'.$index.'">
+	<a class="lipath">'.$path.'</a>
+	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
+	<span class="coverart1">'.$data[ 1 ].'</span>
+	<gr class="coverart2">'.$space.'</gr>
+</div>';
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
-	$html    .= <<< EOF
+	$html    .= '
 	<p></p>
 </ul>
-<div id="lib-index" class="index index0">$indexbar[0]</div>
-<div id="lib-index1" class="index index1">$indexbar[1]</div>
-EOF;
+<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
+<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
 }
 function htmlRadio( $subdirs, $files, $dir ) {
@@ -443,12 +434,11 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$html     .= '<li class="dir" data-index="'.$index.'">';
 			}
 			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.jpg" );
-			$html    .= <<< EOF
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc^^^" data-target="#menu-wrdir">
-	<a class="lipath">$path$subdir</a>
-	<span class="single">$subdir</span>
-</li>
-EOF;
+			$html    .= '
+	'.iconImg( $thumbsrc, 'wrdir' ).'
+	<a class="lipath">'.$path.$subdir.'</a>
+	<span class="single">'.$subdir.'</span>
+</li>';
 		}
 	}
 	if ( count( $files ) ) {
@@ -475,12 +465,11 @@ EOF;
 			$thumbsrc    = '/data/'.$gmode.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
 			$liname      = $each->name;
 			$name        = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
-			$html       .= <<< EOF
-<li class="file"$datacharset data-index="$index">
-	<img class="lazyload iconthumb lib-icon" data-src="$thumbsrc^^^" data-target="#menu-webradio">
-	<a class="lipath">$url</a>
-	<a class="liname">$liname</a>
-EOF;
+			$html       .= '
+<li class="file"'.$datacharset.' data-index="'.$index.'">
+	'.iconImg( $thumbsrc, 'webradio' ).'
+	<a class="lipath">'.$url.'</a>
+	<a class="liname">'.$liname.'</a>';
 			if ( $gmode === 'webradio' ) {
 				$html.= '<div class="li1">'.$name.'</div><div class="li2">'.$url.'</div>';
 			} else {
@@ -492,10 +481,9 @@ EOF;
 	$html.= '<p></p></ul>';
 	if ( $mode !== 'search' ) {
 		$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
-		$html.= <<< EOF
-<div id="lib-index" class="index index0">$indexbar[0]</div>
-<div id="lib-index1" class="index index1">$indexbar[1]</div>
-EOF;
+		$html.= '
+<div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
+<div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	}
 	echo $html;
 }
@@ -543,10 +531,10 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		}
 		$album  = $each0->album;
 		$artist = $albumartist ?: '';
-		$icon   = 'albumartist';
+		$iconartist   = 'albumartist';
 		if ( ! $artist ) {
 			$artist = $each0->artist;
-			$icon = 'artist';
+			$iconartist = 'artist';
 		}
 		$hidealbum     = $album && $gmode !== 'album' ? '' : ' hide';
 		$hideartist    = $artist && $gmode !== 'artist' && $gmode !== 'albumartist' ? '' : ' hide';
@@ -557,7 +545,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$mpdpath       = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
-			$plicon = '&emsp;<i class="fa fa-file-playlist"></i><gr>'
+			$plicon = '&emsp;'.icon( 'file-playlist' ).'<gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
 		} else {
 			$plicon = '';
@@ -572,25 +560,26 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
 		$ext           = strtoupper( $ext ).$plicon;
-		$html         .= <<< EOF
-<li data-mode="$gmode" class="licover">
-	<a class="lipath">$mpdpath</a>
-	<div class="licoverimg"><img id="liimg" src="$coverart^^^"></div>
-	<div class="liinfo $gmode">
-	<div class="lialbum$hidealbum">$album</div>
-	<div class="liartist$hideartist"><i class="fa fa-$icon"></i>$artist</div>
-	<div class="licomposer$hidecomposer"><i class="fa fa-composer"></i>$each0->composer</div>
-	<div class="liconductor$hideconductor"><i class="fa fa-conductor"></i>$each0->conductor</div>
-	<span class="ligenre$hidegenre"><i class="fa fa-genre"></i>$each0->genre&emsp;</span>
-	<span class="lidate$hidedate"><i class="fa fa-date"></i>$each0->date</span>
-	$br
-	<div class="liinfopath"><i class="fa fa-folder"></i>$mpdpath</div>
-	<i class="fa fa-music lib-icon" data-target="#menu-folder"></i>$count<gr> • </gr>$totaltime<gr> • </gr>$ext
+		$icon          = icon( 'music', 'folder' );
+		$html         .= '
+<li data-mode="'.$gmode.'" class="licover">
+	<a class="lipath">'.$mpdpath.'</a>
+	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
+	<div class="liinfo '.$gmode.'">
+	<div class="lialbum'.$hidealbum.'">'.$album.'</div>
+	<div class="liartist'.$hideartist.'">'.icon( $iconartist ).$artist.'</div>
+	<div class="licomposer'.$hidecomposer.'">'.icon( 'composer' ).$each0->composer.'</div>
+	<div class="liconductor'.$hideconductor.'">'.icon( 'conductor' ).$each0->conductor.'</div>
+	<span class="ligenre'.$hidegenre.'">'.icon( 'genre' ).$each0->genre.'&emsp;</span>
+	<span class="lidate'.$hidedate.'"><i class="fa fa-date"></i>'.$each0->date.'</span>
+	'.$br.'
+	<div class="liinfopath"><i class="fa fa-folder"></i>'.$mpdpath.'</div>
+	'.$icon.$count.'<gr> • </gr>'.$totaltime.'<gr> • </gr>'.$ext.'
 	</div>
-</li>
-EOF;
+</li>';
 	}
-	$i = 0;
+	$icon = icon( 'music', 'file' );
+	$i    = 0;
 	foreach( $array as $each ) {
 		if ( ! $each->time ) continue;
 		
@@ -609,13 +598,12 @@ EOF;
 		if ( ! $title ) $title = pathinfo( $each->file, PATHINFO_FILENAME );
 		$li0    = ( $i || $searchmode || $hidecover ) ? '' : ' class="track1"';
 		$i++;
-		$html  .= <<< EOF
-<li data-mode="$gmode" $li0>
-	<a class="lipath">$path</a>
-	<i class="fa fa-music lib-icon" data-target="#menu-file"></i><div class="li1">$title<span class="time">$each->time</span></div>
-	<div class="li2">$i • $trackname</div>
-</li>
-EOF;
+		$html  .= '
+<li data-mode="'.$gmode.'" '.$li0.'>
+	<a class="lipath">'.$path.'</a>
+	'.$icon.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>
+	<div class="li2">'.$i.' • '.$trackname.'</div>
+</li>';
 	}
 	$html.= '<p></p></ul>';
 	if ( $searchmode ) {
