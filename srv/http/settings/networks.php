@@ -9,27 +9,27 @@ htmlHead( [ //////////////////////////////////
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetooth" class="status hide"></pre>
-	<div class="helpblock hide">I^search btn^I Scan to connect
-I^bluetooth btn^I I^btsender btn^I Context menu
+	<div class="helpblock hide">{$Fi( 'search btn' )} Scan to connect
+{$Fi( 'bluetooth btn' )} {$Fi( 'btsender btn' )} Context menu
 
-W_rAudio as sender:_W (or pairing non-audio devices)
+<wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: I^search btn^I Scan to connect | Select to pair
+	· On rAudio: {$Fi( 'search btn' )} Scan to connect | Select to pair
  • Connect:
 	· On receiver: Power on / Power off > Connect / Disconnect
 	· Receiver buttons can be used to control playback
 
-W_rAudio as receiver:_W
+<wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: A*I^system^I System*A Bluetooth I^bluetooth^I | • Discoverable by senders |
-	· On sender: Search > Select W_rAudio_W to pair
+	· On rAudio: {$Fmenu( 'system', 'System' )} Bluetooth {$Fi( 'bluetooth' )} | • Discoverable by senders |
+	· On sender: Search > Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
 	· On sender: Select rAudio > Connect / Disconnect
 </div>
 EOF;
-echoSetIcon( $html );
+echo str_replace( '|', '<g>|</g>', $html );
 ?>
 </div>
 <div id="divwl" class="section">
@@ -41,13 +41,13 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( 'I^plus-circle btn^I Manual connect
-I^search btn^I Scan to connect
-I^wifi btn^I Context menu
+	<div class="helpblock hide"><?=i( 'plus-circle btn' )?> Manual connect
+<?=i( 'search btn' )?> Scan to connect
+<?=i( 'wifi btn' )?> Context menu
 
 Note:
  · Avoid double quotes <code>"</code> in Wi-Fi name and password.
- · Access points with 1 bar icon I^wifi1^I might be unstable.' ) )?></div>
+ · Access points with 1 bar icon <?=i( 'wifi1' )?> might be unstable.</div>
 </div>
 <div id="divlan" class="section">
 <?php
@@ -58,7 +58,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( 'I^lan btn^I Context menu' ) )?></div>
+	<div class="helpblock hide"><?=i( 'lan btn' )?> Context menu</div>
 </div>
 </div>
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->

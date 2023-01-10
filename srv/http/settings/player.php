@@ -15,7 +15,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( 'I^stop btn^I I^play btn^I I^pause btn^I Playback control' ) )?>
+<?=( i( 'stop btn' ).' '.i( 'play btn' ).' '.i( 'pause btn' ) )?> Playback control
 <br>
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
@@ -38,7 +38,7 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
-I^volume^I Volume setting and control:
+{$Fi( 'volume' )} Volume setting and control:
  · Player: Should be set at 0dB
  · Playback: Should be set at 100%
  · Use device volume to control level
@@ -58,7 +58,7 @@ EOF
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< EOF
-I^volume btn^I Control current mixer device.
+{$Fi( 'volume btn' )} Control current mixer device.
 
 Available hardware mixers of current device.
 EOF
@@ -171,10 +171,10 @@ EOF
 		, 'sublabel' => 'decoder'
 		, 'id'       => 'ffmpeg'
 		, 'setting'  => false
-		, 'disabled' => 'W_DAB Radio I^dabradio^I_W is currently enabled.'
+		, 'disabled' => nameIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes: I^chevron-down bl filetype^I
+Decoder for audio filetypes: {$Fi( 'chevron-down bl filetype' )}
 <pre id="prefiletype" class="hide"></pre>
 EOF
 	]
@@ -192,7 +192,7 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 
-I^gear btn^I
+{$Fi( 'gear btn' )}
  • Presets:
 	(default: Quality <code>Very high</code>  Threads <code>Single</code>)
 	

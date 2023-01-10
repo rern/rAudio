@@ -39,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="helpblock hide"><?=( echoSetIcon( 'I^power btn^I Power' ) )?></div>
+	<div class="helpblock hide"><?=i( 'power btn' )?> Power</div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div id="divstatus" class="section">
@@ -59,7 +59,7 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( 'I^refresh btn^I Refresh every 10 seconds' ) )?>
+<?=i( 'refresh btn' )?> Refresh every 10 seconds
 <br>
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
@@ -81,15 +81,13 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( 
-'I^usbdrive btn^I I^networks btn^I Context menu
-I^plus-circle btn^I Add network storage
+	<div class="helpblock hide">
+<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu
+'.i( 'plus-circle btn' ).' Add network storage')?>
+<wh>USB drives:</wh> Will be found and mounted automatically.
 
-W_USB drives:_W Will be found and mounted automatically.
-
-W_Network shares:_W If I^plus-circle btn^I Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
-W_• CIFS:_W
-' ) )?>
+<wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+<wh>• CIFS:</wh>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
@@ -135,7 +133,7 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
 		, 'disabled' => 'js'
-		, 'help'     => 'I^gear btn^I ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => i( 'gear btn' ).' ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -145,7 +143,7 @@ $body = [
 		, 'status'   => 'iw'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-I^gear btn^I
+{$Fi( 'gear btn' )}
 Country of Wi-Fi regulatory domain:
 	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
@@ -174,11 +172,11 @@ $body = [
 </div>
 EOF
 		, 'help'     => <<< EOF
-I^gear btn^I Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+		{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 HAT with EEPROM could be automatically detected.
-(See A*I^player^I Player*A Output | Device | if it's already set.)
+(See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.)
 EOF
 	]
 	, [
@@ -189,7 +187,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
-I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+ {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
@@ -213,7 +211,7 @@ EOF
 		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: A*I^raudio^I System*AI^relays sub^I
+On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -275,7 +273,7 @@ EOF
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
-		, 'help'     => 'I^gear btn^I Servers for time sync and package mirror'
+		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -318,7 +316,7 @@ EOF
 		, 'icon'     => 'networks'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
-		, 'disabled' => 'W_Server rAudio I^rserver^I_W is currently active.'
+		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
 	· Library database
@@ -327,13 +325,13 @@ Connect shared data as client for:
 	
 Note:
  · SSH password must be default.
- · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library home
+ · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
- • W_rAudio as server:_W (Alternative 1)
-	Server: A*I^features^I Features*A W_Server rAudio I^rserver^I_W |
-	Clients: | W_Shared Data I^networks^I_W | • rAudio |
+ • <wh>rAudio as server:</wh> (Alternative 1)
+	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )} |
+	Clients: | {$FnameIcon( 'Shared Data', 'networks' )} | • rAudio |
 	
- • W_Other servers:_W (Alternative 2)
+ • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
 		· Linux:
 			NFS: <c>777</c>
@@ -342,7 +340,7 @@ Note:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		· | W_Shared Data I^networks^I_W | Add the created share
+		· | {$FnameIcon( 'Shared Data', 'networks' )} | Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]
