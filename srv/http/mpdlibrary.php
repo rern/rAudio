@@ -285,7 +285,7 @@ function htmlDirectory( $lists ) {
 			$htmlicon = iconImg( $thumbsrc, 'folder' );
 		} else {
 			$mode     = $gmode;
-			$htmlicon = icon( 'music ', 'file' );
+			$htmlicon = i( 'music ', 'file' );
 		}
 		$html.= '
 <li data-mode="'.$mode.'" data-index="'.$index.'">'.$htmlicon.'
@@ -352,7 +352,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$html     .= '
 <li data-mode="'.$datamode.'" data-index="'.$index.'">
 	<a class="liname">'.$val0.'</a>
-	'.icon( 'album', 'album' ).'<span class="single">'.$name.'</span>
+	'.i( 'album', 'album' ).'<span class="single">'.$name.'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -379,7 +379,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$html     .= '
 <li data-mode="'.$mode.'" data-index="'.$index.'">
 	<a class="lipath">'.$name.'</a>
-	'.icon( $gmode, $mode ).'<span class="single">'.$name.'</span>
+	'.i( $gmode, $mode ).'<span class="single">'.$name.'</span>
 </li>';
 		}
 	} else {
@@ -545,7 +545,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$mpdpath       = $dirs ? dirname( $dirs[ 0 ] ) : dirname( $file0 );
 		$plfile        = exec( 'mpc ls "'.$mpdpath.'" 2> /dev/null | grep -E ".m3u$|.m3u8$|.pls$"' );
 		if ( $cue || $plfile ) {
-			$plicon = '&emsp;'.icon( 'file-playlist' ).'<gr>'
+			$plicon = '&emsp;'.i( 'file-playlist' ).'<gr>'
 					 .( $cue ? 'cue' : pathinfo( $plfile, PATHINFO_EXTENSION ) ).'</gr>';
 		} else {
 			$plicon = '';
@@ -560,17 +560,17 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );
 		$ext           = strtoupper( $ext ).$plicon;
-		$icon          = icon( 'music', 'folder' );
+		$icon          = i( 'music', 'folder' );
 		$html         .= '
 <li data-mode="'.$gmode.'" class="licover">
 	<a class="lipath">'.$mpdpath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
 	<div class="liinfo '.$gmode.'">
 	<div class="lialbum'.$hidealbum.'">'.$album.'</div>
-	<div class="liartist'.$hideartist.'">'.icon( $iconartist ).$artist.'</div>
-	<div class="licomposer'.$hidecomposer.'">'.icon( 'composer' ).$each0->composer.'</div>
-	<div class="liconductor'.$hideconductor.'">'.icon( 'conductor' ).$each0->conductor.'</div>
-	<span class="ligenre'.$hidegenre.'">'.icon( 'genre' ).$each0->genre.'&emsp;</span>
+	<div class="liartist'.$hideartist.'">'.i( $iconartist ).$artist.'</div>
+	<div class="licomposer'.$hidecomposer.'">'.i( 'composer' ).$each0->composer.'</div>
+	<div class="liconductor'.$hideconductor.'">'.i( 'conductor' ).$each0->conductor.'</div>
+	<span class="ligenre'.$hidegenre.'">'.i( 'genre' ).$each0->genre.'&emsp;</span>
 	<span class="lidate'.$hidedate.'"><i class="fa fa-date"></i>'.$each0->date.'</span>
 	'.$br.'
 	<div class="liinfopath"><i class="fa fa-folder"></i>'.$mpdpath.'</div>
@@ -578,7 +578,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	</div>
 </li>';
 	}
-	$icon = icon( 'music', 'file' );
+	$icon = i( 'music', 'file' );
 	$i    = 0;
 	foreach( $array as $each ) {
 		if ( ! $each->time ) continue;

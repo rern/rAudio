@@ -1,11 +1,10 @@
 <?php
-function icon( $class, $target = '' ) {
+function i( $class, $target = '' ) {
 	if ( ! $target ) {
 		return '<i class="fa fa-'.$class.'"></i>';
-	} else if ( $target === 'playlist' || $target === 'filesavedpl' ) {
-		return '<i class="fa fa-'.$class.' pl-icon" data-target="#menu-'.$target.'">';
 	} else {
-		return '<i class="fa fa-'.$class.' lib-icon" data-target="#menu-'.$target.'"></i>';
+		$lipl = $target === 'playlist' || $target === 'filesavedpl' ? 'pl' : 'li';
+		return '<i class="fa fa-'.$class.' '.$lipl.'-icon" data-target="#menu-'.$target.'"></i>';
 	}
 }
 function iconImg( $src, $target ) {

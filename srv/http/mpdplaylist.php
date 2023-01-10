@@ -121,7 +121,7 @@ function htmlSavedPlaylist() {
 		$indexes[] = $index;
 		$html     .= '
 <li class="pl-folder" data-index="'.$index.'">
-	'.icon( 'playlists', 'playlist' ).'
+	'.i( 'playlists', 'playlist' ).'
 	<a class="liname">'.$each->name.'</a></i>
 	<a class="lipath">'.$each->name.'</a></i>
 	<span class="plname">'.$each->name.'</span>
@@ -131,7 +131,7 @@ function htmlSavedPlaylist() {
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-'.icon( 'file-playlist' );
+'.i( 'file-playlist' );
 	echo json_encode( [
 		  'html'      => $html
 		, 'index'     => $indexbar
@@ -206,7 +206,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			if ( ! $artist && ! $album ) $li2.= $file;
 			$html  .= '
 <li class="upnp">
-	'.icon( 'upnp fa-lg', 'filesavedpl' ).'
+	'.i( 'upnp fa-lg', 'filesavedpl' ).'
 	<div class="li1"><span class="name">'.$list->Title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
 	<div class="li2">'.$li2.'</div>
@@ -229,7 +229,7 @@ function htmlTrack( $lists, $plname = '' ) {
 				$icon     = '<img class="lazyload iconthumb pl-icon webradio" data-icon="webradio" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
-				$icon     = icon( 'save savewr' ).icon( 'webradio', 'filesavedpl' );
+				$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
 			}
 			$classnotsaved = $notsaved ? ' notsaved' : '';
 			$namenotsaved  = $notsaved ? '' : $stationname.' • ';
@@ -248,16 +248,16 @@ function htmlTrack( $lists, $plname = '' ) {
 	$counthtml = '';
 	if ( $plname ) {
 		$counthtml.= '
-<a class="lipath">'.$plname.'</a><span class="pl-title name">'.icon( 'file-playlist savedlist wh' ).$plname.'&ensp;<gr> · </gr></span>';
+<a class="lipath">'.$plname.'</a><span class="pl-title name">'.i( 'file-playlist savedlist wh' ).$plname.'&ensp;<gr> · </gr></span>';
 	}
 	if ( $countsong ) {
 		$counthtml.= '
 <wh id="pl-trackcount">'.number_format( $countsong ).'</wh>
-'.icon( 'music' ).'
+'.i( 'music' ).'
 <gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
 	}
-	if ( $countradio ) $counthtml.= icon( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
-	if ( $countupnp )  $counthtml.= '&emsp;'.icon( 'upnp' );
+	if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
+	if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 	$elapsed = exec( '/srv/http/bash/cmd.sh getelapsed' );
 	echo json_encode( [
 		  'html'      => $html

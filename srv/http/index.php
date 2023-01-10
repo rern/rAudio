@@ -2,9 +2,9 @@
 // <!DOCTYPE html> ---------------------------------------------
 include 'common.php';
 
-function i( $id = '', $icon ) {
+function i( $id = '', $class ) {
 	$htmlid = $id ? ' id="'.$id.'"' : '';
-	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
+	return '<i'.$htmlid.' class="fa fa-'.$class.'"></i>';
 }
 // context menus
 function menucommon( $add, $replace ) {
