@@ -118,7 +118,7 @@ case 'home':
 			}
 			$htmlmode.= '
 <div class="lib-mode bookmark">
-	<div class="mode mode-bookmark $bkradio" data-mode="bookmark">
+	<div class="mode mode-bookmark '.$bkradio.'" data-mode="bookmark">
 	<a class="lipath">'.$bkpath.'</a>
 	<a class="bkname hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
@@ -129,9 +129,9 @@ case 'home':
 	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
 	$order  = file_exists( '/srv/http/data/system/order' ) ? json_decode( file_get_contents( '/srv/http/data/system/order' ) ) : false;
 	echo json_encode( [
-		  'html' => $htmlmode
+		  'html'   => $htmlmode
 		, 'counts' => $counts
-		, 'order' => $order
+		, 'order'  => $order
 	] );
 	break;
 case 'list':
