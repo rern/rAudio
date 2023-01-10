@@ -1,5 +1,4 @@
 <?php
-$GLOBALS[ 'iconli' ] = 'pl-icon';
 include '/srv/http/function.php';
 
 $cmd     = $_POST[ 'cmd' ] ?? $argv[ 1 ];
@@ -188,7 +187,7 @@ function htmlTrack( $lists, $plname = '' ) {
 				$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
 				$icon      = 'audiocd';
 			}
-			$icon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
+			$icon = '<img class="lazyload iconthumb li-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
 			$html    .= '
 <li class="'.$class.'" '.$datatrack.'>
 	<a class="lipath">'.$file.'</a>
@@ -227,7 +226,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
 				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
-				$icon     = '<img class="lazyload iconthumb pl-icon webradio" data-icon="webradio" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
+				$icon     = '<img class="lazyload iconthumb li-icon webradio" data-icon="webradio" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
 			} else {
 				$notsaved = 1;
 				$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );

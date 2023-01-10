@@ -272,7 +272,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 				$( '#button-lib-back' ).click();
 				return
 			case 'ArrowRight': // show context menu
-				$( '#lib-list li.active .lib-icon' ).click();
+				$( '#lib-list li.active .li-icon' ).click();
 				return
 			// list ///////////////////////////////////////
 			case 'ArrowUp':
@@ -283,7 +283,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 				var $liactive = $( '#lib-list li.active' );
 				if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
 					if ( $( '.menu:not(.hide)' ).length ) { // context menu
-						var menu = $liactive.find( '.lib-icon' ).data( 'target' );
+						var menu = $liactive.find( '.li-icon' ).data( 'target' );
 						$( menu ).find( 'a' ).eq( 1 ).click();
 					}
 				} else {
@@ -300,7 +300,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 					scrollUpDown( e, $( '#pl-savedlist' ), key );
 					break;
 				case 'ArrowRight':
-					$( '#pl-savedlist li.active .pl-icon' ).click();
+					$( '#pl-savedlist li.active .li-icon' ).click();
 					break;
 				case 'Enter':
 					$( '#pl-savedlist li.active' ).click();
@@ -318,7 +318,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 					scrollUpDown( e, $( '#pl-list' ), key );
 					break;
 				case 'ArrowRight':
-					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .pl-icon' ).click() : $( '#pl-list li.active .pl-icon' ).click();
+					$( '#pl-list li.updn' ).length ? $( '#pl-list li.updn .li-icon' ).click() : $( '#pl-list li.active .li-icon' ).click();
 					break;
 				case 'Enter':
 					$( '#pl-list li.updn' ).click();

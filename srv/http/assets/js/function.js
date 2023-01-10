@@ -93,7 +93,7 @@ function clearIntervalAll() {
 function colorSet() {
 	V.color = 0;
 	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
-	$( '#lib-list .lib-icon' ).eq( 0 ).click();
+	$( '#lib-list .li-icon' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', V.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', D.color === '' )
@@ -116,7 +116,7 @@ function colorSet() {
 				// text
 				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
 				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
-				$( '.lib-icon, #lib-list .li2' ).css( 'cssText', 'color: '+ hsg +'60%) !important' );
+				$( '.li-icon, #lib-list .li2' ).css( 'cssText', 'color: '+ hsg +'60%) !important' );
 				$( '#lib-list li' ).eq( 0 ).find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'cssText', 'color: '+ hsg +'75%)' );
 				// line
@@ -130,11 +130,11 @@ function colorSet() {
 }
 function contextmenuLibrary( $li, $target ) {
 	menuHide();
-	var $menu          = $( $li.find( '.lib-icon' ).data( 'target' ) );
+	var $menu          = $( $li.find( '.li-icon' ).data( 'target' ) );
 	V.list             = {};
 	V.list.li          = $li; // for contextmenu
 	V.list.licover     = $li.hasClass( 'licover' );
-	V.list.singletrack = ! V.list.licover && $li.find( '.lib-icon' ).hasClass( 'fa-music' );
+	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'fa-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
@@ -151,7 +151,7 @@ function contextmenuLibrary( $li, $target ) {
 	V.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
 	if ( ( D.tapaddplay || D.tapreplaceplay )
 		&& ! V.color
-		&& ! $target.hasClass( 'lib-icon' )
+		&& ! $target.hasClass( 'li-icon' )
 		&& ! V.list.licover
 		&& S.player === 'mpd'
 	) {
@@ -605,13 +605,13 @@ function imageLoad( list ) {
 					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="fa fa-'+ icon +' lib-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="fa fa-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			$this.replaceWith( '<i class="fa fa-'+ $this.data( 'icon' ) +' pl-icon" data-target="#menu-filesavedpl"></i>' );
+			$this.replaceWith( '<i class="fa fa-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
 }
@@ -1566,7 +1566,7 @@ function setPlaybackBlank() {
 	vu();
 }
 function setPlaylistInfoWidth() {
-	// pl-icon + margin + duration + margin
+	// li-icon + margin + duration + margin
 	var $liactive = $( '#pl-list li.active' );
 	var $duration = $liactive.find( '.duration' );
 	var $title    = $liactive.find( '.name' );

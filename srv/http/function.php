@@ -1,11 +1,11 @@
 <?php
 function i( $class, $target = '' ) {
 	$icon = '<i class="fa fa-'.$class;
-	$icon.= $target ? ' '.$GLOBALS[ 'iconli' ].'" data-target="#menu-'.$target.'"></i>' : '"></i>';
+	$icon.= $target ? ' li-icon" data-target="#menu-'.$target.'"></i>' : '"></i>';
 	return $icon;
 }
 function iconImg( $src, $target ) {
-	return '<img class="lazyload iconthumb lib-icon" data-src="'.$src.'^^^" data-target="#menu-'.$target.'">';
+	return '<img class="lazyload iconthumb li-icon" data-src="'.$src.'^^^" data-target="#menu-'.$target.'">';
 }
 function indexbar( $indexes ) {
 	$indexbar = '<a class="indexed"><wh>#</wh></a>';

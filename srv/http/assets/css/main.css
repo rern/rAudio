@@ -1673,8 +1673,7 @@ i.map.disabled, .map.disabled i {
 #pl-list li.active.updn {
 	background: var( --cma );
 }
-.lib-icon,
-.pl-icon,
+.li-icon,
 #lib-list li span i {
 	margin-right: 10px;
 }
@@ -1734,8 +1733,7 @@ i.map.disabled, .map.disabled i {
 #pl-list li.active .pl-remove {
 	color: var( --cga ) !important;
 }
-.lib-icon,
-.pl-icon,
+.li-icon,
 #pl-savedlist span::before,
 #pl-savedlist i,
 #lib-list i {
@@ -1746,8 +1744,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.lib-icon,
-.pl-icon {
+.li-icon {
 	float: left;
 	display: block;
 	min-height: 20px;
@@ -1871,8 +1868,7 @@ li.active .li1 bl {
 #pl-list .unsaved {
 	color: var( --cw );
 }
-li.active .lib-icon,
-li.active .pl-icon,
+li.active .li-icon,
 li.active .li1 i,
 li.active .li2,
 li.active .li2 a,
@@ -1881,7 +1877,7 @@ li.active .time,
 .licover.active i.fa-file-playlist {
 	color: var( --cga ) !important;
 }
-li.active .pl-icon.wh {
+li.active .li-icon.wh {
 	color: var( --cw ) !important;
 }
 li.active gr {
@@ -1913,7 +1909,7 @@ li.active .li2 bl {
 .pl-sortable-ghost {
 	background: var( --cg60 );
 }
-.pl-sortable-ghost .pl-icon {
+.pl-sortable-ghost .li-icon {
 	visibility: hidden;
 }
 .pl-sortable-ghost a,

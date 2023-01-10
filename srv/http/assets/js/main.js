@@ -1606,7 +1606,7 @@ Exclude this thumbnail?`
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1899,11 +1899,11 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'pl-remove' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ! [ 'mpd', 'upnp' ].includes( S.player ) ) {
-		$this.find( '.pl-icon' ).click();
+		$this.find( '.li-icon' ).click();
 		return
 	}
 	
@@ -1935,7 +1935,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	V.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
 	menuHide();
-} ).on( 'click', '.pl-icon', function() {
+} ).on( 'click', '.li-icon', function() {
 	var $this     = $( this );
 	var $thisli   = $this.parent();
 	V.list        = {};
@@ -2003,12 +2003,12 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	if ( menushow && active ) return
 	
 	var pladd    = 'file' in V.pladd;
-	var plicon   = $target.hasClass( 'pl-icon' );
-	if ( V.savedplaylist || plicon ) {
+	var liicon   = $target.hasClass( 'li-icon' );
+	if ( V.savedplaylist || liicon ) {
 		if ( pladd ) {
 			playlistInsertSelect( $this );
 		} else {
-			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
+			var datatarget = $target.data( 'target' ) || $this.find( '.li-icon' ).data ( 'target' );
 			var $menu      = $( datatarget );
 			V.list         = {};
 			V.list.li      = $this; // for contextmenu
@@ -2026,7 +2026,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
 					&& V.savedplaylist 
-					&& ! plicon
+					&& ! liicon
 					&& S.player === 'mpd'
 				) {
 					$menu.find( 'a:eq( 0 ) .submenu' ).click();

@@ -68,7 +68,7 @@ function webradioIcon( srcnoext ) {
 					.replace( /\|/g, '/' );
 	return $( '#lib-list li' ).filter( ( i, el ) => {
 		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.lib-icon' );
+	} ).find( '.li-icon' );
 }
 // pushstreamChannel() in common.js
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
@@ -157,7 +157,7 @@ function psDisplay( data ) {
 	} else if ( V.library ) {
 		if ( ! V.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.lib-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
+		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
 			if ( D.hidecover ) {
 				$( '.licover' ).remove();
 			} else {

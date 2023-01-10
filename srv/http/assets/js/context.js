@@ -355,7 +355,7 @@ function webRadioCoverart() {
 		var name      = S.station;
 	} else {
 		var coverart  = V.coverdefault;
-		var src       = V.list.li.find( '.lib-icon' ).attr( 'src' );
+		var src       = V.list.li.find( '.li-icon' ).attr( 'src' );
 		var type      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
