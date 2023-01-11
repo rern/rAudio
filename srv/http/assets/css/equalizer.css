@@ -95,12 +95,12 @@
 	font-size: 24px;
 	vertical-align: -7px !important;
 }
-#eq i,
-#eqname {
+#eq i {
 	position: relative;
 }
 #eqname {
 	padding-right: 21px;
+	vertical-align: -5px;
 	text-align: center;
 }
 #eqsave {
