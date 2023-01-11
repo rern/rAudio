@@ -60,7 +60,7 @@ htmlHead( [ //////////////////////////////////
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
 <?=i( 'refresh btn' )?> Refresh every 10 seconds
-<br>
+
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
@@ -133,7 +133,7 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
 		, 'disabled' => 'js'
-		, 'help'     => i( 'gear btn' ).' ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -147,7 +147,7 @@ $body = [
 Country of Wi-Fi regulatory domain:
 	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
-| ⯀ Auto start Access Point | On failed connection or no router
+| ■ Auto start Access Point | On failed connection or no router
 EOF
 	]
 ];
@@ -172,11 +172,11 @@ $body = [
 </div>
 EOF
 		, 'help'     => <<< EOF
-		{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-HAT with EEPROM could be automatically detected.
-(See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.)
+ · HAT with EEPROM could be automatically detected.
+ · See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.
 EOF
 	]
 	, [
@@ -187,7 +187,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
- {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+ · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
@@ -329,7 +329,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )} |
-	Clients: | {$FnameIcon( 'Shared Data', 'networks' )} | • rAudio |
+	Clients: | {$FnameIcon( 'Shared Data', 'networks' )} | ● rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
