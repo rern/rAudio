@@ -1125,6 +1125,7 @@ i.map.disabled, .map.disabled i {
 #lyricstitle {
 	display: inline-block;
 	margin-left: 5px;
+	width: calc( 100vw - 84px );
 	font-size: 26px;
 	font-weight: 300;
 	line-height: 40px;
