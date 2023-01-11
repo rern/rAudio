@@ -70,7 +70,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
 	<div id="qrwebui" class="qr"></div>
-	<div class="helpblock hide">Use IP address or scan QR code to connect with web user interface.</div>
+	<div class="helpblock hide">Use IP address / URL or scan QR code to connect with web user interface.</div>
 </div>
 <div id="divaccesspoint" class="section hide">
 <?php

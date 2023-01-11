@@ -16,7 +16,7 @@ htmlHead( [ //////////////////////////////////
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
 <?=( i( 'stop btn' ).' '.i( 'play btn' ).' '.i( 'pause btn' ) )?> Playback control
-<br>
+
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
@@ -191,7 +191,6 @@ EOF
 		, 'id'       => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-
 {$Fi( 'gear btn' )}
  • Presets:
 	(default: Quality <code>Very high</code>  Threads <code>Single</code>)
