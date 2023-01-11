@@ -50,8 +50,8 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-var icoveredit  = '<div class="coveredit cover-change">'+ ico.coverart +'</div>';
-var icoversave  = '<div class="coveredit cover-save">'+ ico.save +'</div>';
+var icoveredit  = '<div class="coveredit cover-change">'+ icon( 'coverart' ) +'</div>';
+var icoversave  = '<div class="coveredit cover-save">'+ icon( 'save' ) +'</div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
 $( '.submenu.fa-color' ).html( '<canvas></canvas>' );
@@ -396,9 +396,9 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
-		  plclear        : 'Confirm on '+ ico.replace +'Replace <gr>|</gr> '+ ico.playreplace
-		, plsimilar      : 'Confirm on '+ ico.lastfm +'Add similar'
-		, audiocdplclear : 'Clear on '+ ico.audiocd +'Audio CD load'
+		  plclear        : 'Confirm on '+ icon( 'replace' ) +'Replace <gr>|</gr> '+ icon( 'play-replace' )
+		, plsimilar      : 'Confirm on '+ icon( 'lastfm' ) +'Add similar'
+		, audiocdplclear : 'Clear on '+ icon( 'audiocd' ) +'Audio CD load'
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplaylist );
@@ -545,16 +545,16 @@ $( '#title, #guide-lyrics' ).click( function() {
 	var paren        = title.replace( /^.*\(/, '(' );
 	var content      = `\
 <table>
-<tr><td>${ ico.artistwh }</td><td><input class="required" type="text"></td></tr>
-<tr><td>${ ico.musicwh }</td><td><input class="required" type="text"></td></tr>
-<tr class="album"><td>${ ico.albumwh }</td><td><input type="text"></td></tr>
+<tr><td>${ icon( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
+<tr><td>${ icon( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
+<tr class="album"><td>${ icon( 'album wh' ) }</td><td><input type="text"></td></tr>
 <tr id="paren"><td></td><td><label><input type="checkbox"><gr>Title includes:</gr>&emsp;${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
 <tr><td colspan="2" class="btnbottom">
-	<span class="lyrics">${ ico.lyrics } Lyrics</span>
-	<span class="bio">&emsp;${ ico.bio } Bio</span>
-	<span class="pladd">&emsp;${ ico.fileplaylist } Add</span>
-	<span class="scrobble">&emsp;${ ico.lastfm } Scrobble</span>
+	<span class="lyrics">${ icon( 'lyrics' ) } Lyrics</span>
+	<span class="bio">&emsp;${ icon( 'bio' ) } Bio</span>
+	<span class="pladd">&emsp;${ icon( 'file-playlist' ) } Add</span>
+	<span class="scrobble">&emsp;${ icon( 'lastfm' ) } Scrobble</span>
 	</td></tr>
 </table>`;
 	info( {
@@ -617,7 +617,7 @@ $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
-		, oklabel : ico.minuscircle +'Eject'
+		, oklabel : icon( 'minus-circle' ) +'Eject'
 		, okcolor : red
 		, ok      : () => bash( '/srv/http/bash/audiocd.sh ejecticonclick' )
 	} );
@@ -1063,7 +1063,7 @@ $( '.btn-cmd' ).click( function() {
 						.text( timehms )
 						.addClass( 'gr' );
 					$( '#total, #progress' ).empty();
-					$( '#progress' ).html( ico.stop +'<span></span>'+ timehms );
+					$( '#progress' ).html( icon( 'stop' ) +'<span></span>'+ timehms );
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
@@ -1180,7 +1180,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					 +'<br>  • Create directory icons'
 	}
 	info( {
-		  icon         : ico.coverart
+		  icon         : 'coverart'
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
@@ -1221,7 +1221,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				}
 				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
-				$( '#lib-search-close' ).html( ico.close +'<span>'+ data.count +' <gr>of</gr> </span>' );
+				$( '#lib-search-close' ).html( icon( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
 				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
 				info( {
@@ -1229,7 +1229,7 @@ $( '#lib-search-btn' ).click( function() { // search
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
-				$( '#lib-search-close' ).html( ico.close );
+				$( '#lib-search-close' ).html( icon( 'close' ) );
 			}
 		}, 'json' );
 	}
@@ -1307,7 +1307,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		} else {
 			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.' 
 						 +'<br>To populate Library database:'
-						 +'<br>Settings > Library | '+ ico.refreshlibrarywh
+						 +'<br>Settings > Library | '+ icon( 'refresh-library wh' )
 		}
 		info( {
 			  icon    : 'library'
@@ -1392,15 +1392,15 @@ $( '#lib-mode-list' ).click( function( e ) {
 <br>
 <table>
 <tr>
-	<td><label><input type="radio" name="add" value="add">${ ico.pluso }Add</label></td>
-	<td><label><input type="radio" name="add" value="addplay">${ ico.playplus }Add + Play</label></td>
+	<td><label><input type="radio" name="add" value="add">${ icon( 'plus-o' ) }Add</label></td>
+	<td><label><input type="radio" name="add" value="addplay">${ icon( 'play-plus' ) }Add + Play</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="playnext">${ ico.pluscircle }Play next</label></td>
+	<td><label><input type="radio" name="add" value="playnext">${ icon( 'plus-circle' ) }Play next</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="replace">${ ico.replace }Replace</label></td>
-	<td><label><input type="radio" name="add" value="replaceplay">${ ico.playreplace }Replace + Play</label></td>
+	<td><label><input type="radio" name="add" value="replace">${ icon( 'replace' ) }Replace</label></td>
+	<td><label><input type="radio" name="add" value="replaceplay">${ icon( 'play-replace' ) }Replace + Play</label></td>
 </tr>
 </table>`;
 	info( {
@@ -1463,7 +1463,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
 		, message : icon
-		, oklabel : ico.minuscircle +'Remove'
+		, oklabel : icon( 'minus-circle' ) +'Remove'
 		, okcolor : red
 		, ok      : () => bash( [ 'bookmarkremove', name ] )
 	} );
@@ -1479,7 +1479,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, values       : name
 		, checkblank   : 1
 		, checkchanged : 1
-		, oklabel      : ico.flash +'Rename'
+		, oklabel      : icon( 'flash' ) +'Rename'
 		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
@@ -1487,12 +1487,12 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var name  = $this.find( '.bkname' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon    = ico.coverart;
+		var icon    = 'coverart';
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
 		var icon    = 'bookmark';
-		var message = '<div class="infobookmark">'+ ico.bookmark
+		var message = '<div class="infobookmark">'+ icon( 'bookmark' )
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
 	var path      = $this.find( '.lipath' ).text();
@@ -1501,10 +1501,10 @@ $( '#lib-mode-list' ).click( function( e ) {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
-		, filelabel   : ico.folderopen +'File'
-		, fileoklabel : ico.flash +'Replace'
+		, filelabel   : icon( 'folder-open' ) +'File'
+		, fileoklabel : icon( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! thumbnail ? '' : ico.bookmark +'Default'
+		, buttonlabel : ! thumbnail ? '' : icon( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', imagepath, name ] )
 		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
@@ -1559,12 +1559,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		, title   : 'Album Thumbnail'
 		, message : `\
 <img src="${ src }">
-<wh>${ ico.album } ${ album }</wh>
-${ ico.artistwh } ${ artist }
+<wh>${ icon( 'album' ) } ${ album }</wh>
+${ icon( 'artist wh' ) } ${ artist }
 
 Exclude this thumbnail?`
 		, okcolor : orange
-		, oklabel : ico.minuscircle +'Exclude'
+		, oklabel : icon( 'minus-circle' ) +'Exclude'
 		, ok      : () => {
 			bash( [ 'albumignore', album, artist ] );
 			$this.remove();
@@ -1763,9 +1763,9 @@ $( '#button-pl-save' ).click( function() {
 			  icon    : 'file-playlist'
 			, title   : 'Save Playlist'
 			, message : iconwarning +'Saved playlist cannot contain:<br>'
-					  + audiocdL ? audiocdL + ico.audiocdwh : ''
-					  + upnpL ? upnpL +'&emsp;'+ ico.upnpwh : ''
-					  + notsavedL ? notsavedL +'&emsp;'+ ico.savewh : ''
+					  + audiocdL ? audiocdL + icon( 'audiocd wh' ) : ''
+					  + upnpL ? upnpL +'&emsp;'+ icon( 'upnp wh' ) : ''
+					  + notsavedL ? notsavedL +'&emsp;'+ icon( 'save wh' ) : ''
 		} );
 	} else {
 		playlistNew();
@@ -1824,7 +1824,7 @@ $( '#button-pl-clear' ).click( function() {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
-			, oklabel     : ico.minuscircle +'Clear'
+			, oklabel     : icon( 'minus-circle' ) +'Clear'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1837,7 +1837,7 @@ $( '#button-pl-clear' ).click( function() {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Remove From Playlist'
-			, buttonlabel : [ '<i class="fa fa-playlist"></i>Select', ico.crop +'Crop' ]
+			, buttonlabel : [ '<i class="fa fa-playlist"></i>Select', icon( 'crop' ) +'Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [
 				  () => {
@@ -1850,7 +1850,7 @@ $( '#button-pl-clear' ).click( function() {
 					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
-			, oklabel     : ico.minuscircle +'All'
+			, oklabel     : icon( 'minus-circle' ) +'All'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -2122,7 +2122,7 @@ $( '#lyricsdelete' ).click( function() {
 		  icon    : 'lyrics'
 		, title   : 'Lyrics'
 		, message : 'Delete this lyrics?'
-		, oklabel : ico.minuscircle +'Delete'
+		, oklabel : icon( 'minus-circle' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();

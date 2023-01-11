@@ -103,16 +103,6 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 $css = shell_exec( "sed -E -n '/^.fa-.*con/ {s/^.fa-(.*)::.*/\\1/;p}' /srv/http/assets/css/common.css" );
 $fa = json_encode( explode( "\n", $css ) );
 ?>
-<script>
-	var fa  = JSON.parse( '<?=$fa?>' );
-	var name;
-	var ico = {}
-	fa.forEach( el => {
-		name = el.replace( '-', '' );
-		ico[ name ] = '<i class="fa fa-'+ el +'"></i>';
-		ico[ name +'wh' ] = '<i class="fa fa-'+ el +' wh"></i>';
-	} );
-</script>
 </head>
 <body>
 

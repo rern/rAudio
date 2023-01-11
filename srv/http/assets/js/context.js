@@ -118,7 +118,7 @@ function playlistDelete() {
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><wh>'+ V.list.name +'</wh>'
-		, oklabel : ico.minuscircle +'Delete'
+		, oklabel : icon( 'minus-circle' ) +'Delete'
 		, okcolor : red
 		, ok      : () => bash( [ 'savedpldelete', V.list.name ] )
 	} );
@@ -160,7 +160,7 @@ function playlistRename() {
 		, values       : name
 		, checkchanged : 1
 		, checkblank   : 1
-		, oklabel      : ico.flash +'Rename'
+		, oklabel      : icon( 'flash' ) +'Rename'
 		, ok           : () => playlistSave( infoVal(), name )
 	} );
 }
@@ -186,10 +186,10 @@ function playlistSaveExist( type, name, oldname ) {
 		, title       : rename ? 'Rename Playlist' : 'Save Playlist'
 		, message     : 'Playlist: <wh>'+ name +'</wh>'
 					   +'<br><br>Already exists.'
-		, buttonlabel : ico.undo +'Rename'
+		, buttonlabel : icon( 'undo' ) +'Rename'
 		, buttoncolor : orange
 		, button      : () => rename ? playlistRename() : playlistNew( name )
-		, oklabel     : ico.flash +'Replace'
+		, oklabel     : icon( 'flash' ) +'Replace'
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
 }
@@ -228,9 +228,9 @@ function tagEditor() {
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
 					 +'<div>';
 		if ( V.list.licover ) {
-			message += ico.folder + file;
+			message += icon( 'folder' ) + file;
 		} else {
-			message += '<i class="fa fa-folder gr"></i><gr>'+ file +'</gr><br>'+ ico[ fileicon ] + file.split( '/' ).pop();
+			message += '<i class="fa fa-folder gr"></i><gr>'+ file +'</gr><br>'+ icon( fileicon ) + file.split( '/' ).pop();
 		}
 		message     += '</div>';
 		var footer   = '';
@@ -365,12 +365,12 @@ function webRadioCoverart() {
 	$( '#coverart' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	info( {
-		  icon        : ico.coverart
+		  icon        : 'coverart'
 		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">'+ name +'</p>'
-		, filelabel   : ico.folderopen +'File'
-		, fileoklabel : ico.flash +'Replace'
+		, filelabel   : icon( 'folder-open' ) +'File'
+		, fileoklabel : icon( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
 		, beforeshow  : () => {
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
@@ -383,7 +383,7 @@ function webRadioCoverart() {
 				} );
 			}
 		}
-		, buttonlabel : ico[ type ] +'Default'
+		, buttonlabel : icon( type ) +'Default'
 		, buttoncolor : orange
 		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, type ] )
 		, ok          : () => imageReplace( type, imagefilenoext )
@@ -400,7 +400,7 @@ function webRadioDelete() {
 		, message : '<br><img src="'+ img +'">'
 				   +'<br><wh>'+ name +'</wh>'
 				   +'<br>'+ url
-		, oklabel : ico.minuscircle +'Delete'
+		, oklabel : icon( 'minus-circle' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
@@ -441,7 +441,7 @@ function webRadioEdit() {
 				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
 			}
 		}
-		, oklabel      : ico.save +'Save'
+		, oklabel      : icon( 'save' ) +'Save'
 		, ok           : () => {
 			var dir        = $( '#lib-path .lipath' ).text();
 			var values     = infoVal();
@@ -590,7 +590,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				  icon    : 'folder-forbid'
 				, title   : 'Exclude Directory'
 				, message : 'Exclude from Library:'
-							+'<br>'+ ico.folder +'&ensp;<wh>'+ V.list.path +'</wh>'
+							+'<br>'+ icon( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 				, ok      : () => {
 					bash( [ 'ignoredir', V.list.path ], () => V.list.li.remove() );
 					var dir = V.list.path.split( '/' ).pop();
@@ -635,10 +635,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			return
 		case 'thumb':
 			info( {
-				  icon    : ico.coverart
+				  icon    : 'coverart'
 				, title   : 'Album Thumbnails'
 				, message : 'Update album thumbnails in:'
-							+'<br>'+ ico.folder +' <wh>'+ V.list.path +'</wh>'
+							+'<br>'+ icon( 'folder' ) +' <wh>'+ V.list.path +'</wh>'
 				, ok      : () => thumbUpdate( V.list.path )
 			} );
 			return
@@ -653,7 +653,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, title   : 'Delete Folder'
 				, message : 'Folder:'
 							+'<br><wh>'+ path +'</wh>'
-				, oklabel : ico.minuscircle +'Delete'
+				, oklabel : icon( 'minus-circle' ) +'Delete'
 				, okcolor : red
 				, ok      : () => {
 					bash( [ 'wrdirdelete', path, V.mode ], std => {
@@ -664,7 +664,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 								, message : 'Folder not empty:'
 											+'<br><wh>'+ path +'</wh>'
 											+'<br>Confirm delete?'
-								, oklabel : ico.minuscircle +'Delete'
+								, oklabel : icon( 'minus-circle' ) +'Delete'
 								, okcolor : red
 								, ok      : () => bash( [ 'wrdirdelete', path, V.mode, 'noconfirm' ] )
 							} );

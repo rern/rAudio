@@ -92,7 +92,7 @@ function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
 		bash( [ 'pkgstatus', 'mpd' ], status => {
 			var error =  iconwarning +'MPD is not running '
-						+'<a class="infobtn infobtn-primary restart">'+ ico.refresh +'Start</a>'
+						+'<a class="infobtn infobtn-primary restart">'+ icon( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
 			$( '#data' )
@@ -256,7 +256,7 @@ function psWlan( data ) {
 			  icon    : 'wifi'
 			, title   : 'Wi-Fi'
 			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-			, oklabel : ico.reboot +'Reboot'
+			, oklabel : icon( 'reboot' ) +'Reboot'
 			, okcolor : orange
 			, ok      : () => bash( [ 'reboot' ] )
 		} );
@@ -359,7 +359,7 @@ $( '.close' ).click( function() {
 						+'<pre><wh>'+ list +'</wh></pre>'
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
-			, oklabel : ico.reboot +'Reboot'
+			, oklabel : icon( 'reboot' ) +'Reboot'
 			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );

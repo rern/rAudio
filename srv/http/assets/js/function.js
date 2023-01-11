@@ -223,20 +223,20 @@ function coverartChange() {
 						&& $( '#liimg' ).attr( 'src' ).slice( 0, 7 ) !== '/assets';
 	$( '#coverart, #liimg' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
-	var icon = ico.coverart;
+	var icon  = 'coverart';
 	var title = 'Change Album Cover Art';
 	info( {
 		  icon        : icon
 		, title       : title
 		, message     : '<img class="imgold">'
-					   +'<p class="infoimgname">'+ ico.albumwh +' '+ album
-					   +'<br>'+ ico.artistwh +' '+ artist +'</p>'
+					   +'<p class="infoimgname">'+ icon( 'album wh' ) +' '+ album
+					   +'<br>'+ icon( 'artist wh' ) +' '+ artist +'</p>'
 		, footer      : embedded
 		, beforeshow  : () => $( '.imgold' ).attr( 'src', src ) // fix direct replace src
-		, filelabel   : ico.folderopen +'File'
-		, fileoklabel : ico.flash +'Replace'
+		, filelabel   : icon( 'folder-open' ) +'File'
+		, fileoklabel : icon( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! coverartlocal ? '' : ico.minuscircle +'Remove'
+		, buttonlabel : ! coverartlocal ? '' : icon( 'minus-circle' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
@@ -293,14 +293,14 @@ function coverartSave() {
 		ctx.drawImage( img, 0, 0 );
 		var base64        = filecanvas.toDataURL( 'image/jpeg' );
 		if ( path.slice( -4 ) === '.cue' ) path = dirName( path );
-		var icon          = ico.coverart;
+		var icon          = 'coverart';
 		var title         = 'Save Album Cover Art';
 		info( {
 			  icon    : icon
 			, title   : title
 			, message :  '<img class="infoimgnew" src="'+ base64 +'">'
-						+'<p class="infoimgname">'+ ico.folder +' '+ album
-						+'<br>'+ ico.artist +' '+ artist +'</p>'
+						+'<p class="infoimgname">'+ icon( 'folder' ) +' '+ album
+						+'<br>'+ icon( 'artist' ) +' '+ artist +'</p>'
 			, ok      : () => {
 				imageReplace( 'coverart', path +'/cover' );
 				banner( icon, title, 'Save ...' );
@@ -649,30 +649,30 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }
 var chklibrary = {
-	  album          : ico.albumwh +'<gr>Album</gr>'
-		, nas        : ico.networkswh +'<gr>Network</gr>'
-	, albumartist    : ico.albumartistwh +'<gr>Album Artist</gr>'
-		, sd         : ico.microsdwh +'<gr>SD</gr>'
-	, artist         : ico.artistwh +'<gr>Artist</gr>'
-		, usb        : ico.usbdrivewh +'<gr>USB</gr>'
-	, composer       : ico.composerwh +'<gr>Composer</gr>'
-		, playlists  : ico.playlistswh +'<gr>Playlists</gr>'
-	, conductor      : ico.conductorwh +'<gr>Conductor</gr>'
-		, webradio   : ico.webradiowh +'<gr>Web Radio</gr>'
-	, date           : ico.datewh +'<gr>Date</gr>'
+	  album          : icon( 'album wh' ) +'<gr>Album</gr>'
+		, nas        : icon( 'networks wh' ) +'<gr>Network</gr>'
+	, albumartist    : icon( 'albumartist wh' ) +'<gr>Album Artist</gr>'
+		, sd         : icon( 'microsd wh' ) +'<gr>SD</gr>'
+	, artist         : icon( 'artist wh' ) +'<gr>Artist</gr>'
+		, usb        : icon( 'usbdrive wh' ) +'<gr>USB</gr>'
+	, composer       : icon( 'composer wh' ) +'<gr>Composer</gr>'
+		, playlists  : icon( 'playlists wh' ) +'<gr>Playlists</gr>'
+	, conductor      : icon( 'conductor wh' ) +'<gr>Conductor</gr>'
+		, webradio   : icon( 'webradio wh' ) +'<gr>Web Radio</gr>'
+	, date           : icon( 'date wh' ) +'<gr>Date</gr>'
 		, '-'        : ''
-	, genre          : ico.genrewh +'<gr>Genre</gr>'
+	, genre          : icon( 'genre wh' ) +'<gr>Genre</gr>'
 		, count      : 'Count'
-	, latest         : ico.latestwh +'<gr>Latest</gr>'
+	, latest         : icon( 'latest wh' ) +'<gr>Latest</gr>'
 		, label      : 'Label'
 }
 var chklibrary2 = {
-	  albumbyartist  : ico.albumwh +'Sort Album by artists'
-	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico.playpluswh +'<gr>Add + Play</gr>'
-	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico.playreplacewh +'<gr>Replace + Play</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on '+ ico.playpluswh +'or '+ ico.playreplacewh
+	  albumbyartist  : icon( 'album wh' ) +'Sort Album by artists'
+	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ icon( 'play-plus wh' ) +'<gr>Add + Play</gr>'
+	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ icon( 'play-replace wh' ) +'<gr>Replace + Play</gr>'
+	, playbackswitch : 'Switch to Playback <gr>on '+ icon( 'play-plus wh' ) +'or '+ icon( 'play-replace wh' )
 	, '-'            : ''
-	, backonleft     : ico.arrowleftwh +'Back button on left side'
+	, backonleft     : icon( 'arrow-left wh' ) +'Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }
@@ -734,7 +734,7 @@ function infoUpdate( path ) {
 	info( {
 		  icon       : 'refresh-library'
 		, title      : 'Library Database'
-		, message    : path ? ico.folder +' <wh>'+ path +'</wh>' : ''
+		, message    : path ? icon( 'folder' ) +' <wh>'+ path +'</wh>' : ''
 		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : () => {
 			if ( ! C ) {
@@ -836,7 +836,7 @@ function mpcSeekBar( pageX ) {
 	if ( S.elapsed ) {
 		$( '#progress span' ).html( elapsedhms );
 	} else {
-		$( '#progress' ).html( ico.pause +'<span>'+ elapsedhms +'</span> / '+ second2HMS( S.Time ) );
+		$( '#progress' ).html( icon( 'pause' ) +'<span>'+ elapsedhms +'</span> / '+ second2HMS( S.Time ) );
 	}
 	$( '#time-bar' ).css( 'width', ( pos * 100 ) +'%' );
 	if ( ! V.drag ) mpcSeek( elapsed );
@@ -875,7 +875,7 @@ ${ track }
 		, title       : 'Insert'
 		, content     : content
 		, values      : [ 1 ]
-		, buttonlabel : ico.undo +'Select'
+		, buttonlabel : icon( 'undo' ) +'Select'
 		, button      : playlistInsertTarget
 		, cancel      : () => V.pladd = {}
 		, ok          : () => playlistInsert( +infoVal() + $this.index() )
@@ -929,7 +929,7 @@ function playlistFilter() {
 	} );
 	$( 'html, body' ).scrollTop( 0 );
 	if ( keyword ) {
-		$( '#pl-search-close' ).html( ico.close +'<span>'+ count +' <gr>of</gr> </span>' );
+		$( '#pl-search-close' ).html( icon( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
 	} else {
 		$( '#pl-search-close' ).empty();
 	}
@@ -1049,7 +1049,7 @@ function renderLibrary() { // home
 }
 function renderLibraryCounts() {
 	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
-	var songs = C.song ? C.song.toLocaleString() + ico.music : '';
+	var songs = C.song ? C.song.toLocaleString() + icon( 'music' ) : '';
 	$( '#li-count' ).html( songs );
 	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
@@ -1069,7 +1069,7 @@ function renderLibraryList( data ) {
 	var modetitle = ! root ? data.modetitle : data.modetitle
 												.replace( 'MARTIST', 'M ARTIST' )
 												.replace( 'BRADIO', 'B RADIO' );
-	var htmlmodetitle = ico[ V.mode ] +' <span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
+	var htmlmodetitle = icon( V.mode ) +' <span id="mode-title" '+ ( root ? 'class="spaced"' : '' ) +'>'+ modetitle +'</span>';
 	if ( 'count' in data && V.mode !== 'latest' ) {
 		$( '#lib-path' ).css( 'max-width', 40 );
 		$( '#lib-list' ).css( 'width', '100%' );
@@ -1083,7 +1083,7 @@ function renderLibraryList( data ) {
 	} else if ( data.path ) { // dir breadcrumbs
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
-		var htmlpath = ico[ V.mode ];
+		var htmlpath = icon( V.mode );
 		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
 		htmlpath    += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
 		var lidir   = dir0;
@@ -1161,7 +1161,7 @@ function renderPlayback() {
 	$( '#qrwebui, #qrip' ).empty();
 	setInfo();
 	setCoverart();
-	var istate = ico[ S.state ];
+	var istate = icon( S.state );
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
 		return
@@ -1320,7 +1320,7 @@ function setBlinkDot() {
 		$( '#elapsed' ).html( S.state === 'play' ? blinkdot : '' );
 		blinkDot();
 		if ( D.radioelapsed ) {
-			$( '#progress' ).html( ico[ S.state ] +'<span></span>' );
+			$( '#progress' ).html( icon( S.state ) +'<span></span>' );
 			setProgressElapsed();
 		}
 	}
@@ -1338,7 +1338,7 @@ function setBookmarkEdit() {
 		var path       = $this.find( '.lipath' ).text();
 		var buttonhtml = '<i class="bkedit bk-remove fa fa-minus-circle"></i>';
 		if ( ! $this.find( 'img' ).length ) buttonhtml += '<i class="bkedit bk-rename fa fa-edit-circle"></i>';
-		buttonhtml    += '<div class="bkedit bk-cover">'+ ico.coverart +'</div>';
+		buttonhtml    += '<div class="bkedit bk-cover">'+ icon( 'coverart' ) +'</div>';
 		$this.append( buttonhtml );
 	} );
 	$( '.mode-bookmark' )
@@ -1615,7 +1615,7 @@ function setPlaylistScroll() {
 		if ( S.player === 'upnp' ) $this.find( '.time' ).text( second2HMS( S.Time ) );
 		if ( S.state === 'pause' ) {
 			elapsedtxt = second2HMS( S.elapsed );
-			$elapsed.html( ico.pause + elapsedtxt + slash );
+			$elapsed.html( icon( 'pause' ) + elapsedtxt + slash );
 			setPlaylistInfoWidth();
 		} else if ( S.state === 'play' ) {
 			$stationname.removeClass( 'hide' );
@@ -1625,7 +1625,7 @@ function setPlaylistScroll() {
 			}
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
-			if ( S.elapsed ) $elapsed.html( ico.play + second2HMS( S.elapsed ) + slash );
+			if ( S.elapsed ) $elapsed.html( icon( 'play' ) + second2HMS( S.elapsed ) + slash );
 			V.intElapsedPl = setInterval( () => {
 				S.elapsed++;
 				if ( S.elapsed === S.Time ) {
@@ -1635,7 +1635,7 @@ function setPlaylistScroll() {
 					setPlaylistScroll();
 				} else {
 					elapsedtxt = second2HMS( S.elapsed );
-					$elapsed.html( ico.play + elapsedtxt + slash );
+					$elapsed.html( icon( 'play' ) + elapsedtxt + slash );
 					elapsedL = elapsedtxt.length;
 					if ( elapsedL > elapsedL0 ) {
 						elapsedL0 = elapsedL;
