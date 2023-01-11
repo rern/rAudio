@@ -26,7 +26,7 @@ $( '#setting-btreceiver' ).click( function() {
 				} );
 				$( '#infoOk' ).toggleClass( db === '0.00' );
 			}
-			, oklabel    : icon( 'set0' ) +'0dB'
+			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => volume0db( 'volume0dbbt', $( '#setting-btreceiver' ) )
 		} );
 	} );
@@ -61,7 +61,7 @@ $( '#setting-hwmixer' ).click( function() {
 				} );
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 			}
-			, oklabel    : icon( 'set0' ) +'0dB'
+			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => volume0db( 'volume0db', $( '#setting-hwmixer' ) )
 		} );
 	} );
@@ -361,10 +361,10 @@ function playbackIcon() {
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>'
-					+ icon( 'song' ) + ( S.counts.song || 0 ).toLocaleString()
-					+ icon( 'album' ) + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
-					+ icon( 'artist' ) + ( S.counts.arttist || 0 ).toLocaleString()
-					+ icon( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
+					+ ico( 'song' ) + ( S.counts.song || 0 ).toLocaleString()
+					+ ico( 'album' ) + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
+					+ ico( 'artist' ) + ( S.counts.arttist || 0 ).toLocaleString()
+					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		$( '#divbtreceiver' ).removeClass( 'hide' );
@@ -406,9 +406,9 @@ function renderPage() {
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 		if ( S.camilladsp ) {
-			var label = icon( 'camilladsp' );
+			var label = ico( 'camilladsp' );
 		} else if ( S.equalizer ) {
-			var label = 'Equalizer'+ icon( 'equalizer' );
+			var label = 'Equalizer'+ ico( 'equalizer' );
 		} else {
 			var label = 'Device';
 		}

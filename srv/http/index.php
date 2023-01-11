@@ -40,7 +40,7 @@ $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'directory',  'folder-open',   'Browse directory' ]
+	, [ 'directory',  'folder-open',   'Browse folder' ]
 	, [ 'tag',        'tag',           'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'file' );
@@ -64,7 +64,7 @@ $menulist = [
 	, [ 'exclude',   'folder-forbid',   'Exclude directory' ]
 	, [ 'update',    'refresh-library', 'Update database' ]
 	, [ 'thumb',     'coverart',        'Update thumbnails' ]
-	, [ 'directory', 'folder-open',     'Browse directory' ]
+	, [ 'directory', 'folder-open',     'Browse folder' ]
 	, [ 'tag',       'tag',             'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'folder' );

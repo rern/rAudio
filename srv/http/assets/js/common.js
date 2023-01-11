@@ -5,13 +5,13 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
-var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+var iconwarning = ico( 'warning fa-lg yl' ) +'&ensp;';
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
 	$( '#banner' ).html( `
-<div id="bannerIcon"><i class="fa fa-${ icon }"></i></div>
+<div id="bannerIcon">${ ico( icon ) }</div>
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
 `   ).removeClass( 'hide' );
@@ -40,7 +40,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
-				+'&emsp;<a class="infobtn infobtn-primary copy">'+ icon( 'copy' ) +'Copy</a>'
+				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )
@@ -74,8 +74,8 @@ function highlightJSON( json ) {
 		}
 	} ); // source: https://stackoverflow.com/a/7220510
 }
-function icon( cls ) {
-	return '<i class="fa fa-'+ cls +'"></i>'
+function ico( cls, id ) {
+	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="fa fa-'+ cls +'"></i>'
 }
 
 // info ----------------------------------------------------------------------
@@ -184,7 +184,7 @@ function info( json ) {
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
-		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div>${ ico( 'close', 'infoX' ) }
 	</div>
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>
@@ -271,7 +271,7 @@ function info( json ) {
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || icon( 'folder-open' ) +'File' ) +'</a>';
+					  + ( I.filelabel || ico( 'folder-open' ) +'File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )
@@ -357,7 +357,7 @@ function info( json ) {
 		if ( I.passwordlabel ) {
 			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td>'+ icon( 'eye' ) +'</td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
@@ -699,7 +699,7 @@ function infoFileImageRender( src, original, resize ) {
 			+ ( resize ? resize : '' )
 			+ ( original ? '<br>original: '+ original : '' )
 			+'</div>'
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'&ensp;Tap to rotate' )
 		+'</span>'
 	);
 }
@@ -827,10 +827,10 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, buttonlabel : icon( 'reboot' ) +'Reboot'
+		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : icon( 'power' ) +'Off'
+		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
 		, ok          : () => infoPowerCommand( 'off' )
 	} );
@@ -845,11 +845,11 @@ function infoPowerNfs( nfs, action ) {
 	info( {
 		  icon    : 'power'
 		, title   : 'Power'
-		, message : 'This <wh>Server rAudio '+ icon( 'rserver' ) +'</wh> is currently active.'
+		, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
 					+'<br><wh>Shared Data</wh> on clients will stop.'
 					+'<br>(Resume when server online again)'
 					+'<br><br>Continue?'
-		, oklabel : off ? icon( 'power' ) +'Off' : icon( 'reboot' ) +'Reboot'
+		, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 		, okcolor : off ? red : orange
 		, ok      : () => {
 			bash( [ 'power', action, 1 ] );

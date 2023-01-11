@@ -14,7 +14,7 @@ $( '#setting-spotifyd' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : 'Reset client keys?'
-			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
+			, oklabel : ico( 'minus-circle help' ) +'Reset'
 			, okcolor : red
 			, ok      : () => bash( [ 'spotifytokenreset' ] )
 		} );
@@ -34,7 +34,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, title        : title
 			, textlabel    : [ 'ID', 'Secret' ]
 			, focus        : 0
-			, footer       : 'Keys from private app: <i class="help fa fa-help"></i>'
+			, footer       : 'Keys from private app: '+ ico( 'help help' )
 			, boxwidth     : 320
 			, checklength  : { 0: 32, 1: 32 }
 			, beforeshow   : () => {
@@ -180,7 +180,7 @@ $( '#setting-localbrowser' ).click( function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr><i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
+	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon' ) + ico( 'plus-circle btnicon' ) }</td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 <tr style="height: 10px"></tr>
@@ -200,8 +200,8 @@ $( '#setting-localbrowser' ).click( function() {
 </table>
 ${ htmlbrightness }
 <div class="btnbottom">
-	&nbsp;<span class="reload">Reload${ icon( 'redo' ) }</span>
-	<span class="screenoff">${ icon( 'screenoff' ) }On/Off</span>
+	&nbsp;<span class="reload">Reload${ ico( 'redo' ) }</span>
+	<span class="screenoff">${ ico( 'screenoff' ) }On/Off</span>
 </div>`;
 	var icon  = 'chromium';
 	var title = 'Browser Display';
@@ -213,7 +213,7 @@ ${ htmlbrightness }
 		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.brightness ]
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
-			selectText2Html( { '90° CW': '90°&emsp;'+ icon( 'redo' ), '90° CCW': '90°&emsp;'+ icon( 'undo' ) } );
+			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
@@ -276,8 +276,8 @@ $( '#setting-multiraudio' ).click( function() {
 		var ipsub = location.host;
 	}
 	var trhtml  = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
-			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
+			+'<td>&nbsp;'+ ico( 'minus-circle fa-lg pointer ipremove' ) +'</td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle fa-lg wh pointer ipadd' ) +'</td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
 	var dataL = S.multiraudioconf.length;
 	if ( dataL ) {
@@ -304,7 +304,7 @@ $( '#setting-multiraudio' ).click( function() {
 			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
 			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
-			$( '#ipadd' ).click( function() {
+			$( '.ipadd' ).click( function() {
 				$( '#infoContent tr:last' ).after( trhtml.replace( 'NUM', $( '#infoContent input' ).length + 1 ) );
 				$( '.ipremove' ).removeClass( 'hide' );
 				$( '#infoOk' ).removeClass( 'disabled' );
@@ -380,13 +380,13 @@ $( '#setting-login' ).click( function() {
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
 <table>
-<tr><td></td><td><label><input type="checkbox">${ icon( 'airplay' ) } AirPlay</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">${ icon( 'bluetooth' ) } Bluetooth</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">${ icon( 'spotify' ) } Spotify</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"> ${ icon( 'upnp' ) }UPnP</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'airplay' ) } AirPlay</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'bluetooth' ) } Bluetooth</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'spotify' ) } Spotify</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"> ${ ico( 'upnp' ) }UPnP</label></td></tr>
 <tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
-<tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
-<tr><td>Password</td><td><input type="password"></td><td>${ icon( 'eye' ) }</td></tr>
+<tr><td>User</td><td><input type="text"></td><td>&ensp;${ ico( 'minus-circle fa-lg scrobbleuser pointer' ) }</td></tr>
+<tr><td>Password</td><td><input type="password"></td><td>${ ico( 'eye' ) }</td></tr>
 </table>`;
 	var icon  = 'lastfm';
 	var title = 'Scrobbler';
@@ -510,7 +510,7 @@ function renderPage() {
 	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	var disablednfs = '<wh>Shared Data '+ icon( 'networks' ) +'</wh> is currently enabled.';
+	var disablednfs = '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.';
 	if ( S.smb ) {
 		disablednfs = disablednfs.replace( 'Shared Data', 'File Sharing' );
 	} else if ( S.nfsconnected ) {
@@ -526,7 +526,7 @@ function renderPage() {
 		$( '#divdsp' ).removeClass( 'hide' );
 		$( '#camilladsp' )
 			.toggleClass( 'disabled', S.bluetoothsink || S.equalizer )
-			.prev().html( '<wh>'+ ( S.bluetoothsink ? 'Bluetooth '+ icon( 'bluetooth' ) : 'Equalizer '+ icon( 'equalizer' ) ) +'</wh> is currently enabled.' );
+			.prev().html( '<wh>'+ ( S.bluetoothsink ? 'Bluetooth '+ ico( 'bluetooth' ) : 'Equalizer '+ ico( 'equalizer' ) ) +'</wh> is currently enabled.' );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	if ( ! /code|error/.test( window.location.href ) ) {

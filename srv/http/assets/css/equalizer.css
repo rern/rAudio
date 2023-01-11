@@ -93,6 +93,7 @@
 }
 #eq i {
 	font-size: 24px;
+	vertical-align: -7px !important;
 }
 #eq i,
 #eqname {

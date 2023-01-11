@@ -66,13 +66,13 @@ var keyboard          = new Keyboard( {
 	, layoutName : "alpha"
 	, display    : {
 		  '{alpha}'    : 'Aa'
-		, '{bksp}'     : icon( 'backspace' )
+		, '{bksp}'     : ico( 'backspace' )
 		, '{enter}'    : 'OK'
-		, '{lock}'     : icon( 'capslock' )
-		, '{numlock}'  : icon( 'capslock' )
+		, '{lock}'     : ico( 'capslock' )
+		, '{numlock}'  : ico( 'capslock' )
 		, '{num}'      : '1?'
-		, '{numshift}' : icon( 'shift' )
-		, '{shift}'    : icon( 'shift' )
+		, '{numshift}' : ico( 'shift' )
+		, '{shift}'    : ico( 'shift' )
 		, '{space}'    : '&nbsp;'
 	}
 	, buttonTheme: narrowbuttontheme
