@@ -907,7 +907,7 @@ $( '.map' ).click( function( e ) {
 		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength );
+		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
