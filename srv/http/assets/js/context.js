@@ -292,12 +292,11 @@ function tagEditor() {
 						, string : V.library ? file : dir
 						, format : [ 'file' ]
 					}
-					if ( cue ) file = dir;
 					list( query, function( html ) {
 						var data = {
 							  html      : html
-							, modetitle : file
-							, path      : file
+							, modetitle : dir
+							, path      : dir
 						}
 						V.mode = file.split( '/' )[ 0 ].toLowerCase();
 						tagModeSwitch();
