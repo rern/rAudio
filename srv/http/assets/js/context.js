@@ -226,16 +226,10 @@ function tagEditor() {
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div>';
-		if ( V.list.licover ) {
-			message += ico( 'folder' ) + file;
-		} else {
-			message += ico( 'folder' ) + file
-					 +'<br>'+ ico( fileicon ) + file.split( '/' ).pop();
-		}
+					 +'<div>'+ ico( 'folder' ) + file;
+		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
-		var footer   = '';
-		footer      += '<div id="taglabel">'+ ico( 'help fa-lg' ) +'&emsp;Label</div>';
+		var footer   = '<div id="taglabel">'+ ico( 'help fa-lg' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info-circle' : 'tag'
