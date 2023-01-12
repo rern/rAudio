@@ -354,8 +354,8 @@ function infoSoxrPreset() {
 }
 function playbackIcon() {
 	$( '.playback' )
-		.removeClass( 'fa-pause fa-play fa-stop' )
-		.addClass( 'fa fa-'+ S.state )
+		.removeClass( 'fa-pause fa-play' )
+		.addClass( S.state === 'play' ? 'fa-pause' : 'fa-play' )
 		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
 }
 function renderPage() {
