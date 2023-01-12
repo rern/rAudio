@@ -190,7 +190,8 @@ function info( json ) {
 	<div id="infoButtons"></div>
 </div>
 ` );
-	I.infoscroll = $( window ).scrollTop();
+	$( '#infoOverlay' ).css( 'height', $( 'body' ).height() );
+	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
@@ -205,7 +206,6 @@ function info( json ) {
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
 	
@@ -432,8 +432,6 @@ function info( json ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		infoButtonWidth();
-		$( 'html, body' ).scrollTop( 0 );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 		return
 	}
 	
@@ -499,8 +497,6 @@ function info( json ) {
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
-		$( 'html, body' ).scrollTop( 0 );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 		var $this = $( this );
@@ -532,16 +528,13 @@ function info( json ) {
 
 function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
-	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
 	delete I.infofile;
 	delete I.infofilegif;
-	setTimeout( () => {
-		if ( I.active ) return // I.active: for info() in sequence
-		
-		I.infohide = true;
-		$( '#infoOverlay' ).addClass( 'hide' );
-		$( '#infoOverlay' ).empty();
-	}, 50 ); // wait for next info() if any
+	if ( I.active ) return // I.active: for info() in sequence
+	
+	I.infohide = true;
+	$( '#infoOverlay' ).addClass( 'hide' );
+	$( '#infoOverlay' ).empty();
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return

@@ -116,11 +116,10 @@ $( 'body' ).click( function( e ) {
 		&& ! $target.hasClass( 'bkcoverart' )
 		&& ! $target.hasClass( 'bkradio' )
 	) menuHide();
-	if ( $( '.pl-remove' ).length
+	if ( ! V.local
+		&& $( '.pl-remove' ).length
 		&& ! $target.hasClass( 'pl-remove' )
-		&& $( '#infoOverlay' ).hasClass( 'hide' )
 	) $( '.pl-remove' ).remove();
-
 } );
 $( '#page-library' ).on( 'click', 'p', function() {
 	$( '.licover .cover-change' ).remove();
@@ -1841,6 +1840,7 @@ $( '#button-pl-clear' ).click( function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  () => {
+					local();
 					$( '#pl-list .li1' ).before( ico( 'minus-circle pl-remove' ) );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
