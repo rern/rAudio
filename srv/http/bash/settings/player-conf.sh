@@ -7,13 +7,9 @@
 # - mixer_control - from file if manually set | hwmixer | null
 # - mixer_device  - card index
 
-if [[ $1 ]]; then # from usbdac.rules - player-conf.sh [add|remove]
-	[[ ! -e /srv/http/data/shm/startup ]] && exit # suppress usbdac.rules on startup
-	
-	usbdac=$1
-fi
-
 . /srv/http/bash/common.sh
+
+usbdac=$1
 
 . $dirsettings/player-devices.sh # $i, $A...
 . $dirsettings/player-asound.sh

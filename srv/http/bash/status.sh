@@ -315,7 +315,7 @@ $radiosampling" > $dirshm/radio
 						systemctl start $service
 					fi
 				else
-					. <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
+					[[ -e $dirshm/status ]] && . <( grep -E '^Artist|^Album|^Title|^coverart|^station' $dirshm/status )
 					[[ ! $displaycover ]] && coverart=
 				fi
 			elif [[ $Title && $displaycover ]]; then
