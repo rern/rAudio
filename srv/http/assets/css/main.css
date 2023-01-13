@@ -1312,22 +1312,24 @@ i.map.disabled, .map.disabled i {
 }
 .bk-cover {
 	bottom: 0;
-	height: 34px;
+}
 }
 .coveredit {
 	position: absolute;
 	right: 0;
 	bottom: 0;
-	width: 34px !important;
-	height: 34px !important;
+	width: 40px !important;
+	height: 40px !important;
+	line-height: 40px;
 }
 .cover-change i,
 .bk-cover i {
-	width: 34px !important;
 	margin: 0 !important;
 	font-size: 24px !important;
-	line-height: 34px !important;
 	color: var( --cw ) !important;
+}
+.bk-cover i {
+	line-height: 34px !important;
 }
 .cover-save {
 	left: 0;
