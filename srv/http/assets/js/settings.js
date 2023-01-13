@@ -413,11 +413,10 @@ $( '.help' ).click( function() {
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 $( '.switch' ).click( function() {
-	V.swid = this.id;
-} );
-$( '.switch:not( .custom, .nobanner )' ).click( function() {
-	var id      = this.id;
+	V.swid      = this.id;
 	var $this   = $( this );
+	if ( $this.hasClass( 'custom' ) || $this.hasClass( 'nobanner' ) ) return
+	
 	var checked = $this.prop( 'checked' );
 	var label   = $this.data( 'label' );
 	var icon    = $this.data( 'icon' );
@@ -433,17 +432,17 @@ $( '.switch:not( .custom, .nobanner )' ).click( function() {
 	
 	if ( $this.hasClass( 'common' ) ) {
 		if ( checked ) {
-			$( '#setting-'+ id ).click();
+			$( '#setting-'+ V.swid ).click();
 		} else {
 			notify( icon, label, 'Disable ...' );
-			bash( [ id, false ] );
+			bash( [ V.swid, false ] );
 		}
 	} else {
 		notify( icon, label, checked );
-		bash( [ id, checked ], error => {
+		bash( [ V.swid, checked ], error => {
 			if ( error ) {
 				bannerHide();
-				$( '#'+ id ).prop( 'checked', false );
+				$( '#'+ V.swid ).prop( 'checked', false );
 				info( error );
 			}
 		}, 'json' );
