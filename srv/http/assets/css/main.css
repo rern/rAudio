@@ -1332,6 +1332,8 @@ i.map.disabled, .map.disabled i {
 }
 .cover-save {
 	left: 0;
+	width: 40px !important;
+	text-align: center;
 }
 .coveredit.cover-save i {
 	width: 30px !important;
