@@ -99,11 +99,10 @@ Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
-		  'label'       => 'DSD over PCM'
-		, 'id'          => 'dop'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'help'        => <<< EOF
+		  'label'   => 'DSD over PCM'
+		, 'id'      => 'dop'
+		, 'setting' => false
+		, 'help'    => <<< EOF
 For DSD-capable devices without drivers dedicated for native DSD.
  · Enable if there's static/no sound from the DAC which means not support as native DSD.
  · DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 

@@ -528,7 +528,7 @@ function infoButtonCommand( fn ) {
 	if ( typeof fn !== 'function' ) {
 		infoButtonReset();
 	} else {
-		fn( () => infoButtonReset );
+		$.when( fn() ).then( infoButtonReset() );
 	}
 }
 function infoButtonReset() {
