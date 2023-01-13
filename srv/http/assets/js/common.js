@@ -180,7 +180,6 @@ I = { hidden: true }
 
 function info( json ) {
 	I          = json;
-	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
@@ -198,7 +197,6 @@ function info( json ) {
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		I.active = false; // force clear for infoButtonCommand()
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
@@ -528,13 +526,9 @@ function info( json ) {
 
 function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
-	delete I.infofile;
-	delete I.infofilegif;
-	if ( I.active ) return // I.active: for info() in sequence
-	
-	I.hidden = true;
 	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoOverlay' ).empty();
+	I = { hidden: true }
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
