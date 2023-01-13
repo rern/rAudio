@@ -163,7 +163,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 		, values       : S.hddsleep || 60
 		, checkchanged : S.hddsleep
-		, cancel       : () => cancelSwitch( 'hddsleep' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			var val = infoVal()
 			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
@@ -190,7 +190,7 @@ $( '#setting-bluetooth' ).click( function() {
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : S.bluetoothconf
 		, checkchanged : S.bluetooth
-		, cancel       : () => cancelSwitch( 'bluetooth' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, S.bluetooth ? 'Change ...' : 'Enable ...' );
 			bash( [ 'bluetooth', true, ...infoVal() ] );
@@ -216,7 +216,7 @@ $( '#setting-wlan' ).click( function() {
 			, values       : S.wlanconf
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
-			, cancel       : () => cancelSwitch( 'wlan' )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				notify( icon, title, S.wlan ? 'Change ...' : 'Enable ...' );
 				bash( [ 'wlan', true, ...infoVal() ] );
@@ -344,7 +344,7 @@ $( '#setting-lcdchar' ).click( function() {
 				} );
 			}
 		}
-		, cancel       : () => cancelSwitch( 'lcdchar' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'lcdchar', true, ...infoVal() ] );
 			notify( icon, title, S.lcdchar ? 'Change ...' : 'Enabled ...' );
@@ -402,7 +402,7 @@ $( '#setting-powerbutton' ).click( function() {
 				$( '#infoContent table' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'powerbutton' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'powerbutton', true, ...infoVal() ] );
 			notify( icon, title, S.powerbutton ? 'Change ...' : 'Enable ...' );
@@ -436,7 +436,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
-		, cancel       : () => cancelSwitch( 'rotaryencoder' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'rotaryencoder', true, ...infoVal() ] );
 			notify( icon, title, S.rotaryencoder ? 'Change ...' : 'Enable ...' );
@@ -478,7 +478,7 @@ $( '#setting-mpdoled' ).click( function() {
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'mpdoled' )
+		, cancel       : cancelSwitch
 		, buttonlabel  : ! S.mpdoled ? '' : ico( 'raudio' ) +'Logo'
 		, button       : ! S.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
 		, ok           : () => {
@@ -517,7 +517,7 @@ $( '#setting-lcd' ).click( function() {
 				}
 			} );
 		}
-		, cancel    : () => cancelSwitch( 'lcd' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, S.lcd ? 'Change ...' : 'Enable ...' );
 			bash( [ 'lcd', true, infoVal() ] );
@@ -541,7 +541,7 @@ $( '#setting-vuled' ).click( function() {
 		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : S.vuled
 		, boxwidth     : 80
-		, cancel        : () => cancelSwitch( 'vuled' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, 'Change ...' );
 			bash( [ 'vuled', true, ...infoVal() ] );
@@ -657,7 +657,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, values       : S.soundprofileconf
 		, checkchanged : S.soundprofile
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'soundprofile' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'soundprofile', true, ...infoVal() ] );
 			notify( icon, title, S.soundprofile ? 'Change ...' : 'Enable ...' );

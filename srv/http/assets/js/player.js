@@ -89,7 +89,7 @@ $( '#novolume' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : warning
-			, cancel  : () => cancelSwitch( 'novolume' )
+			, cancel  : cancelSwitch
 			, ok      : () => {
 				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
@@ -125,7 +125,7 @@ $( '#setting-crossfade' ).click( function() {
 		, values       : S.crossfadeconf || 1
 		, checkchanged : S.crossfade
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'crossfade' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'crossfade', true, infoVal() ] );
 			notify( icon, title, S.crossfade ? 'Change ...' : 'Enable ...' );
@@ -141,7 +141,7 @@ $( '#setting-replaygain' ).click( function() {
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
-		, cancel       : () => cancelSwitch( 'replaygain' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'replaygain', true, infoVal() ] );
 			notify( icon, title, S.replaygain ? 'Change ...' : 'Enable ...' );
@@ -175,7 +175,7 @@ $( '#setting-buffer' ).click( function() {
 		, values       : S.bufferconf
 		, checkchanged : S.buffer
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'buffer' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'buffer', true, infoVal() ] );
 			notify( icon, title, S.buffer ? 'Change ...' : 'Enable ...' );
@@ -196,7 +196,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, values       : S.outputbufferconf
 		, checkchanged : S.outputbuffer
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'outputbuffer' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'outputbuffer', true, infoVal() ] );
 			notify( icon, title, S.outputbuffer ? 'Change ...' : 'Enable ...' );
@@ -235,7 +235,7 @@ $( '#setting-custom' ).click( function() {
 			, content      : custominfo.replace( 'N', S.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : S.custom
-			, cancel       : () => cancelSwitch( 'custom' )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
@@ -335,7 +335,7 @@ function infoSoxr( quality ) {
 		, checkblank   : 1
 		, checkchanged : S.soxr && quality === S.soxrquality
 		, boxwidth     : custom ? 85 : 180
-		, cancel       : () => cancelSwitch( 'soxr' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			if ( custom ) {
 				bash( [ 'soxr', true, 'custom', ...infoVal() ] );

@@ -56,8 +56,9 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function cancelSwitch( id ) {
-	$( '#'+ id ).prop( 'checked', S[ id ] );
+function cancelSwitch() {
+	$( '#'+ V.swid ).prop( 'checked', S[ V.swid ] );
+	delete V.swid;
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
@@ -414,6 +415,7 @@ $( '.help' ).click( function() {
 } );
 $( '.switch:not( .custom, .nobanner )' ).click( function() {
 	var id      = this.id;
+	V.swid      = id;
 	var $this   = $( this );
 	var checked = $this.prop( 'checked' );
 	var label   = $this.data( 'label' );

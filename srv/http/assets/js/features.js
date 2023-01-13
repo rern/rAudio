@@ -43,7 +43,7 @@ $( '#setting-spotifyd' ).click( function() {
 					$( '#infoX' ).click();
 				} );
 			}
-			, cancel       : () => cancelSwitch( 'spotifyd' )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				var values = infoVal();
 				var id     = values[ 0 ];
@@ -87,7 +87,7 @@ $( '#setting-snapclient' ).click( function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'snapclient' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'snapclient', true, infoVal() ] );
 			notify( icon, title, S.snapclient ? 'Change ...' : 'Enable ...' );
@@ -103,7 +103,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ S.upmpdcliownqueue ]
 		, checkchanged : S.upmpdcli
-		, cancel       : () => cancelSwitch( 'upmpdcli' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'upmpdcli', true, infoVal() ] );
 			notify( icon, title, S.upmpdcli ? 'Change ...' : 'Enable ...' );
@@ -122,7 +122,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, boxwidth     : 100
 		, values       : S.camillarefresh
 		, checkchanged : S.camilladsp
-		, cancel       : () => cancelSwitch( 'camilladsp' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( icon, title, S.camilladsp ? 'Change ...' : 'Enable ...' );
@@ -141,7 +141,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checkchanged : S.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, cancel       : () => cancelSwitch( 'hostapd' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'hostapd', true, ...infoVal() ] );
 			notify( icon, title, S.hostapd ? 'Change ...' : 'Enable ...' );
@@ -158,7 +158,7 @@ $( '#setting-autoplay' ).click( function() {
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? S.autoplayconf : [ false, false, true ]
 		, checkchanged : S.autoplay
-		, cancel       : () => cancelSwitch( 'autoplay' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'autoplay', true, ...infoVal() ] );
 			notify( icon, title, S.autoplay ? 'Change ...' : 'Enable ...' );
@@ -245,7 +245,7 @@ ${ htmlbrightness }
 				} );
 			}
 		}
-		, cancel       : () => cancelSwitch( 'localbrowser' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
 			notify( icon, title, S.localbrowser ? 'Change ...' : 'Enable ...', );
@@ -262,7 +262,7 @@ $( '#setting-smb' ).click( function() {
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : S.smbconf
 		, checkchanged : S.smb
-		, cancel       : () => cancelSwitch( 'smb' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'smb', true, ...infoVal() ] );
 			notify( icon, title, S.smb ? 'Change ...' : 'Enable ...' );
@@ -318,7 +318,7 @@ $( '#setting-multiraudio' ).click( function() {
 				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'multiraudio' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			I.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
@@ -339,7 +339,7 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, checkblank    : 1
-			, cancel        : () => cancelSwitch( 'login' )
+			, cancel        : cancelSwitch
 			, ok            : () => {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
@@ -363,7 +363,7 @@ $( '#setting-login' ).click( function() {
 		, passwordlabel : ( S.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
 		, checkblank    : 1
-		, cancel        : () => cancelSwitch( 'login' )
+		, cancel        : cancelSwitch
 		, ok            : () => {
 			var values = infoVal();
 			notify( icon, title, S.login ? 'Change ...' : 'Enable...' );
@@ -414,7 +414,7 @@ $( '#setting-scrobble' ).click( function() {
 				infoCheckSet();
 			} );
 		}
-		, cancel        : () => cancelSwitch( 'scrobble' )
+		, cancel        : cancelSwitch
 		, ok            : () => {
 			bash( [ 'scrobble', true, ...infoVal() ], response => {
 				if ( 'error' in response ) {
@@ -451,7 +451,7 @@ $( '#nfsserver' ).click( function() {
 			, message : ( S.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( S.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : () => cancelSwitch( 'nfsserver' )
+			, cancel  : cancelSwitch
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', ! S.nfsserver ] );
@@ -480,7 +480,7 @@ $( '#setting-stoptimer' ).click( function() {
 				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
-		, cancel  : () => cancelSwitch( 'stoptimer' )
+		, cancel  : cancelSwitch
 		, ok           : () => {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
 			notify( icon, title, S.stoptimer ? 'Change ...' : 'Enable ...' );
