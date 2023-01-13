@@ -1321,7 +1321,7 @@ i.map.disabled, .map.disabled i {
 	height: 40px !important;
 	line-height: 40px;
 }
-.cover-change i,
+.coveredit i,
 .bk-cover i {
 	margin: 0 !important;
 	font-size: 24px !important;
@@ -1335,10 +1335,8 @@ i.map.disabled, .map.disabled i {
 }
 .coveredit.cover-save i {
 	width: 30px !important;
-	height: 30px;
-	margin-left: 2px;
-	font-size: 24px;
 	line-height: 30px !important;
+	margin-top: 5px !important;
 	text-align: center;
 	color: var( --cgd ) !important;
 	background: var( --cw );
