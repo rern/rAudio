@@ -180,6 +180,7 @@ I = { hidden: true }
 
 function info( json ) {
 	I          = json;
+	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' ); // consecutive info calls
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
@@ -528,7 +529,9 @@ function infoButtonCommand( fn ) {
 	if ( typeof fn !== 'function' ) {
 		infoButtonReset();
 	} else {
-		$.when( fn() ).then( infoButtonReset() );
+		$.when( fn() ).then( () => {
+			if ( ! I.active ) infoButtonReset(); // consecutive info calls
+		} );
 	}
 }
 function infoButtonReset() {
