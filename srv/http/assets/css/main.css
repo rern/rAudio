@@ -1318,9 +1318,16 @@ i.map.disabled, .map.disabled i {
 	position: absolute;
 	right: 0;
 	bottom: 0;
-	width: 34px;
-	height: 34px;
-	z-index: 17;
+	width: 34px !important;
+	height: 34px !important;
+}
+.cover-change i,
+.bk-cover i {
+	width: 34px !important;
+	margin: 0 !important;
+	font-size: 24px !important;
+	line-height: 34px !important;
+	color: var( --cw ) !important;
 }
 .cover-save {
 	left: 0;
