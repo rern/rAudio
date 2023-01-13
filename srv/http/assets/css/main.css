@@ -1340,8 +1340,8 @@ i.map.disabled, .map.disabled i {
 	line-height: 30px !important;
 	margin-top: 5px !important;
 	text-align: center;
-	color: var( --cgd ) !important;
-	background: var( --cw );
+	color: var( --cw ) !important;
+	background: var( --cg );
 	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
 }
