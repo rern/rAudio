@@ -1590,7 +1590,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( S.song );
 	$liactive.addClass( 'active' );
-	if ( ! $( '.pl-remove' ).length && I.infohide ) {
+	if ( ! $( '.pl-remove' ).length && I.hidden ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;
 		} else {

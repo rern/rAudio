@@ -176,7 +176,7 @@ Note:
 ` );
 }
 
-I = { infohide: true }
+I = { hidden: true }
 
 function info( json ) {
 	I          = json;
@@ -455,7 +455,7 @@ function info( json ) {
 		if ( 'values' in I && I.values !== '' ) infoSetValues();
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		I.infohide = false;
+		I.hidden = false;
 		if ( 'focus' in I ) {
 			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
 		} else {
@@ -532,7 +532,7 @@ function infoButtonCommand( fn ) {
 	delete I.infofilegif;
 	if ( I.active ) return // I.active: for info() in sequence
 	
-	I.infohide = true;
+	I.hidden = true;
 	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoOverlay' ).empty();
 }

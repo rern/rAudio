@@ -120,7 +120,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'addons' || page === 'guide' || ! I.infohide ) return
+	if ( page === 'addons' || page === 'guide' || ! I.hidden ) return
 	
 	bash( dirbash + page +'-data.sh', list => {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -285,7 +285,7 @@ document.title = page;
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).keyup( function( e ) {
-	if ( ! I.infohide ) return
+	if ( ! I.hidden ) return
 	
 	var $focus;
 	var key = e.key;

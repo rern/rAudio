@@ -1,6 +1,6 @@
 // keyboard controls
 $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page scroll
-	if ( V.local || ! I.infohide ) return
+	if ( V.local || ! I.hidden ) return
 	
 	var key = e.key;
 	if ( key === 'Backspace' && ! $( 'input:focus, textarea:focus' ).length ) {
