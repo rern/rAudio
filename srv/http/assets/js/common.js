@@ -530,7 +530,7 @@ function infoButtonCommand( fn ) {
 		infoButtonReset();
 	} else {
 		$.when( fn() ).then( () => {
-			if ( ! I.active ) infoButtonReset(); // consecutive info calls
+			if ( ! I.active ) infoButtonReset(); // not consecutive info calls
 		} );
 	}
 }
