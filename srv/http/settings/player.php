@@ -1,7 +1,7 @@
 <div id="divmpd" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'Music Player Daemon'
+	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 ] );

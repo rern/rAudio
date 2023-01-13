@@ -64,7 +64,7 @@ htmlHead( [ //////////////////////////////////
 <div id="divwebui" class="section hide"> <!-- ------------------------------------------------------------ -->
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'Web User Interface'
+	  'title'  => 'Web <a class="hideN">User </a>Interface'
 	, 'status' => 'avahi'
 ] );
 ?>

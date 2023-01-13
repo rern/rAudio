@@ -122,7 +122,7 @@ echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
-	  'title'  => 'On-board Wireless'
+	  'title'  => 'On-board<a class="hideN"> Wireless</a>'
 	, 'status' => 'rfkill'
 ];
 $body = [

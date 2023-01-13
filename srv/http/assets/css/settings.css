@@ -169,7 +169,7 @@ heading.subhead {
 heading.status .headtitle::after,
 .col-l.status gr::after {
 	display: inline-block;
-	width: 30px;
+	width: 40px;
 	font-family: rern;
 	font-style: normal;
 	font-size: 22px;
@@ -184,7 +184,7 @@ heading.status .headtitle::after,
 	text-align: right;
 }
 heading i {
-	width: 50px;
+	width: 40px;
 	font-size: 22px;
 	text-align: center;
 	color: var( --cg60 );
@@ -201,8 +201,7 @@ heading.status i.fa-status {
 }
 heading i.help {
 	float: right;
-	width: 40px;
-	font-size: 22px;
+	text-align: right;
 }
 heading .fa-plus-circle,
 heading .fa-search {
@@ -557,35 +556,20 @@ input.disabled + .switchlabel:after {
     margin-left: 0;
 }
 @media (max-height: 570px) {
-	.helphead {
-		margin-right: 0;
-	}
+	.helphead { margin-right: 0 }
 	.helphead::before {
 		content: '\f509';
 		color: var( --cg60 );
 	}
-	#bar-bottom {
-		display: none;
-	}
+	#bar-bottom { display: none }
 }
 @media (min-width: 768px) {
-	.container {
-		margin: 0 auto;
-	}
+	.container { margin: 0 auto }
 }
 @media ( max-width: 580px ) {
-	.container {
-		padding: 30px 10px 100px 10px;
-	}
-	.head {
-		padding-right: 0 !important;
-	}
-	heading i.help {
-		margin-right: -10px;
-	}
-	wide {
-		display: none;
-	}
+	.container { padding: 30px 10px 100px 10px }
+	.head { padding-right: 0 !important }
+	wide { display: none }
 }
 @media (max-width: 515px) {
 	.col-r .helpblock {
@@ -593,71 +577,40 @@ input.disabled + .switchlabel:after {
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
-	#bar-bottom {
-		padding: 0;
-	}
+	#bar-bottom { padding: 0 }
 }
 @media (max-width: 465px) {
-	.settingedit { 
-		display: none;
-	}
+	.settingedit { display: none }
+	heading i.help { width: 30px }
+	.hideN { display: none }
+}
+@media ( min-width: 466px ) {
+	.hideW { display: none }
+}
+@media (max-width: 440px) {
+	.head .title { letter-spacing: calc( ( 100vw - 280px ) / 8 ) }
 }
 @media (max-width: 450px) {
-	.head .title {
-		letter-spacing: 12px;
-	}
-	heading {
-		letter-spacing: 4px;
-	}
-	input[type="text"] {
-		padding: 0 7px;
-	}
-	.listtitle a {
-		width: calc( 100% / 13 );
-	}
-	.brindex {
-		display: block;
-	}
+	input[type="text"] { padding: 0 7px }
+	.listtitle a { width: calc( 100% / 13 ) }
+	.brindex { display: block }
 }
 @media (max-width: 419px) {
-	#bar-bottom a {
-		display: none;
-	}
+	#bar-bottom a { display: none }
 }
 @media (max-width: 375px) {
-	.head .title {
-		margin-left: 10px;
-		letter-spacing: 5px;
-	}
-	heading {
-		letter-spacing: 0;
-	}
+	.head .title { margin-left: 10px }
 	#systemlabel,
-	#statuslabel {
-		width: 120px;
-	}
+	#statuslabel { width: 120px }
 }
 @media (max-width: 320px) {
-	.head .title {
-		letter-spacing: 3px;
-	}
-	#divmpd .help {
-		display: none;
-	}
+	#divmpd .help { display: none }
 }
 @media (hover: hover) {
-	#bar-bottom div:hover {
-		background-color: var( --cgd );
-	}
-	#bar-bottom div.active:hover {
-		background-color: var( --cma );
-	}
-	a:hover {
-		text-decoration: none;
-	}
-	.entries li:hover {
-		background: var( --cga );
-	}
+	#bar-bottom div:hover { background-color: var( --cgd ) }
+	#bar-bottom div.active:hover { background-color: var( --cma ) }
+	a:hover { text-decoration: none }
+	.entries li:hover { background: var( --cga ) }
 	#menu a:hover {
 		color: var( --cw );
 		background-color: var( --cgl );
@@ -686,10 +639,6 @@ input.disabled + .switchlabel:after {
 	#backend,
 	#button-data,
 	#gpioimgtxt,
-	#menu {
-		cursor: pointer;
-	}
-	.switchlabel.focus {
-		box-shadow: 0 0 2px 2px var( --cg75 ) !important;
-	}
+	#menu { cursor: pointer }
+	.switchlabel.focus { box-shadow: 0 0 2px 2px var( --cg75 ) !important }
 }
