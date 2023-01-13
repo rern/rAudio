@@ -525,7 +525,13 @@ function info( json ) {
 }
 
 function infoButtonCommand( fn ) {
-	if ( typeof fn === 'function' ) fn();
+	if ( typeof fn !== 'function' ) {
+		infoButtonReset();
+	} else {
+		fn( () => infoButtonReset );
+	}
+}
+function infoButtonReset() {
 	$( '#infoOverlay' ).addClass( 'hide' );
 	$( '#infoOverlay' ).empty();
 	I = { hidden: true }
