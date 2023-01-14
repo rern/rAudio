@@ -172,7 +172,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
-		cardname=$( aplay -l 2> /dev/null | awk '/^card '$1'/ {print $3;exit}' )
+		cardname=$( aplay -l 2> /dev/null | awk '/^card '$i'/ {print $3;exit}' )
 		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
 	fi
 ########
