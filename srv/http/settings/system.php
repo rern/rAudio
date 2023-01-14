@@ -122,11 +122,19 @@ echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
-	  'title'  => 'On-board<a class="hideN"> Wireless</a>'
+	  'title'  => 'On-board Devices'
 	, 'status' => 'rfkill'
 ];
 $body = [
 	[
+		  'label'    => 'Audio'
+		, 'icon'     => 'volume'
+		, 'id'       => 'audio'
+		, 'setting'  => false
+		, 'disabled' => 'No other audio devices available.'
+		, 'help'     => 'Should not be disabled if there\'re no other permannent DAC installed.'
+	]
+	, [
 		  'label'    => 'Bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'

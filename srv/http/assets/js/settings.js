@@ -370,6 +370,7 @@ $( '.page-icon' ).click( function() {
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
+	$( 'html, body' ).scrollTop( 0 );
 } );
 $( '#button-data' ).click( function() {
 	$( '#button-data, #data' ).addClass( 'hide' );

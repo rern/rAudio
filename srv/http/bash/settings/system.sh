@@ -135,6 +135,14 @@ webradioCopyBackup() {
 
 case ${args[0]} in
 
+audio )
+	if [[ ${args[1]} == true ]]; then
+		sed -i '/dtparam=audio=on/ s/#//' /boot/config.txt
+	else
+		sed -i '/dtparam=audio=on/ s/^/#/' /boot/config.txt
+	fi
+	pushReboot Audio
+	;;
 bluetooth )
 	if [[ ${args[1]} == true ]]; then
 		btdiscoverable=${args[2]}
@@ -819,6 +827,9 @@ relays )
 	;;
 rfkilllist )
 	echo "\
+<bll>aplay -l | grep 'bcm2835 Headphones'</bll>
+$( aplay -l | grep 'bcm2835 Headphones' )
+
 <bll># rfkill</bll>
 $( rfkill )"
 	;;

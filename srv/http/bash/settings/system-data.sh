@@ -169,7 +169,9 @@ fi
 
 data+='
   "page"             : "system"
+, "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
+, "audiocount"       : '$( aplay -l | grep -c ^card )'
 , "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
