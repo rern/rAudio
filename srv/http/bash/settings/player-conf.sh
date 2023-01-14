@@ -174,6 +174,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	else
 		cardname=$( aplay -l 2> /dev/null | awk '/^card '$i'/ {print $3;exit}' )
 		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
+#		device="default:CARD=$( aplay -l 2> /dev/null | awk '/^card '$i'/ {print $3;exit}' )"
 	fi
 ########
 	conf='[global]
