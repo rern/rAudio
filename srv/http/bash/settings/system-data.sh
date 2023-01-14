@@ -204,8 +204,7 @@ data+='
 , "vuledconf"        : '$vuledconf
 
 cpuInfo
-[[ $BB =~ ^(09|0c|12)$ ]] && rpi0=1
-if [[ ! $rpi0 ]]; then
+if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"       : '$( aplay -l | grep -c ^card )'
