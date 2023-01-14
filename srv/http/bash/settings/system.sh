@@ -826,9 +826,11 @@ relays )
 	pushstream display '{"submenu":"relays","value":false}'
 	;;
 rfkilllist )
+	onboard=$( aplay -l | grep 'bcm2835 Headphones' )
+	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
 	echo "\
-<bll>aplay -l | grep 'bcm2835 Headphones'</bll>
-$( aplay -l | grep 'bcm2835 Headphones' )
+<bll># aplay -l | grep 'bcm2835 Headphones'</bll>
+$onboard
 
 <bll># rfkill</bll>
 $( rfkill )"

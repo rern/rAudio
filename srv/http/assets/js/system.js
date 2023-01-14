@@ -1053,7 +1053,11 @@ function renderPage() {
 	} else {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
-	$( '#audio' ).toggleClass( 'disabled', S.audiocount < 2 );
+	if ( 'audio' in S ) {
+		$( '#audio' ).toggleClass( 'disabled', S.audiomodule && S.audiocards < 2 );
+	} else {
+		$( '#divaudio' ).addClass( 'hide' );
+	}
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( ( i, el ) => {
 		var $this = $( el );

@@ -169,9 +169,7 @@ fi
 
 data+='
   "page"             : "system"
-, "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
-, "audiocount"       : '$( aplay -l | grep -c ^card )'
 , "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
@@ -204,6 +202,15 @@ data+='
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
+
+cpuInfo
+[[ $BB =~ ^(09|0c|12)$ ]] && rpi0=1
+if [[ ! $rpi0 ]]; then
+	data+='
+, "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audiocards"       : '$( aplay -l | grep -c ^card )'
+, "audiomodule"      : '$( aplay -l | grep -q 'bcm2835 Headphones' && echo true )
+fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
