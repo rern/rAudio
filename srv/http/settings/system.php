@@ -132,7 +132,7 @@ $body = [
 		, 'id'       => 'audio'
 		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
-		, 'help'     => 'Should not be disabled if there\'re no other permannent DAC installed.'
+		, 'help'     => 'Should not be disabled if there\'re no other permanent DAC installed.'
 	]
 	, [
 		  'label'    => 'Bluetooth'
