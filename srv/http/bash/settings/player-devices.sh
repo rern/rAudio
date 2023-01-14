@@ -41,15 +41,12 @@ rm -f $dirshm/nosound
 
 [[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
 
-cards=$( cut -d: -f1 <<< $aplay \
-			| sort -u \
-			| sed 's/card //' )
-for card in $cards; do
-	line=$( sed -n "/^card $card/ p" <<< $aplay | head -1 )
-	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
-	card=${hw:3:1}
-	device=${hw: -1}
-	aplayname=$( sed -E 's/.*\[(.*)],.*/\1/; s/^snd_rpi_//; s/_/-/g' <<< $line ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+readarray -t card_name_device <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\2\3/' <<< "$aplay" )
+for line in "${card_name_device[@]}"; do
+	card=${line:0:1}
+	aplayname=${line:1:-1} # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+	device=${line: -1}
+	hw=hw:$card:$device
 	if [[ $aplayname == Loopback ]]; then
 		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
