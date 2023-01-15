@@ -207,7 +207,7 @@ cpuInfo
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audiocards"       : '$( aplay -l | grep -c ^card )'
+, "audiocards"       : '$( aplay -l | grep ^card | grep -c -v Loopback )'
 , "audiomodule"      : '$( aplay -l | grep -q 'bcm2835 Headphones' && echo true )
 fi
 if [[ -e $dirshm/onboardwlan ]]; then

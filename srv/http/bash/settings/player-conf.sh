@@ -14,6 +14,12 @@ usbdac=$1
 . $dirsettings/player-devices.sh # $asoundcard, $A...
 . $dirsettings/player-asound.sh
 
+pushData() {
+	$dirsettings/player-data.sh pushrefresh
+	$dirbash/status-push.sh
+	pushstream refresh '{"page":"system","audiocards":'$( aplay -l | grep ^card | grep -c -v Loopback )'}'
+}
+
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
@@ -140,8 +146,7 @@ fi
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
 if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
-	$dirsettings/player-data.sh pushrefresh
-	$dirbash/status-push.sh
+	pushData
 	exit
 fi
 
@@ -188,5 +193,4 @@ volume_controller = "alsa"'
 	systemctl try-restart spotifyd
 fi
 
-$dirsettings/player-data.sh pushrefresh
-$dirbash/status-push.sh
+pushData

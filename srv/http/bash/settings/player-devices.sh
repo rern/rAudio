@@ -13,7 +13,7 @@
 
 ### included by player-conf.sh, player-data.sh
 
-readarray -t aplay <<< $( aplay -l 2> /dev/null | grep '^card' )
+readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
