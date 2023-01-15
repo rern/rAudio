@@ -84,8 +84,8 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	$dirsettings/player-conf.sh
 	pushRefresh
+	$dirsettings/player-conf.sh
 	pushSubmenu camilladsp true
 	;;
 dabradio )
@@ -150,8 +150,8 @@ hostapd )
 httpd )
 	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
-	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
+	$dirsettings/player-data.sh pushrefresh
 	;;
 localbrowser )
 	if [[ ${args[1]} == true ]]; then
