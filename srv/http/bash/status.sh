@@ -8,11 +8,11 @@
 
 . /srv/http/bash/common.sh
 
-[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit
+[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit # >>>>>>>>>>
 
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
-	[[ $1 != noexit ]] && exit
+	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
 
 if [[ $1 == snapclient ]]; then
@@ -519,7 +519,7 @@ elapsed=$( getElapsed )
 # >>>>>>>>>> not cd && not stream
 outputStatus $( [[ ! $getcover && $Artist ]] && echo noexit )
 
-[[ $getcover || ! $Artist ]] && exit
+[[ $getcover || ! $Artist ]] && exit # >>>>>>>>>>
 
 if [[ $stream && $state == play && $Title ]]; then
 	args="\

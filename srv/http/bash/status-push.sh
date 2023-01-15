@@ -26,12 +26,12 @@ else
 		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
 		. <( echo "$statusnew" )
 		if [[ $webradio == true ]]; then
-			[[ ! $trackchanged && $state == play ]] && exit
+			[[ ! $trackchanged && $state == play ]] && exit # >>>>>>>>>>
 			
 		else
 			compare='^state|^elapsed'
 			[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
-			[[ ! $trackchanged && ! $statuschanged ]] && exit
+			[[ ! $trackchanged && ! $statuschanged ]] && exit # >>>>>>>>>>
 			
 		fi
 	fi
@@ -91,7 +91,7 @@ fi
 pushstream refresh '{"page":"player","state":"'$state'"}'
 pushstream refresh '{"page":"features","state":"'$state'"}'
 
-[[ ! $scrobble ]] && exit # must be last for $statusprev - webradio and state
+[[ ! $scrobble ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 
 . <( echo "$statusprev" )
 [[ $webradio == false && $player != snapcast \

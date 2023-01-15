@@ -68,21 +68,22 @@ else # with audio devices (from player-devices.sh)
 	fi
 	if [[ $dsp ]]; then # from player-asound.sh
 		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
-		hw=hw:$cardloopback,1
+		hwloopback=hw:$cardloopback,1
 #---------------< camilladsp
 		audiooutput='
 	name           "CamillaDSP (Loopback)"
-	device         "'$hw'"
+	device         "'$hwloopback'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
 	elif [[ $equalizer ]]; then # from player-asound.sh
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
+		hwequal=plug:plugequal
 #---------------< equalizer
 		audiooutput='
 	name           "ALSAEqual"
-	device         "plug:plugequal"
+	device         "'$hwequal'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
@@ -145,7 +146,7 @@ fi
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
+if [[ ! $Acard && ! $btmixer ]]; then
 	pushData
 	exit
 fi
@@ -153,18 +154,23 @@ fi
 # renderers -----------------------------------------------------------------------------
 
 if [[ -e /usr/bin/shairport-sync ]]; then
+	if [[ $btmixer ]]; then
+		device=bluealsa
+	elif [[ $dsp ]]; then
+		device=$hwloopback
+	elif [[ $equalizer ]]; then
+		device=$hwequal
+	else
+		device=hw:$asoundcard
+	fi
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-alsa = {"
-	if [[ $btmixer ]]; then
-		conf+='
-	output_device = "bluealsa";'
-	else
-		conf+='
-	output_device = "hw:'$asoundcard'";'
-	[[ $hwmixer ]] && conf+='
+alsa = {
+	output_device = \"$device\";"
+	
+	[[ $hwmixer && ! $dsp && ! $equalizer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
-	fi
+	
 	conf+='
 }'
 #-------
@@ -174,21 +180,27 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	[[ $btmixer ]] && device=$( bluealsa-aplay -L | head -1 ) || device="hw:$asoundcard"
+	if [[ $btmixer ]]; then
+		device=$( bluealsa-aplay -L | head -1 )
+	elif [[ $dsp ]]; then
+		device=$hwloopback
+	elif [[ $equalizer ]]; then
+		device=$hwequal
+	else
+		device=hw:$asoundcard
+	fi
 ########
 	conf='[global]
 bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
-device = "'$device'"'
-	if [[ ! $btmixer && $hwmixer ]]; then
-		conf+='
-control = "'$device'"
-mixer = "'$hwmixer'"
-volume_controller = "alsa"'
+volume_controller = "alsa"
+device = "'$device'"
+control = "'$device'"'
+	[[ $hwmixer && ! $dsp && ! $equalizer && ! $btmixer ]] && conf+='
+mixer = "'$hwmixer'"'
 #-------
-	fi
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
