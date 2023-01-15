@@ -128,8 +128,6 @@ $body = [
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
-
-Note: Not applicable for Airplay and Spotify
 EOF
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
@@ -149,8 +147,6 @@ Presets:
  · Existing: Adjust | {$Fi( 'save btn' )} Save |
  · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
-
-Note: Not applicable for Airplay and Spotify
 EOF
 	]
 ];
