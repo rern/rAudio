@@ -66,7 +66,7 @@ for line in "${aplay[@]}"; do
 		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
 		getControls $card
 		if [[ ! $controls ]]; then
-			mixerdevices=['"( not available )"']
+			mixerdevices=false
 			mixers=0
 		else
 			readarray -t controls <<< $( sort -u <<< $controls )
@@ -88,7 +88,7 @@ for line in "${aplay[@]}"; do
 		else
 			if [[ $mixers == 0 ]]; then
 				[[ $mixertype == hardware ]] && mixertype=none
-				hwmixer='( not available )'
+				hwmixer=''
 			else
 				hwmixer=${controls[0]}
 			fi

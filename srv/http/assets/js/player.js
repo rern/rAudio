@@ -387,9 +387,11 @@ function renderPage() {
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.val( S.asoundcard );
-		var htmlhwmixer      = D.mixermanual ? '<option value="auto">Auto</option>' : '';
-		if ( 'mixerdevices' in D ) {
+		if ( D.mixerdevices ) {
+			var htmlhwmixer = D.mixermanual ? '<option value="auto">Auto</option>' : '';
 			D.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
+		} else {
+			var htmlhwmixer = '<option value="">( not available )</option>';
 		}
 		$( '#hwmixer' )
 			.html( htmlhwmixer )

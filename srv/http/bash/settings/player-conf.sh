@@ -169,11 +169,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $btmixer ]]; then
-		device=$( bluealsa-aplay -L | head -1 )
-	else
-		device="default:CARD=$( aplay -l 2> /dev/null | awk '/^card '$asoundcard'/ {print $3;exit}' )"
-	fi
+	[[ $btmixer ]] && device=$( bluealsa-aplay -L | head -1 ) || device="hw:'$asoundcard"
 ########
 	conf='[global]
 bitrate = 320
@@ -181,10 +177,10 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 device = "'$device'"'
-	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
+	if [[ ! $btmixer && $hwmixer ]]; then
 		conf+='
+control = "'$device'"
 mixer = "'$hwmixer'"
-control = "hw:'$asoundcard'"
 volume_controller = "alsa"'
 #-------
 	fi
