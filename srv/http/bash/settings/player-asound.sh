@@ -2,11 +2,11 @@
 
 ### included by < player-conf.sh
 
-if [[ $i != -1 ]]; then # from player-devices.sh
+if [[ $asoundcard != -1 ]]; then # from player-devices.sh
 ########
 	asound="\
-defaults.pcm.card $i
-defaults.ctl.card $i
+defaults.pcm.card $asoundcard
+defaults.ctl.card $asoundcard
 "
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
@@ -61,8 +61,8 @@ pcm.bluealsa {
 		if [[ $btmixer ]]; then
 			slavepcm=bluealsa
 			filepresets+="-$btmixer"
-		elif [[ $i != -1 ]]; then
-			slavepcm='"plughw:'$i',0"'
+		elif [[ $asoundcard != -1 ]]; then
+			slavepcm='"plughw:'$asoundcard',0"'
 		fi
 		preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 		if [[ $slavepcm ]]; then

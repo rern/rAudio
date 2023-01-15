@@ -11,7 +11,7 @@
 
 usbdac=$1
 
-. $dirsettings/player-devices.sh # $i, $A...
+. $dirsettings/player-devices.sh # $asoundcard, $A...
 . $dirsettings/player-asound.sh
 
 rm -f $dirmpdconf/{bluetooth,output}.conf
@@ -37,7 +37,7 @@ $audiooutputbt
 ########
 fi
 
-if [[ $i == -1 ]]; then # no audio devices
+if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
@@ -45,11 +45,11 @@ if [[ $i == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 else # with audio devices (from player-devices.sh)
-	aplayname=${Aaplayname[i]}
-	hw=${Ahw[i]}
-	hwmixer=${Ahwmixer[i]}
-	mixertype=${Amixertype[i]}
-	name=${Aname[i]}
+	aplayname=${Aaplayname[asoundcard]}
+	hw=${Ahw[asoundcard]}
+	hwmixer=${Ahwmixer[asoundcard]}
+	mixertype=${Amixertype[asoundcard]}
+	name=${Aname[asoundcard]}
 	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
@@ -93,7 +93,7 @@ else # with audio devices (from player-devices.sh)
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
-	mixer_device   "hw:'$i'"'
+	mixer_device   "hw:'$asoundcard'"'
 			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
@@ -156,7 +156,7 @@ alsa = {"
 	output_device = "bluealsa";'
 	else
 		conf+='
-	output_device = "hw:'$i'";'
+	output_device = "hw:'$asoundcard'";'
 	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
 	fi
@@ -172,7 +172,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $btmixer ]]; then
 		device=$( bluealsa-aplay -L | head -1 )
 	else
-		device="default:CARD=$( aplay -l 2> /dev/null | awk '/^card '$i'/ {print $3;exit}' )"
+		device="default:CARD=$( aplay -l 2> /dev/null | awk '/^card '$asoundcard'/ {print $3;exit}' )"
 	fi
 ########
 	conf='[global]
@@ -184,7 +184,7 @@ device = "'$device'"'
 	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
 		conf+='
 mixer = "'$hwmixer'"
-control = "hw:'$i'"
+control = "hw:'$asoundcard'"
 volume_controller = "alsa"'
 #-------
 	fi

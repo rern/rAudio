@@ -8,7 +8,7 @@
 data='
   "page"             : "player"
 , "devices"          : '$devices'
-, "asoundcard"       : '$i'
+, "asoundcard"       : '$asoundcard'
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
