@@ -169,7 +169,7 @@ alsa = {"
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	[[ $btmixer ]] && device=$( bluealsa-aplay -L | head -1 ) || device="hw:'$asoundcard"
+	[[ $btmixer ]] && device=$( bluealsa-aplay -L | head -1 ) || device="hw:$asoundcard"
 ########
 	conf='[global]
 bitrate = 320
