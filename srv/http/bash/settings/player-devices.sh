@@ -120,7 +120,9 @@ if [[ $usbdac == add ]]; then
 	echo $card > $dirsystem/asoundcard
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
-elif [[ ! -e $dirsystem/asoundcard ]]; then
+elif [[ -e $dirsystem/asoundcard ]]; then # missing card
+	! amixer -c $( < $dirsystem/asoundcard ) &> /dev/null && echo $card > $dirsystem/asoundcard
+else
 	echo $card > $dirsystem/asoundcard
 fi
 asoundcard=$( < $dirsystem/asoundcard )
