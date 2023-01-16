@@ -52,7 +52,8 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 	fi
 else # with audio devices (from player-devices.sh)
 	aplayname=${Aaplayname[asoundcard]}
-	hw=${Ahw[asoundcard]}
+	card=${Acard[asoundcard]}
+	device=${Adevice[asoundcard]}
 	hwmixer=${Ahwmixer[asoundcard]}
 	mixertype=${Amixertype[asoundcard]}
 	name=${Aname[asoundcard]}
@@ -67,28 +68,29 @@ else # with audio devices (from player-devices.sh)
 		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
 	if [[ $dsp ]]; then # from player-asound.sh
-		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
-		hwloopback=hw:$cardloopback,1
+		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
+		hw=hw:$card,1
 #---------------< camilladsp
 		audiooutput='
 	name           "CamillaDSP (Loopback)"
-	device         "'$hwloopback'"
+	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
 	elif [[ $equalizer ]]; then # from player-asound.sh
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
-		hwequal=plug:plugequal
+		hw=plug:plugequal
 #---------------< equalizer
 		audiooutput='
 	name           "ALSAEqual"
-	device         "'$hwequal'"
+	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
+		hw=hw:$card,$device
 #---------------< normal
 		audiooutput='
 	name           "'$name'"
@@ -100,7 +102,7 @@ else # with audio devices (from player-devices.sh)
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
-	mixer_device   "hw:'$asoundcard'"'
+	mixer_device   "hw:'$card'"'
 			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
@@ -148,22 +150,14 @@ fi
 
 [[ ! $Acard && ! $btmixer ]] && pushData && exit # >>>>>>>>>>
 
-# renderers -----------------------------------------------------------------------------
+# renderers ----------------------------------------------------------------------------
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	if [[ $btmixer ]]; then
-		device=bluealsa
-	elif [[ $dsp ]]; then
-		device=$hwloopback
-	elif [[ $equalizer ]]; then
-		device=$hwequal
-	else
-		device=hw:$asoundcard
-	fi
+	[[ $btmixer ]] && hw=bluealsa
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {
-	output_device = \"$device\";"
+	output_device = \"$hw\";"
 	
 	[[ $hwmixer && ! $dsp && ! $equalizer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
@@ -178,13 +172,9 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
 	if [[ $btmixer ]]; then
-		device=$( bluealsa-aplay -L | head -1 )
-	elif [[ $dsp ]]; then
-		device=$hwloopback
-	elif [[ $equalizer ]]; then
-		device=$hwequal
-	else
-		device=hw:$asoundcard
+		hw=$( bluealsa-aplay -L | head -1 )
+	elif [[ ! $equalizer ]]; then
+		hw=${hw/,*}
 	fi
 ########
 	conf='[global]
@@ -193,8 +183,9 @@ onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
 volume_controller = "alsa"
-device = "'$device'"
-control = "'$device'"'
+device = "'$hw'"
+control = "'$hw'"'
+
 	[[ $hwmixer && ! $dsp && ! $equalizer && ! $btmixer ]] && conf+='
 mixer = "'$hwmixer'"'
 #-------

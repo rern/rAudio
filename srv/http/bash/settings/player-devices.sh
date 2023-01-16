@@ -48,9 +48,8 @@ for line in "${aplay[@]}"; do
 	aplayname=${cnd[1]}
 	device=${cnd[2]}
 	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
-	hw=hw:$card:$device
 	if [[ $aplayname == Loopback ]]; then
-		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
+		device=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
@@ -97,7 +96,6 @@ for line in "${aplay[@]}"; do
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
 , "device"       : '$device'
-, "hw"           : "'$hw'"
 , "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
 , "mixerdevices" : '$mixerdevices'
@@ -108,7 +106,6 @@ for line in "${aplay[@]}"; do
 	Aaplayname[card]=$aplayname
 	Acard[card]=$card
 	Adevice[card]=$device
-	Ahw[card]=$hw
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers
 	Amixertype[card]=$mixertype

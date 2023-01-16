@@ -76,6 +76,7 @@ camilladsp )
 		refresh=${args[2]}
 		applyauto=${args[3]}
 		sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
 		touch $dirsystem/camilladsp
 	else
