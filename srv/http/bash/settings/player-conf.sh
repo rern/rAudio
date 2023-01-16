@@ -170,7 +170,7 @@ alsa = {
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N"
+if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 	if [[ $btmixer ]]; then         #          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
 		hw=$( bluealsa-aplay -L | head -1 )
 	elif [[ ! $equalizer ]]; then
