@@ -444,7 +444,7 @@ snapserver )
 	pushRefresh
 	;;
 spotifyd )
-	systemctl disable --now spotifyd
+	[[ ${args[1]} == true ]] && systemctl enable --now spotifyd || systemctl disable --now spotifyd
 	pushRefresh
 	;;
 spotifytoken )
