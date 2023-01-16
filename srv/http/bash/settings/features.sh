@@ -84,8 +84,8 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushRefresh
 	$dirsettings/player-conf.sh
+	pushRefresh
 	pushSubmenu camilladsp true
 	;;
 dabradio )
@@ -109,8 +109,8 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	pushRefresh
 	$dirsettings/player-conf.sh
+	pushRefresh
 	pushSubmenu equalizer $enabled
 	;;
 hostapdget )

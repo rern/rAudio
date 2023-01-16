@@ -146,10 +146,7 @@ fi
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-if [[ ! $Acard && ! $btmixer ]]; then
-	pushData
-	exit
-fi
+[[ ! $Acard && ! $btmixer ]] && pushData && exit # >>>>>>>>>>
 
 # renderers -----------------------------------------------------------------------------
 
