@@ -152,8 +152,8 @@ fi
 
 # renderers ----------------------------------------------------------------------------
 
-if [[ -e /usr/bin/shairport-sync ]]; then
-	[[ $btmixer ]] && hw=bluealsa
+if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N,0";
+	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {
@@ -170,8 +170,8 @@ alsa = {
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $btmixer ]]; then
+if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N"
+	if [[ $btmixer ]]; then         #          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
 		hw=$( bluealsa-aplay -L | head -1 )
 	elif [[ ! $equalizer ]]; then
 		hw=${hw/,*}
