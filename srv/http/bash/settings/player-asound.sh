@@ -73,12 +73,12 @@ pcm.!default {
 	type plug
 	slave.pcm plugequal
 }
-ctl.equal {
-	type equal
-}
 pcm.plugequal {
 	type equal
 	slave.pcm '$slavepcm'
+}
+ctl.equal {
+	type equal
 }'
 		fi
 	fi
