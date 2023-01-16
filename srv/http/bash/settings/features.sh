@@ -86,7 +86,6 @@ camilladsp )
 		rmmod snd-aloop &> /dev/null
 	fi
 	$dirsettings/player-conf.sh
-	pushRefresh
 	pushSubmenu camilladsp true
 	;;
 dabradio )
@@ -111,8 +110,7 @@ equalizer )
 		rm -f $dirsystem/equalizer
 	fi
 	$dirsettings/player-conf.sh
-	pushRefresh
-	pushSubmenu equalizer $enabled
+\	pushSubmenu equalizer $enabled
 	;;
 hostapdget )
 	hostapdip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
@@ -409,18 +407,14 @@ snapclient )
 		touch $dirsystem/snapclient
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
-			$dirsettings/player-conf.sh
 			grep -q state.*play $dirshm/status && systemctl start snapclient
 		fi
 	else
 		rm $dirsystem/snapclient
 		systemctl stop snapclient
-		if [[ $snapserver ]]; then
-			rm $dirsystem/snapclientserver
-			$dirsettings/player-conf.sh
-		fi
+		[[ $snapserver ]] && rm $dirsystem/snapclientserver
 	fi
-	pushRefresh
+	$dirsettings/player-conf.sh
 	pushSubmenu sanpclient ${args[1]}
 	;;
 snapserver )
@@ -441,7 +435,6 @@ snapserver )
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
 	$dirsettings/player-conf.sh
-	pushRefresh
 	;;
 spotifyd )
 	[[ ${args[1]} == true ]] && systemctl enable --now spotifyd || systemctl disable --now spotifyd

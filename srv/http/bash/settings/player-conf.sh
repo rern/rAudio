@@ -15,8 +15,9 @@ usbdac=$1
 . $dirsettings/player-asound.sh
 
 pushData() {
-	$dirsettings/player-data.sh pushrefresh
 	$dirbash/status-push.sh
+	$dirsettings/player-data.sh pushrefresh
+	$dirsettings/features-data.sh pushrefresh
 	pushstream refresh '{"page":"system","audiocards":'$( aplay -l | grep ^card | grep -c -v Loopback )'}'
 }
 
