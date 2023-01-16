@@ -14,7 +14,9 @@ addonsListGet() {
 	[[ $? != 0 ]] && echo -1 && exit
 }
 equalizerAmixer() { # sudo - mixer equal is user dependent
-	sudo -u mpd amixer -MD equal contents \
+	player=$( < $dirshm/player )
+	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
+	sudo -u $user amixer -MD equal contents \
 					| grep ': values' \
 					| cut -d, -f2 \
 					| xargs
@@ -516,11 +518,13 @@ equalizer )
 	fi
 	sed -i "1 s/.*/$name/" "$filepresets"
 	if [[ $type == preset || $type == delete ]]; then
+		player=$( < $dirshm/player )
+		[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
 		freq=( 31 63 125 250 500 1 2 4 8 16 )
 		for (( i=0; i < 10; i++ )); do
 			(( i < 5 )) && unit=Hz || unit=kHz
 			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u mpd amixer -MqD equal sset "$band" ${v[i]}
+			sudo -u $user amixer -MqD equal sset "$band" ${v[i]}
 		done
 	fi
 	val=$( equalizerAmixer )
@@ -533,7 +537,9 @@ equalizerget )
 equalizerupdn )
 	band=${args[1]}
 	val=${args[2]}
-	sudo -u mpd amixer -D equal sset "$band" $val
+	player=$( < $dirshm/player )
+	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
+	sudo -u $user amixer -MqD equal sset "$band" $val
 	;;
 getelapsed )
 	getElapsed

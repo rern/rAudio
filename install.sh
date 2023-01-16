@@ -4,15 +4,6 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20230117
-file=/etc/systemd/system/shairport-sync.service.d/override.conf
-! grep -q User=mpd $file && sed -i 's/User=root/User=mpd/; s/Group=root/Group=audio/' $file
-
-file=/etc/systemd/system/spotifyd.service
-! grep -q User=mpd $file && sed -i '/CPUAffinity/ a\User=mpd' $file
-systemctl daemon-reload
-systemctl try-restart shairport-sync spotifyd
-
 # 20221229
 files=$( ls /etc/systemd/network/e* )
 for file in $files; do
