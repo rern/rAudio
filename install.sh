@@ -121,7 +121,7 @@ chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-#installfinish
+installfinish
 #-------------------------------------------------------------------------------
 
 # 20221123
