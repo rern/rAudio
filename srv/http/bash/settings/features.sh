@@ -5,6 +5,11 @@
 # convert each line to each args
 readarray -t args <<< $1
 
+pushData() {
+	pushstream refresh '{"page":"features","'$1'":'$2'}'
+	$dirsettings/player-conf.sh
+	pushSubmenu $1 $2
+}
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
@@ -85,8 +90,7 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	$dirsettings/player-conf.sh
-	pushSubmenu camilladsp true
+	pushData camilladsp ${args[1]}
 	;;
 dabradio )
 	if [[ ${args[1]} == true ]]; then
@@ -109,8 +113,7 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	$dirsettings/player-conf.sh
-\	pushSubmenu equalizer $enabled
+	pushData equalizer ${args[1]}
 	;;
 hostapdget )
 	hostapdip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
@@ -414,8 +417,7 @@ snapclient )
 		systemctl stop snapclient
 		[[ $snapserver ]] && rm $dirsystem/snapclientserver
 	fi
-	$dirsettings/player-conf.sh
-	pushSubmenu sanpclient ${args[1]}
+	pushData sanpclient ${args[1]}
 	;;
 snapserver )
 	[[ ${args[1]} == true ]] && enable=1
@@ -434,7 +436,7 @@ snapserver )
 	else
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
-	$dirsettings/player-conf.sh
+	pushData snapserver ${args[1]}
 	;;
 spotifyd )
 	[[ ${args[1]} == true ]] && systemctl enable --now spotifyd || systemctl disable --now spotifyd

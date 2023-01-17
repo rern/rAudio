@@ -107,7 +107,7 @@ else
 	else
 		systemctl stop bluetoothbutton
 	fi
-	[[ $equalizer && $preset  ]] && $dirbash/cmd.sh "equalizer
+	[[ $equalizer ]] && $dirbash/cmd.sh "equalizer
 preset
 $preset"
 fi
