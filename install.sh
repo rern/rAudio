@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20230117
+file=/etc/systemd/system/spotifyd.service
+! grep -q ^User $file && sed -i '/CPUAffinity/ a\User=root' $file
+systemctl daemon-reload
+systemctl try-restart spotifyd
+
 # 20221229
 files=$( ls /etc/systemd/network/e* )
 for file in $files; do

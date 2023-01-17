@@ -103,14 +103,17 @@ else # with audio devices (from player-devices.sh)
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$card'"'
-			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
+			[[ -e $dirmpdconf/replaygain.conf ]] && \
+				audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
-		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
+		[[ -e "$dirsystem/dop-$aplayname" ]] && \
+			audiooutput+='
 	dop            "yes"'
 		if [[ $dirsystem/custom ]]; then
 			customfile="$dirsystem/custom-output-$aplayname"
-			[[ -e "$customfile" ]] && audiooutput+="
+			[[ -e "$customfile" ]] && \
+				audiooutput+="
 $( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
@@ -159,7 +162,8 @@ if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N,0";
 alsa = {
 	output_device = \"$hw\";"
 	
-	[[ $hwmixer && ! $dsp && ! $equalizer ]] && conf+='
+	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
+		conf+='
 	mixer_control_name = "'$hwmixer'";'
 	
 	conf+='
@@ -171,23 +175,20 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
-	if [[ $btmixer ]]; then         #          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
-		hw=$( bluealsa-aplay -L | head -1 )
-	else
-		hw=hw:$asoundcard
-	fi
+									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
+	[[ $btmixer ]] && hw=$( bluealsa-aplay -L | head -1 ) || hw=hw:$asoundcard
 ########
-	conf='[global]
-bitrate = 320
-onevent = "/srv/http/bash/spotifyd.sh"
-use_mpris = false
-backend = "alsa"
-volume_controller = "alsa"
+	conf=$( sed -n '1,/^volume_controller/ p' /etc/spotifyd.conf )
+
+	if [[ ! $equalizer ]]; then
+		conf+='
 device = "'$hw'"
 control = "'$hw'"'
 
-	[[ $hwmixer && ! $dsp && ! $equalizer && ! $btmixer ]] && conf+='
+		[[ $hwmixer && ! $dsp && ! $btmixer ]] && \
+			conf+='
 mixer = "'$hwmixer'"'
+	fi
 #-------
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
