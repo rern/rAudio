@@ -69,7 +69,7 @@ if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
-, "mountpoint" : "/mnt/MPD/SD"
+, "mountpoint" : "/<g>mnt/MPD/SD</g>"
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"

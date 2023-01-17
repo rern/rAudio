@@ -1021,9 +1021,8 @@ function renderPage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		var mountpoint = val.mountpoint === '/mnt/MPD/SD' ? '/<gr>mnt/MPD/SD</gr>' : val.mountpoint;
 		html += '<li '+ dataunmounted;
-		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ mountpoint +'</wh>'+ dot
+		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
 		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
 		html +=  val.size ? val.size : '';
 		html += val.nfs ? ' <gr>• NFS</gr>' : '';
