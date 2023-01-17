@@ -13,7 +13,6 @@ $body = [
 		, 'id'       => 'shairport-sync'
 		, 'setting'  => false
 		, 'status'   => 'shairport-sync'
-		, 'disabled' => nameIcon( 'AirPlay', 'airplay' ).' is currently active.'
 		, 'help'     => '<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
@@ -34,7 +33,6 @@ $body = [
 		, 'icon'     => 'snapcast'
 		, 'id'       => 'snapclient'
 		, 'status'   => 'snapclient'
-		, 'disabled' => nameIcon( 'SnapClient', 'snapcast' ).' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
@@ -51,7 +49,6 @@ EOF
 		, 'icon'     => 'spotify'
 		, 'id'       => 'spotifyd'
 		, 'status'   => 'spotifyd'
-		, 'disabled' => nameIcon( 'Spotify', 'spotify' ).' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  · Require Premium account. (No Spotify password saved on rAudio.)
@@ -78,7 +75,6 @@ EOF
 		, 'icon'     => 'upnp'
 		, 'id'       => 'upmpdcli'
 		, 'status'   => 'upmpdcli'
-		, 'disabled' => nameIcon( 'UPnP', 'upnp' ).' is currently active.'
 		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]

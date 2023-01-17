@@ -9,6 +9,7 @@ pushData() {
 	pushstream refresh '{"page":"features","'$1'":'$2'}'
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
+	$dirsettings/features-data.sh pushrefresh
 }
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'

@@ -112,7 +112,7 @@ $( '#setting-upmpdcli' ).click( function() {
 } );
 $( '#setting-camilladsp' ).click( function() {
 	var icon  = 'camilladsp';
-	var title = 'CamillaGUI';
+	var title = 'CamillaDSP';
 	info( {
 		  icon         : icon
 		, title        : title
@@ -126,6 +126,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, ok           : () => {
 			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( icon, title, S.camilladsp ? 'Change ...' : 'Enable ...' );
+			S.camilladsp = true;
 		}
 	} );
 } );
@@ -500,14 +501,9 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
-	$( '#shairport-sync' ).toggleClass( 'disabled', S.shairportactive );
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
-	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
-	$( '#snapclient' ).toggleClass( 'disabled', S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#spotifyd' ).toggleClass( 'disabled', S.spotifydactive );
 	$( '#redirecturi' ).text( S.spotifyredirect );
-	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	var disablednfs = '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.';

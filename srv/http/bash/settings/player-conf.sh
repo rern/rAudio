@@ -184,8 +184,8 @@ if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 		conf+='
 device = "'$hw'"
 control = "'$hw'"'
-
-		[[ $hwmixer && ! $dsp && ! $btmixer ]] && \
+		
+		[[ $hwmixer && ! $btmixer ]] && \
 			conf+='
 mixer = "'$hwmixer'"'
 	fi
