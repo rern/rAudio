@@ -23,6 +23,7 @@ pcm.!default {
 	slave.pcm camilladsp
 }
 pcm.camilladsp {
+	type plug
 	slave {
 		pcm {
 			type     hw
