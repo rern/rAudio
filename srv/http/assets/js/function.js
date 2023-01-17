@@ -1212,7 +1212,7 @@ function renderPlaylist( data ) { // current playlist
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
-	if ( ! S.pllength || data == -1 ) {
+	if ( data == -1 ) {
 		V.playlisthtml = '';
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
@@ -1579,6 +1579,7 @@ function setPlaylistScroll() {
 	clearIntervalAll();
 	switchPage( 'playlist' );
 	if ( V.sortable
+		|| [ 'airplay', 'spotify' ].includes( S.player )
 		|| ( D.audiocd && $( '#pl-list li' ).length < S.song + 1 ) // on eject cd S.song not yet refreshed
 	) {
 		$( '#page-playlist' ).css( 'visibility', '' );
