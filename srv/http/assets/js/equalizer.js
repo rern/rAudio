@@ -11,12 +11,12 @@ var content = `
 <div id="eq">
 <div class="hz">${ opthz }</div>
 <div class="bottom">
-	<i id="eqdelete" class="fa fa-minus-circle hide"></i>
-	<i id="eqrename" class="fa fa-edit-circle"></i>
-	<i id="eqsave" class="fa fa-save"></i>
+	${ ico( 'minus-circle hide', 'eqdelete' ) }
+	${ ico( 'edit-circle', 'eqrename' ) }
+	${ ico( 'save', 'eqsave' ) }
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	<i id="eqnew" class="fa fa-plus-circle"></i><i id="eqcancel" class="fa fa-arrow-left bl hide"></i>
-	<i id="equndo" class="fa fa-undo"></i>
+	${ ico( 'plus-circle', 'eqnew' ) + ico( 'arrow-left bl hide', 'eqcancel' ) }
+	${ ico( 'undo', 'equndo' ) }
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;

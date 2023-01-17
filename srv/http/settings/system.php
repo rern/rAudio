@@ -2,11 +2,6 @@
 $hostname       = getHostName();
 $ip             = getHostByName( $hostname );
 
-if ( is_link( '/mnt/MPD/NAS/SD' ) ) {
-	$disabledusbautoupdate = '<wh>Server rAudio I^rserver^I</wh> is currently active.';
-} else {
-	$disabledusbautoupdate = '<wh>Shared Data I^networks^I</wh> is currently enabled.';
-}
 $i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
 $selecti2s      = '<select id="i2smodule">'
 				 .'<option value="none">None / Auto detect</option>';
@@ -23,11 +18,6 @@ foreach( $timezonelist as $key => $zone ) {
 	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 }
 $selecttimezone.= '</select>';
-if ( file_exists( '/srv/http/data/system/camilladsp' ) ) {
-	$disabledbt = '<wh>DSP I^camilladsp^I</wh> is currently active.';
-} else {
-	$disabledbt = 'Bluetooth is currently connected.';
-}
 ?>
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
@@ -49,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="helpblock hide"><?=( echoSetIcon( 'I^power btn^I Power' ) )?></div>
+	<div class="helpblock hide"><?=i( 'power btn' )?> Power</div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div id="divstatus" class="section">
@@ -69,8 +59,8 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( 'I^refresh btn^I Refresh every 10 seconds' ) )?>
-<br>
+<?=i( 'refresh btn' )?> Refresh every 10 seconds
+
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
@@ -91,15 +81,13 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="helpblock hide"><?=( echoSetIcon( 
-'I^usbdrive btn^I I^networks btn^I Context menu
-I^plus-circle btn^I Add network storage
-
+	<div class="helpblock hide">
+<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu
+'.i( 'plus-circle btn' ).' Add network storage')?>
 <wh>USB drives:</wh> Will be found and mounted automatically.
 
-<wh>Network shares:</wh> If I^plus-circle btn^I Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+<wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 <wh>• CIFS:</wh>
-' ) )?>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
 mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
@@ -127,25 +115,33 @@ htmlSetting( [
 	, 'icon'     => 'refresh-library'
 	, 'id'       => 'usbautoupdate'
 	, 'setting'  => false
-	, 'disabled' => $disabledusbautoupdate
+	, 'disabled' => 'js'
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
-	  'title'  => 'On-board Wireless'
+	  'title'  => 'On-board Devices'
 	, 'status' => 'rfkill'
 ];
 $body = [
 	[
+		  'label'    => 'Audio'
+		, 'icon'     => 'volume'
+		, 'id'       => 'audio'
+		, 'setting'  => false
+		, 'disabled' => 'No other audio devices available.'
+		, 'help'     => 'Should not be disabled if there\'re no other permanent DAC installed.'
+	]
+	, [
 		  'label'    => 'Bluetooth'
 		, 'sublabel' => 'bluetoothctl'
 		, 'icon'     => 'bluetooth'
 		, 'id'       => 'bluetooth'
 		, 'status'   => 'btcontroller'
-		, 'disabled' => $disabledbt
-		, 'help'     => 'I^gear btn^I ⯀ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'disabled' => 'js'
+		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -153,13 +149,13 @@ $body = [
 		, 'icon'     => 'wifi'
 		, 'id'       => 'wlan'
 		, 'status'   => 'iw'
-		, 'disabled' => 'Wi-Fi is currently connected.'
+		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
-I^gear btn^I
+{$Fi( 'gear btn' )}
 Country of Wi-Fi regulatory domain:
 	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
-| ⯀ Auto start Access Point | On failed connection or no router
+| ■ Auto start Access Point | On failed connection or no router
 EOF
 	]
 ];
@@ -184,11 +180,11 @@ $body = [
 </div>
 EOF
 		, 'help'     => <<< EOF
-I^gear btn^I Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-HAT with EEPROM could be automatically detected.
-(See A^I^player^I Player^A Output | Device | if it's already set.)
+ · HAT with EEPROM could be automatically detected.
+ · See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.
 EOF
 	]
 	, [
@@ -199,7 +195,7 @@ EOF
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
-I^warning yl^I LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
+ · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
@@ -223,7 +219,7 @@ EOF
 		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
-On/Off: A^I^raudio^I System^AI^relays sub^I
+On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  · Can be enabled and run as a test without a connected relay module.
 EOF
@@ -285,7 +281,7 @@ EOF
 		, 'status'   => 'timedatectl'
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
-		, 'help'     => 'I^gear btn^I Servers for time sync and package mirror'
+		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -317,7 +313,10 @@ EOF
 		, 'icon'    => 'restore'
 		, 'id'      => 'restore'
 		, 'setting' => 'nobanner'
-		, 'help'    => 'Restore all data and settings from a backup file.'
+		, 'help'    => <<< EOF
+ · Restore all data and settings from a backup file.
+ · Reset to default - Reset everything except Wi-Fi connection and custom LAN
+EOF
 	]
 	, [
 		  'label'    => 'Shared Data'
@@ -325,7 +324,7 @@ EOF
 		, 'icon'     => 'networks'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
-		, 'disabled' => '<wh>Server rAudio I^rserver^I</wh> is currently active.'
+		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
 	· Library database
@@ -334,11 +333,11 @@ Connect shared data as client for:
 	
 Note:
  · SSH password must be default.
- · I^microsd btn^I SD and I^usbdrive btn^I USB will be hidden in Library home
+ · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: A^I^features^I Features^A <wh>Server rAudio I^rserver^I</wh> |
-	Clients: | <wh>Shared Data I^networks^I</wh> | • rAudio |
+	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )} |
+	Clients: | {$FnameIcon( 'Shared Data', 'networks' )} | ● rAudio |
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -349,7 +348,7 @@ Note:
 			| Sharing | Permissions | Everyone - Full Control
 			| Security | Everyone - Full Control
 	Clients:
-		· | <wh>Shared Data I^networks^I</wh> | Add the created share
+		· | {$FnameIcon( 'Shared Data', 'networks' )} | Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]
@@ -420,7 +419,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://www.archlinuxarm.org">Arch Linux Arm</a>
 		<p>Arch Linux for ARM processors which aims for simplicity and full control to the end user.</p>
 	</div>
-	<div class="listtitle backend">P a c k a g e s :</i>
+	<div class="listtitle backend">Packages:</i>
 	<br><?=$indexhtml?></div>
 	<div class="list"></div>
 	
@@ -437,7 +436,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://jquery.com/">jQuery</a>
 		<p>A JavaScript library for simplifying HTML DOM tree traversal and manipulation</p>
 	</div>
-	<div class="listtitle">P l u g i n s : <?=i( 'chevron-down bl' )?></div>
+	<div class="listtitle">Javascript Plugins: <?=i( 'chevron-down bl' )?></div>
 	<div class="list hide"><?=$uihtml?></div>
 	
 	<heading class="subhead">Data</heading>

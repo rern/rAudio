@@ -209,7 +209,7 @@ profileget )
 	;;
 profileremove )
 	ssid=${args[1]}
-	netctl disable "$ssid"
+	netctl is-enabled "$ssid" && netctl disable "$ssid"
 	if netctl is-active "$ssid" &> /dev/null; then
 		netctl stop "$ssid"
 		killall wpa_supplicant &> /dev/null &

@@ -56,8 +56,8 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function cancelSwitch( id ) {
-	$( '#'+ id ).prop( 'checked', S[ id ] );
+function cancelSwitch() {
+	$( '#'+ V.swid ).prop( 'checked', S[ V.swid ] );
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
@@ -92,7 +92,7 @@ function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
 		bash( [ 'pkgstatus', 'mpd' ], status => {
 			var error =  iconwarning +'MPD is not running '
-						+'<a class="infobtn infobtn-primary restart"><i class="fa fa-refresh"></i>Start</a>'
+						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
 			$( '#data' )
@@ -120,7 +120,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'addons' || page === 'guide' || ! I.infohide ) return
+	if ( page === 'addons' || page === 'guide' || ! I.hidden ) return
 	
 	bash( dirbash + page +'-data.sh', list => {
 		if ( typeof list === 'string' ) { // on load, try catching any errors
@@ -256,7 +256,7 @@ function psWlan( data ) {
 			  icon    : 'wifi'
 			, title   : 'Wi-Fi'
 			, message : 'Reboot to connect <wh>'+ data.ssid +'</wh> ?'
-			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+			, oklabel : ico( 'reboot' ) +'Reboot'
 			, okcolor : orange
 			, ok      : () => bash( [ 'reboot' ] )
 		} );
@@ -285,7 +285,7 @@ document.title = page;
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).keyup( function( e ) {
-	if ( ! I.infohide ) return
+	if ( ! I.hidden ) return
 	
 	var $focus;
 	var key = e.key;
@@ -359,7 +359,7 @@ $( '.close' ).click( function() {
 						+'<pre><wh>'+ list +'</wh></pre>'
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
-			, oklabel : '<i class="fa fa-reboot"></i>Reboot'
+			, oklabel : ico( 'reboot' ) +'Reboot'
 			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
@@ -370,6 +370,7 @@ $( '.page-icon' ).click( function() {
 	$( '#data' ).html( highlightJSON( S ) )
 	$( '.container' ).addClass( 'hide' );
 	$( '#button-data, #data' ).removeClass( 'hide' );
+	$( 'html, body' ).scrollTop( 0 );
 } );
 $( '#button-data' ).click( function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
@@ -412,9 +413,11 @@ $( '.help' ).click( function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
-$( '.switch:not( .custom, .nobanner )' ).click( function() {
-	var id      = this.id;
+$( '.switch' ).click( function() {
+	V.swid      = this.id;
 	var $this   = $( this );
+	if ( $this.hasClass( 'custom' ) || $this.hasClass( 'nobanner' ) ) return
+	
 	var checked = $this.prop( 'checked' );
 	var label   = $this.data( 'label' );
 	var icon    = $this.data( 'icon' );
@@ -430,17 +433,17 @@ $( '.switch:not( .custom, .nobanner )' ).click( function() {
 	
 	if ( $this.hasClass( 'common' ) ) {
 		if ( checked ) {
-			$( '#setting-'+ id ).click();
+			$( '#setting-'+ V.swid ).click();
 		} else {
 			notify( icon, label, 'Disable ...' );
-			bash( [ id, false ] );
+			bash( [ V.swid, false ] );
 		}
 	} else {
 		notify( icon, label, checked );
-		bash( [ id, checked ], error => {
+		bash( [ V.swid, checked ], error => {
 			if ( error ) {
 				bannerHide();
-				$( '#'+ id ).prop( 'checked', false );
+				$( '#'+ V.swid ).prop( 'checked', false );
 				info( error );
 			}
 		}, 'json' );

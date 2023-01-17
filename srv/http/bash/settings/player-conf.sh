@@ -8,10 +8,17 @@
 # - mixer_device  - card index
 
 . /srv/http/bash/common.sh
-usbdac=$1 # from usbdac.rules - player-conf.sh [add|remove]
 
-. $dirsettings/player-devices.sh # $i, $A...
+usbdac=$1
+
+. $dirsettings/player-devices.sh # $asoundcard, $A...
 . $dirsettings/player-asound.sh
+
+pushData() {
+	$dirbash/status-push.sh
+	$dirsettings/player-data.sh pushrefresh
+	[[ $usbdac ]] && pushstream refresh '{"page":"system","audiocards":'$( aplay -l | grep ^card | grep -c -v Loopback )'}'
+}
 
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
@@ -36,7 +43,7 @@ $audiooutputbt
 ########
 fi
 
-if [[ $i == -1 ]]; then # no audio devices
+if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
 		pushstream display '{"volumenone":true}'
 		pushstream refresh '{"page":"features","nosound":true}'
@@ -44,11 +51,12 @@ if [[ $i == -1 ]]; then # no audio devices
 		outputswitch='(None)'
 	fi
 else # with audio devices (from player-devices.sh)
-	aplayname=${Aaplayname[i]}
-	hw=${Ahw[i]}
-	hwmixer=${Ahwmixer[i]}
-	mixertype=${Amixertype[i]}
-	name=${Aname[i]}
+	aplayname=${Aaplayname[asoundcard]}
+	card=${Acard[asoundcard]}
+	device=${Adevice[asoundcard]}
+	hwmixer=${Ahwmixer[asoundcard]}
+	mixertype=${Amixertype[asoundcard]}
+	name=${Aname[asoundcard]}
 	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
@@ -60,8 +68,8 @@ else # with audio devices (from player-devices.sh)
 		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
 	if [[ $dsp ]]; then # from player-asound.sh
-		cardloopback=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
-		hw=hw:$cardloopback,1
+		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
+		hw=hw:$card,1
 #---------------< camilladsp
 		audiooutput='
 	name           "CamillaDSP (Loopback)"
@@ -72,15 +80,17 @@ else # with audio devices (from player-devices.sh)
 #--------------->
 	elif [[ $equalizer ]]; then # from player-asound.sh
 		[[ -e $dirshm/btreceiver ]] && mixertype=software
+		hw=plug:plugequal
 #---------------< equalizer
 		audiooutput='
 	name           "ALSAEqual"
-	device         "plug:plugequal"
+	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
 	mixer_type     "'$mixertype'"'
 #--------------->
 	elif [[ ! -e $dirsystem/snapclientserver ]]; then # not client + server on same device
+		hw=hw:$card,$device
 #---------------< normal
 		audiooutput='
 	name           "'$name'"
@@ -92,15 +102,18 @@ else # with audio devices (from player-devices.sh)
 		if [[ $mixertype == hardware ]]; then # mixer_device must be card index
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
-	mixer_device   "hw:'$i'"'
-			[[ -e $dirmpdconf/replaygain.conf ]] && audiooutput+='
+	mixer_device   "hw:'$card'"'
+			[[ -e $dirmpdconf/replaygain.conf ]] && \
+				audiooutput+='
 	replay_gain_handler "mixer"'
 		fi
-		[[ -e "$dirsystem/dop-$aplayname" ]] && audiooutput+='
+		[[ -e "$dirsystem/dop-$aplayname" ]] && \
+			audiooutput+='
 	dop            "yes"'
 		if [[ $dirsystem/custom ]]; then
 			customfile="$dirsystem/custom-output-$aplayname"
-			[[ -e "$customfile" ]] && audiooutput+="
+			[[ -e "$customfile" ]] && \
+				audiooutput+="
 $( sed 's/^/\t/' "$customfile" )"
 		fi
 #--------------->
@@ -138,27 +151,21 @@ fi
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-if [[ $equalizer || $dsp || ( ! $Acard && ! $btmixer ) ]]; then
-	$dirsettings/player-data.sh pushrefresh
-	$dirbash/status-push.sh
-	exit
-fi
+[[ ! $Acard && ! $btmixer ]] && pushData && exit # >>>>>>>>>>
 
-# renderers -----------------------------------------------------------------------------
+# renderers ----------------------------------------------------------------------------
 
-if [[ -e /usr/bin/shairport-sync ]]; then
+if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N,0";
+	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
 ########
 	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
-alsa = {"
-	if [[ $btmixer ]]; then
+alsa = {
+	output_device = \"$hw\";"
+	
+	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
 		conf+='
-	output_device = "bluealsa";'
-	else
-		conf+='
-	output_device = "hw:'$i'";'
-	[[ $hwmixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
-	fi
+	
 	conf+='
 }'
 #-------
@@ -167,30 +174,24 @@ alsa = {"
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $btmixer ]]; then
-		device=$( bluealsa-aplay -L | head -1 )
-	else
-		cardname=$( aplay -l 2> /dev/null | awk '/^card '$1'/ {print $3;exit}' )
-		[[ $cardname ]] && device=$( aplay -L | grep -m1 "^default.*$cardname" )
-	fi
+if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
+									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
+	[[ $btmixer ]] && hw=$( bluealsa-aplay -L | head -1 ) || hw=hw:$asoundcard
 ########
-	conf='[global]
-bitrate = 320
-onevent = "/srv/http/bash/spotifyd.sh"
-use_mpris = false
-backend = "alsa"
-device = "'$device'"'
-	if [[ ! $btmixer && $hwmixer != '( not available )' ]]; then
+	conf=$( sed -n '1,/^volume_controller/ p' /etc/spotifyd.conf )
+
+	if [[ ! $equalizer ]]; then
 		conf+='
-mixer = "'$hwmixer'"
-control = "hw:'$i'"
-volume_controller = "alsa"'
-#-------
+device = "'$hw'"
+control = "'$hw'"'
+		
+		[[ $hwmixer && ! $btmixer ]] && \
+			conf+='
+mixer = "'$hwmixer'"'
 	fi
+#-------
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
 
-$dirsettings/player-data.sh pushrefresh
-$dirbash/status-push.sh
+pushData

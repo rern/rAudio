@@ -4,6 +4,23 @@
 	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
 </div>
 <?php
+function i( $icon, $id = '' ) {
+	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
+	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
+}
+function nameIcon( $name, $icon ) {
+	return '<wh>'.$name.' '.i( $icon ).'</wh>';
+}
+function menu( $icon, $name, $iconsub = '' ) {
+	$menu = '<a class="menu-sub"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
+	$menu.= $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
+	return $menu;
+}
+// functions for use inside heredoc
+$Fi        = 'i';
+$Fmenu     = 'menu';
+$FnameIcon = 'nameIcon';
+
 echo '<div class="container hide">';
 
 include 'settings/'.$page.'.php';
@@ -70,7 +87,8 @@ $body = [
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
 										// 'icon'  = 'fa-icon'
-		, 'disable'     => 'MESSAGE'    // set data-diabled - prompt on click
+		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
+										// 'js' = set by js condition
 		, 'help'        => <<< EOF
 HELP - PHP heredoc
 EOF
@@ -102,7 +120,7 @@ function htmlHead( $data ) {
 	$html   .= '</heading>';
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	echoSetIcon( $html );
+	echo str_replace( '|', '<g>|</g>', $html );
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
@@ -144,7 +162,7 @@ function htmlSetting( $data ) {
 	$html       .= '</div>
 			 </div>';
 	$html       .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
-	echoSetIcon( $html );
+	echo str_replace( '|', '<g>|</g>', $html );
 }
 function htmlSection( $head, $body, $id = '' ) {
 	$html = '<div';
@@ -154,15 +172,4 @@ function htmlSection( $head, $body, $id = '' ) {
 	htmlHead( $head );
 	foreach( $body as $data ) htmlSetting( $data );
 	echo '</div>';
-}
-function echoSetIcon( $html ) { // only within: htmlHead(), htmlSetting()
-	echo str_replace(
-		  [ '|',        'I^',               '^I',     'A^',                   '^A'   ]
-		, [ '<g>|</g>', '<i class="fa fa-', '"></i>', '<a class="menu-sub">', '</a>' ]
-		, $html
-	);
-}
-function i( $icon, $id = '' ) {
-	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
-	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }

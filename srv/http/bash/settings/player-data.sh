@@ -8,7 +8,7 @@
 data='
   "page"             : "player"
 , "devices"          : '$devices'
-, "asoundcard"       : '$i'
+, "asoundcard"       : '$asoundcard'
 , "audioaplayname"   : "'$aplayname'"
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
@@ -35,7 +35,7 @@ data='
 , "soxrconf"         : ['$( sed -E '/resampler|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
 , "soxrcustomconf"   : ['$( sed -E '/resampler|plugin|quality|}/ d; s/.*"(.*)"/\1/' $dirmpdconf/conf/soxr-custom.conf | xargs | tr ' ' , )']
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
+, "state"            : "'$( grep -m1 ^state= $dirshm/status | cut -d= -f2 | tr -d '"' )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data" $1

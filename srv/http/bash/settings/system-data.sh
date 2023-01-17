@@ -69,7 +69,7 @@ if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
-, "mountpoint" : "/mnt/MPD/SD"
+, "mountpoint" : "/<g>mnt/MPD/SD</g>"
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
@@ -202,6 +202,14 @@ data+='
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf
+
+cpuInfo
+if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
+	data+='
+, "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audiocards"       : '$( aplay -l | grep ^card | grep -c -v Loopback )'
+, "audiomodule"      : '$( aplay -l | grep -q 'bcm2835 Headphones' && echo true )
+fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'

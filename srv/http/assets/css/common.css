@@ -1,6 +1,6 @@
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2022122700' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2023010200' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -40,7 +40,7 @@
 .fa-arrow-right::before     { content: '\F603' }
 .fa-artist::before          { content: '\F556' }
 .fa-audiocd::before         { content: '\F538' }
-.fa-backspace:before        { content: '\F608' }
+.fa-backspace::before       { content: '\F608' }
 .fa-bars::before            { content: '\F51C' }
 .fa-bio::before             { content: '\F51D' }
 .fa-bookmark::before        { content: '\F550' }
@@ -50,7 +50,7 @@
 .fa-brush::before           { content: '\F536' }
 .fa-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .fa-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
-.fa-capslock:before         { content: '\F607' }
+.fa-capslock::before        { content: '\F607' }
 .fa-check::before           { content: '\F51B' }
 .fa-chevron-down::before    { content: '\F605' }
 .fa-chevron-up::before      { content: '\F604' }
@@ -60,6 +60,8 @@
 .fa-conductor::before       { content: '\F559' }
 .fa-consume::before         { content: '\F566' }
 .fa-copy::before            { content: '\F54E' }
+.fa-coverart::before        { content: '\F58A'; position: absolute; }
+.fa-coverart::after         { content: '\F58B'; position: relative; color: #000; opacity: 40%; text-shadow: none; }
 .fa-crop::before            { content: '\F568' }
 .fa-dabradio::before        { content: '\F589' }
 .fa-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
@@ -85,7 +87,7 @@
 .fa-guide::before           { content: '\F579' }
 .fa-hdmi::after             { content: '\F58B' }
 .fa-help::before            { content: '\F560' }
-.fa-hide:before             { content: '\F575' }
+.fa-hide::before            { content: '\F575' }
 .fa-i2saudio::before        { content: '\F571' }
 .fa-info-circle::before     { content: '\F561' }
 .fa-input::before           { content: '\F529' }
@@ -158,7 +160,7 @@
 .fa-search::before          { content: '\F56A' }
 .fa-set0::before            { content: '\F515' }
 .fa-settings::before        { content: '\F509' }
-.fa-shift:before            { content: '\F606' }
+.fa-shift::before           { content: '\F606' }
 .fa-shuffle::before         { content: '\F513' }
 .fa-single::before          { content: '\F514' }
 .fa-sliders::before         { content: '\F50B' }
@@ -317,13 +319,6 @@ codered  {
 }
 .splash svg {
 	animation: none !important;
-}
-
-.iconcover {
-	content : url( '/assets/img/iconcover.svg' );
-	width   : 24px !important;
-	margin  : 5px !important;
-	border  : 1px solid hsl(0,0%,20%);
 }
 
 /* banner() */
@@ -805,8 +800,9 @@ input[type=number]:disabled {
 }
 #infoContent .fa-eye {
 	width: 30px;
-	text-align: center;
 	margin-right: -25px;
+	text-align: center;
+	font-size: 20px;
 }
 input[type=radio],
 input[type=checkbox] {

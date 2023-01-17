@@ -170,7 +170,7 @@ $( '.forget' ).click( function() {
 			  icon    : icon
 			, title   : name
 			, message : S.listeth ? '' : iconwarning +'No network connections after this.'
-			, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
+			, oklabel : ico( 'minus-circle' ) +'Forget'
 			, okcolor : red
 			, ok      : () => {
 				notify( icon, name, 'Forget ...' );
@@ -186,7 +186,7 @@ $( '.forget' ).click( function() {
 		  icon    : icon
 		, title   : ssid
 		, message : S.ipeth || S.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
-		, oklabel : '<i class="fa fa-minus-circle"></i>Forget'
+		, oklabel : ico( 'minus-circle' ) +'Forget'
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
@@ -290,7 +290,7 @@ function editLAN() {
 				} );
 			}
 		}
-		, buttonlabel  : ! static ? '' : '<i class="fa fa-undo"></i>DHCP'
+		, buttonlabel  : ! static ? '' : ico( 'undo' ) +'DHCP'
 		, button       : ! static ? '' : () => {
 			notify( icon, title, 'Change URL to '+ S.hostname +'.local ...' );
 			loader();
@@ -398,7 +398,7 @@ function renderBluetooth() {
 		S.listbt.forEach( list => {
 			var dot = list.connected ? '<grn>•</grn>' : '<gr>•</gr>';
 			htmlbt += '<li class="bt" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'
-					 +'<i class="fa fa-'+ ( list.type === 'Source' ? 'btsender' : 'bluetooth' ) +'"></i>'+ dot +'&ensp;'+ list.name +'</li>';
+					 + ico( list.type === 'Source' ? 'btsender' : 'bluetooth' ) + dot +'&ensp;'+ list.name +'</li>';
 		} );
 		$( '#listbt' ).html( htmlbt );
 	} else {
@@ -426,7 +426,7 @@ function renderPage() {
 		$( '#divlan' ).addClass( 'hide' );
 	} else {
 		var htmlwl = '';
-		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'"><i class="fa fa-lan"></i><grn>•</grn>&ensp;'+ S.ipeth
+		if ( S.listeth ) htmlwl = '<li data-ip="'+ S.ipeth +'">'+ ico( 'lan' ) +'<grn>•</grn>&ensp;'+ S.ipeth
 								 +'<gr>&ensp;&raquo;&ensp;'+ S.listeth.gateway +'</gr></li>';
 		$( '#listlan' ).html( htmlwl );
 		$( '.lanadd' ).toggleClass( 'hide', S.listeth !== false );
@@ -469,14 +469,14 @@ function renderWlan() {
 				if ( ! S.hostapd ) {
 					var signal = list.dbm > -60 ? '' : ( list.dbm < -67 ? 1 : 2 );
 					htmlwl += '<li class="wl" data-ssid="'+ list.ssid +'" data-ip="'+ list.ip +'" data-gateway="'+ list.gateway +'">'
-							 +'<i class="fa fa-wifi'+ signal +'"></i><grn>•</grn>&ensp;'+ list.ssid 
+							 + ico( 'wifi'+ signal ) +'<grn>•</grn>&ensp;'+ list.ssid 
 							 +'<gr>&ensp;•&ensp;</gr>'+ list.ip +'<gr>&ensp;&raquo;&ensp;'+ list.gateway +'</gr></li>';
 				} else {
-					htmlwl += '<li class="wl accesspoint"><i class="fa fa-accesspoint"></i><grn>•</grn>&ensp;'
+					htmlwl += '<li class="wl accesspoint">'+ ico( 'accesspoint' ) +'<grn>•</grn>&ensp;'
 							 +'<gr>Access point&ensp;&laquo;&ensp;</gr>'+ S.hostapd.hostapdip +'</li>';
 				}
 			} else {
-				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'"><i class="fa fa-wifi"></i><gr>•&ensp;</gr>'+ list.ssid +'</li>';
+				htmlwl     += '<li class="wl notconnected" data-ssid="'+ list.ssid +'">'+ ico( 'wifi' ) +'<gr>•&ensp;</gr>'+ list.ssid +'</li>';
 			}
 		} );
 		$( '#listwl' ).html( htmlwl );
@@ -491,7 +491,7 @@ function scanBluetooth() {
 		if ( data ) {
 			S.listbtscan = data;
 			var htmlbt   = '';
-			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'"><i class="fa fa-bluetooth"></i><wh>'+ list.name +'</wh></li>' );
+			data.forEach( list => htmlbt  += '<li class="btscan" data-mac="'+ list.mac +'" data-name="'+ list.name +'">'+ ico( 'bluetooth' ) +'<wh>'+ list.name +'</wh></li>' );
 			$( '#listbtscan' ).html( htmlbt );
 		}
 		V.timeoutscan = setTimeout( scanBluetooth, 12000 );
@@ -510,9 +510,9 @@ function scanWlan() {
 					var dbm    = '';
 					var signal = '';
 				}
-				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'"><i class="fa fa-wifi'+ signal +'"></i>';
+				htmlwl += '<li class="wlscan" data-ssid="'+ list.ssid +'" data-encrypt="'+ list.encrypt +'" data-wpa="'+ list.wpa +'">'+ ico( 'wifi'+ signal );
 				htmlwl += dbm && dbm < -67 ? '<gr>'+ list.ssid +'</gr>' : list.ssid;
-				if ( list.encrypt === 'on') htmlwl += ' <i class="fa fa-lock"></i>';
+				if ( list.encrypt === 'on') htmlwl += ' '+ ico( 'lock' );
 				if ( list.signal != 0 ) htmlwl += '<gr>'+ list.signal +'</gr>';
 				htmlwl += '</li>';
 			} );

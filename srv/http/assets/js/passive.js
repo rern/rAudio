@@ -68,7 +68,7 @@ function webradioIcon( srcnoext ) {
 					.replace( /\|/g, '/' );
 	return $( '#lib-list li' ).filter( ( i, el ) => {
 		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.lib-icon' );
+	} ).find( '.li-icon' );
 }
 // pushstreamChannel() in common.js
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
@@ -157,7 +157,7 @@ function psDisplay( data ) {
 	} else if ( V.library ) {
 		if ( ! V.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.lib-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
+		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
 			if ( D.hidecover ) {
 				$( '.licover' ).remove();
 			} else {
@@ -207,7 +207,7 @@ function psMpdRadio( data ) {
 		setInfo();
 		setCoverart();
 		if ( D.radioelapsed ) {
-			$( '#progress' ).html( '<i class="fa fa-play"></i><span></span>' );
+			$( '#progress' ).html( ico( 'play' ) +'<span></span>' );
 			setProgressElapsed();
 		} else {
 			setBlinkDot();
@@ -337,10 +337,10 @@ function psRelays( response ) {
 			, title       : 'Relays Countdown'
 			, message     : stopwatch
 						   +'<div class="msg-r wh">60</div>'
-			, buttonlabel : '<i class="fa fa-relays"></i>Off'
+			, buttonlabel : ico( 'relays' ) +'Off'
 			, buttoncolor : red
 			, button      : () => bash( '/srv/http/bash/settings/relays.sh' )
-			, oklabel     : '<i class="fa fa-set0"></i>Reset'
+			, oklabel     : ico( 'set0' ) +'Reset'
 			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
@@ -367,7 +367,7 @@ function psRelays( response ) {
 			}
 			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
-		if ( I.infohide ) {
+		if ( I.hidden ) {
 			info( {
 				  icon       : 'relays'
 				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )

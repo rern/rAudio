@@ -23,9 +23,6 @@
 	line-height   : 40px !important;
 	border-radius : 3px;
 }
-.select2-container--focus .select2-selection__rendered {
-	outline: 2px solid var( --cgl );
-}
 .select2-results__option {
 	padding-left: 8px;
 }
@@ -80,4 +77,9 @@
 }
 .select2-container--disabled .select2-selection__arrow {
 	display: none;
+}
+@media ( hover:hover ) {
+	.select2-container--focus .select2-selection__rendered {
+		outline: 2px solid var( --cgl );
+	}
 }

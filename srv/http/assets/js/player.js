@@ -26,7 +26,7 @@ $( '#setting-btreceiver' ).click( function() {
 				} );
 				$( '#infoOk' ).toggleClass( db === '0.00' );
 			}
-			, oklabel    : '<i class="fa fa-set0"></i>0dB'
+			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => volume0db( 'volume0dbbt', $( '#setting-btreceiver' ) )
 		} );
 	} );
@@ -61,7 +61,7 @@ $( '#setting-hwmixer' ).click( function() {
 				} );
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 			}
-			, oklabel    : '<i class="fa fa-set0"></i>0dB'
+			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => volume0db( 'volume0db', $( '#setting-hwmixer' ) )
 		} );
 	} );
@@ -89,7 +89,7 @@ $( '#novolume' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : warning
-			, cancel  : () => cancelSwitch( 'novolume' )
+			, cancel  : cancelSwitch
 			, ok      : () => {
 				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
@@ -125,7 +125,7 @@ $( '#setting-crossfade' ).click( function() {
 		, values       : S.crossfadeconf || 1
 		, checkchanged : S.crossfade
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'crossfade' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'crossfade', true, infoVal() ] );
 			notify( icon, title, S.crossfade ? 'Change ...' : 'Enable ...' );
@@ -141,7 +141,7 @@ $( '#setting-replaygain' ).click( function() {
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
-		, cancel       : () => cancelSwitch( 'replaygain' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'replaygain', true, infoVal() ] );
 			notify( icon, title, S.replaygain ? 'Change ...' : 'Enable ...' );
@@ -149,15 +149,17 @@ $( '#setting-replaygain' ).click( function() {
 	} );
 } );
 $( '.filetype' ).click( function() {
-	if ( $( '#divfiletype' ).is( ':empty' ) ) {
+	var $pre = $( '#prefiletype' );
+	if ( $pre.is( ':empty' ) ) {
 		bash( [ 'filetype' ], data => {
-			$( '#divfiletype' )
+			$pre
 				.html( data )
 				.toggleClass( 'hide' );
 		} );
 	} else {
-		$( '#divfiletype' ).toggleClass( 'hide' );
+		$pre.toggleClass( 'hide' );
 	}
+	$( this ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
 $( '#setting-buffer' ).click( function() {
 	var icon  = 'mpd';
@@ -173,7 +175,7 @@ $( '#setting-buffer' ).click( function() {
 		, values       : S.bufferconf
 		, checkchanged : S.buffer
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'buffer' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'buffer', true, infoVal() ] );
 			notify( icon, title, S.buffer ? 'Change ...' : 'Enable ...' );
@@ -194,7 +196,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, values       : S.outputbufferconf
 		, checkchanged : S.outputbuffer
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'outputbuffer' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'outputbuffer', true, infoVal() ] );
 			notify( icon, title, S.outputbuffer ? 'Change ...' : 'Enable ...' );
@@ -233,7 +235,7 @@ $( '#setting-custom' ).click( function() {
 			, content      : custominfo.replace( 'N', S.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : S.custom
-			, cancel       : () => cancelSwitch( 'custom' )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
@@ -333,7 +335,7 @@ function infoSoxr( quality ) {
 		, checkblank   : 1
 		, checkchanged : S.soxr && quality === S.soxrquality
 		, boxwidth     : custom ? 85 : 180
-		, cancel       : () => cancelSwitch( 'soxr' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			if ( custom ) {
 				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
@@ -352,16 +354,17 @@ function infoSoxrPreset() {
 }
 function playbackIcon() {
 	$( '.playback' )
-		.removeClass( 'fa-pause fa-play fa-stop' )
-		.addClass( 'fa fa-'+ S.state )
+		.removeClass( 'fa-pause fa-play' )
+		.addClass( S.state === 'play' ? 'fa-pause' : 'fa-play' )
 		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
 }
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>'
-					+'<i class="fa fa-song gr"></i>&ensp;'+ ( S.counts.song || 0 ).toLocaleString() +'&emsp; '
-					+'<i class="fa fa-album gr"></i>&ensp;'+ ( S.counts.album || 0 ).toLocaleString() +'<wide>&emsp; '
-					+'<i class="fa fa-webradio gr"></i>&ensp;'+ ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
+					+ ico( 'song' ) + ( S.counts.song || 0 ).toLocaleString()
+					+ ico( 'album' ) + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
+					+ ico( 'artist' ) + ( S.counts.arttist || 0 ).toLocaleString()
+					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		$( '#divbtreceiver' ).removeClass( 'hide' );
@@ -384,9 +387,11 @@ function renderPage() {
 		$( '#audiooutput' )
 			.html( htmldevices )
 			.val( S.asoundcard );
-		var htmlhwmixer      = D.mixermanual ? '<option value="auto">Auto</option>' : '';
-		if ( 'mixerdevices' in D ) {
+		if ( D.mixerdevices ) {
+			var htmlhwmixer = D.mixermanual ? '<option value="auto">Auto</option>' : '';
 			D.mixerdevices.forEach( mixer => htmlhwmixer += '<option value="'+ mixer +'">'+ mixer +'</option>' );
+		} else {
+			var htmlhwmixer = '<option value="">( not available )</option>';
 		}
 		$( '#hwmixer' )
 			.html( htmlhwmixer )
@@ -403,9 +408,9 @@ function renderPage() {
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 		if ( S.camilladsp ) {
-			var label = '<i class="fa fa-camilladsp"></i>';
+			var label = ico( 'camilladsp' );
 		} else if ( S.equalizer ) {
-			var label = 'Equalizer<i class="fa fa-equalizer"></i>';
+			var label = 'Equalizer'+ ico( 'equalizer' );
 		} else {
 			var label = 'Device';
 		}

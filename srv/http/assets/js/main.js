@@ -50,9 +50,8 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 var blinkdot    = '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>';
-var iconcover   = '<i class="iconcover"></i>';
-var icoveredit  = '<div class="coveredit cover-change">'+ iconcover +'</div>';
-var icoversave  = '<div class="coveredit cover-save"><i class="fa fa-save"></i></div>';
+var icoveredit  = '<div class="coveredit cover-change">'+ ico( 'coverart' ) +'</div>';
+var icoversave  = '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>';
 var orange      = '#de810e';
 var red         = '#bb2828';
 $( '.submenu.fa-color' ).html( '<canvas></canvas>' );
@@ -92,7 +91,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
 			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| ! I.infohide
+			|| ! I.hidden
 			|| ! $( '#data' ).hasClass( 'hide' )
 		) return
 		
@@ -113,7 +112,40 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 	
 $( 'body' ).click( function( e ) {
 	var $target = $( e.target );
-	if ( ! $target.hasClass( 'savedlist' ) && ! $target.hasClass( 'bkcoverart' ) && ! $target.hasClass( 'bkradio' ) ) menuHide();
+	if ( ! $target.hasClass( 'savedlist' )
+		&& ! $target.hasClass( 'bkcoverart' )
+		&& ! $target.hasClass( 'bkradio' )
+	) menuHide();
+	if ( ! V.local
+		&& $( '.pl-remove' ).length
+		&& ! $target.hasClass( 'pl-remove' )
+	) $( '.pl-remove' ).remove();
+} );
+$( '#page-library' ).on( 'click', 'p', function() {
+	$( '.licover .cover-change' ).remove();
+	$( '.licover img' ).css( 'opacity', '' );
+	$( '#lib-list li' ).removeClass( 'active' );
+	if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
+} );
+$( '#page-playback' ).click( function( e ) {
+	if ( V.press
+		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
+	
+	if ( V.guide ) hideGuide();
+	if ( $( '#divcover .coveredit' ).length ) {
+		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
+			$( '#divcover .cover-change' ).remove();
+			$( '#coverart' ).css( 'opacity', '' );
+		}
+	}
+} );
+$( '#page-playlist' ).on( 'click', 'p', function() {
+	if ( V.savedlist || V.savedplaylist ) return
+	
+	$( '#pl-savedlist li' ).removeClass( 'active' );
+	$( '#pl-list li' ).removeClass( 'updn' );
+	$( '#pl-list .name' ).css( 'max-width', '' );
+	if ( ! $( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
 } );
 $( '.page' ).contextmenu( function( e ) { // touch device - on press - disable default context menu
 	e.preventDefault();
@@ -363,9 +395,9 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
-		  plclear        : 'Confirm on <i class="fa fa-replace"></i>Replace <gr>|</gr> <i class="fa fa-play-replace"></i>'
-		, plsimilar      : 'Confirm on <i class="fa fa-lastfm"></i>Add similar'
-		, audiocdplclear : 'Clear on <i class="fa fa-audiocd"></i>Audio CD load'
+		  plclear        : 'Confirm on '+ ico( 'replace' ) +'Replace <gr>|</gr> '+ ico( 'play-replace' )
+		, plsimilar      : 'Confirm on '+ ico( 'lastfm' ) +'Add similar'
+		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).click();
 	var keys   = Object.keys( chkplaylist );
@@ -459,18 +491,6 @@ $( '#playlist, #button-playlist' ).click( function() {
 		savedpl ? switchPage( 'playlist' ) : getPlaylist(); // switchPage( 'playlist' ) in setPlaylistScroll()
 	}
 } );
-$( '#page-playback' ).click( function( e ) {
-	if ( V.press
-		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
-	
-	if ( V.guide ) hideGuide();
-	if ( $( '#divcover .coveredit' ).length ) {
-		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
-			$( '#divcover .cover-change' ).remove();
-			$( '#coverart' ).css( 'opacity', '' );
-		}
-	}
-} );
 $( '#bar-top, #bar-bottom, #page-library' ).click( function() {
 	if ( V.guide ) hideGuide();
 	if ( ! $( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
@@ -480,19 +500,6 @@ $( '#bar-top' ).click( function( e ) {
 } );
 $( '#settings' ).click( function() {
 	$( this ).addClass( 'hide' );
-} );
-$( '#page-library, #page-playlist' ).on( 'click', 'p', function() {
-	if ( V.library ) {
-		$( '.licover .cover-change' ).remove();
-		$( '.licover img' ).css( 'opacity', '' );
-		$( '#lib-list li' ).removeClass( 'active' );
-		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).click();
-	} else if ( V.playlist && ! V.savedlist && ! V.savedplaylist ) {
-		$( '#pl-savedlist li' ).removeClass( 'active' );
-		$( '#pl-list li' ).removeClass( 'updn' );
-		$( '#pl-list .name' ).css( 'max-width', '' );
-		if ( ! $( '#pl-search-input' ).val() ) $( '#pl-search-close' ).click();
-	}
 } );
 // PLAYBACK /////////////////////////////////////////////////////////////////////////////////////
 $( '#info' ).click( function() {
@@ -537,16 +544,16 @@ $( '#title, #guide-lyrics' ).click( function() {
 	var paren        = title.replace( /^.*\(/, '(' );
 	var content      = `\
 <table>
-<tr><td><i class="fa fa-artist wh"></i></td><td><input class="required" type="text"></td></tr>
-<tr><td><i class="fa fa-music wh"></i></td><td><input class="required" type="text"></td></tr>
-<tr class="album"><td><i class="fa fa-album wh"></i></td><td><input type="text"></td></tr>
+<tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
+<tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
+<tr class="album"><td>${ ico( 'album wh' ) }</td><td><input type="text"></td></tr>
 <tr id="paren"><td></td><td><label><input type="checkbox"><gr>Title includes:</gr>&emsp;${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
 <tr><td colspan="2" class="btnbottom">
-	<span class="lyrics"><i class="fa fa-lyrics"></i> Lyrics</span>
-	<span class="bio">&emsp;<i class="fa fa-bio"></i> Bio</span>
-	<span class="pladd">&emsp;<i class="fa fa-file-playlist"></i> Add</span>
-	<span class="scrobble">&emsp;<i class="fa fa-lastfm"></i> Scrobble</span>
+	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
+	<span class="bio">&emsp;${ ico( 'bio' ) } Bio</span>
+	<span class="pladd">&emsp;${ ico( 'file-playlist' ) } Add</span>
+	<span class="scrobble">&emsp;${ ico( 'lastfm' ) } Scrobble</span>
 	</td></tr>
 </table>`;
 	info( {
@@ -609,7 +616,7 @@ $( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
-		, oklabel : '<i class="fa fa-minus-circle"></i>Eject'
+		, oklabel : ico( 'minus-circle' ) +'Eject'
 		, okcolor : red
 		, ok      : () => bash( '/srv/http/bash/audiocd.sh ejecticonclick' )
 	} );
@@ -899,7 +906,7 @@ $( '.map' ).click( function( e ) {
 		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength );
+		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.timemap' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.volmap' ).toggleClass( 'mapshow', volume );
@@ -1055,7 +1062,7 @@ $( '.btn-cmd' ).click( function() {
 						.text( timehms )
 						.addClass( 'gr' );
 					$( '#total, #progress' ).empty();
-					$( '#progress' ).html( '<i class="fa fa-stop"></i><span></span>'+ timehms );
+					$( '#progress' ).html( ico( 'stop' ) +'<span></span>'+ timehms );
 				} else {
 					$( '#title' ).html( '·&ensp;·&ensp;·' );
 					$( '#elapsed, #progress' ).empty();
@@ -1172,7 +1179,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					 +'<br>  • Create directory icons'
 	}
 	info( {
-		  icon         : iconcover
+		  icon         : 'coverart'
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
@@ -1213,7 +1220,7 @@ $( '#lib-search-btn' ).click( function() { // search
 				}
 				renderLibraryList( list );
 				$( 'html, body' ).scrollTop( 0 );
-				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i><span>'+ data.count +' <gr>of</gr> </span>' );
+				$( '#lib-search-close' ).html( ico( 'close' ) +'<span>'+ data.count +' <gr>of</gr> </span>' );
 				$( '#lib-breadcrumbs, #button-lib-back' ).addClass( 'hide' );
 			} else {
 				info( {
@@ -1221,7 +1228,7 @@ $( '#lib-search-btn' ).click( function() { // search
 					, title   : 'Library Database'
 					, message : 'Nothing found for <wh>'+ keyword +'</wh>'
 				} );
-				$( '#lib-search-close' ).html( '<i class="fa fa-close"></i>' );
+				$( '#lib-search-close' ).html( ico( 'close' ) );
 			}
 		}, 'json' );
 	}
@@ -1299,7 +1306,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		} else {
 			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.' 
 						 +'<br>To populate Library database:'
-						 +'<br>Settings > Library | <i class="fa fa-refresh-library wh"></i>'
+						 +'<br>Settings > Library | '+ ico( 'refresh-library wh' )
 		}
 		info( {
 			  icon    : 'library'
@@ -1376,7 +1383,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 	}
 	
 	var $img = $this.find( '.bkcoverart' );
-	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : '<i class="fa fa-bookmark bl"></i>';
+	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
 	var content = `\
 <div class="infomessage">${ icon }
 <wh>${ name }</wh>
@@ -1384,15 +1391,15 @@ $( '#lib-mode-list' ).click( function( e ) {
 <br>
 <table>
 <tr>
-	<td><label><input type="radio" name="add" value="add"><i class="fa fa-plus-o"></i>Add</label></td>
-	<td><label><input type="radio" name="add" value="addplay"><i class="fa fa-play-plus"></i>Add + Play</label></td>
+	<td><label><input type="radio" name="add" value="add">${ ico( 'plus-o' ) }Add</label></td>
+	<td><label><input type="radio" name="add" value="addplay">${ ico( 'play-plus' ) }Add + Play</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="playnext"><i class="fa fa-plus-circle"></i>Play next</label></td>
+	<td><label><input type="radio" name="add" value="playnext">${ ico( 'plus-circle' ) }Play next</label></td>
 </tr>
 <tr>
-	<td><label><input type="radio" name="add" value="replace"><i class="fa fa-replace"></i>Replace</label></td>
-	<td><label><input type="radio" name="add" value="replaceplay"><i class="fa fa-play-replace"></i>Replace + Play</label></td>
+	<td><label><input type="radio" name="add" value="replace">${ ico( 'replace' ) }Replace</label></td>
+	<td><label><input type="radio" name="add" value="replaceplay">${ ico( 'play-replace' ) }Replace + Play</label></td>
 </tr>
 </table>`;
 	info( {
@@ -1448,14 +1455,14 @@ $( '#lib-mode-list' ).click( function( e ) {
 	if ( $img.length ) {
 		var icon = '<img src="'+ $img.attr( 'src' ) +'">'
 	} else {
-		var icon = '<i class="fa fa-bookmark bookmark bl"></i>'
+		var icon = ico( 'bookmark bookmark bl' )
 				  +'<br><a class="bklabel">'+ name +'</a>'
 	}
 	info( {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
 		, message : icon
-		, oklabel : '<i class="fa fa-minus-circle"></i>Remove'
+		, oklabel : ico( 'minus-circle' ) +'Remove'
 		, okcolor : red
 		, ok      : () => bash( [ 'bookmarkremove', name ] )
 	} );
@@ -1465,13 +1472,13 @@ $( '#lib-mode-list' ).click( function( e ) {
 	info( {
 		  icon         : 'bookmark'
 		, title        : 'Rename Bookmark'
-		, message      : '<div class="infobookmark"><i class="fa fa-bookmark bookmark"></i>'
+		, message      : '<div class="infobookmark">'+ ico( 'bookmark bookmark' )
 						+'<br><span class="bklabel">'+ name +'</span></div>'
 		, textlabel    : 'To:'
 		, values       : name
 		, checkblank   : 1
 		, checkchanged : 1
-		, oklabel      : '<i class="fa fa-flash"></i>Rename'
+		, oklabel      : ico( 'flash' ) +'Rename'
 		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
@@ -1479,12 +1486,12 @@ $( '#lib-mode-list' ).click( function( e ) {
 	var name  = $this.find( '.bkname' ).text();
 	var thumbnail = $this.find( 'img' ).length;
 	if ( thumbnail ) {
-		var icon    = iconcover;
+		var icon    = 'coverart';
 		var message = '<img class="imgold" src="'+ $this.find( 'img' ).attr( 'src' ) +'">'
 					 +'<p class="infoimgname">'+ name +'</p>';
 	} else {
 		var icon    = 'bookmark';
-		var message = '<div class="infobookmark"><i class="fa fa-bookmark"></i>'
+		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
 	var path      = $this.find( '.lipath' ).text();
@@ -1493,10 +1500,10 @@ $( '#lib-mode-list' ).click( function( e ) {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
 		, message     : message
-		, filelabel   : '<i class="fa fa-folder-open"></i> File'
-		, fileoklabel : '<i class="fa fa-flash"></i>Replace'
+		, filelabel   : ico( 'folder-open' ) +'File'
+		, fileoklabel : ico( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! thumbnail ? '' : '<i class="fa fa-bookmark"></i>Default'
+		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', imagepath, name ] )
 		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
@@ -1551,12 +1558,12 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		, title   : 'Album Thumbnail'
 		, message : `\
 <img src="${ src }">
-<wh><i class="fa fa-album"></i> ${ album }</wh>
-<i class="fa fa-artist wh"></i> ${ artist }
+<wh>${ ico( 'album' ) } ${ album }</wh>
+${ ico( 'artist wh' ) } ${ artist }
 
 Exclude this thumbnail?`
 		, okcolor : orange
-		, oklabel : '<i class="fa fa-minus-circle"></i> Exclude'
+		, oklabel : ico( 'minus-circle' ) +'Exclude'
 		, ok      : () => {
 			bash( [ 'albumignore', album, artist ] );
 			$this.remove();
@@ -1598,7 +1605,7 @@ Exclude this thumbnail?`
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'lib-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1755,9 +1762,9 @@ $( '#button-pl-save' ).click( function() {
 			  icon    : 'file-playlist'
 			, title   : 'Save Playlist'
 			, message : iconwarning +'Saved playlist cannot contain:<br>'
-					  + audiocdL ? audiocdL +'<i class="fa fa-audiocd wh"></i>' : ''
-					  + upnpL ? upnpL +'&emsp;<i class="fa fa-upnp wh"></i>' : ''
-					  + notsavedL ? notsavedL +'&emsp;<i class="fa fa-save wh"></i>' : ''
+					  + audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
+					  + upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
+					  + notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
 		} );
 	} else {
 		playlistNew();
@@ -1816,22 +1823,25 @@ $( '#button-pl-clear' ).click( function() {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
-			, oklabel     : '<i class="fa fa-minus-circle"></i>Clear'
+			, oklabel     : ico( 'minus-circle' ) +'Clear'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
 				renderPlaylist( -1 );
 			}
 		} );
+	} else if ( $( '.pl-remove' ).length ) {
+		$( '.pl-remove' ).remove();
 	} else {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Remove From Playlist'
-			, buttonlabel : [ '<i class="fa fa-playlist"></i>Select', '<i class="fa fa-crop"></i>Crop' ]
+			, buttonlabel : [ ico( 'playlist' ) +'Select', ico( 'crop' ) +'Crop' ]
 			, buttoncolor : [ orange ]
 			, button      : [
 				  () => {
-					$( '#pl-list .li1' ).before( '<i class="fa fa-minus-circle pl-remove"></i>' );
+					local();
+					$( '#pl-list .li1' ).before( ico( 'minus-circle pl-remove' ) );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
 				, () => {
@@ -1840,7 +1850,7 @@ $( '#button-pl-clear' ).click( function() {
 					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
-			, oklabel     : '<i class="fa fa-minus-circle"></i>All'
+			, oklabel     : ico( 'minus-circle' ) +'All'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1889,11 +1899,11 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'pl-icon' ) || $target.hasClass( 'pl-remove' ) ) return
+	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ! [ 'mpd', 'upnp' ].includes( S.player ) ) {
-		$this.find( '.pl-icon' ).click();
+		$this.find( '.li-icon' ).click();
 		return
 	}
 	
@@ -1925,7 +1935,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	V.list.li = $( this ).parent();
 	webRadioSave( $( this ).next().next().text() );
 	menuHide();
-} ).on( 'click', '.pl-icon', function() {
+} ).on( 'click', '.li-icon', function() {
 	var $this     = $( this );
 	var $thisli   = $this.parent();
 	V.list        = {};
@@ -1993,12 +2003,12 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	if ( menushow && active ) return
 	
 	var pladd    = 'file' in V.pladd;
-	var plicon   = $target.hasClass( 'pl-icon' );
-	if ( V.savedplaylist || plicon ) {
+	var liicon   = $target.hasClass( 'li-icon' );
+	if ( V.savedplaylist || liicon ) {
 		if ( pladd ) {
 			playlistInsertSelect( $this );
 		} else {
-			var datatarget = $target.data( 'target' ) || $this.find( '.pl-icon' ).data ( 'target' );
+			var datatarget = $target.data( 'target' ) || $this.find( '.li-icon' ).data ( 'target' );
 			var $menu      = $( datatarget );
 			V.list         = {};
 			V.list.li      = $this; // for contextmenu
@@ -2016,7 +2026,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
 					&& V.savedplaylist 
-					&& ! plicon
+					&& ! liicon
 					&& S.player === 'mpd'
 				) {
 					$menu.find( 'a:eq( 0 ) .submenu' ).click();
@@ -2112,7 +2122,7 @@ $( '#lyricsdelete' ).click( function() {
 		  icon    : 'lyrics'
 		, title   : 'Lyrics'
 		, message : 'Delete this lyrics?'
-		, oklabel : '<i class="fa fa-minus-circle"></i>Delete'
+		, oklabel : ico( 'minus-circle' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();

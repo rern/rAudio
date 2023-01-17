@@ -5,19 +5,16 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
-var iconwarning = '<i class="fa fa-warning fa-lg yl"></i>&ensp;';
+var iconwarning = ico( 'warning fa-lg yl' ) +'&ensp;';
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
-	var iconhtml = icon && icon.slice( 0, 1 ) === '<' 
-					? icon 
-					: icon ? '<i class="fa fa-'+ ( icon ) +'"></i>' : '';
 	$( '#banner' ).html( `
-<div id="bannerIcon">${ iconhtml }</div>
+<div id="bannerIcon">${ ico( icon ) }</div>
 <div id="bannerTitle">${ title }</div>
 <div id="bannerMessage">${ message }</div>
-` ).removeClass( 'hide' );
+`   ).removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
 function bannerHide() {
@@ -43,7 +40,7 @@ $( '#data' ).on( 'click', '.copy', function() {
 function errorDisplay( msg, list ) {
 	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
 	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
-				+'&emsp;<a class="infobtn infobtn-primary copy"><i class="fa fa-copy"></i>Copy</a>'
+				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
 	$( '#data' )
@@ -76,6 +73,9 @@ function highlightJSON( json ) {
 			return '<pur>'+ match +'</pur>'
 		}
 	} ); // source: https://stackoverflow.com/a/7220510
+}
+function ico( cls, id ) {
+	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="fa fa-'+ cls +'"></i>'
 }
 
 // info ----------------------------------------------------------------------
@@ -176,28 +176,28 @@ Note:
 ` );
 }
 
-I = { infohide: true }
+I = { hidden: true }
 
 function info( json ) {
 	I          = json;
-	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' );
+	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' ); // consecutive info calls
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
-		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div><i id="infoX" class="fa fa-close"></i>
+		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div>${ ico( 'close', 'infoX' ) }
 	</div>
 	<div id="infoContent"></div>
 	<div id="infoButtons"></div>
 </div>
 ` );
-	I.infoscroll = $( window ).scrollTop();
+	$( '#infoOverlay' ).css( 'height', $( 'body' ).height() );
+	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
 	} );*/
 	
 	$( '#infoX' ).click( function() {
-		I.active = false; // force clear for infoButtonCommand()
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
@@ -205,7 +205,6 @@ function info( json ) {
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		$( 'html, body' ).scrollTop( 0 );
 		return;
 	}
 	
@@ -271,7 +270,7 @@ function info( json ) {
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || '<i class="fa fa-folder-open"></i>File' ) +'</a>';
+					  + ( I.filelabel || ico( 'folder-open' ) +'File' ) +'</a>';
 		$( '#infoButtons' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )
@@ -357,7 +356,7 @@ function info( json ) {
 		if ( I.passwordlabel ) {
 			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
@@ -432,8 +431,6 @@ function info( json ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		infoButtonWidth();
-		$( 'html, body' ).scrollTop( 0 );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 		return
 	}
 	
@@ -457,7 +454,7 @@ function info( json ) {
 		if ( 'values' in I && I.values !== '' ) infoSetValues();
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		I.infohide = false;
+		I.hidden = false;
 		if ( 'focus' in I ) {
 			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
 		} else {
@@ -499,8 +496,6 @@ function info( json ) {
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
-		$( 'html, body' ).scrollTop( 0 );
-		setTimeout( () => $( 'html, body' ).scrollTop( 0 ), 50 ); // fix - ios safari not scroll
 	} );
 	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
 		var $this = $( this );
@@ -531,17 +526,18 @@ function info( json ) {
 }
 
 function infoButtonCommand( fn ) {
-	if ( typeof fn === 'function' ) fn();
-	if ( I.infoscroll ) $( 'html, body' ).scrollTop( I.infoscroll );
-	delete I.infofile;
-	delete I.infofilegif;
-	setTimeout( () => {
-		if ( I.active ) return // I.active: for info() in sequence
-		
-		I.infohide = true;
-		$( '#infoOverlay' ).addClass( 'hide' );
-		$( '#infoOverlay' ).empty();
-	}, 50 ); // wait for next info() if any
+	if ( typeof fn !== 'function' ) {
+		infoButtonReset();
+	} else {
+		$.when( fn() ).then( () => {
+			if ( ! I.active ) infoButtonReset(); // not consecutive info calls
+		} );
+	}
+}
+function infoButtonReset() {
+	$( '#infoOverlay' ).addClass( 'hide' );
+	$( '#infoOverlay' ).empty();
+	I = { hidden: true }
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
@@ -699,7 +695,7 @@ function infoFileImageRender( src, original, resize ) {
 			+ ( resize ? resize : '' )
 			+ ( original ? '<br>original: '+ original : '' )
 			+'</div>'
-			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br><i class="fa fa-redo rotate"></i>&ensp;Tap to rotate' )
+			+ ( src.slice( 0, 4 ) === 'blob' ? '' : '<br>'+ ico( 'redo rotate' ) +'&ensp;Tap to rotate' )
 		+'</span>'
 	);
 }
@@ -827,10 +823,10 @@ function infoPower() {
 	info( {
 		  icon        : 'power'
 		, title       : 'Power'
-		, buttonlabel : '<i class="fa fa-reboot"></i>Reboot'
+		, buttonlabel : ico( 'reboot' ) +'Reboot'
 		, buttoncolor : orange
 		, button      : () => infoPowerCommand( 'reboot' )
-		, oklabel     : '<i class="fa fa-power"></i>Off'
+		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
 		, ok          : () => infoPowerCommand( 'off' )
 	} );
@@ -845,11 +841,11 @@ function infoPowerNfs( nfs, action ) {
 	info( {
 		  icon    : 'power'
 		, title   : 'Power'
-		, message : 'This <wh>Server rAudio <i class="fa fa-rserver"></i></wh> is currently active.'
+		, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
 					+'<br><wh>Shared Data</wh> on clients will stop.'
 					+'<br>(Resume when server online again)'
 					+'<br><br>Continue?'
-		, oklabel : off ? '<i class="fa fa-power"></i>Off' : '<i class="fa fa-reboot"></i>Reboot'
+		, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 		, okcolor : off ? red : orange
 		, ok      : () => {
 			bash( [ 'power', action, 1 ] );
@@ -988,4 +984,18 @@ function selectSet( $select ) {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );
 		} );
+}
+function selectText2Html( pattern ) {
+	function htmlSet( $el ) {
+		$.each( pattern, ( k, v ) => {
+			if ( $el.text() === k ) $el.html( v );
+		} );
+	}
+	var $rendered = $( '.select2-selection__rendered' ).eq( 0 );
+	htmlSet( $rendered );
+	$( '#infoContent select' ).on( 'select2:open', () => {
+		setTimeout( () => $( '.select2-results__options li' ).each( ( i, el ) => htmlSet( $( el ) ) ), 0 );
+	} ).on( 'select2:select', function() {
+		htmlSet( $rendered );
+	} );
 }

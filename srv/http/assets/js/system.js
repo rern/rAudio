@@ -95,7 +95,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 		info( {
 			  icon    : 'networks'
 			, title   : 'Network Storage'
-			, message : '<wh>Shared Data <i class="fa fa-networks"></i></wh> is currently enabled.'
+			, message : '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.'
 		} );
 		return
 	}
@@ -163,7 +163,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 		, values       : S.hddsleep || 60
 		, checkchanged : S.hddsleep
-		, cancel       : () => cancelSwitch( 'hddsleep' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			var val = infoVal()
 			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
@@ -190,7 +190,7 @@ $( '#setting-bluetooth' ).click( function() {
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : S.bluetoothconf
 		, checkchanged : S.bluetooth
-		, cancel       : () => cancelSwitch( 'bluetooth' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, S.bluetooth ? 'Change ...' : 'Enable ...' );
 			bash( [ 'bluetooth', true, ...infoVal() ] );
@@ -215,7 +215,8 @@ $( '#setting-wlan' ).click( function() {
 			, boxwidth     : 250
 			, values       : S.wlanconf
 			, checkchanged : S.wlan
-			, cancel       : () => cancelSwitch( 'wlan' )
+			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				notify( icon, title, S.wlan ? 'Change ...' : 'Enable ...' );
 				bash( [ 'wlan', true, ...infoVal() ] );
@@ -260,14 +261,11 @@ $( '#gpioimgtxt' ).click( function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
 		$( '#gpiopin' ).slideToggle();
 		$( '#fliptxt, #close-img' ).toggle();
-		$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' )
 	} else {
 		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
 		$( '#fliptxt' ).hide();
-		$( this ).find( 'i' )
-			.removeAttr( 'class' )
-			.addClass( 'fa fa-chevron-down' );
 	}
+	$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
@@ -338,15 +336,15 @@ $( '#setting-lcdchar' ).click( function() {
 			} );
 			if ( S.lcdchar ) {
 				$( '#infoOk' )
-					.before( '<gr id="lcdlogo"><i class="fa fa-raudio wh" style="font-size: 20px"></i>&ensp;Logo</gr>&ensp;' )
-					.after( '&emsp;<gr id="lcdsleep"><i class="fa fa-screenoff wh" style="font-size: 20px"></i>&ensp;Sleep</gr>' );
+					.before( '<gr id="lcdlogo">'+ ico( 'raudio fa-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
+					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff fa-lg wh' ) +'&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
 					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
 				} );
 			}
 		}
-		, cancel       : () => cancelSwitch( 'lcdchar' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'lcdchar', true, ...infoVal() ] );
 			notify( icon, title, S.lcdchar ? 'Change ...' : 'Enabled ...' );
@@ -404,7 +402,7 @@ $( '#setting-powerbutton' ).click( function() {
 				$( '#infoContent table' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'powerbutton' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'powerbutton', true, ...infoVal() ] );
 			notify( icon, title, S.powerbutton ? 'Change ...' : 'Enable ...' );
@@ -438,7 +436,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
-		, cancel       : () => cancelSwitch( 'rotaryencoder' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'rotaryencoder', true, ...infoVal() ] );
 			notify( icon, title, S.rotaryencoder ? 'Change ...' : 'Enable ...' );
@@ -480,8 +478,8 @@ $( '#setting-mpdoled' ).click( function() {
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'mpdoled' )
-		, buttonlabel  : ! S.mpdoled ? '' : '<i class="fa fa-raudio"></i>Logo'
+		, cancel       : cancelSwitch
+		, buttonlabel  : ! S.mpdoled ? '' : ico( 'raudio' ) +'Logo'
 		, button       : ! S.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
 		, ok           : () => {
 			notify( icon, title, S.mpdoled ? 'Change ...' : 'Enable ...' );
@@ -519,7 +517,7 @@ $( '#setting-lcd' ).click( function() {
 				}
 			} );
 		}
-		, cancel    : () => cancelSwitch( 'lcd' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, S.lcd ? 'Change ...' : 'Enable ...' );
 			bash( [ 'lcd', true, infoVal() ] );
@@ -543,7 +541,7 @@ $( '#setting-vuled' ).click( function() {
 		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : S.vuled
 		, boxwidth     : 80
-		, cancel        : () => cancelSwitch( 'vuled' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			notify( icon, title, 'Change ...' );
 			bash( [ 'vuled', true, ...infoVal() ] );
@@ -659,7 +657,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, values       : S.soundprofileconf
 		, checkchanged : S.soundprofile
 		, checkblank   : 1
-		, cancel       : () => cancelSwitch( 'soundprofile' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'soundprofile', true, ...infoVal() ] );
 			notify( icon, title, S.soundprofile ? 'Change ...' : 'Enable ...' );
@@ -716,7 +714,7 @@ $( '#backup' ).click( function() {
 } );
 $( '#restore' ).click( function() {
 	var icon  = 'restore';
-	var title = 'Restore Data and Settings';
+	var title = 'Data and Settings';
 	info( {
 		  icon        : icon
 		, title       : title
@@ -726,21 +724,21 @@ $( '#restore' ).click( function() {
 			, 'Reset to default'              : 'reset'
 		}
 		, values      : 'restore'
-		, fileoklabel : '<i class="fa fa-restore"></i>Restore'
+		, fileoklabel : ico( 'restore' ) +'Restore'
 		, filetype    : '.gz'
 		, beforeshow  : () => {
 			$( '#infoContent input' ).click( function() {
-				if ( infoVal() !== 'restore' ) {
+				if ( infoVal() === 'reset' ) {
 					$( '#infoFilename' ).addClass( 'hide' );
 					$( '#infoFileBox' ).val( '' );
 					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
 					$( '#infoOk' )
-						.html( '<i class="fa fa-reset"></i>Reset' )
+						.html( ico( 'reset' ) +'Reset' )
 						.css( 'background-color', orange )
 						.removeClass( 'hide' );
 				} else {
 					$( '#infoOk' )
-						.html( '<i class="fa fa-restore"></i>Restore' )
+						.html( ico( 'restore' ) +'Restore' )
 						.css( 'background-color', '' )
 						.addClass( 'hide' );
 					$( '#infoFileLabel' ).removeClass( 'hide' );
@@ -748,10 +746,11 @@ $( '#restore' ).click( function() {
 			} );
 		}
 		, ok          : () => {
-			notify( icon, title, 'Restore ...' );
 			if ( infoVal() === 'reset' ) {
-				bash( dirbash +'system-datareset.sh', bannerHide );
+				bash( [ 'datareset' ] );
+				notify( icon, title, 'Reset to default ...' );
 			} else {
+				notify( icon, title, 'Restore ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
@@ -816,10 +815,7 @@ $( '.listtitle' ).click( function( e ) {
 	var $target  = $( e.target );
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
-		var updn = $chevron.hasClass( 'fa-chevron-up' ) ? 'down' : 'up';
-		$chevron
-			.removeClass( 'fa-chevron-up fa-chevron-down' )
-			.addClass( 'fa-chevron-'+ updn );
+		$chevron.toggleClass( 'fa-chevron-down fa-chevron-up' );
 		if ( localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) { // package
 		var active = $target.hasClass( 'wh' );
@@ -892,7 +888,7 @@ function infoMount( values ) {
 	<td><input type="text"></td>
 </tr>
 <tr class="guest"><td>Password</td>
-	<td><input type="password" checked></td><td><i class="fa fa-eye fa-lg"></i></td>
+	<td><input type="password" checked></td><td>${ ico( 'eye' ) }</td>
 </tr>
 <tr><td>Options</td>
 	<td><input type="text"></td>
@@ -978,7 +974,7 @@ function infoNFSconnect( ip ) {
 	info( {
 		  icon      : icon
 		, title     : title
-		, message   : 'Server rAudio <i class="fa fa-rserver wh"></i>'
+		, message   : 'Server rAudio '+ ico( 'rserver wh' )
 		, textlabel : 'IP'
 		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
 		, cancel    : () => $( '#shareddata' ).prop( 'checked', false )
@@ -1025,9 +1021,8 @@ function renderPage() {
 			var dataunmounted = ' data-unmounted="1"';
 			var dot = '<red>&ensp;•&ensp;</red>';
 		}
-		var mountpoint = val.mountpoint === '/mnt/MPD/SD' ? '/<gr>mnt/MPD/SD</gr>' : val.mountpoint;
 		html += '<li '+ dataunmounted;
-		html += '><i class="fa fa-'+ val.icon +'"></i><wh class="mountpoint">'+ mountpoint +'</wh>'+ dot
+		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
 		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
 		html +=  val.size ? val.size : '';
 		html += val.nfs ? ' <gr>• NFS</gr>' : '';
@@ -1037,7 +1032,9 @@ function renderPage() {
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	$( '#usbautoupdate' ).toggleClass( 'disabled', S.shareddata || S.nfsserver );
+	$( '#usbautoupdate' )
+		.toggleClass( 'disabled', S.shareddata || S.nfsserver )
+		.prev().html( 'wh'+ ( S.shareddata ? 'Server rAudio '+ ico( 'rserver' ) : 'Shared Data '+ ico( 'networks' ) ) +'</wh> is currently enabled.' );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! S.bluetoothactive );
@@ -1047,12 +1044,18 @@ function renderPage() {
 		if ( 'wlan' in S ) {
 			$( '#wlan' )
 				.toggleClass( 'disabled', S.hostapd || S.wlanconnected )
-				.parent().prev().toggleClass( 'single', ! S.wlan );
+				.prev().html( S.hostapd ? '<wh>Access Point '+ ico( 'accesspoint' ) +'</wh> is currently enabled.' :'Wi-Fi is currently connected.' );
+			$( '#divwlan .col-l.status' ).toggleClass( 'single', ! S.wlan );
 		} else {
 			$( '#divwlan' ).addClass( 'hide' );
 		}
 	} else {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
+	}
+	if ( 'audio' in S ) {
+		$( '#audio' ).toggleClass( 'disabled', S.audiomodule && S.audiocards < 2 );
+	} else {
+		$( '#divaudio' ).addClass( 'hide' );
 	}
 	$( '#i2smodule' ).val( 'none' );
 	$( '#i2smodule option' ).filter( ( i, el ) => {
@@ -1062,7 +1065,9 @@ function renderPage() {
 	S.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', S.i2senabled );
 	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! S.i2senabled );
-	$( '#bluetooth' ).toggleClass( 'disabled', S.btconnected );
+	$( '#bluetooth' )
+		.toggleClass( 'disabled', S.btconnected || S.camilladsp )
+		.prev().html( S.btconnected ? '<wh>Bluetooth '+ ico( 'bluetooth ' )+'</wh> is currently connected.' : '<wh>DSP '+ ico( 'camilladsp' ) +'</wh> is currently enabled.' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );

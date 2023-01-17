@@ -5,6 +5,12 @@
 # convert each line to each args
 readarray -t args <<< $1
 
+pushData() {
+	pushstream refresh '{"page":"features","'$1'":'$2'}'
+	$dirsettings/player-conf.sh
+	pushSubmenu $1 $2
+	$dirsettings/features-data.sh pushrefresh
+}
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
@@ -76,6 +82,7 @@ camilladsp )
 		refresh=${args[2]}
 		applyauto=${args[3]}
 		sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
 		touch $dirsystem/camilladsp
 	else
@@ -84,9 +91,7 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	$dirsettings/player-conf.sh
-	pushRefresh
-	pushSubmenu camilladsp true
+	pushData camilladsp ${args[1]}
 	;;
 dabradio )
 	if [[ ${args[1]} == true ]]; then
@@ -109,9 +114,7 @@ equalizer )
 	else
 		rm -f $dirsystem/equalizer
 	fi
-	pushRefresh
-	$dirsettings/player-conf.sh
-	pushSubmenu equalizer $enabled
+	pushData equalizer ${args[1]}
 	;;
 hostapdget )
 	hostapdip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
@@ -120,21 +123,17 @@ hostapdget )
 	;;
 hostapd )
 	if [[ ${args[1]} == true ]]; then
-		if [[ ${#args[@]} > 2 ]]; then
-			iprange=${args[2]}
-			router=${args[3]}
-			password=${args[4]}
-			sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
-" -e "s/^(.*option:router,).*/\1$router/
-" -e "s/^(.*option:dns-server,).*/\1$router/
+		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan$'\n'true
+		ip=${args[2]}
+		password=${args[3]}
+		ip012=${ip%.*}
+		ip3=$(( ${ip/*.} + 1 ))
+		iprange=$ip012.$ip3,$ip012.254,24h
+		sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
+" -e "s/^(.*option:router,).*/\1$ip/
+" -e "s/^(.*option:dns-server,).*/\1$ip/
 " /etc/dnsmasq.conf
-			sed -i -E -e '/^#*wpa|^#*rsn/ s/^#*//
-' -e "s/(wpa_passphrase=).*/\1$password/
-" /etc/hostapd/hostapd.conf
-		else
-			router=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-			sed -i -E '/^wpa|^rsn/ s/^/#/' /etc/hostapd/hostapd.conf
-		fi
+		sed -i -E "s/(wpa_passphrase=).*/\1$password/" /etc/hostapd/hostapd.conf
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
 		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
@@ -145,7 +144,7 @@ hostapd )
 		featureSet hostapd
 	else
 		systemctl disable --now hostapd
-		ifconfig wlan0 0.0.0.0
+		$dirsettings/system.sh wlan$'\n'false
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","hostapd":'${args[1]}'}'
@@ -154,8 +153,8 @@ hostapd )
 httpd )
 	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
-	$dirsettings/player-data.sh pushrefresh
 	pushRefresh
+	$dirsettings/player-data.sh pushrefresh
 	;;
 localbrowser )
 	if [[ ${args[1]} == true ]]; then
@@ -412,19 +411,14 @@ snapclient )
 		touch $dirsystem/snapclient
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
-			$dirsettings/player-conf.sh
 			grep -q state.*play $dirshm/status && systemctl start snapclient
 		fi
 	else
 		rm $dirsystem/snapclient
 		systemctl stop snapclient
-		if [[ $snapserver ]]; then
-			rm $dirsystem/snapclientserver
-			$dirsettings/player-conf.sh
-		fi
+		[[ $snapserver ]] && rm $dirsystem/snapclientserver
 	fi
-	pushRefresh
-	pushSubmenu sanpclient ${args[1]}
+	pushData sanpclient ${args[1]}
 	;;
 snapserver )
 	[[ ${args[1]} == true ]] && enable=1
@@ -443,11 +437,10 @@ snapserver )
 	else
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
-	$dirsettings/player-conf.sh
-	pushRefresh
+	pushData snapserver ${args[1]}
 	;;
 spotifyd )
-	systemctl disable --now spotifyd
+	[[ ${args[1]} == true ]] && systemctl enable --now spotifyd || systemctl disable --now spotifyd
 	pushRefresh
 	;;
 spotifytoken )

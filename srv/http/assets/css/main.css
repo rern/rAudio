@@ -164,10 +164,6 @@ i.map.disabled, .map.disabled i {
 .submenu.active {
 	background: var( --cgl );
 }
-.menu .iconcover {
-	margin: -2px 8px 0 !important;
-	vertical-align: middle;
-}
 #settings .gr {
 	font-size: 22px;
 }
@@ -1129,6 +1125,7 @@ i.map.disabled, .map.disabled i {
 #lyricstitle {
 	display: inline-block;
 	margin-left: 5px;
+	width: calc( 100vw - 84px );
 	font-size: 26px;
 	font-weight: 300;
 	line-height: 40px;
@@ -1315,37 +1312,38 @@ i.map.disabled, .map.disabled i {
 }
 .bk-cover {
 	bottom: 0;
-	height: 34px;
 }
 .coveredit {
 	position: absolute;
 	right: 0;
 	bottom: 0;
-	width: 34px;
-	height: 34px;
-	z-index: 17;
+	width: 40px !important;
+	height: 40px !important;
+	line-height: 40px;
+}
+.coveredit i,
+.bk-cover i {
+	margin: 0 !important;
+	font-size: 24px !important;
+	color: var( --cw ) !important;
+}
+.bk-cover i {
+	line-height: 34px !important;
 }
 .cover-save {
 	left: 0;
+	width: 40px !important;
+	text-align: center;
 }
 .coveredit.cover-save i {
 	width: 30px !important;
-	height: 30px;
-	margin-left: 2px;
-	font-size: 24px;
 	line-height: 30px !important;
+	margin-top: 5px !important;
 	text-align: center;
-	color: var( --cgd ) !important;
-	background: var( --cw );
+	color: var( --cw ) !important;
+	background: var( --cg );
 	border-radius: 50%;
 	box-shadow: -1px 1px 2px #000000;
-}
-#bannerIcon .iconcover {
-	margin: 3px;
-}
-#infoTop .iconcover {
-	margin-top: 5px !important;
-	width: 28px !important;
 }
 .infoimgname {
 	line-height: 25px;
@@ -1684,8 +1682,7 @@ i.map.disabled, .map.disabled i {
 #pl-list li.active.updn {
 	background: var( --cma );
 }
-.lib-icon,
-.pl-icon,
+.li-icon,
 #lib-list li span i {
 	margin-right: 10px;
 }
@@ -1745,8 +1742,7 @@ i.map.disabled, .map.disabled i {
 #pl-list li.active .pl-remove {
 	color: var( --cga ) !important;
 }
-.lib-icon,
-.pl-icon,
+.li-icon,
 #pl-savedlist span::before,
 #pl-savedlist i,
 #lib-list i {
@@ -1757,8 +1753,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.lib-icon,
-.pl-icon {
+.li-icon {
 	float: left;
 	display: block;
 	min-height: 20px;
@@ -1799,9 +1794,10 @@ li.active .iconthumb {
 #li-count {
 	margin-left: 20px;
 	font-weight: 300;
-}
-#li-count span {
 	color: var( --cw );
+}
+#li-count i {
+	color: var( --cg60 );
 }
 #pl-count,
 #pl-path {
@@ -1881,8 +1877,7 @@ li.active .li1 bl {
 #pl-list .unsaved {
 	color: var( --cw );
 }
-li.active .lib-icon,
-li.active .pl-icon,
+li.active .li-icon,
 li.active .li1 i,
 li.active .li2,
 li.active .li2 a,
@@ -1891,7 +1886,7 @@ li.active .time,
 .licover.active i.fa-file-playlist {
 	color: var( --cga ) !important;
 }
-li.active .pl-icon.wh {
+li.active .li-icon.wh {
 	color: var( --cw ) !important;
 }
 li.active gr {
@@ -1923,7 +1918,7 @@ li.active .li2 bl {
 .pl-sortable-ghost {
 	background: var( --cg60 );
 }
-.pl-sortable-ghost .pl-icon {
+.pl-sortable-ghost .li-icon {
 	visibility: hidden;
 }
 .pl-sortable-ghost a,
@@ -2003,7 +1998,6 @@ li.active .li2 bl {
 	width: calc( 100% - 40px );
 	margin: -13px 0 7px 5px;
 	line-height: 24px;
-	color: var( --cw );
 	cursor: pointer;
 }
 .tagmessage img {
@@ -2267,7 +2261,7 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .iconcover,
+	#divcover .fa-coverart,
 	#divcover .fa-save { top: 5px; }
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {

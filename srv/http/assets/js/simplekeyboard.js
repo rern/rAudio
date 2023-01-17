@@ -66,13 +66,13 @@ var keyboard          = new Keyboard( {
 	, layoutName : "alpha"
 	, display    : {
 		  '{alpha}'    : 'Aa'
-		, '{bksp}'     : '<i class="fa fa-backspace"></i>'
+		, '{bksp}'     : ico( 'backspace' )
 		, '{enter}'    : 'OK'
-		, '{lock}'     : '<i class="fa fa-capslock"></i>'
-		, '{numlock}'  : '<i class="fa fa-capslock"></i>'
+		, '{lock}'     : ico( 'capslock' )
+		, '{numlock}'  : ico( 'capslock' )
 		, '{num}'      : '1?'
-		, '{numshift}' : '<i class="fa fa-shift"></i>'
-		, '{shift}'    : '<i class="fa fa-shift"></i>'
+		, '{numshift}' : ico( 'shift' )
+		, '{shift}'    : ico( 'shift' )
 		, '{space}'    : '&nbsp;'
 	}
 	, buttonTheme: narrowbuttontheme
@@ -143,7 +143,7 @@ function onKeyPress( key ) { // input value not yet changed until onChange
 			}
 			break;
 		case '{enter}':
-			if ( ! I.infohide ) {
+			if ( ! I.hidden ) {
 				$( '#infoOk' ).click();
 			} else {
 				var button = id === 'lib-search-input' ? '#lib-search-btn' : '#pl-search-btn';

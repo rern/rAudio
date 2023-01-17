@@ -45,24 +45,21 @@ data+='
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
+, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( isactive shairport-sync )'
-, "shairportactive"  : '$( [[ $( < $dirshm/player ) == airplay ]] && echo true )
+, "shairport-sync"   : '$( isactive shairport-sync )
 [[ -e /usr/bin/snapserver ]] && data+='
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientactive" : '$( isactive snapclient )'
 , "snapcastconf"     : '$( grep -q -m1 latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$( isactive spotifyd )'
-, "spotifydactive"   : '$( [[ $( < $dirshm/player ) == spotify ]] && echo true )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
-, "upmpdcliactive"   : '$( [[ $( < $dirshm/player ) == upnp ]] && echo true )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e /usr/bin/chromium ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp

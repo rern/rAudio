@@ -14,7 +14,7 @@ $( '#setting-spotifyd' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : 'Reset client keys?'
-			, oklabel : '<i class="help fa fa-minus-circle"></i>Reset'
+			, oklabel : ico( 'minus-circle help' ) +'Reset'
 			, okcolor : red
 			, ok      : () => bash( [ 'spotifytokenreset' ] )
 		} );
@@ -34,7 +34,7 @@ $( '#setting-spotifyd' ).click( function() {
 			, title        : title
 			, textlabel    : [ 'ID', 'Secret' ]
 			, focus        : 0
-			, footer       : 'Keys from private app: <i class="help fa fa-help"></i>'
+			, footer       : 'Keys from private app: '+ ico( 'help help' )
 			, boxwidth     : 320
 			, checklength  : { 0: 32, 1: 32 }
 			, beforeshow   : () => {
@@ -43,7 +43,7 @@ $( '#setting-spotifyd' ).click( function() {
 					$( '#infoX' ).click();
 				} );
 			}
-			, cancel       : () => cancelSwitch( 'spotifyd' )
+			, cancel       : cancelSwitch
 			, ok           : () => {
 				var values = infoVal();
 				var id     = values[ 0 ];
@@ -87,7 +87,7 @@ $( '#setting-snapclient' ).click( function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'snapclient' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'snapclient', true, infoVal() ] );
 			notify( icon, title, S.snapclient ? 'Change ...' : 'Enable ...' );
@@ -103,7 +103,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ S.upmpdcliownqueue ]
 		, checkchanged : S.upmpdcli
-		, cancel       : () => cancelSwitch( 'upmpdcli' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'upmpdcli', true, infoVal() ] );
 			notify( icon, title, S.upmpdcli ? 'Change ...' : 'Enable ...' );
@@ -112,7 +112,7 @@ $( '#setting-upmpdcli' ).click( function() {
 } );
 $( '#setting-camilladsp' ).click( function() {
 	var icon  = 'camilladsp';
-	var title = 'CamillaGUI';
+	var title = 'CamillaDSP';
 	info( {
 		  icon         : icon
 		, title        : title
@@ -122,10 +122,11 @@ $( '#setting-camilladsp' ).click( function() {
 		, boxwidth     : 100
 		, values       : S.camillarefresh
 		, checkchanged : S.camilladsp
-		, cancel       : () => cancelSwitch( 'camilladsp' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'camilladsp', true, infoVal() ] );
 			notify( icon, title, S.camilladsp ? 'Change ...' : 'Enable ...' );
+			S.camilladsp = true;
 		}
 	} );
 } );
@@ -141,16 +142,9 @@ $( '#setting-hostapd' ).click( function() {
 		, checkchanged : S.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, cancel       : () => cancelSwitch( 'hostapd' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
-			var values  = infoVal();
-			var ip      = values[ 0 ];
-			var pwd     = values[ 1 ];
-			var ips     = ip.split( '.' );
-			var ip3     = ips.pop();
-			var ip012   = ips.join( '.' );
-			var iprange = ip012 +'.'+ ( +ip3 + 1 ) +','+ ip012 +'.254,24h';
-			bash( [ 'hostapd', true, iprange, ip, pwd ] );
+			bash( [ 'hostapd', true, ...infoVal() ] );
 			notify( icon, title, S.hostapd ? 'Change ...' : 'Enable ...' );
 		}
 	} );
@@ -165,7 +159,7 @@ $( '#setting-autoplay' ).click( function() {
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? S.autoplayconf : [ false, false, true ]
 		, checkchanged : S.autoplay
-		, cancel       : () => cancelSwitch( 'autoplay' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'autoplay', true, ...infoVal() ] );
 			notify( icon, title, S.autoplay ? 'Change ...' : 'Enable ...' );
@@ -187,7 +181,7 @@ $( '#setting-localbrowser' ).click( function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr><i class="dn fa fa-minus-circle btnicon"></i><i class="up fa fa-plus-circle btnicon"></i></td></tr>
+	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon' ) + ico( 'plus-circle btnicon' ) }</td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 <tr style="height: 10px"></tr>
@@ -207,8 +201,8 @@ $( '#setting-localbrowser' ).click( function() {
 </table>
 ${ htmlbrightness }
 <div class="btnbottom">
-	&nbsp;<span class="reload">Reload<i class="fa fa-redo"></i></span>
-	<span class="screenoff"><i class="fa fa-screenoff"></i>On/Off</span>
+	&nbsp;<span class="reload">Reload${ ico( 'redo' ) }</span>
+	<span class="screenoff">${ ico( 'screenoff' ) }On/Off</span>
 </div>`;
 	var icon  = 'chromium';
 	var title = 'Browser Display';
@@ -220,6 +214,7 @@ ${ htmlbrightness }
 		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.brightness ]
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
+			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
@@ -251,7 +246,7 @@ ${ htmlbrightness }
 				} );
 			}
 		}
-		, cancel       : () => cancelSwitch( 'localbrowser' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'localbrowser', true, ...infoVal() ] );
 			notify( icon, title, S.localbrowser ? 'Change ...' : 'Enable ...', );
@@ -268,7 +263,7 @@ $( '#setting-smb' ).click( function() {
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : S.smbconf
 		, checkchanged : S.smb
-		, cancel       : () => cancelSwitch( 'smb' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			bash( [ 'smb', true, ...infoVal() ] );
 			notify( icon, title, S.smb ? 'Change ...' : 'Enable ...' );
@@ -282,8 +277,8 @@ $( '#setting-multiraudio' ).click( function() {
 		var ipsub = location.host;
 	}
 	var trhtml  = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
-			+'<td>&nbsp;<i class="fa fa-minus-circle fa-lg pointer ipremove"></i></td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;<i id="ipadd" class="fa fa-plus-circle fa-lg wh pointer"></i></td></tr>'
+			+'<td>&nbsp;'+ ico( 'minus-circle fa-lg pointer ipremove' ) +'</td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle fa-lg wh pointer ipadd' ) +'</td></tr>'
 				 + trhtml.replace( 'NUM', 1 );
 	var dataL = S.multiraudioconf.length;
 	if ( dataL ) {
@@ -310,7 +305,7 @@ $( '#setting-multiraudio' ).click( function() {
 			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
 			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
-			$( '#ipadd' ).click( function() {
+			$( '.ipadd' ).click( function() {
 				$( '#infoContent tr:last' ).after( trhtml.replace( 'NUM', $( '#infoContent input' ).length + 1 ) );
 				$( '.ipremove' ).removeClass( 'hide' );
 				$( '#infoOk' ).removeClass( 'disabled' );
@@ -324,7 +319,7 @@ $( '#setting-multiraudio' ).click( function() {
 				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
 			} );
 		}
-		, cancel       : () => cancelSwitch( 'multiraudio' )
+		, cancel       : cancelSwitch
 		, ok           : () => {
 			I.inputs = $( '#infoContent input' );
 			bash( [ 'multiraudio', true, ...infoVal() ] );
@@ -345,7 +340,7 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, checkblank    : 1
-			, cancel        : () => cancelSwitch( 'login' )
+			, cancel        : cancelSwitch
 			, ok            : () => {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
@@ -369,7 +364,7 @@ $( '#setting-login' ).click( function() {
 		, passwordlabel : ( S.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
 		, checkblank    : 1
-		, cancel        : () => cancelSwitch( 'login' )
+		, cancel        : cancelSwitch
 		, ok            : () => {
 			var values = infoVal();
 			notify( icon, title, S.login ? 'Change ...' : 'Enable...' );
@@ -386,13 +381,13 @@ $( '#setting-login' ).click( function() {
 $( '#setting-scrobble' ).click( function() {
 	var content = `\
 <table>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-airplay"></i> AirPlay</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-bluetooth"></i> Bluetooth</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"><i class="fa fa-spotify"></i> Spotify</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"> <i class="fa fa-upnp"></i>UPnP</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'airplay' ) } AirPlay</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'bluetooth' ) } Bluetooth</label></td></tr>
+<tr><td></td><td><label><input type="checkbox">${ ico( 'spotify' ) } Spotify</label></td></tr>
+<tr><td></td><td><label><input type="checkbox"> ${ ico( 'upnp' ) }UPnP</label></td></tr>
 <tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
-<tr><td>User</td><td><input type="text"></td><td>&ensp;<i class="scrobbleuser fa fa-minus-circle fa-lg pointer"></i></td></tr>
-<tr><td>Password</td><td><input type="password"></td><td><i class="fa fa-eye fa-lg"></i></td></tr>
+<tr><td>User</td><td><input type="text"></td><td>&ensp;${ ico( 'minus-circle fa-lg scrobbleuser pointer' ) }</td></tr>
+<tr><td>Password</td><td><input type="password"></td><td>${ ico( 'eye' ) }</td></tr>
 </table>`;
 	var icon  = 'lastfm';
 	var title = 'Scrobbler';
@@ -420,7 +415,7 @@ $( '#setting-scrobble' ).click( function() {
 				infoCheckSet();
 			} );
 		}
-		, cancel        : () => cancelSwitch( 'scrobble' )
+		, cancel        : cancelSwitch
 		, ok            : () => {
 			bash( [ 'scrobble', true, ...infoVal() ], response => {
 				if ( 'error' in response ) {
@@ -457,7 +452,7 @@ $( '#nfsserver' ).click( function() {
 			, message : ( S.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( S.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : () => cancelSwitch( 'nfsserver' )
+			, cancel  : cancelSwitch
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', ! S.nfsserver ] );
@@ -486,7 +481,7 @@ $( '#setting-stoptimer' ).click( function() {
 				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
-		, cancel  : () => cancelSwitch( 'stoptimer' )
+		, cancel  : cancelSwitch
 		, ok           : () => {
 			bash( [ 'stoptimer', true, ...infoVal() ] );
 			notify( icon, title, S.stoptimer ? 'Change ...' : 'Enable ...' );
@@ -506,23 +501,28 @@ function passwordWrong() {
 	$( '#login' ).prop( 'checked', S.login );
 }
 function renderPage() {
-	$( '#shairport-sync' ).toggleClass( 'disabled', S.shairportactive );
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
-	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
-	$( '#snapclient' ).toggleClass( 'disabled', S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#spotifyd' ).toggleClass( 'disabled', S.spotifydactive );
 	$( '#redirecturi' ).text( S.spotifyredirect );
-	$( '#upmpdcli' ).toggleClass( 'disabled', S.upmpdcliactive );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	$( '#nfsserver' ).toggleClass( 'disabled', S.smb || S.shareddata || S.nfsconnected );
+	var disablednfs = '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.';
+	if ( S.smb ) {
+		disablednfs = disablednfs.replace( 'Shared Data', 'File Sharing' );
+	} else if ( S.nfsconnected ) {
+		disablednfs = 'Currently connected by clients';
+	}
+	$( '#nfsserver' )
+		.toggleClass( 'disabled', S.nfsconnected || S.shareddata || S.smb )
+		.prev().html( disablednfs );
 	$( '#stoptimer' ).toggleClass( 'disabled', S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {
 		$( '#divdsp' ).removeClass( 'hide' );
-		$( '#camilladsp' ).toggleClass( 'disabled', S.bluetoothsink || S.equalizer );
+		$( '#camilladsp' )
+			.toggleClass( 'disabled', S.bluetoothsink || S.equalizer )
+			.prev().html( '<wh>'+ ( S.bluetoothsink ? 'Bluetooth '+ ico( 'bluetooth' ) : 'Equalizer '+ ico( 'equalizer' ) ) +'</wh> is currently enabled.' );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
 	if ( ! /code|error/.test( window.location.href ) ) {

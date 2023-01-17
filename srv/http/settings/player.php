@@ -1,7 +1,7 @@
 <div id="divmpd" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'Music Player Daemon'
+	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 ] );
@@ -15,8 +15,8 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( echoSetIcon( 'I^stop btn^I I^play btn^I I^pause btn^I Playback control' ) )?>
-<br>
+<?=( i( 'stop btn' ).' '.i( 'play btn' ).' '.i( 'pause btn' ) )?> Playback control
+
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
@@ -38,7 +38,7 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
-I^volume^I Volume setting and control:
+{$Fi( 'volume' )} Volume setting and control:
  · Player: Should be set at 0dB
  · Playback: Should be set at 100%
  · Use device volume to control level
@@ -58,7 +58,7 @@ EOF
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'  => <<< EOF
-I^volume btn^I Control current mixer device.
+{$Fi( 'volume btn' )} Control current mixer device.
 
 Available hardware mixers of current device.
 EOF
@@ -99,11 +99,10 @@ Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
-		  'label'       => 'DSD over PCM'
-		, 'id'          => 'dop'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'help'        => <<< EOF
+		  'label'   => 'DSD over PCM'
+		, 'id'      => 'dop'
+		, 'setting' => false
+		, 'help'    => <<< EOF
 For DSD-capable devices without drivers dedicated for native DSD.
  · Enable if there's static/no sound from the DAC which means not support as native DSD.
  · DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
@@ -171,11 +170,11 @@ EOF
 		, 'sublabel' => 'decoder'
 		, 'id'       => 'ffmpeg'
 		, 'setting'  => false
-		, 'disabled' => '<wh>DAB Radio I^dabradio^I</wh> is currently enabled.'
+		, 'disabled' => nameIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
-Decoder for audio filetypes: I^help filetype^I
-<div id="divfiletype" class="hide" style="margin-left: 20px"></div>
+Decoder for audio filetypes: {$Fi( 'chevron-down bl filetype' )}
+<pre id="prefiletype" class="hide"></pre>
 EOF
 	]
 	, [
@@ -191,8 +190,7 @@ EOF
 		, 'id'       => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
-
-I^gear btn^I
+{$Fi( 'gear btn' )}
  • Presets:
 	(default: Quality <code>Very high</code>  Threads <code>Single</code>)
 	

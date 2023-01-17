@@ -13,7 +13,8 @@
 
 ### included by player-conf.sh, player-data.sh
 
-aplay=$( aplay -l 2> /dev/null | grep '^card' )
+readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
+
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
 	devices=false
@@ -41,17 +42,14 @@ rm -f $dirshm/nosound
 
 [[ -e $dirsystem/audio-aplayname ]] && audioaplayname=$( < $dirsystem/audio-aplayname )
 
-cards=$( cut -d: -f1 <<< $aplay \
-			| sort -u \
-			| sed 's/card //' )
-for card in $cards; do
-	line=$( sed -n "/^card $card/ p" <<< $aplay | head -1 )
-	hw=$( sed -E 's/card (.*):.*device (.*):.*/hw:\1,\2/' <<< $line )
-	card=${hw:3:1}
-	device=${hw: -1}
-	aplayname=$( sed -E 's/.*\[(.*)],.*/\1/; s/^snd_rpi_//; s/_/-/g' <<< $line ) # some aplay -l: snd_rpi_xxx_yyy > xxx-yyy
+for line in "${aplay[@]}"; do
+	readarray -t cnd <<< $( sed -E 's/card (.*):.*\[(.*)], device (.*):.*/\1\n\2\n\3/' <<< "$line" )
+	card=${cnd[0]}
+	aplayname=${cnd[1]}
+	device=${cnd[2]}
+	[[ ${aplayname:0:8} == snd_rpi_ ]] && aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
 	if [[ $aplayname == Loopback ]]; then
-		device=; hw=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
+		device=; hwmixer=; mixers=; mixerdevices=; mixertype=; name=;
 		devices+=',{
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
@@ -67,7 +65,7 @@ for card in $cards; do
 		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
 		getControls $card
 		if [[ ! $controls ]]; then
-			mixerdevices=['"( not available )"']
+			mixerdevices=false
 			mixers=0
 		else
 			readarray -t controls <<< $( sort -u <<< $controls )
@@ -89,7 +87,7 @@ for card in $cards; do
 		else
 			if [[ $mixers == 0 ]]; then
 				[[ $mixertype == hardware ]] && mixertype=none
-				hwmixer='( not available )'
+				hwmixer=''
 			else
 				hwmixer=${controls[0]}
 			fi
@@ -98,7 +96,6 @@ for card in $cards; do
   "aplayname"    : "'$aplayname'"
 , "card"         : '$card'
 , "device"       : '$device'
-, "hw"           : "'$hw'"
 , "hwmixer"      : "'$hwmixer'"
 , "mixers"       : '$mixers'
 , "mixerdevices" : '$mixerdevices'
@@ -109,7 +106,6 @@ for card in $cards; do
 	Aaplayname[card]=$aplayname
 	Acard[card]=$card
 	Adevice[card]=$device
-	Ahw[card]=$hw
 	Ahwmixer[card]=$hwmixer
 	Amixers[card]=$mixers
 	Amixertype[card]=$mixertype
@@ -121,13 +117,12 @@ if [[ $usbdac == add ]]; then
 	echo $card > $dirsystem/asoundcard
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
 	mv $dirsystem/asoundcard{.backup,} &> /dev/null
-elif [[ -e $dirsystem/asoundcard ]]; then
-	asoundcard=$( < $dirsystem/asoundcard )
-	! grep -v Loopback <<< $aplay | grep -q "^card $asoundcard" && echo ${Acard[0]} > $dirsystem/asoundcard
+elif [[ -e $dirsystem/asoundcard ]]; then # missing card
+	! amixer -c $( < $dirsystem/asoundcard ) &> /dev/null && echo $card > $dirsystem/asoundcard
 else
-	echo ${Acard[0]} > $dirsystem/asoundcard
+	echo $card > $dirsystem/asoundcard
 fi
-i=$( < $dirsystem/asoundcard )
+asoundcard=$( < $dirsystem/asoundcard )
 
 devices="[ ${devices:1} ]"
 aplayname=${Aaplayname[i]}

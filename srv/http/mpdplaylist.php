@@ -119,20 +119,19 @@ function htmlSavedPlaylist() {
 	foreach( $array as $each ) {
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
-		$html     .= <<< EOF
-<li class="pl-folder" data-index="$index">
-	<i class="fa fa-playlists pl-icon" data-target="#menu-playlist">
-	<a class="liname">$each->name</a></i>
-	<a class="lipath">$each->name</a></i>
-	<span class="plname">$each->name</span>
-</li>
-EOF;
+		$html     .= '
+<li class="pl-folder" data-index="'.$index.'">
+	'.i( 'playlists', 'playlist' ).'
+	<a class="liname">'.$each->name.'</a></i>
+	<a class="lipath">'.$each->name.'</a></i>
+	<span class="plname">'.$each->name.'</span>
+</li>';
 	}
 	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );
 	$counthtml = '
 &emsp;<span class="pl-title spaced">PLAYLISTS</span> &emsp; 
 <wh id="pl-savedlist-count">'.number_format( $count ).'</wh>
-<i class="fa fa-file-playlist"></i>';
+'.i( 'file-playlist' );
 	echo json_encode( [
 		  'html'      => $html
 		, 'index'     => $indexbar
@@ -188,15 +187,14 @@ function htmlTrack( $lists, $plname = '' ) {
 				$thumbsrc  = '/data/audiocd/'.$discid.'.jpg';
 				$icon      = 'audiocd';
 			}
-			$htmlicon = '<img class="lazyload iconthumb pl-icon" data-icon="'.$icon.'" data-src="'.$thumbsrc.'^^^" data-target="#menu-filesavedpl">';
-			$html    .= <<< EOF
-<li class="$class" $datatrack>
-	<a class="lipath">$file</a>
-	$htmlicon<div class="li1"><span class="name">$title</span>
-	<span class="duration"><a class="elapsed"></a><a class="time" data-time="$sec">$list->Time</a></span></div>
-	<div class="li2">$li2</div>
-</li>
-EOF;
+			$icon = imgIcon( $thumbsrc, 'filesavedpl', $icon );
+			$html    .= '
+<li class="'.$class.'" '.$datatrack.'>
+	<a class="lipath">'.$file.'</a>
+	'.$icon.'<div class="li1"><span class="name">'.$title.'</span>
+	<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>
+	<div class="li2">'.$li2.'</div>
+</li>';
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
@@ -206,14 +204,13 @@ EOF;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
 			if ( $album ) $li2.= '<a class="album">'.$album.'</a>';
 			if ( ! $artist && ! $album ) $li2.= $file;
-			$html  .= <<< EOF
+			$html  .= '
 <li class="upnp">
-	<i class="fa fa-upnp fa-lg pl-icon" data-target="#menu-filesavedpl"></i>
-	<div class="li1"><span class="name">$list->Title</span>
+	'.i( 'upnp fa-lg', 'filesavedpl' ).'
+	<div class="li1"><span class="name">'.$list->Title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-	<div class="li2">$li2</div>
-</li>
-EOF;
+	<div class="li2">'.$li2.'</div>
+</li>';
 			$countupnp++;
 		} else {
 			if ( str_contains( $file, '://' ) ) { // webradio / dabradio
@@ -229,39 +226,38 @@ EOF;
 			if ( $stationname !== '' ) {
 				$notsaved = 0;
 				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
-				$icon     = '<img class="lazyload webradio iconthumb pl-icon" data-src="'.$thumbsrc.'^^^" data-icon="webradio" data-target="#menu-filesavedpl">';
+				$icon     = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
 			} else {
 				$notsaved = 1;
-				$icon     = '<i class="fa fa-save savewr"></i><i class="fa fa-webradio pl-icon" data-target="#menu-filesavedpl"></i>';
+				$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
 			}
 			$classnotsaved = $notsaved ? ' notsaved' : '';
 			$namenotsaved  = $notsaved ? '' : $stationname.' • ';
 			$charset       = preg_replace( '/#charset=.*/', '', $file );
 			$path          = preg_replace( '/\?.*$/', '', $file );
-			$html         .= <<< EOF
-<li class="webradio $classnotsaved">
-	<a class="lipath">$path</a>
-	$icon<a class="liname">$stationname</a><div class="li1"><span class="name">$stationname</span>
+			$html         .= '
+<li class="webradio '.$classnotsaved.'">
+	<a class="lipath">'.$path.'</a>
+	'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><span class="name">'.$stationname.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-	<div class="li2"><a class="pos">$i</a> • <span class="stationname hide">$namenotsaved</span>$charset</div>
-</li>
-EOF;
+	<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.$namenotsaved.'</span>'.$charset.'</div>
+</li>';
 			$countradio++;
 		}
 	}
 	$counthtml = '';
 	if ( $plname ) {
 		$counthtml.= '
-<a class="lipath">'.$plname.'</a><span class="pl-title name"><i class="savedlist fa fa-file-playlist wh"></i>'.$plname.'&ensp;<gr> · </gr></span>';
+<a class="lipath">'.$plname.'</a><span class="pl-title name">'.i( 'file-playlist savedlist wh' ).$plname.'&ensp;<gr> · </gr></span>';
 	}
 	if ( $countsong ) {
 		$counthtml.= '
 <wh id="pl-trackcount">'.number_format( $countsong ).'</wh>
-<i class="fa fa-music"></i>
+'.i( 'music' ).'
 <gr id="pl-time" data-time="'.$counttime.'">'.second2HMS( $counttime ).'</gr>';
 	}
-	if ( $countradio ) $counthtml.= '<i class="fa fa-webradio"></i><wh id="pl-radiocount">'.$countradio.'</wh>';
-	if ( $countupnp )  $counthtml.= '&emsp;<i class="fa fa-upnp"></i>';
+	if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
+	if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
 	$elapsed = exec( '/srv/http/bash/cmd.sh getelapsed' );
 	echo json_encode( [
 		  'html'      => $html

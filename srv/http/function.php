@@ -1,4 +1,15 @@
 <?php
+function i( $class, $target = '' ) {
+	$icon = '<i class="fa fa-'.$class;
+	$icon.= $target ? ' li-icon" data-target="#menu-'.$target.'"></i>' : '"></i>';
+	return $icon;
+}
+function imgIcon( $thumbsrc, $target, $icon = '' ) {
+	$img = '<img class="lazyload iconthumb li-icon '.$icon.'"';
+	$img.= $icon ? ' data-icon="'.$icon.'"' : '';
+	$img.= ' data-src="'.$thumbsrc.'^^^" data-target="#menu-'.$target.'">';
+	return $img;
+}
 function indexbar( $indexes ) {
 	$indexbar = '<a class="indexed"><wh>#</wh></a>';
 	$chars    = range( 'A', 'Z' );
