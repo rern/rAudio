@@ -88,10 +88,7 @@ $( '#setting-snapclient' ).click( function() {
 			} );
 		}
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'snapclient', true, infoVal() ] );
-			notify( icon, title, S.snapclient ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'snapclient', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-upmpdcli' ).click( function() {
@@ -104,10 +101,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, values       : [ S.upmpdcliownqueue ]
 		, checkchanged : S.upmpdcli
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'upmpdcli', true, infoVal() ] );
-			notify( icon, title, S.upmpdcli ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'upmpdcli', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-camilladsp' ).click( function() {
@@ -123,11 +117,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, values       : S.camillarefresh
 		, checkchanged : S.camilladsp
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'camilladsp', true, infoVal() ] );
-			notify( icon, title, S.camilladsp ? 'Change ...' : 'Enable ...' );
-			S.camilladsp = true;
-		}
+		, ok           : () => enable( 'camilladsp', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-hostapd' ).click( function() {
@@ -143,10 +133,7 @@ $( '#setting-hostapd' ).click( function() {
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'hostapd', true, ...infoVal() ] );
-			notify( icon, title, S.hostapd ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'hostapd', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
@@ -160,10 +147,7 @@ $( '#setting-autoplay' ).click( function() {
 		, values       : val ? S.autoplayconf : [ false, false, true ]
 		, checkchanged : S.autoplay
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'autoplay', true, ...infoVal() ] );
-			notify( icon, title, S.autoplay ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'autoplay', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
@@ -247,10 +231,7 @@ ${ htmlbrightness }
 			}
 		}
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'localbrowser', true, ...infoVal() ] );
-			notify( icon, title, S.localbrowser ? 'Change ...' : 'Enable ...', );
-		}
+		, ok           : () => enable( 'localbrowser', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-smb' ).click( function() {
@@ -264,10 +245,7 @@ $( '#setting-smb' ).click( function() {
 		, values       : S.smbconf
 		, checkchanged : S.smb
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'smb', true, ...infoVal() ] );
-			notify( icon, title, S.smb ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'smb', icon, title, infoVal() )
 	} );
 } );
 $( '#setting-multiraudio' ).click( function() {
@@ -320,11 +298,7 @@ $( '#setting-multiraudio' ).click( function() {
 			} );
 		}
 		, cancel       : cancelSwitch
-		, ok           : () => {
-			I.inputs = $( '#infoContent input' );
-			bash( [ 'multiraudio', true, ...infoVal() ] );
-			notify( icon, title, S.multiraudio ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'multiraudio', icon, title, infoVal() )
 	} );
 } );
 $( '#login' ).click( function() {
@@ -482,15 +456,18 @@ $( '#setting-stoptimer' ).click( function() {
 			} );
 		}
 		, cancel  : cancelSwitch
-		, ok           : () => {
-			bash( [ 'stoptimer', true, ...infoVal() ] );
-			notify( icon, title, S.stoptimer ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : () => enable( 'stoptimer', icon, title, infoVal() )
 	} );
 } );
 
 } );
 
+function enable( pkg, icon, title, val ) {
+	var cmd = typeof val === 'object' ? [ pkg, true, ...val ] : [ pkg, true, val ];
+	bash( cmd );
+	notify( icon, title, S[ pkg ] ? 'Change ...' : 'Enable ...' );
+	S[ pkg ] = true;
+}
 function passwordWrong() {
 	bannerHide();
 	info( {

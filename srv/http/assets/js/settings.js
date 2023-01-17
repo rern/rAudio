@@ -437,13 +437,15 @@ $( '.switch' ).click( function() {
 		} else {
 			notify( icon, label, 'Disable ...' );
 			bash( [ V.swid, false ] );
+			S[ V.swid ] = false;
 		}
 	} else {
 		notify( icon, label, checked );
 		bash( [ V.swid, checked ], error => {
 			if ( error ) {
-				bannerHide();
+				S[ V.swid ] = false;
 				$( '#'+ V.swid ).prop( 'checked', false );
+				bannerHide();
 				info( error );
 			}
 		}, 'json' );
