@@ -83,7 +83,7 @@ over_voltage=2"
 fi
 
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -104,6 +104,7 @@ if [[ -e /usr/bin/camilladsp ]]; then
 	ln -sf /srv/http/assets/fonts $dircamillagui
 	ln -sf /srv/http/assets/css/colors.css $dircamillagui
 	ln -sf /srv/http/assets/img/icon.png $dircamillagui
+	ln -sf $dircamilladsp/configs/{camilladsp,active_config}.yml
 fi
 
 # display
