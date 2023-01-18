@@ -98,15 +98,6 @@ else
 	done
 fi
 
-# camillagui
-if [[ -e /usr/bin/camilladsp ]]; then
-	dircamillagui=/srv/http/settings/camillagui/build
-	ln -sf /srv/http/assets/fonts $dircamillagui
-	ln -sf /srv/http/assets/css/colors.css $dircamillagui
-	ln -sf /srv/http/assets/img/icon.png $dircamillagui
-	ln -sf $dircamilladsp/configs/{camilladsp,active_config}.yml
-fi
-
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
