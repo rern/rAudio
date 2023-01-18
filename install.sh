@@ -57,72 +57,16 @@ if grep -q shairport.sh /etc/shairport-sync.conf; then
 	systemctl try-restart shairport-sync
 fi
 
-# 20221123
-grep -q calc $dirbash/xinitrc && restartbrowser=1
-
-mv /etc/udev/rules.d/ntfs{3,}.rules &> /dev/null
-file=/etc/udev/rules.d/ntfs.rules
-if [[ ! -e $file ]]; then
-	cat << 'EOF' > $file
-ACTION=="add", \
-SUBSYSTEM=="block", \
-ENV{ID_FS_TYPE}=="ntfs", \
-ENV{ID_FS_TYPE}="ntfs3", \
-RUN+="/srv/http/bash/settings/system.sh usbconnect"
-
-ACTION=="remove", \
-SUBSYSTEM=="block", \
-ENV{ID_FS_TYPE}=="ntfs", \
-ENV{ID_FS_TYPE}="ntfs3", \
-RUN+="/srv/http/bash/settings/system.sh usbremove"
-EOF
-	udevadm control --reload-rules
-	udevadm trigger
-fi
-
-# 20221122
-sed -i '/shairport-sync/ d' /etc/pacman.conf
-veropenssl=$( pacman -Q openssl | cut -d' ' -f2 | cut -c 1 )
-vershairport=$( pacman -Q shairport-sync | cut -d' ' -f2 | cut -c 1 )
-[[ $veropenssl == 3 && $vershairport != 4 ]]  && pacman -Sy --noconfirm shairport-sync
-
-[[ -e $dirsystem/loginset ]] && mv -f $dirsystem/login{set,}
-
-[[ ! -e $dirdata/mpdconf ]] && backup=1
-
-sed -i '/interfaces/ d' /etc/samba/smb.conf
-systemctl try-restart smb 
-
-file=/etc/systemd/system/bluetooth.service.d/override.conf
-if grep -q bluetooth$ $file; then
-	sed -i 's/bluetooth$/&start/' $file
-	systemctl daemon-reload
-fi
-
-if [[ -L $dirmpd  && ! -e /mnt/MPD/.mpdignore ]]; then
-	echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
 rm -rf /srv/http/assets/{css,fonts,js}
-[[ -e $dirmpdconf ]] && mv $dirmpdconf /tmp
 
 getinstallzip
 
-if [[ -e /tmp/mpdconf ]]; then
-	rm -rf $dirmpdconf
-	mv /tmp/mpdconf $dirdata
-fi
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 installfinish
 #-------------------------------------------------------------------------------
-
-# 20221123
-[[ $restartbrowser ]] && systemctl try-restart localbrowser

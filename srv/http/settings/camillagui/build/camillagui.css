@@ -374,7 +374,10 @@ input[data-tip='Mixer name, must be unique'] {
 	left: -290px;
 	width: 270px;
 	height: 36px;
-	background: none;
+	background: #000;
+	border-top: 10px solid #000;
+	margin-top: -10px;
+	box-shadow: 0px 4px 10px #000;
 }
 #button-compactview {
 	display: none;
@@ -473,7 +476,6 @@ input[data-tip='Mixer name, must be unique'] {
 }
 /* volume + status ------------------------------------------------------------ */
 #mainpanel {
-	position: fixed;
 	display: block;
 	float: left;
 	width: 270px !important;
@@ -584,6 +586,7 @@ input[data-tip='Mixer name, must be unique'] {
 /* Panels ----------------------------------------------------------------- */
 .configtabs {
 	display: block;
+	float: none;
 	width: 410px;
 	max-width: 100vw;
 	margin-left: 300px !important;
