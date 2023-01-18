@@ -76,7 +76,7 @@ over_voltage=2"
 	sed -i '/^#/! d' /etc/exports
 	
 	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
-	mv $dirdata/{addons,mpdconf} /tmp
+	mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 	rm -rf $dirdata $dirshareddata \
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
@@ -90,7 +90,7 @@ chown -h http:http $dirshm /srv/http/mnt
 
 # addons - new/reset
 if [[ $reset ]]; then
-	mv /tmp/{addons,mpdconf} $dirdata
+	mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
 else
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
