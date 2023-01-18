@@ -532,7 +532,7 @@ $( '#ledcalc' ).click( function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
-	var icon  = 'raudio';
+	var icon  = 'system';
 	var title = 'Player Name';
 	info( {
 		  icon         : icon
