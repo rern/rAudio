@@ -50,6 +50,7 @@ data+='
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( isactive shairport-sync )
 [[ -e /usr/bin/snapserver ]] && data+='
+, "snapclientactive" : '$( isactive snapclient )'
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'

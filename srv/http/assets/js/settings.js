@@ -56,9 +56,6 @@ function bannerReset() {
 	clearTimeout( I.timeoutbanner );
 	I.timeoutbanner = setTimeout( bannerHide, delay );
 }
-function cancelSwitch() {
-	$( '#'+ V.swid ).prop( 'checked', S[ V.swid ] );
-}
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
 	if ( $el.hasClass( 'hide' ) ) {
@@ -133,7 +130,7 @@ function refreshData() {
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
 			$( '#data' ).empty();
 			$( '#button-data, #data' ).addClass( 'hide' );
-			setSwitch();
+			switchSet();
 			renderPage();
 		} else {
 			$( '#data' ).html( highlightJSON( S ) )
@@ -141,7 +138,23 @@ function refreshData() {
 		}
 	} );
 }
-function setSwitch() {
+function showContent() {
+	V.ready ? delete V.ready : bannerReset();
+	var $select = $( '.container select' );
+	if ( $select.length ) selectSet( $select );
+	$( '.container' ).removeClass( 'hide' );
+	loaderHide();
+}
+function switchCancel() {
+	$( '#'+ V.swid ).prop( 'checked', S[ V.swid ] );
+}
+function switchEnable( icon, title, val ) {
+	var cmd = typeof val === 'object' ? [ V.swid, true, ...val ] : [ V.swid, true, val ];
+	bash( cmd );
+	notify( icon, title, S[ V.swid ] ? 'Change ...' : 'Enable ...' );
+	S[ V.swid ] = true;
+}
+function switchSet() {
 	if ( page === 'networks' || page === 'relays' ) return
 	
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
@@ -156,13 +169,7 @@ function setSwitch() {
 		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
 	} );
 }
-function showContent() {
-	V.ready ? delete V.ready : bannerReset();
-	var $select = $( '.container select' );
-	if ( $select.length ) selectSet( $select );
-	$( '.container' ).removeClass( 'hide' );
-	loaderHide();
-}
+
 // pushstreamChannel() in common.js
 pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
 function pushstreamDisconnect() {
@@ -232,7 +239,7 @@ function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	page === 'networks' ? $( '.back' ).click() : setSwitch();
+	page === 'networks' ? $( '.back' ).click() : switchSet();
 	renderPage();
 }
 function psReload( data ) {
@@ -374,7 +381,7 @@ $( '.page-icon' ).click( function() {
 } );
 $( '#button-data' ).click( function() {
 	$( '#button-data, #data' ).addClass( 'hide' );
-	setSwitch();
+	switchSet();
 	renderPage();
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( () => location.reload(), 1000 );

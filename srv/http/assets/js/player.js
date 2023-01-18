@@ -89,7 +89,7 @@ $( '#novolume' ).click( function() {
 			  icon    : icon
 			, title   : title
 			, message : warning
-			, cancel  : cancelSwitch
+			, cancel  : switchCancel
 			, ok      : () => {
 				notify( icon, title, 'Enable ...' );
 				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
@@ -125,11 +125,8 @@ $( '#setting-crossfade' ).click( function() {
 		, values       : S.crossfadeconf || 1
 		, checkchanged : S.crossfade
 		, checkblank   : 1
-		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'crossfade', true, infoVal() ] );
-			notify( icon, title, S.crossfade ? 'Change ...' : 'Enable ...' );
-		}
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
@@ -141,11 +138,8 @@ $( '#setting-replaygain' ).click( function() {
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
-		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'replaygain', true, infoVal() ] );
-			notify( icon, title, S.replaygain ? 'Change ...' : 'Enable ...' );
-		}
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '.filetype' ).click( function() {
@@ -175,11 +169,8 @@ $( '#setting-buffer' ).click( function() {
 		, values       : S.bufferconf
 		, checkchanged : S.buffer
 		, checkblank   : 1
-		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'buffer', true, infoVal() ] );
-			notify( icon, title, S.buffer ? 'Change ...' : 'Enable ...' );
-		}
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-outputbuffer' ).click( function() {
@@ -196,11 +187,8 @@ $( '#setting-outputbuffer' ).click( function() {
 		, values       : S.outputbufferconf
 		, checkchanged : S.outputbuffer
 		, checkblank   : 1
-		, cancel       : cancelSwitch
-		, ok           : () => {
-			bash( [ 'outputbuffer', true, infoVal() ] );
-			notify( icon, title, S.outputbuffer ? 'Change ...' : 'Enable ...' );
-		}
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-soxr' ).click( function() {
@@ -235,7 +223,7 @@ $( '#setting-custom' ).click( function() {
 			, content      : custominfo.replace( 'N', S.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : S.custom
-			, cancel       : cancelSwitch
+			, cancel       : switchCancel
 			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
@@ -335,15 +323,8 @@ function infoSoxr( quality ) {
 		, checkblank   : 1
 		, checkchanged : S.soxr && quality === S.soxrquality
 		, boxwidth     : custom ? 85 : 180
-		, cancel       : cancelSwitch
-		, ok           : () => {
-			if ( custom ) {
-				bash( [ 'soxr', true, 'custom', ...infoVal() ] );
-			} else {
-				bash( [ 'soxr', true, ...infoVal() ] );
-			}
-			notify( icon, title, S.soxr ? 'Change ...' : 'Enable ...' );
-		}
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, custom ? [ 'custom', ...infoVal() ] : infoVal() )
 	} );
 }
 function infoSoxrCustom() {

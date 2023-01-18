@@ -43,7 +43,7 @@ $( '#setting-spotifyd' ).click( function() {
 					$( '#infoX' ).click();
 				} );
 			}
-			, cancel       : cancelSwitch
+			, cancel       : switchCancel
 			, ok           : () => {
 				var values = infoVal();
 				var id     = values[ 0 ];
@@ -87,8 +87,8 @@ $( '#setting-snapclient' ).click( function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'snapclient', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-upmpdcli' ).click( function() {
@@ -100,8 +100,8 @@ $( '#setting-upmpdcli' ).click( function() {
 		, checkbox     : [ 'Clear Playlist on start' ]
 		, values       : [ S.upmpdcliownqueue ]
 		, checkchanged : S.upmpdcli
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'upmpdcli', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-camilladsp' ).click( function() {
@@ -116,8 +116,8 @@ $( '#setting-camilladsp' ).click( function() {
 		, boxwidth     : 100
 		, values       : S.camillarefresh
 		, checkchanged : S.camilladsp
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'camilladsp', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-hostapd' ).click( function() {
@@ -132,8 +132,8 @@ $( '#setting-hostapd' ).click( function() {
 		, checkchanged : S.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'hostapd', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
@@ -146,8 +146,8 @@ $( '#setting-autoplay' ).click( function() {
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
 		, values       : val ? S.autoplayconf : [ false, false, true ]
 		, checkchanged : S.autoplay
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'autoplay', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
@@ -230,8 +230,8 @@ ${ htmlbrightness }
 				} );
 			}
 		}
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'localbrowser', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-smb' ).click( function() {
@@ -244,8 +244,8 @@ $( '#setting-smb' ).click( function() {
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
 		, values       : S.smbconf
 		, checkchanged : S.smb
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'smb', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#setting-multiraudio' ).click( function() {
@@ -297,8 +297,8 @@ $( '#setting-multiraudio' ).click( function() {
 				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
 			} );
 		}
-		, cancel       : cancelSwitch
-		, ok           : () => enable( 'multiraudio', icon, title, infoVal() )
+		, cancel       : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 $( '#login' ).click( function() {
@@ -314,7 +314,7 @@ $( '#login' ).click( function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, checkblank    : 1
-			, cancel        : cancelSwitch
+			, cancel        : switchCancel
 			, ok            : () => {
 				notify( icon, title, 'Disable ...' );
 				$.post( 'cmd.php', {
@@ -338,7 +338,7 @@ $( '#setting-login' ).click( function() {
 		, passwordlabel : ( S.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
 		, checkblank    : 1
-		, cancel        : cancelSwitch
+		, cancel        : switchCancel
 		, ok            : () => {
 			var values = infoVal();
 			notify( icon, title, S.login ? 'Change ...' : 'Enable...' );
@@ -389,7 +389,7 @@ $( '#setting-scrobble' ).click( function() {
 				infoCheckSet();
 			} );
 		}
-		, cancel        : cancelSwitch
+		, cancel        : switchCancel
 		, ok            : () => {
 			bash( [ 'scrobble', true, ...infoVal() ], response => {
 				if ( 'error' in response ) {
@@ -426,7 +426,7 @@ $( '#nfsserver' ).click( function() {
 			, message : ( S.nfsserver ? 'Shared directories:' : 'Directories to share:' )
 						+'<br><br><pre><wh>'+ list +'</wh></pre><br>'
 						+ ( S.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : cancelSwitch
+			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', ! S.nfsserver ] );
@@ -455,19 +455,13 @@ $( '#setting-stoptimer' ).click( function() {
 				$poweroff.prop( 'disabled', valfalse );
 			} );
 		}
-		, cancel  : cancelSwitch
-		, ok           : () => enable( 'stoptimer', icon, title, infoVal() )
+		, cancel  : switchCancel
+		, ok           : () => switchEnable( icon, title, infoVal() )
 	} );
 } );
 
 } );
 
-function enable( pkg, icon, title, val ) {
-	var cmd = typeof val === 'object' ? [ pkg, true, ...val ] : [ pkg, true, val ];
-	bash( cmd );
-	notify( icon, title, S[ pkg ] ? 'Change ...' : 'Enable ...' );
-	S[ pkg ] = true;
-}
 function passwordWrong() {
 	bannerHide();
 	info( {
@@ -479,6 +473,7 @@ function passwordWrong() {
 }
 function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
+	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
 	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
