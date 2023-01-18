@@ -134,7 +134,7 @@ $settinglist = [
 	, [ 'power',           '',         'power',    'Power',    'screenoff',    'screenoff' ]
 	, [ 'displaylibrary',  'sub',      'library',  'Library',  'update',       'refresh-library' ]
 	, [ 'displayplayback', 'sub',      'playback', 'Playback', 'displaycolor', 'color' ]
-	, [ 'displayplaylist', '',         'playlist', 'Playlist', 'multiraudio',  'raudiobox' ]
+	, [ 'displayplaylist', '',         'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
 ];
 $htmlsettings     = '';
 foreach( $settinglist as $l ) {

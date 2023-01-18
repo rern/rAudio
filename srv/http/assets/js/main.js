@@ -273,7 +273,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					i++
 				}
 				info( {
-					  icon    : 'raudiobox'
+					  icon    : 'multiraudio'
 					, title   : 'Switch rAudio'
 					, radio   : radio
 					, values  : location.host

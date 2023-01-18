@@ -28,7 +28,7 @@ On/Off:  <a class="menu-sub"><i class="fa fa-raudio"></i> System</a><i class="
 	<div class="column" id="gpio-num">
 		<span class="gpio-text"><?=( i( 'gpiopins bl' ) )?>Pin</span>
 		<?=$htmlpin?>
-		<span class="gpio-text"><?=( i( 'stopwatch yl' ) )?> Idle</span>
+		<span class="gpio-text"><?=( i( 'stoptimer yl' ) )?> Idle</span>
 		<select id="timer" class="timer"></select>
 	</div>
 	<div class="column c2" id="gpio-name">

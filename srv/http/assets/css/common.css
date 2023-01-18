@@ -40,7 +40,10 @@
 .fa-arrow-right::before     { content: '\F603' }
 .fa-artist::before          { content: '\F556' }
 .fa-audiocd::before         { content: '\F538' }
+.fa-audio::before           { content: '\F516' }
+.fa-autoplay::before        { content: '\F503' }
 .fa-backspace::before       { content: '\F608' }
+.fa-backup::before          { content: '\F543' }
 .fa-bars::before            { content: '\F51C' }
 .fa-bio::before             { content: '\F51D' }
 .fa-bookmark::before        { content: '\F550' }
@@ -85,10 +88,14 @@
 .fa-globe::before           { content: '\F575' }
 .fa-gpiopins::before        { content: '\F572' }
 .fa-guide::before           { content: '\F579' }
+.fa-hddsleep::before        { content: '\F553' }
 .fa-hdmi::after             { content: '\F58B' }
 .fa-help::before            { content: '\F560' }
 .fa-hide::before            { content: '\F575' }
-.fa-i2saudio::before        { content: '\F571' }
+.fa-hostapd::before         { content: '\F554' }
+.fa-hostname::before        { content: '\F590' }
+.fa-httpd::before           { content: '\F55D' }
+.fa-i2smodule::before       { content: '\F571' }
 .fa-info-circle::before     { content: '\F561' }
 .fa-input::before           { content: '\F529' }
 .fa-jigsaw::before          { content: '\F50D' }
@@ -102,18 +109,23 @@
 .fa-library::before         { content: '\F506' }
 .fa-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
 .fa-link::before            { content: '\F56B' }
+.fa-localbrowser::before    { content: '\F584' }
 .fa-lock::before            { content: '\F574' }
+.fa-login::before           { content: '\F574' }
 .fa-lyrics::before          { content: '\F54B' }
+.fa-lyricsembedded::before  { content: '\F54B' }
 .fa-microsd::before         { content: '\F543' }
 .fa-minus::before           { content: '\F518' }
 .fa-minus-circle::before    { content: '\F563' }
 .fa-mpd::before             { content: '\F582' }
 .fa-mpdoled::before         { content: '\F57A' }
+.fa-multiraudio::before     { content: '\F53B' }
 .fa-music::before           { content: '\F54A' }
 .fa-mute::before            { content: '\F517' }
 .fa-nas::before             { content: '\F551' }
 .fa-networks::before        { content: '\F551' }
 .fa-next::before            { content: '\F505' }
+.fa-nfsserver::before       { content: '\F551' }
 .fa-off::before             { content: '\F520' }
 .fa-output::before          { content: '\F52A' }
 .fa-pause::before           { content: '\F504' }
@@ -130,6 +142,7 @@
 .fa-plus-circle::before     { content: '\F564' }
 .fa-plus-o::before          { content: '\F530' }
 .fa-power::before           { content: '\F520' }
+.fa-powerbutton::before     { content: '\F520' }
 .fa-previous::before        { content: '\F501' }
 .fa-radiofrance::before     { content: '\F586' }
 .fa-radioparadise::before   { content: '\F593'; position: absolute; color: var( --cgl ); }
@@ -137,7 +150,6 @@
 .fa-random::before          { content: '\F512' }
 .fa-raudio::before          { content: '\F590' }
 .fa-raudio-nobg::before     { content: '\F500' }
-.fa-raudiobox::before       { content: '\F53B' }
 .fa-rserver::before         { content: '\F53C' }
 .fa-reboot::before          { content: '\F521' }
 .fa-redo::before            { content: '\F524' }
@@ -150,42 +162,52 @@
 .fa-replace::before         { content: '\F531' }
 .fa-reset::before           { content: '\F527' }
 .fa-restore::before         { content: '\F544' }
+.fa-rotaryencoder::before   { content: '\F516' }
 .fa-save::before            { content: '\F542' }
 .fa-save-circle::before     { content: '\F546' }
 .fa-save-plus::before       { content: '\F545' }
 .fa-screenoff::before       { content: '\F547' }
 .fa-scale-dn::before        { content: '\F591' }
 .fa-scale-up::before        { content: '\F592' }
+.fa-scrobble::before        { content: '\F585' }
 .fa-sd::before              { content: '\F543' }
 .fa-search::before          { content: '\F56A' }
 .fa-set0::before            { content: '\F515' }
 .fa-settings::before        { content: '\F509' }
+.fa-shareddata::before      { content: '\F551' }
+.fa-shairport-sync::before  { content: '\F580' }
 .fa-shift::before           { content: '\F606' }
 .fa-shuffle::before         { content: '\F513' }
 .fa-single::before          { content: '\F514' }
 .fa-sliders::before         { content: '\F50B' }
+.fa-smb::before             { content: '\F551' }
 .fa-snapcast::before        { content: '\F587' }
 .fa-snapclient::before      { content: '\F587' }
+.fa-snapserver::before      { content: '\F587' }
 .fa-song::before            { content: '\F54A' }
 .fa-soundprofile::before    { content: '\F576' }
 .fa-source::before          { content: '\F529' }
 .fa-spotify::before         { content: '\F588' }
+.fa-spotifyd::before        { content: '\F588' }
 .fa-star::before            { content: '\F550' }
 .fa-status::before          { content: '\F50A' }
 .fa-stop::before            { content: '\F502' }
 .fa-stoptimer::before       { content: '\F570' }
-.fa-stopwatch::before       { content: '\F570' }
 .fa-system::before          { content: '\F590' }
 .fa-tag::before             { content: '\F55B' }
 .fa-times::before           { content: '\F51A' }
+.fa-timezone::before        { content: '\F575' }
 .fa-title::before           { content: '\F54A' }
 .fa-track::before           { content: '\F54C' }
 .fa-undo::before            { content: '\F523' }
 .fa-update::before          { content: '\F526' }
+.fa-upmpdcli::before        { content: '\F581' }
 .fa-upnp::before            { content: '\F581' }
 .fa-usb::before             { content: '\F553' }
+.fa-usbautoupdate::before   { content: '\F536' }
 .fa-usbdrive::before        { content: '\F553' }
 .fa-volume::before          { content: '\F516' }
+.fa-vuled::before           { content: '\F52B' }
 .fa-warning::before         { content: '\F562' }
 .fa-webradio::before        { content: '\F55D' }
 .fa-wifi::before            { content: '\F597' }
@@ -193,6 +215,7 @@
 .fa-wifi1::after            { content: '\F599'; color: var( --cga ); }
 .fa-wifi2::before           { content: '\F59A'; position: absolute; }
 .fa-wifi2::after            { content: '\F59B'; color: var( --cga ); }
+.fa-wlan::before            { content: '\F597' }
 
 html {
 	height  : 100%;

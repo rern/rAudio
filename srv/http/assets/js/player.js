@@ -12,8 +12,8 @@ $( '#setting-btreceiver' ).click( function() {
 		var vol   = voldb[ 0 ];
 		var db    = voldb[ 1 ];
 		info( {
-			  icon       : 'volume'
-			, title      : 'Bluetooth Volume'
+			  icon       : SW.icon
+			, title      : SW.title
 			, message    : S.btaplayname.replace( / - A2DP$/, '' )
 			, rangevalue : vol
 			, footer     : db +' dB'
@@ -32,11 +32,11 @@ $( '#setting-btreceiver' ).click( function() {
 	} );
 } );
 $( '#audiooutput' ).change( function() {
-	notify( 'mpd', 'Audio Output Device', 'Change ...' );
+	notify( 'volume', 'Audio Output Device', 'Change ...' );
 	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
-	notify( 'mpd', 'Hardware Mixer', 'Change ...' );
+	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
 } );
 $( '#setting-hwmixer' ).click( function() {
@@ -47,8 +47,8 @@ $( '#setting-hwmixer' ).click( function() {
 		var nodb     = typeof db === 'undefined';
 		var nomixer  = D.mixertype === 'none';
 		info( {
-			  icon       : 'volume'
-			, title      : 'Mixer Device Volume'
+			  icon       : SW.icon
+			, title      : SW.title
 			, message    : D.hwmixer
 			, rangevalue : vol
 			, footer     : nodb ? '' : ( nomixer ? '0dB (No Volume)' : db +' dB' )
@@ -82,23 +82,21 @@ $( '#mixertype' ).change( function() {
 } );
 $( '#novolume' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
-	var icon    = 'volume';
-	var title   = 'No Volume';
 	if ( checked ) {
 		info( {
-			  icon    : icon
-			, title   : title
+			  icon    : SW.icon
+			, title   : SW.title
 			, message : warning
 			, cancel  : switchCancel
 			, ok      : () => {
-				notify( icon, title, 'Enable ...' );
+				notify( SW.icon, SW.title, 'Enable ...' );
 				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
 			}
 		} );
 	} else {
 		info( {
-			  icon         : icon
-			, title        : title
+			  icon         : SW.icon
+			, title        : SW.title
 			, message      : `\
 <wh>No volume</wh> will be disabled on:
 &emsp; • Select a Mixer Control
@@ -114,11 +112,9 @@ $( '#dop' ).click( function() {
 	bash( [ 'dop', checked, D.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
-	var icon  = 'mpd';
-	var title = 'Cross-Fading';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
@@ -126,20 +122,18 @@ $( '#setting-crossfade' ).click( function() {
 		, checkchanged : S.crossfade
 		, checkblank   : 1
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
-	var icon  = 'mpd';
-	var title = 'ReplayGain';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '.filetype' ).click( function() {
@@ -156,11 +150,9 @@ $( '.filetype' ).click( function() {
 	$( this ).toggleClass( 'fa-chevron-down fa-chevron-up' );
 } );
 $( '#setting-buffer' ).click( function() {
-	var icon  = 'mpd';
-	var title = 'Custom Audio Buffer';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, textlabel    : 'audio_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 4096)'
@@ -170,15 +162,13 @@ $( '#setting-buffer' ).click( function() {
 		, checkchanged : S.buffer
 		, checkblank   : 1
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-outputbuffer' ).click( function() {
-	var icon  = 'mpd';
-	var title = 'Custom Output Buffer';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, textlabel    : 'max_output_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 8192)'
@@ -188,7 +178,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, checkchanged : S.outputbuffer
 		, checkblank   : 1
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-soxr' ).click( function() {
@@ -215,11 +205,9 @@ $( '#setting-custom' ).click( function() {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
-		var icon      = 'mpd';
-		var title     = "User's Configurations";
 		info( {
-			  icon         : icon
-			, title        : title
+			  icon         : SW.icon
+			, title        : SW.title
 			, content      : custominfo.replace( 'N', S.asoundcard )
 			, values       : [ valglobal, valoutput ]
 			, checkchanged : S.custom
@@ -228,7 +216,7 @@ $( '#setting-custom' ).click( function() {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
 					bash( [ 'customdisable' ] );
-					notify( icon, title, 'Disable ...', 3000 );
+					notify( SW.icon, SW.title, 'Disable ...', 3000 );
 					return
 				}
 				
@@ -236,14 +224,14 @@ $( '#setting-custom' ).click( function() {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
-							  icon    : icon
-							, title   : title
+							  icon    : SW.icon
+							, title   : SW.title
 							, message : 'MPD failed with the added lines'
 										+'<br>Restored to previous configurations.'
 						} );
 					}
 				}, 'json' );
-				notify( icon, title, S.custom ? 'Change ...' : 'Enable ...' );
+				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -269,6 +257,7 @@ var soxr       = `\
 <table>`;
 var soxrcustom = `
 <table>
+<tr class="hide"><td><input type="text" value="custom"></td></tr>
 <tr><td>Precision</td>
 	<td><select>
 		<option value="16">16</option>
@@ -310,11 +299,9 @@ Beware of too high volume.</wh>`;
 
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
-	var icon   = 'mpd';
-	var title   = 'SoX Resampler';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, tab          : [ 'Presets', 'Custom' ]
 		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
 		, tabactive    : custom ? 1 : 0
@@ -324,7 +311,7 @@ function infoSoxr( quality ) {
 		, checkchanged : S.soxr && quality === S.soxrquality
 		, boxwidth     : custom ? 85 : 180
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, custom ? [ 'custom', ...infoVal() ] : infoVal() )
+		, ok           : switchEnable
 	} );
 }
 function infoSoxrCustom() {

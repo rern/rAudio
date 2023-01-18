@@ -154,11 +154,9 @@ $( '#menu a' ).click( function() {
 	}
 } );
 $( '#setting-hddsleep' ).click( function() {
-	var icon  = 'usbdrive';
-	var title = 'HDD Sleep';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
 		, values       : S.hddsleep || 60
@@ -166,14 +164,14 @@ $( '#setting-hddsleep' ).click( function() {
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val = infoVal()
-			notify( icon, title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
+			notify( SW.icon, SW.title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
 			bash( [ 'hddsleep', true, val ], devices => {
 				if ( devices ) {
 					info( {
-						  icon         : icon
-						, title        : title
-						, message      : '<wh>Devices not support sleep:</wh><br>'
-										+ devices
+						  icon    : SW.icon
+						, title   : SW.title
+						, message : '<wh>Devices not support sleep:</wh><br>'
+									+ devices
 					} );
 					bannerHide();
 				}
@@ -182,16 +180,14 @@ $( '#setting-hddsleep' ).click( function() {
 	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
-	var icon  = 'bluetooth';
-	var title = 'Bluetooth';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
 		, values       : S.bluetoothconf
 		, checkchanged : S.bluetooth
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-wlan' ).click( function() {
@@ -203,18 +199,16 @@ $( '#setting-wlan' ).click( function() {
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
 <tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
 </table>`;
-		var icon  = 'wifi';
-		var title = 'Wi-Fi';
 		info( {
-			  icon         : icon
-			, title        : title
+			  icon         : SW.icon
+			, title        : SW.title
 			, content      : infowifi
 			, boxwidth     : 250
 			, values       : S.wlanconf
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : switchCancel
-			, ok           : () => switchEnable( icon, title, infoVal() )
+			, ok           : switchEnable
 		} );
 	}, 'json' );
 } );
@@ -243,8 +237,8 @@ $( '#i2smodule' ).change( function() {
 } );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
-		  icon         : 'i2saudio'
-		, title        : 'Audio - I²S'
+		  icon         : SW.icon
+		, title        : SW.title
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
@@ -304,11 +298,9 @@ $( '#setting-lcdchar' ).click( function() {
 <label style="margin-left: 60px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>`;
 	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
 	var i2c         = S.lcdcharconf[ 2 ] !== 'gpio';
-	var icon        = 'lcdchar';
-	var title       = 'Character LCD';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, content      : infolcdchar
 		, boxwidth     : 180
 		, values       : S.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
@@ -339,7 +331,7 @@ $( '#setting-lcdchar' ).click( function() {
 			}
 		}
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-powerbutton' ).click( function() {
@@ -371,11 +363,9 @@ $( '#setting-powerbutton' ).click( function() {
 <br>
 <label><input id="audiophonics" type="checkbox">Button by Audiophonics</label>
 `;
-	var icon  = 'power';
-	var title = 'Power Button';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 80
 		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
@@ -394,7 +384,7 @@ $( '#setting-powerbutton' ).click( function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-relays' ).click( function() {
@@ -414,26 +404,22 @@ $( '#setting-rotaryencoder' ).click( function() {
 	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
 </tr>
 </table>`;
-	var icon  = 'volume';
-	var title = 'Rotary Encoder';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 90
 		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
-	var icon  = 'mpdoled';
-	var title = 'Spectrum OLED';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, selectlabel  : 'Type'
 		, content      : `\
 <table>
@@ -466,15 +452,13 @@ $( '#setting-mpdoled' ).click( function() {
 		, cancel       : switchCancel
 		, buttonlabel  : ! S.mpdoled ? '' : ico( 'raudio' ) +'Logo'
 		, button       : ! S.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-lcd' ).click( function() {
-	var icon  = 'lcd';
-	var title = 'TFT 3.5" LCD';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, selectlabel  : 'Type'
 		, select       : {
 			  'Generic'               : 'tft35a'
@@ -489,18 +473,18 @@ $( '#setting-lcd' ).click( function() {
 		, buttonlabel  : ! S.lcd ? '' : 'Calibrate'
 		, button       : ! S.lcd ? '' : () => {
 			info( {
-				  icon    : icon
-				, title   : title
+				  icon    : SW.icon
+				, title   : SW.title
 				, message : 'Calibrate touchscreen?'
 							+'<br>(Get stylus ready.)'
 				, ok      : () => {
-					notify( icon, 'Calibrate Touchscreen', 'Start ...' );
+					notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
 					bash( [ 'lcdcalibrate' ] );
 				}
 			} );
 		}
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-vuled' ).click( function() {
@@ -510,18 +494,16 @@ $( '#setting-vuled' ).click( function() {
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
 	}
-	var icon  = 'led';
-	var title = 'VU LED';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, message      : gpiosvg
 		, select       : htmlpins
 		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : S.vuled
 		, boxwidth     : 80
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#ledcalc' ).click( function() {
@@ -576,19 +558,17 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#setting-timezone' ).click( function() {
-	var icon  = 'globe';
-	var title = 'Servers';
 	if ( S.soc === 'BCM2835' || S.soc === 'BCM2836' ) { // rpi 0, 1
 		info( {
-			  icon         : icon
-			, title        : title
+			  icon         : SW.icon
+			, title        : SW.title
 			, textlabel    : 'NTP'
 			, boxwidth     : 300
 			, values       : S.ntp
 			, checkchanged : 1
 			, checkblank   : 1
 			, ok           : () => {
-				notify( icon, title, 'Sync ...' );
+				notify( SW.icon, SW.title, 'Sync ...' );
 				bash( [ 'servers', infoVal() ], bannerHide );
 			}
 		} );
@@ -606,8 +586,8 @@ $( '#setting-timezone' ).click( function() {
 <tr><td>Package</td><td>${ selecthtml }</td></tr>
 </table>`
 		info( {
-			  icon         : icon
-			, title        : title
+			  icon         : SW.icon
+			, title        : SW.title
 			, content      : content
 			, boxwidth     : 240
 			, values       : [ S.ntp, list.current ]
@@ -615,7 +595,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkblank   : [ 0 ]
 			, ok           : () => {
 				var values = infoVal();
-				if ( values[ 0 ] !== S.ntp ) notify( icon, title, 'Sync ...' );
+				if ( values[ 0 ] !== S.ntp ) notify( SW.icon, SW.title, 'Sync ...' );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
@@ -623,32 +603,28 @@ $( '#setting-timezone' ).click( function() {
 	}, 'json' );
 } );
 $( '#setting-soundprofile' ).click( function() {
-	var icon  = 'sliders';
-	var title = 'Kernel Sound Profile';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, textlabel    : [ 'vm.swappiness', 'lan mtu', 'lan txqueuelen' ]
 		, boxwidth     : 110
 		, values       : S.soundprofileconf
 		, checkchanged : S.soundprofile
 		, checkblank   : 1
 		, cancel       : switchCancel
-		, ok           : () => switchEnable( icon, title, infoVal() )
+		, ok           : switchEnable
 	} );
 } );
 $( '#backup' ).click( function() {
-	var icon  = 'sd';
-	var title = 'Backup Settings';
 	info( {
-		  icon    : icon
-		, title   : title
+		  icon    : SW.icon
+		, title   : SW.title
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
-			notify( icon, title, 'Process ...' );
+			notify( SW.icon, SW.title, 'Process ...' );
 			bash( [ 'databackup' ], data => {
 				if ( data == 1 ) {
-					notify( icon, title, 'Download ...' );
+					notify( SW.icon, SW.title, 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
 						.then( response => response.blob() )
 						.then( blob => {
@@ -666,16 +642,16 @@ $( '#backup' ).click( function() {
 							}, 1000 );
 						} ).catch( () => {
 							info( {
-								  icon    : icon
-								, title   : title
+								  icon    : SW.icon
+								, title   : SW.title
 								, message : iconwarning +'File download failed.'
 							} );
 							bannerHide();
 						} );
 				} else {
 					info( {
-						  icon    : icon
-						, title   : title
+						  icon    : SW.icon
+						, title   : SW.title
 						, message : 'Backup failed.'
 					} );
 					bannerHide();
@@ -686,11 +662,9 @@ $( '#backup' ).click( function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).click( function() {
-	var icon  = 'restore';
-	var title = 'Data and Settings';
 	info( {
-		  icon        : icon
-		, title       : title
+		  icon        : SW.icon
+		, title       : SW.title
 		, message     : 'Restore from:'
 		, radio       : {
 			  'Backup file <code>*.gz</code>' : 'restore'
@@ -721,9 +695,9 @@ $( '#restore' ).click( function() {
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
 				bash( [ 'datareset' ] );
-				notify( icon, title, 'Reset to default ...' );
+				notify( SW.icon, SW.title, 'Reset to default ...' );
 			} else {
-				notify( icon, title, 'Restore ...' );
+				notify( SW.icon, SW.title, 'Restore ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
@@ -732,14 +706,14 @@ $( '#restore' ).click( function() {
 					.then( result => { // -1 / -2 = errors
 						if ( result == -1 ) {
 							info( {
-								  icon    : icon
-								, title   : title
+								  icon    : SW.icon
+								, title   : SW.title
 								, message : iconwarning +' Upload failed.'
 							} );
 						} else if ( result == -2 ) {
 							info( {
-								  icon    : icon
-								, title   : title
+								  icon    : SW.icon
+								, title   : SW.title
 								, message : iconwarning +' Restore failed.'
 							} );
 						}
@@ -752,14 +726,12 @@ $( '#restore' ).click( function() {
 	$( '#restore' ).prop( 'checked', 0 );
 } );
 $( '#shareddata' ).click( function() {
-	var icon  = 'networks';
-	var title = 'Shared Data';
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
 		$( '#shareddata' ).prop( 'checked', false );
 		info( {
-			  icon    : icon
-			, title   : title
+			  icon    : SW.icon
+			, title   : SW.title
 			, message : $this.prev().html()
 		} );
 		return
@@ -767,14 +739,14 @@ $( '#shareddata' ).click( function() {
 	
 	if ( S.shareddata ) {
 		info( {
-			  icon    : icon
-			, title   : title
+			  icon    : SW.icon
+			, title   : SW.title
 			, message : 'Disable and restore local data?'
 			, cancel  : () => $this.prop( 'checked', true )
 			, okcolor : orange
 			, ok      : () => {
 				bash( [ 'shareddatadisconnect', 'disable' ] );
-				notify( icon, title, 'Disable ...' );
+				notify( SW.icon, SW.title, 'Disable ...' );
 			}
 		} );
 	} else {
@@ -1038,9 +1010,6 @@ function renderPage() {
 	S.i2senabled = $( '#i2smodule' ).val() !== 'none';
 	$( '#divi2smodulesw' ).toggleClass( 'hide', S.i2senabled );
 	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! S.i2senabled );
-	$( '#bluetooth' )
-		.toggleClass( 'disabled', S.btconnected || S.camilladsp )
-		.prev().html( S.btconnected ? '<wh>Bluetooth '+ ico( 'bluetooth ' )+'</wh> is currently connected.' : '<wh>DSP '+ ico( 'camilladsp' ) +'</wh> is currently enabled.' );
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
