@@ -148,6 +148,10 @@ function showContent() {
 function switchCancel() {
 	$( '#'+ V.swid ).prop( 'checked', S[ V.swid ] );
 }
+function switchDisable() {
+	S[ V.swid ] = false;
+	$( '#setting-'+ V.swid ).addClass( 'hide' );
+}
 function switchEnable( icon, title, val ) {
 	var cmd = typeof val === 'object' ? [ V.swid, true, ...val ] : [ V.swid, true, val ];
 	bash( cmd );
@@ -444,14 +448,13 @@ $( '.switch' ).click( function() {
 		} else {
 			notify( icon, label, 'Disable ...' );
 			bash( [ V.swid, false ] );
-			S[ V.swid ] = false;
+			switchDisable();
 		}
 	} else {
 		notify( icon, label, checked );
 		bash( [ V.swid, checked ], error => {
 			if ( error ) {
-				S[ V.swid ] = false;
-				$( '#'+ V.swid ).prop( 'checked', false );
+				switchDisable();
 				bannerHide();
 				info( error );
 			}
