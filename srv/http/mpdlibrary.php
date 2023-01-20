@@ -391,13 +391,13 @@ function htmlList( $lists ) { // non-file 'list' command
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$space     = $data[ 2 ] ?: '&nbsp;';
-			$html     .= '
-<div class="coverart" data-index="'.$index.'">
+			$html     .= 
+'<div class="coverart" data-index="'.$index.'">
 	<a class="lipath">'.$path.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
 	<span class="coverart1">'.$data[ 1 ].'</span>
 	<gr class="coverart2">'.$space.'</gr>
-</div>';
+</div>'; // keep 1st quote the same line to prevent extra space between inline divs
 		}
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
