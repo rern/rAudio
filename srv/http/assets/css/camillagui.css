@@ -417,15 +417,6 @@ input[data-tip='Mixer name, must be unique'] {
 	display: block;
 	color: var( --cg60 );
 }
-#diveqhelp {
-	font-size: 16px;
-	line-height: 22px;
-	letter-spacing: 0;
-	color: var( --cg60 );
-}
-#compactview #diveqhelp {
-	padding: 0 50px;
-}
 /* Compact view button ------------------- */
 #compactview .box,
 #mainpanel .box {
@@ -522,8 +513,7 @@ input[data-tip='Mixer name, must be unique'] {
 .dblabel i:last-of-type {
 	width: 51px;
 }
-#log,
-#eqhelp {
+#log {
 	position: absolute;
 	top: -26px;
 	right: 0;
@@ -534,10 +524,7 @@ input[data-tip='Mixer name, must be unique'] {
 	color: var( --cg60 );
 	text-shadow: none;
 }
-#eqhelp {
-	left: auto;
-}
-#compactview #eqhelp {
+#compactview {
 	right: 5px;
 }
 #status pre {
@@ -905,7 +892,6 @@ textarea:focus-visible {
 .head svg,
 .resetzoom,
 #applyauto,
-#eqhelp,
 #log,
 #logo {
 	cursor: pointer;
