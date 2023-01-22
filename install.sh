@@ -5,49 +5,10 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20130123
-if [[ ! -e $dirdata/camilladsp ]]; then
-	dircamilladsp=/srv/http/data/camilladsp
-	mkdir -p $dircamilladsp/{coeffs,configs}
-	echo 'devices:
-  adjust_period: 10
-  capture:
-    channels: 2
-    device: hw:Loopback,0
-    format: S32LE
-    type: Alsa
-  capture_samplerate: 0
-  chunksize: 2048
-  enable_rate_adjust: false
-  enable_resampling: false
-  playback:
-    channels: 2
-    device: hw:0,0
-    format: S16LE
-    type: Alsa
-  queuelimit: 4
-  rate_measure_interval: 1
-  resampler_type: Synchronous
-  samplerate: 44100
-  silence_threshold: -60
-  silence_timeout: 3
-  stop_on_rate_change: false
-  target_level: 0
-filters:
-  Volume:
-    parameters:
-      ramp_time: 200
-    type: Volume
-mixers: {}
-pipeline:
-- channel: 0
-  names:
-  - Volume
-  type: Filter
-- channel: 1
-  names:
-  - Volume
-  type: Filter' > $dircamilladsp/configs/camilladsp.yml
-  ln -s $dircamilladsp/configs/{camilladsp,active_config}.yml
+if [[ ! -e $dircamilladsp/default_config.yml ]]; then
+	mv $dircamilladsp/{configs/,}default_config.yml
+	rm $dircamilladsp/configs/active_config.yml
+	ln -s $dircamilladsp/{configs/camilladsp,active_config}.yml
 fi
 
 # 20230117
