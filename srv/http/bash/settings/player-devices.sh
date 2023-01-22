@@ -16,9 +16,10 @@
 readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 
 if [[ ! $aplay ]]; then
-	[[ -e $dirshm/btreceiver ]] && i=0 || i=-1
+	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
 	devices=false
 	touch $dirshm/nosound
+	rm -f $dirshm/amixercontrol
 	pushstream display '{"volumenone":true}'
 	return
 fi
@@ -113,10 +114,10 @@ for line in "${aplay[@]}"; do
 done
 
 if [[ $usbdac == add ]]; then
-	mv $dirsystem/asoundcard{,.backup} &> /dev/null
+	[[ -e $dirsystem/asoundcard ]] && mv $dirsystem/asoundcard{,.backup}
 	echo $card > $dirsystem/asoundcard
 elif [[ $usbdac == remove && -e $dirsystem/asoundcard.backup ]]; then
-	mv $dirsystem/asoundcard{.backup,} &> /dev/null
+	[[ -e $dirsystem/asoundcard.backup ]] && mv $dirsystem/asoundcard{.backup,} &> /dev/null
 elif [[ -e $dirsystem/asoundcard ]]; then # missing card
 	! amixer -c $( < $dirsystem/asoundcard ) &> /dev/null && echo $card > $dirsystem/asoundcard
 else
