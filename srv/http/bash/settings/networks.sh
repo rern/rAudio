@@ -76,7 +76,7 @@ $( bluealsa-aplay -L | grep -A2 $mac )
 $info"
 	echo "$data"
 	;;
-btcontroller )
+bluetooth )
 	echo "\
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show )"

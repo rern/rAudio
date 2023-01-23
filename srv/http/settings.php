@@ -125,11 +125,16 @@ function htmlHead( $data ) {
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
+	if ( isset( $data[ 'html' ] ) ) {
+		echo str_replace( '|', '<g>|</g>', $data[ 'html' ] );
+		return;
+	}
+	
+	global $page;
 	// col-l
-	$label       = $data[ 'label' ];
-	$icon        = $data[ 'icon' ] ?? '';
+	$label       = '<span>'.$data[ 'label' ].'</span>';
 	$sublabel    = $data[ 'sublabel' ] ?? '';
-	$status      = $data[ 'status' ] ?? '';
+	$status      = $data[ 'status' ] ?? false;
 	$id          = $data[ 'id' ] ?? '';
 	$input       = $data[ 'input' ] ?? '';
 	$settingicon = $data[ 'settingicon' ] ?? 'gear';
@@ -138,21 +143,15 @@ function htmlSetting( $data ) {
 	$help        = $data[ 'help' ] ?? '';
 	$html        = '<div id="div'.$id.'"><div class="col-l';
 	$html       .= $sublabel ? '' : ' single';
-	$html       .= $status ? ' status" data-status="'.$status.'">' : '">';
-	if ( $sublabel ) {
-		$html   .= '<a>'.$label.'<gr>'.$sublabel;
-		$html   .= '</gr></a>';
-	} else {
-		$html   .= $label;
-	}
-	$html       .= $icon ? i( $icon ) : '';
+	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
+	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
+	$html       .= $page === 'features' || $page === 'system' ? i( $id ) : ''; // icon
 	$html       .= '</div>';
 	// col-r
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"';
-		$html   .= ' data-label="'.$label.'" data-icon="'.$icon.'"><div class="switchlabel" for="'.$id.'">';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'">';
 		$html   .= '</div>';
 	} else {
 		$html   .= $input;
@@ -161,7 +160,7 @@ function htmlSetting( $data ) {
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
 			 </div>';
-	$html       .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
+	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
 }
 function htmlSection( $head, $body, $id = '' ) {

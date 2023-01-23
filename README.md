@@ -15,7 +15,7 @@ Audio player for
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
-	- Local screen if connected (Not applicable on Raspberry Pi `1` or `Zero`)
+	- Local screen
 - Share data and files between multiple rAudios
 	- Server rAudio : clients (Easy setup with server IP address only)
 	- File server : clients
@@ -52,7 +52,7 @@ Audio player for
 	- HTTP (no metadata)
 	- SnapSever - `MPD snapcast`
 	- Web Radio
-	- DAB Radio
+	- DAB Radio (Addon)
 - Digital Signal Processors
 	- DSP - `camilladsp`
 	- Equalizer - `alsaequal`
@@ -75,6 +75,9 @@ Audio player for
 	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
 	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)
+- Not applicable on Raspberry Pi `1` or `Zero`:
+	- RTL-SDR (for DAB radio)
+	- TFT 3.5" LCD (for GUI on local screen)
 	
 ### Default root password
 - `ros`

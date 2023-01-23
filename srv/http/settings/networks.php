@@ -3,7 +3,7 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'status' => 'btcontroller'
+	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan' => 'search' ]
 ] );
 $html = <<< EOF
@@ -36,7 +36,7 @@ echo str_replace( '|', '<g>|</g>', $html );
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
-	, 'status'  => 'wlan'
+	, 'status'  => 'ifconfigwlan'
 	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>

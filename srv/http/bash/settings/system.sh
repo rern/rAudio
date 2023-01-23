@@ -694,6 +694,12 @@ pkgstatus )
 		camilladsp )
 			fileconf=$dircamilladsp/configs/camilladsp.yml
 			;;
+		dabradio )
+			pkg=rtsp-simple-server
+			conf="\
+<bll># rtl_test -t</bll>
+$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
+			;;
 		hostapd )
 			conf="\
 <bll># cat /etc/hostapd/hostapd.conf</bll>
@@ -723,15 +729,10 @@ $( < /etc/dnsmasq.conf )"
 $( awk NF <<< $conf )"
 			skip='configuration file does not exist'
 			;;
-		nfs-server )
+		nfsserver )
 			pkg=nfs-utils
 			systemctl -q is-active nfs-server && fileconf=/etc/exports
 			skip='Protocol not supported'
-			;;
-		rtsp-simple-server )
-			conf="\
-<bll># rtl_test -t</bll>
-$( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
 			;;
 		smb )
 			pkg=samba

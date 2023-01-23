@@ -88,7 +88,7 @@ async def get_param(request):
     cdsp = request.app["CAMILLA"]
     if name == "volume":
         result = cdsp.get_volume()
-    elif name == "configmutevolume":
+    elif name == "mute":
         config = cdsp.get_config()
         mute = True if cdsp.get_mute() else False
         volume = cdsp.get_volume()
@@ -133,7 +133,7 @@ async def set_param(request):
     if name == "volume":
         cdsp.set_volume(value)
     elif name == "mute":
-        cdsp.set_mute(value == 'True')
+        cdsp.set_mute(value == "true")
     elif name == "updateinterval":
         cdsp.set_update_interval(value)
     elif name == "configname":
@@ -162,7 +162,7 @@ async def eval_filter_values(request):
         config,
         name=(content["name"]),
         samplerate=samplerate,
-        npoints=100,
+        npoints=1000,
     )
     data["channels"] = channels
     data["options"] = options
@@ -188,7 +188,7 @@ async def eval_filterstep_values(request):
         plot_config,
         step_index,
         name="Filterstep {}".format(step_index),
-        npoints=300,
+        npoints=1000,
     )
     data["channels"] = channels
     data["options"] = options

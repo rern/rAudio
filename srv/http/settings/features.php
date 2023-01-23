@@ -9,20 +9,18 @@ $body = [
 	[
 		  'label'    => 'AirPlay'
 		, 'sublabel' => 'shairport-sync'
-		, 'icon'     => 'airplay'
 		, 'id'       => 'shairport-sync'
 		, 'setting'  => false
-		, 'status'   => 'shairport-sync'
+		, 'status'   => true
 		, 'help'     => '<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
 		  'label'    => 'DAB Radio'
 		, 'sublabel' => 'rtsp-server'
-		, 'icon'     => 'dabradio'
 		, 'id'       => 'dabradio'
 		, 'setting'  => false
-		, 'status'   => 'rtsp-simple-server'
+		, 'status'   => true
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
@@ -30,9 +28,8 @@ $body = [
 	, [
 		  'label'    => 'SnapClient'
 		, 'sublabel' => 'snapclient'
-		, 'icon'     => 'snapcast'
 		, 'id'       => 'snapclient'
-		, 'status'   => 'snapclient'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
@@ -46,9 +43,8 @@ EOF
 	, [
 		  'label'    => 'Spotify'
 		, 'sublabel' => 'spotifyd'
-		, 'icon'     => 'spotify'
 		, 'id'       => 'spotifyd'
-		, 'status'   => 'spotifyd'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
  · Require Premium account. (No Spotify password saved on rAudio.)
@@ -72,9 +68,8 @@ EOF
 	, [
 		  'label'    => 'UPnP'
 		, 'sublabel' => 'upmpdcli'
-		, 'icon'     => 'upnp'
 		, 'id'       => 'upmpdcli'
-		, 'status'   => 'upmpdcli'
+		, 'status'   => true
 		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
@@ -85,19 +80,17 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
-	  'label'    => 'For browsers'
-	, 'sublabel' => 'MPD httpd'
-	, 'icon'     => 'webradio'
-	, 'id'       => 'httpd'
-	, 'setting'  => false
-	, 'help'     => <<< EOF
+		  'label'    => 'For browsers'
+		, 'sublabel' => 'MPD httpd'
+		, 'id'       => 'httpd'
+		, 'setting'  => false
+		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
 		  'label'    => 'SnapServer'
 		, 'sublabel' => 'MPD snapcast'
-		, 'icon'     => 'snapcast'
 		, 'id'       => 'snapserver'
 		, 'setting'  => false
 		, 'disabled' => nameIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
@@ -117,10 +110,9 @@ $body = [
 	[
 		  'label'    => 'DSP'
 		, 'sublabel' => 'camilladsp'
-		, 'icon'     => 'camilladsp'
 		, 'id'       => 'camilladsp'
-		, 'status'   => 'camilladsp'
-		, 'disabled' => 'js'
+		, 'status'   => true
+		, 'disabled' => nameIcon( 'Equalizer', 'alsaequal' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
@@ -130,7 +122,6 @@ EOF
 	, [
 		  'label'    => 'Equalizer'
 		, 'sublabel' => 'alsaequal'
-		, 'icon'     => 'equalizer'
 		, 'id'       => 'equalizer'
 		, 'setting'  => false
 		, 'disabled' => nameIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
@@ -152,9 +143,8 @@ $body = [
 	[
 		  'label'    => 'Access Point'
 		, 'sublabel' => 'hostapd'
-		, 'icon'     => 'accesspoint'
 		, 'id'       => 'hostapd'
-		, 'status'   => 'hostapd'
+		, 'status'   => true
 		, 'disabled' => nameIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
@@ -165,7 +155,6 @@ EOF
 	]
 	, [
 		  'label'   => 'AutoPlay'
-		, 'icon'    => 'play'
 		, 'id'      => 'autoplay'
 		, 'help'    => <<< EOF
 Start playing automatically on:
@@ -177,9 +166,8 @@ EOF
 	, [
 		  'label'    => 'Browser on RPi'
 		, 'sublabel' => 'chromium'
-		, 'icon'     => 'chromium'
 		, 'id'       => 'localbrowser'
-		, 'status'   => 'localbrowser'
+		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
@@ -193,9 +181,8 @@ EOF
 	, [
 		  'label'    => 'File Sharing'
 		, 'sublabel' => 'smb'
-		, 'icon'     => 'networks'
 		, 'id'       => 'smb'
-		, 'status'   => 'smb'
+		, 'status'   => true
 		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
@@ -210,7 +197,6 @@ EOF
 	, [
 		  'label'    => 'Lyrics in File'
 		, 'sublabel' => 'embedded ID3'
-		, 'icon'     => 'lyrics'
 		, 'id'       => 'lyricsembedded'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
@@ -222,11 +208,10 @@ EOF
 	]
 	, [
 		  'label'   => 'Multiple rAudios'
-		, 'icon'    => 'raudiobox'
 		, 'id'      => 'multiraudio'
 		, 'help'    => <<< EOF
 Switch between multiple rAudio devices.
-Switch: {$Fmenu( 'playlist', 'Playlist', 'raudiobox' )}
+Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
 
 (SSH password must be default.)
 EOF
@@ -234,7 +219,6 @@ EOF
 	, [
 		  'label'    => 'Password Login'
 		, 'sublabel' => 'password_hash'
-		, 'icon'     => 'lock'
 		, 'id'       => 'login'
 		, 'setting'  => 'custom'
 		, 'help'     => <<< EOF
@@ -245,7 +229,6 @@ EOF
 	, [
 		  'label'    => 'Scrobbler'
 		, 'sublabel' => 'Last.fm'
-		, 'icon'     => 'lastfm'
 		, 'id'       => 'scrobble'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
@@ -259,11 +242,10 @@ EOF
 	, [
 		  'label'       => 'Server rAudio'
 		, 'sublabel'    => 'nfs-server'
-		, 'icon'        => 'rserver'
 		, 'id'          => 'nfsserver'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
-		, 'status'      => 'nfs-server'
+		, 'status'      => true
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and | Shared Data {$Fi( 'networks' )} |
@@ -289,7 +271,6 @@ EOF
 	]
 	, [
 		  'label'    => 'Stop Timer'
-		, 'icon'     => 'stopwatch'
 		, 'id'       => 'stoptimer'
 		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF

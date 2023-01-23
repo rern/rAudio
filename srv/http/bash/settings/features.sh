@@ -6,7 +6,6 @@
 readarray -t args <<< $1
 
 pushData() {
-	pushstream refresh '{"page":"features","'$1'":'$2'}'
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
 	$dirsettings/features-data.sh pushrefresh

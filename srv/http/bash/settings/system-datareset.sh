@@ -76,34 +76,26 @@ over_voltage=2"
 	sed -i '/^#/! d' /etc/exports
 	
 	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
-	mv $dirdata/{addons,mpdconf} /tmp
+	mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 	rm -rf $dirdata $dirshareddata \
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 fi
 
 # data directories
-mkdir -p $dirdata/{addons,audiocd,bookmarks,lyrics,mpd,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
+mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
 
 # addons - new/reset
 if [[ $reset ]]; then
-	mv /tmp/{addons,mpdconf} $dirdata
+	mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
 else
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
-fi
-
-# camillagui
-if [[ -e /usr/bin/camilladsp ]]; then
-	dircamillagui=/srv/http/settings/camillagui/build
-	ln -sf /srv/http/assets/fonts $dircamillagui
-	ln -sf /srv/http/assets/css/colors.css $dircamillagui
-	ln -sf /srv/http/assets/img/icon.png $dircamillagui
 fi
 
 # display

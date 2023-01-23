@@ -20,7 +20,6 @@ data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
 , "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
-, "bluetoothsink"    : '$( cut -d' ' -f2 $dirshm/btconnected 2> /dev/null | grep -q -m1 Sink && echo true )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
 , "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
@@ -50,6 +49,7 @@ data+='
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$( isactive shairport-sync )
 [[ -e /usr/bin/snapserver ]] && data+='
+, "snapclientactive" : '$( isactive snapclient )'
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'

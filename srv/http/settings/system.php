@@ -104,7 +104,6 @@ mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</y
 <?php
 htmlSetting( [
 	  'label'    => 'Hard Drive Sleep'
-	, 'icon'     => 'screenoff'
 	, 'id'       => 'hddsleep'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => 'Sleep timer for USB hard drives.'
@@ -112,7 +111,6 @@ htmlSetting( [
 htmlSetting( [
 	  'label'    => 'Hotplug Update'
 	, 'sublabel' => 'data on USB'
-	, 'icon'     => 'refresh-library'
 	, 'id'       => 'usbautoupdate'
 	, 'setting'  => false
 	, 'disabled' => 'js'
@@ -128,7 +126,6 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'label'    => 'Audio'
-		, 'icon'     => 'volume'
 		, 'id'       => 'audio'
 		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
@@ -137,18 +134,15 @@ $body = [
 	, [
 		  'label'    => 'Bluetooth'
 		, 'sublabel' => 'bluetoothctl'
-		, 'icon'     => 'bluetooth'
 		, 'id'       => 'bluetooth'
-		, 'status'   => 'btcontroller'
-		, 'disabled' => 'js'
+		, 'status'   => true
 		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
 		, 'sublabel' => 'iw'
-		, 'icon'     => 'wifi'
 		, 'id'       => 'wlan'
-		, 'status'   => 'iw'
+		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
@@ -167,30 +161,30 @@ $head = [ //////////////////////////////////
 ];
 $body = [
 	[
-		  'label'    => 'Audio - I²S'
-		, 'icon'     => 'i2saudio'
-		, 'input'    => <<< EOF
-<div id="divi2smodulesw">
-	<input id="i2smodulesw" type="checkbox">
-	<div class="switchlabel" for="i2smodulesw"></div>
-</div>
-<div id="divi2smodule">
-	$selecti2s
+		  'html'    => <<< EOF
+<div id="divi2s">
+	<div class="col-l single">Audio - I²S<i class="fa fa-i2smodule"></i></div>
+	<div class="col-r">
+	<div id="divi2smodulesw">
+		<input id="i2smodulesw" type="checkbox">
+		<div class="switchlabel" for="i2smodulesw"></div>
+	</div>
+	<div id="divi2smodule">
+		$selecti2s
+	</div>
 	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
-</div>
-EOF
-		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
-I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
- · HAT with EEPROM could be automatically detected.
- · See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.
+	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+	 · HAT with EEPROM could be automatically detected.
+	 · See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.
+	</span>
+</div>
 EOF
 	]
 	, [
 		  'label'    => 'Character LCD'
 		, 'sublabel' => 'HD44780'
-		, 'icon'     => 'lcdchar'
 		, 'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
@@ -201,7 +195,6 @@ EOF
 	, [
 		  'label'    => 'Power Button'
 		, 'sublabel' => 'Power LED'
-		, 'icon'     => 'power'
 		, 'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
@@ -215,7 +208,6 @@ EOF
 	]
 	, [
 		  'label'   => 'Relay Module'
-		, 'icon'    => 'relays'
 		, 'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
@@ -226,7 +218,6 @@ EOF
 	],
 	[
 		  'label'    => 'Rotary Encoder'
-		, 'icon'     => 'volume'
 		, 'id'       => 'rotaryencoder'
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
@@ -236,20 +227,17 @@ EOF
 	]
 	,[
 		  'label'    => 'Spectrum OLED'
-		, 'icon'     => 'mpdoled'
 		, 'id'       => 'mpdoled'
 		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
-		, 'icon'     => 'lcd'
 		, 'id'       => 'lcd'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
 		  'label'   => 'VU LED'
-		, 'icon'    => 'led'
 		, 'id'      => 'vuled'
 		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
@@ -261,8 +249,7 @@ htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'Host Name'
-		, 'icon'    => 'raudio'
+		  'label'   => 'Player Name'
 		, 'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => false
@@ -276,9 +263,8 @@ EOF
 	, [
 		  'label'    => 'Time Zone'
 		, 'sublabel' => 'timedatectl'
-		, 'icon'     => 'globe'
 		, 'id'       => 'timezone'
-		, 'status'   => 'timedatectl'
+		, 'status'   => true
 		, 'input'    => $selecttimezone
 		, 'setting'  => 'custom'
 		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
@@ -286,9 +272,8 @@ EOF
 	, [
 		  'label'    => 'Sound Profile'
 		, 'sublabel' => 'sysctl'
-		, 'icon'     => 'soundprofile'
 		, 'id'       => 'soundprofile'
-		, 'status'   => 'soundprofile'
+		, 'status'   => true
 		, 'help'     => 'Tweak kernel parameters for sound profiles.'
 	]
 ];
@@ -297,7 +282,6 @@ $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'label'   => 'Backup'
-		, 'icon'    => 'sd'
 		, 'id'      => 'backup'
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
@@ -310,7 +294,6 @@ EOF
 	]
 	, [
 		  'label'   => 'Restore'
-		, 'icon'    => 'restore'
 		, 'id'      => 'restore'
 		, 'setting' => 'nobanner'
 		, 'help'    => <<< EOF
@@ -321,7 +304,6 @@ EOF
 	, [
 		  'label'    => 'Shared Data'
 		, 'sublabel' => 'client'
-		, 'icon'     => 'networks'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
 		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
