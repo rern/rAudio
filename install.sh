@@ -4,8 +4,8 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20130123
-if [[ ! -e $dircamilladsp/default_config.yml ]]; then
+# 20130122
+if [[ -e $dircamilladsp/configs/default_config.yml ]]; then
 	mv $dircamilladsp/{configs/,}default_config.yml
 	rm $dircamilladsp/configs/active_config.yml
 	ln -s $dircamilladsp/{configs/camilladsp,active_config}.yml
@@ -48,7 +48,7 @@ fi
 
 rm -rf /srv/http/data/tmp
 
-sed -i 's/5000/5005/' /srv/http/settings/camillagui/config/camillagui.yml
+sed -i 's/5000/5005/' /srv/http/settings/camillagui/config/camillagui.yml &> /dev/null
 
 if [[ -e "$dirwebradio/https:||stream.radioparadise.com|world-etc-flac" ]]; then
 	echo -e "$bar Update Radio Paradise station arts ..."
