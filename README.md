@@ -8,6 +8,10 @@ Audio player for
 - BeagleBone Black
 - CubieBoard2
 
+- Note: Not applicable on Raspberry Pi `1` or `Zero`
+	- DAB Radio
+	- Local screen GUI
+
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
 - A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
