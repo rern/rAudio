@@ -71,6 +71,8 @@ rm -rf /srv/http/assets/{css,fonts,js}
 
 getinstallzip
 
+[[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
+
 chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
