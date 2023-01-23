@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20130123
+# 20130122
 if [[ ! -e $dircamilladsp/default_config.yml ]]; then
 	mv $dircamilladsp/{configs/,}default_config.yml
 	rm $dircamilladsp/configs/active_config.yml
