@@ -5,15 +5,9 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20130208
-if [[ -e /usr/bin/camilladsp ]]; then
-	file=$dircamilladsp/configs/camilladsp.yml
-	if ! grep -q '- Volume' $file; then
-		sed -i '/names:/ a\  - Volume' $file
-	fi
-	
-	file=/srv/http/settings/camillagui/backend/views.py
-	if ! grep -q mute $file; then
-		sed -i -e '/cdsp.get_volume/ a\
+file=/srv/http/settings/camillagui/backend/views.py
+if [[ -e $file ]] && ! grep -q 'name == "mute"' $file; then
+	sed -i -e '/cdsp.get_volume/ a\
     elif name == "mute":\
         config = cdsp.get_config()\
         mute = True if cdsp.get_mute() else False\
@@ -25,7 +19,8 @@ if [[ -e /usr/bin/camilladsp ]]; then
     elif name == "mute":\
         cdsp.set_mute(value == "true")
 ' $file
-	fi
+	file=$dircamilladsp/configs/camilladsp.yml
+	! grep -q '\- Volume' $file && sed -i '/names:/ a\  - Volume' $file
 fi
 
 # 20130123
