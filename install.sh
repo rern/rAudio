@@ -5,9 +5,27 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20130208
-file=$dircamilladsp/configs/camilladsp.yml
-if [[ -e $file && ! grep '- Volume' $file; then
-	sed -i '/names:/ a\  - Volume' $file
+if [[ -e /usr/bin/camilladsp ]]; then
+	file=$dircamilladsp/configs/camilladsp.yml
+	if ! grep -q '- Volume' $file; then
+		sed -i '/names:/ a\  - Volume' $file
+	fi
+	
+	file=/srv/http/settings/camillagui/backend/views.py
+	if ! grep -q mute $file; then
+		sed -i -e '/cdsp.get_volume/ a\
+    elif name == "mute":\
+        config = cdsp.get_config()\
+        mute = True if cdsp.get_mute() else False\
+        volume = cdsp.get_volume()\
+        result = {"config": config, "mute": mute, "volume": volume}\
+        return web.json_response(result)\
+        
+' -e '/cdsp.set_volume/ a\
+    elif name == "mute":\
+        cdsp.set_mute(value == "true")
+' $file
+	fi
 fi
 
 # 20130123
