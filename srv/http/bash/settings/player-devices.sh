@@ -17,6 +17,7 @@ readarray -t aplay <<< $( aplay -l 2> /dev/null | awk '/^card/ && !/Loopback/' )
 
 if [[ ! $aplay ]]; then
 	[[ -e $dirshm/btreceiver ]] && asoundcard=0 || asoundcard=-1
+	echo $asoundcard > $dirsystem/asoundcard
 	devices=false
 	touch $dirshm/nosound
 	rm -f $dirshm/amixercontrol
