@@ -6,6 +6,8 @@ alias=r1
 
 # 20130122
 if [[ -e $dircamilladsp/configs/default_config.yml ]]; then
+	file=$dircamilladsp/configs/camilladsp.yml
+	! grep -q '\- Volume' $file && sed -i '/names:/ a\  - Volume' $file
 	mv $dircamilladsp/{configs/,}default_config.yml
 	rm $dircamilladsp/configs/active_config.yml
 	ln -s $dircamilladsp/{configs/camilladsp,active_config}.yml
