@@ -153,7 +153,7 @@ $( '#setting-localbrowser' ).click( function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon' ) + ico( 'plus-circle btnicon' ) }</td></tr>
+	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon dn' ) + ico( 'plus-circle btnicon up' ) }</td></tr>
 <tr><td></td>
 	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 <tr style="height: 10px"></tr>
@@ -189,6 +189,7 @@ ${ htmlbrightness }
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
 				var up   = $( this ).hasClass( 'up' );
+				console.log(up)
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
 				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
