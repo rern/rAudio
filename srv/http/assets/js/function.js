@@ -1500,8 +1500,6 @@ function setInfo() {
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
-	if ( $( '#artist' ).text() + $( '#title' ).text() + $( '#album' ).text() === V.prevartist + V.prevtitle + V.prevalbum ) return // skip if same data
-	
 	var tWmax = 0;
 	var $el   = $( '#artist, #title, #album' );
 	$el
