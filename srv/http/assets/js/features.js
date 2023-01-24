@@ -187,9 +187,8 @@ ${ htmlbrightness }
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
-			$( '#infoContent' ).on( 'click', '.up, .dn', function() {
+			$( '#infoContent .btnicon' ).click( function() {
 				var up   = $( this ).hasClass( 'up' );
-				console.log(up)
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
 				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
