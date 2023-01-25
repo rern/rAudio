@@ -342,7 +342,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
 		
-		$icon = '<img class="iconthumb li-icon" src="/mnt/MPD/'.$each->file.'thumb.jpg">';
+		$icon = '<img class="iconthumb li-icon lazyload" data-src="/mnt/MPD/'.$each->file.'thumb.jpg" data-icon="album">';
 		if ( $modeartist || $f1 ) {
 			$name       = $val0;
 		} else {
