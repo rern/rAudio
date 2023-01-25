@@ -1252,18 +1252,17 @@ $( '#lib-search-input' ).keyup( function( e ) {
 $( '#button-lib-back' ).click( function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL           = $breadcrumbs.length
-	var backmode     = 'gmode' in V && V.gmode !== V.mode;
-	if ( V.mode === $( '#mode-title' ).text().replace( ' ', '' ).toLowerCase()
-		|| ( bL && bL < 2 )
-		|| ( ! bL && V.query.length === 1 )
-	) {
+	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length === 1 ) ) {
 		$( '#library' ).click();
-	} else if ( bL && V.mode !== 'latest' && ! backmode ) {
+		return
+	}
+	
+	var backmode     = 'gmode' in V && V.gmode !== V.mode;
+	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		V.query.pop();
 		var query    = V.query[ V.query.length - 1 ];
-		var backmode = 'gmode' in V && V.gmode !== V.mode;
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {
