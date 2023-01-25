@@ -1650,14 +1650,14 @@ Exclude this thumbnail?`
 	var mode     = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
 	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
-	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // list by directory
+	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // file
 		var query = {
 			  query  : 'ls'
 			, string : path
 			, format : [ 'file' ]
 		}
 		var modetitle = modefile ? path : $( '#mode-title' ).text();
-	} else if ( V.mode.slice( -5 ) === 'radio' ) {
+	} else if ( V.mode.slice( -5 ) === 'radio' ) { // dabradio, webradio
 		if ( $this.hasClass( 'dir' ) ) {
 			var query = {
 				  query  : 'radio'
@@ -1668,13 +1668,13 @@ Exclude this thumbnail?`
 			contextmenuLibrary( $this, $target );
 			return
 		}
-	} else if ( mode !== 'album' ) { // list by mode (non-album)
+	} else if ( mode !== 'album' ) { // non-album
 		if ( [ 'date', 'genre' ].includes( V.mode ) ) {
-			var format = [ 'artist', 'album' ];
+			var format = [ 'artist', 'album', 'file' ];
 		} else if ( [ 'conductor', 'composer' ].includes( V.mode ) ) {
-			var format = [ 'album', 'artist' ];
+			var format = [ 'album', 'artist', 'file' ];
 		} else {
-			var format = [ 'album' ];
+			var format = [ 'album', 'file' ]; // artist, albumartist
 		}
 		var query = {
 			  query  : 'find'
@@ -1683,7 +1683,7 @@ Exclude this thumbnail?`
 			, format : format
 		}
 		var modetitle = path;
-	} else { // track list
+	} else { // album
 		if ( V.mode === 'album' ) {
 			if ( name ) { // albums with the same names
 				var query = {
