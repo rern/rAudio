@@ -51,8 +51,8 @@ $html      = '<ul id="lib-list" class="list">';
 switch( $_POST[ 'query' ] ) {
 
 case 'find':
+	$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
 	if ( is_array( $mode ) ) {
-		$format = str_replace( '%artist%', '[%artist%|%albumartist%]', $format );
 		exec( 'mpc -f %file% find '.$mode[ 0 ].' "'.$string[ 0 ].'" '.$mode[ 1 ].' "'.$string[ 1 ].'" 2> /dev/null '
 				."| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}'"
 				."| sort -u"
@@ -79,7 +79,6 @@ case 'find':
 			}
 		}
 	} else {
-		$format = str_replace( '%artist%', '[%albumartist%|%artist%]', $format );
 		exec( 'mpc find -f "'.$format.'" '.$mode.' "'.$string.'" 2> /dev/null '
 				."| sed 's:[^/]*$::'"
 				."| awk 'NF && !a[$0]++'"
