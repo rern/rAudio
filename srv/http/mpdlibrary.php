@@ -333,29 +333,29 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
+	$key0       = $f[ 0 ];
+	$key1       = $fL > 1 ? $f[ 1 ] : '';
 	$modeartist = in_array( $gmode, [ 'artist', 'albumartist' ] );
 	$modedate_genre = in_array( $gmode, [ 'date', 'genre' ] );
-	$key0       = $modedate_genre ? $f[ 1 ] : $f[ 0 ];
-	$f1         = count( $f ) === 1;
-	if ( ! $f1 ) $key1       = $modedate_genre ? $f[ 0 ] : $f[ 1 ];
 	foreach( $array as $each ) {
 		$val0       = $each->$key0;
 		if ( ! $val0 ) continue;
 		
 		$icon = '<img class="iconthumb li-icon lazyload" data-src="/mnt/MPD/'.$each->file.'thumb.jpg" data-icon="album">';
-		if ( $modeartist || $f1 ) {
-			$name       = $val0;
+		if ( $modeartist || ! $key1 ) {
+			$name = $val0;
 		} else {
-			$val1       = $each->$key1;
-			$name       = $modedate_genre ? $val1.'<gr> • </gr>'.$val0 : $val0.'<gr> • </gr>'.$val1;
+			$val1 = $each->$key1;
+			$name = $val0.'<gr> • </gr>'.$val1;
 		}
 		
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
 		$datamode  = property_exists( $each, 'path' ) ? $mode : 'album'; // cue //////////////////////////////////////////////////////////////////
+		$liname    = $modedate_genre ? $val1 : $val0;
 		$html     .= '
 <li data-mode="'.$datamode.'" data-index="'.$index.'">
-	<a class="liname">'.$val0.'</a>
+	<a class="liname">'.$liname.'</a>
 	'.$icon.'<span class="single">'.$name.'</span>
 </li>';
 	}
