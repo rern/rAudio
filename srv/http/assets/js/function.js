@@ -589,6 +589,11 @@ function imageLoad( list ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				imageOnError( this );
 			} );
+		} else if ( ! [ 'nas', 'sd', 'usb' ].includes( V.mode ) ) {
+			$lazyload.off( 'error' ).on( 'error', function() {
+				var $this = $( this );
+				$this.replaceWith( '<i class="fa fa-album li-icon" data-target="#menu-album"></i>' );
+			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
