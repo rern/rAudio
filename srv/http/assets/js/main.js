@@ -1648,7 +1648,7 @@ Exclude this thumbnail?`
 	var name     = $this.find( '.liname' ).text();
 	var mode     = $this.data( 'mode' );
 	var modefile = [ 'sd', 'nas', 'usb' ].includes( V.mode );
-	// modes: sd, nas, usb, webradio, album, artist, albumartist, composer, conductor, date, genre
+	// modes: sd, nas, usb, dabradio, webradio, album, artist, albumartist, composer, conductor, date, genre
 	if ( [ 'sd', 'nas', 'usb' ].includes( mode ) ) { // file
 		var query = {
 			  query  : 'ls'
