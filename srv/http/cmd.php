@@ -1,8 +1,10 @@
 <?php
 $sudo         = '/usr/bin/sudo ';
 $sudobin      = $sudo.'/usr/bin/';
-$sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
-$dirdata      = '/srv/http/data/';
+$sudosettings = $sudo.'/srv/http/bash/settings/';
+$dirbash      = '/srv/http/bash/';
+$dirshm       = '/srv/http/data/shm/';
+$dirsystem    = '/srv/http/data/system/';
 
 switch( $_POST[ 'cmd' ] ) {
 
@@ -16,10 +18,10 @@ switch( $_POST[ 'cmd' ] ) {
 //    php  -> js   - string / array / json literal( response type 'json' )
 //
 case 'sh': // multiple commands / scripts: no pre-escaped characters - js > php > bash
-	$sh     = $_POST[ 'sh' ];                                // php array = js array
-	$script = '/srv/http/bash/'.array_shift( $sh ).' "'; // script    = 1st element
-	$script.= escape( implode( "\n", $sh ) ).'"';        // arguments = array > escaped multiline string
-	echo rtrim( shell_exec( $sudo.$script ) );           // bash arguments = multiline string > array by line
+	$sh     = $_POST[ 'sh' ];                     // php array = js array
+	$script = $dirbash.array_shift( $sh ).' "';   // script    = 1st element
+	$script.= escape( implode( "\n", $sh ) ).'"'; // arguments = array > escaped multiline string
+	echo rtrim( shell_exec( $sudo.$script ) );    // bash arguments = multiline string > array by line
 	break;
 case 'bash': // single / one-line command - return string
 	$cmd = $_POST[ 'bash' ];
@@ -39,15 +41,15 @@ case 'exec': // single / one-line command - return array of lines to js
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
-	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirdata.'tmp/backup.gz' );
+	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirshm.'backup.gz' );
 	exec( $sudosettings.'system.sh datarestore', $output, $result );
 	if ( $result != 0 ) exit( '-2' );
 	break;
 case 'giftype':
-	$tmpfile     = $_FILES[ 'file' ][ 'tmp_name' ];
+	$tmpfile  = $_FILES[ 'file' ][ 'tmp_name' ];
 	$animated = exec( $sudobin.'gifsicle -I '.$tmpfile.' | grep -q -m1 "image #1" && echo 1 || echo 0' );
 	echo $animated;
-	if ( $animated ) move_uploaded_file( $tmpfile, $dirdata.'shm/local/tmp.gif' );
+	if ( $animated ) move_uploaded_file( $tmpfile, $dirshm.'local/tmp.gif' );
 	break;
 case 'imagereplace':
 	$imagefile = $_POST[ 'imagefile' ];
@@ -58,18 +60,18 @@ case 'imagereplace':
 	$imagedata    = $_POST[ 'imagedata' ];
 	$jpg          = substr( $imagedata, 0, 4 ) === 'data'; // animated gif passed as already uploaded tmp/file
 	if ( $jpg ) {
-		$tmpfile = $dirdata.'shm/local/binary';
+		$tmpfile = $dirshm.'local/binary';
 		$base64  = preg_replace( '/^.*,/', '', $imagedata ); // data:imgae/jpeg;base64,... > ...
 		file_put_contents( $tmpfile, base64_decode( $base64 ) );
 	} else {
 		$tmpfile = $imagedata;
 	}
-	$sh          = [ $type, $tmpfile, $imagefile, $bookmarkname ];
-	$script      = $sudo.'/srv/http/bash/cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
+	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
+	$script       = $sudo.$dirbash.'cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
 	shell_exec( $script );
 	break;
 case 'login':
-	$file = $dirdata.'system/login';
+	$file = $dirsystem.'login';
 	if ( file_exists( $file )  && ! password_verify( $_POST[ 'password' ], file_get_contents( $file ) ) ) exit( '-1' );
 	
 	if ( isset( $_POST[ 'disable' ] ) ) {
