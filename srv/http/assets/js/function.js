@@ -408,7 +408,6 @@ function displaySubMenu() {
 	if ( V.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {
-	V.bioartist.push( artist );
 	if ( artist === $( '#biocontent .name' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
@@ -432,6 +431,7 @@ function getBio( artist, getsimilar ) {
 			return
 		}
 		
+		V.bioartist.push( artist );
 		var data     = data.artist;
 		artistname   = data.name;
 		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
