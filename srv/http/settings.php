@@ -75,9 +75,8 @@ EOF
 $body = [
 	[
 		  'label'       => 'LABEL'      // REQUIRED
-		, 'id'          => 'INPUT ID'   // REQUIRED
 		, 'sublabel'    => 'SUB LABEL'
-		, 'icon'        => 'ICON'
+		, 'id'          => 'INPUT ID'   // REQUIRED
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
 		, 'setting'     => (none)       // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
@@ -90,7 +89,7 @@ $body = [
 		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
 										// 'js' = set by js condition
 		, 'help'        => <<< EOF
-HELP - PHP heredoc
+HELP
 EOF
 		, 'exist'       => EXIST        // return blank if not EXIST
 	]
