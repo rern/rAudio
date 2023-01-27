@@ -333,9 +333,9 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	usort( $array, function( $a, $b ) {
 		return strnatcasecmp( $a->sort, $b->sort );
 	} );
-	$key0       = $f[ 0 ];
-	$key1       = $fL > 1 ? $f[ 1 ] : '';
-	$modeartist = in_array( $gmode, [ 'artist', 'albumartist' ] );
+	$key0           = $f[ 0 ];
+	$key1           = $fL > 1 ? $f[ 1 ] : '';
+	$modeartist     = in_array( $gmode, [ 'artist', 'albumartist' ] );
 	$modedate_genre = in_array( $gmode, [ 'date', 'genre' ] );
 	foreach( $array as $each ) {
 		$val0       = $each->$key0;
@@ -426,7 +426,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		usort( $array, function( $a, $b ) {
 			return strnatcasecmp( $a->sort, $b->sort );
 		} );
-		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir );  // /srv/http/data/webradio/path/to > path/to 
+		$path = str_replace( '/srv/http/data/'.$gmode.'/', '', $dir ); // /srv/http/data/webradio/path/to > path/to 
 		if ( $path ) $path.= '/';
 		foreach( $array as $each ) {
 			$subdir = $each->subdir;
