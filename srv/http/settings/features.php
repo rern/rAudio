@@ -36,7 +36,7 @@ $body = [
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
  · SnapClient and SnapServer can be enabled on the same device.
 	· Enable SnapServer before SnapClient
-	· SnapClient auto connect/disconnect on play/stop
+	· SnapClient auto connect/disconnect on play/stop (no connect icon)
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
