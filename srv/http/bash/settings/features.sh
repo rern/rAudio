@@ -46,12 +46,6 @@ spotifyReset() {
 
 case ${args[0]} in
 
-autoplay|autoplaybt|autoplaycd|lyricsembedded )
-	feature=${args[0]}
-	filefeature=$dirsystem/$feature
-	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	pushRefresh
-	;;
 autoplay )
 	if [[ ${args[1]} == true ]]; then
 		[[ ${args[2]} == true ]] && touch $dirsystem/autoplaybt || rm -f $dirsystem/autoplaybt
@@ -245,6 +239,12 @@ login )
 logindisable )
 	pushRefresh
 	pushSubmenu lock false
+	;;
+lyricsembedded )
+	feature=${args[0]}
+	filefeature=$dirsystem/$feature
+	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
+	pushRefresh
 	;;
 multiraudio )
 	if [[ ${args[1]} == true ]]; then
