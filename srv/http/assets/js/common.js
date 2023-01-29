@@ -497,7 +497,7 @@ function info( json ) {
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 	} );
-	$( '#infoContent' ).on( 'click', '.fa-eye', function() {
+	$( '#infoContent .fa-eye' ).click( function() {
 		var $this = $( this );
 		var $pwd  = $this.parent().prev().find( 'input' );
 		if ( $pwd.prop( 'type' ) === 'text' ) {

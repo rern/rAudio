@@ -408,7 +408,6 @@ function displaySubMenu() {
 	if ( V.localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {
-	V.bioartist.push( artist );
 	if ( artist === $( '#biocontent .name' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
@@ -432,6 +431,7 @@ function getBio( artist, getsimilar ) {
 			return
 		}
 		
+		V.bioartist.push( artist );
 		var data     = data.artist;
 		artistname   = data.name;
 		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
@@ -588,6 +588,11 @@ function imageLoad( list ) {
 		if ( V.mode === 'album' || V.mode === 'latest' ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				imageOnError( this );
+			} );
+		} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
+			$lazyload.off( 'error' ).on( 'error', function() {
+				var $this = $( this );
+				$this.replaceWith( '<i class="fa fa-album li-icon" data-target="#menu-album"></i>' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
@@ -1500,8 +1505,6 @@ function setInfo() {
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
 function setInfoScroll() {
-	if ( $( '#artist' ).text() + $( '#title' ).text() + $( '#album' ).text() === V.prevartist + V.prevtitle + V.prevalbum ) return // skip if same data
-	
 	var tWmax = 0;
 	var $el   = $( '#artist, #title, #album' );
 	$el

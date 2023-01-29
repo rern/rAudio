@@ -1293,6 +1293,10 @@ i.map.disabled, .map.disabled i {
 	color: var( --cm );
 }
 /* coverart/bookmark edit icons */
+.coveredit,
+.bkedit {
+	z-index: 20;
+}
 .bkedit {
 	position: absolute;
 	right: 0;
@@ -1301,7 +1305,6 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	font-size: 24px !important;
 	color: var( --cw ) !important;
-	z-index: 102;
 }
 .bk-remove,
 .coverart-remove {

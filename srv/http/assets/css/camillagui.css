@@ -606,14 +606,13 @@ input[data-tip='Mixer name, must be unique'] {
 	text-shadow: -1px 1px 2px #000000;
 	background: var( --cga );
 	border: none;
-	border-radius: 0 5px 0 0;
+	border-radius: 3px 3px 0 0;
 	box-shadow: 2px 0px 5px #000;
 }
 .react-tabs__tab:nth-child( 2 ) {
 	width: calc( 100% / 5 );
 	margin-left: 0;
 	padding: 0;
-	border-radius: 5px 5px 0 0;
 	z-index: 4;
 }
 .react-tabs__tab:nth-child( 3 ) { z-index: 3 }

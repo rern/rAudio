@@ -170,16 +170,16 @@ function htmlTrack( $lists, $plname = '' ) {
 			$datatrack = '';
 			if ( strpos( $file, '.cue/track' ) ) {
 				$datatrack = 'data-track="'.$track.'"'; // for cue in edit
-				$file  = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
+				$file      = substr_replace( $file , '.cue', strrpos( $file , '.' ) );
 			}
 			$title     = $list->Title ?: pathinfo( $file, PATHINFO_FILENAME );
 			$ext       = '';
 			if ( substr( $file, 0, 4 ) !== 'cdda' ) {
-				$class    = 'file';
-				$discid   = '';
-				$path     = pathinfo( $file, PATHINFO_DIRNAME );
-				$thumbsrc = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
-				$icon     = 'music';
+				$class     = 'file';
+				$discid    = '';
+				$path      = pathinfo( $file, PATHINFO_DIRNAME );
+				$thumbsrc  = '/mnt/MPD/'.rawurlencode( $path ).'/thumb.jpg'; // replaced with icon on load error(faster than existing check)
+				$icon      = 'music';
 			} else {
 				$class     = 'audiocd';
 				$discid    = file( '/srv/http/data/shm/audiocd', FILE_IGNORE_NEW_LINES )[ 0 ];
@@ -224,12 +224,12 @@ function htmlTrack( $lists, $plname = '' ) {
 				$stationname = '';
 			}
 			if ( $stationname !== '' ) {
-				$notsaved = 0;
-				$thumbsrc = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
-				$icon     = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
+				$notsaved    = 0;
+				$thumbsrc    = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
+				$icon        = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
 			} else {
-				$notsaved = 1;
-				$icon     = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
+				$notsaved    = 1;
+				$icon        = i( 'save savewr' ).i( 'webradio', 'filesavedpl' );
 			}
 			$classnotsaved = $notsaved ? ' notsaved' : '';
 			$namenotsaved  = $notsaved ? '' : $stationname.' • ';
