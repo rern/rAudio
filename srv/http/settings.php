@@ -160,7 +160,7 @@ function htmlSetting( $data ) {
 	$html       .= '</div>
 			 </div>';
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
-	echo str_replace( '|', '<g>|</g>', $html );
+	echo $html;
 }
 function htmlSection( $head, $body, $id = '' ) {
 	$html = '<div';

@@ -15,21 +15,21 @@ $html = <<< EOF
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: {$Fi( 'search btn' )} Scan to connect | Select to pair
+	· On rAudio: {$Fi( 'search btn' )} Scan to connect > Select to pair
  • Connect:
 	· On receiver: Power on / Power off > Connect / Disconnect
 	· Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$Fmenu( 'system', 'System' )} Bluetooth {$Fi( 'bluetooth' )} | • Discoverable by senders |
+	· On rAudio: {$Fmenu( 'system', 'System' )} Bluetooth {$Fi( 'bluetooth' )} > • Discoverable by senders
 	· On sender: Search > Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
 	· On sender: Select rAudio > Connect / Disconnect
 </div>
 EOF;
-echo str_replace( '|', '<g>|</g>', $html );
+echo $html;
 ?>
 </div>
 <div id="divwl" class="section">
