@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20130208
+# 20130129
 file=/srv/http/settings/camillagui/backend/views.py
 if [[ -e $file ]] && ! grep -q 'name == "mute"' $file; then
 	sed -i -e '/cdsp.get_volume/ a\
