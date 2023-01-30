@@ -46,12 +46,6 @@ spotifyReset() {
 
 case ${args[0]} in
 
-autoplay|autoplaybt|autoplaycd|lyricsembedded )
-	feature=${args[0]}
-	filefeature=$dirsystem/$feature
-	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	pushRefresh
-	;;
 autoplay )
 	if [[ ${args[1]} == true ]]; then
 		[[ ${args[2]} == true ]] && touch $dirsystem/autoplaybt || rm -f $dirsystem/autoplaybt
@@ -246,6 +240,12 @@ logindisable )
 	pushRefresh
 	pushSubmenu lock false
 	;;
+lyricsembedded )
+	feature=${args[0]}
+	filefeature=$dirsystem/$feature
+	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
+	pushRefresh
+	;;
 multiraudio )
 	if [[ ${args[1]} == true ]]; then
 		data=$( printf "%s\n" "${args[@]:2}" | awk NF )
@@ -381,11 +381,13 @@ scrobble ) # ( airplay bluetooth spotify upnp notify user password )
 	fi
 	pushRefresh
 	;;
-shairport-sync )
+shairport-sync|spotifyd )
+	pkg=${args[0]}
 	if [[ ${args[1]} == true ]]; then
-		featureSet shairport-sync
+		featureSet $pkg
 	else
-		systemctl disable --now shairport-sync
+		[[ $( cat $dirshm ) == airplay ]] && $dirbash/cmd.sh playerstop
+		systemctl disable --now $pkg
 	fi
 	pushRefresh
 	;;
@@ -437,10 +439,6 @@ snapserver )
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
 	pushData snapserver ${args[1]}
-	;;
-spotifyd )
-	[[ ${args[1]} == true ]] && systemctl enable --now spotifyd || systemctl disable --now spotifyd
-	pushRefresh
 	;;
 spotifytoken )
 	code=${args[1]}

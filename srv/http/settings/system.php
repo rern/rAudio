@@ -136,7 +136,7 @@ $body = [
 		, 'sublabel' => 'bluetoothctl'
 		, 'id'       => 'bluetooth'
 		, 'status'   => true
-		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit | Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit - Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -149,7 +149,7 @@ $body = [
 Country of Wi-Fi regulatory domain:
 	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
-| ■ Auto start Access Point | On failed connection or no router
+■ Auto start Access Point - On failed connection or no router
 EOF
 	]
 ];
@@ -177,7 +177,7 @@ $body = [
 
 	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 	 · HAT with EEPROM could be automatically detected.
-	 · See {$Fmenu( 'player', 'Player' )} Output | Device | if it's already set.
+	 · See {$Fmenu( 'player', 'Player' )} Output - Device if it's already set.
 	</span>
 </div>
 EOF
@@ -318,8 +318,8 @@ Note:
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )} |
-	Clients: | {$FnameIcon( 'Shared Data', 'networks' )} | ● rAudio |
+	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )}
+	Clients: {$FnameIcon( 'Shared Data', 'networks' )} &#9656; ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -327,10 +327,13 @@ Note:
 			NFS: <c>777</c>
 			CIFS/SMB: <c>read only = no</c>
 		· Windows:
-			| Sharing | Permissions | Everyone - Full Control
-			| Security | Everyone - Full Control
+			Right-click Folder &#9656; Properties &#9656; 
+				<btn>Sharing</btn> &#9656; <btn>Advanced Sharing...</btn> &#9656; <btn>Permissions</btn>
+					Everyone - Full Control
+				<btn>Security</btn>
+					Everyone - Full Control
 	Clients:
-		· | {$FnameIcon( 'Shared Data', 'networks' )} | Add the created share
+		· {$FnameIcon( 'Shared Data', 'networks' )} &#9656; Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]
