@@ -11,10 +11,7 @@ bitrate = 320
 onevent = "/srv/http/bash/spotifyd.sh"
 use_mpris = false
 backend = "alsa"
-volume_controller = "alsa"
-device = "default:CARD=Headphones"
-mixer = "Headphone"
-control = "hw:0"' > /etc/spotifyd.conf
+volume_controller = "alsa"' > /etc/spotifyd.conf
 	$dirsettings/player-conf.sh
 fi
 
