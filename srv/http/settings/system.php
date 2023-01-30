@@ -319,7 +319,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FnameIcon( 'Shared Data', 'networks' )} > ● rAudio
+	Clients: {$FnameIcon( 'Shared Data', 'networks' )} &#9656; ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -327,10 +327,13 @@ Note:
 			NFS: <c>777</c>
 			CIFS/SMB: <c>read only = no</c>
 		· Windows:
-			<btn>Sharing</btn> > <btn>Permissions</btn> > Everyone - Full Control
-			<btn>Security</btn> > Everyone - Full Control
+			Right-click Folder &#9656; Properties &#9656; 
+				<btn>Sharing</btn> &#9656; <btn>Advanced Sharing...</btn> &#9656; <btn>Permissions</btn>
+					Everyone - Full Control
+				<btn>Security</btn>
+					Everyone - Full Control
 	Clients:
-		· {$FnameIcon( 'Shared Data', 'networks' )} > Add the created share
+		· {$FnameIcon( 'Shared Data', 'networks' )} &#9656; Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]

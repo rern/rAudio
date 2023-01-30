@@ -1,7 +1,7 @@
 <?php
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = 'File Explorer > Address bar - <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
+$fileexplorer = 'File Explorer &#9656; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
@@ -57,10 +57,10 @@ EOF
 		· App description: <code class="yl">Description</code>
 	<btn>EDIT SETTINGS</btn>
 		· Redirect URIs: <c id="redirecturi"></c>
-	<btn>USERS AND ACCESS</btn> <btn>ADD NEW USER</btn>
+	<btn>USERS AND ACCESS</btn> &#9656; <btn>ADD NEW USER</btn>
 		· Name: <code class="yl">user</code>
 		· Spotify Account: <code class="yl">email</code>
-· {$FnameIcon( 'Spotify', 'spotify' )} > Enable
+· {$FnameIcon( 'Spotify', 'spotify' )} &#9656; Enable
 	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -130,8 +130,8 @@ EOF
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust > {$Fi( 'plus-circle btn' )} Add > {$Fi( 'save btn' )} Save
- · Existing: Adjust > {$Fi( 'save btn' )} Save
+ · New: Adjust &#9656; {$Fi( 'plus-circle btn' )} Add &#9656; {$Fi( 'save btn' )} Save
+ · Existing: Adjust &#9656; {$Fi( 'save btn' )} Save
  · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
@@ -236,7 +236,7 @@ EOF
  · No Last.fm password saved on rAudio.
  · Option to include renderers - Exclude if already scrobbleed by sender devices.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title > {$Fi( 'lastfm btn' )} Scrobble
+ · Web Radio must be manually scrobbled: Playing title &#9656; {$Fi( 'lastfm btn' )} Scrobble
 EOF
 	]
 	, [
@@ -259,11 +259,11 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Fmenu( 'system', 'System' )} {$FnameIcon( 'Shared Data', 'networks' )} > ● rAudio
+	· {$Fmenu( 'system', 'System' )} {$FnameIcon( 'Shared Data', 'networks' )} &#9656; ● rAudio &#9656; Check
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features > Services for NFS > Client for NFS > Enable
+	· Windows Features &#9656; Services for NFS &#9656; Client for NFS &#9656; Enable
 	· $fileexplorer
 	
 (SSH password must be default.)
