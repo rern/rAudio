@@ -178,7 +178,7 @@ if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
 	[[ $btmixer ]] && hw=$( bluealsa-aplay -L | head -1 ) || hw=hw:$asoundcard
 ########
-	conf=$( sed -n '1,/^volume_controller/ p' /etc/spotifyd.conf )
+	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 
 	if [[ ! $equalizer ]]; then
 		conf+='

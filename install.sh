@@ -4,6 +4,20 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20230130
+if ! grep -q onevent /etc/spotifyd.conf; then
+	echo '[global]
+bitrate = 320
+onevent = "/srv/http/bash/spotifyd.sh"
+use_mpris = false
+backend = "alsa"
+volume_controller = "alsa"
+device = "default:CARD=Headphones"
+mixer = "Headphone"
+control = "hw:0"' > /etc/spotifyd.conf
+	$dirsettings/player-conf.sh
+fi
+
 # 20130129
 file=/srv/http/settings/camillagui/backend/views.py
 if [[ -e $file ]] && ! grep -q 'name == "mute"' $file; then
