@@ -1154,7 +1154,7 @@ function renderPlayback() {
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
 	clearInterval( V.intBlinkDot );
-	if ( ! S.pllength && S.player === 'mpd' && S.state === 'stop' ) { // empty queue
+	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
 		return
 	}
