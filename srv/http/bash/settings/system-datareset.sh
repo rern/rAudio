@@ -2,10 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $diraddons ]]; then # create-ros.sh
-	mkdir $diraddons
-	echo $1 > $diraddons/r1
-else                           # reset
+if [[ -e $diraddons ]]; then # reset
 	reset=1
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
 	mpc -q clear
@@ -88,15 +85,14 @@ mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playli
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
-
-# addons - new/reset
 if [[ $reset ]]; then
 	mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
-else
+else # from create-ros.sh
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
+	echo $1 > $diraddons/r1
 fi
 
 # display
