@@ -508,12 +508,16 @@ lcdcharset )
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	current=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
-	[[ ! $current ]] && current=0
+	mirror=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
 	if : >/dev/tcp/8.8.8.8/53; then
 		notify -blink globe 'Mirror List' 'Get ...'
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
-		[[ $? == 0 ]] && mv -f mirrorlist $file || rm mirrorlist
+		if [[ $? == 0 ]]; then
+			mv -f mirrorlist $file
+			[[ $mirror ]] && sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+		else
+			rm mirrorlist
+		fi
 	fi
 	readarray -t lines <<< $( awk NF $file | sed -n '/### A/,$ {s/ (not Austria\!)//; s/.mirror.*//; s|.*//||; p}' )
 	clist='"Auto (by Geo-IP)"'
@@ -530,9 +534,10 @@ mirrorlist )
 			codelist+=',"'$line'"'
 		fi
 	done
+	[[ ! $mirror ]] && mirror=0
 	echo '{
   "country" : [ '$clist' ]
-, "current" : "'$current'"
+, "mirror" : "'$mirror'"
 , "code"    : [ '$codelist' ]
 }'
 	;;

@@ -590,7 +590,7 @@ $( '#setting-timezone' ).click( function() {
 			, title        : SW.title
 			, content      : content
 			, boxwidth     : 240
-			, values       : [ S.ntp, list.current ]
+			, values       : [ S.ntp, list.mirror ]
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
 			, ok           : () => {
