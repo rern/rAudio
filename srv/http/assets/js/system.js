@@ -595,7 +595,7 @@ $( '#setting-timezone' ).click( function() {
 			, checkblank   : [ 0 ]
 			, ok           : () => {
 				var values = infoVal();
-				if ( values[ 0 ] !== S.ntp ) notify( SW.icon, SW.title, 'Sync ...' );
+				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
