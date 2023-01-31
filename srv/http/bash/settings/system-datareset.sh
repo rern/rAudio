@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -e $diraddons ]]; then # reset
+# reset -------------------------------------------------------------------------------------------------------------->>>
+if [[ -e $diraddons ]]; then
 	reset=1
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
 	mpc -q clear
@@ -44,17 +45,17 @@ if [[ -e $diraddons ]]; then # reset
 	# config.txt
 	cpuInfo
 	config="\
-gpu_mem=32
 initramfs initramfs-linux.img followkernel
-max_usb_current=1
 disable_splash=1
 disable_overscan=1
 dtparam=audio=on"
 	[[ $onboardwireless ]] && config+="
 dtparam=krnbt=on"
 	[[ $rpi0 ]] && config+="
+gpu_mem=32
 force_turbo=1
 hdmi_drive=2
+max_usb_current=1
 over_voltage=2"
 	echo "$config" > /boot/config.txt
 	# css color
@@ -79,6 +80,7 @@ over_voltage=2"
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 fi
+# reset --------------------------------------------------------------------------------------------------------------<<<
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
