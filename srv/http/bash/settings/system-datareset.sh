@@ -2,9 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $dirdata/addons ]]; then # create-ros.sh
+if [[ ! -e $diraddons ]]; then # create-ros.sh
+	mkdir $diraddons
 	echo $1 > $diraddons/r1
-else                                # reset
+else                           # reset
 	reset=1
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
 	mpc -q clear
