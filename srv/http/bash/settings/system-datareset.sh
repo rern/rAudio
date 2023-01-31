@@ -155,7 +155,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 }' > $dirmpd/counts
 fi
 
-
 # set ownership and permissions
 $dirsettings/system.sh dirpermissions
 
