@@ -1252,7 +1252,7 @@ $( '#lib-search-input' ).keyup( function( e ) {
 $( '#button-lib-back' ).click( function() {
 	var $breadcrumbs = $( '#lib-breadcrumbs a' );
 	var bL           = $breadcrumbs.length
-	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length === 1 ) ) {
+	if ( ( bL && bL < 2 ) || ( ! bL && V.query.length < 2 ) ) {
 		$( '#library' ).click();
 		return
 	}
@@ -1262,7 +1262,7 @@ $( '#button-lib-back' ).click( function() {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		V.query.pop();
-		var query    = V.query[ V.query.length - 1 ];
+		var query = V.query[ V.query.length - 1 ];
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {

@@ -192,7 +192,7 @@ function info( json ) {
 ` );
 	if ( ! page && ! V.playback ) {
 		var list = V.library ? '#lib' : '#pl';
-		var listH = $( list +'-list' )[ 0 ].offsetHeight;
+		var listH = $( list +'-list' ).length ? $( list +'-list' )[ 0 ].offsetHeight : 0;
 	} else {
 		var listH = document.body.offsetHeight;
 	}
