@@ -193,12 +193,13 @@ function info( json ) {
 	if ( ! page && ! V.playback ) {
 		var list = V.library ? '#lib' : '#pl';
 		var listH = $( list +'-list' )[ 0 ].offsetHeight;
-		if ( listH > $( 'body' ).height() * 2 ) h = listH;
 	} else {
-		var h = '';
+		var listH = document.body.offsetHeight;
 	}
-	if ( h ) $( '#infoOverlay' ).css( 'height', h );
-	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+	if ( listH > window.innerHeight * 2 ) {
+		$( '#infoOverlay' ).css( 'height', listH );
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+	}
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
