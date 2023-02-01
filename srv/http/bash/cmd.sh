@@ -904,6 +904,7 @@ playlist )
 	mpc -q load "$name"
 	[[ $play ]] && sleep 1 && mpc -q play
 	[[ $play || $replace ]] && $dirbash/push-status.sh
+	pushstreamPlaylist
 	;;
 power )
 	action=${args[1]}
