@@ -1779,7 +1779,7 @@ li.active .iconthumb {
 	line-height: 20px !important;
 	text-align: center;
 	color: #000000 !important;
-	background: var( --cw );
+	background: var( --cg75 );
 }
 #pl-list li.radio {
 	margin: 0;
