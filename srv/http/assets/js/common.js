@@ -196,7 +196,9 @@ function info( json ) {
 	} else {
 		var listH = document.body.offsetHeight;
 	}
-	if ( listH > window.innerHeight * 2 ) {
+	var infoH = window.innerHeight;
+	if ( navigator.maxTouchPoints ) infoH *= 2;
+	if ( listH > infoH ) {
 		$( '#infoOverlay' ).css( 'height', listH );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	}
@@ -543,9 +545,11 @@ function infoButtonCommand( fn ) {
 	}
 }
 function infoButtonReset() {
-	$( '#infoOverlay' ).addClass( 'hide' );
-	$( '#infoOverlay' ).empty();
 	I = { hidden: true }
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' )
+		.empty();
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
