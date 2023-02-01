@@ -126,14 +126,7 @@ function playlistDelete() {
 function playlistLoad( path, play, replace ) {
 	V.local = 1;
 	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
-	list( {
-		  cmd     : 'load'
-		, name    : path
-		, play    : play
-		, replace : replace
-	}, function( data ) {
-		V.local = 0;
-		S.pllength = +data;
+	bash( [ 'playlist', path, play, replace ], function() {
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
 	} );
 }
@@ -726,9 +719,9 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			if ( V.library ) {
 				mpccmd = [ 'mpcload', path ];
 			} else { // saved playlist
-				var play = cmd.slice( -1 ) === 'y' ? 1 : 0;
-				var replace = cmd.slice( 0, 1 ) === 'r' ? 1 : 0;
-				if ( replace && D.plclear && S.pllength ) {
+				var play = cmd.slice( -1 ) === 'y';
+				var replace = cmd.slice( 0, 1 ) === 'r';
+				if ( replace ) {
 					infoReplace( () => playlistLoad( path, play, replace ) );
 				} else {
 					playlistLoad( path, play, replace );
