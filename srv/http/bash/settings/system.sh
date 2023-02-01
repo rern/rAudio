@@ -514,7 +514,7 @@ mirrorlist )
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		if [[ $? == 0 ]]; then
 			mv -f mirrorlist $file
-			[[ $mirror ]] && sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+			[[ $mirror ]] && sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" $file
 		else
 			rm mirrorlist
 		fi
@@ -876,7 +876,7 @@ servers )
 				echo $mirror > $dirsystem/mirror
 				mirror+=.
 			fi
-			sed -i "0,/^Server/ s|//.*mirror|//${mirror}mirror|" $file
+			sed -i "0,/^Server/ s|//.*mirror|//$mirror.mirror|" $file
 		fi
 	fi
 	pushRefresh
