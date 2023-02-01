@@ -190,7 +190,14 @@ function info( json ) {
 	<div id="infoButtons"></div>
 </div>
 ` );
-	$( '#infoOverlay' ).css( 'height', $( 'body' ).height() );
+	if ( ! page && ! V.playback ) {
+		var list = V.library ? '#lib' : '#pl';
+		var listH = $( list +'-list' )[ 0 ].offsetHeight;
+		if ( listH > $( 'body' ).height() * 2 ) h = listH;
+	} else {
+		var h = '';
+	}
+	if ( h ) $( '#infoOverlay' ).css( 'height', h );
 	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
