@@ -12,12 +12,6 @@ a {
 	color: var( --cw );
 	text-decoration: none !important;
 }
-ul {
-	margin: 0;
-}
-ib {
-	display: inline-block;
-}
 #biocontent .artist,
 #elapsed,
 #lib-mode-list gr,
@@ -313,6 +307,7 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- middle window ----------------------*/
 .page {
+	flex: 1; /* force children height:100% = body height */
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
 #page-playback {
@@ -1647,7 +1642,6 @@ i.map.disabled, .map.disabled i {
 #lib-list,
 #pl-list,
 #pl-savedlist {
-	display: block;
 	margin: 0;
 	list-style: none
 }
