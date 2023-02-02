@@ -222,7 +222,7 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
-	position: relative;
+	position    : relative;
 	margin      : 0;
 	font-family : "Lato";
 	font-size   : 15px;

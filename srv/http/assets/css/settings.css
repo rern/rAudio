@@ -67,6 +67,7 @@ label {
 ul {
 	margin: 0;
 }
+.container::after,
 .section::after {
 	content: '';
 	display: block;
@@ -466,6 +467,7 @@ input.disabled + .switchlabel:after {
 }
 .container {
 	max-width: 768px;
+	min-height: 100vh;
 	height: 100%;
 	padding: 30px 55px 100px 55px;
 }
