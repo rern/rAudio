@@ -1236,7 +1236,7 @@ i.map.disabled, .map.disabled i {
 	height: 10px;
 }
 .lib-mode {
-	float: left;
+	display: inline-block;
 	width: 16.666666%;
 	padding: 3px;
 }
