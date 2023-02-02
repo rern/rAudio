@@ -1215,7 +1215,6 @@ i.map.disabled, .map.disabled i {
 	padding-top: 50px;
 }
 #lib-mode-list {
-	height: 100%;
 	padding: 90px 7px 7px 7px;
 }
 #lib-mode-list::after { /* fix 0 height */
