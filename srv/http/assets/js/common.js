@@ -190,13 +190,11 @@ function info( json ) {
 	<div id="infoButtons"></div>
 </div>
 ` );
-	$( '#infoOverlay' ).css( 'height', $( 'body' ).height() );
-	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
 	} );*/
-	
+	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	$( '#infoX' ).click( function() {
 		infoButtonCommand( I.cancel );
 	} );
@@ -535,9 +533,11 @@ function infoButtonCommand( fn ) {
 	}
 }
 function infoButtonReset() {
-	$( '#infoOverlay' ).addClass( 'hide' );
-	$( '#infoOverlay' ).empty();
 	I = { hidden: true }
+	$( '#infoOverlay' )
+		.addClass( 'hide' )
+		.removeAttr( 'style' )
+		.empty();
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return

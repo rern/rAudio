@@ -34,14 +34,6 @@ case 'get':
 case 'list':
 	htmlSavedPlaylist();
 	break;
-case 'load': // load saved playlist to current
-	if ( $_POST[ 'replace' ] ) exec( 'mpc -q clear' );
-	
-	$name = $_POST[ 'name' ] ?? $argv[ 2 ]; // $argv - by import playlists
-	exec( 'mpc -q load "'.$name.'"' );
-	if ( $_POST[ 'play' ] ) exec( 'sleep 1; mpc play' );
-	if ( isset( $_POST[ 'name' ] ) ) echo exec( 'mpc status %length%' ); // not by import playlists
-	break;
 	
 }
 

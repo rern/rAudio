@@ -896,6 +896,16 @@ playerstop )
 	pushstream player '{"player":"'$player'","active":false}'
 	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
 	;;
+playlist )
+	name=${args[1]}
+	[[ ${args[2]} == true ]] && play=1
+	[[ ${args[3]} == true ]] && replace=1
+	[[ $replace ]] && mpc -q clear
+	mpc -q load "$name"
+	[[ $play ]] && sleep 1 && mpc -q play
+	[[ $play || $replace ]] && $dirbash/push-status.sh
+	pushstreamPlaylist
+	;;
 power )
 	action=${args[1]}
 	rserverok=${args[2]}

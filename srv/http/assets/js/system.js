@@ -590,12 +590,12 @@ $( '#setting-timezone' ).click( function() {
 			, title        : SW.title
 			, content      : content
 			, boxwidth     : 240
-			, values       : [ S.ntp, list.current ]
+			, values       : [ S.ntp, list.mirror ]
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
 			, ok           : () => {
 				var values = infoVal();
-				if ( values[ 0 ] !== S.ntp ) notify( SW.icon, SW.title, 'Sync ...' );
+				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
 				bash( [ 'servers', ...values ], bannerHide );
 			}
 		} );
@@ -813,12 +813,13 @@ function infoMount( values ) {
 	}
 	var htmlmount      = `\
 <table id="tblinfomount">
-<tr><td>Type</td>
-	<td>
+<tr><td style="width: 90px">Type</td>
+	<td style="width: 230px">
 		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="raudio">rAudio</label>
 	</td>
+	<td style="width: 20px"></td>
 </tr>
 <tr><td>Name</td>
 <td><input id="mountpoint" type="text"></td>
@@ -848,8 +849,6 @@ function infoMount( values ) {
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
 		, checkblank : [ 0, 1, 2 ]
 		, beforeshow : () => {
-			$( '#infoContent td' ).eq( 0 ).css( 'width', 90 );
-			$( '#infoContent td' ).eq( 1 ).css( 'width', 230 );
 			if ( ! shareddata ) {
 				$( '#infoContent label' ).eq( 2 ).remove();
 			} else {
