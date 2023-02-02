@@ -1,5 +1,5 @@
 #infoOverlay { /* no on-screen keyboard */
-	min-height: 100vh;
+	min-height: 100%;
 }
 /* :hover *********************************************************/
 #lib-path a:hover {

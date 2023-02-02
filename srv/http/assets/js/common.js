@@ -190,28 +190,11 @@ function info( json ) {
 	<div id="infoButtons"></div>
 </div>
 ` );
-	if ( ! page && ! V.playback ) {
-		if ( V.library ) {
-			var list = '#lib-list';
-		} else {
-			var list = $( '#pl-list' ).hasClass( 'hide' ) ? '#pl-savedlist' : '#pl-list';
-		}
-		var listH = $( list ).length ? $( list )[ 0 ].offsetHeight : 0;
-	} else {
-		var listH = document.body.offsetHeight;
-	}
-	var infoH = window.innerHeight;
-	if ( navigator.maxTouchPoints ) {
-		listH += infoH / 2; // add bottom space for on-screen keyboard
-		infoH *= 2;
-	}
-	if ( listH > infoH ) $( '#infoOverlay' ).css( 'height', listH );
-	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 /*	$( '#infoOverlay' ).on( 'mousedown touchstart', function( e ) {
 		if ( e.target.id === 'infoOverlay' ) $( '#infoX' ).click();
 	} );*/
-	
+	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	$( '#infoX' ).click( function() {
 		infoButtonCommand( I.cancel );
 	} );
