@@ -313,7 +313,6 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- middle window ----------------------*/
 .page {
-	min-height: 100%;
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
 #page-playback {
