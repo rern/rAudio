@@ -130,26 +130,25 @@ disconnect )
 editlan )
 	ip=${args[1]}
 	gw=${args[2]}
-	lan0="\
-[Match]
-Name=$lan
-[Network]
-DNSSEC=no
-"
-	if [[ ! $ip ]];then
-		lan0+="\
-DHCP=yes
-"
-	else
+	if [[ $ip ]]; then
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
-		
-		lan0+="\
-Address=$ip/24
-Gateway=$gw
-"
 	fi
-	file=$( ls -1 /etc/systemd/network/* | head -1 ) # en.network > eth.network > eth0.network
-	echo "$lan0" > $file
+	
+	file=/etc/systemd/network/en.network
+	if [[ -e $file ]]; then
+		lan=en*
+	else
+		lan=eth0
+		file=/etc/systemd/network/eth0.network
+	fi
+	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
+	if [[ $ip ]]; then
+		sed -i '/^DNSSEC/ i\
+Address='$ip'/24\
+Gateway='$gw $file
+	else
+		sed -i '/^DNSSEC/ i\DHCP=yes' $file
+	fi
 	systemctl restart systemd-networkd
 	pushRefresh
 	;;
