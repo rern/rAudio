@@ -116,7 +116,12 @@ Gateway=$( jq -r .Gateway <<< $data )
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	[[ $( jq -r .add <<< $data ) == true ]] && netctlSwitch "$ESSID" || pushRefresh
+	if [[ $( jq -r .add <<< $data ) == true ]]; then
+		netctlSwitch "$ESSID"
+		avahi-daemon --kill # flush cache and restart
+	else
+		pushRefresh
+	fi
 	;;
 disconnect )
 	wlandev=$( < $dirshm/wlan )
@@ -176,7 +181,7 @@ Gateway='$gw $file
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
-	pushRefresh
+	avahi-daemon --kill # flush cache and restart
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )

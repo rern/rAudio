@@ -292,10 +292,9 @@ function editLAN() {
 		}
 		, buttonlabel  : ! static ? '' : ico( 'undo' ) +'DHCP'
 		, button       : ! static ? '' : () => {
-			notify( icon, title, 'Change URL to '+ S.hostname +'.local ...' );
 			loader();
-			location.href = 'http://'+ S.hostname +'.local/settings.php?p=networks';
-			bash( [ 'editlan' ] );
+			bash( [ 'lanedit' ] );
+			editReconnect( S.hostname +'.local', 10 );
 		}
 		, ok           : () => editLANSet( infoVal() )
 	} );
@@ -303,20 +302,31 @@ function editLAN() {
 function editLANSet( values ) {
 	var ip      = values[ 0 ];
 	var gateway = values[ 1 ];
-	notify( 'lan', 'IP Address', 'Set ...' );
 	bash( [ 'lanedit', ip, gateway ], avail => {
 		if ( avail == -1 ) {
+			clearInterval( V.interval );
+			clearTimeout( V.timeout );
+			bannerHide();
 			info( {
 				  icon    : 'lan'
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
 				, ok      : editLAN
 			} );
-		} else {
-			location.href = 'http://'+ ip +'/settings.php?p=networks';
 		}
-		bannerHide();
 	} );
+	editReconnect( ip, 3 );
+}
+function editReconnect( ip, delay ) {
+	notify( 'lan', 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
+	var i      = delay;
+	V.interval = setInterval( () => {
+		i--
+		i > 0 ? $( '#bannerMessage a' ).text( i ) : clearInterval( V.interval );
+	}, 1000 );
+	V.timeout  = setTimeout( () => {
+		location.href = 'http://'+ ip +'/settings.php?p=networks';
+	}, delay * 1000 );
 }
 function editWiFi() {
 	bash( [ 'profileget', V.li.data( 'ssid' ) ], values => infoWiFi( values ), 'json' );
