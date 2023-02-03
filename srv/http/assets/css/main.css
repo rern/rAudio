@@ -12,12 +12,6 @@ a {
 	color: var( --cw );
 	text-decoration: none !important;
 }
-ul {
-	margin: 0;
-}
-ib {
-	display: inline-block;
-}
 #biocontent .artist,
 #elapsed,
 #lib-mode-list gr,
@@ -313,7 +307,7 @@ i.map.disabled, .map.disabled i {
 }
 /* ---------------------- middle window ----------------------*/
 .page {
-	min-height: 100%;
+	flex: 1; /* force children height:100% = body height */
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
 #page-playback {
@@ -1216,7 +1210,6 @@ i.map.disabled, .map.disabled i {
 	padding-top: 50px;
 }
 #lib-mode-list {
-	height: 100%;
 	padding: 90px 7px 7px 7px;
 }
 #lib-mode-list::after { /* fix 0 height */
@@ -1238,7 +1231,7 @@ i.map.disabled, .map.disabled i {
 	height: 10px;
 }
 .lib-mode {
-	float: left;
+	display: inline-block;
 	width: 16.666666%;
 	padding: 3px;
 }
@@ -1649,7 +1642,6 @@ i.map.disabled, .map.disabled i {
 #lib-list,
 #pl-list,
 #pl-savedlist {
-	display: block;
 	margin: 0;
 	list-style: none
 }
@@ -2059,7 +2051,10 @@ li.active .li2 bl {
 @media (max-width: 540px) {
 	#bio .container { padding : 0 10px }
 	#pl-count,
-	#pl-path { display: none }
+	#pl-path,
+	.pl-title { display: none }
+	.pl-title.name { display: inline }
+	#pl-savedlist-count { margin-left: -20px }
 }
 /************************************************************************************/
 @media (max-width: 2038px) { .coverart, .lib-mode { width: calc( 100% / 10 ) } }
