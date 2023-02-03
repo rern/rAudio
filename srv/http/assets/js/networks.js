@@ -304,7 +304,7 @@ function editLANSet( values ) {
 	var ip      = values[ 0 ];
 	var gateway = values[ 1 ];
 	notify( 'lan', 'IP Address', 'Set ...' );
-	bash( [ 'editlan', ip, gateway ], avail => {
+	bash( [ 'lanedit', ip, gateway ], avail => {
 		if ( avail == -1 ) {
 			info( {
 				  icon    : 'lan'

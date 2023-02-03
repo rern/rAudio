@@ -127,31 +127,6 @@ disconnect )
 	ifconfig $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
-editlan )
-	ip=${args[1]}
-	gw=${args[2]}
-	if [[ $ip ]]; then
-		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
-	fi
-	
-	file=/etc/systemd/network/en.network
-	if [[ -e $file ]]; then
-		lan=en*
-	else
-		lan=eth0
-		file=/etc/systemd/network/eth0.network
-	fi
-	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $ip ]]; then
-		sed -i '/^DNSSEC/ i\
-Address='$ip'/24\
-Gateway='$gw $file
-	else
-		sed -i '/^DNSSEC/ i\DHCP=yes' $file
-	fi
-	systemctl restart systemd-networkd
-	pushRefresh
-	;;
 hostapd )
 	echo $dirsettings/features.sh "$1"
 	;;
@@ -177,6 +152,31 @@ iwlist )
 	echo
 	echo '<bll># iw list</bll>'
 	iw list
+	;;
+lanedit )
+	ip=${args[1]}
+	gw=${args[2]}
+	if [[ $ip ]]; then
+		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
+	fi
+	
+	file=/etc/systemd/network/en.network
+	if [[ -e $file ]]; then
+		lan=en*
+	else
+		lan=eth0
+		file=/etc/systemd/network/eth0.network
+	fi
+	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
+	if [[ $ip ]]; then
+		sed -i '/^DNSSEC/ i\
+Address='$ip'/24\
+Gateway='$gw $file
+	else
+		sed -i '/^DNSSEC/ i\DHCP=yes' $file
+	fi
+	systemctl restart systemd-networkd
+	pushRefresh
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )
