@@ -251,16 +251,17 @@ function connectWiFi( data ) { // { add:..., gw:..., hidden:..., ip:..., passwor
 		if ( $( '#listlan li' ).length ) {
 			notify( icon, ssid, 'Change ...' );
 		} else {
-			loader();
-			location.href = 'http://'+ ip +'/settings.php?p=networks';
-			notify( icon, ssid, 'Change URL to '+ ip );
+			editReconnect( ip, 5 );
 		}
 	} else {
 		notify( icon, ssid, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
 	bash( [ 'connect', JSON.stringify( data ) ], connected => {
 		if ( connected == -1 ) {
+			clearInterval( V.interval );
+			clearTimeout( V.timeout );
 			S.wlconnected =  '';
+			bannerHide();
 			info( {
 				  icon      : icon
 				, title     : 'Wi-Fi'
@@ -292,7 +293,6 @@ function editLAN() {
 		}
 		, buttonlabel  : ! static ? '' : ico( 'undo' ) +'DHCP'
 		, button       : ! static ? '' : () => {
-			loader();
 			bash( [ 'lanedit' ] );
 			editReconnect( S.hostname +'.local', 10 );
 		}
@@ -318,6 +318,7 @@ function editLANSet( values ) {
 	editReconnect( ip, 3 );
 }
 function editReconnect( ip, delay ) {
+	loader();
 	notify( 'lan', 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
 	var i      = delay;
 	V.interval = setInterval( () => {
