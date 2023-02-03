@@ -1214,6 +1214,8 @@ function renderPlaylist( data ) { // current playlist
 	V.savedlist      = 0;
 	V.savedplaylist  = 0;
 	S.elapsed        = data.elapsed;
+	$( '#savedpl-path' ).addClass( 'hide' );
+	$( '#pl-path' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).click();
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
@@ -1256,7 +1258,10 @@ function renderPlaylistList( data ) { // list of saved playlists
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
 	$( '#menu-plaction' ).addClass( 'hide' );
 	
-	$( '#pl-path' ).html( data.counthtml );
+	$( '#pl-path' ).addClass( 'hide' );
+	$( '#savedpl-path' )
+		.html( data.counthtml )
+		.removeClass( 'hide' );
 	$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
@@ -1279,7 +1284,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 function renderSavedPlaylist( name ) { // tracks in a playlist
 	menuHide();
 	list( { cmd: 'get', name: name }, function( data ) {
-		$( '#pl-path' ).html( data.counthtml );
+		$( '#savedpl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();

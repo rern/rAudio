@@ -281,6 +281,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
 	<div class="content-top">
 		<span id="pl-path"></span>
+		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active' )?>
 		<?=i( 'button-pl-back', 'arrow-left hide' )?>
 		<?=i( 'button-pl-search', '-search pllength' )?>

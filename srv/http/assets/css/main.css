@@ -2051,7 +2051,10 @@ li.active .li2 bl {
 @media (max-width: 540px) {
 	#bio .container { padding : 0 10px }
 	#pl-count,
-	#pl-path { display: none }
+	#pl-path,
+	.pl-title { display: none }
+	.pl-title.name { display: inline }
+	#pl-savedlist-count { margin-left: -20px }
 }
 /************************************************************************************/
 @media (max-width: 2038px) { .coverart, .lib-mode { width: calc( 100% / 10 ) } }
