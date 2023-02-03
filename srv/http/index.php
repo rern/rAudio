@@ -159,6 +159,29 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<?=$htmlsettings?>
 </div>
 
+<div id="page-library" class="page hide">
+	<div class="content-top">
+		<?=i( 'button-library', 'library active' )?>
+		<?=i( 'button-lib-search', 'search' )?>
+		<div id="lib-search" class="hide">
+			<div class="input-group">
+				<input id="lib-search-input" type="text">
+				<span class="input-group-btn">
+					<button id="lib-search-btn" class="btn btn-default"><?=i( '', 'search' )?></button>
+				</span>
+			</div>
+		</div>
+		<div id="lib-search-close"></div>
+		<div id="lib-path">
+			<?=i( 'button-lib-back', 'arrow-left' )?>
+			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
+			<div id="lib-breadcrumbs"></div>
+			<span class="lipath"></span>
+		</div>
+	</div>
+	<div id="lib-mode-list"></div>
+</div>
+
 <div id="page-playback" class="page">
 	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
 	<?=i( 'guide-bio', 'bio map guide hide' )?>
@@ -252,29 +275,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 			</div>
 		</div>
 	</div>
-</div>
-
-<div id="page-library" class="page hide">
-	<div class="content-top">
-		<?=i( 'button-library', 'library active' )?>
-		<?=i( 'button-lib-search', 'search' )?>
-		<div id="lib-search" class="hide">
-			<div class="input-group">
-				<input id="lib-search-input" type="text">
-				<span class="input-group-btn">
-					<button id="lib-search-btn" class="btn btn-default"><?=i( '', 'search' )?></button>
-				</span>
-			</div>
-		</div>
-		<div id="lib-search-close"></div>
-		<div id="lib-path">
-			<?=i( 'button-lib-back', 'arrow-left' )?>
-			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
-			<div id="lib-breadcrumbs"></div>
-			<span class="lipath"></span>
-		</div>
-	</div>
-	<div id="lib-mode-list"></div>
 </div>
 
 <div id="page-playlist" class="page hide">
