@@ -2081,6 +2081,7 @@ li.active .li2 bl {
 		#page-playback {
 			transform-origin: top;
 			transform: scale( var( --scale ) );
+			height: calc( 100% / var( --scale ) );
 		}
 	}
 	@media ( max-height: 440px ) {
