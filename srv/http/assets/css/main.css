@@ -306,10 +306,6 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm ) !important;
 }
 /* ---------------------- middle window ----------------------*/
-.page {
-	flex: 1; /* force children height:100% = body height */
-	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
-}
 #page-playback {
 	padding: 120px 0 60px;
 }
@@ -2085,7 +2081,6 @@ li.active .li2 bl {
 		#page-playback {
 			transform-origin: top;
 			transform: scale( var( --scale ) );
-			width: calc( 100% / var( --scale ) );
 			height: calc( 100% / var( --scale ) );
 		}
 	}
