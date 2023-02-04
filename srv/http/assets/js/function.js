@@ -1217,7 +1217,7 @@ function renderPlaylist( data ) { // current playlist
 	$( '#savedpl-path' ).addClass( 'hide' );
 	$( '#pl-path' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).click();
-	$( '#button-pl-back, #pl-savedlist, #pl-index' ).addClass( 'hide' );
+	$( '#button-pl-back, #pl-savedlist, #pl-index, #pl-index1' ).addClass( 'hide' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
 		V.playlisthtml = '';
@@ -1262,7 +1262,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 	$( '#savedpl-path' )
 		.html( data.counthtml )
 		.removeClass( 'hide' );
-	$( '#button-pl-back, #pl-savedlist, #pl-index' ).removeClass( 'hide' );
+	$( '#button-pl-back, #pl-savedlist, #pl-index, #pl-index1' ).removeClass( 'hide' );
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 	var barvisible = $bartop.is( ':visible' );

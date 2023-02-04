@@ -2084,7 +2084,7 @@ li.active .li2 bl {
 		#page-playback { padding: 40px 0 !important; }
 		#page-playback.barsalways { padding: 60px 0 60px !important }
 		#page-playback {
-			transform-origin: 0 0;
+			transform-origin: top;
 			transform: scale( var( --scale ) );
 			width: calc( 100% / var( --scale ) );
 			height: calc( 100% / var( --scale ) );
