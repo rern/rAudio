@@ -217,7 +217,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			}
 			if ( $stationname !== '' ) {
 				$notsaved    = 0;
-				$thumbsrc    = '/data/'.$type.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
+				$thumbsrc    = '/data/'.$type.'/img/'.$urlname.'-thumb.jpg';
 				$icon        = imgIcon( $thumbsrc, 'filesavedpl', 'webradio' );
 			} else {
 				$notsaved    = 1;
