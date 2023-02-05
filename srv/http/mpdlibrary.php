@@ -437,9 +437,8 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$indexes[] = $index;
 				$html     .= '<li class="dir" data-index="'.$index.'">';
 			}
-			$thumbsrc = rawurlencode( "/data/$gmode/$subdir/thumb.jpg" );
 			$html    .= '
-	'.imgIcon( $thumbsrc, 'wrdir' ).'
+	'.imgIcon( '/data/'.$gmode.'/'.$subdir.'/thumb.jpg', 'wrdir' ).'
 	<a class="lipath">'.$path.$subdir.'</a>
 	<span class="single">'.$subdir.'</span>
 </li>';
@@ -452,8 +451,8 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			$data          = file( "$dir/$file", FILE_IGNORE_NEW_LINES );
 			$name          = $data[ 0 ];
 			$each->charset = $data[ 2 ] ?? '';
+			$each->file    = $file;
 			$each->name    = $name;
-			$each->url     = str_replace( '|', '/', $file );
 			$each->sort    = stripSort( $name );
 			$array[]       = $each;
 		}
@@ -464,9 +463,8 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			$index       = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 			$indexes[]   = $index;
 			$datacharset = $each->charset ? ' data-charset="'.$each->charset.'"' : '';
-			$url         = $each->url;
-			$urlname     = str_replace( '/', '|', $url );
-			$thumbsrc    = '/data/'.$gmode.'/img/'.rawurlencode( $urlname ).'-thumb.jpg';
+			$url         = str_replace( '|', '/', $each->file );
+			$thumbsrc    = '/data/'.$gmode.'/img/'.$each->file.'-thumb.jpg';
 			$liname      = $each->name;
 			$name        = $searchmode ? preg_replace( "/($string)/i", '<bl>$1</bl>', $liname ) : $liname;
 			$html       .= '

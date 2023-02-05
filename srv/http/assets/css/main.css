@@ -306,10 +306,6 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm ) !important;
 }
 /* ---------------------- middle window ----------------------*/
-.page {
-	flex: 1; /* force children height:100% = body height */
-	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
-}
 #page-playback {
 	padding: 120px 0 60px;
 }
@@ -321,7 +317,6 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 }
 #divtitle {
-	height: 34px;
 	height: 34px;
 	line-height: 34px;
 	font-size: 30px;

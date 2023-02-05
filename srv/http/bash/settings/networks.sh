@@ -116,7 +116,12 @@ Gateway=$( jq -r .Gateway <<< $data )
 	fi
 	
 	echo "$profile" > "/etc/netctl/$ESSID"
-	[[ $( jq -r .add <<< $data ) == true ]] && netctlSwitch "$ESSID" || pushRefresh
+	if [[ $( jq -r .add <<< $data ) == true ]]; then
+		netctlSwitch "$ESSID"
+		avahi-daemon --kill # flush cache and restart
+	else
+		pushRefresh
+	fi
 	;;
 disconnect )
 	wlandev=$( < $dirshm/wlan )
@@ -126,32 +131,6 @@ disconnect )
 	killall wpa_supplicant
 	ifconfig $wlandev up
 	$dirsettings/networks-data.sh pushwl
-	;;
-editlan )
-	ip=${args[1]}
-	gw=${args[2]}
-	lan0="\
-[Match]
-Name=$lan
-[Network]
-DNSSEC=no
-"
-	if [[ ! $ip ]];then
-		lan0+="\
-DHCP=yes
-"
-	else
-		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
-		
-		lan0+="\
-Address=$ip/24
-Gateway=$gw
-"
-	fi
-	file=$( ls -1 /etc/systemd/network/* | head -1 ) # en.network > eth.network > eth0.network
-	echo "$lan0" > $file
-	systemctl restart systemd-networkd
-	pushRefresh
 	;;
 hostapd )
 	echo $dirsettings/features.sh "$1"
@@ -178,6 +157,31 @@ iwlist )
 	echo
 	echo '<bll># iw list</bll>'
 	iw list
+	;;
+lanedit )
+	ip=${args[1]}
+	gw=${args[2]}
+	if [[ $ip ]]; then
+		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
+	fi
+	
+	file=/etc/systemd/network/en.network
+	if [[ -e $file ]]; then
+		lan=en*
+	else
+		lan=eth0
+		file=/etc/systemd/network/eth0.network
+	fi
+	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
+	if [[ $ip ]]; then
+		sed -i '/^DNSSEC/ i\
+Address='$ip'/24\
+Gateway='$gw $file
+	else
+		sed -i '/^DNSSEC/ i\DHCP=yes' $file
+	fi
+	systemctl restart systemd-networkd
+	avahi-daemon --kill # flush cache and restart
 	;;
 profileconnect )
 	wlandev=$( < $dirshm/wlan )

@@ -222,7 +222,6 @@ html {
 	padding : env( safe-area-inset ); /* disable iPhone X rounded corner padding */
 }
 body {
-	display     : flex; /* allow children height:100% = body height/min-height */
 	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
