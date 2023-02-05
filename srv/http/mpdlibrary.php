@@ -437,9 +437,8 @@ function htmlRadio( $subdirs, $files, $dir ) {
 				$indexes[] = $index;
 				$html     .= '<li class="dir" data-index="'.$index.'">';
 			}
-			$thumbsrc = '/data/'.$gmode.'/'.$subdir.'/thumb.jpg';
 			$html    .= '
-	'.imgIcon( $thumbsrc, 'wrdir' ).'
+	'.imgIcon( '/data/'.$gmode.'/'.$subdir.'/thumb.jpg', 'wrdir' ).'
 	<a class="lipath">'.$path.$subdir.'</a>
 	<span class="single">'.$subdir.'</span>
 </li>';
