@@ -82,7 +82,7 @@ function currentPlaylist() {
 			$radiofile     = '/srv/http/data/webradio/'.$urlname;
 			if ( ! file_exists( $radiofile ) ) {
 				$radiofile = '';
-				$radiofile = exec( 'find /srv/http/data/webradio -name "'.$urlname.'"' );
+				$radiofile = exec( 'find /srv/http/data/webradio/ -name "'.$urlname.'"' );
 			}
 			$each->Name    = $radiofile ? exec( 'head -1 "'.$radiofile.'"' ) : '';
 			$each->urlname = $urlname;
@@ -209,7 +209,7 @@ function htmlTrack( $lists, $plname = '' ) {
 				$urlname     = str_replace( '/', '|', $file );
 				$type        = str_contains( $file, ':8554' ) ? 'dabradio' : 'webradio';
 				$fileradio   = '/srv/http/data/'.$type.'/'.$urlname;
-				if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.' -name "'.$urlname.'" | head -1' );
+				if ( ! file_exists( $fileradio ) ) $fileradio = exec( 'find /srv/http/data/'.$type.'/ -name "'.$urlname.'" | head -1' );
 				$stationname = $fileradio ? exec( 'head -1 "'.$fileradio.'"' ) : '';
 			} else {
 				$urlname     = str_replace( '#', '%23', $list->urlname );
