@@ -97,9 +97,6 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default. (For metadata update)
- · Snapcast control client and player:
-	· <a href="https://github.com/badaix/snapweb">Snapweb</a>
-	· <a href="https://github.com/badaix/snapdroid">Snapdroid</a>
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
