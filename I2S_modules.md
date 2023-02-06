@@ -1,6 +1,6 @@
 ### Supported I2S Modules
 ```sh
-sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/system-i2s.json
+sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/assets/data/system-i2s.json
 ```
 
 - Adafruit MAX98357
@@ -119,4 +119,3 @@ sed -e '/[{}]/ d' -e 's/\s*"\(.*\)":.*/- \1/' /srv/http/settings/system-i2s.json
 - Waveshare WM8960
 - Wolfson Audio
 - X10 DAC
-
