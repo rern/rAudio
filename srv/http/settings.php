@@ -9,7 +9,7 @@ function i( $icon, $id = '' ) {
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
 function nameIcon( $name, $icon ) {
-	return '<wh>'.$name.' '.i( $icon ).'</wh>';
+	return '<lbl>'.$name.' '.i( $icon ).'</lbl>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
 	$menu = '<a class="menu-sub"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';

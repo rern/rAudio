@@ -96,7 +96,8 @@ EOF
 		, 'disabled' => nameIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
- · SSH passwords must be default. (For metadata update)
+
+Note: SSH passwords must be default. (For metadata update)
 EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
@@ -171,7 +172,8 @@ EOF
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
 	· Also by timer in {$Fi( 'gear btn' )}
 	· Backlight still on - no energy saved
- · HDMI display must be connected before boot.
+
+Note: HDMI display must be connected before boot.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/chromium' )
 	]
@@ -187,7 +189,7 @@ EOF
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · Windows: $fileexplorer
  
-(For even better performance: Server rAudio {$Fi( 'rserver' )} )
+Note: {$FnameIcon( 'Server rAudio', 'rserver' )} should yield better performance.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -210,7 +212,7 @@ EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
 
-(SSH password must be default.)
+Note: SSH password must be default.
 EOF
 	]
 	, [
@@ -263,7 +265,7 @@ EOF
 	· Windows Features &#9656; Services for NFS &#9656; Client for NFS &#9656; Enable
 	· $fileexplorer
 	
-(SSH password must be default.)
+Note: SSH password must be default.
 EOF
 	]
 	, [

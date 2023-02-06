@@ -145,6 +145,13 @@ btn {
 	border: 1px solid var( --cg );
 	border-radius: 3px;
 }
+lbl {
+	display: inline-block;
+	height: 25px;
+	line-height: 21px;
+	padding: 2px 5px;
+	border: 1px solid var( --cg );
+}
 @supports (-webkit-touch-callout: none) { /* ios only */
 	.menu-sub {
 		line-height: 25px;
