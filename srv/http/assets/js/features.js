@@ -280,7 +280,10 @@ $( '#setting-multiraudio' ).click( function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, ok           : switchEnable
+		, ok           : () => {
+			I.inputs = $( '#infoContent input' );
+			switchEnable();
+		}
 	} );
 } );
 $( '#login' ).click( function() {
