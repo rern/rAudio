@@ -513,6 +513,7 @@ function info( json ) {
 	} else {
 		I.blank = false;
 	}
+	I.checkip ? infoCheckIP() : I.notip = false;
 	if ( I.checklength ) {
 		infoCheckLength();
 	} else {
@@ -553,8 +554,15 @@ function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
 	I.blank = false;
-	I.blank = I.checkblank.some( i => {
-		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
+	I.blank = I.checkblank.some( i => $inputs_txt.eq( i ).val().trim() === '' );
+}
+function infoCheckIP() {
+	if ( ! I.checkip ) return
+
+	I.notip = false;
+	I.checkip.some( i => {
+		I.notip = $inputs_txt.eq( i ).val().split( '.' ).some( v => ! v || v < 0 || v > 255 );
+		if ( I.notip ) return
 	} );
 }
 function infoCheckLength() {
@@ -575,17 +583,18 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkblank || I.checklength || I.checkchanged ) {
+	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
 		$inputs_txt.on( 'keyup paste cut', function() {
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
+			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			if ( I.checkchanged ) {
 				var prevval = I.values.join( '' );
 				var values  = infoVal();
 				var val     = I.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				I.nochange  = prevval === val;
 			}
-			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ), 50 ); // ios: force after infoCheckLength
+			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ), 50 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( I.checkchanged ) {

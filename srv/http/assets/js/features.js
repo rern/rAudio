@@ -238,10 +238,10 @@ $( '#setting-multiraudio' ).click( function() {
 	} else {
 		var ipsub = location.host;
 	}
-	var trhtml  = '<tr><td><input type="text" spellcheck="false"></td><td><input type="text" value="'+ ipsub +'" spellcheck="false"></td>'
-			+'<td>&nbsp;'+ ico( 'minus-circle fa-lg pointer ipremove' ) +'</td></tr>';
-	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle fa-lg wh pointer ipadd' ) +'</td></tr>'
-				 + trhtml.replace( 'NUM', 1 );
+	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
+					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ ipsub +'" spellcheck="false"></td>'
+					 +'<td>&nbsp;'+ ico( 'minus-circle fa-lg pointer ipremove' ) +'</td></tr>';
+	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle fa-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	var dataL = S.multiraudioconf.length;
 	if ( dataL ) {
 		var iL = dataL / 2 - 1;
@@ -255,33 +255,27 @@ $( '#setting-multiraudio' ).click( function() {
 		, content      : '<table>'+ content +'</table>'
 		, values       : S.multiraudioconf
 		, checkchanged : S.multiraudio
+		, checkblank   : 1
+		, checkip      : [ ...Array( S.multiraudioconf.length ).keys() ].filter( n => n % 2 )
 		, beforeshow   : () => {
-			if ( $( '#infoContent input' ).length === 2 ) {
-				setTimeout( () => {
-					$( '.ipremove' ).addClass( 'hide' );
-					$( '#infoOk' ).addClass( 'disabled' );
-				}, 0 );
-			}
 			$( '#infoContent td' ).css( 'padding', 0 );
-			$( '#infoContent tr' ).find( 'td:eq( 0 )' ).css( 'width', '180px' );
-			$( '#infoContent tr' ).find( 'td:eq( 1 )' ).css( 'width', '130px' );
-			$( '.ipadd' ).click( function() {
-				$( '#infoContent tr:last' ).after( trhtml.replace( 'NUM', $( '#infoContent input' ).length + 1 ) );
-				$( '.ipremove' ).removeClass( 'hide' );
-				$( '#infoOk' ).removeClass( 'disabled' );
-			} );
-			$( '#infoContent' ).on( 'click', '.ipremove', function() {
-				$( this ).parents( 'tr' ).remove();
-				I.inputs   = $( '#infoContent input' );
-				var values = infoVal();
-				if ( typeof values === 'string' ) values = [ values ];
-				$( '#infoOk' ).toggleClass( 'disabled', values.join( ',' ) === S.multiraudioconf.join( ',' ) );
-				$( '.ipremove' ).toggleClass( 'hide', I.inputs.length === 2 );
+			$( '#infoOk' ).addClass( 'disabled' );
+			$( '#infoContent' ).on( 'click', 'i', function() {
+				var $this = $( this );
+				if ( $this.hasClass( 'ipadd' ) ) {
+					$( '#infoContent tr:last' ).after( trhtml );
+				} else {
+					$this.parents( 'tr' ).remove();
+				}
+				$inputs_txt  = $( '#infoContent input' );
+				I.inputs     = $inputs_txt;
+				I.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
+				I.checkip    = I.checkblank.filter( n => n % 2 );
+				infoCheckSet();
 			} );
 		}
 		, cancel       : switchCancel
 		, ok           : () => {
-			I.inputs = $( '#infoContent input' );
 			switchEnable();
 		}
 	} );
