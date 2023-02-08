@@ -536,9 +536,9 @@ mirrorlist )
 	done
 	[[ ! $mirror ]] && mirror=0
 	echo '{
-  "country" : [ '$clist' ]
+  "code"    : [ '$codelist' ]
+, "country" : [ '$clist' ]
 , "mirror" : "'$mirror'"
-, "code"    : [ '$codelist' ]
 }'
 	;;
 mount )
