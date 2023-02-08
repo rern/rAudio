@@ -519,7 +519,7 @@ mirrorlist )
 			rm mirrorlist
 		fi
 	fi
-	readarray -t lines <<< $( awk NF $file | sed -n '/### A/,$ {s/ (not Austria\!)//; s/.mirror.*//; s|.*//||; p}' )
+	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' $file )
 	clist='"Auto (by Geo-IP)"'
 	codelist=0
 	for line in "${lines[@]}"; do
