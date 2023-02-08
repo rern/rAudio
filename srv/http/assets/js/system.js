@@ -811,7 +811,7 @@ function infoMount( val ) {
 		values[ 0 ]    = 'raudio';
 	} else {
 		var shareddata = false;
-		if ( val ) values = val;
+		val ? values = val : values[ 1 ] = '';
 	}
 	var htmlmount      = `\
 <table id="tblinfomount">
@@ -824,7 +824,7 @@ function infoMount( val ) {
 	<td style="width: 20px"></td>
 </tr>
 <tr class="common"><td>Name</td>
-<td><input id="mountpoint" type="text"></td>
+<td><input id="mountpoint" type="text" placeholder="for Library · NAS · 'Name'"></td>
 </tr>
 <tr class="common"><td>Server IP</td>
 	<td><input type="text"></td>
@@ -833,13 +833,13 @@ function infoMount( val ) {
 	<td><input id="share" type="text"></td>
 </tr>
 <tr class="cifs"><td>User</td>
-	<td><input type="text"></td>
+	<td><input type="text" placeholder="if required by server"></td>
 </tr>
 <tr class="cifs"><td>Password</td>
-	<td><input type="password" checked></td><td>${ ico( 'eye' ) }</td>
+	<td><input type="password" placeholder="if required by server"></td><td>${ ico( 'eye' ) }</td>
 </tr>
 <tr class="cifs nfs"><td>Options</td>
-	<td><input type="text"></td>
+	<td><input type="text" placeholder="if required by server"></td>
 </tr>`;
 	htmlmount += '</table>';
 	var icon   = 'networks';
@@ -873,10 +873,7 @@ function infoMount( val ) {
 				} else {
 					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
 				}
-				if ( ! values ) {
-					$mountpoint.attr( 'placeholder', 'for Library > NAS > "Name" ' );
-					$share.attr( 'placeholder', placeholder );
-				}
+				if ( ! values[ 3 ] ) $share.attr( 'placeholder', placeholder );
 			}
 			hideOptions( values ? values[ 0 ] : 'cifs' );
 			$( '#infoContent input:radio' ).change( function() {
