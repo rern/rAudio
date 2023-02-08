@@ -525,7 +525,11 @@ function infoButtonCommand( fn ) {
 		infoButtonReset();
 	} else {
 		$.when( fn() ).then( () => {
-			if ( ! I.active ) infoButtonReset(); // not consecutive info calls
+			if ( I.active ) {
+				I.active = false;
+			} else {
+				infoButtonReset(); // not consecutive info calls
+			}
 		} );
 	}
 }
