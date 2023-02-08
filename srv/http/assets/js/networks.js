@@ -75,11 +75,12 @@ $( '.wlscan' ).click( function() {
 } );
 $( '.lanadd' ).click( function() {
 	info( {
-		  icon          : 'lan'
-		, title         : 'New LAN Connection'
-		, textlabel     : [ 'IP', 'Gateway' ]
-		, focus         : 0
-		, ok           : () => editLANSet( infoVal() )
+		  icon      : 'lan'
+		, title     : 'New LAN Connection'
+		, textlabel : [ 'IP', 'Gateway' ]
+		, checkip   : [ 0, 1 ]
+		, focus     : 0
+		, ok        : () => editLANSet( infoVal() )
 	} );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
@@ -209,6 +210,7 @@ $( '.hostapdset' ).click( function() {
 		, checkchanged : S.hostapd
 		, checkblank   : 1
 		, checklength  : { 1: [ 8, 'min' ] }
+		, checkip      : [ 0 ]
 		, ok           : () => {
 			var values  = infoVal();
 			var ip      = values[ 0 ];
@@ -279,18 +281,12 @@ function editLAN() {
 	info( {
 		  icon         : icon
 		, title        : title
-		, textlabel    : ! static ? [ '<gr>DHCP</gr> IP', 'Gateway' ] : [ '<gr>Static</gr> IP' ]
+		, textlabel    : ! static ? [ 'IP', 'Gateway' ] : [ 'IP' ]
 		, focus        : 0
 		, values       : [ ip, gw ]
-		, checkchanged : 1
+		, checkchanged : ! static ? '' : 1
 		, checkblank   : 1
-		, beforeshow   : () => {
-			if ( ! static ) {
-				$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
-					$( '#infoContent gr' ).text( $( this ).val() === ip ? 'DHCP' : 'Static' );
-				} );
-			}
-		}
+		, checkip      : [ 0, 1 ]
 		, buttonlabel  : ! static ? '' : ico( 'undo' ) +'DHCP'
 		, button       : ! static ? '' : () => {
 			bash( [ 'lanedit' ] );
@@ -357,6 +353,7 @@ function infoWiFi( values ) {
 		, values        : values
 		, checkchanged  : ! add
 		, checkblank    : ! add
+		, checkip       : [ 1, 2 ]
 		, beforeshow    : () => {
 			var $static = $( '#infoContent' ).find( 'tr:eq( 1 ), tr:eq( 2 )' );
 			$static.toggleClass( 'hide', ! values[ 4 ] );

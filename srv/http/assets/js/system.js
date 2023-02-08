@@ -847,7 +847,8 @@ function infoMount( values ) {
 		, title      : title
 		, content    : htmlmount
 		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
-		, checkblank : [ 0, 1, 2 ]
+		, checkblank : [ 0, 2 ]
+		, checkip    : [ 1 ]
 		, beforeshow : () => {
 			if ( ! shareddata ) {
 				$( '#infoContent label' ).eq( 2 ).remove();
@@ -921,7 +922,11 @@ function infoNFSconnect( ip ) {
 		, message   : 'Server rAudio '+ ico( 'rserver wh' )
 		, textlabel : 'IP'
 		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
-		, cancel    : () => $( '#shareddata' ).prop( 'checked', false )
+		, checkip   : [ 0 ]
+		, cancel    : () => {
+			I.active = false;
+			$( '#shareddata' ).prop( 'checked', false );
+		}
 		, ok        : () => {
 			var ip = infoVal();
 			bash( [ 'sharelist', ip ], list => {

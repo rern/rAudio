@@ -514,13 +514,9 @@ function info( json ) {
 		I.blank = false;
 	}
 	I.checkip ? infoCheckIP() : I.notip = false;
-	if ( I.checklength ) {
-		infoCheckLength();
-	} else {
-		I.short = false;
-	}
+	I.checklength  ? infoCheckLength() : I.short = false;
 	I.nochange = I.values && I.checkchanged ? true : false;
-	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ); // initial check
+	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.checkip || I.short || I.nochange ); // initial check
 	infoCheckSet();
 }
 
@@ -553,16 +549,14 @@ function infoButtonWidth() {
 function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
-	I.blank = false;
 	I.blank = I.checkblank.some( i => $inputs_txt.eq( i ).val().trim() === '' );
 }
 function infoCheckIP() {
 	if ( ! I.checkip ) return
-
-	I.notip = false;
-	I.checkip.some( i => {
-		I.notip = $inputs_txt.eq( i ).val().split( '.' ).some( v => ! v || v < 0 || v > 255 );
-		if ( I.notip ) return
+	
+	var regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/; // https://stackoverflow.com/a/36760050
+	I.notip = I.checkip.some( i => {
+		return ! regex.test( $inputs_txt.eq( i ).val() );
 	} );
 }
 function infoCheckLength() {
@@ -594,7 +588,9 @@ function infoCheckSet() {
 				var val     = I.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				I.nochange  = prevval === val;
 			}
-			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ), 50 ); // ios: force after infoCheckLength
+			setTimeout( () => {
+				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
+			}, 75 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( I.checkchanged ) {
