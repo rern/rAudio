@@ -318,8 +318,8 @@ Note:
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Fmenu( 'features', 'Features' )} {$FnameIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FnameIcon( 'Shared Data', 'networks' )} &#9656; ● rAudio
+	Server: {$Fmenu( 'features', 'Features' )}{$FnameIcon( 'Server rAudio', 'rserver' )}
+	Clients: {$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -333,7 +333,7 @@ Note:
 				<btn>Security</btn>
 					Everyone - Full Control
 	Clients:
-		· {$FnameIcon( 'Shared Data', 'networks' )} &#9656; Add the created share
+		· {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
 		· Data on 1st connected client will be used as initial shared.
 EOF
 	]

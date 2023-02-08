@@ -60,7 +60,7 @@ EOF
 	<btn>USERS AND ACCESS</btn> &#9656; <btn>ADD NEW USER</btn>
 		· Name: <code class="yl">user</code>
 		· Spotify Account: <code class="yl">email</code>
-· {$FnameIcon( 'Spotify', 'spotify' )} &#9656; Enable
+· {$FnameIcon( 'Spotify', 'spotify' )} Enable
 	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
@@ -247,7 +247,7 @@ EOF
 		, 'status'      => true
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and Shared Data {$Fi( 'networks' )}
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FnameIcon( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
 	· In {$Fmenu( 'library', 'Library' )}
@@ -258,11 +258,11 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Fmenu( 'system', 'System' )} {$FnameIcon( 'Shared Data', 'networks' )} &#9656; ● rAudio &#9656; Check
+	· {$Fmenu( 'system', 'System' )}{$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features &#9656; Services for NFS &#9656; Client for NFS &#9656; Enable
+	· Windows Features &#9656; Services for NFS &#9656; Client for NFS · Enable
 	· $fileexplorer
 	
 Note: SSH password must be default.

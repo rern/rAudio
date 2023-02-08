@@ -121,6 +121,7 @@ div.helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
+lbl,
 .menu-sub {
 	display: inline-block;
 	width: 95px;
@@ -129,14 +130,22 @@ div.helpblock {
 	padding-left: 3px;
 	background: var( --cg );
 }
+.menu-sub i,
+.sub {
+	color: var( --cw );
+}
 .sub {
 	margin-left: 0 !important;
 	width: 25px !important;
 	line-height: 25px !important;
 	text-align: center;
-	color: var( --cw );
 	background: var( --cg );
 	border-left: solid 1px var( --cga );
+}
+lbl {
+	width: fit-content;
+	padding: 0 5px;
+	background: var( --cga );
 }
 btn {
 	display: inline-block;
@@ -144,13 +153,6 @@ btn {
 	padding: 0 3px;
 	border: 1px solid var( --cg );
 	border-radius: 3px;
-}
-lbl {
-	display: inline-block;
-	height: 25px;
-	line-height: 21px;
-	padding: 2px 5px;
-	border: 1px solid var( --cg );
 }
 @supports (-webkit-touch-callout: none) { /* ios only */
 	.menu-sub {
