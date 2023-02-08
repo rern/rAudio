@@ -419,7 +419,7 @@ snapclient )
 		systemctl stop snapclient
 		[[ $snapserver ]] && rm $dirsystem/snapclientserver
 	fi
-	pushData sanpclient ${args[1]}
+	pushRefresh
 	;;
 snapserver )
 	[[ ${args[1]} == true ]] && enable=1
@@ -438,7 +438,7 @@ snapserver )
 	else
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
-	pushData snapserver ${args[1]}
+	pushRefresh
 	;;
 spotifytoken )
 	code=${args[1]}
