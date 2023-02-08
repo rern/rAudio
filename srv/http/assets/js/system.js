@@ -815,7 +815,7 @@ function infoMount( val ) {
 	}
 	var htmlmount      = `\
 <table id="tblinfomount">
-<tr class="rserver"><td style="width: 90px">Type</td>
+<tr class="common"><td style="width: 90px">Type</td>
 	<td style="width: 230px">
 		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
@@ -823,22 +823,22 @@ function infoMount( val ) {
 	</td>
 	<td style="width: 20px"></td>
 </tr>
-<tr><td>Name</td>
+<tr class="common"><td>Name</td>
 <td><input id="mountpoint" type="text"></td>
 </tr>
-<tr class="rserver"><td>Server IP</td>
+<tr class="common"><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
-<tr><td id="sharelabel">Share name</td>
+<tr class="cifs nfs"><td id="sharelabel">Share name</td>
 	<td><input id="share" type="text"></td>
 </tr>
-<tr class="guest"><td>User</td>
+<tr class="cifs"><td>User</td>
 	<td><input type="text"></td>
 </tr>
-<tr class="guest"><td>Password</td>
+<tr class="cifs"><td>Password</td>
 	<td><input type="password" checked></td><td>${ ico( 'eye' ) }</td>
 </tr>
-<tr><td>Options</td>
+<tr class="cifs nfs"><td>Options</td>
 	<td><input type="text"></td>
 </tr>`;
 	htmlmount += '</table>';
@@ -861,18 +861,17 @@ function infoMount( val ) {
 			var $share = $( '#share' );
 			function hideOptions( type ) {
 				if ( ! values[ 3 ] ) $share.val( '' );
-				$( '#infoContent tr' ).removeClass( 'hide' );
+				$( '#infoContent tr' ).not( '.common' ).addClass( 'hide' );
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
-					$( '.guest' ).addClass( 'hide' );
+					$( '#infoContent' ).find( '.common, .nfs' ).removeClass( 'hide' );
 					var placeholder = '/path/to/share on server';
 				} else if ( type === 'cifs' ) {
 					$( '#sharelabel' ).text( 'Share name' );
-					$( '.guest' ).removeClass( 'hide' );
+					$( '#infoContent' ).find( '.common, .cifs' ).removeClass( 'hide' );
 					var placeholder = 'sharename on server';
 				} else {
 					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
-					$( '#infoContent tr' ).not( '.rserver' ).addClass( 'hide' );
 				}
 				if ( ! values ) {
 					$mountpoint.attr( 'placeholder', 'for Library > NAS > "Name" ' );
