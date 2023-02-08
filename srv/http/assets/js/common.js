@@ -516,7 +516,7 @@ function info( json ) {
 	I.checkip ? infoCheckIP() : I.notip = false;
 	I.checklength  ? infoCheckLength() : I.short = false;
 	I.nochange = I.values && I.checkchanged ? true : false;
-	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.checkip || I.short || I.nochange ); // initial check
+	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 	infoCheckSet();
 }
 

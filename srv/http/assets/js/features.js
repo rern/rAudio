@@ -259,7 +259,6 @@ $( '#setting-multiraudio' ).click( function() {
 		, checkip      : [ ...Array( S.multiraudioconf.length ).keys() ].filter( n => n % 2 )
 		, beforeshow   : () => {
 			$( '#infoContent td' ).css( 'padding', 0 );
-			$( '#infoOk' ).addClass( 'disabled' );
 			$( '#infoContent' ).on( 'click', 'i', function() {
 				var $this = $( this );
 				if ( $this.hasClass( 'ipadd' ) ) {
