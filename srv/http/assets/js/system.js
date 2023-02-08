@@ -802,16 +802,16 @@ function i2sSelectHide() {
 }
 function infoMount( val ) {
 	var ip     = $( '#list' ).data( 'ip' );
-	var ipsub  = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
-	var values = [ 'cifs', 'data', ipsub ];
-	if ( val === 'shareddata' ) {
+	var ipsub  = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
+	if ( val === 'raudio' ) {
 		var shareddata = true;
-	} else if ( val === 'raudio' ) {
+		var values     = [ 'raudio', 'data', ipsub ];
+	} else if ( val === 'shareddata' ) {
 		var shareddata = true;
-		values[ 0 ]    = 'raudio';
+		var values     = [ 'cifs', 'data', ipsub ];
 	} else {
 		var shareddata = false;
-		val ? values = val : values[ 1 ] = '';
+		var values     = val || [ 'cifs', '', ipsub ];
 	}
 	var htmlmount      = `\
 <table id="tblinfomount">
@@ -875,7 +875,7 @@ function infoMount( val ) {
 				}
 				if ( ! values[ 3 ] ) $share.attr( 'placeholder', placeholder );
 			}
-			hideOptions( values ? values[ 0 ] : 'cifs' );
+			hideOptions( values[ 0 ] );
 			$( '#infoContent input:radio' ).change( function() {
 				hideOptions( $( this ).val() );
 			} );
