@@ -177,7 +177,7 @@ $body = [
 
 	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
 	 · HAT with EEPROM could be automatically detected.
-	 · See {$Fmenu( 'player', 'Player' )} Output - Device if it's already set.
+	 · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
 	</span>
 </div>
 EOF
