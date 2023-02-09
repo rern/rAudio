@@ -593,6 +593,7 @@ $( '#setting-timezone' ).click( function() {
 			, values       : [ S.ntp, list.mirror ]
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
+			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 			, ok           : () => {
 				var values = infoVal();
 				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );

@@ -520,7 +520,7 @@ mirrorlist )
 		fi
 	fi
 	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' $file )
-	clist='"Auto (by Geo-IP)"'
+	clist='"Auto"'
 	codelist=0
 	for line in "${lines[@]}"; do
 		if [[ ${line:0:4} == '### ' ]];then
@@ -530,6 +530,8 @@ mirrorlist )
 			city=${line:3}
 		else
 			[[ $city ]] && cc="$country - $city" || cc=$country
+			[[ $cc == $ccprev ]] && cc+=" 2"
+			ccprev=$cc
 			clist+=',"'$cc'"'
 			codelist+=',"'$line'"'
 		fi
