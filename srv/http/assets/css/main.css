@@ -1743,6 +1743,9 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
+#lib-list i {
+	background: none !important;
+}
 .li-icon {
 	float: left;
 	display: block;

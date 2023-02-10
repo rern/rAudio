@@ -102,9 +102,9 @@ function colorSet() {
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
 	setTimeout( () => {
-		var $li = $( '#lib-list li' ).eq( n );
-		var $target = $li.find( 'i' );
-		contextmenuLibrary( $li, $target );
+		V.list.li = $( '#lib-list li' ).eq( n );
+		var $target = V.list.li.find( 'i' );
+		contextmenuLibrary( V.list.li, $target );
 	}, 0 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', D.color === '' )
@@ -128,13 +128,13 @@ function colorSetPicker() {
 				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
 				// background
 				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
-				$( '#playback-controls .active, #library, #button-library, #lib-list li:eq( 0 ), #colorok' ).css( 'background-color', hex );
+				$( '#playback-controls .active, #library, #button-library, #colorok' ).add( V.list.li ).css( 'background-color', hex );
 				$( '.content-top, #lib-index, #playback' ).css( 'background-color', hsg +'20%)' );
 				// text
 				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
 				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
-				$( '#lib-list li' ).not( '.active' ).find( 'i, #lib-list .li2' ).css( 'cssText', 'color: '+ hsg +'60%) !important' );
-				$( '#lib-list li.active' ).find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
+				$( '#lib-list li' ).not( '.active' ).find( 'i, #lib-list .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
+				V.list.li.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'cssText', 'color: '+ hsg +'75%)' );
 				// line
 				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
