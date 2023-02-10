@@ -260,7 +260,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			if ( ! V.library ) {
 				$( '#library' ).click();
 			} else {
-				V.mode !== 'webradio' && $( '#mode-webradio' ).click() || colorSet();
+				V.librarylist ? colorSet() : $( '#mode-webradio' ).click();
 			}
 			break;
 		case 'multiraudio':
