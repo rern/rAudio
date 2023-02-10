@@ -93,16 +93,11 @@ function clearIntervalAll() {
 function colorSet() {
 	V.color = 0;
 	if ( V.wH > 590 ) {
-		var n = 0;
-		$( '.licover' ).css( 'margin-top', '' );
-		$( '#lib-list li.track1' ).css( 'margin-top', '' );
-	} else {
-		var n = 1;
 		$( '.licover' ).css( 'margin-top', '-230px' );
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
 	setTimeout( () => {
-		V.list.li = $( '#lib-list li' ).eq( n );
+		V.list.li = $( '#lib-list li' ).eq( 1 );
 		var $target = V.list.li.find( 'i' );
 		contextmenuLibrary( V.list.li, $target );
 	}, 0 );

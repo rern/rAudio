@@ -1600,7 +1600,7 @@ i.map.disabled, .map.disabled i {
 	margin-top: 230px;
 }
 .licover.active {
-	background: linear-gradient( #000000 195px, var( --cm ) 0 ) !important;
+	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
 .licoverimg {
 	position: relative;
@@ -1709,7 +1709,7 @@ i.map.disabled, .map.disabled i {
 #pl-savedlist span.plname {
 	line-height: 48px;
 }
-#lib-list .active:not(.coverart),
+#lib-list li.active:not(.licover),
 #lib-list .active .coverart1,
 #lib-list .active .coverart2,
 #pl-list .active,
