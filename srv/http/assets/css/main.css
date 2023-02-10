@@ -1957,7 +1957,7 @@ li.active .li2 bl {
 }
 #divcolor {
 	position: relative;
-	top: 50%;
+	top: 50vh;
 	-webkit-transform: translateY( -50% );
 	-ms-transform: translateY( -50% );
 	transform: translateY( -50% );

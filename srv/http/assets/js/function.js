@@ -92,12 +92,17 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	V.color = 0;
-	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	$( '#lib-list .li-icon' ).eq( 0 ).click();
 	$( '.licover' ).toggleClass( 'hide', V.wH < 590 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', D.color === '' )
 		.before( '<canvas id="canvascolor"></canvas>' );
+	$( '#colorpicker' ).removeClass( 'hide' );
+	$( 'body' ).addClass( 'disablescroll' );
+	V.colorpicker ? colorSetPicker() : $.getScript( '/assets/js/plugin/'+ jfiles.html5kellycolorpicker, colorSetPicker );
+}
+function colorSetPicker() {
+	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
 	V.colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
@@ -125,8 +130,6 @@ function colorSet() {
 			}
 		}
 	} );
-	$( '#colorpicker' ).removeClass( 'hide' );
-	$( 'body' ).addClass( 'disablescroll' );
 }
 function contextmenuLibrary( $li, $target ) {
 	menuHide();
@@ -1550,16 +1553,7 @@ function setPlaybackBlank() {
 		.attr( 'src', V.coverdefault )
 		.css( 'opacity', '' );
 	if ( S.ip ) {
-		$.getScript( '/assets/js/plugin/qrcode-20200314.min.js', function() {
-			$( '#qrip' ).html( '<gr>http://</gr>'+ S.ip +'<br><gr>http://</gr>'+ S.hostname );
-			var qr = new QRCode( {
-				  msg : 'http://'+ S.ip
-				, dim : 230
-				, pad : 11
-			} );
-			$( '#qrwebui' ).html( qr );
-			$( '.qr' ).removeClass( 'hide' );
-		} );
+		V.qr ? setPlaybackBlankQR() : $.getScript( '/assets/js/plugin/'+ jfiles.qrcode, setPlaybackBlankQR );
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#sampling' ).empty();
@@ -1574,6 +1568,16 @@ function setPlaybackBlank() {
 		$( '.qr' ).addClass( 'hide' );
 	}
 	vu();
+}
+function setPlaybackBlankQR() {
+	$( '#qrip' ).html( '<gr>http://</gr>'+ S.ip +'<br><gr>http://</gr>'+ S.hostname );
+	V.qr = new QRCode( {
+		  msg : 'http://'+ S.ip
+		, dim : 230
+		, pad : 11
+	} );
+	$( '#qrwebui' ).html( V.qr );
+	$( '.qr' ).removeClass( 'hide' );
 }
 function setPlaylistInfoWidth() {
 	// li-icon + margin + duration + margin
