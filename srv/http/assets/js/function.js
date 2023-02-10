@@ -1550,14 +1550,16 @@ function setPlaybackBlank() {
 		.attr( 'src', V.coverdefault )
 		.css( 'opacity', '' );
 	if ( S.ip ) {
-		$( '#qrip' ).html( '<gr>http://</gr>'+ S.ip +'<br><gr>http://</gr>'+ S.hostname );
-		var qr = new QRCode( {
-			  msg : 'http://'+ S.ip
-			, dim : 230
-			, pad : 11
+		$.getScript( '/assets/js/plugin/qrcode-20200314.min.js', function() {
+			$( '#qrip' ).html( '<gr>http://</gr>'+ S.ip +'<br><gr>http://</gr>'+ S.hostname );
+			var qr = new QRCode( {
+				  msg : 'http://'+ S.ip
+				, dim : 230
+				, pad : 11
+			} );
+			$( '#qrwebui' ).html( qr );
+			$( '.qr' ).removeClass( 'hide' );
 		} );
-		$( '#qrwebui' ).html( qr );
-		$( '.qr' ).removeClass( 'hide' );
 		$( '#coverTR' ).toggleClass( 'empty', $bartop.is( ':hidden' ) );
 		$( '#coverart' ).addClass( 'hide' );
 		$( '#sampling' ).empty();

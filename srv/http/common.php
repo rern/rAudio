@@ -52,7 +52,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp[] = 'roundslider';
 	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'html5kellycolorpicker', 'lazysizes', 'pica', 'pushstream', 'qrcode', 'roundslider', 'Sortable' ];
+	$jsp    = [ 'jquery', 'html5kellycolorpicker', 'lazysizes', 'pica', 'pushstream', 'roundslider', 'Sortable' ];
 	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
