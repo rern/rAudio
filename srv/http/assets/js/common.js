@@ -6,6 +6,9 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = ico( 'warning fa-lg yl' ) +'&ensp;';
+var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
+var orange      = '#de810e';
+var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
@@ -282,7 +285,7 @@ function info( json ) {
 			I.infofile    = this.files[ 0 ];
 			var filename  = I.infofile.name;
 			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
-			I.filechecked = 1;
+			I.filechecked = true;
 			if ( I.filetype ) {
 				if ( I.filetype === 'image/*' ) {
 					I.filechecked = typeimage;
@@ -743,7 +746,7 @@ function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
 	var i      = 0;
-	I.textarea = 0;
+	I.textarea = false;
 	I.inputs.each( ( i, el ) => {
 		$this = $( el );
 		type  = $this.prop( 'type' );
@@ -757,7 +760,7 @@ function infoVal() {
 				val = $this.prop( 'checked' );
 				break;
 			case 'textarea':
-				I.textarea = 1;
+				I.textarea = true;
 				val = $this.val().trim().replace( /\n/g, '\\n' );
 				break;
 			case 'password':
@@ -876,8 +879,8 @@ function loaderHide() {
 
 // ----------------------------------------------------------------------
 function local( delay ) {
-	V.local = 1;
-	setTimeout( () => V.local = 0, delay || 300 );
+	V.local = true;
+	setTimeout( () => V.local = false, delay || 300 );
 }
 
 // ----------------------------------------------------------------------
@@ -904,12 +907,12 @@ $.fn.press = function( arg1, arg2 ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
-			V.press = 1;
+			V.press = true;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( () => V.press = 0, 300 ); // needed for mouse events
+		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
@@ -926,7 +929,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	}
 	function pushstreamPower( message ) {
 		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		V[ type ] = 1;
+		V[ type ] = true;
 		loader();
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
@@ -956,18 +959,18 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// page visibility -----------------------------------------------------------------
-	var active  = 1; // fix: multiple firings
-	var select2 = 0; // fix: closing > blur > disconnect
+	var active  = true; // fix: multiple firings
+	var select2 = false; // fix: closing > blur > disconnect
 	function connect() {
 		if ( active || V.off ) return
 		
-		active = 1;
+		active = true;
 		pushstream.connect();
 	}
 	function disconnect() {
 		if ( ! active ) return
 		
-		active = 0;
+		active = false;
 		pushstream.disconnect();
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
@@ -984,14 +987,14 @@ function selectSet( $select ) {
 		var searchbox = page === 'system' ? 1 : 0;
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = 0;
+		var searchbox = false;
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
-		.on( 'select2:closing', () => select2 = 1 )
-		.on( 'select2:close',   () => select2 = 0 )
+		.on( 'select2:closing', () => select2 = true )
+		.on( 'select2:close',   () => select2 = false )
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );

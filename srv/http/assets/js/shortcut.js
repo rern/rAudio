@@ -82,7 +82,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		, MediaTrackPrevious : 'previous'
 		, MediaTrackNext     : 'next'
 	}
-	if ( V.localhost ) {
+	if ( localhost ) {
 		keyevent.AudioVolumeDown = 'voldn';
 		keyevent.AudioVolumeMute = 'volmute';
 		keyevent.AudioVolumeUp   = 'volup';

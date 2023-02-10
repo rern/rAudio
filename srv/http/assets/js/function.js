@@ -22,7 +22,7 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function blinkDot() {
-	if ( ! V.localhost ) return
+	if ( ! localhost ) return
 	
 	$( '.dot' ).css( 'animation', 'none' );
 	var $d1 = $( '.dot1' );
@@ -91,8 +91,8 @@ function clearIntervalAll() {
 	$( '#vuneedle' ).css( 'transform', '' );
 }
 function colorSet() {
-	V.color = 0;
-	if ( V.wH > 590 ) {
+	V.color = false;
+	if ( V.librarytracklist ) {
 		$( '.licover' ).css( 'margin-top', '-230px' );
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
@@ -152,7 +152,7 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.playlist ) {
 		V.list.name   = $li.find( '.liname' ).text() || '';
 		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( $( '.licover' ).length && ! $li.hasClass( 'licover' ) ) {
+	} else if ( V.librarytracklist && ! $li.hasClass( 'licover' ) ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
@@ -177,7 +177,7 @@ function contextmenuLibrary( $li, $target ) {
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode && V.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! $( '.licover' ).length || ! filemode );
+	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytracklist || ! filemode );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
@@ -415,7 +415,7 @@ function displaySubMenu() {
 		.toggleClass( 'fa-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
 	[ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ].forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
-	if ( V.localhost ) $( '#power' ).addClass( 'sub' );
+	if ( localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .name' ).text() ) {
@@ -573,7 +573,7 @@ function getPlaylist() {
 }
 function hideGuide() {
 	if ( V.guide ) {
-		V.guide         = 0;
+		V.guide        = false;
 		var barvisible = $bartop.is( ':visible' );
 		$( '#coverTR' ).toggleClass( 'empty', ! S.pllength && ! barvisible && S.player === 'mpd' );
 		$( '.map' ).removeClass( 'mapshow' );
@@ -863,6 +863,9 @@ function orderLibrary() {
 		$( '#lib-mode-list' ).append( $libmode );
 	} );
 }
+function pageScroll( pos ) {
+	$( 'html, body' ).scrollTop( pos );
+}
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file ], () => {
@@ -942,7 +945,7 @@ function playlistFilter() {
 			$this.find( '.album' ).html( album );
 		}
 	} );
-	$( 'html, body' ).scrollTop( 0 );
+	pageScroll( 0 );
 	if ( keyword ) {
 		$( '#pl-search-close' ).html( ico( 'close' ) +'<span>'+ count +' <gr>of</gr> </span>' );
 	} else {
@@ -1031,7 +1034,8 @@ function refreshData( resetdata ) {
 }
 function renderLibrary() { // home
 	V.mode        = '';
-	V.librarylist = 0;
+	V.librarylist = false;
+	V.librarytracklist = false;
 	V.query       = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
@@ -1057,7 +1061,7 @@ function renderLibrary() { // home
 		.css( 'padding-top', $bartop.is( ':visible' ) ? '' : 50 )
 		.removeClass( 'hide' );
 	if ( O ) orderLibrary();
-	$( 'html, body' ).scrollTop( V.modescrolltop );
+	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
 	renderLibraryCounts();
@@ -1074,7 +1078,7 @@ function renderLibraryList( data ) {
 		return
 	}
 	
-	V.librarylist = 1;
+	V.librarylist = true;
 	$( '#lib-title, #lib-mode-list, .menu' ).addClass( 'hide' );
 	$( '#button-lib-back' )
 		.toggleClass( 'back-left', D.backonleft )
@@ -1126,20 +1130,22 @@ function renderLibraryList( data ) {
 	var html = data.html.replaceAll( '^^^', hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
-			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( icoversave );
+			V.librarytracklist = true;
+			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
+			V.librarytracklist = false;
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
 		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
-			V.albumlist = 1;
+			V.albumlist = true;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span class="btntitle" id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
 			$( '#lib-list' ).removeClass( 'hide' );
 		} else {
-			V.albumlist = 0;
+			V.albumlist = false;
 			$( '#lib-list p' )
 				.toggleClass( 'fixedcover', D.fixedcover )
 				.toggleClass( 'bars-on', $bartop.is( ':visible' ) );
@@ -1152,9 +1158,9 @@ function renderLibraryList( data ) {
 		if ( $bartop.is( ':hidden' ) ) pH += 40;
 		$( '#lib-list p' )
 			.removeClass( 'bars-on' )
-			.toggleClass( 'fixedcover', D.fixedcover && $( '.licover' ).length === 1 )
+			.toggleClass( 'fixedcover', D.fixedcover && V.librarytracklist )
 			.css( 'height', pH );
-		$( 'html, body' ).scrollTop( V.scrolltop[ data.path ] || 0 );
+		pageScroll( V.scrolltop[ data.path ] || 0 );
 	} );
 }
 function renderPlayback() {
@@ -1200,7 +1206,7 @@ function renderPlayback() {
 	
 	$( '#elapsed, #total' ).removeClass( 'bl gr wh' );
 	if ( S.elapsed === false || S.Time === false || ! ( 'elapsed' in S ) || S.elapsed > time ) {
-		$( '#elapsed' ).html( S.state === 'play' ? blinkdot : '' );
+		$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
 		blinkDot();
 		return
 	}
@@ -1221,8 +1227,8 @@ function renderPlayback() {
 	}
 }
 function renderPlaylist( data ) { // current playlist
-	V.savedlist      = 0;
-	V.savedplaylist  = 0;
+	V.savedlist      = false;
+	V.savedplaylist  = false;
 	S.elapsed        = data.elapsed;
 	$( '#savedpl-path' ).addClass( 'hide' );
 	$( '#pl-path' ).removeClass( 'hide' );
@@ -1237,7 +1243,7 @@ function renderPlaylist( data ) { // current playlist
 		$( '#pl-search-close' ).click();
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
-		$( 'html, body' ).scrollTop( 0 );
+		pageScroll( 0 );
 		switchPage( 'playlist' );
 		return
 	}
@@ -1285,7 +1291,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 			$( '#pl-savedlist' ).css( 'width', '' );
 			$( '#pl-index' ).html( data.index[ 0 ] );
 			$( '#pl-index1' ).html( data.index[ 1 ] );
-			$( 'html, body' ).scrollTop( 0 );
+			pageScroll( 0 );
 		} );
 	} else {
 		$( '.list p' ).toggleClass( 'bars-on', barvisible );
@@ -1304,7 +1310,7 @@ function renderSavedPlaylist( name ) { // tracks in a playlist
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );
-			$( 'html, body' ).scrollTop( 0 );
+			pageScroll( 0 );
 		} );
 	}, 'json' );
 }
@@ -1337,7 +1343,7 @@ function setBlinkDot() {
 	$( '#vuneedle' ).css( 'transform', '' );
 	$( '#elapsed, #total, #progress' ).empty();
 	if ( S.state === 'play' ) {
-		$( '#elapsed' ).html( S.state === 'play' ? blinkdot : '' );
+		$( '#elapsed' ).html( S.state === 'play' ? V.blinkdot : '' );
 		blinkDot();
 		if ( D.radioelapsed ) {
 			$( '#progress' ).html( ico( S.state ) +'<span></span>' );
@@ -1441,7 +1447,7 @@ function setButtonUpdating() {
 		} else {
 			$( '#library, #button-library' ).addClass( 'blink' );
 		}
-		if ( V.localhost ) blinkUpdate();
+		if ( localhost ) blinkUpdate();
 		$( '#update' ).addClass( 'on' );
 	} else {
 		$( '#library, #button-library' ).removeClass( 'blink' );
@@ -1492,7 +1498,7 @@ function setInfo() {
 			$( '#album' ).text( url );
 		} else {
 			$( '#artist' ).text( S.Artist || ( ! S.Artist && ! S.Title ? S.station : '' ) );
-			$( '#title' ).html( S.Title || blinkdot );
+			$( '#title' ).html( S.Title || V.blinkdot );
 			blinkDot();
 			$( '#album' ).text( S.Album || url );
 		}
@@ -1538,7 +1544,7 @@ function setInfoScroll() {
 		  width     : tWmax
 		, animation : ( V.wW + tWmax ) / V.scrollspeed +'s infinite linear scrollleft'
 	} );
-	if ( V.localhost ) {
+	if ( localhost ) {
 		$( '.scrollleft' )
 			.css( 'animation-iteration-count', 1 )
 			.on( 'animationend webkitAnimationEnd oAnimationEnd MSAnimationEnd', function() {
@@ -1618,7 +1624,7 @@ function setPlaylistScroll() {
 		} else {
 			var top = $liactive.offset().top - litop - ( 49 * 3 );
 		}
-		$( 'html, body' ).scrollTop( top );
+		pageScroll( top );
 	}
 	$( '#page-playlist' ).css( 'visibility', '' );
 	$( '#pl-list .elapsed' ).empty();
@@ -1694,7 +1700,7 @@ function setProgressElapsed() {
 		var time = S.Time;
 		$timeRS.option( 'max', time );
 		setProgress();
-		if ( ! V.localhost ) {
+		if ( ! localhost ) {
 			setTimeout( setProgressAnimate, 0 ); // delay to after setvalue on load
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
@@ -1702,7 +1708,7 @@ function setProgressElapsed() {
 		V.intElapsed = setInterval( () => {
 			S.elapsed++;
 			if ( S.elapsed < time ) {
-				if ( V.localhost ) {
+				if ( localhost ) {
 					$timeRS.setValue( S.elapsed );
 					$( '#time-bar' ).css( 'width', S.elapsed / time * 100 +'%' );
 				}
@@ -1717,7 +1723,7 @@ function setProgressElapsed() {
 			}
 		}, 1000 );
 	} else if ( D.radioelapsed ) {
-		$( '#elapsed' ).html( blinkdot );
+		$( '#elapsed' ).html( V.blinkdot );
 		$elapsed = $( '#total, #progress span' );
 		$elapsed.text( second2HMS( S.elapsed ) );
 		V.intElapsed = setInterval( () => {
@@ -1732,7 +1738,7 @@ function setTrackCoverart() {
 	if ( D.hidecover || ! $( '#liimg' ).length ) return
 	
 	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
-		$( 'html, body' ).scrollTop( 0 );
+		pageScroll( 0 );
 	} ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', V.coverdefault );
 	} );
@@ -1765,8 +1771,8 @@ function setVolume() {
 	}
 }
 function sortPlaylist( pl, iold, inew ) {
-	V.sortable = 1;
-	setTimeout( () => V.sortable = 0, 500 );
+	V.sortable = true;
+	setTimeout( () => V.sortable = false, 500 );
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1 ] );
 	} else {
@@ -1802,18 +1808,18 @@ function switchPage( page ) {
 		var savedlist = V.savedlist || V.savedplaylist;
 		if ( savedlist ) V.plscrolltop = $( window ).scrollTop();
 	}
-	V.library = V.playback = V.playlist = 0;
-	V[ page ] = 1;
+	V.library = V.playback = V.playlist = false;
+	V[ page ] = true;
 	V.page    = page;
 	displayBottom();
 	// restore page scroll
 	if ( V.playback ) {
-		$( 'html, body' ).scrollTop( 0 );
+		pageScroll( 0 );
 		vu();
 	} else if ( V.library ) {
-		V.librarylist ? $( 'html, body' ).scrollTop( V.liscrolltop ) : renderLibrary();
+		V.librarylist ? pageScroll( V.liscrolltop ) : renderLibrary();
 	} else {
-		if ( savedlist ) $( 'html, body' ).scrollTop( V.plscrolltop );
+		if ( savedlist ) pageScroll( V.plscrolltop );
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );

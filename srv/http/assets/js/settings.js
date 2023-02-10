@@ -280,13 +280,10 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-var dirsystem    = '/srv/http/data/system';
-var localhost    = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
-var orange       = '#de810e';
-var page         = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var red          = '#bb2828';
+var dirsystem  = '/srv/http/data/system';
+var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var timer;
-var pagenext     = {
+var pagenext   = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
 	, networks : [ 'player', 'system' ]
