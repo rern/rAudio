@@ -297,7 +297,7 @@ $( '#displayplayback' ).click( function() {
 		, time             : 'Time'
 			, radioelapsed : 'Web Radio time'
 		, cover            : 'Cover art'
-			, covervu      : '<img class="imgicon" src="/assets/img/vu.svg"> As default'
+			, covervu      : '<img class="imgicon" src="'+ V.covervu +'"> As default'
 		, volume           : 'Volume'
 			, vumeter      : 'VU meter'
 		, buttons          : 'Buttons'

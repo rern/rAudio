@@ -487,7 +487,6 @@ displaysave )
 	else
 		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter
-		notify -blink playback Playback 'VU meter disable...'
 	fi
 	$dirsettings/player-conf.sh
 	;;
