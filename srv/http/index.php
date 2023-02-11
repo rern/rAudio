@@ -237,8 +237,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
-				<div id="qrwebui" class="qr hide"></div>
-				<div id="qrip" class="qr hide"></div>
 				<div id="covermap">
 					<?=i( 'coverTL', 'scale-dn map covermap r1 c1 ws hs' )?>
 					<?=i( 'coverT', 'guide map covermap r1 c2 wl hs' )?>

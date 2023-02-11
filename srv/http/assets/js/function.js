@@ -1175,7 +1175,6 @@ function renderPlayback() {
 	$( '#coverart' ).css( 'opacity', '' );
 	$( '#divcover .cover-change' ).remove();
 	$( '#coverTR' ).removeClass( 'empty' );
-	$( '#qrwebui, #qrip' ).empty();
 	setInfo();
 	setCoverart();
 	var istate = ico( S.state );
@@ -1579,14 +1578,16 @@ function setPlaybackBlank() {
 	vu();
 }
 function setPlaybackBlankQR() {
-	$( '#qrip' ).html( '<gr>http://</gr>'+ S.ip +'<br><gr>http://</gr>'+ S.hostname );
 	V.qr = new QRCode( {
 		  msg : 'http://'+ S.ip
 		, dim : 230
 		, pad : 11
 	} );
-	$( '#qrwebui' ).html( V.qr );
-	$( '.qr' ).removeClass( 'hide' );
+	$( '#qrwebui, #qrip' ).remove();
+	$( '#covermap' ).before( `
+<div id="qrwebui">${ V.qr.outerHTML }</div>
+<div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
+</div>` );
 }
 function setPlaylistInfoWidth() {
 	// li-icon + margin + duration + margin
