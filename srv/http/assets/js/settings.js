@@ -437,6 +437,7 @@ $( '.switch' ).click( function() {
 	if ( $this.hasClass( 'custom' ) || $this.hasClass( 'nobanner' ) ) return
 	
 	var checked = $this.prop( 'checked' );
+	S[ SW.id ]  = checked;
 	if ( $this.hasClass( 'disabled' ) ) {
 		$this.prop( 'checked', ! checked );
 		info( {
