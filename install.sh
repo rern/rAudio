@@ -5,9 +5,8 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230212
-if [[ -e /boot/kernel8.img ]]; then
-	file=/etc/systemd/network/eth.network
-	[[ ! -e $file ]] && sed 's/=en/=eth/' ${file/eth/en} > $file
+if [[ -e /boot/kernel8.img && ! $( ls /etc/systemd/network/et* 2> /dev/null ) ]]; then
+	sed 's/=en/=eth/' /etc/systemd/network/en.network > /etc/systemd/network/eth.network
 fi
 
 # 20230130
