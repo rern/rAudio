@@ -309,13 +309,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <?=$menu?>
 
-<div id="colorpicker" class="hide">
-	<div id="divcolor">
-	<?=i( 'colorcancel', 'close' )?>
-	<a id="colorreset" class="infobtn"><?=i( '', 'set0' )?> Default</a>&ensp;
-	<a id="colorok" class="infobtn infobtn-primary">OK</a>
-	</div>
-</div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
 		<img src="">

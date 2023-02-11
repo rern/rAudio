@@ -96,16 +96,21 @@ function colorSet() {
 		$( '.licover' ).css( 'margin-top', '-230px' );
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
-	$( '#colorreset' )
-		.toggleClass( 'hide', D.color === '' )
-		.before( '<canvas id="canvascolor"></canvas>' );
-	$( '#colorpicker' ).removeClass( 'hide' );
 	$( 'body' ).addClass( 'disablescroll' );
 	setTimeout( () => $( '#lib-list li' ).eq( 1 ).click(), 0 );
-	V.colorpicker ? colorSetPicker() : $.getScript( '/assets/js/plugin/'+ jfiles.html5kellycolorpicker, colorSetPicker );
+	$( '#lyrics' ).before( `
+<div id="colorpicker">
+	<div id="divcolor">
+	<i id="colorcancel" class="fa fa-close"></i>
+	<canvas id="canvascolor"></canvas>
+	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="fa fa-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
+	</div>
+</div>
+` );
+	typeof KellyColorPicker === 'function' ? colorSetPicker() : $.getScript( '/assets/js/plugin/'+ jfiles.html5kellycolorpicker, colorSetPicker );
 }
 function colorSetPicker() {
-	var rgb0 = $( '#colorcancel' ).css( 'color' ).replace( /rgb\(|,|\)/g, '' ); // rgb(aaa, bb, cc) > aaa bb cc
+	local();
 	V.colorpicker = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
@@ -115,8 +120,7 @@ function colorSetPicker() {
 				var hex = e.getCurColorHex();
 				var h = Math.round( 360 * e.getCurColorHsv().h );
 				var hsg = 'hsl('+ h +',3%,';
-				var rgb = Object.values( e.getCurColorRgb() ).join( ' ' );
-				$( '#colorok' ).toggleClass( 'disabled', rgb === rgb0 );
+				if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
 				// background
 				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
 				$( '#playback-controls .active, #library, #button-library, #colorok' ).add( V.list.li ).css( 'background-color', hex );
@@ -1800,7 +1804,7 @@ function switchPage( page ) {
 		} else {
 			V.modescrolltop = $( window ).scrollTop();
 		}
-		if ( V.color ) $( '#colorcancel' ).click();
+		if ( V.colorpicker ) $( '#colorcancel' ).click();
 	} else if ( V.playlist ) {
 		var savedlist = V.savedlist || V.savedplaylist;
 		if ( savedlist ) V.plscrolltop = $( window ).scrollTop();

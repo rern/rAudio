@@ -56,7 +56,7 @@ a {
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
-	margin: 0;
+	margin: 10px 5px;
 	width: 90px;
 	box-shadow: 0 0 6px 5px #000000;
 }
@@ -1956,7 +1956,7 @@ li.active .li2 bl {
 	height: 100%;
 	text-align: center;
 	overflow: hidden;
-	z-index: 94;
+	z-index: 110;
 }
 #divcolor {
 	position: relative;

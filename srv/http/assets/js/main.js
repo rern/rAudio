@@ -111,7 +111,7 @@ $( 'body' ).click( function( e ) {
 	if ( ! $target.hasClass( 'savedlist' )
 		&& ! $target.hasClass( 'bkcoverart' )
 		&& ! $target.hasClass( 'bkradio' )
-		&& e.target.id !== 'canvascolor'
+		&& ! V.colorpicker
 	) menuHide();
 	if ( ! V.local
 		&& $( '.pl-remove' ).length
@@ -253,8 +253,6 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			infoUpdate( '' );
 			break;
 		case 'displaycolor':
-			if ( V.colorpicker ) return
-			
 			V.color = true;
 			if ( ! V.library ) {
 				$( '#library' ).click();
@@ -431,8 +429,15 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	bash( [ 'color', h +' '+ s +' '+ l ] );
 	loader();
 } ).on( 'click', '#colorreset', function() {
-	bash( [ 'color', 'reset' ] );
-	loader();
+	info( {
+		  icon    : 'gear'
+		, title   : 'Colors'
+		, message : 'Reset colors to default?'
+		, ok      : () => {
+			bash( [ 'color', 'reset' ] );
+			loader();
+		}
+	} );
 } ).on( 'click', '#colorcancel', function() {
 	$( '#colorpicker' ).remove();
 	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
@@ -442,6 +447,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
+	V.colorpicker = false;
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
