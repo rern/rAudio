@@ -96,16 +96,12 @@ function colorSet() {
 		$( '.licover' ).css( 'margin-top', '-230px' );
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
-	setTimeout( () => {
-		V.list.li = $( '#lib-list li' ).eq( 1 );
-		var $target = V.list.li.find( 'i' );
-		contextmenuLibrary( V.list.li, $target );
-	}, 0 );
 	$( '#colorreset' )
 		.toggleClass( 'hide', D.color === '' )
 		.before( '<canvas id="canvascolor"></canvas>' );
 	$( '#colorpicker' ).removeClass( 'hide' );
 	$( 'body' ).addClass( 'disablescroll' );
+	setTimeout( () => $( '#lib-list li' ).eq( 1 ).click(), 0 );
 	V.colorpicker ? colorSetPicker() : $.getScript( '/assets/js/plugin/'+ jfiles.html5kellycolorpicker, colorSetPicker );
 }
 function colorSetPicker() {
