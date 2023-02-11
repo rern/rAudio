@@ -124,7 +124,6 @@ function playlistDelete() {
 	} );
 }
 function playlistLoad( path, play, replace ) {
-	console.log( path, play, replace )
 	V.local = true;
 	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
 	bash( [ 'playlist', path, play, replace ], function() {

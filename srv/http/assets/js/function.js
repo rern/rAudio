@@ -1166,6 +1166,7 @@ function renderPlayback() {
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
 	clearInterval( V.intBlinkDot );
+	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
 		return
@@ -1583,7 +1584,6 @@ function setPlaybackBlankQR() {
 		, dim : 230
 		, pad : 11
 	} );
-	$( '#qrwebui, #qrip' ).remove();
 	$( '#covermap' ).before( `
 <div id="qrwebui">${ V.qr.outerHTML }</div>
 <div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
