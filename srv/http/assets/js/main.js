@@ -253,6 +253,8 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			infoUpdate( '' );
 			break;
 		case 'displaycolor':
+			if ( V.colorpicker ) return
+			
 			V.color = true;
 			if ( ! V.library ) {
 				$( '#library' ).click();
@@ -411,7 +413,7 @@ $( '#displayplaylist' ).click( function() {
 		, ok           : () => displaySave( keys )
 	} );
 } );
-$( '#colorok' ).click( function() {
+$( 'body' ).on( 'click', '#colorok', function() {
 	var hsv = V.colorpicker.getCurColorHsv(); // hsv = { h: N, s: N, v: N } N = 0-1
 	var s   = hsv.s;
 	var v   = hsv.v;
@@ -428,23 +430,18 @@ $( '#colorok' ).click( function() {
 	}
 	bash( [ 'color', h +' '+ s +' '+ l ] );
 	loader();
-} );
-$( '#colorreset' ).click( function() {
+} ).on( 'click', '#colorreset', function() {
 	bash( [ 'color', 'reset' ] );
 	loader();
-} );
-$( '#colorcancel' ).click( function() {
-	$( '#colorpicker' ).addClass( 'hide' );
+} ).on( 'click', '#colorcancel', function() {
+	$( '#colorpicker' ).remove();
 	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
 	  , .content-top, #button-library, #mode-title, #button-lib-back \
 	  , #lib-list li, .licover, #lib-list i, #lib-list .li2 \
-	  , .menu a, .submenu, #colorcancel, #colorok' ).removeAttr( 'style' );
+	  , .menu a, .submenu' ).removeAttr( 'style' );
 	$( 'body' ).removeClass( 'disablescroll' );
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
-} );
-$( '#colorpicker' ).click( function( e ) {
-	if ( e.target.id === 'colorpicker' ) $( '#colorcancel' ).click();
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
@@ -490,7 +487,6 @@ $( '#playlist, #button-playlist' ).click( function() {
 } );
 $( '#bar-top, #bar-bottom, #page-library' ).click( function() {
 	if ( V.guide ) hideGuide();
-	if ( ! $( '#colorpicker' ).hasClass( 'hide' ) ) $( '#colorcancel' ).click();
 } );
 $( '#bar-top' ).click( function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
