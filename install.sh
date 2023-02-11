@@ -4,6 +4,12 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20230212
+if [[ -e /boot/kernel8.img ]]; then
+	file=/etc/systemd/network/eth.network
+	[[ ! -e $file ]] && sed 's/=en/=eth/' ${file/eth/en} > $file
+fi
+
 # 20230130
 if ! grep -q onevent /etc/spotifyd.conf; then
 	echo '[global]
