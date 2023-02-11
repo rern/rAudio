@@ -1,3 +1,6 @@
+#eq .bottom   { z-index: 1 }
+#eq .vertical { z-index: 0 }
+
  /* calc var */
 #eq {
 	--eqSliderH : 300px;
@@ -61,14 +64,12 @@
 	line-height: 36px;
 	transform: translateX( -50% );
 	font-size: 0; /* force no space between inline-block */
-	z-index: 1;
 }
 #eq .vertical {
 	position: relative;
 	max-width: 300px;
 	margin: 0 auto;
 	transform : rotateZ( -90deg );
-	z-index: 0;
 }
 #eq .vertical::before { /* flat line */
 	position: absolute;

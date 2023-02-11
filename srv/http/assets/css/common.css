@@ -3,7 +3,7 @@
 #infoOverlay,
 #button-data  { z-index: 115 }
 #data         { z-index: 110 }
-/* #keyboard     { z-index: 108 } simplekeyboard.css */
+#keyboard     { z-index: 108 }
 .head         { z-index: 95 }
 .albumrefresh { z-index: 1 }
 

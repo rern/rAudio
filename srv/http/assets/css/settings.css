@@ -1,3 +1,7 @@
+.menu { z-index: 11 }
+#bar-bottom { z-index: 5 }
+.container input[type=checkbox] { z-index: 1 }
+
 body {
 	height: auto;
 }
@@ -9,7 +13,6 @@ body {
 	padding: 0;
 	background: var( --cg );
 	box-shadow: -4px 4px 10px #000000;
-	z-index: 11;
 }
 .menu a {
 	display: inline-block;
@@ -249,7 +252,6 @@ heading .disabled {
 	line-height: 30px;
 	text-align: center;
 	background: var( --cga );
-	z-index: 5;
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
 #bar-bottom div {
@@ -391,7 +393,6 @@ input[type=image] {
 	height: 40px;
 	width: 80px;
 	opacity: 0;
-	z-index: 1;
 }
 .switchlabel {
 	display: inline-block;
