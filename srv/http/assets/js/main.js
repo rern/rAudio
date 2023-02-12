@@ -254,10 +254,12 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'displaycolor':
 			V.color = true;
-			if ( ! V.library ) {
-				$( '#library' ).click();
-			} else {
+			if ( V.library ) {
 				V.librarylist ? colorSet() : $( '#mode-webradio' ).click();
+			} else if ( V.playlist && S.pllength ) {
+				colorSet();
+			} else {
+				$( '#library' ).click();
 			}
 			break;
 		case 'multiraudio':
@@ -440,13 +442,12 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	} );
 } ).on( 'click', '#colorcancel', function() {
 	$( '#colorpicker' ).remove();
-	$( 'body, #bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
-	  , .content-top, #button-library, #mode-title, #button-lib-back , #lib-breadcrumbs a\
-	  , #lib-list li, .licover, #lib-list i, #lib-list .li2 \
-	  , .menu a, .submenu' ).removeAttr( 'style' );
-	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
-	V.colorpicker = false;
+	V.colorpicker   = false;
+	V.colorelements.removeAttr( 'style' );
+	V.colorelements = '';
+	if ( V.playlist && ! V.savedlist && ! V.savedplaylist) setPlaylistScroll();
+	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
