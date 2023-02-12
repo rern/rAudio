@@ -97,11 +97,10 @@ function colorSet() {
 		if ( V.librarytracklist && $( '.licover' ).is( ':visible' ) ) {
 			$( '.licover' ).css( 'margin-top', '-230px' );
 			$( '#lib-list li.track1' ).css( 'margin-top', 0 );
-			var n = 1;
+			$( '#lib-list .li-icon' ).eq( 1 ).click();
 		} else {
-			var n = 0;
+			$( '#lib-list .li-icon' ).eq( 0 ).click();
 		}
-		setTimeout( () => $( '#lib-list .li-icon' ).eq( n ).click(), 0 );
 	} else {
 		if ( V.savedlist || V.savedplaylist ) {
 			pageScroll( 0 );
