@@ -1410,7 +1410,8 @@ i.map.disabled, .map.disabled i {
 }
 .lialbum,
 #button-pl-back,
-#lib-breadcrumbs a:first-of-type {
+#lib-breadcrumbs a:first-of-type,
+#lib-breadcrumbs a:last-of-type {
 	color: var( --cml );
 }
 #button-coverart {

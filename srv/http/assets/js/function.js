@@ -97,7 +97,7 @@ function colorSet() {
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
 	$( 'body' ).css( 'overflow', 'hidden' );
-	setTimeout( () => $( '#lib-list li' ).eq( 1 ).click(), 0 );
+	setTimeout( () => $( '#lib-list .li-icon' ).eq( 1 ).click(), 0 );
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
 	<div id="divcolor">
@@ -127,7 +127,7 @@ function colorSetPicker() {
 				$( '.content-top, #lib-index, #playback' ).css( 'background-color', hsg +'20%)' );
 				// text
 				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
-				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
+				$( '#button-lib-back, #colorcancel, #lib-breadcrumbs a:first-of-type, #lib-breadcrumbs a:last-of-type' ).css( 'color', hex );
 				$( '#lib-list li' ).not( '.active' ).find( 'i, #lib-list .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
 				V.list.li.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
 				$( '.menu a' ).css( 'cssText', 'color: '+ hsg +'75%)' );
@@ -1104,12 +1104,12 @@ function renderLibraryList( data ) {
 		var dir0     = dir[ 0 ];
 		var htmlpath = ico( V.mode );
 		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
-		htmlpath    += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
+		htmlpath    += '<a>'+ dir0 +'/<span class="lidir">'+ dir0 +'</span></a>';
 		var lidir   = dir0;
 		var iL      = dir.length;
 		for ( i = 1; i < iL; i++ ) {
 			lidir    += '/'+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
+			htmlpath += '<a>'+ dir[ i ] +'<a>/</a><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( V.mode === 'webradio' ) {

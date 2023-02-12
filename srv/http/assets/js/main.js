@@ -440,11 +440,10 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	} );
 } ).on( 'click', '#colorcancel', function() {
 	$( '#colorpicker' ).remove();
-	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
-	  , .content-top, #button-library, #mode-title, #button-lib-back \
+	$( 'body, #bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
+	  , .content-top, #button-library, #mode-title, #button-lib-back , #lib-breadcrumbs a\
 	  , #lib-list li, .licover, #lib-list i, #lib-list .li2 \
 	  , .menu a, .submenu' ).removeAttr( 'style' );
-	$( 'body' ).css( 'overflow', '' );
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
 	V.colorpicker = false;
