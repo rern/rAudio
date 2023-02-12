@@ -1,3 +1,44 @@
+#colorpicker,
+#status { z-index: 110 }
+#bar-top,
+#bar-bottom,
+#bio { z-index: 106 }
+#lyrics,
+#settings { z-index: 105 }
+.content-top { z-index: 104 }
+.band,
+.emptyadd,
+#volume-text { z-index: 102 }
+#refresh,
+#status { z-index: 100 }
+#lyricsfade { z-index: 97 }
+#lib-search,
+#pl-search { z-index: 96 }
+.coveredit,
+.bkedit,
+.controls { z-index: 20 }
+.map { z-index: 16 }
+.licover,
+#elapsed,
+#timeicon,
+#total  { z-index: 15 }
+.menu { z-index: 11 }
+.rs-container::after,
+#vu::before { z-index: 6 }
+#biocontent .close-root,
+#biocontent .bioback,
+#bioimg,
+#volume .rs-container::before,
+.index { z-index: 5 }
+#divlyricstitle { z-index: 2 }
+.rs-container::before,
+.rs-container::after,
+#divlyricsartist,
+#pl-list .pl-remove,
+#time .rs-inner-container::before,
+#time .rs-inner-container::after { z-index: 1 }
+@media ( orientation: portrait ) { @media ( max-width: 480px ) { #bioimg { z-index: -5 } } }
+
 #infoContent .imgicon {
 	width: 30px !important;
 	margin-right: 5px !important;
@@ -56,7 +97,7 @@ a {
 	background-color: var( --cgd ) !important;
 }
 #divcolor .infobtn {
-	margin: 0;
+	margin: 10px 5px;
 	width: 90px;
 	box-shadow: 0 0 6px 5px #000000;
 }
@@ -94,7 +135,6 @@ i.map.disabled, .map.disabled i {
 	padding: 0;
 	background: var( --cg );
 	box-shadow: 4px 4px 10px #000000;
-	z-index: 11;
 }
 .menu.fixed {
 	position: fixed;
@@ -146,7 +186,6 @@ i.map.disabled, .map.disabled i {
 	width: 160px;
 	padding: 0;
 	box-shadow: -4px 4px 10px #000000;
-	z-index: 105;
 }
 #power, #screenoff {
 	background: var( --cga );
@@ -213,11 +252,9 @@ i.map.disabled, .map.disabled i {
 	position: fixed;
 	width: 40px;
 	height: 40px;
-	z-index: 100;
 }
 #status {
 	left: 40px;
-	z-index: 110;
 }
 #bar-top,
 #bar-bottom {
@@ -225,7 +262,6 @@ i.map.disabled, .map.disabled i {
 	width: 100%;
 	height: 40px;
 	background: linear-gradient( to left, var( --cg ) calc( 100% - 50px ), var( --cgd ) 100% );
-	z-index: 106;
 }
 #bar-bottom {
 	bottom: 0;
@@ -330,7 +366,6 @@ i.map.disabled, .map.disabled i {
 	margin: auto;
 	text-align: center;
 	font-size: 24px;
-	z-index: 102;
 }
 #divartist,
 #divalbum {
@@ -473,7 +508,6 @@ i.map.disabled, .map.disabled i {
 .band {
 	background: var( --cg );
 	opacity: 0.7;
-	z-index: 102;
 }
 #time-bar,
 #volume-bar {
@@ -516,7 +550,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 18px;
 	font-weight: 300;
 	background: #000000;
-	z-index: 102;
 }
 #time-band,
 #volume-band {
@@ -588,7 +621,6 @@ i.map.disabled, .map.disabled i {
 	background:         radial-gradient( 160% 55% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 	background: -webkit-radial-gradient( 75% 0%, 160% 55%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 									  /* x   y   w    h */
-	z-index: 6;
 }
 
 .controls {
@@ -596,7 +628,6 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	left: 0;
 	margin: 0 auto;
-	z-index: 20;
 }
 .btn {
 	border: none;
@@ -618,16 +649,11 @@ i.map.disabled, .map.disabled i {
 	margin-left: -60px;
 	width: 120px;
 	text-align: center;
-	z-index: 15;
 }
 #timeicon i {
 	width: 20px;
 	font-size: 16px;
 	color: var( --cm ) !important;
-}
-#elapsed,
-#total {
-	z-index: 15;
 }
 #elapsed,
 #volume {
@@ -662,7 +688,6 @@ i.map.disabled, .map.disabled i {
 	align-items: center;
 	justify-content: center;
 	font-size: 24px;
-	z-index: 16;
 	opacity: 0;
 }
 .map.mapshow {
@@ -890,7 +915,6 @@ i.map.disabled, .map.disabled i {
 #time .rs-inner-container::after {
 	position: absolute;
 	content: '';
-	z-index: 1;
 }
 .rs-container::after { /* glossy overlay */
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
@@ -898,7 +922,6 @@ i.map.disabled, .map.disabled i {
 	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 									  /* x   y   w    h */
 	border-radius: 50%;
-	z-index: 6;
 }
 .rs-path {
 	stroke: none !important;
@@ -958,7 +981,6 @@ i.map.disabled, .map.disabled i {
 	height: 220px;
 	background-color: #000000;
 	border-radius: 50%;
-	z-index: 5;
 }
 #volume .rs-container::after {
 	left: 0;
@@ -998,7 +1020,6 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
-	z-index: 106;
 }
 #bio .container {
 	max-width: 750px;
@@ -1036,7 +1057,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 	text-align: center;
 	color: var( --cm ) !important;
-	z-index: 5;
 }
 #biocontent .bioback {
 	margin-top: -10px;
@@ -1061,7 +1081,6 @@ i.map.disabled, .map.disabled i {
 	max-width: 200px;
 	margin: 0 20px 10px 0;
 	line-height: 0;
-	z-index: 5;
 }
 #bioimg a:nth-child(odd) {
 	margin-left: 10px;
@@ -1090,7 +1109,6 @@ i.map.disabled, .map.disabled i {
 	height: calc(100vh - 50px);
 	background: var( --cgd );
 	box-shadow: 4px 4px 10px #000000;
-	z-index: 105;
 	-webkit-overflow-scrolling: touch;
 }
 #lyrics i {
@@ -1105,7 +1123,6 @@ i.map.disabled, .map.disabled i {
 }
 #divlyricstitle {
 	background: var( --cga );
-	z-index: 2;
 }
 #divlyricstitle img {
 	display: inline-block;
@@ -1118,9 +1135,6 @@ i.map.disabled, .map.disabled i {
 	font-size: 26px;
 	font-weight: 300;
 	line-height: 40px;
-}
-#divlyricsartist {
-	z-index: 1;
 }
 #lyricsartist {
 	display: inline-block;
@@ -1172,7 +1186,6 @@ i.map.disabled, .map.disabled i {
 	width: 510px;
 	max-width: 100vw;
 	height: 100px;
-	z-index: 97;
 	background: -moz-linear-gradient(top,  transparent, #000000);
 	background: -webkit-linear-gradient(top,  transparent,#000000);
 	background: linear-gradient(to bottom,  transparent,#000000);
@@ -1280,11 +1293,6 @@ i.map.disabled, .map.disabled i {
 .mode .fa-bookmark {
 	color: var( --cm );
 }
-/* coverart/bookmark edit icons */
-.coveredit,
-.bkedit {
-	z-index: 20;
-}
 .bkedit {
 	position: absolute;
 	right: 0;
@@ -1349,7 +1357,6 @@ i.map.disabled, .map.disabled i {
 	background: var( --cga );
 	top: 40px;
 	padding-right: 10px;
-	z-index: 104;
 }
 .content-top a {
 	font-size: 18px;
@@ -1461,7 +1468,6 @@ i.map.disabled, .map.disabled i {
 	white-space: nowrap;
 	float: right;
 	margin-top: 4px;
-	z-index: 96;
 }
 .input-group {
 	display: table;
@@ -1537,7 +1543,6 @@ i.map.disabled, .map.disabled i {
 	align-items:center;
 	background: var( --cga );
 	box-shadow: 0 0 10px 4px #000000;
-	z-index: 5;
 }
 .index1 {
 	display: none;
@@ -1591,7 +1596,6 @@ i.map.disabled, .map.disabled i {
 	height: 230px !important;
 	padding-left: 40px;
 	background: #000;
-	z-index: 15;
 }
 .licover.nofixed {
 	position: relative;
@@ -1600,7 +1604,7 @@ i.map.disabled, .map.disabled i {
 	margin-top: 230px;
 }
 .licover.active {
-	background: linear-gradient( #000000 195px, var( --cm ) 0 ) !important;
+	background: linear-gradient( #000000 195px, var( --cm ) 0 );
 }
 .licoverimg {
 	position: relative;
@@ -1709,7 +1713,7 @@ i.map.disabled, .map.disabled i {
 #pl-savedlist span.plname {
 	line-height: 48px;
 }
-#lib-list .active:not(.coverart),
+#lib-list li.active:not(.licover),
 #lib-list .active .coverart1,
 #lib-list .active .coverart2,
 #pl-list .active,
@@ -1727,7 +1731,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 45px;
 	text-align: center;
 	color: var( --cg60 ) !important;
-	z-index: 1;
 }
 #pl-list li.active .pl-remove {
 	color: var( --cga ) !important;
@@ -1742,6 +1745,9 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 	color: var( --cg60 );
+}
+#lib-list i {
+	background: none !important;
 }
 .li-icon {
 	float: left;
@@ -1953,11 +1959,10 @@ li.active .li2 bl {
 	height: 100%;
 	text-align: center;
 	overflow: hidden;
-	z-index: 94;
 }
 #divcolor {
 	position: relative;
-	top: 50%;
+	top: 50vh;
 	-webkit-transform: translateY( -50% );
 	-ms-transform: translateY( -50% );
 	transform: translateY( -50% );
@@ -2207,7 +2212,6 @@ li.active .li2 bl {
 			width: 100%;
 			max-width: none;
 			margin: -10px 0 10px 0;
-			z-index: -5;
 		}
 		#bioimg a {
 			display: inline-block;

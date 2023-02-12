@@ -78,6 +78,9 @@
 .select2-container--disabled .select2-selection__arrow {
 	display: none;
 }
+.select2 i {
+	vertical-align: 0 !important;
+}
 @media ( hover:hover ) {
 	.select2-container--focus .select2-selection__rendered {
 		outline: 2px solid var( --cgl );

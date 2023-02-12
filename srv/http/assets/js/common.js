@@ -6,6 +6,9 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 
 var page        = location.search.replace( '?p=', '' );
 var iconwarning = ico( 'warning fa-lg yl' ) +'&ensp;';
+var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
+var orange      = '#de810e';
+var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
@@ -282,7 +285,7 @@ function info( json ) {
 			I.infofile    = this.files[ 0 ];
 			var filename  = I.infofile.name;
 			var typeimage = I.infofile.type.slice( 0, 5 ) === 'image';
-			I.filechecked = 1;
+			I.filechecked = true;
 			if ( I.filetype ) {
 				if ( I.filetype === 'image/*' ) {
 					I.filechecked = typeimage;
@@ -513,13 +516,10 @@ function info( json ) {
 	} else {
 		I.blank = false;
 	}
-	if ( I.checklength ) {
-		infoCheckLength();
-	} else {
-		I.short = false;
-	}
+	I.checkip ? infoCheckIP() : I.notip = false;
+	I.checklength  ? infoCheckLength() : I.short = false;
 	I.nochange = I.values && I.checkchanged ? true : false;
-	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ); // initial check
+	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
 	infoCheckSet();
 }
 
@@ -528,7 +528,11 @@ function infoButtonCommand( fn ) {
 		infoButtonReset();
 	} else {
 		$.when( fn() ).then( () => {
-			if ( ! I.active ) infoButtonReset(); // not consecutive info calls
+			if ( I.active ) {
+				I.active = false;
+			} else {
+				infoButtonReset(); // not consecutive info calls
+			}
 		} );
 	}
 }
@@ -552,9 +556,14 @@ function infoButtonWidth() {
 function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
-	I.blank = false;
-	I.blank = I.checkblank.some( i => {
-		if ( $inputs_txt.eq( i ).val().trim() === '' ) return true
+	I.blank = I.checkblank.some( i => $inputs_txt.eq( i ).val().trim() === '' );
+}
+function infoCheckIP() {
+	if ( ! I.checkip ) return
+	
+	var regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/; // https://stackoverflow.com/a/36760050
+	I.notip = I.checkip.some( i => {
+		return ! regex.test( $inputs_txt.eq( i ).val() );
 	} );
 }
 function infoCheckLength() {
@@ -575,17 +584,20 @@ function infoCheckLength() {
 	} );
 }
 function infoCheckSet() {
-	if ( I.checkblank || I.checklength || I.checkchanged ) {
+	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
 		$inputs_txt.on( 'keyup paste cut', function() {
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
+			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			if ( I.checkchanged ) {
 				var prevval = I.values.join( '' );
 				var values  = infoVal();
 				var val     = I.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
 				I.nochange  = prevval === val;
 			}
-			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.blank || I.short || I.nochange ), 50 ); // ios: force after infoCheckLength
+			setTimeout( () => {
+				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
+			}, 75 ); // ios: force after infoCheckLength
 		} );
 	}
 	if ( I.checkchanged ) {
@@ -603,7 +615,7 @@ function infoFileImage() {
 	$( '.infoimgname' ).addClass( 'hide' );
 	$( '.infoimgnew, .infoimgwh' ).remove();
 	if ( I.infofile.name.slice( -3 ) !== 'gif' ) {
-		infoFileImageReader();
+		infoFileImageLoad();
 	} else { // animated gif or not
 		var formdata = new FormData();
 		formdata.append( 'cmd', 'giftype' );
@@ -624,10 +636,13 @@ function infoFileImage() {
 						bannerHide();
 					}
 				} else {
-					infoFileImageReader();
+					infoFileImageLoad();
 				}
 			} );
 	}
+}
+function infoFileImageLoad() {
+	V.pica ? infoFileImageReader() : $.getScript( '/assets/js/plugin/'+ jfiles.pica, infoFileImageReader );
 }
 function infoFileImageReader() {
 	var maxsize   = ( V.library && ! V.librarylist ) ? 200 : 1000;
@@ -648,7 +663,7 @@ function infoFileImageReader() {
 				var canvas    = document.createElement( 'canvas' );
 				canvas.width  = resize.w;
 				canvas.height = resize.h;
-				pica.resize( filecanvas, canvas, picaOption ).then( function() {
+				V.pica = pica.resize( filecanvas, canvas, picaOption ).then( function() {
 					infoFileImageRender( canvas.toDataURL( 'image/jpeg' ), imgW +' x '+ imgH, resize.wxh );
 				} );
 			} else {
@@ -731,7 +746,7 @@ function infoVal() {
 	var values = [];
 	var $this, type, name, val, n;
 	var i      = 0;
-	I.textarea = 0;
+	I.textarea = false;
 	I.inputs.each( ( i, el ) => {
 		$this = $( el );
 		type  = $this.prop( 'type' );
@@ -745,7 +760,7 @@ function infoVal() {
 				val = $this.prop( 'checked' );
 				break;
 			case 'textarea':
-				I.textarea = 1;
+				I.textarea = true;
 				val = $this.val().trim().replace( /\n/g, '\\n' );
 				break;
 			case 'password':
@@ -864,8 +879,8 @@ function loaderHide() {
 
 // ----------------------------------------------------------------------
 function local( delay ) {
-	V.local = 1;
-	setTimeout( () => V.local = 0, delay || 300 );
+	V.local = true;
+	setTimeout( () => V.local = false, delay || 300 );
 }
 
 // ----------------------------------------------------------------------
@@ -892,12 +907,12 @@ $.fn.press = function( arg1, arg2 ) {
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
-			V.press = 1;
+			V.press = true;
 			callback( e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
 		clearTimeout( timeout );
-		setTimeout( () => V.press = 0, 300 ); // needed for mouse events
+		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
 }
@@ -914,7 +929,7 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 	}
 	function pushstreamPower( message ) {
 		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		V[ type ] = 1;
+		V[ type ] = true;
 		loader();
 	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
@@ -944,18 +959,18 @@ if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// page visibility -----------------------------------------------------------------
-	var active  = 1; // fix: multiple firings
-	var select2 = 0; // fix: closing > blur > disconnect
+	var active  = true; // fix: multiple firings
+	var select2 = false; // fix: closing > blur > disconnect
 	function connect() {
 		if ( active || V.off ) return
 		
-		active = 1;
+		active = true;
 		pushstream.connect();
 	}
 	function disconnect() {
 		if ( ! active ) return
 		
-		active = 0;
+		active = false;
 		pushstream.disconnect();
 	}
 	document.onvisibilitychange = () => document.hidden ? disconnect() : connect();
@@ -972,14 +987,14 @@ function selectSet( $select ) {
 		var searchbox = page === 'system' ? 1 : 0;
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = 0;
+		var searchbox = false;
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
-		.on( 'select2:closing', () => select2 = 1 )
-		.on( 'select2:close',   () => select2 = 0 )
+		.on( 'select2:closing', () => select2 = true )
+		.on( 'select2:close',   () => select2 = false )
 		.each( ( i, el ) => {
 			var $this = $( el );
 			if ( $this.find( 'option' ).length === 1 ) $this.prop( 'disabled', true );

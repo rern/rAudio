@@ -124,7 +124,7 @@ function playlistDelete() {
 	} );
 }
 function playlistLoad( path, play, replace ) {
-	V.local = 1;
+	V.local = true;
 	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
 	bash( [ 'playlist', path, play, replace ], function() {
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
@@ -210,7 +210,7 @@ function tagEditor() {
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
-			var $img = $( '.licover' ).length ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
+			var $img = V.librarytracklist ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
 		} else {
 			var $img =  V.list.li.find( 'img' );
@@ -329,8 +329,8 @@ function tagModeSwitch() {
 	if ( V.playlist ) {
 		$( '#page-playlist' ).addClass( 'hide' );
 		$( '#page-library' ).removeClass( 'hide' );
-		V.playlist = 0;
-		V.library  = 1;
+		V.playlist = false;
+		V.library  = true;
 		V.page     = 'library';
 	}
 }
@@ -500,7 +500,7 @@ function webRadioSave( name ) {
 		, focus      : 0
 		, checkblank : 1
 		, ok         : () => {
-			V.local     = 1;
+			V.local     = true;
 			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
 			bash( [ 'webradioadd', '', newname, url ], error => {
 				if ( error ) {
@@ -519,7 +519,7 @@ function webRadioSave( name ) {
 				V.list.li.find( '.li2 .radioname' ).append( ' • ' );
 				V.list.li.find( '.savewr' ).remove();
 				V.list.li.removeClass( 'notsaved' );
-				V.local = 0;
+				V.local = false;
 			} );
 		}
 	} );
@@ -585,8 +585,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'remove':
-			V.contextmenu = 1;
-			setTimeout( () => V.contextmenu = 0, 500 );
+			V.contextmenu = true;
+			setTimeout( () => V.contextmenu = false, 500 );
 			playlistRemove( V.list.li );
 			return
 		case 'savedpladd':
@@ -708,7 +708,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case '':
 			if ( V.list.singletrack || V.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'mpcadd', path ];
-			} else if ( $( '.licover' ).length && ! $( '.licover .lipath' ).length ) {
+			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
 			} else { // directory or album
 				mpccmd = [ 'mpcls', path ];

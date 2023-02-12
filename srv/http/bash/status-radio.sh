@@ -100,6 +100,7 @@ metadataGet() {
 , "state"    : "play"
 , "song"     : '$song'
 , "station"  : "'$station'"
+, "stream"   : true
 , "Time"     : false
 , "Title"    : "'$title'"
 }'

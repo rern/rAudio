@@ -593,6 +593,7 @@ $( '#setting-timezone' ).click( function() {
 			, values       : [ S.ntp, list.mirror ]
 			, checkchanged : 1
 			, checkblank   : [ 0 ]
+			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 			, ok           : () => {
 				var values = infoVal();
 				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
@@ -800,20 +801,22 @@ function i2sSelectHide() {
 	$( '#divi2smodulesw' ).removeClass( 'hide' );
 	$( '#divi2smodule' ).addClass( 'hide' );
 }
-function infoMount( values ) {
-	var ip    = $( '#list' ).data( 'ip' );
-	var ipsub = ip.substring( 0, ip.lastIndexOf( '.') + 1 );
-	if ( values === 'shareddata' ) {
+function infoMount( val ) {
+	var ip     = $( '#list' ).data( 'ip' );
+	var ipsub  = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
+	if ( val === 'raudio' ) {
 		var shareddata = true;
-		values         = [ 'cifs', 'data', ipsub, '', '', '', '', false ];
-		var chktext    = 'Use data from this rAudio'
+		var values     = [ 'raudio', 'data', ipsub ];
+	} else if ( val === 'shareddata' ) {
+		var shareddata = true;
+		var values     = [ 'cifs', 'data', ipsub ];
 	} else {
 		var shareddata = false;
-		var chktext    = 'Update Library on mount'
+		var values     = val || [ 'cifs', '', ipsub ];
 	}
 	var htmlmount      = `\
 <table id="tblinfomount">
-<tr><td style="width: 90px">Type</td>
+<tr class="common"><td style="width: 90px">Type</td>
 	<td style="width: 230px">
 		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
@@ -821,23 +824,23 @@ function infoMount( values ) {
 	</td>
 	<td style="width: 20px"></td>
 </tr>
-<tr><td>Name</td>
-<td><input id="mountpoint" type="text"></td>
+<tr class="common"><td>Name</td>
+<td><input id="mountpoint" type="text" placeholder="for Library · NAS · 'Name'"></td>
 </tr>
-<tr><td>Server IP</td>
+<tr class="common"><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
-<tr><td id="sharelabel">Share name</td>
+<tr class="cifs nfs"><td id="sharelabel">Share name</td>
 	<td><input id="share" type="text"></td>
 </tr>
-<tr class="guest"><td>User</td>
-	<td><input type="text"></td>
+<tr class="cifs"><td>User</td>
+	<td><input type="text" placeholder="if required by server"></td>
 </tr>
-<tr class="guest"><td>Password</td>
-	<td><input type="password" checked></td><td>${ ico( 'eye' ) }</td>
+<tr class="cifs"><td>Password</td>
+	<td><input type="password" placeholder="if required by server"></td><td>${ ico( 'eye' ) }</td>
 </tr>
-<tr><td>Options</td>
-	<td><input type="text"></td>
+<tr class="cifs nfs"><td>Options</td>
+	<td><input type="text" placeholder="if required by server"></td>
 </tr>`;
 	htmlmount += '</table>';
 	var icon   = 'networks';
@@ -846,40 +849,37 @@ function infoMount( values ) {
 		  icon       : icon
 		, title      : title
 		, content    : htmlmount
-		, values     : values || [ 'cifs', '', ipsub, '', '', '', '', true ]
-		, checkblank : [ 0, 1, 2 ]
+		, values     : values
+		, checkblank : [ 2 ]
+		, checkip    : [ 1 ]
 		, beforeshow : () => {
 			if ( ! shareddata ) {
 				$( '#infoContent label' ).eq( 2 ).remove();
 			} else {
 				$( '#mountpoint' ).prop( 'disabled', 1 );
 			}
+			var $mountpoint = $( '#mountpoint' );
 			var $share = $( '#share' );
 			function hideOptions( type ) {
+				if ( ! values[ 3 ] ) $share.val( '' );
+				$( '#infoContent tr' ).not( '.common' ).addClass( 'hide' );
 				if ( type === 'nfs' ) {
 					$( '#sharelabel' ).text( 'Share path' );
-					$( '.guest' ).addClass( 'hide' );
+					$( '#infoContent' ).find( '.common, .nfs' ).removeClass( 'hide' );
 					var placeholder = '/path/to/share on server';
-				} else {
+				} else if ( type === 'cifs' ) {
 					$( '#sharelabel' ).text( 'Share name' );
-					$( '.guest' ).removeClass( 'hide' );
+					$( '#infoContent' ).find( '.common, .cifs' ).removeClass( 'hide' );
 					var placeholder = 'sharename on server';
-				}
-				if ( ! values ) {
-					$( '#mountpoint' ).attr( 'placeholder', 'for Library > NAS > "Name" ' );
-					$share.attr( 'placeholder', placeholder );
-				}
-			}
-			hideOptions( values ? values[ 0 ] : 'cifs' );
-			$( '#infoContent input:radio' ).change( function() {
-				var val = $( this ).val();
-				if ( val !== 'raudio' ) {
-					hideOptions( val );
 				} else {
-					infoNFSconnect( $( '#list' ).data( 'ip' ) );
+					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
 				}
+				if ( ! values[ 3 ] ) $share.attr( 'placeholder', placeholder );
+			}
+			hideOptions( values[ 0 ] );
+			$( '#infoContent input:radio' ).change( function() {
+				hideOptions( $( this ).val() );
 			} );
-			var $mountpoint = $( '#mountpoint' );
 			$mountpoint.on( 'keyup paste', function() {
 				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 			} );
@@ -895,6 +895,36 @@ function infoMount( values ) {
 		}
 		, ok         : () => {
 			var values = infoVal();
+			if ( values[ 0 ] === 'raudio' ) {
+				var ip = values[ 2 ];
+				notify( icon, title, 'Connect rAudio Sever ...' );
+				bash( [ 'sharelist', ip ], list => {
+					bannerHide();
+					if ( list.slice( 0, 6 ) === 'Server' ) {
+						info( {
+							  icon    : icon
+							, title   : title
+							, message : list
+										+'<br>Connect?'
+							, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
+							, ok      : () => {
+								bash( [ 'shareddataconnect', ip ] );
+								notify( icon, title, 'Connect Server rAudio ...' );
+							} 
+						} );
+					} else {
+						info( {
+							  icon    : icon
+							, title   : title
+							, message : list
+							, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
+							, ok      : () => infoMount( 'raudio' )
+						} );
+					}
+				} );
+				return
+			}
+			
 			bash( [ 'mount', ...values, shareddata ], error => {
 				if ( error ) {
 					info( {
@@ -909,44 +939,6 @@ function infoMount( values ) {
 				}
 			} );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-		}
-	} );
-}
-function infoNFSconnect( ip ) {
-	var icon  = 'networks';
-	var title = 'Shared Data';
-	info( {
-		  icon      : icon
-		, title     : title
-		, message   : 'Server rAudio '+ ico( 'rserver wh' )
-		, textlabel : 'IP'
-		, values    : ip.substring( 0, ip.lastIndexOf( '.') + 1 )
-		, cancel    : () => $( '#shareddata' ).prop( 'checked', false )
-		, ok        : () => {
-			var ip = infoVal();
-			bash( [ 'sharelist', ip ], list => {
-				if ( list.slice( 0, 6 ) === 'Server' ) {
-					info( {
-						  icon    : icon
-						, title   : title
-						, message : list
-									+'<br>Connect?'
-						, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
-						, ok      : () => {
-							bash( [ 'shareddataconnect', ip ] );
-							notify( icon, title, 'Connect Server rAudio ...' );
-						} 
-					} );
-				} else {
-					info( {
-						  icon    : icon
-						, title   : title
-						, message : list
-						, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
-						, ok      : () => infoNFSconnect( ip )
-					} );
-				}
-			} );
 		}
 	} );
 }

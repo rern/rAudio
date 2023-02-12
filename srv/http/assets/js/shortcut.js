@@ -25,7 +25,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 	if ( key === 'Escape' ) {
 		if ( $( '.menu:not(.hide)' ).length ) {
 			$( '.menu' ).addClass( 'hide' );
-			if ( 'colorpicker' in V ) $( '#colorcancel' ).click();
+			if ( V.colorpicker ) $( '#colorcancel' ).click();
 		} else {
 			$( '#button-settings' ).click();
 		}
@@ -71,7 +71,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		return
 	}
 	
-	if ( ! $( '#colorpicker' ).hasClass( 'hide' ) ) return
+	if ( V.colorpicker ) return
 
 	var keyevent = {
 		  MediaNextTrack     : 'next'
@@ -82,7 +82,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		, MediaTrackPrevious : 'previous'
 		, MediaTrackNext     : 'next'
 	}
-	if ( V.localhost ) {
+	if ( localhost ) {
 		keyevent.AudioVolumeDown = 'voldn';
 		keyevent.AudioVolumeMute = 'volmute';
 		keyevent.AudioVolumeUp   = 'volup';

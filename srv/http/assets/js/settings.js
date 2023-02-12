@@ -280,13 +280,10 @@ function psWlan( data ) {
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
-var dirsystem    = '/srv/http/data/system';
-var localhost    = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
-var orange       = '#de810e';
-var page         = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var red          = '#bb2828';
+var dirsystem  = '/srv/http/data/system';
+var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
 var timer;
-var pagenext     = {
+var pagenext   = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
 	, networks : [ 'player', 'system' ]
@@ -454,11 +451,13 @@ $( '.switch' ).click( function() {
 		if ( checked ) {
 			$( '#setting-'+ SW.id ).click();
 		} else {
+			S[ SW.id ]  = false;
 			notify( SW.icon, SW.title, 'Disable ...' );
 			bash( [ SW.id, false ] );
 			switchDisable();
 		}
 	} else {
+		S[ SW.id ]  = checked;
 		notify( SW.icon, SW.title, checked );
 		bash( [ SW.id, checked ], error => {
 			if ( error ) {

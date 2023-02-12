@@ -1,3 +1,7 @@
+.menu { z-index: 11 }
+#bar-bottom { z-index: 5 }
+.container input[type=checkbox] { z-index: 1 }
+
 body {
 	height: auto;
 }
@@ -9,7 +13,6 @@ body {
 	padding: 0;
 	background: var( --cg );
 	box-shadow: -4px 4px 10px #000000;
-	z-index: 11;
 }
 .menu a {
 	display: inline-block;
@@ -121,6 +124,7 @@ div.helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
+lbl,
 .menu-sub {
 	display: inline-block;
 	width: 95px;
@@ -129,14 +133,22 @@ div.helpblock {
 	padding-left: 3px;
 	background: var( --cg );
 }
+.menu-sub i,
+.sub {
+	color: var( --cw );
+}
 .sub {
 	margin-left: 0 !important;
 	width: 25px !important;
 	line-height: 25px !important;
 	text-align: center;
-	color: var( --cw );
 	background: var( --cg );
 	border-left: solid 1px var( --cga );
+}
+lbl {
+	width: fit-content;
+	padding: 0 5px;
+	background: var( --cga );
 }
 btn {
 	display: inline-block;
@@ -240,7 +252,6 @@ heading .disabled {
 	line-height: 30px;
 	text-align: center;
 	background: var( --cga );
-	z-index: 5;
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
 }
 #bar-bottom div {
@@ -382,7 +393,6 @@ input[type=image] {
 	height: 40px;
 	width: 80px;
 	opacity: 0;
-	z-index: 1;
 }
 .switchlabel {
 	display: inline-block;

@@ -21,7 +21,7 @@ window.onresize = () => { // rotate / resize
 	} else if ( V.library ) {
 		if ( V.librarylist ) {
 			setTimeout( () => {
-				if ( $( '.licover' ).length ) {
+				if ( V.librarytracklist ) {
 					$( '#lib-list p' ).css( 'min-height', ( barvisible ? 40 : 0 ) );
 					$( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
 				} else {
@@ -73,7 +73,7 @@ function webradioIcon( srcnoext ) {
 // pushstreamChannel() in common.js
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
 				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
-if ( ! V.localhost ) channels.push( 'vumeter' );
+if ( ! localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamDisconnect() {
 	clearIntervalAll();
@@ -291,7 +291,7 @@ function psPlaylist( data ) {
 			renderPlaylist( -1 );
 			bannerHide();
 		} else if ( 'autoplaycd' in data ) {
-			V.autoplaycd = 1;
+			V.autoplaycd = true;
 			setTimeout( () => delete V.autoplaycd, 5000 );
 		} else if ( 'html' in data ) {
 			S.song = data.song;

@@ -1,3 +1,14 @@
+.head { z-index: 10 }
+.react-tabs__tab:nth-child( 2 ) { z-index: 4 }
+.react-tabs__tab:nth-child( 3 ) { z-index: 3 }
+.react-tabs__tab:nth-child( 4 ) { z-index: 2 }
+#divhelp,
+#volume .label,
+.dblabel,
+.react-tabs__tab-list,
+.react-tabs__tab:nth-child( 5 ) { z-index: 1 }
+@media (max-width: 719px) { .tab-buttons::after { z-index: -1 } }
+
 @font-face {
 	font-family: Lato;
 	src: url( '../fonts/Lato-Regular.woff2' ) format( 'woff2' );
@@ -81,7 +92,6 @@ body {
 	line-height: 40px;
 	background: var( --cga );
 	box-shadow: 0px 4px 10px #000000;
-	z-index: 10;
 }
 .head .page-icon {
 	float: left;
@@ -126,7 +136,6 @@ body {
 	padding: 20px 0;
 	text-align: right;
 	background: #000000;
-	z-index: 1;
 }
 #divhelp a {
 	color: var( --cml );
@@ -487,7 +496,6 @@ input[data-tip='Mixer name, must be unique'] {
 	align-items: center;
 	background: #000000;
 	outline: 3px solid #000000;
-	z-index: 1;
 }
 .dblabel {
 	position: absolute;
@@ -495,7 +503,6 @@ input[data-tip='Mixer name, must be unique'] {
 	right: 11px;
 	width: 242px;
 	line-height: 16px;
-	z-index: 1;
 }
 .dblabel.lower {
 	top: auto;
@@ -593,7 +600,6 @@ input[data-tip='Mixer name, must be unique'] {
 	background: #000000;
 	box-shadow: 0px 4px 10px #000000;
 	border: none;
-	z-index: 1;
 }
 .react-tabs__tab {
 	position: relative;
@@ -613,11 +619,7 @@ input[data-tip='Mixer name, must be unique'] {
 	width: calc( 100% / 5 );
 	margin-left: 0;
 	padding: 0;
-	z-index: 4;
 }
-.react-tabs__tab:nth-child( 3 ) { z-index: 3 }
-.react-tabs__tab:nth-child( 4 ) { z-index: 2 }
-.react-tabs__tab:nth-child( 5 ) { z-index: 1 }
 .react-tabs__tab:focus:after {
 	content: '';
 	height: 0;
@@ -804,7 +806,6 @@ textarea:focus-visible {
 		height: 45px;
 		background: #000000;
 		box-shadow: 0px 4px 5px #000000;
-		z-index: -1;
 	}
 	#button-compactview {
 		position: fixed;

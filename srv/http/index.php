@@ -237,8 +237,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
-				<div id="qrwebui" class="qr hide"></div>
-				<div id="qrip" class="qr hide"></div>
 				<div id="covermap">
 					<?=i( 'coverTL', 'scale-dn map covermap r1 c1 ws hs' )?>
 					<?=i( 'coverT', 'guide map covermap r1 c2 wl hs' )?>
@@ -311,13 +309,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <?=$menu?>
 
-<div id="colorpicker" class="hide">
-	<div id="divcolor">
-	<?=i( 'colorcancel', 'close' )?>
-	<a id="colorreset" class="infobtn"><?=i( '', 'set0' )?> Default</a>&ensp;
-	<a id="colorok" class="infobtn infobtn-primary">OK</a>
-	</div>
-</div>
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
 		<img src="">
@@ -349,6 +340,9 @@ if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keybo
 foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 ?>
+<script>
+var jfiles = <?=json_encode( $jfiles )?>;
+</script>
 
 </body>
 </html>

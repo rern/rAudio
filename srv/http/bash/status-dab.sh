@@ -28,6 +28,7 @@ while true; do
 , "state"    : "play"
 , "song"     : '$(( $pos - 1 ))'
 , "station"  : ""
+, "stream"   : true
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
 }'

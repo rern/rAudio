@@ -22,7 +22,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$Fmenu( 'system', 'System' )} Bluetooth {$Fi( 'bluetooth' )} &#9656; • Discoverable by senders
+	· On rAudio: {$Fmenu( 'system', 'System' )}{$FnameIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
 	· On sender: Search &#9656; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
