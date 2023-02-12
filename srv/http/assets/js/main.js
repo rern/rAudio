@@ -444,7 +444,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	  , .content-top, #button-library, #mode-title, #button-lib-back \
 	  , #lib-list li, .licover, #lib-list i, #lib-list .li2 \
 	  , .menu a, .submenu' ).removeAttr( 'style' );
-	$( 'body' ).removeClass( 'disablescroll' );
+	$( 'body' ).css( 'overflow', '' );
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
 	V.colorpicker = false;

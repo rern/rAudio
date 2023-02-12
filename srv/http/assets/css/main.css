@@ -1947,11 +1947,6 @@ li.active .li2 bl {
 	height: 12px;
 }
 /* color */
-.disablescroll {
-	position : fixed;
-	width    : 100%;
-	overflow : hidden;
-}
 #colorpicker {
 	position: absolute;
 	top: 0;

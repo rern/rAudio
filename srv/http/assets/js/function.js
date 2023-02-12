@@ -96,7 +96,7 @@ function colorSet() {
 		$( '.licover' ).css( 'margin-top', '-230px' );
 		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 	}
-	$( 'body' ).addClass( 'disablescroll' );
+	$( 'body' ).css( 'overflow', 'hidden' );
 	setTimeout( () => $( '#lib-list li' ).eq( 1 ).click(), 0 );
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
