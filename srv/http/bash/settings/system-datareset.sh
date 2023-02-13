@@ -37,10 +37,10 @@ else                                # reset
 # system
 	# cmdline.txt
 	cmdline=$( sed -E 's/^(.*repair=yes) .*/\1/' /boot/cmdline.txt )
-	if [[ -e /boot/kernel.img || ! -e /usr/bin/chromium ]]; then
-		cmdline+=' console=tty1'
-	else
+	if systemctl -q is-enabled localbrowser; then
 		cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
+	else
+		cmdline+=' console=tty1'
 	fi
 	echo $cmdline > /boot/cmdline.txt
 	# config.txt
@@ -114,15 +114,14 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display
 
 # localbrowser
-if [[ -e /usr/bin/chromium ]]; then
-	rm -rf /root/.config/chromium
+rm -rf /root/.config/chromium /root/.mozilla
+if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	echo "\
 rotate=NORMAL
 zoom=100
 screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
-	systemctl -q enable localbrowser
 fi
 
 # mirror
