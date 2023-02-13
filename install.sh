@@ -9,6 +9,7 @@ if [[ -e /boot/kernel7.img && ! -e /usr/bin/firefox ]]; then
 	echo -e "$bar Switch Browser on RPi to Firefox ..."
 	pacman -R --noconfirm chromium
 	pacman -Sy --noconfirm firefox
+	timeout 1 firefox --headless &> /dev/null
 fi
 
 # 20230212
