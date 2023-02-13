@@ -114,7 +114,6 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display
 
 # localbrowser
-rm -rf /root/.config/chromium /root/.mozilla
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	echo "\
 rotate=NORMAL
@@ -122,6 +121,12 @@ zoom=100
 screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
+	if [[ -e /usr/bin/firefox ]]; then
+		rm -rf /root/.mozilla
+		timeout 1 firefox --headless &> /dev/null
+	else
+		rm -rf /root/.config/chromium
+	fi
 fi
 
 # mirror
