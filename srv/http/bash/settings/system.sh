@@ -716,9 +716,9 @@ $( < /etc/hostapd/hostapd.conf )
 $( < /etc/dnsmasq.conf )"
 			;;
 		localbrowser )
-			pkg=chromium
+			[[ -e /usr/bin/firefox ]] && pkg=firefox || pkg=chromium
 			fileconf=$dirsystem/localbrowser.conf
-			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+			[[ $pkg == chromium ]] && skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
 			;;
 		mpd )
 			conf=$( grep -v ^i $mpdconf )
