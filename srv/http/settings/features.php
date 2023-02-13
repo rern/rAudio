@@ -137,6 +137,12 @@ EOF
 ];
 htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
+$browser = '';
+if ( file_exists( '/usr/bin/firefox' ) ) {
+	$browser = '<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a>';
+} else if ( file_exists( '/usr/bin/chromium' ) ) {
+	$browser = '<a href="https://github.com/chromium/chromium">Chromium</a>';
+}
 $body = [
 	[
 		  'label'    => 'Access Point'
@@ -167,7 +173,7 @@ EOF
 		, 'id'       => 'localbrowser'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
+$browser - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
 	· Also by timer in {$Fi( 'gear btn' )}
@@ -175,7 +181,7 @@ EOF
 
 Note: HDMI display must be connected before boot.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/chromium' ) || file_exists( '/usr/bin/firefox' )
+		, 'exist'    => $browser
 	]
 	, [
 		  'label'    => 'File Sharing'
