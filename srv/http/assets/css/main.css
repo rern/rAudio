@@ -28,7 +28,6 @@
 #biocontent .close-root,
 #biocontent .bioback,
 #bioimg,
-#volume .rs-container::before,
 .index { z-index: 5 }
 #divlyricstitle { z-index: 2 }
 .rs-container::before,
