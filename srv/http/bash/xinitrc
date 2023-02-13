@@ -28,7 +28,7 @@ if [[ -e /usr/bin/firefox ]]; then
 	profile=$( grep -m1 Default $dirfirefox/profiles.ini | cut -d= -f2 )
 	fileuserjs=$dirfirefox/$profile/user.js
 	if [[ $scale == 1.00 ]]; then
-		rm $fileuserjs
+		rm -f $fileuserjs
 	else
 		echo 'user_pref("layout.css.devPixelsPerPx", "'$scale'");' > $fileuserjs
 	fi
