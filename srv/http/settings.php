@@ -6,6 +6,7 @@
 <?php
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
+	if ( $icon === 'localbrowser' && file_exists( '/usr/bin/firefox' ) ) $icon = 'firefox';
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
 function nameIcon( $name, $icon ) {

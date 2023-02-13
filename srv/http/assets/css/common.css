@@ -84,6 +84,8 @@
 .fa-features::before        { content: '\F50B' }
 .fa-file-music::before      { content: '\F549' }
 .fa-file-playlist::before   { content: '\F548' }
+.fa-firefox::before         { content: '\F58C'; position: absolute; }
+.fa-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .fa-flash::before           { content: '\F566' }
 .fa-folder::before          { content: '\F540' }
 .fa-folder-cascade::before  { content: '\F54A' }
@@ -118,8 +120,7 @@
 .fa-library::before         { content: '\F506' }
 .fa-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
 .fa-link::before            { content: '\F56B' }
-.fa-localbrowser::before    { content: '\F58C'; position: absolute; }
-.fa-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
+.fa-localbrowser::before    { content: '\F584' }
 .fa-lock::before            { content: '\F574' }
 .fa-login::before           { content: '\F574' }
 .fa-lyrics::before          { content: '\F54B' }
