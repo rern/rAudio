@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2023010200' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2023021300' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -118,7 +118,8 @@
 .fa-library::before         { content: '\F506' }
 .fa-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
 .fa-link::before            { content: '\F56B' }
-.fa-localbrowser::before    { content: '\F584' }
+.fa-localbrowser::before    { content: '\F58C'; position: absolute; }
+.fa-localbrowser::after     { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .fa-lock::before            { content: '\F574' }
 .fa-login::before           { content: '\F574' }
 .fa-lyrics::before          { content: '\F54B' }

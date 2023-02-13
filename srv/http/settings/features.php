@@ -163,11 +163,11 @@ EOF
 	]
 	, [
 		  'label'    => 'Browser on RPi'
-		, 'sublabel' => 'chromium'
+		, 'sublabel' => 'localbrowser'
 		, 'id'       => 'localbrowser'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
+<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a> - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
 	· Also by timer in {$Fi( 'gear btn' )}
@@ -175,7 +175,7 @@ EOF
 
 Note: HDMI display must be connected before boot.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/chromium' )
+		, 'exist'    => file_exists( '/usr/bin/chromium' ) || file_exists( '/usr/bin/firefox' )
 	]
 	, [
 		  'label'    => 'File Sharing'
