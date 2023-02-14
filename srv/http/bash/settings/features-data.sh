@@ -10,12 +10,6 @@
 
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-dirscrobble=$dirsystem/scrobble.conf
-for key in airplay bluetooth spotify upnp notify; do
-	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
-done
-scrobbleconf+='"'$( getContent $dirscrobble/user )'", ""'
-
 data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
@@ -28,18 +22,18 @@ data+='
 , "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
-, "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
+, "lyricsembedded"   : '$( exists $dirsystem/lyricsembedded )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
-, "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
-, "scrobbleconf"     : ['$scrobbleconf']
-, "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
+, "scrobble"         : '$( exists $dirsystem/scrobble )'
+, "scrobblekey"      : '$( exists $dirscrobble/key )'
+, "stoptimerconf"    : '$( getContent $dirshm/stoptimer )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
-, "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
+, "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'

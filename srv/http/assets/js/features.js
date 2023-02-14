@@ -327,55 +327,43 @@ $( '#setting-login' ).click( function() {
 	} );
 } );
 $( '#setting-scrobble' ).click( function() {
-	var content = `\
-<table>
-<tr><td></td><td><label><input type="checkbox">${ ico( 'airplay' ) } AirPlay</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">${ ico( 'bluetooth' ) } Bluetooth</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">${ ico( 'spotify' ) } Spotify</label></td></tr>
-<tr><td></td><td><label><input type="checkbox"> ${ ico( 'upnp' ) }UPnP</label></td></tr>
-<tr><td></td><td><label><input type="checkbox">Notify on scrobble</label></td></tr>
-<tr><td>User</td><td><input type="text"></td><td>&ensp;${ ico( 'minus-circle fa-lg scrobbleuser pointer' ) }</td></tr>
-<tr><td>Password</td><td><input type="password"></td><td>${ ico( 'eye' ) }</td></tr>
-</table>`;
-	info( {
-		  icon          : SW.icon
-		, title         : SW.title
-		, content       : content
-		, boxwidth      : 170
-		, values        : S.scrobbleconf
-		, checkblank    : S.scrobblekey ? '' : [ 0, 1 ]
-		, checkchanged  : S.scrobble
-		, beforeshow    : () => {
-			var $user = $( '#infoContent input[type=text]' );
-			var $pwd = $( '#infoContent input[type=password]' ).parents( 'tr' )
-			$user.prop( 'disabled', S.scrobblekey );
-			$pwd.toggleClass( 'hide', S.scrobblekey );
-			$( '.scrobbleuser' ).toggleClass( 'hide', ! S.scrobblekey )
-			$( '.scrobbleuser' ).click( function() {
-				$( this ).remove();
-				$user.prop( 'disabled', false );
-				$pwd.toggleClass( 'hide', false );
-				$( '#infoOk' ).addClass( 'disabled' );
-				$( '#infoContent input' ).off( 'keyup paste cut' );
-				I.checkblank = [ 0, 1 ];
-				infoCheckSet();
-			} );
-		}
-		, cancel        : switchCancel
-		, ok            : () => {
-			bash( [ 'scrobble', true, ...infoVal() ], response => {
-				if ( 'error' in response ) {
-					info( {
-						  icon    : SW.icon
-						, title   : SW.title
-						, message : response.message
-					} );
-					$( '#scrobble' ).prop( 'checked', 0 );
-				}
-			}, 'json' );
-			notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
-		}
-	} );
+	if ( ! S.scrobblekey ) { // api account page: https://www.last.fm/api/accounts
+		info( {
+			  icon    : SW.icon
+			, title   : SW.title
+			, message : 'Open <wh>Last.fm</wh> for authorization?'
+			, cancel  : switchCancel
+			, ok      : () => {
+				bash( 'grep apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2', function( apikey ) {
+					var ip = location.host;
+					location.href = 'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler/?ip='+ ip
+				} );
+			}
+		} );
+		return
+	}
+	
+	bash( [ 'scrobbleget' ], function( values ) {
+		info( {
+			  icon          : SW.icon
+			, title         : SW.title
+			, checkbox      : [
+				  ico( 'airplay' ) +'AirPlay'
+				, ico( 'bluetooth' ) +'Bluetooth'
+				, ico( 'spotify' ) +'Spotify'
+				, ico( 'upnp' ) +'UPnP'
+				, 'Notify on scrobble'
+			]
+			, boxwidth      : 170
+			, values        : values
+			, checkchanged  : S.scrobble
+			, cancel        : switchCancel
+			, ok            : () => {
+				bash( [ 'scrobble', true, ...infoVal() ] );
+				notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
+			}
+		} );
+	}, 'json' );
 } );
 $( '#nfsserver' ).click( function() {
 	var $this = $( this );
@@ -463,21 +451,36 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
-	if ( ! /code|error/.test( window.location.href ) ) {
-		showContent();
+	showContent();
+	// scrobble token
+	var url   = new URL( window.location.href );
+	window.history.replaceState( '', '', '/settings.php?p=features' );
+	var token = url.searchParams.get( 'token' );
+	if ( token ) {
+		bash( [ 'scrobbletoken', token ], function( response ) {
+			if ( 'error' in response ) {
+				info( {
+					  icon    : 'scrobble'
+					, title   : 'Scrobbler'
+					, message : response.message
+				} );
+			} else {
+				S.scrobblekey = true;
+				$( '#setting-scrobble' ).click();
+			}
+		}, 'json' );
 		return
 	}
 	
 	// spotify code
-	var url   = new URL( window.location.href );
 	var code  = url.searchParams.get( 'code' );
-	var error = url.searchParams.get( 'error' );
 	if ( code ) {
 		bash( [ 'spotifytoken', code ], () => showContent );
-		window.history.replaceState( '', '', window.location.origin +'/settings.php?p=features' );
 		return
-		
-	} else if ( error ) {
+	}
+	
+	var error = url.searchParams.get( 'error' );
+	if ( error ) {
 		info( {
 			  icon    : 'spotify'
 			, title   : 'Spotify'

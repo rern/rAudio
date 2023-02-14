@@ -355,49 +355,54 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobble ) # ( airplay bluetooth spotify upnp notify user password )
+scrobble ) # ( airplay bluetooth spotify upnp notify )
 	if [[ ${args[1]} == true ]]; then
 		conf=( ${args[@]:2:5} )
-		username=${args[7]}
-		password=${args[8]}
 		dirscrobble=$dirsystem/scrobble.conf
 		mkdir -p $dirscrobble
+		chown http:http $dirscrobble
 		keys=( airplay bluetooth spotify upnp notify )
 		for(( i=0; i < 5; i++ )); do
 			fileconf=$dirscrobble/${keys[ i ]}
 			[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
 		done
-		if [[ ! $password ]]; then
-			if [[ -e $dirscrobble/key && $username == $( < $dirscrobble/user ) ]]; then
-				touch $dirsystem/scrobble
-				pushRefresh
-			fi
-			exit
-		fi
-		
-		keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-		apikey=${keys[0]}
-		sharedsecret=${keys[1]}
-		apisig=$( iconv -t utf8 <<< "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
-					| md5sum \
-					| cut -c1-32 )
-		reponse=$( curl -sX POST \
-			--data "api_key=$apikey" \
-			--data "method=auth.getMobileSession" \
-			--data-urlencode "password=$password" \
-			--data-urlencode "username=$username" \
-			--data "api_sig=$apisig" \
-			--data "format=json" \
-			http://ws.audioscrobbler.com/2.0 )
-		[[ $reponse =~ error ]] && echo $reponse && exit
-		
-		echo $username > $dirscrobble/user
-		sed 's/.*key":"//; s/".*//' <<< $reponse > $dirscrobble/key
 		touch touch $dirsystem/scrobble
 	else
 		rm -f $dirsystem/scrobble
 	fi
 	pushRefresh
+	;;
+scrobbleget )
+	dirscrobble=$dirsystem/scrobble.conf
+	if [[ -e $dirscrobble ]]; then
+		for key in airplay bluetooth spotify upnp notify; do
+			scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
+		done
+		echo "[ $scrobbleconf ]"
+	else
+		echo '[ false, false, false, false, false ]'
+	fi
+	;;
+scrobbletoken )
+	token=${args[1]:0:32}
+	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	apikey=${keys[0]:0:32}
+	sharedsecret=${keys[1]:0:32}
+	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \
+				| md5sum \
+				| cut -c1-32 )
+	reponse=$( curl -sX POST \
+		--data "method=auth.getSession" \
+		--data "api_key=$apikey" \
+		--data "token=$token" \
+		--data "api_sig=$apisig" \
+		--data "format=json" \
+		http://ws.audioscrobbler.com/2.0 )
+	if [[ $reponse =~ error ]]; then
+		echo $reponse
+	else
+		jq -r .key <<< $reponse > $dirscrobble/key
+	fi
 	;;
 shairport-sync|spotifyd )
 	pkg=${args[0]}
