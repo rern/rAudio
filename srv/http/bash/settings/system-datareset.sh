@@ -54,6 +54,8 @@ hdmi_force_hotplug=1"
 	[[ $onboardwireless ]] && config+="
 dtparam=krnbt=on"
 	[[ $rpi0 ]] && config+="
+gpu_mem=32
+max_usb_current=1
 force_turbo=1
 hdmi_drive=2
 over_voltage=2"
