@@ -356,7 +356,7 @@ hdmi )
 		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"features","hdmihotplug":'$hdmi'}'
+	pushstream refresh '{"page":"features","hdmihotplug":'${args[1]}'}'
 	;;
 hostname )
 	hostname=${args[1]}
