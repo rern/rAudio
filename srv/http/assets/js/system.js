@@ -989,7 +989,7 @@ function renderPage() {
 		$( '#divbluetooth' ).parent().addClass( 'hide' );
 	}
 	if ( 'audio' in S ) {
-		$( '#audio' ).toggleClass( 'disabled', S.audiomodule && S.audiocards < 2 );
+		$( '#audio' ).toggleClass( 'disabled', S.audio && ! S.audiocards );
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
