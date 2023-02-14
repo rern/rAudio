@@ -131,7 +131,7 @@ $body = [
 		, 'disabled' => 'No other audio devices available.'
 		, 'help'     => <<< EOF
  · For 3.5mm jack and HDMI audio output
- · Should not be disabled if there\'re no other permanent DAC installed.
+ · Should not be disabled if there's no other DAC permanently installed.
 EOF
 	]
 	, [
