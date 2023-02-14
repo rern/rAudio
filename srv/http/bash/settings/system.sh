@@ -351,6 +351,7 @@ hddsleep )
 hdmi )
 	if [[ ${args[1]} == true ]]; then
 		echo hdmi_force_hotplug=1 >> /boot/config.txt
+		! grep -q hdmi_force_hotplug=1 /tmp/config.txt && pushReboot 'HDMI Hotplug'
 	else
 		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 	fi
