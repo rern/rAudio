@@ -180,8 +180,10 @@ cursor=$newcursor
 		if [[ $hdmi == true ]]; then
 			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
 				echo hdmi_force_hotplug=1 >> /boot/config.txt
-				echo HDMI Hotplug >> $dirshm/reboot
-				notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
+				if ! grep -q hdmi_force_hotplug=1 /tmp/config.txt; then
+					echo HDMI Hotplug >> $dirshm/reboot
+					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
+				fi
 			fi
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
