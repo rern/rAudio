@@ -24,6 +24,7 @@ scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )
 
 if [[ -e /usr/bin/firefox ]]; then
 	dirfirefox=/root/.mozilla/firefox
+	[[ ! -e $dirfirefox ]] && timeout 1 firefox --headless &> dev/null
 	profile=$( grep -m1 ^Default $dirfirefox/profiles.ini | cut -d= -f2 )
 	fileuserjs=$dirfirefox/$profile/user.js
 	if [[ $scale == 1.00 ]]; then

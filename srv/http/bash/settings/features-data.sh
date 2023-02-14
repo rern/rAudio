@@ -70,11 +70,11 @@ if [[ -e $dirsystem/localbrowser.conf ]]; then
 	if systemctl -q is-active localbrowser; then
 		localbrowser=true
 	else
-		systemctl -q is-enabled localbrowser && systemctl -q disable --now localbrowser
+		systemctl -q is-enabled localbrowser && $dirsettings/features.sh localbrowser$'\n'false
 	fi
 	data+='
 , "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
-, "localbrowser"     : '$( isactive localbrowser )'
+, "localbrowser"     : '$localbrowser'
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then

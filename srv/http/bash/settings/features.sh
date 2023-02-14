@@ -17,6 +17,14 @@ featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
 }
+localbrowserDisable() {
+	ply-image /srv/http/assets/img/splash.png
+	systemctl disable --now bootsplash localbrowser
+	systemctl enable --now getty@tty1
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	rm -f $dirsystem/onwhileplay
+	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+}
 localbrowserXset() {
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
@@ -223,6 +231,8 @@ cursor=$newcursor
 			if systemctl -q is-active localbrowser; then
 				systemctl enable bootsplash localbrowser
 				systemctl stop bluetoothbutton
+			else
+				localbrowserDisable
 			fi
 		elif [[ $changedscreenoff ]]; then
 			localbrowserXset $newscreenoff
@@ -232,12 +242,7 @@ cursor=$newcursor
 			fi
 		fi
 	else
-		ply-image /srv/http/assets/img/splash.png
-		systemctl disable --now bootsplash localbrowser
-		systemctl enable --now getty@tty1
-		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-		rm -f $dirsystem/onwhileplay
-		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+		localbrowserDisable
 	fi
 	pushRefresh
 	;;

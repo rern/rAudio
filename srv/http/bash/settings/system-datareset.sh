@@ -122,12 +122,7 @@ zoom=100
 screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
-	if [[ -e /usr/bin/firefox ]]; then
-		rm -rf /root/.mozilla
-		timeout 1 firefox --headless &> /dev/null
-	else
-		rm -rf /root/.config/chromium
-	fi
+	rm -rf /root/.config/chromium /root/.mozilla
 fi
 
 # mirror
