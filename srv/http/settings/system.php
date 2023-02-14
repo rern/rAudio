@@ -129,7 +129,10 @@ $body = [
 		, 'id'       => 'audio'
 		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
-		, 'help'     => 'Should not be disabled if there\'re no other permanent DAC installed.'
+		, 'help'     => <<< EOF
+ · For 3.5mm jack and HDMI audio output
+ · Should not be disabled if there\'re no other permanent DAC installed.
+EOF
 	]
 	, [
 		  'label'    => 'Bluetooth'
