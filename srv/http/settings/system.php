@@ -145,7 +145,10 @@ EOF
 		  'label'    => 'HDMI Hotplug'
 		, 'id'       => 'hdmi'
 		, 'setting'  => false
-		, 'help'     => 'Force enable HDMI without connecting before boot'
+		, 'help'     => <<< EOF
+ · Force enable HDMI without connecting before boot
+ · Enable if not detected properly
+EOF
 	]
 	, [
 		  'label'    => 'Wi-Fi'

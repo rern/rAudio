@@ -356,6 +356,7 @@ hdmi )
 		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 	fi
 	pushRefresh
+	pushstream refresh '{"page":"features","hdmihotplug":'$hdmi'}'
 	;;
 hostname )
 	hostname=${args[1]}
@@ -843,10 +844,10 @@ relays )
 	pushstream display '{"submenu":"relays","value":false}'
 	;;
 rfkilllist )
-	onboard=$( aplay -l | grep 'bcm2835 Headphones' )
+	onboard=$( aplay -l | grep 'bcm2835' )
 	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
 	echo "\
-<bll># aplay -l | grep 'bcm2835 Headphones'</bll>
+<bll># aplay -l | grep 'bcm2835'</bll>
 $onboard
 
 <bll># rfkill</bll>

@@ -181,7 +181,7 @@ $browser - Browser on RPi connected screen.
 
 Note: HDMI Hotplug
  · Disabled - Display must be connected before boot.
- · Enable - If connect before boot but not detected.
+ · Enable - If connect before boot but not detected properly.
 EOF
 		, 'exist'    => $browser
 	]

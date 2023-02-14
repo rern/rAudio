@@ -188,6 +188,7 @@ cursor=$newcursor
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 		fi
+		pushstream refresh '{"page":"system","hdmi":'$hdmi'}'
 		if [[ $changedrotate ]]; then
 			$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then

@@ -181,7 +181,7 @@ ${ htmlbrightness }
 		, title        : SW.title
 		, content      : content
 		, boxwidth     : 110
-		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.hdmihotplug, val.brightness ]
+		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, S.hdmi, val.brightness ]
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );

@@ -66,14 +66,14 @@ if [[ -e $dirsystem/localbrowser.conf ]]; then
 	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
-	hdmihotplug=$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true || echo false )
-	localbrowserconf='{ '$conf', "brightness" : '$brightness', "hdmihotplug": '$hdmihotplug' }'
+	localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
 	if systemctl -q is-active localbrowser; then
 		localbrowser=true
 	else
 		systemctl -q is-enabled localbrowser && systemctl -q disable --now localbrowser
 	fi
 	data+='
+, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
 , "localbrowser"     : '$( isactive localbrowser )'
 , "localbrowserconf" : '$localbrowserconf
 fi
