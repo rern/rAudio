@@ -61,7 +61,7 @@ data+='
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
-if [[ -e /usr/bin/chromium ]]; then
+if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
