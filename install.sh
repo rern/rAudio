@@ -5,11 +5,14 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230217
-if [[ -e /boot/kernel7.img && ! -e /usr/bin/firefox ]]; then
-	echo -e "$bar Switch Browser on RPi to Firefox ..."
-	pacman -R --noconfirm chromium
-	pacman -Sy --noconfirm firefox
-	timeout 1 firefox --headless &> /dev/null
+if [[ -e /boot/kernel7.img ]]; then
+	if [[ ! -e /usr/bin/firefox ]]; then
+		echo -e "$bar Switch Browser on RPi to Firefox ..."
+		pacman -R --noconfirm chromium
+		pacman -Sy --noconfirm firefox
+		timeout 1 firefox --headless &> /dev/null
+	fi
+	! grep -q hdmi_force_hotplug=1 /boot/config.txt && echo hdmi_force_hotplug=1 >> /boot/config.txt
 fi
 
 # 20230212

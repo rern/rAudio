@@ -348,6 +348,14 @@ hddsleep )
 	fi
 	pushRefresh
 	;;
+hdmi )
+	if [[ ${args[1]} == true ]]; then
+		echo hdmi_force_hotplug=1 >> /boot/config.txt
+	else
+		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+	fi
+	pushRefresh
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
@@ -438,8 +446,8 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm $dirbash/xinitrc; then
-			sed -i '/^chromium/ a\	--no-xshm \\' $dirbash/xinitrc
+		if [[ -e /boot/kernel7.img && -e /usr/bin/chromium ]]; then
+			! grep -q no-xshm $dirbash/xinitrc && sed -i '/chromium/ a\	--no-xshm \\' $dirbash/xinitrc
 		fi
 		systemctl enable localbrowser
 		pushReboot 'TFT 3.5" LCD'

@@ -139,6 +139,12 @@ $body = [
 		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit - Only for Bluetooth receivers with fixed sampling'
 	]
 	, [
+		  'label'    => 'HDMI Hotplug'
+		, 'id'       => 'hdmi'
+		, 'setting'  => false
+		, 'help'     => 'Force enable HDMI without connecting before boot'
+	]
+	, [
 		  'label'    => 'Wi-Fi'
 		, 'sublabel' => 'iw'
 		, 'id'       => 'wlan'

@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2023021300' ) format( 'woff2' );
+	src          : url( '/assets/fonts/rern.woff2?v.2023021400' ) format( 'woff2' );
 	font-display : block;
 	font-style   : normal;
 	font-weight  : normal;
@@ -100,7 +100,7 @@
 .fa-gpiopins::before        { content: '\F572' }
 .fa-guide::before           { content: '\F579' }
 .fa-hddsleep::before        { content: '\F553' }
-.fa-hdmi::after             { content: '\F58B' }
+.fa-hdmi::before            { content: '\F57B' }
 .fa-help::before            { content: '\F560' }
 .fa-hide::before            { content: '\F575' }
 .fa-hostapd::before         { content: '\F554' }

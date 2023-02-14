@@ -174,6 +174,7 @@ data+='
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
+, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
