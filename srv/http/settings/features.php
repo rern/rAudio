@@ -179,7 +179,9 @@ $browser - Browser on RPi connected screen.
 	· Also by timer in {$Fi( 'gear btn' )}
 	· Backlight still on - no energy saved
 
-Note: HDMI display must be connected before boot.
+Note: HDMI Hotplug
+- Display must be connected before boot.
+- Enable If connect before boot but not detected.
 EOF
 		, 'exist'    => $browser
 	]

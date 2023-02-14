@@ -63,14 +63,11 @@ data+='
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
+	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
-	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
-		localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
-	else
-		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
-	fi
+	hdmihotplug=$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true || echo false )
+	localbrowserconf='{ '$conf', "brightness" : '$brightness', "hdmihotplug": '$hdmihotplug' }'
 	if systemctl -q is-active localbrowser; then
 		localbrowser=true
 	else

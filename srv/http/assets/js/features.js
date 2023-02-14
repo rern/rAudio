@@ -167,8 +167,8 @@ $( '#setting-localbrowser' ).click( function() {
 		<option value="15">15</option>
 		</select>
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
-<tr><td></td>
-	<td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
 <tr style="height: 10px"></tr>
 </table>
 ${ htmlbrightness }
@@ -181,7 +181,7 @@ ${ htmlbrightness }
 		, title        : SW.title
 		, content      : content
 		, boxwidth     : 110
-		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.brightness ]
+		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, val.hdmihotplug, val.brightness ]
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );

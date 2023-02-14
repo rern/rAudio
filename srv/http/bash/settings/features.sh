@@ -156,6 +156,7 @@ localbrowser )
 		newcursor=${args[4]}
 		newscreenoff=${args[5]}
 		newonwhileplay=${args[6]}
+		hdmi=${args[7]}
 		if [[ -e $dirsystem/localbrowser.conf ]]; then
 			. $dirsystem/localbrowser.conf
 			[[ $rotate != $newrotate ]] && changedrotate=1          # [reboot] / [restart]
@@ -176,7 +177,15 @@ cursor=$newcursor
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-
+		if [[ $hdmi == true ]]; then
+			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
+				echo hdmi_force_hotplug=1 >> /boot/config.txt
+				echo HDMI Hotplug >> $dirshm/reboot
+				notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
+			fi
+		else
+			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+		fi
 		if [[ $changedrotate ]]; then
 			$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
@@ -191,7 +200,7 @@ cursor=$newcursor
 				pushRefresh
 				if ! grep -q "rotate=$newrotate" /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
-					notify chromium 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
 				fi
 			fi
