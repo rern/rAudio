@@ -180,8 +180,8 @@ $browser - Browser on RPi connected screen.
 	· Backlight still on - no energy saved
 
 Note: HDMI Hotplug
-- Display must be connected before boot.
-- Enable If connect before boot but not detected.
+ · Disabled - Display must be connected before boot.
+ · Enable - If connect before boot but not detected.
 EOF
 		, 'exist'    => $browser
 	]
