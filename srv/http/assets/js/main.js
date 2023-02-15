@@ -1381,7 +1381,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 <div class="infomessage">${ icon }
 <wh>${ name }</wh>
 </div>
-<div class="menu info" style="position: relative; left: 0; text-align: left; margin: 10px auto;">
+<div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu cmd" data-cmd="addplay"></i>
 <a data-cmd="playnext" class="cmd"><i class="fa fa-plus-circle"></i>Play next</a>
 <a data-cmd="replace" class="sub cmd"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu cmd" data-cmd="replaceplay"></i>

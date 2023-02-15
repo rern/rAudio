@@ -721,6 +721,12 @@ hr {
 	color: var( --cg60 );
 	background: none;
 }
+#infoContent .menu {
+	position: relative;
+	left: 0;
+	margin: 10px auto;
+	text-align: left;
+}
 .infomessage {
 	user-select: text;
 	-webkit-user-select: text;
