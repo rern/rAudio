@@ -242,6 +242,7 @@ EOF
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
  · Web Radio must be manually scrobbled: Playing title &#9656; {$Fi( 'lastfm btn' )} Scrobble
+ · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &#9656; User icon &#9656; View profile
 EOF
 	]
 	, [
