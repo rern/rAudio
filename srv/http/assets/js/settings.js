@@ -434,7 +434,7 @@ $( '.setting, .switch' ).click( function() {
 } );
 $( '.switch' ).click( function() {
 	var $this   = $( this );
-	if ( $this.hasClass( 'custom' ) || $this.hasClass( 'nobanner' ) ) return
+	if ( $this.is( '.custom, .nobanner' ) ) return
 	
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
