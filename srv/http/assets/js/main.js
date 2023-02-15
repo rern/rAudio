@@ -107,16 +107,11 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 }
 	
 $( 'body' ).click( function( e ) {
+	if ( ! I.hidden || V.colorpicker ) return
+	
 	var $target = $( e.target );
-	if ( ! $target.hasClass( 'savedlist' )
-		&& ! $target.hasClass( 'bkcoverart' )
-		&& ! $target.hasClass( 'bkradio' )
-		&& ! V.colorpicker
-	) menuHide();
-	if ( ! V.local
-		&& $( '.pl-remove' ).length
-		&& ! $target.hasClass( 'pl-remove' )
-	) $( '.pl-remove' ).remove();
+	if ( ! $target.is( '.bkcoverart, .bkradio, .savedlist' ) ) menuHide();
+	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 } );
 $( '#page-library' ).on( 'click', 'p', function() {
 	$( '.licover .cover-change' ).remove();
@@ -1386,31 +1381,26 @@ $( '#lib-mode-list' ).click( function( e ) {
 <div class="infomessage">${ icon }
 <wh>${ name }</wh>
 </div>
-<br>
-<table>
-<tr>
-	<td><label><input type="radio" name="add" value="add">${ ico( 'plus-o' ) }Add</label></td>
-	<td><label><input type="radio" name="add" value="addplay">${ ico( 'play-plus' ) }Add + Play</label></td>
-</tr>
-<tr>
-	<td><label><input type="radio" name="add" value="playnext">${ ico( 'plus-circle' ) }Play next</label></td>
-</tr>
-<tr>
-	<td><label><input type="radio" name="add" value="replace">${ ico( 'replace' ) }Replace</label></td>
-	<td><label><input type="radio" name="add" value="replaceplay">${ ico( 'play-replace' ) }Replace + Play</label></td>
-</tr>
-</table>`;
+<div class="menu info" style="position: relative; left: 0; text-align: left; margin: 10px auto;">
+<a data-cmd="add" class="sub cmd"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu cmd" data-cmd="addplay"></i>
+<a data-cmd="playnext" class="cmd"><i class="fa fa-plus-circle"></i>Play next</a>
+<a data-cmd="replace" class="sub cmd"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu cmd" data-cmd="replaceplay"></i>
+</div>`;
 	info( {
-		  icon        : 'playlist'
-		, title       : 'Add to Playlist'
-		, content     : content
-		, values      : 'addplay'
-		, ok          : () => {
-			var cmd    = infoVal();
+		  icon      : 'playlist'
+		, title     : 'Add to Playlist'
+		, content   : content
+		, values    : 'addplay'
+		, okno      : 1      
+	} );
+	setTimeout( () => {
+		$( '#infoContent' ).on( 'click', '.cmd', function() {
+			var cmd    = $( this ).data( 'cmd' );
 			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
 			addToPlaylist( cmd, [ action, path ], msg );
-		}
-	} );
+			$( '#infoX' ).click();
+		} );
+	}, 300 );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	$( '#lib-search-close' ).click();
@@ -1598,12 +1588,12 @@ Exclude this thumbnail?`
 	}
 	var $this   = $( this );
 	var $target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'coverart' ) ) return
+	if ( $target.is( '.fa-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+	if ( ( menushow && V.mode !== 'webradio' ) || $target.is( '.li-icon, .licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1897,7 +1887,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'pl-remove' ) ) return
+	if ( $target.is( '.fa-save, .li-icon, .pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ! [ 'mpd', 'upnp' ].includes( S.player ) ) {
