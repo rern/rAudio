@@ -343,27 +343,25 @@ $( '#setting-scrobble' ).click( function() {
 		return
 	}
 	
-	bash( [ 'scrobbleget' ], function( values ) {
-		info( {
-			  icon          : SW.icon
-			, title         : SW.title
-			, checkbox      : [
-				  ico( 'airplay' ) +'AirPlay'
-				, ico( 'bluetooth' ) +'Bluetooth'
-				, ico( 'spotify' ) +'Spotify'
-				, ico( 'upnp' ) +'UPnP'
-				, 'Notify on scrobble'
-			]
-			, boxwidth      : 170
-			, values        : values
-			, checkchanged  : S.scrobble
-			, cancel        : switchCancel
-			, ok            : () => {
-				bash( [ 'scrobble', true, ...infoVal() ] );
-				notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
-			}
-		} );
-	}, 'json' );
+	info( {
+		  icon          : SW.icon
+		, title         : SW.title
+		, checkbox      : [
+			  ico( 'airplay' ) +'AirPlay'
+			, ico( 'bluetooth' ) +'Bluetooth'
+			, ico( 'spotify' ) +'Spotify'
+			, ico( 'upnp' ) +'UPnP'
+			, 'Notify on scrobbling'
+		]
+		, boxwidth      : 170
+		, values        : S.scrobbleconf
+		, checkchanged  : S.scrobble
+		, cancel        : switchCancel
+		, ok            : () => {
+			bash( [ 'scrobble', true, ...infoVal() ] );
+			notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
+		}
+	} );
 } );
 $( '#nfsserver' ).click( function() {
 	var $this = $( this );

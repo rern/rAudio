@@ -355,33 +355,19 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobble ) # ( airplay bluetooth spotify upnp notify )
+scrobble )
 	if [[ ${args[1]} == true ]]; then
-		conf=( ${args[@]:2:5} )
-		dirscrobble=$dirsystem/scrobble.conf
-		mkdir -p $dirscrobble
-		chown http:http $dirscrobble
-		keys=( airplay bluetooth spotify upnp notify )
-		for(( i=0; i < 5; i++ )); do
-			fileconf=$dirscrobble/${keys[ i ]}
-			[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
-		done
+		echo "\
+airplay=${args[2]}
+bluetooth=${args[3]}
+spotify=${args[4]}
+upnp=${args[5]}
+notify=${args[6]}" > $dirsystem/scrobble.conf
 		touch touch $dirsystem/scrobble
 	else
 		rm -f $dirsystem/scrobble
 	fi
 	pushRefresh
-	;;
-scrobbleget )
-	dirscrobble=$dirsystem/scrobble.conf
-	if [[ -e $dirscrobble ]]; then
-		for key in airplay bluetooth spotify upnp notify; do
-			scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
-		done
-		echo "[ $scrobbleconf ]"
-	else
-		echo '[ false, false, false, false, false ]'
-	fi
 	;;
 scrobbletoken )
 	token=${args[1]:0:32}
@@ -401,7 +387,11 @@ scrobbletoken )
 	if [[ $reponse =~ error ]]; then
 		echo $reponse
 	else
-		jq -r .key <<< $reponse > $dirscrobble/key
+		echo "\
+apikey=$apikey
+sharedsecret=$sharedsecret
+sk=$( jq -r .key <<< $reponse )
+" > $dirsystem/scrobblekey
 	fi
 	;;
 shairport-sync|spotifyd )

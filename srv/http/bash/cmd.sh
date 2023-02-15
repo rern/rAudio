@@ -860,7 +860,9 @@ playerstart )
 playerstop )
 	elapsed=${args[1]}
 	player=$( < $dirshm/player )
-	[[ -e $dirsystem/scrobble && -e $dirsystem/scrobble.conf/$player ]] && cp -f $dirshm/{status,scrobble}
+	if [[ -e $dirsystem/scrobble ]] && grep -q $player=true $dirsystem/scrobble.conf; then
+		cp -f $dirshm/{status,scrobble}
+	fi
 	killall cava &> /dev/null
 	echo mpd > $dirshm/player
 	[[ $player != upnp ]] && $dirbash/status-push.sh

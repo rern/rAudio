@@ -9,6 +9,7 @@
 . /srv/http/bash/common.sh
 
 spotifyredirect=https://rern.github.io/raudio/spotify
+scrobbleconf=$( sed 's/^.*=/,/' $dirsystem/scrobble.conf 2> /dev/null )
 
 data+='
   "page"             : "features"
@@ -29,7 +30,8 @@ data+='
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
-, "scrobblekey"      : '$( exists $dirscrobble/key )'
+, "scrobbleconf"     : [ '${scrobbleconf:1}' ]
+, "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
