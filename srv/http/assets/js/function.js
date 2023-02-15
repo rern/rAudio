@@ -103,13 +103,13 @@ function colorSet() {
 		}
 	} else {
 		if ( V.savedlist || V.savedplaylist ) {
-			pageScroll( 0 );
 			$( '#pl-savedlist .li-icon' ).eq( 0 ).click();
 		} else {
 			$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
 			$( '#pl-list li.active .li-icon' ).click();
 		}
 	}
+	pageScroll( 0 );
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
 	<div id="divcolor">
