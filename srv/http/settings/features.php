@@ -240,7 +240,6 @@ EOF
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
- · Option to include renderers - Exclude if already scrobbleed by sender devices.
  · SnapClient already scrobbled by SnapServer.
  · Web Radio must be manually scrobbled: Playing title &#9656; {$Fi( 'lastfm btn' )} Scrobble
 EOF
