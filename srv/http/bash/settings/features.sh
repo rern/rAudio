@@ -369,7 +369,7 @@ notify=${args[6]}" > $dirsystem/scrobble.conf
 	fi
 	pushRefresh
 	;;
-scrobbletoken )
+scrobblekeyget )
 	token=${args[1]:0:32}
 	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]:0:32}
@@ -377,20 +377,20 @@ scrobbletoken )
 	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \
 				| md5sum \
 				| cut -c1-32 )
-	reponse=$( curl -sX POST \
+	response=$( curl -sX POST \
 		--data "method=auth.getSession" \
 		--data "api_key=$apikey" \
 		--data "token=$token" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
-	if [[ $reponse =~ error ]]; then
-		echo $reponse
+	if [[ $response =~ error ]]; then
+		jq -r .message <<< $response
 	else
 		echo "\
 apikey=$apikey
 sharedsecret=$sharedsecret
-sk=$( jq -r .key <<< $reponse )
+sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
 	fi
 	;;

@@ -24,7 +24,7 @@ fi
 apisig=$( echo -n "${sigalbum}api_key${apikey}artist${Artist}methodtrack.scrobblesk${sk}timestamp${timestamp}track${Title}${sharedsecret}" \
 			| md5sum \
 			| cut -c1-32 )
-reponse=$( curl -sX POST \
+response=$( curl -sX POST \
 	--data-urlencode "$dataalbum" \
 	--data "api_key=$apikey" \
 	--data-urlencode "artist=$Artist" \
@@ -35,7 +35,7 @@ reponse=$( curl -sX POST \
 	--data "api_sig=$apisig" \
 	--data "format=json" \
 	http://ws.audioscrobbler.com/2.0 )
-if [[ $reponse =~ error ]]; then
+if [[ $response =~ error ]]; then
 	msg="Error: $( jq -r .message <<< $response )"
 else
 	grep -q notify=true $dirsystem/scrobble.conf && msg="${Title//\"/\\\"}"

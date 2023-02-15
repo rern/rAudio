@@ -449,36 +449,34 @@ function renderPage() {
 		$( '#camilladsp' ).toggleClass( 'disabled', S.equalizer );
 		$( '#equalizer' ).toggleClass( 'disabled', S.camilladsp );
 	}
-	showContent();
+	if ( /features$/.test( window.location.href ) ) {
+		showContent();
+		return
+	}
+	
 	// scrobble token
 	var url   = new URL( window.location.href );
 	window.history.replaceState( '', '', '/settings.php?p=features' );
 	var token = url.searchParams.get( 'token' );
+	var code  = url.searchParams.get( 'code' );
+	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobbletoken', token ], function( response ) {
-			if ( 'error' in response ) {
+		bash( [ 'scrobblekeyget', token ], function( error ) {
+			if ( error ) {
 				info( {
 					  icon    : 'scrobble'
 					, title   : 'Scrobbler'
-					, message : response.message
+					, message : error
 				} );
 			} else {
 				S.scrobblekey = true;
+				showContent();
 				$( '#setting-scrobble' ).click();
 			}
-		}, 'json' );
-		return
-	}
-	
-	// spotify code
-	var code  = url.searchParams.get( 'code' );
-	if ( code ) {
+		} );
+	} else if ( code ) {
 		bash( [ 'spotifytoken', code ], () => showContent );
-		return
-	}
-	
-	var error = url.searchParams.get( 'error' );
-	if ( error ) {
+	} else if ( error ) {
 		info( {
 			  icon    : 'spotify'
 			, title   : 'Spotify'
