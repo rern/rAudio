@@ -1391,16 +1391,16 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, title     : 'Add to Playlist'
 		, content   : content
 		, values    : 'addplay'
+		, beforeshow : () => {
+			$( '#infoContent' ).on( 'click', '.cmd', function() {
+				var cmd    = $( this ).data( 'cmd' );
+				var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
+				addToPlaylist( cmd, [ action, path ], msg );
+				$( '#infoX' ).click();
+			} );
+		}
 		, okno      : 1      
 	} );
-	setTimeout( () => {
-		$( '#infoContent' ).on( 'click', '.cmd', function() {
-			var cmd    = $( this ).data( 'cmd' );
-			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
-			addToPlaylist( cmd, [ action, path ], msg );
-			$( '#infoX' ).click();
-		} );
-	}, 300 );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
 	$( '#lib-search-close' ).click();
