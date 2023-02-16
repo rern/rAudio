@@ -187,10 +187,10 @@ $body = [
 	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
-	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-	 · HAT with EEPROM could be automatically detected.
-	 · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
-	</span>
+I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+ · HAT with EEPROM could be automatically detected.
+ · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
+</span>
 </div>
 EOF
 	]
