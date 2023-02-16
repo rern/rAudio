@@ -51,7 +51,7 @@ EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
- · Spotify private app - <code>Client ID</code> and <code>Client Secret</code>
+ · <code>Client ID</code> and <code>Client Secret</code> from Spotify private app
 
 To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
  · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
@@ -64,8 +64,9 @@ To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bl
 · <btn>USERS AND ACCESS</btn> &raquo; <btn>ADD NEW USER</btn>
 	· Name: <code>(any)</code>
 	· Spotify Account: <code>(email)</code>
-· {$FnameIcon( 'Spotify', 'spotify' )} Enable
-	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
+	
+Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
+
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
