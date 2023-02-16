@@ -48,8 +48,11 @@ EOF
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )} Reset client keys
 
-<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device (Require Premium account)
-Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
+<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
+Require:
+	 · Premium account
+	 · Spotify private app - <code>Client ID</code> and <code>Client Secret</code>
+To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
  · Open <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
  · <btn>LOG IN</btn>
 	· with normal Spotify account
@@ -60,7 +63,7 @@ Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot point
 	· Redirect URIs: <c id="redirecturi"></c>
 · <btn>USERS AND ACCESS</btn> &#9656; <btn>ADD NEW USER</btn>
 	· Name: <code>(any)</code>
-	· Spotify Account: <code>your@email</code>
+	· Spotify Account: <code>(your@email)</code>
 · {$FnameIcon( 'Spotify', 'spotify' )} Enable
 	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
