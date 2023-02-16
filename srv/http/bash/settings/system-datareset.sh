@@ -47,18 +47,18 @@ else                                # reset
 	cpuInfo
 	config="\
 initramfs initramfs-linux.img followkernel
-disable_splash=1
 disable_overscan=1
+disable_splash=1
 dtparam=audio=on"
-	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
-hdmi_force_hotplug=1"
 	[[ $onboardwireless ]] && config+="
 dtparam=krnbt=on"
+	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
+hdmi_force_hotplug=1"
 	[[ $rpi0 ]] && config+="
-gpu_mem=32
-max_usb_current=1
 force_turbo=1
+gpu_mem=32
 hdmi_drive=2
+max_usb_current=1
 over_voltage=2"
 	echo "$config" > /boot/config.txt
 	# css color
