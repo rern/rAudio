@@ -1393,10 +1393,11 @@ $( '#lib-mode-list' ).click( function( e ) {
 		, values    : 'addplay'
 		, beforeshow : () => {
 			$( '#infoContent' ).on( 'click', '.cmd', function() {
-				var cmd    = $( this ).data( 'cmd' );
-				var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
-				addToPlaylist( cmd, [ action, path ], msg );
+				V.bkradio   = true;
+				var cmd     = $( this ).data( 'cmd' );
+				var action  = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
 				$( '#infoX' ).click();
+				addToPlaylist( cmd, [ action, path ], msg );
 			} );
 		}
 		, okno      : 1      
