@@ -51,7 +51,7 @@ EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
- · <code>Client ID</code> and <code>Client Secret</code> from Spotify private app
+ · <code>Client ID</code> and <code>Client Secret</code> from your Spotify private app
 
 To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
  · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
