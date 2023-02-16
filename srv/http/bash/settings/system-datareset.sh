@@ -49,7 +49,8 @@ else                                # reset
 initramfs initramfs-linux.img followkernel
 disable_splash=1
 disable_overscan=1
-dtparam=audio=on
+dtparam=audio=on"
+	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
 	[[ $onboardwireless ]] && config+="
 dtparam=krnbt=on"
