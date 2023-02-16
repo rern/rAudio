@@ -726,6 +726,7 @@ hr {
 	left: 0;
 	margin: 10px auto;
 	text-align: left;
+	box-shadow: none;
 }
 .infomessage {
 	user-select: text;
