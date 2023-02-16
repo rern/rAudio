@@ -321,9 +321,9 @@ EOF
 		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
-	· Library database
-	· Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	· Display order of Library home
+ · Library database
+ · Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+ · Display order of Library home
 	
 Note:
  · SSH password must be default.
@@ -335,18 +335,18 @@ Note:
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
-		· Linux:
-			NFS: <c>777</c>
-			CIFS/SMB: <c>read only = no</c>
-		· Windows:
-			Right-click Folder &#9656; Properties &#9656; 
-				<btn>Sharing</btn> &#9656; <btn>Advanced Sharing...</btn> &#9656; <btn>Permissions</btn>
-					Everyone - Full Control
-				<btn>Security</btn>
-					Everyone - Full Control
+	 · Linux:
+		NFS: <c>777</c>
+		CIFS/SMB: <c>read only = no</c>
+	 · Windows:
+		Right-click Folder &raquo; Properties &raquo; 
+			<btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn>
+				Everyone - Full Control
+			<btn>Security</btn>
+				Everyone - Full Control
 	Clients:
-		· {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
-		· Data on 1st connected client will be used as initial shared.
+	 · {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
+	 · Data on 1st connected client will be used as initial shared.
 EOF
 	]
 ];

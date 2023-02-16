@@ -1,7 +1,7 @@
 <?php
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = 'File Explorer &#9656; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
+$fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
@@ -50,20 +50,20 @@ EOF
 
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
-	 · Premium account
-	 · Spotify private app - <code>Client ID</code> and <code>Client Secret</code>
+ · Premium account
+ · Spotify private app - <code>Client ID</code> and <code>Client Secret</code>
+
 To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
- · Open <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
- · <btn>LOG IN</btn>
+ · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
 	· with normal Spotify account
  · <btn>CREATE AN APP</btn>
 	· App name: <code>rAudio</code>
 	· App description: <code>(any)</code>
 · <btn>EDIT SETTINGS</btn>
 	· Redirect URIs: <c id="redirecturi"></c>
-· <btn>USERS AND ACCESS</btn> &#9656; <btn>ADD NEW USER</btn>
+· <btn>USERS AND ACCESS</btn> &raquo; <btn>ADD NEW USER</btn>
 	· Name: <code>(any)</code>
-	· Spotify Account: <code>(your@email)</code>
+	· Spotify Account: <code>(email)</code>
 · {$FnameIcon( 'Spotify', 'spotify' )} Enable
 	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
 EOF
@@ -132,8 +132,8 @@ EOF
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust &#9656; {$Fi( 'plus-circle btn' )} Add &#9656; {$Fi( 'save btn' )} Save
- · Existing: Adjust &#9656; {$Fi( 'save btn' )} Save
+ · New: Adjust &raquo; {$Fi( 'plus-circle btn' )} Add &raquo; {$Fi( 'save btn' )} Save
+ · Existing: Adjust &raquo; {$Fi( 'save btn' )} Save
  · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
@@ -245,8 +245,8 @@ EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title &#9656; {$Fi( 'lastfm btn' )} Scrobble
- · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &#9656; User icon &#9656; View profile
+ · Web Radio must be manually scrobbled: Playing title &raquo; {$Fi( 'lastfm btn' )} Scrobble
+ · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; View profile
 EOF
 	]
 	, [
@@ -273,7 +273,7 @@ EOF
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features &#9656; Services for NFS &#9656; Client for NFS · Enable
+	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	
 Note: SSH password must be default.
