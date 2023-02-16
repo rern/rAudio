@@ -475,15 +475,9 @@ function info( json ) {
 		}
 		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', I.boxW );
 		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
-		var $tdfirst = $( '#infoContent td:first-child' );
-		var tdL      = $( '#infoContent tr:eq( 0 ) td' ).length;
-		if ( $tdfirst.find( 'input' ).length ) { // radio / checkbox
-			$tdfirst.css( 'padding-right', tdL > 1 ? 10 : 0 );
-		} else { // label - text input
-			$tdfirst.css( {
-				  'padding-right' : tdL > 1 ? 5 : 0
-				, 'text-align'    : tdL > 1 ? 'right' : 'left'
-			} );
+		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
+			var $td1st = $( '#infoContent td:first-child' );
+			$td1st.css( 'padding-right', $td1st.find( 'input' ).length ? '10px' : '5px' ); // checkbox/radio gutter : text label
 		}
 		if ( ( I.messagealign || I.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();

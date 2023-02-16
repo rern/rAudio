@@ -344,20 +344,20 @@ $( '#setting-scrobble' ).click( function() {
 	}
 	
 	info( {
-		  icon          : SW.icon
-		, title         : SW.title
-		, checkbox      : [
+		  icon         : SW.icon
+		, title        : SW.title
+		, checkbox     : [
 			  ico( 'airplay' ) +'AirPlay'
 			, ico( 'bluetooth' ) +'Bluetooth'
 			, ico( 'spotify' ) +'Spotify'
 			, ico( 'upnp' ) +'UPnP'
-			, 'Notify on scrobbling'
 		]
-		, boxwidth      : 170
-		, values        : S.scrobbleconf
-		, checkchanged  : S.scrobble
-		, cancel        : switchCancel
-		, ok            : () => {
+		, footer       : '<label><input type="checkbox">Notify on scrobbling</label>'
+		, boxwidth     : 170
+		, values       : S.scrobbleconf
+		, checkchanged : S.scrobble
+		, cancel       : switchCancel
+		, ok           : () => {
 			bash( [ 'scrobble', true, ...infoVal() ] );
 			notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
 		}
