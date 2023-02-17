@@ -593,11 +593,11 @@ input.disabled + .switchlabel:after {
 		overflow: hidden;
 	}
 	.container {
+		padding: 30px 10px 200px 10px;
 		overflow-y: auto;
 	}
 }
 @media ( max-width: 580px ) {
-	.container { padding: 30px 10px 70px 10px }
 	.head { padding-right: 0 !important }
 	wide { display: none }
 }
