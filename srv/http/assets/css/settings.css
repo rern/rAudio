@@ -472,11 +472,22 @@ input.disabled + .switchlabel:after {
 	fill: var( --cg60 );
 	background: #000000;
 }
+body {
+	height: 100%;
+	overflow: hidden;
+}
+#divcontainer {
+	margin-top: 40px;
+	width: 100%;
+	height: calc( 100% - 80px );
+	overflow-x: hidden;
+	overflow-y: auto;
+}
 .container {
 	max-width: 768px;
 	min-height: 100vh;
-	height: 100%;
-	padding: 30px 55px 100px 55px;
+	padding: 0 55px 55px 55px;
+	overflow-y: auto;
 }
 .col-l,
 .col-r {
@@ -577,6 +588,9 @@ input.disabled + .switchlabel:after {
 	vertical-align: baseline;
 }
 @media (max-height: 570px) {
+	#divcontainer {
+		height: calc( 100% - 40px );
+	}
 	.helphead { margin-right: 0 }
 	.helphead::before {
 		content: '\f509';
@@ -587,17 +601,8 @@ input.disabled + .switchlabel:after {
 @media (min-width: 768px) {
 	.container { margin: 0 auto }
 }
-@media (max-width: 768px) {
-	body {
-		height: 100%;
-		overflow: hidden;
-	}
-	.container {
-		overflow-y: auto;
-	}
-}
 @media ( max-width: 580px ) {
-	.container { padding: 30px 10px 70px 10px }
+	.container { padding: 0 10px 70px 10px }
 	.head { padding-right: 0 !important }
 	wide { display: none }
 }
