@@ -184,6 +184,7 @@ I = { hidden: true }
 function info( json ) {
 	I          = json;
 	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' ); // consecutive info calls
+	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' ); // fix: narrow screen scroll
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
@@ -529,6 +530,7 @@ function infoButtonCommand( fn ) {
 			}
 		} );
 	}
+	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoButtonReset() {
 	I = { hidden: true }
