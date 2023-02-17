@@ -2,9 +2,6 @@
 #bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
 
-body {
-	height: auto;
-}
 #listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
 .menu {
 	position: absolute;
@@ -590,8 +587,17 @@ input.disabled + .switchlabel:after {
 @media (min-width: 768px) {
 	.container { margin: 0 auto }
 }
+@media (max-width: 768px) {
+	body {
+		height: 100%;
+		overflow: hidden;
+	}
+	.container {
+		overflow-y: auto;
+	}
+}
 @media ( max-width: 580px ) {
-	.container { padding: 30px 10px 100px 10px }
+	.container { padding: 30px 10px 70px 10px }
 	.head { padding-right: 0 !important }
 	wide { display: none }
 }
