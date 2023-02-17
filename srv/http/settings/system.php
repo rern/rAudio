@@ -55,6 +55,7 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
+		<div id="warning"><i class="fa fa-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>

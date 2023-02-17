@@ -947,7 +947,8 @@ function renderPage() {
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
-	$( '#status' ).html( S.status );
+	$( '#status' ).html( S.status + S.warning );
+	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {
@@ -1010,5 +1011,10 @@ function renderPage() {
 	showContent();
 }
 function getStatus() {
-	bash( [ 'statuscurrent' ], status => $( '#status' ).html( status ) );
+	bash( [ 'statuscurrent' ], data => {
+		S.status  = data.status;
+		S.warning = data.warning;
+		$( '#status' ).html( S.status + S.warning );
+		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	}, 'json' );
 }

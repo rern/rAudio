@@ -12,23 +12,23 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
+warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x00000 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" )
 	current=${binary: -4}
 	occured=${binary:0:4}
-	e_current=( 'Under-voltage (<4.7V) detected' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
-	e_occured=( 'Under-voltage (<4.7V) has occurred' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+	e_current=( '<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
+	e_occured=( '<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
 	for i in 0 1 2 3; do
-		[[ ${current:i:1} == 1 ]] && event+=" · ${e_current[i]}<br>"
+		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
 	done
 	for i in 0 1 2 3; do
-		[[ ${occured:i:1} == 1 ]] && event+=" · ${e_occured[i]}<br>"
+		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
-	[[ $event ]] && status+="<i class='fa fa-warning yl'></i>&ensp;Warning !<br>$event"
 fi
 # for interval refresh
-[[ $1 == status ]] && echo $status && exit
+[[ $1 == status ]] && echo '{"status":"'$status'","warning":"'$warning'"}' && exit
 
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
@@ -210,7 +210,8 @@ data+='
 , "timezone"         : "'$timezone'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
-, "vuledconf"        : '$vuledconf
+, "vuledconf"        : '$vuledconf'
+, "warning"          : "'$warning'"'
 
 cpuInfo
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
