@@ -13,10 +13,19 @@ $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
-if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - detected now <code>0x1</code>"
-elif [[ $throttled == 0x10000 ]]; then
-	status+="<br><i class='fa fa-warning yl'></i>&ensp;Voltage under 4.7V - occurred <code>0x10000</code>"
+if [[ $throttled != 0x00000 ]]; then
+	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" )
+	current=${binary: -4}
+	occured=${binary:0:4}
+	e_current=( 'Under-voltage detected' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
+	e_occured=( 'Under-voltage has occurred' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+	for i in 0 1 2 3; do
+		[[ ${current:i:1} == 1 ]] && event+=" · ${e_current[i]}<br>"
+	done
+	for i in 0 1 2 3; do
+		[[ ${occured:i:1} == 1 ]] && event+=" · ${e_occured[i]}<br>"
+	done
+	[[ $event ]] && status+="<i class='fa fa-warning yl'></i>&ensp;Warning !<br>$event"
 fi
 # for interval refresh
 [[ $1 == status ]] && echo $status && exit
