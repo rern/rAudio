@@ -17,8 +17,8 @@ if [[ $throttled != 0x00000 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" )
 	current=${binary: -4}
 	occured=${binary:0:4}
-	e_current=( 'Under-voltage detected' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
-	e_occured=( 'Under-voltage has occurred' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+	e_current=( 'Under-voltage (<4.7V) detected' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
+	e_occured=( 'Under-voltage (<4.7V) has occurred' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
 	for i in 0 1 2 3; do
 		[[ ${current:i:1} == 1 ]] && event+=" · ${e_current[i]}<br>"
 	done
