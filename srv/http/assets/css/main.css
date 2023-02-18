@@ -1409,9 +1409,11 @@ i.map.disabled, .map.disabled i {
 }
 .lialbum,
 #button-pl-back,
-#lib-breadcrumbs a:first-of-type,
-#lib-breadcrumbs a:last-of-type {
+#lib-breadcrumbs a {
 	color: var( --cml );
+}
+#lib-breadcrumbs a:last-child {
+	color: var( --cw );
 }
 #button-coverart {
 	position:relative;

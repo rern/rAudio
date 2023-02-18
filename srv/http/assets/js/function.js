@@ -1138,7 +1138,8 @@ function renderLibraryList( data ) {
 		var iL      = dir.length;
 		for ( i = 1; i < iL; i++ ) {
 			lidir    += '/'+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +'<a>/</a><span class="lidir">'+ lidir +'</span></a>';
+			htmlpath += '<a>'+ dir[ i ] +'/';
+			if ( i < ( iL -1 ) ) htmlpath += '<span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( V.mode === 'webradio' ) {
