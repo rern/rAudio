@@ -1134,12 +1134,11 @@ function renderLibraryList( data ) {
 		var htmlpath = ico( V.mode );
 		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
 		htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
-		var lidir    = '';
+		var lidir    = dir0;
 		var iL       = dir.length;
 		for ( i = 1; i < iL; i++ ) {
-			lidir    += ' / '+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +' / ';
-			if ( i < ( iL -1 ) ) htmlpath += '<span class="lidir">'+ lidir +'</span></a>';
+			lidir    += '/'+ dir[ i ];
+			htmlpath += '<a>'+ dir[ i ] +' / <span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( V.mode === 'webradio' ) {
