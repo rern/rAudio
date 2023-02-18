@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20230217
+# 20230218
 [[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
 if [[ -e /boot/kernel7.img ]]; then
 	if [[ ! -e /usr/bin/firefox ]]; then
