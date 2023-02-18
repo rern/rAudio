@@ -478,7 +478,11 @@ function info( json ) {
 		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
 		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
 			var $td1st = $( '#infoContent td:first-child' );
-			$td1st.css( 'padding-right', $td1st.find( 'input' ).length ? '10px' : '5px' ); // checkbox/radio gutter : text label
+			var input  = $td1st.find( 'input' ).length;
+			$td1st.css( {
+				  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
+				, 'text-align'   : input ? '' : 'right'   // text label
+			} ); 
 		}
 		if ( ( I.messagealign || I.footeralign ) && $( '#infoContent table' ) ) {
 			var tblW = $( '#infoContent table' ).width();
