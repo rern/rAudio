@@ -2,9 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-if [[ ! -e $dirdata/addons ]]; then # create-ros.sh
-	echo $1 > $diraddons/r1
-else                                # reset
+# reset -------------------------------------------------------------------------------------------------------------->>>
+if [[ -e $diraddons ]]; then
 	reset=1
 	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
 	mpc -q clear
@@ -55,6 +54,7 @@ dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
 	[[ $rpi0 ]] && config+="
+gpu_mem=32
 force_turbo=1
 gpu_mem=32
 hdmi_drive=2
@@ -83,21 +83,21 @@ over_voltage=2"
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
 fi
+# reset --------------------------------------------------------------------------------------------------------------<<<
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
-
-# addons - new/reset
 if [[ $reset ]]; then
 	mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
-else
+else # from create-ros.sh
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
+	echo $1 > $diraddons/r1
 fi
 
 # display
@@ -158,7 +158,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
 }' > $dirmpd/counts
 fi
-
 
 # set ownership and permissions
 $dirsettings/system.sh dirpermissions

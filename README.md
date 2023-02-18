@@ -50,7 +50,7 @@ Audio player for
 - Streamers
 	- Bluetooth audio sender
 	- HTTP (no metadata)
-	- SnapSever - `snapcast` Multiroom audio server
+	- SnapSever - `MPD snapcast`
 	- Web Radio
 	- DAB Radio (Addon)
 - Digital Signal Processors
@@ -87,7 +87,7 @@ Audio player for
 - [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
 
 ### Image files
-- Raspberry Pi - [**Release i20230122**](https://github.com/rern/rAudio-1/releases/tag/i20230122)
+- Raspberry Pi - [**Release i20230212**](https://github.com/rern/rAudio-1/releases/tag/i20230212)
 - BeagleBone Black - [DIY](https://github.com/rern/rAudio-1/discussions/299)
 - CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
 
@@ -102,15 +102,15 @@ Audio player for
 		- Others: [Build and install](https://github.com/raspberrypi/rpi-imager)
 	- Download an image file.
 	- `CHOOSE OS` > Use custom (OR right click the image file > Open with > Raspberry Pi Imager)
-	- `CHOOSE STORAGE` > select SD card
+	- `CHOOSE STORAGE`:
+		- Select SD card - normal boot
+		- Select USB drive - boot from USB drive without SD card
+			- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
+			- [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md) must be set.
+			- Should be used only when USB drive is faster than SD card.
 	- Do not set anything in `Advance options`
 	- `WRITE`
 	- Verify is optional.
-	- Boot from USB drive without SD card
-		- For Raspberry Pi 2B v1.2, 3A+, 3B, 3B+, 4B
-		- Setup [USB mass storage boot](https://www.raspberrypi.org/documentation/hardware/raspberrypi/bootmodes/msd.md)
-		- `CHOOSE STORAGE` > select USB drive > `WRITE`
-		- Should be used only when USB drive is faster than SD card.
 - Existing users:
 	- Keep current setup SD card.
 	- Try with a spare one before moving forward.
