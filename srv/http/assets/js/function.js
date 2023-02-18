@@ -1132,7 +1132,7 @@ function renderLibraryList( data ) {
 		var dir      = data.path.split( '/' );
 		var dir0     = dir[ 0 ];
 		var htmlpath = ico( V.mode );
-		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
+		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +' / </a>';
 		htmlpath    += '<a>'+ dir0 +' / <span class="lidir">'+ dir0 +'</span></a>';
 		var lidir    = dir0;
 		var iL       = dir.length;

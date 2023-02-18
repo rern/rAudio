@@ -148,7 +148,7 @@ li:not( .licover ),
 #volume-text {
 	cursor: pointer;
 }
-#lib-path a:last-child:hover {
+#lib-path a:last-of-type:hover {
 	cursor: default;
 	color: var( --cw );
 }

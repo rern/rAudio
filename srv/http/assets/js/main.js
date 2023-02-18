@@ -1117,7 +1117,7 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 	$( '#bio' ).addClass( 'hide' );
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
-$( '#lib-breadcrumbs' ).on( 'click', 'a:not( :last-child )', function() {
+$( '#lib-breadcrumbs' ).on( 'click', 'a:not( :last-of-type )', function() {
 	V.query = [];
 	delete V.gmode;
 	if ( V.query.length > 1 ) V.scrolltop[ V.query[ V.query.length - 1 ].modetitle ] = $( window ).scrollTop();

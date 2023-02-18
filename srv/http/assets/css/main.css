@@ -1412,7 +1412,7 @@ i.map.disabled, .map.disabled i {
 #lib-breadcrumbs a {
 	color: var( --cml );
 }
-#lib-breadcrumbs a:last-child {
+#lib-breadcrumbs a:last-of-type {
 	color: var( --cw );
 }
 #button-coverart {
