@@ -107,16 +107,11 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 }
 	
 $( 'body' ).click( function( e ) {
+	if ( ! I.hidden || V.colorpicker ) return
+	
 	var $target = $( e.target );
-	if ( ! $target.hasClass( 'savedlist' )
-		&& ! $target.hasClass( 'bkcoverart' )
-		&& ! $target.hasClass( 'bkradio' )
-		&& ! V.colorpicker
-	) menuHide();
-	if ( ! V.local
-		&& $( '.pl-remove' ).length
-		&& ! $target.hasClass( 'pl-remove' )
-	) $( '.pl-remove' ).remove();
+	if ( ! $target.is( '.bkcoverart, .bkradio, .savedlist' ) ) menuHide();
+	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
 } );
 $( '#page-library' ).on( 'click', 'p', function() {
 	$( '.licover .cover-change' ).remove();
@@ -254,10 +249,12 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'displaycolor':
 			V.color = true;
-			if ( ! V.library ) {
-				$( '#library' ).click();
-			} else {
+			if ( V.library ) {
 				V.librarylist ? colorSet() : $( '#mode-webradio' ).click();
+			} else if ( V.playlist && S.pllength ) {
+				colorSet();
+			} else {
+				$( '#library' ).click();
 			}
 			break;
 		case 'multiraudio':
@@ -440,14 +437,12 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	} );
 } ).on( 'click', '#colorcancel', function() {
 	$( '#colorpicker' ).remove();
-	$( '#bar-top, #playback-controls i, #lib-index, #lib-index a, #bar-bottom i \
-	  , .content-top, #button-library, #mode-title, #button-lib-back \
-	  , #lib-list li, .licover, #lib-list i, #lib-list .li2 \
-	  , .menu a, .submenu' ).removeAttr( 'style' );
-	$( 'body' ).removeClass( 'disablescroll' );
-	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 	V.colorpicker.destroy();
-	V.colorpicker = false;
+	V.colorpicker   = false;
+	V.colorelements.removeAttr( 'style' );
+	V.colorelements = '';
+	if ( V.playlist && ! V.savedlist && ! V.savedplaylist) setPlaylistScroll();
+	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
 $( '#addons' ).click( function () {
 	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
@@ -1386,30 +1381,26 @@ $( '#lib-mode-list' ).click( function( e ) {
 <div class="infomessage">${ icon }
 <wh>${ name }</wh>
 </div>
-<br>
-<table>
-<tr>
-	<td><label><input type="radio" name="add" value="add">${ ico( 'plus-o' ) }Add</label></td>
-	<td><label><input type="radio" name="add" value="addplay">${ ico( 'play-plus' ) }Add + Play</label></td>
-</tr>
-<tr>
-	<td><label><input type="radio" name="add" value="playnext">${ ico( 'plus-circle' ) }Play next</label></td>
-</tr>
-<tr>
-	<td><label><input type="radio" name="add" value="replace">${ ico( 'replace' ) }Replace</label></td>
-	<td><label><input type="radio" name="add" value="replaceplay">${ ico( 'play-replace' ) }Replace + Play</label></td>
-</tr>
-</table>`;
+<div class="menu">
+<a data-cmd="add" class="sub cmd"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu cmd" data-cmd="addplay"></i>
+<a data-cmd="playnext" class="cmd"><i class="fa fa-plus-circle"></i>Play next</a>
+<a data-cmd="replace" class="sub cmd"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu cmd" data-cmd="replaceplay"></i>
+</div>`;
 	info( {
-		  icon        : 'playlist'
-		, title       : 'Add to Playlist'
-		, content     : content
-		, values      : 'addplay'
-		, ok          : () => {
-			var cmd    = infoVal();
-			var action = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
-			addToPlaylist( cmd, [ action, path ], msg );
+		  icon      : 'playlist'
+		, title     : 'Add to Playlist'
+		, content   : content
+		, values    : 'addplay'
+		, beforeshow : () => {
+			$( '#infoContent' ).on( 'click', '.cmd', function() {
+				V.bkradio   = true;
+				var cmd     = $( this ).data( 'cmd' );
+				var action  = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
+				$( '#infoX' ).click();
+				addToPlaylist( cmd, [ action, path ], msg );
+			} );
 		}
+		, okno      : 1      
 	} );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
@@ -1598,12 +1589,12 @@ Exclude this thumbnail?`
 	}
 	var $this   = $( this );
 	var $target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'coverart' ) ) return
+	if ( $target.is( '.fa-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
 	menuHide();
-	if ( ( menushow && V.mode !== 'webradio' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'licoverimg' ) ) {
+	if ( ( menushow && V.mode !== 'webradio' ) || $target.is( '.li-icon, .licoverimg' ) ) {
 		if ( ! active ) contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1897,7 +1888,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$target = $( e.target );
-	if ( $target.hasClass( 'fa-save' ) || $target.hasClass( 'li-icon' ) || $target.hasClass( 'pl-remove' ) ) return
+	if ( $target.is( '.fa-save, .li-icon, .pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ! [ 'mpd', 'upnp' ].includes( S.player ) ) {

@@ -17,6 +17,15 @@ featureSet() {
 	systemctl restart $@
 	systemctl -q is-active $@ && systemctl enable $@
 }
+localbrowserDisable() {
+	ply-image /srv/http/assets/img/splash.png
+	systemctl disable --now bootsplash localbrowser
+	systemctl enable --now getty@tty1
+	sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
+	rm -f $dirsystem/onwhileplay
+	rm -rf /root/.mozilla
+	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+}
 localbrowserXset() {
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
@@ -156,6 +165,7 @@ localbrowser )
 		newcursor=${args[4]}
 		newscreenoff=${args[5]}
 		newonwhileplay=${args[6]}
+		hdmi=${args[7]}
 		if [[ -e $dirsystem/localbrowser.conf ]]; then
 			. $dirsystem/localbrowser.conf
 			[[ $rotate != $newrotate ]] && changedrotate=1          # [reboot] / [restart]
@@ -176,7 +186,18 @@ cursor=$newcursor
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-
+		if [[ $hdmi == true ]]; then
+			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
+				echo hdmi_force_hotplug=1 >> /boot/config.txt
+				if ! grep -q hdmi_force_hotplug=1 /tmp/config.txt; then
+					echo HDMI Hotplug >> $dirshm/reboot
+					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
+				fi
+			fi
+		else
+			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+		fi
+		pushstream refresh '{"page":"system","hdmi":'$hdmi'}'
 		if [[ $changedrotate ]]; then
 			$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
@@ -191,7 +212,7 @@ cursor=$newcursor
 				pushRefresh
 				if ! grep -q "rotate=$newrotate" /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
-					notify chromium 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
 				fi
 			fi
@@ -211,6 +232,8 @@ cursor=$newcursor
 			if systemctl -q is-active localbrowser; then
 				systemctl enable bootsplash localbrowser
 				systemctl stop bluetoothbutton
+			else
+				localbrowserDisable
 			fi
 		elif [[ $changedscreenoff ]]; then
 			localbrowserXset $newscreenoff
@@ -220,12 +243,7 @@ cursor=$newcursor
 			fi
 		fi
 	else
-		ply-image /srv/http/assets/img/splash.png
-		systemctl disable --now bootsplash localbrowser
-		systemctl enable --now getty@tty1
-		sed -i -E 's/(console=).*/\1tty1/' /boot/cmdline.txt
-		rm -f $dirsystem/onwhileplay
-		[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
+		localbrowserDisable
 	fi
 	pushRefresh
 	;;
@@ -337,49 +355,44 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobble ) # ( airplay bluetooth spotify upnp notify user password )
+scrobble )
 	if [[ ${args[1]} == true ]]; then
-		conf=( ${args[@]:2:5} )
-		username=${args[7]}
-		password=${args[8]}
-		dirscrobble=$dirsystem/scrobble.conf
-		mkdir -p $dirscrobble
-		keys=( airplay bluetooth spotify upnp notify )
-		for(( i=0; i < 5; i++ )); do
-			fileconf=$dirscrobble/${keys[ i ]}
-			[[ ${conf[ i ]} == true ]] && touch $fileconf || rm -f $fileconf
-		done
-		if [[ ! $password ]]; then
-			if [[ -e $dirscrobble/key && $username == $( < $dirscrobble/user ) ]]; then
-				touch $dirsystem/scrobble
-				pushRefresh
-			fi
-			exit
-		fi
-		
-		keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-		apikey=${keys[0]}
-		sharedsecret=${keys[1]}
-		apisig=$( iconv -t utf8 <<< "api_key${apikey}methodauth.getMobileSessionpassword${password}username${username}$sharedsecret" \
-					| md5sum \
-					| cut -c1-32 )
-		reponse=$( curl -sX POST \
-			--data "api_key=$apikey" \
-			--data "method=auth.getMobileSession" \
-			--data-urlencode "password=$password" \
-			--data-urlencode "username=$username" \
-			--data "api_sig=$apisig" \
-			--data "format=json" \
-			http://ws.audioscrobbler.com/2.0 )
-		[[ $reponse =~ error ]] && echo $reponse && exit
-		
-		echo $username > $dirscrobble/user
-		sed 's/.*key":"//; s/".*//' <<< $reponse > $dirscrobble/key
+		echo "\
+airplay=${args[2]}
+bluetooth=${args[3]}
+spotify=${args[4]}
+upnp=${args[5]}
+notify=${args[6]}" > $dirsystem/scrobble.conf
 		touch touch $dirsystem/scrobble
 	else
 		rm -f $dirsystem/scrobble
 	fi
 	pushRefresh
+	;;
+scrobblekeyget )
+	token=${args[1]:0:32}
+	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	apikey=${keys[0]:0:32}
+	sharedsecret=${keys[1]:0:32}
+	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \
+				| md5sum \
+				| cut -c1-32 )
+	response=$( curl -sX POST \
+		--data "method=auth.getSession" \
+		--data "api_key=$apikey" \
+		--data "token=$token" \
+		--data "api_sig=$apisig" \
+		--data "format=json" \
+		http://ws.audioscrobbler.com/2.0 )
+	if [[ $response =~ error ]]; then
+		jq -r .message <<< $response
+	else
+		echo "\
+apikey=$apikey
+sharedsecret=$sharedsecret
+sk=$( jq -r .session.key <<< $response )
+" > $dirsystem/scrobblekey
+	fi
 	;;
 shairport-sync|spotifyd )
 	pkg=${args[0]}

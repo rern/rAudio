@@ -1,7 +1,7 @@
 <?php
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
-$fileexplorer = 'File Explorer &#9656; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
+$fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
@@ -46,22 +46,27 @@ EOF
 		, 'id'       => 'spotifyd'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device.
- · Require Premium account. (No Spotify password saved on rAudio.)
- · Get credential from <wh>Spotify private app</wh>: ( <bll class="screenshot pointer">Screenshots</bll> )
-	<a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a> (Replace <code class="yl">YELLOW</code> with actual values)
-	<btn>LOG IN</btn>
-		· with normal Spotify account
-	<btn>CREATE AN APP</btn>
-		· App name: <code class="yl">Name</code>
-		· App description: <code class="yl">Description</code>
-	<btn>EDIT SETTINGS</btn>
-		· Redirect URIs: <c id="redirecturi"></c>
-	<btn>USERS AND ACCESS</btn> &#9656; <btn>ADD NEW USER</btn>
-		· Name: <code class="yl">user</code>
-		· Spotify Account: <code class="yl">email</code>
-· {$FnameIcon( 'Spotify', 'spotify' )} Enable
-	· Paste <code>Client ID</code> and <code>Client Secret</code> from the created app
+{$Fi( 'gear btn' )} Reset client keys
+
+<a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
+Require:
+ · Premium account
+ · <code>Client ID</code> and <code>Client Secret</code> from your Spotify private app
+
+To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
+ · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
+	· with normal Spotify account
+ · <btn>CREATE AN APP</btn>
+	· App name: <code>rAudio</code>
+	· App description: <code>(any)</code>
+· <btn>EDIT SETTINGS</btn>
+	· Redirect URIs: <c id="redirecturi"></c>
+· <btn>USERS AND ACCESS</btn> &raquo; <btn>ADD NEW USER</btn>
+	· Name: <code>(any)</code>
+	· Spotify Account: <code>(email)</code>
+	
+Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
+
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -128,8 +133,8 @@ EOF
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust &#9656; {$Fi( 'plus-circle btn' )} Add &#9656; {$Fi( 'save btn' )} Save
- · Existing: Adjust &#9656; {$Fi( 'save btn' )} Save
+ · New: Adjust &raquo; {$Fi( 'plus-circle btn' )} Add &raquo; {$Fi( 'save btn' )} Save
+ · Existing: Adjust &raquo; {$Fi( 'save btn' )} Save
  · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
@@ -137,6 +142,12 @@ EOF
 ];
 htmlSection( $head, $body, 'dsp' );
 $head = [ 'title' => 'Others' ]; //////////////////////////////////
+$browser = '';
+if ( file_exists( '/usr/bin/firefox' ) ) {
+	$browser = '<a href="https://www.mozilla.org/firefox/browsers/">Firefox</a>';
+} else if ( file_exists( '/usr/bin/chromium' ) ) {
+	$browser = '<a href="https://github.com/chromium/chromium">Chromium</a>';
+}
 $body = [
 	[
 		  'label'    => 'Access Point'
@@ -163,19 +174,21 @@ EOF
 	]
 	, [
 		  'label'    => 'Browser on RPi'
-		, 'sublabel' => 'chromium'
+		, 'sublabel' => 'localbrowser'
 		, 'id'       => 'localbrowser'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-<a href="https://github.com/chromium/chromium">Chromium</a> - Browser on RPi connected screen.
+$browser - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
 	· Also by timer in {$Fi( 'gear btn' )}
 	· Backlight still on - no energy saved
 
-Note: HDMI display must be connected before boot.
+Note: HDMI Hotplug
+ · Disabled - Display must be connected before boot.
+ · Enable - If connect before boot but not detected properly.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/chromium' )
+		, 'exist'    => $browser
 	]
 	, [
 		  'label'    => 'File Sharing'
@@ -232,10 +245,9 @@ EOF
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
- · No Last.fm password saved on rAudio.
- · Option to include renderers - Exclude if already scrobbleed by sender devices.
  · SnapClient already scrobbled by SnapServer.
- · Web Radio must be manually scrobbled: Playing title &#9656; {$Fi( 'lastfm btn' )} Scrobble
+ · Web Radio must be manually scrobbled: Playing title &raquo; {$Fi( 'lastfm btn' )} Scrobble
+ · Scrobbled list: <a href="https://www.last.fm/">Last.fm</a> &raquo; User icon &raquo; View profile
 EOF
 	]
 	, [
@@ -262,7 +274,7 @@ EOF
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>
-	· Windows Features &#9656; Services for NFS &#9656; Client for NFS · Enable
+	· Windows Features &raquo; Services for NFS &raquo; Client for NFS · Enable
 	· $fileexplorer
 	
 Note: SSH password must be default.

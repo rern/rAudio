@@ -4,6 +4,18 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20230217
+[[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
+if [[ -e /boot/kernel7.img ]]; then
+	if [[ ! -e /usr/bin/firefox ]]; then
+		echo -e "$bar Switch Browser on RPi to Firefox ..."
+		pacman -R --noconfirm chromium
+		pacman -Sy --noconfirm firefox
+		timeout 1 firefox --headless &> /dev/null
+	fi
+	! grep -q hdmi_force_hotplug=1 /boot/config.txt && echo hdmi_force_hotplug=1 >> /boot/config.txt
+fi
+
 # 20230212
 if [[ -e /boot/kernel8.img && ! $( ls /etc/systemd/network/et* 2> /dev/null ) ]]; then
 	sed 's/=en/=eth/' /etc/systemd/network/en.network > /etc/systemd/network/eth.network
@@ -62,9 +74,6 @@ for file in $files; do
 RequiredForOnline=no' >> $file
 done
 
-# 20221218
-[[ -L $dirdata/playlists ]] && chown -h mpd:audio $dirdata/playlists
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -74,7 +83,6 @@ getinstallzip
 
 [[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
 
-chmod +x $dirsettings/system.sh
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 

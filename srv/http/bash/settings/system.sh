@@ -348,6 +348,16 @@ hddsleep )
 	fi
 	pushRefresh
 	;;
+hdmi )
+	if [[ ${args[1]} == true ]]; then
+		echo hdmi_force_hotplug=1 >> /boot/config.txt
+		! grep -q hdmi_force_hotplug=1 /tmp/config.txt && pushReboot 'HDMI Hotplug'
+	else
+		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+	fi
+	pushRefresh
+	pushstream refresh '{"page":"features","hdmihotplug":'${args[1]}'}'
+	;;
 hostname )
 	hostname=${args[1]}
 	hostnamectl set-hostname $hostname
@@ -438,8 +448,8 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
-		if [[ $( uname -m ) == armv7l ]] && ! grep -q no-xshm $dirbash/xinitrc; then
-			sed -i '/^chromium/ a\	--no-xshm \\' $dirbash/xinitrc
+		if [[ -e /boot/kernel7.img && -e /usr/bin/chromium ]]; then
+			! grep -q no-xshm $dirbash/xinitrc && sed -i '/chromium/ a\	--no-xshm \\' $dirbash/xinitrc
 		fi
 		systemctl enable localbrowser
 		pushReboot 'TFT 3.5" LCD'
@@ -716,9 +726,9 @@ $( < /etc/hostapd/hostapd.conf )
 $( < /etc/dnsmasq.conf )"
 			;;
 		localbrowser )
-			pkg=chromium
+			[[ -e /usr/bin/firefox ]] && pkg=firefox || pkg=chromium
 			fileconf=$dirsystem/localbrowser.conf
-			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+			[[ $pkg == chromium ]] && skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
 			;;
 		mpd )
 			conf=$( grep -v ^i $mpdconf )
@@ -834,10 +844,10 @@ relays )
 	pushstream display '{"submenu":"relays","value":false}'
 	;;
 rfkilllist )
-	onboard=$( aplay -l | grep 'bcm2835 Headphones' )
+	onboard=$( aplay -l | grep 'bcm2835' )
 	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
 	echo "\
-<bll># aplay -l | grep 'bcm2835 Headphones'</bll>
+<bll># aplay -l | grep 'bcm2835'</bll>
 $onboard
 
 <bll># rfkill</bll>

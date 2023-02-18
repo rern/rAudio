@@ -9,12 +9,7 @@
 . /srv/http/bash/common.sh
 
 spotifyredirect=https://rern.github.io/raudio/spotify
-
-dirscrobble=$dirsystem/scrobble.conf
-for key in airplay bluetooth spotify upnp notify; do
-	scrobbleconf+=$( [[ -e $dirscrobble/$key ]] && echo true, || echo false, )
-done
-scrobbleconf+='"'$( getContent $dirscrobble/user )'", ""'
+scrobbleconf=$( sed 's/^.*=/,/' $dirsystem/scrobble.conf 2> /dev/null )
 
 data+='
   "page"             : "features"
@@ -28,18 +23,19 @@ data+='
 , "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
-, "lyricsembedded"   : '$( [[ -e $dirsystem/lyricsembedded ]] && echo true )'
+, "lyricsembedded"   : '$( exists $dirsystem/lyricsembedded )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
-, "scrobble"         : '$( [[ -e $dirsystem/scrobble ]] && echo true )'
-, "scrobbleconf"     : ['$scrobbleconf']
-, "scrobblekey"      : '$( [[ -e $dirsystem/scrobble.conf/key ]] && echo true )'
+, "scrobble"         : '$( exists $dirsystem/scrobble )'
+, "scrobbleconf"     : [ '${scrobbleconf:1}' ]
+, "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
+, "stoptimerconf"    : '$( getContent $dirshm/stoptimer )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
-, "stoptimer"        : '$( [[ -e $dirshm/stoptimer ]] && echo true )'
+, "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='
 , "hostapd"          : '$( isactive hostapd )'
@@ -61,23 +57,20 @@ data+='
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$( isactive upmpdcli )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
-if [[ -e /usr/bin/chromium ]]; then
+if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
+	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
-	if [[ -e $dirsystem/localbrowser.conf ]]; then
-		conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
-		localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
-	else
-		localbrowserconf='{ "rotate": "NORMAL", "zoom": 100, "screenoff": 0, "playon": false, "cursor": false, "brightness": '$brightness' }'
-	fi
+	localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
 	if systemctl -q is-active localbrowser; then
 		localbrowser=true
 	else
-		systemctl -q is-enabled localbrowser && systemctl -q disable --now localbrowser
+		systemctl -q is-enabled localbrowser && $dirsettings/features.sh localbrowser$'\n'false
 	fi
 	data+='
-, "localbrowser"     : '$( isactive localbrowser )'
+, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
+, "localbrowser"     : '$localbrowser'
 , "localbrowserconf" : '$localbrowserconf
 fi
 if [[ -e /usr/bin/smbd ]]; then

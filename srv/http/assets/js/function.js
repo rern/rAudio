@@ -92,12 +92,24 @@ function clearIntervalAll() {
 }
 function colorSet() {
 	V.color = false;
-	if ( V.librarytracklist ) {
-		$( '.licover' ).css( 'margin-top', '-230px' );
-		$( '#lib-list li.track1' ).css( 'margin-top', 0 );
+	$( 'body' ).css( 'overflow', 'hidden' );
+	if ( V.library ) {
+		if ( V.librarytracklist && $( '.licover' ).is( ':visible' ) ) {
+			$( '.licover' ).css( 'margin-top', '-230px' );
+			$( '#lib-list li.track1' ).css( 'margin-top', 0 );
+			$( '#lib-list .li-icon' ).eq( 1 ).click();
+		} else {
+			$( '#lib-list .li-icon' ).eq( 0 ).click();
+		}
+	} else {
+		if ( V.savedlist || V.savedplaylist ) {
+			$( '#pl-savedlist .li-icon' ).eq( 0 ).click();
+		} else {
+			$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
+			$( '#pl-list li.active .li-icon' ).click();
+		}
 	}
-	$( 'body' ).addClass( 'disablescroll' );
-	setTimeout( () => $( '#lib-list li' ).eq( 1 ).click(), 0 );
+	pageScroll( 0 );
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
 	<div id="divcolor">
@@ -111,7 +123,24 @@ function colorSet() {
 }
 function colorSetPicker() {
 	local();
-	V.colorpicker = new KellyColorPicker( {
+	if ( V.library ) {
+		var $bg_cg  = D.bars ? $( '#bar-top, #playback-controls i, .menu a, .submenu, #playlist' ) : $( '.menu a, .submenu' );
+		var $bg_cm  = D.bars ? $( '#playback-controls .active, #colorok, #library, #button-library' ) : $( '#colorok, #button-library' );
+		var $bg_cga = D.bars ? $( '.content-top, #playback, #lib-index' ) : $( '.content-top, #lib-index' );
+		var $t_cg   = $( '#colorcancel, #button-lib-back, #lib-breadcrumbs a:first-of-type, #lib-breadcrumbs a:last-of-type' );
+		var $t_cgl  = $( '#lib-index a' );
+		var $t_cg60 = $( '#lib-list li' );
+	} else {
+		var $bg_cg  = D.bars ? $( '#bar-top, #playback-controls i, .menu a, .submenu, #library' ) : $( '.menu a, .submenu' );
+		var $bg_cm  = D.bars ? $( '#playback-controls .active, #colorok, #playlist, #button-playlist' ) : $( '#colorok, #button-playlist' );
+		var $bg_cga = D.bars ? $( '.content-top, #playback, #pl-index' ) : $( '.content-top, #pl-index' );
+		var $t_cg   = $( '#colorcancel, #button-pl-back' );
+		var $t_cgl  = $( '#pl-index a' );
+		var $t_cg60 = V.savedlist || V.savedplaylist ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+	}
+	var $menu_a     = $( '.menu a' ).not( '.hide' );
+	V.colorelements = $( 'body' ).add( $bg_cg ).add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 ).add( $menu_a );
+	V.colorpicker   = new KellyColorPicker( {
 		  place  : 'canvascolor'
 		, size   : 230
 		, color  : $( '#button-library' ).css( 'background-color' )
@@ -122,18 +151,18 @@ function colorSetPicker() {
 				var hsg = 'hsl('+ h +',3%,';
 				if ( ! V.local ) $( '#colorok' ).removeClass( 'disabled' );
 				// background
-				$( '#bar-top, #playback-controls i, #playlist, .menu a, .submenu' ).css( 'background-color', hsg +'30%)' );
-				$( '#playback-controls .active, #library, #button-library, #colorok' ).add( V.list.li ).css( 'background-color', hex );
-				$( '.content-top, #lib-index, #playback' ).css( 'background-color', hsg +'20%)' );
+				$bg_cg.css( 'background-color', hsg +'30%)' );
+				$bg_cm.add( V.list.li ).css( 'background-color', hex );
+				$bg_cga.css( 'background-color', hsg +'20%)' );
 				// text
-				$( '#lib-index a' ).css( 'cssText', 'color: '+ hsg +'40%)' );
-				$( '#button-lib-back, #colorcancel' ).css( 'color', hex );
-				$( '#lib-list li' ).not( '.active' ).find( 'i, #lib-list .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
+				$t_cgl.css( 'color', hsg +'40%)' );
+				$t_cg.css( 'color', hex );
+				$t_cg60.not( '.active' ).find( 'i, .li2' ).css( 'css', 'color: '+ hsg +'60%)' );
 				V.list.li.find( 'i, .time, .li2' ).css( 'color', hsg +'30%)' );
-				$( '.menu a' ).css( 'cssText', 'color: '+ hsg +'75%)' );
+				$menu_a.css( 'color', hsg +'75%)' );
 				// line
-				$( '#lib-list li' ).css( 'border-bottom', '1px solid '+ hsg +'20%)' );
-				$( '.menu a' ).css( 'border-top', '1px solid '+ hsg +'20%)' );
+				$t_cg60.css( 'border-bottom', '1px solid '+ hsg +'20%)' );
+				$menu_a.css( 'border-top', '1px solid '+ hsg +'20%)' );
 			}
 		}
 	} );
@@ -1104,12 +1133,12 @@ function renderLibraryList( data ) {
 		var dir0     = dir[ 0 ];
 		var htmlpath = ico( V.mode );
 		if ( V.mode.slice( -5 ) === 'radio' ) htmlpath += '<a>'+ V.mode +'/</a>';
-		htmlpath    += '<a>'+ dir0 +'<bll>/</bll><span class="lidir">'+ dir0 +'</span></a>';
+		htmlpath    += '<a>'+ dir0 +'/<span class="lidir">'+ dir0 +'</span></a>';
 		var lidir   = dir0;
 		var iL      = dir.length;
 		for ( i = 1; i < iL; i++ ) {
 			lidir    += '/'+ dir[ i ];
-			htmlpath += '<a>'+ dir[ i ] +'<bll>/</bll><span class="lidir">'+ lidir +'</span></a>';
+			htmlpath += '<a>'+ dir[ i ] +'<a>/</a><span class="lidir">'+ lidir +'</span></a>';
 		}
 	}
 	if ( V.mode === 'webradio' ) {

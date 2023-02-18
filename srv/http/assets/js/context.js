@@ -34,8 +34,10 @@ function addToPlaylist( cmd, mpccmd, msg ) {
 	}
 }
 function addToPlaylistCommand( cmd, mpccmd, msg ) {
-	var sleep = V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
+	var sleep = V.bkradio || V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
+	delete V.bkradio;
 	if ( S.state === 'play' && S.webradio ) sleep += 1;
+	if ( cmd.slice( -4 ) === 'play' ) sleep += 1;
 	var contextCommand = {
 		  add         : [ mpccmd,                                    'Add to Playlist' ]
 		, playnext    : [ mpccmd,                                    'Add to Playlist to play next' ]

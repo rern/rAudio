@@ -55,6 +55,7 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
+		<div id="warning"><i class="fa fa-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
@@ -129,7 +130,10 @@ $body = [
 		, 'id'       => 'audio'
 		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
-		, 'help'     => 'Should not be disabled if there\'re no other permanent DAC installed.'
+		, 'help'     => <<< EOF
+ · For 3.5mm jack and HDMI audio output
+ · Should not be disabled if there's no other DAC permanently installed.
+EOF
 	]
 	, [
 		  'label'    => 'Bluetooth'
@@ -137,6 +141,15 @@ $body = [
 		, 'id'       => 'bluetooth'
 		, 'status'   => true
 		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit - Only for Bluetooth receivers with fixed sampling'
+	]
+	, [
+		  'label'    => 'HDMI Hotplug'
+		, 'id'       => 'hdmi'
+		, 'setting'  => false
+		, 'help'     => <<< EOF
+ · Force enable HDMI without connecting before boot
+ · Enable if not detected properly
+EOF
 	]
 	, [
 		  'label'    => 'Wi-Fi'
@@ -175,10 +188,10 @@ $body = [
 	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
-	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-	 · HAT with EEPROM could be automatically detected.
-	 · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
-	</span>
+I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+ · HAT with EEPROM could be automatically detected.
+ · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
+</span>
 </div>
 EOF
 	]
@@ -309,9 +322,9 @@ EOF
 		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
-	· Library database
-	· Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
-	· Display order of Library home
+ · Library database
+ · Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
+ · Display order of Library home
 	
 Note:
  · SSH password must be default.
@@ -323,18 +336,18 @@ Note:
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
-		· Linux:
-			NFS: <c>777</c>
-			CIFS/SMB: <c>read only = no</c>
-		· Windows:
-			Right-click Folder &#9656; Properties &#9656; 
-				<btn>Sharing</btn> &#9656; <btn>Advanced Sharing...</btn> &#9656; <btn>Permissions</btn>
-					Everyone - Full Control
-				<btn>Security</btn>
-					Everyone - Full Control
+	 · Linux:
+		NFS: <c>777</c>
+		CIFS/SMB: <c>read only = no</c>
+	 · Windows:
+		Right-click Folder &raquo; Properties &raquo; 
+			<btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn>
+				Everyone - Full Control
+			<btn>Security</btn>
+				Everyone - Full Control
 	Clients:
-		· {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
-		· Data on 1st connected client will be used as initial shared.
+	 · {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
+	 · Data on 1st connected client will be used as initial shared.
 EOF
 	]
 ];

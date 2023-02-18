@@ -36,24 +36,27 @@ if [[ -e $diraddons ]]; then
 # system
 	# cmdline.txt
 	cmdline=$( sed -E 's/^(.*repair=yes) .*/\1/' /boot/cmdline.txt )
-	if [[ -e /boot/kernel.img || ! -e /usr/bin/chromium ]]; then
-		cmdline+=' console=tty1'
-	else
+	if systemctl -q is-enabled localbrowser; then
 		cmdline+=' isolcpus=3 console=tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0'
+	else
+		cmdline+=' console=tty1'
 	fi
 	echo $cmdline > /boot/cmdline.txt
 	# config.txt
 	cpuInfo
 	config="\
 initramfs initramfs-linux.img followkernel
-disable_splash=1
 disable_overscan=1
+disable_splash=1
 dtparam=audio=on"
 	[[ $onboardwireless ]] && config+="
 dtparam=krnbt=on"
+	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
+hdmi_force_hotplug=1"
 	[[ $rpi0 ]] && config+="
 gpu_mem=32
 force_turbo=1
+gpu_mem=32
 hdmi_drive=2
 max_usb_current=1
 over_voltage=2"
@@ -113,15 +116,14 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display
 
 # localbrowser
-if [[ -e /usr/bin/chromium ]]; then
-	rm -rf /root/.config/chromium
+if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	echo "\
 rotate=NORMAL
 zoom=100
 screenoff=0
 onwhileplay=false
 cursor=false" > $dirsystem/localbrowser.conf
-	systemctl -q enable localbrowser
+	rm -rf /root/.config/chromium /root/.mozilla
 fi
 
 # mirror

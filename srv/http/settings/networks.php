@@ -15,18 +15,18 @@ $html = <<< EOF
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
-	· On rAudio: {$Fi( 'search btn' )} Scan to connect &#9656; Select to pair
+	· On rAudio: {$Fi( 'search btn' )} Scan to connect &raquo; Select to pair
  • Connect:
-	· On receiver: Power on / Power off &#9656; Connect / Disconnect
+	· On receiver: Power on / Power off &raquo; Connect / Disconnect
 	· Receiver buttons can be used to control playback
 
 <wh>rAudio as receiver:</wh>
  • Pair:
 	· On rAudio: {$Fmenu( 'system', 'System' )}{$FnameIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
-	· On sender: Search &#9656; Select <wh>rAudio</wh> to pair
+	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:
-	· On sender: Select rAudio &#9656; Connect / Disconnect
+	· On sender: Select rAudio &raquo; Connect / Disconnect
 </div>
 EOF;
 echo $html;

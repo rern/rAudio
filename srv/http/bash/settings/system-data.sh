@@ -12,14 +12,23 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='fa fa-warning'></i>&ensp;No Internet connection"
+warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
-if [[ $throttled == 0x1 ]]; then # https://www.raspberrypi.org/documentation/raspbian/applications/vcgencmd.md
-	status+="<br><i class='fa fa-warning blink red'></i>&ensp;Voltage under 4.7V - detected now <code>0x1</code>"
-elif [[ $throttled == 0x10000 ]]; then
-	status+="<br><i class='fa fa-warning yl'></i>&ensp;Voltage under 4.7V - occurred <code>0x10000</code>"
+if [[ $throttled != 0x00000 ]]; then
+	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" ) # 01234567890123456789
+	current=${binary: -4} # 6789
+	occured=${binary:0:4} # 0123
+	e_current=( '<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
+	e_occured=( '<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+	for i in 0 1 2 3; do
+		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
+	done
+	for i in 0 1 2 3; do
+		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
+	done
 fi
 # for interval refresh
-[[ $1 == status ]] && echo $status && exit
+[[ $1 == status ]] && echo '{"status":"'$status'","warning":"'$warning'"}' && exit
 
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
@@ -174,6 +183,7 @@ data+='
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
+, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
@@ -200,14 +210,14 @@ data+='
 , "timezone"         : "'$timezone'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
-, "vuledconf"        : '$vuledconf
+, "vuledconf"        : '$vuledconf'
+, "warning"          : "'$warning'"'
 
 cpuInfo
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audiocards"       : '$( aplay -l | grep ^card | grep -c -v Loopback )'
-, "audiomodule"      : '$( aplay -l | grep -q 'bcm2835 Headphones' && echo true )
+, "audiocards"       : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	data+='
