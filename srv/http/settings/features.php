@@ -115,7 +115,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'id'       => 'camilladsp'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Equalizer', 'alsaequal' ).' is currently enabled.'
+		, 'disabled' => nameIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
@@ -202,7 +202,7 @@ EOF
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · Windows: $fileexplorer
  
-Note: {$FnameIcon( 'Server rAudio', 'rserver' )} should yield better performance.
+Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performance.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -259,7 +259,7 @@ EOF
 		, 'status'      => true
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FnameIcon( 'Shared Data', 'networks' )}
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
 	· In {$Fmenu( 'library', 'Library' )}
@@ -270,7 +270,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Fmenu( 'system', 'System' )}{$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
+	· {$Fmenu( 'system', 'System' )}{$FlabelIcon( 'Shared Data', 'networks' )} ● rAudio
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

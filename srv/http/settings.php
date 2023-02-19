@@ -12,15 +12,19 @@ function i( $icon, $id = '' ) {
 function nameIcon( $name, $icon ) {
 	return '<lbl>'.$name.' '.i( $icon ).'</lbl>';
 }
+function labelIcon( $name, $icon ) {
+	return '<a class="infomenu label">'.$name.' <i class="fa fa-'.$icon.'"></i></a>';
+}
 function menu( $icon, $name, $iconsub = '' ) {
-	$menu = '<a class="menu-sub"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
+	$menu = '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
 	$menu.= $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
 	return $menu;
 }
 // functions for use inside heredoc
-$Fi        = 'i';
-$Fmenu     = 'menu';
-$FnameIcon = 'nameIcon';
+$Fi         = 'i';
+$Fmenu      = 'menu';
+$FlabelIcon = 'labelIcon';
+$FnameIcon  = 'nameIcon';
 
 echo '<div class="container hide">';
 
