@@ -319,7 +319,7 @@ EOF
 		, 'sublabel' => 'client'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
-		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -331,8 +331,8 @@ Note:
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Fmenu( 'features', 'Features' )}{$FnameIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
+	Server: {$Fmenu( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
+	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -346,7 +346,7 @@ Note:
 			<btn>Security</btn>
 				Everyone - Full Control
 	Clients:
-	 · {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
+	 · {$FlabelIcon( 'Shared Data', 'networks' )} Add the created share
 	 · Data on 1st connected client will be used as initial shared.
 EOF
 	]

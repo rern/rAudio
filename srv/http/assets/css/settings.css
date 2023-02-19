@@ -121,27 +121,24 @@ div.helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
-lbl,
 .infomenu {
 	display: inline-block;
 	width: 95px;
-	height: 25px;
+	height: 25px !important;
 	line-height: 27px;
 	padding-left: 3px;
 	background: var( --cg );
-}
-lbl {
-	width: fit-content;
-	padding: 0 5px;
-	background: var( --cga );
 }
 .infomenu.label {
 	width: fit-content;
 	text-align: right;
 	background: var( --cga );
 }
+#infoContent .infomenu.label {
+	background: var( --cg );
+}
 .infomenu.label i {
-	margin-right: 0;
+	margin: 0 0 0 8px;
 	text-align: left;
 }
 .sub {

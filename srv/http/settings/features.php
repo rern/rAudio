@@ -98,7 +98,7 @@ EOF
 		, 'sublabel' => 'MPD snapcast'
 		, 'id'       => 'snapserver'
 		, 'setting'  => false
-		, 'disabled' => nameIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
+		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 
@@ -115,7 +115,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'id'       => 'camilladsp'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
+		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
@@ -127,7 +127,7 @@ EOF
 		, 'sublabel' => 'alsaequal'
 		, 'id'       => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => nameIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
+		, 'disabled' => labelIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
@@ -154,7 +154,7 @@ $body = [
 		, 'sublabel' => 'hostapd'
 		, 'id'       => 'hostapd'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
+		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -195,7 +195,7 @@ EOF
 		, 'sublabel' => 'smb'
 		, 'id'       => 'smb'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files

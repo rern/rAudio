@@ -9,11 +9,8 @@ function i( $icon, $id = '' ) {
 	if ( $icon === 'localbrowser' && file_exists( '/usr/bin/firefox' ) ) $icon = 'firefox';
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
-function nameIcon( $name, $icon ) {
-	return '<lbl>'.$name.' '.i( $icon ).'</lbl>';
-}
 function labelIcon( $name, $icon ) {
-	return '<a class="infomenu label">'.$name.' <i class="fa fa-'.$icon.'"></i></a>';
+	return '<a class="infomenu label">'.$name.'<i class="fa fa-'.$icon.'"></i></a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
 	$menu = '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
@@ -24,7 +21,6 @@ function menu( $icon, $name, $iconsub = '' ) {
 $Fi         = 'i';
 $Fmenu      = 'menu';
 $FlabelIcon = 'labelIcon';
-$FnameIcon  = 'nameIcon';
 
 echo '<div class="container hide">';
 
@@ -154,7 +150,7 @@ function htmlSetting( $data ) {
 	// col-r
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
-		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
+		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
 		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'">';
 		$html   .= '</div>';
 	} else {

@@ -170,7 +170,7 @@ EOF
 		, 'sublabel' => 'decoder'
 		, 'id'       => 'ffmpeg'
 		, 'setting'  => false
-		, 'disabled' => nameIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
+		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 Should be disabled if not used for faster Library update.
 Decoder for audio filetypes: {$Fi( 'chevron-down bl filetype' )}
