@@ -270,7 +270,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Shared Data', 'networks' )} ● rAudio
+	· {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

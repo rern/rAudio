@@ -332,7 +332,7 @@ Note:
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} ● rAudio
+	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
