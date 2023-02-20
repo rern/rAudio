@@ -15,8 +15,7 @@ htmlHead( [ //////////////////////////////////
 	, 'nohelp' => true
 ] );
 ?>
-<span class="helpblock hide"><img src="/assets/img/relays.jpg">
-Power on/off peripheral equipments
+<span class="helpblock hide">Power on/off peripheral equipments
 On/Off:  <a class="helpmenu"><i class="fa fa-raudio"></i>System<i class="fa fa-relays sub"></i></a>
 <br> • More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
  • Can be enabled and run as a test without a connected relay module.
