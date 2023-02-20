@@ -50,7 +50,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	info( {
 		  icon        : d[ 2 ] || name
 		, title       : d[ 0 ]
-		, message     : '<img src="/assets/img/'+ name +'.jpg?v='+ Math.ceil( Date.now() / 1000 )
+		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' ) +'?v='+ Math.ceil( Date.now() / 1000 )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
 		, footer      : d[ 1 ]
 		, footeralign : 'left'
