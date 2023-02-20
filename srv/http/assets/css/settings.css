@@ -131,8 +131,12 @@ div.helpblock {
 }
 .infomenu.label {
 	width: fit-content;
+	padding-left: 10px;
 	text-align: right;
 	background: var( --cga );
+}
+.infomenu.tab {
+	text-align: center;
 }
 #infoContent .infomenu.label {
 	background: var( --cg );

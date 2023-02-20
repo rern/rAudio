@@ -16,10 +16,14 @@ function menu( $icon, $name, $iconsub = '' ) {
 	$submenu = $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
 	return '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
+function tab( $icon, $name ) {
+	return '<a class="infomenu tab"><i class="fa fa-'.$icon.'"></i>&ensp;'.$name.'</a>';
+}
 // functions for use inside heredoc
 $Fi         = 'i';
-$Fmenu      = 'menu';
 $FlabelIcon = 'labelIcon';
+$Fmenu      = 'menu';
+$Ftab       = 'tab';
 
 echo '<div class="container hide">';
 
