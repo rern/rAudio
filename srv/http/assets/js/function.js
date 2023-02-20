@@ -711,12 +711,12 @@ var chklibrary = {
 		, label      : 'Label'
 }
 var chklibrary2 = {
-	  albumbyartist  : ico( 'album wh' ) +'Sort Album by artists'
+	  albumbyartist  : ico( 'album' ) +'Album - Sort by artists'
 	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus wh' ) +'<gr>Add + Play</gr>'
 	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace wh' ) +'<gr>Replace + Play</gr>'
 	, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus wh' ) +'or '+ ico( 'play-replace wh' )
 	, '-'            : ''
-	, backonleft     : ico( 'arrow-left wh' ) +'Back button on left side'
+	, backonleft     : ico( 'arrow-left bl' ) +'Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 }

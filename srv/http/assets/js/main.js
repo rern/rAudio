@@ -389,8 +389,8 @@ $( '#displayplayback' ).click( function() {
 } );
 $( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
-		  plclear        : 'Confirm on '+ ico( 'replace' ) +'Replace <gr>|</gr> '+ ico( 'play-replace' )
-		, plsimilar      : 'Confirm on '+ ico( 'lastfm' ) +'Add similar'
+		  plclear        : 'Confirm <gr>on</gr> '+ ico( 'replace wh' ) +'<gr>Replace |</gr> '+ ico( 'play-replace wh' )
+		, plsimilar      : 'Confirm <gr>on</gr> '+ ico( 'lastfm wh' ) +'<gr>Add similar</gr>'
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).click();
