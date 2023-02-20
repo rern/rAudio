@@ -121,7 +121,7 @@ div.helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
-.infomenu {
+.helpmenu {
 	display: inline-block;
 	width: 115px;
 	height: 25px !important;
@@ -129,23 +129,23 @@ div.helpblock {
 	padding-left: 3px;
 	background: var( --cg );
 }
-.infomenu.label {
+.helpmenu.label {
 	width: fit-content;
 	padding-left: 10px;
 	text-align: right;
 	background: var( --cga );
 }
-.infomenu.tab {
+.helpmenu.tab {
 	text-align: center;
 }
-#infoContent .infomenu.label {
+#infoContent .helpmenu.label {
 	background: var( --cg );
 }
-.infomenu.label i {
+.helpmenu.label i {
 	margin: 0 0 0 8px;
 	text-align: left;
 }
-.sub {
+.helpmenu .sub {
 	float: right;
 	margin-left: 0 !important;
 	width: 25px !important;
@@ -154,7 +154,7 @@ div.helpblock {
 	background: var( --cg );
 	border-left: solid 1px var( --cga );
 }
-.infomenu i,
+.helpmenu i,
 .sub {
 	color: var( --cw );
 }

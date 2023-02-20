@@ -387,10 +387,10 @@ $( '#displayplayback' ).click( function() {
 		, ok           : () => displaySave( keys )
 	} );
 } );
-$( '#displayplaylist' ).click( function() {
+$( '#displayplaylist' ).click( function() { // '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
 	var chkplaylist = {
-		  plclear        : 'Confirm <gr>on</gr> '+ ico( 'replace wh' ) +'<gr>Replace |</gr> '+ ico( 'play-replace wh' )
-		, plsimilar      : 'Confirm <gr>on</gr> '+ ico( 'lastfm wh' ) +'<gr>Add similar</gr>'
+		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
+		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
 		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).click();

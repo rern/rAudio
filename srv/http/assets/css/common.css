@@ -889,6 +889,31 @@ input[type=radio]:disabled {
 	background: #000000;
 	font-family: Inconsolata;
 }
+.infomenu {
+	display: inline-block;
+	width: 140px;
+	height: 27px !important;
+	line-height: 27px;
+	padding-left: 3px;
+	color: var( --cg75 );
+	background: var( --cg );
+}
+.infomenu .sub {
+	float: right;
+	margin: 0 !important;
+	line-height: 27px !important;
+	background: var( --cg );
+	border-left: solid 1px var( --cga );
+}
+.infomenu i,
+.infomenusub {
+	width: 27px !important;
+	color: var( --cw ) !important;
+}
+.infomenusub {
+	line-height: 27px;
+	background: var( --cg );
+}
 @media ( max-height: 420px ) {
 	#infoContent { padding: 10px 5px }
 }

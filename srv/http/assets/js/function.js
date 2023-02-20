@@ -712,9 +712,9 @@ var chklibrary = {
 }
 var chklibrary2 = {
 	  albumbyartist  : ico( 'album' ) +'Album - Sort by artists'
-	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus wh' ) +'<gr>Add + Play</gr>'
-	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace wh' ) +'<gr>Replace + Play</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus wh' ) +'or '+ ico( 'play-replace wh' )
+	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
+	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
+	, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
 	, '-'            : ''
 	, backonleft     : ico( 'arrow-left bl' ) +'Back button on left side'
 	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'

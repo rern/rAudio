@@ -10,14 +10,14 @@ function i( $icon, $id = '' ) {
 	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
 }
 function labelIcon( $name, $icon ) {
-	return '<a class="infomenu label">'.$name.'<i class="fa fa-'.$icon.'"></i></a>';
+	return '<a class="helpmenu label">'.$name.'<i class="fa fa-'.$icon.'"></i></a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
 	$submenu = $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
-	return '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
+	return '<a class="helpmenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
 function tab( $icon, $name ) {
-	return '<a class="infomenu tab"><i class="fa fa-'.$icon.'"></i>&ensp;'.$name.'</a>';
+	return '<a class="helpmenu tab"><i class="fa fa-'.$icon.'"></i>&ensp;'.$name.'</a>';
 }
 // functions for use inside heredoc
 $Fi         = 'i';
