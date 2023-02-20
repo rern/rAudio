@@ -262,7 +262,7 @@ EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
-	· In {$Ftab( 'library', 'Library' )}
+	· In {$Ftab( 'library', '' )} Library
 		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
 		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
 	· On reboot / power off:
