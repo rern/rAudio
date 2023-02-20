@@ -108,7 +108,7 @@ div.helpblock {
 }
 .helpblock .fa.btn {
 	width: 22px;
-	line-height: 18px;
+	line-height: 20px;
 	margin-left: 0;
 	margin-right: 0;
 	border: 1px solid var( --cg );
@@ -154,18 +154,12 @@ div.helpblock {
 .sub {
 	color: var( --cw );
 }
-
 btn {
 	display: inline-block;
-	line-height: 19px;
+	line-height: 22px;
 	padding: 0 3px;
 	border: 1px solid var( --cg );
 	border-radius: 3px;
-}
-@supports (-webkit-touch-callout: none) { /* ios only */
-	.menu-sub {
-		line-height: 25px;
-	}
 }
 .clear {
 	clear: both;
