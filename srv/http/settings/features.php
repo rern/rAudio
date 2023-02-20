@@ -216,6 +216,8 @@ EOF
  · Search online if not available.
  · Should be disable if most lyrics are not embedded.
  · Online fetched lyrics are saved as separate files, not embedded.
+ 
+Note: Should be disabled if none embedded.
 EOF
 	]
 	, [
