@@ -13,9 +13,8 @@ function labelIcon( $name, $icon ) {
 	return '<a class="infomenu label">'.$name.'<i class="fa fa-'.$icon.'"></i></a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
-	$menu = '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
-	$menu.= $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
-	return $menu;
+	$submenu = $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
+	return '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
 // functions for use inside heredoc
 $Fi         = 'i';
