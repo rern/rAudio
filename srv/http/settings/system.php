@@ -331,7 +331,7 @@ Note:
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Fmenu( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
+	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
 	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
