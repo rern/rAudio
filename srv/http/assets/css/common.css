@@ -631,7 +631,6 @@ hr {
 	text-align: center;
 	font-size: 28px;
 	line-height: 40px;
-	color: var( --cg60 );
 }
 #infoTop a {
 	color: var( --cw );
