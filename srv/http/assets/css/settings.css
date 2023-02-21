@@ -99,14 +99,14 @@ div.helpblock {
 	color: var( --cg75 );
 	white-space: pre-wrap;
 }
-.helpblock .fa {
+.helpblock i {
 	width: 20px;
 	margin-left: 3px;
 	margin-right: -4px;
 	line-height: 16px;
 	font-size: 16px !important;
 }
-.helpblock .fa.btn {
+.helpblock i.btn {
 	width: 22px;
 	line-height: 20px;
 	margin-left: 0;

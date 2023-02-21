@@ -1880,7 +1880,7 @@ li.active .li2,
 li.active .li2 a,
 li.active gr,
 li.active .time,
-.licover.active i.fa-file-playlist {
+.licover.active .fa-file-playlist {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
@@ -2182,7 +2182,7 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
-		#lib-list li span .fa,
+		#lib-list li span i,
 		#pl-savedlist span::before { display: none }
 		#lib-list li { line-height: 52px }
 		#lib-list .li1,

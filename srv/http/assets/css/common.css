@@ -20,12 +20,11 @@
 	font-family : Inconsolata;
 	src         : url('/assets/fonts/Inconsolata.woff2') format('woff2');
 }
-.fa {
+i {
 	display     : inline-block;
 	font-family : rern;
 	font-style  : normal;
 }
-.fa90 { transform: rotate( -90deg ) }
 .fa-lg { font-size: 22px !important }
 .fa-accesspoint::before     { content: '\F554' }
 .fa-addons::before          { content: '\F50D' }
@@ -563,7 +562,7 @@ hr {
 	user-select: none;
 	-webkit-user-select: none;
 }
-#infoOverlay .fa {
+#infoOverlay i {
 	vertical-align: -2px;
 }
 #infoOverlay a {
@@ -735,7 +734,7 @@ hr {
 .infofooter {
 	padding: 0 5px;
 }
-.infomessage .fa {
+.infomessage i {
 	width: 25px;
 	vertical-align: 0;
 	font-size: 20px;

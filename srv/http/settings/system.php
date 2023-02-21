@@ -55,7 +55,7 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
-		<div id="warning"><i class="fa fa-warning yl"></i>&ensp;<wh>Warning</wh></div>
+		<div id="warning"><i class="fa-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
@@ -176,7 +176,7 @@ $body = [
 	[
 		  'html'    => <<< EOF
 <div id="divi2s">
-	<div class="col-l single">Audio - I²S<i class="fa fa-i2smodule"></i></div>
+	<div class="col-l single">Audio - I²S<i class="fa-i2smodule"></i></div>
 	<div class="col-r">
 	<div id="divi2smodulesw">
 		<input id="i2smodulesw" type="checkbox">
@@ -185,7 +185,7 @@ $body = [
 	<div id="divi2smodule">
 		$selecti2s
 	</div>
-	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
+	<i id="setting-i2smodule" class="fa-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.

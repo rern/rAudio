@@ -4,13 +4,13 @@ include 'common.php';
 
 function i( $id = '', $class ) {
 	$htmlid = $id ? ' id="'.$id.'"' : '';
-	return '<i'.$htmlid.' class="fa fa-'.$class.'"></i>';
+	return '<i'.$htmlid.' class="fa-'.$class.'"></i>';
 }
 // context menus
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="fa fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
 	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'plus-circle' ).'Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="fa fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
 function menuli( $list ) {
