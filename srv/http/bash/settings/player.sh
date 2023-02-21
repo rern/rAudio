@@ -179,6 +179,7 @@ mixertype )
 	else
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
+	[[ $mixertype != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
 	[[ $mixertype == none ]] && none=true || none=false
 	pushstream display '{"volumenone":'$none'}'
