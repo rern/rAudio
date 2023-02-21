@@ -8,29 +8,17 @@
 .albumrefresh { z-index: 1 }
 
 @font-face {
-	font-family  : rern;
-	src          : url( '/assets/fonts/rern.woff2?v.2023021400' ) format( 'woff2' );
-	font-display : block;
-	font-style   : normal;
-	font-weight  : normal;
+	font-family : Lato;
+	src         : url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
 }
 @font-face {
-	font-family  : Lato;
-	src          : url( '/assets/fonts/Lato-Regular.woff2' ) format( 'woff2' );
-	font-weight  : normal;
-	font-style   : normal;
-}
-@font-face {
-	font-family  : Lato;
-	src          : url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
-	font-weight  : 300;
-	font-style   : normal;
+	font-family : Lato;
+	src         : url( '/assets/fonts/Lato-Light.woff2' ) format( 'woff2' );
+	font-weight : 300;
 }
 @font-face {
 	font-family : Inconsolata;
 	src         : url('/assets/fonts/Inconsolata.woff2') format('woff2');
-	font-weight : normal;
-	font-style  : normal;
 }
 .fa {
 	display     : inline-block;
@@ -622,7 +610,6 @@ hr {
 	padding: 0 0 0 5px;
 	line-height: 40px;
 	text-align: left;
-	color: var( --cw );
 }
 #infoTop i {
 	float: left;
@@ -631,9 +618,6 @@ hr {
 	text-align: center;
 	font-size: 28px;
 	line-height: 40px;
-}
-#infoTop a {
-	color: var( --cw );
 }
 #infoTop .albumrefresh {
 	color: var( --cw );
