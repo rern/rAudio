@@ -66,14 +66,6 @@ file=/etc/systemd/system/spotifyd.service
 systemctl daemon-reload
 systemctl try-restart spotifyd
 
-# 20221229
-files=$( ls /etc/systemd/network/e* )
-for file in $files; do
-	! grep -q RequiredForOnline=no $file && echo '
-[Link]
-RequiredForOnline=no' >> $file
-done
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -88,3 +80,6 @@ $dirsettings/system.sh dirpermissions
 
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20230224
+[[ -e $dirmpdconf/replaygain.conf ]] && $dirsettings/player-conf.sh
