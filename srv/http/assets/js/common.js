@@ -5,7 +5,7 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
-var iconwarning = ico( 'warning fa-lg yl' ) +'&ensp;';
+var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
@@ -78,7 +78,7 @@ function highlightJSON( json ) {
 	} ); // source: https://stackoverflow.com/a/7220510
 }
 function ico( cls, id ) {
-	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="fa-'+ cls +'"></i>'
+	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="i-'+ cls +'"></i>'
 }
 
 // info ----------------------------------------------------------------------
@@ -174,7 +174,7 @@ Get values: infoVal()
 Show usage: infoUsage()
 
 Note:
-- Require fa-font, Select2.js
+- Require i-font, Select2.js
 - Single value/function - no need to be array
 ` );
 }
@@ -199,7 +199,7 @@ function info( json ) {
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'fa-info-circle' );
+		$( '#infoIcon' ).addClass( 'i-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
@@ -211,12 +211,12 @@ function info( json ) {
 	if ( I.height ) $( '#infoContent' ).css( 'height', I.height );
 	if ( I.icon ) {
 		if ( I.icon.charAt( 0 ) !== '<' ) {
-			$( '#infoIcon' ).addClass( 'fa-'+ I.icon );
+			$( '#infoIcon' ).addClass( 'i-'+ I.icon );
 		} else {
 			$( '#infoIcon' ).html( I.icon );
 		}
 	} else {
-		$( '#infoIcon' ).addClass( 'fa-help' );
+		$( '#infoIcon' ).addClass( 'i-help' );
 	}
 	var title = I.title || 'Information';
 	$( '#infoTitle' ).html( title );
@@ -493,7 +493,7 @@ function info( json ) {
 		if ( I.beforeshow ) I.beforeshow();
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 	} );
-	$( '#infoContent .fa-eye' ).click( function() {
+	$( '#infoContent .i-eye' ).click( function() {
 		var $this = $( this );
 		var $pwd  = $this.parent().prev().find( 'input' );
 		if ( $pwd.prop( 'type' ) === 'text' ) {

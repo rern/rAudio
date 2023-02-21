@@ -1,6 +1,6 @@
 <?php
 function i( $class, $target = '' ) {
-	$icon = '<i class="fa-'.$class;
+	$icon = '<i class="i-'.$class;
 	$icon.= $target ? ' li-icon" data-target="#menu-'.$target.'"></i>' : '"></i>';
 	return $icon;
 }

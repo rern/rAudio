@@ -1,23 +1,23 @@
 <?php include 'common.php';?>
 
 <div class="head">
-	<i class="page-icon fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
+	<i class="page-icon i-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
 </div>
 <?php
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	if ( $icon === 'localbrowser' && file_exists( '/usr/bin/firefox' ) ) $icon = 'firefox';
-	return '<i'.$htmlid.' class="fa-'.$icon.'"></i>';
+	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
 }
 function labelIcon( $name, $icon ) {
-	return '<a class="helpmenu label">'.$name.'<i class="fa-'.$icon.'"></i></a>';
+	return '<a class="helpmenu label">'.$name.'<i class="i-'.$icon.'"></i></a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
-	$submenu = $iconsub ? '<i class="fa-'.$iconsub.' sub"></i>' : '';
-	return '<a class="helpmenu"><i class="fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
+	$submenu = $iconsub ? '<i class="i-'.$iconsub.' sub"></i>' : '';
+	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
 function tab( $icon, $name ) {
-	return '<a class="helpmenu tab"><i class="fa-'.$icon.'"></i>&ensp;'.$name.'</a>';
+	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i>&ensp;'.$name.'</a>';
 }
 // functions for use inside heredoc
 $Fi         = 'i';
@@ -89,7 +89,7 @@ $body = [
 		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
-										// 'icon'  = 'fa-icon'
+										// 'icon'  = 'i-icon'
 		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
 										// 'js' = set by js condition
 		, 'help'        => <<< EOF

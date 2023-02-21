@@ -113,7 +113,7 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 
 <div id="banner" class="hide"></div>
 
-<div id="button-data" class="head hide"><i class="fa-close"></i><span class="title"><?=$title?>-DATA</span></div>
+<div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 
 <?php if ( ! $guide && ! $progress && ! $relays ) { ?>

@@ -57,7 +57,7 @@ function radioRefresh() {
 }
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'fa-'+ S.player ) ) displayBottom();
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
 	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
@@ -78,7 +78,7 @@ pushstreamChannel( channels );
 function pushstreamDisconnect() {
 	clearIntervalAll();
 	hideGuide();
-	if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).click();
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
@@ -157,7 +157,7 @@ function psDisplay( data ) {
 	} else if ( V.library ) {
 		if ( ! V.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
+		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'i-music' ) ) {
 			if ( D.hidecover ) {
 				$( '.licover' ).remove();
 			} else {
@@ -314,7 +314,7 @@ function psRadioList( data ) {
 		if ( ! V.local ) getPlaylist();
 	}
 	S.updatingdab = false;
-	$( '#i-dabupdate' ).addClass( 'hide' );
+	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
 function psRelays( response ) {
 	clearInterval( V.intRelaysTimer );
@@ -353,7 +353,7 @@ function psRelays( response ) {
 			} else {
 				clearInterval( V.intRelaysTimer );
 				$( '#relays' ).removeClass( 'on' );
-				$( '#i-relays, #ti-relays' ).addClass( 'hide' );
+				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
 	} else {

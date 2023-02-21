@@ -18,7 +18,7 @@ foreach( $arrayalias as $alias ) {
 		if ( $addonhide === 1 || exec( $addonhide ) ) continue;
 	}
 	
-	$buttonlabel      = $addon[ 'buttonlabel' ] ?? '<i class="fa-plus-circle"></i> Install';
+	$buttonlabel      = $addon[ 'buttonlabel' ] ?? '<i class="i-plus-circle"></i> Install';
 	$uninstallfile    = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
 	if ( $nouninstall || $uninstallfile ) {
 		$installed = 'class="installed"';
@@ -29,9 +29,9 @@ foreach( $arrayalias as $alias ) {
 			$notverified = exec( $verify[ 'command' ] ) ? $verify[ 'notverified' ] : '';
 		}
 		if ( $notverified ) {
-			$btnin     = '<i class="fa-info-circle fa-lg gr info"></i><div class="info">'.$notverified.'</div>';
+			$btnin     = '<i class="i-info-circle i-lg gr info"></i><div class="info">'.$notverified.'</div>';
 		} else if ( ! $version || $version == $versioninstalled ) {
-			$icon      = $nouninstall ? '<i class="fa-update"></i>' : '';
+			$icon      = $nouninstall ? '<i class="i-update"></i>' : '';
 			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
 			$btnin     = '<a class="infobtn infobtn-default disabled">'.$icon.' '.$buttonlabel.'</a>';
 		} else {
@@ -39,15 +39,15 @@ foreach( $arrayalias as $alias ) {
 			$update    = 1;
 			$installed = 'class="installed update"';
 			$check     = '<grn class="blink">•</grn> ';
-			$btnin     = '<a class="infobtn infobtn-primary"><i class="fa-update"></i> Update</a>';
+			$btnin     = '<a class="infobtn infobtn-primary"><i class="i-update"></i> Update</a>';
 		}
 		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
-		$btnun     = '<a class="infobtn infobtn-primary red '.$hide.'" '.$btnunattr.'><i class="fa-minus-circle"></i> Uninstall</a>';
+		$btnun     = '<a class="infobtn infobtn-primary red '.$hide.'" '.$btnunattr.'><i class="i-minus-circle"></i> Uninstall</a>';
 	} else {
 		$installed = '';
 		$check     = '';
 		$btnin     = '<a class="infobtn infobtn-primary">'.$buttonlabel.'</a>';
-		$btnun     = '<a class="infobtn disabled"><i class="fa-minus-circle"></i> Uninstall</a>';
+		$btnun     = '<a class="infobtn disabled"><i class="i-minus-circle"></i> Uninstall</a>';
 	}
 	
 	// addon list ---------------------------------------------------------------
@@ -68,7 +68,7 @@ foreach( $arrayalias as $alias ) {
 	$description   = str_replace( '\\', '', $description );
 	$sourcecode    = $addon[ 'sourcecode' ];
 	if ( $sourcecode && $buttonlabel !== 'Link' ) {
-		$detail   = '<br><a href="'.$sourcecode.'" class="source">source <i class="fa-github"></i></a>';
+		$detail   = '<br><a href="'.$sourcecode.'" class="source">source <i class="i-github"></i></a>';
 	} else {
 		$detail   = '';
 	}
@@ -80,7 +80,7 @@ foreach( $arrayalias as $alias ) {
 	$blocks      .= '
 			<legend>
 				<span>'.$check.preg_replace( '/\**$/', '', $title ).'</span>
-				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? ' <i class="fa-help"></i>' : '' ).'</a>
+				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? ' <i class="i-help"></i>' : '' ).'</a>
 				</p>
 			</legend>
 			'.$revision.'

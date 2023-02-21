@@ -45,7 +45,7 @@ function blinkDot() {
 	}, 3000 );
 }
 function blinkUpdate() {
-	var $icons = $( '#library, #button-library, #i-libupdate, #ti-libupdate' );
+	var $icons = $( '#library, #button-library, #mi-libupdate, #ti-libupdate' );
 	$icons.removeClass( 'blink' );
 	V.intBlinkUpdate = setInterval( () => {
 		$icons.addClass( 'clear' );
@@ -113,9 +113,9 @@ function colorSet() {
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
 	<div id="divcolor">
-	<i id="colorcancel" class="fa-close"></i>
+	<i id="colorcancel" class="i-close"></i>
 	<canvas id="canvascolor"></canvas>
-	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="fa-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
+	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="i-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
 	</div>
 </div>
 ` );
@@ -173,7 +173,7 @@ function contextmenuLibrary( $li, $target ) {
 	V.list             = {};
 	V.list.li          = $li; // for contextmenu
 	V.list.licover     = $li.hasClass( 'licover' );
-	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'fa-music' );
+	V.list.singletrack = ! V.list.licover && $li.find( '.li-icon' ).hasClass( 'i-music' );
 	// file modes  - path > path ... > tracks
 	// album mode  - path > tracks
 	// other modes - name > name-album > filtered tracks
@@ -396,7 +396,7 @@ function displayBars() {
 function displayBottom() {
 	$( '#playback' )
 		.removeAttr( 'class' )
-		.addClass( 'fa-'+ S.player );
+		.addClass( 'i-'+ S.player );
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#'+ V.page ).addClass( 'active' );
 }
@@ -440,8 +440,8 @@ function displaySubMenu() {
 	}
 	
 	$( '#dsp' )
-		.toggleClass( 'fa-camilladsp', D.camilladsp )
-		.toggleClass( 'fa-equalizer', D.equalizer );
+		.toggleClass( 'i-camilladsp', D.camilladsp )
+		.toggleClass( 'i-equalizer', D.equalizer );
 	D.dsp = D.camilladsp || D.equalizer;
 	[ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ].forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( localhost ) $( '#power' ).addClass( 'sub' );
@@ -478,7 +478,7 @@ function getBio( artist, getsimilar ) {
 		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
-			var similarhtml  = '<p>'+ ico( 'artist fa-lg' ) +'&ensp;Similar Artists:<p><span>';
+			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
 			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
 			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
 		}
@@ -487,7 +487,7 @@ function getBio( artist, getsimilar ) {
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
 	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
-	<p class="genre">${ ico( 'genre fa-lg' ) }&ensp;${ genre }${ backhtml }</p>
+	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
@@ -631,7 +631,7 @@ function imageLoad( list ) {
 		} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				$this.replaceWith( '<i class="fa-album li-icon" data-target="#menu-album"></i>' );
+				$this.replaceWith( '<i class="i-album li-icon" data-target="#menu-album"></i>' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
@@ -649,13 +649,13 @@ function imageLoad( list ) {
 					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="fa-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="i-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			$this.replaceWith( '<i class="fa-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
+			$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
 }
@@ -1398,7 +1398,7 @@ function setBookmarkEdit() {
 	} );
 	$( '.mode-bookmark' )
 		.css( 'background', 'hsl(0,0%,15%)' )
-		.find( '.fa-bookmark, .label, img' )
+		.find( '.i-bookmark, .label, img' )
 		.css( 'opacity', 0.33 );
 }
 function setButtonControl() {
@@ -1423,7 +1423,7 @@ function setButtonOptions() {
 	$( '#snapclient' ).toggleClass( 'on', S.player === 'snapcast' );
 	$( '#modeicon i, #timeicon i' ).addClass( 'hide' );
 	var timevisible = $time.is( ':visible' );
-	var prefix = timevisible ? 'ti' : 'i';
+	var prefix = timevisible ? 'ti' : 'mi';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
@@ -1441,11 +1441,11 @@ function setButtonOptions() {
 		}
 		[ 'consume', 'librandom' ].forEach( option => {
 			if ( timevisible ) {
-				$( '#i-'+ option ).addClass( 'hide' );
+				$( '#mi-'+ option ).addClass( 'hide' );
 				$( '#ti-'+ option ).toggleClass( 'hide', ! S[ option ] );
 			} else {
 				$( '#ti-'+ option ).addClass( 'hide' );
-				$( '#i-'+ option ).toggleClass( 'hide', ! S[ option ] );
+				$( '#mi-'+ option ).toggleClass( 'hide', ! S[ option ] );
 			}
 			$( '#button-pl-'+ option ).toggleClass( 'bl', S[ option ] );
 		} );
@@ -1458,20 +1458,20 @@ function setButtonUpdateAddons() {
 	if ( S.updateaddons ) {
 		$( '#button-settings, #addons i' ).addClass( 'bl' );
 		if ( ! D.bars ) {
-			var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-addons' ).addClass( 'hide' );
 			$( '#'+ prefix +'-addons' ).removeClass( 'hide' );
 		}
 	} else {
 		$( '#button-settings, #addons i' ).removeClass( 'bl' );
-		$( '#i-addons, #ti-addons' ).addClass( 'hide' );
+		$( '#mi-addons, #ti-addons' ).addClass( 'hide' );
 	}
 }
 function setButtonUpdating() {
 	clearInterval( V.intBlinkUpdate );
 	if ( S.updating_db ) {
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
-			var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 			$( '#'+ prefix +'-libupdate' ).removeClass( 'hide' );
 		} else {
 			$( '#library, #button-library' ).addClass( 'blink' );
@@ -1480,10 +1480,10 @@ function setButtonUpdating() {
 		$( '#update' ).addClass( 'on' );
 	} else {
 		$( '#library, #button-library' ).removeClass( 'blink' );
-		$( '#i-libupdate, #ti-libupdate' ).addClass( 'hide' );
+		$( '#mi-libupdate, #ti-libupdate' ).addClass( 'hide' );
 		$( '#update' ).removeClass( 'on' );
 	}
-	$( '#i-dabupdate' ).toggleClass( 'hide', ! S.updatingdab );
+	$( '#mi-dabupdate' ).toggleClass( 'hide', ! S.updatingdab );
 }
 function setCoverart() {
 	if ( ! D.cover ) {
@@ -1548,9 +1548,9 @@ function setInfo() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa-', '' ) ) {
+	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'i-', '' ) ) {
 		$( '#playericon' ).removeAttr( 'class' );
-		if ( S.icon ) $( '#playericon' ).addClass( 'fa-'+ S.icon );
+		if ( S.icon ) $( '#playericon' ).addClass( 'i-'+ S.icon );
 	}
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
@@ -1603,8 +1603,8 @@ function setPlaybackBlank() {
 		$( '#coverart' ).removeClass( 'hide' );
 		$( '#sampling' )
 			.css( 'display', 'block' )
-			.html( 'Network not connected:&emsp; '+ ico( 'networks fa-lg wh' ) +'&ensp;Setup' )
-			.on( 'click', '.fa-networks', function() {
+			.html( 'Network not connected:&emsp; '+ ico( 'networks i-lg wh' ) +'&ensp;Setup' )
+			.on( 'click', '.i-networks', function() {
 				location.href = 'settings.php?p=networks';
 			} );
 		$( '.qr' ).addClass( 'hide' );
@@ -1796,7 +1796,7 @@ function setVolume() {
 		.text( S.volumemute || S.volume )
 		.toggleClass( 'bl', mute );
 	if ( $volume.is( ':hidden' ) ) {
-		var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).toggleClass( 'hide', ! mute );
 	}
 }
@@ -1918,7 +1918,7 @@ function volumeBarSet( pageX ) {
 		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 	S.volume = vol;
 	$volumeRS.setValue( S.volume );
 }
@@ -1939,10 +1939,10 @@ function volumeColorMute() {
 		.addClass( 'bl' );
 	$volumehandle.addClass( 'bgr60' );
 	$( '#volmute' )
-		.removeClass( 'fa-volume' )
-		.addClass( 'fa-mute active' );
+		.removeClass( 'i-volume' )
+		.addClass( 'i-mute active' );
 	if ( $volume.is( ':hidden' ) ) {
-		var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 		$( '#'+ prefix +'-mute' ).removeClass( 'hide' );
 	}
 }
@@ -1950,9 +1950,9 @@ function volumeColorUnmute() {
 	$volumetooltip.removeClass( 'bl' );
 	$volumehandle.removeClass( 'bgr60' );
 	$( '#volmute' )
-		.removeClass( 'fa-mute active' )
-		.addClass( 'fa-volume' );
-	$( '#i-mute, #ti-mute' ).addClass( 'hide' );
+		.removeClass( 'i-mute active' )
+		.addClass( 'i-volume' );
+	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

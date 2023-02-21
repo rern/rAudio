@@ -2,7 +2,7 @@
 #bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
 
-#listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
+#listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
 .menu {
 	position: absolute;
 	margin-left: 40px;
@@ -216,18 +216,18 @@ heading i {
 heading i.back {
 	width: 40px;
 }
-heading .fa-status {
+heading .i-status {
 	display: none;
 }
-heading.status .fa-status {
+heading.status .i-status {
 	display: inline-block;
 }
 heading i.help {
 	float: right;
 	text-align: right;
 }
-heading .fa-plus-circle,
-heading .fa-search {
+heading .i-plus-circle,
+heading .i-search {
 	color: var( --cw );
 }
 heading .disabled {
@@ -316,7 +316,7 @@ cy {
 	text-align: center;
 	color: var( --cg60 );
 }
-.entries .fa-save {
+.entries .i-save {
 	width: 20px;
 	font-size: 22px;
 }
@@ -332,7 +332,7 @@ cy {
 	display: block;
 	width: calc( 100% - 40px );
 }
-.entries li .fa-info-circle {
+.entries li .i-info-circle {
     font-size: 22px !important;
 }
 .entries li.active {
@@ -510,12 +510,12 @@ input.disabled + .switchlabel:after {
 }
 .settings i,
 .col-l i.status,
-.col-l a .fa-status {
+.col-l a .i-status {
 	width: 20px;
 	vertical-align: 0;
 	text-align: center
 }
-.col-l .fa-status {
+.col-l .i-status {
 	font-size: 15px;
 }
 .col-l a {
@@ -575,7 +575,7 @@ input.disabled + .switchlabel:after {
 	margin: 0 5px 0 12px;
 	color: var( --cg60 );
 }
-#statusvalue .fa-song {
+#statusvalue .i-song {
     margin-left: 0;
 }
 #statuslabel i {

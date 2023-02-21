@@ -4,13 +4,13 @@ include 'common.php';
 
 function i( $id = '', $class ) {
 	$htmlid = $id ? ' id="'.$id.'"' : '';
-	return '<i'.$htmlid.' class="fa-'.$class.'"></i>';
+	return '<i'.$htmlid.' class="i-'.$class.'"></i>';
 }
 // context menus
 function menucommon( $add, $replace ) {
-	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="fa-play-plus submenu" data-cmd="'.$add.'play"></i>';
+	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="i-play-plus submenu" data-cmd="'.$add.'play"></i>';
 	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'plus-circle' ).'Play next</a>';
-	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="fa-play-replace submenu" data-cmd="'.$replace.'play"></i>';
+	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="i-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
 function menuli( $list ) {
@@ -120,10 +120,10 @@ $ids = [ 'random',   'repeat',     'single',    'repeat1',   'consume', 'librand
 	   , 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons',  'relays',    'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
-	$modeicon.= i( 'i-'.$id, $id.' hide' );
+	$modeicon.= i( 'mi-'.$id, $id.' hide' );
 }
 if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
-$timeicon = str_replace( 'i-', 'ti-', $modeicon );
+$timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
 	  [ 'features',        'settings', 'features', 'Features', 'dsp',          '' ]

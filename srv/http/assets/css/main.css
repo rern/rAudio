@@ -83,7 +83,7 @@ a {
 	color: var( --cm );
 	text-shadow: -2px 2px 4px #000000;
 }
-.infobookmark .fa-bookmark {
+.infobookmark .i-bookmark {
 	margin-top: 20px;
 }
 .disabled,
@@ -198,7 +198,7 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
-.submenu.fa-color canvas {
+.submenu.i-color canvas {
 	width: 20px;
 	height: 20px;
 	vertical-align: -2px;
@@ -332,7 +332,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom i.active {
 	background: var( --cm );
 }
-#bar-bottom .fa-mpd::before {
+#bar-bottom .i-mpd::before {
 	content: "\f507";
 }
 .renderer {
@@ -1288,7 +1288,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 16px;
 	color: var( --cg60 );
 }
-.mode .fa-bookmark {
+.mode .i-bookmark {
 	color: var( --cm );
 }
 .bkedit {
@@ -1459,7 +1459,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
-#pl-path .fa-arrow-left {
+#pl-path .i-arrow-left {
 	width: 40px !important;
 }
 #lib-search,
@@ -1880,7 +1880,7 @@ li.active .li2,
 li.active .li2 a,
 li.active gr,
 li.active .time,
-.licover.active .fa-file-playlist {
+.licover.active .i-file-playlist {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
@@ -2254,8 +2254,8 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .fa-coverart,
-	#divcover .fa-save { top: 5px; }
+	#divcover .i-coverart,
+	#divcover .i-save { top: 5px; }
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {

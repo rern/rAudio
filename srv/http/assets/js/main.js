@@ -50,8 +50,8 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 // color icon
-$( '.submenu.fa-color' ).html( '<canvas></canvas>' );
-var canvas      = $( '.submenu.fa-color canvas' )[ 0 ];
+$( '.submenu.i-color' ).html( '<canvas></canvas>' );
+var canvas      = $( '.submenu.i-color canvas' )[ 0 ];
 var ctx         = canvas.getContext( '2d' );
 var cw          = canvas.width / 2;
 var ch          = canvas.height / 2;
@@ -200,7 +200,7 @@ $( '.settings' ).click( function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
-			if ( $( this ).hasClass( 'fa-camilladsp' ) ) {
+			if ( $( this ).hasClass( 'i-camilladsp' ) ) {
 				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
 				loader();
 			} else {
@@ -387,7 +387,7 @@ $( '#displayplayback' ).click( function() {
 		, ok           : () => displaySave( keys )
 	} );
 } );
-$( '#displayplaylist' ).click( function() { // '<a class="infomenu"><i class="fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
+$( '#displayplaylist' ).click( function() {
 	var chkplaylist = {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
 		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
@@ -500,9 +500,9 @@ $( '#info' ).click( function() {
 	if ( localhost ) setInfoScroll();
 } );
 $( '.emptyadd' ).click( function( e ) {
-	if ( $( e.target ).hasClass( 'fa-plus-circle' ) ) {
+	if ( $( e.target ).hasClass( 'i-plus-circle' ) ) {
 		$( '#library' ).click();
-	} else if ( $( e.target ).hasClass( 'fa-gear' ) ) {
+	} else if ( $( e.target ).hasClass( 'i-gear' ) ) {
 		$( '#button-settings' ).click();
 	}
 } );
@@ -606,7 +606,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 $( '#album, #guide-album' ).click( function() {
 	if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
 } );
-$( '#infoicon' ).on( 'click', '.fa-audiocd', function() {
+$( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
@@ -907,12 +907,12 @@ $( '.map' ).click( function( e ) {
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
 		if ( time || volume ) {
 			$( '#coverTL' )
-				.removeClass( 'fa-scale-dn' )
-				.addClass( 'fa-scale-up' );
+				.removeClass( 'i-scale-dn' )
+				.addClass( 'i-scale-up' );
 		} else {
 			$( '#coverTL' )
-				.removeClass( 'fa-scale-up' )
-				.addClass( 'fa-scale-dn' );
+				.removeClass( 'i-scale-up' )
+				.addClass( 'i-scale-dn' );
 		}
 		if ( S.player === 'mpd' ) {
 			if ( ! time && ! S.stream ) {
@@ -1028,7 +1028,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#total' )
 				.text( second2HMS( S.Time ) )
 				.removeClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa-play' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'i-play' );
 			if ( S.stream ) $( '#title, #elapsed' ).html( V.blinkdot );
 			vu();
 		} else if ( cmd === 'stop' ) {
@@ -1081,7 +1081,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa-pause' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'i-pause' );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = S.pllength;
 			var song     = S.song;
@@ -1382,9 +1382,9 @@ $( '#lib-mode-list' ).click( function( e ) {
 <wh>${ name }</wh>
 </div>
 <div class="menu">
-<a data-cmd="add" class="sub cmd"><i class="fa-plus-o"></i>Add</a><i class="fa-play-plus submenu cmd" data-cmd="addplay"></i>
-<a data-cmd="playnext" class="cmd"><i class="fa-plus-circle"></i>Play next</a>
-<a data-cmd="replace" class="sub cmd"><i class="fa-replace"></i>Replace</a><i class="fa-play-replace submenu cmd" data-cmd="replaceplay"></i>
+<a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
+<a data-cmd="playnext" class="cmd"><i class="i-plus-circle"></i>Play next</a>
+<a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>`;
 	info( {
 		  icon      : 'playlist'
@@ -1589,7 +1589,7 @@ Exclude this thumbnail?`
 	}
 	var $this   = $( this );
 	var $target = $( e.target );
-	if ( $target.is( '.fa-save, .coverart' ) ) return
+	if ( $target.is( '.i-save, .coverart' ) ) return
 	
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
@@ -1600,8 +1600,8 @@ Exclude this thumbnail?`
 	}
 	
 	if ( $this.hasClass( 'licover' ) ) {
-		if ( $target.is( '.liartist, .fa-artist, .fa-albumartist, .licomposer, .fa-composer' ) ) {
-			var name = ( $target.is( '.licomposer, .fa-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
+		if ( $target.is( '.liartist, .i-artist, .i-albumartist, .licomposer, .i-composer' ) ) {
+			var name = ( $target.is( '.licomposer, .i-composer' ) ) ? $this.find( '.licomposer' ).text() : $this.find( '.liartist' ).text();
 			getBio( name );
 		} else if ( $target.hasClass( 'liinfopath' ) ) {
 			V.gmode     = V.mode;
@@ -1627,7 +1627,7 @@ Exclude this thumbnail?`
 	} else if ( $target.hasClass( 'lialbum' ) ) {
 		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
-	} else if ( $this.find( '.fa-music' ).length || $target.data( 'target' ) ) {
+	} else if ( $this.find( '.i-music' ).length || $target.data( 'target' ) ) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1743,8 +1743,8 @@ $( '#button-pl-playlists' ).click( function() {
 	list( { cmd: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
 } );
 $( '#button-pl-save' ).click( function() {
-	var audiocdL  = $( '#pl-list .fa-audiocd' ).length;
-	var upnpL     = $( '#pl-list .fa-upnp' ).length;
+	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
+	var upnpL     = $( '#pl-list .i-upnp' ).length;
 	var notsavedL = $( '#pl-list .notsaved' ).length;
 	if ( audiocdL || upnpL ) {
 		info( {
@@ -1888,7 +1888,7 @@ new Sortable( document.getElementById( 'pl-savedlist' ), {
 $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	$target = $( e.target );
-	if ( $target.is( '.fa-save, .li-icon, .pl-remove' ) ) return
+	if ( $target.is( '.i-save, .li-icon, .pl-remove' ) ) return
 	
 	var $this = $( this );
 	if ( ! [ 'mpd', 'upnp' ].includes( S.player ) ) {
@@ -1906,7 +1906,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		if ( S.state == 'play' ) {
 			if ( $this.find( '.lipath' ).text().slice( 0, 4 ) !== 'http' ) {
 				$( '#pause' ).click();
-				$this.find( '.elapsed i' ).removeClass( 'fa-play' ).addClass( 'fa-pause' );
+				$this.find( '.elapsed i' ).removeClass( 'i-play' ).addClass( 'i-pause' );
 			} else {
 				$( '#stop' ).click();
 			}

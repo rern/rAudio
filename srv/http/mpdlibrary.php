@@ -101,7 +101,7 @@ case 'home':
 '<div class="lib-mode">
 	<div id="mode-'.$modeLC.'" class="mode" data-mode="'.$modeLC.'">
 	<a class="lipath">'.$modeLC.'</a>
-	<i class="fa-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
+	<i class="i-'.$modeLC.'"></i><gr></gr><a class="label">'.$mode.'</a>
 	</div>
 </div>';
 	}
@@ -580,9 +580,9 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	<div class="licomposer'.$hidecomposer.'">'.i( 'composer' ).$each0->composer.'</div>
 	<div class="liconductor'.$hideconductor.'">'.i( 'conductor' ).$each0->conductor.'</div>
 	<span class="ligenre'.$hidegenre.'">'.i( 'genre' ).$each0->genre.'&emsp;</span>
-	<span class="lidate'.$hidedate.'"><i class="fa-date"></i>'.$each0->date.'</span>
+	<span class="lidate'.$hidedate.'"><i class="i-date"></i>'.$each0->date.'</span>
 	'.$br.'
-	<div class="liinfopath"><i class="fa-folder"></i>'.$mpdpath.'</div>
+	<div class="liinfopath"><i class="i-folder"></i>'.$mpdpath.'</div>
 	'.$icon.$count.'<gr> • </gr>'.$totaltime.'<gr> • </gr>'.$ext.'
 	</div>
 </li>';
