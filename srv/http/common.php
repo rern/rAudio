@@ -100,12 +100,6 @@ if ( ! $page ) { // main
 foreach( $cssp as $c ) echo '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
 ?>
-<style>
-@font-face {
-	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2<?=$hash?>' ) format( 'woff2' );
-}
-</style>
 </head>
 <body>
 
