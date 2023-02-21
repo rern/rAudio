@@ -103,7 +103,7 @@ else # with audio devices (from player-devices.sh)
 			audiooutput+='
 	mixer_control  "'$hwmixer'"
 	mixer_device   "hw:'$card'"'
-			[[ -e $dirmpdconf/replaygain.conf ]] && \
+			[[ -e $dirmpdconf/replaygain.conf && -e $dirsystem/replaygain-hw ]] && \
 				audiooutput+='
 	replay_gain_handler "mixer"'
 		fi

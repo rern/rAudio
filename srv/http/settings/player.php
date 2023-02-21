@@ -137,6 +137,10 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
+
+Note: {$Fi( 'gear btn' )} ■ Use Mixer device volume
+- Volume control by Mixer device
+- Volume set at 100%
 EOF
 	]
 ];
