@@ -9,8 +9,7 @@
 .band,
 .emptyadd,
 #volume-text { z-index: 102 }
-#refresh,
-#status { z-index: 100 }
+#refresh { z-index: 100 }
 #lyricsfade { z-index: 97 }
 #lib-search,
 #pl-search { z-index: 96 }
