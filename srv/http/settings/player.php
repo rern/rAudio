@@ -137,11 +137,9 @@ EOF
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
-Gain control:
- · MPD software (default)
- · {$Fi( 'gear btn' )} ■ Gain control - Mixer device
-	 · Use Volume Control - Mixer device
-	 · Start playing always reset volume to 100%
+{$Fi( 'gear btn' )}  ■ Gain control - Mixer device
+ · Enabled - Start playing may reset volume to 100%
+ · Disabled - MPD software
 EOF
 	]
 ];
