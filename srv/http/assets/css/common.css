@@ -705,7 +705,6 @@ hr {
 #infoContent label i {
 	text-align: center;
 	width: 22px;
-	color: var( --cg60 );
 	font-size: 20px;
 	margin-right: 5px;
 }
@@ -713,6 +712,9 @@ hr {
 	font-size: 20px;
 	width: 24px;
 	text-align: center;
+}
+#infoContent i {
+    color: var( --cw );
 }
 #infoContent pre {
 	margin: 0;
@@ -908,7 +910,6 @@ input[type=radio]:disabled {
 .infomenu i,
 .infomenusub {
 	width: 27px !important;
-	color: var( --cw ) !important;
 }
 .infomenusub {
 	line-height: 27px;
