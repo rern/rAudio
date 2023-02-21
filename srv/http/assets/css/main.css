@@ -676,7 +676,7 @@ i.map.disabled, .map.disabled i {
 }
 #volume,
 #total {
-	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: Lato;
 }
 /* overlay controls */
 
@@ -1484,7 +1484,7 @@ i.map.disabled, .map.disabled i {
 	border-radius: 5px;
 	color: var( --cw );
 	background-color: #000000;
-	font-family: "Lato";
+	font-family: Lato;
 	font-size: 18px;
 }
 .input-group input,

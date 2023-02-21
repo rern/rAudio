@@ -223,7 +223,7 @@ body {
 	position    : relative;
 	min-height  : 100%;
 	margin      : 0;
-	font-family : "Lato";
+	font-family : Lato;
 	font-size   : 15px;
 	color       : var( --cw );
 	background-color    : #000;
@@ -803,7 +803,7 @@ input[type=password] {
 	border-radius: 5px;
 	border: 1px solid var( --cg );
 	font-size: 16px;
-	font-family: "Lato";
+	font-family: Lato;
 }
 input[type=text]:disabled,
 input[type=tel]:disabled,
