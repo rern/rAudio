@@ -387,7 +387,7 @@ $( '#displayplayback' ).click( function() {
 		, ok           : () => displaySave( keys )
 	} );
 } );
-$( '#displayplaylist' ).click( function() { // '<a class="infomenu"><i class="fa fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
+$( '#displayplaylist' ).click( function() { // '<a class="infomenu"><i class="fa-'.$icon.'"></i> '.$name.$submenu.'</a>';
 	var chkplaylist = {
 		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
 		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
@@ -1028,7 +1028,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#total' )
 				.text( second2HMS( S.Time ) )
 				.removeClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-play' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa-play' );
 			if ( S.stream ) $( '#title, #elapsed' ).html( V.blinkdot );
 			vu();
 		} else if ( cmd === 'stop' ) {
@@ -1081,7 +1081,7 @@ $( '.btn-cmd' ).click( function() {
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
-			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa fa-pause' );
+			$( '#progress i' ).removeAttr( 'class' ).addClass( 'fa-pause' );
 		} else if ( cmd === 'previous' || cmd === 'next' ) {
 			var pllength = S.pllength;
 			var song     = S.song;
@@ -1382,9 +1382,9 @@ $( '#lib-mode-list' ).click( function( e ) {
 <wh>${ name }</wh>
 </div>
 <div class="menu">
-<a data-cmd="add" class="sub cmd"><i class="fa fa-plus-o"></i>Add</a><i class="fa fa-play-plus submenu cmd" data-cmd="addplay"></i>
-<a data-cmd="playnext" class="cmd"><i class="fa fa-plus-circle"></i>Play next</a>
-<a data-cmd="replace" class="sub cmd"><i class="fa fa-replace"></i>Replace</a><i class="fa fa-play-replace submenu cmd" data-cmd="replaceplay"></i>
+<a data-cmd="add" class="sub cmd"><i class="fa-plus-o"></i>Add</a><i class="fa-play-plus submenu cmd" data-cmd="addplay"></i>
+<a data-cmd="playnext" class="cmd"><i class="fa-plus-circle"></i>Play next</a>
+<a data-cmd="replace" class="sub cmd"><i class="fa-replace"></i>Replace</a><i class="fa-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>`;
 	info( {
 		  icon      : 'playlist'

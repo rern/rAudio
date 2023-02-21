@@ -209,7 +209,7 @@ function tagEditor() {
 				return
 			}
 			
-			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytracklist ? $( '.licoverimg img' ) : V.list.li.find( 'img' );

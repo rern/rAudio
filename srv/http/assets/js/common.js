@@ -78,7 +78,7 @@ function highlightJSON( json ) {
 	} ); // source: https://stackoverflow.com/a/7220510
 }
 function ico( cls, id ) {
-	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="fa fa-'+ cls +'"></i>'
+	return '<i '+ ( id ? 'id="'+ id +'" ' : '' ) +'class="fa-'+ cls +'"></i>'
 }
 
 // info ----------------------------------------------------------------------
@@ -199,7 +199,7 @@ function info( json ) {
 		infoButtonCommand( I.cancel );
 	} );
 	if ( typeof I !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'fa fa-info-circle' );
+		$( '#infoIcon' ).addClass( 'fa-info-circle' );
 		$( '#infoTitle' ).text( 'Info' );
 		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
@@ -211,12 +211,12 @@ function info( json ) {
 	if ( I.height ) $( '#infoContent' ).css( 'height', I.height );
 	if ( I.icon ) {
 		if ( I.icon.charAt( 0 ) !== '<' ) {
-			$( '#infoIcon' ).addClass( 'fa fa-'+ I.icon );
+			$( '#infoIcon' ).addClass( 'fa-'+ I.icon );
 		} else {
 			$( '#infoIcon' ).html( I.icon );
 		}
 	} else {
-		$( '#infoIcon' ).addClass( 'fa fa-help' );
+		$( '#infoIcon' ).addClass( 'fa-help' );
 	}
 	var title = I.title || 'Information';
 	$( '#infoTitle' ).html( title );

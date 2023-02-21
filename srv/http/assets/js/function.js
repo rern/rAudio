@@ -113,9 +113,9 @@ function colorSet() {
 	$( '#lyrics' ).before( `
 <div id="colorpicker">
 	<div id="divcolor">
-	<i id="colorcancel" class="fa fa-close"></i>
+	<i id="colorcancel" class="fa-close"></i>
 	<canvas id="canvascolor"></canvas>
-	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="fa fa-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
+	<a id="colorreset" class="infobtn ${ D.color ? '' : 'hide' }"><i class="fa-set0"></i> Default</a><a id="colorok" class="infobtn infobtn-primary disabled">OK</a>
 	</div>
 </div>
 ` );
@@ -396,7 +396,7 @@ function displayBars() {
 function displayBottom() {
 	$( '#playback' )
 		.removeAttr( 'class' )
-		.addClass( 'fa fa-'+ S.player );
+		.addClass( 'fa-'+ S.player );
 	$( '#bar-bottom i' ).removeClass( 'active' );
 	$( '#'+ V.page ).addClass( 'active' );
 }
@@ -631,7 +631,7 @@ function imageLoad( list ) {
 		} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				$this.replaceWith( '<i class="fa fa-album li-icon" data-target="#menu-album"></i>' );
+				$this.replaceWith( '<i class="fa-album li-icon" data-target="#menu-album"></i>' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
@@ -649,13 +649,13 @@ function imageLoad( list ) {
 					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="fa fa-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="fa-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
 			} );
 		}
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			$this.replaceWith( '<i class="fa fa-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
+			$this.replaceWith( '<i class="fa-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
 		} );
 	}
 }
@@ -1548,9 +1548,9 @@ function setInfo() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa fa-', '' ) ) {
+	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'fa-', '' ) ) {
 		$( '#playericon' ).removeAttr( 'class' );
-		if ( S.icon ) $( '#playericon' ).addClass( 'fa fa-'+ S.icon );
+		if ( S.icon ) $( '#playericon' ).addClass( 'fa-'+ S.icon );
 	}
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
