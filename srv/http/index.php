@@ -126,7 +126,7 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features',        'settings', 'features', 'Features', 'dsp',          '' ]
+	  [ 'features',        'settings', 'features', 'Features', 'dsp',          'equalizer' ]
 	, [ 'player',          'settings', 'player',   'Player',   'logout',       'lock' ]
 	, [ 'networks',        'settings', 'networks', 'Networks', 'snapclient',   'snapclient' ]
 	, [ 'system',          'settings', 'raudio',   'System',   'relays',       'relays' ]
