@@ -408,7 +408,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 }
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg" style="width: 40px"></a>
+	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>
 	
