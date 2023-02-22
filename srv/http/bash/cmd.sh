@@ -353,7 +353,7 @@ color )
 	file=$dirsystem/color
 	if [[ $hsl == reset ]]; then
 		rm -f $file
-		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css \
+		hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
 					| sed 's/.*(\(.*\)).*/\1/' \
 					| tr ',' ' ' \
 					| tr -d % ) )
@@ -383,10 +383,10 @@ s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
  s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	sed -i -E "
-s|(.box.*hsl).*|\1($hsl);}|
-s|(path.*hsl).*|\1(${hsg}75%);}|
+s|(rect.*hsl).*;|\1($hsl);|
+s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
-	sed -E "s|(path.*hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
