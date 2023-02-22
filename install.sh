@@ -78,8 +78,7 @@ getinstallzip
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
-version=$( < $diraddons/r1 )
-sed -E -i "s/(rern.woff2\?v=).*'/\1$version'/" /srv/http/assets/css/common.css
+sed -E -i "s/(rern.woff2\?v=).*'/\1$( date +%s )'/" /srv/http/assets/css/common.css
 
 installfinish
 #-------------------------------------------------------------------------------
