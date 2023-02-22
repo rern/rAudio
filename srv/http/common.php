@@ -18,7 +18,12 @@
 $hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
 $css       = [ 'colors', 'common' ];
-
+$logosvg   = '
+<svg class="logo" viewBox="0 0 180 180">
+	<rect width="180" height="180" rx="9"/>
+	<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
+</svg>
+';
 // login
 if ( file_exists( '/srv/http/data/system/login' ) ) {
 	foreach( $css as $c ) echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
@@ -110,11 +115,4 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 
-<?php if ( ! $guide && ! $progress && ! $relays ) { ?>
-<div id="loader">
-	<svg class="logo" viewBox="0 0 180 180">
-		<rect width="180" height="180" rx="9"/>
-		<path d="M108.24,95.51A49.5,49.5,0,0,0,90,0V81H54V45H36V81H0V99H36v36H54V99H90v81h18V120.73L167.27,180H171a9,9,0,0,0,9-9v-3.72ZM108,23.67a31.46,31.46,0,0,1,0,51.66Z"/>
-	</svg>
-</div>
-<?php } ?>
+<?php if ( ! $guide && ! $progress && ! $relays ) echo '<div id="loader">'.$logosvg.'</div>';?>
