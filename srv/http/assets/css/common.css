@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=20230218' );
+	src         : url( '/assets/fonts/rern.woff2?v=1677030699' );
 }
 @font-face {
 	font-family : Lato;
@@ -653,7 +653,7 @@ hr {
 	display: inline-block;
 	width: calc( 100% - 45px );
 	margin-left: 10px;
-	font-size: 20px;
+	font-size: 22px;
 	font-weight: 300;
 	line-height: 40px;
 	white-space: nowrap;
