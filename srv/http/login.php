@@ -1,26 +1,24 @@
 <style>
 #divlogin {
-	position         : relative;
-	top              : 50%;
-	transform        : translateY( -50% );
-	text-align       : center;
+	transform      : translateY( calc( 50vh - 100% ) );
+	text-align     : center;
 }
 #divlogin svg {
-	width            : 50px;
+	width          : 50px;
 }
 #logintitle {
-	margin           : 10px 0 10px 20px;
-	font-weight      : 300;
-	letter-spacing   : 25px;
+	margin         : 10px 0 10px 20px;
+	font-weight    : 300;
+	letter-spacing : 25px;
 }
 #pwd {
-	width            : 230px;
-	margin           : 30px 10px 10px 25px;
-	text-align       : center;
+	width          : 230px;
+	margin         : 30px 10px 10px 25px;
+	text-align     : center;
 }
 #toggle {
-	font-size        : 20px;
-	vertical-align   : -3px;
+	font-size      : 20px;
+	vertical-align : -3px;
 }
 </style>
 
