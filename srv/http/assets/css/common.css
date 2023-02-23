@@ -32,7 +32,7 @@ i {
 .i-lg { font-size: 22px !important }
 .i-accesspoint::before     { content: '\F554' }
 .i-addons::before          { content: '\F50D' }
-.i-addons-progress::before { content: '\F50D' }
+.i-addonsprogress::before  { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }
 .i-albumartist::before     { content: '\F557' }

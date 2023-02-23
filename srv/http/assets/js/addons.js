@@ -19,7 +19,7 @@ $( '.page-icon' ).click( function() {
 			$( '#button-data, #data' ).removeClass( 'hide' );
 		} );
 } ).press( function() {
-	location.href = 'settings.php?p=addons-progress';
+	location.href = 'settings.php?p=addonsprogress';
 } );
 $( '#button-data' ).click( function() {
 	$( '.container' ).removeClass( 'hide' );
@@ -90,7 +90,7 @@ $( '.thumbnail' ).click( function() {
 } );
 
 function formPost() { // post submit with temporary form
-	var htmlform  = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
+	var htmlform  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 	opt.forEach( o => htmlform += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">' );
 	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();

@@ -914,7 +914,7 @@ $.fn.press = function( arg1, arg2 ) {
 }
 
 // pushstream -----------------------------------------------------------------
-if ( ! [ 'addons', 'addons-progress', 'guide' ].includes( page )  ) {
+if ( ! [ 'addons', 'addonsprogress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
 		, reconnectOnChannelUnavailableInterval : 3000

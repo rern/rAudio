@@ -1855,7 +1855,7 @@ function switchPage( page ) {
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path ) {
-	var htmlform = '<form id="formtemp" action="settings.php?p=addons-progress" method="post">';
+	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
 	[ 'cove', path ].forEach( el => htmlform += '<input type="hidden" name="opt[]" value="'+ el +'">' );
 	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();

@@ -28,12 +28,6 @@ if ( file_exists( '/srv/http/data/system/login' ) ) {
 	}
 }
 
-$addons    = $page === 'addons';
-$progress  = $page === 'addons-progress';
-$guide     = $page === 'guide';
-$networks  = $page === 'networks';
-$relays    = $page === 'relays';
-$system    = $page === 'system';
 $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
@@ -69,6 +63,7 @@ if ( ! $page ) { // main
 	// hovercursor.css and shortcut.js included by main.js
 	$title = 'STATUS';
 } else {         // settings
+	$$page = true;
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
 	$js    = [ 'common' ];
