@@ -302,6 +302,7 @@ i.map.disabled, .map.disabled i {
 }
 #button-settings {
 	position: absolute;
+	top: 0;
 	right: 20px;
 	font-size: 30px;
 }

@@ -149,11 +149,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 <div id="refresh"></div><div id="status"></div>
 
 <div id="bar-top" class="hide">
-	<?=i( 'logo', 'raudio-nobg' )?>
-	<?=i( 'button-settings', 'gear' )?>
-	<div id="playback-controls">
-		<?=$htmlcontrols?>
-	</div>
+	<?=i( 'logo', 'raudio-nobg' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>
 </div>
 <div id="settings" class="menu hide">
 	<?=$htmlsettings?>
@@ -188,15 +184,9 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<?=i( 'guide-lyrics', 'lyrics map guide hide' )?>
 	<?=i( 'guide-album', 'lastfm map guide hide' )?>
 	<div id="info">
-		<div id="divartist">
-			<span id="artist"></span>
-		</div>
-		<div id="divtitle">
-			<span id="title"></i></span>
-		</div>
-		<div id="divalbum">
-			<span id="album"></span>
-		</div>
+		<div id="divartist"><span id="artist"></span></div>
+		<div id="divtitle"><span id="title"></i></span></div>
+		<div id="divalbum"><span id="album"></span></div>
 		<div id="infoicon">
 			<i id="playericon"></i>
 			<span id="progress"></span>
@@ -311,9 +301,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="lyrics" class="hide">
 	<div id="divlyricstitle">
-		<img src="">
-		<span id="lyricstitle"></span>
-		<?=i( 'lyricsclose', 'close' )?>
+		<img src=""><span id="lyricstitle"></span><?=i( 'lyricsclose', 'close' )?>
 	</div>
 	<div id="divlyricsartist">
 		<span id="lyricsartist"></span><?=i( 'lyricsedit', 'edit-circle' )?>
