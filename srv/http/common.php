@@ -82,7 +82,10 @@ if ( ! $page ) { // main
 	$js[]   = $page;
 	
 	$icon = $pagetitle = $page;
-	if ( $guide ) {
+	if ( $addonsprogress ) {
+		$icon = 'addons';
+		$pagetitle = 'addons-progress';
+	} else if ( $guide ) {
 		$icon = 'help';
 		$pagetitle = 'user guide';
 	} else if ( $relays ) {
