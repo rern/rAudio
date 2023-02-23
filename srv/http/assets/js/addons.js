@@ -65,7 +65,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 	}
 } ).press( function( e ) {
 	$this = $( e.target );
-	alias = $this.parent().data( 'alias' );
+	alias = $this.parents( 'form' ).data( 'alias' );
 	title = addons[ alias ].title;
 	type  = $this.text();
 	info( {
