@@ -67,7 +67,7 @@ if ( ! $page ) { // main
 	$css[] = 'settings';
 	$jsp   = [ 'jquery' ];
 	$js    = [ 'common' ];
-	if ( ! $guide && ! $networks && ! $progress ) {
+	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
@@ -104,4 +104,4 @@ foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 
-<?php if ( ! $guide && ! $progress && ! $relays ) echo '<div id="loader">'.$logosvg.'</div>';?>
+<?php if ( ! $guide && ! $addonsprogress && ! $relays ) echo '<div id="loader">'.$logosvg.'</div>';?>
