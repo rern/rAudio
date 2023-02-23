@@ -31,7 +31,7 @@ include 'settings/'.$page.'.php';
 
 echo '</div>';
 
-if ( $progress || $guide ) {
+if ( $addonsprogress || $guide ) {
 	echo '
 </body>
 </html>
@@ -54,10 +54,8 @@ if ( ! $addons ) {
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------
-if ( ! $addonsprogress ) {
-	foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-	foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-}
+foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
 echo '
 </body>
 </html>
