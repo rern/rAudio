@@ -17,7 +17,7 @@ function menu( $icon, $name, $iconsub = '' ) {
 	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
 }
 function tab( $icon, $name ) {
-	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i>&ensp;'.$name.'</a>';
+	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i> '.$name.'</a>';
 }
 // functions for use inside heredoc
 $Fi         = 'i';

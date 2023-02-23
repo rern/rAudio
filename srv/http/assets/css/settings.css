@@ -101,10 +101,9 @@ div.helpblock {
 }
 .helpblock i {
 	width: 20px;
-	margin-left: 3px;
-	margin-right: -4px;
 	line-height: 16px;
 	font-size: 16px !important;
+	text-align: center;
 }
 .helpblock .tab i {
 	margin-left: 0;
@@ -126,7 +125,7 @@ div.helpblock {
 }
 .helpmenu {
 	display: inline-block;
-	width: 115px;
+	width: 130px;
 	height: 25px !important;
 	line-height: 27px;
 	padding-left: 3px;
