@@ -252,10 +252,13 @@ heading .disabled {
 	height: 40px;
 	padding: 0 55px;
 	font-size: 28px;
-	line-height: 30px;
+	line-height: 35px;
 	text-align: center;
 	background: var( --cga );
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
+}
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#bar-bottom { line-height: 30px }
 }
 #bar-bottom div {
 	display: inline-block;
