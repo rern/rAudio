@@ -94,17 +94,21 @@ if ( ! $page ) { // main
 	$title = strtoupper( $pagetitle );
 }
 // <style> -----------------------------------------------------
-foreach( $cssp as $c ) echo '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
-foreach( $css as $c )  echo '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+$links = '';
+foreach( $cssp as $c ) $links.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
+foreach( $css as $c )  $links.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+echo $links;
 ?>
 </head>
 <body>
-
 <div id="infoOverlay" class="hide" tabindex="-1"></div>
-
+	<?php if ( !$addons && ! $addonsprogress && ! $guide && ! $relays ) { ?>
+<div id="loader"><?=$logosvg?></div>
+	<?php }
+		  if ( !$addons && ! $addonsprogress && ! $guide ) { ?>
 <div id="banner" class="hide"></div>
-
+	<?php }
+		  if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
-
-<?php if ( ! $guide && ! $addonsprogress && ! $relays ) echo '<div id="loader">'.$logosvg.'</div>';?>
+	<?php } ?>
