@@ -106,6 +106,9 @@ div.helpblock {
 	line-height: 16px;
 	font-size: 16px !important;
 }
+.helpblock .tab i {
+	margin-left: 0;
+}
 .helpblock i.btn {
 	width: 22px;
 	line-height: 20px;
