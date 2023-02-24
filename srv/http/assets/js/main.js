@@ -100,10 +100,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ V.page ][ diff > 0 ? 1 : 0 ] ).click();
 		xstart = false;
 	} );
-} else {
-	var hash = versionHash();
-	$( 'head' ).append( '<link rel="stylesheet" href="/assets/css/hovercursor.css'+ hash +'">' );
-	$.getScript( 'assets/js/shortcut.js'+ hash );
+	$( '#hovercursor, #shortcut' ).remove();
 }
 	
 $( 'body' ).click( function( e ) {

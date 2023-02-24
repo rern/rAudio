@@ -319,8 +319,11 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------
-foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
-foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+$script = '';
+foreach( $jsp as $j ) $script.= '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
+foreach( $js as $j )  $script.= '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+if ( ! $page )        $script.= '<script id="shortcut" src="/assets/js/shortcut.js'.$hash.'"></script>';
+echo $script;
 ?>
 <script>
 var jfiles = <?=json_encode( $jfiles )?>;

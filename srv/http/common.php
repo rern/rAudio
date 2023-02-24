@@ -60,7 +60,7 @@ if ( ! $page ) { // main
 		$jsp[]  = 'simplekeyboard';
 		$js[]   = 'simplekeyboard';
 	}
-	// hovercursor.css and shortcut.js included by main.js
+	// hovercursor.css and shortcut.js - appended last
 	$title = 'STATUS';
 } else {         // settings
 	$$page = true;
@@ -97,6 +97,7 @@ if ( ! $page ) { // main
 $links = '';
 foreach( $cssp as $c ) $links.= '<link rel="stylesheet" href="/assets/css/plugin/'.$cfiles[ $c ].'">';
 foreach( $css as $c )  $links.= '<link rel="stylesheet" href="/assets/css/'.$c.'.css'.$hash.'">';
+if ( ! $page )         $links.= '<link id="hovercursor" rel="stylesheet" href="/assets/css/hovercursor.css'.$hash.'">';
 echo $links;
 ?>
 </head>
