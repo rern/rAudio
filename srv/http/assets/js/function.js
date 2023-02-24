@@ -423,7 +423,7 @@ function displayPlayback() {
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
 	$( '#timemap' ).toggleClass( 'hide', D.cover );
-	$( '#play-group, #vol-group' ).toggleClass( 'hide', ! D.buttons );
+	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
 }
 function displaySave( keys ) {
@@ -1429,7 +1429,7 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
 	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', ! S.snapclient );
 	if ( ! S.stream && S.player === 'mpd' ) {
-		if ( $( '#play-group' ).is( ':visible' ) ) {
+		if ( $( '#button-time' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', S.random );
 			$( '#repeat' ).toggleClass( 'active', S.repeat );
 			$( '#single' ).toggleClass( 'active', S.single );

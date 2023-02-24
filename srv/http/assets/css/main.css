@@ -473,8 +473,8 @@ i.map.disabled, .map.disabled i {
 #volume-knob {
 	max-width: 400px;
 }
-#play-group,
-#vol-group {
+#button-time,
+#button-volume {
 	margin-top: 20px;
 	width: 100%;
 }
@@ -857,11 +857,11 @@ i.map.disabled, .map.disabled i {
 	font-size:24px;
 	line-height: 40px;
 }
-#play-group .btn.active,
+#button-time .btn.active,
 #volmute.btn-default.active {
 	background-color: var( --cm ) !important;
 }
-#play-group .active.disabled {
+#button-time .active.disabled {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
@@ -2037,8 +2037,8 @@ li.active .li2 bl {
 }
 @media ( max-height: 540px ) {
 	#playback-row { margin-top: 10px }
-	#play-group,
-	#vol-group { display: none }
+	#button-time,
+	#button-volume { display: none }
 }
 @media ( max-width: 700px ) {
 	#sampling .radio { display: inline }
@@ -2130,8 +2130,8 @@ li.active .li2 bl {
 		#time-knob,
 		#coverart-block,
 		#volume-knob { min-width: 30% }
-		#play-group,
-		#vol-group { display: none }
+		#button-time,
+		#button-volume { display: none }
 	}
 	@media ( min-width: 750px ) {
 		#time-knob,
@@ -2174,8 +2174,8 @@ li.active .li2 bl {
 		#time-knob { display: none }
 		#volume-knob,
 		#coverart-block,
-		#play-group,
-		#vol-group	{ width: 100% }
+		#button-time,
+		#button-volume	{ width: 100% }
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,

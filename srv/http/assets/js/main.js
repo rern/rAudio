@@ -710,7 +710,7 @@ $( '#volume' ).roundSlider( {
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
-		$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
+		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 		bash( [ 'volume', S.volume, e.value, S.card, S.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
@@ -748,7 +748,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } );
 $( '#volmute, #volM' ).click( function() {
-	$( '#volume-knob, #vol-group i' ).addClass( 'disabled' );
+	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 	bash( [ 'volume' ] );
 } );
 $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {

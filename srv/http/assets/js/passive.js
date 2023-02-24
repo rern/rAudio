@@ -405,7 +405,7 @@ function psSavedPlaylists( data ) {
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
-		$( '#volume-knob, #vol-group i' ).toggleClass( 'disabled', data.val );
+		$( '#volume-knob, #button-volume i' ).toggleClass( 'disabled', data.val );
 		return
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
