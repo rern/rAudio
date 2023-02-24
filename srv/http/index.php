@@ -211,12 +211,10 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<?=i( 'timeB', 'stop map timemap' )?>
 				<?=i( 'timeBR', 'repeat map timemap' )?>
 			</div>
-			<div id="button-time">
-				<div class="btn-group">
-					<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )?>
-					<?=i( 'single', 'single btn btn-default btn-cmd btn-toggle' )?>
-					<?=i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
-				</div>
+			<div id="button-time" class="btn-group">
+				<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )?>
+				<?=i( 'single', 'single btn btn-default btn-cmd btn-toggle' )?>
+				<?=i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
@@ -254,12 +252,10 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<?=i( 'volR', 'plus map volmap' )?>
 				<?=i( 'volB', 'minus map volmap' )?>
 			</div>
-			<div id="button-volume">
-				<div class="btn-group">
-					<?=i( 'voldn', 'minus btn btn-default' )?>
-					<?=i( 'volmute', 'volume btn btn-default' )?>
-					<?=i( 'volup', 'plus btn btn-default' )?>
-				</div>
+			<div id="button-volume" class="btn-group">
+				<?=i( 'voldn', 'minus btn btn-default' )?>
+				<?=i( 'volmute', 'volume btn btn-default' )?>
+				<?=i( 'volup', 'plus btn btn-default' )?>
 			</div>
 		</div>
 	</div>

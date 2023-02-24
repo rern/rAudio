@@ -457,8 +457,8 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 	text-align: center
 }
-#time-knob>div:first-child, 
-#volume-knob>div:first-child {
+#time-knob > div:first-child, 
+#volume-knob > div:first-child {
 	margin: 0 auto;
 }
 #time-knob,
@@ -472,11 +472,6 @@ i.map.disabled, .map.disabled i {
 #time-knob,
 #volume-knob {
 	max-width: 400px;
-}
-#button-time,
-#button-volume {
-	margin-top: 20px;
-	width: 100%;
 }
 #time-knob {
 	order: 1;
@@ -835,19 +830,20 @@ i.map.disabled, .map.disabled i {
 }
 .btn-group {
 	display: inline-block;
+	margin-top: 20px;
 }
-.btn-group>.btn {
+.btn-group > .btn {
 	position: relative;
 	float: left;
 }
-.btn-group>.btn:not(:first-child):not(:last-child) {
+.btn-group > .btn:not(:first-child):not(:last-child) {
 	border-radius:0;
 }
-.btn-group>.btn:first-child:not(:last-child) {
+.btn-group > .btn:first-child:not(:last-child) {
 	border-bottom-right-radius: 0;
 	border-top-right-radius: 0;
 }
-.btn-group>.btn:last-child:not(:first-child) {
+.btn-group > .btn:last-child:not(:first-child) {
 	border-bottom-left-radius: 0;
 	border-top-left-radius: 0;
 }
@@ -857,11 +853,10 @@ i.map.disabled, .map.disabled i {
 	font-size:24px;
 	line-height: 40px;
 }
-#button-time .btn.active,
-#volmute.btn-default.active {
+.btn-group .btn.active {
 	background-color: var( --cm ) !important;
 }
-#button-time .active.disabled {
+.btn-group .active.disabled {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
@@ -1496,7 +1491,7 @@ i.map.disabled, .map.disabled i {
 .input-group-btn {
 	vertical-align:middle;
 }
-.input-group-btn>.btn {
+.input-group-btn > .btn {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
@@ -2173,9 +2168,7 @@ li.active .li2 bl {
 		#playback-row { margin-top: 20px }
 		#time-knob { display: none }
 		#volume-knob,
-		#coverart-block,
-		#button-time,
-		#button-volume	{ width: 100% }
+		#coverart-block	{ width: 100% }
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,
