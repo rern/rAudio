@@ -98,7 +98,7 @@ EOF
 		, 'sublabel' => 'MPD snapcast'
 		, 'id'       => 'snapserver'
 		, 'setting'  => false
-		, 'disabled' => nameIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
+		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 
@@ -115,7 +115,7 @@ $body = [
 		, 'sublabel' => 'camilladsp'
 		, 'id'       => 'camilladsp'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Equalizer', 'alsaequal' ).' is currently enabled.'
+		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
@@ -127,7 +127,7 @@ EOF
 		, 'sublabel' => 'alsaequal'
 		, 'id'       => 'equalizer'
 		, 'setting'  => false
-		, 'disabled' => nameIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
+		, 'disabled' => labelIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
@@ -154,7 +154,7 @@ $body = [
 		, 'sublabel' => 'hostapd'
 		, 'id'       => 'hostapd'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
+		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
@@ -195,14 +195,14 @@ EOF
 		, 'sublabel' => 'smb'
 		, 'id'       => 'smb'
 		, 'status'   => true
-		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
  · Set sources permissions for read + write - directory: <c>0777</c> file: <c>0555</c>
  · Windows: $fileexplorer
  
-Note: {$FnameIcon( 'Server rAudio', 'rserver' )} should yield better performance.
+Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performance.
 EOF
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
@@ -216,6 +216,8 @@ EOF
  · Search online if not available.
  · Should be disable if most lyrics are not embedded.
  · Online fetched lyrics are saved as separate files, not embedded.
+ 
+Note: Should be disabled if none embedded.
 EOF
 	]
 	, [
@@ -259,10 +261,10 @@ EOF
 		, 'status'      => true
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
-<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FnameIcon( 'Shared Data', 'networks' )}
+<a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
  • <wh>rAudio Shared Data server:</wh>
 	· Must be set to <wh>static IP address</wh> which should be set on router.
-	· In {$Fmenu( 'library', 'Library' )}
+	· In {$Ftab( 'library', '' )} Library
 		· {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden.
 		· {$Fi( 'usb btn' )} USB items will be displayed in {$Fi( 'networks btn' )} NAS instead.
 	· On reboot / power off:
@@ -270,7 +272,7 @@ EOF
 		· Re-enabled by itself once the server is back online.
 	
  • <wh>rAudio Shared Data clients:</wh>
-	· {$Fmenu( 'system', 'System' )}{$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
+	· {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	· Automatically setup: discover, connect shared files and data
 	
  • <wh>Windows NFS clients:</wh>

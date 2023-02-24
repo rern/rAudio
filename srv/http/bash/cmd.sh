@@ -353,7 +353,7 @@ color )
 	file=$dirsystem/color
 	if [[ $hsl == reset ]]; then
 		rm -f $file
-		hsl=( $( grep '\-\-cd *:' /srv/http/assets/css/colors.css \
+		hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
 					| sed 's/.*(\(.*\)).*/\1/' \
 					| tr ',' ' ' \
 					| tr -d % ) )
@@ -383,10 +383,10 @@ s|(--cg60 *: *hsl).*;|\1(${hsg}60%);|
  s|(--cgd *: *hsl).*;|\1(${hsg}10%);|
 " /srv/http/assets/css/colors.css
 	sed -i -E "
-s|(.box.*hsl).*|\1($hsl);}|
-s|(path.*hsl).*|\1(${hsg}75%);}|
+s|(rect.*hsl).*;|\1($hsl);|
+s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
-	sed -E "s|(path.*hsl).*|\1(0,0%,90%);}|" $dirimg/icon.svg \
+	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
 	[[ ! $rotate ]] && rotate=NORMAL
@@ -472,20 +472,23 @@ dabscan )
 	;;
 displaysave )
 	data=${args[1]}
-	pushstream display "$data"
-	jq -S <<< $data > $dirsystem/display
-	grep -q -m1 '"vumeter".*true' $dirsystem/display && vumeter=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
+	jq -S <<< $data > $dirsystem/display
+	grep -q -m1 vumeter.*true $dirsystem/display && touch $dirsystem/vumeter && vumeter=1
+	pushstream display "$data"
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		grep -q -m1 '^state.*play' $dirshm/status && cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		touch $dirsystem/vumeter
-		[[ -e $dirmpdconf/fifo.conf ]] && exit
-		
+		if [[ -e $dirmpdconf/fifo.conf ]]; then
+			if grep -q -m1 '^state.*play' $dirshm/status && ! pgrep cava &> /dev/null; then
+				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+			fi
+			exit
+			
+		fi
 	else
 		killall cava &> /dev/null
-		rm -f $dirsystem/vumeter
+		rm -f $dirsystem/vumeter $dirshm/status
 	fi
 	$dirsettings/player-conf.sh
 	;;
@@ -1097,6 +1100,13 @@ volumeupdown )
 		fi
 	fi
 	pushstreamVolume updn $( volumeGet )
+	;;
+vumeter )
+	! grep -q vu.*true $dirsystem/display && exit
+	
+	html='<div id="vu" class="hide">'
+	html+="$( < /srv/http/assets/img/vu.svg )</div>"
+	echo "$html"
 	;;
 webradioadd )
 	dir=${args[1]}

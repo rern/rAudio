@@ -30,7 +30,7 @@ data='
 , "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
 , "player"           : "'$( < $dirshm/player )'"
 , "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
-, "replaygainconf"   : "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'"
+, "replaygainconf"   : [ "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'", '$( exists $dirsystem/replaygain-hw )' ]
 , "soxr"             : '$( exists $dirsystem/soxr )'
 , "soxrconf"         : ['$( sed -E '/\{|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
 , "soxrcustomconf"   : ["custom"'$( sed -E '/\{|plugin|quality|}/ d; s/.*"(.*)"/,\1/' $dirmpdconf/conf/soxr-custom.conf )']

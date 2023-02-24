@@ -2,7 +2,7 @@
 #bar-bottom { z-index: 5 }
 .container input[type=checkbox] { z-index: 1 }
 
-#listwlscan .fa-lock { font-size: 16px; vertical-align: 1px }
+#listwlscan .i-lock { font-size: 16px; vertical-align: 1px }
 .menu {
 	position: absolute;
 	margin-left: 40px;
@@ -99,16 +99,18 @@ div.helpblock {
 	color: var( --cg75 );
 	white-space: pre-wrap;
 }
-.helpblock .fa {
+.helpblock i {
 	width: 20px;
-	margin-left: 3px;
-	margin-right: -4px;
 	line-height: 16px;
 	font-size: 16px !important;
+	text-align: center;
 }
-.helpblock .fa.btn {
+.helpblock .tab i {
+	margin-left: 0;
+}
+.helpblock i.btn {
 	width: 22px;
-	line-height: 18px;
+	line-height: 20px;
 	margin-left: 0;
 	margin-right: 0;
 	border: 1px solid var( --cg );
@@ -121,20 +123,32 @@ div.helpblock {
 .helpblock .img {
 	color: var( --cml );
 }
-lbl,
-.menu-sub {
+.helpmenu {
 	display: inline-block;
-	width: 95px;
-	height: 25px;
+	width: 125px;
+	height: 25px !important;
 	line-height: 27px;
 	padding-left: 3px;
 	background: var( --cg );
 }
-.menu-sub i,
-.sub {
-	color: var( --cw );
+.helpmenu.label {
+	width: fit-content;
+	padding-left: 10px;
+	text-align: right;
+	background: var( --cga );
 }
-.sub {
+.helpmenu.tab {
+	text-align: center;
+}
+#infoContent .helpmenu.label {
+	background: var( --cg );
+}
+.helpmenu.label i {
+	margin: 0 0 0 8px;
+	text-align: left;
+}
+.helpmenu .sub {
+	float: right;
 	margin-left: 0 !important;
 	width: 25px !important;
 	line-height: 25px !important;
@@ -142,22 +156,16 @@ lbl,
 	background: var( --cg );
 	border-left: solid 1px var( --cga );
 }
-lbl {
-	width: fit-content;
-	padding: 0 5px;
-	background: var( --cga );
+.helpmenu i,
+.sub {
+	color: var( --cw );
 }
 btn {
 	display: inline-block;
-	line-height: 19px;
+	line-height: 22px;
 	padding: 0 3px;
 	border: 1px solid var( --cg );
 	border-radius: 3px;
-}
-@supports (-webkit-touch-callout: none) { /* ios only */
-	.menu-sub {
-		line-height: 25px;
-	}
 }
 .clear {
 	clear: both;
@@ -210,18 +218,18 @@ heading i {
 heading i.back {
 	width: 40px;
 }
-heading i.fa-status {
+heading .i-status {
 	display: none;
 }
-heading.status i.fa-status {
+heading.status .i-status {
 	display: inline-block;
 }
 heading i.help {
 	float: right;
 	text-align: right;
 }
-heading .fa-plus-circle,
-heading .fa-search {
+heading .i-plus-circle,
+heading .i-search {
 	color: var( --cw );
 }
 heading .disabled {
@@ -246,10 +254,13 @@ heading .disabled {
 	height: 40px;
 	padding: 0 55px;
 	font-size: 28px;
-	line-height: 30px;
+	line-height: 35px;
 	text-align: center;
 	background: var( --cga );
 	touch-action: manipulation; /* fix: Unable to preventDefault inside passive event listener */
+}
+@supports ( -webkit-touch-callout: none ) { /* ios only */
+	#bar-bottom { line-height: 30px }
 }
 #bar-bottom div {
 	display: inline-block;
@@ -310,7 +321,7 @@ cy {
 	text-align: center;
 	color: var( --cg60 );
 }
-.entries .fa-save {
+.entries .i-save {
 	width: 20px;
 	font-size: 22px;
 }
@@ -326,7 +337,7 @@ cy {
 	display: block;
 	width: calc( 100% - 40px );
 }
-.entries li .fa-info-circle {
+.entries li .i-info-circle {
     font-size: 22px !important;
 }
 .entries li.active {
@@ -504,12 +515,12 @@ input.disabled + .switchlabel:after {
 }
 .settings i,
 .col-l i.status,
-.col-l a i.fa-status {
+.col-l a .i-status {
 	width: 20px;
 	vertical-align: 0;
 	text-align: center
 }
-.col-l i.fa-status {
+.col-l .i-status {
 	font-size: 15px;
 }
 .col-l a {
@@ -569,7 +580,7 @@ input.disabled + .switchlabel:after {
 	margin: 0 5px 0 12px;
 	color: var( --cg60 );
 }
-#statusvalue .fa-song {
+#statusvalue .i-song {
     margin-left: 0;
 }
 #statuslabel i {

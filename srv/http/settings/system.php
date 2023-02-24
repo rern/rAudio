@@ -55,7 +55,7 @@ htmlHead( [ //////////////////////////////////
 		<br>CPU Temp<wide>erature</wide></span>
 		<br>Time
 		<br>Up Time
-		<div id="warning"><i class="fa fa-warning yl"></i>&ensp;<wh>Warning</wh></div>
+		<div id="warning"><i class="i-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
@@ -176,7 +176,7 @@ $body = [
 	[
 		  'html'    => <<< EOF
 <div id="divi2s">
-	<div class="col-l single">Audio - I²S<i class="fa fa-i2smodule"></i></div>
+	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
 	<div id="divi2smodulesw">
 		<input id="i2smodulesw" type="checkbox">
@@ -185,12 +185,12 @@ $body = [
 	<div id="divi2smodule">
 		$selecti2s
 	</div>
-	<i id="setting-i2smodule" class="fa fa-gear setting"></i>
+	<i id="setting-i2smodule" class="i-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Fmenu( 'player', 'Player' )}<lbl>Output</lbl> <lbl>Device</lbl>
+ · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
 </span>
 </div>
 EOF
@@ -319,7 +319,7 @@ EOF
 		, 'sublabel' => 'client'
 		, 'id'       => 'shareddata'
 		, 'setting'  => 'custom'
-		, 'disabled' => nameIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
@@ -331,8 +331,8 @@ Note:
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Fmenu( 'features', 'Features' )}{$FnameIcon( 'Server rAudio', 'rserver' )}
-	Clients: {$FnameIcon( 'Shared Data', 'networks' )} ● rAudio
+	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
+	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)
 	Server: Create a share for data with full permissions
@@ -346,7 +346,7 @@ Note:
 			<btn>Security</btn>
 				Everyone - Full Control
 	Clients:
-	 · {$FnameIcon( 'Shared Data', 'networks' )} Add the created share
+	 · {$FlabelIcon( 'Shared Data', 'networks' )} Add the created share
 	 · Data on 1st connected client will be used as initial shared.
 EOF
 	]
@@ -408,7 +408,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 }
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg" style="width: 40px"></a>
+	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>by&emsp;r e r n</gr></div>
 	

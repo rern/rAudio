@@ -9,8 +9,7 @@
 .band,
 .emptyadd,
 #volume-text { z-index: 102 }
-#refresh,
-#status { z-index: 100 }
+#refresh { z-index: 100 }
 #lyricsfade { z-index: 97 }
 #lib-search,
 #pl-search { z-index: 96 }
@@ -84,7 +83,7 @@ a {
 	color: var( --cm );
 	text-shadow: -2px 2px 4px #000000;
 }
-.infobookmark .fa-bookmark {
+.infobookmark .i-bookmark {
 	margin-top: 20px;
 }
 .disabled,
@@ -199,7 +198,7 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
-.submenu.fa-color canvas {
+.submenu.i-color canvas {
 	width: 20px;
 	height: 20px;
 	vertical-align: -2px;
@@ -303,6 +302,7 @@ i.map.disabled, .map.disabled i {
 }
 #button-settings {
 	position: absolute;
+	top: 0;
 	right: 20px;
 	font-size: 30px;
 }
@@ -333,7 +333,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom i.active {
 	background: var( --cm );
 }
-#bar-bottom .fa-mpd::before {
+#bar-bottom .i-mpd::before {
 	content: "\f507";
 }
 .renderer {
@@ -457,8 +457,8 @@ i.map.disabled, .map.disabled i {
 	position: relative;
 	text-align: center
 }
-#time-knob>div:first-child, 
-#volume-knob>div:first-child {
+#time-knob > div:first-child, 
+#volume-knob > div:first-child {
 	margin: 0 auto;
 }
 #time-knob,
@@ -472,11 +472,6 @@ i.map.disabled, .map.disabled i {
 #time-knob,
 #volume-knob {
 	max-width: 400px;
-}
-#play-group,
-#vol-group {
-	margin-top: 20px;
-	width: 100%;
 }
 #time-knob {
 	order: 1;
@@ -677,7 +672,7 @@ i.map.disabled, .map.disabled i {
 }
 #volume,
 #total {
-	font-family: "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-family: Lato;
 }
 /* overlay controls */
 
@@ -716,8 +711,8 @@ i.map.disabled, .map.disabled i {
 	left: 70px;
 	margin-top: 50px;
 }
-.timemap,
-.volmap {
+.maptime,
+.mapvolume {
 	border-radius: 4px;
 }
 .r1 { top: 0; }
@@ -731,8 +726,8 @@ i.map.disabled, .map.disabled i {
 .c3 { margin-left: 78%; }
 .r1,
 .r3,
-.timemap,
-.volmap {
+.maptime,
+.mapvolume {
 	background: var( --cg );
 }
 #coverT,
@@ -758,11 +753,11 @@ i.map.disabled, .map.disabled i {
 	border-left: 3px solid #000000;
 	border-right: 3px solid #000000;
 }
-.timemap {
+.maptime {
 	font-size: 22px;
 }
-.timemap,
-.volmap {
+.maptime,
+.mapvolume {
 	height: 40px;
 	width: 60px;
 	left: 50%;
@@ -835,19 +830,20 @@ i.map.disabled, .map.disabled i {
 }
 .btn-group {
 	display: inline-block;
+	margin-top: 20px;
 }
-.btn-group>.btn {
+.btn-group > .btn {
 	position: relative;
 	float: left;
 }
-.btn-group>.btn:not(:first-child):not(:last-child) {
+.btn-group > .btn:not(:first-child):not(:last-child) {
 	border-radius:0;
 }
-.btn-group>.btn:first-child:not(:last-child) {
+.btn-group > .btn:first-child:not(:last-child) {
 	border-bottom-right-radius: 0;
 	border-top-right-radius: 0;
 }
-.btn-group>.btn:last-child:not(:first-child) {
+.btn-group > .btn:last-child:not(:first-child) {
 	border-bottom-left-radius: 0;
 	border-top-left-radius: 0;
 }
@@ -857,11 +853,10 @@ i.map.disabled, .map.disabled i {
 	font-size:24px;
 	line-height: 40px;
 }
-#play-group .btn.active,
-#volmute.btn-default.active {
+.btn-group .btn.active {
 	background-color: var( --cm ) !important;
 }
-#play-group .active.disabled {
+.btn-group .active.disabled {
 	background-color: var( --cmd ) !important;
 }
 /* glossy highlight */
@@ -1289,7 +1284,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 16px;
 	color: var( --cg60 );
 }
-.mode .fa-bookmark {
+.mode .i-bookmark {
 	color: var( --cm );
 }
 .bkedit {
@@ -1409,9 +1404,11 @@ i.map.disabled, .map.disabled i {
 }
 .lialbum,
 #button-pl-back,
-#lib-breadcrumbs a:first-of-type,
-#lib-breadcrumbs a:last-of-type {
+#lib-breadcrumbs a {
 	color: var( --cml );
+}
+#lib-breadcrumbs a:last-of-type {
+	color: var( --cw );
 }
 #button-coverart {
 	position:relative;
@@ -1458,7 +1455,7 @@ i.map.disabled, .map.disabled i {
 	line-height: 40px;
 	text-align: center;
 }
-#pl-path .fa-arrow-left {
+#pl-path .i-arrow-left {
 	width: 40px !important;
 }
 #lib-search,
@@ -1483,7 +1480,7 @@ i.map.disabled, .map.disabled i {
 	border-radius: 5px;
 	color: var( --cw );
 	background-color: #000000;
-	font-family: "Lato";
+	font-family: Lato;
 	font-size: 18px;
 }
 .input-group input,
@@ -1494,7 +1491,7 @@ i.map.disabled, .map.disabled i {
 .input-group-btn {
 	vertical-align:middle;
 }
-.input-group-btn>.btn {
+.input-group-btn > .btn {
 	border-top-left-radius: 0;
 	border-bottom-left-radius: 0;
 }
@@ -1879,7 +1876,7 @@ li.active .li2,
 li.active .li2 a,
 li.active gr,
 li.active .time,
-.licover.active i.fa-file-playlist {
+.licover.active .i-file-playlist {
 	color: var( --cga ) !important;
 }
 li.active .li-icon.wh {
@@ -2035,8 +2032,8 @@ li.active .li2 bl {
 }
 @media ( max-height: 540px ) {
 	#playback-row { margin-top: 10px }
-	#play-group,
-	#vol-group { display: none }
+	#button-time,
+	#button-volume { display: none }
 }
 @media ( max-width: 700px ) {
 	#sampling .radio { display: inline }
@@ -2128,8 +2125,8 @@ li.active .li2 bl {
 		#time-knob,
 		#coverart-block,
 		#volume-knob { min-width: 30% }
-		#play-group,
-		#vol-group { display: none }
+		#button-time,
+		#button-volume { display: none }
 	}
 	@media ( min-width: 750px ) {
 		#time-knob,
@@ -2171,9 +2168,7 @@ li.active .li2 bl {
 		#playback-row { margin-top: 20px }
 		#time-knob { display: none }
 		#volume-knob,
-		#coverart-block,
-		#play-group,
-		#vol-group	{ width: 100% }
+		#coverart-block	{ width: 100% }
 		#coverart-block,
 		#volume-knob { width: auto }
 		#coverart-block,
@@ -2181,7 +2176,7 @@ li.active .li2 bl {
 	}
 	@media ( max-width: 480px ) {
 		#playback-controls i { margin: 0 5px }
-		#lib-list li span .fa,
+		#lib-list li span i,
 		#pl-savedlist span::before { display: none }
 		#lib-list li { line-height: 52px }
 		#lib-list .li1,
@@ -2253,8 +2248,8 @@ li.active .li2 bl {
 	#volume-knob,
 	#guide-lyrics { display: none; }
 	#coverart-block { margin-bottom : 0; }
-	#divcover .fa-coverart,
-	#divcover .fa-save { top: 5px; }
+	#divcover .i-coverart,
+	#divcover .i-save { top: 5px; }
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {

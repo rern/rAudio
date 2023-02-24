@@ -50,7 +50,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	info( {
 		  icon        : d[ 2 ] || name
 		, title       : d[ 0 ]
-		, message     : '<img src="/assets/img/'+ name +'.'+ Math.ceil( Date.now() / 1000 ) +'.'+ (d[ 4 ] || 'jpg' )
+		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' ) +'?v='+ Math.ceil( Date.now() / 1000 )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
 		, footer      : d[ 1 ]
 		, footeralign : 'left'
@@ -253,7 +253,7 @@ $( '#gpioimgtxt' ).click( function() {
 		$( '#gpiopin, #gpiopin1' ).css( 'display', 'none' );
 		$( '#fliptxt' ).hide();
 	}
-	$( this ).find( 'i' ).toggleClass( 'fa-chevron-down fa-chevron-up' );
+	$( this ).find( 'i' ).toggleClass( 'i-chevron-down i-chevron-up' );
 } );
 $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
@@ -322,8 +322,8 @@ $( '#setting-lcdchar' ).click( function() {
 			} );
 			if ( S.lcdchar ) {
 				$( '#infoOk' )
-					.before( '<gr id="lcdlogo">'+ ico( 'raudio fa-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff fa-lg wh' ) +'&ensp;Sleep</gr>' );
+					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
+					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
 				$( '#infoButtons gr' ).click( function() {
 					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
 					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
@@ -761,7 +761,7 @@ $( '.listtitle' ).click( function( e ) {
 	var $target  = $( e.target );
 	if ( ! $this.hasClass( 'backend' ) ) { // js
 		$list.toggleClass( 'hide' )
-		$chevron.toggleClass( 'fa-chevron-down fa-chevron-up' );
+		$chevron.toggleClass( 'i-chevron-down i-chevron-up' );
 		if ( localhost ) $( '.list a' ).remove();
 	} else if ( $target.is( 'a' ) ) { // package
 		var active = $target.hasClass( 'wh' );
@@ -967,7 +967,7 @@ function renderPage() {
 		html += '</li>';
 	} );
 	$( '#list' ).html( html );
-	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .fa-usbdrive' ).length === 0 );
+	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
 	$( '#usbautoupdate' )
 		.toggleClass( 'disabled', S.shareddata || S.nfsserver )

@@ -69,10 +69,14 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	systemctl -q is-active rtsp-simple-server && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	display=$( head -n -1 $dirsystem/display )
-	[[ -e $filesharedip ]] && display+='
+	if [[ -e $filesharedip ]]; then
+		display=$( grep -Ev 'sd|usb|}' $dirsystem/display )
+		display+='
 , "sd"  : false
 , "usb" : false'
+	else
+		display=$( grep -v } $dirsystem/display )
+	fi
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'

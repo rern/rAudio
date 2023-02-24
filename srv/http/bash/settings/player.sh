@@ -179,6 +179,7 @@ mixertype )
 	else
 		echo $mixertype > "$dirsystem/mixertype-$aplayname"
 	fi
+	[[ $mixertype != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
 	[[ $mixertype == none ]] && none=true || none=false
 	pushstream display '{"volumenone":'$none'}'
@@ -216,6 +217,7 @@ replaygain )
 	fileoutput=$dirmpdconf/output.conf
 	if [[ ${args[1]} == true ]]; then
 		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
+		[[ ${args[3]} == true ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
 		linkConf
 	else
 		rm $dirmpdconf/replaygain.conf

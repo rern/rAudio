@@ -124,7 +124,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 $( '.connect' ).click( function() {
 	clearTimeout( V.timeoutscan );
 	if ( V.listid === 'listbt' ) {
-		var icon = V.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 		notify( icon, V.li.data( 'name' ), 'Connect ...' );
 		bluetoothCommand( 'connect', V.li.data( 'mac' ) );
 		return
@@ -141,7 +141,7 @@ $( '.connect' ).click( function() {
 } );
 $( '.disconnect' ).click( function() {
 	if ( V.listid === 'listbt' ) {
-		var icon = V.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 		notify( icon, V.li.data( 'name' ), 'Disconnect ...' );
 		bluetoothCommand( 'disconnect', V.li.data( 'mac' ) );
 		return
@@ -166,7 +166,7 @@ $( '.edit' ).click( function() {
 $( '.forget' ).click( function() {
 	if ( V.listid === 'listbt' ) {
 		var name = V.li.data( 'name' );
-		var icon = V.li.find( 'i' ).hasClass( 'fa-btsender' ) ? 'btsender' : 'bluetooth';
+		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
 		info( {
 			  icon    : icon
 			, title   : name

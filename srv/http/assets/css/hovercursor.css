@@ -41,8 +41,8 @@
 	background-color: var( --cgl ) !important;
 }
 .index a:hover,
-.fa-arrow-left:hover,
-.fa-arrow-right:hover,
+.i-arrow-left:hover,
+.i-arrow-right:hover,
 #button-lib-search:hover,
 #lib-search-btn:hover,
 #lyrics i:hover,
@@ -60,7 +60,7 @@
 #playback-row .btn.active:active:hover {
 	background-color: var( --cma ) !important;
 }
-.fa-arrow-left:active:hover,
+.i-arrow-left:active:hover,
 .menu a:active:hover,
 .submenu:active:hover,
 #button-lib-search:active:hover,
@@ -99,9 +99,9 @@ li:not( .licover ),
 .coveredit,
 .bkedit,
 .emptyadd i,
-.fa-arrow-left,
-.fa-arrow-right,
-.fa-search,
+.i-arrow-left,
+.i-arrow-right,
+.i-search,
 .infomessage img,
 .infomessage .tagpath,
 .index a,
@@ -128,7 +128,7 @@ li:not( .licover ),
 #coloroption,
 #elapsed,
 #eq i,
-#playericon.fa-audiocd,
+#playericon.i-audiocd,
 #liboptions,
 #lib-path a,
 #lib-search-close,
@@ -147,4 +147,8 @@ li:not( .licover ),
 #volume-bar-up,
 #volume-text {
 	cursor: pointer;
+}
+#lib-path a:last-of-type:hover {
+	cursor: default;
+	color: var( --cw );
 }

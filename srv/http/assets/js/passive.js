@@ -57,7 +57,7 @@ function radioRefresh() {
 }
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'fa-'+ S.player ) ) displayBottom();
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
 	setButtonControl();
 	setButtonOptions();
 	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
@@ -78,7 +78,7 @@ pushstreamChannel( channels );
 function pushstreamDisconnect() {
 	clearIntervalAll();
 	hideGuide();
-	if ( $( '#infoIcon' ).hasClass( 'fa-relays' ) ) $( '#infoX' ).click();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).click();
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
@@ -98,7 +98,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'savedplaylist': psSavedPlaylists( data ); break;
 		case 'radiolist':     psRadioList( data );      break;
 		case 'relays':        psRelays( data );         break;
-		case 'reload':        location.href = '/';      break;
+		case 'reload':        location.reload();        break;
 		case 'restore':       psRestore( data );        break;
 		case 'volume':        psVolume( data );         break;
 		case 'vumeter':       psVUmeter( data );        break;
@@ -149,6 +149,11 @@ function psDisplay( data ) {
 	
 	$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
 	V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+	if ( ! D.covervu && ! D.vumeter ) {
+		$( '#vu' ).remove();
+	} else if ( ! $( '#vu' ).length ) {
+		$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu" class="hide">'+ data +'</div>' ), 'text' );
+	}
 	displayBars();
 	if ( V.playback ) {
 		setButtonControl();
@@ -157,7 +162,7 @@ function psDisplay( data ) {
 	} else if ( V.library ) {
 		if ( ! V.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'fa-music' ) ) {
+		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'i-music' ) ) {
 			if ( D.hidecover ) {
 				$( '.licover' ).remove();
 			} else {
@@ -314,7 +319,7 @@ function psRadioList( data ) {
 		if ( ! V.local ) getPlaylist();
 	}
 	S.updatingdab = false;
-	$( '#i-dabupdate' ).addClass( 'hide' );
+	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
 function psRelays( response ) {
 	clearInterval( V.intRelaysTimer );
@@ -353,7 +358,7 @@ function psRelays( response ) {
 			} else {
 				clearInterval( V.intRelaysTimer );
 				$( '#relays' ).removeClass( 'on' );
-				$( '#i-relays, #ti-relays' ).addClass( 'hide' );
+				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
 	} else {
@@ -405,7 +410,7 @@ function psSavedPlaylists( data ) {
 }
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
-		$( '#volume-knob, #vol-group i' ).toggleClass( 'disabled', data.val );
+		$( '#volume-knob, #button-volume i' ).toggleClass( 'disabled', data.val );
 		return
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;

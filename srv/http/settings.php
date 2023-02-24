@@ -1,26 +1,29 @@
 <?php include 'common.php';?>
 
 <div class="head">
-	<i class="page-icon fa fa-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
+	<i class="page-icon i-<?=$icon?>"></i><span class='title'><?=$title?></span><?=( i( 'close close' ).i( 'help helphead' ) )?>
 </div>
 <?php
 function i( $icon, $id = '' ) {
 	$htmlid = $id ? ' id="setting-'.$id.'"' : '';
 	if ( $icon === 'localbrowser' && file_exists( '/usr/bin/firefox' ) ) $icon = 'firefox';
-	return '<i'.$htmlid.' class="fa fa-'.$icon.'"></i>';
+	return '<i'.$htmlid.' class="i-'.$icon.'"></i>';
 }
-function nameIcon( $name, $icon ) {
-	return '<lbl>'.$name.' '.i( $icon ).'</lbl>';
+function labelIcon( $name, $icon ) {
+	return '<a class="helpmenu label">'.$name.'<i class="i-'.$icon.'"></i></a>';
 }
 function menu( $icon, $name, $iconsub = '' ) {
-	$menu = '<a class="menu-sub"><i class="fa fa-'.$icon.'"></i> '.$name.'</a>';
-	$menu.= $iconsub ? '<i class="fa fa-'.$iconsub.' sub"></i>' : '';
-	return $menu;
+	$submenu = $iconsub ? '<i class="i-'.$iconsub.' sub"></i>' : '';
+	return '<a class="helpmenu"><i class="i-'.$icon.'"></i> '.$name.$submenu.'</a>';
+}
+function tab( $icon, $name ) {
+	return '<a class="helpmenu tab"><i class="i-'.$icon.'"></i> '.$name.'</a>';
 }
 // functions for use inside heredoc
-$Fi        = 'i';
-$Fmenu     = 'menu';
-$FnameIcon = 'nameIcon';
+$Fi         = 'i';
+$FlabelIcon = 'labelIcon';
+$Fmenu      = 'menu';
+$Ftab       = 'tab';
 
 echo '<div class="container hide">';
 
@@ -28,7 +31,7 @@ include 'settings/'.$page.'.php';
 
 echo '</div>';
 
-if ( $progress || $guide ) {
+if ( $addonsprogress || $guide ) {
 	echo '
 </body>
 </html>
@@ -53,7 +56,6 @@ if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keybo
 // <script> -----------------------------------------------------
 foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
-
 echo '
 </body>
 </html>
@@ -86,7 +88,7 @@ $body = [
 		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
 		, 'settingicon' => (none)       // default = 'gear' 
 		                                // false   = no icon
-										// 'icon'  = 'fa-icon'
+										// 'icon'  = 'i-icon'
 		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
 										// 'js' = set by js condition
 		, 'help'        => <<< EOF
@@ -150,7 +152,7 @@ function htmlSetting( $data ) {
 	// col-r
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
-		$html   .= $disabled ? '<a class="hide">'.$disabled.'</a>' : '';
+		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
 		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'">';
 		$html   .= '</div>';
 	} else {

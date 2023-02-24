@@ -130,6 +130,7 @@ $( '#setting-replaygain' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
+		, footer       : D.mixertype === 'software' && D.mixers ? '<label><input type="checkbox"><wh>Gain control - Mixer device</wh></label>' : ''
 		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
@@ -147,7 +148,7 @@ $( '.filetype' ).click( function() {
 	} else {
 		$pre.toggleClass( 'hide' );
 	}
-	$( this ).toggleClass( 'fa-chevron-down fa-chevron-up' );
+	$( this ).toggleClass( 'i-chevron-down i-chevron-up' );
 } );
 $( '#setting-buffer' ).click( function() {
 	info( {
@@ -322,8 +323,8 @@ function infoSoxrPreset() {
 }
 function playbackIcon() {
 	$( '.playback' )
-		.removeClass( 'fa-pause fa-play' )
-		.addClass( S.state === 'play' ? 'fa-pause' : 'fa-play' )
+		.removeClass( 'i-pause i-play' )
+		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
 		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
 }
 function renderPage() {

@@ -209,7 +209,7 @@ function tagEditor() {
 				return
 			}
 			
-			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="fa fa-'+ el +' wh" data-mode="'+ el +'"></i>' );
+			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
 			var $img = V.librarytracklist ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
@@ -224,7 +224,7 @@ function tagEditor() {
 					 +'<div>'+ ico( 'folder' ) + file;
 		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
-		var footer   = '<div id="taglabel">'+ ico( 'help fa-lg' ) +'&emsp;Label</div>';
+		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
 			  icon         : V.playlist ? 'info-circle' : 'tag'
@@ -403,9 +403,9 @@ var htmlwebradio = `\
 <tr><td>Name</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>URL</td><td colspan="2"><input type="text"></td></tr>
 <tr><td>Charset</td><td><input type="text">
-	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank">${ ico( 'help fa-lg gr' ) }</a></td>
+	&nbsp;<a href="https://en.wikipedia.org/wiki/Character_encoding#Common_character_encodings" target="_blank">${ ico( 'help i-lg gr' ) }</a></td>
 	<td style="width: 50%; text-align: right">
-		<a id="addwebradiodir" style="cursor: pointer">${ ico( 'folder-plus fa-lg' ) }&ensp;New folder&ensp;</a>
+		<a id="addwebradiodir" style="cursor: pointer">${ ico( 'folder-plus i-lg' ) }&ensp;New folder&ensp;</a>
 	</td>
 </tr>
 </table>

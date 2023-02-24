@@ -1,5 +1,5 @@
 <?php
-include '/srv/http/function.php';
+include '/srv/http/mpdfunction.php';
 
 $cmd     = $_POST[ 'cmd' ] ?? $argv[ 1 ];
 $add     = $cmd === 'add' ? true : false;
@@ -198,7 +198,7 @@ function htmlTrack( $lists, $plname = '' ) {
 			if ( ! $artist && ! $album ) $li2.= $file;
 			$html  .=
 '<li class="upnp">
-	'.i( 'upnp fa-lg', 'filesavedpl' ).'
+	'.i( 'upnp i-lg', 'filesavedpl' ).'
 	<div class="li1"><span class="name">'.$list->Title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
 	<div class="li2">'.$li2.'</div>

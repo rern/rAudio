@@ -66,14 +66,6 @@ file=/etc/systemd/system/spotifyd.service
 systemctl daemon-reload
 systemctl try-restart spotifyd
 
-# 20221229
-files=$( ls /etc/systemd/network/e* )
-for file in $files; do
-	! grep -q RequiredForOnline=no $file && echo '
-[Link]
-RequiredForOnline=no' >> $file
-done
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -86,5 +78,12 @@ getinstallzip
 $dirsettings/system.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
+hash=?v=$( date +%s )
+sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+sed -i "s/?v=.*/$hash';/" /srv/http/common.php
+
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20230224
+[[ -e $dirmpdconf/replaygain.conf ]] && $dirsettings/player-conf.sh

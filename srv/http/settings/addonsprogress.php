@@ -10,13 +10,13 @@ $type     = $opt[ 1 ];
 $branch   = $opt[ 2 ] ?? '';
 $addon    = $addons[ $alias ];
 if ( $alias === 'cove' ) {
-	$icon = '<i class="page-icon fa fa-coverart"></i>';
+	$icon = '<i class="page-icon i-coverart"></i>';
 	$href = '/';
 	$name = 'Album Thumbnails';
 	$path = $type === '/' ? '' : $type; // path = $opt[ 1 ]
 	$type = 'Update';
 } else {
-	$icon = '<i class="page-icon fa fa-jigsaw"></i>';
+	$icon = '<i class="page-icon i-jigsaw"></i>';
 	$href = 'settings.php?p=addons';
 	$name = $addon[ 'title' ];
 }
@@ -30,7 +30,7 @@ $postinfo = $addon[ 'postinfo' ] ?? '';
 if ( $postinfo ) {
 	$c0 = $postinfo[ 0 ];
 	if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
-	if ( $postinfo ) $postmsg  .= '<br><br><i class="fa fa-info-circle wh"></i>'.$postinfo;
+	if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
 }
 $installurl    = $addon[ 'installurl' ];
 $installfile   = basename( $installurl );
@@ -94,13 +94,13 @@ pre hr.hrlight {
 
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"><i class="fa fa-jigsaw"></i><a id="infoTitle"><?=$name?></a></div></div>
+		<div id="infoTopBg"><div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$name?></a></div></div>
 		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 <br>
-<p class="addontitle gr"><i class="titleicon fa fa-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$name?></wh> - <?=$type?> ...</p>
+<p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$name?></wh> - <?=$type?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
