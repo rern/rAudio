@@ -472,37 +472,25 @@ dabscan )
 	;;
 displaysave )
 	data=${args[1]}
-	grep -q -m1 covervu.*true $dirsystem/display && prevcovervu=1
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	jq -S <<< $data > $dirsystem/display
-	grep -q -m1 covervu.*true $dirsystem/display && covervu=1
-	grep -q -m1 vumeter.*true $dirsystem/display && vumeter=1
-	if [[ ( $prevcovervu != $covervu ) || ( $prevvumeter != $vumeter ) ]]; then
-		reload=1
-	else
-		pushstream display "$data"
-	fi
-	if [[ $prevvumeter == $vumeter ]]; then
-		[[ $reload ]] && pushstream reload 1
-		exit
-	fi
+	grep -q -m1 vumeter.*true $dirsystem/display && touch $dirsystem/vumeter && vumeter=1
+	pushstream display "$data"
+	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
-		touch $dirsystem/vumeter
 		if [[ -e $dirmpdconf/fifo.conf ]]; then
 			if grep -q -m1 '^state.*play' $dirshm/status && ! pgrep cava &> /dev/null; then
 				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 			fi
-			[[ $reload ]] && pushstream reload 1
 			exit
+			
 		fi
-		
 	else
 		killall cava &> /dev/null
-		rm -f $dirsystem/vumeter
+		rm -f $dirsystem/vumeter $dirshm/status
 	fi
 	$dirsettings/player-conf.sh
-	[[ $reload ]] && pushstream reload 1
 	;;
 equalizer )
 	type=${args[1]} # preset, delete, rename, new, save

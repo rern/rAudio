@@ -149,6 +149,11 @@ function psDisplay( data ) {
 	
 	$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
 	V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+	if ( ( D.covervu || D.vumeter ) && ! $( '#vu' ).length ) {
+		$.get( '/assets/img/vu.svg', data => {
+			$( '#coverart' ).after ( '<div id="vu" class="hide">'+ data +'</div>' );
+		}, 'text' );
+	}
 	displayBars();
 	if ( V.playback ) {
 		setButtonControl();
