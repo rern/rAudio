@@ -222,13 +222,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" src="" class="cover hide">
-<?php
-if ( exec( "grep -q vu.*true /srv/http/data/system/display && echo 1" ) ) {
-		echo '<div id="vu" class="hide">';
-		include 'assets/img/vu.svg';
-		echo '</div>';
-}
-?>
+				<?=( shell_exec( '/srv/http/bash/cmd.sh vumeter' ) )?>
 				<div id="map-cover">
 					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )?>
 					<?=i( 'coverT', 'guide map mapcover r1 c2 wl hs' )?>

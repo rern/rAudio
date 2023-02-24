@@ -1113,6 +1113,13 @@ volumeupdown )
 	fi
 	pushstreamVolume updn $( volumeGet )
 	;;
+vumeter )
+	! grep -q vu.*true $dirsystem/display && exit
+	
+	html='<div id="vu" class="hide">'
+	html+="$( < /srv/http/assets/img/vu.svg )</div>"
+	echo "$html"
+	;;
 webradioadd )
 	dir=${args[1]}
 	name=${args[2]}
