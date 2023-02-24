@@ -288,15 +288,16 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 $( '#power' ).click( infoPower );
 $( '#displaylibrary' ).click( infoLibrary );
 $( '#displayplayback' ).click( function() {
+	var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
 	var chkplayback = {
 		  bars             : 'Top-Bottom bars'
 			, barsalways   : 'Bars always on'
 		, time             : 'Time'
 			, radioelapsed : 'Web Radio time'
 		, cover            : 'Cover art'
-			, covervu      : '<img class="imgicon" src="'+ V.covervu +'"> As default'
+			, covervu      : vumeter +'As default'
 		, volume           : 'Volume'
-			, vumeter      : 'VU meter'
+			, vumeter      : vumeter +'VU meter'
 		, buttons          : 'Buttons'
 			, noswipe      : 'Disable swipe'
 	}

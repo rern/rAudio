@@ -98,7 +98,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'savedplaylist': psSavedPlaylists( data ); break;
 		case 'radiolist':     psRadioList( data );      break;
 		case 'relays':        psRelays( data );         break;
-		case 'reload':        location.href = '/';      break;
+		case 'reload':        location.reload();        break;
 		case 'restore':       psRestore( data );        break;
 		case 'volume':        psVolume( data );         break;
 		case 'vumeter':       psVUmeter( data );        break;
