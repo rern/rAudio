@@ -200,16 +200,16 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 			<div id="timeicon"><?=$timeicon?></div>
 			<span id="elapsed" class="controls1"></span>
 			<span id="total" class="controls1"></span>
-			<div id="timemap">
-				<i id="timeTL" class="map timemap"></i>
-				<?=i( 'timeT', 'guide map timemap' )?>
-				<?=i( 'timeTR', 'gear map timemap' )?>
-				<?=i( 'timeL', 'previous map timemap' )?>
-				<div id="timeM" class="map timemap"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-				<?=i( 'timeR', 'next map timemap' )?>
-				<?=i( 'timeBL', 'random map timemap' )?>
-				<?=i( 'timeB', 'stop map timemap' )?>
-				<?=i( 'timeBR', 'repeat map timemap' )?>
+			<div id="map-time">
+				<i id="timeTL" class="map maptime"></i>
+				<?=i( 'timeT', 'guide map maptime' )?>
+				<?=i( 'timeTR', 'gear map maptime' )?>
+				<?=i( 'timeL', 'previous map maptime' )?>
+				<div id="timeM" class="map maptime"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
+				<?=i( 'timeR', 'next map maptime' )?>
+				<?=i( 'timeBL', 'random map maptime' )?>
+				<?=i( 'timeB', 'stop map maptime' )?>
+				<?=i( 'timeBR', 'repeat map maptime' )?>
 			</div>
 			<div id="button-time" class="btn-group">
 				<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )?>
@@ -225,16 +225,16 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="vu" class="hide">
 					<?php include 'assets/img/vu.svg';?>
 				</div>
-				<div id="covermap">
-					<?=i( 'coverTL', 'scale-dn map covermap r1 c1 ws hs' )?>
-					<?=i( 'coverT', 'guide map covermap r1 c2 wl hs' )?>
-					<?=i( 'coverTR', 'gear map covermap r1 c3 ws hs' )?>
-					<?=i( 'coverL', 'previous map covermap r2 c1 ws hl' )?>
-					<div id="coverM" class="map covermap r2 c2 wl hl"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-					<?=i( 'coverR', 'next map covermap r2 c3 ws hl' )?>
-					<?=i( 'coverBL', 'random map covermap r3 c1 ws hs' )?>
-					<?=i( 'coverB', 'stop map covermap r3 c2 wl hs' )?>
-					<?=i( 'coverBR', 'repeat map covermap r3 c3 ws hs' )?>
+				<div id="map-cover">
+					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )?>
+					<?=i( 'coverT', 'guide map mapcover r1 c2 wl hs' )?>
+					<?=i( 'coverTR', 'gear map mapcover r1 c3 ws hs' )?>
+					<?=i( 'coverL', 'previous map mapcover r2 c1 ws hl' )?>
+					<div id="coverM" class="map mapcover r2 c2 wl hl"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
+					<?=i( 'coverR', 'next map mapcover r2 c3 ws hl' )?>
+					<?=i( 'coverBL', 'random map mapcover r3 c1 ws hs' )?>
+					<?=i( 'coverB', 'stop map mapcover r3 c2 wl hs' )?>
+					<?=i( 'coverBR', 'repeat map mapcover r3 c3 ws hs' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
 				<?=i( 'volume-band', 'volume transparent volumeband band' )?>
@@ -245,12 +245,12 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
-			<div id="volmap">
-				<?=i( 'volT', 'plus map volmap' )?>
-				<?=i( 'volL', 'minus map volmap' )?>
-				<?=i( 'volM', 'volume map volmap' )?>
-				<?=i( 'volR', 'plus map volmap' )?>
-				<?=i( 'volB', 'minus map volmap' )?>
+			<div id="map-volume">
+				<?=i( 'volT', 'plus map mapvolume' )?>
+				<?=i( 'volL', 'minus map mapvolume' )?>
+				<?=i( 'volM', 'volume map mapvolume' )?>
+				<?=i( 'volR', 'plus map mapvolume' )?>
+				<?=i( 'volB', 'minus map mapvolume' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
 				<?=i( 'voldn', 'minus btn btn-default' )?>

@@ -422,7 +422,7 @@ function displayPlayback() {
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
-	$( '#timemap' ).toggleClass( 'hide', D.cover );
+	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
 }
@@ -1617,7 +1617,7 @@ function setPlaybackBlankQR() {
 		, dim : 230
 		, pad : 11
 	} );
-	$( '#covermap' ).before( `
+	$( '#map-cover' ).before( `
 <div id="qrwebui">${ V.qr.outerHTML }</div>
 <div id="qrip"><gr>http://</gr>${ S.ip }<br><gr>http://</gr>${ S.hostname }
 </div>` );

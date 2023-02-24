@@ -896,14 +896,14 @@ $( '.map' ).click( function( e ) {
 		var time   = $time.is( ':visible' );
 		var volume = $volume.is( ':visible' );
 		$( '#coverTR' ).removeClass( 'empty' );
-		$( '.covermap, .guide' ).addClass( 'mapshow' );
+		$( '.mapcover, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
 		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
 		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
-		$( '.timemap' ).toggleClass( 'mapshow', ! D.cover );
-		$( '.volmap' ).toggleClass( 'mapshow', volume );
+		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
+		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
 		$( '#bar-bottom' ).toggleClass( 'translucent', $bartop.is( ':hidden' ) );
 		if ( time || volume ) {
 			$( '#coverTL' )
@@ -975,7 +975,7 @@ $( '.map' ).click( function( e ) {
 				setProgress();
 				setTimeout( setProgressAnimate, 0 );
 			}
-			if ( 'coverTL' in V && ! D.cover ) $( '#timemap' ).removeClass( 'hide' );
+			if ( 'coverTL' in V && ! D.cover ) $( '#map-time' ).removeClass( 'hide' );
 			break;
 		case 'settings':
 			$( '#button-settings' ).click();
