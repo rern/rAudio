@@ -379,17 +379,7 @@ force_eeprom_read=0"
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	config=$( grep -E 'dtoverlay=gpio
-						 |dtoverlay=sdtweak,poll_once
-						 |dtparam=i2c_arm_baudrate
-						 |dtparam=i2c_arm=on
-						 |dtparam=krnbt=on
-						 |dtparam=spi=on
-						 |dtoverlay=.*:rotate=
-						 |gpio-poweroff
-						 |gpio-shutdown
-						 |hdmi_force_hotplug
-						 |temp_soft_limit' /boot/config.txt )
+	config=$( grep -Ev "dtparam=audio=on|dtparam=i2s=on|dtoverlay=$aplayname|gpio=25=op,dh" /boot/config.txt )
 	if [[ $aplayname != onboard ]]; then
 		config+="
 dtparam=i2s=on

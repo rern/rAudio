@@ -21,7 +21,7 @@ calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
 cpuInfo() {
-	hwrevision=$( awk '/Revision/ {print $NF}' /proc/cpuinfo )
+	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
 	C=${hwrevision: -4:1}
 	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || onboardwireless=1
