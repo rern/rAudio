@@ -960,7 +960,6 @@ function renderPage() {
 	$( '#systemvalue' ).html( S.system );
 	$( '#status' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	if ( ! ( 'softlimit' in S ) ) $( '#divsoftlimit' ).remove();
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {

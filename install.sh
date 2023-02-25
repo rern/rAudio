@@ -86,4 +86,6 @@ installfinish
 #-------------------------------------------------------------------------------
 
 # 20230224
-[[ -e $dirmpdconf/replaygain.conf ]] && $dirsettings/player-conf.sh
+if [[ -e $dirmpdconf/replaygain.conf ]]; then
+	! grep -q mixer_type.*software $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+fi

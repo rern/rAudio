@@ -74,12 +74,15 @@ htmlHead( [ //////////////////////////////////
 RPi 3B+: 60°C soft limit default (optimized throttling)
 </div>
 <?php
-htmlSetting( [
-	  'label'    => 'Custom Soft Limit'
-	, 'sublabel' => 'CPU throttling'
-	, 'id'       => 'softlimit'
-	, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
-] );
+$cpurevision = exec( 'grep ^Revision /proc/cpuinfo' );
+if ( substr( $cpurevision, -3, 2 ) === '0d' ) {
+	htmlSetting( [
+		  'label'    => 'Custom Soft Limit'
+		, 'sublabel' => 'CPU throttling'
+		, 'id'       => 'softlimit'
+		, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
+	] );
+}
 ?>
 </div>
 <div id="divstorage" class="section">
