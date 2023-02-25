@@ -15,11 +15,21 @@ $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
-	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" ) # 01234567890123456789
-	current=${binary: -4} # 6789
-	occured=${binary:0:4} # 0123
-	e_current=( '<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
-	e_occured=( '<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
+	current=${binary: -4}                                                             # 6789
+	occured=${binary:2:4}                                             # 0123
+	e_current=( \
+		'Soft temperature limit active' \
+		'Currently throttled' \
+		'Arm frequency capped' \
+		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' \
+	)
+	e_occured=( \
+		'Soft temperature limit has occurred' \
+		'Throttling has occurred' \
+		'Arm frequency capping has occurred' \
+		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
+	)
 	for i in 0 1 2 3; do
 		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
 	done
