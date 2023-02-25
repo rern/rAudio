@@ -23,29 +23,29 @@ dirPermissions() {
 }
 I2Cset() {
 	# parse finalized settings
-	grep -E -q 'waveshare|tft35a' $fileconfig && lcd=1
+	grep -E -q 'waveshare|tft35a' /boot/config.txt && lcd=1
 	[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
 	if [[ -e $dirsystem/mpdoled ]]; then
 		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 		if [[ $chip != 1 && $chip != 7 ]]; then
 			I2Cmpdoled=1
-			[[ ! $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 )
+			[[ ! $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate /boot/config.txt | cut -d= -f3 )
 		else
 			SPImpdoled=1
 		fi
 	fi
 
 	# reset
-	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' $fileconfig
+	sed -i -E '/dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate/ d' /boot/config.txt
 	sed -i -E '/i2c-bcm2708|i2c-dev|^\s*$/ d' $filemodule
 	[[ ! $( awk NF $filemodule ) ]] && rm $filemodule
 
 	# dtparam=i2c_arm=on
-	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> $fileconfig
+	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo dtparam=i2c_arm=on >> /boot/config.txt
 	# dtparam=spi=on
-	[[ $lcd || $SPImpdoled ]] && echo dtparam=spi=on >> $fileconfig
+	[[ $lcd || $SPImpdoled ]] && echo dtparam=spi=on >> /boot/config.txt
 	# dtparam=i2c_arm_baudrate=$baud
-	[[ $I2Cmpdoled ]] && echo dtparam=i2c_arm_baudrate=$baud >> $fileconfig
+	[[ $I2Cmpdoled ]] && echo dtparam=i2c_arm_baudrate=$baud >> /boot/config.txt
 	# i2c-dev
 	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && echo i2c-dev >> $filemodule
 	# i2c-bcm2708
@@ -55,7 +55,7 @@ pushReboot() {
 	name=$1
 	reboot=$2
 	pushRefresh
-	if [[ ! $reboot ]] && cmp -s /tmp/config.txt $fileconfig && cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+	if [[ ! $reboot ]] && cmp -s /tmp/config.txt /boot/config.txt && cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		sed -i "/$name/ d" $dirshm/reboot
 	else
 		notify system "${name//\"/\\\"}" 'Reboot required.' 5000
@@ -136,14 +136,12 @@ webradioCopyBackup() {
 case ${args[0]} in
 
 audio )
-	if [[ ${args[1]} == true ]]; then
-		sed -i '/dtparam=audio=on/ s/#//' /boot/config.txt
-	else
-		sed -i '/dtparam=audio=on/ s/^/#/' /boot/config.txt
-	fi
+	sed -i '/dtparam=audio=on/ d' /boot/config.txt
+	[[ ${args[1]} == true ]] && echo dtparam=audio=on >> /boot/config.txt
 	pushReboot Audio
 	;;
 bluetooth )
+	sed -i '/^dtparam=krnbt=on/ d' /boot/config.txt
 	if [[ ${args[1]} == true ]]; then
 		btdiscoverable=${args[2]}
 		btformat=${args[3]}
@@ -154,7 +152,7 @@ bluetooth )
 			yesno=no
 			rm $dirsystem/btdiscoverable
 		fi
-		sed -i '/dtparam=krnbt=on/ s/^#//' $fileconfig
+		echo dtparam=krnbt=on >> /boot/config.txt
 		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
 			systemctl start bluetooth
 			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
@@ -167,7 +165,6 @@ bluetooth )
 		[[ $btformat == true ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 		[[ $btformat != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		sed -i '/^dtparam=krnbt=on/ s/^/#/' $fileconfig
 		grep -q dtparam=krnbt=on /tmp/config.txt && notify bluetooth 'On-board Bluetooth' 'Disabled after reboot.'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
@@ -349,11 +346,10 @@ hddsleep )
 	pushRefresh
 	;;
 hdmi )
+	sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 	if [[ ${args[1]} == true ]]; then
 		echo hdmi_force_hotplug=1 >> /boot/config.txt
-		! grep -q hdmi_force_hotplug=1 /tmp/config.txt && pushReboot 'HDMI Hotplug'
-	else
-		sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+		pushReboot 'HDMI Hotplug'
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"features","hdmihotplug":'${args[1]}'}'
@@ -370,9 +366,9 @@ hostname )
 	;;
 i2seeprom )
 	if [[ ${args[1]} == true ]]; then
-		sed -i '$ a\force_eeprom_read=0' $fileconfig
+		sed -i '$ a\force_eeprom_read=0' /boot/config.txt
 	else
-		sed -i '/force_eeprom_read=0/ d' $fileconfig
+		sed -i '/force_eeprom_read=0/ d' /boot/config.txt
 	fi
 	pushRefresh
 	;;
@@ -384,9 +380,7 @@ i2smodule )
 						 |dtparam=i2c_arm=on
 						 |dtparam=krnbt=on
 						 |dtparam=spi=on
-						 |hdmi_force_hotplug=1
-						 |tft35a
-						 |waveshare' $fileconfig )
+						 |dtoverlay=.*:rotate=' /boot/config.txt )
 	if [[ $aplayname != onboard ]]; then
 		dtoverlay+="
 dtparam=i2s=on
@@ -394,7 +388,7 @@ dtoverlay=$aplayname"
 		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && dtoverlay+="
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
-		! grep -q gpio-shutdown $fileconfig && systemctl disable --now powerbutton
+		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
 	else
 		dtoverlay+="
 dtparam=audio=on"
@@ -404,9 +398,8 @@ dtparam=audio=on"
 		output="On-board $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	sed -i -E '/dtparam=|dtoverlay=|force_eeprom_read=0|gpio=25=op,dh|^$/ d' $fileconfig
-	echo "$dtoverlay" >> $fileconfig
-	sed -i '/^$/ d' $fileconfig
+	sed -i -E '/dtparam=|dtoverlay=|force_eeprom_read=0|gpio=25=op,dh|^$/ d' /boot/config.txt
+	echo "$dtoverlay" >> /boot/config.txt
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
 	pushReboot 'Audio I&#178;S module'
@@ -440,10 +433,10 @@ lcd )
 			rm $dirsystem/lcdmodel
 		fi
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
-		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' /boot/config.txt
 		echo "\
 hdmi_force_hotplug=1
-dtoverlay=$model:rotate=0" >> $fileconfig
+dtoverlay=$model:rotate=0" >> /boot/config.txt
 		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
 		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
@@ -455,7 +448,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 		pushReboot 'TFT 3.5" LCD'
 	else
 		sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-		sed -i -E '/hdmi_force_hotplug|rotate=/ d' $fileconfig
+		sed -i -E '/hdmi_force_hotplug|rotate=/ d' /boot/config.txt
 		sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 		I2Cset
@@ -463,7 +456,7 @@ dtoverlay=$model:rotate=0" >> $fileconfig
 	fi
 	;;
 lcdcalibrate )
-	degree=$( grep rotate $fileconfig | cut -d= -f3 )
+	degree=$( grep rotate /boot/config.txt | cut -d= -f3 )
 	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
@@ -658,9 +651,9 @@ mpdoled )
 		I2Cset
 		if [[ $chip != 1 && $chip != 7 ]]; then
 			! ls /dev/i2c* &> /dev/null && pushReboot 'Spectrum OLED' reboot
-			[[ $( grep dtparam=i2c_arm_baudrate $fileconfig | cut -d= -f3 ) != $baud ]] && reboot=1
+			[[ $( grep dtparam=i2c_arm_baudrate /boot/config.txt | cut -d= -f3 ) != $baud ]] && reboot=1
 		else
-			! grep -q dtparam=spi=on $fileconfig && reboot=1
+			! grep -q dtparam=spi=on /boot/config.txt && reboot=1
 		fi
 		if [[ $reboot ]]; then
 			pushReboot 'Spectrum OLED'
@@ -794,10 +787,9 @@ ${args[1]}"
 powerbutton )
 	if [[ ${args[1]} == true ]]; then
 		if [[ ${args[6]} == true ]]; then # audiophonics
-			sed -i '/disable_overscan/ a\
+			echo "\
 dtoverlay=gpio-poweroff,gpiopin=22\
-dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down
-' $fileconfig
+dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down" >> /boot/config.txt
 			touch $dirsystem/audiophonics
 			pushReboot 'Power Button'
 			exit
@@ -813,13 +805,13 @@ sw=$sw
 led=$led
 reserved=$reserved
 " > $dirsystem/powerbutton.conf
-		sed -i '/gpio-shutdown/ d' $fileconfig
+		sed -i '/gpio-shutdown/ d' /boot/config.txt
 		systemctl restart powerbutton
 		systemctl enable powerbutton
 		if [[ $sw == 5 ]]; then
 			pushRefresh
 		else
-			sed -i "/disable_overscan/ a\dtoverlay=gpio-shutdown,gpio_pin=$reserved" $fileconfig
+			echo dtoverlay=gpio-shutdown,gpio_pin=$reserved >> /boot/config.txt
 			pushReboot 'Power Button'
 		fi
 	else
@@ -829,7 +821,7 @@ reserved=$reserved
 			systemctl disable --now powerbutton
 			gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 		fi
-		sed -i -E '/gpio-poweroff|gpio-shutdown/ d' $fileconfig
+		sed -i -E '/gpio-poweroff|gpio-shutdown/ d' /boot/config.txt
 		pushRefresh
 	fi
 	;;
@@ -1005,9 +997,13 @@ sharelistsmb )
 softlimit )
 	enable=${args[1]}
 	tempsoftlimit=temp_soft_limit=${args[2]}
-	sed -i '/temp_soft_limit/ d' /boot/config.txt
-	[[ ${args[1]} == true ]] && echo $tempsoftlimit >> /boot/config.txt
-	! grep -q $tempsoftlimit /tmp/config.txt && pushReboot 'Custom Soft limit'
+	config=$( grep -v temp_soft_limit /boot/config.txt )
+	if [[ ${args[1]} == true ]]; then
+		config+="
+$tempsoftlimit"
+		pushReboot 'Custom Soft limit'
+	fi
+	echo "$config" | sort > /boot/config.txt
 	pushRefresh
 	;;
 soundprofileset )
@@ -1065,7 +1061,7 @@ systemconfig )
 $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( grep -v ^# /boot/config.txt )
+$( < /boot/config.txt )
 
 <bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
 $( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
