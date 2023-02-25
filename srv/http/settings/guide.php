@@ -52,10 +52,9 @@ Bottom bar :
 <?php
 $html     = '<div class="bottom-bar">';
 foreach( [ 'library', 'playback', 'playlist', 'settings' ] as $id ) {
-	$html.= '<a id="'.$id.'" class="btn"><i class="i-'.$id.'"></i><span>'.ucfirst( $id ).'</span></a>';
+	$html.= '<a id="'.$id.'" class="btn">'.i( $id ).'<span>'.ucfirst( $id ).'</span></a>';
 }
-$html    .= '<a id="prevnext"><i class="prev i-arrow-left"></i><i class="next i-arrow-right"></i></a>
-			 </div>';
+$html    .= '<a id="prevnext">'.i( 'arrow-left prev' ).i( 'arrow-right next' ).'</a></div>';
 echo $html;
 ?>
 </div>
