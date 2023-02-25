@@ -70,8 +70,17 @@ htmlHead( [ //////////////////////////////////
 <wh>• CPU temperature:</wh>
  · 80-84°C: ARM cores throttled.
  · 85°C: ARM cores and GPU throttled.
- · RPi 3B+: 60°C soft limit (optimized throttling)
+
+RPi 3B+: 60°C soft limit default (optimized throttling)
 </div>
+<?php
+htmlSetting( [
+	  'label'    => 'Custom Soft Limit'
+	, 'sublabel' => 'CPU throttling'
+	, 'id'       => 'softlimit'
+	, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
+] );
+?>
 </div>
 <div id="divstorage" class="section">
 <?php

@@ -1002,6 +1002,14 @@ Server rAudio @<wh>$ip</wh> :
 sharelistsmb )
 	timeout 10 smbclient -NL ${args[1]} | sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//'
 	;;
+softlimit )
+	enable=${args[1]}
+	tempsoftlimit=temp_soft_limit=${args[2]}
+	sed -i '/temp_soft_limit/ d' /boot/config.txt
+	[[ ${args[1]} == true ]] && echo $tempsoftlimit >> /boot/config.txt
+	! grep -q $tempsoftlimit /tmp/config.txt && pushReboot 'Custom Soft limit'
+	pushRefresh
+	;;
 soundprofileset )
 	soundProfile
 	;;

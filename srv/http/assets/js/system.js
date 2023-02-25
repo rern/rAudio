@@ -153,6 +153,17 @@ $( '#menu a' ).click( function() {
 			break;
 	}
 } );
+$( '#setting-softlimit' ).click( function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, radio        : { '65°C': 65, '70°C': 70, '75°C': 75 }
+		, values       : S.softlimitconf || 65
+		, checkchanged : S.softlimit
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
+} );
 $( '#setting-hddsleep' ).click( function() {
 	info( {
 		  icon         : SW.icon
@@ -949,6 +960,7 @@ function renderPage() {
 	$( '#systemvalue' ).html( S.system );
 	$( '#status' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	if ( ! ( 'softlimit' in S ) ) $( '#divsoftlimit' ).remove();
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {

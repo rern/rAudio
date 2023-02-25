@@ -12,6 +12,7 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='i-warning'></i>&ensp;No Internet connection"
+softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
@@ -19,13 +20,13 @@ if [[ $throttled != 0x0 ]]; then
 	current=${binary: -4}                                                             # 6789
 	occured=${binary:2:4}                                             # 0123
 	e_current=( \
-		'Soft temperature limit active' \
+		"Soft temperature limit active <gr>(>$softlimit°C)</gr>" \
 		'Currently throttled' \
 		'Arm frequency capped' \
 		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' \
 	)
 	e_occured=( \
-		'Soft temperature limit has occurred' \
+		"Soft temperature limit has occurred <gr>(>$softlimit°C)</gr>" \
 		'Throttling has occurred' \
 		'Arm frequency capping has occurred' \
 		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
@@ -223,7 +224,6 @@ data+='
 , "vuledconf"        : '$vuledconf'
 , "warning"          : "'$warning'"'
 
-cpuInfo
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
@@ -247,6 +247,11 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+fi
+if [[ $BB == 0d ]]; then # 3B+
+	data+='
+, "softlimit"        : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
+, "softlimitconf"    : '$softlimit
 fi
 
 data2json "$data" $1

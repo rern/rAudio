@@ -245,6 +245,9 @@ heading .disabled {
 .helphead {
 	color: var( --cg60 )
 }
+#divsoftlimit {
+	margin-top: 20px;
+}
 
 #bar-bottom {
 	position: fixed;
