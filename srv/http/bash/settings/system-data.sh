@@ -14,7 +14,7 @@ $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='i-warning'></i>&ensp;No Internet connection"
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
-if [[ $throttled != 0x00000 ]]; then
+if [[ $throttled != 0x0 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" ) # 01234567890123456789
 	current=${binary: -4} # 6789
 	occured=${binary:0:4} # 0123
