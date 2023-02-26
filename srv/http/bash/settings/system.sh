@@ -20,49 +20,41 @@ dirPermissions() {
 		done
 	fi
 }
-I2Cset() {
-	# parse finalized settings
-	grep -E -q 'dtoverlay=.*:rotate=' /boot/config.txt && lcd=1
-	[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
-	if [[ -e $dirsystem/mpdoled ]]; then
-		chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-		if [[ $chip != 1 && $chip != 7 ]]; then
-			I2Cmpdoled=1
-			[[ ! $baud ]] && baud=$( grep dtparam=i2c_arm_baudrate /boot/config.txt | cut -d= -f3 )
-		else
-			SPImpdoled=1
-		fi
-	fi
-	config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' /boot/config.txt )
-	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && config+="
-dtparam=i2c_arm=on"
-	[[ $lcd || $SPImpdoled ]] && config+="
-dtparam=spi=on"
-	[[ $I2Cmpdoled ]] && config+="
-dtparam=i2c_arm_baudrate=$baud"
-	sort -u <<< $config > /boot/config.txt
-	
-	if [[ -e $filemodule ]]; then
-		sed -i -E '/i2c-bcm2708|i2c-dev|^$/ d' $filemodule
-		module=$( awk NF $filemodule )
-	fi
-	[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && module+="
-i2c-dev" >> $filemodule
-	[[ $lcd || $I2Clcdchar ]] && module+="
-i2c-bcm2708" >> $filemodule
-	[[ $module ]] && awk NF <<< $module > $filemodule || rm -f $filemodule
-}
-pushReboot() {
+configTxt() {
 	name=$1
-	reboot=$2
-	pushRefresh
-	if [[ ! $reboot ]] && cmp -s /tmp/config.txt /boot/config.txt && cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		sed -i "/$name/ d" $dirshm/reboot
-	else
-		notify system "$name" 'Reboot required.' 5000
-		echo $name >> $dirshm/reboot
-		exit
+	if [[ $i2cset ]]; then
+		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && lcd=1
+		[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
+		if [[ -e $dirsystem/mpdoled ]]; then
+			chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+			[[ $chip == 1 || $chip == 7 ]] && SPImpdoled=1 || I2Cmpdoled=1
+		fi
+		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
+		[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && config+="
+dtparam=i2c_arm=on"
+		[[ $lcd || $SPImpdoled ]] && config+="
+dtparam=spi=on"
+		[[ $I2Cmpdoled ]] && config+="
+dtparam=i2c_arm_baudrate=$baud" # $baud from mpdoled )
+		sort -u <<< $config > /boot/config.txt
+		
+		[[ -e $filemodule ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev' $filemodule )
+		[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && module+="
+i2c-dev" >> $filemodule
+		[[ $lcd || $I2Clcdchar ]] && module+="
+i2c-bcm2708" >> $filemodule
+		module=$( awk NF <<< $module )
+		[[ $module ]] && echo "$module" > $filemodule || rm -f $filemodule
 	fi
+	sort -u <<< $config > /boot/config.txt
+	pushRefresh
+	[[ $reboot ]] && list=$( grep -v "$name" $dirshm/reboot )
+	if [[ ${@: -1} == reboot ]] || ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+		notify system "$name" 'Reboot required.' 5000
+		[[ $list ]] && list+=$'\n'
+		list+="$name"
+	fi
+	[[ $list ]] && sort -u <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
 sharedDataIPlist() {
 	list=$( ipAddress )
@@ -140,9 +132,7 @@ audio )
 	config=$( grep -v dtparam=audio=on /boot/config.txt )
 	[[ ${args[1]} == true ]] && config+="
 dtparam=audio=on"
-	sort -u <<< $config > /boot/config.txt
-	pushReboot Audio
-	pushRefresh
+	configTxt Audio
 	;;
 bluetooth )
 	config=$( grep -v dtparam=krnbt=on /boot/config.txt )
@@ -175,9 +165,7 @@ dtparam=krnbt=on"
 			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
 	fi
-	sort -u <<< $config > /boot/config.txt
-	pushReboot Bluetooth
-	pushRefresh
+	configTxt Bluetooth
 	;;
 bluetoothstart )
 	sleep 3
@@ -353,9 +341,7 @@ hdmi )
 	config=$( grep -v hdmi_force_hotplug /boot/config.txt )
 	[[ ${args[1]} == true ]] && config+="
 hdmi_force_hotplug=1"
-	pushReboot 'HDMI Hotplug'
-	sort -u <<< $config > /boot/config.txt
-	pushRefresh
+	configTxt 'HDMI Hotplug'
 	pushstream refresh '{"page":"features","hdmihotplug":'${args[1]}'}'
 	;;
 hostname )
@@ -372,9 +358,7 @@ i2seeprom )
 	config=$( grep -v force_eeprom_read /boot/config.txt )
 	[[ ${args[1]} == true ]] && config+="
 force_eeprom_read=0"
-	sort -u <<< $config > /boot/config.txt
-	pushReboot 'I²S HAT EEPROM read'
-	pushRefresh
+	configTxt 'I²S HAT EEPROM read'
 	;;
 i2smodule )
 	aplayname=${args[1]}
@@ -399,9 +383,7 @@ dtparam=audio=on"
 	fi
 	echo $aplayname > $dirsystem/audio-aplayname
 	echo $output > $dirsystem/audio-output
-	sort -u <<< $config > /boot/config.txt
-	pushReboot 'Audio I&#178;S module'
-	pushRefresh
+	configTxt 'Audio I&#178;S module'
 	;;
 journalctl )
 	filebootlog=/tmp/bootlog
@@ -444,10 +426,8 @@ dtoverlay=$model:rotate=0"
 		sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
-	sort -u <<< $config > /boot/config.txt
-	I2Cset
-	pushReboot 'TFT 3.5&quot; LCD'
-	pushRefresh
+	i2cset=1
+	configTxt 'TFT 3.5&quot; LCD'
 	;;
 lcdcalibrate )
 	degree=$( grep rotate /boot/config.txt | cut -d= -f3 )
@@ -471,7 +451,7 @@ charmap=${args[3]}"
 inf=i2c
 address=${args[5]}
 chip=${args[6]}"
-			! ls /dev/i2c* &> /dev/null && pushReboot 'Character LCD' reboot
+			! ls /dev/i2c* &> /dev/null && reboot=1
 		else
 			conf+="
 inf=gpio
@@ -484,14 +464,13 @@ pins_data=[$( tr ' ' , <<< ${args[@]:10:4} )]"
 backlight=${args[14]^}"
 		echo "$conf" > $dirsystem/lcdchar.conf
 		touch $dirsystem/lcdchar
-		[[ ! -s $dirshm/reboot ]] && lcdchar.py logo
 	else
 		rm $dirsystem/lcdchar
 		lcdchar.py clear
 	fi
-	I2Cset
-	pushReboot 'Character LCD'
-	pushRefresh
+	i2cset=1
+	configTxt 'Character LCD'
+	[[ -e $dirsystem/lcdchar && ! -e $dirshm/reboot ]] && lcdchar.py logo
 	;;
 lcdcharset )
 	killall lcdchar.py &> /dev/null
@@ -637,17 +616,14 @@ mpdoled )
 			systemctl daemon-reload
 		fi
 		touch $dirsystem/mpdoled
-		if [[ $chip != 1 && $chip != 7 ]]; then
-			! ls /dev/i2c* &> /dev/null && pushReboot 'Spectrum OLED' reboot
-		fi
-		[[ ! -s $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
+		[[ $chip != 1 && $chip != 7 ]] && ! ls /dev/i2c* &> /dev/null && reboot=1
 	else
 		rm $dirsystem/mpdoled
 		$dirsettings/player-conf.sh
 	fi
-	I2Cset
-	pushReboot 'Spectrum OLED'
-	pushRefresh
+	i2cset=1
+	configTxt 'Spectrum OLED'
+	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
 packagelist )
 	filepackages=/tmp/packages
@@ -772,8 +748,7 @@ powerbutton )
 			config+="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
-			sort <<< $config > /boot/config.txt
-			pushReboot 'Power Button'
+			configTxt 'Power Button'
 			touch $dirsystem/audiophonics
 			exit
 		fi
@@ -802,9 +777,7 @@ dtoverlay=gpio-shutdown,gpio_pin=$reserved"
 			gpio -1 write $( grep led $dirsystem/powerbutton.conf | cut -d= -f2 ) 0
 		fi
 	fi
-	sort -u <<< $config > /boot/config.txt
-	pushReboot 'Power Button'
-	pushRefresh
+	configTxt 'Power Button'
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
@@ -981,9 +954,7 @@ softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )
 	[[ ${args[1]} == true ]] && config+="
 $tempsoftlimit"
-	sort -u <<< $config > /boot/config.txt
-	pushReboot 'Custom Soft limit'
-	pushRefresh
+	configTxt 'Custom Soft limit'
 	;;
 soundprofileset )
 	soundProfile
