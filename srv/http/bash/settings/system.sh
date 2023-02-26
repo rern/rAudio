@@ -22,7 +22,7 @@ dirPermissions() {
 }
 configTxt() {
 	name=$1
-	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison
+	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
 		cp /boot/cmdline.txt /tmp
 		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
 		grep -Ev '^#|^\s*$' $filemodule 2> /dev/null | sort -u > /tmp/raspberrypi.conf
@@ -38,10 +38,10 @@ configTxt() {
 		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
 		[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && config+="
 dtparam=i2c_arm=on"
-		[[ $lcd || $SPImpdoled ]] && config+="
-dtparam=spi=on"
 		[[ $I2Cmpdoled ]] && config+="
 dtparam=i2c_arm_baudrate=$baud" # $baud from mpdoled )
+		[[ $lcd || $SPImpdoled ]] && config+="
+dtparam=spi=on"
 		
 		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
 		[[ $lcd || $I2Clcdchar ]] && module+="
