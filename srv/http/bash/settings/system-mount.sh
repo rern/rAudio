@@ -2,14 +2,16 @@
 
 . /srv/http/bash/common.sh
 
-protocol=$1
-mountpoint="$dirnas/$2"
-ip=$3
-directory=$4
-user=$5
-password=$6
-extraoptions=$7
-shareddata=$8
+readarray -t args <<< $1
+
+protocol=${args[0]}
+mountpoint="$dirnas/${args[1]}"
+ip=${args[2]}
+directory=${args[3]}
+user=${args[4]}
+password=${args[5]}
+extraoptions=${args[6]}
+shareddata=${args[7]}
 
 ! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 

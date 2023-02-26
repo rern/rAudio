@@ -939,7 +939,7 @@ function infoMount( val ) {
 			}
 			
 			values.push( shareddata );
-			values = values.join( '" "' );
+			values = values.join( '\n' );
 			bash( '/srv/http/bash/settings/system-mount.sh "'+ values +'"', error => {
 				if ( error ) {
 					info( {
