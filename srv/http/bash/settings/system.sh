@@ -22,6 +22,11 @@ dirPermissions() {
 }
 configTxt() {
 	name=$1
+	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison
+		cp /boot/cmdline.txt /tmp
+		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
+		grep -Ev '^#|^\s*$' $filemodule 2> /dev/null | sort -u > /tmp/raspberrypi.conf
+	fi
 	[[ ! $config ]] && config=$( < /boot/config.txt )
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && lcd=1
@@ -37,33 +42,34 @@ dtparam=i2c_arm=on"
 dtparam=spi=on"
 		[[ $I2Cmpdoled ]] && config+="
 dtparam=i2c_arm_baudrate=$baud" # $baud from mpdoled )
-		sort -u <<< $config > /boot/config.txt
 		
-		[[ -e $filemodule ]] && module=$( grep -Ev 'i2c-bcm2708|i2c-dev' $filemodule )
-		[[ $lcd || $I2Clcdchar || $I2Cmpdoled ]] && module+="
-i2c-dev" >> $filemodule
+		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
 		[[ $lcd || $I2Clcdchar ]] && module+="
-i2c-bcm2708" >> $filemodule
-		module=$( awk NF <<< $module )
-		[[ $module ]] && echo "$module" > $filemodule || rm -f $filemodule
+i2c-bcm2708"
+		if [[ $lcd || $I2Clcdchar || $I2Cmpdoled ]]; then
+			module+="
+i2c-dev"
+			! ls /dev/i2c* &> /dev/null && rebootneeded=1
+		fi
+		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
+		[[ ! $rebootneeded ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebootneeded=1
+		[[ ! -s $filemodule ]] && rm -f $filemodule
 	fi
-	if [[ -e /tmp/raspberrypi.conf ]]; then
-		[[ ! -e $filemodule ]] || ! cmp -s /tmp/raspberrypi.conf $filemodule && modulechanged=1
-	else
-		[[ -e $filemodule ]] && modulechanged=1
-	fi
-	sort -u <<< $config > /boot/config.txt
+	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
-	[[ -e $dirshm/reboot ]] && list=$( grep -v "$name" $dirshm/reboot )
-	if [[ $reboot ]] \
+	list=$( grep -v "$name" $dirshm/reboot 2> /dev/null )
+	if [[ $rebootneeded ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
-		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt \
-		|| modulechanged; then
+		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		notify system "$name" 'Reboot required.' 5000
-		[[ $list ]] && list+=$'\n'
-		list+="$name"
+		list+="
+$name"
 	fi
-	[[ $list ]] && sort -u <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
+	if [[ $list ]]; then
+		sort -u <<< $list | awk NF > $dirshm/reboot
+	else
+		rm -f $dirshm/reboot
+	fi
 }
 sharedDataIPlist() {
 	list=$( ipAddress )
@@ -76,7 +82,7 @@ sharedDataIPlist() {
 			list+=$'\n'$ip
 		fi
 	done
-	sort -u <<< $list > $filesharedip
+	sort -u <<< $list | awk NF > $filesharedip
 }
 sharedDataSet() {
 	rm -f $dirmpd/{listing,updating}
@@ -460,7 +466,6 @@ charmap=${args[3]}"
 inf=i2c
 address=${args[5]}
 chip=${args[6]}"
-			! ls /dev/i2c* &> /dev/null && reboot=1
 		else
 			conf+="
 inf=gpio
@@ -623,7 +628,6 @@ mpdoled )
 			systemctl daemon-reload
 		fi
 		touch $dirsystem/mpdoled
-		[[ $chip != 1 && $chip != 7 ]] && ! ls /dev/i2c* &> /dev/null && reboot=1
 	else
 		rm $dirsystem/mpdoled
 		$dirsettings/player-conf.sh
@@ -1018,11 +1022,11 @@ systemconfig )
 $( < /boot/cmdline.txt )
 
 <bll># cat /boot/config.txt</bll>
-$( < /boot/config.txt )
+$( grep -Ev '^#|^\s*$' /boot/config.txt )
 
 <bll># pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2</bll>
 $( pacman -Qs 'firmware|bootloader' | grep ^local | cut -d/ -f2 )"
-	raspberrypiconf=$( < $filemodule )
+	raspberrypiconf=$( cat $filemodule 2> /dev/null )
 	if [[ $raspberrypiconf ]]; then
 		config+="
 
