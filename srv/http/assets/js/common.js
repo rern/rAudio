@@ -542,11 +542,14 @@ function infoButtonReset() {
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
 	
+	var $buttonhide = $( '#infoButtons a.hide' );
+	$buttonhide.removeClass( 'hide' );
 	var widest = 0;
 	$( '#infoButtons a' ).each( ( i, el ) => {
 		var w = $( el ).outerWidth();
 		if ( w > widest ) widest = w;
 	} );
+	$buttonhide.addClass( 'hide' );
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function infoCheckBlank() {
