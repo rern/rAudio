@@ -49,8 +49,8 @@ i2c-bcm2708" >> $filemodule
 	fi
 	sort -u <<< $config > /boot/config.txt
 	pushRefresh
-	[[ $reboot ]] && list=$( grep -v "$name" $dirshm/reboot )
-	if [[ ${@: -1} == reboot ]] || ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+	[[ -e $dirshm/reboot ]] && list=$( grep -v "$name" $dirshm/reboot )
+	if [[ $reboot ]] || ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		notify system "$name" 'Reboot required.' 5000
 		[[ $list ]] && list+=$'\n'
 		list+="$name"
