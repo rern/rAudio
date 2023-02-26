@@ -6,20 +6,6 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 # convert each line to each args
 readarray -t args <<< $1
 
-dirPermissions() {
-	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chmod -R 755 /srv/http/{assets,bash,data,settings}
-	chown -R http:http /srv/http/{assets,bash,data,settings}
-	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
-	if [[ -L $dirshareddata ]]; then # server rAudio
-		chmod 777 $filesharedip $dirshareddata/system/{display,order}
-		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
-		for dir in "${dirs[@]}"; do
-			chmod 777 "$dir"
-		done
-	fi
-}
 configTxt() {
 	name=$1
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
@@ -69,6 +55,20 @@ $name"
 		sort -u <<< $list | awk NF > $dirshm/reboot
 	else
 		rm -f $dirshm/reboot
+	fi
+}
+dirPermissions() {
+	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
+	if [[ -L $dirshareddata ]]; then # server rAudio
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
+		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
+		done
 	fi
 }
 sharedDataIPlist() {
