@@ -47,10 +47,18 @@ i2c-bcm2708" >> $filemodule
 		module=$( awk NF <<< $module )
 		[[ $module ]] && echo "$module" > $filemodule || rm -f $filemodule
 	fi
+	if [[ -e /tmp/raspberrypi.conf ]]; then
+		[[ ! -e $filemodule ]] || ! cmp -s /tmp/raspberrypi.conf $filemodule && modulechanged=1
+	else
+		[[ -e $filemodule ]] && modulechanged=1
+	fi
 	sort -u <<< $config > /boot/config.txt
 	pushRefresh
 	[[ -e $dirshm/reboot ]] && list=$( grep -v "$name" $dirshm/reboot )
-	if [[ $reboot ]] || ! cmp -s /tmp/config.txt /boot/config.txt || ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
+	if [[ $reboot ]] \
+		|| ! cmp -s /tmp/config.txt /boot/config.txt \
+		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt \
+		|| modulechanged; then
 		notify system "$name" 'Reboot required.' 5000
 		[[ $list ]] && list+=$'\n'
 		list+="$name"
