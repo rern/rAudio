@@ -22,6 +22,7 @@ dirPermissions() {
 }
 configTxt() {
 	name=$1
+	[[ ! $config ]] && config=$( < /boot/config.txt )
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && lcd=1
 		[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
