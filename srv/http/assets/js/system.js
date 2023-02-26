@@ -938,7 +938,9 @@ function infoMount( val ) {
 				return
 			}
 			
-			bash( [ 'mount', ...values, shareddata ], error => {
+			values.push( shareddata );
+			values = values.join( '" "' );
+			bash( '/srv/http/bash/settings/system-mount.sh "'+ values +'"', error => {
 				if ( error ) {
 					info( {
 						  icon    : icon
