@@ -317,6 +317,15 @@ $( '#setting-lcdchar' ).click( function() {
 		, values       : S.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : S.lcdchar
 		, beforeshow   : () => {
+			if ( ! S.lcdcharreboot ) {
+				$( '#infoOk' )
+					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
+					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
+				$( '#infoButtons gr' ).click( function() {
+					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
+					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
+				} );
+			}
 			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
 			$( '#infoContent .gpio td:odd' ).css( {
 				  width           : 35
@@ -331,15 +340,6 @@ $( '#setting-lcdchar' ).click( function() {
 				$( '.i2c' ).toggleClass( 'hide', ! i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
-			if ( S.lcdchar ) {
-				$( '#infoOk' )
-					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
-				$( '#infoButtons gr' ).click( function() {
-					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
-				} );
-			}
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -428,6 +428,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
+	var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -461,12 +462,13 @@ $( '#setting-mpdoled' ).click( function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, buttonlabel  : ! S.mpdoled ? '' : ico( 'raudio' ) +'Logo'
-		, button       : ! S.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
+		, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
+		, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
 		, ok           : switchEnable
 	} );
 } );
 $( '#setting-lcd' ).click( function() {
+	var buttoncalibrate = S.lcd && ! S.lcdreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -481,8 +483,8 @@ $( '#setting-lcd' ).click( function() {
 		, values       : S.lcdmodel || 'tft35a'
 		, checkchanged : S.lcd
 		, boxwidth     : 190
-		, buttonlabel  : ! S.lcd ? '' : 'Calibrate'
-		, button       : ! S.lcd ? '' : () => {
+		, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
+		, button       : ! buttoncalibrate ? '' : () => {
 			info( {
 				  icon    : SW.icon
 				, title   : SW.title

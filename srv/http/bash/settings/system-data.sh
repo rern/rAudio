@@ -186,6 +186,12 @@ elif [[ -e $dirsystem/powerbutton.conf ]]; then
 fi
 [[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
 [[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
+if [[ -e $dirshm/reboot ]]; then
+	reboot=$( cat $dirshm/reboot )
+	grep -q TFT <<< $reboot && lcdreboot=true
+	grep -q Character <<< $reboot && lcdcharreboot=true
+	grep -q Spectrum <<< $reboot && mpdoledreboot=true
+fi
 
 data+='
   "page"             : "system"
@@ -199,13 +205,16 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "lcdreboot"        : '$lcdreboot'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$lcdcharaddr'
 , "lcdcharconf"      : '$lcdcharconf'
+, "lcdcharreboot"    : '$lcdcharreboot'
 , "list"             : '$list'
 , "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
+, "mpdoledreboot"    : '$mpdoledreboot'
 , "nfsserver"        : '$( isactive nfs-server )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
