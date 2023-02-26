@@ -49,16 +49,16 @@ i2c-bcm2708"
 		if [[ $lcd || $I2Clcdchar || $I2Cmpdoled ]]; then
 			module+="
 i2c-dev"
-			! ls /dev/i2c* &> /dev/null && rebootneeded=1
+			! ls /dev/i2c* &> /dev/null && rebooti2c=1
 		fi
 		grep -Ev '^#|^\s*$' <<< $module | sort -u > $filemodule
-		[[ ! $rebootneeded ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebootneeded=1
+		[[ ! $rebooti2c ]] && ! cmp -s /tmp/raspberrypi.conf $filemodule && rebooti2c=1
 		[[ ! -s $filemodule ]] && rm -f $filemodule
 	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
 	list=$( grep -v "$name" $dirshm/reboot 2> /dev/null )
-	if [[ $rebootneeded ]] \
+	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
 		notify system "$name" 'Reboot required.' 5000
