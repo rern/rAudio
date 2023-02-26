@@ -467,11 +467,9 @@ backlight=${args[14]^}"
 		touch $dirsystem/lcdchar
 	else
 		rm $dirsystem/lcdchar
-		lcdchar.py clear
 	fi
 	i2cset=1
 	configTxt 'Character LCD'
-	[[ -e $dirsystem/lcdchar && ! -e $dirshm/reboot ]] && lcdchar.py logo
 	;;
 lcdcharset )
 	killall lcdchar.py &> /dev/null
