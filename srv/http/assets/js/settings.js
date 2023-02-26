@@ -6,7 +6,7 @@ function bash( command, callback, json ) {
 		if ( cmd0 === 'cmd' ) {
 			var filesh = 'cmd';
 			command.shift();
-		} else if ( cmd0 === 'pkgstatus' || cmd0 === 'rebootlist' ) {
+		} else if ( cmd0 === 'rebootlist' ) {
 			var filesh = 'settings/system';
 		} else {
 			var filesh = 'settings/'+ page;
@@ -61,7 +61,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
-	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? '/srv/http/bash/settings/system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -87,7 +87,7 @@ function infoPlayerActive( $this ) {
 }
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( [ 'pkgstatus', 'mpd' ], status => {
+		bash( '/srv/http/bash/settings/system-pkgstatus.sh mpd', status => {
 			var error =  iconwarning +'MPD is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
