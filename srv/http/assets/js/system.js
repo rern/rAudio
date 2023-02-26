@@ -636,7 +636,7 @@ $( '#backup' ).click( function() {
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
 			notify( SW.icon, SW.title, 'Process ...' );
-			bash( [ 'databackup' ], data => {
+			bash( '/srv/http/bash/settings/system-databackup.sh', data => {
 				if ( data == 1 ) {
 					notify( SW.icon, SW.title, 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
@@ -708,7 +708,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				bash( [ 'datareset' ] );
+				bash( '/srv/http/bash/settings/system-datareset.sh' );
 				notify( SW.icon, SW.title, 'Reset to default ...' );
 			} else {
 				notify( SW.icon, SW.title, 'Restore ...' );

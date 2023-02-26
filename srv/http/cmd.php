@@ -42,7 +42,7 @@ case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
 	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dirshm.'backup.gz' );
-	exec( $sudosettings.'system.sh datarestore', $output, $result );
+	exec( $sudosettings.'system-datarestore.sh', $output, $result );
 	if ( $result != 0 ) exit( '-2' );
 	break;
 case 'giftype':

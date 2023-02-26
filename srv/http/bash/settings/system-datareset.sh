@@ -2,6 +2,23 @@
 
 . /srv/http/bash/common.sh
 
+dirPermissions() {
+	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
+	if [[ -L $dirshareddata ]]; then # server rAudio
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
+		for dir in "${dirs[@]}"; do
+			chmod 777 "$dir"
+		done
+	fi
+}
+
+[[ $1 == dirpermissions ]] && dirPermissions && exit
+
 # reset -------------------------------------------------------------------------------------------------------------->>>
 if [[ -e $diraddons ]]; then
 	reset=1
@@ -160,6 +177,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 fi
 
 # set ownership and permissions
-$dirsettings/system.sh dirpermissions
+dirPermissions
 
 [[ $reset ]] && $dirbash/cmd.sh power$'\n'reboot

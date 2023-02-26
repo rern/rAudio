@@ -75,7 +75,7 @@ getinstallzip
 
 [[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
 
-$dirsettings/system.sh dirpermissions
+$dirsettings/system-datareset.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 hash=?v=$( date +%s )
