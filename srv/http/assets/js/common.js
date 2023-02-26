@@ -947,7 +947,7 @@ if ( ! [ 'addons', 'addonsprogress', 'guide' ].includes( page )  ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );
 				setTimeout( () => {
-					$( '#loader .logo' ).css( 'animation', 'none' );
+					$( '#loader svg' ).css( 'animation', 'none' );
 					bannerHide();
 					loader();
 				}, 10000 );
