@@ -827,7 +827,8 @@ function infoMount( val ) {
 		var shareddata = false;
 		var values     = val || [ 'cifs', '', ipsub ];
 	}
-	var htmlmount      = `\
+	var phname    = shareddata ? '' : ' placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"';
+	var htmlmount = `\
 <table id="tblinfomount">
 <tr class="common"><td style="width: 90px">Type</td>
 	<td style="width: 230px">
@@ -838,7 +839,7 @@ function infoMount( val ) {
 	<td style="width: 20px"></td>
 </tr>
 <tr class="common"><td>Name</td>
-<td><input id="mountpoint" type="text" placeholder="for Library · NAS · 'Name'"></td>
+<td><input id="mountpoint" type="text"${ phname }></td>
 </tr>
 <tr class="common"><td>Server IP</td>
 	<td><input type="text"></td>
@@ -883,7 +884,7 @@ function infoMount( val ) {
 				} else if ( type === 'cifs' ) {
 					$( '#sharelabel' ).text( 'Share name' );
 					$( '#infoContent' ).find( '.common, .cifs' ).removeClass( 'hide' );
-					var placeholder = 'sharename on server';
+					var placeholder = 'share name on server';
 				} else {
 					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
 				}
