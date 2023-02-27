@@ -1116,6 +1116,7 @@ webradioadd )
 	urlname=${url//\//|}
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+	
 	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
 	[[ -e "$file" ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
@@ -1143,8 +1144,52 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
+	! find $dir -name $urlname &> /dev/null && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
 	webradioCount $type
+	;;
+webradioedit )
+	dir=${args[1]}
+	name=${args[2]}
+	url=${args[3]}
+	charset=${args[4]}
+	urlprev=${args[5]}
+	urlname=${url//\//|}
+	urlprevname=${urlprev//\//|}
+	path=$dirwebradio/
+	[[ $dir ]] && path+="/$dir"
+	newfile="$path/$urlname"
+	prevfile="$path/$urlprevname"
+	if [[ $url == $urlprev ]]; then
+		sampling=$( sed -n 2p "$prevfile" )
+	else
+		[[ -e "$newfile" ]] && echo -1 && exit
+		
+		ext=${url##*.}
+		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+		
+		# stationcover
+		previmgurl=$dirwebradio/img/$urlprevname
+		previmg=$( ls -1 $previmgurl.* | head -1 )
+		prevthumb=$previmgurl-thumb.jpg
+		if [[ $previmg || -e $prevthumb ]]; then
+			newimgurl=$dirwebradio/img/$urlname
+			newimg=$newimgurl.${previmg##*.}
+			newthumb=$newimgurl-thumb.jpg
+			if find $dirwebradio -type f -name $urlname &> /dev/null; then
+				[[ $previmg ]] && cp $previmg $newimg
+				[[ -e $prevthumb ]] && cp $prevthumb $newthumb
+			else
+				[[ $previmg ]] && mv $previmg $newimg
+				[[ -e $prevthumb ]] && mv $prevthumb $newthumb
+			fi
+		fi
+	fi
+	echo "\
+$name
+$sampling
+$charset" > "$newfile"
+	[[ ! $sampling ]] && rm "$prevfile"
+	pushstreamRadioList
 	;;
 wrdirdelete )
 	path=${args[1]}
@@ -1169,36 +1214,6 @@ wrdirrename )
 	newname=${args[3]}
 	mode=${args[4]}
 	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
-	pushstreamRadioList
-	;;
-webradioedit )
-	dir=${args[1]}
-	name=${args[2]}
-	url=${args[3]}
-	charset=${args[4]}
-	urlprev=${args[5]}
-	urlname=${url//\//|}
-	[[ $url != $urlprev ]] && urlchanged=1
-	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	if [[ $urlchanged ]]; then
-		ext=${url/*.}
-		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-		
-		[[ -e "$file" ]] && echo -1 && exit
-		
-	fi
-	sampling=$( sed -n 2p "$file" 2> /dev/null )
-	echo "\
-$name
-$sampling
-$charset" > "$file"
-	if [[ $urlchanged ]]; then
-		urlprevname=${urlprev//\//|}
-		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
-		mv $dirwebradio/img/{$urlprevname,$urlname}.* # jpg / gif
-		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.*
-		webRadioSampling $url "$file" &
-	fi
 	pushstreamRadioList
 	;;
 	
