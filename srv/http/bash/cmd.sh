@@ -1117,8 +1117,10 @@ webradioadd )
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	
-	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	[[ -e "$file" ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
+	file=$dirwebradio
+	[[ $dir ]] && file+="/$dir"
+	file+="/$urlname"
+	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
 $name
 
@@ -1144,7 +1146,8 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	! find $dir -name $urlname &> /dev/null && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
+	urlexists=$( find "$path" -name $urlname )
+	[[ ! $urlexists ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
 	webradioCount $type
 	;;
 webradioedit )
@@ -1154,41 +1157,38 @@ webradioedit )
 	charset=${args[4]}
 	urlprev=${args[5]}
 	urlname=${url//\//|}
-	urlprevname=${urlprev//\//|}
+	prevurlname=${urlprev//\//|}
 	path=$dirwebradio/
 	[[ $dir ]] && path+="/$dir"
 	newfile="$path/$urlname"
-	prevfile="$path/$urlprevname"
+	prevfile="$path/$prevurlname"
 	if [[ $url == $urlprev ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
-		[[ -e "$newfile" ]] && echo -1 && exit
+		[[ -e $newfile ]] && echo -1 && exit
 		
 		ext=${url##*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 		
+		rm "$prevfile"
 		# stationcover
-		previmgurl=$dirwebradio/img/$urlprevname
-		previmg=$( ls -1 $previmgurl.* | head -1 )
-		prevthumb=$previmgurl-thumb.jpg
+		previmgurl="$dirwebradio/img/$prevurlname"
+		previmg=$( ls -1 "$previmgurl".* | head -1 )
+		prevthumb="$previmgurl-thumb.jpg"
 		if [[ $previmg || -e $prevthumb ]]; then
-			newimgurl=$dirwebradio/img/$urlname
-			newimg=$newimgurl.${previmg##*.}
-			newthumb=$newimgurl-thumb.jpg
-			if find $dirwebradio -type f -name $urlname &> /dev/null; then
-				[[ $previmg ]] && cp $previmg $newimg
-				[[ -e $prevthumb ]] && cp $prevthumb $newthumb
-			else
-				[[ $previmg ]] && mv $previmg $newimg
-				[[ -e $prevthumb ]] && mv $prevthumb $newthumb
-			fi
+			newimgurl="$dirwebradio/img/$urlname"
+			newimg="$newimgurl.${previmg##*.}"
+			newthumb="$newimgurl-thumb.jpg"
+			[[ ! -e $newimg && -e $previmg ]] && cp "$previmg" "$newimg"
+			[[ ! -e $newthumb && -e $prevthumb ]] && cp "$prevthumb" "$newthumb"
+			urlexists=$( find $dirwebradio -name $urlname )
+			[[ ! $urlexists ]] && rm -f "$previmgurl".* "$prevthumb"
 		fi
 	fi
 	echo "\
 $name
 $sampling
 $charset" > "$newfile"
-	[[ ! $sampling ]] && rm "$prevfile"
 	pushstreamRadioList
 	;;
 wrdirdelete )
