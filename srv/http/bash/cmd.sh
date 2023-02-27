@@ -1181,7 +1181,7 @@ webradioedit )
 			newthumb="$newimgurl-thumb.jpg"
 			[[ ! -e $newimg && -e $previmg ]] && cp "$previmg" "$newimg"
 			[[ ! -e $newthumb && -e $prevthumb ]] && cp "$prevthumb" "$newthumb"
-			urlexists=$( find $dirwebradio -name $urlname )
+			urlexists=$( find $dirwebradio -name "$prevurlname" )
 			[[ ! $urlexists ]] && rm -f "$previmgurl".* "$prevthumb"
 		fi
 	fi
