@@ -40,7 +40,6 @@ V = {   // var global
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
-var cmdphp      = 'cmd.php';
 var data        = {}
 var picaOption  = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
@@ -205,7 +204,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'logout':
-			$.post( cmdphp, { cmd: 'logout' }, () => location.reload() );
+			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );

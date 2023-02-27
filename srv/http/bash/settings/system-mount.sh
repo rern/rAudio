@@ -4,14 +4,14 @@
 
 readarray -t args <<< $1
 
-protocol=${args[0]}
-mountpoint="$dirnas/${args[1]}"
-ip=${args[2]}
-directory=${args[3]}
-user=${args[4]}
-password=${args[5]}
-extraoptions=${args[6]}
-shareddata=${args[7]}
+protocol=${args[1]}
+mountpoint="$dirnas/${args[2]}"
+ip=${args[3]}
+directory=${args[4]}
+user=${args[5]}
+password=${args[6]}
+extraoptions=${args[7]}
+shareddata=${args[8]}
 
 ! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 

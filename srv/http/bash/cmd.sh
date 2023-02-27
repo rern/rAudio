@@ -947,7 +947,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-	[[ $action == reboot ]] && reboot && exit
+	[[ $action != off ]] && reboot && exit
 	
 	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
 	poweroff

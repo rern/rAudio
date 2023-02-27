@@ -104,7 +104,7 @@ if [[ $usb ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{
   "icon"       : "usbdrive"
-, "mountpoint" : "'$mountpoint'"
+, "mountpoint" : "'${mountpoint//\"/\\\"}'"
 , "mounted"    : true
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
@@ -132,7 +132,7 @@ if [[ $nas ]]; then
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
-, "mountpoint" : "'$mountpoint'"'
+, "mountpoint" : "'${mountpoint//\"/\\\"}'"'
 		if [[ $used_size ]]; then
 			list+='
 , "mounted"    : true

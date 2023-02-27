@@ -1,26 +1,3 @@
-function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var args = { cmd: 'bash', bash : command }
-	} else {
-		var cmd0 = command[ 0 ];
-		if ( cmd0 === 'cmd' ) {
-			var filesh = 'cmd';
-			command.shift();
-		} else if ( cmd0 === 'rebootlist' ) {
-			var filesh = 'settings/system';
-		} else {
-			var filesh = 'settings/'+ page;
-		}
-		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
-	}
-	$.post( 
-		  'cmd.php'
-		, args
-		, callback || null
-		, json || null
-	);
-}
-
 S              = {} // status
 SW             = {} // switch
 V              = {} // var global
@@ -356,7 +333,7 @@ $( '.close' ).click( function() {
 		return
 	}
 	
-	bash( [ 'rebootlist' ], list => {
+	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -370,7 +347,7 @@ $( '.close' ).click( function() {
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
+			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
 } );

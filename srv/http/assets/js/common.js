@@ -11,6 +11,27 @@ var orange      = '#de810e';
 var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
+function bash( command, callback, json ) {
+	if ( typeof command === 'string' ) {
+		var args   = { cmd: 'bash', bash : command }
+	} else {
+		if ( page ) {
+			var filesh = 'settings/'+ page;
+			if ( command[ 0 ] === 'mount' ) filesh += '-mount'; // system-mount.sh - with arguments
+		} else {
+			var filesh = 'cmd';
+		}
+		var args   = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
+	}
+	$.post( 
+		  'cmd.php'
+		, args
+		, callback || null
+		, json || null
+	);
+}
+
+// ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
 	$( '#banner' ).html( `

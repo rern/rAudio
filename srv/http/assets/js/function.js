@@ -1,19 +1,6 @@
-function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var args = { cmd: 'bash', bash : command }
-	} else {
-		var args = { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
-	}
-	$.post( 
-		  cmdphp
-		, args
-		, callback || null
-		, json || null
-	);
-}
 function list( args, callback, json ) {
 	$.post(
-		  ( 'cmd' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php' )
+		  'cmd' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php'
 		, args
 		, callback || null
 		, json || null
@@ -681,7 +668,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
-	$.post( cmdphp, data, function( std ) {
+	$.post( 'cmd.php', data, function( std ) {
 		if ( std == -1 ) {
 			info( {
 				  icon    : I.icon
