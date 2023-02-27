@@ -1,6 +1,6 @@
 function list( args, callback, json ) {
 	$.post(
-		  'cmd' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php'
+		  'playlist' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php'
 		, args
 		, callback || null
 		, json || null
@@ -585,7 +585,7 @@ function getPlaybackStatus( withdisplay ) {
 	} );
 }
 function getPlaylist() {
-	list( { cmd: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
+	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
 }
 function hideGuide() {
 	if ( V.guide ) {
@@ -1315,7 +1315,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 }
 function renderSavedPlaylist( name ) { // tracks in a playlist
 	menuHide();
-	list( { cmd: 'get', name: name }, function( data ) {
+	list( { playlist: 'get', name: name }, function( data ) {
 		$( '#savedpl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );

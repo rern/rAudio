@@ -1737,7 +1737,7 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-playlists' ).click( function() {
 	V.savedlist     = true;
 	V.savedplaylist = false;
-	list( { cmd: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
+	list( { playlist: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
 } );
 $( '#button-pl-save' ).click( function() {
 	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
