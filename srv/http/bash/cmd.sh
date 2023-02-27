@@ -241,7 +241,7 @@ webradioPlaylistVerify() {
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	[[ ! $url ]] && echo 'No valid URL found:' && exit
+	[[ ! $url ]] && echo 'No valid URL found in:' && exit
 }
 webRadioSampling() {
 	url=$1
@@ -1164,7 +1164,7 @@ webradioedit )
 	if [[ $url == $urlprev ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
-		[[ -e $newfile ]] && echo -1 && exit
+		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		
 		ext=${url##*.}
 		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url

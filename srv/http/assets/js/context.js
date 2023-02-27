@@ -412,7 +412,6 @@ var htmlwebradio = `\
 `;
 function webRadioEdit() {
 	var name      = V.list.name;
-	var img       = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
 	var pathsplit = V.list.path.split( '//' );
 	var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	var charset   = V.list.li.data( 'charset' );
@@ -425,10 +424,10 @@ function webRadioEdit() {
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : () => {
+			var $img = V.list.li.find( 'img' );
+			if ( $img.length ) $( '#infoContent' ).prepend( '<img src="'+ $img.attr( 'src' ) +'">' );
+			if ( url.includes( 'stream.radioparadise.com' )|| url.includes( 'icecast.radiofrance.fr' ) ) $( '#infoContent' ).find( 'tr' ).last().remove();
 			$( '#addwebradiodir' ).remove();
-			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
-				$( '#infoContent' ).find( 'tr:eq( 2 ), tr:eq( 3 )' ).remove();
-			}
 		}
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
