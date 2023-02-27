@@ -1146,8 +1146,7 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	urlexists=$( find "$path" -name $urlname )
-	[[ ! $urlexists ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
+	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
 	webradioCount $type
 	;;
 webradioedit )
@@ -1181,8 +1180,7 @@ webradioedit )
 			newthumb="$newimgurl-thumb.jpg"
 			[[ ! -e $newimg && -e $previmg ]] && cp "$previmg" "$newimg"
 			[[ ! -e $newthumb && -e $prevthumb ]] && cp "$prevthumb" "$newthumb"
-			urlexists=$( find $dirwebradio -name "$prevurlname" )
-			[[ ! $urlexists ]] && rm -f "$previmgurl".* "$prevthumb"
+			[[ ! $( find $dirwebradio -name "$prevurlname" ) ]] && rm -f "$previmgurl".* "$prevthumb"
 		fi
 	fi
 	echo "\
