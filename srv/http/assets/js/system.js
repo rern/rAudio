@@ -815,8 +815,8 @@ function i2sSelectHide() {
 	$( '#divi2smodule' ).addClass( 'hide' );
 }
 function infoMount( val ) {
-	var ip     = $( '#list' ).data( 'ip' );
-	var ipsub  = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
+	var ip        = $( '#list' ).data( 'ip' );
+	var ipsub     = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
 	if ( val === 'raudio' ) {
 		var shareddata = true;
 		var values     = [ 'raudio', 'data', ipsub ];
@@ -827,14 +827,15 @@ function infoMount( val ) {
 		var shareddata = false;
 		var values     = val || [ 'cifs', '', ipsub ];
 	}
+	var radiora    = shareddata ? '<label><input type="radio" name="inforadio" value="raudio">rAudio</label>' : '';
 	var phname    = shareddata ? '' : ' placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"';
 	var htmlmount = `\
-<table id="tblinfomount">
+<table>
 <tr class="common"><td style="width: 90px">Type</td>
 	<td style="width: 230px">
 		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
-		<label><input type="radio" name="inforadio" value="raudio">rAudio</label>
+		${ radiora }
 	</td>
 	<td style="width: 20px"></td>
 </tr>
@@ -855,10 +856,10 @@ function infoMount( val ) {
 </tr>
 <tr class="cifs nfs"><td>Options</td>
 	<td><input type="text" placeholder="if required by server"></td>
-</tr>`;
-	htmlmount += '</table>';
-	var icon   = 'networks';
-	var title  = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+</tr>
+</table>`;
+	var icon      = 'networks';
+	var title     = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	info( {
 		  icon       : icon
 		, title      : title
@@ -867,13 +868,15 @@ function infoMount( val ) {
 		, checkblank : [ 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			if ( ! shareddata ) {
-				$( '#infoContent label' ).eq( 2 ).remove();
-			} else {
-				$( '#mountpoint' ).prop( 'disabled', 1 );
-			}
 			var $mountpoint = $( '#mountpoint' );
 			var $share = $( '#share' );
+			if ( shareddata ) {
+				$mountpoint.prop( 'disabled', 1 );
+			} else {
+				$mountpoint.on( 'keyup paste', function() {
+					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
+				} );
+			}
 			function hideOptions( type ) {
 				if ( ! values[ 3 ] ) $share.val( '' );
 				$( '#infoContent tr' ).not( '.common' ).addClass( 'hide' );
@@ -893,9 +896,6 @@ function infoMount( val ) {
 			hideOptions( values[ 0 ] );
 			$( '#infoContent input:radio' ).change( function() {
 				hideOptions( $( this ).val() );
-			} );
-			$mountpoint.on( 'keyup paste', function() {
-				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
