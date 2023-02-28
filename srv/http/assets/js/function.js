@@ -1131,7 +1131,7 @@ function renderLibraryList( data ) {
 	if ( V.mode === 'webradio' ) {
 		htmlpath += ico( 'plus-circle btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
-		htmlpath += ico( 'minus-circle btntitle button-latest-clear' );
+		htmlpath += ico( 'flash btntitle button-latest-clear' );
 	} else if ( V.mode === 'dabradio' ) {
 		htmlpath += root ? ico( 'refresh btntitle button-dab-refresh' ) : '';
 	}

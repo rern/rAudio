@@ -556,9 +556,17 @@ ignoredir )
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	> $dirmpd/latest
-	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
-	notify latest Latest Cleared
+	path=${args[1]}
+	if [[ $path ]]; then
+		sed -i "\|\^$path$| d" $dirmpd/latest
+		count=$( wc -l < $dirmpd/latest )
+		notify latest Latest 'Album cleared.'
+	else
+		> $dirmpd/latest
+		count=0
+		notify latest Latest Cleared
+	fi
+	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
 	;;
 librandom )
 	enable=${args[1]}

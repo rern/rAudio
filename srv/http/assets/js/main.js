@@ -1154,12 +1154,25 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		, ok       : () => bash( [ 'dabscan' ] )
 	} );
 } ).on( 'click', '.button-latest-clear', function() {
-	info( {
-		  icon         : 'latest'
-		, title        : 'Latest'
-		, message      : 'Clear Latest albums list?'
-		, ok           : () => bash( [ 'latestclear' ] )
-	} );
+	if ( V.librarytracklist ) {
+		info( {
+			  icon         : 'latest'
+			, title        : 'Latest'
+			, message      : 'Clear from Latest album list:<br><br>'+ $( '.licover .lialbum' ).text()
+			, ok           : () => {
+				bash( [ 'latestclear', $( '.licover .lipath' ).text() ], () => $( '#button-lib-back' ).click() );
+			}
+		} );
+	} else {
+		info( {
+			  icon         : 'latest'
+			, title        : 'Latest'
+			, message      : 'Clear Latest albums list?'
+			, ok           : () => {
+				bash( [ 'latestclear' ], () => $( '#library' ).click() );
+			}
+		} );
+	}
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {
