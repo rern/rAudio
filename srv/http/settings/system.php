@@ -459,7 +459,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a>
 		<p>Coverarts for their own stations</p>
 		<a href="http://gnudb.gnudb.org">GnuDB</a>
-		<p>Audio CD</p>
+		<p>Audio CD track list</p>
 	</div>
 </div>
 
