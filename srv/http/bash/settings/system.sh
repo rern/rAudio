@@ -465,7 +465,7 @@ $description
 		done <<< $pacmanqi
 		sed -E 's|^URL.*: (.*)|<a href="\1" target="_blank">|
 				s|^Name.*: (.*)|\1</a> |
-				s|^Vers.*: (.*)|\1|
+				s|^Vers.*: (.*)|<gr>\1</gr>|
 				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
 				> /tmp/packages
 	fi
