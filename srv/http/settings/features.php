@@ -12,7 +12,11 @@ $body = [
 		, 'id'       => 'shairport-sync'
 		, 'setting'  => false
 		, 'status'   => true
-		, 'help'     => '<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device.'
+		, 'help'     => <<< EOF
+<a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
+
+Note: Playing files directly on rAudio yields better quality.
+EOF
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
@@ -75,7 +79,11 @@ EOF
 		, 'sublabel' => 'upmpdcli'
 		, 'id'       => 'upmpdcli'
 		, 'status'   => true
-		, 'help'     => '<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device.'
+		, 'help'     => <<< EOF
+<a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
+
+Note: Playing files directly on rAudio yields better quality.
+EOF
 		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
