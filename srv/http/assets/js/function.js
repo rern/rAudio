@@ -780,7 +780,7 @@ function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( data ) {
 		C        = data.counts;
 		O        = data.order;
-		var html = data.html
+		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
 			var hash      = versionHash();
