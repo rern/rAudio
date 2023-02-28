@@ -1917,11 +1917,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} ).on( 'click', '.savewr', function() {
-	V.list.li = $( this ).parent();
-	webRadioSave( $( this ).next().next().text() );
-	menuHide();
-} ).on( 'click', '.li-icon', function() {
+} ).on( 'click', '.li-icon, .savewr', function() {
 	var $this     = $( this );
 	var $thisli   = $this.parent();
 	V.list        = {};
