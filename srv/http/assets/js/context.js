@@ -411,32 +411,32 @@ var htmlwebradio = `\
 </table>
 `;
 function webRadioEdit() {
-	var name      = V.list.name;
-	var pathsplit = V.list.path.split( '//' );
-	var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
-	var charset   = V.list.li.data( 'charset' );
+	var url  = V.list.path;
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
 		, content      : htmlwebradio
-		, values       : [ name, url, charset || 'UTF-8' ]
+		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
 		, checkchanged : 1
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : () => {
-			var $img = V.list.li.find( 'img' );
-			if ( $img.length ) $( '#infoContent' ).prepend( '<img src="'+ $img.attr( 'src' ) +'">' );
-			if ( url.includes( 'stream.radioparadise.com' )|| url.includes( 'icecast.radiofrance.fr' ) ) $( '#infoContent' ).find( 'tr' ).last().remove();
-			$( '#addwebradiodir' ).remove();
+			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
+			$( '#infoContent' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
+			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
+				$( '#infoContent' ).find( 'tr' ).last().remove();
+			} else {
+				$( '#addwebradiodir' ).remove();
+			}
 		}
 		, oklabel      : ico( 'save' ) +'Save'
 		, ok           : () => {
-			var dir        = $( '#lib-path .lipath' ).text();
-			var values     = infoVal();
-			var newname    = values[ 0 ];
-			var newurl     = values[ 1 ];
-			var newcharset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', dir, newname, newurl, newcharset, url ], error => {
+			var dir     = $( '#lib-path .lipath' ).text();
+			var values  = infoVal();
+			var name    = values[ 0 ];
+			var newurl  = values[ 1 ];
+			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
+			bash( [ 'webradioedit', dir, name, newurl, charset, url ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
