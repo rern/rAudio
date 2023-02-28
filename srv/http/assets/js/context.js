@@ -411,7 +411,7 @@ var htmlwebradio = `\
 </table>
 `;
 function webRadioEdit() {
-	var url  = V.list.path;
+	var url = V.list.path;
 	info( {
 		  icon         : 'webradio'
 		, title        : 'Edit Web Radio'
@@ -424,7 +424,7 @@ function webRadioEdit() {
 			var src  = V.list.li.find( 'img' ).attr( 'src' ) || V.coverdefault;
 			$( '#infoContent' ).prepend( '<div class="infomessage"><img src="'+ src +'"></div>' );
 			if ( url.includes( 'stream.radioparadise.com' ) || url.includes( 'icecast.radiofrance.fr' ) ) {
-				$( '#infoContent' ).find( 'tr' ).last().remove();
+				$( '#infoContent tr' ).last().remove();
 			} else {
 				$( '#addwebradiodir' ).remove();
 			}
