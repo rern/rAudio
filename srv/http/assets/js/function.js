@@ -1049,10 +1049,10 @@ function refreshData( resetdata ) {
 	}
 }
 function renderLibrary() { // home
-	V.mode        = '';
-	V.librarylist = false;
+	V.mode             = '';
+	V.librarylist      = false;
 	V.librarytracklist = false;
-	V.query       = [];
+	V.query            = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
