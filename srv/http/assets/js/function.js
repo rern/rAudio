@@ -1022,7 +1022,7 @@ function refreshData( resetdata ) {
 			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).click();
 			} else if ( V.query.length ) {
-				var query = V.query[ V.query.length - 1 ];
+				var query = V.query.slice( -1 )[ 0 ];
 				list( query, function( html ) {
 					var data = {
 						  html      : html

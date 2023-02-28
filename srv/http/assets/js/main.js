@@ -1117,7 +1117,7 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 $( '#lib-breadcrumbs' ).on( 'click', 'a:not( :last-of-type )', function() {
 	V.query = [];
 	delete V.gmode;
-	if ( V.query.length > 1 ) V.scrolltop[ V.query[ V.query.length - 1 ].modetitle ] = $( window ).scrollTop();
+	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
 	if ( V.mode.slice( -5 ) === 'radio' ) {
 		var query = {
@@ -1253,7 +1253,7 @@ $( '#button-lib-back' ).click( function() {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		V.query.pop();
-		var query = V.query[ V.query.length - 1 ];
+		var query = V.query.slice( -1 )[ 0 ];
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {

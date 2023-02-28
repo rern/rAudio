@@ -42,7 +42,7 @@ window.onresize = () => { // rotate / resize
 }
 function radioRefresh() {
 	if ( V.query.length ) {
-		var query = V.query[ V.query.length - 1 ];
+		var query = V.query.slice( -1 )[ 0 ];
 		list( query, function( html ) {
 			var data = {
 				  html      : html
@@ -166,7 +166,7 @@ function psDisplay( data ) {
 			if ( D.hidecover ) {
 				$( '.licover' ).remove();
 			} else {
-				var query = V.query[ V.query.length - 1 ];
+				var query = V.query.slice( -1 )[ 0 ];
 				list( query, function( html ) {
 					var data = {
 						  html      : html
