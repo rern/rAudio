@@ -251,7 +251,8 @@ force_eeprom_read=0"
 i2smodule )
 	aplayname=${args[1]}
 	output=${args[2]}
-	config=$( grep -Ev "dtparam=audio=on|dtparam=i2s=on|dtoverlay=$aplayname|gpio=25=op,dh" /boot/config.txt )
+	prevaplayname=$( getContent $dirsystem/audio-aplayname )
+	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
 	if [[ $aplayname != onboard ]]; then
 		config+="
 dtparam=i2s=on
@@ -260,17 +261,13 @@ dtoverlay=$aplayname"
 gpio=25=op,dh"
 		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
+		echo $aplayname > $dirsystem/audio-aplayname
+		echo $output > $dirsystem/audio-output
 	else
 		config+="
 dtparam=audio=on"
-		cpuInfo
-		[[ $BB == 09 || $BB == 0c ]] && output='HDMI 1' || output=Headphones
-		aplayname="bcm2835 $output"
-		output="On-board $output"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	echo $aplayname > $dirsystem/audio-aplayname
-	echo $output > $dirsystem/audio-output
 	configTxt 'Audio I&#178;S module'
 	;;
 journalctl )

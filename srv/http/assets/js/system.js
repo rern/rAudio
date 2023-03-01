@@ -224,11 +224,7 @@ $( '#setting-wlan' ).click( function() {
 	}, 'json' );
 } );
 $( '#i2smodulesw' ).click( function() {
-	setTimeout( () => { // delay to show switch sliding
-		$( '#i2smodulesw' ).prop( 'checked', 0 );
-		i2sOptionSet();
-		i2sSelectShow();
-	}, 200 );
+	setTimeout( i2sOptionSet, 0 );
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
@@ -238,6 +234,7 @@ $( '#i2smodule' ).change( function() {
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
+		S.i2smodulesw = false;
 		aplayname = 'onboard';
 		output = '';
 		notify( icon, title, 'Disable ...' );
@@ -245,9 +242,7 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
-$( '#divi2smodule' ).click( '.select2', function() {
-	if ( $( '#i2smodule option' ).length < 3 ) i2sOptionSet();
-} );
+$( '#divi2smodule' ).click( '.select2', i2sOptionSet );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
 		  icon         : SW.icon
@@ -832,17 +827,26 @@ function getStatus() {
 	}, 'json' );
 }
 function i2sOptionSet() {
-	$( '#i2smodule' ).select2( 'close' );
-	$.post( 'cmd.php', { cmd: 'selecti2s' }, function( data ) {
-		$( '#i2smodule' ).html( data );
-		$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
-			var $this = $( el );
-			return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-		} ).prop( 'selected', true );
-		$( '#i2smodule' ).select2( 'open' );
-	} );
+	if ( $( '#i2smodule option' ).length > 2 ) {
+		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+			i2sSelectShow();
+			$( '#i2smodule' ).select2( 'open' );
+		}
+	} else {
+		$( '#i2smodule' ).select2( 'close' );
+		$.post( 'cmd.php', { cmd: 'selecti2s' }, function( data ) {
+			$( '#i2smodule' ).html( data );
+			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+				var $this = $( el );
+				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+			} ).prop( 'selected', true );
+			i2sSelectShow();
+			$( '#i2smodule' ).select2( 'open' );
+		} );
+	}
 }
 function i2sSelectHide() {
+	$( '#i2smodulesw' ).prop( 'checked', S.i2smodulesw );
 	$( '#divi2smodulesw' ).removeClass( 'hide' );
 	$( '#divi2smodule' ).addClass( 'hide' );
 }
