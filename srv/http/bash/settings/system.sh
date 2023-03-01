@@ -118,6 +118,13 @@ soundProfile() {
 		ip link set $lan txqueuelen $txqueuelen
 	fi
 }
+timezoneAuto() {
+	timezone=$( curl -s https://ipapi.co/timezone )
+	[[ ! $timezone ]] && timezone=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
+	[[ ! $timezone ]] && timezone=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
+	[[ ! $timezone ]] && timezone=UTC
+	[[ $timezone ]] && timedatectl set-timezone $timezone
+}
 webradioCopyBackup() {
 	if [[ -e $dirbackup/webradio ]]; then
 		rm -rf $dirbackup/webradio
@@ -769,8 +776,11 @@ timedate )
 	;;
 timezone )
 	timezone=${args[1]}
-	timedatectl set-timezone $timezone
+	[[ $timezone == auto ]] && timezoneAuto || timedatectl set-timezone $timezone
 	pushRefresh
+	;;
+timezoneauto )
+	timezoneAuto
 	;;
 usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup

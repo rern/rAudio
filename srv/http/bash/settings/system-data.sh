@@ -149,6 +149,8 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
+audioaplayname=$( getContent $dirsystem/audio-aplayname )
+audiooutput=$( getContent $dirsystem/audio-output )
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -193,8 +195,8 @@ fi
 
 data+='
   "page"             : "system"
-, "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
-, "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
+, "audioaplayname"   : "'$audioaplayname'"
+, "audiooutput"      : "'$audiooutput'"
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
@@ -202,6 +204,7 @@ data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "i2smodulesw"      : '$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )'
 , "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdreboot"        : '$lcdreboot'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
@@ -226,6 +229,7 @@ data+='
 , "status"           : "'$status'"
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
+, "timezoneoffset"   : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'

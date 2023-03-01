@@ -1,24 +1,3 @@
-<?php
-$hostname       = getHostName();
-$ip             = getHostByName( $hostname );
-
-$i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
-$selecti2s      = '<select id="i2smodule">'
-				 .'<option value="none">None / Auto detect</option>';
-foreach( $i2slist as $name => $sysname ) {
-	$selecti2s .= '<option value="'.$sysname.'">'.$name.'</option>';
-}
-$selecti2s     .= '</select>';
-$timezonelist   = timezone_identifiers_list();
-$selecttimezone = '<select id="timezone">';
-foreach( $timezonelist as $key => $zone ) {
-	$datetime       = new DateTime( 'now', new DateTimeZone( $zone ) );
-	$offset         = $datetime->format( 'P' );
-	$zonename       = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
-	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
-}
-$selecttimezone.= '</select>';
-?>
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
 </div>
@@ -195,7 +174,7 @@ $body = [
 		<div class="switchlabel" for="i2smodulesw"></div>
 	</div>
 	<div id="divi2smodule">
-		$selecti2s
+		<select id="i2smodule"></select>
 	</div>
 	<i id="setting-i2smodule" class="i-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
@@ -290,7 +269,7 @@ EOF
 		, 'sublabel' => 'timedatectl'
 		, 'id'       => 'timezone'
 		, 'status'   => true
-		, 'input'    => $selecttimezone
+		, 'input'    => '<select id="timezone"></select>'
 		, 'setting'  => 'custom'
 		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
 	]

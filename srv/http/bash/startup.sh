@@ -15,6 +15,7 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
+	[[ ! -e /boot/backup.gz ]] && $dirsettings/system.sh timezoneauto
 	# no on-board wireless - remove bluetooth
 	cpuInfo
 	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt

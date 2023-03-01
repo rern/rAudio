@@ -226,9 +226,8 @@ $( '#setting-wlan' ).click( function() {
 $( '#i2smodulesw' ).click( function() {
 	setTimeout( () => { // delay to show switch sliding
 		$( '#i2smodulesw' ).prop( 'checked', 0 );
-		$( '#divi2smodulesw' ).addClass( 'hide' );
-		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#i2smodule' ).select2( 'open' );
+		i2sOptionSet();
+		i2sSelectShow();
 	}, 200 );
 } );
 $( '#i2smodule' ).change( function() {
@@ -245,6 +244,9 @@ $( '#i2smodule' ).change( function() {
 		i2sSelectHide();
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
+} );
+$( '#divi2smodule' ).click( '.select2', function() {
+	if ( $( '#i2smodule option' ).length < 3 ) i2sOptionSet();
 } );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
@@ -570,6 +572,17 @@ $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
+$( '#divtimezone' ).click( '.select2', function() {
+	if ( $( '#timezone option' ).length > 2 ) return
+	
+	$( '#timezone' ).select2( 'close' )
+	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
+		$( '#timezone' )
+			.html( data )
+			.val( S.timezone )
+			.select2( 'open' );
+	} );
+} );
 $( '#setting-timezone' ).click( function() {
 	if ( S.soc === 'BCM2835' || S.soc === 'BCM2836' ) { // rpi 0, 1
 		info( {
@@ -810,9 +823,32 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function getStatus() {
+	bash( [ 'statuscurrent' ], data => {
+		S.status  = data.status;
+		S.warning = data.warning;
+		$( '#status' ).html( S.status + S.warning );
+		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	}, 'json' );
+}
+function i2sOptionSet() {
+	$( '#i2smodule' ).select2( 'close' );
+	$.post( 'cmd.php', { cmd: 'selecti2s' }, function( data ) {
+		$( '#i2smodule' ).html( data );
+		$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+			var $this = $( el );
+			return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+		} ).prop( 'selected', true );
+		$( '#i2smodule' ).select2( 'open' );
+	} );
+}
 function i2sSelectHide() {
 	$( '#divi2smodulesw' ).removeClass( 'hide' );
 	$( '#divi2smodule' ).addClass( 'hide' );
+}
+function i2sSelectShow() {
+	$( '#divi2smodulesw' ).addClass( 'hide' );
+	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
 }
 function infoMount( val ) {
 	var ip        = $( '#list' ).data( 'ip' );
@@ -1008,27 +1044,27 @@ function renderPage() {
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
-	$( '#i2smodule' ).val( 'none' );
-	$( '#i2smodule option' ).filter( ( i, el ) => {
-		var $this = $( el );
-		return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-	} ).prop( 'selected', true );
-	S.i2senabled = $( '#i2smodule' ).val() !== 'none';
-	$( '#divi2smodulesw' ).toggleClass( 'hide', S.i2senabled );
-	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! S.i2senabled );
+	if ( S.i2smodulesw ) {
+		$( '#i2smodule' ).html( `
+<option></option>
+<option value="${ S.audioaplayname }" selected>${ S.audiooutput }</option>
+` );
+		i2sSelectShow();
+	} else {
+		i2sSelectHide();
+	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	$( '#timezone' ).val( S.timezone );
+	if ( $( '#timezone option' ).length > 2 ) {
+		$( '#timezone' ).val( S.timezone );
+	} else {
+		$( '#timezone' ).html( `
+<option></option>
+<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' &middot; ' ) +'&ensp;'+ S.timezoneoffset }</option>
+` );
+	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
-}
-function getStatus() {
-	bash( [ 'statuscurrent' ], data => {
-		S.status  = data.status;
-		S.warning = data.warning;
-		$( '#status' ).html( S.status + S.warning );
-		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	}, 'json' );
 }
