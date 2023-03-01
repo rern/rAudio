@@ -384,7 +384,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			if ( ! S.powerbuttonconf[ 3 ] ) {
+			if ( ! S.powerbuttonconf[ 4 ] ) {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf[ 0 ] == 5 );
 				$( '#infoContent select' ).eq( 0 ).change( function() {
 					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
