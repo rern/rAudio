@@ -1,6 +1,6 @@
 $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-types = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+key = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
 
 $( 'select' ).change( refreshValues );
 $( 'input' ).keyup( refreshValues );
@@ -41,21 +41,21 @@ $( '#save' ).click( function() {
 
 function refreshValues() {
 	setTimeout( () => { // wait for select2 ready
-		types.forEach( type => {
-			R[ type ] = [];
-			$( '.'+ type ).each(  ( i, el ) => {
-				if ( type === 'name' ) {
-					R.name.push( $( el ).val() || 0 );
+		key.forEach( key => {
+			R[ key ] = [];
+			$( '.'+ key ).each(  ( i, el ) => {
+				if ( key === 'name' ) {
+					R.name.push( $( el ).val() );
 					return
 					
-				} else if ( type === 'ond' ) {
+				} else if ( key === 'ond' ) {
 					var v = R.on[ i + 1 ] ? $( el ).val() : 0; // none - disable delay
-				} else if ( type === 'offd' ) {
+				} else if ( key === 'offd' ) {
 					var v = R.off[ i + 1 ] ? $( el ).val() : 0; // none - disable delay
 				} else {
-					var v = +$( el ).val();
+					var v = $( el ).val();
 				}
-				if ( v !== 0 ) R[ type ].push( v ); // force none to last
+				if ( v != 0 ) R[ key ].push( +v ); // force none to last
 			} );
 		} );
 		R.timer = +$( '#timer' ).val();
@@ -78,9 +78,9 @@ function renderPage() {
 	}
 	for ( i = 0; i < 4; i++ ) $( '.on, .off' ).html( optnamepin );
 	for ( i = 0; i < 4; i++ ) {
-		types.forEach( type => {
-			var sub = type === 'name' ? '' : 0;
-			$( '.'+ type ).eq( i ).val( R[ type ][ i ] || sub );
+		key.forEach( key => {
+			var sub = key === 'name' ? '' : 0;
+			$( '.'+ key ).eq( i ).val( R[ key ][ i ] || sub );
 		} );
 	}
 	$( '#timer' ).val( R.timer );
