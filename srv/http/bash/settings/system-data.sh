@@ -149,8 +149,11 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
-audioaplayname=$( getContent $dirsystem/audio-aplayname )
-audiooutput=$( getContent $dirsystem/audio-output )
+if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
+	audioaplayname=$( < $dirsystem/audio-aplayname )
+	audiooutput=$( < $dirsystem/audio-output )
+	i2smodulesw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
+fi
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -204,7 +207,7 @@ data+='
 , "hostapd"          : '$( isactive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
-, "i2smodulesw"      : '$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )'
+, "i2smodulesw"      : '$i2smodulesw'
 , "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdreboot"        : '$lcdreboot'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
