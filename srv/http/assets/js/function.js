@@ -784,7 +784,7 @@ function libraryHome() {
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
 			var hash      = versionHash();
-			var html      = html.replaceAll( '^^^', hash );
+			var html      = html.replace( /\^\^\^/g, hash );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -1143,7 +1143,7 @@ function renderLibraryList( data ) {
 	if ( ! data.html ) return // empty radio
 	
 	var hash = versionHash();
-	var html = data.html.replaceAll( '^^^', hash );
+	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
 			V.librarytracklist = true;
@@ -1276,7 +1276,7 @@ function renderPlaylist( data ) { // current playlist
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
@@ -1301,7 +1301,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 	if ( data.html !== V.playlisthtml ) {
 		V.playlistlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
@@ -1320,7 +1320,7 @@ function renderSavedPlaylist( name ) { // tracks in a playlist
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );

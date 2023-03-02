@@ -1,7 +1,4 @@
 <?php
-$data       = shell_exec( '/srv/http/bash/settings/relays-data.sh' );
-$data       = json_decode( $data );
-
 $pins      = [ 11, 12, 13, 15, 16, 18, 19, 21, 22, 23, 32, 33, 35, 36, 37, 38, 40 ];
 $optionpin = '';
 foreach ( $pins as $p ) $optionpin.= '<option value='.$p.'>'.$p.'</option>';
@@ -12,21 +9,19 @@ for ( $i = 0; $i < 4; $i++ ) {
 	$htmlname.= '<input type="text" class="name" placeholder="(no name)">';
 }
 
-$optnamepin = '<option value="0">--- none ---</option>';
-for ( $i = 0; $i < 4; $i++ ) $optnamepin.= '<option value="'.$data->pin[ $i ].'">'.$data->name[ $i ] ?? '(no name)</option>';
-
-$optsec     = '<option value="0">0</option>';
+$optsec    = '<option value="0">0</option>';
 for( $i = 1; $i < 11; $i++ ) $optsec.= '<option value="'.$i.'">'.$i.'</option>';
+$opttimer  = $optsec;
+$optsec   .= '</select><span class="sec">S</span>';
 
-$htmlsec    = '</select><span class="sec">sec.</span>';
 $selecton     = '';
 $selectoff    = '';
 for ( $i = 0; $i < 4; $i++ ) {
-	$selecton .= '<select class="on">'.$optnamepin.'</select>';
-	$selectoff.= '<select class="off">'.$optnamepin.'</select>';
+	$selecton .= '<select class="on"></select>';
+	$selectoff.= '<select class="off"></select>';
 	if ( $i < 3 ) {
-		$selecton .= '<select class="ond delay">'.$optsec.$htmlsec;
-		$selectoff.= '<select class="offd delay">'.$optsec.$htmlsec;
+		$selecton .= '<select class="ond delay">'.$optsec;
+		$selectoff.= '<select class="offd delay">'.$optsec;
 	}
 }
 
@@ -50,7 +45,7 @@ On/Off:  <a class="helpmenu"><?=( i( 'raudio' ) )?> System<?=( i( 'relays sub'
 		<span class="gpio-text"><?=( i( 'gpiopins bl' ) )?>Pin</span>
 		<?=$htmlpin?>
 		<span class="gpio-text"><?=( i( 'stoptimer yl' ) )?> Idle</span>
-		<select id="timer" class="timer"><?=$optsec?></select>
+		<select id="timer" class="timer"><?=$opttimer?></select>
 	</div>
 	<div class="column c2" id="gpio-name">
 		<span class="gpio-text"><?=( i( 'tag bl' ) )?> Name</span>

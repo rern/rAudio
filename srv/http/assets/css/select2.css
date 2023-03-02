@@ -75,8 +75,13 @@
 	border-color : transparent transparent var( --cw ) transparent !important;
 	border-width : 0 5px 5px 5px !important;
 }
+.select2-container.disabled .select2-selection__arrow,
 .select2-container--disabled .select2-selection__arrow {
 	display: none;
+}
+.select2-container.disabled,
+.select2-container--disabled {
+	pointer-events: none;
 }
 .select2 i {
 	vertical-align: 0 !important;
