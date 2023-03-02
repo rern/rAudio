@@ -1,6 +1,6 @@
 $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-key = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
+keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
 
 $( 'select' ).change( refreshValues );
 $( 'input' ).keyup( refreshValues );
@@ -11,7 +11,7 @@ $( '#undo' ).click( function() {
 	R = JSON.parse( JSON.stringify( S ) );
 	renderPage();
 	$( '#undo' ).addClass( 'disabled' )
-	if ( R.enabled ) $( '#save' ).addClass( 'disabled' )
+	if ( S.enabled ) $( '#save' ).addClass( 'disabled' )
 } );
 $( '#save' ).click( function() {
 	var onorder  = [];
@@ -41,35 +41,36 @@ $( '#save' ).click( function() {
 
 function refreshValues() {
 	setTimeout( () => { // wait for select2 ready
-		key.forEach( key => {
-			R[ key ] = [];
-			$( '.'+ key ).each(  ( i, el ) => {
-				if ( key === 'name' ) {
+		keys.forEach( k => {
+			R[ k ] = [];
+			$( '.'+ k ).each(  ( i, el ) => {
+				if ( k === 'name' ) {
 					R.name.push( $( el ).val() );
 					return
 					
-				} else if ( key === 'ond' ) {
+				} else if ( k === 'ond' ) {
 					var v = R.on[ i + 1 ] ? $( el ).val() : 0; // none - disable delay
-				} else if ( key === 'offd' ) {
+				} else if ( k === 'offd' ) {
 					var v = R.off[ i + 1 ] ? $( el ).val() : 0; // none - disable delay
 				} else {
 					var v = $( el ).val();
 				}
-				if ( v != 0 ) R[ key ].push( +v ); // force none to last
+				if ( v != 0 ) R[ k ].push( +v ); // force none to last
 			} );
 		} );
 		R.timer = +$( '#timer' ).val();
-		var changed = Ss !== JSON.stringify( R );
+		var changed = Rs !== JSON.stringify( R );
 		$( '#undo' ).toggleClass( 'disabled', ! changed );
-		if ( R.enabled ) $( '#save' ).toggleClass( 'disabled', ! changed );
+		if ( S.enabled ) $( '#save' ).toggleClass( 'disabled', ! changed );
 		renderPage();
 	}, 0 );
 }
 function renderPage() {
 	if ( typeof R === 'undefined' ) {
-		Ss = JSON.stringify( S );
-		R  = JSON.parse( Ss );
-		$( '#save' ).toggleClass( 'disabled', R.enabled );
+		R  = JSON.parse( JSON.stringify( S ) );
+		[ 'page', 'enabled', 'login' ].forEach( k => delete R[ k ] );
+		Rs = JSON.stringify( R );
+		$( '#save' ).toggleClass( 'disabled', S.enabled );
 	}
 	var optnamepin = '<option value="0">(none)</option>';
 	for ( i = 0; i < 4; i++ ) {
@@ -78,9 +79,9 @@ function renderPage() {
 	}
 	for ( i = 0; i < 4; i++ ) $( '.on, .off' ).html( optnamepin );
 	for ( i = 0; i < 4; i++ ) {
-		key.forEach( key => {
-			var sub = key === 'name' ? '' : 0;
-			$( '.'+ key ).eq( i ).val( R[ key ][ i ] || sub );
+		keys.forEach( k => {
+			var sub = k === 'name' ? '' : 0;
+			$( '.'+ k ).eq( i ).val( R[ k ][ i ] || sub );
 		} );
 	}
 	$( '#timer' ).val( R.timer );
