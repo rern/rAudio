@@ -117,8 +117,7 @@ function refreshData() {
 }
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
-	var $select = $( '.container select' );
-	if ( $select.length ) selectSet( $select );
+	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -222,7 +221,13 @@ function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	page === 'networks' ? $( '.back' ).click() : switchSet();
+	if ( page === 'relays' ) {
+		Rs = JSON.stringify( R );
+	} else if ( page === 'networks' ) {
+		$( '.back' ).click();
+	} else {
+		switchSet();
+	}
 	renderPage();
 }
 function psReload( data ) {
