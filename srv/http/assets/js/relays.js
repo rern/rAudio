@@ -3,10 +3,7 @@ $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 types = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
 
 $( 'select' ).change( refreshValues );
-$( 'input' ).keyup( function() {
-	
-	refreshValues();
-} );
+$( 'input' ).keyup( refreshValues );
 $( '.back' ).click( function() {
 	location.href = 'settings.php?p=system';
 } );
@@ -16,7 +13,7 @@ $( '#undo' ).click( function() {
 	$( '#undo' ).addClass( 'disabled' )
 	if ( R.enabled ) $( '#save' ).addClass( 'disabled' )
 } );
-$( '#save' ).off( 'click' ).click( function() {
+$( '#save' ).click( function() {
 	var onorder  = [];
 	var offorder = [];
 	for ( i = 0; i < 4; i++ ) {
