@@ -22,10 +22,10 @@ $( '#save' ).click( function() {
 	}
 	var cmd = [
 		  'save'
-		, 'pin=\'[ '+ R.pin.join( ',' ) +' ]\''
-		, 'name=\'[ "'+ R.name.join( '","' ) +'" ]\''
-		, 'onorder=\'[ "'+ onorder.join( '","' ) +'" ]\''
-		, 'offorder=\'[ "'+ offorder.join( '","' ) +'" ]\''
+		, 'pin=['+ R.pin.join( ',' ) +']'
+		, 'name=\'[ "'+ R.name.join( '", "' ) +'" ]\''
+		, 'onorder=\'[ "'+ onorder.join( '", "' ) +'" ]\''
+		, 'offorder=\'[ "'+ offorder.join( '", "' ) +'" ]\''
 		, 'on=( '+ R.on.join( ' ' ) +' )'
 		, 'ond=( '+ R.ond.join( ' ' ) +' )'
 		, 'off=( '+ R.off.join( ' ' ) +' )'
