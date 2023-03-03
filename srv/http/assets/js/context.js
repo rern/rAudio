@@ -454,11 +454,11 @@ function webRadioExists( error, name, url, charset ) {
 function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
-		, title        : 'Add Web Radio'
+		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
 		, focus        : 0
-		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
+		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : () => {
 			if ( $( '#lib-path .lipath' ).text() ) {
@@ -487,41 +487,6 @@ function webRadioNew( name, url, charset ) {
 				bannerHide();
 			} );
 			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
-		}
-	} );
-}
-function webRadioSave( name ) {
-	var url = V.list.li.find( '.lipath' ).text();
-	info( {
-		  icon       : 'webradio'
-		, title      : 'Save Web Radio'
-		, message    : url
-		, textlabel  : 'Name'
-		, values     : name || ''
-		, focus      : 0
-		, checkblank : 1
-		, ok         : () => {
-			V.local     = true;
-			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioadd', '', newname, url ], error => {
-				if ( error ) {
-					bannerHide();
-					info( {
-						  icon    : 'webradio'
-						, title   : 'Save Web Radio'
-						, message : iconwarning + error
-									+'<br><br><wh>'+ url +'</wh>'
-						, ok      : () => webRadioSave( newname )
-					} );
-					return
-				}
-				
-				V.list.li.find( '.liname, .radioname' ).text( newname );
-				V.list.li.find( '.li2 .radioname' ).append( ' • ' );
-				V.list.li.find( '.savewr' ).remove();
-				V.list.li.removeClass( 'notsaved' );
-				V.local = false;
-			} );
 		}
 	} );
 }
@@ -678,7 +643,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrsave':
-			webRadioSave();
+			webRadioNew( '', V.list.li.find( '.lipath' ).text() );
 			return
 	}
 	

@@ -1038,13 +1038,13 @@ function refreshData( resetdata ) {
 	} else if ( V.playback ) {
 		getPlaybackStatus( 'withdisplay' );
 	} else {
-		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
+		if ( V.savedlist ) {
+			$( '#button-pl-playlists' ).click();
+		} else if ( V.savedplaylist ) {
+			renderSavedPlaylist( $( '#savedpl-path .lipath' ).text() );
+		} else {
 			if ( resetdata ) V.playlisthtml = '';
 			getPlaylist();
-		} else if ( ! V.savedplaylist ) {
-			$( '#button-pl-playlists' ).click();
-		} else {
-			renderSavedPlaylist( $( '#pl-path .lipath' ).text() )
 		}
 	}
 }
