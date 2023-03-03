@@ -469,12 +469,12 @@ function webRadioNew( name, url, charset ) {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
-						, focus      : 0
 						, checkblank : 1
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
 					} );
 				} );
 			}
+			if ( V.playlist ) $( '#infoContent input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok           : () => {
 			var values  = infoVal();
