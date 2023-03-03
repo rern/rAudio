@@ -3,7 +3,7 @@ $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
 
 $( 'select' ).change( refreshValues );
-$( 'input' ).keyup( refreshValues );
+$( 'input' ).on( 'keyup paste cut', refreshValues );
 $( '.back' ).click( function() {
 	location.href = 'settings.php?p=system';
 } );
@@ -11,7 +11,7 @@ $( '#undo' ).click( function() {
 	R = JSON.parse( JSON.stringify( S ) );
 	renderPage();
 	$( '#undo' ).addClass( 'disabled' )
-	if ( S.enabled ) $( '#save' ).addClass( 'disabled' )
+	if ( S.enabled ) $( '#save' ).addClass( 'disabled' );
 } );
 $( '#save' ).click( function() {
 	var onorder  = [];
@@ -72,9 +72,9 @@ function renderPage() {
 		Rs = JSON.stringify( R );
 		$( '#save' ).toggleClass( 'disabled', S.enabled );
 	}
-	var optnamepin = '<option value="0">(none)</option>';
+	var optnamepin = '<option value="0">None</option>';
 	for ( i = 0; i < 4; i++ ) {
-		var name = R.name[ i ] || '(no name)';
+		var name = R.name[ i ] || '(unnamed)';
 		optnamepin += '<option value="'+ R.pin[ i ] +'">'+ name +'</option>';
 	}
 	for ( i = 0; i < 4; i++ ) $( '.on, .off' ).html( optnamepin );
@@ -87,15 +87,4 @@ function renderPage() {
 	$( '#timer' ).val( R.timer );
 	for ( i = 1; i < 4; i++ ) $( '.ond' ).eq( i - 1 ).prop( 'disabled', ! R.on[ i ] );
 	showContent();
-	renderSelect();
-	$( '.on, .off' ).on( 'select2:open', () => {
-		setTimeout( () => renderSelect( 'open' ), 0 );
-	} ).on( 'select2:select', function() {
-		renderSelect();
-	} );
-}
-function renderSelect( open ) {
-	$( open ? '.select2-results__options li' : '.select2-selection__rendered' ).each( ( i, el ) => {
-		$( el ).html( $( el ).text().replace( '(none)', '<gr>(none)</gr>' ) );
-	} );
 }

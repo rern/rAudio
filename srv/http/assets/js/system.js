@@ -528,7 +528,7 @@ $( '#ledcalc' ).click( function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
 			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
-				.keyup( function() {
+				.on( 'keyup paste cut', function() {
 					var fv = $( this ).val();
 					if ( fv > 3.3 ) {
 						var ohm = '( > 3.3V)';
@@ -553,7 +553,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, checkblank   : 1
 		, checkchanged : 1
 		, beforeshow   : () => {
-			$( '#infoContent input' ).keyup( function() {
+			$( '#infoContent input' ).on( 'keyup paste', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}

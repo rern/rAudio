@@ -79,7 +79,7 @@ $( '#setting-snapclient' ).click( function() {
 		, boxwidth     : 100
 		, checkchanged : S.snapclient
 		, beforeshow   : () => {
-			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste cut', function() {
+			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste', function() {
 				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
 			} );
 		}
