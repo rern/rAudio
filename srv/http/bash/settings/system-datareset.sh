@@ -139,7 +139,7 @@ rotate=NORMAL
 zoom=100
 screenoff=0
 onwhileplay=false
-cursor=false" > $dirsystem/localbrowser.conf
+cursor=no" > $dirsystem/localbrowser.conf
 	rm -rf /root/.config/chromium /root/.mozilla
 fi
 

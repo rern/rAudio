@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230218
+sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf
+
 [[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
 if [[ -e /boot/kernel7.img ]]; then
 	if [[ ! -e /usr/bin/firefox ]]; then
