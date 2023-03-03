@@ -1,24 +1,3 @@
-<?php
-$hostname       = getHostName();
-$ip             = getHostByName( $hostname );
-
-$i2slist        = json_decode( file_get_contents( '/srv/http/assets/data/system-i2s.json' ) );
-$selecti2s      = '<select id="i2smodule">'
-				 .'<option value="none">None / Auto detect</option>';
-foreach( $i2slist as $name => $sysname ) {
-	$selecti2s .= '<option value="'.$sysname.'">'.$name.'</option>';
-}
-$selecti2s     .= '</select>';
-$timezonelist   = timezone_identifiers_list();
-$selecttimezone = '<select id="timezone">';
-foreach( $timezonelist as $key => $zone ) {
-	$datetime       = new DateTime( 'now', new DateTimeZone( $zone ) );
-	$offset         = $datetime->format( 'P' );
-	$zonename       = preg_replace( [ '/_/', '/\//' ], [ ' ', ' <gr>&middot;</gr> ' ], $zone );
-	$selecttimezone.= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
-}
-$selecttimezone.= '</select>';
-?>
 <div id="gpiosvg" class="hide">
 <?php include 'assets/img/gpio.svg';?>
 </div>
@@ -70,8 +49,20 @@ htmlHead( [ //////////////////////////////////
 <wh>• CPU temperature:</wh>
  · 80-84°C: ARM cores throttled.
  · 85°C: ARM cores and GPU throttled.
- · RPi 3B+: 60°C soft limit (optimized throttling)
+
+RPi 3B+: 60°C soft limit default (optimized throttling)
 </div>
+<?php
+$cpurevision = exec( 'grep ^Revision /proc/cpuinfo' );
+if ( substr( $cpurevision, -3, 2 ) === '0d' ) {
+	htmlSetting( [
+		  'label'    => 'Custom Soft Limit'
+		, 'sublabel' => 'CPU throttling'
+		, 'id'       => 'softlimit'
+		, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
+	] );
+}
+?>
 </div>
 <div id="divstorage" class="section">
 <?php
@@ -183,7 +174,7 @@ $body = [
 		<div class="switchlabel" for="i2smodulesw"></div>
 	</div>
 	<div id="divi2smodule">
-		$selecti2s
+		<select id="i2smodule"></select>
 	</div>
 	<i id="setting-i2smodule" class="i-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
@@ -278,7 +269,7 @@ EOF
 		, 'sublabel' => 'timedatectl'
 		, 'id'       => 'timezone'
 		, 'status'   => true
-		, 'input'    => $selecttimezone
+		, 'input'    => '<select id="timezone"></select>'
 		, 'setting'  => 'custom'
 		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
 	]
@@ -397,8 +388,7 @@ $listui = [
 ];
 $uihtml = '';
 foreach( $listui as $ui ) {
-	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a>';
-	$uihtml.= '<p>'.$ui[ 1 ].'</p>';
+	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> - '.$ui[ 1 ].'<br>';
 }
 $hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
 $indexhtml = '';
@@ -410,7 +400,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <div id="divabout" class="section">
 	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
-	<br><gr>by&emsp;r e r n</gr></div>
+	<br><gr>b y&emsp;r e r n</gr></div>
 	
 	<heading class="subhead">Back End</heading>
 	<div class="list">
@@ -423,6 +413,8 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	
 	<heading class="subhead">Front End</heading>
 	<div class="list">
+		<a href="https://nginx.org/en/">nginx</a>
+		<p>HTTP and reverse proxy server, a mail proxy server, and a generic TCP/UDP proxy server</p>
 		<a href="https://www.php.net">PHP</a>
 		<p>PHP: Hypertext Preprocessor - A scripting language for web server side</p>
 		<a href="https://whatwg.org">HTML</a>
@@ -446,7 +438,7 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 		<a href="https://radioparadise.com">Radio Paradise</a> <a href="https://www.fip.fr/">Fip</a> <a href="https://www.francemusique.fr/">France Musique</a>
 		<p>Coverarts for their own stations</p>
 		<a href="http://gnudb.gnudb.org">GnuDB</a>
-		<p>Audio CD</p>
+		<p>Audio CD track list</p>
 	</div>
 </div>
 

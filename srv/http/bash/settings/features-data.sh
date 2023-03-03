@@ -38,28 +38,28 @@ data+='
 , "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='
-, "hostapd"          : '$( isactive hostapd )'
+, "hostapd"          : '$( isActive hostapd )'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( isactive shairport-sync )
+, "shairport-sync"   : '$( isActive shairport-sync )
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapclientactive" : '$( isactive snapclient )'
+, "snapclientactive" : '$( isActive snapclient )'
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapcastconf"     : '$( grep -q -m1 latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( isactive spotifyd )'
+, "spotifyd"         : '$( isActive spotifyd )'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( isactive upmpdcli )'
+, "upmpdcli"         : '$( isActive upmpdcli )'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
-	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
+	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/; s/:yes/:true/; s/:no/:false/' $dirsystem/localbrowser.conf )
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
@@ -78,13 +78,13 @@ if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 $dirusb /etc/samba/smb.conf | grep -q -m1 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
-, "smb"              : '$( isactive smb )'
+, "smb"              : '$( isActive smb )'
 , "smbconf"          : '$smbconf
 fi
 if [[ -e /usr/bin/rtsp-simple-server ]]; then
 	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
 	data+='
 , "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$( isactive rtsp-simple-server )
+, "dabradio"         : '$( isActive rtsp-simple-server )
 fi
 data2json "$data" $1

@@ -5,6 +5,8 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230218
+sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf
+
 [[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
 if [[ -e /boot/kernel7.img ]]; then
 	if [[ ! -e /usr/bin/firefox ]]; then
@@ -75,7 +77,7 @@ getinstallzip
 
 [[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
 
-$dirsettings/system.sh dirpermissions
+$dirsettings/system-datareset.sh dirpermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 
 hash=?v=$( date +%s )
@@ -86,4 +88,6 @@ installfinish
 #-------------------------------------------------------------------------------
 
 # 20230224
-[[ -e $dirmpdconf/replaygain.conf ]] && $dirsettings/player-conf.sh
+if [[ -e $dirmpdconf/replaygain.conf ]]; then
+	! grep -q mixer_type.*software $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+fi

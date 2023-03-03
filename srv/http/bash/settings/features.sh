@@ -162,7 +162,7 @@ localbrowser )
 	if [[ ${args[1]} == true ]]; then
 		newrotate=${args[2]}
 		newzoom=${args[3]}
-		newcursor=${args[4]}
+		[[ ${args[4]} == true ]] && newcursor=yes || newcursor=no
 		newscreenoff=${args[5]}
 		newonwhileplay=${args[6]}
 		hdmi=${args[7]}
@@ -236,7 +236,7 @@ cursor=$newcursor
 				localbrowserDisable
 			fi
 		elif [[ $changedscreenoff ]]; then
-			localbrowserXset $newscreenoff
+			localbrowserXset
 			if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
 				[[ $off == 0 ]] && tf=false || tf=true
 				pushSubmenu screenoff $tf
@@ -248,7 +248,7 @@ cursor=$newcursor
 	pushRefresh
 	;;
 localbrowserxset )
-	localbrowserXset ${args[1]}
+	localbrowserXset
 	;;
 login )
 	pushRefresh

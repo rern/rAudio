@@ -40,7 +40,6 @@ V = {   // var global
 var $bartop     = $( '#bar-top' );
 var $time       = $( '#time-knob' );
 var $volume     = $( '#volume-knob' );
-var cmdphp      = 'cmd.php';
 var data        = {}
 var picaOption  = { // pica.js
 	  unsharpAmount    : 100  // 0...500 Default = 0 (try 50-100)
@@ -205,7 +204,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'logout':
-			$.post( cmdphp, { cmd: 'logout' }, () => location.reload() );
+			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
 			break;
 		case 'snapclient':
 			var active = $( this ).hasClass( 'on' );
@@ -1118,7 +1117,7 @@ $( '#bio' ).on( 'click', '.closebio', function() {
 $( '#lib-breadcrumbs' ).on( 'click', 'a:not( :last-of-type )', function() {
 	V.query = [];
 	delete V.gmode;
-	if ( V.query.length > 1 ) V.scrolltop[ V.query[ V.query.length - 1 ].modetitle ] = $( window ).scrollTop();
+	if ( V.query.length > 1 ) V.scrolltop[ V.query.slice( -1 )[ 0 ].modetitle ] = $( window ).scrollTop();
 	var path = $( this ).find( '.lidir' ).text();
 	if ( V.mode.slice( -5 ) === 'radio' ) {
 		var query = {
@@ -1155,12 +1154,25 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		, ok       : () => bash( [ 'dabscan' ] )
 	} );
 } ).on( 'click', '.button-latest-clear', function() {
-	info( {
-		  icon         : 'latest'
-		, title        : 'Latest'
-		, message      : 'Clear Latest albums list?'
-		, ok           : () => bash( [ 'latestclear' ] )
-	} );
+	if ( V.librarytracklist ) {
+		info( {
+			  icon         : 'latest'
+			, title        : 'Latest'
+			, message      : 'Clear from Latest album list:<br><br>'+ $( '.licover .lialbum' ).text()
+			, ok           : () => {
+				bash( [ 'latestclear', $( '.licover .lipath' ).text() ], () => $( '#button-lib-back' ).click() );
+			}
+		} );
+	} else {
+		info( {
+			  icon         : 'latest'
+			, title        : 'Latest'
+			, message      : 'Clear Latest albums list?'
+			, ok           : () => {
+				bash( [ 'latestclear' ], () => $( '#library' ).click() );
+			}
+		} );
+	}
 } );
 $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {
@@ -1238,7 +1250,7 @@ $( '#lib-search-close' ).click( function( e ) {
 		$( '#lib-breadcrumbs a' ).length ? $( '#lib-breadcrumbs a' ).last().click() : $( '#library' ).click();
 	}
 } );
-$( '#lib-search-input' ).keyup( function( e ) {
+$( '#lib-search-input' ).on( 'keyup paste cut', function( e ) {
 	if ( e.key === 'Enter' ) $( '#lib-search-btn' ).click();
 } );
 $( '#button-lib-back' ).click( function() {
@@ -1254,7 +1266,7 @@ $( '#button-lib-back' ).click( function() {
 		bL > 1 ? $breadcrumbs.eq( -2 ).click() : $( '#library' ).click();
 	} else {
 		V.query.pop();
-		var query = V.query[ V.query.length - 1 ];
+		var query = V.query.slice( -1 )[ 0 ];
 		if ( query === 'album' ) {
 			$( '#mode-album' ).click();
 		} else {
@@ -1738,7 +1750,7 @@ $( '#button-pl-back' ).click( function() {
 $( '#button-pl-playlists' ).click( function() {
 	V.savedlist     = true;
 	V.savedplaylist = false;
-	list( { cmd: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
+	list( { playlist: 'list' }, ( data ) => renderPlaylistList( data ), 'json' );
 } );
 $( '#button-pl-save' ).click( function() {
 	var audiocdL  = $( '#pl-list .i-audiocd' ).length;
@@ -1847,7 +1859,7 @@ $( '#button-pl-clear' ).click( function() {
 		} );
 	}
 } );
-$( '#pl-search-input' ).keyup( playlistFilter );
+$( '#pl-search-input' ).on( 'keyup paste cut', playlistFilter );
 $( '#pl-search-close, #pl-search-btn' ).click( function() {
 	$( '#pl-search-close' ).empty();
 	$( '#pl-search-close, #pl-search, #pl-search-btn' ).addClass( 'hide' );
@@ -1918,11 +1930,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}
-} ).on( 'click', '.savewr', function() {
-	V.list.li = $( this ).parent();
-	webRadioSave( $( this ).next().next().text() );
-	menuHide();
-} ).on( 'click', '.li-icon', function() {
+} ).on( 'click', '.li-icon, .savewr', function() {
 	var $this     = $( this );
 	var $thisli   = $this.parent();
 	V.list        = {};

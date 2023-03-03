@@ -153,6 +153,17 @@ $( '#menu a' ).click( function() {
 			break;
 	}
 } );
+$( '#setting-softlimit' ).click( function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, radio        : { '65°C': 65, '70°C': 70, '75°C': 75 }
+		, values       : S.softlimitconf || 65
+		, checkchanged : S.softlimit
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
+} );
 $( '#setting-hddsleep' ).click( function() {
 	info( {
 		  icon         : SW.icon
@@ -213,12 +224,7 @@ $( '#setting-wlan' ).click( function() {
 	}, 'json' );
 } );
 $( '#i2smodulesw' ).click( function() {
-	setTimeout( () => { // delay to show switch sliding
-		$( '#i2smodulesw' ).prop( 'checked', 0 );
-		$( '#divi2smodulesw' ).addClass( 'hide' );
-		$( '#divi2smodule' ).removeClass( 'hide' );
-		$( '#i2smodule' ).select2( 'open' );
-	}, 200 );
+	setTimeout( i2sOptionSet, 0 );
 } );
 $( '#i2smodule' ).change( function() {
 	var aplayname = $( this ).val();
@@ -228,6 +234,7 @@ $( '#i2smodule' ).change( function() {
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
+		S.i2smodulesw = false;
 		aplayname = 'onboard';
 		output = '';
 		notify( icon, title, 'Disable ...' );
@@ -235,6 +242,7 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
+$( '#divi2smodule' ).click( '.select2', i2sOptionSet );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
 		  icon         : SW.icon
@@ -306,6 +314,15 @@ $( '#setting-lcdchar' ).click( function() {
 		, values       : S.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
 		, checkchanged : S.lcdchar
 		, beforeshow   : () => {
+			if ( ! S.lcdcharreboot ) {
+				$( '#infoOk' )
+					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
+					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
+				$( '#infoButtons gr' ).click( function() {
+					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
+					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
+				} );
+			}
 			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
 			$( '#infoContent .gpio td:odd' ).css( {
 				  width           : 35
@@ -320,15 +337,6 @@ $( '#setting-lcdchar' ).click( function() {
 				$( '.i2c' ).toggleClass( 'hide', ! i2c );
 				$( '.gpio' ).toggleClass( 'hide', i2c );
 			} );
-			if ( S.lcdchar ) {
-				$( '#infoOk' )
-					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
-				$( '#infoButtons gr' ).click( function() {
-					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
-				} );
-			}
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -371,7 +379,7 @@ $( '#setting-powerbutton' ).click( function() {
 		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			if ( ! S.powerbuttonconf[ 3 ] ) {
+			if ( ! S.powerbuttonconf[ 4 ] ) {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf[ 0 ] == 5 );
 				$( '#infoContent select' ).eq( 0 ).change( function() {
 					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
@@ -417,6 +425,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
+	var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -450,12 +459,13 @@ $( '#setting-mpdoled' ).click( function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, buttonlabel  : ! S.mpdoled ? '' : ico( 'raudio' ) +'Logo'
-		, button       : ! S.mpdoled ? '' : () => bash( [ 'mpdoledlogo' ] )
+		, buttonlabel  : buttonlogo ? ico( 'raudio' ) +'Logo' : ''
+		, button       : buttonlogo ? () => bash( [ 'mpdoledlogo' ] ) : ''
 		, ok           : switchEnable
 	} );
 } );
 $( '#setting-lcd' ).click( function() {
+	var buttoncalibrate = S.lcd && ! S.lcdreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -470,8 +480,8 @@ $( '#setting-lcd' ).click( function() {
 		, values       : S.lcdmodel || 'tft35a'
 		, checkchanged : S.lcd
 		, boxwidth     : 190
-		, buttonlabel  : ! S.lcd ? '' : 'Calibrate'
-		, button       : ! S.lcd ? '' : () => {
+		, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
+		, button       : ! buttoncalibrate ? '' : () => {
 			info( {
 				  icon    : SW.icon
 				, title   : SW.title
@@ -518,7 +528,7 @@ $( '#ledcalc' ).click( function() {
 			$( '#infoContent input' ).prop( 'disabled', 1 );
 			$( '#infoContent input' ).eq( 2 )
 				.prop( 'disabled', 0 )
-				.keyup( function() {
+				.on( 'keyup paste cut', function() {
 					var fv = $( this ).val();
 					if ( fv > 3.3 ) {
 						var ohm = '( > 3.3V)';
@@ -543,7 +553,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, checkblank   : 1
 		, checkchanged : 1
 		, beforeshow   : () => {
-			$( '#infoContent input' ).keyup( function() {
+			$( '#infoContent input' ).on( 'keyup paste', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
@@ -556,6 +566,17 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val() ] );
+} );
+$( '#divtimezone' ).click( '.select2', function() {
+	if ( $( '#timezone option' ).length > 2 ) return
+	
+	$( '#timezone' ).select2( 'close' )
+	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
+		$( '#timezone' )
+			.html( data )
+			.val( S.timezone )
+			.select2( 'open' );
+	} );
 } );
 $( '#setting-timezone' ).click( function() {
 	if ( S.soc === 'BCM2835' || S.soc === 'BCM2836' ) { // rpi 0, 1
@@ -623,7 +644,7 @@ $( '#backup' ).click( function() {
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
 			notify( SW.icon, SW.title, 'Process ...' );
-			bash( [ 'databackup' ], data => {
+			bash( '/srv/http/bash/settings/system-databackup.sh', data => {
 				if ( data == 1 ) {
 					notify( SW.icon, SW.title, 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
@@ -695,7 +716,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				bash( [ 'datareset' ] );
+				bash( '/srv/http/bash/settings/system-datareset.sh' );
 				notify( SW.icon, SW.title, 'Reset to default ...' );
 			} else {
 				notify( SW.icon, SW.title, 'Restore ...' );
@@ -797,13 +818,45 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+function getStatus() {
+	bash( [ 'statuscurrent' ], data => {
+		S.status  = data.status;
+		S.warning = data.warning;
+		$( '#status' ).html( S.status + S.warning );
+		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	}, 'json' );
+}
+function i2sOptionSet() {
+	if ( $( '#i2smodule option' ).length > 2 ) {
+		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
+			i2sSelectShow();
+			$( '#i2smodule' ).select2( 'open' );
+		}
+	} else {
+		$( '#i2smodule' ).select2( 'close' );
+		$.post( 'cmd.php', { cmd: 'selecti2s' }, function( data ) {
+			$( '#i2smodule' ).html( data );
+			$( '#i2smodule option' ).filter( ( i, el ) => { // for 1 value : multiple names
+				var $this = $( el );
+				return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
+			} ).prop( 'selected', true );
+			i2sSelectShow();
+			$( '#i2smodule' ).select2( 'open' );
+		} );
+	}
+}
 function i2sSelectHide() {
+	$( '#i2smodulesw' ).prop( 'checked', S.i2smodulesw );
 	$( '#divi2smodulesw' ).removeClass( 'hide' );
 	$( '#divi2smodule' ).addClass( 'hide' );
 }
+function i2sSelectShow() {
+	$( '#divi2smodulesw' ).addClass( 'hide' );
+	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
+}
 function infoMount( val ) {
-	var ip     = $( '#list' ).data( 'ip' );
-	var ipsub  = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
+	var ip        = $( '#list' ).data( 'ip' );
+	var ipsub     = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
 	if ( val === 'raudio' ) {
 		var shareddata = true;
 		var values     = [ 'raudio', 'data', ipsub ];
@@ -814,18 +867,20 @@ function infoMount( val ) {
 		var shareddata = false;
 		var values     = val || [ 'cifs', '', ipsub ];
 	}
-	var htmlmount      = `\
-<table id="tblinfomount">
+	var radiora    = shareddata ? '<label><input type="radio" name="inforadio" value="raudio">rAudio</label>' : '';
+	var phname    = shareddata ? '' : ' placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"';
+	var htmlmount = `\
+<table>
 <tr class="common"><td style="width: 90px">Type</td>
 	<td style="width: 230px">
 		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
 		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
-		<label><input type="radio" name="inforadio" value="raudio">rAudio</label>
+		${ radiora }
 	</td>
 	<td style="width: 20px"></td>
 </tr>
 <tr class="common"><td>Name</td>
-<td><input id="mountpoint" type="text" placeholder="for Library · NAS · 'Name'"></td>
+<td><input id="mountpoint" type="text"${ phname }></td>
 </tr>
 <tr class="common"><td>Server IP</td>
 	<td><input type="text"></td>
@@ -841,10 +896,10 @@ function infoMount( val ) {
 </tr>
 <tr class="cifs nfs"><td>Options</td>
 	<td><input type="text" placeholder="if required by server"></td>
-</tr>`;
-	htmlmount += '</table>';
-	var icon   = 'networks';
-	var title  = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+</tr>
+</table>`;
+	var icon      = 'networks';
+	var title     = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	info( {
 		  icon       : icon
 		, title      : title
@@ -853,13 +908,15 @@ function infoMount( val ) {
 		, checkblank : [ 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
-			if ( ! shareddata ) {
-				$( '#infoContent label' ).eq( 2 ).remove();
-			} else {
-				$( '#mountpoint' ).prop( 'disabled', 1 );
-			}
 			var $mountpoint = $( '#mountpoint' );
 			var $share = $( '#share' );
+			if ( shareddata ) {
+				$mountpoint.prop( 'disabled', 1 );
+			} else {
+				$mountpoint.on( 'keyup paste', function() {
+					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
+				} );
+			}
 			function hideOptions( type ) {
 				if ( ! values[ 3 ] ) $share.val( '' );
 				$( '#infoContent tr' ).not( '.common' ).addClass( 'hide' );
@@ -870,7 +927,7 @@ function infoMount( val ) {
 				} else if ( type === 'cifs' ) {
 					$( '#sharelabel' ).text( 'Share name' );
 					$( '#infoContent' ).find( '.common, .cifs' ).removeClass( 'hide' );
-					var placeholder = 'sharename on server';
+					var placeholder = 'share name on server';
 				} else {
 					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
 				}
@@ -879,9 +936,6 @@ function infoMount( val ) {
 			hideOptions( values[ 0 ] );
 			$( '#infoContent input:radio' ).change( function() {
 				hideOptions( $( this ).val() );
-			} );
-			$mountpoint.on( 'keyup paste', function() {
-				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
@@ -925,7 +979,7 @@ function infoMount( val ) {
 				return
 			}
 			
-			bash( [ 'mount', ...values, shareddata ], error => {
+			bash( [ 'mount', ...values, shareddata ], error => { // system-mount.sh
 				if ( error ) {
 					info( {
 						  icon    : icon
@@ -994,27 +1048,27 @@ function renderPage() {
 	} else {
 		$( '#divaudio' ).addClass( 'hide' );
 	}
-	$( '#i2smodule' ).val( 'none' );
-	$( '#i2smodule option' ).filter( ( i, el ) => {
-		var $this = $( el );
-		return $this.text() === S.audiooutput && $this.val() === S.audioaplayname;
-	} ).prop( 'selected', true );
-	S.i2senabled = $( '#i2smodule' ).val() !== 'none';
-	$( '#divi2smodulesw' ).toggleClass( 'hide', S.i2senabled );
-	$( '#divi2smodule, #setting-i2smodule' ).toggleClass( 'hide', ! S.i2senabled );
+	if ( S.i2smodulesw ) {
+		$( '#i2smodule' ).html( `
+<option></option>
+<option value="${ S.audioaplayname }" selected>${ S.audiooutput }</option>
+` );
+		i2sSelectShow();
+	} else {
+		i2sSelectHide();
+	}
 	$( '#divsoundprofile' ).toggleClass( 'hide', ! S.soundprofileconf );
 	$( '#hostname' ).val( S.hostname );
 	$( '#avahiurl' ).text( S.hostname +'.local' );
-	$( '#timezone' ).val( S.timezone );
+	if ( $( '#timezone option' ).length > 2 ) {
+		$( '#timezone' ).val( S.timezone );
+	} else {
+		$( '#timezone' ).html( `
+<option></option>
+<option value="${ S.timezone }" selected>${ S.timezone.replace( /\//, ' &middot; ' ) +'&ensp;'+ S.timezoneoffset }</option>
+` );
+	}
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
-}
-function getStatus() {
-	bash( [ 'statuscurrent' ], data => {
-		S.status  = data.status;
-		S.warning = data.warning;
-		$( '#status' ).html( S.status + S.warning );
-		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	}, 'json' );
 }

@@ -1,19 +1,6 @@
-function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var args = { cmd: 'bash', bash : command }
-	} else {
-		var args = { cmd: 'sh', sh: [ 'cmd.sh' ].concat( command ) }
-	}
-	$.post( 
-		  cmdphp
-		, args
-		, callback || null
-		, json || null
-	);
-}
 function list( args, callback, json ) {
 	$.post(
-		  ( 'cmd' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php' )
+		  'playlist' in args  ? 'mpdplaylist.php' : 'mpdlibrary.php'
 		, args
 		, callback || null
 		, json || null
@@ -598,7 +585,7 @@ function getPlaybackStatus( withdisplay ) {
 	} );
 }
 function getPlaylist() {
-	list( { cmd: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
+	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
 }
 function hideGuide() {
 	if ( V.guide ) {
@@ -681,7 +668,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 		, bookmarkname : bookmarkname || ''
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
-	$.post( cmdphp, data, function( std ) {
+	$.post( 'cmd.php', data, function( std ) {
 		if ( std == -1 ) {
 			info( {
 				  icon    : I.icon
@@ -793,11 +780,11 @@ function libraryHome() {
 	$.post( 'mpdlibrary.php', { query: 'home' }, function( data ) {
 		C        = data.counts;
 		O        = data.order;
-		var html = data.html
+		var html = data.html;
 		if ( html !== V.libraryhtml ) {
 			V.libraryhtml = html;
 			var hash      = versionHash();
-			var html      = html.replaceAll( '^^^', hash );
+			var html      = html.replace( /\^\^\^/g, hash );
 			$( '#lib-mode-list' ).html( html );
 		}
 		if ( ! $( '#lib-search-input' ).val() ) $( '#lib-search-close' ).empty();
@@ -1035,7 +1022,7 @@ function refreshData( resetdata ) {
 			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).click();
 			} else if ( V.query.length ) {
-				var query = V.query[ V.query.length - 1 ];
+				var query = V.query.slice( -1 )[ 0 ];
 				list( query, function( html ) {
 					var data = {
 						  html      : html
@@ -1062,10 +1049,10 @@ function refreshData( resetdata ) {
 	}
 }
 function renderLibrary() { // home
-	V.mode        = '';
-	V.librarylist = false;
+	V.mode             = '';
+	V.librarylist      = false;
 	V.librarytracklist = false;
-	V.query       = [];
+	V.query            = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
@@ -1144,7 +1131,7 @@ function renderLibraryList( data ) {
 	if ( V.mode === 'webradio' ) {
 		htmlpath += ico( 'plus-circle btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
-		htmlpath += ico( 'minus-circle btntitle button-latest-clear' );
+		htmlpath += ico( 'flash btntitle button-latest-clear' );
 	} else if ( V.mode === 'dabradio' ) {
 		htmlpath += root ? ico( 'refresh btntitle button-dab-refresh' ) : '';
 	}
@@ -1156,7 +1143,7 @@ function renderLibraryList( data ) {
 	if ( ! data.html ) return // empty radio
 	
 	var hash = versionHash();
-	var html = data.html.replaceAll( '^^^', hash );
+	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
 			V.librarytracklist = true;
@@ -1289,7 +1276,7 @@ function renderPlaylist( data ) { // current playlist
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
@@ -1314,7 +1301,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 	if ( data.html !== V.playlisthtml ) {
 		V.playlistlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
@@ -1328,12 +1315,12 @@ function renderPlaylistList( data ) { // list of saved playlists
 }
 function renderSavedPlaylist( name ) { // tracks in a playlist
 	menuHide();
-	list( { cmd: 'get', name: name }, function( data ) {
+	list( { playlist: 'get', name: name }, function( data ) {
 		$( '#savedpl-path' ).html( data.counthtml );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();
-		var html = data.html.replaceAll( '^^^', hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );

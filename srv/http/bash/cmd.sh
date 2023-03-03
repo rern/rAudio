@@ -241,7 +241,7 @@ webradioPlaylistVerify() {
 	elif [[ $ext == pls ]]; then
 		url=$( curl -s $url 2> /dev/null | grep -m1 ^File | cut -d= -f2 )
 	fi
-	[[ ! $url ]] && echo 'No valid URL found:' && exit
+	[[ ! $url ]] && echo 'No valid URL found in:' && exit
 }
 webRadioSampling() {
 	url=$1
@@ -556,9 +556,17 @@ ignoredir )
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	> $dirmpd/latest
-	sed -i -E 's/("latest": ).*/\10,/' $dirmpd/counts
-	notify latest Latest Cleared
+	path=${args[1]}
+	if [[ $path ]]; then
+		sed -i "\|\^$path$| d" $dirmpd/latest
+		count=$( wc -l < $dirmpd/latest )
+		notify latest Latest 'Album cleared.'
+	else
+		> $dirmpd/latest
+		count=0
+		notify latest Latest Cleared
+	fi
+	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
 	;;
 librandom )
 	enable=${args[1]}
@@ -947,7 +955,7 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-	[[ $action == reboot ]] && reboot && exit
+	[[ $action != off ]] && reboot && exit
 	
 	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
 	poweroff
@@ -1116,8 +1124,11 @@ webradioadd )
 	urlname=${url//\//|}
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	[[ -e "$file" ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
+	
+	file=$dirwebradio
+	[[ $dir ]] && file+="/$dir"
+	file+="/$urlname"
+	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
 $name
 
@@ -1143,8 +1154,48 @@ webradiodelete )
 	path=$dirdata/$type
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
-	[[ ! $( find $dir -name $urlname ) ]] && rm -f "$path/img/$urlname."* "$path/img/$urlname-thumb".*
+	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
 	webradioCount $type
+	;;
+webradioedit )
+	dir=${args[1]}
+	name=${args[2]}
+	url=${args[3]}
+	charset=${args[4]}
+	urlprev=${args[5]}
+	urlname=${url//\//|}
+	prevurlname=${urlprev//\//|}
+	path=$dirwebradio/
+	[[ $dir ]] && path+="/$dir"
+	newfile="$path/$urlname"
+	prevfile="$path/$prevurlname"
+	if [[ $url == $urlprev ]]; then
+		sampling=$( sed -n 2p "$prevfile" )
+	else
+		[[ -e $newfile ]] && echo 'URL exists:' && exit
+		
+		ext=${url##*.}
+		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+		
+		rm "$prevfile"
+		# stationcover
+		previmgurl="$dirwebradio/img/$prevurlname"
+		previmg=$( ls -1 "$previmgurl".* | head -1 )
+		prevthumb="$previmgurl-thumb.jpg"
+		if [[ $previmg || -e $prevthumb ]]; then
+			newimgurl="$dirwebradio/img/$urlname"
+			newimg="$newimgurl.${previmg##*.}"
+			newthumb="$newimgurl-thumb.jpg"
+			[[ ! -e $newimg && -e $previmg ]] && cp "$previmg" "$newimg"
+			[[ ! -e $newthumb && -e $prevthumb ]] && cp "$prevthumb" "$newthumb"
+			[[ ! $( find $dirwebradio -name "$prevurlname" ) ]] && rm -f "$previmgurl".* "$prevthumb"
+		fi
+	fi
+	echo "\
+$name
+$sampling
+$charset" > "$newfile"
+	pushstreamRadioList
 	;;
 wrdirdelete )
 	path=${args[1]}
@@ -1169,36 +1220,6 @@ wrdirrename )
 	newname=${args[3]}
 	mode=${args[4]}
 	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
-	pushstreamRadioList
-	;;
-webradioedit )
-	dir=${args[1]}
-	name=${args[2]}
-	url=${args[3]}
-	charset=${args[4]}
-	urlprev=${args[5]}
-	urlname=${url//\//|}
-	[[ $url != $urlprev ]] && urlchanged=1
-	[[ $dir ]] && file="$dirwebradio/$dir/$urlname" || file="$dirwebradio/$urlname"
-	if [[ $urlchanged ]]; then
-		ext=${url/*.}
-		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
-		
-		[[ -e "$file" ]] && echo -1 && exit
-		
-	fi
-	sampling=$( sed -n 2p "$file" 2> /dev/null )
-	echo "\
-$name
-$sampling
-$charset" > "$file"
-	if [[ $urlchanged ]]; then
-		urlprevname=${urlprev//\//|}
-		[[ $dir ]] && rm "$dirwebradio/$dir/$urlprevname" || rm "$dirwebradio/$urlprevname"
-		mv $dirwebradio/img/{$urlprevname,$urlname}.* # jpg / gif
-		mv $dirwebradio/img/{$urlprevname,$urlname}-thumb.*
-		webRadioSampling $url "$file" &
-	fi
 	pushstreamRadioList
 	;;
 	

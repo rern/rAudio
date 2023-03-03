@@ -2,8 +2,6 @@
 
 . /srv/http/bash/common.sh
 
-[[ ! -e /tmp/config.txt ]] && cp /boot/{cmdline,config}.txt /tmp
-
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
@@ -12,14 +10,25 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='i-warning'></i>&ensp;No Internet connection"
+softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
-if [[ $throttled != 0x00000 ]]; then
-	binary=$( python -c "print( bin( int( '$throttled', 16 ) )[2:] )" ) # 01234567890123456789
-	current=${binary: -4} # 6789
-	occured=${binary:0:4} # 0123
-	e_current=( '<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' 'Arm frequency capped' 'Currently throttled' 'Soft temperature limit active' )
-	e_occured=( '<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' 'Arm frequency capping has occurred' 'Throttling has occurred' 'Soft temperature limit has occurred' )
+if [[ $throttled != 0x0 ]]; then
+	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
+	current=${binary: -4}                                                             # 6789
+	occured=${binary:2:4}                                             # 0123
+	e_current=( \
+		"Soft temperature limit active <gr>(>$softlimit°C)</gr>" \
+		'Currently throttled' \
+		'Arm frequency capped' \
+		'<red>Under-voltage</red> detected <gr>(<4.7V)</gr>' \
+	)
+	e_occured=( \
+		"Soft temperature limit has occurred <gr>(>$softlimit°C)</gr>" \
+		'Throttling has occurred' \
+		'Arm frequency capping has occurred' \
+		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
+	)
 	for i in 0 1 2 3; do
 		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
 	done
@@ -73,7 +82,7 @@ if ifconfig | grep -q -m1 $lan; then
 fi
 
 # sd, usb and nas
-smb=$( isactive smb )
+smb=$( isActive smb )
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
@@ -95,7 +104,7 @@ if [[ $usb ]]; then
 			used_size=( $( df -lh --output=used,size,source | grep "$source" ) )
 			list+=',{
   "icon"       : "usbdrive"
-, "mountpoint" : "'$mountpoint'"
+, "mountpoint" : "'${mountpoint//\"/\\\"}'"
 , "mounted"    : true
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
@@ -123,7 +132,7 @@ if [[ $nas ]]; then
 		used_size=( $( timeout 0.1s df -h --output=used,size,source | grep "$source" ) )
 		list+=',{
   "icon"       : "networks"
-, "mountpoint" : "'$mountpoint'"'
+, "mountpoint" : "'${mountpoint//\"/\\\"}'"'
 		if [[ $used_size ]]; then
 			list+='
 , "mounted"    : true
@@ -140,6 +149,11 @@ if [[ $nas ]]; then
 fi
 list="[ ${list:1} ]"
 
+if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
+	audioaplayname=$( < $dirsystem/audio-aplayname )
+	audiooutput=$( < $dirsystem/audio-output )
+	i2smodulesw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
+fi
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -175,32 +189,42 @@ elif [[ -e $dirsystem/powerbutton.conf ]]; then
 fi
 [[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
 [[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
+if [[ -e $dirshm/reboot ]]; then
+	reboot=$( cat $dirshm/reboot )
+	grep -q TFT <<< $reboot && lcdreboot=true
+	grep -q Character <<< $reboot && lcdcharreboot=true
+	grep -q Spectrum <<< $reboot && mpdoledreboot=true
+fi
 
 data+='
   "page"             : "system"
-, "audioaplayname"   : "'$( getContent $dirsystem/audio-aplayname )'"
-, "audiooutput"      : "'$( getContent $dirsystem/audio-output )'"
+, "audioaplayname"   : "'$audioaplayname'"
+, "audiooutput"      : "'$audiooutput'"
 , "display"          : { "logout": '$( exists $dirsystem/login )' }
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
 , "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
-, "hostapd"          : '$( isactive hostapd )'
+, "hostapd"          : '$( isActive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "i2smodulesw"      : '$i2smodulesw'
 , "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "lcdreboot"        : '$lcdreboot'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"      : '$lcdcharaddr'
 , "lcdcharconf"      : '$lcdcharconf'
+, "lcdcharreboot"    : '$lcdcharreboot'
 , "list"             : '$list'
 , "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
-, "nfsserver"        : '$( isactive nfs-server )'
+, "mpdoledreboot"    : '$mpdoledreboot'
+, "nfsserver"        : '$( isActive nfs-server )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$( isactive rotaryencoder )'
+, "rotaryencoder"    : '$( isActive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
@@ -208,12 +232,12 @@ data+='
 , "status"           : "'$status'"
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
+, "timezoneoffset"   : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
 , "warning"          : "'$warning'"'
 
-cpuInfo
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
@@ -227,7 +251,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	discoverable=true
 	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetooth=true
-		bluetoothactive=$( isactive bluetooth )
+		bluetoothactive=$( isActive bluetooth )
 		if [[ $bluetoothactive == true ]]; then
 			discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 		fi
@@ -237,6 +261,11 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+fi
+if [[ $BB == 0d ]]; then # 3B+
+	data+='
+, "softlimit"        : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
+, "softlimitconf"    : '$softlimit
 fi
 
 data2json "$data" $1

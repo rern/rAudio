@@ -11,6 +11,27 @@ var orange      = '#de810e';
 var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
+function bash( command, callback, json ) {
+	if ( typeof command === 'string' ) {
+		var args   = { cmd: 'bash', bash : command }
+	} else {
+		if ( page ) {
+			var filesh = 'settings/'+ page;
+			if ( command[ 0 ] === 'mount' ) filesh += '-mount'; // system-mount.sh - with arguments
+		} else {
+			var filesh = 'cmd';
+		}
+		var args   = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
+	}
+	$.post( 
+		  'cmd.php'
+		, args
+		, callback || null
+		, json || null
+	);
+}
+
+// ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
 	$( '#banner' ).html( `
@@ -542,11 +563,14 @@ function infoButtonReset() {
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
 	
+	var $buttonhide = $( '#infoButtons a.hide' );
+	$buttonhide.removeClass( 'hide' );
 	var widest = 0;
 	$( '#infoButtons a' ).each( ( i, el ) => {
 		var w = $( el ).outerWidth();
 		if ( w > widest ) widest = w;
 	} );
+	$buttonhide.addClass( 'hide' );
 	if ( widest > 70 ) $( '.infobtn, .filebtn' ).css( 'min-width', widest );
 }
 function infoCheckBlank() {
@@ -947,7 +971,7 @@ if ( ! [ 'addons', 'addonsprogress', 'guide' ].includes( page )  ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );
 				setTimeout( () => {
-					$( '#loader .logo' ).css( 'animation', 'none' );
+					$( '#loader svg' ).css( 'animation', 'none' );
 					bannerHide();
 					loader();
 				}, 10000 );

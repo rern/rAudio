@@ -12,11 +12,7 @@ done
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-if [[ $cursor == true ]] || ! ifconfig | grep -q -m1 inet.*broadcast; then  # no network connection
-	cursor=yes
-else
-	cursor=no
-fi
+! ifconfig | grep -q -m1 inet.*broadcast && cursor=yes
 
 matchbox-window-manager -use_cursor $cursor &
 
@@ -34,10 +30,8 @@ if [[ -e /usr/bin/firefox ]]; then
 	fi
 	firefox -kiosk http://localhost
 else
-	[[ $scale != 1.00 ]] && scalefactor=--force-device-scale-factor=$scale
-	chromium localhost $scalefactor \
-		--disable-software-rasterizer \
-		--incognito \
-		--kiosk \
-		--no-sandbox
+	[[ $scale != 1.00 ]] && options="--force-device-scale-factor=$scale"
+	[[ -e /boot/kernel7.img ]] && options+=' --no-xshm'
+	grep -q fbcon=map /boot/cmdline.txt && options+=' --disable-software-rasterizer'
+	chromium localhost $options --incognito --kiosk --no-sandbox
 fi

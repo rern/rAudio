@@ -44,7 +44,7 @@ svg {
 	width: 175px;
 }
 #gpio-num.column,
-.delay {
+.delay + .select2 {
 	width: 70px !important;
 }
 .gpio-text {

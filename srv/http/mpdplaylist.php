@@ -1,13 +1,13 @@
 <?php
 include '/srv/http/mpdfunction.php';
 
-$cmd     = $_POST[ 'cmd' ] ?? $argv[ 1 ];
-$add     = $cmd === 'add' ? true : false;
-$headers = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
+$playlist = $_POST[ 'playlist' ] ?? $argv[ 1 ];
+$add      = $playlist === 'add' ? true : false;
+$headers  = [ 'http', 'rtmp', 'rtp:', 'rtsp' ];
 
 // current playlist
 // saved playlists: delete, edit, get, list, load, rename, save
-switch( $cmd ) {
+switch( $playlist ) {
 	
 case 'add':
 case 'current':

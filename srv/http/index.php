@@ -266,7 +266,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active' )?>
 		<?=i( 'button-pl-back', 'arrow-left hide' )?>
-		<?=i( 'button-pl-search', '-search pllength' )?>
+		<?=i( 'button-pl-search', 'search pllength' )?>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">

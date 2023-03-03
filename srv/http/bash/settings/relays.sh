@@ -11,7 +11,7 @@ cmd=${args[0]}
 if [[ $cmd == save ]]; then
 	printf "%s\n" "${args[@]:1}" > $dirsystem/relays.conf
 	touch $dirsystem/relays
-	$dirsettings/relays-data.sh pushrefresh
+	pushRefresh
 	pushstream display '{"submenu":"relays","value":true}'
 	exit
 fi

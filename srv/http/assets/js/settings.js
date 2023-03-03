@@ -1,26 +1,3 @@
-function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var args = { cmd: 'bash', bash : command }
-	} else {
-		var cmd0 = command[ 0 ];
-		if ( cmd0 === 'cmd' ) {
-			var filesh = 'cmd';
-			command.shift();
-		} else if ( cmd0 === 'pkgstatus' || cmd0 === 'rebootlist' ) {
-			var filesh = 'settings/system';
-		} else {
-			var filesh = 'settings/'+ page;
-		}
-		var args = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
-	}
-	$.post( 
-		  'cmd.php'
-		, args
-		, callback || null
-		, json || null
-	);
-}
-
 S              = {} // status
 SW             = {} // switch
 V              = {} // var global
@@ -61,7 +38,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
-	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? '/srv/http/bash/settings/system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -87,7 +64,7 @@ function infoPlayerActive( $this ) {
 }
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( [ 'pkgstatus', 'mpd' ], status => {
+		bash( '/srv/http/bash/settings/system-pkgstatus.sh mpd', status => {
 			var error =  iconwarning +'MPD is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -140,8 +117,7 @@ function refreshData() {
 }
 function showContent() {
 	V.ready ? delete V.ready : bannerReset();
-	var $select = $( '.container select' );
-	if ( $select.length ) selectSet( $select );
+	if ( $( 'select' ).length ) selectSet( $( 'select' ) );
 	$( '.container' ).removeClass( 'hide' );
 	loaderHide();
 }
@@ -245,7 +221,13 @@ function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	page === 'networks' ? $( '.back' ).click() : switchSet();
+	if ( page === 'relays' ) {
+		Rs = JSON.stringify( R );
+	} else if ( page === 'networks' ) {
+		$( '.back' ).click();
+	} else {
+		switchSet();
+	}
 	renderPage();
 }
 function psReload( data ) {
@@ -356,7 +338,7 @@ $( '.close' ).click( function() {
 		return
 	}
 	
-	bash( [ 'rebootlist' ], list => {
+	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -370,7 +352,7 @@ $( '.close' ).click( function() {
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => bash( [ 'cmd', 'power', 'reboot' ], nfs => infoPowerNfs( nfs, 'reboot' ) )
+			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
 } );

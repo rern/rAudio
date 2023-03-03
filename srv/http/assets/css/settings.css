@@ -187,7 +187,7 @@ heading.subhead {
 	margin: 20px 0 10px 0;
 	padding-bottom: 0;
 	line-height: 28px;
-	font-size: 17px;
+	font-size: 18px;
 	color: var( --cw );
 	border-bottom-color: var( --cga );
 }
@@ -244,6 +244,9 @@ heading .disabled {
 }
 .helphead {
 	color: var( --cg60 )
+}
+#divsoftlimit {
+	margin-top: 20px;
 }
 
 #bar-bottom {
@@ -358,16 +361,19 @@ input[type=image] {
 	border: none !important;
 }
 #divabout {
-	margin-top: 40px;
+	margin-top: 60px;
 	line-height: 22px;
 }
 #logotext {
 	display: inline-block;
-	margin-left: 8px;
+	margin-left: 12px;
 	line-height: 16px;
+	font-size: 22px;
+	font-weight: 300;
 	letter-spacing: 15px;
 }
 #logotext gr {
+	font-size: 15px;
 	letter-spacing: normal;
 }
 .list {
