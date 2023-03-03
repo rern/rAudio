@@ -51,7 +51,7 @@ $menu.= menudiv( 'filepl', $html );
 $html = $htmlcommon;
 $menulist = [
 	  [ 'similar',       'lastfm',        'Add similar' ]
-	, [ 'wrsave',        'save',          'Save Web Radio' ]
+	, [ 'wrsave',        'save',          'Save to Library' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
 	, [ 'savedplremove', 'minus-circle',  'Remove' ]
 	, [ 'tag',           'tag',           'Tag Editor' ]
@@ -75,7 +75,7 @@ $menulist = [
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
 	, [ 'current',    'check',         'Current' ]
-	, [ 'wrsave',     'save',          'Save Web Radio' ]
+	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 	, [ 'remove',     'minus-circle',  'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
