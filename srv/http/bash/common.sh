@@ -58,7 +58,7 @@ getElapsed() {
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
 }
-isactive() {
+isActive() {
 	systemctl -q is-active $1 && echo true || echo false
 }
 notify() { # icon title message delayms

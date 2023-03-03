@@ -308,7 +308,7 @@ dtoverlay=$model:rotate=0"
 		fi
 		systemctl enable localbrowser
 	else
-		sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
+		sed -i '/incognito/ i\		--disable-software-rasterizer \\' $dirbash/xinitrc
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
 	i2cset=1

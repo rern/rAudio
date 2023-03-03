@@ -82,7 +82,7 @@ if ifconfig | grep -q -m1 $lan; then
 fi
 
 # sd, usb and nas
-smb=$( isactive smb )
+smb=$( isActive smb )
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
@@ -204,7 +204,7 @@ data+='
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
 , "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
-, "hostapd"          : '$( isactive hostapd )'
+, "hostapd"          : '$( isActive hostapd )'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"      : '$i2smodulesw'
@@ -219,12 +219,12 @@ data+='
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "mpdoledreboot"    : '$mpdoledreboot'
-, "nfsserver"        : '$( isactive nfs-server )'
+, "nfsserver"        : '$( isActive nfs-server )'
 , "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$( isactive rotaryencoder )'
+, "rotaryencoder"    : '$( isActive rotaryencoder )'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
@@ -251,7 +251,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	discoverable=true
 	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetooth=true
-		bluetoothactive=$( isactive bluetooth )
+		bluetoothactive=$( isActive bluetooth )
 		if [[ $bluetoothactive == true ]]; then
 			discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 		fi
