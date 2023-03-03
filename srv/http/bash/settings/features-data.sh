@@ -59,7 +59,7 @@ data+='
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
-	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/' $dirsystem/localbrowser.conf )
+	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/; s/:yes/:true/; s/:no/:false/' $dirsystem/localbrowser.conf )
 	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
 	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
 	localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
