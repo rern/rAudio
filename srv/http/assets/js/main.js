@@ -2045,7 +2045,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', '.savewr', function() {
 	var $this = $( this );
 	V.list.li = $this.parent();
-	webRadioSave( $this.next().next().text() );
+	webRadioSave();
 	menuHide();
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
