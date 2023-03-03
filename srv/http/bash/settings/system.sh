@@ -300,15 +300,11 @@ lcd )
 		config+="
 hdmi_force_hotplug=1
 dtoverlay=$model:rotate=0"
-		cp -f /etc/X11/{lcd0,xorg.conf.d/99-calibration.conf}
-		sed -i '/disable-software-rasterizer/ d' $dirbash/xinitrc
+		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
+		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
-		if [[ -e /boot/kernel7.img && -e /usr/bin/chromium ]]; then
-			! grep -q no-xshm $dirbash/xinitrc && sed -i '/chromium/ a\	--no-xshm \\' $dirbash/xinitrc
-		fi
 		systemctl enable localbrowser
 	else
-		sed -i '/incognito/ i\		--disable-software-rasterizer \\' $dirbash/xinitrc
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
 	i2cset=1
