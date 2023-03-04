@@ -567,8 +567,8 @@ $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
-$( '#divtimezone' ).click( '.select2', function() {
-	if ( $( '#timezone option' ).length > 2 ) return
+$( '#divtimezone .col-r' ).click( function( e ) {
+	if ( e.target.id === 'setting-timezone' || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
 	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
