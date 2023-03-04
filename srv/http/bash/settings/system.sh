@@ -357,7 +357,7 @@ lcdcharset )
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	mirror=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
+	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
 	if : >/dev/tcp/8.8.8.8/53; then
 		notify -blink globe 'Mirror List' 'Get ...'
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
