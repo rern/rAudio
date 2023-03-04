@@ -596,33 +596,24 @@ $( '#setting-timezone' ).click( function() {
 		return
 	}
 	
-	bash( [ 'mirrorlist' ], list => {
-		var lL         = list.code.length;
-		var selecthtml = '<select>';
-		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
-		selecthtml    += '</select>';
-		var content    = `
+	if ( 'htmlmirror' in V ) {
+		infoTimezone();
+	} else {
+		notify( SW.icon, SW.title, 'Get mirror server list ...' );
+		bash( [ 'mirrorlist' ], list => {
+			V.mirrorlist   = list;
+			S.mirror       = list.mirror;
+			var htmloption = '';
+			list.code.forEach( ( el, i ) => htmloption += '<option value="'+ el +'">'+ list.country[ i ] +'</option>' );
+			V.htmlmirror   = `
 <table>
 <tr><td>NTP</td><td><input type="text"></td></tr>
-<tr><td>Package</td><td>${ selecthtml }</td></tr>
-</table>`
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, content      : content
-			, boxwidth     : 240
-			, values       : [ S.ntp, list.mirror ]
-			, checkchanged : 1
-			, checkblank   : [ 0 ]
-			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
-			, ok           : () => {
-				var values = infoVal();
-				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
-				bash( [ 'servers', ...values ], bannerHide );
-			}
-		} );
-		bannerHide();
-	}, 'json' );
+<tr><td>Package</td><td><select>${ htmloption }</select></td></tr>
+</table>`;
+			infoTimezone();
+			bannerHide();
+		}, 'json' );
+	}
 } );
 $( '#setting-soundprofile' ).click( function() {
 	info( {
@@ -993,6 +984,24 @@ function infoMount( val ) {
 				}
 			} );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
+		}
+	} );
+}
+function infoTimezone() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, content      : V.htmlmirror
+		, boxwidth     : 240
+		, values       : [ S.ntp, S.mirror ]
+		, checkchanged : 1
+		, checkblank   : [ 0 ]
+		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+		, ok           : () => {
+			var values = infoVal();
+			S.mirror   = values[ 1 ];
+			values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
+			bash( [ 'servers', ...values ], bannerHide );
 		}
 	} );
 }

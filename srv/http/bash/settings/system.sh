@@ -388,7 +388,7 @@ mirrorlist )
 	echo '{
   "code"    : [ '$codelist' ]
 , "country" : [ '$clist' ]
-, "mirror" : "'$mirror'"
+, "mirror"  : "'$mirror'"
 }'
 	;;
 mountforget )
