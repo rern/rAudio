@@ -242,7 +242,9 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
-$( '#divi2smodule' ).click( '.select2', i2sOptionSet );
+$( '#divi2s .col-r' ).click( function( e ) {
+	if ( e.target.id !== 'setting-i2smodule' ) i2sOptionSet();
+} );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
 		  icon         : SW.icon
