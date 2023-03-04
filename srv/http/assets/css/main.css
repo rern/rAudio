@@ -1855,6 +1855,11 @@ li.active .li1 bl {
 	max-width: calc( 100vw - 60px );
 	font-size: 14px;
 	line-height: 14px;
+}
+.li2,
+.li2 a,
+.li2 span {
+	font-size: 14px !important;
 	color: var( --cg60 )
 }
 #lib-list .li2 {

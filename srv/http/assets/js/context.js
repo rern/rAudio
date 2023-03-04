@@ -714,14 +714,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( ! mpccmd ) mpccmd = [];
 	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
-	if ( V.list.li.hasClass( 'licover' ) ) {
-		var msg = '<div class="li1">'+ V.list.li.find( '.lialbum' ).text() +'</div>'
-				+'<a class="li2">'+ V.list.li.find( '.liartist' ).text() +'</a>';
-	} else if ( V.list.li.find( '.li1' ).length ) {
-		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
-				+'<a class="li2">'+ V.list.li.find( '.li2' )[ 0 ].outerHTML +'</a>';
-		if ( ! V.savedplaylist ) msg.replace( /<span.*span>/, '' );
-		msg     = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
+	if ( V.librarylist || V.list.li.find( '.li1' ).length ) {
+		var $li2 = V.list.li.find( '.li2' );
+		if ( V.list.licover ) {
+			var l1 = '.lialbum';
+		} else {
+			var l1 = '.li1 .name';
+			if ( V.playlist ) $li2 = $li2.find( '.name' );
+		}
+		var msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
+				+'<a class="li2">'+ $li2.text() +'</a>';
 	} else {
 		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}
