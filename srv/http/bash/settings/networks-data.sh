@@ -77,8 +77,11 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
 [[ -e $dirshm/wlan ]] && listWlan
 
 # lan
-ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
-ipeth=$( ifconfig $lan 2> /dev/null | awk '/inet.*broadcast/ {print $2}' )
+ifconfiglan=$( ifconfig | grep -A1 ^e )
+if [[ $ifconfiglan ]]; then
+	lan=$( head -1 <<< $ifconfiglan | cut -d: -f1 )
+	[[ $lan ]] && ipeth=$( tail -1 <<< $ifconfiglan | awk '{print $2}' )
+fi
 if [[ $ipeth ]]; then
 	ipr=$( ip r | grep ^default.*$lan )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )

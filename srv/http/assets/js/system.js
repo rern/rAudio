@@ -620,7 +620,7 @@ $( '#setting-soundprofile' ).click( function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : [ 'vm.swappiness', 'lan mtu', 'lan txqueuelen' ]
+		, textlabel    : [ 'vm.swappiness', 'LAN mtu', 'LAN txqueuelen' ]
 		, boxwidth     : 110
 		, values       : S.soundprofileconf
 		, checkchanged : S.soundprofile
