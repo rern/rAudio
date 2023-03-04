@@ -175,8 +175,8 @@ $body = [
 	</div>
 	<div id="divi2smodule">
 		<select id="i2smodule"></select>
+		<i id="setting-i2smodule" class="i-gear setting"></i>
 	</div>
-	<i id="setting-i2smodule" class="i-gear setting"></i>
 	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
 I²S DAC/audio HAT(Hardware Attached on Top) for audio output.

@@ -243,7 +243,7 @@ $( '#i2smodule' ).change( function() {
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
 $( '#divi2s .col-r' ).click( function( e ) {
-	if ( e.target.id !== 'setting-i2smodule' ) i2sOptionSet();
+	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
@@ -570,7 +570,7 @@ $( '#timezone' ).change( function( e ) {
 	bash( [ 'timezone', $( this ).val() ] );
 } );
 $( '#divtimezone .col-r' ).click( function( e ) {
-	if ( e.target.id === 'setting-timezone' || $( '#timezone option' ).length > 2 ) return
+	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
 	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
