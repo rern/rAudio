@@ -168,7 +168,7 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.playlist ) {
 		V.list.name   = $li.find( '.liname' ).text() || '';
 		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( V.librarytracklist && ! $li.hasClass( 'licover' ) ) {
+	} else if ( V.librarytracklist && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
