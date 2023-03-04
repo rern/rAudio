@@ -676,8 +676,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'mpcadd', path ];
 			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
-			} else { // directory or album
-				mpccmd = [ 'mpcls', path ];
+			} else { // directory / album / saved playlist track
+				mpccmd = [ V.savedplaylist ? 'mpcadd' : 'mpcls', path ];
 			}
 			break;
 		case 'pl':
@@ -720,9 +720,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	} else if ( V.list.li.find( '.li1' ).length ) {
 		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
 				+'<a class="li2">'+ V.list.li.find( '.li2' )[ 0 ].outerHTML +'</a>';
-		msg     = msg
-					.replace( /<span.*span>/, '' )
-					.replace( '<bl>', '' ).replace( '</bl>', '' );
+		if ( ! V.savedplaylist ) msg.replace( /<span.*span>/, '' );
+		msg     = msg.replace( '<bl>', '' ).replace( '</bl>', '' );
 	} else {
 		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}
