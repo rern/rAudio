@@ -222,7 +222,6 @@ data+='
 , "mpdoledconf"      : '$mpdoledconf'
 , "mpdoledreboot"    : '$mpdoledreboot'
 , "nfsserver"        : '$nfsserver'
-, "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'

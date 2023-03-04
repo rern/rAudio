@@ -385,10 +385,12 @@ mirrorlist )
 		fi
 	done
 	[[ ! $mirror ]] && mirror=0
+	ntp=$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )
 	echo '{
   "code"    : [ '$codelist' ]
 , "country" : [ '$clist' ]
 , "mirror"  : "'$mirror'"
+, "ntp"     : "'$ntp'"
 }'
 	;;
 mountforget )

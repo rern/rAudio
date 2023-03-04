@@ -603,6 +603,7 @@ $( '#setting-timezone' ).click( function() {
 		bash( [ 'mirrorlist' ], list => {
 			V.mirrorlist   = list;
 			S.mirror       = list.mirror;
+			S.ntp          = list.ntp;
 			var htmloption = '';
 			list.code.forEach( ( el, i ) => htmloption += '<option value="'+ el +'">'+ list.country[ i ] +'</option>' );
 			V.htmlmirror   = `
@@ -999,8 +1000,9 @@ function infoTimezone() {
 		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 		, ok           : () => {
 			var values = infoVal();
-			S.mirror   = values[ 1 ];
 			values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
+			S.ntp      = values[ 0 ];
+			S.mirror   = values[ 1 ];
 			bash( [ 'servers', ...values ], bannerHide );
 		}
 	} );
