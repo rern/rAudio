@@ -58,9 +58,6 @@ getElapsed() {
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
 }
-isActive() {
-	systemctl -q is-active $1 && echo true || echo false
-}
 notify() { # icon title message delayms
 	if [[ $1 == -blink ]]; then
 		blink=' blink'
@@ -71,6 +68,15 @@ notify() { # icon title message delayms
 		[[ $4 ]] && delay=$4 || delay=3000
 	fi
 	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","message":"'${3//\"/\\\"}'","delay":'$delay'}'
+}
+packageActive() {
+	pkgs=$@
+	active=( $( systemctl is-active $pkgs | sed 's/inactive/false/; s/active/true/' ) )
+	i=0
+	for pkg in ${pkgs[@]}; do
+		printf -v ${pkg//-} '%s' ${active[i]}
+		(( i++ ))
+	done
 }
 pushRefresh() {
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )

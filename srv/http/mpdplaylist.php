@@ -152,7 +152,7 @@ function htmlTrack( $lists, $plname = '' ) {
 		if ( ! in_array( $fileheader, $headers ) ) {
 			$sec       = HMS2Second( $list->Time );
 			$track     = preg_replace( '/^#*0*/', '', $list->Track );
-			$li2       = '<a class="pos">'.$i.'</a> • ';
+			$li2       = '';
 			if ( $track ) $li2.= '<a class="track">'.$track.'</a> - ';
 			$artist    = $list->Artist ?: $list->Albumartist;
 			$album     = $list->Album;
@@ -185,12 +185,12 @@ function htmlTrack( $lists, $plname = '' ) {
 	<a class="lipath">'.$file.'</a>
 	'.$icon.'<div class="li1"><span class="name">'.$title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time" data-time="'.$sec.'">'.$list->Time.'</a></span></div>
-	<div class="li2">'.$li2.'</div>
+	<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 			$countsong++;
 			$counttime += $sec;
 		} else if ( substr( $file, 0, 14 ) === 'http://192.168' ) {
-			$li2    = '<a class="pos">'.$i.'</a> • ';
+			$li2    = '';
 			$artist = $list->Artist;
 			$album  = $list->Album;
 			if ( $artist ) $li2.= '<a class="artist">'.$artist.'</a> - ';
@@ -201,7 +201,7 @@ function htmlTrack( $lists, $plname = '' ) {
 	'.i( 'upnp i-lg', 'filesavedpl' ).'
 	<div class="li1"><span class="name">'.$list->Title.'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-	<div class="li2">'.$li2.'</div>
+	<div class="li2"><a class="pos">'.$i.'</a> • <span class="name">'.$li2.'</span></div>
 </li>';
 			$countupnp++;
 		} else {
@@ -225,14 +225,14 @@ function htmlTrack( $lists, $plname = '' ) {
 			}
 			$classnotsaved = $notsaved ? ' notsaved' : '';
 			$namenotsaved  = $notsaved ? '' : $stationname.' • ';
-			$charset       = preg_replace( '/#charset=.*/', '', $file );
+			$url           = preg_replace( '/#charset=.*/', '', $file );
 			$path          = preg_replace( '/\?.*$/', '', $file );
 			$html         .=
 '<li class="webradio '.$classnotsaved.'">
 	<a class="lipath">'.$path.'</a>
-	'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><span class="name">'.$stationname.'</span>
+	'.$icon.'<a class="liname">'.$stationname.'</a><div class="li1"><span class="name">'.( $notsaved ? '. . .' : $stationname ).'</span>
 	<span class="duration"><a class="elapsed"></a><a class="time"></a></span></div>
-	<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.$namenotsaved.'</span>'.$charset.'</div>
+	<div class="li2"><a class="pos">'.$i.'</a> • <span class="stationname hide">'.$namenotsaved.'</span><span class="name">'.$url.'</span></div>
 </li>';
 			$countradio++;
 		}

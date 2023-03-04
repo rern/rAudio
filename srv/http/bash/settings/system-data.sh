@@ -71,18 +71,20 @@ $rpimodel<br>\
 $soc<br>\
 $soccpu"
 
-ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
-if ifconfig | grep -q -m1 $lan; then
+ifconfiglan=$( ifconfig | grep -A2 ^e )
+if [[ $ifconfiglan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
 	else
-		mtu_txq=( $( ifconfig $lan | sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' ) )
-		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f 3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
+		mtu_txq=( $( sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' <<< $ifconfiglan ) )
+		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
 	fi
 fi
 
+packageActive bluetooth hostapd nfs-server rotaryencoder smb
+
 # sd, usb and nas
-smb=$( isActive smb )
+smb=$smb
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
@@ -204,7 +206,7 @@ data+='
 , "hddapm"           : '$hddapm'
 , "hddsleep"         : '${hddapm/128/false}'
 , "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
-, "hostapd"          : '$( isActive hostapd )'
+, "hostapd"          : '$hostapd'
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"      : '$i2smodulesw'
@@ -219,12 +221,11 @@ data+='
 , "mpdoled"          : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"      : '$mpdoledconf'
 , "mpdoledreboot"    : '$mpdoledreboot'
-, "nfsserver"        : '$( isActive nfs-server )'
-, "ntp"              : "'$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )'"
+, "nfsserver"        : '$nfsserver'
 , "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
 , "powerbuttonconf"  : '$powerbuttonconf'
 , "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$( isActive rotaryencoder )'
+, "rotaryencoder"    : '$rotaryencoder'
 , "rotaryencoderconf": '$rotaryencoderconf'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
 , "soundprofile"     : '$( exists $dirsystem/soundprofile )'
@@ -250,14 +251,12 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
 	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
-		bluetooth=true
-		bluetoothactive=$( isActive bluetooth )
-		if [[ $bluetoothactive == true ]]; then
-			discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
-		fi
+		bluetoothon=true
+		bluetoothactive=$bluetooth
+		$bluetoothactive == true && discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 	fi
 	data+='
-, "bluetooth"        : '$bluetooth'
+, "bluetooth"        : '$bluetoothon'
 , "bluetoothactive"  : '$bluetoothactive'
 , "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
 , "btconnected"      : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )

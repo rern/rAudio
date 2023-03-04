@@ -11,6 +11,8 @@
 spotifyredirect=https://rern.github.io/raudio/spotify
 scrobbleconf=$( sed 's/^.*=/,/' $dirsystem/scrobble.conf 2> /dev/null )
 
+packageActive hostapd rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli
+
 data+='
   "page"             : "features"
 , "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
@@ -38,24 +40,24 @@ data+='
 , "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
 [[ -e /usr/bin/hostapd ]] && data+='
-, "hostapd"          : '$( isActive hostapd )'
+, "hostapd"          : '$hostapd'
 , "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 [[ -e /usr/bin/shairport-sync ]] && data+='
-, "shairport-sync"   : '$( isActive shairport-sync )
+, "shairport-sync"   : '$shairportsync
 [[ -e /usr/bin/snapserver ]] && data+='
-, "snapclientactive" : '$( isActive snapclient )'
+, "snapclientactive" : '$snapclient'
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
 , "snapcastconf"     : '$( grep -q -m1 latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
 [[ -e /usr/bin/spotifyd ]] && data+='
-, "spotifyd"         : '$( isActive spotifyd )'
+, "spotifyd"         : '$spotifyd'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
-, "upmpdcli"         : '$( isActive upmpdcli )'
+, "upmpdcli"         : '$upmpdcli'
 , "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
@@ -78,13 +80,13 @@ if [[ -e /usr/bin/smbd ]]; then
 	grep -A1 $dirusb /etc/samba/smb.conf | grep -q -m1 'read only = no' && writeusb=true || writeusb=false
 	smbconf="[ $writesd, $writeusb ]"
 	data+='
-, "smb"              : '$( isActive smb )'
+, "smb"              : '$smb'
 , "smbconf"          : '$smbconf
 fi
 if [[ -e /usr/bin/rtsp-simple-server ]]; then
 	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
 	data+='
 , "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$( isActive rtsp-simple-server )
+, "dabradio"         : '$rtspsimpleserver
 fi
 data2json "$data" $1

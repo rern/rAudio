@@ -168,7 +168,7 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.playlist ) {
 		V.list.name   = $li.find( '.liname' ).text() || '';
 		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( V.librarytracklist && ! $li.hasClass( 'licover' ) ) {
+	} else if ( V.librarytracklist && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
@@ -1038,13 +1038,13 @@ function refreshData( resetdata ) {
 	} else if ( V.playback ) {
 		getPlaybackStatus( 'withdisplay' );
 	} else {
-		if ( ! $( '#pl-list' ).hasClass( 'hide' ) ) {
+		if ( V.savedlist ) {
+			$( '#button-pl-playlists' ).click();
+		} else if ( V.savedplaylist ) {
+			renderSavedPlaylist( $( '#savedpl-path .lipath' ).text() );
+		} else {
 			if ( resetdata ) V.playlisthtml = '';
 			getPlaylist();
-		} else if ( ! V.savedplaylist ) {
-			$( '#button-pl-playlists' ).click();
-		} else {
-			renderSavedPlaylist( $( '#pl-path .lipath' ).text() )
 		}
 	}
 }

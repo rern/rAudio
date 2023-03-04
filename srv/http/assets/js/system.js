@@ -242,7 +242,9 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output ] );
 } );
-$( '#divi2smodule' ).click( '.select2', i2sOptionSet );
+$( '#divi2s .col-r' ).click( function( e ) {
+	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
+} );
 $( '#setting-i2smodule' ).click( function() {
 	info( {
 		  icon         : SW.icon
@@ -567,8 +569,8 @@ $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val() ] );
 } );
-$( '#divtimezone' ).click( '.select2', function() {
-	if ( $( '#timezone option' ).length > 2 ) return
+$( '#divtimezone .col-r' ).click( function( e ) {
+	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
 	$.post( 'cmd.php', { cmd: 'selecttimezone' }, function( data ) {
@@ -596,39 +598,31 @@ $( '#setting-timezone' ).click( function() {
 		return
 	}
 	
-	bash( [ 'mirrorlist' ], list => {
-		var lL         = list.code.length;
-		var selecthtml = '<select>';
-		for ( i = 0; i < lL; i++ ) selecthtml += '<option value="'+ list.code[ i ] +'">'+ list.country[ i ] +'</option>';
-		selecthtml    += '</select>';
-		var content    = `
+	if ( 'htmlmirror' in V ) {
+		infoTimezone();
+	} else {
+		notify( SW.icon, SW.title, 'Get mirror server list ...' );
+		bash( [ 'mirrorlist' ], list => {
+			V.mirrorlist   = list;
+			S.mirror       = list.mirror;
+			S.ntp          = list.ntp;
+			var htmloption = '';
+			list.code.forEach( ( el, i ) => htmloption += '<option value="'+ el +'">'+ list.country[ i ] +'</option>' );
+			V.htmlmirror   = `
 <table>
 <tr><td>NTP</td><td><input type="text"></td></tr>
-<tr><td>Package</td><td>${ selecthtml }</td></tr>
-</table>`
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, content      : content
-			, boxwidth     : 240
-			, values       : [ S.ntp, list.mirror ]
-			, checkchanged : 1
-			, checkblank   : [ 0 ]
-			, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
-			, ok           : () => {
-				var values = infoVal();
-				values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
-				bash( [ 'servers', ...values ], bannerHide );
-			}
-		} );
-		bannerHide();
-	}, 'json' );
+<tr><td>Package</td><td><select>${ htmloption }</select></td></tr>
+</table>`;
+			infoTimezone();
+			bannerHide();
+		}, 'json' );
+	}
 } );
 $( '#setting-soundprofile' ).click( function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : [ 'vm.swappiness', 'lan mtu', 'lan txqueuelen' ]
+		, textlabel    : [ 'vm.swappiness', 'LAN mtu', 'LAN txqueuelen' ]
 		, boxwidth     : 110
 		, values       : S.soundprofileconf
 		, checkchanged : S.soundprofile
@@ -993,6 +987,25 @@ function infoMount( val ) {
 				}
 			} );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
+		}
+	} );
+}
+function infoTimezone() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, content      : V.htmlmirror
+		, boxwidth     : 240
+		, values       : [ S.ntp, S.mirror ]
+		, checkchanged : 1
+		, checkblank   : [ 0 ]
+		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+		, ok           : () => {
+			var values = infoVal();
+			values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
+			S.ntp      = values[ 0 ];
+			S.mirror   = values[ 1 ];
+			bash( [ 'servers', ...values ], bannerHide );
 		}
 	} );
 }

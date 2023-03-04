@@ -112,7 +112,7 @@ soundProfile() {
 		touch $dirsystem/soundprofile
 	fi
 	sysctl vm.swappiness=$swappiness
-	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
 	if ifconfig | grep -q -m1 $lan; then
 		ip link set $lan mtu $mtu
 		ip link set $lan txqueuelen $txqueuelen
@@ -357,9 +357,8 @@ lcdcharset )
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
-	mirror=$( grep -m1 ^Server $file | sed 's|\.*mirror.*||; s|.*//||' )
+	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
 	if : >/dev/tcp/8.8.8.8/53; then
-		notify -blink globe 'Mirror List' 'Get ...'
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		if [[ $? == 0 ]]; then
 			mv -f mirrorlist $file
@@ -386,10 +385,12 @@ mirrorlist )
 		fi
 	done
 	[[ ! $mirror ]] && mirror=0
+	ntp=$( grep '^NTP' /etc/systemd/timesyncd.conf | cut -d= -f2 )
 	echo '{
   "code"    : [ '$codelist' ]
 , "country" : [ '$clist' ]
-, "mirror" : "'$mirror'"
+, "mirror"  : "'$mirror'"
+, "ntp"     : "'$ntp'"
 }'
 	;;
 mountforget )
@@ -694,13 +695,12 @@ soundprofileset )
 	soundProfile
 	;;
 soundprofileget )
-	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
 	echo "\
 <bll># sysctl vm.swappiness
 # ifconfig $lan | grep -E 'mtu|txq'</bll>
-
 $( sysctl vm.swappiness )
-$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ /=/; p}' )"
+$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /; p}' )"
 	;;
 soundprofile )
 	if [[ ${args[1]} == true ]]; then

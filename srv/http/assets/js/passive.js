@@ -316,7 +316,13 @@ function psRadioList( data ) {
 	if ( V.library ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
 	} else if ( V.playlist ) {
-		if ( ! V.local ) getPlaylist();
+		if ( V.savedlist ) {
+			$( '#button-pl-playlists' ).click();
+		} else if ( V.savedplaylist ) {
+			renderSavedPlaylist( $( '#savedpl-path .lipath' ).text() );
+		} else {
+			getPlaylist();
+		}
 	}
 	S.updatingdab = false;
 	$( '#mi-dabupdate' ).addClass( 'hide' );

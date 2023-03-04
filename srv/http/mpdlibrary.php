@@ -610,7 +610,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		$html  .=
 '<li data-mode="'.$gmode.'" '.$li0.'>
 	<a class="lipath">'.$path.'</a>
-	'.$icon.'<div class="li1">'.$title.'<span class="time">'.$each->time.'</span></div>
+	'.$icon.'<div class="li1"><a class="name">'.$title.'</a><a class="time">'.$each->time.'</a></div>
 	<div class="li2">'.$i.' • '.$trackname.'</div>
 </li>';
 	}

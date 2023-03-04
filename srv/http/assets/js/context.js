@@ -454,11 +454,11 @@ function webRadioExists( error, name, url, charset ) {
 function webRadioNew( name, url, charset ) {
 	info( {
 		  icon         : 'webradio'
-		, title        : 'Add Web Radio'
+		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
 		, focus        : 0
-		, values       : name ? [ name, url, charset ] : [ '', '', 'UTF-8' ]
+		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : () => {
 			if ( $( '#lib-path .lipath' ).text() ) {
@@ -469,12 +469,12 @@ function webRadioNew( name, url, charset ) {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
-						, focus      : 0
 						, checkblank : 1
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
 					} );
 				} );
 			}
+			if ( V.playlist ) $( '#infoContent input' ).eq( 1 ).prop( 'disabled', true );
 		}
 		, ok           : () => {
 			var values  = infoVal();
@@ -487,41 +487,6 @@ function webRadioNew( name, url, charset ) {
 				bannerHide();
 			} );
 			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
-		}
-	} );
-}
-function webRadioSave( name ) {
-	var url = V.list.li.find( '.lipath' ).text();
-	info( {
-		  icon       : 'webradio'
-		, title      : 'Save Web Radio'
-		, message    : url
-		, textlabel  : 'Name'
-		, values     : name || ''
-		, focus      : 0
-		, checkblank : 1
-		, ok         : () => {
-			V.local     = true;
-			var newname = infoVal().toString().replace( /\/\s*$/, '' ); // omit trailling / and space
-			bash( [ 'webradioadd', '', newname, url ], error => {
-				if ( error ) {
-					bannerHide();
-					info( {
-						  icon    : 'webradio'
-						, title   : 'Save Web Radio'
-						, message : iconwarning + error
-									+'<br><br><wh>'+ url +'</wh>'
-						, ok      : () => webRadioSave( newname )
-					} );
-					return
-				}
-				
-				V.list.li.find( '.liname, .radioname' ).text( newname );
-				V.list.li.find( '.li2 .radioname' ).append( ' • ' );
-				V.list.li.find( '.savewr' ).remove();
-				V.list.li.removeClass( 'notsaved' );
-				V.local = false;
-			} );
 		}
 	} );
 }
@@ -678,7 +643,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} );
 			return
 		case 'wrsave':
-			webRadioSave();
+			webRadioNew( '', V.list.li.find( '.lipath' ).text() );
 			return
 	}
 	
@@ -711,8 +676,8 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				mpccmd = [ 'mpcadd', path ];
 			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
-			} else { // directory or album
-				mpccmd = [ 'mpcls', path ];
+			} else { // directory / album / saved playlist track
+				mpccmd = [ V.savedplaylist ? 'mpcadd' : 'mpcls', path ];
 			}
 			break;
 		case 'pl':
@@ -749,15 +714,16 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	}
 	if ( ! mpccmd ) mpccmd = [];
 	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
-	if ( V.list.li.hasClass( 'licover' ) ) {
-		var msg = '<div class="li1">'+ V.list.li.find( '.lialbum' ).text() +'</div>'
-				+'<a class="li2">'+ V.list.li.find( '.liartist' ).text() +'</a>';
-	} else if ( V.list.li.find( '.li1' ).length ) {
-		var msg = V.list.li.find( '.li1' )[ 0 ].outerHTML
-				+'<a class="li2">'+ V.list.li.find( '.li2' )[ 0 ].outerHTML +'</a>';
-		msg     = msg
-					.replace( /<span.*span>/, '' )
-					.replace( '<bl>', '' ).replace( '</bl>', '' );
+	if ( V.librarylist || V.list.li.find( '.li1' ).length ) {
+		var $li2 = V.list.li.find( '.li2' );
+		if ( V.list.licover ) {
+			var l1 = '.lialbum';
+		} else {
+			var l1 = '.li1 .name';
+			if ( V.playlist ) $li2 = $li2.find( '.name' );
+		}
+		var msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
+				+'<a class="li2">'+ $li2.text() +'</a>';
 	} else {
 		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}

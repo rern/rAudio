@@ -1989,8 +1989,6 @@ $( '#savedpl-path' ).click( '.savedlist', function() {
 $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	var $target  = $( e.target );
-	if ( $target.hasClass( 'savewr' ) ) return
-	
 	var $this    = $( this );
 	var menushow = $( '.contextmenu:not( .hide )' ).length;
 	var active   = $this.hasClass( 'active' );
@@ -2042,11 +2040,6 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		renderSavedPlaylist( $this.find( '.plname' ).text() );
 		if ( pladd ) playlistInsertTarget();
 	}
-} ).on( 'click', '.savewr', function() {
-	var $this = $( this );
-	V.list.li = $this.parent();
-	webRadioSave( $this.next().next().text() );
-	menuHide();
 } );
 // lyrics /////////////////////////////////////////////////////////////////////////////////////
 $( '#lyricstextarea' ).on( 'input', function() {

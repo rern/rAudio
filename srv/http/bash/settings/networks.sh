@@ -136,7 +136,7 @@ hostapd )
 	echo $dirsettings/features.sh "$1"
 	;;
 ifconfigeth )
-	ifconfig eth0 &> /dev/null && lan=eth0 || lan=end0
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
 	echo "\
 <bll># ifconfig $lan</bll>
 $( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
