@@ -36,7 +36,7 @@ if [[ $throttled != 0x0 ]]; then
 		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
 fi
-! internetConnected && warning+=" · No Internet connection"
+! internetConnected && warning+=" · <i class='i-networks'></i> No Internet connection"
 # for interval refresh
 [[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'","intervalstatus":true}' && exit
 

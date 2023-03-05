@@ -46,22 +46,20 @@ htmlHead( [ //////////////////////////////////
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
  
-<wh>• CPU temperature:</wh>
- · 80-84°C: ARM cores throttled.
- · 85°C: ARM cores and GPU throttled.
-
-RPi 3B+: 60°C soft limit default (optimized throttling)
+<wh>• Warnings:</wh> (if any)
+ · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
+--><a class="softlimitno">
+	· 80-84°C: CPU cores throttled.
+	· 85°C: CPU cores and GPU throttled.</a><a class="softlimit">
+	· 60°C: Optimized throttling CPU cores and GPU (Soft limit)</a>
 </div>
 <?php
-$cpurevision = exec( 'grep ^Revision /proc/cpuinfo' );
-if ( substr( $cpurevision, -3, 2 ) === '0d' ) {
-	htmlSetting( [
-		  'label'    => 'Custom Soft Limit'
-		, 'sublabel' => 'CPU throttling'
-		, 'id'       => 'softlimit'
-		, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
-	] );
-}
+htmlSetting( [
+	  'label'    => 'Custom Soft Limit'
+	, 'sublabel' => 'CPU throttling'
+	, 'id'       => 'softlimit'
+	, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
+] );
 ?>
 </div>
 <div id="divstorage" class="section">
