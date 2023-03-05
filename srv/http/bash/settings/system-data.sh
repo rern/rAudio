@@ -50,17 +50,18 @@ rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plu
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
+	soc=BCM
 	cpuInfo
+	C=${hwrevision: -4:1}
 	case $C in
-		0 ) soc=BCM2835;; # 0, 1
-		1 ) soc=BCM2836;; # 2
+		0 ) soc+=2835;; # 0, 1
+		1 ) soc+=2836;; # 2
 		2 ) case $BB in
-				04|08 ) soc=BCM2837;;   # 2 1.2, 3B
-				0d|0e ) soc=BCM2837B0;; # 3A+, 3B+
-				12 )    soc=BCM2710A1;; # 0 2W
-			esac
-			;;
-		3 ) soc=BCM2711;; # 4
+				04|08 ) soc+=2837;;   # 2 1.2, 3B
+				0d|0e ) soc+=2837B0;; # 3A+, 3B+
+				12 )    soc+=2710A1;; # 0 2W
+			esac;;
+		3 ) soc+=2711;; # 4
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
