@@ -70,13 +70,13 @@ dtparam=audio=on"
 dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
-	[[ $rpi0 ]] && config+="
+	[[ $BB =~ ^(09|0c)$ ]] && config+="
 gpu_mem=32
 force_turbo=1
 gpu_mem=32
 hdmi_drive=2
 max_usb_current=1
-over_voltage=2"
+over_voltage=2" # rpi 0
 	echo "$config" > /boot/config.txt
 	# css color
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset

@@ -239,7 +239,7 @@ data+='
 , "vuledconf"        : '$vuledconf'
 , "warning"          : "'$warning'"'
 
-if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
+if [[ ! $BB =~ ^(09|0c|12)$ ]]; then # rpi zero, zero w, zero 2w
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"       : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
