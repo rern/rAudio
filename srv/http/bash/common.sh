@@ -54,14 +54,10 @@ getElapsed() {
 	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
 }
 internetConnected() {
-	interface=$( ifconfig \
-					| grep -B1 inet.*broadcast \
-					| head -1 \
-					| cut -d: -f1 )
-	[[ $( cat /sys/class/net/$interface/carrier 2> /dev/null ) == 1 ]] && return 0 || return 1
+	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0 || return 1
 }
 ipAddress() {
-	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
+	ifconfig | head -1 | awk '/inet.*broadcast/ {print $2;exit}'
 }
 notify() { # icon title message delayms
 	if [[ $1 == -blink ]]; then
