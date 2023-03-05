@@ -57,7 +57,7 @@ internetConnected() {
 	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0 || return 1
 }
 ipAddress() {
-	ifconfig | head -1 | awk '/inet.*broadcast/ {print $2;exit}'
+	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
 }
 notify() { # icon title message delayms
 	if [[ $1 == -blink ]]; then
