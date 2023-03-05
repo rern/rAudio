@@ -163,7 +163,8 @@ function pushstreamDisconnect() {
 			$( '.back' ).click();
 		}
 	} else if ( page === 'system' && S.intervalstatus ) {
-		statusStop();
+		bash( [ 'statusstop' ] );
+		$( '.refresh' ).removeClass( 'blink wh' );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -341,9 +342,9 @@ $( '.page-icon' ).click( function() {
 	$( 'html, body' ).scrollTop( 0 );
 } );
 $( '#button-data' ).click( function() {
-	$( '#button-data, #data' ).addClass( 'hide' );
 	switchSet();
 	renderPage();
+	$( '#button-data, #data' ).addClass( 'hide' );
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( () => location.reload(), 1000 );
 } ).on( 'mouseup mouseleave touchup touchleave', function() {

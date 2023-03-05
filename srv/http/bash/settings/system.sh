@@ -727,6 +727,13 @@ statusonboard )
 		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
 	;;
+statusstart )
+	$dirsettings/system-datastatus.sh &> /dev/null
+	;;
+statusstop )
+	killall system-datastatus.sh &> /dev/null
+	pushstream refresh '{"page":"system","intervalstatus":false}'
+	;;
 storage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>

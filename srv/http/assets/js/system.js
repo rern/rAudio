@@ -78,12 +78,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
-	if ( $( this ).hasClass( 'blink' ) ) {
-		statusStop();
-	} else {
-		statusGet();
-		V.intStatus = setInterval( statusGet, 10000 );
-	}
+	bash( [ S.intervalstatus ? 'statusstop' : 'statusstart' ] );
 } );
 $( '.addnas' ).click( function() {
 	infoMount();
@@ -1022,8 +1017,9 @@ function renderPage() {
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
-	$( '.refresh' ).toggleClass( 'blink wh', 'intervalstatus' in S );
-	if ( S.intervalstatus ) return
+	$( '.refresh' ).toggleClass( 'blink wh', S.intervalstatus === true );
+	
+	if ( S.intervalstatus && $( '#data' ).hasClass( 'hide' ) ) return
 	
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
@@ -1093,12 +1089,4 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
-}
-function statusGet() {
-	bash( '/srv/http/bash/settings/system-data.sh status' );
-}
-function statusStop() {
-	delete S.intervalstatus;
-	clearInterval( V.intStatus );
-	$( '.refresh' ).removeClass( 'blink wh' );
 }
