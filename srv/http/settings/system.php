@@ -50,7 +50,8 @@ htmlHead( [ //////////////////////////////////
  · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
 --><a class="softlimitno">
 	· 80-84°C: CPU cores throttled.
-	· 85°C: CPU cores and GPU throttled.</a><a class="softlimit">
+	· 85°C: CPU cores and GPU throttled.</a><!--
+--><a class="softlimit">
 	· 60°C: Optimized throttling CPU cores and GPU (Soft limit)</a>
 </div>
 <?php
