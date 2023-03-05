@@ -333,28 +333,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	}
 } );
 $( '.close' ).click( function() {
-	if ( page !== 'system' ) {
-		location.href = '/'; 
-		return
-	}
-	
-	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
-		if ( ! list ) {
-			location.href = '/';
-			return
-		}
-		
-		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : 'Reboot required for:<br><br>'
-						+'<pre><wh>'+ list +'</wh></pre>'
-			, cancel  : () => location.href = '/'
-			, okcolor : orange
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
-		} );
-	} );
+	location.href = '/'; 
 } );
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( S ) ) return
