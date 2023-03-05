@@ -162,11 +162,8 @@ function pushstreamDisconnect() {
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
-	} else if ( page === 'system' ) {
-		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( V.intStatus );
-			$( '#refresh' ).removeClass( 'blink' );
-		}
+	} else if ( page === 'system' && S.intervalstatus ) {
+		statusStop();
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {

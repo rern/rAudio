@@ -38,7 +38,7 @@ if [[ $throttled != 0x0 ]]; then
 fi
 ! internetConnected && warning+=" · No Internet connection"
 # for interval refresh
-[[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'"}' && exit
+[[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'","intervalstatus":true}' && exit
 
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}

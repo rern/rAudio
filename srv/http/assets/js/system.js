@@ -78,18 +78,11 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
-	var $this = $( this );
-	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intStatus );
-		bannerHide();
-		$this.removeClass( 'blink wh' );
+	if ( $( this ).hasClass( 'blink' ) ) {
+		statusStop();
 	} else {
-		function getStatus() {
-			bash( '/srv/http/bash/settings/system-data.sh status' );
-		}
-		$this.addClass( 'blink wh' );
-		getStatus();
-		V.intStatus = setInterval( getStatus, 10000 );
+		statusGet();
+		V.intStatus = setInterval( statusGet, 10000 );
 	}
 } );
 $( '.addnas' ).click( function() {
@@ -1023,12 +1016,15 @@ function infoTimezone() {
 	} );
 }
 function renderPage() {
+	$( '#status' ).html( S.status + S.warning );
+	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
-	$( '#status' ).html( S.status + S.warning );
-	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	$( '.refresh' ).toggleClass( 'blink wh', 'intervalstatus' in S );
+	if ( S.intervalstatus ) return
+	
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {
@@ -1097,4 +1093,12 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
+}
+function statusGet() {
+	bash( '/srv/http/bash/settings/system-data.sh status' );
+}
+function statusStop() {
+	delete S.intervalstatus;
+	clearInterval( V.intStatus );
+	$( '.refresh' ).removeClass( 'blink wh' );
 }
