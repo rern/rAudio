@@ -728,8 +728,7 @@ statusonboard )
 	fi
 	;;
 statusstart )
-	killall system-status.sh &> /dev/null
-	$dirsettings/system-status.sh &> /dev/null &
+	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
 	;;
 statusstop )
 	killall system-status.sh &> /dev/null
