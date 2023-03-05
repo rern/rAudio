@@ -3,11 +3,12 @@
 . /srv/http/bash/common.sh
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
+timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
-$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
+$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 ! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='i-warning'></i>&ensp;No Internet connection"
 softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
@@ -234,7 +235,7 @@ data+='
 , "status"           : "'$status'"
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
-, "timezoneoffset"   : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
+, "timezoneoffset"   : "'$timezoneoffset'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
