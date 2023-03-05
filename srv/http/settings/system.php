@@ -168,20 +168,21 @@ $body = [
 <div id="divi2s">
 	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
-	<div id="divi2smodulesw">
-		<input id="i2smodulesw" type="checkbox">
-		<div class="switchlabel" for="i2smodulesw"></div>
-	</div>
-	<div id="divi2smodule">
-		<select id="i2smodule"></select>
-		<i id="setting-i2smodule" class="i-gear setting"></i>
-	</div>
-	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+		<div id="divi2smodulesw">
+			<input id="i2smodulesw" type="checkbox">
+			<div class="switchlabel" for="i2smodulesw"></div>
+		</div>
+		<div id="divi2smodule">
+			<select id="i2smodule"></select>
+			<i id="setting-i2smodule" class="i-gear setting"></i>
+		</div>
+		<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
-I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
- · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
-</span>
+	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+	 · HAT with EEPROM could be automatically detected.
+	 · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+		</span>
+	</div>
 </div>
 EOF
 	]
