@@ -78,15 +78,17 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
-	if ( $( e.target ).hasClass( 'help' ) ) return
-	
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
 		clearInterval( V.intStatus );
 		bannerHide();
 		$this.removeClass( 'blink wh' );
 	} else {
+		function getStatus() {
+			bash( '/srv/http/bash/settings/system-data.sh status' );
+		}
 		$this.addClass( 'blink wh' );
+		getStatus();
 		V.intStatus = setInterval( getStatus, 10000 );
 	}
 } );
@@ -831,14 +833,6 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function getStatus() {
-	bash( [ 'statuscurrent' ], data => {
-		S.status  = data.status;
-		S.warning = data.warning;
-		$( '#status' ).html( S.status + S.warning );
-		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	}, 'json' );
-}
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {

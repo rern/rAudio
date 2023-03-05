@@ -720,9 +720,6 @@ txqueuelen=${args[4]}
 	fi
 	pushRefresh
 	;;
-statuscurrent )
-	$dirsettings/system-data.sh status
-	;;
 statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
