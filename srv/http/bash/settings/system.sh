@@ -358,7 +358,7 @@ lcdcharset )
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-	if : >/dev/tcp/8.8.8.8/53; then
+	if internetConnected; then
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		if [[ $? == 0 ]]; then
 			mv -f mirrorlist $file

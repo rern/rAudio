@@ -36,7 +36,7 @@ if [[ $throttled != 0x0 ]]; then
 		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
 fi
-! : >/dev/tcp/8.8.8.8/53 && warning+="<br> · No Internet connection"
+! internetConnected && warning+="<br> · No Internet connection"
 # for interval refresh
 [[ $1 == status ]] && echo '{"status":"'$status'","warning":"'$warning'"}' && exit
 

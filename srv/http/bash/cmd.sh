@@ -7,7 +7,7 @@ dirimg=/srv/http/assets/img
 readarray -t args <<< $1
 
 addonsListGet() {
-	: >/dev/tcp/8.8.8.8/53 || ( echo -2 && exit ) # online check
+	! internetConnected && echo -2 && exit
 	
 	[[ ! $1 ]] && branch=main || branch=$1
 	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json

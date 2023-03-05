@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-: >/dev/tcp/8.8.8.8/53 || exit # online check
+! internetConnected && exit
 
 if [[ $1 ]]; then
 	readarray -t args <<< $1

@@ -4,7 +4,7 @@
 # stop / prevnext - cmd.sh mpcplayback / mpcprevnext
 # webradio        - cmd.sh scrobble
 
-: >/dev/tcp/8.8.8.8/53 || exit # online check
+! internetConnected && exit
 
 sleep 2 # wait - after track change pushstream
 
