@@ -728,10 +728,11 @@ statusonboard )
 	fi
 	;;
 statusstart )
-	$dirsettings/system-datastatus.sh &> /dev/null
+	killall system-status.sh &> /dev/null
+	$dirsettings/system-status.sh &> /dev/null &
 	;;
 statusstop )
-	killall system-datastatus.sh &> /dev/null
+	killall system-status.sh &> /dev/null
 	pushstream refresh '{"page":"system","intervalstatus":false}'
 	;;
 storage )
