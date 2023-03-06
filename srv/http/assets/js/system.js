@@ -366,7 +366,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = `\
 <table>
-<tr><td width="70">On</td>
+<tr><td width="40">On</td>
 	<td><input type="text" disabled></td>
 </tr>
 <tr><td>Off</td>
@@ -386,7 +386,7 @@ $( '#setting-powerbutton' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg + infopowerbutton
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
@@ -410,24 +410,24 @@ $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin  = '<td colspan="3"><select >';
+	var pin  = '<td><select >';
 	$.each( pin2gpio, ( k, v ) => pin += '<option value='+ v +'>'+ k +'</option>' );
 	pin += '</select></td>';
 	var inforotaryencoder = `\
 <table>
-<tr><td>CLK</td>${ pin }</tr>
+<tr><td width="60">CLK</td>${ pin }</tr>
 <tr><td>DT</td>${ pin }</tr>
 <tr><td>SW</td>${ pin }</tr>
-<tr><td>Each step <gr>(%)</gr></td>
-	<td style="width: 55px"><label><input type="radio" name="step" value="1">1</label></td>
-	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
+<tr><td>Step</td>
+	<td><label><input type="radio" name="step" value="1">1%</label></td>
+	<td><label><input type="radio" name="step" value="2">2%</label></td>
 </tr>
 </table>`;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
-		, boxwidth     : 90
+		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
@@ -513,7 +513,7 @@ $( '#setting-vuled' ).click( function() {
 	$.each( pin2gpio, ( k, v ) => opt += '<option value="'+ v +'">'+ k +'</option>' );
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
+		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ opt +'</select></td></tr>';
 	}
 	info( {
 		  icon         : SW.icon
@@ -522,7 +522,7 @@ $( '#setting-vuled' ).click( function() {
 		, select       : htmlpins
 		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : S.vuled
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
