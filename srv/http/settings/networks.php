@@ -8,7 +8,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
-	<pre id="codebluetooth" class="status hide"></pre>
+	<pre id="codebluetoothlist" class="status hide"></pre>
 	<div class="helpblock hide">{$Fi( 'search btn' )} Scan to connect
 {$Fi( 'bluetooth btn' )} {$Fi( 'btsender btn' )} Context menu
 

@@ -41,6 +41,9 @@ albumignore )
 bluetoothinfo )
 	mac=$( cut -d' ' -f1 $dirshm/btconnected )
 	echo "\
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $mac )
+
 <bll># bluetoothctl info $mac</bll>
 $( bluetoothctl info $mac )"
 	;;
