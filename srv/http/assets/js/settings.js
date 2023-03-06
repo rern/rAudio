@@ -240,7 +240,7 @@ function psVolume( data ) {
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 		$( '.infofooter' ).text( data.db +' dB' );
-		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
 }
 function psWlan( data ) {

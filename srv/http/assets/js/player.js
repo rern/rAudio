@@ -6,31 +6,6 @@ $( '.playback' ).click( function() {
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
-$( '#setting-btreceiver' ).click( function() {
-	bash( [ 'volumegetbt' ], voldb => {
-		var voldb = voldb.split( ' ' );
-		var vol   = voldb[ 0 ];
-		var db    = voldb[ 1 ];
-		info( {
-			  icon       : SW.icon
-			, title      : SW.title
-			, message    : S.btaplayname.replace( / - A2DP$/, '' )
-			, rangevalue : vol
-			, footer     : db +' dB'
-			, beforeshow : () => {
-				$( '#infoButtons' ).toggleClass( 'hide', db === '0.00' );
-				$( '#infoRange input' ).on( 'click input', function() {
-					bash( 'amixer -MD bluealsa -q sset "'+ S.btaplayname +'" '+ $( this ).val() +'%' );
-				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumepushbt' ] );
-				} );
-				$( '#infoOk' ).toggleClass( db === '0.00' );
-			}
-			, oklabel    : ico( 'set0' ) +'0dB'
-			, ok         : () => volume0db( 'volume0dbbt', $( '#setting-btreceiver' ) )
-		} );
-	} );
-} );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
 	bash( [ 'audiooutput', $( this ).val() ] );
@@ -39,30 +14,49 @@ $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
 } );
-$( '#setting-hwmixer' ).click( function() {
-	bash( [ 'volumeget' ], voldb => {
-		var voldb    = voldb.split( ' ' );
-		var vol      = voldb[ 0 ];
-		var db       = voldb[ 1 ];
-		var nodb     = typeof db === 'undefined';
-		var nomixer  = D.mixertype === 'none';
+$( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
+	var bt = this.id === 'setting-btreceiver';
+	bash( [ bt ? 'volumegetbt' : 'volumeget' ], voldb => {
+		var voldb   = voldb.split( ' ' );
+		var vol     = voldb[ 0 ];
+		var db      = voldb[ 1 ];
+		var nodb    = typeof db === 'undefined';
+		var nomixer = D.mixertype === 'none';
+		if ( bt ) {
+			var cmd       = 'volume0dbbt';
+			var cmdamixer = '-D bluealsa';
+			var cmdpush   = 'volumepushbt';
+			var mixer     = S.btaplayname;
+		} else {
+			var cmd       = 'volume0db';
+			var cmdamixer = '-c '+ S.asoundcard;
+			var cmdpush   = 'volumepush';
+			var mixer     = D.hwmixer;
+		}
 		info( {
 			  icon       : SW.icon
 			, title      : SW.title
-			, message    : D.hwmixer
+			, message    : mixer.replace( ' - A2DP', '' )
 			, rangevalue : vol
-			, footer     : nodb ? '' : ( nomixer ? '0dB (No Volume)' : db +' dB' )
+			, footer     : nodb ? '' : ( nomixer ? '0dB (No Mixer)' : db +' dB' )
 			, beforeshow : () => {
-				$( '#infoRange input' ).prop( 'disabled', D.mixertype === 'none' );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'amixer -c '+ S.asoundcard +' -Mq sset "'+ D.hwmixer +'" '+ $( this ).val() +'%' );
-				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'volumepush' ] );
+				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
+				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
+				$( '#infoOk' ).off( 'click' ).click( function() {
+					if ( $( '.infofooter' ).text() > '0.00 dB' ) {
+						bash( [ cmd ] );
+					} else {
+						if ( ! $( '.warning' ).hasClass( 'hide' ) ) bash( [ cmd ] );
+						$( '#infoContent, .warning' ).toggleClass( 'hide' );
+					}
 				} );
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ cmdpush ] );
+				} ).prop( 'disabled', D.mixertype === 'none' );
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
-			, ok         : () => volume0db( 'volume0db', $( '#setting-hwmixer' ) )
 		} );
 	} );
 } );
@@ -405,16 +399,4 @@ function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
-}
-function volume0db( cmd, $setting ) {
-	if ( $( '.infofooter' ).text().slice( 0, -3 ) > 0 ) {
-		bash( [ cmd ], () => $setting.click() )
-	} else {
-		info( {
-			  icon    : 'volume'
-			, title   : cmd  === 'volume0db' ? 'Mixer Device Volume' : 'Bluetooth Volume'
-			, message : warning
-			, ok      : () => bash( [ cmd ], () => $setting.click() )
-		} );
-	}
 }
