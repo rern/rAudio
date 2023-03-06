@@ -42,6 +42,11 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
 				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
+				$( '#infoRange input' ).on( 'click input keyup', function() {
+					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
+				} ).on( 'touchend mouseup keyup', function() {
+					bash( [ cmdpush ] );
+				} ).prop( 'disabled', D.mixertype === 'none' );
 				$( '#infoOk' ).off( 'click' ).click( function() {
 					if ( $( '.infofooter' ).text() > '0.00 dB' ) {
 						bash( [ cmd ] );
@@ -50,11 +55,9 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 						$( '#infoContent, .warning' ).toggleClass( 'hide' );
 					}
 				} );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
-				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ cmdpush ] );
-				} ).prop( 'disabled', D.mixertype === 'none' );
+				$( '#infoX' ).off( 'click' ).click( function() {
+					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $( '#infoContent, .warning' ).toggleClass( 'hide' );
+				} );
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
 		} );
@@ -287,10 +290,11 @@ var soxrcustom = `
 </tr>
 </table>`;
 var warning = `
-<wh>${ iconwarning }Lower speakers / headphones volume
+${ iconwarning }<wh>Lower speakers / headphones volume
 
 <gr>Signal will be set to original level at 0dB.</gr>
-Beware of too high volume.</wh>`;
+Beware of too high volume.</wh>
+<br>`;
 
 function infoSoxr( quality ) {
 	var custom = quality === 'custom';
