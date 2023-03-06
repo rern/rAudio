@@ -388,11 +388,11 @@ function displayBottom() {
 	$( '#'+ V.page ).addClass( 'active' );
 }
 function displayPlayback() {
-	var $cover     = $( '#coverart-block' );
+	$time.toggleClass( 'hide', ! D.time );                          // #time-knob hidden on load - set before get :hidden
 	var hidetime   = ! D.time || $( '#time-knob' ).is( ':hidden' ); // #time-knob hidden by css on small screen
 	var hidevolume = ! D.volume || D.volumenone;
-	$time.toggleClass( 'hide', hidetime );
 	$volume.toggleClass( 'hide', hidevolume );
+	var $cover     = $( '#coverart-block' );
 	$cover.toggleClass( 'hide', ! D.cover );
 	if ( ( hidetime || hidevolume ) && V.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
