@@ -389,23 +389,24 @@ function displayBottom() {
 }
 function displayPlayback() {
 	var $cover  = $( '#coverart-block' );
+	var time    = D.time && ! $( '#time-knob' ).is( ':hidden' ); // #time-knob hidden by css
 	var volume  = D.volume && ! D.volumenone;
-	$time.toggleClass( 'hide', ! D.time );
+	$time.toggleClass( 'hide', ! time );
 	$volume.toggleClass( 'hide', ! volume );
 	$cover.toggleClass( 'hide', ! D.cover );
-	if ( ( ! D.time || ! volume ) && V.wW > 500 ) {
+	if ( ( ! time || ! volume ) && V.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
-		if ( ! D.time && ! volume ) {
+		if ( ! time && ! volume ) {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
-		} else if ( ! D.time || ! volume ) {
+		} else if ( ! time || ! volume ) {
 			$cover.css( { width: 'fit-content', 'max-width': '55vw' } );
 		}
 	} else {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	if ( D.time ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
-	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', D.time );
+	if ( time ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
+	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
@@ -1535,9 +1536,16 @@ function setInfo() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'i-', '' ) ) {
-		$( '#playericon' ).removeAttr( 'class' );
-		if ( S.icon ) $( '#playericon' ).addClass( 'i-'+ S.icon );
+	if ( S.icon ) {
+		if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
+			$( '#playericon' )
+				.removeAttr( 'class' )
+				.addClass( S.icon ? 'i-'+ S.icon : 'hide' );
+		}
+	} else {
+		$( '#playericon' )
+				.removeAttr( 'class' )
+				.addClass( 'hide' );
 	}
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }
