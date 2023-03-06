@@ -203,8 +203,8 @@ Note:
 I = { hidden: true }
 
 function info( json ) {
+	local(); // flag for consecutive info
 	I          = json;
-	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' ); // consecutive info calls
 	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' ); // fix: narrow screen scroll
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -540,17 +540,8 @@ function info( json ) {
 }
 
 function infoButtonCommand( fn ) {
-	if ( typeof fn !== 'function' ) {
-		infoButtonReset();
-	} else {
-		$.when( fn() ).then( () => {
-			if ( I.active ) {
-				I.active = false;
-			} else {
-				infoButtonReset(); // not consecutive info calls
-			}
-		} );
-	}
+	if ( typeof fn === 'function' ) fn();
+	if ( ! V.local ) infoButtonReset();
 	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoButtonReset() {
