@@ -541,7 +541,7 @@ function info( json ) {
 
 function infoButtonCommand( fn ) {
 	if ( typeof fn === 'function' ) fn();
-	if ( ! V.local ) infoButtonReset();
+	if ( ! V.local ) infoButtonReset(); // no reset if consecutive info
 	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoButtonReset() {
