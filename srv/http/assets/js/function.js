@@ -405,8 +405,8 @@ function displayPlayback() {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	if ( time ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
-	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', time );
+	if ( ! hidetime ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
+	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
