@@ -36,11 +36,11 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		info( {
 			  icon        : SW.icon
 			, title       : SW.title
-			, message     : mixer.replace( ' - A2DP', '' )
+			, message     : bt ? mixer.replace( ' - A2DP', '' ) : mixer
 			, range       : 1
 			, checkbox    : bt ? [ 'Disable other outputs when connected' ] : ''
-			, order       : [ 'range', 'footer', 'checkbox' ]
-			, values      : [ vol, S.btoutputonly ]
+			, order       : bt ? [ 'range', 'footer', 'checkbox' ] : ''
+			, values      : bt ? [ vol, S.btoutputonly ] : vol
 			, footer      : nomixer ? '0dB (No Mixer)' : db +' dB'
 			, oklabel     : ico( 'set0' ) +'0dB'
 			, beforeshow  : () => {
@@ -63,15 +63,17 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 						$toggle.toggleClass( 'hide' );
 					}
 				} );
-				$( '#infoBox input' ).last().change( () => {
-					info( {
-						  icon    : SW.icon
-						, title   : SW.title
-						, message : S.btoutputonly ? 'Enable other outputs?' : 'Output to Bluetooth only?'
-						, ok      : () => bash( [ 'btoutputonly', ! S.btoutputonly ] )
-						, cancel  : () => $( '#setting-btreceiver' ).click()
+				if ( bt ) {
+					$( '#infoBox input[type=checkbox]' ).change( () => {
+						info( {
+							  icon    : SW.icon
+							, title   : SW.title
+							, message : S.btoutputonly ? 'Enable other outputs?' : 'Output to Bluetooth only?'
+							, ok      : () => bash( [ 'btoutputonly', ! S.btoutputonly ] )
+							, cancel  : () => $( '#setting-btreceiver' ).click()
+						} );
 					} );
-				} );
+				}
 			}
 		} );
 	} );
