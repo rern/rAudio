@@ -33,15 +33,32 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			var cmdpush   = 'volumepush';
 			var mixer     = D.hwmixer;
 		}
+		var footer  = '';
+		if ( !nodb ) footer += '<div class="db" style=" width: 320px; text-align: center;">'
+							+ ( nomixer ? '0dB (No Mixer)' : db +' dB' ) +'</div>';
+		if ( bt )    footer += '<label><input type="checkbox">Bluetooth output only</label>';
 		info( {
-			  icon       : SW.icon
-			, title      : SW.title
-			, message    : mixer.replace( ' - A2DP', '' )
-			, rangevalue : vol
-			, footer     : nodb ? '' : ( nomixer ? '0dB (No Mixer)' : db +' dB' )
-			, beforeshow : () => {
+			  icon        : SW.icon
+			, title       : SW.title
+			, message     : mixer.replace( ' - A2DP', '' )
+			, rangevalue  : vol
+			, footer      : footer
+			, footeralign : 'left'
+			, oklabel     : ico( 'set0' ) +'0dB'
+			, beforeshow  : () => {
 				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
 				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
+				$( '.infofooter input' )
+					.prop( 'checked', S.btoutputonly )
+					.change( () => {
+						info( {
+							  icon    : SW.icon
+							, title   : SW.title
+							, message : S.btoutputonly ? 'Disable Bluetooth output only?' : 'Output to Bluetooth only?'
+							, ok      : () => bash( [ 'btoutputonly' ] )
+							, cancel  : () => $( '#setting-btreceiver' ).click()
+						} );
+					} );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
@@ -59,7 +76,6 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $( '#infoContent, .warning' ).toggleClass( 'hide' );
 				} );
 			}
-			, oklabel    : ico( 'set0' ) +'0dB'
 		} );
 	} );
 } );

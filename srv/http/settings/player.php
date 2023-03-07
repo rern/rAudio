@@ -38,17 +38,10 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
-{$Fi( 'volume' )} Volume setting and control:
+{$Fi( 'volume btn' )} Volume setting and control:
  · Player: Should be set at 0dB
  · Playback: Should be set at 100%
  · Use device volume to control level
-EOF
-	]
-	, [	  'label'    => 'Bluetooth Only'
-		, 'id'       => 'btoutputonly'
-		, 'setting'  => false
-		, 'help'     => <<< EOF
-When connected: Output to Bluetooth device only, disable others.
 EOF
 	]
 	, [
