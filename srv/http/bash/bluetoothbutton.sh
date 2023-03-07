@@ -16,8 +16,9 @@ evtest /dev/input/$event | while read line; do
 	key=$( sed -E 's/.*KEY_(.*)\).*/\1/; s/CD|IOUSSONG|SONG//' <<< $line )
 	key=${key,,}
 	case $key in
-		play|pause|stop ) $cmdsh mpcplayback$'\n'$key;;
-		prev|next )       $cmdsh mpcprevnext$'\n'$key;;
+		play|pause ) $cmdsh mpcplayback;;
+		stop )       $cmdsh mpcplayback$'\n'stop;;
+		prev|next )  $cmdsh mpcprevnext$'\n'$key;;
 		volumeup|volumedown ) 
 			[[ $key == volumeup ]] && updn=+ || updn=-
 			$cmdsh "volumeupdown
