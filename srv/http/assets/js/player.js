@@ -356,7 +356,7 @@ function renderPage() {
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', S.btoutputonly );
 	} else {
 		$( '#divbtreceiver, #divbtoutputonly' ).addClass( 'hide' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeeClass( 'hide' );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
