@@ -46,9 +46,8 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow  : () => {
 				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
 				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
-				var $toggle = $( '#infoContent, .warning, #infoBox label' );
 				$( '#infoX' ).off( 'click' ).click( function() {
-					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $toggle.toggleClass( 'hide' );
+					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $( '#infoContent, .warning' ).toggleClass( 'hide' );
 				} );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
@@ -60,7 +59,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 						bash( [ cmd ] );
 					} else {
 						if ( ! $( '.warning' ).hasClass( 'hide' ) ) bash( [ cmd ] );
-						$toggle.toggleClass( 'hide' );
+						$( '#infoContent, .warning' ).toggleClass( 'hide' );
 					}
 				} );
 				if ( bt ) {
