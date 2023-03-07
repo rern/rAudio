@@ -20,6 +20,6 @@ evtest /dev/input/$event | while read line; do
 		prev|next )       $cmdsh mpcprevnext$'\n'$key;;
 		volumeup|volumedown ) 
 			[[ $key == volumeup ]] && updn=+ || updn=-
-			$cmdsh volumeupdown$'\n'$updn$'\n'$mixer;;
+			$cmdsh volumeupdown$'\n'$updn$'\n'$'\n'$mixer;;
 	esac
 done
