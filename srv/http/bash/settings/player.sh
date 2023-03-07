@@ -49,7 +49,7 @@ $( bluetoothctl info $mac )"
 	;;
 btoutputonly )
 	btoutputonly=${args[1]}
-	[[ -e $dirsystem/btoutputonly  ]] && prevbtoutputonly=true || prevbtoutputonly=false
+	[[ -e $dirsystem/btoutputonly ]] && prevbtoutputonly=true || prevbtoutputonly=false
 	[[ $btoutputonly == true ]] && touch $dirsystem/btoutputonly || rm $dirsystem/btoutputonly
 	[[ $btoutputonly != $prevbtoutputonly ]] && $dirsettings/player-conf.sh
 	;;
