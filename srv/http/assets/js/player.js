@@ -37,15 +37,15 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			  icon        : SW.icon
 			, title       : SW.title
 			, message     : mixer.replace( ' - A2DP', '' )
-			, rangevalue  : vol
+			, range       : 1
 			, checkbox    : bt ? [ 'Disable other outputs when connected' ] : ''
+			, order       : [ 'range', 'footer', 'checkbox' ]
+			, values      : [ vol, S.btoutputonly ]
 			, footer      : nomixer ? '0dB (No Mixer)' : db +' dB'
 			, oklabel     : ico( 'set0' ) +'0dB'
 			, beforeshow  : () => {
 				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
 				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
-				$( '#infoBox' ).append( $( '#infoContent label' ).css( 'margin', '10px auto' ) );
-				$( '#infoContent table' ).remove();
 				var $toggle = $( '#infoContent, .warning, #infoBox label' );
 				$( '#infoX' ).off( 'click' ).click( function() {
 					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $toggle.toggleClass( 'hide' );
@@ -63,17 +63,15 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 						$toggle.toggleClass( 'hide' );
 					}
 				} );
-				$( '#infoBox input[type=checkbox]' )
-					.prop( 'checked', S.btoutputonly )
-					.change( () => {
-						info( {
-							  icon    : SW.icon
-							, title   : SW.title
-							, message : S.btoutputonly ? 'Enable other outputs?' : 'Output to Bluetooth only?'
-							, ok      : () => bash( [ 'btoutputonly' ] )
-							, cancel  : () => $( '#setting-btreceiver' ).click()
-						} );
+				$( '#infoBox input' ).last().change( () => {
+					info( {
+						  icon    : SW.icon
+						, title   : SW.title
+						, message : S.btoutputonly ? 'Enable other outputs?' : 'Output to Bluetooth only?'
+						, ok      : () => bash( [ 'btoutputonly', ! S.btoutputonly ] )
+						, cancel  : () => $( '#setting-btreceiver' ).click()
 					} );
+				} );
 			}
 		} );
 	} );

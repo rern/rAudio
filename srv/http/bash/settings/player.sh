@@ -48,7 +48,7 @@ $( bluealsa-aplay -L | grep -A2 $mac )
 $( bluetoothctl info $mac )"
 	;;
 btoutputonly )
-	[[ -e $dirsystem/btoutputonly ]] && rm $dirsystem/btoutputonly || touch $dirsystem/btoutputonly
+	[[ ${args[1]} == true ]] && touch $dirsystem/btoutputonly || rm $dirsystem/btoutputonly
 	$dirsettings/player-conf.sh
 	;;
 buffer | outputbuffer )

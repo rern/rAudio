@@ -144,6 +144,8 @@ info( {                                       // default
 	footer        : 'FOOTER'                  // (blank)        (footer above buttons)
 	footeralign   : 'CSS'                     // (blank)
 	
+	range         : 1                         // ***
+	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
 	focus         : N                         // (none)         (focused input)
@@ -429,22 +431,20 @@ function info( json ) {
 			}
 			htmls.select += '</select></td></tr>';
 		}
-		if ( I.rangevalue ) {
+		if ( I.range ) {
 			htmls.range = '<div id="infoRange">'
-						 +'<div class="value">'+ I.rangevalue +'</div>'
-						 +'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +I.rangevalue +'"><a class="max">100</a></div>';
+						 +'<div class="value"></div>'
+						 +'<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a></div>';
 		}
 		var htmlcontent = '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
-		if ( ! I.order ) I.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
+		if ( ! I.order ) I.order = [ 'range', 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'footer' ];
 		var htmlinputs  = '';
 		I.order.forEach( type => {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
-		htmlcontent   += htmls.range || '';
-		htmlcontent   += htmls.footer || '';
 	}
 	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
@@ -505,7 +505,7 @@ function info( json ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
-		if ( I.rangevalue ) {
+		if ( I.range ) {
 			$( '#infoRange input' ).on( 'click input keyup', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
@@ -748,8 +748,9 @@ function infoSetValues() {
 			$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
+		} else { // text, password, textarea, select, range
 			$this.val( val );
+			if ( type === 'range' ) $('#infoContent .value' ).text( val );
 		}
 	} );
 }
