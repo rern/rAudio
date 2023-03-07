@@ -240,7 +240,7 @@ function psVolume( data ) {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
-		$( '.infofooter .db' ).text( data.db +' dB' );
+		$( '.infofooter' ).text( data.db +' dB' );
 		$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
 }
