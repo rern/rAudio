@@ -44,6 +44,13 @@ $body = [
  · Use device volume to control level
 EOF
 	]
+	, [	  'label'    => 'Bluetooth Only'
+		, 'id'       => 'btoutputonly'
+		, 'setting'  => false
+		, 'help'     => <<< EOF
+When connected: Output to Bluetooth device only, disable others.
+EOF
+	]
 	, [
 		  'label'   => 'Device'
 		, 'id'      => 'audiooutput'

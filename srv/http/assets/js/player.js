@@ -334,11 +334,13 @@ function renderPage() {
 					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
-		$( '#divbtreceiver' ).removeClass( 'hide' );
+		$( '#divbtreceiver, #divbtoutputonly' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', S.btoutputonly );
 	} else {
-		$( '#divbtreceiver' ).addClass( 'hide' );
+		$( '#divbtreceiver, #divbtoutputonly' ).addClass( 'hide' );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
