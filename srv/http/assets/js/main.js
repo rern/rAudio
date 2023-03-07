@@ -314,71 +314,77 @@ $( '#displayplayback' ).click( function() {
 			var $chk = $( '#infoContent input' );
 			var $el  = {}
 			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
-			function displayInfoBars( t, c ) {
-				if ( ! t && ! c ) {
-					displayInfoChk( $el.bars, 0, 1 );
-					displayInfoChk( $el.barsalways, 0, 1 );
-				} else {
-					displayInfoChk( $el.bars, 1, 0 );
-					displayInfoChk( $el.barsalways, 1, 0 );
+			function restoreEnabled() {
+				var list = [ 'time', 'cover', 'covervu', 'vumeter', 'volume' ];
+				if ( D.volumenone ) list.pop();
+				list.forEach( el => setEnabled( $el[ el ], 1 ) );
+			}
+			function setChecked( $ck, check ) {
+				$ck.prop( 'checked', check );
+			}
+			function setEnabled( $ck, enable ) {
+				$ck.prop( 'disabled', ! enable ).parent().toggleClass( 'gr', ! enable );
+			}
+			function tcvValue() {
+				return {
+					  time   : $el.time.prop( 'checked' )
+					, cover  : $el.cover.prop( 'checked' )
+					, volume : $el.volume.prop( 'checked' )
 				}
 			}
-			function displayInfoChk( $ck, enable, check ) {
-				$ck
-					.prop( 'disabled', ! enable )
-					.prop( 'checked', check )
-					.parent().toggleClass( 'gr', ! enable );
-			}
-			if ( ! D.bars ) displayInfoChk( $el.barsalways );
-			if ( ! D.cover ) displayInfoChk( $el.vumeter );
-			if ( D.volumenone ) displayInfoChk( $el.volume, 0, 0 );
-			if ( ! D.time && ! D.volume ) {
-				displayInfoChk( $el.cover );
-				displayInfoChk( $el.buttons );
-			}
-			if ( ! D.time && ! D.cover ) displayInfoChk( $el.bars, 0, 1 );
-			$el.time.add( $el.volume ).change( function() {
-				var t = $el.time.prop( 'checked' );
-				var c = $el.cover.prop( 'checked' );
-				var v = $el.volume.prop( 'checked' );
-				if ( t || v ) {
-					displayInfoChk( $el.cover, 1, 0 );
-					displayInfoChk( $el.buttons, 1, 0 );
-				} else {
-					displayInfoChk( $el.cover, 0, 1 );
-					displayInfoChk( $el.buttons, 0, 0 );
-				}
-				if ( ! t && ( ! v || D.volumenone ) ) displayInfoChk( $el.cover, 1, 1 );
-				displayInfoBars( t, c );
-			} );
+			if ( D.volumenone ) setEnabled( $el.volume, 0 );
 			$el.bars.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
-					displayInfoChk( $el.barsalways, 1 );
+					setEnabled( $el.barsalways, 1 );
 				} else {
-					displayInfoChk( $el.barsalways, 0, 0 );
+					setChecked( $el.barsalways, 0 );
+					setEnabled( $el.barsalways, 0 );
+				}
+			} );
+			$el.time.change( function() {
+				var tcv = tcvValue();
+				if ( ! tcv.time ) {
+					if ( tcv.cover ) {
+						if ( ! tcv.volume ) setEnabled( $el.cover, 0 );
+					} else {
+						setEnabled( $el.volume, 0 );
+					}
+				} else {
+					restoreEnabled();
 				}
 			} );
 			$el.cover.change( function() {
-				var t = $el.time.prop( 'checked' );
-				var c = $el.cover.prop( 'checked' );
-				var v = $el.volume.prop( 'checked' );
-				if ( c ) {
-					displayInfoChk( $el.vumeter, 1, 0 );
-					$el.covervu.add( $el.vumeter ).prop( 'disabled', 0 );
-				} else {
-					displayInfoChk( $el.vumeter, 0, 0 );
-					if ( ! t && ( ! v || D.volumenone ) ) displayInfoChk( $el.time, 1, 1 );
-					displayInfoChk( $el.covervu, 0, 0 );
-					displayInfoChk( $el.vumeter, 0, 0 );
-					$el.covervu.add( $el.vumeter ).prop( 'disabled', 1 );
+				var tcv = tcvValue();
+				if ( ! tcv.cover ) {
+					if ( tcv.time ) {
+						if ( ! tcv.volume ) setEnabled( $el.time, 0 );
+					} else {
+						setEnabled( $el.volume, 0 );
+					}
+					[ 'covervu', 'vumeter' ].forEach( el => {
+						setChecked( $el[ el ], 0 );
+						setEnabled( $el[ el ], 0 );
+					} );				} else {
+					restoreEnabled();
 				}
-				displayInfoBars( t, c );
+			} );
+			$el.volume.change( function() {
+				var tcv = tcvValue();
+				if ( ! tcv.volume ) {
+					if ( tcv.cover ) {
+						if ( ! tcv.time ) setEnabled( $el.cover, 0 );
+					} else {
+						setEnabled( $el.time, 0 );
+					}
+				} else {
+					restoreEnabled();
+				}
 			} );
 			$el.covervu.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayInfoChk( $el.vumeter, 1, 0 );
+				if ( $( this ).prop( 'checked' ) ) setChecked( $el.vumeter, 0 );
 			} );
 			$el.vumeter.change( function() {
-				if ( $( this ).prop( 'checked' ) ) displayInfoChk( $el.covervu, 1, 0 );
+				if ( $( this ).prop( 'checked' ) ) setChecked( $el.covervu, 0 );
 			} );
 		}
 		, ok           : () => displaySave( keys )
