@@ -727,23 +727,21 @@ function infoLibrary( page ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : () => {
-			var $chk = $( '#infoContent input' );
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
+			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
 				$el.tapaddplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', 0 );
+					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 				} );
 				$el.tapreplaceplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', 0 );
+					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 				} );
 				$el.hidecover.change( function() {
-					var enable = $( this ).prop( 'checked' ) ? 0 : 1;
+					var enable = $( this ).prop( 'checked' ) ? false : true;
 					$el.fixedcover
 						.prop( 'disabled', ! enable )
-						.prop( 'checked', 0 )
-						.parent().toggleClass( 'gr', ! enable );
+						.prop( 'checked', false );
 				} );
 				$el.fixedcover.prop( 'disabled', D.hidecover );
 			} else {
@@ -770,8 +768,8 @@ function infoUpdate( path ) {
 		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : () => {
 			if ( ! C ) {
-				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
-				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
+				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', true );
+				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal() ] )

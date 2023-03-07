@@ -317,13 +317,7 @@ $( '#displayplayback' ).click( function() {
 			function restoreEnabled() {
 				var list = [ 'time', 'cover', 'covervu', 'vumeter', 'volume' ];
 				if ( D.volumenone ) list.pop();
-				list.forEach( el => setEnabled( $el[ el ], 1 ) );
-			}
-			function setChecked( $ck, check ) {
-				$ck.prop( 'checked', check );
-			}
-			function setEnabled( $ck, enable ) {
-				$ck.prop( 'disabled', ! enable ).parent().toggleClass( 'gr', ! enable );
+				list.forEach( el => $el[ el ].prop( 'disabled', false ) );
 			}
 			function tcvValue() {
 				return {
@@ -332,22 +326,23 @@ $( '#displayplayback' ).click( function() {
 					, volume : $el.volume.prop( 'checked' )
 				}
 			}
-			if ( D.volumenone ) setEnabled( $el.volume, 0 );
+			if ( D.volumenone ) $el.volume.prop( 'disabled', true );
 			$el.bars.change( function() {
 				if ( $( this ).prop( 'checked' ) ) {
-					setEnabled( $el.barsalways, 1 );
+					$el.barsalways.prop( 'disabled', false );
 				} else {
-					setChecked( $el.barsalways, 0 );
-					setEnabled( $el.barsalways, 0 );
+					$el.barsalways
+						.prop( 'checked', false )
+						.prop( 'disabled', true );
 				}
 			} );
 			$el.time.change( function() {
 				var tcv = tcvValue();
 				if ( ! tcv.time ) {
 					if ( tcv.cover ) {
-						if ( ! tcv.volume ) setEnabled( $el.cover, 0 );
+						if ( ! tcv.volume ) $el.cover.prop( 'disabled', true );
 					} else {
-						setEnabled( $el.volume, 0 );
+						$el.volume.prop( 'disabled', true );
 					}
 				} else {
 					restoreEnabled();
@@ -357,13 +352,14 @@ $( '#displayplayback' ).click( function() {
 				var tcv = tcvValue();
 				if ( ! tcv.cover ) {
 					if ( tcv.time ) {
-						if ( ! tcv.volume ) setEnabled( $el.time, 0 );
+						if ( ! tcv.volume ) $el.time.prop( 'disabled', true );
 					} else {
-						setEnabled( $el.volume, 0 );
+						$el.volume.prop( 'disabled', true );
 					}
 					[ 'covervu', 'vumeter' ].forEach( el => {
-						setChecked( $el[ el ], 0 );
-						setEnabled( $el[ el ], 0 );
+						$el[ el ]
+							.prop( 'checked', false )
+							.prop( 'disabled', true );
 					} );				} else {
 					restoreEnabled();
 				}
@@ -372,19 +368,19 @@ $( '#displayplayback' ).click( function() {
 				var tcv = tcvValue();
 				if ( ! tcv.volume ) {
 					if ( tcv.cover ) {
-						if ( ! tcv.time ) setEnabled( $el.cover, 0 );
+						if ( ! tcv.time ) $el.cover.prop( 'disabled', true );
 					} else {
-						setEnabled( $el.time, 0 );
+						$el.time.prop( 'disabled', true );
 					}
 				} else {
 					restoreEnabled();
 				}
 			} );
 			$el.covervu.change( function() {
-				if ( $( this ).prop( 'checked' ) ) setChecked( $el.vumeter, 0 );
+				if ( $( this ).prop( 'checked' ) ) $el.vumeter.prop( 'checked', false );
 			} );
 			$el.vumeter.change( function() {
-				if ( $( this ).prop( 'checked' ) ) setChecked( $el.covervu, 0 );
+				if ( $( this ).prop( 'checked' ) ) $el.covervu.prop( 'checked', false );
 			} );
 		}
 		, ok           : () => displaySave( keys )

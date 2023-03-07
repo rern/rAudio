@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1677310933' );
+	src         : url( '/assets/fonts/rern.woff2?v=1677937520' );
 }
 @font-face {
 	font-family : Lato;
@@ -848,7 +848,7 @@ input:checked {
 }
 input[type=checkbox]:checked:disabled,
 input[type=radio]:checked:disabled {
-	background-color: var( --cmd );
+	background-color: var( --cmd ) !important;
 	box-shadow: none;
 }
 input[type=checkbox]:disabled,
