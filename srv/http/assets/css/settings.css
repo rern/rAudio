@@ -133,7 +133,7 @@ div.helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding-left: 10px;
+	padding: 0 5px 0 10px;
 	text-align: right;
 	background: var( --cga );
 }

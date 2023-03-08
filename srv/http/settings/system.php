@@ -139,6 +139,7 @@ EOF
 		, 'help'     => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
+ · Should be disabled if not used.
 EOF
 	]
 	, [

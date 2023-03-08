@@ -48,7 +48,15 @@ EOF
 		  'label'   => 'Device'
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
-		, 'help'    => 'HDMI device available only when connected before boot.'
+		, 'help'    => <<< EOF
+{$Fi( 'volume btn' )}
+ · Output state while Bluetooth connected
+ · Should be disabled if not used simultaneously.
+
+HDMI audio:
+{$Ftab( 'system', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
+ · if not enabled, available when connected before boot only
+EOF
 	]
 	, [
 		  'label'       => 'Mixer Device'
