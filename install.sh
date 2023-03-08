@@ -4,6 +4,9 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
+# 20230310
+[[ -e $dirmpdconf/bluetooth.conf ]] && touch $dirsystem/btoutputonly
+
 # 20230218
 sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf &> /dev/null
 
