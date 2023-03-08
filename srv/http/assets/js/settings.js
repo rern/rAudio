@@ -243,8 +243,8 @@ function psVolume( data ) {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
-		$( '.infofooter' ).text( data.db +' dB' );
-		$( '#infoButtons' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoRange .sub' ).text( data.db +' dB' );
+		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
 	}, 300 );
 }
 function psWlan( data ) {

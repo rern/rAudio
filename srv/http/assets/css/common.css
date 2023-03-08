@@ -901,6 +901,9 @@ input[type=radio]:disabled {
 	line-height: 27px;
 	background: var( --cg );
 }
+#infoPrompt {
+	margin-top: 20px;
+}
 @media ( max-height: 420px ) {
 	#infoContent { padding: 10px 5px }
 }

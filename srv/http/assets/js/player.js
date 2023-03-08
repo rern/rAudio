@@ -27,6 +27,14 @@ $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
 } );
+var htmlvolume = `
+<div id="infoRange">
+	<div class="name"></div>
+	<div class="value"></div>
+	<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
+</div
+><div class="infofooter">-6.83 dB</div>
+`;
 $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 	var bt = this.id === 'setting-btreceiver';
 	bash( [ bt ? 'volumegetbt' : 'volumeget' ], voldb => {
@@ -37,42 +45,34 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		var nomixer = D.mixertype === 'none';
 		if ( bt ) {
 			var cmd       = 'volume0dbbt';
-			var cmdamixer = '-D bluealsa';
+			var cmdamixer = 'amixer -D bluealsa';
 			var cmdpush   = 'volumepushbt';
 			var mixer     = S.btaplayname;
 		} else {
 			var cmd       = 'volume0db';
-			var cmdamixer = '-c '+ S.asoundcard;
+			var cmdamixer = 'amixer -c '+ S.asoundcard;
 			var cmdpush   = 'volumepush';
 			var mixer     = D.hwmixer;
 		}
 		info( {
-			  icon        : SW.icon
-			, title       : SW.title
-			, message     : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, range       : 1
-			, values      : vol
-			, footer      : nomixer ? '0dB (No Mixer)' : db +' dB'
-			, oklabel     : ico( 'set0' ) +'0dB'
-			, beforeshow  : () => {
-				$( '#infoContent' ).before( '<div class="warning infomessage hide">'+ warning +'</a>' );
-				$( '#infoButtons' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
-				$( '#infoX' ).off( 'click' ).click( function() {
-					$( '.warning' ).hasClass( 'hide' ) ? infoButtonReset() : $( '#infoContent, .warning' ).toggleClass( 'hide' );
-				} );
+			  icon       : SW.icon
+			, title      : SW.title
+			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
+			, values     : vol
+			, rangesub   : nomixer ? '0dB (No Mixer)' : db +' dB'
+			, prompt     : warning
+			, beforeshow : () => {
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'amixer '+ cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
+					bash( cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ cmdpush ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
-				$( '#infoOk' ).off( 'click' ).click( function() {
-					if ( $( '.infofooter' ).text() > '0.00 dB' ) {
-						bash( [ cmd ] );
-					} else {
-						if ( ! $( '.warning' ).hasClass( 'hide' ) ) bash( [ cmd ] );
-						$( '#infoContent, .warning' ).toggleClass( 'hide' );
-					}
-				} );
+			}
+			, oklabel    : ico( 'set0' ) +'0dB'
+			, ok         : () => {
+				I.noreset = 1;
+				bash( [ cmd ] );
 			}
 		} );
 	} );
