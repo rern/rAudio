@@ -7,6 +7,7 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
+	, 'help'   => i( 'power btn' ).' Power'
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -18,7 +19,6 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="helpblock hide"><?=i( 'power btn' )?> Power</div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div id="divstatus" class="section">
@@ -27,6 +27,7 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'journalctl'
 	, 'button' => [ 'refresh' => 'refresh' ]
+	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ] );
 ?>
 	<div id="statuslabel" class="col-l text gr">
@@ -39,8 +40,6 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=i( 'refresh btn' )?> Refresh every 10 seconds
-
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
@@ -69,12 +68,12 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
+	, 'help'   => i( 'plus-circle btn' ).' Add network storage'
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="helpblock hide">
-<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu
-'.i( 'plus-circle btn' ).' Add network storage')?>
+<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
 <wh>USB drives:</wh> Will be found and mounted automatically.
 
 <wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)

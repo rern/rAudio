@@ -4,6 +4,9 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
+	, 'help'   => <<< EOF
+{$Fi( 'stop btn' )} {$Fi( 'play btn' )} {$Fi( 'pause btn' )} Playback control
+EOF
 ] );
 ?>
 	<div class="col-l text gr">
@@ -15,8 +18,6 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( i( 'stop btn' ).' '.i( 'play btn' ).' '.i( 'pause btn' ) )?> Playback control
-
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
@@ -26,6 +27,11 @@ Through plugins and libraries it can play a variety of sound files while being c
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'asound'
+	, 'button' => [ 'btoutputonly' => 'gear' ]
+	, 'help'   => <<< EOF
+{$Fi( 'gear btn' )} Other outputs while Bluetooth connected
+ · Should be disabled if not used simultaneously
+EOF
 ];
 $body = [
 	[
@@ -48,14 +54,11 @@ EOF
 		  'label'   => 'Device'
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
+		, 'setting' => false
 		, 'help'    => <<< EOF
-{$Fi( 'volume btn' )}
- · Output state while Bluetooth connected
- · Should be disabled if not used simultaneously.
-
 HDMI audio:
-{$Ftab( 'system', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
- · if not enabled, available when connected before boot only
+ · Available when connected before boot only
+ · Enable plug and play: {$Ftab( 'system', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
