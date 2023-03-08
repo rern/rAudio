@@ -11,14 +11,15 @@ $( '#audiooutput' ).change( function() {
 	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#setting-audiooutput' ).click( function() {
+	SW.title = 'Audio Output';
 	info( {
 		  icon         : SW.icon
-		, title        : 'Audio Output'
+		, title        : SW.title
 		, checkbox     : [ 'Disable while Bluetooth connected' ]
 		, values       : S.btoutputonly
 		, checkchanged : 1
 		, ok           : () => {
-			notify( SW.icon, 'Bluetooth Only while connected', ! S.btoutputonly );
+			notify( SW.icon, SW.title, ( S.btoutputonly ? 'Enable' : 'Disable' ) +' while Bluetooth connected' );
 			bash( [ 'btoutputonly', ! S.btoutputonly ] );
 		}
 	} );
