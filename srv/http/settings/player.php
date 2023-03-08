@@ -48,7 +48,6 @@ EOF
 		  'label'   => 'Device'
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
-		, 'setting' => false
 		, 'help'    => 'HDMI device available only when connected before boot.'
 	]
 	, [
