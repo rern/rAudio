@@ -165,7 +165,7 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-touch $dirsystem/usbautoupdate
+touch $dirsystem/{btoutputonly,usbautoupdate}
 
 # webradio
 curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
