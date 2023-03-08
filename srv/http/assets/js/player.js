@@ -18,7 +18,7 @@ $( '#setting-audiooutput' ).click( function() {
 		, values       : S.btoutputonly
 		, checkchanged : 1
 		, ok           : () => {
-			notify( SW.icon, 'Bluetooth Only', ! S.btoutputonly );
+			notify( SW.icon, 'Bluetooth Only while connected', ! S.btoutputonly );
 			bash( [ 'btoutputonly', ! S.btoutputonly ] );
 		}
 	} );
