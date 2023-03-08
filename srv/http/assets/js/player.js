@@ -6,11 +6,8 @@ $( '.playback' ).click( function() {
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
-$( '#audiooutput' ).change( function() {
-	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val() ] );
-} );
-$( '#setting-audiooutput' ).click( function() {
+$( '.btoutputonly' ).click( function() {
+	SW.icon  = 'volume';
 	SW.title = 'Audio Output';
 	info( {
 		  icon         : SW.icon
@@ -23,6 +20,10 @@ $( '#setting-audiooutput' ).click( function() {
 			bash( [ 'btoutputonly', ! S.btoutputonly ] );
 		}
 	} );
+} );
+$( '#audiooutput' ).change( function() {
+	notify( 'volume', 'Audio Output Device', 'Change ...' );
+	bash( [ 'audiooutput', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
