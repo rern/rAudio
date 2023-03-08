@@ -44,10 +44,8 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
-{$Fi( 'volume btn' )} Volume setting and control:
- · Player: Should be set at 0dB
- · Playback: Should be set at 100%
- · Use device volume to control level
+{$Fi( 'volume btn' )} Sender volume control
+ · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
@@ -58,7 +56,7 @@ EOF
 		, 'help'    => <<< EOF
 HDMI audio:
  · Available when connected before boot only
- · Enable plug and play: {$Ftab( 'system', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
+ · Enable plug and play: {$Ftab( 'mpd', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
@@ -67,11 +65,7 @@ EOF
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
-		, 'help'  => <<< EOF
-{$Fi( 'volume btn' )} Control current mixer device.
-
-Available hardware mixers of current device.
-EOF
+		, 'help'        => i( 'volume btn' ).' Mixer device volume control'
 	]
 	, [
 		  'label'   => 'Volume Control'
