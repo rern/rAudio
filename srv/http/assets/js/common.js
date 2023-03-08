@@ -201,9 +201,7 @@ Show usage: infoUsage()
 No reset + no close on click Ok: Set 'I.noreset = 1' in ok button function
 
 Note:
-- Set I.noreset = 1; to keep info open, no reset + no close
-- Require i-font, Select2.js
-- Single value/function - no need to be array
+- Set I.noreset = 1; to keep info open, omit infoButtonReset().
 ` );
 }
 
@@ -223,20 +221,6 @@ function info( json ) {
 </div>
 ` );
 	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-	$( '#infoX' ).click( function() {
-		if ( ! I.prompt ) {
-			infoButtonCommand( I.cancel );
-		} else {
-			$( '#infoPrompt' ).hasClass( 'hide' ) ? infoButtonCommand( I.cancel ) : $( '#infoContent, #infoPrompt' ).toggleClass( 'hide' );
-		}
-	} );
-	if ( typeof I !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'i-info-circle' );
-		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		return;
-	}
 	
 	// title
 	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
@@ -283,7 +267,13 @@ function info( json ) {
 			infoButtonCommand( buttonfn );
 		} );
 	}
-	$( '#infoCancel' ).click( () => $( '#infoX' ).click() );
+	$( '#infoX, #infoCancel' ).click( function() {
+		if ( ! I.prompt ) {
+			infoButtonCommand( I.cancel );
+		} else {
+			$( '#infoPrompt' ).hasClass( 'hide' ) ? infoButtonCommand( I.cancel ) : $( '#infoContent, #infoPrompt' ).toggleClass( 'hide' );
+		}
+	} );
 	$( '#infoOk' ).on( 'click', function() {
 		if ( ! I.prompt ) {
 			infoButtonCommand( I.ok );
