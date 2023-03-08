@@ -219,15 +219,18 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( page === 'relays' ) {
-		Rs = JSON.stringify( R );
-	} else if ( page === 'networks' ) {
-		$( '.back' ).click();
-	} else {
-		switchSet();
-	}
-	renderPage();
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( page === 'relays' ) {
+			Rs = JSON.stringify( R );
+		} else if ( page === 'networks' ) {
+			$( '.back' ).click();
+		} else {
+			switchSet();
+		}
+		renderPage();
+	}, 300 );
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
