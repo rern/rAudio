@@ -4,7 +4,16 @@ alias=r1
 
 . /srv/http/bash/addons.sh
 
-# 20230218
+# 20230318
+file=/etc/systemd/system/shairport.service
+if grep -q BeagleBone /proc/device-tree/model && ! grep -q ^Nice $file; then
+	sed -i '/^Group/ a\Nice=4' $file
+	sed -i '/^RestartSec/ a\Nice=4' ${file/shairport/spotifyd}
+	systemctl daemon-reload
+	systemctl try-restart shairport spotifyd
+fi
+
+# 20230204
 sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf &> /dev/null
 
 [[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
