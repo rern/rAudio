@@ -509,7 +509,7 @@ function info( json ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
-		if ( I.range ) {
+		if ( I.rangelabel ) {
 			$( '#infoRange input' ).on( 'click input keyup', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
