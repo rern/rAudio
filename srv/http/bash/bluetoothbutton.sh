@@ -6,15 +6,24 @@ mac=$( bluetoothctl show \
 		| head -1 \
 		| cut -d' ' -f2 )
 event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ {/Handlers=/ {s/^.*=//; p}}" /proc/bus/input/devices | awk '{print $NF}' ) # /proc/... contains trailing space
+cmdsh=/srv/http/bash/cmd.sh
+mixer=$( < /srv/http/data/shm/btreceiver )
 
+# line='Event: time 1678155098.191722, type 1 (EV_KEY), code 200 (KEY_XXXXXX), value 1'
 evtest /dev/input/$event | while read line; do
-	if [[ $line =~ .*EV_KEY.*KEY_NEXT.*1 ]]; then
-		/srv/http/bash/cmd.sh mpcprevnext$'\n'next
-	elif [[ $line =~ .*EV_KEY.*KEY_PREVIOUS.*1 ]]; then
-		/srv/http/bash/cmd.sh mpcprevnext$'\n'prev
-	elif [[ $line =~ .*EV_KEY.*KEY_STOP.*1 ]]; then
-		/srv/http/bash/cmd.sh mpcplayback$'\n'stop
-	elif [[ $line =~ .*EV_KEY.*KEY_PLAY.*1 || $line =~ .*EV_KEY.*KEY_PAUSE.*1 ]]; then
-		/srv/http/bash/cmd.sh mpcplayback
-	fi
+	! grep -Eq '^E.*(CD\)|SONG\)|VOLUME).*1$' <<< $line && continue # PLAYCD PAUSECD STOPCD NEXTSONG PREVIOUSSONG VOLUMEUP VOLUMEDOWN
+	
+	key=$( sed -E 's/.*KEY_(.*)\).*/\1/; s/CD|IOUSSONG|SONG//' <<< $line )
+	key=${key,,}
+	case $key in
+		play|pause ) $cmdsh mpcplayback;;
+		stop )       $cmdsh mpcplayback$'\n'stop;;
+		prev|next )  $cmdsh mpcprevnext$'\n'$key;;
+		volumeup|volumedown ) 
+			[[ $key == volumeup ]] && updn=+ || updn=-
+			$cmdsh "volumeupdown
+$updn
+
+$mixer";;
+	esac
 done

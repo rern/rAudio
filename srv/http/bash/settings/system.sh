@@ -358,7 +358,7 @@ lcdcharset )
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
-	if : >/dev/tcp/8.8.8.8/53; then
+	if internetConnected; then
 		curl -sfLO https://github.com/archlinuxarm/PKGBUILDs/raw/master/core/pacman-mirrorlist/mirrorlist
 		if [[ $? == 0 ]]; then
 			mv -f mirrorlist $file
@@ -720,15 +720,19 @@ txqueuelen=${args[4]}
 	fi
 	pushRefresh
 	;;
-statuscurrent )
-	$dirsettings/system-data.sh status
-	;;
 statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
 		echo '<hr>'
 		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
+	;;
+statusstart )
+	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
+	;;
+statusstop )
+	killall system-status.sh &> /dev/null
+	pushstream refresh '{"page":"system","intervalstatus":false}'
 	;;
 storage )
 	echo -n "\

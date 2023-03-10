@@ -161,6 +161,9 @@ info( {                                       // default
 	select        : { LABEL: 'VALUE', ... }   // ***
 	selectlabel   : 'LABEL'                   // (blank)        (select input label)
 	
+	rangelabel    : 'LABEL'                   // ***            (input range label)
+	rangesub      : 'SUBLABEL'                '' (none)         (sublabel under range)
+	
 	order         : [ TYPE, ... ]             // (sequence)     (order of *** inputs)
 	
 	values        : [ 'VALUE', ... ]          // (none)         (default values - in layout order)
@@ -189,22 +192,22 @@ info( {                                       // default
 	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
 	ok            : FUNCTION                  // (reset)        (ok click function)
+	oknoreset     : 1                         // (none)         (keep info open + omit reset; reset by cancel only)
+	
+	confirm       : 'CONFIRM'                 // (none)         (confirm prompt)
+	confirmno     : FUNCTION                  // (none)         (skip confirm if FUNCTION true)
 } );
 
 Get values: infoVal()
 Show usage: infoUsage()
-
-Note:
-- Require i-font, Select2.js
-- Single value/function - no need to be array
 ` );
 }
 
 I = { hidden: true }
 
 function info( json ) {
+	local(); // flag for consecutive info
 	I          = json;
-	I.active   = ! $( '#infoOverlay' ).hasClass( 'hide' ); // consecutive info calls
 	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' ); // fix: narrow screen scroll
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -216,26 +219,12 @@ function info( json ) {
 </div>
 ` );
 	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
-	$( '#infoX' ).click( function() {
-		infoButtonCommand( I.cancel );
-	} );
-	if ( typeof I !== 'object' ) {
-		$( '#infoIcon' ).addClass( 'i-info-circle' );
-		$( '#infoTitle' ).text( 'Info' );
-		$( '#infoContent' ).prepend( '<p class="message">'+ I +'</p>' );
-		$( '#infoOverlay' ).removeClass( 'hide' );
-		return;
-	}
 	
 	// title
 	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
 	if ( I.height ) $( '#infoContent' ).css( 'height', I.height );
 	if ( I.icon ) {
-		if ( I.icon.charAt( 0 ) !== '<' ) {
-			$( '#infoIcon' ).addClass( 'i-'+ I.icon );
-		} else {
-			$( '#infoIcon' ).html( I.icon );
-		}
+		I.icon.charAt( 0 ) !== '<' ? $( '#infoIcon' ).addClass( 'i-'+ I.icon ) : $( '#infoIcon' ).html( I.icon );
 	} else {
 		$( '#infoIcon' ).addClass( 'i-help' );
 	}
@@ -276,11 +265,23 @@ function info( json ) {
 			infoButtonCommand( buttonfn );
 		} );
 	}
-	$( '#infoCancel' ).one( 'click', function() {
-		infoButtonCommand( I.cancel );
+	$( '#infoX, #infoCancel' ).click( function() {
+		if ( ! I.confirm ) {
+			infoButtonCommand( I.cancel, 'cancel' );
+		} else {
+			$( '#infoConfirm' ).hasClass( 'hide' )
+				? infoButtonCommand( I.cancel, 'cancel' )
+				: $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
+		}
 	} );
-	$( '#infoOk' ).one( 'click', function() {
-		infoButtonCommand( I.ok );
+	$( '#infoOk' ).on( 'click', function() {
+		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
+			infoButtonCommand( I.ok );
+		} else {
+			$( '#infoConfirm' ).hasClass( 'hide' )
+				? $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' )
+				: infoButtonCommand( I.ok );
+		}
 	} );
 	if ( I.fileoklabel ) {
 		var htmlfile = '<div id="infoFile">'
@@ -429,22 +430,23 @@ function info( json ) {
 			}
 			htmls.select += '</select></td></tr>';
 		}
-		if ( I.rangevalue ) {
+		if ( I.rangelabel ) {
 			htmls.range = '<div id="infoRange">'
-						 +'<div class="value">'+ I.rangevalue +'</div>'
-						 +'<a class="min">0</a><input type="range" min="0" max="100" value="'+ +I.rangevalue +'"><a class="max">100</a></div>';
+						 +'<div class="name">'+ I.rangelabel +'</div>'
+						 +'<div class="value gr"></div>'
+						 +'<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>'
+						 + ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
+						 +'</div>';
 		}
 		var htmlcontent = '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
-		if ( ! I.order ) I.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select' ];
+		if ( ! I.order ) I.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range', 'footer' ];
 		var htmlinputs  = '';
 		I.order.forEach( type => {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
-		htmlcontent   += htmls.range || '';
-		htmlcontent   += htmls.footer || '';
 	}
 	if ( ! htmlcontent ) {
 		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
@@ -454,6 +456,8 @@ function info( json ) {
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
+	if ( I.confirm ) $( '#infoContent' ).after( '<div id="infoConfirm" class="infomessage hide">'+ I.confirm +'</div>' );
+	
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields
@@ -505,7 +509,7 @@ function info( json ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
-		if ( I.rangevalue ) {
+		if ( I.range ) {
 			$( '#infoRange input' ).on( 'click input keyup', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
@@ -539,26 +543,22 @@ function info( json ) {
 	infoCheckSet();
 }
 
-function infoButtonCommand( fn ) {
-	if ( typeof fn !== 'function' ) {
-		infoButtonReset();
-	} else {
-		$.when( fn() ).then( () => {
-			if ( I.active ) {
-				I.active = false;
-			} else {
-				infoButtonReset(); // not consecutive info calls
-			}
-		} );
+function infoButtonCommand( fn, cancel ) {
+	if ( typeof fn === 'function' ) fn();
+	if ( cancel ) delete I.oknoreset;
+	if ( ! V.local && I.oknoreset ) return // consecutive info / no reset
+	
+	if ( I.oknoreset ) {
+		$( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
+		return
 	}
-	$( 'body' ).css( 'overflow-y', '' );
-}
-function infoButtonReset() {
+	
 	I = { hidden: true }
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
 		.empty();
+	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
@@ -757,8 +757,9 @@ function infoSetValues() {
 			$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select
+		} else { // text, password, textarea, select, range
 			$this.val( val );
+			if ( type === 'range' ) $('#infoRange .value' ).text( val );
 		}
 	} );
 }

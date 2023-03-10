@@ -86,6 +86,11 @@ $( '.lanadd' ).click( function() {
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
 	V.li = $( this );
+	if ( V.li.hasClass( 'bt' ) && ! $('#codebluetoothlist' ).hasClass( 'hide' ) ) {
+		$('#codebluetoothlist' ).addClass( 'hide' );
+		return
+	}
+	
 	if ( V.li.hasClass( 'accesspoint' ) ) return
 	
 	V.listid  = V.li.parent().prop( 'id' );
@@ -233,11 +238,11 @@ function bluetoothCommand( cmd, mac ) {
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac ], data => {
 		if ( ! data ) {
-			$( '#codebluetooth' )
+			$( '#codebluetoothlist' )
 				.empty()
 				.addClass( 'hide' );
 		} else {
-			$( '#codebluetooth' )
+			$( '#codebluetoothlist' )
 				.html( data )
 				.data( 'mac', mac )
 				.removeClass( 'hide' );

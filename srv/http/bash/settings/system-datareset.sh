@@ -70,13 +70,13 @@ dtparam=audio=on"
 dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
-	[[ $rpi0 ]] && config+="
+	[[ $BB =~ ^(09|0c)$ ]] && config+="
 gpu_mem=32
 force_turbo=1
 gpu_mem=32
 hdmi_drive=2
 max_usb_current=1
-over_voltage=2"
+over_voltage=2" # rpi 0
 	echo "$config" > /boot/config.txt
 	# css color
 	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset
@@ -165,7 +165,7 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-touch $dirsystem/usbautoupdate
+touch $dirsystem/{btoutputonly,usbautoupdate}
 
 # webradio
 curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio

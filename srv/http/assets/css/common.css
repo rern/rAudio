@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1677310933' );
+	src         : url( '/assets/fonts/rern.woff2?v=1677937520' );
 }
 @font-face {
 	font-family : Lato;
@@ -848,7 +848,7 @@ input:checked {
 }
 input[type=checkbox]:checked:disabled,
 input[type=radio]:checked:disabled {
-	background-color: var( --cmd );
+	background-color: var( --cmd ) !important;
 	box-shadow: none;
 }
 input[type=checkbox]:disabled,
@@ -900,6 +900,9 @@ input[type=radio]:disabled {
 .infomenusub {
 	line-height: 27px;
 	background: var( --cg );
+}
+#infoPrompt {
+	margin-top: 20px;
 }
 @media ( max-height: 420px ) {
 	#infoContent { padding: 10px 5px }

@@ -133,7 +133,7 @@ div.helpblock {
 }
 .helpmenu.label {
 	width: fit-content;
-	padding-left: 10px;
+	padding: 0 5px 0 10px;
 	text-align: right;
 	background: var( --cga );
 }
@@ -589,9 +589,12 @@ input.disabled + .switchlabel:after {
 #statusvalue .i-song {
     margin-left: 0;
 }
-#statuslabel i {
+#warning {
+	margin-top: -1px;
+}
+#warning i {
 	font-size: 16px;
-	vertical-align: baseline;
+	vertical-align: 0;
 }
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }

@@ -23,9 +23,7 @@ calc() { # $1 - decimal precision, $2 - math without spaces
 cpuInfo() {
 	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
-	C=${hwrevision: -4:1}
 	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || onboardwireless=1
-	[[ $BB =~ ^(09|0c)$ ]] && rpi0=1
 }
 data2json() {
 	data="$1"
@@ -55,8 +53,11 @@ getElapsed() {
 	mmss=$( mpc status %currenttime% )
 	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
 }
+internetConnected() {
+	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0 || return 1
+}
 ipAddress() {
-	ifconfig | awk '/inet.*broadcast/ {print $2;exit}'
+	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
 }
 notify() { # icon title message delayms
 	if [[ $1 == -blink ]]; then

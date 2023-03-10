@@ -388,24 +388,25 @@ function displayBottom() {
 	$( '#'+ V.page ).addClass( 'active' );
 }
 function displayPlayback() {
-	var $cover  = $( '#coverart-block' );
-	var volume  = D.volume && ! D.volumenone;
-	$time.toggleClass( 'hide', ! D.time );
-	$volume.toggleClass( 'hide', ! volume );
+	$time.toggleClass( 'hide', ! D.time );                          // #time-knob hidden on load - set before get :hidden
+	var hidetime   = ! D.time || $( '#time-knob' ).is( ':hidden' ); // #time-knob hidden by css on small screen
+	var hidevolume = ! D.volume || D.volumenone;
+	$volume.toggleClass( 'hide', hidevolume );
+	var $cover     = $( '#coverart-block' );
 	$cover.toggleClass( 'hide', ! D.cover );
-	if ( ( ! D.time || ! volume ) && V.wW > 500 ) {
+	if ( ( hidetime || hidevolume ) && V.wW > 500 ) {
 		$( '#time-knob, #volume-knob' ).css( 'width', '38%' );
-		if ( ! D.time && ! volume ) {
+		if ( hidetime && hidevolume ) {
 			$cover.css( { width: '100%', 'max-width': '100%' } );
-		} else if ( ! D.time || ! volume ) {
+		} else if ( hidetime || hidevolume ) {
 			$cover.css( { width: 'fit-content', 'max-width': '55vw' } );
 		}
 	} else {
 		$( '#time-knob, #volume-knob' ).css( 'width', '' );
 		$cover.css( { width: '', 'max-width': '' } );
 	}
-	if ( D.time ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
-	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', D.time );
+	if ( ! hidetime ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
+	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
@@ -726,23 +727,21 @@ function infoLibrary( page ) {
 		, values       : values
 		, checkchanged : 1
 		, beforeshow   : () => {
-			var $chk = $( '#infoContent input' );
 			var $el  = {}
-			keys.forEach( ( k, i ) => $el[ k ] = $chk.eq( i ) );
+			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			if ( page2 ) {
 				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
 				$el.tapaddplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', 0 );
+					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 				} );
 				$el.tapreplaceplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', 0 );
+					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 				} );
 				$el.hidecover.change( function() {
-					var enable = $( this ).prop( 'checked' ) ? 0 : 1;
+					var enable = $( this ).prop( 'checked' ) ? false : true;
 					$el.fixedcover
 						.prop( 'disabled', ! enable )
-						.prop( 'checked', 0 )
-						.parent().toggleClass( 'gr', ! enable );
+						.prop( 'checked', false );
 				} );
 				$el.fixedcover.prop( 'disabled', D.hidecover );
 			} else {
@@ -769,8 +768,8 @@ function infoUpdate( path ) {
 		, radio      : path ? '' : { 'Only changed files' : '', 'Rebuild entire database': 'rescan' }
 		, beforeshow : () => {
 			if ( ! C ) {
-				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', 1 );
-				$( '#infoContent input' ).eq( 1 ).prop( 'checked', 1 );
+				$( '#infoContent input' ).eq( 0 ).prop( 'disabled', true );
+				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
 		, ok         : () => bash( [ 'mpcupdate', path || infoVal() ] )
@@ -1535,9 +1534,16 @@ function setInfo() {
 		}
 	}
 	$( '#sampling' ).html( sampling );
-	if ( S.icon !== $( '#playericon' ).prop( 'class' ).replace( 'i-', '' ) ) {
-		$( '#playericon' ).removeAttr( 'class' );
-		if ( S.icon ) $( '#playericon' ).addClass( 'i-'+ S.icon );
+	if ( S.icon ) {
+		if ( 'i-'+ S.icon !== $( '#playericon' ).prop( 'class' ) ) {
+			$( '#playericon' )
+				.removeAttr( 'class' )
+				.addClass( S.icon ? 'i-'+ S.icon : 'hide' );
+		}
+	} else {
+		$( '#playericon' )
+				.removeAttr( 'class' )
+				.addClass( 'hide' );
 	}
 	if ( $time.is( ':hidden' ) ) setProgressElapsed();
 }

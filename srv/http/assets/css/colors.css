@@ -22,7 +22,7 @@ grn, .grn { color : #0f0 }
 ora, .ora { color : #f80 }
 pur, .pur { color : #f0f }
 red, .red { color : #f00 }
-yl,  .yl  { color : #ff0 }
+yl,  .yl  { color : #ff0 !important }
 wh,  .wh  { color : var( --cw ) !important }
 
 .bgr      { background       : var( --cgd ) !important }

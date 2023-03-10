@@ -24,6 +24,25 @@ var pin2gpio = {
 	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
+$( '.close' ).off( 'click' ).click( function() { // off close in settings.js
+	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
+		if ( ! list ) {
+			location.href = '/';
+			return
+		}
+		
+		info( {
+			  icon    : page
+			, title   : 'System Setting'
+			, message : 'Reboot required for:<br><br>'
+						+'<pre><wh>'+ list +'</wh></pre>'
+			, cancel  : () => location.href = '/'
+			, okcolor : orange
+			, oklabel : ico( 'reboot' ) +'Reboot'
+			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
+		} );
+	} );
+} );
 $( '.power' ).click( infoPower );
 $( '.img' ).click( function() {
 	var name             = $( this ).data( 'name' );
@@ -37,14 +56,14 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
 	var txtrotaryencoder = `${ gpiosvg }<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
 	var title = {
-		  i2cbackpack   : [ 'Character LCD', '', 'lcdchar' ]
-		, lcdchar       : [ 'Character LCD', txtlcdchar ]
+		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
+		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
 		, relays        : [ 'Relays Module' ]
 		, rotaryencoder : [ 'Rorary Encoder', txtrotaryencoder, 'volume' ]
 		, lcd           : [ 'TFT 3.5" LCD' ]
-		, mpdoled       : [ 'Spectrum OLED', txtmpdoled ]
-		, powerbutton   : [ 'Power Button',  '', 'power', '300px', 'svg' ]
-		, vuled         : [ 'VU LED',        '', 'led',   '300px', 'svg' ]
+		, mpdoled       : [ 'Spectrum OLED',  txtmpdoled ]
+		, powerbutton   : [ 'Power Button',   '',               'power', '300px', 'svg' ]
+		, vuled         : [ 'VU LED',         '',               'led',   '300px', 'svg' ]
 	}
 	var d                = title[ name ];
 	info( {
@@ -59,17 +78,7 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
-	if ( $( e.target ).hasClass( 'help' ) ) return
-	
-	var $this = $( this );
-	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intStatus );
-		bannerHide();
-		$this.removeClass( 'blink wh' );
-	} else {
-		$this.addClass( 'blink wh' );
-		V.intStatus = setInterval( getStatus, 10000 );
-	}
+	bash( [ S.intervalstatus ? 'statusstop' : 'statusstart' ] );
 } );
 $( '.addnas' ).click( function() {
 	infoMount();
@@ -357,7 +366,7 @@ $( '#setting-powerbutton' ).click( function() {
 	} );
 	var infopowerbutton = `\
 <table>
-<tr><td width="70">On</td>
+<tr><td width="40">On</td>
 	<td><input type="text" disabled></td>
 </tr>
 <tr><td>Off</td>
@@ -377,7 +386,7 @@ $( '#setting-powerbutton' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg + infopowerbutton
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
@@ -401,24 +410,24 @@ $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin  = '<td colspan="3"><select >';
+	var pin  = '<td><select >';
 	$.each( pin2gpio, ( k, v ) => pin += '<option value='+ v +'>'+ k +'</option>' );
 	pin += '</select></td>';
 	var inforotaryencoder = `\
 <table>
-<tr><td>CLK</td>${ pin }</tr>
+<tr><td width="60">CLK</td>${ pin }</tr>
 <tr><td>DT</td>${ pin }</tr>
 <tr><td>SW</td>${ pin }</tr>
-<tr><td>Each step <gr>(%)</gr></td>
-	<td style="width: 55px"><label><input type="radio" name="step" value="1">1</label></td>
-	<td style="width: 55px"><label><input type="radio" name="step" value="2">2</label></td>
+<tr><td>Step</td>
+	<td><label><input type="radio" name="step" value="1">1%</label></td>
+	<td><label><input type="radio" name="step" value="2">2%</label></td>
 </tr>
 </table>`;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
-		, boxwidth     : 90
+		, boxwidth     : 70
 		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
@@ -504,7 +513,7 @@ $( '#setting-vuled' ).click( function() {
 	$.each( pin2gpio, ( k, v ) => opt += '<option value="'+ v +'">'+ k +'</option>' );
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'/7</td><td><select>'+ opt +'</select></td></tr>';
+		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ opt +'</select></td></tr>';
 	}
 	info( {
 		  icon         : SW.icon
@@ -513,7 +522,7 @@ $( '#setting-vuled' ).click( function() {
 		, select       : htmlpins
 		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
 		, checkchanged : S.vuled
-		, boxwidth     : 80
+		, boxwidth     : 70
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
@@ -812,14 +821,6 @@ $( '#i2smodule, #timezone' ).on( 'select2:opening', function () { // temp css fo
 
 } ); // document ready end <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function getStatus() {
-	bash( [ 'statuscurrent' ], data => {
-		S.status  = data.status;
-		S.warning = data.warning;
-		$( '#status' ).html( S.status + S.warning );
-		$( '#warning' ).toggleClass( 'hide', S.warning === '' );
-	}, 'json' );
-}
 function i2sOptionSet() {
 	if ( $( '#i2smodule option' ).length > 2 ) {
 		if ( $( '#divi2smodule' ).hasClass( 'hide' ) ) {
@@ -1010,12 +1011,16 @@ function infoTimezone() {
 	} );
 }
 function renderPage() {
+	$( '#status' ).html( S.status + S.warning );
+	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
-	$( '#status' ).html( S.status + S.warning );
-	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
+	$( '.refresh' ).toggleClass( 'blink wh', S.intervalstatus === true );
+	if ( S.intervalstatus && $( '#data' ).hasClass( 'hide' ) ) return
+	
+	$( S.softlimit ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {

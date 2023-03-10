@@ -4,6 +4,9 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
+	, 'help'   => <<< EOF
+{$Fi( 'stop btn' )} {$Fi( 'play btn' )} {$Fi( 'pause btn' )} Playback control
+EOF
 ] );
 ?>
 	<div class="col-l text gr">
@@ -15,8 +18,6 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=( i( 'stop btn' ).' '.i( 'play btn' ).' '.i( 'pause btn' ) )?> Playback control
-
 <a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
 Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 </div>
@@ -26,6 +27,11 @@ Through plugins and libraries it can play a variety of sound files while being c
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'asound'
+	, 'button' => [ 'btoutputonly' => 'gear' ]
+	, 'help'   => <<< EOF
+{$Fi( 'gear btn' )} Other outputs while Bluetooth connected
+ · Should be disabled if not used simultaneously
+EOF
 ];
 $body = [
 	[
@@ -38,10 +44,8 @@ $body = [
 			, 'setting'     => 'custom'
 			, 'settingicon' => 'volume'
 			, 'help'        => <<< EOF
-{$Fi( 'volume' )} Volume setting and control:
- · Player: Should be set at 0dB
- · Playback: Should be set at 100%
- · Use device volume to control level
+{$Fi( 'volume btn' )} Sender volume control
+ · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
@@ -49,7 +53,11 @@ EOF
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
 		, 'setting' => false
-		, 'help'    => 'HDMI device available only when connected before boot.'
+		, 'help'    => <<< EOF
+HDMI audio:
+ · Available when connected before boot only
+ · Enable plug and play: {$Ftab( 'mpd', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
+EOF
 	]
 	, [
 		  'label'       => 'Mixer Device'
@@ -57,11 +65,7 @@ EOF
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
-		, 'help'  => <<< EOF
-{$Fi( 'volume btn' )} Control current mixer device.
-
-Available hardware mixers of current device.
-EOF
+		, 'help'        => i( 'volume btn' ).' Mixer device volume control'
 	]
 	, [
 		  'label'   => 'Volume Control'
@@ -103,11 +107,15 @@ EOF
 		, 'id'      => 'dop'
 		, 'setting' => false
 		, 'help'    => <<< EOF
-For DSD-capable devices without drivers dedicated for native DSD.
- · Enable if there's static/no sound from the DAC which means not support as native DSD.
- · DoP will repack 16bit DSD stream into 24bit PCM frames and transmit to the DAC. 
- · PCM frames will be reassembled back to original DSD stream, COMPLETELY UNCHANGED, with expense of double bandwith.
- · On-board audio and non-DSD devices will always get DSD converted to PCM stream, no bit-perfect
+<wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
+ · DoP repacks 16bit DSD stream into 24bit PCM frames. 
+ · PCM frames transmitted to DAC and reassembled back to original DSD stream.
+ · DoP is bit-perfect by itself. (with expense of double bandwith)
+ · Enabled:
+	· if DAC not support native DSD.
+	· If there's static/no sound of DSD.
+ · Disabled without native DSD support
+	· DSD converted to PCM stream. (no bit-perfect)
 EOF
 	]
 ];

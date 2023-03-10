@@ -7,6 +7,7 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
+	, 'help'   => i( 'power btn' ).' Power'
 ] );
 ?>
 	<div id="systemlabel" class="col-l text gr">
@@ -18,7 +19,6 @@ htmlHead( [ //////////////////////////////////
 	</div>
 	<div id="systemvalue" class="col-r text"></div> 
 	<div style="clear:both"></div>
-	<div class="helpblock hide"><?=i( 'power btn' )?> Power</div>
 	<pre id="codesystem" class="hide"></pre>
 </div>
 <div id="divstatus" class="section">
@@ -27,6 +27,7 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'journalctl'
 	, 'button' => [ 'refresh' => 'refresh' ]
+	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ] );
 ?>
 	<div id="statuslabel" class="col-l text gr">
@@ -39,29 +40,26 @@ htmlHead( [ //////////////////////////////////
 	<div id="status" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
-<?=i( 'refresh btn' )?> Refresh every 10 seconds
-
 <wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
  
-<wh>• CPU temperature:</wh>
- · 80-84°C: ARM cores throttled.
- · 85°C: ARM cores and GPU throttled.
-
-RPi 3B+: 60°C soft limit default (optimized throttling)
+<wh>• Warnings:</wh> (if any)
+ · Power supply voltage and throttled state (<a href="https://www.raspberrypi.com/documentation/computers/os.html#get_throttled">vcgencmd get_throttled</a>)<!--
+--><a class="softlimitno">
+	· 80-84°C: CPU cores throttled.
+	· 85°C: CPU cores and GPU throttled.</a><!--
+--><a class="softlimit">
+	· 60°C: Optimized throttling CPU cores and GPU (Soft limit)</a>
 </div>
 <?php
-$cpurevision = exec( 'grep ^Revision /proc/cpuinfo' );
-if ( substr( $cpurevision, -3, 2 ) === '0d' ) {
-	htmlSetting( [
-		  'label'    => 'Custom Soft Limit'
-		, 'sublabel' => 'CPU throttling'
-		, 'id'       => 'softlimit'
-		, 'help'     => 'Temperature limit for CPU throttling (default: 60°C)'
-	] );
-}
+htmlSetting( [
+	  'label'    => 'Custom Soft Limit'
+	, 'sublabel' => 'CPU throttling'
+	, 'id'       => 'softlimit'
+	, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
+] );
 ?>
 </div>
 <div id="divstorage" class="section">
@@ -70,15 +68,16 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
+	, 'help'   => i( 'plus-circle btn' ).' Add network storage'
+				.'<br><br><wh>USB drives:</wh> Will be found and mounted automatically.'
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="helpblock hide">
-<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu
-'.i( 'plus-circle btn' ).' Add network storage')?>
-<wh>USB drives:</wh> Will be found and mounted automatically.
-
+<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
+<br>
 <wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+
 <wh>• CIFS:</wh>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
@@ -140,6 +139,7 @@ EOF
 		, 'help'     => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
+ · Should be disabled if not used.
 EOF
 	]
 	, [
@@ -169,20 +169,21 @@ $body = [
 <div id="divi2s">
 	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
-	<div id="divi2smodulesw">
-		<input id="i2smodulesw" type="checkbox">
-		<div class="switchlabel" for="i2smodulesw"></div>
-	</div>
-	<div id="divi2smodule">
-		<select id="i2smodule"></select>
-		<i id="setting-i2smodule" class="i-gear setting"></i>
-	</div>
-	<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
+		<div id="divi2smodulesw">
+			<input id="i2smodulesw" type="checkbox">
+			<div class="switchlabel" for="i2smodulesw"></div>
+		</div>
+		<div id="divi2smodule">
+			<select id="i2smodule"></select>
+			<i id="setting-i2smodule" class="i-gear setting"></i>
+		</div>
+		<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 
-I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
- · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
-</span>
+	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+	 · HAT with EEPROM could be automatically detected.
+	 · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+		</span>
+	</div>
 </div>
 EOF
 	]

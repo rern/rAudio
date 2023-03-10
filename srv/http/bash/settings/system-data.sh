@@ -3,13 +3,13 @@
 . /srv/http/bash/common.sh
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
+timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
 uptime=$( uptime -p | tr -d 's,' | sed 's/up //; s/ day/d/; s/ hour/h/; s/ minute/m/' )
 status="\
 $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
-$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · }</wide><br>\
+$( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
-! : >/dev/tcp/8.8.8.8/53 && status+="<br><i class='i-warning'></i>&ensp;No Internet connection"
 softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
@@ -36,8 +36,9 @@ if [[ $throttled != 0x0 ]]; then
 		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
 fi
+! internetConnected && warning+=" · <i class='i-networks'></i> No Internet connection"
 # for interval refresh
-[[ $1 == status ]] && echo '{"status":"'$status'","warning":"'$warning'"}' && exit
+[[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'","intervalstatus":true}' && exit
 
 readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
 cpu=${cpu[0]}
@@ -50,17 +51,18 @@ rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plu
 if [[ $rpimodel == *BeagleBone* ]]; then
 	soc=AM3358
 else
+	soc=BCM
 	cpuInfo
+	C=${hwrevision: -4:1}
 	case $C in
-		0 ) soc=BCM2835;; # 0, 1
-		1 ) soc=BCM2836;; # 2
+		0 ) soc+=2835;; # 0, 1
+		1 ) soc+=2836;; # 2
 		2 ) case $BB in
-				04|08 ) soc=BCM2837;;   # 2 1.2, 3B
-				0d|0e ) soc=BCM2837B0;; # 3A+, 3B+
-				12 )    soc=BCM2710A1;; # 0 2W
-			esac
-			;;
-		3 ) soc=BCM2711;; # 4
+				04|08 ) soc+=2837;;   # 2 1.2, 3B
+				0d|0e ) soc+=2837B0;; # 3A+, 3B+
+				12 )    soc+=2710A1;; # 0 2W
+			esac;;
+		3 ) soc+=2711;; # 4
 	esac
 fi
 soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
@@ -233,13 +235,13 @@ data+='
 , "status"           : "'$status'"
 , "system"           : "'$system'"
 , "timezone"         : "'$timezone'"
-, "timezoneoffset"   : "'$( date +%z | sed -E 's/(..)$/:\1/' )'"
+, "timezoneoffset"   : "'$timezoneoffset'"
 , "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
 , "vuled"            : '$( exists $dirsystem/vuled )'
 , "vuledconf"        : '$vuledconf'
 , "warning"          : "'$warning'"'
 
-if [[ ! $BB =~ ^(09|0c|12)$ ]]; then
+if [[ ! $BB =~ ^(09|0c|12)$ ]]; then # rpi zero, zero w, zero 2w
 	data+='
 , "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"       : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )

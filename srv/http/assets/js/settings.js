@@ -10,7 +10,8 @@ var cmd        = {
 	  albumignore  : playersh   +'albumignore'
 	, asound       : playersh   +'devices'
 	, avahi        : networkssh +'avahi'
-	, bluetooth    : networkssh +'bluetooth'
+	, bluetooth    : networkssh +'bluetoothshow'
+	, btreceiver   : playersh   +'bluetoothinfo'
 	, journalctl   : systemsh   +'journalctl'
 	, lan          : networkssh +'ifconfigeth'
 	, mount        : systemsh   +'storage'
@@ -162,11 +163,9 @@ function pushstreamDisconnect() {
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
-	} else if ( page === 'system' ) {
-		if ( $( '#refresh' ).hasClass( 'blink' ) ) {
-			clearInterval( V.intStatus );
-			$( '#refresh' ).removeClass( 'blink' );
-		}
+	} else if ( page === 'system' && S.intervalstatus ) {
+		bash( [ 'statusstop' ] );
+		$( '.refresh' ).removeClass( 'blink wh' );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -220,15 +219,18 @@ function psPlayer( data ) {
 function psRefresh( data ) {
 	if ( data.page !== page ) return
 	
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( page === 'relays' ) {
-		Rs = JSON.stringify( R );
-	} else if ( page === 'networks' ) {
-		$( '.back' ).click();
-	} else {
-		switchSet();
-	}
-	renderPage();
+	clearTimeout( V.debounce );
+	V.debounce = setTimeout( () => {
+		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+		if ( page === 'relays' ) {
+			Rs = JSON.stringify( R );
+		} else if ( page === 'networks' ) {
+			$( '.back' ).click();
+		} else {
+			switchSet();
+		}
+		renderPage();
+	}, 300 );
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
@@ -241,8 +243,10 @@ function psVolume( data ) {
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
-		$( '.infofooter' ).text( data.db +' dB' );
+		$( '#infoRange .sub' ).text( data.db +' dB' );
 		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoContent' ).removeClass( 'hide' );
+		$( '#infoConfirm' ).addClass( 'hide' );
 	}, 300 );
 }
 function psWlan( data ) {
@@ -333,28 +337,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	}
 } );
 $( '.close' ).click( function() {
-	if ( page !== 'system' ) {
-		location.href = '/'; 
-		return
-	}
-	
-	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
-		if ( ! list ) {
-			location.href = '/';
-			return
-		}
-		
-		info( {
-			  icon    : page
-			, title   : 'System Setting'
-			, message : 'Reboot required for:<br><br>'
-						+'<pre><wh>'+ list +'</wh></pre>'
-			, cancel  : () => location.href = '/'
-			, okcolor : orange
-			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
-		} );
-	} );
+	location.href = '/'; 
 } );
 $( '.page-icon' ).click( function() {
 	if ( $.isEmptyObject( S ) ) return
@@ -365,9 +348,9 @@ $( '.page-icon' ).click( function() {
 	$( 'html, body' ).scrollTop( 0 );
 } );
 $( '#button-data' ).click( function() {
-	$( '#button-data, #data' ).addClass( 'hide' );
 	switchSet();
 	renderPage();
+	$( '#button-data, #data' ).addClass( 'hide' );
 } ).on( 'mousedown touchdown', function() {
 	timer = setTimeout( () => location.reload(), 1000 );
 } ).on( 'mouseup mouseleave touchup touchleave', function() {

@@ -41,8 +41,24 @@ albumignore )
 bluetoothinfo )
 	mac=$( cut -d' ' -f1 $dirshm/btconnected )
 	echo "\
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $mac )
+
 <bll># bluetoothctl info $mac</bll>
 $( bluetoothctl info $mac )"
+	;;
+btoutputonly )
+	btonly=${args[1]}
+	[[ -e $dirmpdconf/bluetooth.conf ]] && btenabled=1
+	[[ -e $dirmpdconf/output.conf ]] && outputenabled=1
+	if [[ $btonly == true ]]; then
+		touch $dirsystem/btoutputonly
+		[[ $btenabled && $outputenabled ]] && restart=1
+	else
+		rm $dirsystem/btoutputonly
+		[[ $btenabled && ! $outputenabled ]] && restart=1
+	fi
+	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
 	;;
 buffer | outputbuffer )
 	type=${args[0]}
