@@ -62,7 +62,8 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
 			, values     : vol
 			, rangesub   : nomixer ? '0dB (No Mixer)' : db +' dB'
-			, prompt     : warning
+			, confirm    : warning
+			, confirmno  : () => $( '.sub' ).text() > '0.00 dB'
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
@@ -73,9 +74,9 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => {
-				I.noreset = 1;
 				bash( [ cmd ] );
 			}
+			, oknoreset  : 1
 		} );
 	} );
 } );

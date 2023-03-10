@@ -192,16 +192,14 @@ info( {                                       // default
 	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
 	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
 	ok            : FUNCTION                  // (reset)        (ok click function)
+	oknoreset     : 1                         // (none)         (keep info open + omit reset; reset by cancel only)
 	
-	prompt        : 'PROMPT'                  // (none)         (confirm prompt)
+	confirm       : 'CONFIRM'                 // (none)         (confirm prompt)
+	confirmno     : FUNCTION                  // (none)         (skip confirm if FUNCTION true)
 } );
 
 Get values: infoVal()
 Show usage: infoUsage()
-No reset + no close on click Ok: Set 'I.noreset = 1' in ok button function
-
-Note:
-- Set I.noreset = 1; to keep info open, omit infoButtonReset().
 ` );
 }
 
@@ -268,17 +266,21 @@ function info( json ) {
 		} );
 	}
 	$( '#infoX, #infoCancel' ).click( function() {
-		if ( ! I.prompt ) {
-			infoButtonCommand( I.cancel );
+		if ( ! I.confirm ) {
+			infoButtonCommand( I.cancel, 'cancel' );
 		} else {
-			$( '#infoPrompt' ).hasClass( 'hide' ) ? infoButtonCommand( I.cancel ) : $( '#infoContent, #infoPrompt' ).toggleClass( 'hide' );
+			$( '#infoConfirm' ).hasClass( 'hide' )
+				? infoButtonCommand( I.cancel, 'cancel' )
+				: $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
 		}
 	} );
 	$( '#infoOk' ).on( 'click', function() {
-		if ( ! I.prompt ) {
+		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
 			infoButtonCommand( I.ok );
 		} else {
-			$( '#infoPrompt' ).hasClass( 'hide' ) ? $( '#infoContent, #infoPrompt' ).toggleClass( 'hide' ) : infoButtonCommand( I.ok );
+			$( '#infoConfirm' ).hasClass( 'hide' )
+				? $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' )
+				: infoButtonCommand( I.ok );
 		}
 	} );
 	if ( I.fileoklabel ) {
@@ -454,7 +456,7 @@ function info( json ) {
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
-	if ( I.prompt ) $( '#infoContent' ).after( '<div id="infoPrompt" class="infomessage hide">'+ I.prompt +'</div>' );
+	if ( I.confirm ) $( '#infoContent' ).after( '<div id="infoConfirm" class="infomessage hide">'+ I.confirm +'</div>' );
 	
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
@@ -541,15 +543,13 @@ function info( json ) {
 	infoCheckSet();
 }
 
-function infoButtonCommand( fn ) {
+function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
-	if ( ! V.local ) infoButtonReset(); // no reset if consecutive info
-	$( 'body' ).css( 'overflow-y', '' );
-}
-function infoButtonReset() {
-	if ( I.noreset ) {
-		delete I.noreset;
-		$( '#infoContent, #infoPrompt' ).toggleClass( 'hide' );
+	if ( cancel ) delete I.oknoreset;
+	if ( ! V.local && I.oknoreset ) return // consecutive info / no reset
+	
+	if ( I.oknoreset ) {
+		$( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
 		return
 	}
 	
@@ -558,6 +558,7 @@ function infoButtonReset() {
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
 		.empty();
+	$( 'body' ).css( 'overflow-y', '' );
 }
 function infoButtonWidth() {
 	if ( I.buttonfit ) return

@@ -245,6 +245,8 @@ function psVolume( data ) {
 		$( '#infoRange input' ).val( val );
 		$( '#infoRange .sub' ).text( data.db +' dB' );
 		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoContent' ).removeClass( 'hide' );
+		$( '#infoConfirm' ).addClass( 'hide' );
 	}, 300 );
 }
 function psWlan( data ) {
