@@ -5,13 +5,13 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan' => 'search' ]
+	, 'help'   => i( 'search btn' ).' Scan to connect'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
 	<pre id="codebluetoothlist" class="status hide"></pre>
-	<div class="helpblock hide">{$Fi( 'search btn' )} Scan to connect
-{$Fi( 'bluetooth btn' )} {$Fi( 'btsender btn' )} Context menu
-
+	<div class="helpblock hide">{$Fi( 'bluetooth btn' )} {$Fi( 'btsender btn' )} Context menu
+	
 <wh>rAudio as sender:</wh> (or pairing non-audio devices)
  • Pair:
 	· On receiver: Turn on Discovery / Pairing mode
