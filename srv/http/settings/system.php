@@ -69,14 +69,15 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
 	, 'help'   => i( 'plus-circle btn' ).' Add network storage'
+				.'<br><br><wh>USB drives:</wh> Will be found and mounted automatically.'
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
 	<div class="helpblock hide">
 <?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
-<wh>USB drives:</wh> Will be found and mounted automatically.
-
+<br>
 <wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
+
 <wh>• CIFS:</wh>
 <pre>
 mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
