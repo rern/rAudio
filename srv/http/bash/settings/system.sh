@@ -80,7 +80,7 @@ sharedDataSet() {
 		ln -s $dirshareddata/$dir $dirdata
 		chown -h http:http $dirdata/$dir
 	done
-	chown -h mpd:audio $dirdata/{mpd,playlists}
+	chown -h mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
