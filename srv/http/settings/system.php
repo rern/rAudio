@@ -75,14 +75,14 @@ htmlHead( [ //////////////////////////////////
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
-<pre>
+<pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
-# CIFS: (no user - username=guest, no password - password="")
+<g># CIFS: no user - username=guest, no password - password=""</g>
 mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o noauto,username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
 
-# NFS:
+<g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,noauto,bg,soft,timeo=5
 </pre>
