@@ -5,7 +5,7 @@ htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
 	, 'status' => 'bluetooth'
 	, 'button' => [ 'btscan' => 'search' ]
-	, 'help'   => i( 'search btn' ).' Scan to connect'
+	, 'help'   => i( 'search btn' ).' Available devices'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
@@ -42,7 +42,7 @@ htmlHead( [ //////////////////////////////////
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="helpblock hide"><?=i( 'plus-circle btn' )?> Manual connect
-<?=i( 'search btn' )?> Scan to connect
+<?=i( 'search btn' )?> Available networks
 <?=i( 'wifi btn' )?> Context menu
 
 Note:

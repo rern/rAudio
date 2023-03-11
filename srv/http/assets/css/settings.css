@@ -30,12 +30,6 @@
 	text-shadow: -1px 0 2px #000000;
 }
 
-.entries li,
-.entries li span {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 heading,
 .col-l,
 .entries li {
@@ -98,6 +92,9 @@ div.helpblock {
 	line-height: 22px;
 	color: var( --cg75 );
 	white-space: pre-wrap;
+}
+heading + .helpblock {
+	margin-bottom: 30px;
 }
 .helpblock i {
 	width: 20px;
@@ -310,10 +307,19 @@ cy {
 }
 .entries {
 	display: block;
-	margin: -10px 0 10px 0;
+	margin: -16px 0 10px 0;
 	padding: 0;
 	line-height: 42px;
 	list-style: none;
+}
+.entries li,
+.entries li span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.entries li:first-of-type {
+	border-top: 1px solid var( --cg );
 }
 .entries i {
 	width: 40px;

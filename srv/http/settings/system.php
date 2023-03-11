@@ -73,8 +73,7 @@ htmlHead( [ //////////////////////////////////
 ] );
 ?>
 	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="helpblock hide">
-<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
+	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
 <br>
 <wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
 
