@@ -1311,7 +1311,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 		} else {
 			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.' 
 						 +'<br>To populate Library database:'
-						 +'<br>Settings > Library | '+ ico( 'refresh-library wh' )
+						 +'<div class="menu" style="width: 160px"><a class="sub">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgr60' ) +'</div>'
 		}
 		info( {
 			  icon    : 'library'
