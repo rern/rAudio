@@ -5,7 +5,7 @@ htmlHead( [ //////////////////////////////////
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
-{$Fi( 'stop btn' )} {$Fi( 'play btn' )} {$Fi( 'pause btn' )} Playback control
+{$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 EOF
 ] );
 ?>
