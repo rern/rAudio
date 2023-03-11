@@ -1309,9 +1309,9 @@ $( '#lib-mode-list' ).click( function( e ) {
 		} else if ( V.mode === 'latest' ) {
 			var message = 'No new albums added since last update.';
 		} else {
-			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.'
+			var message = 'Database not yet available in this mode.'
 						 +'<br>If music files already in SD, NAS or USB,'
-						 +'<br>populate them to database:'
+						 +'<br>import them to database:'
 						 +'<div class="menu" style="width: 160px"><a class="sub">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>'
 		}
 		info( {
