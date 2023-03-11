@@ -1309,14 +1309,21 @@ $( '#lib-mode-list' ).click( function( e ) {
 		} else if ( V.mode === 'latest' ) {
 			var message = 'No new albums added since last update.';
 		} else {
-			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.' 
-						 +'<br>To populate Library database:'
-						 +'<div class="menu" style="width: 160px"><a class="sub">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgr60' ) +'</div>'
+			var message = '<wh>'+ $this.find( '.label' ).text() +'</wh> data not available.'
+						 +'<br>If music files already in SD, NAS or USB,'
+						 +'<br>populate them to database:'
+						 +'<div class="menu" style="width: 160px"><a class="sub">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>'
 		}
 		info( {
 			  icon    : 'library'
 			, title   : 'Library Database'
 			, message : message
+			, okno    : 1
+			, beforeshow : () => {
+				$( '#infoContent' ).on( 'click', '.submenu', function() {
+					$( '#update' ).click();
+				} );
+			}
 		} );
 		return
 	}

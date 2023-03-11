@@ -23,7 +23,8 @@
 #pl-savedlist li.active:hover,
 #pl-list li.active:hover,
 #playback-controls button.active:hover,
-#playback-row .btn.active:hover {
+#playback-row .btn.active:hover,
+#infoContent .bgm:hover {
 	background-color: var( --cml ) !important;
 }
 .licover.active:hover {
