@@ -23,8 +23,7 @@
 #pl-savedlist li.active:hover,
 #pl-list li.active:hover,
 #playback-controls button.active:hover,
-#playback-row .btn.active:hover,
-#infoContent .bgm:hover {
+#playback-row .btn.active:hover {
 	background-color: var( --cml ) !important;
 }
 .licover.active:hover {
@@ -86,6 +85,13 @@
 .licover.active:active:hover {
 	background: linear-gradient( #000000 189px, var( --cma ) 41px ) !important;
 }
+.sub.nohover:hover {
+	background-color: var( --cg ) !important;
+}
+.submenu.bgm:hover {
+	background-color: var( --cml ) !important;
+}
+
 /* cursor *********************************************************/
 button,
 li:not( .licover ),
