@@ -64,33 +64,34 @@ htmlSetting( [
 </div>
 <div id="divstorage" class="section">
 <?php
+$uid = exec( 'id -u mpd' );
+$gid = exec( 'id -g mpd' );
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'mount'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
-	, 'help'   => i( 'plus-circle btn' ).' Add network storage'
-				.'<br><br><wh>USB drives:</wh> Will be found and mounted automatically.'
+	, 'help'   => <<< EOF
+{$Fi( 'plus-circle btn' )} Add network storage
+
+ · USB drives  Will be found and mounted automatically.
+ · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
+<pre>
+mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
+
+# CIFS: (no user - username=guest, no password - password="")
+mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
+      -o noauto,username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
+
+# NFS:
+mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
+      -o defaults,noauto,bg,soft,timeo=5
+</pre>
+EOF
 ] );
 ?>
-	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
-<br>
-<wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
-
-<wh>• CIFS:</wh>
-<pre>
-mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
-      -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
-<gr>#	 (no user - username=guest, no password - password="")</gr>
-</pre><!--
---><wh>• NFS:</wh>
-<pre>
-mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
-      -o defaults,noauto,bg,soft,timeo=5
-</pre></div>
-<pre id="codehddinfo" class="hide"></pre>
+	<ul id="list" class="entries"></ul>
+	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?></div>
+	<pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
 	  'label'    => 'Hard Drive Sleep'

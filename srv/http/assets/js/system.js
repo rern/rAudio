@@ -850,7 +850,7 @@ function i2sSelectShow() {
 	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
 }
 function infoMount( val ) {
-	var ip        = $( '#list' ).data( 'ip' );
+	var ip        = S.ip;
 	var ipsub     = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
 	if ( val === 'raudio' ) {
 		var shareddata = true;
@@ -862,7 +862,7 @@ function infoMount( val ) {
 		var shareddata = false;
 		var values     = val || [ 'cifs', '', ipsub ];
 	}
-	var radiora    = shareddata ? '<label><input type="radio" name="inforadio" value="raudio">rAudio</label>' : '';
+	var radiora   = shareddata ? '<label><input type="radio" name="inforadio" value="raudio">rAudio</label>' : '';
 	var phname    = shareddata ? '' : ' placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"';
 	var htmlmount = `\
 <table>

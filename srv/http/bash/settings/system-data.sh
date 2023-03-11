@@ -212,6 +212,7 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"      : '$i2smodulesw'
+, "ip"               : "'$( ipAddress )'"
 , "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
 , "lcdreboot"        : '$lcdreboot'
 , "lcdchar"          : '$( exists $dirsystem/lcdchar )'
