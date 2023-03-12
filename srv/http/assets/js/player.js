@@ -8,7 +8,7 @@ $( '.playback' ).click( function() {
 } );
 $( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';
-	SW.title = 'Audio Output';
+	SW.title = 'Output';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
