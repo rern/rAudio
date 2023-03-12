@@ -11,6 +11,7 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+[[ ! $softlimit ]] && softlimit=60
 warning=
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then

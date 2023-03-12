@@ -51,7 +51,7 @@ htmlHead( [ //////////////////////////////////
 	· 80-84°C: CPU cores throttled.
 	· 85°C: CPU cores and GPU throttled.</a><!--
 --><a class="softlimit">
-	· 60°C: Optimized throttling CPU cores and GPU (Soft limit)</a>
+	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
 </div>
 <?php
 htmlSetting( [

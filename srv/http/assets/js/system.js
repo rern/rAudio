@@ -1020,7 +1020,7 @@ function renderPage() {
 	$( '.refresh' ).toggleClass( 'blink wh', S.intervalstatus === true );
 	if ( S.intervalstatus && $( '#data' ).hasClass( 'hide' ) ) return
 	
-	$( S.softlimit ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
+	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
 		if ( val.mounted ) {
