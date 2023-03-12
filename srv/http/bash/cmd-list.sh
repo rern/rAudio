@@ -11,7 +11,6 @@
 
 updateDone() {
 	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
-	chown -R mpd:audio $dirmpd
 	rm -f $dirmpd/{updating,listing}
 	pushstream mpdupdate '{"done":1}'
 }

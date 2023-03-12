@@ -113,7 +113,8 @@ function psBtReceiver( connected ) {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
 function psBookmark() {
-	refreshData( 'resetdata' );
+	V.libraryhtml = '';
+	refreshData();
 }
 function psCoverart( data ) {
 	clearTimeout( V.timeoutCover );
@@ -235,7 +236,8 @@ function psMpdUpdate( data ) {
 			S.updating_db = false;
 			S.updatingdab = false;
 			setButtonUpdating();
-			refreshData( 'resetdata' );
+			V.libraryhtml = V.librarylisthtml = V.playlisthtml = V.playlistlisthtml = '';
+			refreshData();
 			setTimeout( () => banner( 'refresh-library', 'Library Update', 'Done' ), 2000 );
 		}, 2000 );
 	}

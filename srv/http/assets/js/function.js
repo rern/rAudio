@@ -1009,17 +1009,15 @@ function playlistRemove( $li ) {
 		$li.remove();
 	}
 }
-function refreshData( resetdata ) {
+function refreshData() {
 	if ( V.library ) {
 		if ( $( '#lib-search-input' ).val() ) return
 		
 		if ( ! V.librarylist ) { // home
-			if ( resetdata ) V.libraryhtml = '';
 			libraryHome();
 		} else {
-			if ( resetdata ) V.librarylisthtml = '';
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) {
-				$( '#lib-breadcrumbs .lidir' ).last().click();
+				$( '#lib-breadcrumbs a' ).last().click();
 			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 				$( '#mode-album' ).click();
 			} else if ( V.query.length ) {
@@ -1044,7 +1042,6 @@ function refreshData( resetdata ) {
 		} else if ( V.savedplaylist ) {
 			renderSavedPlaylist( $( '#savedpl-path .lipath' ).text() );
 		} else {
-			if ( resetdata ) V.playlisthtml = '';
 			getPlaylist();
 		}
 	}
@@ -1299,7 +1296,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 	$( '.emptyadd' ).addClass( 'hide' );
 	$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 	var barvisible = $bartop.is( ':visible' );
-	if ( data.html !== V.playlisthtml ) {
+	if ( data.html !== V.playlistlisthtml ) {
 		V.playlistlisthtml = data.html;
 		var hash = versionHash();
 		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
