@@ -16,8 +16,9 @@ $( '.btoutputall' ).click( function() {
 		, values       : S.btoutputall
 		, checkchanged : 1
 		, ok           : () => {
-			notify( SW.icon, SW.title, ( S.btoutputall ? 'Enable' : 'Disable' ) +' while Bluetooth connected' );
-			bash( [ 'btoutputall', S.btoutputall ] );
+			var checked = infoVal();
+			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
+			bash( [ 'btoutputall', checked ] );
 		}
 	} );
 } );
