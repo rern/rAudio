@@ -23,9 +23,14 @@ $( < /etc/hostapd/hostapd.conf )
 $( < /etc/dnsmasq.conf )"
 		;;
 	localbrowser )
-		[[ -e /usr/bin/firefox ]] && pkg=firefox || pkg=chromium
 		fileconf=$dirsystem/localbrowser.conf
-		[[ $pkg == chromium ]] && skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+		if [[ -e /usr/bin/firefox ]]; then
+			browser=firefox
+		else
+			browser=chromium
+			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+		fi
+		config="<code>$( pacman -Q $browser )</code>"
 		;;
 	mpd )
 		conf=$( grep -v ^i $mpdconf )
@@ -64,7 +69,7 @@ $( awk NF <<< $conf )"
 		fileconf=/etc/$pkg.conf
 		;;
 esac
-config="<code>$( pacman -Q $pkg )</code>"
+[[ ! $config ]] && config="<code>$( pacman -Q $pkg )</code>"
 if [[ $conf ]]; then
 	config+="
 $conf"
