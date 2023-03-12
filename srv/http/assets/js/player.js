@@ -6,18 +6,18 @@ $( '.playback' ).click( function() {
 		bash( '/srv/http/bash/cmd.sh '+ cmd );
 	}
 } );
-$( '.btoutputonly' ).click( function() {
+$( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';
 	SW.title = 'Audio Output';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Disable while Bluetooth connected' ]
-		, values       : S.btoutputonly
+		, checkbox     : [ 'Enable all while Bluetooth connected' ]
+		, values       : S.btoutputall
 		, checkchanged : 1
 		, ok           : () => {
-			notify( SW.icon, SW.title, ( S.btoutputonly ? 'Enable' : 'Disable' ) +' while Bluetooth connected' );
-			bash( [ 'btoutputonly', ! S.btoutputonly ] );
+			notify( SW.icon, SW.title, ( S.btoutputall ? 'Enable' : 'Disable' ) +' while Bluetooth connected' );
+			bash( [ 'btoutputall', S.btoutputall ] );
 		}
 	} );
 } );
@@ -351,12 +351,12 @@ function renderPage() {
 					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
-		$( '#divbtreceiver, #divbtoutputonly' ).removeClass( 'hide' );
+		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', S.btoutputonly );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
-		$( '#divbtreceiver, #divbtoutputonly' ).addClass( 'hide' );
+		$( '#divbtreceiver' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {

@@ -27,7 +27,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
 	, 'status' => 'asound'
-	, 'button' => [ 'btoutputonly' => 'gear' ]
+	, 'button' => [ 'btoutputall' => 'gear' ]
 	, 'help'   => <<< EOF
 {$Fi( 'gear btn' )} Other outputs while Bluetooth connected
  · Should be disabled if not used simultaneously

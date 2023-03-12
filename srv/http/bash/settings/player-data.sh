@@ -13,7 +13,7 @@ data='
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
-, "btoutputonly"     : '$( exists $dirsystem/btoutputonly )'
+, "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'

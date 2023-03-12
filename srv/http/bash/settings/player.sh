@@ -47,16 +47,15 @@ $( bluealsa-aplay -L | grep -A2 $mac )
 <bll># bluetoothctl info $mac</bll>
 $( bluetoothctl info $mac )"
 	;;
-btoutputonly )
-	btonly=${args[1]}
-	[[ -e $dirmpdconf/bluetooth.conf ]] && btenabled=1
-	[[ -e $dirmpdconf/output.conf ]] && outputenabled=1
-	if [[ $btonly == true ]]; then
-		touch $dirsystem/btoutputonly
-		[[ $btenabled && $outputenabled ]] && restart=1
+btoutputall )
+	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
+	[[ -e $dirmpdconf/output.conf ]] && output=1
+	if [[ ${args[1]} == true ]]; then
+		touch $dirsystem/btoutputall
+		[[ $bluetooth && ! $output ]] && restart=1
 	else
-		rm $dirsystem/btoutputonly
-		[[ $btenabled && ! $outputenabled ]] && restart=1
+		rm $dirsystem/btoutputall
+		[[ $bluetooth && $output ]] && restart=1
 	fi
 	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
 	;;
