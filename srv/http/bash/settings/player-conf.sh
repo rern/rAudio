@@ -25,7 +25,7 @@ rm -f $dirmpdconf/{bluetooth,output}.conf
 # outputs -----------------------------------------------------------------------------
 if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
-	[[ -e $dirsystem/btoutputall ]] && btoutputall=1
+	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
 #---------------< bluetooth
 	audiooutputbt='
 	name        "'$btmixer'"
@@ -51,7 +51,7 @@ if [[ $asoundcard == -1 ]]; then # no audio devices
 		systemctl stop camilladsp &> /dev/null
 		outputswitch='(None)'
 	fi
-elif [[ $btoutputall ]]; then # with devices (from player-devices.sh)
+elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	aplayname=${Aaplayname[asoundcard]}
 	card=${Acard[asoundcard]}
 	device=${Adevice[asoundcard]}
@@ -129,7 +129,7 @@ $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 ########
 fi
 
-if [[ ( ! $audiooutput && $btoutputall && ! -e $dirsystem/snapclientserver )
+if [[ ( ! $audiooutput && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
 	|| -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 else
