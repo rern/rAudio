@@ -420,6 +420,7 @@ function displaySave( keys ) {
 	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
 	[ 'audiocd', 'color', 'equalizer', 'logout', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( item => delete display[ item ] );
 	bash( [ 'displaysave', JSON.stringify( display ) ] );
+	$( '#infoOk' ).addClass( 'disabled' );
 }
 function displaySubMenu() {
 	if ( D.equalizer && typeof infoEqualizer !== 'function' ) {
@@ -749,6 +750,7 @@ function infoLibrary( page ) {
 			}
 		}
 		, ok           : () => displaySave( keys )
+		, oknoreset    : 1
 	} );
 }
 function infoUpdate( path ) {
