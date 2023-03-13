@@ -70,6 +70,7 @@ Please try update instead.
 	  exit
 	fi
 	
+	[[ $type != Rank || $type != Import ]] && title "$bar $type $name ..." || title "$bar $name ..."
 	title "$bar $type $name ..."
 }
 installfinish() {
