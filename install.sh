@@ -66,12 +66,6 @@ if [[ -e $dircamilladsp/configs/default_config.yml ]]; then
 	ln -s $dircamilladsp/{configs/camilladsp,active_config}.yml
 fi
 
-# 20230117
-file=/etc/systemd/system/spotifyd.service
-! grep -q ^User $file && sed -i '/CPUAffinity/ a\User=root' $file
-systemctl daemon-reload
-systemctl try-restart spotifyd
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
