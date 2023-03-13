@@ -257,7 +257,7 @@ function psNotify( data ) {
 		if ( V.mode === 'latest' ) $( '#button-library' ).click();
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( () => location.href = '/', 3000 );
-	} else if ( [ 'Off', 'Reboot' ].includes( message ) ) {
+	} else if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
 		pushstreamPower( message );
 	}
 }
