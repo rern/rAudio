@@ -125,14 +125,6 @@ timezoneAuto() {
 	[[ ! $timezone ]] && timezone=UTC
 	[[ $timezone ]] && timedatectl set-timezone $timezone
 }
-webradioCopyBackup() {
-	if [[ -e $dirbackup/webradio ]]; then
-		rm -rf $dirbackup/webradio
-		cp -r $dirwebradio $dirbackup
-		webradio=$( grep webradio $dirmpd/counts )
-		sed -i "s/.*webradio.*/$webradio/" $dirbackup/mpd/counts
-	fi
-}
 
 case ${args[0]} in
 

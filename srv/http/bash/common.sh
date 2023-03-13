@@ -99,13 +99,11 @@ pushstream() {
 	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return # no shared data / no other cilents
 	
 	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q -m1 'line.*rserver' <<< $json; then # 'Server rAudio' 'Online/Offline ...' rserver
-		[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1 || webradiocopy=
+		[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1
 		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			curl -s -X POST http://$ip/pub?id=$channel -d "$json"
-			if [[ $webradiocopy ]]; then
-				sshCommand $ip $dirbash/cmd.sh webradiocopybackup & >/dev/null &
-			fi
+			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
 		done
 	fi
 }
