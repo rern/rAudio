@@ -43,4 +43,4 @@ if [[ $mountpoints ]]; then
 	done
 fi
 grep -q -m1 $dirsd /etc/exports && $dirsettings/features.sh nfsserver$'\n'true
-$dirbash/cmd.sh power
+$dirbash/cmd.sh reboot

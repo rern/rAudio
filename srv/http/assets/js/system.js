@@ -39,7 +39,7 @@ $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : ico( 'reboot' ) +'Reboot'
-			, ok      : () => bash( '/srv/http/bash/cmd.sh power', nfs => infoPowerNfs( nfs, 'reboot' ) )
+			, ok      : () => bash( '/srv/http/bash/cmd.sh reboot', nfs => infoPowerNfs( nfs, 'reboot' ) )
 		} );
 	} );
 } );

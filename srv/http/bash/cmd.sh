@@ -917,8 +917,8 @@ playlist )
 	[[ $play || $replace ]] && $dirbash/push-status.sh
 	pushstreamPlaylist
 	;;
-power )
-	[[ ${args[1]} == off ]] && action=off || action=reboot
+poweroff|reboot )
+	[[ ${args[0]} == reboot ]] && reboot=1
 	rserverok=${args[2]}
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
@@ -933,8 +933,7 @@ power )
 	elif [[ -e $filesharedip ]]; then # rclient
 		sed -i "/$( ipAddress )/ d" $filesharedip
 	fi
-	
-	notify -blink $action Power "${action^} ..."
+	[[ $reboot ]] && notify -blink reboot System 'Reboot ...' || notify -blink power System 'Off ...'
 	touch $dirshm/power
 	mpc -q stop
 	alsactl store
@@ -955,10 +954,12 @@ power )
 		sleep 3
 	fi
 	[[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-	[[ $action != off ]] && reboot && exit
-	
-	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
-	poweroff
+	if [[ $reboot ]]; then
+		reboot
+	else
+		[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
+		poweroff
+	fi
 	;;
 radiorestart )
 	[[ -e $disshm/radiorestart ]] && exit

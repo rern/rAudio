@@ -9,7 +9,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1677937520' );
+	src         : url( '/assets/fonts/rern.woff2?v=1678675034' );
 }
 @font-face {
 	font-family : Lato;
@@ -127,7 +127,6 @@ i {
 .i-networks::before        { content: '\F551' }
 .i-next::before            { content: '\F505' }
 .i-nfsserver::before       { content: '\F551' }
-.i-off::before             { content: '\F520' }
 .i-output::before          { content: '\F52A' }
 .i-pause::before           { content: '\F504' }
 .i-play::before            { content: '\F503' }
