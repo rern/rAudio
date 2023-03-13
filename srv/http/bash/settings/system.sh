@@ -80,7 +80,7 @@ sharedDataSet() {
 		ln -s $dirshareddata/$dir $dirdata
 		chown -h http:http $dirdata/$dir
 	done
-	chown -h mpd:audio $dirplaylists
+	chown -h mpd:audio $dirmpd $dirplaylists
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
@@ -660,6 +660,9 @@ shareddataiplist )
 shareddatarestart )
 	systemctl restart mpd
 	pushstream mpdupdate $( < $dirmpd/counts )
+	;;
+shareddataset )
+	sharedDataSet
 	;;
 sharelist )
 	ip=${args[1]}

@@ -60,4 +60,4 @@ for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
-[[ $shareddata == true ]] && sharedDataSet || pushRefresh
+[[ $shareddata == true ]] && $dirsettings/system.sh shareddataset || pushRefresh
