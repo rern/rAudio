@@ -918,7 +918,7 @@ playlist )
 	pushstreamPlaylist
 	;;
 power )
-	action=${args[1]}
+	[[ ${args[1]} == off ]] && action=off || action=reboot
 	rserverok=${args[2]}
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit

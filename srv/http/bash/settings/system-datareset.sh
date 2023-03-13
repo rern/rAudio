@@ -179,4 +179,4 @@ fi
 # set ownership and permissions
 dirPermissions
 
-[[ $reset ]] && $dirbash/cmd.sh power$'\n'reboot
+[[ $reset ]] && $dirbash/cmd.sh power
