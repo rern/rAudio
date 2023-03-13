@@ -7,7 +7,7 @@ dirPermissions() {
 	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
 	chmod -R 755 /srv/http/{assets,bash,data,settings}
 	chown -R http:http /srv/http/{assets,bash,data,settings}
-	chown -R mpd:audio $dirplaylists
+	chown -R mpd:audio $dirmpd $dirplaylists
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
 		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
