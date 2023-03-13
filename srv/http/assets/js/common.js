@@ -1,6 +1,6 @@
 /* 
 copy,     banner(),    errorDisplay(), 
-info(),   infoPower(), infoPowerCommand(), infoPowerNfs(),
+info(),   infoPower(), infoPowerCommand(),
 loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
@@ -864,29 +864,28 @@ function infoPower() {
 		, button      : () => infoPowerCommand( 'reboot' )
 		, oklabel     : ico( 'power' ) +'Off'
 		, okcolor     : red
-		, ok          : () => infoPowerCommand( 'off' )
+		, ok          : () => infoPowerCommand( 'poweroff' )
 	} );
 }
 function infoPowerCommand( action ) {
-	bash( [ 'power', action ], nfs => infoPowerNfs( nfs, action ) );
-}
-function infoPowerNfs( nfs, action ) {
-	if ( nfs != -1 ) return
-	
-	var off = action === 'off';
-	info( {
-		  icon    : 'power'
-		, title   : 'Power'
-		, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
-					+'<br><wh>Shared Data</wh> on clients will stop.'
-					+'<br>(Resume when server online again)'
-					+'<br><br>Continue?'
-		, oklabel : off ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
-		, okcolor : off ? red : orange
-		, ok      : () => {
-			bash( [ 'power', action, 1 ] );
-			banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
-		}
+	bash( '/srv/http/bash/cmd.sh '+ action, nfs => {
+		if ( nfs != -1 ) return
+		
+		var poweroff = action === 'poweroff';
+		info( {
+			  icon    : 'power'
+			, title   : 'Power'
+			, message : 'This <wh>Server rAudio '+ ico( 'rserver' ) +'</wh> is currently active.'
+						+'<br><wh>Shared Data</wh> on clients will stop.'
+						+'<br>(Resume when server online again)'
+						+'<br><br>Continue?'
+			, oklabel : poweroff ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
+			, okcolor : poweroff ? red : orange
+			, ok      : () => {
+				bash( [ 'power', action, 1 ] );
+				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
+			}
+		} );
 	} );
 }
 

@@ -204,7 +204,7 @@ function psNotify( data ) {
 	var message  = data.message;
 	var delay    = data.delay;
 	banner( icon, title, message, delay );
-	if ( title === 'Power' ) pushstreamPower( message );
+	if ( [ 'Off', 'Reboot' ].includes( message ) ) pushstreamPower( message );
 }
 function psPlayer( data ) {
 	var player_id = {
