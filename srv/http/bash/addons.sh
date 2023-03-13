@@ -56,7 +56,7 @@ installstart() { # $1-'u'=update
 	branch=${args[2]}
 	args=( "${args[@]:3}" ) # 'opt' for script start at ${args[0]}
 	
-	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>" )
+	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
 	
 	if [[ -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  title "$info $title already installed."
@@ -89,7 +89,7 @@ $bar Done.
 	fi
 }
 uninstallstart() {
-	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>" )
+	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
 	
 	if [[ ! -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  echo $info $name not found.
