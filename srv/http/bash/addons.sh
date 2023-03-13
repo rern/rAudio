@@ -71,7 +71,6 @@ Please try update instead.
 	fi
 	
 	[[ $type != Rank || $type != Import ]] && title "$bar $type $name ..." || title "$bar $name ..."
-	title "$bar $type $name ..."
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
