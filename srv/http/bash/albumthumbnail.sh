@@ -2,17 +2,24 @@
 
 path=$1
 fullpath="/mnt/MPD/$path"
+padw='<a class="cbw">   </a>'
+padg='<a class="cbg">   </a>'
+padgr='<a class="cbgr">   </a>'
 
 . /srv/http/bash/addons.sh
 
 warningWrite() {
-	title "$warn Unable to create thumbnails."
-	echo "Directory:  $( tcolor "$1" )"
+	error="
+$warn Unable to create thumbnails.
+Directory:  <a class='cc'>$1</a>"
 	if (( $( stat -c %a "$1" ) < 755 )); then
-		echo "No write permission: $( stat -c '%A (%a)' "$1" )"
+		error+="
+No write permission: $( stat -c '%A (%a)' "$1" )"
 	else
-		echo "Conversion failed."
+		error+="
+Conversion failed."
 	fi
+	echo "$error"
 }
 
 title "$bar Update Album Thumbnails ..."
@@ -30,10 +37,7 @@ else
 fi
 unsharp=0x.5
 
-if [[ ! $mpdpathlist ]]; then
-	echo "$padW No albums found in database."
-	exit
-fi
+[[ ! $mpdpathlist ]] && echo "$padw No albums found in database." && exit
 
 readarray -t lines <<< $mpdpathlist
 
@@ -51,12 +55,12 @@ for mpdpath in "${lines[@]}"; do
 	fi
 	elapse=$( date -d@$sec -u +%H:%M:%S )
 	total=$( date -d@$total -u +%H:%M:%S )
-	echo $percent% $( tcolor $elapse/$total 8 )
-	echo $i/$count $( tcolor "$mpdpath" )
+	echo $percent% '<a class="cgr">'$elapse/$total'</a>'
+	echo $i/$count '<a class="cc">'$mpdpath'</a>'
 	
 	dir="/mnt/MPD/$mpdpath"
 	if ls "$dir/coverart".* &> /dev/null; then
-		echo "   $padW Thumbnail already exists."
+		echo "   $padw Thumbnail already exists."
 		continue
 	fi
 	
@@ -94,12 +98,15 @@ for mpdpath in "${lines[@]}"; do
 		[[ ! -e "$dir/coverart.jpg" ]] && warningWrite "$dir" && exit
 		
 		(( thumb++ ))
-		echo "   $padG #$thumb - Thumbnail created."
+		echo "   $padg #$thumb - Thumbnail created."
 	else
-		echo "   $padGr No coverart found."
+		echo "   $padgr No coverart found."
 	fi
 done
 
-echo Duration: $( date -d@$SECONDS -u +%H:%M:%S )
+echo "
+Duration: $( date -d@$SECONDS -u +%H:%M:%S )
 
-title -l '=' "$bar Done"
+$bar Done.
+<hr>
+"
