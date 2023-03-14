@@ -8,7 +8,6 @@ fi
 
 . /srv/http/bash/common.sh
 addonsjson=$diraddons/addons-list.json
-
 bar='<a class="cbc">   </a>'
 info='<a class="cby ck"> i </a>'
 warn='<a class="cbr cw"> ! </a>'
@@ -19,7 +18,6 @@ title() {
 $1
 <hr>"
 }
-
 getinstallzip() {
 	echo $bar Get files ...
 	installfile=$branch.tar.gz
@@ -48,39 +46,21 @@ getinstallzip() {
 }
 installstart() { # $1-'u'=update
 	rm $0
-	
 	readarray -t args <<< $1 # lines to array: alias type branch opt1 opt2 ...
-
 	alias=${args[0]}
 	type=${args[1]}
 	branch=${args[2]}
 	args=( "${args[@]:3}" ) # 'opt' for script start at ${args[0]}
-	
 	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
-	
-	if [[ -e /usr/local/bin/uninstall_$alias.sh ]]; then
-	  title "$info $title already installed."
-	  if [[ ! -t 1 ]]; then
-		  echo "\
-Please try update instead.
-<hr>
-"
-		  echo 1 > $diraddons/$alias
-	  fi
-	  exit
-	fi
-	
 	[[ $type != Rank || $type != Import ]] && title "$bar $type $name ..." || title "$bar $name ..."
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
 	[[ $version != null ]] && echo $version > $diraddons/$alias
-	
 	echo "
 $bar Done.
 <hr>
 "
-	
 	if [[ -e $dirmpd/updating ]]; then
 		path=$( < $dirmpd/updating )
 		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
@@ -90,7 +70,6 @@ $bar Done.
 }
 uninstallstart() {
 	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
-	
 	if [[ ! -e /usr/local/bin/uninstall_$alias.sh ]]; then
 	  echo $info $name not found.
 	  rm $diraddons/$alias &> /dev/null
