@@ -11,19 +11,16 @@ $( '.helphead' ).off( 'click' ).click( function() {
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
-$( '.revision' ).click( function( e ) {
-	e.stopPropagation();
+$( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
-	$revisiontext = $this.parent().parent().next();
+	$revisiontext = $this.parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
-} );
-$( '#list li' ).click( function() {
+} ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
-} );
-$( '.boxed-group .infobtn' ).click( function() {
+} ).on( 'click', '.infobtn', function() {
 	$this       = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
@@ -44,6 +41,8 @@ $( '.boxed-group .infobtn' ).click( function() {
 			, ok      : formPost
 		} );
 	}
+} ).on( 'click', '.thumbnail', function() {
+	$( this ).prev().find( '.source' )[ 0 ].click();
 } ).press( function( e ) {
 	$this = $( e.target );
 	alias = $this.parents( 'form' ).data( 'alias' );
@@ -65,9 +64,6 @@ $( '.boxed-group .infobtn' ).click( function() {
 			}
 		}
 	} );
-} );
-$( '.thumbnail' ).click( function() {
-	$( this ).prev().find( '.source' )[ 0 ].click();
 } );
 
 function formPost() { // post submit with temporary form
@@ -189,26 +185,62 @@ function getOption() {
 	}
 }
 function renderPage() {
-	$( '.installed' ).removeClass( 'installed update' );
-	$( '.uninstall' ).addClass( 'hide' );
-	$.each( S.versioninstalled, ( k, v ) => {
-		$( '#list .'+ k ).addClass( 'installed' );
-		$( '#'+ k +' .'+ k ).addClass( 'installed' );
-		var addon   = S[ k ];
-		var version = addon.version;
-		if ( version === 1 ) {
-			$( '#'+ k +' .install' ).addClass( 'disabled' );
+	var hash = Date.now();
+	var list = '';
+	var addons = '';
+	$.each( S, ( k, v ) => {
+		if ( [ 'push', 'versioninstalled' ].includes( k ) ) return
+		
+		var alias    = k;
+		var addon    = v;
+		var version  = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
+		if ( 'revision' in addon ) {
+			var revision = '<p class="revisiontext hide">';
+			addon.revision.forEach( el => revision += '<gr>•</gr>'+ el +'<br>' );
+			revision += '</p>';
 		} else {
-			$( '#'+ k +' .install' )
-				.html( ico( 'update' ) +'Update' )
-				.toggleClass( 'disabled', v === version );
-			$( '#'+ k +' .'+ k ).toggleClass( 'update', v < version );
-			$( '#'+ k +' .uninstall' ).toggleClass( 'hide', ! ( 'version' in addon ) || 'nouninstall' in addon );
+			var revision = '';
 		}
+		var buttonlabel = addon.buttonlabel || '<i class="i-plus-circle"></i> Install';
+		addons += `\
+<div id="${ alias }" class="divaddon">
+	<div class="content">
+		<legend><span class="title ${ alias }">${ addon.title }</span>${ version }</legend>
+		${ revision }
+		<form class="form-horizontal" data-alias="${ alias }">
+			<p class="detailtext">${ addon.description }<br><a href="${ addon.sourcecode }" class="source" target="_blank">source <i class="i-github"></i></a></p>
+			<a class="install infobtn">${ buttonlabel }</a> &nbsp; <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>
+		</form>
+	</div>
+	<img src="${ addon.thumbnail }?v=${ hash }" class="thumbnail">
+	<div style="clear: both;"></div>
+</div>
+`;
+		list += '<li class="'+ alias +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
 	} );
-	$( '.container' ).removeClass( 'hide' );
-	$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
-	loaderHide();
+	html = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
+	$( '.container' ).html( html ).promise().done( function() {
+		$( '.installed' ).removeClass( 'installed update' );
+		$( '.uninstall' ).addClass( 'hide' );
+		$.each( S.versioninstalled, ( k, v ) => {
+			$( '#list .'+ k ).addClass( 'installed' );
+			$( '#'+ k +' .'+ k ).addClass( 'installed' );
+			var addon   = S[ k ];
+			var version = addon.version;
+			if ( version === 1 ) {
+				$( '#'+ k +' .install' ).addClass( 'disabled' );
+			} else {
+				$( '#'+ k +' .install' )
+					.html( ico( 'update' ) +'Update' )
+					.toggleClass( 'disabled', v === version );
+				$( '#'+ k +' .'+ k ).toggleClass( 'update', v < version );
+				$( '#'+ k +' .uninstall' ).toggleClass( 'hide', ! ( 'version' in addon ) || 'nouninstall' in addon );
+			}
+		} );
+		$( '.container' ).removeClass( 'hide' );
+		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
+		loaderHide();
+	} );
 }
 function setOption( val ) {
 	if ( val ) opt.push( val );

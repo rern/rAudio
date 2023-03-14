@@ -27,7 +27,7 @@ $Ftab       = 'tab';
 
 echo '<div class="container hide">';
 
-include 'settings/'.$page.'.php';
+if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
 
 echo '</div>';
 

@@ -8,7 +8,7 @@ hr {
 	border-top: 1px solid #eee
 }
 @media (max-width: 540px) {
-	.boxed-group {
+	.divaddon {
 		padding: 10px !important;
 	}
 }
@@ -45,36 +45,40 @@ hr {
 .detailtext a {
 	color: var( --cml );
 }
-.boxed-group {
+.divaddon {
 	margin: 10px 0;
 	padding: 10px 20px;
 	border-radius: 6px;
 	background: var( --cga );
 }
-.boxed-group img {
+.divaddon img {
 	max-width: 100px;
+}
+.content {
+	float: left;
+	width: calc( 100% - 110px);
 }
 legend {
 	width: 100%;
 	margin-bottom: 5px;
 	font-size: 14px;
+	line-height: 30px;
 	color: var( --cg60 );
 	border-bottom: 1px solid var( --cg );
 }
-legend span {
+legend .title {
 	font-size: 21px;
 }
-legend span.installed::before {
+legend .title.installed::before {
 	content: '• ';
 	color: #0f0;
 }
-legend span.installed.update::before {
+legend .title.installed.update::before {
 	animation: blinkopaque 1.5s linear infinite;
 }
 legend p,
 legend a {
 	display: inline-block;
-	line-height: 1em;
 }
 legend > i:last-child {
 	float: right;
@@ -131,7 +135,7 @@ a:hover {
 	text-decoration: none;
 }
 #list li,
-.boxed-group legend,
+.divaddon legend,
 a {
 	cursor: pointer;
 }
@@ -140,7 +144,7 @@ strike {
 }
 li i,
 .revision,
-.boxed-group legend i {
+.divaddon legend i {
 	color: var( --cg60 );
 }
 span,
@@ -152,4 +156,10 @@ p,
 ul,
 .disabled {
 	color: var( --cw );
+}
+.install {
+	background-color: var( --cm );
+}
+.uninstall {
+	background-color: #bb2828;
 }

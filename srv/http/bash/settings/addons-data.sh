@@ -11,7 +11,7 @@ installed=$( ls $diraddons | grep -Ev 'addons-list|update' )
 for addon in $installed; do
 	verinstalled=$( < $diraddons/$addon )
 	versions+=', "'$addon'" : "'$verinstalled'"'
-	[[ $verinstalled > 1 && $verinstalled != $( jq -r .$addon.version <<< $addonslist ) ]] && update=1
+	[[ $verinstalled > 1 && $verinstalled < $( jq -r .$addon.version <<< $addonslist ) ]] && update=1
 done
 
 sed "$ i\, \"versioninstalled\" : { ${versions:1} }" <<< $addonslist
