@@ -73,10 +73,11 @@ rm -rf /srv/http/assets/{css,fonts,js}
 
 getinstallzip
 
-[[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
-
+. $dirbash/common.sh
 dirPermissions
+
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
 
 hash=?v=$( date +%s )
 sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
