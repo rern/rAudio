@@ -11,7 +11,7 @@ rm -f $dirsystem/{autoplay,color,hddsleep,listing,login*,crossfade*,custom*,dop*
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 
 bsdtar -xpf $backupfile -C /srv/http
-$dirsettings/system-datareset.sh dirpermissions
+dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 uuid2=${uuid1:0:-1}2

@@ -78,19 +78,17 @@ sharedDataSet() {
 		rm -rf $dirbackup/$dir
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
-		chown -h http:http $dirdata/$dir
 	done
-	chown -h mpd:audio $dirmpd $dirplaylists
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order} $dirshareddata/system
 	fi
 	touch $filesharedip $dirshareddata/system/order # in case order not exist
-	chmod 777 $filesharedip $dirshareddata/system/{display,order}
 	for file in display order; do
 		mv $dirsystem/$file $dirbackup
 		ln -s $dirshareddata/system/$file $dirsystem
 	done
+	dirPermissionsShared
 	echo data > $dirnas/.mpdignore
 	echo "\
 SD

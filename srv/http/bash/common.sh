@@ -43,6 +43,19 @@ data2json() {
 				s/,\s*]/, false ]/g' <<< $json )
 	[[ $2 ]] && pushstream refresh "$json" || echo "$json"
 }
+dirPermissions() {
+	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
+	chmod -R 755 /srv/http/{assets,bash,data,settings}
+	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown -R mpd:audio $dirmpd $dirplaylists
+	[[ -L $dirshareddata ]] && dirPermissionsShared
+}
+dirPermissionsShared() {
+	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
+	chown -h mpd:audio $dirdata/{mpd,playlists}
+	chmod 777 $filesharedip $dirshareddata/system/{display,order}
+}
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
