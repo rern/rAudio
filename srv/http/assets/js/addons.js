@@ -2,30 +2,11 @@ document.title = 'Addons';
 V              = {} // var global
 var icon       = 'jigsaw';
 
-$( '.container' ).removeClass( 'hide' );
-$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
-loaderHide();
-
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.close' ).click( function() {
-	location.href = '/';
-} );
-$( '.page-icon' ).click( function() {
-	fetch( '/data/addons/addons-list.json' )
-		.then( response => response.text() )
-		.then( data => {
-			$( '#data' ).text( '\n\n'+ data );
-			$( '.container' ).addClass( 'hide' );
-			$( '#button-data, #data' ).removeClass( 'hide' );
-		} );
-} ).press( function() {
+$( '.page-icon' ).press( function() {
 	location.href = 'settings.php?p=addonsprogress';
 } );
-$( '#button-data' ).click( function() {
-	$( '.container' ).removeClass( 'hide' );
-	$( '#button-data, #data' ).addClass( 'hide' );
-} );
-$( '.helphead' ).click( function() {
+$( '.helphead' ).off( 'click' ).click( function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
@@ -47,10 +28,10 @@ $( '.boxed-group .infobtn' ).click( function() {
 	if ( $this.hasClass( 'disabled' ) ) return
 	
 	alias  = $this.parent().data( 'alias' );
-	addon  = addons[ alias ];
+	addon  = S[ alias ];
 	title  = addon.title;
 	type   = $this.text();
-	option = addons.option;
+	option = addon.option;
 	opt    = [ alias, type, addon.version || 'main' ];
 	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 		j = 0;
@@ -66,7 +47,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 } ).press( function( e ) {
 	$this = $( e.target );
 	alias = $this.parents( 'form' ).data( 'alias' );
-	title = addons[ alias ].title;
+	title = S[ alias ].title;
 	type  = $this.text();
 	info( {
 		  icon      : icon
@@ -75,7 +56,7 @@ $( '.boxed-group .infobtn' ).click( function() {
 		, values    : 'UPDATE'
 		, ok        : () => {
 			opt    = [ alias, type, infoVal() ];
-			option = addons[ alias ].option;
+			option = S[ alias ].option;
 			if ( option && type !== 'Update' && type !== 'Uninstall' ) {
 				j = 0;
 				getOption();
@@ -206,6 +187,28 @@ function getOption() {
 			} );
 			break;
 	}
+}
+function renderPage() {
+	$( '.installed' ).removeClass( 'installed update' );
+	$( '.uninstall' ).addClass( 'hide' );
+	$.each( S.versioninstalled, ( k, v ) => {
+		$( '#list .'+ k ).addClass( 'installed' );
+		$( '#'+ k +' .'+ k ).addClass( 'installed' );
+		var addon   = S[ k ];
+		var version = addon.version;
+		if ( version === 1 ) {
+			$( '#'+ k +' .install' ).addClass( 'disabled' );
+		} else {
+			$( '#'+ k +' .install' )
+				.html( ico( 'update' ) +'Update' )
+				.toggleClass( 'disabled', v === version );
+			$( '#'+ k +' .'+ k ).toggleClass( 'update', v < version );
+			$( '#'+ k +' .uninstall' ).toggleClass( 'hide', ! ( 'version' in addon ) || 'nouninstall' in addon );
+		}
+	} );
+	$( '.container' ).removeClass( 'hide' );
+	$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
+	loaderHide();
 }
 function setOption( val ) {
 	if ( val ) opt.push( val );

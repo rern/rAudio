@@ -41,16 +41,14 @@ if ( $addonsprogress || $guide ) {
 // .................................................................................
 
 // bottom bar
-if ( ! $addons ) {
-	$htmlbar = '<div id="bar-bottom">';
-	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
-		$id      = strtolower( $name );
-		$active  = $id === $pagetitle ? ' class="active"' : '';
-		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
-	}
-	$htmlbar.= '</div>';
-	echo $htmlbar;
+$htmlbar = '<div id="bar-bottom">';
+foreach ( [ 'Features', 'Player', 'Networks', 'System', 'Addons' ] as $name ) {
+	$id      = strtolower( $name );
+	$active  = $id === $pagetitle ? ' class="active"' : '';
+	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 }
+$htmlbar.= '</div>';
+echo $htmlbar;
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------

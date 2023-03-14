@@ -126,15 +126,15 @@ if ( $localhost ) str_replace( 'library blink', 'refresh-library', $modeicon );
 $timeicon = str_replace( 'mi-', 'ti-', $modeicon );
 $dsp = $equalizer ? 'equalizer' : 'camilladsp';
 $settinglist = [
-	  [ 'features',        'settings', 'features', 'Features', 'dsp',          'equalizer' ]
-	, [ 'player',          'settings', 'player',   'Player',   'logout',       'lock' ]
-	, [ 'networks',        'settings', 'networks', 'Networks', 'snapclient',   'snapclient' ]
-	, [ 'system',          'settings', 'raudio',   'System',   'relays',       'relays' ]
-	, [ 'addons',          'sub',      'jigsaw',   'Addons',   'guide',        'help' ]
-	, [ 'power',           '',         'power',    'Power',    'screenoff',    'screenoff' ]
-	, [ 'displaylibrary',  'sub',      'library',  'Library',  'update',       'refresh-library' ]
-	, [ 'displayplayback', 'sub',      'playback', 'Playback', 'displaycolor', 'color' ]
-	, [ 'displayplaylist', '',         'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
+	  [ 'features',        'settings',     'features', 'Features', 'dsp',          'equalizer' ]
+	, [ 'player',          'settings',     'player',   'Player',   'logout',       'lock' ]
+	, [ 'networks',        'settings',     'networks', 'Networks', 'snapclient',   'snapclient' ]
+	, [ 'system',          'settings',     'raudio',   'System',   'relays',       'relays' ]
+	, [ 'addons',          'settings sub', 'jigsaw',   'Addons',   'guide',        'help' ]
+	, [ 'power',           '',             'power',    'Power',    'screenoff',    'screenoff' ]
+	, [ 'displaylibrary',  'sub',          'library',  'Library',  'update',       'refresh-library' ]
+	, [ 'displayplayback', 'sub',          'playback', 'Playback', 'displaycolor', 'color' ]
+	, [ 'displayplaylist', '',             'playlist', 'Playlist', 'multiraudio',  'multiraudio' ]
 ];
 $htmlsettings     = '';
 foreach( $settinglist as $l ) {

@@ -65,21 +65,14 @@ if ( ! $page ) { // main
 } else {         // settings
 	$$page = true;
 	$css[] = 'settings';
-	$jsp   = [ 'jquery' ];
-	$js    = [ 'common' ];
+	$jsp   = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
+	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
 	if ( $relays ) $css[]  = 'relays';
-	if ( $addons ) {
-		$css[]  = 'addons';
-	} else {
-		$jsp[]  = 'pushstream';
-		$js[]   = 'settings';
-	}
-	$jsp[]  = $networks ? 'qrcode' : 'select2';
-	$js[]   = $page;
+	if ( $addons ) $css[]  = 'addons';
 	
 	$icon = $pagetitle = $page;
 	if ( $addonsprogress ) {
@@ -103,10 +96,10 @@ echo $links;
 </head>
 <body>
 <div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<?php if ( !$addons && ! $addonsprogress && ! $guide && ! $relays ) { ?>
+	<?php if ( ! $addonsprogress && ! $guide && ! $relays ) { ?>
 <div id="loader"><?=$logosvg?></div>
 	<?php }
-		  if ( !$addons && ! $addonsprogress && ! $guide ) { ?>
+		  if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="banner" class="hide"></div>
 	<?php }
 		  if ( ! $addonsprogress && ! $guide ) { ?>

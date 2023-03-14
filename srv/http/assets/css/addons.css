@@ -64,6 +64,13 @@ legend {
 legend span {
 	font-size: 21px;
 }
+legend span.installed::before {
+	content: '• ';
+	color: #0f0;
+}
+legend span.installed.update::before {
+	animation: blinkopaque 1.5s linear infinite;
+}
 legend p,
 legend a {
 	display: inline-block;

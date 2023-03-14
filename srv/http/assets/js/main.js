@@ -443,23 +443,6 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	if ( V.playlist && ! V.savedlist && ! V.savedplaylist) setPlaylistScroll();
 	if ( S.player !== 'mpd' ) switchPage( 'playback' );
 } );
-$( '#addons' ).click( function () {
-	banner( 'jigsaw blink', 'Addons', 'Download database ...', -1 );
-	bash( [ 'addonslist' ], std => {
-		if ( std ) {
-			info( {
-				  icon    : 'jigsaw'
-				, title   : 'Addons'
-				, message : std == -1 ? 'Download from Addons server failed.' : 'No internet connection.'
-						   +'<br>Please try again later.'
-				, ok      : loaderHide
-			} );
-		} else {
-			location.href = '/settings.php?p=addons';
-		}
-	} );
-	loader();
-} );
 $( '#library, #button-library' ).click( function() {
 	if ( V.library && V.librarylist ) {
 		libraryHome();

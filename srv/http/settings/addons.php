@@ -2,16 +2,12 @@
 $diraddons  = '/srv/http/data/addons';
 $addons     = json_decode( file_get_contents( $diraddons.'/addons-list.json' ), true );
 // ------------------------------------------------------------------------------------
-$updates    = 0;
 $arrayalias = array_keys( $addons );
 $list       = '<ul id="list">';
 $blocks     = '';
 foreach( $arrayalias as $alias ) {
 	$addon            = $addons[ $alias ];
 	$version          = $addon[ 'version' ] ?? '';
-	$nouninstall      = $addon[ 'nouninstall' ] ?? '';
-	$versioninstalled = file_exists( "$diraddons/$alias" ) ? trim( file_get_contents( "$diraddons/$alias" ) ) : 1;
-	$update           = 0;
 	// hide by conditions
 	if ( isset( $addon[ 'hide' ] ) ) {
 		$addonhide = $addon[ 'hide' ];
@@ -19,40 +15,22 @@ foreach( $arrayalias as $alias ) {
 	}
 	
 	$buttonlabel      = $addon[ 'buttonlabel' ] ?? i( 'plus-circle' ).' Install';
-	$uninstallfile    = file_exists( "/usr/local/bin/uninstall_$alias.sh" );
-	if ( $nouninstall || $uninstallfile ) {
-		$installed = 'class="installed"';
-		$check     = '<grn>•</grn> ';
-		$hide      = $nouninstall ? 'hide' : '';
-		if ( isset( $addon[ 'verify' ] ) ) {
-			$verify      = $addon[ 'verify' ];
-			$notverified = exec( $verify[ 'command' ] ) ? $verify[ 'notverified' ] : '';
-		}
-		if ( $notverified ) {
-			$btnin     = i( 'info-circle i-lg gr info' ).'<div class="info">'.$notverified.'</div>';
-		} else if ( ! $version || $version == $versioninstalled ) {
-			$icon      = $nouninstall ? i( 'update' ) : '';
-			// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
-			$btnin     = '<a class="infobtn infobtn-default disabled">'.$icon.' '.$buttonlabel.'</a>';
-		} else {
-			$updates   = 1;
-			$update    = 1;
-			$installed = 'class="installed update"';
-			$check     = '<grn class="blink">•</grn> ';
-			$btnin     = '<a class="infobtn infobtn-primary">'.i( 'update' ).' Update</a>';
-		}
-		$btnunattr = isset( $addon[ 'rollback' ] ) ? ' rollback="'.$addon[ 'rollback' ].'"' : '';
-		$btnun     = '<a class="infobtn infobtn-primary red '.$hide.'" '.$btnunattr.'>'.i( 'minus-circle' ).' Uninstall</a>';
-	} else {
-		$installed = '';
-		$check     = '';
-		$btnin     = '<a class="infobtn infobtn-primary">'.$buttonlabel.'</a>';
-		$btnun     = '<a class="infobtn disabled">'.i( 'minus-circle' ).' Uninstall</a>';
+	$installed = 'class="installed"';
+	if ( isset( $addon[ 'verify' ] ) ) {
+		$verify      = $addon[ 'verify' ];
+		$notverified = exec( $verify[ 'command' ] ) ? $verify[ 'notverified' ] : '';
 	}
+	if ( $notverified ) {
+		$btnin     = i( 'info-circle i-lg gr info' ).'<div class="info">'.$notverified.'</div>';
+	} else {
+		// !!! mobile browsers: <button>s submit 'formtemp' with 'get' > 'failed', use <a> instead
+		$btnin     = '<a class="install infobtn infobtn-primary">'.$buttonlabel.'</a>';
+	}
+	$btnun     = '<a class="uninstall infobtn infobtn-default red">'.i( 'plus-circle' ).' Uninstall</a>';
 	
 	// addon list ---------------------------------------------------------------
 	$title         = $addon[ 'title' ];
-	$list         .= '<li data-alias="'.$alias.'" '.$installed.'>'.$title.'</li>';
+	$list         .= '<li class="'.$alias.'"data-alias="'.$alias.'" '.$installed.'>'.$title.'</li>';
 	// addon blocks -------------------------------------------------------------
 	$revisionclass = $version ? 'revision' : 'revisionnone';
 	$addonrevision = $addon[ 'revision' ] ?? '';
@@ -79,14 +57,14 @@ foreach( $arrayalias as $alias ) {
 		<div style="float: left; width: calc( 100% - 110px);">';
 	$blocks      .= '
 			<legend>
-				<span>'.$check.preg_replace( '/\**$/', '', $title ).'</span>
+				<span class="'.$alias.'">'.$title.'</span>
 				&emsp;<p><a class="'.$revisionclass.'">'.$version.( $version ? ' '.i( 'help' ) : '' ).'</a>
 				</p>
 			</legend>
 			'.$revision.'
 			<form class="form-horizontal" data-alias="'.$alias.'">
 				<p class="detailtext">'.$description.$detail.'</p>';
-	$blocks     .= $uninstallfile ? $btnin.' &nbsp; '.$btnun : $btnin;
+	$blocks     .= $btnin.' &nbsp; '.$btnun;
 	$blocks     .= '
 			</form>';
 	if ( $thumbnail ) $blocks .= '
@@ -96,24 +74,9 @@ foreach( $arrayalias as $alias ) {
 	$blocks     .= '
 		</div>';
 }
-if ( $updates ) {
-	touch( "$diraddons/update" );
-} else {
-	@unlink( "$diraddons/update" );
-}
 // ------------------------------------------------------------------------------------
 echo $list.'
 	</ul>'.
 	$blocks.'
 	<p class="bottom"></p>
 </div>';
-
-$keepkey = [ 'title', 'installurl', 'option', 'postinfo', 'version' ];
-foreach( $arrayalias as $alias ) {
-	$addonslist[ $alias ] = array_intersect_key( $addons[ $alias ], array_flip( $keepkey ) );
-}
-?>
-
-<script>
-var addons = <?=json_encode( $addonslist )?>;
-</script>

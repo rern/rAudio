@@ -95,16 +95,15 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'addons' || page === 'guide' || ! I.hidden ) return
+	if ( page === 'guide' || ! I.hidden ) return
 	
-	bash( dirbash + page +'-data.sh', list => {
-		if ( typeof list === 'string' ) { // on load, try catching any errors
-			var list2G = list2JSON( list );
+	bash( dirbash + page +'-data.sh', data => {
+		if ( typeof data === 'string' ) { // on load, try catching any errors
+			var list2G = list2JSON( data );
 		} else {
-			S = list;
+			S = data;
 		}
 		if ( ! list2G ) return
-		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
 			$( '#data' ).empty();
 			$( '#button-data, #data' ).addClass( 'hide' );
@@ -154,7 +153,11 @@ function switchSet() {
 }
 
 // pushstreamChannel() in common.js
-pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
+if ( page === 'addons' ) {
+	pushstreamChannel( [ 'notify' ] );
+} else {
+	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
+}
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
@@ -358,13 +361,6 @@ $( '#button-data' ).click( function() {
 } );
 $( '.helphead' ).click( function() {
 	var $this = $( this );
-	if ( page === 'addons' ) {
-		var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-		$this.toggleClass( 'bl', hidden );
-		$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
-		return
-	}
-	
 	var eltop = $( 'heading' ).filter( ( i, el ) => el.getBoundingClientRect().top > 0 )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {

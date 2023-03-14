@@ -5,6 +5,14 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230317
+if crontab -l | grep -q addonsupdates; then
+	cron="00 01 * * * $dirsettings/addons-data.sh"
+	current=$( crontab -l | grep -v addonsupdates )
+	[[ $current ]] && cron+="
+$current"
+	echo "$cron" | crontab -
+fi
+
 rm -f $dirsystem/btoutputonly
 [[ -e $dirmpdconf/bluetooth.conf && -e $dirmpdconf/output.conf ]] && touch $dirsystem/btoutputall
 

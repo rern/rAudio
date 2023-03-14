@@ -6,13 +6,6 @@ dirimg=/srv/http/assets/img
 # convert each line to each args
 readarray -t args <<< $1
 
-addonsListGet() {
-	! internetConnected && echo -2 && exit
-	
-	[[ ! $1 ]] && branch=main || branch=$1
-	curl -sfL https://github.com/rern/rAudio-addons/raw/$branch/addons-list.json -o $diraddons/addons-list.json
-	[[ $? != 0 ]] && echo -1 && exit
-}
 equalizerAmixer() { # sudo - mixer equal is user dependent
 	player=$( < $dirshm/player )
 	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
@@ -267,33 +260,6 @@ webRadioSampling() {
 
 case ${args[0]} in
 
-addonslist )
-	addonsListGet ${args[1]}
-	bash=$( jq -r .push.bash $diraddons/addons-list.json ) # push bash
-	if [[ $bash ]]; then
-		eval "$bash" || exit
-	fi
-	
-	url=$( jq -r .push.url $diraddons/addons-list.json ) # push download
-	[[ $url ]] && bash <( curl -sL $url )
-	;;
-addonsupdates )
-	addonsListGet
-	installed=$( ls "$diraddons" | grep -v addons-list )
-	for addon in $installed; do
-		verinstalled=$( < $diraddons/$addon )
-		if (( ${#verinstalled} > 1 )); then
-			verlist=$( jq -r .$addon.version $diraddons/addons-list.json )
-			[[ $verinstalled != $verlist ]] && count=1 && break
-		fi
-	done
-	if [[ $count ]]; then
-		pushstream option '{"addons":1}'
-		touch $diraddons/update
-	else
-		rm -f $diraddons/update
-	fi
-	;;
 albumignore )
 	album=${args[1]}
 	artist=${args[2]}

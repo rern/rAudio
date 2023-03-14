@@ -127,7 +127,7 @@ if [[ -e $file ]]; then
 fi
 
 if [[ $connected ]]; then
-	internetConnected && $dirbash/cmd.sh addonsupdates
+	internetConnected && $dirsettings/addons-data.sh &> /dev/null &
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	$dirsettings/features.sh hostapdset
 	systemctl -q disable hostapd
