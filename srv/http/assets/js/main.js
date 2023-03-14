@@ -191,7 +191,20 @@ $( '#button-settings' ).click( function( e ) {
 	}
 } )
 $( '.settings' ).click( function() {
-	location.href = 'settings.php?p='+ this.id;
+	var id = this.id;
+	if ( id !== 'addons' ) {
+		location.href = 'settings.php?p='+ id;
+	} else {
+		if ( navigator.onLine ) {
+			location.href = 'settings.php?p=addons';
+		} else {
+			info( {
+				  icon    : 'jigsaw'
+				, title   : 'Addons'
+				, message : iconwarning +'No internet connection.'
+			} );
+		}
+	}
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
