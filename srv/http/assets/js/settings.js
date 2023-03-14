@@ -104,6 +104,7 @@ function refreshData() {
 			S = data;
 		}
 		if ( ! list2G ) return
+		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
 			$( '#data' ).empty();
 			$( '#button-data, #data' ).addClass( 'hide' );
