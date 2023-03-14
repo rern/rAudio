@@ -264,7 +264,7 @@ heading .disabled {
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 100% / 4 );
+	width: calc( 100% / 5 );
 	max-width: 165px;
 	height: 40px;
 	cursor: pointer;
@@ -496,10 +496,11 @@ input.disabled + .switchlabel:after {
 	background: #000000;
 }
 .container {
-	max-width: 768px;
+	max-width: 658px;
 	min-height: 100vh;
 	height: 100%;
-	padding: 30px 55px 100px 55px;
+	margin: 0 auto;
+	padding: 30px 0 100px 0;
 }
 .col-l,
 .col-r {
@@ -610,18 +611,25 @@ input.disabled + .switchlabel:after {
 	}
 	#bar-bottom { display: none }
 }
-@media (min-width: 768px) {
-	.container { margin: 0 auto }
+@media (max-width: 800px) {
+	#bar-bottom {
+		padding: 0 20px;
+	}
 }
-@media (max-width: 768px) {
+@media (max-width: 700px) {
+	.container {
+		padding: 30px 10px 100px 10px;
+	}
+}
+@media (max-width: 658px) {
 	body {
 		height: 100%;
 		overflow: hidden;
 	}
 	.container {
-		padding: 30px 10px 200px 10px;
 		overflow-y: auto;
 	}
+	#bar-bottom { padding: 0 }
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
@@ -633,7 +641,6 @@ input.disabled + .switchlabel:after {
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
-	#bar-bottom { padding: 0 }
 }
 @media (max-width: 465px) {
 	.settingedit { display: none }
@@ -651,7 +658,7 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 	.brindex { display: block }
 }
-@media (max-width: 419px) {
+@media (max-width: 615px) {
 	#bar-bottom a { display: none }
 }
 @media (max-width: 375px) {
