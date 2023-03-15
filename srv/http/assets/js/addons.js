@@ -188,8 +188,9 @@ function renderPage() {
 	var hash = Date.now();
 	var list = '';
 	var addons = '';
+	delete S.push;
 	$.each( S, ( k, v ) => {
-		if ( [ 'push', 'versioninstalled' ].includes( k ) ) return
+		if ( k === 'versioninstalled' ) return
 		
 		var alias    = k;
 		var addon    = v;

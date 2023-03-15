@@ -191,14 +191,7 @@ $( '#button-settings' ).click( function( e ) {
 	}
 } )
 $( '.settings' ).click( function() {
-	var id = this.id;
-	if ( id !== 'addons' ) {
-		location.href = 'settings.php?p='+ id;
-	} else {
-		bash( dirsettings +'addons-data.sh init', error => {
-			error ? infoWarning( 'addons', 'Addons', error ) : location.href = 'settings.php?p=addons';
-		} );
-	}
+	location.href = 'settings.php?p='+ this.id;
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {

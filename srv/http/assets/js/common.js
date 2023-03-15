@@ -64,8 +64,14 @@ $( '#data' ).on( 'click', '.copy', function() {
 
 // ----------------------------------------------------------------------
 function errorDisplay( msg, list ) {
-	var pos   = msg.includes( 'position' ) ? msg.replace( /.* position /, '' ) : msg.replace( /.* column (.*) of .*/, '$1' );
-	var error =  '<codered>Errors:</codered> '+ msg.replace( pos, '<codered>'+ pos +'</codered>' )
+	var pos = '';
+	if ( msg.includes( 'position' ) ) {
+		pos = msg.replace( /.* position /, '' );
+	} else if ( msg.includes( 'column' ) ) {
+		pos = msg.replace( /.* column (.*) of .*/, '$1' );
+	}
+	if ( pos ) msg = msg.replace( pos, '<codered>'+ pos +'</codered>' );
+	var error =  '<codered>Errors:</codered> '+ msg
 				+'&emsp;<a class="infobtn infobtn-primary copy">'+ ico( 'copy' ) +'Copy</a>'
 				+'<hr>'
 				+ list.slice( 0, pos ) +'<codered>X</codered>'+ list.slice( pos );
