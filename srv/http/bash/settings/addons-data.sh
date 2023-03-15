@@ -39,4 +39,4 @@ data+='
 		, "update"           : '$update'
 	}
 }'
-echo "$data"
+echo "$data" | tee $dirshm/addons-list.json
