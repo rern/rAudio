@@ -3,7 +3,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.playback' ).click( function() {
 	if ( ! $( this ).hasClass( 'disabled' ) ) {
 		var cmd = S.player === 'mpd' ? 'mpcplayback' : 'playerstop';
-		bash( '/srv/http/bash/cmd.sh '+ cmd );
+		bash( dirbash +'cmd.sh '+ cmd );
 	}
 } );
 $( '.btoutputall' ).click( function() {

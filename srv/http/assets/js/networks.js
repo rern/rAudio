@@ -233,7 +233,7 @@ $( '.hostapdset' ).click( function() {
 } );
 
 function bluetoothCommand( cmd, mac ) {
-	bash( '/srv/http/bash/bluetoothcommand.sh '+ cmd +' '+ mac );
+	bash( dirbash +'bluetoothcommand.sh '+ cmd +' '+ mac );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac ], data => {

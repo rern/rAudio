@@ -195,15 +195,17 @@ $( '.settings' ).click( function() {
 	if ( id !== 'addons' ) {
 		location.href = 'settings.php?p='+ id;
 	} else {
-		if ( navigator.onLine ) {
-			location.href = 'settings.php?p=addons';
-		} else {
-			info( {
-				  icon    : 'jigsaw'
-				, title   : 'Addons'
-				, message : iconwarning +'No internet connection.'
-			} );
-		}
+		bash( dirsettings +'addons-data.sh init', error => {
+			if ( error ) {
+				info( {
+					  icon    : 'jigsaw'
+					, title   : 'Addons'
+					, message : iconwarning + error
+				} );
+			} else {
+				location.href = 'settings.php?p=addons';
+			}
+		} );
 	}
 } );
 $( '#settings' ).on( 'click', '.submenu', function() {
@@ -223,13 +225,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
 				if ( S.snapclient ) {
-					bash( '/srv/http/bash/snapcast.sh stop' );
+					bash( dirbash +'snapcast.sh stop' );
 				} else {
 					$( '#stop' ).click();
 				}
 			} else {
 				$( '#stop' ).click();
-				bash( '/srv/http/bash/snapcast.sh start', data => {
+				bash( dirbash +'snapcast.sh start', data => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
@@ -244,7 +246,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).click();
-			bash( '/srv/http/bash/settings/relays.sh '+ ! S.relayson );
+			bash( dirsettings +'relays.sh '+ ! S.relayson );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -607,7 +609,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, title   : 'Audio CD'
 		, oklabel : ico( 'minus-circle' ) +'Eject'
 		, okcolor : red
-		, ok      : () => bash( '/srv/http/bash/audiocd.sh ejecticonclick' )
+		, ok      : () => bash( dirbash +'audiocd.sh ejecticonclick' )
 	} );
 } );
 $( '#elapsed' ).click( function() {

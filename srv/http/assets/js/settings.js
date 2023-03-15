@@ -2,10 +2,9 @@ S              = {} // status
 SW             = {} // switch
 V              = {} // var global
 
-var dirbash    = '/srv/http/bash/settings/';
-var playersh   = dirbash +'player.sh ';
-var networkssh = dirbash +'networks.sh ';
-var systemsh   = dirbash +'system.sh ';
+var playersh   = dirsettings +'player.sh ';
+var networkssh = dirsettings +'networks.sh ';
+var systemsh   = dirsettings +'system.sh ';
 var cmd        = {
 	  albumignore  : playersh   +'albumignore'
 	, asound       : playersh   +'devices'
@@ -39,7 +38,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
-	var command = services.includes( id ) ? '/srv/http/bash/settings/system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? dirsettings +'system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -65,7 +64,7 @@ function infoPlayerActive( $this ) {
 }
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( '/srv/http/bash/settings/system-pkgstatus.sh mpd', status => {
+		bash( dirsettings +'system-pkgstatus.sh mpd', status => {
 			var error =  iconwarning +'MPD is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -74,7 +73,7 @@ function list2JSON( list ) {
 				.html( error )
 				.removeClass( 'hide' )
 				.on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
+					bash( dirsettings +'player-conf.sh', refreshData );
 					notify( 'mpd', 'MPD', 'Start ...' );
 				} );
 		loaderHide();
@@ -97,7 +96,7 @@ function notify( icon, title, message, delay ) {
 function refreshData() {
 	if ( page === 'guide' || ! I.hidden ) return
 	
-	bash( dirbash + page +'-data.sh', data => {
+	bash( dirsettings + page +'-data.sh', data => {
 		if ( typeof data === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( data );
 		} else {

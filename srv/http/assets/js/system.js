@@ -25,7 +25,7 @@ var pin2gpio = {
 	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
 }
 $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
-	bash( '/srv/http/bash/settings/system.sh rebootlist', list => {
+	bash( dirsettings +'system.sh rebootlist', list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -647,7 +647,7 @@ $( '#backup' ).click( function() {
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
 			notify( SW.icon, SW.title, 'Process ...' );
-			bash( '/srv/http/bash/settings/system-databackup.sh', data => {
+			bash( dirsettings +'system-databackup.sh', data => {
 				if ( data == 1 ) {
 					notify( SW.icon, SW.title, 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
@@ -719,7 +719,7 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				bash( '/srv/http/bash/settings/system-datareset.sh' );
+				bash( dirsettings +'system-datareset.sh' );
 				notify( SW.icon, SW.title, 'Reset to default ...' );
 			} else {
 				notify( SW.icon, SW.title, 'Restore ...' );

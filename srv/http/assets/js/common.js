@@ -5,6 +5,8 @@ loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
+var dirbash     = '/srv/http/bash/';
+var dirsettings = '/srv/http/bash/settings/';
 var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
@@ -868,7 +870,7 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	bash( '/srv/http/bash/cmd.sh '+ action, nfs => {
+	bash( dirbash +'cmd.sh '+ action, nfs => {
 		if ( nfs != -1 ) return
 		
 		var poweroff = action === 'poweroff';
