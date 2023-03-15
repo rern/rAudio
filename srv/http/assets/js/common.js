@@ -93,7 +93,7 @@ function highlightJSON( json ) {
 			if ( /:$/.test( match ) ) { // key
 				return match
 			} else {                    // value
-				return '<yl>'+ match +'</yl>'
+				return '<gr>'+ match +'</gr>'
 			}
 		} else if ( /true/.test( match ) ) {     // true
 			return '<grn>'+ match +'</grn>'
