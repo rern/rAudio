@@ -185,7 +185,7 @@ function getOption() {
 	}
 }
 function renderPage() {
-	var list = '';
+	var list   = '';
 	var addons = '';
 	delete S.push;
 	$.each( S, ( alias, addon ) => {
@@ -198,12 +198,12 @@ function renderPage() {
 		if ( 'revision' in addon ) {
 			var revision = '<p class="revisiontext hide">';
 			addon.revision.forEach( el => revision += '<gr>•</gr>'+ el +'<br>' );
-			revision += '</p>';
+			revision    += '</p>';
 		} else {
 			var revision = '';
 		}
 		if ( notverified ) {
-			var button = iconwarning + addon.verify.notverified;
+			var button   = iconwarning + addon.verify.notverified;
 		} else {
 			var disabled = ''
 			if ( installed ) {
@@ -212,10 +212,10 @@ function renderPage() {
 			} else {
 				var buttonlabel = addon.buttonlabel || ico( 'plus-circle' ) +'Install';
 			}
-			var button = '<a class="install infobtn '+ disabled +'">'+ buttonlabel +'</a>';
+			var button   = '<a class="install infobtn '+ disabled +'">'+ buttonlabel +'</a>';
 			if ( version && ! ( 'nouninstall' in addon ) ) button += ' &nbsp; <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';
 		}
-		addons += `\
+		addons         += `\
 <div id="${ alias }" class="divaddon${ installed }">
 	<div class="content">
 		<legend><span class="title ${ update }">${ addon.title }</span>${ version }</legend>
@@ -229,9 +229,9 @@ function renderPage() {
 	<div style="clear: both;"></div>
 </div>
 `;
-		list += '<li class="'+ alias + installed +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
+		list           += '<li class="'+ alias + installed +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
 	} );
-	html = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
+	html       = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
 	$( '.container' ).html( html ).promise().done( function() {
 		$( '.installed' ).removeClass( 'installed update' );
 		$( '.uninstall' ).addClass( 'hide' );
