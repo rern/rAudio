@@ -2,13 +2,6 @@
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
 $sudobash = '/usr/bin/sudo /srv/http/bash/';
-$list     = file_get_contents( '/srv/http/data/addons/addons-list.json' );
-$addons   = json_decode( $list, true );
-$opt      = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
-$alias    = $opt[ 0 ];
-$type     = $opt[ 1 ];
-$branch   = $opt[ 2 ] ?? '';
-$addon    = $addons[ $alias ];
 if ( $alias === 'cove' ) {
 	$icon = '<i class="page-icon i-coverart"></i>';
 	$href = '/';
@@ -16,26 +9,33 @@ if ( $alias === 'cove' ) {
 	$path = $type === '/' ? '' : $type; // path = $opt[ 1 ]
 	$type = 'Update';
 } else {
+	$list     = file_get_contents( '/srv/http/data/shm/addons-list.json' );
+	$addons   = json_decode( $list, true );
+	$opt      = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
+	$alias    = $opt[ 0 ];
+	$type     = $opt[ 1 ];
+	$branch   = $opt[ 2 ] ?? '';
+	$addon    = $addons[ $alias ];
 	$icon = '<i class="page-icon i-jigsaw"></i>';
 	$href = 'settings.php?p=addons';
 	$name = $addon[ 'title' ];
+	$options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
+	if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
+		$i             = array_search( 'password', array_keys( $addon[ 'option' ] ) );
+		$opt[ $i + 3 ] = '***';
+	}
+	$postmsg  = $type.' done.';
+	$postinfo = $addon[ 'postinfo' ] ?? '';
+	if ( $postinfo ) {
+		$c0 = $postinfo[ 0 ];
+		if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
+		if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
+	}
+	$installurl    = $addon[ 'installurl' ];
+	$installfile   = basename( $installurl );
+	$uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
+	if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 }
-$options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
-	$i             = array_search( 'password', array_keys( $addon[ 'option' ] ) );
-	$opt[ $i + 3 ] = '***';
-}
-$postmsg  = $type.' done.';
-$postinfo = $addon[ 'postinfo' ] ?? '';
-if ( $postinfo ) {
-	$c0 = $postinfo[ 0 ];
-	if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
-	if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
-}
-$installurl    = $addon[ 'installurl' ];
-$installfile   = basename( $installurl );
-$uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
-if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 
 <style>
@@ -110,7 +110,11 @@ scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 
 </script>
 <?php
 // ......................................................................................
-$getinstall = <<< EOF
+if ( $alias === 'cove' ) {
+	$commandtxt = 'albumthumbnail.sh'.( $path ? ' "'.$path.'"' : '' );
+	$command    = $sudobash.$commandtxt;
+} else {
+	$getinstall = <<< EOF
 curl -sSfLO $installurl
 [[ $? != 0 ]] && echo '<a class="cwbr"> ! </a> '$type script download failed. && exit
 
@@ -119,41 +123,37 @@ cmd;
 $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 EOF;
-
-if ( $alias === 'cove' ) {
-	$commandtxt = 'albumthumbnail.sh'.( $path ? ' "'.$path.'"' : '' );
-	$command    = $sudobash.$commandtxt;
-} else if ( $type === 'Uninstall' ) {
-	$command    = $uninstall;
-	$commandtxt = "uninstall_$alias.sh";
-} else if ( $type === 'Update' && ! isset( $addon[ 'nouninstall' ] ) ) {
-	$command    = <<< EOF
+	if ( $type === 'Uninstall' ) {
+		$command    = $uninstall;
+		$commandtxt = "uninstall_$alias.sh";
+	} else if ( $type === 'Update' && ! isset( $addon[ 'nouninstall' ] ) ) {
+		$command    = <<< EOF
 $getinstall
 $uninstall
 /usr/bin/sudo ./$installfile "$options"
 EOF;
-	$commandtxt = <<< EOF
+		$commandtxt = <<< EOF
 curl -sSfLO $installurl
 chmod 755 $installfile
 uninstall_$alias.sh
 ./$installfile "$options"
 EOF;
-} else {
-	$command    = <<< EOF
+	} else {
+		$command    = <<< EOF
 $getinstall
 /usr/bin/sudo ./$installfile "$options"
 EOF;
-	$commandtxt = <<< EOF
+		$commandtxt = <<< EOF
 curl -sSfLO $installurl
 chmod 755 $installfile
 ./$installfile "$options"
 EOF;
-}
-echo $commandtxt.'<br>';
+	}
+	echo $commandtxt.'<br>';
 
-if ( $type === 'Debug' ) {
-	$listtext = htmlspecialchars( $list );
-	echo <<< EOF
+	if ( $type === 'Debug' ) {
+		$listtext = htmlspecialchars( $list );
+		echo <<< EOF
 
 <hr>
 <a class="cbc"> . </a> Addons List
@@ -167,9 +167,9 @@ $listtext
 </body>
 </html>
 EOF;
-	exit;
+		exit;
+	}
 }
-
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
 $fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
