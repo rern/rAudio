@@ -196,15 +196,7 @@ $( '.settings' ).click( function() {
 		location.href = 'settings.php?p='+ id;
 	} else {
 		bash( dirsettings +'addons-data.sh init', error => {
-			if ( error ) {
-				info( {
-					  icon    : 'jigsaw'
-					, title   : 'Addons'
-					, message : iconwarning + error
-				} );
-			} else {
-				location.href = 'settings.php?p=addons';
-			}
+			error ? infoWarning( 'addons', 'Addons', error ) : location.href = 'settings.php?p=addons';
 		} );
 	}
 } );
@@ -1764,14 +1756,11 @@ $( '#button-pl-save' ).click( function() {
 	var upnpL     = $( '#pl-list .i-upnp' ).length;
 	var notsavedL = $( '#pl-list .notsaved' ).length;
 	if ( audiocdL || upnpL ) {
-		info( {
-			  icon    : 'file-playlist'
-			, title   : 'Save Playlist'
-			, message : iconwarning +'Saved playlist cannot contain:<br>'
-					  + audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
-					  + upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
-					  + notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
-		} );
+		message = 'Saved playlist cannot contain:<br>'
+				+ audiocdL ? audiocdL + ico( 'audiocd wh' ) : ''
+				+ upnpL ? upnpL +'&emsp;'+ ico( 'upnp wh' ) : ''
+				+ notsavedL ? notsavedL +'&emsp;'+ ico( 'save wh' ) : ''
+		infoWarning( 'file-playlist', 'Save Playlist', message );
 	} else {
 		playlistNew();
 	}

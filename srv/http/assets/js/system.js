@@ -666,11 +666,7 @@ $( '#backup' ).click( function() {
 								bannerHide();
 							}, 1000 );
 						} ).catch( () => {
-							info( {
-								  icon    : SW.icon
-								, title   : SW.title
-								, message : iconwarning +'File download failed.'
-							} );
+							infoWarning( SW.icon, SW.title, 'File download failed.' )
 							bannerHide();
 						} );
 				} else {
@@ -729,19 +725,7 @@ $( '#restore' ).click( function() {
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
 					.then( result => { // -1 / -2 = errors
-						if ( result == -1 ) {
-							info( {
-								  icon    : SW.icon
-								, title   : SW.title
-								, message : iconwarning +' Upload failed.'
-							} );
-						} else if ( result == -2 ) {
-							info( {
-								  icon    : SW.icon
-								, title   : SW.title
-								, message : iconwarning +' Restore failed.'
-							} );
-						}
+						infoWarning(  SW.icon,  SW.title, result == -1 ? 'Upload failed.' : 'Restore failed.' )
 						bannerHide();
 					} );
 			}

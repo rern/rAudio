@@ -671,13 +671,7 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 		, imagedata    : 'infofilegif' in I ? I.infofilegif : $( '.infoimgnew' ).attr( 'src' )
 	}
 	$.post( 'cmd.php', data, function( std ) {
-		if ( std == -1 ) {
-			info( {
-				  icon    : I.icon
-				, title   : I.title
-				, message : iconwarning +'Target directory not writable.'
-			} );
-		}
+		if ( std == -1 ) infoWarning( I.icon, I.title, 'Target directory not writable.' )
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }

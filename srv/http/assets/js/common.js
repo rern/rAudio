@@ -1,6 +1,6 @@
 /* 
 copy,     banner(),    errorDisplay(), 
-info(),   infoPower(), infoPowerCommand(),
+info(),   infoPower(), infoPowerCommand(), infoWarning()
 loader(), local(),     $.fn.press(),       pushstream,     selectSet()
 */
 
@@ -888,6 +888,13 @@ function infoPowerCommand( action ) {
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
+	} );
+}
+function infoWarning( icon, title, message ) {
+	info( {
+		  icon    : icon
+		, title   : title
+		, message : iconwarning + message
 	} );
 }
 

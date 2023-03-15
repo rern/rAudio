@@ -18,11 +18,7 @@ $( '#setting-spotifyd' ).click( function() {
 		} );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
-			info( {
-				  icon    : SW.icon
-				, title   : SW.title
-				, message : iconwarning +'Authorization cannot run on <wh>Firefox</wh>.'
-			} );
+			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
 			$( '#spotifyd' ).prop( 'checked', false );
 			return
 		}
@@ -477,11 +473,6 @@ function renderPage() {
 	} else if ( code ) {
 		bash( [ 'spotifytoken', code ], () => showContent );
 	} else if ( error ) {
-		info( {
-			  icon    : 'spotify'
-			, title   : 'Spotify'
-			, message : iconwarning +'Authorization failed:'
-						+'<br>'+ error
-		} );
+		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}
 }
