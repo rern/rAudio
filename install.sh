@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/addons.sh
 
 # 20230317
+rm -f $diraddons/addons-list.json
 if crontab -l | grep -q addonsupdates; then
 	cron="00 01 * * * $dirsettings/addons-data.sh"
 	current=$( crontab -l | grep -v addonsupdates )
