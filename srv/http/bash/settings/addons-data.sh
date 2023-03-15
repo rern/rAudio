@@ -4,19 +4,19 @@
 
 ! internetConnected && echo 'No internet connection.' && exit
 
-addonslist=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addons-list.json | head -n -1 ) # remove last } for append
+data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addons-list.json | head -n -1 ) # remove last } for append
 [[ $? != 0 ]] && echo 'Database download failed.' && exit
 
-addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $addonslist )
+addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $data )
 for addon in $addons; do
-	data=$( sed -n '/"'$addon'"/,/^\s}/ p' <<< $addonslist )
-	hide=$( sed -n '/"hide"/ {s/.* : "//; s/"$//; p}' <<< $data )
-	verify=$( sed -n '/"command"/ {s/.* : "//; s/"$//; p}' <<< $data )
+	this=$( sed -n '/"'$addon'"/,/^\s}/ p' <<< $data )
+	hide=$( sed -n '/"hide"/ {s/.* : "//; s/"$//; p}' <<< $this )
+	verify=$( sed -n '/"command"/ {s/.* : "//; s/"$//; p}' <<< $this )
 	[[ $hide && $( eval $hide 2> /dev/null ) == 1 ]] && hide+=',"'$addon'"'
 	[[ $verify && $( eval $verify 2> /dev/null ) == 1 ]] && notverified+=',"'$addon'"'
 	if [[ -e $diraddons/$addon ]]; then
 		installed+=',"'$addon'"'
-		version=$( sed -n '/"version"/ {s/.* : "//; s/"$//; p}' <<< $data )
+		version=$( sed -n '/"version"/ {s/.* : "//; s/"$//; p}' <<< $this )
 		[[ $( < $diraddons/$addon ) < $version ]] && update+=',"'$addon'"'
 	fi
 done
@@ -31,7 +31,7 @@ else
 	update='[""]'
 	rm -f $diraddons/update
 fi
-data=$addonslist'
+data+='
 	, "status" : {
 		  "hide"             : '$hide'
 		, "installed"        : '$installed'
