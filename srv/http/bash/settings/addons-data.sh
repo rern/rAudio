@@ -7,7 +7,7 @@
 addonslist=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addons-list.json )
 [[ $? != 0 ]] && echo 'Database download failed.' && exit
 
-installed=$( ls $diraddons | grep -Ev 'addons-list|update' )
+installed=$( ls $diraddons | grep -v update )
 for addon in $installed; do
 	verinstalled=$( < $diraddons/$addon )
 	versions+=', "'$addon'" : "'$verinstalled'"'
