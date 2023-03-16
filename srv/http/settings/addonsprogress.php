@@ -4,32 +4,27 @@ ignore_user_abort( TRUE ); // for 'connection_status()' to work
 $alias    = $_POST[ 'alias' ];
 $sudobash = '/usr/bin/sudo /srv/http/bash/settings/';
 if ( $alias === 'albumthumbnail' ) {
-	$path        = $_POST[ 'path' ];
-	$icon        = '<i class="page-icon i-coverart"></i>';
-	$hrefback    = '/';
-	$title       = 'Album Thumbnails';
-	$label       = 'Update';
+	$path          = $_POST[ 'path' ];
+	$icon          = '<i class="page-icon i-coverart"></i>';
+	$hrefback      = '/';
+	$title         = 'Album Thumbnails';
+	$label         = 'Update';
 } else {
-	$branch      = $_POST[ 'branch' ] ?? 'main';
-	$installurl  = $_POST[ 'installurl' ];
-	$nouninstall = $_POST[ 'nouninstall' ];
-	$postinfo    = $_POST[ 'postinfo' ];
-	$title       = $_POST[ 'title' ];
-	$label       = $_POST[ 'label' ];
-	$opt         = $_POST[ 'opt' ] ?? '';
+	$branch        = $_POST[ 'branch' ] ?? 'main';
+	$installurl    = $_POST[ 'installurl' ];
+	$postinfo      = $_POST[ 'postinfo' ];
+	$title         = $_POST[ 'title' ];
+	$label         = $_POST[ 'label' ];
+	$uninstall     = $_POST[ 'uninstall' ];
+	$opt           = $_POST[ 'opt' ] ?? '';
 
-	$icon        = '<i class="page-icon i-jigsaw"></i>';
-	$hrefback    = 'settings.php?p=addons';
-	$options = $alias."\n".$label."\n".$branch;
-	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-	$postmsg  = $label.' done.';
-	if ( $postinfo ) {
-		$c0 = $postinfo[ 0 ];
-		if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
-		if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
-	}
+	$icon          = '<i class="page-icon i-jigsaw"></i>';
+	$hrefback      = 'settings.php?p=addons';
 	$installfile   = basename( $installurl );
-	$uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
+	$options       = $alias."\n".$label."\n".$branch;
+	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
+	$postmsg       = $label.' done.';
+	if ( $postinfo ) $postmsg.= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
 }
 ?>
 
@@ -106,6 +101,9 @@ scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 
 <?php
 if ( ! $alias ) { // debug
 	echo <<< EOF
+curl -sSfLO installurl
+chmod 755 installfile
+./installfile "options"
 
 <hr>
 <a class="cbc"> . </a> Debug
@@ -130,7 +128,7 @@ curl -sSfLO $installurl
 chmod 755 $installfile
 cmd;
 $uninstall = <<<cmd
-/usr/bin/sudo $uninstallfile
+/usr/bin/sudo /usr/local/bin/uninstall_$alias.sh
 EOF;
 
 if ( $alias === 'albumthumbnail' ) {
@@ -140,7 +138,7 @@ if ( $alias === 'albumthumbnail' ) {
 } else if ( $label === 'Uninstall' ) {
 	$command    = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
-} else if ( $label === 'Update' && ! $nouninstall ) {
+} else if ( $label === 'Update' && $uninstall ) {
 	$command    = <<< EOF
 $getinstall
 $uninstall

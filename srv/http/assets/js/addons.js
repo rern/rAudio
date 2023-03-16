@@ -4,6 +4,7 @@ var icon       = 'jigsaw';
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '.page-icon' ).press( function() {
+	V.addon = { label: 'Debug', title: 'Debug' }
 	optionSet();
 } );
 $( '.helphead' ).off( 'click' ).click( function() {
@@ -114,12 +115,10 @@ function optionSet( val ) {
 	if ( V.optL ) return
 	
 	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-	[ 'alias', 'branch', 'installurl', 'label' ]
+	[ 'alias', 'branch', 'installurl', 'label', 'uninstall' ]
 		.forEach( k => htmlform += '<input type="hidden" name="'+ k +'" value="'+ ( V[ k ] || '' ) +'">' );
-	if ( 'addon' in V ) {
-		[ 'nouninstall', 'postinfo', 'title', 'version' ]
-			.forEach( k => htmlform += '<input type="hidden" name="'+ k +'" value="'+ ( V.addon[ k ] || '' ) +'">' );
-	}
+	[ 'postinfo', 'title', 'version' ]
+		.forEach( k => htmlform += '<input type="hidden" name="'+ k +'" value="'+ ( V.addon[ k ] || '' ) +'">' );
 	if ( 'opt' in V ) V.opt.forEach( v => htmlform += '<input type="hidden" name="opt[]" value="'+ v +'">' );
 	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();
