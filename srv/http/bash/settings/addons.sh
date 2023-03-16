@@ -7,7 +7,7 @@ if [[ $1 == abort ]]; then
 fi
 
 . /srv/http/bash/common.sh
-addonsjson=$diraddons/addons-list.json
+addonsjson=$diraddons/addonslist.json
 bar='<a class="cbc">   </a>'
 info='<a class="cby ck"> i </a>'
 warn='<a class="cbr cw"> ! </a>'
@@ -46,13 +46,13 @@ getinstallzip() {
 }
 installstart() { # $1-'u'=update
 	rm $0
-	readarray -t args <<< $1 # lines to array: alias type branch opt1 opt2 ...
+	readarray -t args <<< $1 # lines to array: alias label branch opt1 opt2 ...
 	alias=${args[0]}
-	type=${args[1]}
+	label=${args[1]}
 	branch=${args[2]}
 	args=( "${args[@]:3}" ) # 'opt' for script start at ${args[0]}
-	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
-	[[ $type != Rank || $type != Import ]] && title "$bar $type $name ..." || title "$bar $name ..."
+	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
+	[[ $label != Rank || $label != Import ]] && title "$bar $label $title ..." || title "$bar $title ..."
 }
 installfinish() {
 	version=$( jq -r .$alias.version $addonsjson )
@@ -69,17 +69,17 @@ $bar Done.
 	fi
 }
 uninstallstart() {
-	name="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
+	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"
 	if [[ ! -e /usr/local/bin/uninstall_$alias.sh ]]; then
-	  echo $info $name not found.
+	  echo $info $title not found.
 	  rm $diraddons/$alias &> /dev/null
 	  exit 1
 	fi
 	
 	rm $0
-	[[ $type != Update ]] && title "$bar Uninstall $name ..."
+	[[ $label != Update ]] && title "$bar Uninstall $title ..."
 }
 uninstallfinish() {
 	rm $diraddons/$alias &> /dev/null
-	[[ $type != Update ]] && title "$bar Done."
+	[[ $label != Update ]] && title "$bar Done."
 }

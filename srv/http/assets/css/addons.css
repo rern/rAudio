@@ -24,7 +24,8 @@ hr {
 #list li.installed:before {
 	color: #0f0;
 }
-#list li.update:before {
+#list li.update:before,
+legend .title.installed.update::before {
 	animation: blinkopaque 1.5s linear infinite;
 }
 .source {
@@ -72,9 +73,6 @@ legend .title {
 legend .title.installed::before {
 	content: '• ';
 	color: #0f0;
-}
-legend .title.installed.update::before {
-	animation: blinkopaque 1.5s linear infinite;
 }
 legend p,
 legend a {

@@ -4,9 +4,10 @@
 
 ! internetConnected && echo 'No internet connection.' && exit
 
-data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addons-list.json | head -n -1 ) # remove last } for append
+data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 [[ $? != 0 ]] && echo 'Database download failed.' && exit
 
+echo "$data" > $diraddons/addonslist.json
 addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $data )
 for addon in $addons; do
 	addondata=$( sed -n '/"'$addon'"/,/^\s}/ p' <<< $data )
@@ -31,7 +32,7 @@ else
 	update='[""]'
 	rm -f $diraddons/update
 fi
-data+='
+echo $( head -n -1 <<< $data )'
 	, "status" : {
 		  "hide"             : '$hide'
 		, "installed"        : '$installed'
@@ -39,4 +40,3 @@ data+='
 		, "update"           : '$update'
 	}
 }'
-echo "$data" | tee $diraddons/addons-list.json

@@ -4,7 +4,7 @@ var icon       = 'jigsaw';
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '.page-icon' ).press( function() {
-	location.href = 'settings.php?p=addonsprogress';
+	optionSet();
 } );
 $( '.helphead' ).off( 'click' ).click( function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
@@ -24,165 +24,105 @@ $( '.container' ).on( 'click', '.revision', function() {
 	$this       = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
 	
-	alias  = $this.parent().data( 'alias' );
-	addon  = S[ alias ];
-	title  = addon.title;
-	type   = $this.text();
-	option = addon.option;
-	opt    = [ alias, type, addon.version || 'main' ];
-	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
-		j = 0;
-		getOption();
+	V.alias      = $this.parents( 'form' ).data( 'alias' );
+	V.addon      = S[ V.alias ];
+	V.label      = $this.find( '.label' ).text();
+	V.branch     = V.addon.version || 'main';
+	V.installurl = V.addon.installurl;
+	V.uninstall  = 'version' in V.addon && ! ( 'nouninstall' in V.addon );
+	if ( 'option' in V.addon ) {
+		optionGet();
 	} else {
 		info( {
 			  icon    : icon
-			, title   : title
-			, message : addon.version ? type +' to <wh>'+ addon.version +'</wh> ?' : type +'?'
-			, ok      : formPost
+			, title   : V.addon.title
+			, message : V.addon.version ? V.label +' to <wh>'+ V.addon.version +'</wh> ?' : V.label +'?'
+			, ok      : optionSet
 		} );
 	}
 } ).on( 'click', '.thumbnail', function() {
 	$( this ).prev().find( '.source' )[ 0 ].click();
 } ).press( function( e ) {
-	$this = $( e.target );
-	alias = $this.parents( 'form' ).data( 'alias' );
-	title = S[ alias ].title;
-	type  = $this.text();
+	var $this    = $( e.target );
+	if ( ! $this.parents( 'form' ).length ) return
+
+	V.alias      = $this.parents( 'form' ).data( 'alias' );
+	V.addon      = S[ V.alias ];
+	V.label      = $this.find( '.label' ).text();
+	V.uninstall  = 'version' in V.addon && ! ( 'nouninstall' in V.addon );
 	info( {
 		  icon      : icon
-		, title     : title
+		, title     : V.addon.title
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : () => {
-			opt    = [ alias, type, infoVal() ];
-			option = S[ alias ].option;
-			if ( option && type !== 'Update' && type !== 'Uninstall' ) {
-				j = 0;
-				getOption();
-			} else {
-				formPost();
-			}
+			V.branch = infoVal();
+			V.installurl = V.addon.installurl.replace( 'raw/main', 'raw/'+ V.branch );
+			'option' in V.addon ? optionGet() : optionSet();
 		}
 	} );
 } );
 
-function formPost() { // post submit with temporary form
-	var htmlform  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-	opt.forEach( o => htmlform += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">' );
+function buttonLabel( icon, label ) {
+	return ico( icon ) +' <span class="label">'+ label +'</span>';
+}
+function optionGet() {
+	V.optL = Object.keys( V.addon.option ).length;
+	V.opt = [];
+	$.each( V.addon.option, ( opt, v ) => {
+		V.optL--;
+		var i    = { icon: icon, title: V.title }
+		switch ( opt ) {
+			case 'confirm':
+				i.message = v;
+				i.oklabel = 'Continue';
+				i.ok      = () => $( '#infoX' ).click();
+				break;
+			case 'text':
+				i.message   = v.message
+				i.textlabel = v.label
+				i.values    = v.value
+				i.boxwidth  = v.width
+				i.ok        = () => optionSet( infoVal() || 0 )
+				break;
+			case 'radio':
+				i.message = v.message
+				i.radio   = v.list
+				i.values  = v.checked
+				i.ok      = () => optionSet( infoVal() )
+				break;
+			case 'checkbox':
+				i.message  = v.message
+				i.checkbox = v.list
+				i.values   = v.checked
+				i.ok       = () => optionSet( infoVal() )
+				break;
+			case 'select':
+				i.message     = v.message
+				i.selectlabel = v.label
+				i.select      = v.list
+				i.values      = v.checked
+				i.boxwidth    = v.width
+				i.ok          = () => optionSet( infoVal() )
+				break;
+		}
+		info( i );
+	} );
+}
+function optionSet( val ) {
+	if ( val ) V.opt.push( val );
+	if ( V.optL ) return
+	
+	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
+	[ 'alias', 'branch', 'installurl', 'label' ]
+		.forEach( k => htmlform += '<input type="hidden" name="'+ k +'" value="'+ ( V[ k ] || '' ) +'">' );
+	if ( 'addon' in V ) {
+		[ 'nouninstall', 'postinfo', 'title', 'version' ]
+			.forEach( k => htmlform += '<input type="hidden" name="'+ k +'" value="'+ ( V.addon[ k ] || '' ) +'">' );
+	}
+	if ( 'opt' in V ) V.opt.forEach( v => htmlform += '<input type="hidden" name="opt[]" value="'+ v +'">' );
 	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();
-}
-function getOption() {
-	okey    = Object.keys( option );
-	olength = okey.length;
-	oj      = okey[ j ];
-	oj0     = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
-	switch ( oj0 ) {
-		case 'wait': // only 1 'Ok' = continue
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : setOption
-			} );
-			break;
-		case 'confirm': // 'Cancel' = close
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : setOption
-			} );
-			break;
-		case 'yesno': // 'Cancel' = 0
-			var ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, buttonlabel : 'No'
-				, button      : () => setOption( 0 )
-				, ok          : () => setOption( 1 )
-			} );
-			break;
-		case 'skip': // 'Cancel' = continue, 'Ok' = skip options
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : option[ oj ]
-				, buttonlabel : 'No'
-				, button      : setOption
-				, oklabel     : 'Yes'
-				, ok          : formPost
-			} );
-			break;
-		case 'text':
-			var ojson = option[ oj ];
-			info( {
-				  icon      : icon
-				, title     : title
-				, message   : ojson.message
-				, textlabel : ojson.label
-				, values    : ojson.value
-				, boxwidth  : ojson.width
-				, ok        : () => setOption( infoVal() || 0 )
-			} );
-			break;
-		case 'password':
-			ojson = option[ oj ];
-			info( {
-				  icon          : icon
-				, title         : title
-				, message       : ojson.message
-				, passwordlabel : ojson.label
-				, ok:          () => {
-					var pwd = infoVal();
-					if ( pwd ) {
-						infoVerifyPassword( title, pwd, () => setOption( pwd ) );
-					} else {
-						setOption( 0 );
-					}
-				}
-			} );
-			break;
-		case 'radio': // single value
-			ojson = option[ oj ];
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : ojson.message
-				, radio   : ojson.list
-				, values  : ojson.checked
-				, ok      : () => setOption( infoVal() )
-			} );
-			break;
-		case 'select': // long single value
-			ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, selectlabel : ojson.label
-				, select      : ojson.list
-				, values      : ojson.checked
-				, boxwidth    : ojson.width
-				, ok          : () => setOption( infoVal() )
-			} );
-			break;
-		case 'checkbox': // multiple values
-			ojson = option[ oj ];
-			info( {
-				  icon     : icon
-				, title    : title
-				, message  : ojson.message
-				, checkbox : ojson.list
-				, values   : ojson.checked
-				, ok       : () => setOption( infoVal() )
-			} );
-			break;
-	}
 }
 function renderPage() {
 	var list   = '';
@@ -190,7 +130,6 @@ function renderPage() {
 	delete S.push;
 	$.each( S, ( alias, addon ) => {
 		if ( alias === 'status' || ( S.status.hide.includes( alias ) ) ) return
-		
 		var installed   = S.status.installed.includes( alias ) ? ' installed' : '';
 		var notverified = S.status.notverified.includes( alias );
 		var update      = S.status.update.includes( alias ) ? ' update' : '';
@@ -208,17 +147,19 @@ function renderPage() {
 			var disabled = ''
 			if ( installed ) {
 				disabled = update ? '' : ' disabled';
-				var buttonlabel = ico( 'update' ) +'Update';
+				var buttonlabel = buttonLabel( 'update', 'Update' );
+			} else if ( addon.buttonlabel ) {
+				var buttonlabel = buttonLabel( addon.buttonlabel[ 0 ], addon.buttonlabel[ 1 ] );
 			} else {
-				var buttonlabel = addon.buttonlabel || ico( 'plus-circle' ) +'Install';
+				var buttonlabel = buttonLabel( 'plus-circle', 'Install' );
 			}
-			var button   = '<a class="install infobtn '+ disabled +'">'+ buttonlabel +'</a>';
+			var button   = '<a class="install infobtn'+ disabled +'">'+ buttonlabel +'</a>';
 			if ( version && ! ( 'nouninstall' in addon ) ) button += ' &nbsp; <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';
 		}
 		addons         += `\
-<div id="${ alias }" class="divaddon${ installed }">
+<div id="${ alias }" class="divaddon">
 	<div class="content">
-		<legend><span class="title ${ update }">${ addon.title }</span>${ version }</legend>
+		<legend><span class="title${ installed + update }">${ addon.title }</span>${ version }</legend>
 		${ revision }
 		<form class="form-horizontal" data-alias="${ alias }">
 			<p class="detailtext">${ addon.description }<br><a href="${ addon.sourcecode }" class="source" target="_blank">source <i class="i-github"></i></a></p>
@@ -229,19 +170,12 @@ function renderPage() {
 	<div style="clear: both;"></div>
 </div>
 `;
-		list           += '<li class="'+ alias + installed +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
+		list           += '<li class="'+ alias + installed + update +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
 	} );
 	html       = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
 	$( '.container' ).html( html ).promise().done( function() {
-		$( '.installed' ).removeClass( 'installed update' );
-		$( '.uninstall' ).addClass( 'hide' );
 		$( '.container' ).removeClass( 'hide' );
 		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
 		loaderHide();
 	} );
-}
-function setOption( val ) {
-	if ( val ) opt.push( val );
-	j++;
-	j < olength ? getOption() : formPost();
 }

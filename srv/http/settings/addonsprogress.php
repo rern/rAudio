@@ -1,41 +1,36 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$sudobash = '/usr/bin/sudo /srv/http/bash/';
-$list     = file_get_contents( '/srv/http/data/addons/addons-list.json' );
-$addons   = json_decode( $list, true );
-$opt      = $_POST[ 'opt' ] ?? [ 'r1', 'Debug', 'debug' ]; // [ alias, type, branch, opt1, opt2, ... ]
-$alias    = $opt[ 0 ];
-$type     = $opt[ 1 ];
-$branch   = $opt[ 2 ] ?? '';
-$addon    = $addons[ $alias ];
-if ( $alias === 'cove' ) {
-	$icon = '<i class="page-icon i-coverart"></i>';
-	$href = '/';
-	$name = 'Album Thumbnails';
-	$path = $type === '/' ? '' : $type; // path = $opt[ 1 ]
-	$type = 'Update';
+$alias    = $_POST[ 'alias' ];
+$sudobash = '/usr/bin/sudo /srv/http/bash/settings/';
+if ( $alias === 'albumthumbnail' ) {
+	$path        = $_POST[ 'path' ];
+	$icon        = '<i class="page-icon i-coverart"></i>';
+	$hrefback    = '/';
+	$title       = 'Album Thumbnails';
+	$label       = 'Update';
 } else {
-	$icon = '<i class="page-icon i-jigsaw"></i>';
-	$href = 'settings.php?p=addons';
-	$name = $addon[ 'title' ];
+	$branch      = $_POST[ 'branch' ] ?? 'main';
+	$installurl  = $_POST[ 'installurl' ];
+	$nouninstall = $_POST[ 'nouninstall' ];
+	$postinfo    = $_POST[ 'postinfo' ];
+	$title       = $_POST[ 'title' ];
+	$label       = $_POST[ 'label' ];
+	$opt         = $_POST[ 'opt' ] ?? '';
+
+	$icon        = '<i class="page-icon i-jigsaw"></i>';
+	$hrefback    = 'settings.php?p=addons';
+	$options = $alias."\n".$label."\n".$branch;
+	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
+	$postmsg  = $label.' done.';
+	if ( $postinfo ) {
+		$c0 = $postinfo[ 0 ];
+		if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
+		if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
+	}
+	$installfile   = basename( $installurl );
+	$uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
 }
-$options = preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
-if ( isset( $addon[ 'option' ][ 'password' ] ) ) { // hide password
-	$i             = array_search( 'password', array_keys( $addon[ 'option' ] ) );
-	$opt[ $i + 3 ] = '***';
-}
-$postmsg  = $type.' done.';
-$postinfo = $addon[ 'postinfo' ] ?? '';
-if ( $postinfo ) {
-	$c0 = $postinfo[ 0 ];
-	if ( $c0 === '/' || $c0 === '[' ) $postinfo = exec( $postinfo );
-	if ( $postinfo ) $postmsg  .= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
-}
-$installurl    = $addon[ 'installurl' ];
-$installfile   = basename( $installurl );
-$uninstallfile = "/usr/local/bin/uninstall_$alias.sh";
-if ( $branch && $branch !== $addon[ 'version' ] ) $installurl = str_replace( 'raw/main', 'raw/'.$branch, $installurl );
 ?>
 
 <style>
@@ -87,13 +82,13 @@ pre hr.hrlight {
 
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$name?></a></div></div>
+		<div id="infoTopBg"><div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div></div>
 		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
 </div>
 <br>
-<p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$name?></wh> - <?=$type?> ...</p>
+<p class="addontitle gr"><i class="titleicon i-gear<?=( $localhost ? '' : ' blink' )?>"></i>&ensp;<wh><?=$title?></wh> - <?=$label?> ...</p>
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
@@ -105,14 +100,32 @@ document.title = 'Addons';
 E.helphead.remove();
 E.container.classList.remove( 'hide' );
 
-E.close.addEventListener( 'click', () => location.href = '<?=$href?>' );
+E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
 </script>
 <?php
+if ( ! $alias ) { // debug
+	echo <<< EOF
+
+<hr>
+<a class="cbc"> . </a> Debug
+<hr>
+stdout
+
+<a class="cbc"> . </a> Done
+<hr class="hrlight">
+</pre>
+<script>setTimeout( () => clearInterval( scroll ), 1000 );</script>
+</body>
+</html>
+EOF;
+	exit;
+}
+
 // ......................................................................................
 $getinstall = <<< EOF
 curl -sSfLO $installurl
-[[ $? != 0 ]] && echo '<a class="cwbr"> ! </a> '$type script download failed. && exit
+[[ $? != 0 ]] && echo '<a class="cwbr"> ! </a> '$label script download failed. && exit
 
 chmod 755 $installfile
 cmd;
@@ -120,13 +133,14 @@ $uninstall = <<<cmd
 /usr/bin/sudo $uninstallfile
 EOF;
 
-if ( $alias === 'cove' ) {
-	$commandtxt = 'albumthumbnail.sh'.( $path ? ' "'.$path.'"' : '' );
+if ( $alias === 'albumthumbnail' ) {
+	$commandtxt = 'albumthumbnail.sh';
+	if ( $path ) $commandtxt.= ' "'.$path.'"';
 	$command    = $sudobash.$commandtxt;
-} else if ( $type === 'Uninstall' ) {
+} else if ( $label === 'Uninstall' ) {
 	$command    = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
-} else if ( $type === 'Update' && ! isset( $addon[ 'nouninstall' ] ) ) {
+} else if ( $label === 'Update' && ! $nouninstall ) {
 	$command    = <<< EOF
 $getinstall
 $uninstall
@@ -151,25 +165,6 @@ EOF;
 }
 echo $commandtxt.'<br>';
 
-if ( $type === 'Debug' ) {
-	$listtext = htmlspecialchars( $list );
-	echo <<< EOF
-
-<hr>
-<a class="cbc"> . </a> Addons List
-<hr>
-$listtext
-
-<a class="cbc"> . </a> Done
-<hr class="hrlight">
-</pre>
-<script>setTimeout( () => clearInterval( scroll ), 1000 );</script>
-</body>
-</html>
-EOF;
-	exit;
-}
-
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
 $fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
@@ -177,7 +172,7 @@ ob_implicit_flush( true ); // start flush: bypass buffer - output to screen
 ob_end_flush();            // force flush: current buffer (run after flush started)
 
 echo $fillbuffer;          // fill buffer to force start output
-if ( $type === 'Uninstall' ) sleep( 1 );
+if ( $label === 'Uninstall' ) sleep( 1 );
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $popencmd = popen( "$command 2>&1", 'r' ); // start bash
 while ( ! feof( $popencmd ) ) {            // get stdout until eof

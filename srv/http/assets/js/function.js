@@ -1842,7 +1842,8 @@ function switchPage( page ) {
 }
 function thumbUpdate( path ) {
 	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-	[ 'cove', path ].forEach( el => htmlform += '<input type="hidden" name="opt[]" value="'+ el +'">' );
+				  +'<input type="hidden" name="alias" value="albumthumbnail">';
+				  +'<input type="hidden" name="path" value="'+ ( path || '' ) +'">';
 	$( 'body' ).append( htmlform +'</form>' );
 	$( '#formtemp' ).submit();
 }
