@@ -4,7 +4,8 @@ var icon       = 'jigsaw';
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
 $( '.page-icon' ).press( function() {
-	V.addon = { label: 'Debug', title: 'Debug' }
+	V.addon = { title: 'Debug' }
+	V.label = 'Debug';
 	optionSet();
 } );
 $( '.helphead' ).off( 'click' ).click( function() {
