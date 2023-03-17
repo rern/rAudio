@@ -10,11 +10,11 @@ if ( $alias === 'albumthumbnail' ) {
 	$title         = 'Album Thumbnails';
 	$label         = 'Update';
 } else {
-	$branch        = $_POST[ 'branch' ] ?? 'main';
+	$branch        = $_POST[ 'branch' ];
 	$installurl    = $_POST[ 'installurl' ];
+	$label         = $_POST[ 'label' ];
 	$postinfo      = $_POST[ 'postinfo' ];
 	$title         = $_POST[ 'title' ];
-	$label         = $_POST[ 'label' ];
 	$uninstall     = $_POST[ 'uninstall' ];
 	$opt           = $_POST[ 'opt' ] ?? '';
 

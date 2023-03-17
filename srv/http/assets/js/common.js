@@ -920,11 +920,10 @@ function local( delay ) {
 
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	// ELEMENT  : #id or .class
-	// DELEGATE : optional
-	// this     : use $( e.target ) instead of $( this );
-	// .on      : cannot be attached with .on
+$( ELEMENT ).press( DELEGATE, function( TARGET ) {
+	ELEMENT  : #id or .class
+	DELEGATE : optional > use TARGET for this
+	.on      : cannot be attached with .on
 } );
 events:
 	- move  : mouseenter > mousemove > mouseleave > mouseout
@@ -943,9 +942,9 @@ $.fn.press = function( arg1, arg2 ) {
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
 			V.press = true;
-			callback( e );
+			callback( delegate ? this : e );
 		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function( e ) {
+	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
 		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );
