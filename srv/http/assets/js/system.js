@@ -918,7 +918,7 @@ function infoMount( val ) {
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
-					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /[\/\\]/g : /\\/g;
+					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
 					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
