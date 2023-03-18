@@ -145,7 +145,7 @@ function renderPage() {
 	$( '.container' ).html( html ).promise().done( function() {
 		$( '.container' ).removeClass( 'hide' );
 		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
-		$( '.infobtn' ).toggleClass( 'disabled', S.status.error !== '' );
+		if ( S.status.error ) $( '.infobtn' ).addClass( 'disabled' );
 		loaderHide();
 	} );
 }
