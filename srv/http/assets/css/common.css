@@ -950,7 +950,7 @@ input[type=radio]:disabled {
 	input[type=radio]:focus,
 	input[type=checkbox]:focus,
 	#infoContent textarea:focus {
-		outline: 2px solid var( --cgl ) !important;
+		outline: 1px solid var( --cgl ) !important;
 	}
 	input[type=radio]:focus,
 	input[type=checkbox]:focus {
