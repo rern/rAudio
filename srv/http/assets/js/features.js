@@ -247,7 +247,7 @@ $( '#setting-multiraudio' ).click( function() {
 		var iL = values.length / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
-		values = [ S.hostip, S.hostname ];
+		values = [ S.hostname, S.hostip ];
 	}
 	var check = infoCheckEvenOdd( values );
 	info( {
@@ -289,10 +289,10 @@ $( '#setting-multiraudio' ).click( function() {
 			
 			var data = '';
 			v.forEach( ( el, i ) => {
-				i % 2 ? data += '"'+ el +'"' : data += ',"'+ el +'":'
+				i % 2 ? data += `"${ el }"` : data += `,"${ el }": `;
 			} );
 			data = '{'+ data.slice( 1 ) +'}';
-			bash( [ 'multiraudio', 'enable=true', data ] );
+			bash( [ 'multiraudio', 'json', data ] );
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}

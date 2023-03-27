@@ -226,13 +226,14 @@ logindisable )
 	pushSubmenu lock false
 	;;
 multiraudio )
-	if [[ $enable ]]; then
+	if [[ ${args[1]} ]]; then
 		fileconf=$dirsystem/multiraudio.conf
-		json=$( jq <<< $data )
+		json=$( jq <<< ${args[2]} )
 		echo "$json" > $fileconf
 		touch $dirsystem/multiraudio
 		ip=$( ipAddress )
-		iplist=$( jq keys <<< $json )
+		iplist=$( jq -r '.[]' <<< $json | grep -v $ip )
+		echo $iplist
 		for ip in $iplist; do
 			sshCommand $ip << EOF
 echo "$json" > $fileconf

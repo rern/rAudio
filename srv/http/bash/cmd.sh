@@ -825,6 +825,12 @@ mpcupdate )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
+multiraudiolist )
+	echo '{
+  "current" : "'$( ipAddress )'"
+, "list"    : '$( < $dirsystem/multiraudio.conf )'
+}'
+	;;
 ordersave )
 	data=$( jq <<< ${args[1]} )
 	pushstream order "$data"

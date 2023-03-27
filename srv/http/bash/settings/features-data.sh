@@ -63,7 +63,7 @@ fi
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli'
-, "upmpdcliconf"     : { "ownqueue": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false ) }
+, "upmpdcliconf"     : { "ownqueue": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
 	if systemctl -q is-active localbrowser; then

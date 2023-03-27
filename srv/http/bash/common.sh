@@ -20,6 +20,8 @@ fi
 argsConvert() { # convert lines to array > $args > var=value ...
 	readarray -t args <<< $1
 	cmd=${args[0]}
+	[[ ${args[1]} == json ]] && return
+	
 	filetmp=$dirshm/conf
 	printf "%s\n" "${args[@]:1}" > $filetmp
 	. $filetmp

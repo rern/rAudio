@@ -255,12 +255,16 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'multiraudio':
 			bash( [ 'multiraudiolist' ], data => {
+				var currentip = data.current;
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
 					, radio      : data.list
-					, values     : data.current
+					, values     : currentip
 					, beforeshow : function() {
+						$( '#infoContent input' ).each( ( i, el ) => {
+							if ( $( el ).val() === currentip ) $( el ).prop( 'disabled', true );
+						} );	
 						$( '#infoContent input' ).change( function() {
 							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
