@@ -1,15 +1,15 @@
 #banner       { z-index: 125 }
 #loader       { z-index: 120 }
 #infoOverlay,
+#keyboard,
 #button-data  { z-index: 115 }
 #data         { z-index: 110 }
-#keyboard     { z-index: 108 }
 .head         { z-index: 95 }
 .albumrefresh { z-index: 1 }
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1678713332' );
+	src         : url( '/assets/fonts/rern.woff2?v=1679112028' );
 }
 @font-face {
 	font-family : Lato;
@@ -103,7 +103,6 @@ i {
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }
 .i-latest::before          { content: '\F55E' }
-.i-lcd::before             { content: '\F577' }
 .i-lcdchar::before         { content: '\F578' }
 .i-led::before             { content: '\F52B' }
 .i-librandom::before       { content: '\F569' }
@@ -195,6 +194,7 @@ i {
 .i-stoptimer::before       { content: '\F570' }
 .i-system::before          { content: '\F590' }
 .i-tag::before             { content: '\F55B' }
+.i-tft::before             { content: '\F577' }
 .i-times::before           { content: '\F51A' }
 .i-timezone::before        { content: '\F575' }
 .i-title::before           { content: '\F54A' }
@@ -308,7 +308,7 @@ codered  {
 	height: 40px;
 	padding-right: 10px;
 	background: var( --cga );
-	box-shadow: 0px 4px 10px #000000;
+	box-shadow: var( --shadow-bar );
 }
 .head i {
 	width: 40px;
@@ -316,7 +316,7 @@ codered  {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 .head .i-close {
 	color: var( --cm );
@@ -421,7 +421,7 @@ codered  {
 	background: var( --wkgloss );
 	background-color: var( --cm );
 	-webkit-appearance: none;
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 #infoRange input::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
@@ -431,7 +431,7 @@ codered  {
 	background: var( --gloss );
 	background: var( --wkgloss );
 	background-color: var( --cm );
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 #infoRange input:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
@@ -486,7 +486,7 @@ input[type=checkbox] {
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 									  /* x   y   w    h */
-	box-shadow: -1px 1px 2px 1px #000000;  /* x, y, blurw, shadoww, color */
+	box-shadow: var( --shadow-check );  /* x, y, blurw, shadoww, color */
 }
 .infobtn {
 	display: inline-block;
@@ -504,7 +504,7 @@ input[type=checkbox] {
 	text-align: center;
 	color: var( --cw ) !important;
 	background-color: var( --cg );
-	box-shadow: -2px 2px 3px 1px #000000;
+	box-shadow: var( --shadow-btn );
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
@@ -518,11 +518,14 @@ input[type=checkbox] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.infobtn.disabled {
+.disabled,
+.disabled i {
+	pointer-events: none;
 	color: var( --cg60 ) !important;
+}
+.infobtn.disabled {
 	background-color: var( --cgd ) !important;
 	box-shadow: none;
-	pointer-events: none;
 	filter: none !important;
 }
 .infobtn i {
@@ -591,7 +594,7 @@ hr {
 #infoOverlay a,
 #infoBox i,
 .infobtn {
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 #infoContent .bklabel {
 	height: auto;
@@ -668,10 +671,13 @@ hr {
 }
 #infoTab a {
 	display: inline-block;
+	border-radius: 6px 6px 0 0;
 }
 #infoTab a.active {
 	background: var( --cga );
-	border-radius: 6px 6px 0 0;
+}
+#infoTab a:not(:last-child) {
+/*	box-shadow: 2px -2px 4px #000000;*/
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;

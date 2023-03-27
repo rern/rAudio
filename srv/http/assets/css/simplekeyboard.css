@@ -7,7 +7,7 @@
 	width: 100%;
 	bottom: 0;
 	background: var( --cga ) !important;
-	box-shadow: 0 0 10px 4px #000000;
+	box-shadow: var( --shadow-bar );
 	-webkit-touch-callout: none; /* iOS Safari */
 	user-select: none;
 	-webkit-user-select: none;   /* Safari */
@@ -24,9 +24,9 @@
 	padding: 0 !important;
 	font-family: Lato;
 	font-size: 22px;
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: var( --shadow-text );
 	background: var( --cg ) !important;
-	box-shadow: -2px 2px 2px #000000 !important;
+	box-shadow: var( --shadow-btn ) !important;
 	border-radius: 4px !important;
 	border-bottom: none !important;
 	border-top: 1px solid var( --cg60 );

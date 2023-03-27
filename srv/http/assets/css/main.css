@@ -81,15 +81,10 @@ a {
 	width: 100px;
 	font-size: 3em;
 	color: var( --cm );
-	text-shadow: -2px 2px 4px #000000;
+	text-shadow: var( --shadow-btn );
 }
 .infobookmark .i-bookmark {
 	margin-top: 20px;
-}
-.disabled,
-.disabled i {
-	pointer-events: none;
-	color: var( --cg60 ) !important;
 }
 #time-knob.disabled .btn {
 	background-color: var( --cgd ) !important;
@@ -97,7 +92,7 @@ a {
 #divcolor .infobtn {
 	margin: 10px 5px;
 	width: 90px;
-	box-shadow: 0 0 6px 5px #000000;
+	box-shadow: var( --shadow-bar );
 }
 #divcolor .btn.disabled {
 	background-color: var( --cg ) !important;
@@ -132,7 +127,7 @@ i.map.disabled, .map.disabled i {
 	width: 190px;
 	padding: 0;
 	background: var( --cg );
-	box-shadow: 4px 4px 10px #000000;
+	box-shadow: var( --shadow-menu );
 }
 .menu.fixed {
 	position: fixed;
@@ -162,7 +157,7 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 .menu i.gr {
 	color: var( --cg60 ) !important;
@@ -183,7 +178,7 @@ i.map.disabled, .map.disabled i {
 	right: 0px;
 	width: 160px;
 	padding: 0;
-	box-shadow: -4px 4px 10px #000000;
+	box-shadow: var( --shadow-menu-l );
 }
 #power, #screenoff {
 	background: var( --cga );
@@ -203,7 +198,7 @@ i.map.disabled, .map.disabled i {
 	height: 20px;
 	vertical-align: -2px;
 	border-radius: 50%;
-	box-shadow: -1px 1px 2px #000000;
+	box-shadow: var( --shadow-text );
 /*	background-image: linear-gradient( to right, #ff0000, #ff8800, #ffff00, #00ff88, #0000ff, #8800ff, #ff00ff );*/
 }
 #menu-file {
@@ -271,7 +266,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom,
 #biocontent .artist,
 #divlyricsartist {
-	box-shadow: 0 0 10px 4px #000000;
+	box-shadow: var( --shadow-bar );
 }
 #bar-top i {
 	width: 40px;
@@ -287,7 +282,7 @@ i.map.disabled, .map.disabled i {
 #button-playlist i,
 #page-playback .btn-group i,
 .content-top i {
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 #playback-controls {
 	text-align: center
@@ -900,7 +895,7 @@ i.map.disabled, .map.disabled i {
 	transition: all 0s linear;
 }
 .rs-container {
-	box-shadow: #555555 0 0 8px 2px;
+	box-shadow: 0 0 8px 2px #555;
 	border-radius: 50%;
 }
 .rs-container::before,
@@ -1102,7 +1097,7 @@ i.map.disabled, .map.disabled i {
 	max-width: 510px;
 	height: calc(100vh - 50px);
 	background: var( --cgd );
-	box-shadow: 4px 4px 10px #000000;
+	box-shadow: var( --shadow-menu );
 	-webkit-overflow-scrolling: touch;
 }
 #lyrics i {
@@ -1232,6 +1227,12 @@ i.map.disabled, .map.disabled i {
 #lib-mode-list.bars-off::after {
 	height: 10px;
 }
+#lib-mode-list .bookmark {
+    vertical-align: -1px;
+}
+#lib-mode-list.nolabel .bookmark {
+    vertical-align: -33px;
+}
 .lib-mode {
 	display: inline-block;
 	width: 16.666666%;
@@ -1240,25 +1241,20 @@ i.map.disabled, .map.disabled i {
 .mode {
 	position: relative;
 	height: 110px;
-	padding: 20px 5px 10px 5px;
 	border-radius: 5px;
 	color: var( --cg60 );
 	text-align: center;
 }
 .mode i {
 	display: inline-block;
+	padding-top: 20px;
+	font-size: 48px;
+	line-height: 60px;
 	text-align: center;
 	color: var( --cg60 );
 }
-.mode i:first-of-type {
-	font-size: 48px;
-	line-height: 60px;
-}
 .mode gr {
 	margin-left: 8px;
-}
-.nolabel {
-	padding-top: 25px;
 }
 #lib-mode-list gr {
 	font-size: 14px;
@@ -1267,15 +1263,10 @@ i.map.disabled, .map.disabled i {
 	overflow: hidden;
 }
 .bkcoverart {
-	position: absolute;
-	width: auto;
-	max-width: 100%;
+	position: relative;
+	top: 5px;
 	height: 100px;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	margin: auto;
+	max-width: 100%;
 	border: 1px solid hsl(0,0%,15%);
 }
 .label,
@@ -1336,7 +1327,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw ) !important;
 	background: var( --cg );
 	border-radius: 50%;
-	box-shadow: -1px 1px 2px #000000;
+	box-shadow: var( --shadow-text );
 }
 .infoimgname {
 	line-height: 25px;
@@ -1539,7 +1530,7 @@ i.map.disabled, .map.disabled i {
 	flex-direction:column;
 	align-items:center;
 	background: var( --cga );
-	box-shadow: 0 0 10px 4px #000000;
+	box-shadow: var( --shadow-bar );
 }
 .index1 {
 	display: none;
@@ -1970,7 +1961,7 @@ li.active .li2 bl {
 	background: #000000;
 	border-radius: 50%;
 	touch-action: none;
-	box-shadow: 0 0 10px 5px #000000;
+	box-shadow: var( --shadow-bar );
 }
 #colorcancel {
 	position: absolute;
@@ -1981,7 +1972,8 @@ li.active .li2 bl {
 	line-height: 36px;
 	border-radius: 50%;
 	color: var( --cm );
-	text-shadow: -2px 2px 4px #000000;
+	background: #000;
+	text-shadow: var( --shadow-btn );
 	box-shadow: 0 0 6px 5px #000000;
 }
 .tagmessage {

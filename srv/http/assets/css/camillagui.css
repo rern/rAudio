@@ -91,7 +91,7 @@ body {
 	height: 40px;
 	line-height: 40px;
 	background: var( --cga );
-	box-shadow: 0px 4px 10px #000000;
+	box-shadow: var( --shadow-bar );
 }
 .head .page-icon {
 	float: left;
@@ -268,7 +268,7 @@ input[type=range]::-webkit-slider-thumb {
 	background: var( --wkgloss );
 	background-color: var( --cm );
 	-webkit-appearance: none;
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 input[type=range]::-moz-range-thumb {
 	height: 36px;
@@ -278,7 +278,7 @@ input[type=range]::-moz-range-thumb {
 	background: var( --gloss );
 	background: var( --wkgloss );
 	background-color: var( --cm );
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 input[type=range]::-webkit-slider-runnable-track {
 	width: 100%;
@@ -317,7 +317,7 @@ input[data-tip='Mixer name, must be unique'] {
 	background-color: var( --cg ) !important;
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: var( --shadow-text );
 	width:36px;
 	height: 36px;
 }
@@ -609,7 +609,7 @@ input[data-tip='Mixer name, must be unique'] {
 	padding: 0 0 0 5px;
 	line-height: 36px;
 	text-align: center;
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: var( --shadow-text );
 	background: var( --cga );
 	border: none;
 	border-radius: 3px 3px 0 0;
