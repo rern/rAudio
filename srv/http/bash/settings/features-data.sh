@@ -8,42 +8,47 @@
 
 . /srv/http/bash/common.sh
 
+[[ ! -e /tmp/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
+
 spotifyredirect=https://rern.github.io/raudio/spotify
-scrobbleconf=$( sed 's/^.*=/,/' $dirsystem/scrobble.conf 2> /dev/null )
 
 packageActive hostapd rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
   "page"             : "features"
-, "autoplay"         : '$( ls $dirsystem/autoplay* &> /dev/null && echo true )'
-, "autoplayconf"     : [ '$( exists $dirsystem/autoplaybt )', '$( exists $dirsystem/autoplaycd )', '$( exists $dirsystem/autoplay )' ]
+, "autoplay"         : '$( exists $dirsystem/autoplay )'
+, "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "camillarefresh"   : '$( grep 'status_update_interval' /srv/http/settings/camillagui/config/gui-config.yml | cut -d' ' -f2 )'
+, "camilladspconf"   : { "refresh": '$( getVar status_update_interval /srv/http/settings/camillagui/config/gui-config.yml )' }
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
+, "hostip"           : "'$( ipAddress )'"
 , "httpd"            : '$( exists $dirmpdconf/httpd.conf )'
 , "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'
 , "lyricsembedded"   : '$( exists $dirsystem/lyricsembedded )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
-, "multiraudioconf"  : [ '$( sed 's/^/"/; s/$/", /' $dirsystem/multiraudio.conf 2> /dev/null | sed '$ s/,//' )' ]
+, "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.conf )'
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
 , "nfsserver"        : '$( [[ -L $dirshareddata ]] && systemctl -q is-active nfs-server && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
-, "scrobbleconf"     : [ '${scrobbleconf:1}' ]
+, "scrobbleconf"     : '$( conf2json scrobble.conf )'
 , "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
-, "stoptimerconf"    : '$( getContent $dirshm/stoptimer )'
 , "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
-, "state"            : "'$( grep -m1 state $dirshm/status | cut -d= -f2 | tr -d '"' )'"
+, "state"            : "'$( getVar state $dirshm/status )'"
 , "stoptimer"        : '$( exists $dirshm/stoptimer )'
-, "stoptimerconf"    : '$( getContent $dirshm/stoptimer )
-[[ -e /usr/bin/hostapd ]] && data+='
+, "stoptimerconf"    : '$( conf2json stoptimer.conf )
+if [[ -e /usr/bin/hostapd ]]; then
+	ip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
+	wpa_passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
+	data+='
 , "hostapd"          : '$hostapd'
-, "hostapdconf"      : '$( $dirsettings/features.sh hostapdget )'
+, "hostapdconf"      : { "ip": "'$ip'", "wpa_passphrase": "'$wpa_passphrase'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+fi
 [[ -e /usr/bin/shairport-sync ]] && data+='
 , "shairport-sync"   : '$shairportsync
 [[ -e /usr/bin/snapserver ]] && data+='
@@ -51,34 +56,31 @@ data+='
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapcastconf"     : '$( grep -q -m1 latency /etc/default/snapclient && grep latency /etc/default/snapclient | tr -d -c 0-9 || echo 800 )
+, "snapclientconf"   : { "latency": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$spotifyd'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli'
-, "upmpdcliownqueue" : '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true )
+, "upmpdcliconf"     : { "ownqueue": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false ) }
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
-	conf=$( sed -e '/=/ {s/^/,"/; s/=/":/}' -e 's/.*rotate.*:\(.*\)/"rotate":"\1"/; s/:yes/:true/; s/:no/:false/' $dirsystem/localbrowser.conf )
-	brightnessfile=/sys/class/backlight/rpi_backlight/brightness
-	[[ -e $brightnessfile ]] && brightness=$( < $brightnessfile ) || brightness=false
-	localbrowserconf='{ '$conf', "brightness" : '$brightness' }'
 	if systemctl -q is-active localbrowser; then
 		localbrowser=true
 	else
-		systemctl -q is-enabled localbrowser && $dirsettings/features.sh localbrowser$'\n'false
+		systemctl -q is-enabled localbrowser && $dirsettings/features.sh localbrowser
 	fi
 	data+='
-, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
+, "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
 , "localbrowser"     : '$localbrowser'
-, "localbrowserconf" : '$localbrowserconf
+, "localbrowserconf" : '$( conf2json $dirsystem/localbrowser.conf )
 fi
 if [[ -e /usr/bin/smbd ]]; then
-	grep -A1 $dirsd /etc/samba/smb.conf | grep -q -m1 'read only = no' && writesd=true || writesd=false
-	grep -A1 $dirusb /etc/samba/smb.conf | grep -q -m1 'read only = no' && writeusb=true || writeusb=false
-	smbconf="[ $writesd, $writeusb ]"
+	file=/etc/samba/smb.conf
+	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
+	sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
+	smbconf='{ "sd": '$sd', "usb": '$usb' }'
 	data+='
 , "smb"              : '$smb'
 , "smbconf"          : '$smbconf

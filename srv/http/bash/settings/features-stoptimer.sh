@@ -2,15 +2,12 @@
 
 . /srv/http/bash/common.sh
 
-min=$1
-poweroff=$2
+. $dirsystem/stoptimer.conf
 
 rm -f $dirshm/relaystimer
 killall relays-timer.sh &> /dev/null
 
 sleep $(( min * 60 ))
-
-rm -f $dirshm/stoptimer
 
 $dirbash/cmd.sh volume # mute
 [[ $( < $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop || $dirbash/cmd.sh playerstop

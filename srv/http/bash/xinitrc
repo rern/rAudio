@@ -12,8 +12,11 @@ done
 
 /srv/http/bash/settings/features.sh localbrowserxset
 
-! ifconfig | grep -q -m1 inet.*broadcast && cursor=yes
-
+if ifconfig | grep -q -m1 inet.*broadcast; then
+	[[ $cursor ]] && cursor=yes || cursor=no
+else
+	cursor=yes
+fi
 matchbox-window-manager -use_cursor $cursor &
 
 scale=$( awk 'BEGIN { printf "%.2f", '$zoom/100' }' )

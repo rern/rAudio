@@ -82,7 +82,7 @@ function bookmarkNew() {
 		, textlabel  : 'As:'
 		, focus      : 0
 		, values     : name
-		, checkblank : 1
+		, checkblank : true
 		, beforeshow : () => {
 			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
 			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
@@ -140,7 +140,7 @@ function playlistNew( name ) {
 		, textlabel    : 'Name'
 		, focus        : 0
 		, values       : name
-		, checkblank   : 1
+		, checkblank   : true
 		, ok           : () => playlistSave( infoVal() )
 	} );
 }
@@ -153,8 +153,8 @@ function playlistRename() {
 		, textlabel    : 'To'
 		, focus        : 0
 		, values       : name
-		, checkchanged : 1
-		, checkblank   : 1
+		, checkchanged : true
+		, checkblank   : true
 		, oklabel      : ico( 'flash' ) +'Rename'
 		, ok           : () => playlistSave( infoVal(), name )
 	} );
@@ -237,7 +237,7 @@ function tagEditor() {
 			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
-			, checkchanged : 1
+			, checkchanged : true
 			, beforeshow   : () => {
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
@@ -417,7 +417,7 @@ function webRadioEdit() {
 		, title        : 'Edit Web Radio'
 		, content      : htmlwebradio
 		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
-		, checkchanged : 1
+		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : () => {
@@ -469,7 +469,7 @@ function webRadioNew( name, url, charset ) {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
-						, checkblank : 1
+						, checkblank : true
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
 					} );
 				} );
@@ -631,15 +631,15 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			var name = path.pop();
 			var path = path.join( '/' );
 			info( {
-				  icon        : V.mode
-				, title       : 'Rename Folder'
-				, textlabel   : 'Name'
-				, focus       : 0
-				, values      : name
-				, checkblank  : 1
-				, checkchange : 1
-				, oklabel     : 'Rename'
-				, ok          : () => bash( [ 'wrdirrename', path, name, infoVal(), V.mode ] )
+				  icon         : V.mode
+				, title        : 'Rename Folder'
+				, textlabel    : 'Name'
+				, focus        : 0
+				, values       : name
+				, checkblank   : true
+				, checkchanged : true
+				, oklabel      : 'Rename'
+				, ok           : () => bash( [ 'wrdirrename', path, name, infoVal(), V.mode ] )
 			} );
 			return
 		case 'wrsave':

@@ -1,3 +1,10 @@
+/*
+Naming must be the same for:
+	system - NAME.service
+	js     - id = icon = NAME, #setting-NAME
+	bash   - cmd=NAME, save to NAME.conf
+*/
+
 S              = {} // status
 SW             = {} // switch
 V              = {} // var global
@@ -51,6 +58,14 @@ function currentStatus( id ) {
 		bannerReset();
 	} );
 }
+function infoDisabled( $this ) {
+	$this.prop( 'checked', ! checked );
+	info( {
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : $this.prev().html()
+	} );
+}
 function infoPlayerActive( $this ) {
 	var $switch = $this.prev().prev();
 	if ( $switch.hasClass( 'disabled' ) ) {
@@ -61,6 +76,13 @@ function infoPlayerActive( $this ) {
 		} );
 		return true
 	}
+}
+function json2array( keys, json ) {
+	if ( ! json ) return false
+	
+	var values = [];
+	keys.forEach( k => values.push( json[ k ] ) );
+	return values
 }
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
@@ -94,7 +116,7 @@ function notify( icon, title, message, delay ) {
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function refreshData() {
-	if ( page === 'guide' || ! I.hidden ) return
+	if ( page === 'guide' || I.active ) return
 	
 	bash( dirsettings + page +'-data.sh', data => {
 		if ( typeof data === 'string' ) { // on load, try catching any errors
@@ -122,16 +144,19 @@ function showContent() {
 	loaderHide();
 }
 function switchCancel() {
-	delete I.active;
 	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
+	delete SW.icon;
 }
 function switchDisable() {
-	S[ SW.id ] = false;
 	$( '#setting-'+ SW.id ).addClass( 'hide' );
+	notify( SW.icon, SW.title, 'Disable ...' );
+	S[ SW.id ] = false;
 }
 function switchEnable() {
-	var val = infoVal();
-	var cmd = typeof val === 'object' ? [ SW.id, true, ...val ] : [ SW.id, true, val ];
+	var values = infoVal();
+	if ( typeof values === 'string' ) values = [ values ];
+	var cmd = [ SW.id, 'enable=true', ...values ];
+	if ( I.fileconf ) cmd.push( 'fileconf='+ I.fileconf );
 	bash( cmd );
 	notify( SW.icon, SW.title, S[ SW.id ] ? 'Change ...' : 'Enable ...' );
 	S[ SW.id ] = true;
@@ -284,7 +309,7 @@ document.title = page;
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).keyup( function( e ) {
-	if ( ! I.hidden ) return
+	if ( I.active ) return
 	
 	var $focus;
 	var key = e.key;
@@ -390,7 +415,7 @@ $( '.setting, .switch' ).click( function() {
 	
 	local();
 	SW.id    = this.id.replace( 'setting-', '' );
-	SW.icon = page !== 'player' ? SW.id : $( this ).closest( '#divoptions' ).length ? 'mpd' : 'volume';
+	SW.icon = page !== 'player' ? SW.id : ( $( this ).closest( '#divoptions' ).length ? 'mpd' : 'volume' );
 	SW.title = $( this ).parent().prev().find( 'span' ).text();
 } );
 $( '.switch' ).click( function() {
@@ -399,12 +424,7 @@ $( '.switch' ).click( function() {
 	
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
-		$this.prop( 'checked', ! checked );
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : $this.prev().html()
-		} );
+		infoDisabled( $this );
 		return
 	}
 	
@@ -413,14 +433,14 @@ $( '.switch' ).click( function() {
 			$( '#setting-'+ SW.id ).click();
 		} else {
 			S[ SW.id ]  = false;
-			notify( SW.icon, SW.title, 'Disable ...' );
-			bash( [ SW.id, false ] );
+			bash( [ SW.id, 'enable=' ] );
 			switchDisable();
 		}
 	} else {
 		S[ SW.id ]  = checked;
 		notify( SW.icon, SW.title, checked );
-		bash( [ SW.id, checked ], error => {
+		console.log( [ SW.id, 'enable='+ ( checked || '' ) ] )
+		bash( [ SW.id, 'enable='+ ( checked ? 'true' : '' ) ], error => {
 			if ( error ) {
 				switchDisable();
 				bannerHide();

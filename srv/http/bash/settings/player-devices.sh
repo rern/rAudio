@@ -26,6 +26,7 @@ if [[ ! $aplay ]]; then
 fi
 
 getControls() {
+	local amixer controls
 	amixer=$( amixer -c $1 scontents )
 	[[ ! $amixer ]] && controls= && return
 	
@@ -37,6 +38,7 @@ getControls() {
 	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
 	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
 	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
+	[[ $controls ]] && echo "$controls"
 }
 
 rm -f $dirshm/nosound
@@ -65,7 +67,7 @@ for line in "${aplay[@]}"; do
 		fi
 		mixertypefile="$dirsystem/mixertype-$aplayname"
 		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
-		getControls $card
+		controls=$( getControls $card )
 		if [[ ! $controls ]]; then
 			mixerdevices=false
 			mixers=0

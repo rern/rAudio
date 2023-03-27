@@ -77,10 +77,12 @@ $soccpu"
 ifconfiglan=$( ifconfig | grep -A2 ^e )
 if [[ $ifconfiglan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
-		soundprofileconf="$( cut -d= -f2 $dirsystem/soundprofile.conf | xargs | tr ' ' , )"
+		soundprofileconf=$( conf2json $dirsystem/soundprofile.conf )
 	else
-		mtu_txq=( $( sed -E -n '/mtu|txqueuelen/ {s/.*mtu |.*txqueuelen | *\(.*//g; p}' <<< $ifconfiglan ) )
-		soundprofileconf="$( sysctl vm.swappiness | cut -d' ' -f3 ), ${mtu_txq[0]}, ${mtu_txq[1]}"
+		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
+		mtu=$( awk '/mtu/ {print $4}' <<< $ifconfiglan )
+		txqueuelen=$( awk '/txqueuelen/ {print $4}' <<< $ifconfiglan )
+		soundprofileconf='{ "swappiness": '$swappiness', "mtu": '$mtu', "txqueuelen": '$txqueuelen' }'
 	fi
 fi
 
@@ -159,6 +161,8 @@ if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodulesw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
+tftmodel=$( getContent $dirsystem/lcdmodel )
+[[ $tftmodel ]] && tftconf='{ "model": "'$tftmodel'" }'
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -171,104 +175,93 @@ if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
 	fi
 fi
-if [[ -e $dirsystem/lcdchar.conf ]]; then # cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	vals=$( sed -E -e '/var]/ d
-				' -e '/charmap|inf|chip/ s/.*=(.*)/"\1"/; s/.*=//
-				' -e 's/[][]//g; s/,/ /g; s/(True|False)/\l\1/
-				' $dirsystem/lcdchar.conf )
-	if grep -q -m1 i2c <<< "$vals"; then
-		vals=$( echo $vals | sed -E 's/(true|false)$/15 18 16 21 22 23 24 \1/' ) # echo to remove \n
-	else
-		vals=$( echo $vals | sed -E 's/("gpio")/\1 39 "PCF8574"/' ) # echo to remove \n
-	fi
-	lcdcharconf='[ '$( tr ' ' , <<< $vals )' ]'
-fi
-oledchip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-baudrate=$( grep baudrate /boot/config.txt | cut -d= -f3 )
-[[ ! $baudrate ]] && baudrate=800000
-mpdoledconf='[ '$oledchip', '$baudrate' ]'
-if [[ -e $dirsystem/audiophonics ]]; then
-	powerbuttonconf='[ 5, 5, 40, 5, true ]'
-elif [[ -e $dirsystem/powerbutton.conf ]]; then
-	powerbuttonconf="[ $( cut -d= -f2 $dirsystem/powerbutton.conf | xargs | tr ' ' , ), false ]"
-fi
-[[ -e $dirsystem/rotaryencoder.conf ]] && rotaryencoderconf="[ $( cut -d= -f2 $dirsystem/rotaryencoder.conf | xargs | tr ' ' , ) ]"
-[[ -e $dirsystem/vuled.conf ]] && vuledconf="[ $( tr ' ' , < $dirsystem/vuled.conf ) ]"
+chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
+baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
+[[ ! $baud ]] && baud=800000
+mpdoledconf='{ "chip": "'$chip'", "baud": '$baud' }'
 if [[ -e $dirshm/reboot ]]; then
 	reboot=$( cat $dirshm/reboot )
-	grep -q TFT <<< $reboot && lcdreboot=true
+	grep -q TFT <<< $reboot && tftreboot=true
 	grep -q Character <<< $reboot && lcdcharreboot=true
 	grep -q Spectrum <<< $reboot && mpdoledreboot=true
 fi
 
 data+='
-  "page"             : "system"
-, "audioaplayname"   : "'$audioaplayname'"
-, "audiooutput"      : "'$audiooutput'"
-, "display"          : { "logout": '$( exists $dirsystem/login )' }
-, "hddapm"           : '$hddapm'
-, "hddsleep"         : '${hddapm/128/false}'
-, "hdmi"             : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
-, "hostapd"          : '$hostapd'
-, "hostname"         : "'$( hostname )'"
-, "i2seeprom"        : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
-, "i2smodulesw"      : '$i2smodulesw'
-, "ip"               : "'$( ipAddress )'"
-, "lcd"              : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
-, "lcdreboot"        : '$lcdreboot'
-, "lcdchar"          : '$( exists $dirsystem/lcdchar )'
-, "lcdcharaddr"      : '$lcdcharaddr'
-, "lcdcharconf"      : '$lcdcharconf'
-, "lcdcharreboot"    : '$lcdcharreboot'
-, "list"             : '$list'
-, "lcdmodel"         : "'$( getContent $dirsystem/lcdmodel )'"
-, "mpdoled"          : '$( exists $dirsystem/mpdoled )'
-, "mpdoledconf"      : '$mpdoledconf'
-, "mpdoledreboot"    : '$mpdoledreboot'
-, "nfsserver"        : '$nfsserver'
-, "powerbutton"      : '$( systemctl -q is-active powerbutton || [[ $audiophonics == true ]] && echo true )'
-, "powerbuttonconf"  : '$powerbuttonconf'
-, "relays"           : '$( exists $dirsystem/relays )'
-, "rotaryencoder"    : '$rotaryencoder'
-, "rotaryencoderconf": '$rotaryencoderconf'
-, "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
-, "soundprofile"     : '$( exists $dirsystem/soundprofile )'
-, "soundprofileconf" : ['$soundprofileconf']
-, "status"           : "'$status'"
-, "system"           : "'$system'"
-, "timezone"         : "'$timezone'"
-, "timezoneoffset"   : "'$timezoneoffset'"
-, "usbautoupdate"    : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
-, "vuled"            : '$( exists $dirsystem/vuled )'
-, "vuledconf"        : '$vuledconf'
-, "warning"          : "'$warning'"'
+  "page"              : "system"
+, "audioaplayname"    : "'$audioaplayname'"
+, "audiooutput"       : "'$audiooutput'"
+, "display"           : { "logout" : '$( exists $dirsystem/login )' }
+, "hddapm"            : '$hddapm'
+, "hddsleep"          : '${hddapm/128/false}'
+, "hdmi"              : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
+, "hostapd"           : '$hostapd'
+, "hostname"          : "'$( hostname )'"
+, "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
+, "i2smodulesw"       : '$i2smodulesw'
+, "ip"                : "'$( ipAddress )'"
+, "lcdchar"           : '$( exists $dirsystem/lcdchar )'
+, "lcdcharaddr"       : '$lcdcharaddr'
+, "lcdcharconf"       : '$( conf2json lcdchar.conf )'
+, "lcdcharreboot"     : '$lcdcharreboot'
+, "list"              : '$list'
+, "mpdoled"           : '$( exists $dirsystem/mpdoled )'
+, "mpdoledconf"       : '$mpdoledconf'
+, "mpdoledreboot"     : '$mpdoledreboot'
+, "nfsserver"         : '$nfsserver'
+, "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
+, "powerbutton"       : '$( systemctl -q is-active powerbutton || [[ -e $dirsystem/audiophonics ]] && echo true )'
+, "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
+, "poweraudiophonics" : '$( exists $dirsystem/audiophonics )'
+, "relays"            : '$( exists $dirsystem/relays )'
+, "rotaryencoder"     : '$rotaryencoder'
+, "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
+, "rpi01"             : '$( exists /boot/kernel.img )'
+, "shareddata"        : '$( [[ -L $dirmpd ]] && echo true )'
+, "soundprofile"      : '$( exists $dirsystem/soundprofile )'
+, "soundprofileconf"  : '$soundprofileconf'
+, "status"            : "'$status'"
+, "system"            : "'$system'"
+, "tft"               : '$( grep -q -m1 'dtoverlay=.*rotate=' /boot/config.txt && echo true )'
+, "tftconf"           : '$tftconf'
+, "tftreboot"         : '$tftreboot'
+, "timezone"          : "'$timezone'"
+, "timezoneoffset"    : "'$timezoneoffset'"
+, "usbautoupdate"     : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
+, "vuled"             : '$( exists $dirsystem/vuled )'
+, "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
+, "warning"           : "'$warning'"'
 
 if [[ ! $BB =~ ^(09|0c|12)$ ]]; then # rpi zero, zero w, zero 2w
 	data+='
-, "audio"            : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
-, "audiocards"       : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
+, "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
+, "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
 fi
 if [[ -e $dirshm/onboardwlan ]]; then
+	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
+	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
+	wlanconf='{ "regdom": "'$regdom'", "apauto": '$apauto' }'
 	data+='
-, "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
-, "wlanconf"         : [ "'$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )'", '$( [[ ! -e $dirsystem/wlannoap ]] && echo true )' ]
-, "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
+, "wlan"              : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
+, "wlanconf"          : '$wlanconf'
+, "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
 	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetoothon=true
 		bluetoothactive=$bluetooth
 		$bluetoothactive == true && discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
 	fi
+	format=$( exists $dirsystem/btformat )
+	bluetoothconf='{ "discoverable": '$discoverable', "format": '$format' }'
 	data+='
-, "bluetooth"        : '$bluetoothon'
-, "bluetoothactive"  : '$bluetoothactive'
-, "bluetoothconf"    : [ '$discoverable', '$( exists $dirsystem/btformat )' ]
-, "btconnected"      : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+, "bluetooth"         : '$bluetoothon'
+, "bluetoothactive"   : '$bluetoothactive'
+, "bluetoothconf"     : '$bluetoothconf'
+, "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
 if [[ $BB == 0d ]]; then # 3B+
 	data+='
-, "softlimit"        : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
-, "softlimitconf"    : '$softlimit
+, "softlimit"         : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
+, "softlimitconf"     : { "softlimit": '$softlimit' }'
 fi
 
 data2json "$data" $1

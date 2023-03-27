@@ -104,6 +104,7 @@ function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
 	$title   = $data[ 'title' ];
+	$id      = $data[ 'id' ] ?? '';
 	$subhead = $data[ 'subhead' ] ?? '';
 	$status  = $data[ 'status' ] ?? '';
 	$button  = $data[ 'button' ] ?? '';
@@ -111,7 +112,8 @@ function htmlHead( $data ) {
 	$class   = $status ? 'status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
-	$html    = $status ? '<heading data-status="'.$status.'"' : '<heading';
+	$id      = $id ? ' id="'.$id.'"' : '';
+	$html    = $status ? '<heading '.$id.' data-status="'.$status.'"' : '<heading';
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );

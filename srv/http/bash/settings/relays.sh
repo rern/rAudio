@@ -3,10 +3,7 @@
 . /srv/http/bash/common.sh
 timerfile=$dirshm/relaystimer
 
-# convert each line to each args
-readarray -t args <<< $1
-
-cmd=${args[0]}
+argsConvert "$1"
 
 if [[ $cmd == save ]]; then
 	printf "%s\n" "${args[@]:1}" > $dirsystem/relays.conf

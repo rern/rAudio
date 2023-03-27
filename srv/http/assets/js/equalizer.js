@@ -117,7 +117,7 @@ function infoEqualizer() {
 				bash( [ 'equalizer', 'preset', E.current ] );
 			} );
 		}
-		, okno          : 1
+		, okno          : true
 	} );
 }
 function eqButtonSet() {

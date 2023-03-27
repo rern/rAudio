@@ -2,16 +2,9 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t args <<< $1
+argsConvert "$1"
 
-protocol=${args[1]}
-mountpoint="$dirnas/${args[2]}"
-ip=${args[3]}
-directory=${args[4]}
-user=${args[5]}
-password=${args[6]}
-extraoptions=${args[7]}
-shareddata=${args[8]}
+mountpoint="$dirnas/$name"
 
 ! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
 
@@ -21,7 +14,7 @@ umount -ql "$mountpoint"
 mkdir -p "$mountpoint"
 chown mpd:audio "$mountpoint"
 if [[ $protocol == cifs ]]; then
-	source="//$ip/$directory"
+	source="//$ip/$share"
 	options=noauto
 	if [[ ! $user ]]; then
 		options+=,username=guest
@@ -30,7 +23,7 @@ if [[ $protocol == cifs ]]; then
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else
-	source="$ip:$directory"
+	source="$ip:$share"
 	options=defaults,noauto,bg,soft,timeo=5
 fi
 [[ $extraoptions ]] && options+=,$extraoptions
@@ -60,4 +53,4 @@ for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
-[[ $shareddata == true ]] && $dirsettings/system.sh shareddataset || pushRefresh
+[[ $shareddata ]] && $dirsettings/system.sh shareddataset || pushRefresh

@@ -1,26 +1,28 @@
 #!/usr/bin/python
 
-import configparser
-
-config = configparser.ConfigParser()
-config.read( '/srv/http/data/system/lcdchar.conf' )
-section = 'var'
-cols = config.getint( section, 'cols' )
-charmap = config.get( section, 'charmap' )
-backlight = config.getboolean( section, 'backlight' )
+conf = {}
+with open( '/srv/http/data/system/lcdchar.conf' ) as f:
+  for line in f:
+    if line.startswith( '[' ): continue
+      
+    key, val = line.strip().split( '=' )
+    conf[ key ] = val
+    
+cols = int( conf[ 'cols' ] )
+charmap = conf[ 'charmap' ]
+backlight = conf[ 'backlight' ]
 rows = cols == 16 and 2 or 4
 
-if config.has_option( section, 'address' ): # i2c
-    address = config.getint( section, 'address' )
-    chip = config.get( section, 'chip' )
+if 'address' in conf: # i2c
+    address = conf[ 'address' ]
+    chip = conf[ 'chip' ]
     from RPLCD.i2c import CharLCD
-    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, address=address, i2c_expander=chip )
+    lcd = CharLCD( cols=16, rows=2, charmap=charmap, address=address, i2c_expander=chip )
 else:
-    import json
-    pin_rs = config.getint( section, 'pin_rs' )
-    pin_rw = config.getint( section, 'pin_rw' )
-    pin_e = config.getint( section, 'pin_e' )
-    pins_data = json.loads( config.get( section, 'pins_data' ) )
+    pin_rs = conf[ 'pin_rs' ]
+    pin_rw = conf[ 'pin_rw' ]
+    pin_e = conf[ 'pin_e' ]
+    pins_data = [ conf[ 'p0' ], conf[ 'p1' ], conf[ 'p2' ], conf[ 'p3' ] ]
     from RPLCD.gpio import CharLCD
     from RPi import GPIO
     lcd = CharLCD( cols=cols, rows=rows, charmap=charmap, numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data )

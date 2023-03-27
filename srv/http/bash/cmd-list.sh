@@ -166,7 +166,7 @@ counts='{
 }'
 updateDone
 
-[[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
+[[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

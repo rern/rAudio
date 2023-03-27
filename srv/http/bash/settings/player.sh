@@ -2,11 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-# convert each line to each args
-readarray -t args <<< $1
+argsConvert "$1"
 
 linkConf() {
-	ln -sf $dirmpdconf/{conf/,}${args[0]}.conf
+	ln -sf $dirmpdconf/{conf/,}$cmd.conf
 }
 volumeGet() {
 	card=$( < $dirsystem/asoundcard )
@@ -24,14 +23,14 @@ volumeGetBt() {
 	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 }
 
-case ${args[0]} in
+case $cmd in
 
 audiooutput )
-	echo ${args[1]} > $dirsystem/asoundcard
+	echo $asoundcard > $dirsystem/asoundcard
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
-	[[ ${args[1]} == true ]] && linkConf || rm $dirmpdconf/${args[0]}.conf
+	[[ $enable ]] && linkConf || rm $dirmpdconf/$cmd.conf
 	systemctl restart mpd
 	pushRefresh
 	;;
@@ -50,7 +49,7 @@ $( bluetoothctl info $mac )"
 btoutputall )
 	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
 	[[ -e $dirmpdconf/output.conf ]] && output=1
-	if [[ ${args[1]} == true ]]; then
+	if [[ $enable ]]; then
 		touch $dirsystem/btoutputall
 		[[ $bluetooth && ! $output ]] && restart=1
 	else
@@ -60,24 +59,21 @@ btoutputall )
 	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
 	;;
 buffer | outputbuffer )
-	type=${args[0]}
-	if [[ ${args[1]} == true ]]; then
-		kb=${args[2]}
-		if [[ $type == buffer ]]; then
-			setting='audio_buffer_size  "'$kb'"'
+	if [[ $enable ]]; then
+		if [[ $cmd == buffer ]]; then
+			data='audio_buffer_size  "'$audio_buffer_size'"'
+			[[ $audio_buffer_size != 4096 ]] && link=1
 		else
-			setting='max_output_buffer_size  "'$kb'"'
+			data='max_output_buffer_size  "'$max_output_buffer_size'"'
+			[[ $max_output_buffer_size != 8192 ]] && link=1
 		fi
-		echo "$setting" > $dirmpdconf/conf/$type.conf
-		linkConf
-	else
-		rm $dirmpdconf/$type.conf
+		echo "$data" > $dirmpdconf/conf/$cmd.conf
 	fi
+	[[ $link ]] && linkConf || rm $dirmpdconf/$cmd.conf
 	$dirsettings/player-conf.sh
 	;;
 crossfade )
-	if [[ ${args[1]} == true ]]; then
-		crossfade=${args[2]}
+	if [[ $enable ]]; then
 		mpc -q crossfade $crossfade
 		echo $crossfade > $dirsystem/crossfade.conf
 		touch $dirsystem/crossfade
@@ -90,13 +86,10 @@ customget )
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-${args[1]}" )"
+$( getContent "$dirsystem/custom-output-$aplayname" )"
 	;;
 custom )
-	if [[ ${args[1]} == true ]]; then
-		global=${args[2]}
-		output=${args[3]}
-		aplayname=${args[4]}
+	if [[ $enable ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
 		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $global ]]; then
@@ -152,11 +145,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 dop )
-	if [[ ${args[1]} == true ]]; then
-		touch "$dirsystem/dop-${args[2]}"
-	else
-		rm -f "$dirsystem/dop-${args[2]}"
-	fi
+	[[ $enable ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 filetype )
@@ -171,15 +160,10 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 hwmixer )
-	aplayname=${args[1]}
-	hwmixer=${args[2]}
 	echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	mixertype=${args[1]}
-	aplayname=${args[2]}
-	hwmixer=${args[3]}
 	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
 		if [[ $mixertype == hardware ]];then
@@ -217,9 +201,6 @@ nonutf8 )
 	cat $dirmpd/nonutf8
 	;;
 novolume )
-	aplayname=${args[1]}
-	card=${args[2]}
-	hwmixer=${args[3]}
 	mpc -q crossfade 0
 	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
@@ -230,9 +211,9 @@ novolume )
 	;;
 replaygain )
 	fileoutput=$dirmpdconf/output.conf
-	if [[ ${args[1]} == true ]]; then
-		echo 'replaygain  "'${args[2]}'"' > $dirmpdconf/conf/replaygain.conf
-		[[ ${args[3]} == true ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
+	if [[ $enable ]]; then
+		echo 'replaygain  "'$type'"' > $dirmpdconf/conf/replaygain.conf
+		[[ $hardware ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
 		linkConf
 	else
 		rm $dirmpdconf/replaygain.conf
@@ -240,35 +221,30 @@ replaygain )
 	$dirsettings/player-conf.sh
 	;;
 soxr )
-	rm -f $dirmpdconf/soxr*
-	if [[ ${args[1]} == true ]]; then
-		if [[ ${args[2]} == custom ]]; then
-			cat << EOF > $dirmpdconf/conf/soxr-custom.conf
-resampler {
+	rm -f $dirmpdconf/soxr* $dirsystem/soxr
+	if [[ $enable ]]; then
+		if [[ $quality == custom ]]; then
+			data='
 	plugin          "soxr"
 	quality         "custom"
-	precision       "${args[3]}"
-	phase_response  "${args[4]}"
-	passband_end    "${args[5]}"
-	stopband_begin  "${args[6]}"
-	attenuation     "${args[7]}"
-	flags           "${args[8]}"
-}
-EOF
-		ln -sf $dirmpdconf/{conf/,}soxr-custom.conf
+	precision       "'$precision'"
+	phase_response  '$phase_response'"
+	passband_end    "'$passband_end'"
+	stopband_begin  "'$stopband_begin'"
+	attenuation     "'$attenuation'"
+	flags           "'$flags'"'
 		else
-			cat << EOF > $dirmpdconf/conf/soxr.conf
-resampler {
+			data='
 	plugin   "soxr"
-	quality  "${args[2]}"
-	thread   "${args[3]}"
-}
-EOF
-			linkConf
+	quality  "'$quality'"
+	thread   "'$thread'"'
 		fi
-		echo ${args[2]} > $dirsystem/soxr
-	else
-		rm -f $dirsystem/soxr
+		echo "\
+resampler {\
+$data
+}" > $dirmpdconf/conf/$cmd.conf
+		linkConf
+		echo $quality > $dirsystem/soxr
 	fi
 	systemctl restart mpd
 	pushRefresh

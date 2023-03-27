@@ -237,7 +237,7 @@ EOF
 	]
 	, [
 		  'label'    => 'TFT 3.5" LCD'
-		, 'id'       => 'lcd'
+		, 'id'       => 'tft'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
@@ -279,7 +279,20 @@ EOF
 		, 'sublabel' => 'sysctl'
 		, 'id'       => 'soundprofile'
 		, 'status'   => true
-		, 'help'     => 'Tweak kernel parameters for sound profiles.'
+		, 'help'     => <<< EOF
+Tweak kernel parameters to improve sound quality.
+
+Swapiness (default: <code>60</code>)
+	· Balance between swap disk vs system memory cache
+	· Low - less swap
+Maximum Transmission Unit (default: <code>1500</code> bytes)
+	· Maximum size of one packet that can be transmitted in a network
+	· High - less overhead more efficiency
+	· Low - less delay
+Transmit Queue Length (default: <code>1000</code>)
+	· Number of packets allowed per kernel transmit queue in a network
+	· High - improve performance under high load
+EOF
 	]
 ];
 htmlSection( $head, $body, 'environment' );

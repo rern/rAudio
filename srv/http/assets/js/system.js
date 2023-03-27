@@ -1,3 +1,39 @@
+var gpiosvg        = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
+var board2bcm      = {
+	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
+	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
+}
+var html_optionpin = htmlOption( board2bcm );
+var default_v      = {
+	  bluetooth     : { discoverable: true, format: false }
+	, hddsleep      : { apm: 60 }
+	, lcdchar_gpio : {
+		  inf       :'gpio'
+		, cols      : 20
+		, charmap   : 'A00'
+		, pin_rs    : 15
+		, pin_rw    : 18
+		, pin_e     : 16
+		, p0        : 21
+		, p1        : 22
+		, p2        : 23
+		, p3        : 24
+		, backlight : false
+	}
+	, lcdchar_i2c : {
+		  inf       :'gpio'
+		, cols      : 20
+		, charmap   : 'A00'
+		, address   : 39
+		, chip      : 'PCF8574'
+		, backlight : false
+	}
+	, powerbutton   : { on: 5, sw: 5, led: 40, reserved: 5 }
+	, rotaryencoder : { pina: 27, pinb: 22, pins: 23, strp: 1 }
+	, softlimit     : { softlimit: 60 }
+	, vuled         : { p0: 14, p1: 15, p2: 18, p3: 23, p4: 24, p5: 25, p6: 8 }
+	, wlan          : { regdom: '00', apauto: true }
+}
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( 'body' ).click( function( e ) {
@@ -19,13 +55,8 @@ $( 'body' ).click( function( e ) {
 $( '.container' ).on( 'click', '.settings', function() {
 	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
 } );
-var gpiosvg  = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
-var pin2gpio = {
-	   3:2,   5:3,   7:4,   8:14, 10:15, 11:17, 12:18, 13:27, 15:22, 16:23, 18:24, 19:10, 21:9
-	, 22:25, 23:11, 24:8,  26:7,  29:5,  31:6,  32:12, 33:13, 35:19, 36:16, 37:26, 38:20, 40:21
-}
 $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
-	bash( dirsettings +'system.sh rebootlist', list => {
+	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
 			return
@@ -47,14 +78,15 @@ $( '.power' ).click( infoPower );
 $( '.img' ).click( function() {
 	var name             = $( this ).data( 'name' );
 	var txtlcdchar       = `\
-${ gpiosvg }<code>GND:(any black pin)</code>
+<code>GND:(any black pin)</code>
 <wh>I²C:</wh> <code>VCC:1</code> <code>SDA:3</code> <code>SCL:5</code> <code>5V:4</code>
 <wh>GPIO:</wh> <code>VCC:4</code> <code>RS:15</code> <code>RW:18</code> <code>E:16</code> <code>D4-7:21-24</code>`;
 	var txtmpdoled       = `\
-${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
+<code>GND:(any black pin)</code> <code>VCC:1</code>
 <wh>I²C:</wh> <code>SCL:5</code> <code>SDA:3</code>
 <wh>SPI:</wh> <code>CLK:23</code> <code>MOS:19</code> <code>RES:22</code> <code>DC:18</code> <code>CS:24</code>`;
-	var txtrotaryencoder = `${ gpiosvg }<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
+	var txtrotaryencoder = `
+<code>GND: (any black pin)</code> &emsp; <code>+: not use</code>`
 	var title = {
 		  i2cbackpack   : [ 'Character LCD',  '',               'lcdchar' ]
 		, lcdchar       : [ 'Character LCD',  txtlcdchar ]
@@ -71,10 +103,10 @@ ${ gpiosvg }<code>GND:(any black pin)</code> <code>VCC:1</code>
 		, title       : d[ 0 ]
 		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' ) +'?v='+ Math.ceil( Date.now() / 1000 )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
-		, footer      : d[ 1 ]
+		, footer      : [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? gpiosvg + d[ 1 ] : ''
 		, footeralign : 'left'
 		, beforeshow  : () => $( '.'+ name +'-no' ).addClass( 'hide' )
-		, okno        : 1
+		, okno        : true
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
@@ -138,12 +170,12 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint ] );
+			bash( [ 'mountforget', 'mountpoint='+ mountpoint ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source ], data => {
+				bash( [ 'hddinfo', 'dev='+ source ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -154,11 +186,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source ] );
+			bash( [ 'mountremount', 'mountpoint='+ mountpoint, 'source='+ source ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint ] );
+			bash( [ 'mountunmount', 'mountpoint='+ mountpoint ] );
 			break;
 	}
 } );
@@ -167,7 +199,7 @@ $( '#setting-softlimit' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, radio        : { '65°C': 65, '70°C': 70, '75°C': 75 }
-		, values       : S.softlimitconf || 65
+		, values       : S.softlimitconf || default_v.softlimit
 		, checkchanged : S.softlimit
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -179,24 +211,10 @@ $( '#setting-hddsleep' ).click( function() {
 		, title        : SW.title
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-		, values       : S.hddsleep || 60
+		, values       : { apm: S.hddsleep } || default_v.hddsleep
 		, checkchanged : S.hddsleep
 		, cancel       : switchCancel
-		, ok           : () => {
-			var val = infoVal()
-			notify( SW.icon, SW.title, ( val === 128 ? 'Disable ...' : 'Timer: '+ ( val * 5 / 60 ) +'minutes ...' ) )
-			bash( [ 'hddsleep', true, val ], devices => {
-				if ( devices ) {
-					info( {
-						  icon    : SW.icon
-						, title   : SW.title
-						, message : '<wh>Devices not support sleep:</wh><br>'
-									+ devices
-					} );
-					bannerHide();
-				}
-			} );
-		}
+		, ok           : switchEnable
 	} );
 } );
 $( '#setting-bluetooth' ).click( function() {
@@ -204,7 +222,7 @@ $( '#setting-bluetooth' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : S.bluetoothconf
+		, values       : S.bluetoothconf || default_v.bluetooth
 		, checkchanged : S.bluetooth
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -212,8 +230,7 @@ $( '#setting-bluetooth' ).click( function() {
 } );
 $( '#setting-wlan' ).click( function() {
 	bash( 'cat /srv/http/assets/data/regdomcodes.json', list => {
-		var options  = '';
-		$.each( list, ( k, v ) => options += '<option value="'+ k +'">'+ v +'</option>' );
+		var options  = htmlOption( list );
 		var infowifi = `\
 <table>
 <tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
@@ -224,7 +241,7 @@ $( '#setting-wlan' ).click( function() {
 			, title        : SW.title
 			, content      : infowifi
 			, boxwidth     : 250
-			, values       : S.wlanconf
+			, values       : S.wlanconf || default_v.wlan
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : switchCancel
@@ -243,13 +260,13 @@ $( '#i2smodule' ).change( function() {
 	if ( aplayname !== 'none' ) {
 		notify( icon, title, 'Enable ...' );
 	} else {
+		notify( icon, title, 'Disable ...' );
 		S.i2smodulesw = false;
 		aplayname = 'onboard';
 		output = '';
-		notify( icon, title, 'Disable ...' );
 		i2sSelectHide();
 	}
-	bash( [ 'i2smodule', aplayname, output ] );
+	bash( [ 'i2smodule', 'aplayname='+ aplayname, 'output='+ output ] );
 } );
 $( '#divi2s .col-r' ).click( function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
@@ -261,7 +278,7 @@ $( '#setting-i2smodule' ).click( function() {
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
-		, ok           : () => bash( [ 'i2seeprom', infoVal() ] )
+		, ok           : () => bash( [ 'i2seeprom', 'enable='+ ( infoVal() || '' ) ] )
 	} );
 } );
 $( '#gpioimgtxt' ).click( function() {
@@ -278,141 +295,52 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
 $( '#setting-lcdchar' ).click( function() {
-	var i2caddress  = '<td>Address</td>';
-	if ( ! S.lcdcharaddr ) S.lcdcharaddr = [ 39, 63 ];
-	S.lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
-	var optpins  = '<select>';
-	Object.keys( pin2gpio ).forEach( k => optpins += '<option value='+ k +'>'+ k +'</option>' ); // only lcdchar uses j8 pin number
-	optpins     += '</select>';
-	var infolcdchar = `\
-<table>
-<tr id="cols"><td width="135">Size</td>
-	<td width="80"><label><input type="radio" name="cols" value="20">20x4</label></td>
-	<td width="80"><label><input type="radio" name="cols" value="16">16x2</label></td>
-</tr>
-<tr><td>Char<wide>acter</wide> Map</td>
-	<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
-	<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
-</tr>
-<tr><td>Interface</td>
-	<td><label><input type="radio" name="inf" value="i2c">I&#178;C</label></td>
-	<td><label><input type="radio" name="inf" value="gpio">GPIO</label></td>
-</tr>
-<tr id="i2caddress" class="i2c">${ i2caddress }</tr>
-<tr class="i2c"><td>I&#178;C Chip</td>
-	<td colspan="2">
-	<select id="i2cchip">
-		<option value="PCF8574">PCF8574</option>
-		<option value="MCP23008">MCP23008</option>
-		<option value="MCP23017">MCP23017</option>
-	</select>
-	</td>
-</tr>
-</table>
-<table class="gpio">
-<tr><td class="gpiosvg" colspan="8" style="padding-top: 10px;">${ gpiosvg }</td></tr>
-<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
-<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
-</table>
-<label style="margin-left: 60px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label></td></tr>`;
-	// cols charmap inf address chip pin_rs pin_rw pin_e pins_data backlight
-	var i2c         = S.lcdcharconf[ 2 ] !== 'gpio';
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, content      : infolcdchar
-		, boxwidth     : 180
-		, values       : S.lcdcharconf || [ 20, 'A00', 'i2c', 39, 'PCF8574', 15, 18, 16, 21, 22, 23, 24, false ]
-		, checkchanged : S.lcdchar
-		, beforeshow   : () => {
-			if ( ! S.lcdcharreboot ) {
-				$( '#infoOk' )
-					.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-					.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
-				$( '#infoButtons gr' ).click( function() {
-					var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-					bash( dirbash +"system.sh lcdcharset$'\n'"+ action );
-				} );
-			}
-			$( '#infoContent .gpio td:even' ).css( 'width', 55 );
-			$( '#infoContent .gpio td:odd' ).css( {
-				  width           : 35
-				, 'padding-right' : 2
-				, 'text-align'    : 'right'
-			} );
-			$( '#infoContent svg .power' ).remove();
-			$( '.i2c' ).toggleClass( 'hide', ! i2c );
-			$( '.gpio' ).toggleClass( 'hide', i2c );
-			$( '#infoContent input[name=inf]' ).change( function() {
-				i2c = $( '#infoContent input[name=inf]:checked' ).val() === 'i2c';
-				$( '.i2c' ).toggleClass( 'hide', ! i2c );
-				$( '.gpio' ).toggleClass( 'hide', i2c );
-			} );
-		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
+	if ( S.lcdcharconf ) {
+		S.lcdcharconf.inf === 'i2c' ? infoLcdChar() : infoLcdCharGpio();
+	} else {
+		infoLcdChar();
+	}
 } );
 $( '#setting-powerbutton' ).click( function() {
-	var offpin  = '';
-	var ledpin  = '';
-	var respin  = '';
-	$.each( pin2gpio, ( k, v ) => {
-		offpin += '<option value='+ k +'>'+ k +'</option>';
-		if ( k != 5 ) {
-			ledpin += '<option value='+ k +'>'+ k +'</option>';
-			respin += '<option value='+ v +'>'+ k +'</option>';
-		}
-	} );
+	if ( S.poweraudiophonics ) {
+		infoAudiophonics();
+		return
+	}
+	
+	var optionpin = htmlOption( Object.keys( board2bcm ) );
 	var infopowerbutton = `\
 <table>
-<tr><td width="40">On</td>
-	<td><input type="text" disabled></td>
-</tr>
-<tr><td>Off</td>
-	<td><select >${ offpin }</select></td>
-</tr>
-<tr><td>LED</td>
-	<td><select >${ ledpin }</select></td>
-</tr>
-<tr class="reserved hide"><td>Reserved</td>
-	<td><select >${ respin }</select></td>
-</tr>
+<tr><td width="40">On</td><td><input type="text" disabled></td></tr>
+<tr><td>Off</td><td><select >${ optionpin }</select></td></tr>
+<tr><td>LED</td><td><select >${ optionpin }</select></td></tr>
+<tr class="reserved hide"><td>Reserved</td><td><select >${ optionpin }</select></td></tr>
 </table>
-<br>
-<label><input id="audiophonics" type="checkbox">Button by Audiophonics</label>
 `;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
+		, tablabel     : [ 'Generic', 'Audiophonic' ]
+		, tab          : [ '', infoAudiophonics ]
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 70
-		, values       : S.powerbuttonconf || [ 5, 5, 40, 5, false ]
+		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			if ( ! S.powerbuttonconf[ 4 ] ) {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf[ 0 ] == 5 );
-				$( '#infoContent select' ).eq( 0 ).change( function() {
-					$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
-				} );
-			} else {
-				$( '#infoContent table' ).addClass( 'hide' );
-			}
-			$( '#audiophonics' ).change( function() {
-				$( '#infoContent table' ).toggleClass( 'hide', $( this ).prop( 'checked' ) );
+			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.on == 5 );
+			$( '#infoContent select' ).eq( 0 ).change( function() {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#setting-relays' ).click( function() {
 	location.href = 'settings.php?p=relays';
 } );
 $( '#setting-rotaryencoder' ).click( function() {
-	var pin  = '<td><select >';
-	$.each( pin2gpio, ( k, v ) => pin += '<option value='+ v +'>'+ k +'</option>' );
-	pin += '</select></td>';
+	var pin  = '<td><select >'+ html_optionpin +'</select></td>';
 	var inforotaryencoder = `\
 <table>
 <tr><td width="60">CLK</td>${ pin }</tr>
@@ -428,36 +356,28 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 70
-		, values       : S.rotaryencoderconf || [ 27, 22 ,23 ,1 ]
+		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#setting-mpdoled' ).click( function() {
 	var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
+	var chip       = {
+		  'SSD130x SP'  : 1
+		, 'SSD130x I²C' : 3
+		, 'Seeed I²C'   : 4
+		, 'SH1106 I²C'  : 6
+		, 'SH1106 SPI'  : 7
+	}
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, selectlabel  : 'Type'
-		, content      : `\
-<table>
-<tr><td>Controller</td>
-<td><select class="oledchip">
-	<option value="1">SSD130x SPI</option>
-	<option value="3">SSD130x I²C</option>
-	<option value="4">Seeed I²C</option>
-	<option value="6">SH1106 I²C</option>
-	<option value="7">SH1106 SPI</option>
-</select></td></tr>
-<tr class="baud"><td>Refresh <gr>(baud)</gr></td>
-<td><select>
-	<option value="800000">800000</option>
-	<option value="1000000">1000000</option>
-	<option value="1200000">1200000</option>
-</select></td></tr>
-</table>`
+		, selectlabel  : [ 'Controller', 'Refresh <gr>(baud)</gr>' ]
+		, select       : [ chip, [ 800000, 1000000, 1200000 ] ]
 		, values       : S.mpdoledconf
 		, checkchanged : S.mpdoled
 		, boxwidth     : 140
@@ -475,8 +395,8 @@ $( '#setting-mpdoled' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-lcd' ).click( function() {
-	var buttoncalibrate = S.lcd && ! S.lcdreboot;
+$( '#setting-tft' ).click( function() {
+	var buttoncalibrate = S.tft && ! S.tftreboot;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -488,8 +408,8 @@ $( '#setting-lcd' ).click( function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, values       : S.lcdmodel || 'tft35a'
-		, checkchanged : S.lcd
+		, values       : S.tftconf || 'tft35a'
+		, checkchanged : S.tft
 		, boxwidth     : 190
 		, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'
 		, button       : ! buttoncalibrate ? '' : () => {
@@ -500,7 +420,7 @@ $( '#setting-lcd' ).click( function() {
 							+'<br>(Get stylus ready.)'
 				, ok      : () => {
 					notify( SW.icon, 'Calibrate Touchscreen', 'Start ...' );
-					bash( [ 'lcdcalibrate' ] );
+					bash( [ 'tftcalibrate' ] );
 				}
 			} );
 		}
@@ -509,22 +429,20 @@ $( '#setting-lcd' ).click( function() {
 	} );
 } );
 $( '#setting-vuled' ).click( function() {
-	var opt  = '';
-	$.each( pin2gpio, ( k, v ) => opt += '<option value="'+ v +'">'+ k +'</option>' );
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
-		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ opt +'</select></td></tr>';
+		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ html_optionpin +'</select></td></tr>';
 	}
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, message      : gpiosvg
-		, select       : htmlpins
-		, values       : S.vuledconf || [ 14, 15, 18, 23, 24, 25, 8 ]
+		, content      : gpiosvg +'<table>'+ htmlpins +'</table>'
+		, values       : S.vuledconf || default_v.vuled
 		, checkchanged : S.vuled
 		, boxwidth     : 70
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#ledcalc' ).click( function() {
@@ -549,7 +467,7 @@ $( '#ledcalc' ).click( function() {
 					$( '#infoContent input' ).eq( 3 ).val( ohm );
 				} );
 		}
-		, okno       : 1
+		, okno       : true
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
@@ -560,9 +478,9 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : title
 		, textlabel    : 'Name'
 		, focus        : 0
-		, values       : S.hostname
-		, checkblank   : 1
-		, checkchanged : 1
+		, values       : { hostname: S.hostname }
+		, checkblank   : true
+		, checkchanged : true
 		, beforeshow   : () => {
 			$( '#infoContent input' ).on( 'keyup paste', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
@@ -570,13 +488,13 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		}
 		, ok           : () => {
 			notify( icon, title, 'Change ...' );
-			bash( [ 'hostname', infoVal() ] );
+			bash( [ 'hostname', ...infoVal() ] );
 		}
 	} );
 } );
 $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', $( this ).val() ] );
+	bash( [ 'timezone', 'timezone='+ $( this ).val() ] );
 } );
 $( '#divtimezone .col-r' ).click( function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
@@ -590,39 +508,14 @@ $( '#divtimezone .col-r' ).click( function( e ) {
 	} );
 } );
 $( '#setting-timezone' ).click( function() {
-	if ( S.soc === 'BCM2835' || S.soc === 'BCM2836' ) { // rpi 0, 1
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, textlabel    : 'NTP'
-			, boxwidth     : 300
-			, values       : S.ntp
-			, checkchanged : 1
-			, checkblank   : 1
-			, ok           : () => {
-				notify( SW.icon, SW.title, 'Sync ...' );
-				bash( [ 'servers', infoVal() ], bannerHide );
-			}
-		} );
-		return
-	}
-	
-	if ( 'htmlmirror' in V ) {
-		infoTimezone();
+	if ( 'htmlmirror' in V || S.rpi01 ) {
+		infoNtpMirror();
 	} else {
 		notify( SW.icon, SW.title, 'Get mirror server list ...' );
-		bash( [ 'mirrorlist' ], list => {
-			V.mirrorlist   = list;
-			S.mirror       = list.mirror;
-			S.ntp          = list.ntp;
-			var htmloption = '';
-			list.code.forEach( ( el, i ) => htmloption += '<option value="'+ el +'">'+ list.country[ i ] +'</option>' );
-			V.htmlmirror   = `
-<table>
-<tr><td>NTP</td><td><input type="text"></td></tr>
-<tr><td>Package</td><td><select>${ htmloption }</select></td></tr>
-</table>`;
-			infoTimezone();
+		bash( [ 'mirrorlist' ], data => {
+			S.mirror     = data.current;
+			V.htmlmirror = htmlOption( data.list );
+			infoNtpMirror();
 			bannerHide();
 		}, 'json' );
 	}
@@ -631,13 +524,14 @@ $( '#setting-soundprofile' ).click( function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : [ 'vm.swappiness', 'LAN mtu', 'LAN txqueuelen' ]
-		, boxwidth     : 110
+		, textlabel    : [ 'Swappiness', 'Maximum Transmission Unit <gr>(B)</gr>', 'Transmit Queue Length' ]
+		, boxwidth     : 80
 		, values       : S.soundprofileconf
-		, checkchanged : S.soundprofile
-		, checkblank   : 1
+		, checkchanged : true
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#backup' ).click( function() {
@@ -715,8 +609,8 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				bash( dirsettings +'system-datareset.sh' );
 				notify( SW.icon, SW.title, 'Reset to default ...' );
+				bash( dirsettings +'system-datareset.sh' );
 			} else {
 				notify( SW.icon, SW.title, 'Restore ...' );
 				var formdata = new FormData();
@@ -737,16 +631,8 @@ $( '#restore' ).click( function() {
 $( '#shareddata' ).click( function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
-		$( '#shareddata' ).prop( 'checked', false );
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : $this.prev().html()
-		} );
-		return
-	}
-	
-	if ( S.shareddata ) {
+		infoDisabled( $this );
+	} else if ( S.shareddata ) {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
@@ -754,12 +640,13 @@ $( '#shareddata' ).click( function() {
 			, cancel  : () => $this.prop( 'checked', true )
 			, okcolor : orange
 			, ok      : () => {
-				bash( [ 'shareddatadisconnect', 'disable' ] );
 				notify( SW.icon, SW.title, 'Disable ...' );
+				bash( [ 'shareddatadisconnect', 'disable=true' ] );
 			}
 		} );
 	} else {
-		infoMount( 'shareddata' );
+		V.shareddata = true;
+		infoMount();
 	}
 } );
 $( '.listtitle' ).click( function( e ) {
@@ -779,7 +666,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text() ], list => {
+		bash( [ 'packagelist', 'pkg='+ $target.text() ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -833,166 +720,254 @@ function i2sSelectShow() {
 	$( '#divi2smodulesw' ).addClass( 'hide' );
 	$( '#divi2smodule, #setting-i2smodule' ).removeClass( 'hide' );
 }
-function infoMount( val ) {
-	var ip        = S.ip;
-	var ipsub     = ip.substring( 0, ip.lastIndexOf( '.' ) + 1 );
-	if ( val === 'raudio' ) {
-		var shareddata = true;
-		var values     = [ 'raudio', 'data', ipsub ];
-	} else if ( val === 'shareddata' ) {
-		var shareddata = true;
-		var values     = [ 'cifs', 'data', ipsub ];
-	} else {
-		var shareddata = false;
-		var values     = val || [ 'cifs', '', ipsub ];
-	}
-	var radiora   = shareddata ? '<label><input type="radio" name="inforadio" value="raudio">rAudio</label>' : '';
-	var phname    = shareddata ? '' : ' placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"';
-	var htmlmount = `\
+var htmllcdchar = {
+	  common : `
+<input type="hidden" value="">
 <table>
-<tr class="common"><td style="width: 90px">Type</td>
-	<td style="width: 230px">
-		<label><input type="radio" name="inforadio" value="cifs" checked>CIFS</label>&ensp;
-		<label><input type="radio" name="inforadio" value="nfs">NFS</label>&ensp;
-		${ radiora }
-	</td>
-	<td style="width: 20px"></td>
+<tr id="cols"><td width="115">Size</td>
+	<td width="90"><label><input type="radio" name="cols" value="20">20x4</label></td>
+	<td width="90"><label><input type="radio" name="cols" value="16">16x2</label></td>
 </tr>
-<tr class="common"><td>Name</td>
-<td><input id="mountpoint" type="text"${ phname }></td>
+<tr><td>Char<wide>acter</wide> Map</td>
+	<td><label><input type="radio" name="charmap" value="A00">A00</label></td>
+	<td><label><input type="radio" name="charmap" value="A02">A02</label></td>
+</tr>`
+	, sleep  : `\
+</table>
+<label style="margin-left: 40px"><input id="backlight" type="checkbox" value="True">Sleep <gr>(60s)</gr></label>`
+}
+function htmlOption( values ) {
+	var options = '';
+	if ( Array.isArray( values ) ) {
+		values.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
+	} else {
+		$.each( values, ( k, v ) => options += '<option value="'+ v +'">'+ k +'</option>' );
+	}
+	return options
+}
+function infoAudiophonics() {
+	info( {
+		  icon     : SW.icon
+		, title    : SW.title
+		, checkbox : 'Enable'
+		, values   : S.poweraudiophonics
+		, cancel   : switchCancel
+		, ok       : switchEnable
+	} );
+}
+function infoLcdChar() {
+	var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
+	var i2caddress  = '';
+	lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
+	var options = htmlOption( [ 'PCF8574', 'MCP23008', 'MCP23017' ] );
+	var content = `
+${ htmllcdchar.common }
+<tr id="i2caddress" class="i2c"><td>Address</td>${ i2caddress }</tr>
+<tr class="i2c"><td>I&#178;C Chip</td>
+	<td colspan="2"><select id="i2cchip">${ options }</select></td>
 </tr>
-<tr class="common"><td>Server IP</td>
+${ htmllcdchar.sleep }
+`;
+	var inf_i2c = S.lcdcharconf.inf === 'i2c';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		, tab          : [ '', infoLcdCharGpio ]
+		, content      : content
+		, boxwidth     : 180
+		, values       : inf_i2c ? S.lcdcharconf : default_v.lcdchar_i2c
+		, checkchanged : S.lcdchar && inf_i2c
+		, beforeshow   : infoLcdcharButton
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+}
+function infoLcdCharGpio() {
+	var optpins = '<select>'+ html_optionpin +'</select>';
+	var content = `
+${ gpiosvg }
+${ htmllcdchar.common }
+</table>
+<table class="gpio">
+<tr><td>RS</td><td>${ optpins }</td><td>RW</td><td>${ optpins }</td><td>E</td><td>${ optpins }</td><td></td><td></td></tr>
+<tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
+${ htmllcdchar.sleep }
+`;
+	var inf_gpio = S.lcdcharconf.inf === 'gpio';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'I&#178;C', 'GPIO' ]
+		, tab          : [ infoLcdChar, '' ]
+		, content      : content
+		, boxwidth     : 180
+		, values       : inf_gpio ? S.lcdcharconf : default_v.lcdchar_gpio
+		, checkchanged : S.lcdchar && inf_gpio
+		, beforeshow   : infoLcdcharButton
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+}
+function infoLcdcharButton() {
+	$( '#infoContent svg .power' ).remove();
+	if ( S.lcdcharreboot ) return
+	
+	$( '#infoOk' )
+		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
+		.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
+	$( '#infoButtons gr' ).click( function() {
+		var action = this.id === 'lcdlogo' ? 'logo' : 'off';
+		bash( [ 'lcdcharset', 'action='+ action ] );
+	} );
+}
+var contentmount = {
+	  common : `\
+<table>
+<tr><td style="width: 90px">Name</td>
+<td><input id="mountpoint" type="text" placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"></td>
+</tr>
+<tr><td>Server IP</td>
 	<td><input type="text"></td>
 </tr>
-<tr class="cifs nfs"><td id="sharelabel">Share name</td>
-	<td><input id="share" type="text"></td>
-</tr>
-<tr class="cifs"><td>User</td>
+<tr><td id="sharelabel">Share</td>
+	<td><input id="share" type="text" placeholder="Share name/path on server"></td>
+</tr>`
+	, cifs   : `\
+<tr><td>User</td>
 	<td><input type="text" placeholder="if required by server"></td>
 </tr>
-<tr class="cifs"><td>Password</td>
-	<td><input type="password" placeholder="if required by server"></td><td>${ ico( 'eye' ) }</td>
-</tr>
-<tr class="cifs nfs"><td>Options</td>
+<tr><td>Password</td>
+	<td><input type="password" placeholder="if required by server"></td>
+</tr>`
+	, option : `\
+<tr><td>Options</td>
 	<td><input type="text" placeholder="if required by server"></td>
 </tr>
-</table>`;
-	var icon      = 'networks';
-	var title     = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+</table>`
+}
+function infoMount( val ) {
+	var nfs     = val === 'nfs';
+	if ( typeof val === 'object' ) {
+		if ( val.length < 5 ) nfs = false;
+	} else {
+		val     = false;
+	}
+	var shareddata = SW.id === 'shareddata';
+	var icon    = 'networks';
+	var title   = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+	var ipsub   = ipSub();
+	var tab     = ! nfs ? [ '', () => infoMount( 'nfs' ) ] : [ infoMount, '' ];
+	if ( shareddata ) tab.push( inforServer );
+	if ( nfs ) {
+		var content = contentmount.common + contentmount.option;
+		var values  = { name: '', ip: ipsub, share: '', options: '' }
+	} else {
+		var content = contentmount.common + contentmount.cifs + contentmount.option;
+		var values  = { name: '', ip: ipsub, share: '', user: '', password: '', options: '' }
+	}
 	info( {
 		  icon       : icon
 		, title      : title
-		, content    : htmlmount
+		, tablabel   : ! shareddata ? [ 'CIFS', 'NFS' ] : [ 'CIFS', 'NFS', 'rAudio' ]
+		, tab        : tab
+		, content    : content
 		, values     : values
-		, checkblank : [ 2 ]
+		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
 			var $mountpoint = $( '#mountpoint' );
 			var $share = $( '#share' );
-			if ( shareddata ) {
-				$mountpoint.prop( 'disabled', 1 );
-			} else {
-				$mountpoint.on( 'keyup paste', function() {
-					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
-				} );
-			}
-			function hideOptions( type ) {
-				if ( ! values[ 3 ] ) $share.val( '' );
-				$( '#infoContent tr' ).not( '.common' ).addClass( 'hide' );
-				if ( type === 'nfs' ) {
-					$( '#sharelabel' ).text( 'Share path' );
-					$( '#infoContent' ).find( '.common, .nfs' ).removeClass( 'hide' );
-					var placeholder = '/path/to/share on server';
-				} else if ( type === 'cifs' ) {
-					$( '#sharelabel' ).text( 'Share name' );
-					$( '#infoContent' ).find( '.common, .cifs' ).removeClass( 'hide' );
-					var placeholder = 'share name on server';
-				} else {
-					if ( ! $share.val() ) $share.val( 0 ); // temp for checkblank
-				}
-				if ( ! values[ 3 ] ) $share.attr( 'placeholder', placeholder );
-			}
-			hideOptions( values[ 0 ] );
-			$( '#infoContent input:radio' ).change( function() {
-				hideOptions( $( this ).val() );
+			if ( shareddata ) $mountpoint.val( 'data' ).prop( 'disabled', true );
+			$mountpoint.on( 'keyup paste', function() {
+				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 			} );
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
-					var slash = $( '#infoContent input[type=radio]:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
+					var slash = $( '#infoContent input:radio:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
 					$share.val( $share.val().replace( slash, '' ) );
 				}, 0 );
 			} );
 		}
-		, cancel     : () => {
-			if ( shareddata ) $( '#shareddata' ).prop( 'checked', false );
-		}
+		, cancel     : switchCancel
 		, ok         : () => {
-			var values = infoVal();
-			if ( values[ 0 ] === 'raudio' ) {
-				var ip = values[ 2 ];
-				notify( icon, title, 'Connect rAudio Sever ...' );
-				bash( [ 'sharelist', ip ], list => {
-					bannerHide();
-					if ( list.slice( 0, 6 ) === 'Server' ) {
-						info( {
-							  icon    : icon
-							, title   : title
-							, message : list
-										+'<br>Connect?'
-							, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
-							, ok      : () => {
-								bash( [ 'shareddataconnect', ip ] );
-								notify( icon, title, 'Connect Server rAudio ...' );
-							} 
-						} );
-					} else {
-						info( {
-							  icon    : icon
-							, title   : title
-							, message : list
-							, cancel  : () => $( '#shareddata' ).prop( 'checked', false )
-							, ok      : () => infoMount( 'raudio' )
-						} );
-					}
-				} );
-				return
-			}
-			
-			bash( [ 'mount', ...values, shareddata ], error => { // system-mount.sh
+			var cmd = [ 'mount', 'protocol='+ ( nfs ? 'nfs' : 'cifs' ), ...infoVal() ];
+			if ( shareddata ) cmd.push( 'shareddata=true' );
+			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
+			bash( cmd, error => { // system-mount.sh
 				if ( error ) {
 					info( {
 						  icon    : icon
 						, title   : title
 						, message : error
-						, ok      : () => infoMount( values )
+						, ok      : () => infoMount( nfs ? 'nfs' : '' )
 					} );
 					bannerHide();
 				} else {
 					refreshData();
 				}
 			} );
-			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 		}
 	} );
 }
-function infoTimezone() {
+function infoNtpMirror() {
+	var title = 'Servers';
 	info( {
 		  icon         : SW.icon
-		, title        : SW.title
-		, content      : V.htmlmirror
+		, title        : title
+		, textlabel    : 'NTP'
+		, selectlabel  : S.rpi01 ? '' : 'Mirror'
+		, select       : S.rpi01 ? '' : V.htmlmirror
 		, boxwidth     : 240
-		, values       : [ S.ntp, S.mirror ]
-		, checkchanged : 1
+		, values       : S.rpi01 ? { ntp: S.ntp } : { ntp: S.ntp, mirror: S.mirror }
+		, checkchanged : true
 		, checkblank   : [ 0 ]
-		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
+		, beforeshow   : () => {
+			selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } );
+		}
 		, ok           : () => {
-			var values = infoVal();
-			values[ 0 ] !== S.ntp ? notify( SW.icon, SW.title, 'Sync ...' ) : notify( SW.icon, 'Package Server', 'Change ...' );
-			S.ntp      = values[ 0 ];
-			S.mirror   = values[ 1 ];
-			bash( [ 'servers', ...values ], bannerHide );
+			if ( ! S.rpi01 ) S.mirror = $( '#infoContent select' ).val();
+			notify( SW.icon, title, 'Change ...' );
+			bash( [ 'servers', ...infoVal() ] );
 		}
 	} );
+}
+function inforServer() {
+	info( {
+		  icon      : SW.icon
+		, title     : SW.title
+		, textlabel : 'Server IP'
+		, values    : ipSub()
+		, checkip   : [ 1 ]
+		, cancel    : switchCancel
+		, ok        : () => {
+			var ip = infoVal();
+			notify( icon, title, 'Connect rAudio Sever ...' );
+			bash( [ 'sharelist', 'ip='+ ip ], list => {
+				var json = {
+					  icon    : Sw.icon
+					, title   : Sw.title
+					, message : list
+					, cancel  : switchCancel
+					, ok      : inforServer
+				}
+				if ( list.slice( 0, 6 ) === 'Server' ) {
+					json.message = list +'<br>Connect?'
+					json.ok      = () => {
+						notify( icon, title, 'Connect Server rAudio ...' );
+						bash( [ 'shareddataconnect', 'ip='+ ip ] );
+					}
+				}
+				info( json );
+				bannerHide();
+			} );
+		}
+	} );
+}
+function ipSub() {
+	return S.ip.substring( 0, S.ip.lastIndexOf( '.' ) + 1 );
 }
 function renderPage() {
 	$( '#status' ).html( S.status + S.warning );

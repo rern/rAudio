@@ -86,7 +86,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 			|| $target.parents( '#time-knob' ).length
 			|| $target.parents( '#volume-knob' ).length
 			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| ! I.hidden
+			|| I.active
 			|| ! $( '#data' ).hasClass( 'hide' )
 		) return
 		
@@ -103,7 +103,7 @@ if ( navigator.maxTouchPoints ) { // swipeleft / right /////////////////////////
 }
 	
 $( 'body' ).click( function( e ) {
-	if ( ! I.hidden || V.colorpicker ) return
+	if ( I.active || V.colorpicker ) return
 	
 	var $target = $( e.target );
 	if ( ! $target.is( '.bkcoverart, .bkradio, .savedlist' ) ) menuHide();
@@ -254,30 +254,23 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			}
 			break;
 		case 'multiraudio':
-			bash( 'cat /srv/http/data/system/multiraudio.conf', data => {
-				var data  = data.trim().split( '\n' );
-				var dataL = data.length;
-				var radio = {}
-				for ( i = 0; i < dataL; i++ ) {
-					radio[ data[ i ] ] = data[ i + 1 ];
-					i++
-				}
+			bash( [ 'multiraudiolist' ], data => {
 				info( {
-					  icon    : 'multiraudio'
-					, title   : 'Switch rAudio'
-					, radio   : radio
-					, values  : location.host
-					, okno    : 1
+					  icon       : 'multiraudio'
+					, title      : 'Switch rAudio'
+					, radio      : data.list
+					, values     : data.current
 					, beforeshow : function() {
 						$( '#infoContent input' ).change( function() {
-							var ip = $( '#infoContent input:checked' ).val();
+							var ip = infoVal();
 							if ( typeof Android === 'object' ) Android.changeIP( ip );
 							loader();
 							location.href = 'http://'+ ip;
 						} );
 					}
+					, okno       : true
 				} );
-			} );
+			}, 'json' );
 			break;
 	}
 } );
@@ -307,9 +300,9 @@ $( '#displayplayback' ).click( function() {
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplayback )
-		, checkcolumn  : 1
+		, checkcolumn  : true
 		, values       : values
-		, checkchanged : 1
+		, checkchanged : true
 		, beforeshow   : () => {
 			var $chk = $( '#infoContent input' );
 			var $el  = {}
@@ -403,7 +396,7 @@ $( '#displayplaylist' ).click( function() {
 		, messagealign : 'left'
 		, checkbox     : Object.values( chkplaylist )
 		, values       : values
-		, checkchanged : 1
+		, checkchanged : true
 		, ok           : () => displaySave( keys )
 	} );
 } );
@@ -582,7 +575,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				$( '#infoX' ).click();
 			} );
 		}
-		, okno        : 1
+		, okno        : true
 	} );
 } );
 $( '#album, #guide-album' ).click( function() {
@@ -1301,7 +1294,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 			  icon    : 'library'
 			, title   : 'Library Database'
 			, message : message
-			, okno    : 1
+			, okno    : true
 			, beforeshow : () => {
 				$( '#infoContent' ).on( 'click', '.submenu', function() {
 					$( '#update' ).click();
@@ -1402,7 +1395,7 @@ $( '#lib-mode-list' ).click( function( e ) {
 				addToPlaylist( cmd, [ action, path ], msg );
 			} );
 		}
-		, okno      : 1      
+		, okno      : true
 	} );
 } ).on( 'click', '.mode-bookmark', function( e ) { // delegate - id changed on renamed
 	var $this = $( this );
@@ -1467,8 +1460,8 @@ $( '#lib-mode-list' ).click( function( e ) {
 						+'<br><span class="bklabel">'+ name +'</span></div>'
 		, textlabel    : 'To:'
 		, values       : name
-		, checkblank   : 1
-		, checkchanged : 1
+		, checkblank   : true
+		, checkchanged : true
 		, oklabel      : ico( 'flash' ) +'Rename'
 		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
 	} );

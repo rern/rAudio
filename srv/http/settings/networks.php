@@ -76,7 +76,6 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Access Point'
-	, 'button' => [ 'hostapdset' => 'gear' ]
 ] );
 ?>
 	<div id="boxqr" class="hide">
@@ -95,6 +94,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide">
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
+• Access point setting: <?=( tab( 'features', 'Features' ).labelIcon( 'Access Point', 'hostapd' ) )?>
 </div>
 <div style="clear:both"></div>
 </div>

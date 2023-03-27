@@ -8,27 +8,27 @@ $( '.playback' ).click( function() {
 } );
 $( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';
-	SW.title = 'Output';
+	SW.title = 'Output All';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Enable all while Bluetooth connected' ]
 		, values       : S.btoutputall
-		, checkchanged : 1
+		, checkchanged : true
 		, ok           : () => {
 			var checked = infoVal();
 			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
-			bash( [ 'btoutputall', checked ] );
+			bash( [ 'btoutputall', 'enable='+ ( checked || '' ) ] );
 		}
 	} );
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val() ] );
+	bash( [ 'audiooutput', 'asoundcard='+ $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
+	bash( [ 'hwmixer', 'aplayname='+ D.aplayname, 'hwmixer='+ $( this ).val() ] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -77,7 +77,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, ok         : () => {
 				bash( [ cmd ] );
 			}
-			, oknoreset  : 1
+			, oknoreset  : true
 		} );
 	} );
 } );
@@ -104,8 +104,8 @@ $( '#novolume' ).click( function() {
 			, message : warning
 			, cancel  : switchCancel
 			, ok      : () => {
+				bash( [ 'novolume', 'enable=true', 'aplayname='+ D.aplayname, 'hwmixer='+ D.hwmixer ] );
 				notify( SW.icon, SW.title, 'Enable ...' );
-				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
 			}
 		} );
 	} else {
@@ -124,7 +124,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	bash( [ 'dop', checked, D.aplayname ] );
+	bash( [ 'dop', 'enable='+ ( checked || '' ), 'aplayname='+ D.aplayname ] );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -133,20 +133,21 @@ $( '#setting-crossfade' ).click( function() {
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
-		, values       : S.crossfadeconf || 1
+		, values       : S.crossfadeconf || { sec: 1 }
 		, checkchanged : S.crossfade
-		, checkblank   : 1
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
 $( '#setting-replaygain' ).click( function() {
+	var hardware = D.mixertype === 'software' && D.mixers;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, footer       : D.mixertype === 'software' && D.mixers ? '<label><input type="checkbox"><wh>Gain control - Mixer device</wh></label>' : ''
-		, values       : S.replaygainconf
+		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
+		, values       : hardware ? S.replaygainconf : { type: S.replaygainconf.type }
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -175,8 +176,8 @@ $( '#setting-buffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.bufferconf
-		, checkchanged : S.buffer
-		, checkblank   : 1
+		, checkchanged : S.buffer || S.bufferconf.audio_buffer_size === 4096
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
@@ -191,14 +192,14 @@ $( '#setting-outputbuffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
-		, checkchanged : S.outputbuffer
-		, checkblank   : 1
+		, checkchanged : S.outputbuffer || S.outputbufferconf.max_output_buffer_size === 8192
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
 $( '#setting-soxr' ).click( function() {
-	infoSoxr( S.soxrquality || 'very high' );
+	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );
 var custominfo = `\
 <table width="100%">
@@ -217,7 +218,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', D.aplayname ], val => {
+	bash( [ 'customget', 'aplayname='+ D.aplayname ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -231,12 +232,13 @@ $( '#setting-custom' ).click( function() {
 			, ok           : () => {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
-					bash( [ 'customdisable' ] );
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
+					bash( [ 'custom', 'enable=' ] );
 					return
 				}
 				
-				bash( [ 'custom', true, values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
+				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
+				bash( [ 'custom', 'enable=true', 'global='+ values[ 0 ], 'output='+ values[ 1 ], 'aplayname='+ D.aplayname ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -247,7 +249,6 @@ $( '#setting-custom' ).click( function() {
 						} );
 					}
 				}, 'json' );
-				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -315,27 +316,36 @@ Beware of too high volume.</wh>
 <br>`;
 
 function infoSoxr( quality ) {
-	var custom = quality === 'custom';
+	delete S.soxrconf.plugin
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tab          : [ 'Presets', 'Custom' ]
-		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
-		, tabactive    : custom ? 1 : 0
-		, content      : custom ? soxrcustom : soxr
-		, values       : custom ? S.soxrcustomconf : S.soxrconf
-		, checkblank   : 1
-		, checkchanged : S.soxr && quality === S.soxrquality
-		, boxwidth     : custom ? 85 : 180
+		, tablabel     : [ 'Presets', 'Custom' ]
+		, tab          : [ '', infoSoxrCustom ]
+		, content      : soxr
+		, values       : S.soxrconf
+		, checkblank   : true
+		, checkchanged : S.soxr
+		, boxwidth     : 180
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 }
 function infoSoxrCustom() {
-	infoSoxr( 'custom' );
-}
-function infoSoxrPreset() {
-	infoSoxr( S.soxrquality === 'custom' ? 'very high' : S.soxrquality );
+	delete S.soxrcustomconf.plugin
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Presets', 'Custom' ]
+		, tab          : [ infoSoxr, '' ]
+		, content      : soxrcustom
+		, values       : S.soxrcustomconf
+		, checkblank   : true
+		, checkchanged : S.soxr
+		, boxwidth     : 85
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
 }
 function playbackIcon() {
 	$( '.playback' )
@@ -412,15 +422,15 @@ function renderPage() {
 			$( '#infoRange .value' ).text( vol );
 			$( '#infoRange input' ).val( vol );
 			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
+			$( '#infoButton a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
 		} );
 	}
-	$( '#divlists' ).toggleClass( 'hide', ! S.lists.includes( true ) );
-	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', ! S.lists[ i ] );
+	$.each( S.lists, ( k, v ) => $( '#'+ k ).toggleClass( 'hide', ! v ) );
+	$( '#divlists' ).toggleClass( 'hide', $( '#divlists .subhead.hide' ).length === 3 );
 	showContent();
 }
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
+	bash( [ 'mixertype', 'mixertype='+ mixertype, 'aplayname='+ D.aplayname, 'hwmixer='+ hwmixer ] );
 }

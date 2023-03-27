@@ -6,7 +6,7 @@
 dirairplay=/srv/http/data/shm/airplay
 
 pushstreamAirplay() {
-	json=$@ # for enclose in double quotes "$json" as single argument
+	local json=$@ # for enclose in double quotes "$json" as single argument
 	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$json"
 }
 

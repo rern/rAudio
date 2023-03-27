@@ -2,10 +2,9 @@
 
 . /srv/http/bash/common.sh
 
-# convert each line to each args
-readarray -t args <<< $1
+argsConvert "$1"
 
-pushData() {
+pushRestartMpd() {
 	$dirsettings/player-conf.sh
 	pushSubmenu $1 $2
 	$dirsettings/features-data.sh pushrefresh
@@ -29,7 +28,7 @@ localbrowserDisable() {
 localbrowserXset() {
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
+	local off=$(( $screenoff * 60 ))
 	xset s off
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
@@ -53,16 +52,10 @@ spotifyReset() {
 	pushRefresh
 }
 
-case ${args[0]} in
+case $cmd in
 
-autoplay )
-	if [[ ${args[1]} == true ]]; then
-		[[ ${args[2]} == true ]] && touch $dirsystem/autoplaybt || rm -f $dirsystem/autoplaybt
-		[[ ${args[3]} == true ]] && touch $dirsystem/autoplaycd || rm -f $dirsystem/autoplaycd
-		[[ ${args[4]} == true ]] && touch $dirsystem/autoplay || rm -f $dirsystem/autoplay
-	else
-		rm -f $dirsystem/autoplay*
-	fi
+autoplay|lyricsembedded|scrobble )
+	[[ $enable ]] && touch $dirsystem/$cmd || rm -f $dirsystem/$cmd
 	pushRefresh
 	;;
 camilladspasound )
@@ -80,10 +73,8 @@ camilladspasound )
 	alsactl nrestore &> /dev/null
 	;;
 camilladsp )
-	if [[ ${args[1]} == true ]]; then
-		refresh=${args[2]}
-		applyauto=${args[3]}
-		sed -i -E "s/(status_update_interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+	if [[ $enable ]]; then
+		sed -i -E "s/(interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
 		touch $dirsystem/camilladsp
@@ -93,10 +84,10 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushData camilladsp ${args[1]}
+	pushRestartMpd camilladsp $enable
 	;;
 dabradio )
-	if [[ ${args[1]} == true ]]; then
+	if [[ $enable ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
 			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg$'\n'true
@@ -110,24 +101,12 @@ dabradio )
 	pushRefresh
 	;;
 equalizer )
-	enabled=${args[1]}
-	if [[ $enabled == true ]]; then
-		touch $dirsystem/equalizer
-	else
-		rm -f $dirsystem/equalizer
-	fi
-	pushData equalizer ${args[1]}
-	;;
-hostapdget )
-	hostapdip=$( grep router /etc/dnsmasq.conf | cut -d, -f2 )
-	hostapdpwd=$( sed -E -n '/^wpa_pass/ {s/.*=(.*)/\1/; s/"/\\"/; p}' /etc/hostapd/hostapd.conf )
-	echo '[ "'$hostapdip'","'$hostapdpwd'" ]'
+	[[ $enable ]] && touch $dirsystem/equalizer || rm -f $dirsystem/equalizer
+	pushRestartMpd equalizer $enabled
 	;;
 hostapd )
-	if [[ ${args[1]} == true ]]; then
+	if [[ $enable ]]; then
 		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan$'\n'true
-		ip=${args[2]}
-		password=${args[3]}
 		ip012=${ip%.*}
 		ip3=$(( ${ip/*.} + 1 ))
 		iprange=$ip012.$ip3,$ip012.254,24h
@@ -135,7 +114,7 @@ hostapd )
 " -e "s/^(.*option:router,).*/\1$ip/
 " -e "s/^(.*option:dns-server,).*/\1$ip/
 " /etc/dnsmasq.conf
-		sed -i -E "s/(wpa_passphrase=).*/\1$password/" /etc/hostapd/hostapd.conf
+		sed -i -E "s/(wpa_passphrase=).*/\1$wpa_passphrase/" /etc/hostapd/hostapd.conf
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
 		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
@@ -149,44 +128,31 @@ hostapd )
 		$dirsettings/system.sh wlan$'\n'false
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","hostapd":'${args[1]}'}'
+	pushstream refresh '{"page":"system","hostapd":'$enable'}'
 	pushRefresh networks
 	;;
 httpd )
-	[[ ${args[1]} == true ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
+	[[ $enable ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
 	$dirsettings/player-data.sh pushrefresh
 	;;
 localbrowser )
-	if [[ ${args[1]} == true ]]; then
-		newrotate=${args[2]}
-		newzoom=${args[3]}
-		[[ ${args[4]} == true ]] && newcursor=yes || newcursor=no
-		newscreenoff=${args[5]}
-		newonwhileplay=${args[6]}
-		hdmi=${args[7]}
-		if [[ -e $dirsystem/localbrowser.conf ]]; then
-			. $dirsystem/localbrowser.conf
-			[[ $rotate != $newrotate ]] && changedrotate=1          # [reboot] / [restart]
-			[[ $zoom != $newzoom ]] && restart=1                    # [restart]
-			[[ $cursor != $newcursor ]] && restart=1                # [restart]
-			[[ $screenoff != $newscreenoff ]] && changedscreenoff=1 # xset dpms
-			# onwhileplay                                           # flag file
+	if [[ $enable ]]; then
+		file=$dirsystem/localbrowser.conf
+		sed -i '/brightness/ d' $file
+		diff=$( grep -Fxvf $file /tmp/localbrowser.conf )
+		if [[ $diff ]]; then
+			for k in cursor rotate screenoff zoom; do
+				grep -q -m1 ^$k <<< $diff && printf -v diff$k '%s' 1
+			done
+			[[ $diffcursor || $diffzoom ]] && restart=1
 		fi
-		[[ $newonwhileplay == true ]] && touch $dirsystem/onwhileplay || rm -f $dirsystem/onwhileplay
-		echo -n "\
-rotate=$newrotate
-zoom=$newzoom
-screenoff=$newscreenoff
-onwhileplay=$newonwhileplay
-cursor=$newcursor
-" > $dirsystem/localbrowser.conf
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ $hdmi == true ]]; then
+		if [[ $hdmi ]]; then
 			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
 				echo hdmi_force_hotplug=1 >> /boot/config.txt
 				if ! grep -q hdmi_force_hotplug=1 /tmp/config.txt; then
@@ -198,19 +164,19 @@ cursor=$newcursor
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 		fi
 		pushstream refresh '{"page":"system","hdmi":'$hdmi'}'
-		if [[ $changedrotate ]]; then
-			$dirbash/cmd.sh rotatesplash$'\n'$newrotate # after set new data in conf file
+		if [[ $diffrotate ]]; then
+			case $rotate in
+				NORMAL ) degree=0;;
+				CCW )    degree=270 && matrix='0 1 0 -1 0 1 0 0 1';;
+				CW )     degree=90  && matrix='0 -1 1 1 0 0 0 0 1';;
+				UD )     degree=180 && matrix='-1 0 1 0 -1 1 0 0 1';;
+			esac
+			$dirbash/cmd.sh rotatesplash$'\n'$rotate # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
-				case $newrotate in
-					NORMAL ) degree=0;;
-					CCW )    degree=270;;
-					CW )     degree=90;;
-					UD )     degree=180;;
-				esac
 				sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 				pushRefresh
-				if ! grep -q "rotate=$newrotate" /tmp/localbrowser.conf; then
+				if ! grep -q "rotate=$rotate" /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
 					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
@@ -219,33 +185,34 @@ cursor=$newcursor
 			
 			restart=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-			case $newrotate in
-				NORMAL ) rm -f $rotateconf;;
-				CW )  matrix='0 1 0 -1 0 1 0 0 1';;
-				CCW ) matrix='0 -1 1 1 0 0 0 0 1';;
-				UD )  matrix='-1 0 1 0 -1 1 0 0 1';;
-			esac
-			[[ matrix ]] && sed "s/ROTATION_SETTING/$newrotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+			if [[ $matrix ]]; then
+				sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+			else 
+				rm -f $rotateconf
+			fi
+		fi
+		if [[ $diffscreenoff ]]; then
+			localbrowserXset
+			[[ $screenoff == 0 ]] && pushSubmenu screenoff false || pushSubmenu screenoff true
 		fi
 		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
+			restartlocalbrowser=1
 			systemctl restart bootsplash localbrowser
-			if systemctl -q is-active localbrowser; then
-				systemctl enable bootsplash localbrowser
-				systemctl stop bluetoothbutton
-			else
-				localbrowserDisable
-			fi
-		elif [[ $changedscreenoff ]]; then
-			localbrowserXset
-			if [[ $screenoff == 0 || $newscreenoff == 0 ]]; then
-				[[ $off == 0 ]] && tf=false || tf=true
-				pushSubmenu screenoff $tf
-			fi
 		fi
 	else
 		localbrowserDisable
 	fi
 	pushRefresh
+	if [[ $restartlocalbrowser ]]; then
+		if systemctl -q is-active localbrowser; then
+			systemctl enable bootsplash localbrowser
+			systemctl stop bluetoothbutton
+		else
+			[[ -e /usr/bin/firefox ]] && icon=firefox || icon=chromium
+			! systemctl -q is-active localbrowser && notify $icon 'Browser on RPi' 'Start failed.' 5000
+			localbrowserDisable
+		fi
+	fi
 	;;
 localbrowserxset )
 	localbrowserXset
@@ -258,40 +225,31 @@ logindisable )
 	pushRefresh
 	pushSubmenu lock false
 	;;
-lyricsembedded )
-	feature=${args[0]}
-	filefeature=$dirsystem/$feature
-	[[ ${args[1]} == true ]] && touch $filefeature || rm -f $filefeature
-	pushRefresh
-	;;
 multiraudio )
-	if [[ ${args[1]} == true ]]; then
-		data=$( printf "%s\n" "${args[@]:2}" | awk NF )
-		if [[ $( wc -l <<< $data ) > 2 ]]; then
-			touch $dirsystem/multiraudio
-			echo "$data" > $dirsystem/multiraudio.conf
-			ip=$( ipAddress )
-			iplist=$( sed -n 'n; p' <<< $data | grep -v $ip ) # ip at even lines
-			for ip in $iplist; do
-				sshCommand $ip << EOF
-echo "$data" > $dirsystem/multiraudio.conf 
+	if [[ $enable ]]; then
+		fileconf=$dirsystem/multiraudio.conf
+		json=$( jq <<< $data )
+		echo "$json" > $fileconf
+		touch $dirsystem/multiraudio
+		ip=$( ipAddress )
+		iplist=$( jq keys <<< $json )
+		for ip in $iplist; do
+			sshCommand $ip << EOF
+echo "$json" > $fileconf
 touch $dirsystem/multiraudio
 EOF
-			done
-		else
-			rm -f $dirsystem/multiraudio*
-		fi
+		done
 	else
 		rm -f $dirsystem/multiraudio
+		[[ $data == removeconf ]] && rm -f $dirsystem/multiraudio.conf
 	fi
 	pushRefresh
-	pushSubmenu multiraudio ${args[1]}
+	pushSubmenu multiraudio $enable
 	;;
 nfsserver )
-	active=${args[1]}
 	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
-	if [[ $active == true ]]; then
+	if [[ $active ]]; then
 		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
@@ -355,22 +313,8 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobble )
-	if [[ ${args[1]} == true ]]; then
-		echo "\
-airplay=${args[2]}
-bluetooth=${args[3]}
-spotify=${args[4]}
-upnp=${args[5]}
-notify=${args[6]}" > $dirsystem/scrobble.conf
-		touch touch $dirsystem/scrobble
-	else
-		rm -f $dirsystem/scrobble
-	fi
-	pushRefresh
-	;;
 scrobblekeyget )
-	token=${args[1]:0:32}
+	token=${token[1]:0:32}
 	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]:0:32}
 	sharedsecret=${keys[1]:0:32}
@@ -395,21 +339,20 @@ sk=$( jq -r .session.key <<< $response )
 	fi
 	;;
 shairport-sync|spotifyd )
-	pkg=${args[0]}
-	if [[ ${args[1]} == true ]]; then
-		featureSet $pkg
+	if [[ $enable ]]; then
+		featureSet $cmd
 	else
-		[[ $( cat $dirshm ) == airplay ]] && $dirbash/cmd.sh playerstop
-		systemctl disable --now $pkg
+		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
+		systemctl disable --now $cmd
 	fi
 	pushRefresh
 	;;
 smb )
-	if [[ ${args[1]} == true ]]; then
+	if [[ $enable ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
-		[[ ${args[2]} == true ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
-		[[ ${args[3]} == true ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
+		[[ $sd ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
+		[[ $usb ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
 		featureSet smb
 	else
 		systemctl disable --now smb
@@ -418,8 +361,8 @@ smb )
 	;;
 snapclient )
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
-	if [[ ${args[1]} == true ]]; then
-		echo 'SNAPCLIENT_OPTS="--latency='${args[2]}'"' > /etc/default/snapclient
+	if [[ $enable ]]; then
+		echo 'SNAPCLIENT_OPTS="--latency='$latency'"' > /etc/default/snapclient
 		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
 		
 		touch $dirsystem/snapclient
@@ -435,7 +378,6 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
-	[[ ${args[1]} == true ]] && enable=1
 	if [[ $enable ]]; then
 		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
 		if [[ $avahi ]]; then
@@ -454,7 +396,6 @@ snapserver )
 	pushRefresh
 	;;
 spotifytoken )
-	code=${args[1]}
 	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
@@ -481,16 +422,10 @@ spotifytokenreset )
 	spotifyReset 'Reset ...'
 	;;
 stoptimer )
-	if [[ ${args[1]} == true ]]; then
-		min=${args[2]}
-		poweroff=${args[3]}
-		[[ $poweroff == true ]] && off=poweroff
+	if [[ $enable ]]; then
+		touch $dirshm/stoptimer
 		killall features-stoptimer.sh &> /dev/null
-		rm -f $dirshm/stoptimer
-		if [[ $min != false ]]; then
-			$dirsettings/features-stoptimer.sh $min $off &> /dev/null &
-			echo "[ $min, $poweroff ]" > $dirshm/stoptimer
-		fi
+		$dirsettings/features-stoptimer.sh &> /dev/null &
 	else
 		killall features-stoptimer.sh &> /dev/null
 		rm -f $dirshm/stoptimer
@@ -498,14 +433,14 @@ stoptimer )
 			. $dirsystem/relays.conf
 			echo $timer > $timerfile
 			$dirsettings/relays-timer.sh &> /dev/null &
-	fi
+		fi
 	fi
 	pushRefresh
 	;;
 upmpdcli )
-	if [[ ${args[1]} == true ]]; then
-		[[ ${args[2]} == true ]] && val=1 || val=0
-		sed -i -E "s/(ownqueue = )./\1$val/" /etc/upmpdcli.conf
+	if [[ $enable ]]; then
+		[[ $ownqueue ]] && line='ownqueue = 1' || line='ownqueue = 0'
+		sed -i "s/^ownqueue.*/$line/" /etc/upmpdcli.conf
 		featureSet upmpdcli
 	else
 		systemctl disable --now upmpdcli

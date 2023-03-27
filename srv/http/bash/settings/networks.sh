@@ -2,10 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-# convert each line to each args
-readarray -t args <<< $1
+argsConvert "$1"
 
 netctlSwitch() {
+	local ssid wlandev connected active i
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
@@ -28,6 +28,7 @@ netctlSwitch() {
 	fi
 }
 wlanDevice() {
+	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep ^w )
 	if [[ ! $iplinkw ]]; then
 		cpuInfo
@@ -46,7 +47,7 @@ wlanDevice() {
 	fi
 }
 
-case ${args[0]} in
+case $cmd in
 
 avahi )
 	hostname=$( hostname )
@@ -60,7 +61,6 @@ $( timeout 1 avahi-browse -arp \
 	| sort -u )"
 	;;
 bluetoothinfo )
-	mac=${args[1]}
 	info=$( bluetoothctl info $mac )
 	grep -q -m1 'not available' <<< $info && exit
 	
@@ -74,41 +74,42 @@ bluetoothshow )
 $( bluetoothctl show )"
 	;;
 connect )
-	data=${args[1]}
-	ESSID=$( jq -r .ESSID <<< $data )
-	Key=$( jq -r .Key <<< $data )
-	wlandev=$( < $dirshm/wlan )
-	profile="\
-Interface=$wlandev
-Connection=wireless
-ESSID=\"$ESSID\"
-IP=$( jq -r .IP <<< $data )
-"
-	if [[ $Key ]]; then
-		profile+="\
-Security=$( jq -r .Security <<< $data )
-Key=\"$Key\"
-"
-	else
-		profile+="\
-Security=none
-"
+	file="/etc/netctl/$ESSID"
+	if [[ $IP == static && $Address != $( ipAddress ) ]]; then
+		if ping -c 1 -w 1 $Address &> /dev/null; then
+			rm "$file"
+			echo "IP <wh>$Address</wh> already in use."
+			exit
+		fi
 	fi
-	[[ $( jq -r .Hidden <<< $data ) == true ]] && profile+="\
-Hidden=yes
-"
-	[[ $( jq -r .IP <<< $data ) == static ]] && profile+="\
-Address=$( jq -r .Address <<< $data )/24
-Gateway=$( jq -r .Gateway <<< $data )
-"
+	
+	data="\
+Interface=$( < $dirshm/wlan )
+Connection=wireless
+IP=$IP
+ESSID=$ESSID"
+	if [[ $Key ]]; then
+		[[ $Security ]] && Security=wep || Security=wpa
+		data+="
+Key=$Key"
+	else
+		Security=none
+	fi
+	[[ $Address ]] && data+="
+Address=$Address/24
+Gateway=$Gateway"
+	data+="
+Security=$Security"
+	[[ $Hidden ]] && data+="
+Hidden=yes"
+	echo "$data" > "/etc/netctl/$ESSID"
+	
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
-		echo "$profile" > /boot/wifi                                             # save for next boot
 		pushstream wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
 	
-	echo "$profile" > "/etc/netctl/$ESSID"
-	if [[ $( jq -r .add <<< $data ) == true ]]; then
+	if ! netctl is-active "$ESSID" &> /dev/null; then
 		netctlSwitch "$ESSID"
 		avahi-daemon --kill # flush cache and restart
 	else
@@ -140,9 +141,6 @@ ifconfigwlan )
 $( ifconfig $wlandev | grep -E -v 'RX|TX')
 $( iwconfig $wlandev | awk NF )"
 	;;
-ipused )
-	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
-	;;
 iwlist )
 	echo '<bll># iw reg get</bll>'
 	iw reg get
@@ -151,8 +149,6 @@ iwlist )
 	iw list
 	;;
 lanedit )
-	ip=${args[1]}
-	gw=${args[2]}
 	if [[ $ip ]]; then
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
 	fi
@@ -165,11 +161,11 @@ lanedit )
 		file=/etc/systemd/network/eth0.network
 	fi
 	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $ip ]]; then
+	if [[ $ip ]]; then # static
 		sed -i '/^DNSSEC/ i\
 Address='$ip'/24\
 Gateway='$gw $file
-	else
+	else               # dhcp - reset
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
@@ -182,29 +178,12 @@ profileconnect )
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "${args[1]}"
+	netctlSwitch "$ssid"
 	;;
 profileget )
-	ssid=${args[1]}
-	data='"'$ssid'"'
-	if netctl is-active "$ssid" &> /dev/null; then
-		status=( $( netctl status Home5GHz \
-					| grep -E 'rebinding lease|default route' \
-					| awk '{print $NF}' ) )
-		data+=',"'${status[0]}'","'${status[1]}'"'
-	else
-		data+=',"",""'
-	fi
-	netctl=$( < "/etc/netctl/$ssid" )
-	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
-	grep -q -m1 ^IP=dhcp <<< $netctl && static=false || static=true
-	grep -q -m1 ^Hidden <<< $netctl && hidden=true || hidden=false
-	grep -q -m1 ^Security=wep <<< $netctl && wep=true || wep=false
-	data+=',"'$password'", '$static', '$hidden', '$wep
-	echo "[$data]"
+	conf2json "/etc/netctl/$ssid"
 	;;
 profileremove )
-	ssid=${args[1]}
 	netctl is-enabled "$ssid" && netctl disable "$ssid"
 	if netctl is-active "$ssid" &> /dev/null; then
 		netctl stop "$ssid"

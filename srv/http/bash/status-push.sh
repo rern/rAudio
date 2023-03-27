@@ -42,7 +42,7 @@ fi
 [[ $trackchanged && $state == play \
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
-if [[ -e $dirsystem/onwhileplay ]]; then
+if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
 	export DISPLAY=:0
 	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
 fi
@@ -93,10 +93,9 @@ pushstream refresh '{"page":"features","state":"'$state'"}'
 
 [[ ! $scrobble ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 
-. $dirsystem/scrobble.conf
 . <( echo "$statusprev" )
 [[ $webradio == false && $player != snapcast \
-	&& ( $player == mpd || ${!player} == true ) \
+	&& ( $player == mpd || grep -q $player=true $dirsystem/scrobble.conf ) \
 	&& $Artist && $Title ]] \
 	&& (( $Time > 30 )) \
 	&& $dirbash/scrobble.sh "\

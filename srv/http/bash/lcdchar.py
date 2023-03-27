@@ -34,10 +34,10 @@ if argvL == 2: # 1 argument
 import math
 import time
 
-def backlightOff( backlight ):
-    if backlight:
-        time.sleep( 60 )
-        lcd.backlight_enabled = False
+def backlightOff():
+    global backlight
+    time.sleep( 60 )
+    lcd.backlight_enabled = False
     lcd.close()
     quit()
     
@@ -89,8 +89,8 @@ if not Album: Album = idots
 if rows == 2:
     if state == 'play':
         lines = Title
-    else:
-        backlightOff( backlight )
+    elif backlight:
+        backlightOff()
 else:
     lines = Artist + rn + Title + rn + Album
 
@@ -111,8 +111,7 @@ else:
 
 lcd.write_string( lines + rn + icon[ state ] + progress + irr )
 
-if state != 'play':
-    backlightOff( backlight )
+if backlight and state != 'play': backlightOff()
 
 if elapsed is False: quit()
 

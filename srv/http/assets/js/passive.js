@@ -380,13 +380,13 @@ function psRelays( response ) {
 			}
 			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
-		if ( I.hidden ) {
+		if ( ! I.active ) {
 			info( {
 				  icon       : 'relays'
 				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )
 				, message    : stopwatch
 							  +'<div class="msg-r">'+ devices +'</div>'
-				, okno       : 1
+				, okno       : true
 				, beforeshow : () => $( '#infoX' ).addClass( 'hide' )
 			} );
 		} else {

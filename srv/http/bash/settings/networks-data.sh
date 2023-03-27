@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 
 listBluetooth() {
+	local devices dev mac info listbt 
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
@@ -15,11 +16,25 @@ listBluetooth() {
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
 }'
 		done
-		listbt="[ ${listbt:1} ]"
+		echo [ ${listbt:1} ]
 	fi
 }
+if [[ $1 == pushbt ]]; then
+	listbt=$( listBluetooth )
+	if [[ $listbt ]]; then
+		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
+		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
+		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
+	else
+		listbt=false
+	fi
+	pushstream bluetooth "$listbt"
+	exit
+fi
+
+wldev=$( < $dirshm/wlan )
 listWlan() {
-	wldev=$( < $dirshm/wlan )
+	local profiles profile ipwl gateway dbm listwl listwlnotconnected
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -45,36 +60,22 @@ listWlan() {
 			fi
 		done
 	fi
-	[[ $$listwlnotconnected ]] && listwl+="$listwlnotconnected"
-	[[ $listwl ]] && listwl="[ ${listwl:1} ]"
+	[[ $listwlnotconnected ]] && listwl+="$listwlnotconnected"
+	[[ $listwl ]] && echo [ ${listwl:1} ]
 }
-
-if [[ $1 == pushbt ]]; then
-	listBluetooth
-	if [[ $listbt ]]; then
-		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
-		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
-	else
-		listbt=false
-	fi
-	pushstream bluetooth "$listbt"
-	exit
-	
-elif [[ $1 == pushwl ]]; then
-	listWlan
+if [[ $1 == pushwl ]]; then
+	listwl=$( listWlan )
 	[[ ! $listwl ]] && listwl=false
 	pushstream wlan "$listwl"
 	exit
-	
 fi
 
 # bluetooth
 rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
-[[ $activebt ]] && listBluetooth
+[[ $activebt ]] && listbt=$( listBluetooth )
 
 # wlan
-[[ -e $dirshm/wlan ]] && listWlan
+[[ -e $dirshm/wlan ]] && listwl=$( listWlan )
 
 # lan
 ifconfiglan=$( ifconfig | grep -A1 ^e )
@@ -103,17 +104,12 @@ if [[ $ipeth ]]; then
 , "static"   : '$static'
 }'
 fi
-
 # hostapd
 if systemctl -q is-active hostapd; then
-	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
-	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
-	ip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	ap='{
-  "ssid"       : "'${ssid//\"/\\\"}'"
-, "passphrase" : "'${passphrase//\"/\\\"}'"
-, "ip"         : "'$ip'"
-, "conf"       : '$( $dirsettings/features.sh hostapdget )'
+	hostapd='{
+  "ssid"       : "'$( hostname )'"
+, "ip"         : "'$( grep router /etc/dnsmasq.conf | cut -d, -f2 )'"
+, "passphrase" : "'$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )'"
 }'
 fi
 
@@ -129,7 +125,8 @@ data='
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
 , "listwl"      : '$listwl'
-, "hostapd"     : '$ap'
-, "hostname"    : "'$( hostname )'"'
+, "hostapd"     : '$hostapd'
+, "hostname"    : "'$( hostname )'"
+, "wldev"       : "'$wldev'"'
 
 data2json "$data" $1

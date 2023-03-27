@@ -1,7 +1,8 @@
 /* 
-copy,     banner(),    errorDisplay(), 
-info(),   infoPower(), infoPowerCommand(), infoWarning()
-loader(), local(),     $.fn.press(),       pushstream,     selectSet()
+$.fn.press
+bash()   banner()    copy               errorDisplay() 
+info()   infoPower() infoPowerCommand() infoWarning()
+loader() local()     pushstream         selectSet()
 */
 
 var page        = location.search.replace( '?p=', '' );
@@ -11,6 +12,38 @@ var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+
+// ----------------------------------------------------------------------
+/*
+$( ELEMENT ).press( DELEGATE, function( e ) {
+	cannot be attached with .on
+	DELEGATE : optional - if not delegate, use e.target for this
+} );
+events:
+	- move  : mouseenter > mousemove > mouseleave > mouseout
+	- click : mousedown  > mouseup   > click
+	- touch : touchstart > touchmove > touchend
+*/
+$.fn.press = function( arg1, arg2 ) {
+	var callback, delegate, timeout;
+	if ( arg2 ) { 
+		delegate = arg1; // this = delegate
+		callback = arg2;
+	} else {
+		delegate = '';   // this not applicable
+		callback = arg1;
+	}
+	this.on( 'touchstart mousedown', delegate, function( e ) {
+		timeout = setTimeout( () => {
+			V.press = true;
+			callback( delegate ? this : e );
+		}, 1000 );
+	} ).on( 'touchend mouseup mouseleave', delegate, function() {
+		clearTimeout( timeout );
+		setTimeout( () => V.press = false, 300 ); // needed for mouse events
+	} );
+	return this // allow chain
+}
 
 // ----------------------------------------------------------------------
 function bash( command, callback, json ) {
@@ -25,6 +58,13 @@ function bash( command, callback, json ) {
 		}
 		var args   = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
 	}
+	if ( V.consolelog ) {
+		var data = args.sh[ 0 ].replace( 'settings/', '' ) +' "'+ args.sh[ 1 ] +'\n'
+				 + args.sh.slice( 2 ).join( '\n' ) +'\n"';
+		navigator.maxTouchPoints ? alert( data ) : console.log( data );
+		return
+	}
+	
 	$.post( 
 		  'cmd.php'
 		, args
@@ -111,38 +151,36 @@ function ico( cls, id ) {
 }
 
 // info ----------------------------------------------------------------------
-function infoUsage() {
-	console.log( `
-===============================
-| icon | title                |
-|      |----------------------|
-|      | message              |
-===============================
-
-banner( 'icon', 'title', 'message', delayms )
-
-
+// Show usage: Press icon
+var usage = `\
 ===============================
 | icon - title              X |
 |-----------------------------|
-| <-                       -> |
+|      tab     |     tab      |
+|              ---------------|
 |           message           |
-|         input/select        |
+|  input / select / textarea  |
 |            footer           |
 |                             |
 | file - button - cancel - ok |
 ===============================
 
-Simple usage: info( 'message' )
+Debug : Click icon for console.log / alert of return arguments
+Get values   : infoVal( ''|'array'|'json' )
+	- ''      
+		values array - return array | value if single
+		values json  - return array [ var=value, ... ] for bash
+	- 'array' - force return values in array (single value or values json)
+	- 'json'  - force return values in json
+
 
 info( {                                       // default
 	icon          : 'NAME'                    // 'question'     (top icon)
 	title         : 'TITLE'                   // 'Information'  (top title)
 	width         : N                         // 400            (info width)
 	
-	tab           : [ 'LABEL', ... ]          // (none)         (tabs for switch between multiple infos)
-	tabfunction   : [ FUNCTION, ... ]         // (none)         (info() functions)
-	tabactive     : N                         // (none)         (active tab)
+	tab           : [ FUNCTION, ... ]         // ***            (info() functions - blank for current)
+	tablabel      : [ 'LABEL', ... ]          // ***            (tabs for switch between multiple infos)
 	
 	content       : 'HTML'                    // ***            (custom html <table> input content)
 	height        : N                         // (fit)          (infocontent height)
@@ -154,78 +192,152 @@ info( {                                       // default
 	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
-	focus         : N                         // (none)         (focused input)
+	focus         : N                         // --             (focused input)
 	
 	passwordlabel : 'LABEL'                   // (blank)        (password input label)
 	
-	textarea      : 1                         // ***
+	textarea      : true                      // ***
 	
 	boxwidth      : N                         // 200            (input text/password width - 'max' to fit)
 	
 	radio         : { LABEL: 'VALUE', ... }   // ***
+	                [ 'VALUE', ... ]                            (label = value)
+	radiocolumn   : true                      // --             (layout 2 colums)
 	
-	checkbox      : [ 'LABEL', ... ]          // ***
+	checkbox      : [ 'LABEL', ... ]          // ***            (value = true/false if not json)
+	                { LABEL: 'VALUE', ... }  
+	checkcolumn   : true                      // --             (layout 2 colums)
 	
 	select        : { LABEL: 'VALUE', ... }   // ***
+	                [ LABEL, ... ]                              (option label = value)
 	selectlabel   : 'LABEL'                   // (blank)        (select input label)
 	
 	rangelabel    : 'LABEL'                   // ***            (input range label)
-	rangesub      : 'SUBLABEL'                '' (none)         (sublabel under range)
+	rangesub      : 'SUBLABEL'                '' --             (sublabel under range)
 	
 	order         : [ TYPE, ... ]             // (sequence)     (order of *** inputs)
 	
-	values        : [ 'VALUE', ... ]          // (none)         (default values - in layout order)
-	checkchanged  : 1                         // (none)         (check values changed)
-	checkblank    : 1 or [ i, ... ]           // (none)         (check values not blank /  [ partial ] )
-	checklength   : { i: N, . }               // (none)         (required N characters in i)
-	checklength   : { i: [ N, 'COND' ], ... } // (none)         (required N: characters; COND: min, max; in i)
-	
-	beforeshow    : FUNCTION                  // (none)         (function after values set)
+	beforeshow    : FUNCTION                  // --             (function after values set)
 	
 	filelabel     : 'LABEL'                   // ***            (browse button label)
 	fileoklabel   : 'LABEL'                   // 'OK'           (upload button label)
-	filetype      : '.EXT, ...'               // (none)         (filter and verify filetype (with 'dot' - 'image/*' for all image types)
+	filetype      : '.EXT, ...'               // --             (filter and verify filetype (with 'dot' - 'image/*' for all image types)
 	
+	button        : [ FUNCTION, ... ]         // --             (function array)
 	buttonlabel   : [ 'LABEL', ... ]          // ***            (extra buttons - label array)
-	button        : [ FUNCTION, ... ]         // (none)         (function array)
 	buttoncolor   : [ 'COLOR', ... ]          // 'var( --cm )'  (color array)
-	buttonfit     : 1                         // (none)         (fit buttons width to label)
+	buttonfit     : 1                         // --             (fit buttons width to label)
 	
-	cancellabel   : 'LABEL'                   // ***            (cancel button label)
-	cancelcolor   : 'COLOR'                   // var( --cg )    (cancel button color)
-	cancelshow    : 1                         // (hide)         (show cancel button)
 	cancel        : FUNCTION                  // (reset)        (cancel click function)
-
-	okno          : 1                         // (show)         (no ok button)
-	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
-	okcolor       : 'COLOR'                   // var( --cm )    (ok button color)
-	ok            : FUNCTION                  // (reset)        (ok click function)
-	oknoreset     : 1                         // (none)         (keep info open + omit reset; reset by cancel only)
+	cancellabel   : 'LABEL'                   // ***            (cancel button label)
+	cancelcolor   : 'COLOR'                   // 'var( --cg )'  (cancel button color)
+	cancelshow    : true                      // (hide)         (show cancel button)
 	
-	confirm       : 'CONFIRM'                 // (none)         (confirm prompt)
-	confirmno     : FUNCTION                  // (none)         (skip confirm if FUNCTION true)
+	ok            : FUNCTION                  // (reset)        (ok click function)
+	okno          : true                      // (show)         (no ok button)
+	oklabel       : 'LABEL'                   // ('OK')         (ok button label)
+	okcolor       : 'COLOR'                   // 'var( --cm )'  (ok button color)
+	oknoreset     : true                      // --             (keep info open + omit reset; reset by cancel only)
+	
+	confirm       : 'CONFIRM'                 // --             (confirm prompt)
+	confirmno     : FUNCTION                  // --             (skip confirm if FUNCTION true)
+	
+	checkchanged  : true                      // --             (check values changed)
+	checkblank    : true or [ i, ... ]        // --             (check values not blank /  [ partial ] )
+	checkip       : [ i, ... ]                // --             (check valid ip)
+	checklength   : { i: N, . }               // --             (required N characters in i)
+	                { i: [ N, 'COND' ], ... }                   (required N: characters; COND: min, max; in i)
+	
+	values        : [ 'VALUE', ... ]          // --             (default values - in layout order)
+	                { KEY: 'VALUE', ... }                       (return bash var - [ 'KEY=value', ... ])
+	
+	fileconf      : true / 'FILE'             // --             (append bash var - save to $dirsystem/ID.conf / 'FILE')
 } );
+`;
 
-Get values: infoVal()
-Show usage: infoUsage()
-` );
-}
-
-I = { hidden: true }
+$( '#infoOverlay' ).on( 'click', '#infoIcon', function() {
+	V.consolelog = true;
+	setTimeout( ()=>  delete V.consolelog, 300 );
+	$( '#infoOk' ).click();
+} ).press( '#infoIcon', function() {
+	info( {
+		  icon     : 'help'
+		, title    : 'Usage'
+		, width    : '100%'
+		, boxwidth : '100%'
+		, textarea : true
+		, values   : usage
+		, okno     : true
+		, beforeshow : () => $( '#infoContent textarea' ).css( 'height', window.innerHeight - 120 )
+	} );
+} ).on( 'click', '#infoContent', function() {
+	$( '.infobtn, .filebtn' ).removeClass( 'active' );
+} );
+$( '#infoOverlay' ).keydown( function( e ) {
+/*
+all:      [Tab]       - focus / next input
+		  [Shift+Tab] - previous input
+radio:    [L] [R]     - check
+checkbox: [space]     - check
+select:   [U] [D]     - check
+*/
+	if ( ! I.active ) return
+	
+	var key = e.key;
+	switch ( key ) {
+		case 'Enter':
+			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			break;
+		case 'Escape':
+			local(); // prevent toggle setting menu
+			$( '#infoX' ).click();
+			break;
+		case 'ArrowLeft':
+		case 'ArrowRight':
+			var activeinput = $( document.activeElement ).attr( 'type' );
+			if ( [ 'text', 'password', 'textarea' ].includes( activeinput ) ) return
+			
+			var $tabactive = $( '#infoTab a.active' );
+			if ( key === 'ArrowLeft' ) {
+				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
+			} else {
+				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
+			}
+			break;
+	}
+} );
+	
+I = { active: false }
+var $infocontent;
 
 function info( json ) {
 	local(); // flag for consecutive info
 	I          = json;
-	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' ); // fix: narrow screen scroll
+	
+	if ( I.values ) {
+		if ( ! Array.isArray( I.values ) ) {
+			if ( typeof I.values === 'string' ) {
+				I.values = [ I.values ];
+			} else { // json
+				I.keys = Object.keys( I.values );
+				I.values = Object.values( I.values );
+			}
+		}
+	}
+	if ( ! ( 'values' in I ) ) I.values = [ '' ];
+	// fix: narrow screen scroll
+	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
+	
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
 	<div id="infoTopBg">
 		<div id="infoTop"><i id="infoIcon"></i><a id="infoTitle"></a></div>${ ico( 'close', 'infoX' ) }
 	</div>
 	<div id="infoContent"></div>
-	<div id="infoButtons"></div>
+	<div id="infoButton"></div>
 </div>
 ` );
+	$infocontent = $( '#infoContent' );
 	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 	// title
@@ -238,18 +350,14 @@ function info( json ) {
 	}
 	var title = I.title || 'Information';
 	$( '#infoTitle' ).html( title );
-	
 	// buttons
 	var htmlbutton = '';
 	if ( I.button ) {
-		if ( typeof I.button !== 'object' ) I.button = [ I.button ];
-		if ( typeof I.buttonlabel !== 'object' ) I.buttonlabel = [ I.buttonlabel ];
-		if ( 'buttoncolor' in I && typeof I.buttoncolor !== 'object' ) I.buttoncolor = [ I.buttoncolor ];
-		var iL = I.button.length;
-		for ( i = 0; i < iL; i++ ) {
+		[ 'button', 'buttonlabel', 'buttoncolor' ].forEach( k => infoKey2array( k ) );
+		I.button.forEach( ( fn, i ) => {
 			htmlbutton += I.buttoncolor ? '<a style="background-color:'+ I.buttoncolor[ i ] +'"' : '<a';
 			htmlbutton += ' class="infobtn extrabtn infobtn-primary">'+ I.buttonlabel[ i ] +'</a>';
-		}
+		} );
 	}
 	if ( I.cancelshow || I.cancellabel || I.cancelcolor ) {
 		var color   = I.cancelcolor ? ' style="background-color:'+ I.cancelcolor +'"' : '';
@@ -260,15 +368,14 @@ function info( json ) {
 		htmlbutton += '<a id="infoOk"'+ color +' class="infobtn infobtn-primary">'+ ( I.oklabel || 'OK' ) +'</a>';
 	}
 	if ( htmlbutton ) {
-		$( '#infoButtons' )
+		$( '#infoButton' )
 			.html( htmlbutton )
 			.removeClass( 'hide' );
 	} else {
-		$( '#infoButtons' ).remove();
+		$( '#infoButton' ).remove();
 	}
 	if ( I.button ) {
-		if ( typeof I.button !== 'object' ) I.button = [ I.button ];
-		$( '#infoButtons' ).on( 'click', '.extrabtn', function() {
+		$( '#infoButton' ).on( 'click', '.extrabtn', function() {
 			var buttonfn = I.button[ $( this ).index( '.extrabtn' ) ];
 			infoButtonCommand( buttonfn );
 		} );
@@ -282,7 +389,7 @@ function info( json ) {
 				: $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
 		}
 	} );
-	$( '#infoOk' ).on( 'click', function() {
+	$( '#infoOk' ).click( function() {
 		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
 			infoButtonCommand( I.ok );
 		} else {
@@ -291,7 +398,7 @@ function info( json ) {
 				: infoButtonCommand( I.ok );
 		}
 	} );
-	if ( I.fileoklabel ) {
+	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
 					  +'<code id="infoFilename" class="hide"></code>'
 					  +'<input type="file" class="hide" id="infoFileBox"'
@@ -299,7 +406,7 @@ function info( json ) {
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
 					  + ( I.filelabel || ico( 'folder-open' ) +'File' ) +'</a>';
-		$( '#infoButtons' ).prepend( htmlfile )
+		$( '#infoButton' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )
 			.addClass( 'hide' );
@@ -328,8 +435,8 @@ function info( json ) {
 										 +'<tr><td>File not :</td><td><code>'+ I.filetype +'</code></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
-				$( '#infoButtons' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
-				$( '#infoButtons' ).one( 'click', '.btntemp', function() {
+				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );
+				$( '#infoButton' ).one( 'click', '.btntemp', function() {
 					$( '#infoContent' ).html( htmlprev );
 					infoSetValues();
 					$( this ).remove();
@@ -346,22 +453,22 @@ function info( json ) {
 			}
 		} );
 	}
-	
+	// tab
 	if ( I.tab ) {
-		$( '#infoTab' ).remove();
 		htmltab      = '<div id="infoTab">';
-		I.tab.forEach( lbl => htmltab += '<a>'+ lbl +'</a>' );
+		I.tablabel.forEach( ( lbl, i ) => {
+			var active = I.tab[ i ] ? '' : 'class="active"';
+			htmltab += '<a '+ active +'>'+ lbl +'</a>';
+		} );
 		htmltab += '</div>';
 		$( '#infoTopBg' ).after( htmltab );
 		$( '#infoTab a' ).click( function() {
-			if ( ! $( this ).hasClass( 'active' ) ) I.tabfunction[ $( this ).index() ]();
+			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
-		$( '#infoTab a' )
-			.css( 'width', 100 / I.tab.length +'%' )
-			.eq( I.tabactive ).addClass( 'active' );
+		$( '#infoTab a' ).css( 'width', 100 / I.tablabel.length +'%' );
 	}
-	if ( I.content ) {
-		// custom html content
+	
+	if ( I.content ) { // custom html content
 		var htmlcontent = I.content;
 	} else {
 		var htmls = {}
@@ -377,45 +484,65 @@ function info( json ) {
 		}
 		// inputs html ///////////////////////////////////////////////////////////
 		if ( I.textlabel ) {
-			if ( typeof I.textlabel !== 'object' ) I.textlabel = [ I.textlabel ];
+			infoKey2array( 'textlabel' );
 			htmls.text      = '';
 			I.textlabel.forEach( lbl => htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
 		}
+		if ( I.numberlabel ) {
+			infoKey2array( 'numberlabel' );
+			htmls.number    = '';
+			I.numberlabel.forEach( lbl => htmls.number += '<tr><td>'+ lbl +'</td><td><input type="number"></td></tr>' );
+		}
 		if ( I.passwordlabel ) {
-			if ( typeof I.passwordlabel !== 'object' ) I.passwordlabel = [ I.passwordlabel ];
+			infoKey2array( 'passwordlabel' );
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td><td>'+ ico( 'eye' ) +'</td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
 		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
-		if ( I.radio ) { // single set only
-			var line;
-			var i       = 0;
-			htmls.radio = '';
-			$.each( I.radio, ( k, v ) => {
-				line = '<td>'+ ( k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '' ) +'</td>';
-				if ( ! I.radiocolumn ) {
-					htmls.radio += '<tr>'+ td0 + line +'</tr>';
-				} else {
-					i++
-					if ( i % 2 ) {
-						htmls.radio += '<tr>'+ td0 + line;
-						return
-					} else {
-						htmls.radio += line +'</tr>';
-					}
+		if ( I.radio ) {
+			infoKey2array( 'radio' );
+			I.radio.forEach( radio => {
+				if ( Array.isArray( radio ) ) {
+					var kv = {}
+					radio.forEach( v => kv[ v ] = v );
+					radio = kv;
 				}
+				var line;
+				var i       = 0;
+				htmls.radio = '';
+				$.each( radio, ( k, v ) => {
+					line = '<td>'+ ( k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '' ) +'</td>';
+					if ( ! I.radiocolumn ) {
+						htmls.radio += '<tr>'+ td0 + line +'</tr>';
+					} else {
+						i++
+						if ( i % 2 ) {
+							htmls.radio += '<tr>'+ td0 + line;
+							return
+						} else {
+							htmls.radio += line +'</tr>';
+						}
+					}
+				} );
 			} );
-			if ( ! I.values ) I.values = [ '' ];
 		}
 		if ( I.checkbox ) {
-			var line;
+			infoKey2array( 'checkbox' );
+			var isstring   = typeof I.checkbox[ 0 ] === 'string';
+			var line, lbl, val;
 			var i          = 0;
 			htmls.checkbox = '';
-			I.checkbox.forEach( lbl => {
-				line = '<td>'+ ( lbl ? '<label><input type="checkbox">'+ lbl +'</label>' : '' ) +'</td>';
+			$.each( I.checkbox, ( k, v ) => { // i, k
+				if ( isstring ) {
+					lbl = v;
+				} else {
+					lbl = k;
+					val = 'value="'+ v +'"';
+				}
+				line = '<td>'+ ( lbl ? '<label><input type="checkbox" '+ val +'>'+ lbl +'</label>' : '' ) +'</td>';
 				if ( ! I.checkcolumn ) {
 					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
 				} else {
@@ -430,34 +557,45 @@ function info( json ) {
 			} );
 		}
 		if ( I.select ) {
-			if ( typeof I.select !== 'object' ) {
-				htmls.select      = I.select;
-			} else {
-				htmls.select      = '<tr><td>'+ I.selectlabel +'</td><td><select>';
-				$.each( I.select, ( k, v ) => htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
-			}
-			htmls.select += '</select></td></tr>';
+			infoKey2array( 'select' );
+			infoKey2array( 'selectlabel' );
+			htmls.select = '';
+			I.select.forEach( ( el, i ) => {
+				htmls.select += '<tr><td>'+ I.selectlabel[ i ] +'</td><td><select>';
+				if ( typeof el !== 'object' ) {     // html
+					htmls.select += el;
+				} else if ( Array.isArray( el ) ) { // name = value
+					el.forEach( v => htmls.select += '<option value="'+ v +'">'+ v +'</option>' );
+				} else {                            // json
+					$.each( el, ( k, v ) => htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
+				}
+				htmls.select += '</select></td></tr>';
+			} );
 		}
 		if ( I.rangelabel ) {
+			infoKey2array( 'rangelabel' );
 			htmls.range = '<div id="infoRange">'
-						 +'<div class="name">'+ I.rangelabel +'</div>'
-						 +'<div class="value gr"></div>'
-						 +'<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>'
-						 + ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
-						 +'</div>';
+			I.rangelabel.forEach( range => {
+				htmls.range += '<div class="name">'+ I.rangelabel +'</div>'
+							  +'<div class="value gr"></div>'
+							  +'<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>'
+							  + ( I.rangesub ? '<div class="sub gr">'+ I.rangesub +'</div>' : '' )
+			} );
+			htmls.range += '</div>';
 		}
 		var htmlcontent = '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
-		if ( ! I.order ) I.order = [ 'text', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range', 'footer' ];
+		if ( ! I.order ) I.order = [ 'text', 'number', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
 		var htmlinputs  = '';
 		I.order.forEach( type => {
 			if ( type in htmls ) htmlinputs += htmls[ type ];
 		} );
 		if ( htmlinputs ) htmlcontent += '<table>'+ htmlinputs +'</table>';
+		htmlcontent    += htmls.footer || '';
 	}
 	if ( ! htmlcontent ) {
-		$( '#infoButtons' ).css( 'padding', '0 0 20px 0' );
+		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		infoButtonWidth();
 		return
@@ -467,12 +605,13 @@ function info( json ) {
 	if ( I.confirm ) $( '#infoContent' ).after( '<div id="infoConfirm" class="infomessage hide">'+ I.confirm +'</div>' );
 	
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
+		
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
 		// get all input fields
-		$inputs_txt = $( '#infoContent' ).find( 'input:text, input:password, textarea' );
-		var $input  = $( '#infoContent' ).find( 'input, select, textarea' );
+		$inputbox = $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea' );
+		$input    = $( '#infoContent' ).find( 'input, select, textarea' );
 		var name, nameprev;
-		I.inputs    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
+		$input    = $input.filter( ( i, el ) => { // filter each radio per group ( multiple inputs with same name )
 			name = el.name;
 			if ( ! name ) {
 				return true
@@ -482,12 +621,12 @@ function info( json ) {
 			}
 		} );
 		// assign values
-		if ( 'values' in I && I.values !== '' ) infoSetValues();
+		infoSetValues();
 		
 		$( '#infoOverlay' ).removeClass( 'hide' );
-		I.hidden = false;
+		I.active = true;
 		if ( 'focus' in I ) {
-			$( '#infoContent' ).find( 'input:text, input:password').eq( I.focus ).focus();
+			$inputbox.eq( I.focus ).focus();
 		} else {
 			$( '#infoOverlay' ).focus();
 		}
@@ -503,7 +642,7 @@ function info( json ) {
 		} else {
 			I.boxW = 230;
 		}
-		$( '#infoContent' ).find( 'input:text, input:password, textarea, select' ).parent().css( 'width', I.boxW );
+		$( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
 		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
 		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
 			var $td1st = $( '#infoContent td:first-child' );
@@ -513,7 +652,7 @@ function info( json ) {
 				, 'text-align'   : input ? '' : 'right'   // text label
 			} ); 
 		}
-		if ( ( I.messagealign || I.footeralign ) && $( '#infoContent table' ) ) {
+		if ( ( I.messagealign || I.footeralign ) && htmlinputs ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
@@ -524,6 +663,7 @@ function info( json ) {
 		}
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
+		$( '#infoContent input:password' ).parent().after( '<td>'+ ico( 'eye' ) +'</td>' );
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 	} );
 	$( '#infoContent .i-eye' ).click( function() {
@@ -539,12 +679,18 @@ function info( json ) {
 	} );
 	// check inputs: blank / length / change
 	if ( I.checkblank ) {
-		if ( typeof I.checkblank !== 'object' ) I.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
+		if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+		infoKey2array( 'checkblank' );
 		infoCheckBlank();
 	} else {
 		I.blank = false;
 	}
-	I.checkip ? infoCheckIP() : I.notip = false;
+	if ( I.checkip ) {
+		infoKey2array( 'checkip' );
+		infoCheckIP();
+	} else {
+		I.notip = false;
+	}
 	I.checklength  ? infoCheckLength() : I.short = false;
 	I.nochange = I.values && I.checkchanged ? true : false;
 	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
@@ -554,14 +700,14 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( ! V.local && I.oknoreset ) return // consecutive info / no reset
+	if ( V.consolelog || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
 	
 	if ( I.oknoreset ) {
 		$( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
 		return
 	}
 	
-	I = { hidden: true }
+	I = { active: false }
 	$( '#infoOverlay' )
 		.addClass( 'hide' )
 		.removeAttr( 'style' )
@@ -571,10 +717,10 @@ function infoButtonCommand( fn, cancel ) {
 function infoButtonWidth() {
 	if ( I.buttonfit ) return
 	
-	var $buttonhide = $( '#infoButtons a.hide' );
+	var $buttonhide = $( '#infoButton a.hide' );
 	$buttonhide.removeClass( 'hide' );
 	var widest = 0;
-	$( '#infoButtons a' ).each( ( i, el ) => {
+	$( '#infoButton a' ).each( ( i, el ) => {
 		var w = $( el ).outerWidth();
 		if ( w > widest ) widest = w;
 	} );
@@ -584,27 +730,25 @@ function infoButtonWidth() {
 function infoCheckBlank() {
 	if ( ! I.checkblank ) return // suppress error on repeating
 	
-	I.blank = I.checkblank.some( i => $inputs_txt.eq( i ).val().trim() === '' );
+	I.blank = I.checkblank.some( i => $inputbox.eq( i ).val().trim() === '' );
 }
 function infoCheckIP() {
-	if ( ! I.checkip ) return
-	
 	var regex = /^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$/; // https://stackoverflow.com/a/36760050
 	I.notip = I.checkip.some( i => {
-		return ! regex.test( $inputs_txt.eq( i ).val() );
+		return ! regex.test( $inputbox.eq( i ).val() );
 	} );
 }
 function infoCheckLength() {
 	I.short = false;
 	$.each( I.checklength, ( k, v ) => {
-		if ( typeof v !== 'object' ) {
+		if ( ! Array.isArray( v ) ) {
 			var L    = v
 			var cond = 'equal';
 		} else {
 			var L    = v[ 0 ];
 			var cond = v[ 1 ];
 		}
-		var diff = I.inputs.eq( k ).val().trim().length - L;
+		var diff = $input.eq( k ).val().trim().length - L;
 		if ( ( cond === 'equal' && diff !== 0 ) || ( cond === 'min' && diff < 0 ) || ( cond === 'max' && diff > 0 ) ) {
 			I.short = true;
 			return false
@@ -613,15 +757,13 @@ function infoCheckLength() {
 }
 function infoCheckSet() {
 	if ( I.checkblank || I.checkip || I.checklength || I.checkchanged ) {
-		$inputs_txt.on( 'keyup paste cut', function() {
+		$inputbox.on( 'keyup paste cut', function() {
 			if ( I.checkblank ) setTimeout( infoCheckBlank, 0 ); // ios: wait for value
 			if ( I.checklength ) setTimeout( infoCheckLength, 25 );
 			if ( I.checkip ) setTimeout( infoCheckIP, 50 );
 			if ( I.checkchanged ) {
-				var prevval = I.values.join( '' );
-				var values  = infoVal();
-				var val     = I.values.length > 1 ? values.join( '' ) : values; // single value cannot be joined
-				I.nochange  = prevval === val;
+				var values  = infoVal( 'array' );
+				I.nochange  = I.values.join( '' ) === values.join( '' );
 			}
 			setTimeout( () => {
 				$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange )
@@ -630,7 +772,7 @@ function infoCheckSet() {
 	}
 	if ( I.checkchanged ) {
 		$( '#infoContent' ).find( 'input:radio, input:checkbox, select' ).on( 'change', function() {
-			var values = I.values.length > 1 ? infoVal() : [ infoVal() ];
+			var values = infoVal( 'array' );
 			I.nochange = I.values.join( '' ) === values.join( '' );
 			$( '#infoOk' ).toggleClass( 'disabled', I.nochange );
 		} );
@@ -754,15 +896,26 @@ function infoFileImageResize( ext, imgW, imgH ) {
 		}
 	}
 }
+function infoKey2array( key ) {
+	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
+}
 function infoSetValues() {
-	if ( typeof I.values !== 'object' ) I.values = [ I.values ];
+	if ( ! I.values ) {
+		$( '#infoContent input:radio' ).eq( 0 ).prop( 'checked', true );
+		return
+	}
+	
 	var $this, type, val;
-	I.inputs.each( ( i, el ) => {
+	$input.each( ( i, el ) => {
 		$this = $( el );
 		type  = $this.prop( 'type' );
 		val   = I.values[ i ];
 		if ( type === 'radio' ) { // reselect radio by name
-			$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
+			if ( val ) {
+				$( '#infoContent input:radio[name='+ el.name +']' ).val( [ val ] );
+			} else {
+				$( '#infoContent input:radio' ).eq( 0 ).prop( 'checked', true );
+			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
 		} else { // text, password, textarea, select, range
@@ -771,25 +924,26 @@ function infoSetValues() {
 		}
 	} );
 }
-function infoVal() {
+function infoVal( format ) {
+	var $this, type, name, val;
 	var values = [];
-	var $this, type, name, val, n;
-	var i      = 0;
-	I.textarea = false;
-	I.inputs.each( ( i, el ) => {
+	$input.each( ( i, el ) => {
 		$this = $( el );
 		type  = $this.prop( 'type' );
-		val   = '';
 		switch ( type ) {
 			case 'radio': // radio has only single checked - skip unchecked inputs
 				val = $( '#infoContent input:radio[name='+ el.name +']:checked' ).val();
-				if ( val === 'true' ) { val = true; } else if ( val === 'false' ) { val = false; }
+				if ( val === 'true' ) {
+					val = true;
+				} else if ( val === 'false' ) {
+					val = false;
+				}
 				break;
 			case 'checkbox':
 				val = $this.prop( 'checked' );
+				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
 				break;
 			case 'textarea':
-				I.textarea = true;
 				val = $this.val().trim().replace( /\n/g, '\\n' );
 				break;
 			case 'password':
@@ -803,11 +957,46 @@ function infoVal() {
 		}
 		values.push( val );
 	} );
-	if ( values.length > 1 ) {
-		return values
-	} else {
-		return values[ 0 ]
+	if ( ! I.keys || format ) {
+		if ( format === 'array' ) {
+			return values
+		} else if ( format === 'json' ) {
+			var val = {}
+			I.keys.forEach( ( k, i ) => val[ k ] = values[ i ] );
+			return val
+		} else {
+			return values.length > 1 ? values : values[ 0 ] // single value as string
+		}
 	}
+	
+	// bash - [ "k='val'", ... ]
+	var val = [];
+	I.keys.forEach( ( k, i ) => {
+		var v           = values[ i ];
+		if ( typeof v !== 'string' ) {
+			if ( v === false ) v = '';
+			val.push( k +'='+ v );
+			return
+		}
+		
+		var singlequote = v.indexOf( "'" ) > 0;
+		var doublequote = v.indexOf( '"' ) > 0;
+		var space       = v.indexOf( ' ' ) > 0;
+		if ( ! singlequote && ! doublequote && ! space ) {
+			val.push( k +'='+ v );
+			return
+		}
+		
+		if ( singlequote && doublequote ) {
+			v = v.replace( /'/g, '\'"\'"\'' ); // escape single quotes: ' > '"'"'
+			val.push( k +"='"+ v +"'" );
+		} else if ( singlequote ) {
+			val.push( k +'="'+ v + '"' );
+		} else {
+			val.push( k +"='"+ v + "'" );
+		}
+	} );
+	return val
 }
 function infoVerifyPassword( title, pwd, fn ) { // verify password - called from addons.js
 	if ( ! title ) return
@@ -829,38 +1018,14 @@ function infoVerifyPassword( title, pwd, fn ) { // verify password - called from
 		}
 	} );
 }
-
-$( '#infoOverlay' ).keyup( function( e ) {
-/*
-all:      [Tab]       - focus / next input
-		  [Shift+Tab] - previous input
-radio:    [L] [R]     - check
-checkbox: [space]     - check
-select:   [U] [D]     - check
-*/
-	var key = e.key;
-	switch ( key ) {
-		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
-			break;
-		case 'Escape':
-			local(); // prevent toggle setting menu
-			$( '#infoX' ).click();
-			break;
-		case 'ArrowLeft':
-		case 'ArrowRight':
-			var $tabactive = $( '#infoTab a.active' );
-			if ( key === 'ArrowLeft' ) {
-				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
-			} else {
-				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
-			}
-			break;
-	}
-} );
-$( '#infoContent' ).click( function() {
-	$( '.infobtn, .filebtn' ).removeClass( 'active' );
-} );
+function string2number( v ) { // return number - '1.23' > 1.23 / quoted string - '000123' > '"000123"'
+	if ( ( v !== '0' && v[ 0 ] === '0' && ( v[ 1 ] !== '.' || ! v[ 2 ] ) )
+		|| isNaN( parseFloat( v ) )
+		|| isNaN( v - 0 )
+	) return '"'+ v +'"'
+	
+	return Number( v )
+}
 
 // common info functions --------------------------------------------------
 function infoPower() {
@@ -916,39 +1081,6 @@ function loaderHide() {
 function local( delay ) {
 	V.local = true;
 	setTimeout( () => V.local = false, delay || 300 );
-}
-
-// ----------------------------------------------------------------------
-/*
-$( ELEMENT ).press( DELEGATE, function( TARGET ) {
-	ELEMENT  : #id or .class
-	DELEGATE : optional > use TARGET for this
-	.on      : cannot be attached with .on
-} );
-events:
-	- move  : mouseenter > mousemove > mouseleave > mouseout
-	- click : mousedown  > mouseup   > click
-	- touch : touchstart > touchmove > touchend
-*/
-$.fn.press = function( arg1, arg2 ) {
-	var callback, delegate, timeout;
-	if ( ! arg2 ) {
-		delegate = '';
-		callback = arg1;
-	} else {
-		delegate = arg1;
-		callback = arg2;
-	}
-	this.on( 'touchstart mousedown', delegate, function( e ) {
-		timeout = setTimeout( () => {
-			V.press = true;
-			callback( delegate ? this : e );
-		}, 1000 );
-	} ).on( 'touchend mouseup mouseleave', delegate, function() {
-		clearTimeout( timeout );
-		setTimeout( () => V.press = false, 300 ); // needed for mouse events
-	} );
-	return this // allow chain
 }
 
 // pushstream -----------------------------------------------------------------

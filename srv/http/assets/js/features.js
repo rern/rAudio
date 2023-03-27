@@ -1,5 +1,33 @@
+var default_v      = {
+	  autoplay  : { bluetooth: true, cd: true, startup: true }
+	, stoptimer : { min: '', poweroff: false }
+}
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.screenshot' ).click( function() {
+	info( {
+		  icon        : 'spotify'
+		, title       : 'Spotify for Developers'
+		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
+		, okno        : true
+	} );
+} );
+$( '#setting-snapclient' ).click( function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, message      : 'Sync SnapClient with SnapServer:'
+		, numberlabel  : 'Latency <gr>(ms)</gr>'
+		, focus        : 0
+		, checkblank   : true
+		, values       : S.snapclientconf
+		, boxwidth     : 100
+		, checkchanged : S.snapclient
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
+} );
 $( '#setting-spotifyd' ).click( function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
@@ -55,40 +83,12 @@ $( '#setting-spotifyd' ).click( function() {
 		} );
 	}
 } );
-$( '.screenshot' ).click( function() {
-	info( {
-		  icon        : 'spotify'
-		, title       : 'Spotify for Developers'
-		, message     : '<img src="/assets/img/spotify.gif" style="width: 100%; height: auto; margin-bottom: 0;">'
-		, okno        : 1
-	} );
-} );
-$( '#setting-snapclient' ).click( function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, message      : 'Sync SnapClient with SnapServer:'
-		, textlabel    : 'Latency <gr>(ms)</gr>'
-		, focus        : 0
-		, checkblank   : 1
-		, values       : S.snapcastconf
-		, boxwidth     : 100
-		, checkchanged : S.snapclient
-		, beforeshow   : () => {
-			$( '#infoContent input' ).eq( 0 ).on( 'keyup paste', function() {
-				$( this ).val( $( this ).val().replace( /[^0-9]/, '' ) );
-			} );
-		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
 $( '#setting-upmpdcli' ).click( function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Clear Playlist on start' ]
-		, values       : [ S.upmpdcliownqueue ]
+		, values       : S.upmpdcliconf
 		, checkchanged : S.upmpdcli
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -100,9 +100,9 @@ $( '#setting-camilladsp' ).click( function() {
 		, title        : SW.title
 		, textlabel    : 'VU refresh rate <gr>(ms)</gr>'
 		, focus        : 0
-		, checkblank   : 1
+		, checkblank   : true
 		, boxwidth     : 100
-		, values       : S.camillarefresh
+		, values       : S.camillaconf
 		, checkchanged : S.camilladsp
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -116,27 +116,26 @@ $( '#setting-hostapd' ).click( function() {
 		, textlabel    : [ 'IP', 'Password' ]
 		, values       : S.hostapdconf
 		, checkchanged : S.hostapd
-		, checkblank   : 1
+		, checkblank   : true
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
 $( '#setting-autoplay' ).click( function() {
-	var val  = S.autoplayconf[ 0 ] || S.autoplayconf[ 1 ] || S.autoplayconf[ 2 ];
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
-		, values       : val ? S.autoplayconf : [ false, false, true ]
+		, values       : S.autoplayconf || default_v.autoplay
 		, checkchanged : S.autoplay
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
-	var val            = S.localbrowserconf;
-	var htmlbrightness = val.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var htmlbrightness = S.localbrowserconf.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
 	var content        = `
 <table>
 <tr><td style="width:130px">Rotation</td>
@@ -163,11 +162,11 @@ $( '#setting-localbrowser' ).click( function() {
 		<option value="15">15</option>
 		</select>
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
-<tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while playing</label></td></tr>
+<tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
 <tr style="height: 10px"></tr>
 </table>
-${ htmlbrightness }
+<div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
 <div class="btnbottom">
 	&nbsp;<span class="reload">Reload${ ico( 'redo' ) }</span>
 	<span class="screenoff">${ ico( 'screenoff' ) }On/Off</span>
@@ -177,11 +176,11 @@ ${ htmlbrightness }
 		, title        : SW.title
 		, content      : content
 		, boxwidth     : 110
-		, values       : [ val.rotate, val.zoom, val.cursor, val.screenoff, val.onwhileplay, S.hdmi, val.brightness ]
+		, values       : S.localbrowserconf
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
-			$( '#onwhileplay' ).prop( 'disabled', val.screenoff === 0 );
+			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.screenoff === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent .btnicon' ).click( function() {
 				var up   = $( this ).hasClass( 'up' );
@@ -204,16 +203,19 @@ ${ htmlbrightness }
 			$( '.screenoff' ).click( function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
-			if ( val.brightness ) {
+			if ( S.brightness ) {
 				$( '#infoRange input' ).on( 'click input keyup', function() {
 					bash( 'echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( 'echo '+ $( this ).val() +' > /srv/http/data/system/brightness' );
 				} );
+			} else {
+				$( '#infoRange' ).remove();
 			}
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#setting-smb' ).click( function() {
@@ -238,40 +240,61 @@ $( '#setting-multiraudio' ).click( function() {
 					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ ipsub +'" spellcheck="false"></td>'
 					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
-	var dataL = S.multiraudioconf.length;
-	if ( dataL ) {
-		var iL = dataL / 2 - 1;
+	
+	if ( S.multiraudioconf ) {
+		var values = [];
+		$.each( S.multiraudioconf, ( k, v ) => values.push( k, v ) );
+		var iL = values.length / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
-		S.multiraudioconf = [ "rAudio", location.host ];
+		values = [ S.hostip, S.hostname ];
 	}
+	var check = infoCheckEvenOdd( values );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : '<table>'+ content +'</table>'
-		, values       : S.multiraudioconf
+		, values       : values || [ "rAudio", location.host ]
 		, checkchanged : S.multiraudio
-		, checkblank   : 1
-		, checkip      : [ ...Array( S.multiraudioconf.length ).keys() ].filter( n => n % 2 )
+		, checkblank   : check.blank
+		, checkip      : check.ip
 		, beforeshow   : () => {
+			$( '#infoContent input' ).each( ( i, el ) => {
+				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
+			} );
 			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent' ).on( 'click', 'i', function() {
 				var $this = $( this );
 				if ( $this.hasClass( 'ipadd' ) ) {
-					$( '#infoContent tr:last' ).after( trhtml );
+					$( '#infoContent table' ).append( trhtml );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
-				$inputs_txt  = $( '#infoContent input' );
-				I.inputs     = $inputs_txt;
-				I.checkblank = [ ...Array( $inputs_txt.length ).keys() ];
-				I.checkip    = I.checkblank.filter( n => n % 2 );
+				$inputbox    = $( '#infoContent input' );
+				$input       = $inputbox;
+				check        = infoCheckEvenOdd( $inputbox.length );
+				I.checkblank = check.blank;
+				I.checkip    = check.ip;
 				infoCheckSet();
 			} );
 		}
 		, cancel       : switchCancel
 		, ok           : () => {
-			switchEnable();
+			var v = infoVal();
+			if ( v.length < 3 ) {
+				bash( [ 'multiraudio', false, 'removeconf' ] );
+				switchDisable();
+				return
+			}
+			
+			var data = '';
+			v.forEach( ( el, i ) => {
+				i % 2 ? data += '"'+ el +'"' : data += ',"'+ el +'":'
+			} );
+			data = '{'+ data.slice( 1 ) +'}';
+			bash( [ 'multiraudio', 'enable=true', data ] );
+			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
+			S[ SW.id ] = true;
 		}
 	} );
 } );
@@ -285,7 +308,7 @@ $( '#login' ).click( function() {
 			, message       : 'Disable:'
 			, passwordlabel : 'Password'
 			, focus         : 0
-			, checkblank    : 1
+			, checkblank    : true
 			, cancel        : switchCancel
 			, ok            : () => {
 				notify( SW.icon, SW.title, 'Disable ...' );
@@ -307,7 +330,7 @@ $( '#setting-login' ).click( function() {
 		, message       : ( S.login ? 'Change password:' : 'New setup:' )
 		, passwordlabel : ( S.login ? [ 'Existing', 'New' ] : 'Password' )
 		, focus         : 0
-		, checkblank    : 1
+		, checkblank    : true
 		, cancel        : switchCancel
 		, ok            : () => {
 			var values = infoVal();
@@ -353,10 +376,8 @@ $( '#setting-scrobble' ).click( function() {
 		, values       : S.scrobbleconf
 		, checkchanged : S.scrobble
 		, cancel       : switchCancel
-		, ok           : () => {
-			bash( [ 'scrobble', true, ...infoVal() ] );
-			notify( SW.icon, SW.title, S.scrobble ? 'Change ...' : 'Enable ...' );
-		}
+		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#nfsserver' ).click( function() {
@@ -381,7 +402,7 @@ $( '#nfsserver' ).click( function() {
 			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
-				bash( [ 'nfsserver', ! S.nfsserver ] );
+				bash( [ 'nfsserver', 'active='+ ( S.nfsserver ? '' : true ) ] ); // inversed t/f
 				notify( SW.icon, SW.title, S.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
 		} );
@@ -391,27 +412,28 @@ $( '#setting-stoptimer' ).click( function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, radio        : { Disable: 'false', '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
+		, radio        : { '5 minutes': 5, '15 minutes': 15, '30 minutes': 30, '60 minutes': 60 }
 		, checkbox     : [ 'Power off on stop' ]
-		, values       : S.stoptimerconf || [ false, false ]
+		, values       : S.stoptimerconf || default_v.stoptimer
 		, checkchanged : S.stoptimer
 		, beforeshow   : () => {
-			var $poweroff = $( '#infoContent input:checkbox' );
-			$poweroff.prop( 'disabled', ! S.stoptimerconf[ 1 ] );
 			$( '#infoContent tr:last' ).css( 'height', '60px' );
-			$( '#infoContent input:radio' ).change( function() {
-				var valfalse = $( this ).val() === 'false';
-				if ( valfalse ) $poweroff.prop( 'checked', false );
-				$poweroff.prop( 'disabled', valfalse );
-			} );
 		}
 		, cancel       : switchCancel
 		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 
 } );
 
+function infoCheckEvenOdd( length ) {
+	var check   = {}
+	check.blank = [];
+	check.ip    = [];
+	for ( i = 0; i < length; i++ ) i % 2 ? check.ip.push( i ) : check.blank.push( i );
+	return check
+}
 function passwordWrong() {
 	bannerHide();
 	info( {
@@ -437,7 +459,7 @@ function renderPage() {
 	$( '#nfsserver' )
 		.toggleClass( 'disabled', S.nfsconnected || S.shareddata || S.smb )
 		.prev().html( disablednfs );
-	$( '#stoptimer' ).toggleClass( 'disabled', S.state !== 'play' );
+	$( '#stoptimer' ).toggleClass( 'disabled', ! S.stoptimer && S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );
 	} else {
@@ -457,7 +479,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobblekeyget', token ], function( error ) {
+		bash( [ 'scrobblekeyget', 'token='+ token ], function( error ) {
 			if ( error ) {
 				info( {
 					  icon    : 'scrobble'
@@ -471,7 +493,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', code ], () => showContent );
+		bash( [ 'spotifytoken', 'code='+ code ], () => showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

@@ -675,76 +675,92 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	} );
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }
-var chklibrary = {
-	  album          : ico( 'album' ) +'<gr>Album</gr>'
-		, nas        : ico( 'networks' ) +'<gr>Network</gr>'
-	, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
-		, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
-	, artist         : ico( 'artist' ) +'<gr>Artist</gr>'
-		, usb        : ico( 'usbdrive' ) +'<gr>USB</gr>'
-	, composer       : ico( 'composer' ) +'<gr>Composer</gr>'
-		, playlists  : ico( 'playlists' ) +'<gr>Playlists</gr>'
-	, conductor      : ico( 'conductor' ) +'<gr>Conductor</gr>'
-		, webradio   : ico( 'webradio' ) +'<gr>Web Radio</gr>'
-	, date           : ico( 'date' ) +'<gr>Date</gr>'
-		, '-'        : ''
-	, genre          : ico( 'genre' ) +'<gr>Genre</gr>'
-		, count      : 'Count'
-	, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
-		, label      : 'Label'
-}
-var chklibrary2 = {
-	  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
-	, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
-	, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
-	, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
-	, '-'            : ''
-	, backonleft     : ico( 'arrow-left' ) +'Back button on left side'
-	, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
-	, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
-}
-function infoLibrary( page ) {
-	var page2    = page === 2;
-	var checkbox = Object.values( page2 ? chklibrary2 : chklibrary );
-	var keys     = Object.keys( page2 ? chklibrary2 : chklibrary );
+function infoLibrary() {
+	var chk = {
+		  album          : ico( 'album' ) +'<gr>Album</gr>'
+			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
+		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
+			, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
+		, artist         : ico( 'artist' ) +'<gr>Artist</gr>'
+			, usb        : ico( 'usbdrive' ) +'<gr>USB</gr>'
+		, composer       : ico( 'composer' ) +'<gr>Composer</gr>'
+			, playlists  : ico( 'playlists' ) +'<gr>Playlists</gr>'
+		, conductor      : ico( 'conductor' ) +'<gr>Conductor</gr>'
+			, webradio   : ico( 'webradio' ) +'<gr>Web Radio</gr>'
+		, date           : ico( 'date' ) +'<gr>Date</gr>'
+			, '-'        : ''
+		, genre          : ico( 'genre' ) +'<gr>Genre</gr>'
+			, count      : 'Count'
+		, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
+			, label      : 'Label'
+	}
+	var checkbox = Object.values( chk );
+	var keys     = Object.keys( chk );
 	keys         = keys.filter( k => k !== '-' );
 	var values   = [];
 	keys.forEach( k => values.push( D[ k ] ) );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
-		, tab          : [ 'Show', 'Options' ]
-		, tabfunction  : [ infoLibrary, () => infoLibrary( 2 ) ]
-		, tabactive    : page2 ? 1 : 0
+		, tablabel     : [ 'Show', 'Options' ]
+		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
 		, checkbox     : checkbox
-		, checkcolumn  : page2 ? '' : 1
+		, checkcolumn  : true
 		, values       : values
-		, checkchanged : 1
+		, checkchanged : true
 		, beforeshow   : () => {
 			var $el  = {}
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
-			if ( page2 ) {
-				$( '.infomessage, #infoContent td' ).css( 'width', '296' );
-				$el.tapaddplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
-				} );
-				$el.tapreplaceplay.click( function() {
-					if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
-				} );
-				$el.hidecover.change( function() {
-					var enable = $( this ).prop( 'checked' ) ? false : true;
-					$el.fixedcover
-						.prop( 'disabled', ! enable )
-						.prop( 'checked', false );
-				} );
-				$el.fixedcover.prop( 'disabled', D.hidecover );
-			} else {
-				$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
-			}
+			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : () => displaySave( keys )
-		, oknoreset    : 1
+	} );
+}
+function infoLibraryOption() {
+	var chk = {
+		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
+		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
+		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
+		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
+		, '-'            : ''
+		, backonleft     : ico( 'arrow-left' ) +'Back button on left side'
+		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
+		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
+	}
+	var checkbox = Object.values( chk );
+	var keys     = Object.keys( chk );
+	keys         = keys.filter( k => k !== '-' );
+	var values   = [];
+	keys.forEach( k => values.push( D[ k ] ) );
+	info( {
+		  icon         : 'library'
+		, title        : 'Library'
+		, tablabel     : [ 'Show', 'Options' ]
+		, tab          : [ infoLibrary, '' ]
+		, messagealign : 'left'
+		, checkbox     : checkbox
+		, values       : values
+		, checkchanged : true
+		, beforeshow   : () => {
+			var $el  = {}
+			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
+			$( '.infomessage, #infoContent td' ).css( 'width', '296' );
+			$el.tapaddplay.click( function() {
+				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
+			} );
+			$el.tapreplaceplay.click( function() {
+				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
+			} );
+			$el.hidecover.change( function() {
+				var enable = $( this ).prop( 'checked' ) ? false : true;
+				$el.fixedcover
+					.prop( 'disabled', ! enable )
+					.prop( 'checked', false );
+			} );
+			$el.fixedcover.prop( 'disabled', D.hidecover );
+		}
+		, ok           : () => displaySave( keys )
 	} );
 }
 function infoUpdate( path ) {
@@ -1059,10 +1075,10 @@ function renderLibrary() { // home
 	} );
 	if ( D.label ) {
 		$( '#lib-mode-list a.label' ).show();
-		$( '.mode' ).removeClass( 'nolabel' );
+		$( '#lib-mode-list' ).removeClass( 'nolabel' );
 	} else {
 		$( '#lib-mode-list a.label' ).hide();
-		$( '.mode:not( .mode-bookmark )' ).addClass( 'nolabel' );
+		$( '#lib-mode-list' ).addClass( 'nolabel' );
 	}
 	$( '#lib-list' ).addClass( 'hide' );
 	$( '#lib-mode-list' )
@@ -1634,7 +1650,7 @@ function setPlaylistScroll() {
 	$( '#pl-list li' ).removeClass( 'active updn' );
 	$liactive = $( '#pl-list li' ).eq( S.song || 0 );
 	$liactive.addClass( 'active' );
-	if ( ! $( '.pl-remove' ).length && I.hidden ) {
+	if ( ! $( '.pl-remove' ).length && ! I.active ) {
 		if ( $( '#pl-list li' ).length < 5 ) {
 			var top = 0;
 		} else {

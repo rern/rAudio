@@ -7,7 +7,7 @@ dirimg=/srv/http/assets/img
 readarray -t args <<< $1
 
 equalizerAmixer() { # sudo - mixer equal is user dependent
-	player=$( < $dirshm/player )
+	local player=$( < $dirshm/player )
 	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
 	sudo -u $user amixer -MD equal contents \
 					| grep ': values' \
@@ -15,6 +15,7 @@ equalizerAmixer() { # sudo - mixer equal is user dependent
 					| xargs
 }
 equalizerGet() {
+	local val filepresets current presets lines l name nameval data
 	val=$( equalizerAmixer )
 	filepresets=$dirsystem/equalizer.presets
 	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
@@ -29,10 +30,10 @@ equalizerGet() {
 	[[ $current != '(unnamed)' ]] && presets+='"Flat"' || presets+='"(unnamed)","Flat"'
 	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | sort )
 	if [[ $lines ]]; then
-		for line in "${lines[@]}"; do
-			name=${line/^*}
+		for l in "${lines[@]}"; do
+			name=${l/^*}
 			presets+=',"'$name'"'
-			nameval+=',"'$name'":"'${line/*^}'"'
+			nameval+=',"'$name'":"'${l/*^}'"'
 		done
 	fi
 	data='{
@@ -60,6 +61,7 @@ plAddPosition() {
 	fi
 }
 plAddRandom() {
+	local tail dir mpcls cuefile plL range file diffcount
 	tail=$( plTail )
 	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
@@ -88,11 +90,13 @@ plAddRandom() {
 	(( $tail > 1 )) || plAddRandom
 }
 plTail() {
+	local total pos
 	total=$( mpc status %length% )
 	pos=$( mpc status %songpos% )
 	echo $(( total - pos ))
 }
 pushstreamPlaylist() {
+	local arg
 	[[ $1 ]] && arg=$1 || arg=current
 	pushstream playlist $( php /srv/http/mpdplaylist.php $arg )
 }
@@ -123,6 +127,7 @@ rotateSplash() {
 		$dirimg/splash.png
 }
 scrobbleOnStop() {
+	local elapsed
 	. $dirshm/scrobble
 	elapsed=$1
 	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ $Artist && $Title ]]; then
@@ -148,6 +153,7 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeGet() {
+	local mixersoftware card control
 	[[ -e $dirshm/btreceiver ]] && volumeGetBt && return
 	
 	[[ -e $dirshm/nosound ]] && echo -1 && return
@@ -170,6 +176,7 @@ volumeGet() {
 	fi
 }
 volumeGetBt() {
+	local control val
 	control=$( < $dirshm/btreceiver )
 	for i in {1..5}; do # takes some seconds to be ready
 		val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
@@ -178,6 +185,7 @@ volumeGetBt() {
 	done
 }
 volumeSet() {
+	local current target card control diff values
 	current=$1
 	target=$2
 	card=$3
@@ -199,6 +207,7 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
+	local target card control
 	target=$1
 	card=$2
 	control=$3
@@ -212,6 +221,7 @@ volumeSetAt() {
 	fi
 }
 webradioCopyBackup() {
+	local webradio
 	if [[ -e $dirbackup/webradio ]]; then
 		rm -rf $dirbackup/webradio
 		cp -r $dirwebradio $dirbackup
@@ -220,6 +230,7 @@ webradioCopyBackup() {
 	fi
 }
 webradioCount() {
+	local type count
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"'$type'","count":'$count'}'
@@ -227,6 +238,7 @@ webradioCount() {
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
 webradioPlaylistVerify() {
+	local ext url
 	ext=$1
 	url=$2
 	if [[ $ext == m3u ]]; then
@@ -237,6 +249,7 @@ webradioPlaylistVerify() {
 	[[ ! $url ]] && echo 'No valid URL found in:' && exit
 }
 webRadioSampling() {
+	local url file data samplerate bitrate sample kb rate
 	url=$1
 	file=$2
 	timeout 3 curl -sL $url -o /tmp/webradio

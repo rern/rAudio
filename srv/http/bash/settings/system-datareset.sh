@@ -120,9 +120,10 @@ if [[ -e /etc/systemd/system/localbrowser.service ]]; then
 	echo "\
 rotate=NORMAL
 zoom=100
+cursor=
 screenoff=0
-onwhileplay=false
-cursor=no" > $dirsystem/localbrowser.conf
+onwhileplay=
+hdmi=" > $dirsystem/localbrowser.conf
 	rm -rf /root/.config/chromium /root/.mozilla
 fi
 

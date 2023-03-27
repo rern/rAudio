@@ -155,16 +155,11 @@ fi
 filter='Album AlbumArtist Artist audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-mpdStatus() {
-	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep -E $filter )
-}
 songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
 (( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0 # mpd song    : start at 0
-mpdStatus "playlistinfo $song"
-
-readarray -t lines <<< $mpdtelnet
+readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
+								| telnet 127.0.0.1 6600 2> /dev/null \
+								| grep -E $filter )
 for line in "${lines[@]}"; do
 	key=${line/:*}
 	val=${line#*: }
