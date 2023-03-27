@@ -248,7 +248,9 @@ if [[ -e $dirshm/onboardwlan ]]; then
 	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
 		bluetoothon=true
 		bluetoothactive=$bluetooth
-		$bluetoothactive == true && discoverable=$( bluetoothctl show | grep -q -m1 'Discoverable: yes' && echo true )
+		if [[ $bluetoothactive == true ]]; then
+			bluetoothctl show | grep -q -m1 'Discoverable: yes' && discoverable=true || discoverable=false
+		fi
 	fi
 	format=$( exists $dirsystem/btformat )
 	bluetoothconf='{ "discoverable": '$discoverable', "format": '$format' }'
