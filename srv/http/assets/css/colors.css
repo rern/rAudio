@@ -12,6 +12,15 @@
 	--cg   : hsl(200,3%,30%);   /* gray */
 	--cga  : hsl(200,3%,20%);   /* gray-active */
 	--cgd  : hsl(200,3%,10%);   /* gray-dark */
+	
+	--shadow-btn    : -2px  2px 4px      #000;
+	--shadow-btn-u  : -2px -2px 4px      #000;
+	--shadow-bar    :  0    0   10px 4px #000;
+	--shadow-check  : -1px  1px 2px  1px #000;
+	--shadow-menu   :  4px  4px 10px     #000;
+	--shadow-menu-l : -4px  4px 10px     #000;
+	--shadow-menu-u : -4px -4px 10px     #000;
+	--shadow-text   : -1px  0   2px      #000;
 }
 
 bl,  .bl  { color : var( --cm ) !important }
