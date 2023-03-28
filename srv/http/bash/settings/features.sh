@@ -235,6 +235,7 @@ multiraudio )
 			sshCommand $ip << EOF
 echo "$conf" > $fileconf
 touch $dirsystem/multiraudio
+pushstream display '{"submenu":"multiraudio","value":true}'
 EOF
 		done
 	else
