@@ -2,7 +2,7 @@
 
 alias=r1
 
-. /srv/http/bash/addons.sh
+[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230310
 [[ ! -e $dirmpdconf/bluetooth.conf ]] && touch $dirsystem/btoutputonly
