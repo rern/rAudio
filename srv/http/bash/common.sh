@@ -105,7 +105,8 @@ data2json() {
 }
 dirPermissions() {
 	chown -R root:root /srv
-	chown -R mpd:audio $dirmpd $dirplaylists
+	chown mpd:audio $dirmpd $dirmpd/mpd.db
+	chown -R $dirplaylists
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R u+x $dirbash /srv/http/settings/camillagui/{backend,main.py}
 	[[ -L $dirshareddata ]] && dirPermissionsShared
