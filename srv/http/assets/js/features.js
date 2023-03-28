@@ -198,16 +198,17 @@ $( '#setting-localbrowser' ).click( function() {
 				}
 			} );
 			$( '.reload' ).click( function() {
-				bash( 'curl -s -X POST http://127.0.0.1/pub?id=reload -d 1' );
+				bash( [ 'localbrowserreload' ] );
 			} );
 			$( '.screenoff' ).click( function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
 			if ( S.brightness ) {
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( 'echo '+ $( this ).val() +' > /sys/class/backlight/rpi_backlight/brightness' );
+				var $range = $( '#infoRange input' );
+				$range.on( 'click input keyup', function() {
+					bash( 'echo '+ $range.val() +' > /sys/class/backlight/rpi_backlight/brightness' );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( 'echo '+ $( this ).val() +' > /srv/http/data/system/brightness' );
+					bash( 'echo '+ $range.val() +' > /srv/http/data/system/brightness' );
 				} );
 			} else {
 				$( '#infoRange' ).remove();
@@ -355,7 +356,7 @@ $( '#setting-scrobble' ).click( function() {
 			, message : 'Open <wh>Last.fm</wh> for authorization?'
 			, cancel  : switchCancel
 			, ok      : () => {
-				bash( 'grep apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2', function( apikey ) {
+				bash( [ 'lastfmkey' ], function( apikey ) {
 					var ip = location.host;
 					location.href = 'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler/?ip='+ ip
 				} );

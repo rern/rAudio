@@ -38,7 +38,7 @@ else
 	param="album=${Album//&/ and }"
 	method='method=album.getInfo'
 fi
-apikey=$( grep apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
+apikey=$( grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2 )
 data=$( curl -sfG -m 5 \
 	--data-urlencode "artist=$Artist" \
 	--data-urlencode "$param" \

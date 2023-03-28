@@ -137,6 +137,9 @@ httpd )
 	pushRefresh
 	$dirsettings/player-data.sh pushrefresh
 	;;
+lastfmkey )
+	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2
+	;;
 localbrowser )
 	if [[ $enable ]]; then
 		file=$dirsystem/localbrowser.conf
@@ -213,6 +216,9 @@ localbrowser )
 			localbrowserDisable
 		fi
 	fi
+	;;
+localbrowserreload )
+	pushstream reload 1
 	;;
 localbrowserxset )
 	localbrowserXset
@@ -314,7 +320,7 @@ screenofftoggle )
 	;;
 scrobblekeyget )
 	token=${token[1]:0:32}
-	keys=( $( grep -E 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
+	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]:0:32}
 	sharedsecret=${keys[1]:0:32}
 	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \

@@ -224,7 +224,6 @@ function bluetoothInfo( mac ) {
 	} );
 }
 function connectWiFi( bashvar, ip ) {
-	console.log(bashvar)
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
