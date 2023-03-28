@@ -127,7 +127,7 @@ getElapsed() {
 }
 getVar(){
 	line=$( grep -E "^${1// /|^}" $2 )
-	[[ $line != *=* ]] && line=$( sed 's/ \+/="/' <<< $line )
+	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
 	sed -E "s/.* *= *//; s/^[\"']|[\"']$//g; s/\"/\\\\\"/g" <<< $line
 }
 internetConnected() {
