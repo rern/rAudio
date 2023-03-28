@@ -821,6 +821,13 @@ input[type=number]:disabled {
 	outline: none;
 	opacity: 1;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+}
+input[type=number] {
+	-moz-appearance:textfield;
+}
 #infoPasswordBox {
 	margin-top: 0 !important;
 	outline: none;
