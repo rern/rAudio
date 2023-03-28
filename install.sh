@@ -3,6 +3,7 @@
 alias=r1
 
 #. /srv/http/bash/settings/addons.sh
+[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230324
 if ls $dirsystem/autoplay* 2> /dev/null; then
