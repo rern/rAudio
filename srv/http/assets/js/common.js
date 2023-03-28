@@ -979,20 +979,15 @@ function infoVal( format ) {
 			return
 		}
 		
-		var singlequote = v.indexOf( "'" ) > 0;
-		var doublequote = v.indexOf( '"' ) > 0;
-		var space       = v.indexOf( ' ' ) > 0;
-		if ( ! singlequote && ! doublequote && ! space ) {
+		var singlequote = v.includes( "'" );
+		var doublequote = v.includes( '"' );
+		var space       = v.includes( ' ' );
+		if ( ! singlequote && ! doublequote && ! space ) { //  v
 			val.push( k +'='+ v );
-			return
-		}
-		
-		if ( singlequote && doublequote ) {
-			v = v.replace( /'/g, '\'"\'"\'' ); // escape single quotes: ' > '"'"'
-			val.push( k +"='"+ v +"'" );
-		} else if ( singlequote ) {
-			val.push( k +'="'+ v + '"' );
-		} else {
+		} else if ( singlequote || doublequote ) {
+			v = v.replace( /"/g, '\\"' );                  // "v\"...\""
+			val.push( k +'="'+ v +'"' );
+		} else {                                           // 'v ...'
 			val.push( k +"='"+ v + "'" );
 		}
 	} );

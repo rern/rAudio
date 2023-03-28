@@ -76,6 +76,9 @@ confNotString() {
 	[[ ${var:0:1} == '[' ]]                               && array=1   # [val, ...]
 	[[ ! $string && ( $boolean || $number || $array ) ]]  && return 0  || return 1
 }
+confFromJson() { # $1 - file
+	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
+}
 cpuInfo() {
 	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
@@ -186,12 +189,17 @@ pushstream() {
 		done
 	fi
 }
-sshCommand() { # $1-ip, ${@:2}-commands
-	if ping -c 1 -w 1 $1 &> /dev/null; then
-		sshpass -p ros ssh -q \
-			-o UserKnownHostsFile=/dev/null \
-			-o StrictHostKeyChecking=no \
-			root@$1 \
-			"${@:2}"
-	fi
+sshCommand() { # $1=ip or -d/--data stdout(optional)
+	[[ $1 == '-d' || $1 == '--data' ]] && shift && data=1 || data=
+	! ping -c 1 -w 1 $1 &> /dev/null && return
+	
+	[[ $data ]] && sshpassCmd $@ || sshpassCmd $@ &> /dev/null
+}
+sshpassCmd() {
+	sshpass -p ros ssh -q \
+		-o ConnectTimeout=1 \
+		-o UserKnownHostsFile=/dev/null \
+		-o StrictHostKeyChecking=no \
+		root@$1 \
+		"${@:2}"
 }

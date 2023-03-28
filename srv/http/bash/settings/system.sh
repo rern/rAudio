@@ -63,10 +63,8 @@ sharedDataIPlist() {
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
 		if ping -c 1 -w 1 $ip &> /dev/null; then
-			if [[ $1 ]] ; then
-				sshCommand $ip $dirsettings/system.sh shareddatarestart & >/dev/null &
-			fi
 			list+=$'\n'$ip
+			[[ $1 ]] && sshCommand $ip $dirsettings/system.sh shareddatarestart
 		fi
 	done
 	sort -u <<< $list | awk NF > $filesharedip

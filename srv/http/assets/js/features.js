@@ -231,11 +231,7 @@ $( '#setting-smb' ).click( function() {
 	} );
 } );
 $( '#setting-multiraudio' ).click( function() {
-	if ( location.host.slice( -5 ) !== 'local' ) {
-		var ipsub = location.host.substring( 0, location.host.lastIndexOf( '.' ) ) +'.';
-	} else {
-		var ipsub = location.host;
-	}
+	var ipsub = S.hostip.replace( /^(.*\.)[^.]*$/, '$1' );
 	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
 					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ ipsub +'" spellcheck="false"></td>'
 					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
@@ -243,19 +239,19 @@ $( '#setting-multiraudio' ).click( function() {
 	
 	if ( S.multiraudioconf ) {
 		var values = [];
-		$.each( S.multiraudioconf, ( k, v ) => values.push( k, v ) );
+		$.each( S.multiraudioconf, ( k, v ) => values.push( v, k.slice( 1 ).replace( /_/g, '.' ) ) ); // _ip_n_n_n: name > name, ip.n.n.n, ...
 		var iL = values.length / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
 		values = [ S.hostname, S.hostip ];
 	}
-	var check = infoCheckEvenOdd( values );
+	var check = infoCheckEvenOdd( values.length );
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : '<table>'+ content +'</table>'
 		, values       : values || [ "rAudio", location.host ]
-		, checkchanged : S.multiraudio
+		, checkchanged : true
 		, checkblank   : check.blank
 		, checkip      : check.ip
 		, beforeshow   : () => {
@@ -276,23 +272,39 @@ $( '#setting-multiraudio' ).click( function() {
 				I.checkblank = check.blank;
 				I.checkip    = check.ip;
 				infoCheckSet();
+				$( '#infoOk' )
+					.text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' )
+					.toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 			} );
 		}
 		, cancel       : switchCancel
 		, ok           : () => {
 			var v = infoVal();
 			if ( v.length < 3 ) {
-				bash( [ 'multiraudio', false, 'removeconf' ] );
-				switchDisable();
+				notify( SW.icon, SW.title, false );
+				bash( [ 'multiraudio', 'enable=' ] );
 				return
 			}
 			
-			var data = '';
+			var name;
+			var cmd = [ 'multiraudio', 'fileconf=true' ];
 			v.forEach( ( el, i ) => {
-				i % 2 ? data += `"${ el }"` : data += `,"${ el }": `;
+				if ( i % 2 ) { // ip
+					cmd.push( '_'+ el.replace( /\./g, '_' ) +'=' + name ); // ip.n.n.n > _ip_n_n_n=name
+				} else {       // name
+					var singlequote = el.includes( "'" );
+					var doublequote = el.includes( '"' );
+					var space       = el.includes( ' ' );
+					if ( ! singlequote && ! doublequote && ! space ) {
+						name = el;
+					} else if ( singlequote || doublequote ) {
+						name = '"'+ el.replace( /"/g, '\\"' ) +'"';
+					} else {
+						name = "'"+ v + "'";
+					}
+				}
 			} );
-			data = '{'+ data.slice( 1 ) +'}';
-			bash( [ 'multiraudio', 'json', data ] );
+			bash( cmd );
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}

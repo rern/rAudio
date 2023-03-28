@@ -439,7 +439,6 @@ $( '.switch' ).click( function() {
 	} else {
 		S[ SW.id ]  = checked;
 		notify( SW.icon, SW.title, checked );
-		console.log( [ SW.id, 'enable='+ ( checked || '' ) ] )
 		bash( [ SW.id, 'enable='+ ( checked ? 'true' : '' ) ], error => {
 			if ( error ) {
 				switchDisable();

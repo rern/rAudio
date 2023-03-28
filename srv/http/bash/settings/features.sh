@@ -227,16 +227,13 @@ logindisable )
 	;;
 multiraudio )
 	if [[ ${args[1]} ]]; then
-		fileconf=$dirsystem/multiraudio.conf
-		json=$( jq <<< ${args[2]} )
-		echo "$json" > $fileconf
 		touch $dirsystem/multiraudio
-		ip=$( ipAddress )
-		iplist=$( jq -r '.[]' <<< $json | grep -v $ip )
-		echo $iplist
+		fileconf=$dirsystem/multiraudio.conf
+		conf=$( < $fileconf )
+		iplist=$( sed -E 's/^_|=.*//g; s/_/./g' $fileconf | grep -v $( ipAddress ) )
 		for ip in $iplist; do
 			sshCommand $ip << EOF
-echo "$json" > $fileconf
+echo "$conf" > $fileconf
 touch $dirsystem/multiraudio
 EOF
 		done
