@@ -287,24 +287,15 @@ $( '#setting-multiraudio' ).click( function() {
 			}
 			
 			var name;
-			var cmd = [ 'multiraudio', 'fileconf=true' ];
+			var cmd = [];
 			v.forEach( ( el, i ) => {
 				if ( i % 2 ) { // ip
 					cmd.push( '_'+ el.replace( /\./g, '_' ) +'=' + name ); // ip.n.n.n > _ip_n_n_n=name
 				} else {       // name
-					var singlequote = el.includes( "'" );
-					var doublequote = el.includes( '"' );
-					var space       = el.includes( ' ' );
-					if ( ! singlequote && ! doublequote && ! space ) {
-						name = el;
-					} else if ( singlequote || doublequote ) {
-						name = '"'+ el.replace( /"/g, '\\"' ) +'"';
-					} else {
-						name = "'"+ v + "'";
-					}
+					name = jsonStringQuote( el );
 				}
 			} );
-			bash( cmd );
+			bash( [ 'multiraudio', 'fileconf=true', ...cmd ] );
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}

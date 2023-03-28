@@ -973,53 +973,23 @@ function infoVal( format ) {
 	var val = [];
 	I.keys.forEach( ( k, i ) => {
 		var v           = values[ i ];
-		if ( typeof v !== 'string' ) {
+		if ( typeof v === 'string' ) {
+			val.push( k +'='+ jsonStringQuote( v ) );
+		} else {
 			if ( v === false ) v = '';
 			val.push( k +'='+ v );
-			return
-		}
-		
-		var singlequote = v.includes( "'" );
-		var doublequote = v.includes( '"' );
-		var space       = v.includes( ' ' );
-		if ( ! singlequote && ! doublequote && ! space ) { //  v
-			val.push( k +'='+ v );
-		} else if ( singlequote || doublequote ) {
-			v = v.replace( /"/g, '\\"' );                  // "v\"...\""
-			val.push( k +'="'+ v +'"' );
-		} else {                                           // 'v ...'
-			val.push( k +"='"+ v + "'" );
 		}
 	} );
 	return val
 }
-function infoVerifyPassword( title, pwd, fn ) { // verify password - called from addons.js
-	if ( ! title ) return
-	
-	info( {
-		  title         : title
-		, message       : 'Please retype'
-		, passwordlabel : 'Password'
-		, ok            : () => {
-			if ( infoVal() === pwd ) {
-				fn();
-			} else {
-				info( {
-					  title   : title
-					, message : 'Passwords not matched. Please try again.'
-					, ok      : () => infoVerifyPassword( title, pwd, fn )
-				} );
-			}
-		}
-	} );
-}
-function string2number( v ) { // return number - '1.23' > 1.23 / quoted string - '000123' > '"000123"'
-	if ( ( v !== '0' && v[ 0 ] === '0' && ( v[ 1 ] !== '.' || ! v[ 2 ] ) )
-		|| isNaN( parseFloat( v ) )
-		|| isNaN( v - 0 )
-	) return '"'+ v +'"'
-	
-	return Number( v )
+function jsonStringQuote( v ) {
+	var singlequote = v.includes( "'" );
+	var doublequote = v.includes( '"' );
+	var space       = v.includes( ' ' );
+	if ( ! singlequote && ! doublequote && ! space ) return v                                  //  v
+	if ( doublequote && ! singlequote )              return "'"+ v + "'"                       // 'v "v" v'
+	if ( singlequote || doublequote )                return '"'+ v.replace( /"/g, '\\"' ) +'"' // "v 'v' \"v\""
+	/* space */                                      return "'"+ v + "'"                       // 'v ...'
 }
 
 // common info functions --------------------------------------------------

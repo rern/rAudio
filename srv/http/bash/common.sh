@@ -104,11 +104,10 @@ data2json() {
 	[[ $2 ]] && pushstream refresh "$json" || echo "$json"
 }
 dirPermissions() {
-	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chmod -R 755 /srv/http/{assets,bash,data,settings}
-	chown -R http:http /srv/http/{assets,bash,data,settings}
+	chown -R root:root /srv
 	chown -R mpd:audio $dirmpd $dirplaylists
+	chmod -R u=rw,go=r,a+X /srv
+	chmod -R u+x /srv/http/bash
 	[[ -L $dirshareddata ]] && dirPermissionsShared
 }
 dirPermissionsShared() {
