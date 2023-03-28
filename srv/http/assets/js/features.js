@@ -33,7 +33,7 @@ $( '#setting-spotifyd' ).click( function() {
 	if ( active ) return
 	
 	if ( ! S.spotifyd && S.spotifytoken ) {
-		bash( [ 'spotifyd', true ] );
+		bash( [ 'spotifyd', 'enable=true' ] );
 		notify( SW.icon, SW.title, 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		info( {
