@@ -256,10 +256,11 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'multiraudio':
 			bash( [ 'multiraudiolist' ], data => {
 				var currentip = data.current;
+				var radio     = jsonMultirAudio( data.list );
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, radio      : data.list
+					, radio      : radio
 					, values     : currentip
 					, beforeshow : function() {
 						$( '#infoContent input' ).each( ( i, el ) => {

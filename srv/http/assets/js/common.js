@@ -982,6 +982,20 @@ function infoVal( format ) {
 	} );
 	return val
 }
+function jsonMultirAudio( json ) {
+	var val    = {};
+	$.each( json, ( k, v ) => val[ v ] = k.slice( 1 ).replace( /_/g, '.' ) ); // _ip_n_n_n > ip.n.n.n
+	var names  = Object.keys( val ).sort();
+	if ( page ) {
+		var values = []
+		names.forEach( n => values.push( n, val[ n ] ) );
+		return values
+	}
+	
+	var radio = {}
+	names.forEach( n => radio[ n ] = val[ n ] );
+	return radio
+}
 function jsonStringQuote( v ) {
 	var singlequote = v.includes( "'" );
 	var doublequote = v.includes( '"' );

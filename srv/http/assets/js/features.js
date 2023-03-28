@@ -238,9 +238,8 @@ $( '#setting-multiraudio' ).click( function() {
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	
 	if ( S.multiraudioconf ) {
-		var values = [];
-		$.each( S.multiraudioconf, ( k, v ) => values.push( v, k.slice( 1 ).replace( /_/g, '.' ) ) ); // _ip_n_n_n: name > name, ip.n.n.n, ...
-		var iL = values.length / 2 - 1;
+		var values = jsonMultirAudio( S.multiraudioconf );
+		var iL     = values.length / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
 		values = [ S.hostname, S.hostip ];
