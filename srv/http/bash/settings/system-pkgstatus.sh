@@ -54,7 +54,7 @@ $( awk NF <<< $conf )"
 		skip='Protocol not supported'
 		;;
 	smb )
-		pkg=samba
+		pkg=smb
 		fileconf=/etc/samba/smb.conf
 		;;
 	snapclient )

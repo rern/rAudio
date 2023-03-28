@@ -1,5 +1,6 @@
 var default_v      = {
 	  autoplay  : { bluetooth: true, cd: true, startup: true }
+	, scrobble  : { airplay: true, bluetooth: true, spotify: true, upnp: true, notify: true }
 	, stoptimer : { min: '', poweroff: false }
 }
 
@@ -102,7 +103,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, focus        : 0
 		, checkblank   : true
 		, boxwidth     : 100
-		, values       : S.camillaconf
+		, values       : S.camilladspconf
 		, checkchanged : S.camilladsp
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -117,6 +118,7 @@ $( '#setting-hostapd' ).click( function() {
 		, values       : S.hostapdconf
 		, checkchanged : S.hostapd
 		, checkblank   : true
+		, checkip      : [ 0 ]
 		, checklength  : { 1: [ 8, 'min' ] }
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -250,8 +252,8 @@ $( '#setting-multiraudio' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : '<table>'+ content +'</table>'
-		, values       : values || [ "rAudio", location.host ]
-		, checkchanged : true
+		, values       : values
+		, checkchanged : S.multiraudio && values.length > 2
 		, checkblank   : check.blank
 		, checkip      : check.ip
 		, beforeshow   : () => {
@@ -295,7 +297,7 @@ $( '#setting-multiraudio' ).click( function() {
 					name = jsonStringQuote( el );
 				}
 			} );
-			bash( [ 'multiraudio', 'fileconf=true', ...cmd ] );
+			bash( [ 'multiraudio', 'enable=true', 'fileconf=true', ...cmd ] );
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}
@@ -374,9 +376,9 @@ $( '#setting-scrobble' ).click( function() {
 			, ico( 'spotify' ) +'Spotify'
 			, ico( 'upnp' ) +'UPnP'
 		]
-		, footer       : '<label><input type="checkbox">Notify on scrobbling</label>'
+		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
 		, boxwidth     : 170
-		, values       : S.scrobbleconf
+		, values       : S.scrobbleconf || default_v.scrobble
 		, checkchanged : S.scrobble
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -405,7 +407,7 @@ $( '#nfsserver' ).click( function() {
 			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
-				bash( [ 'nfsserver', 'active='+ ( S.nfsserver ? '' : true ) ] ); // inversed t/f
+				bash( [ 'nfsserver', 'enable='+ ( S.nfsserver ? '' : true ) ] ); // enable if not active
 				notify( SW.icon, SW.title, S.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
 		} );

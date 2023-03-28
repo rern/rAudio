@@ -5,14 +5,27 @@
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
+camilladsp=$( exists $dirsystem/camilladsp )
+crossfade=$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )
+equalizer=$( exists $dirsystem/equalizer )
+normalization=$( exists $dirmpdconf/normalization.conf )
+replaygain=$( exists $dirmpdconf/replaygain.conf )
+replaygainconf='{
+  "type"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+, "hardware" : '$( exists $dirsystem/replaygain-hw )'
+}'
+soxr=$( exists $dirsystem/soxr )
+resampled=$( [[ $camilladsp == true \
+				|| $crossfade == true \
+				|| $equalizer == true \
+				|| $normalization == true \
+				|| $replaygain == true \
+				|| $soxr == true \
+					]] && echo true );
 lists='{
   "albumignore" : '$( exists $dirmpd/albumignore )'
 , "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
 , "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
-}'
-replaygainconf='{
-  "type"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
-, "hardware" : '$( exists $dirsystem/replaygain-hw )'
 }'
 
 data='
@@ -26,23 +39,24 @@ data='
 , "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : '$( conf2json $dirmpdconf/conf/buffer.conf )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladsp"       : '$camilladsp'
 , "counts"           : '$( getContent $dirmpd/counts )'
-, "crossfade"        : '$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )'
+, "crossfade"        : '$crossfade'
 , "crossfadeconf"    : { "sec": '$( getContent $dirsystem/crossfade.conf )' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
-, "equalizer"        : '$( exists $dirsystem/equalizer )'
+, "equalizer"        : '$equalizer'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
 , "lists"            : '$lists'
-, "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
+, "normalization"    : '$normalization'
+, "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
 , "outputbufferconf" : '$( conf2json $dirmpdconf/conf/outputbuffer.conf )'
 , "player"           : "'$( < $dirshm/player )'"
-, "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
+, "replaygain"       : '$replaygain'
 , "replaygainconf"   : '$replaygainconf'
-, "soxr"             : '$( exists $dirsystem/soxr )'
+, "soxr"             : '$soxr'
 , "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"

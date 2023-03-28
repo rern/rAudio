@@ -232,7 +232,7 @@ logindisable )
 	pushSubmenu lock false
 	;;
 multiraudio )
-	if [[ ${args[1]} ]]; then
+	if [[ $enable ]]; then
 		touch $dirsystem/multiraudio
 		fileconf=$dirsystem/multiraudio.conf
 		conf=$( < $fileconf )
@@ -254,7 +254,7 @@ EOF
 nfsserver )
 	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
-	if [[ $active ]]; then
+	if [[ $enable ]]; then
 		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
@@ -307,7 +307,8 @@ USB" > /mnt/MPD/.mpdignore
 		pushstream display $( < $dirsystem/display )
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","nfsserver":'$active'}'
+	[[ ! $enable ]] && enable=false
+	pushstream refresh '{"page":"system","nfsserver":'$enable'}'
 	;;
 nfssharelist )
 	nfsShareList

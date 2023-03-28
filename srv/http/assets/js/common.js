@@ -314,17 +314,18 @@ function info( json ) {
 	local(); // flag for consecutive info
 	I          = json;
 	
-	if ( I.values ) {
+	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
-			if ( typeof I.values === 'string' ) {
-				I.values = [ I.values ];
-			} else { // json
-				I.keys = Object.keys( I.values );
+			if ( typeof I.values === 'object' ) { // json
+				I.keys   = Object.keys( I.values );
 				I.values = Object.values( I.values );
+			} else {
+				I.values = [ I.values ];
 			}
 		}
+	} else {
+		I.values = [ '' ];
 	}
-	if ( ! ( 'values' in I ) ) I.values = [ '' ];
 	// fix: narrow screen scroll
 	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
 	

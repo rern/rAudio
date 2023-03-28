@@ -129,5 +129,7 @@ fi
 asoundcard=$( < $dirsystem/asoundcard )
 
 devices="[ ${devices:1} ]"
-aplayname=${Aaplayname[i]}
-output=${Aname[i]}
+aplayname=${Aaplayname[card]}
+mixertype=${Amixertype[card]}
+output=${Aname[card]}
+

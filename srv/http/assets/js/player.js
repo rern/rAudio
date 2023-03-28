@@ -28,7 +28,11 @@ $( '#audiooutput' ).change( function() {
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', 'aplayname='+ D.aplayname, 'hwmixer='+ $( this ).val() ] );
+	bash( [
+		  'hwmixer'
+		, 'aplayname='+ jsonStringQuote( D.aplayname )
+		, 'hwmixer='+ jsonStringQuote( $( this ).val() )
+	] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -104,7 +108,12 @@ $( '#novolume' ).click( function() {
 			, message : warning
 			, cancel  : switchCancel
 			, ok      : () => {
-				bash( [ 'novolume', 'enable=true', 'aplayname='+ D.aplayname, 'hwmixer='+ D.hwmixer ] );
+				S.novolume = true;
+				bash( [
+					  'novolume'
+					, 'aplayname='+ jsonStringQuote( D.aplayname )
+					, 'hwmixer='+ jsonStringQuote( D.hwmixer )
+				] );
 				notify( SW.icon, SW.title, 'Enable ...' );
 			}
 		} );
@@ -118,13 +127,17 @@ $( '#novolume' ).click( function() {
 &emsp; • Enable any Volume options`
 			, messagealign : 'left'
 		} );
-		$( this ).prop( 'checked', 1 );
+		$( this ).prop( 'checked', true );
 	}
 } );
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	bash( [ 'dop', 'enable='+ ( checked || '' ), 'aplayname='+ D.aplayname ] );
+	bash( [
+		  'dop'
+		, 'enable='+ ( checked || '' )
+		, 'aplayname='+ jsonStringQuote( D.aplayname )
+	] );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -218,7 +231,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', 'aplayname='+ D.aplayname ], val => {
+	bash( [ 'customget', 'aplayname='+ jsonStringQuote( D.aplayname ) ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -238,7 +251,13 @@ $( '#setting-custom' ).click( function() {
 				}
 				
 				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
-				bash( [ 'custom', 'enable=true', 'global='+ values[ 0 ], 'output='+ values[ 1 ], 'aplayname='+ D.aplayname ], mpdstart => {
+				bash( [
+					  'custom'
+					, 'enable=true'
+					, "global='"+ values[ 0 ] +"'"
+					, "output='"+ values[ 1 ] +"'"
+					, 'aplayname='+ jsonStringQuote( D.aplayname )
+				], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -374,8 +393,6 @@ function renderPage() {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		D               = S.devices[ S.asoundcard ];
-		S.resampled     = S.crossfade || S.normalization || S.replaygain || S.camilladsp || S.equalizer || S.soxr;
-		S.novolume      = D.mixertype === 'none' && ! S.resampled;
 		var htmldevices = '';
 		$.each( S.devices, ( i, el ) => {
 			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
@@ -432,5 +449,10 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', 'mixertype='+ mixertype, 'aplayname='+ D.aplayname, 'hwmixer='+ hwmixer ] );
+	bash( [
+		  'mixertype'
+		, 'mixertype='+ mixertype
+		, 'aplayname='+ jsonStringQuote( D.aplayname )
+		, 'hwmixer='+ jsonStringQuote( hwmixer )
+	] );
 }

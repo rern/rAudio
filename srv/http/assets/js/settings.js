@@ -59,7 +59,7 @@ function currentStatus( id ) {
 	} );
 }
 function infoDisabled( $this ) {
-	$this.prop( 'checked', ! checked );
+	$this.prop( 'checked', ! $this.prop( 'checked' ) );
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
@@ -420,14 +420,14 @@ $( '.setting, .switch' ).click( function() {
 } );
 $( '.switch' ).click( function() {
 	var $this   = $( this );
-	if ( $this.is( '.custom, .nobanner' ) ) return
-	
-	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'disabled' ) ) {
 		infoDisabled( $this );
 		return
 	}
 	
+	if ( $this.is( '.custom, .nobanner' ) ) return
+	
+	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'common' ) ) {
 		if ( checked ) {
 			$( '#setting-'+ SW.id ).click();
