@@ -246,7 +246,9 @@ function htmlTrack( $lists, $plname = '' ) {
 	}
 	if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
-	$elapsed = exec( '/srv/http/bash/cmd.sh getelapsed' );
+	$mmss = exec( 'mpc status %currenttime%' );
+	$mmss = explode( ':', $mmss );
+	$elapsed = $mmss[ 0 ] * 60 + $mmss[ 1 ];
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml

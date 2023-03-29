@@ -564,7 +564,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 		foreach( $hhmmss as $hms ) $seconds += HMS2second( $hms ); // hh:mm:ss > seconds
 		$totaltime     = second2HMS( $seconds );
 		$args          = escape( implode( "\n", [ $artist, $album, $each0->file ] ) );
-		$coverart      = exec( '/srv/http/bash/status-coverart.sh "'.$args.'"' );
+		$coverart      = exec( '/usr/bin/sudo /srv/http/bash/status-coverart.sh "'.$args.'"' );
 		$br            = ! $hidegenre || !$hidedate ? '<br>' : '';
 		$mpdpath       = str_replace( '\"', '"', $mpdpath );
 		$count         = count( $array );

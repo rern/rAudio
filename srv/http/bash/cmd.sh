@@ -280,6 +280,9 @@ albumignore )
 	sed -i "/\^$artist^^$album^/ d" $dirmpd/albumbyartist
 	echo $album^^$artist >> $dirmpd/albumignore
 	;;
+audiocdeject )
+	$dirbash/audiocd.sh ejecticonclick
+	;;
 audiocdtag )
 	track=${args[1]}
 	tag=${args[2]}
@@ -828,7 +831,7 @@ mpcupdate )
 multiraudiolist )
 	echo '{
   "current" : "'$( ipAddress )'"
-, "list"    : '$( conf2json $dirsystem/multiraudio.conf )'
+, "list"    : '$( < $dirsystem/multiraudio.conf )'
 }'
 	;;
 ordersave )
@@ -954,6 +957,9 @@ radiorestart )
 	sleep 1
 	rm $disshm/radiorestart
 	;;
+relays )
+	$dirsettings/relays.sh ${args[1]}
+	;;
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null
 	$dirsettings/relays-timer.sh &> /dev/null &
@@ -1048,6 +1054,15 @@ shairportstop )
 	timestamp=$( date +%s%3N )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
 	$dirbash/status-push.sh
+	;;
+shareddatadisconnect )
+	$dirsettings/system.sh shareddatadisconnect
+	;;
+snapcast )
+	$dirbash/snapcast.sh ${args[1]}
+	;;
+status )
+	$dirbash/status.sh ${args[1]}
 	;;
 volume ) # no args = toggle mute / unmute
 	current=${args[1]}

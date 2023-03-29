@@ -22,15 +22,18 @@ $( '#save' ).click( function() {
 	}
 	var cmd = [
 		  'save'
-		, 'pin=['+ R.pin.join( ',' ) +']'
-		, 'name=\'[ "'+ R.name.join( '", "' ) +'" ]\''
-		, 'onorder=\'[ "'+ onorder.join( '", "' ) +'" ]\''
-		, 'offorder=\'[ "'+ offorder.join( '", "' ) +'" ]\''
-		, 'on=( '+ R.on.join( ' ' ) +' )'
-		, 'ond=( '+ R.ond.join( ' ' ) +' )'
-		, 'off=( '+ R.off.join( ' ' ) +' )'
-		, 'offd=( '+ R.offd.join( ' ' ) +' )'
-		, 'timer='+ R.timer
+		, 'KEY'
+		, 'pin name onorder offorder on ond off offd timer fileconf'
+		, '['+ R.pin.join( ',' ) +']'
+		, '[ "'+ R.name.join( '", "' ) +'" ]'
+		, '[ "'+ onorder.join( '", "' ) +'" ]'
+		, '[ "'+ offorder.join( '", "' ) +'" ]'
+		, '( '+ R.on.join( ' ' ) +' )'
+		, '( '+ R.ond.join( ' ' ) +' )'
+		, '( '+ R.off.join( ' ' ) +' )'
+		, '( '+ R.offd.join( ' ' ) +' )'
+		, R.timer
+		, true
 	];
 	bash( cmd );
 	banner( 'relays', 'Relays', 'Change ...' );

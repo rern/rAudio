@@ -34,7 +34,7 @@ $( '#setting-spotifyd' ).click( function() {
 	if ( active ) return
 	
 	if ( ! S.spotifyd && S.spotifytoken ) {
-		bash( [ 'spotifyd', 'enable=true' ] );
+		bash( [ 'spotifyd' ] );
 		notify( SW.icon, SW.title, 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		info( {
@@ -71,7 +71,7 @@ $( '#setting-spotifyd' ).click( function() {
 				var values = infoVal();
 				var id     = values[ 0 ];
 				var secret = values[ 1 ];
-				bash( 'echo "base64client='+ btoa( id +':'+ secret ) +'" > /srv/http/data/system/spotify' );
+				bash( [ 'spotifykey', 'KEY', 'btoa', btoa( id +':'+ secret ) ] );
 				var data   = {
 					  response_type : 'code'
 					, client_id     : id
@@ -208,9 +208,9 @@ $( '#setting-localbrowser' ).click( function() {
 			if ( S.brightness ) {
 				var $range = $( '#infoRange input' );
 				$range.on( 'click input keyup', function() {
-					bash( 'echo '+ $range.val() +' > /sys/class/backlight/rpi_backlight/brightness' );
+					bash( [ 'brightness', $range.val() ] );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( 'echo '+ $range.val() +' > /srv/http/data/system/brightness' );
+					bash( [ 'brightness', $range.val() ] );
 				} );
 			} else {
 				$( '#infoRange' ).remove();
@@ -241,7 +241,9 @@ $( '#setting-multiraudio' ).click( function() {
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	
 	if ( S.multiraudioconf ) {
-		var values = jsonMultirAudio( S.multiraudioconf );
+		var keys = Object.keys( S.multiraudioconf ).sort();
+		var values = [];
+		keys.forEach( k => values.push( k, S.multiraudioconf[ k ] ) );
 		var iL     = values.length / 2 - 1;
 		for ( i = 0; i < iL; i++ ) content += trhtml;
 	} else {
@@ -254,8 +256,8 @@ $( '#setting-multiraudio' ).click( function() {
 		, content      : '<table>'+ content +'</table>'
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
-		, checkblank   : check.blank
-		, checkip      : check.ip
+		, checkblank   : I.checkblank
+		, checkip      : I.checkip
 		, beforeshow   : () => {
 			$( '#infoContent input' ).each( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
@@ -263,20 +265,18 @@ $( '#setting-multiraudio' ).click( function() {
 			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent' ).on( 'click', 'i', function() {
 				var $this = $( this );
-				if ( $this.hasClass( 'ipadd' ) ) {
+				var add   = $this.hasClass( 'ipadd' );
+				if ( add ) {
 					$( '#infoContent table' ).append( trhtml );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
 				$inputbox    = $( '#infoContent input' );
 				$input       = $inputbox;
-				check        = infoCheckEvenOdd( $inputbox.length );
-				I.checkblank = check.blank;
-				I.checkip    = check.ip;
+				infoCheckEvenOdd( $input.length );
 				infoCheckSet();
-				$( '#infoOk' )
-					.text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' )
-					.toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
+				$( '#infoOk' ).text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' );
+				if ( ! add ) $( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 			} );
 		}
 		, cancel       : switchCancel
@@ -284,20 +284,18 @@ $( '#setting-multiraudio' ).click( function() {
 			var v = infoVal();
 			if ( v.length < 3 ) {
 				notify( SW.icon, SW.title, false );
-				bash( [ 'multiraudio', 'enable=' ] );
+				bash( [ 'multiraudio', 'disable' ] );
 				return
 			}
 			
-			var name;
-			var cmd = [];
+			var val = {}
 			v.forEach( ( el, i ) => {
-				if ( i % 2 ) { // ip
-					cmd.push( '_'+ el.replace( /\./g, '_' ) +'=' + name ); // ip.n.n.n > _ip_n_n_n=name
-				} else {       // name
-					name = jsonStringQuote( el );
-				}
+				i % 2 ? val[ name ] = el : name = el;
 			} );
-			bash( [ 'multiraudio', 'enable=true', 'fileconf=true', ...cmd ] );
+			keys = Object.keys( val ).sort();
+			data = {}
+			keys.forEach( k => data[ k ] = val[ k ] );
+			$.post( 'cmd.php', { cmd: 'jsontemp', json: JSON.stringify( data ) }, () => bash( [ 'multiraudio' ] ) );
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}
@@ -407,7 +405,7 @@ $( '#nfsserver' ).click( function() {
 			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
-				bash( [ 'nfsserver', 'enable='+ ( S.nfsserver ? '' : true ) ] ); // enable if not active
+				bash( [ 'nfsserver', S.nfsserver ? 'disable' : '' ] ); // enable if not active
 				notify( SW.icon, SW.title, S.nfsserver ? 'Disable ...' : 'Enable ...' );
 			}
 		} );
@@ -433,11 +431,9 @@ $( '#setting-stoptimer' ).click( function() {
 } );
 
 function infoCheckEvenOdd( length ) {
-	var check   = {}
-	check.blank = [];
-	check.ip    = [];
-	for ( i = 0; i < length; i++ ) i % 2 ? check.ip.push( i ) : check.blank.push( i );
-	return check
+	I.checkblank = [];
+	I.checkip    = [];
+	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
 }
 function passwordWrong() {
 	bannerHide();
@@ -484,7 +480,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobblekeyget', 'token='+ token ], function( error ) {
+		bash( [ 'scrobblekeyget', 'KEY', 'token', token ], function( error ) {
 			if ( error ) {
 				info( {
 					  icon    : 'scrobble'
@@ -498,7 +494,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', 'code='+ code ], () => showContent );
+		bash( [ 'spotifytoken', 'KEY', 'code', code ], () => showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

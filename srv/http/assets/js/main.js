@@ -210,13 +210,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
 				if ( S.snapclient ) {
-					bash( dirbash +'snapcast.sh stop' );
+					bash( [ 'snapcast', 'stop' ] );
 				} else {
 					$( '#stop' ).click();
 				}
 			} else {
 				$( '#stop' ).click();
-				bash( dirbash +'snapcast.sh start', data => {
+				bash( [ 'snapcast', 'start' ], data => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
@@ -231,7 +231,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).click();
-			bash( dirsettings +'relays.sh '+ ! S.relayson );
+			bash( [ 'relays', ! S.relayson ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -256,11 +256,10 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'multiraudio':
 			bash( [ 'multiraudiolist' ], data => {
 				var currentip = data.current;
-				var radio     = jsonMultirAudio( data.list );
 				info( {
 					  icon       : 'multiraudio'
 					, title      : 'Switch rAudio'
-					, radio      : radio
+					, radio      : data.list
 					, values     : currentip
 					, beforeshow : function() {
 						$( '#infoContent input' ).each( ( i, el ) => {
@@ -592,7 +591,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, title   : 'Audio CD'
 		, oklabel : ico( 'minus-circle' ) +'Eject'
 		, okcolor : red
-		, ok      : () => bash( dirbash +'audiocd.sh ejecticonclick' )
+		, ok      : () => bash( [ 'audiocdeject' ] )
 	} );
 } );
 $( '#elapsed' ).click( function() {

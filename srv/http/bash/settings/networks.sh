@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-argsConvert "$1"
+args2var "$1"
 
 netctlSwitch() {
 	local ssid wlandev connected active i
@@ -59,6 +59,9 @@ $( timeout 1 avahi-browse -arp \
 	| grep -v 127.0.0.1 \
 	| sed 's/;/ : /' \
 	| sort -u )"
+	;;
+bluetoothcommand )
+	$dirbash/bluetoothcommand.sh $action $mac
 	;;
 bluetoothinfo )
 	info=$( bluetoothctl info $mac )
@@ -192,6 +195,15 @@ profileremove )
 	fi
 	rm "/etc/netctl/$ssid"
 	$dirsettings/networks-data.sh pushwl
+	;;
+scanbluetooth )
+	$dirsettings/networks-scan.sh
+	;;
+scankill ) 
+	killall -q networks-scan.sh &> /dev/null
+	;;
+scanwlan )
+	$dirsettings/networks-scan.sh wlan
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth

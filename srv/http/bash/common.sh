@@ -20,6 +20,16 @@ fi
 argsConvert() { # convert lines to array > $args > var=value ...
 	readarray -t args <<< $1
 	cmd=${args[0]}
+	if [[ ${args[1]:0:5} == 'keys=' ]]; then
+		keys=${args[1]:5}
+		i=2
+		for k in $keys; do
+			printf -v $k '%s' ${args[i]}
+			(( i++ ))
+		done
+		return
+	fi
+	
 	filetmp=$dirshm/conf
 	printf "%s\n" "${args[@]:1}" > $filetmp
 	. $filetmp
@@ -28,6 +38,71 @@ argsConvert() { # convert lines to array > $args > var=value ...
 		grep -Ev '^enable|^fileconf' $filetmp > $fileconf
 	fi
 	rm $filetmp
+}
+
+# args2var "command
+#	KEY
+#	key1 key2 ...
+#	value1
+#	value2
+#   ..."
+#
+# convert lines to variables: (lines need no variable escapes)
+#	cmd=command
+#	key1=value1 ...   (if 'KEY' and 'key1 key2 ...' are set)
+#	                   or
+#	${args[1]}=value1 (generic access)
+#	${args[2]}=value2
+#
+# json string:
+#	access with generic ${args[i]}
+#		except - double quotes in values: php > save to $dirshm/jsontemp > mv to destination
+
+args2var() { # args2var "$1"
+	local i j keys kL key val conf
+	readarray -t args <<< $1
+	cmd=${args[0]}
+	if [[ ${args[1]} == 'KEY' ]]; then
+		enable=true
+	else
+		[[ ${args[1]} == disable ]] && enable= || enable=true
+		return
+	fi
+	
+	keys=( ${args[2]} )
+	kL=${#keys[@]}
+	for (( i=0; i < kL; i++ )); do
+		j=$(( i + 3 )) # values start from #3, after 'key1 key2 ...' 
+		key=${keys[i]}
+		val=${args[j]}
+		printf -v $key '%s' "$val"
+		conf+="$key=$val"$'\n'
+	done
+	[[ ! $fileconf ]] && return
+	
+	[[ $fileconf == true ]] && fileconf=$dirsystem/$cmd.conf
+	# quote values: vvv | "v v v" | "v 'v' v" | "v \"v' v" > save file conf
+	sed -E '/^fileconf|^$/d
+			s/ "/ \\"/g
+			s/" /\\" /g
+			s/=(.* )/="\1/
+			s/( .*)$/\1"/
+			' <<< $conf > $fileconf
+}
+varQuote() {
+	local v singlequote doublequote space
+	[[ $1 == *\'* ]] && singlequote=1
+	[[ $1 == *\"* ]] && doublequote=1
+	[[ $1 == *' '* ]]  && space=1
+	if [[ ! $singlequote && ! $doublequote && ! $space ]]; then
+		echo "$1"
+	elif [[ $doublequote && ! $singlequote ]]; then
+		echo "'""$1""'"
+	elif [[ $singlequote || $doublequote ]]; then
+		echo '"'${1//\"/\\\"}'"'
+	else
+		echo '"'"$1"'"'
+	fi
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -104,7 +179,7 @@ data2json() {
 dirPermissions() {
 	chown -R root:root /srv
 	chown mpd:audio $dirmpd $dirmpd/mpd.db
-	chown -R $dirplaylists
+	chown -R mpd:audio $dirplaylists
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R u+x $dirbash /srv/http/settings/camillagui/{backend,main.py}
 	[[ -L $dirshareddata ]] && dirPermissionsShared

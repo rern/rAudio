@@ -45,7 +45,7 @@ function currentStatus( id ) {
 	if ( $el.hasClass( 'hide' ) ) {
 		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
 	}
-	var command = services.includes( id ) ? dirsettings +'system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
+	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -86,7 +86,7 @@ function json2array( keys, json ) {
 }
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( dirsettings +'system-pkgstatus.sh mpd', status => {
+		bash( [ 'pkgstatus', 'mpd' ], status => {
 			var error =  iconwarning +'MPD is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -95,7 +95,7 @@ function list2JSON( list ) {
 				.html( error )
 				.removeClass( 'hide' )
 				.on( 'click', '.restart', function() {
-					bash( dirsettings +'player-conf.sh', refreshData );
+					bash( [ 'restartmpd' ], refreshData );
 					notify( 'mpd', 'MPD', 'Start ...' );
 				} );
 		loaderHide();
@@ -118,7 +118,7 @@ function notify( icon, title, message, delay ) {
 function refreshData() {
 	if ( page === 'guide' || I.active ) return
 	
-	bash( dirsettings + page +'-data.sh', data => {
+	bash( [ 'refreshdata' ], data => {
 		if ( typeof data === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( data );
 		} else {
@@ -153,11 +153,9 @@ function switchDisable() {
 	S[ SW.id ] = false;
 }
 function switchEnable() {
-	var values = infoVal();
+	var values = infoVal( 'KEY' );
 	if ( typeof values === 'string' ) values = [ values ];
-	var cmd = [ SW.id, 'enable=true', ...values ];
-	if ( I.fileconf ) cmd.push( 'fileconf='+ I.fileconf );
-	bash( cmd );
+	bash( [ SW.id, ...values ] );
 	notify( SW.icon, SW.title, S[ SW.id ] ? 'Change ...' : 'Enable ...' );
 	S[ SW.id ] = true;
 }
@@ -186,7 +184,7 @@ if ( page === 'addons' ) {
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( 'killall -q networks-scan.sh &> /dev/null' );
+			bash( [ 'scankill' ] );
 			clearTimeout( V.timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
@@ -433,13 +431,13 @@ $( '.switch' ).click( function() {
 			$( '#setting-'+ SW.id ).click();
 		} else {
 			S[ SW.id ]  = false;
-			bash( [ SW.id, 'enable=' ] );
+			bash( [ SW.id, 'disable' ] );
 			switchDisable();
 		}
 	} else {
 		S[ SW.id ]  = checked;
 		notify( SW.icon, SW.title, checked );
-		bash( [ SW.id, 'enable='+ ( checked ? 'true' : '' ) ], error => {
+		bash( [ SW.id, checked ? '' : 'disable' ], error => {
 			if ( error ) {
 				switchDisable();
 				bannerHide();

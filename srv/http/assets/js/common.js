@@ -48,29 +48,37 @@ $.fn.press = function( arg1, arg2 ) {
 // ----------------------------------------------------------------------
 function bash( command, callback, json ) {
 	if ( typeof command === 'string' ) {
-		var args   = { cmd: 'bash', bash : command }
+		var args   = { cmd: 'sh', bash : command }
 	} else {
+		var filesh = 'cmd';
 		if ( page ) {
-			var filesh = 'settings/'+ page;
-			if ( command[ 0 ] === 'mount' ) filesh += '-mount'; // system-mount.sh - with arguments
-		} else {
-			var filesh = 'cmd';
+			var cmd0= command[ 0 ];
+			var filesh = 'settings/';
+			if ( cmd0 === 'refreshdata' ) {
+				filesh += 'system';
+				command.push( page );
+			} else if ( cmd0 === 'pkgstatus' ) {
+				filesh += 'system-pkgstatus';
+			} else if ( cmd0 === 'mount' ) {
+				filesh += 'system-mount';
+			} else {
+				filesh += page;
+			}
 		}
-		var args   = { cmd: 'sh', sh: [ filesh +'.sh' ].concat( command ) }
+		var args   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
 	}
-	if ( V.consolelog ) {
+	if ( V.consolelog ) { // debug
 		var data = args.sh[ 0 ].replace( 'settings/', '' ) +' "'+ args.sh[ 1 ] +'\n'
 				 + args.sh.slice( 2 ).join( '\n' ) +'\n"';
 		navigator.maxTouchPoints ? alert( data ) : console.log( data );
-		return
+	} else {
+		$.post( 
+			  'cmd.php'
+			, args
+			, callback || null
+			, json || null
+		);
 	}
-	
-	$.post( 
-		  'cmd.php'
-		, args
-		, callback || null
-		, json || null
-	);
 }
 
 // ----------------------------------------------------------------------
@@ -167,9 +175,8 @@ var usage = `\
 
 Debug : Click icon for console.log / alert of return arguments
 Get values   : infoVal( ''|'array'|'json' )
-	- ''      
-		values array - return array | value if single
-		values json  - return array [ var=value, ... ] for bash
+	- ''      - values array - return array | value if single
+	- 'KEY'   - 
 	- 'array' - force return values in array (single value or values json)
 	- 'json'  - force return values in json
 
@@ -250,8 +257,6 @@ info( {                                       // default
 	
 	values        : [ 'VALUE', ... ]          // --             (default values - in layout order)
 	                { KEY: 'VALUE', ... }                       (return bash var - [ 'KEY=value', ... ])
-	
-	fileconf      : true / 'FILE'             // --             (append bash var - save to $dirsystem/ID.conf / 'FILE')
 } );
 `;
 
@@ -958,30 +963,21 @@ function infoVal( format ) {
 		}
 		values.push( val );
 	} );
-	if ( ! I.keys || format ) {
-		if ( format === 'array' ) {
-			return values
-		} else if ( format === 'json' ) {
-			var val = {}
-			I.keys.forEach( ( k, i ) => val[ k ] = values[ i ] );
-			return val
-		} else {
-			return values.length > 1 ? values : values[ 0 ] // single value as string
+	if ( ! I.keys )           return values.length > 1 ? values : values[ 0 ] // single value as string
+	if ( format === 'KEY' ) {
+		var keys = I.keys.join( ' ' );
+		if ( I.fileconf ) {
+			keys += ' fileconf';
+			values.push( I.fileconf );
 		}
+		return [ 'KEY', keys, ...values ]
 	}
-	
-	// bash - [ "k='val'", ... ]
-	var val = [];
-	I.keys.forEach( ( k, i ) => {
-		var v           = values[ i ];
-		if ( typeof v === 'string' ) {
-			val.push( k +'='+ jsonStringQuote( v ) );
-		} else {
-			if ( v === false ) v = '';
-			val.push( k +'='+ v );
-		}
-	} );
-	return val
+	if ( format === 'array' ) return values
+	if ( format === 'json' ) {
+		var v = {}
+		I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
+		return v
+	}
 }
 
 // common info functions --------------------------------------------------
@@ -998,7 +994,7 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	bash( dirbash +'cmd.sh '+ action, nfs => {
+	bash( [ action ], nfs => {
 		if ( nfs != -1 ) return
 		
 		var poweroff = action === 'poweroff';
@@ -1012,7 +1008,7 @@ function infoPowerCommand( action ) {
 			, oklabel : poweroff ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : poweroff ? red : orange
 			, ok      : () => {
-				bash( [ 'power', action, 1 ] );
+				bash( [ action, 1 ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
@@ -1027,20 +1023,6 @@ function infoWarning( icon, title, message ) {
 }
 
 // json -----------------------------------------------------------------
-function jsonMultirAudio( json ) {
-	var val    = {};
-	$.each( json, ( k, v ) => val[ v ] = k.slice( 1 ).replace( /_/g, '.' ) ); // _ip_n_n_n > ip.n.n.n
-	var names  = Object.keys( val ).sort();
-	if ( page ) {
-		var values = []
-		names.forEach( n => values.push( n, val[ n ] ) );
-		return values
-	}
-	
-	var radio = {}
-	names.forEach( n => radio[ n ] = val[ n ] );
-	return radio
-}
 function jsonStringQuote( v ) {
 	var singlequote = v.includes( "'" );
 	var doublequote = v.includes( '"' );

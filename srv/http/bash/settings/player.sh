@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-argsConvert "$1"
+args2var "$1"
 
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$cmd.conf
@@ -209,6 +209,9 @@ novolume )
 	$dirsettings/player-conf.sh
 	pushstream display '{"volumenone":true}'
 	;;
+playback )
+	$dirbash/cmd.sh $action
+	;;
 replaygain )
 	fileoutput=$dirmpdconf/output.conf
 	if [[ $enable ]]; then
@@ -218,6 +221,9 @@ replaygain )
 	else
 		rm $dirmpdconf/replaygain.conf
 	fi
+	$dirsettings/player-conf.sh
+	;;
+restartmpd )
 	$dirsettings/player-conf.sh
 	;;
 soxr )
@@ -248,6 +254,9 @@ $data
 	fi
 	systemctl restart mpd
 	pushRefresh
+	;;
+volume )
+	amixer -c $asoundcard -Mq sset "$mixer" $vol%
 	;;
 volume0db )
 	card=$( < $dirsystem/asoundcard )

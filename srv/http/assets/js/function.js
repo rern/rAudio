@@ -535,7 +535,7 @@ function getBio( artist, getsimilar ) {
 	} );
 }
 function getPlaybackStatus( withdisplay ) {
-	bash( dirbash +'status.sh '+ withdisplay, list => {
+	bash( [ 'status', withdisplay ], list => {
 		if ( list == -1 ) {
 			loaderHide();
 			info( {
@@ -545,7 +545,7 @@ function getPlaybackStatus( withdisplay ) {
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
-				, ok      : () => bash( dirsettings +'system.sh shareddatadisconnect', () => location.reload() )
+				, ok      : () => bash( [ 'shareddatadisconnect' ], () => location.reload() )
 			} );
 			return
 		}

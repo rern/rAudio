@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-argsConvert "$1"
+args2var "$1"
 
 pushRestartMpd() {
 	$dirsettings/player-conf.sh
@@ -57,6 +57,9 @@ case $cmd in
 autoplay|lyricsembedded|scrobble )
 	[[ $enable ]] && touch $dirsystem/$cmd || rm -f $dirsystem/$cmd
 	pushRefresh
+	;;
+brightness )
+	echo ${args[1]} > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladspasound )
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
@@ -235,8 +238,9 @@ multiraudio )
 	if [[ $enable ]]; then
 		touch $dirsystem/multiraudio
 		fileconf=$dirsystem/multiraudio.conf
-		conf=$( < $fileconf )
-		iplist=$( sed -E 's/^_|=.*//g; s/_/./g' $fileconf | grep -v $( ipAddress ) )
+		mv -f $dirshm/jsontemp $fileconf
+		conf=$( jq < $fileconf )
+		iplist=$( jq .[] <<< $conf | grep -v $( ipAddress ) )
 		for ip in $iplist; do
 			sshCommand $ip << EOF
 echo "$conf" > $fileconf
@@ -400,6 +404,9 @@ snapserver )
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
 	pushRefresh
+	;;
+spotifykey )
+	echo base64client=$btoa > $dirsystem/spotify
 	;;
 spotifytoken )
 	[[ ! $code ]] && rm -f $dirsystem/spotify && exit

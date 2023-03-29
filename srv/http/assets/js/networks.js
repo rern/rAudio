@@ -142,7 +142,7 @@ $( '.connect' ).click( function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Connect ...' );
-	bash( [ 'profileconnect', 'ssid='+ ssid ] );
+	bash( [ 'profileconnect', 'KEY', 'ssid', ssid ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( V.listid === 'listbt' ) {
@@ -196,7 +196,7 @@ $( '.forget' ).click( function() {
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', 'ssid='+ ssid ] );
+			bash( [ 'profileremove', 'KEY', 'ssid', ssid ] );
 		}
 	} );
 } );
@@ -207,10 +207,10 @@ $( '.info' ).click( function() {
 } );
 
 function bluetoothCommand( cmd, mac ) {
-	bash( dirbash +'bluetoothcommand.sh '+ cmd +' '+ mac );
+	bash( [ 'bluetoothcommand', 'KEY', 'action mac', cmd, mac ] );
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', 'mac='+ mac ], data => {
+	bash( [ 'bluetoothinfo', 'KEY', 'mac', mac ], data => {
 		if ( ! data ) {
 			$( '#codebluetoothlist' )
 				.empty()
@@ -223,7 +223,7 @@ function bluetoothInfo( mac ) {
 		}
 	} );
 }
-function connectWiFi( bashvar, ip ) {
+function connectWiFi( data, ip ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
@@ -232,7 +232,7 @@ function connectWiFi( bashvar, ip ) {
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', ...bashvar ], error => {
+	bash( [ 'connect', 'KEY', I.key.join( ' ' ), ...data ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -271,9 +271,9 @@ function editLAN() {
 		}
 	} );
 }
-function editLANSet( bashvar, ip ) {
+function editLANSet( data, ip ) {
 	var icon = 'lan'
-	bash( [ 'lanedit', ...bashvar ], avail => {
+	bash( [ 'lanedit', 'KEY', I.key.join( ' ' ), ...data ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -302,7 +302,7 @@ function editReconnect( icon, ip, delay ) {
 	}, delay * 1000 );
 }
 function editWiFi() {
-	bash( [ 'profileget', 'ssid='+ V.li.data( 'ssid' ) ], v => {
+	bash( [ 'profileget', 'KEY', 'ssid', V.li.data( 'ssid' ) ], v => {
 		var static = v.IP === 'static'
 		v.Security = v.Security === 'wep';
 		v.Hidden = 'Hidden' in v;
@@ -463,7 +463,7 @@ function renderWlan() {
 	bannerHide();
 }
 function scanBluetooth() {
-	bash( dirsettings +'networks-scan.sh', data => {
+	bash( [ 'scanbluetooth' ], data => {
 		if ( data ) {
 			S.listbtscan = data;
 			var htmlbt   = '';
@@ -474,7 +474,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( dirsettings +'networks-scan.sh wlan', data => {
+	bash( [ 'scanwlan' ], data => {
 		if ( data ) {
 			S.listwlscan = data;
 			var htmlwl   = '';

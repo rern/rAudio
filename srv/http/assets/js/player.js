@@ -1,10 +1,9 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.playback' ).click( function() {
-	if ( ! $( this ).hasClass( 'disabled' ) ) {
-		var cmd = S.player === 'mpd' ? 'mpcplayback' : 'playerstop';
-		bash( dirbash +'cmd.sh '+ cmd );
-	}
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	bash( [ 'playback', 'KEY', 'acttion', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
 $( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';
@@ -18,21 +17,17 @@ $( '.btoutputall' ).click( function() {
 		, ok           : () => {
 			var checked = infoVal();
 			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
-			bash( [ 'btoutputall', 'enable='+ ( checked || '' ) ] );
+			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'disable' ] );
 		}
 	} );
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', 'asoundcard='+ $( this ).val() ] );
+	bash( [ 'audiooutput', 'KEY', 'asoundcard', $( this ).val() ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [
-		  'hwmixer'
-		, 'aplayname='+ jsonStringQuote( D.aplayname )
-		, 'hwmixer='+ jsonStringQuote( $( this ).val() )
-	] );
+	bash( [ 'hwmixer', 'KEY', 'aplayname hwmixer', D.aplayname, $( this ).val() ] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -52,12 +47,10 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		var nomixer = D.mixertype === 'none';
 		if ( bt ) {
 			var cmd       = 'volume0dbbt';
-			var cmdamixer = 'amixer -D bluealsa';
 			var cmdpush   = 'volumepushbt';
 			var mixer     = S.btaplayname;
 		} else {
 			var cmd       = 'volume0db';
-			var cmdamixer = 'amixer -c '+ S.asoundcard;
 			var cmdpush   = 'volumepush';
 			var mixer     = D.hwmixer;
 		}
@@ -72,7 +65,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
+					bash( [ 'volume', 'KEY', 'asoundcard mixer vol', S.asoundcard, mixer, $( this ).val() ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ cmdpush ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
@@ -109,11 +102,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [
-					  'novolume'
-					, 'aplayname='+ jsonStringQuote( D.aplayname )
-					, 'hwmixer='+ jsonStringQuote( D.hwmixer )
-				] );
+				bash( [ 'novolume', 'KEY', 'aplayname hwmixer', D.aplayname, D.hwmixer ] );
 				notify( SW.icon, SW.title, 'Enable ...' );
 			}
 		} );
@@ -133,11 +122,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	bash( [
-		  'dop'
-		, 'enable='+ ( checked || '' )
-		, 'aplayname='+ jsonStringQuote( D.aplayname )
-	] );
+	bash( checked ? [ 'dop', 'KEY', 'aplayname', D.aplayname ] : [ 'dop' ] );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -231,7 +216,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', 'aplayname='+ jsonStringQuote( D.aplayname ) ], val => {
+	bash( [ 'customget', 'KEY', 'aplayname', D.aplayname ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -251,13 +236,7 @@ $( '#setting-custom' ).click( function() {
 				}
 				
 				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
-				bash( [
-					  'custom'
-					, 'enable=true'
-					, "global='"+ values[ 0 ] +"'"
-					, "output='"+ values[ 1 ] +"'"
-					, 'aplayname='+ jsonStringQuote( D.aplayname )
-				], mpdstart => {
+				bash( [ 'custom', 'KEY', 'global output aplayname', values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -449,10 +428,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [
-		  'mixertype'
-		, 'mixertype='+ mixertype
-		, 'aplayname='+ jsonStringQuote( D.aplayname )
-		, 'hwmixer='+ jsonStringQuote( hwmixer )
-	] );
+	bash( [ 'mixertype', 'KEY', 'mixertype aplayname hwmixer', mixertype, D.aplayname, hwmixer ] );
 }

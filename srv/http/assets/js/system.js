@@ -229,7 +229,7 @@ $( '#setting-bluetooth' ).click( function() {
 	} );
 } );
 $( '#setting-wlan' ).click( function() {
-	bash( 'cat /srv/http/assets/data/regdomcodes.json', list => {
+	bash( [ 'regdomlist' ], list => {
 		var options  = htmlOption( list );
 		var infowifi = `\
 <table>

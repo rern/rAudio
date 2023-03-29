@@ -1,8 +1,8 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-$alias    = $_POST[ 'alias' ];
-$dirsettings = '/usr/bin/sudo /srv/http/bash/settings/';
+$alias        = $_POST[ 'alias' ];
+$sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
 if ( $alias === 'albumthumbnail' ) {
 	$path          = $_POST[ 'path' ];
 	$icon          = '<i class="page-icon i-coverart"></i>';
@@ -134,7 +134,7 @@ EOF;
 if ( $alias === 'albumthumbnail' ) {
 	$commandtxt = 'albumthumbnail.sh';
 	if ( $path ) $commandtxt.= ' "'.$path.'"';
-	$command    = $dirsettings.$commandtxt;
+	$command    = $sudosettings.$commandtxt;
 } else if ( $label === 'Uninstall' ) {
 	$command    = $uninstall;
 	$commandtxt = "uninstall_$alias.sh";
@@ -187,7 +187,7 @@ while ( ! feof( $popencmd ) ) {            // get stdout until eof
 	// abort on browser back/close
 	if ( connection_status() !== 0 || connection_aborted() === 1 ) {
 		pclose( $popencmd );
-		exec( $dirsettings.'addons.sh abort '.$installfile.' '.$alias );
+		exec( $sudosettings.'addons.sh abort '.$installfile.' '.$alias );
 		exit;
 	}
 }

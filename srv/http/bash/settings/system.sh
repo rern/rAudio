@@ -422,6 +422,12 @@ rebootlist )
 	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
+refreshdata )
+	$dirsettings/${args[1]}-data.sh
+	;;
+regdomlist )
+	cat /srv/http/assets/data/regdomcodes.json
+	;;
 relays )
 	rm -f $dirsystem/relays
 	pushRefresh

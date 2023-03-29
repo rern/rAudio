@@ -352,7 +352,7 @@ function psRelays( response ) {
 						   +'<div class="msg-r wh">60</div>'
 			, buttonlabel : ico( 'relays' ) +'Off'
 			, buttoncolor : red
-			, button      : () => bash( dirsettings +'relays.sh' )
+			, button      : () => bash( [ 'relays' ] )
 			, oklabel     : ico( 'set0' ) +'Reset'
 			, ok          : () => {
 				bash( [ 'relaystimerreset' ] );
