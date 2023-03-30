@@ -238,7 +238,6 @@ multiraudio )
 	if [[ $enable ]]; then
 		touch $dirsystem/multiraudio
 		fileconf=$dirsystem/multiraudio.conf
-		mv -f $dirshm/jsontemp $fileconf
 		conf=$( jq < $fileconf )
 		iplist=$( jq .[] <<< $conf | grep -v $( ipAddress ) )
 		for ip in $iplist; do

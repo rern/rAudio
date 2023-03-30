@@ -294,7 +294,11 @@ $( '#setting-multiraudio' ).click( function() {
 			keys = Object.keys( val ).sort();
 			data = {}
 			keys.forEach( k => data[ k ] = val[ k ] );
-			$.post( 'cmd.php', { cmd: 'jsontemp', json: JSON.stringify( data ) }, () => bash( [ 'multiraudio' ] ) );
+			$.post(
+				  'cmd.php'
+				, { cmd: 'fileconf', fileconf: 'multiraudio', json: JSON.stringify( data ) }
+				, () => bash( [ 'multiraudio' ] )
+			);
 			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
 			S[ SW.id ] = true;
 		}

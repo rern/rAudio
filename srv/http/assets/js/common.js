@@ -24,25 +24,21 @@ no " ` escaping in js values:
 		> php decode and reencode:       $json = '{ "key": "\"double\"quotes and \`backtick\`" }';
 */
 function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var data   = { cmd: 'sh', bash : command }
-	} else {
-		var filesh = 'cmd';
-		if ( page ) {
-			var cmd0= command[ 0 ];
-			var filesh = 'settings/';
-			if ( cmd0 === 'refreshdata' ) {
-				filesh += 'system';
-				command.push( page );
-			} else if ( cmd0 === 'pkgstatus' ) {
-				filesh += 'system-pkgstatus';
-				command.shift();
-			} else {
-				filesh += page;
-			}
+	var filesh = 'cmd';
+	if ( page ) {
+		var cmd0= command[ 0 ];
+		var filesh = 'settings/';
+		if ( [ 'refreshdata', 'relays' ].includes( cmd0 ) ) {
+			filesh += 'system';
+			command.push( page );
+		} else if ( cmd0 === 'pkgstatus' ) {
+			filesh += 'system-pkgstatus';
+			command.shift();
+		} else {
+			filesh += page;
 		}
-		var data   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
 	}
+	var data   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
 	if ( V.consolelog ) {
 		var l    = data.args;
 		var debug = l[ 0 ].replace( 'settings/', '' ) +' "'+ l[ 1 ] +'\n'

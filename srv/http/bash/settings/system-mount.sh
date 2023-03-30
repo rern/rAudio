@@ -2,7 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-argsConvert "$1"
+args2var "$1"
 
 mountpoint="$dirnas/$name"
 

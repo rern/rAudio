@@ -17,29 +17,6 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
-argsConvert() { # convert lines to array > $args > var=value ...
-	readarray -t args <<< $1
-	cmd=${args[0]}
-	if [[ ${args[1]:0:5} == 'keys=' ]]; then
-		keys=${args[1]:5}
-		i=2
-		for k in $keys; do
-			printf -v $k '%s' ${args[i]}
-			(( i++ ))
-		done
-		return
-	fi
-	
-	filetmp=$dirshm/conf
-	printf "%s\n" "${args[@]:1}" > $filetmp
-	. $filetmp
-	if [[ $fileconf ]]; then # save file conf
-		[[ ${fileconf:0:1} != / ]] && fileconf=$dirsystem/$cmd.conf
-		grep -Ev '^enable|^fileconf' $filetmp > $fileconf
-	fi
-	rm $filetmp
-}
-
 # args2var "command
 #	KEY
 #	key1 key2 ...
@@ -68,7 +45,6 @@ args2var() { # args2var "$1"
 		[[ ${args[1]} == disable ]] && enable= || enable=true
 		return
 	fi
-	
 	keys=( ${args[2]} )
 	kL=${#keys[@]}
 	for (( i=0; i < kL; i++ )); do
@@ -88,21 +64,6 @@ args2var() { # args2var "$1"
 			s/=(.* )/="\1/
 			s/( .*)$/\1"/
 			' <<< $conf > $fileconf
-}
-varQuote() {
-	local v singlequote doublequote space
-	[[ $1 == *\'* ]] && singlequote=1
-	[[ $1 == *\"* ]] && doublequote=1
-	[[ $1 == *' '* ]]  && space=1
-	if [[ ! $singlequote && ! $doublequote && ! $space ]]; then
-		echo "$1"
-	elif [[ $doublequote && ! $singlequote ]]; then
-		echo "'""$1""'"
-	elif [[ $singlequote || $doublequote ]]; then
-		echo '"'${1//\"/\\\"}'"'
-	else
-		echo '"'"$1"'"'
-	fi
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -156,8 +117,8 @@ cpuInfo() {
 	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
 	C=${hwrevision: -4:1}
-	data=BB=$BB$'\n'
-	data+=C=$C$'\n'
+	                                      data=BB=$BB$'\n'
+	                                      data+=C=$C$'\n'
 	[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
 	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
 	[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero

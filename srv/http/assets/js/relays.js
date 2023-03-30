@@ -1,9 +1,7 @@
 $( function() { //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-keys = [ 'pin', 'name', 'on', 'off', 'ond', 'offd' ];
-
-$( 'select' ).change( refreshValues );
-$( 'input' ).on( 'keyup paste cut', refreshValues );
+$( 'select' ).change( refreshOnChange );
+$( 'input' ).on( 'keyup paste cut', refreshOnChange );
 $( '.back' ).click( function() {
 	location.href = 'settings.php?p=system';
 } );
@@ -20,37 +18,35 @@ $( '#save' ).click( function() {
 		onorder.push(  $( '.on' ).eq( i ).find( 'option:selected' ).text() );
 		offorder.push( $( '.off' ).eq( i ).find( 'option:selected' ).text() );
 	}
-	var cmd = [
-		  'save'
-		, 'KEY'
-		, 'pin name onorder offorder on ond off offd timer fileconf'
-		, '['+ R.pin.join( ',' ) +']'
-		, '[ "'+ R.name.join( '", "' ) +'" ]'
-		, '[ "'+ onorder.join( '", "' ) +'" ]'
-		, '[ "'+ offorder.join( '", "' ) +'" ]'
-		, '( '+ R.on.join( ' ' ) +' )'
-		, '( '+ R.ond.join( ' ' ) +' )'
-		, '( '+ R.off.join( ' ' ) +' )'
-		, '( '+ R.offd.join( ' ' ) +' )'
-		, R.timer
-		, true
-	];
-	bash( cmd );
+	var name = {}
+	R.pin.forEach( ( p, i ) => name[ p ] = R.name[ i ] );
+	var data = {
+		  name  : name
+		, on    : R.on
+		, ond   : R.ond
+		, off   : R.off
+		, offd  : R.offd
+		, timer : R.timer
+	}
+	$.post(
+		  'cmd.php'
+		, { cmd: 'fileconf', fileconf: 'relays', json: JSON.stringify( data ) }
+		, () => bash( [ 'relays' ] )
+	);
 	banner( 'relays', 'Relays', 'Change ...' );
 	$( '.infobtn' ).addClass( 'disabled' );
 } );
 
 } ); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-function refreshValues() {
+function refreshOnChange() {
+	return
 	setTimeout( () => { // wait for select2 ready
-		keys.forEach( k => {
+		[ 'pin', 'name', 'on', 'off', 'ond', 'offd' ].forEach( k => {
 			R[ k ] = [];
 			$( '.'+ k ).each(  ( i, el ) => {
 				if ( k === 'name' ) {
 					R.name.push( $( el ).val() );
-					return
-					
 				} else if ( k === 'ond' ) {
 					var v = R.on[ i + 1 ] ? $( el ).val() : 0; // none - disable delay
 				} else if ( k === 'offd' ) {
@@ -72,22 +68,23 @@ function renderPage() {
 	if ( typeof R === 'undefined' ) {
 		R  = JSON.parse( JSON.stringify( S ) );
 		[ 'page', 'enabled', 'login' ].forEach( k => delete R[ k ] );
-		Rs = JSON.stringify( R );
 		$( '#save' ).toggleClass( 'disabled', S.enabled );
 	}
+	R.pin  = Object.keys( R.pname );
+	R.name = Object.values( R.pname );
+	Rs = JSON.stringify( R );
 	var optnamepin = '<option value="0">None</option>';
-	for ( i = 0; i < 4; i++ ) {
-		var name = R.name[ i ] || '(unnamed)';
-		optnamepin += '<option value="'+ R.pin[ i ] +'">'+ name +'</option>';
-	}
-	for ( i = 0; i < 4; i++ ) $( '.on, .off' ).html( optnamepin );
-	for ( i = 0; i < 4; i++ ) {
-		keys.forEach( k => {
-			var sub = k === 'name' ? '' : 0;
-			$( '.'+ k ).eq( i ).val( R[ k ][ i ] || sub );
-		} );
-	}
+	R.pin.forEach( ( p, i ) => optnamepin += '<option value="'+ p +'">'+ ( R.name[ i ] || '(unnamed)' ) +'</option>' );
+	$( '.on, .off' ).html( optnamepin );
+	$( '.pin' ).each(  ( i, el ) => $( el ).val( R.pin[ i ] ) );
+	$( '.name' ).each( ( i, el ) => $( el ).val( R.name[ i ] ) );
+	$( '.on' ).each(   ( i, el ) => $( el ).val( R.on[ i ] ) );
+	$( '.ond' ).each(  ( i, el ) => $( el ).val( R.ond[ i ] ) );
+	$( '.off' ).each(  ( i, el ) => $( el ).val( R.off[ i ] ) );
+	$( '.offd' ).each( ( i, el ) => $( el ).val( R.offd[ i ] ) );
+//	[ 'on', 'ond', 'off', 'offd' ].forEach( ( cl, i ) => $( '.'+ cl ).val( R[ cl ][ i ] ) );
 	$( '#timer' ).val( R.timer );
-	for ( i = 1; i < 4; i++ ) $( '.ond' ).eq( i - 1 ).prop( 'disabled', ! R.on[ i ] );
+	R.on.forEach( ( p, i ) => $( '.ond' ).eq( i - 1 ).prop( 'disabled', ! p ) );
+	R.off.forEach( ( p, i ) => $( '.offd' ).eq( i - 1 ).prop( 'disabled', ! p ) );
 	showContent();
 }

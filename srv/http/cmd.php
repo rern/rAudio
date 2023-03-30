@@ -14,15 +14,6 @@ case 'bash':
 	$script.= escape( implode( "\n", $args ) ).'"'; // array > escaped > multiline
 	echo rtrim( shell_exec( $sudo.$script ) );      // multiline > bash
 	break;
-/*case 'sh': // single / one-line command - return string
-	$cmd = $_POST[ 'bash' ];
-	if ( $cmd[ 0 ] === '/' ) {
-		$cmd = $sudo.$cmd;
-	} else if ( $cmd[ 0 ] !== '{' ) {
-		$cmd = $sudobin.$cmd;
-	}
-	echo shell_exec( $cmd );
-	break;*/
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
@@ -55,9 +46,9 @@ case 'imagereplace':
 	$script       = $sudobash.'cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
 	shell_exec( $script );
 	break;
-case 'jsontemp':
+case 'fileconf':
 	$json = json_decode( $_POST[ 'json' ] );
-	file_put_contents( '/srv/http/data/shm/jsontemp', json_encode( $json ) );
+	file_put_contents( $dirsystem.$_POST[ 'fileconf' ].'.conf', json_encode( $json ) );
 	break;
 case 'login':
 	$file = $dirsystem.'login';

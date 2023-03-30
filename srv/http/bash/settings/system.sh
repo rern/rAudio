@@ -407,9 +407,14 @@ regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json
 	;;
 relays )
-	rm -f $dirsystem/relays
-	pushRefresh
-	pushstream display '{"submenu":"relays","value":false}'
+	if [[ $enable ]]; then
+		touch $dirsystem/relays
+	else
+		rm -f $dirsystem/relays
+		enable=false
+	fi
+	$dirsettings/relays-data.sh push
+	pushstream display '{"submenu":"relays","value":'$enable'}'
 	;;
 rotaryencoder )
 	if [[ $enable ]]; then

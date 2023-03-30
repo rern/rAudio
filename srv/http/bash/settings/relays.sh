@@ -3,19 +3,9 @@
 . /srv/http/bash/common.sh
 timerfile=$dirshm/relaystimer
 
-argsConvert "$1"
-
-if [[ $cmd == save ]]; then
-	printf "%s\n" "${args[@]:1}" > $dirsystem/relays.conf
-	touch $dirsystem/relays
-	pushRefresh
-	pushstream display '{"submenu":"relays","value":true}'
-	exit
-fi
-
 . $dirsystem/relays.conf
 
-if [[ $cmd == true ]]; then
+if [[ $1 == true ]]; then
 	touch $dirshm/relayson
 	pushstream relays '{"state":true,"order":'$onorder'}'
 	for i in 0 1 2 3; do
