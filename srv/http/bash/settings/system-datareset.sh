@@ -43,7 +43,7 @@ if [[ -e $diraddons ]]; then
 	fi
 	echo $cmdline > /boot/cmdline.txt
 	# config.txt
-	cpuInfo
+	. $dirshm/cpuinfo
 	config="\
 initramfs initramfs-linux.img followkernel
 disable_overscan=1
@@ -53,7 +53,7 @@ dtparam=audio=on"
 dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
-	[[ $BB =~ ^(09|0c)$ ]] && config+="
+	[[ $rpi0 ]] && config+="
 gpu_mem=32
 force_turbo=1
 gpu_mem=32

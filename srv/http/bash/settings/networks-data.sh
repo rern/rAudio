@@ -121,6 +121,7 @@ data='
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
 , "ipeth"       : "'$ipeth'"
+, "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'

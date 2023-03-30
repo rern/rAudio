@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+cpuInfo
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
@@ -17,8 +18,8 @@ if [[ -e /boot/expand ]]; then # run once
 	fi
 	[[ ! -e /boot/backup.gz ]] && $dirsettings/system.sh timezoneauto
 	# no on-board wireless - remove bluetooth
-	cpuInfo
-	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	. $dirshm/cpuinfo
+	[[ $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then

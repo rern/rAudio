@@ -1,6 +1,7 @@
-/* 
+/*
+bash()
 $.fn.press
-bash()   banner()    copy               errorDisplay() 
+banner() copy        errorDisplay() 
 info()   infoPower() infoPowerCommand() infoWarning()
 loader() local()     pushstream         selectSet()
 */
@@ -12,6 +13,50 @@ var iconwarning = ico( 'warning i-lg yl' ) +'&ensp;';
 var localhost   = [ 'localhost', '127.0.0.1' ].includes( location.hostname );
 var orange      = '#de810e';
 var red         = '#bb2828';
+
+// ----------------------------------------------------------------------
+/*
+no " ` escaping in js values:
+	- js array:                                 cmd = [ 'command', '"double"quotes and `backtick`' ];
+		> php implode to multiline:           $script = "command\n\"double\"quotes and \`backtick\`";
+			> bash readarray multiline to array: args=( command '"double"quotes and `backtick`' )
+	- js json with double quotes in values: json = { key: '"double"quotes and `backtick`' }
+		> php decode and reencode:       $json = '{ "key": "\"double\"quotes and \`backtick\`" }';
+*/
+function bash( command, callback, json ) {
+	if ( typeof command === 'string' ) {
+		var data   = { cmd: 'sh', bash : command }
+	} else {
+		var filesh = 'cmd';
+		if ( page ) {
+			var cmd0= command[ 0 ];
+			var filesh = 'settings/';
+			if ( cmd0 === 'refreshdata' ) {
+				filesh += 'system';
+				command.push( page );
+			} else if ( cmd0 === 'pkgstatus' ) {
+				filesh += 'system-pkgstatus';
+				command.shift();
+			} else {
+				filesh += page;
+			}
+		}
+		var data   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
+	}
+	if ( V.consolelog ) {
+		var l    = data.args;
+		var debug = l[ 0 ].replace( 'settings/', '' ) +' "'+ l[ 1 ] +'\n'
+				 + l.slice( 2 ).join( '\n' ) +'\n"';
+		navigator.maxTouchPoints ? alert( debug ) : console.log( debug );
+	} else {
+		$.post( 
+			  'cmd.php'
+			, data
+			, callback || null
+			, json || null
+		);
+	}
+}
 
 // ----------------------------------------------------------------------
 /*
@@ -43,42 +88,6 @@ $.fn.press = function( arg1, arg2 ) {
 		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );
 	return this // allow chain
-}
-
-// ----------------------------------------------------------------------
-function bash( command, callback, json ) {
-	if ( typeof command === 'string' ) {
-		var args   = { cmd: 'sh', bash : command }
-	} else {
-		var filesh = 'cmd';
-		if ( page ) {
-			var cmd0= command[ 0 ];
-			var filesh = 'settings/';
-			if ( cmd0 === 'refreshdata' ) {
-				filesh += 'system';
-				command.push( page );
-			} else if ( cmd0 === 'pkgstatus' ) {
-				filesh += 'system-pkgstatus';
-			} else if ( cmd0 === 'mount' ) {
-				filesh += 'system-mount';
-			} else {
-				filesh += page;
-			}
-		}
-		var args   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
-	}
-	if ( V.consolelog ) { // debug
-		var data = args.sh[ 0 ].replace( 'settings/', '' ) +' "'+ args.sh[ 1 ] +'\n'
-				 + args.sh.slice( 2 ).join( '\n' ) +'\n"';
-		navigator.maxTouchPoints ? alert( data ) : console.log( data );
-	} else {
-		$.post( 
-			  'cmd.php'
-			, args
-			, callback || null
-			, json || null
-		);
-	}
 }
 
 // ----------------------------------------------------------------------
@@ -963,7 +972,8 @@ function infoVal( format ) {
 		}
 		values.push( val );
 	} );
-	if ( ! I.keys )           return values.length > 1 ? values : values[ 0 ] // single value as string
+	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array : single value as string
+	if ( format === 'array' ) return values
 	if ( format === 'KEY' ) {
 		var keys = I.keys.join( ' ' );
 		if ( I.fileconf ) {
@@ -972,12 +982,9 @@ function infoVal( format ) {
 		}
 		return [ 'KEY', keys, ...values ]
 	}
-	if ( format === 'array' ) return values
-	if ( format === 'json' ) {
-		var v = {}
-		I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
-		return v
-	}
+	var v = {}
+	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
+	return v // json
 }
 
 // common info functions --------------------------------------------------

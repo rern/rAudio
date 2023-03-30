@@ -234,9 +234,8 @@ $( '#setting-smb' ).click( function() {
 	} );
 } );
 $( '#setting-multiraudio' ).click( function() {
-	var ipsub = S.hostip.replace( /^(.*\.)[^.]*$/, '$1' );
 	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
-					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ ipsub +'" spellcheck="false"></td>'
+					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ S.ipsub +'" spellcheck="false"></td>'
 					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'plus-circle i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	

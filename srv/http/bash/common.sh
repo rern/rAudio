@@ -155,7 +155,14 @@ confFromJson() { # $1 - file
 cpuInfo() {
 	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
-	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || onboardwireless=1
+	C=${hwrevision: -4:1}
+	data=BB=$BB$'\n'
+	data+=C=$C$'\n'
+	[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
+	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
+	[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero
+	[[ $BB == 0d ]]                    && data+=rpi3bplus=true$'\n'       # 3B+
+	echo "$data" > $dirshm/cpuinfo
 }
 data2json() {
 	local data json
@@ -209,6 +216,10 @@ internetConnected() {
 }
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
+}
+ipSub() {
+	ip=$( ipAddress )
+	echo ${ip%.*}.
 }
 notify() { # icon title message delayms
 	local blink delay

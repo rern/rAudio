@@ -112,16 +112,15 @@ function htmlHead( $data ) {
 	$class   = $status ? 'status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
-	$id      = $id ? ' id="'.$id.'"' : '';
-	$html    = $status ? '<heading '.$id.' data-status="'.$status.'"' : '<heading';
+	$html    = '<heading '.( $id ? ' id="'.$id.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );
+	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
 	$html   .= '</heading>';
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
-	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
+	$html   .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
 }
 function htmlSetting( $data ) {
@@ -145,7 +144,7 @@ function htmlSetting( $data ) {
 	$help        = $data[ 'help' ] ?? '';
 	$html        = '<div id="div'.$id.'"><div class="col-l';
 	$html       .= $sublabel ? '' : ' single';
-	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
+	$html       .= $status ? ' status">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
 	$html       .= $page === 'features' || $page === 'system' ? i( $id ) : ''; // icon
 	$html       .= '</div>';

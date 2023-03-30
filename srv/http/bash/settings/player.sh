@@ -34,18 +34,6 @@ autoupdate | ffmpeg | normalization )
 	systemctl restart mpd
 	pushRefresh
 	;;
-albumignore )
-	cat $dirmpd/albumignore
-	;;
-bluetoothinfo )
-	mac=$( cut -d' ' -f1 $dirshm/btconnected )
-	echo "\
-<bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L | grep -A2 $mac )
-
-<bll># bluetoothctl info $mac</bll>
-$( bluetoothctl info $mac )"
-	;;
 btoutputall )
 	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
 	[[ -e $dirmpdconf/output.conf ]] && output=1
@@ -111,39 +99,6 @@ custom )
 		$dirsettings/player-conf.sh
 	fi
 	;;
-devices )
-	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
-					| grep -B1 pvolume \
-					| head -1 )
-	[[ $bluealsa ]] && devices="\
-<bll># amixer -D bluealsa scontrols</bll>
-$bluealsa
-
-"
-	devices+="\
-<bll># aplay -l | grep ^card</bll>
-$( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
-
-<bll># amixer scontrols</bll>"
-	card=$( < $dirsystem/asoundcard )
-	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
-	if [[ $aplayname != snd_rpi_wsp ]]; then
-		devices+="
-$( amixer -c $card scontrols )
-"
-	else
-		devices+="\
-Simple mixer control 'HPOUT1 Digital',0
-Simple mixer control 'HPOUT2 Digital',0
-Simple mixer control 'SPDIF Out',0
-Simple mixer control 'Speaker Digital',0
-"
-	fi
-	devices+="
-<bll># cat /etc/asound.conf</bll>
-$( < /etc/asound.conf )"
-	echo "$devices"
-	;;
 dop )
 	[[ $enable ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
 	$dirsettings/player-conf.sh
@@ -182,23 +137,6 @@ mixertype )
 	$dirsettings/player-conf.sh
 	[[ $mixertype == none ]] && none=true || none=false
 	pushstream display '{"volumenone":'$none'}'
-	;;
-mpdignorelist )
-	file=$dirmpd/mpdignorelist
-	readarray -t files < $file
-	list="\
-<bll># find /mnt/MPD -name .mpdignore</bll>
-"
-	for file in "${files[@]}"; do
-		list+="\
-$file
-$( sed 's|^| <grn>•</grn> |' "$file" )
-"
-	done
-	echo "$list"
-	;;
-nonutf8 )
-	cat $dirmpd/nonutf8
 	;;
 novolume )
 	mpc -q crossfade 0
@@ -254,6 +192,68 @@ $data
 	fi
 	systemctl restart mpd
 	pushRefresh
+	;;
+statusalbumignore )
+	cat $dirmpd/albumignore
+	;;
+statusbtreceiver )
+	mac=$( cut -d' ' -f1 $dirshm/btconnected )
+	echo "\
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $mac )
+
+<bll># bluetoothctl info $mac</bll>
+$( bluetoothctl info $mac )"
+	;;
+statusmpdignore )
+	file=$dirmpd/mpdignorelist
+	readarray -t files < $file
+	list="\
+<bll># find /mnt/MPD -name .mpdignore</bll>
+"
+	for file in "${files[@]}"; do
+		list+="\
+$file
+$( sed 's|^| <grn>•</grn> |' "$file" )
+"
+	done
+	echo "$list"
+	;;
+statusnonutf8 )
+	cat $dirmpd/nonutf8
+	;;
+statusoutput )
+	bluealsa=$( amixer -D bluealsa 2> /dev/nulll \
+					| grep -B1 pvolume \
+					| head -1 )
+	[[ $bluealsa ]] && devices="\
+<bll># amixer -D bluealsa scontrols</bll>
+$bluealsa
+
+"
+	devices+="\
+<bll># aplay -l | grep ^card</bll>
+$( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
+
+<bll># amixer scontrols</bll>"
+	card=$( < $dirsystem/asoundcard )
+	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
+	if [[ $aplayname != snd_rpi_wsp ]]; then
+		devices+="
+$( amixer -c $card scontrols )
+"
+	else
+		devices+="\
+Simple mixer control 'HPOUT1 Digital',0
+Simple mixer control 'HPOUT2 Digital',0
+Simple mixer control 'SPDIF Out',0
+Simple mixer control 'Speaker Digital',0
+"
+	fi
+	devices+="
+<bll># cat /etc/asound.conf</bll>
+$( < /etc/asound.conf )"
+	echo "$devices"
 	;;
 volume )
 	amixer -c $asoundcard -Mq sset "$mixer" $vol%

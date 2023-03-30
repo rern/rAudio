@@ -24,6 +24,7 @@ data+='
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
 , "httpd"            : '$( exists $dirmpdconf/httpd.conf )'
+, "ipsub"            : "'$( ipSub )'"
 , "latest"           : '$( exists $dirsystem/latest )'
 , "lcd"              : '$( grep -E -q 'waveshare|tft35a' /boot/config.txt 2> /dev/null && echo true )'
 , "login"            : '$( exists $dirsystem/login )'

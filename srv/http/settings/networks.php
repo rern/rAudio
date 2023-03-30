@@ -3,7 +3,8 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'status' => 'bluetooth'
+	, 'id'     => 'bt'
+	, 'status' => true
 	, 'button' => [ 'btscan' => 'search' ]
 	, 'help'   => i( 'search btn' ).' Available devices'
 ] );
@@ -36,7 +37,8 @@ echo $html;
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'   => 'Wi-Fi'
-	, 'status'  => 'ifconfigwlan'
+	, 'id'      => 'wl'
+	, 'status'  => true
 	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>
@@ -53,7 +55,8 @@ Note:
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
-	, 'status' => 'lan'
+	, 'id'     => 'lan'
+	, 'status' => true
 	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
 ] );
 ?>
@@ -65,7 +68,8 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web <a class="hideN">User </a>Interface'
-	, 'status' => 'avahi'
+	, 'id'     => 'webui'
+	, 'status' => true
 ] );
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>

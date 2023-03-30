@@ -410,8 +410,7 @@ function renderPage() {
 		$( '#divaudiooutput div' ).eq( 0 ).html( label );
 	}
 	if ( $( '#infoRange .value' ).length ) {
-		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ];
-		bash( cmd, voldb => {
+		bash( I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ], voldb => {
 			var voldb = voldb.split( ' ' );
 			var vol   = voldb[ 0 ];
 			var db    = voldb[ 1 ];

@@ -5,7 +5,8 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
-	, 'status' => 'system'
+	, 'id'     => 'system'
+	, 'status' => true
 	, 'button' => [ 'power' => 'power' ]
 	, 'help'   => i( 'power btn' ).' Power'
 ] );
@@ -25,7 +26,8 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
-	, 'status' => 'journalctl'
+	, 'id'     => 'status'
+	, 'status' => true
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ] );
@@ -37,7 +39,7 @@ htmlHead( [ //////////////////////////////////
 		<br>Up Time
 		<div id="warning"><i class="i-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
-	<div id="status" class="col-r text"></div>
+	<div id="statustext" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
 <wh>• CPU Load:</wh>
@@ -52,6 +54,7 @@ htmlHead( [ //////////////////////////////////
 	· 85°C: CPU cores and GPU throttled.</a><!--
 --><a class="softlimit">
 	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
+· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)
 </div>
 <?php
 htmlSetting( [
@@ -68,7 +71,8 @@ $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
-	, 'status' => 'mount'
+	, 'id'     => 'storage'
+	, 'status' => true
 	, 'button' => [ 'addnas' => 'plus-circle' ]
 	, 'help'   => <<< EOF
 {$Fi( 'plus-circle btn' )} Add network storage
@@ -112,7 +116,8 @@ if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
-	, 'status' => 'rfkill'
+	, 'id'     => 'onboard'
+	, 'status' => true
 ];
 $body = [
 	[

@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 filemodule=/etc/modules-load.d/raspberrypi.conf
 
-argsConvert "$1"
+args2var "$1"
 
 configTxt() { # each $cmd removes each own lines > reappends if enable or changed
 	local name tft I2Clcdchar chip SPImpdoled I2Clcdchar I2Cmpdoled module list
@@ -170,21 +170,6 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-bluetoothstatus )
-	if rfkill | grep -q -m1 bluetooth; then
-		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||; p}' )
-		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
-	fi
-	echo "\
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show $mac )"
-	;;
-hddinfo )
-	echo -n "\
-<bll># hdparm -I $dev</bll>
-$( hdparm -I $dev | sed '1,3 d' )
-"
-	;;
 hddsleep )
 	if [[ $enable ]]; then
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
@@ -254,26 +239,6 @@ dtparam=audio=on"
 	fi
 	configTxt 'Audio I&#178;S module'
 	;;
-journalctl )
-	filebootlog=/tmp/bootlog
-	[[ -e $filebootlog ]] && cat $filebootlog && exit
-	
-	journal="\
-<bll># journalctl -b</bll>"
-	journal+="
-$( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<red>&</red>|; p}' )
-"
-	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
-	if [[ $startupfinished ]]; then
-		echo "\
-<bll># journalctl -b -o cat -g 'Startup finished'</bll>
-$startupfinished
-
-$journal" | tee $filebootlog
-	else
-		echo "$journal"
-	fi
-	;;
 lcdchar )
 	file=$dirsystem/lcdchar.conf
 	[[ $enable ]] && touch $dirsystem/lcdchar || rm $dirsystem/lcdchar
@@ -313,6 +278,9 @@ mirrorlist )
 		fi
 	done
 	echo '{ "current": "'$mirror'", "list": { '$codelist' } }'
+	;;
+mount )
+	$dirsettings/system-mount.sh "${args[@]:1}"
 	;;
 mountforget )
 	umount -l "$mountpoint"
@@ -387,6 +355,9 @@ $description
 	fi
 	grep -B1 -A2 --no-group-separator "^${pkg,}" $filepackages
 	;;
+pkgstatus )
+	$dirsettings/system-pkgstatus.sh ${args[1]}
+	;;
 poweraudiophonics )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $enable ]]; then
@@ -425,6 +396,13 @@ rebootlist )
 refreshdata )
 	$dirsettings/${args[1]}-data.sh
 	;;
+refreshstart )
+	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
+	;;
+refreshstop )
+	killall system-status.sh &> /dev/null
+	pushstream refresh '{"page":"system","intervalstatus":false}'
+	;;
 regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json
 	;;
@@ -432,16 +410,6 @@ relays )
 	rm -f $dirsystem/relays
 	pushRefresh
 	pushstream display '{"submenu":"relays","value":false}'
-	;;
-rfkilllist )
-	onboard=$( aplay -l | grep 'bcm2835' )
-	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
-	echo "\
-<bll># aplay -l | grep 'bcm2835'</bll>
-$onboard
-
-<bll># rfkill</bll>
-$( rfkill )"
 	;;
 rotaryencoder )
 	if [[ $enable ]]; then
@@ -584,14 +552,6 @@ temp_soft_limit=$softlimit"
 soundprofileset )
 	soundProfile
 	;;
-soundprofileget )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	echo "\
-<bll># sysctl vm.swappiness
-# ifconfig $lan | grep -E 'mtu|txq'</bll>
-$( sysctl vm.swappiness )
-$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /; p}' )"
-	;;
 soundprofile )
 	if [[ $enable ]]; then
 		if [[ "$swappiness $mtu $txqueuelen" == '60 1500 1000' ]]; then
@@ -606,6 +566,37 @@ soundprofile )
 	fi
 	pushRefresh
 	;;
+statusbluetooth )
+	if rfkill | grep -q -m1 bluetooth; then
+		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||; p}' )
+		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
+	fi
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show $mac )"
+	;;
+databackup )
+	$dirsettings/system-databackup.sh
+	;;
+datareset )
+	$dirsettings/system-datareset.sh
+	;;
+hddinfo )
+	echo -n "\
+<bll># hdparm -I $dev</bll>
+$( hdparm -I $dev | sed '1,3 d' )
+"
+	;;
+statusonboard )
+	onboard=$( aplay -l | grep 'bcm2835' )
+	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
+	echo "\
+<bll># aplay -l | grep 'bcm2835'</bll>
+$onboard
+
+<bll># rfkill</bll>
+$( rfkill )"
+	;;
 statusonboard )
 	ifconfig
 	if systemctl -q is-active bluetooth; then
@@ -613,14 +604,35 @@ statusonboard )
 		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
 	fi
 	;;
-statusstart )
-	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
+statussoundprofile )
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
+	echo "\
+<bll># sysctl vm.swappiness
+# ifconfig $lan | grep -E 'mtu|txq'</bll>
+$( sysctl vm.swappiness )
+$( ifconfig $lan | sed -E -n '/mtu|txq/ {s/.*(mtu.*)/\1/; s/.*(txq.*) \(.*/\1/; s/ / = /; p}' )"
 	;;
-statusstop )
-	killall system-status.sh &> /dev/null
-	pushstream refresh '{"page":"system","intervalstatus":false}'
+statusstatus )
+	filebootlog=/tmp/bootlog
+	[[ -e $filebootlog ]] && cat $filebootlog && exit
+	
+	journal="\
+<bll># journalctl -b</bll>"
+	journal+="
+$( journalctl -b | sed -n '1,/Startup finished.*kernel/ {s|Failed to start .*|<red>&</red>|; p}' )
+"
+	startupfinished=$( sed -E -n '/Startup finished/ {s/^.*(Startup)/\1/; p}' <<< $journal )
+	if [[ $startupfinished ]]; then
+		echo "\
+<bll># journalctl -b -o cat -g 'Startup finished'</bll>
+$startupfinished
+
+$journal" | tee $filebootlog
+	else
+		echo "$journal"
+	fi
 	;;
-storage )
+statusstorage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>
 $( < /etc/fstab )
@@ -629,7 +641,7 @@ $( < /etc/fstab )
 $( mount | grep ^/dev | sort | column -t )
 "
 	;;
-systemconfig )
+statussystem )
 	config="\
 <bll># cat /boot/cmdline.txt</bll>
 $( < /boot/cmdline.txt )
@@ -652,6 +664,19 @@ $raspberrypiconf"
 $(  i2cdetect -y $dev )"
 	fi
 	echo "$config"
+	;;
+statustimezone )
+	echo "<bll># timedatectl</bll>"
+	timedatectl
+	echo "
+<code>NTP server</code>:     $( getVar NTP /etc/systemd/timesyncd.conf )
+<code>Package mirror</code>: $( sed -n '/^Server/ {s/.*= //; p}' /etc/pacman.d/mirrorlist | head -1 )"
+	;;
+statuswlan )
+	echo '<bll># iw reg get</bll>'
+	iw reg get
+	echo '<bll># iw list</bll>'
+	iw list
 	;;
 tft )
 	config=$( grep -Ev 'hdmi_force_hotplug|:rotate=' /boot/config.txt )
@@ -681,14 +706,6 @@ tftcalibrate )
 		sed -i -E 's/(Calibration" +").*/\1'$value'"/' /etc/X11/xorg.conf.d/99-calibration.conf
 		systemctl start localbrowser
 	fi
-	;;
-timedate )
-	echo "<bll># timedatectl</bll> <code>(NTP: $( getVar NTP /etc/systemd/timesyncd.conf ))</code>"
-	timedatectl
-	echo "
-<code>NTP server</code>: $( getVar NTP /etc/systemd/timesyncd.conf )
-<code>Package mirror</code>:
-$( sed -n '/^Server/ {s/.*= //; p}' /etc/pacman.d/mirrorlist )"
 	;;
 timezone )
 	[[ $timezone == auto ]] && timezoneAuto || timedatectl set-timezone $timezone

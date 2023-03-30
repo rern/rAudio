@@ -28,6 +28,8 @@ var default_v      = {
 		, chip      : 'PCF8574'
 		, backlight : false
 	}
+	, mountcifs     : { protocol: 'cifs', name: '', ip: S.ipsub, share: '', user: '', password: '', options: '' }
+	, mpountnfs     : { protocol: 'nfs', name: '', ip: S.ipsub, share: '', options: '' }
 	, powerbutton   : { on: 5, sw: 5, led: 40, reserved: 5 }
 	, rotaryencoder : { pina: 27, pinb: 22, pins: 23, strp: 1 }
 	, softlimit     : { softlimit: 60 }
@@ -110,7 +112,7 @@ $( '.img' ).click( function() {
 	} );
 } );
 $( '.refresh' ).click( function( e ) {
-	bash( [ S.intervalstatus ? 'statusstop' : 'statusstart' ] );
+	bash( [ S.intervalstatus ? 'refreshstop' : 'refreshstart' ] );
 } );
 $( '.addnas' ).click( function() {
 	infoMount();
@@ -541,7 +543,7 @@ $( '#backup' ).click( function() {
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
 			notify( SW.icon, SW.title, 'Process ...' );
-			bash( dirsettings +'system-databackup.sh', data => {
+			bash( [ 'databackup' ], data => {
 				if ( data == 1 ) {
 					notify( SW.icon, SW.title, 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
@@ -610,7 +612,7 @@ $( '#restore' ).click( function() {
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
 				notify( SW.icon, SW.title, 'Reset to default ...' );
-				bash( dirsettings +'system-datareset.sh' );
+				bash( [ 'datareset' ] );
 			} else {
 				notify( SW.icon, SW.title, 'Restore ...' );
 				var formdata = new FormData();
@@ -825,6 +827,7 @@ function infoLcdcharButton() {
 }
 var contentmount = {
 	  common : `\
+<input type="hidden">
 <table>
 <tr><td style="width: 90px">Name</td>
 <td><input id="mountpoint" type="text" placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"></td>
@@ -858,23 +861,16 @@ function infoMount( val ) {
 	var shareddata = SW.id === 'shareddata';
 	var icon    = 'networks';
 	var title   = shareddata ? 'Shared Data Server' : 'Add Network Storage';
-	var ipsub   = ipSub();
 	var tab     = ! nfs ? [ '', () => infoMount( 'nfs' ) ] : [ infoMount, '' ];
 	if ( shareddata ) tab.push( inforServer );
-	if ( nfs ) {
-		var content = contentmount.common + contentmount.option;
-		var values  = { name: '', ip: ipsub, share: '', options: '' }
-	} else {
-		var content = contentmount.common + contentmount.cifs + contentmount.option;
-		var values  = { name: '', ip: ipsub, share: '', user: '', password: '', options: '' }
-	}
+	var content = contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option;
 	info( {
 		  icon       : icon
 		, title      : title
 		, tablabel   : ! shareddata ? [ 'CIFS', 'NFS' ] : [ 'CIFS', 'NFS', 'rAudio' ]
 		, tab        : tab
 		, content    : content
-		, values     : values
+		, values     : default_v[ nfs ? 'mountnfs' : 'mountcifs' ]
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
@@ -893,10 +889,12 @@ function infoMount( val ) {
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
-			var cmd = [ 'mount', 'protocol='+ ( nfs ? 'nfs' : 'cifs' ), ...infoVal() ];
-			if ( shareddata ) cmd.push( 'shareddata=true' );
+			var values = infoVal();
+			values.protocol = nfs ? 'nfs' : 'cifs';
+			if ( shareddata ) values.shareddata = true;
+			var cmd = [ 'mount', 'KEY', keys, ...values ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( cmd, error => { // system-mount.sh
+			bash( cmd, error => {
 				if ( error ) {
 					info( {
 						  icon    : icon
@@ -939,7 +937,7 @@ function inforServer() {
 		  icon      : SW.icon
 		, title     : SW.title
 		, textlabel : 'Server IP'
-		, values    : ipSub()
+		, values    : S.ipsub
 		, checkip   : [ 1 ]
 		, cancel    : switchCancel
 		, ok        : () => {
@@ -966,11 +964,8 @@ function inforServer() {
 		}
 	} );
 }
-function ipSub() {
-	return S.ip.substring( 0, S.ip.lastIndexOf( '.' ) + 1 );
-}
 function renderPage() {
-	$( '#status' ).html( S.status + S.warning );
+	$( '#statustext' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()

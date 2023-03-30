@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+[[ -e $dirshm/cpuinfo ]] && . $dirshm/cpuinfo || cpuInfo
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
@@ -10,14 +11,15 @@ $( cut -d' ' -f1-3 /proc/loadavg | sed 's| | <gr>•</gr> |g' )<br>\
 $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
-softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-[[ ! $softlimit ]] && softlimit=60
-warning=
+if [[ $rpi3bplus ]]; then
+	softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+	[[ ! $softlimit ]] && softlimit=60
+fi
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
 	binary=$( python -c "print( bin( int( '$throttled', 16 ) ) )" ) # 0b01234567890123456789
 	current=${binary: -4}                                                             # 6789
-	occured=${binary:2:4}                                             # 0123
+	occured=${binary:2:4}                                           # 0123
 	e_current=( \
 		"Soft temperature limit active <gr>(>$softlimit°C)</gr>" \
 		'Currently throttled' \
@@ -30,10 +32,11 @@ if [[ $throttled != 0x0 ]]; then
 		'Arm frequency capping has occurred' \
 		'<yl>Under-voltage</yl> has occurred <gr>(<4.7V)</gr>' \
 	)
-	for i in 0 1 2 3; do
+	[[ $softlimit ]] && digit='0 1 2 3' || digit='1 2 3'
+	for i in $digit; do
 		[[ ${current:i:1} == 1 ]] && warning+=" · ${e_current[i]}<br>"
 	done
-	for i in 0 1 2 3; do
+	for i in $digit; do
 		[[ ${occured:i:1} == 1 ]] && warning+=" · ${e_occured[i]}<br>"
 	done
 fi
@@ -41,38 +44,41 @@ fi
 # for interval refresh
 [[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'","intervalstatus":true}' && exit
 
-readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
-cpu=${cpu[0]}
-core=${cpu[1]}
-speed=${cpu[2]/.*}
-(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
-(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
-soccpu+=" @ $speed"
-rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
-if [[ $rpimodel == *BeagleBone* ]]; then
-	soc=AM3358
-else
-	soc=BCM
-	cpuInfo
-	C=${hwrevision: -4:1}
-	case $C in
-		0 ) soc+=2835;; # 0, 1
-		1 ) soc+=2836;; # 2
-		2 ) case $BB in
-				04|08 ) soc+=2837;;   # 2 1.2, 3B
-				0d|0e ) soc+=2837B0;; # 3A+, 3B+
-				12 )    soc+=2710A1;; # 0 2W
-			esac;;
-		3 ) soc+=2711;; # 4
-	esac
-fi
-soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
-system="\
+if [[ -e $dirshm/system ]]; then
+	system=$( < $dirshm/system )
+else 
+	readarray -t cpu <<< $( lscpu | awk '/Core|Model name|CPU max/ {print $NF}' )
+	cpu=${cpu[0]}
+	core=${cpu[1]}
+	speed=${cpu[2]/.*}
+	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
+	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
+	soccpu+=" @ $speed"
+	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
+	if [[ $rpimodel == *BeagleBone* ]]; then
+		soc=AM3358
+	else
+		soc=BCM
+		case $C in
+			0 ) soc+=2835;; # 0, 1
+			1 ) soc+=2836;; # 2
+			2 ) case $BB in
+					04|08 ) soc+=2837;;   # 2 1.2, 3B
+					0d|0e ) soc+=2837B0;; # 3A+, 3B+
+					12 )    soc+=2710A1;; # 0 2W
+				esac;;
+			3 ) soc+=2711;; # 4
+		esac
+	fi
+	soc+=$( free -h | awk '/^Mem/ {print " <gr>•</gr> "$2}' | sed -E 's|(.i)| \1B|' )
+	system="\
 rAudio $( getContent $diraddons/r1 )<br>\
 $( uname -rm | sed -E 's|-rpi-ARCH (.*)| <gr>\1</gr>|' )<br>\
 $rpimodel<br>\
 $soc<br>\
 $soccpu"
+	echo "$system" > $dirshm/system
+fi
 
 ifconfiglan=$( ifconfig | grep -A2 ^e )
 if [[ $ifconfiglan ]]; then
@@ -198,7 +204,7 @@ data+='
 , "hostname"          : "'$( hostname )'"
 , "i2seeprom"         : '$( grep -q -m1 force_eeprom_read=0 /boot/config.txt && echo true )'
 , "i2smodulesw"       : '$i2smodulesw'
-, "ip"                : "'$( ipAddress )'"
+, "ipsub"                : "'$( ipSub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'
 , "lcdcharconf"       : '$( conf2json lcdchar.conf )'
@@ -231,7 +237,7 @@ data+='
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
 
-if [[ ! $BB =~ ^(09|0c|12)$ ]]; then # rpi zero, zero w, zero 2w
+if [[ $onboardsound ]]; then
 	data+='
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
@@ -260,7 +266,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
 fi
-if [[ $BB == 0d ]]; then # 3B+
+if [[ $rpi3bplus ]]; then
 	data+='
 , "softlimit"         : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
 , "softlimitconf"     : { "softlimit": '$softlimit' }'

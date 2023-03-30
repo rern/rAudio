@@ -31,7 +31,7 @@ wlanDevice() {
 	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep ^w )
 	if [[ ! $iplinkw ]]; then
-		cpuInfo
+		. $dirshm/cpuinfo
 		if [[ $onboardwireless ]]; then
 			modprobe brcmfmac
 			sleep 1
@@ -49,17 +49,6 @@ wlanDevice() {
 
 case $cmd in
 
-avahi )
-	hostname=$( hostname )
-	echo "\
-<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
-$( timeout 1 avahi-browse -arp \
-	| cut -d';' -f7,8 \
-	| grep $hostname \
-	| grep -v 127.0.0.1 \
-	| sed 's/;/ : /' \
-	| sort -u )"
-	;;
 bluetoothcommand )
 	$dirbash/bluetoothcommand.sh $action $mac
 	;;
@@ -70,11 +59,6 @@ bluetoothinfo )
 	echo "\
 <bll># bluetoothctl info $mac</bll>
 $info"
-	;;
-bluetoothshow )
-	echo "\
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show )"
 	;;
 connect )
 	file="/etc/netctl/$ESSID"
@@ -131,26 +115,6 @@ disconnect )
 hostapd )
 	echo $dirsettings/features.sh "$1"
 	;;
-ifconfigeth )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	echo "\
-<bll># ifconfig $lan</bll>
-$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
-	;;
-ifconfigwlan )
-	wlandev=$( < $dirshm/wlan )
-	echo "\
-<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -E -v 'RX|TX')
-$( iwconfig $wlandev | awk NF )"
-	;;
-iwlist )
-	echo '<bll># iw reg get</bll>'
-	iw reg get
-	echo
-	echo '<bll># iw list</bll>'
-	iw list
-	;;
 lanedit )
 	if [[ $ip ]]; then
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
@@ -204,6 +168,35 @@ scankill )
 	;;
 scanwlan )
 	$dirsettings/networks-scan.sh wlan
+	;;
+statusbt )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
+	;;
+statuslan )
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
+	echo "\
+<bll># ifconfig $lan</bll>
+$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
+	;;
+statuswebui )
+	hostname=$( hostname )
+	echo "\
+<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
+$( timeout 1 avahi-browse -arp \
+	| cut -d';' -f7,8 \
+	| grep $hostname \
+	| grep -v 127.0.0.1 \
+	| sed 's/;/ : /' \
+	| sort -u )"
+	;;
+statuswl )
+	wlandev=$( < $dirshm/wlan )
+	echo "\
+<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -E -v 'RX|TX')
+$( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth

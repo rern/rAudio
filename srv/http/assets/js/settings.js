@@ -9,31 +9,6 @@ S              = {} // status
 SW             = {} // switch
 V              = {} // var global
 
-var playersh   = dirsettings +'player.sh ';
-var networkssh = dirsettings +'networks.sh ';
-var systemsh   = dirsettings +'system.sh ';
-var cmd        = {
-	  albumignore  : playersh   +'albumignore'
-	, asound       : playersh   +'devices'
-	, avahi        : networkssh +'avahi'
-	, bluetooth    : networkssh +'bluetoothshow'
-	, btreceiver   : playersh   +'bluetoothinfo'
-	, journalctl   : systemsh   +'journalctl'
-	, lan          : networkssh +'ifconfigeth'
-	, mount        : systemsh   +'storage'
-	, mpdignore    : playersh   +'mpdignorelist'
-	, nonutf8      : playersh   +'nonutf8'
-	, rfkill       : systemsh   +'rfkilllist'
-	, shareddata   : systemsh   +'shareddataname'
-	, soundprofile : systemsh   +'soundprofileget'
-	, system       : systemsh   +'systemconfig'
-	, timezone     : systemsh   +'timedate'
-	, wlan         : networkssh +'iwlist'
-	, ifconfigwlan : networkssh +'ifconfigwlan'
-}
-var services   = [ 'camilladsp',     'dabradio', 'hostapd',    'localbrowser', 'mpd',     'nfsserver'
-				 , 'shairport-sync', 'smb',      'snapclient', 'spotifyd',     'upmpdcli' ];
-
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
@@ -42,10 +17,10 @@ function bannerReset() {
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
-	if ( $el.hasClass( 'hide' ) ) {
-		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
-	}
-	var command = services.includes( id ) ? [ 'pkgstatus', id ] : cmd[ id ]+' 2> /dev/null';
+	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
+	var services   = [ 'camilladsp',     'dabradio', 'hostapd',    'localbrowser', 'mpd',     'nfsserver'
+					 , 'shairport-sync', 'smb',      'snapclient', 'spotifyd',     'upmpdcli' ];
+	var command = services.includes( id ) ? [ 'pkgstatus', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -171,7 +146,7 @@ function switchSet() {
 		$this.toggleClass( 'hide', ! S[ sw ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
+		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
 	} );
 }
 
@@ -357,7 +332,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	
 	var $this = $( this );
 	if ( ! $this.hasClass( 'single' ) ) {
-		var id    = $this.data( 'status' );
+		var id   = $this.parent().prop( 'id' ).replace( /^div/, '' );
 		var $code = $( '#code'+ id );
 		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	}

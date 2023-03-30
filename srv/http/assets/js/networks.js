@@ -1,6 +1,6 @@
 var default_v = {
 	  dhcp   : { ESSID: '', Key: '', Security: false, Hidden: false }
-	, static : { ESSID: '', Key: '', Address: '', Gateway: '', Security: false, Hidden: false }
+	, static : { ESSID: '', Key: '', Address: S.ipsub, Gateway: S.ipsub, Security: false, Hidden: false }
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -232,7 +232,7 @@ function connectWiFi( data, ip ) {
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', 'KEY', I.key.join( ' ' ), ...data ], error => {
+	bash( [ 'connect', 'KEY', I.keys.join( ' ' ), ...data ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -273,7 +273,7 @@ function editLAN() {
 }
 function editLANSet( data, ip ) {
 	var icon = 'lan'
-	bash( [ 'lanedit', 'KEY', I.key.join( ' ' ), ...data ], avail => {
+	bash( [ 'lanedit', 'KEY', I.keys.join( ' ' ), ...data ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -322,7 +322,7 @@ function infoWiFi( values ) {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ '', () => infoWiFiSwitch( values ) ]
+		, tab           : [ '', () => infoWiFiSwitch( infoVal() ) ]
 		, boxwidth      : 180
 		, textlabel     : [ 'SSID' ]
 		, passwordlabel : 'Password'
@@ -338,7 +338,7 @@ function infoWiFiStatic( values ) {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ () => infoWiFiSwitch( values ), '' ]
+		, tab           : [ () => infoWiFiSwitch( infoVal() ), '' ]
 		, boxwidth      : 180
 		, textlabel     : [ 'SSID', 'Password', 'IP', 'Gateway' ]
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
@@ -353,11 +353,11 @@ function infoWiFiStatic( values ) {
 	} );
 }
 function infoWiFiSwitch( values ) {
-	var static = 'Address' in values;
-	var keys = Object.keys( default_v[ static ? 'dhcp' : 'static' ] );
+	var target = 'Address' in values ? 'dhcp' : 'static';
+	var keys = Object.keys( default_v[ target ] );
 	var v = {}
 	keys.forEach( k => v[ k ] = values[ k ] );
-	static ? infoWiFi( v ) : infoWiFiStatic( v );
+	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
 function qr( msg ) {
 	return new QRCode( {
@@ -379,10 +379,10 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
-	if ( ! $( '#codebluetooth' ).hasClass( 'hide' ) ) {
+/*	if ( ! $( '#codebluetooth' ).hasClass( 'hide' ) ) {
 		var mac = $( '#codebluetooth' ).data( 'mac' );
 		bluetoothInfo( mac );
-	}
+	}*/
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
