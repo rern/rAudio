@@ -20,6 +20,7 @@
 	--shadow-menu   :  4px  4px 10px     #000;
 	--shadow-menu-l : -4px  4px 10px     #000;
 	--shadow-menu-u : -4px -4px 10px     #000;
+	--shadow-select : -1px  1px 1px      #000;
 	--shadow-text   : -1px  0   2px      #000;
 }
 
@@ -27,10 +28,10 @@ bl,  .bl  { color : var( --cm ) !important }
 bll       { color : var( --cml ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
-grn, .grn { color : #0f0 }
-ora, .ora { color : #f80 }
-pur, .pur { color : #f0f }
-red, .red { color : #f00 }
+grn, .grn { color : #0f0 !important }
+ora, .ora { color : #f80 !important }
+pur, .pur { color : #f0f !important }
+red, .red { color : #f00 !important }
 yl,  .yl  { color : #ff0 !important }
 wh,  .wh  { color : var( --cw ) !important }
 

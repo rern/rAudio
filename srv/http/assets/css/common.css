@@ -520,13 +520,16 @@ input[type=checkbox] {
 }
 .disabled,
 .disabled i {
-	pointer-events: none;
 	color: var( --cg60 ) !important;
+	pointer-events: none;
 }
 .infobtn.disabled {
 	background-color: var( --cgd ) !important;
 	box-shadow: none;
 	filter: none !important;
+}
+input[type=checkbox].disabled {
+	pointer-events: auto;
 }
 .infobtn i {
 	font-size: 18px;
@@ -698,12 +701,10 @@ hr {
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoContent td:first-child i {
-	font-size: 20px;
-	width: 24px;
-	text-align: center;
-}
 #infoContent i {
+	width: 24px;
+	font-size: 20px;
+	text-align: center;
     color: var( --cw );
 }
 #infoContent pre {
