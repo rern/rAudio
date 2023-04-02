@@ -525,7 +525,7 @@ $( '#setting-timezone' ).click( function() {
 	if ( 'htmlmirror' in V || S.rpi01 ) {
 		infoNtpMirror();
 	} else {
-		notify( SW.icon, SW.title, 'Get mirror server list ...' );
+		notifyCommon( 'Get mirror server list ...' );
 		bash( [ 'mirrorlist' ], data => {
 			S.mirror     = data.current;
 			V.htmlmirror = htmlOption( data.list );
@@ -554,10 +554,10 @@ $( '#backup' ).click( function() {
 		, title   : SW.title
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
-			notify( SW.icon, SW.title, 'Process ...' );
+			notifyCommon( 'Process ...' );
 			bash( [ 'databackup' ], data => {
 				if ( data == 1 ) {
-					notify( SW.icon, SW.title, 'Download ...' );
+					notifyCommon( 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
 						.then( response => response.blob() )
 						.then( blob => {
@@ -623,10 +623,10 @@ $( '#restore' ).click( function() {
 		}
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
-				notify( SW.icon, SW.title, 'Reset to default ...' );
+				notifyCommon( 'Reset to default ...' );
 				bash( [ 'datareset' ] );
 			} else {
-				notify( SW.icon, SW.title, 'Restore ...' );
+				notifyCommon( 'Restore ...' );
 				var formdata = new FormData();
 				formdata.append( 'cmd', 'datarestore' );
 				formdata.append( 'file', I.infofile );
@@ -654,7 +654,7 @@ $( '#shareddata' ).click( function() {
 			, cancel  : () => $this.prop( 'checked', true )
 			, okcolor : orange
 			, ok      : () => {
-				notify( SW.icon, SW.title, 'Disable ...' );
+				notifyCommon( 'Disable ...' );
 				bash( [ 'shareddatadisconnect', 'disable=true' ] );
 			}
 		} );

@@ -35,7 +35,7 @@ $( '#setting-spotifyd' ).click( function() {
 	
 	if ( ! S.spotifyd && S.spotifytoken ) {
 		bash( [ 'spotifyd' ] );
-		notify( SW.icon, SW.title, 'Enable ...' );
+		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		info( {
 			  icon    : SW.icon
@@ -282,7 +282,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, ok           : () => {
 			var v = infoVal();
 			if ( v.length < 3 ) {
-				notify( SW.icon, SW.title, false );
+				notifyCommon( 'Disable ...' );
 				bash( [ 'multiraudio', 'disable' ] );
 				return
 			}
@@ -309,7 +309,7 @@ $( '#login' ).click( function() {
 			, checkblank    : true
 			, cancel        : switchCancel
 			, ok            : () => {
-				notify( SW.icon, SW.title, 'Disable ...' );
+				notifyCommon();
 				$.post( 'cmd.php', {
 					  cmd      : 'login'
 					, disable  : 1
@@ -332,7 +332,7 @@ $( '#setting-login' ).click( function() {
 		, cancel        : switchCancel
 		, ok            : () => {
 			var values = infoVal();
-			notify( SW.icon, SW.title, S.login ? 'Change ...' : 'Enable...' );
+			notifyCommon( S.login ? 'Change ...' : 'Enable...' );
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : values[ 0 ]
@@ -401,7 +401,7 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', S.nfsserver ? 'disable' : '' ] ); // enable if not active
-				notify( SW.icon, SW.title, S.nfsserver ? 'Disable ...' : 'Enable ...' );
+				notifyCommon();
 			}
 		} );
 	} );

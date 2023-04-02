@@ -1070,7 +1070,7 @@ function stringQuote( v ) {
 	var space       = v.includes( ' ' );
 	if ( ! singlequote && ! doublequote && ! space ) return v                                  //  v
 	if ( doublequote && ! singlequote )              return "'"+ v + "'"                       // 'v "v" v'
-	if ( singlequote || doublequote )                return v.replace( /"/g, '\\"' ) // "v 'v' \"v\""
+	if ( singlequote || doublequote )                return '"'+ v.replace( /"/g, '\\"' ) +'"' // "v 'v' \"v\""
 	/* space */                                      return "'"+ v + "'"                       // 'v ...'
 }
 
@@ -1089,6 +1089,11 @@ function local( delay ) {
 }
 
 // pushstream -----------------------------------------------------------------
+$( '#bar-top, .head' ).press( function() {
+	V.debug = true;
+	banner( 'gear', 'Pushstream', 'No disconnect.' )
+} );
+
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'
@@ -1139,7 +1144,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		pushstream.connect();
 	}
 	function disconnect() {
-		if ( ! active ) return
+		if ( ! active || V.debug ) return
 		
 		active = false;
 		pushstream.disconnect();

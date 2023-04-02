@@ -103,7 +103,7 @@ $( '#novolume' ).click( function() {
 			, ok      : () => {
 				S.novolume = true;
 				bash( [ 'novolume', 'KEY', 'aplayname hwmixer', D.aplayname, D.hwmixer ] );
-				notify( SW.icon, SW.title, 'Enable ...' );
+				notifyCommon( 'Enable ...' );
 			}
 		} );
 	} else {
@@ -235,7 +235,7 @@ $( '#setting-custom' ).click( function() {
 					return
 				}
 				
-				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
+				notifyCommon( S.custom ? 'Change ...' : 'Enable ...' );
 				bash( [ 'custom', 'KEY', 'global output aplayname', values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
