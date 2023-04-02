@@ -170,6 +170,18 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
+databackup )
+	$dirsettings/system-databackup.sh
+	;;
+datareset )
+	$dirsettings/system-datareset.sh
+	;;
+hddinfo )
+	echo -n "\
+<bll># hdparm -I $dev</bll>
+$( hdparm -I $dev | sed '1,3 d' )
+"
+	;;
 hddsleep )
 	if [[ $enable ]]; then
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
@@ -241,7 +253,7 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	file=$dirsystem/lcdchar.conf
-	[[ $enable ]] && touch $dirsystem/lcdchar || rm $dirsystem/lcdchar
+	[[ $enable ]] && touch $dirsystem/lcdchar || rm -f  $dirsystem/lcdchar
 	i2cset=1
 	configTxt 'Character LCD'
 	;;
@@ -409,11 +421,12 @@ regdomlist )
 relays )
 	if [[ $enable ]]; then
 		touch $dirsystem/relays
+		mv -f $dirshm/relays.json $dirsystem
 	else
 		rm -f $dirsystem/relays
 		enable=false
 	fi
-	$dirsettings/relays-data.sh push
+	pushRefresh
 	pushstream display '{"submenu":"relays","value":'$enable'}'
 	;;
 rotaryencoder )
@@ -580,18 +593,6 @@ statusbluetooth )
 <bll># bluetoothctl show</bll>
 $( bluetoothctl show $mac )"
 	;;
-databackup )
-	$dirsettings/system-databackup.sh
-	;;
-datareset )
-	$dirsettings/system-datareset.sh
-	;;
-hddinfo )
-	echo -n "\
-<bll># hdparm -I $dev</bll>
-$( hdparm -I $dev | sed '1,3 d' )
-"
-	;;
 statusonboard )
 	onboard=$( aplay -l | grep 'bcm2835' )
 	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
@@ -736,7 +737,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
-	[[ $enable ]] && touch $dirsystem/usbautoupdate || rm $dirsystem/usbautoupdate
+	[[ $enable ]] && touch $dirsystem/usbautoupdate || rm -f $dirsystem/usbautoupdate
 	pushRefresh
 	;;
 vuled )

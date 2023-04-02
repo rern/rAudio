@@ -7,15 +7,15 @@ timerfile=$dirshm/relaystimer
 
 if [[ $1 == true ]]; then
 	touch $dirshm/relayson
-	pushstream relays '{"state":true,"order":'$onorder'}'
-	for i in 0 1 2 3; do
-		pin=${on[$i]}
-		(( $pin == 0 )) && break
-		
+	devices='<wh>'$( echo -e $orderon )
+	i=0
+	for pin in ${on[$i]}; do
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
-		(( $i > 0 )) && pushstream relays '{"on":'$(( i + 1 ))'}'
-		sleep ${ond[$i]} &> /dev/null
+		message=$( sed "$(( i + 1 )) s|$|</wh>|" <<< $devices )
+		pushstream relays '{ "state": "ON", "message": '$message' }'
+		sleep ${ond[$i]}
+		(( i++ ))
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
@@ -24,18 +24,18 @@ if [[ $1 == true ]]; then
 else
 	rm -f $dirshm/relayson $timerfile
 	killall relays-timer.sh &> /dev/null
-	pushstream relays '{"state":false,"order":'$offorder'}'
-	for i in 0 1 2 3; do
-		pin=${off[$i]}
-		(( $pin == 0 )) && break
-		
+	devices='<gr>'$( echo -e $orderoff )
+	i=0
+	for pin in ${off[$i]}; do
 		gpio -1 write $pin 0
-		(( $i > 0 )) && pushstream relays '{"off":'$(( i + 1 ))'}'
-		sleep ${offd[$i]} &> /dev/null
+		message=$( sed "$(( i + 1 )) s|$|</gr>|" <<< $devices )
+		pushstream relays '{ "state": "OFF", "message": '$message' }'
+		sleep ${offd[$i]}
+		(( i++ ))
 	done
 fi
 
 alsactl store
 sleep 1
 $dirbash/status-push.sh
-pushstream relays '{"done":1}'
+pushstream relays '{ "state": "RESET" }'

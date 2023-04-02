@@ -339,7 +339,7 @@ function psRelays( response ) {
 		$( '#infoX' ).click();
 	}
 	if ( ! ( 'state' in response ) ) return
-		
+	
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
 	var state     = response.state;
 	if ( state === 'RESET' ) {
@@ -369,31 +369,19 @@ function psRelays( response ) {
 				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
-	} else {
-		if ( ! state ) $( '#infoX' ).click();
-		var devices = '';
-		$.each( response.order, ( i, val ) => {
-			if ( i === 0 ) {
-				var color = state ? '' : 'class="gr"';
-			} else {
-				var color = state ? 'class="gr"' : '';
+	} else if ( [ 'ON', 'OFF' ].includes( state ) ) {
+		info( {
+			  icon       : 'relays'
+			, title      : 'Relays '+ state
+			, message    : stopwatch
+						  +'<div class="msg-r">'+ response.message +'</div>'
+			, okno       : true
+			, oknoreset  : true
+			, beforeshow : () => {
+				$( '#infoX' ).addClass( 'hide' );
+				if ( state === 'OFF' ) $( '#infoContent .msg-r' ).addClass( 'wh' );
 			}
-			devices += '<a id="device'+ ( i + 1 ) +'" '+ color +'>'+ val +'</a><br>';
 		} );
-		if ( ! I.active ) {
-			info( {
-				  icon       : 'relays'
-				, title      : 'Relays '+ ( state ? 'ON' : 'OFF' )
-				, message    : stopwatch
-							  +'<div class="msg-r">'+ devices +'</div>'
-				, okno       : true
-				, beforeshow : () => $( '#infoX' ).addClass( 'hide' )
-			} );
-		} else {
-			$( '#infoTitle' ).text( 'GPIO Relays '+ ( state ? 'ON' : 'OFF' ) );
-			$( '.infobtn' ).addClass( 'hide' );
-			$( '.infofooter wh' ).html( devices );
-		}
 	}
 }
 function psRestore( data ) {

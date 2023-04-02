@@ -288,19 +288,11 @@ $( '#setting-multiraudio' ).click( function() {
 			}
 			
 			var val = {}
-			v.forEach( ( el, i ) => {
-				i % 2 ? val[ name ] = el : name = el;
-			} );
+			v.forEach( ( el, i ) => i % 2 ? val[ name ] = el : name = el );
 			keys = Object.keys( val ).sort();
 			data = {}
 			keys.forEach( k => data[ k ] = val[ k ] );
-			$.post(
-				  'cmd.php'
-				, { cmd: 'fileconf', fileconf: 'multiraudio', json: JSON.stringify( data ) }
-				, () => bash( [ 'multiraudio' ] )
-			);
-			notify( SW.icon, SW.title, S.multiraudio ? 'Change ...' : 'Enable ...' );
-			S[ SW.id ] = true;
+			bashJson( data, [ 'multiraudio' ] );
 		}
 	} );
 } );

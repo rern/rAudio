@@ -237,9 +237,10 @@ logindisable )
 multiraudio )
 	if [[ $enable ]]; then
 		touch $dirsystem/multiraudio
-		fileconf=$dirsystem/multiraudio.conf
-		conf=$( jq < $fileconf )
-		iplist=$( jq .[] <<< $conf | grep -v $( ipAddress ) )
+		mv -f $dirshm/multiraudio.json $dirsystem
+		fileconf=$dirsystem/multiraudio.json
+		conf=$( < $fileconf )
+		iplist=$( grep -Ev "$( ipAddress )|{|}" <<< $conf | awk '{print $NF}' | tr -d '",' )
 		for ip in $iplist; do
 			sshCommand $ip << EOF
 echo "$conf" > $fileconf

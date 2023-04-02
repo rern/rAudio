@@ -90,6 +90,9 @@ function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );
 }
+function notifyCommon( message, delay ) {
+	banner( SW.icon +' blink', SW.title, message, delay || -1 );
+}
 function refreshData() {
 	if ( page === 'guide' || I.active ) return
 	

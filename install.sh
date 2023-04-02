@@ -31,22 +31,6 @@ hdmi=$hdmi"
 	echo "$conf" > $file
 fi
 
-file=$dirsystem/multiraudio.conf
-if [[ -e $file ]]; then
-	if [[ $( head -1 $file ) == { ]]; then # json from testing
-		data=$( sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"$/_\2="\1"/; s/\./_/g' <<< $file )
-	else
-		readarray -t lines < $file
-		lL=${#lines[@]}
-		data=
-		for (( i=0; i < lL; i++ )); do
-			v=${lines[i]}
-			[[ $(( i % 2 )) == 0 ]] && v='"'${v//\"/\\\"}'"' || data+="k=_${v//./_}=$v"$'\n'
-		done
-	fi
-	echo "$data" > $file
-fi
-
 file=$dirsystem/lcdchar.conf
 if [[ -e $file ]] && grep -q pins_data $file; then
 	lines=$( < $file )
@@ -114,6 +98,13 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 
 # 20230330
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
+
+file=$dirsystem/multiraudio.conf
+if [[ -e $file ]]; then
+	filejson=${file/conf/json}
+	grep -q '{' $file && jq < $file > $filejson || conf2json $file | jq > $filejson
+	rm -f $file
+fi
 
 installfinish
 #-------------------------------------------------------------------------------

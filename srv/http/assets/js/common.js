@@ -16,19 +16,28 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-no " ` escaping in js values:
-	- js array:                                 cmd = [ 'command', '"double"quotes and `backtick`' ];
-		> php implode to multiline:           $script = "command\n\"double\"quotes and \`backtick\`";
+Avoid " ` escaping in js values:
+
+js array >            php array - implode to multiline     > bash pair key=value
+js json - stringify > php decode - reencode - save to file > bash move file to target
+
+json array/json <     php array/string - encode            < bash string or array/json literal
+
+	- js array: bash()                         cmd = [ 'command', '"double"quotes and `backtick`' ];
+		> php escape - implode to multiline: $script = "command\n\"double\"quotes and \`backtick\`";
 			> bash readarray multiline to array: args=( command '"double"quotes and `backtick`' )
-	- js json with double quotes in values: json = { key: '"double"quotes and `backtick`' }
-		> php decode and reencode:       $json = '{ "key": "\"double\"quotes and \`backtick\`" }';
+	- js json: bashJson()
+		> php decode - reencode - save to $dirshm
+			> bash mv fileconf to $dirsystem/$cmd.conf
+			
+*** multiline string value - js string:    value = '"'+ line0 +'\\n'+ line1'.replace( /"|`/g, '\\\\"' ) +'"';
 */
 function bash( command, callback, json ) {
 	var filesh = 'cmd';
 	if ( page ) {
 		var cmd0= command[ 0 ];
 		var filesh = 'settings/';
-		if ( [ 'refreshdata', 'relays' ].includes( cmd0 ) ) {
+		if ( cmd0 === 'refreshdata' ) {
 			filesh += 'system';
 			command.push( page );
 		} else if ( cmd0 === 'pkgstatus' ) {
@@ -40,18 +49,40 @@ function bash( command, callback, json ) {
 	}
 	var data   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
 	if ( V.consolelog ) {
-		var l    = data.args;
+		var l     = data.args;
 		var debug = l[ 0 ].replace( 'settings/', '' ) +' "'+ l[ 1 ] +'\n'
-				 + l.slice( 2 ).join( '\n' ) +'\n"';
+				  + l.slice( 2 ).join( '\n' ) +'\n"';
 		navigator.maxTouchPoints ? alert( debug ) : console.log( debug );
-	} else {
-		$.post( 
-			  'cmd.php'
-			, data
-			, callback || null
-			, json || null
-		);
+		return
 	}
+	
+	$.post( 
+		  'cmd.php'
+		, data
+		, callback || null
+		, json || null
+	);
+}
+function bashJson( json, command ) {
+	notify( SW.icon, SW.title, S.relays ? 'Change ...' : 'Enable ...' );
+	if ( V.consolelog ) {
+		var l     = command;
+		var debug = JSON.stringify( json, null, 2 ) +'\n'
+				  + JSON.stringify( command, null, 2 ) +'\n';
+		navigator.maxTouchPoints ? alert( debug ) : console.log( debug );
+		return
+	}
+	
+	S[ SW.id ] = true;
+	$.post(
+		  'cmd.php'
+		, {
+			  cmd  : 'filejson'
+			, json : JSON.stringify( json )
+			, file : '/srv/http/data/shm/'+ SW.id +'.json' // php write to dirshm only
+		}
+		, () => bash( command )
+	);
 }
 
 // ----------------------------------------------------------------------
@@ -334,7 +365,7 @@ function info( json ) {
 			}
 		}
 	} else {
-		I.values = [ '' ];
+		I.values = false;
 	}
 	// fix: narrow screen scroll
 	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
@@ -572,7 +603,7 @@ function info( json ) {
 			infoKey2array( 'selectlabel' );
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
-				htmls.select += '<tr><td>'+ I.selectlabel[ i ] +'</td><td><select>';
+				htmls.select += '<tr><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
 				if ( typeof el !== 'object' ) {     // html
 					htmls.select += el;
 				} else if ( Array.isArray( el ) ) { // name = value
@@ -655,7 +686,7 @@ function info( json ) {
 		}
 		$( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
 		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
-		if ( $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
+		if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
 			var $td1st = $( '#infoContent td:first-child' );
 			var input  = $td1st.find( 'input' ).length;
 			$td1st.css( {
@@ -911,11 +942,6 @@ function infoKey2array( key ) {
 	if ( ! Array.isArray( I[ key ] ) ) I[ key ] = [ I[ key ] ];
 }
 function infoSetValues() {
-	if ( ! I.values ) {
-		$( '#infoContent input:radio' ).eq( 0 ).prop( 'checked', true );
-		return
-	}
-	
 	var $this, type, val;
 	$input.each( ( i, el ) => {
 		$this = $( el );
@@ -929,7 +955,9 @@ function infoSetValues() {
 			}
 		} else if ( type === 'checkbox' ) {
 			$this.prop( 'checked',  val );
-		} else { // text, password, textarea, select, range
+		} else if ( $this.is( 'select' ) ) {
+			val ? $this.val( val ) : el.selectedIndex = 0;
+		} else { // text, password, textarea, range
 			$this.val( val );
 			if ( type === 'range' ) $('#infoRange .value' ).text( val );
 		}
@@ -966,7 +994,14 @@ function infoVal( format ) {
 			default:
 				val = $this.val();
 		}
-		values.push( val );
+		if (   typeof val !== 'string'              // boolean
+			|| isNaN( val )                         // NotaNumber 
+			|| val[ 0 ] === '0' && val[ 1 ] !== '.' // '0123' not 0.123
+		) {
+			values.push( val );
+		} else {
+			values.push( parseFloat( val ) );
+		}
 	} );
 	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array : single value as string
 	if ( format === 'array' ) return values
@@ -1026,13 +1061,16 @@ function infoWarning( icon, title, message ) {
 }
 
 // json -----------------------------------------------------------------
-function jsonStringQuote( v ) {
+function escapeQuote( v ) {
+	return v.replace( /"|`/g, '\\\\"' )
+}
+function stringQuote( v ) {
 	var singlequote = v.includes( "'" );
 	var doublequote = v.includes( '"' );
 	var space       = v.includes( ' ' );
 	if ( ! singlequote && ! doublequote && ! space ) return v                                  //  v
 	if ( doublequote && ! singlequote )              return "'"+ v + "'"                       // 'v "v" v'
-	if ( singlequote || doublequote )                return '"'+ v.replace( /"/g, '\\"' ) +'"' // "v 'v' \"v\""
+	if ( singlequote || doublequote )                return v.replace( /"/g, '\\"' ) // "v 'v' \"v\""
 	/* space */                                      return "'"+ v + "'"                       // 'v ...'
 }
 
