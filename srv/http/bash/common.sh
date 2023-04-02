@@ -51,6 +51,7 @@ args2var() { # args2var "$1"
 		j=$(( i + 3 )) # values start from #3, after 'key1 key2 ...' 
 		key=${keys[i]}
 		val=${args[j]}
+		[[ $val == false ]] && val=
 		printf -v $key '%s' "$val"
 		conf+="$key=$val"$'\n'
 	done

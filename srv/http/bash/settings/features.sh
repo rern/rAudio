@@ -452,8 +452,8 @@ stoptimer )
 	;;
 upmpdcli )
 	if [[ $enable ]]; then
-		[[ $ownqueue ]] && line='ownqueue = 1' || line='ownqueue = 0'
-		sed -i "s/^ownqueue.*/$line/" /etc/upmpdcli.conf
+		[[ $ownqueue ]] && ownqueue=1 || ownqueue=0
+		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
 		featureSet upmpdcli
 	else
 		systemctl disable --now upmpdcli
