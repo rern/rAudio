@@ -421,7 +421,6 @@ regdomlist )
 relays )
 	if [[ $enable ]]; then
 		touch $dirsystem/relays
-		mv -f $dirshm/relays.json $dirsystem
 	else
 		rm -f $dirsystem/relays
 		enable=false

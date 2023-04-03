@@ -283,7 +283,7 @@ $( '#setting-multiraudio' ).click( function() {
 			var v = infoVal();
 			if ( v.length < 3 ) {
 				notifyCommon( 'Disable ...' );
-				bash( [ 'multiraudio', 'disable' ] );
+				bash( [ 'multiraudioreset' ] );
 				return
 			}
 			
@@ -292,7 +292,8 @@ $( '#setting-multiraudio' ).click( function() {
 			keys = Object.keys( val ).sort();
 			data = {}
 			keys.forEach( k => data[ k ] = val[ k ] );
-			bashJson( data, [ 'multiraudio' ] );
+			notifyCommon( 'Change ...' );
+			bash( { cmd: [ 'multiraudio' ], json: data } );
 		}
 	} );
 } );

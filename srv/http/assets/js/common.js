@@ -19,69 +19,56 @@ var red         = '#bb2828';
 Avoid " ` escaping in js values:
 
 js array >            php array - implode to multiline     > bash pair key=value
-js json - stringify > php decode - reencode - save to file > bash move file to target
+js json - stringify > php decode - reencode - save to file > bash args2var move file to target (fix permissiom)
 
 json array/json <     php array/string - encode            < bash string or array/json literal
 
-	- js array: bash()                         cmd = [ 'command', '"double"quotes and `backtick`' ];
+	- js array:                                cmd = [ 'command', '"double"quotes and `backtick`' ];
 		> php escape - implode to multiline: $script = "command\n\"double\"quotes and \`backtick\`";
 			> bash readarray multiline to array: args=( command '"double"quotes and `backtick`' )
-	- js json: bashJson()
+	- js json:
 		> php decode - reencode - save to $dirshm
 			> bash mv fileconf to $dirsystem/$cmd.conf
 			
 *** multiline string value - js string:    value = '"'+ line0 +'\\n'+ line1'.replace( /"|`/g, '\\\\"' ) +'"';
 */
 function bash( command, callback, json ) {
-	var filesh = 'cmd';
+	var data = { cmd: 'bash' }
+	if ( ! Array.isArray( command ) ) { // with json data
+		data.json = JSON.stringify( command.json );
+		command = command.cmd;
+	}
 	if ( page ) {
 		var cmd0= command[ 0 ];
-		var filesh = 'settings/';
 		if ( cmd0 === 'refreshdata' ) {
-			filesh += 'system';
-			command.push( page );
+			data.args = [ 'settings/'+ page +'-data.sh' ];
 		} else if ( cmd0 === 'pkgstatus' ) {
-			filesh += 'system-pkgstatus';
-			command.shift();
+			data.args = [ 'settings/pkgstatus.sh', command[ 1 ] ];
 		} else {
-			filesh += page;
+			data.args = [ 'settings/'+ page +'.sh', ...command ];
 		}
+	} else {
+		data.args = [ 'cmd.sh', ...command ];
 	}
-	var data   = { cmd: 'bash', args: [ filesh +'.sh', ...command ] }
 	if ( V.consolelog ) {
-		var l     = data.args;
-		var debug = l[ 0 ].replace( 'settings/', '' ) +' "'+ l[ 1 ] +'\n'
-				  + l.slice( 2 ).join( '\n' ) +'\n"';
-		navigator.maxTouchPoints ? alert( debug ) : console.log( debug );
+		var l    = data.args;
+		var bash = l[ 0 ].replace( 'settings/', '' ) +" \"$( cat << 'EOF'\n"
+				 + l.slice( 1 ).join( '\n' ) +'\n'
+				 + 'EOF\n)"';
+		if ( navigator.maxTouchPoints ) {
+			alert( JSON.stringify( data ) +'\n'+ bash );
+		} else {
+			console.log( data );
+			console.log( bash );
+		}
 		return
 	}
 	
 	$.post( 
 		  'cmd.php'
-		, data
+		, data // { cmd: 'bash', args: [ 'file.sh', ...command ], json: 'json string' }
 		, callback || null
 		, json || null
-	);
-}
-function bashJson( json, command ) {
-	notify( SW.icon, SW.title, S.relays ? 'Change ...' : 'Enable ...' );
-	if ( V.consolelog ) {
-		var l     = command;
-		var debug = JSON.stringify( json, null, 2 ) +'\n'
-				  + JSON.stringify( command, null, 2 ) +'\n';
-		navigator.maxTouchPoints ? alert( debug ) : console.log( debug );
-		return
-	}
-	
-	S[ SW.id ] = true;
-	$.post(
-		  'cmd.php'
-		, {
-			  cmd  : 'filejson'
-			, json : JSON.stringify( json )
-			, file : '/srv/http/data/shm/'+ SW.id +'.json' // php write to dirshm only
-		}
-		, () => bash( command )
 	);
 }
 

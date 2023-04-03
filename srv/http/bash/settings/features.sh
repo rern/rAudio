@@ -237,7 +237,6 @@ logindisable )
 multiraudio )
 	if [[ $enable ]]; then
 		touch $dirsystem/multiraudio
-		mv -f $dirshm/multiraudio.json $dirsystem
 		fileconf=$dirsystem/multiraudio.json
 		conf=$( < $fileconf )
 		iplist=$( grep -Ev "$( ipAddress )|{|}" <<< $conf | awk '{print $NF}' | tr -d '",' )
@@ -250,10 +249,12 @@ EOF
 		done
 	else
 		rm -f $dirsystem/multiraudio
-		[[ $data == removeconf ]] && rm -f $dirsystem/multiraudio.conf
 	fi
 	pushRefresh
 	pushSubmenu multiraudio $enable
+	;;
+multiraudioreset )
+	rm -f $dirsystem/multiraudio*
 	;;
 nfsserver )
 	readarray -t paths <<< $( nfsShareList )

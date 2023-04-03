@@ -31,40 +31,39 @@ fi
 #	${args[1]}=value1 (generic access)
 #	${args[2]}=value2
 #
-# json string:
-#	access with generic ${args[i]}
-#		except - double quotes in values: php > save to $dirshm/jsontemp > mv to destination
+# json: avoid escape double quotes in values
+#	php > save to $dirshm/$cmd.json > mv to $dirsystem
 
 args2var() { # args2var "$1"
-	local i j keys kL key val conf
+	local i keys vals kL k v conf
 	readarray -t args <<< $1
 	cmd=${args[0]}
-	if [[ ${args[1]} == 'KEY' ]]; then
+	[[ -e $dirshm/$cmd.json ]] && mv -f $dirshm/$cmd.json $dirsystem
+	if [[ ${args[1]} == KEY ]]; then
 		enable=true
 	else
 		[[ ${args[1]} == disable ]] && enable= || enable=true
 		return
 	fi
 	keys=( ${args[2]} )
+	vals=${args[@]:3} # values start from #3, after 'key1 key2 ...'
 	kL=${#keys[@]}
 	for (( i=0; i < kL; i++ )); do
-		j=$(( i + 3 )) # values start from #3, after 'key1 key2 ...' 
-		key=${keys[i]}
-		val=${args[j]}
-		[[ $val == false ]] && val=
-		printf -v $key '%s' "$val"
-		conf+="$key=$val"$'\n'
+		k=${keys[i]}
+		v=${vals[i]}
+		[[ $v == false ]] && v=
+		printf -v $k '%s' "$v"
+		conf+="$k=$v"$'\n'
 	done
 	[[ ! $fileconf ]] && return
 	
-	[[ $fileconf == true ]] && fileconf=$dirsystem/$cmd.conf
 	# quote values: vvv | "v v v" | "v 'v' v" | "v \"v' v" > save file conf
 	sed -E '/^fileconf|^$/d
 			s/ "/ \\"/g
 			s/" /\\" /g
 			s/=(.* )/="\1/
 			s/( .*)$/\1"/
-			' <<< $conf > $fileconf
+			' <<< $conf > $dirsystem/$cmd.conf
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'

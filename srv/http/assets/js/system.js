@@ -985,7 +985,7 @@ function infoRelayName() {
 					}
 				} );
 			} );
-			bashJson( S.relaysconf, [ 'relays' ] )
+			bash( { cmd: [ 'relays' ], json: S.relaysconf } );
 		}
 	} );
 }
@@ -1053,7 +1053,10 @@ function infoRelaySequence() {
 				v[ 'order'+ kk ] = '"'+ order.replace( /"|`/g, '\\\\"' ) +'"';
 			} );
 			S.relaysconf.name = json;
-			bashJson( S.relaysconf, [ 'relays', 'KEY', Object.keys( v ).join( ' ' ), ...Object.values( v ) ] )
+			bash( {
+				  cmd  : [ 'relays', 'KEY', Object.keys( v ).join( ' ' ), ...Object.values( v ) ]
+				, json : S.relaysconf
+			} );
 		}
 	} );
 }

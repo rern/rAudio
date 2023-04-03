@@ -163,8 +163,9 @@ elif [[ $nasfailed ]]; then
 fi
 
 touch $dirshm/startup
-
-grep -q startup=true $dirsystem/autoplay.conf && $dirbash/cmd.sh mpcplayback$'\n'play
+if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
+	$dirbash/cmd.sh mpcplayback$'\n'play
+fi
 
 if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
 	/boot/startup.sh
