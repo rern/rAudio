@@ -292,7 +292,7 @@ $( '#setting-multiraudio' ).click( function() {
 			keys = Object.keys( val ).sort();
 			data = {}
 			keys.forEach( k => data[ k ] = val[ k ] );
-			notifyCommon( 'Change ...' );
+			notifyCommon();
 			bash( { cmd: [ 'multiraudio' ], json: data } );
 		}
 	} );
@@ -333,7 +333,7 @@ $( '#setting-login' ).click( function() {
 		, cancel        : switchCancel
 		, ok            : () => {
 			var values = infoVal();
-			notifyCommon( S.login ? 'Change ...' : 'Enable...' );
+			notifyCommon();
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
 				, password : values[ 0 ]
@@ -402,7 +402,7 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( [ 'nfsserver', S.nfsserver ? 'disable' : '' ] ); // enable if not active
-				notifyCommon();
+				notify( ! S.nfsserver );
 			}
 		} );
 	} );

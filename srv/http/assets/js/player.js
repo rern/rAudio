@@ -235,7 +235,7 @@ $( '#setting-custom' ).click( function() {
 					return
 				}
 				
-				notifyCommon( S.custom ? 'Change ...' : 'Enable ...' );
+				notifyCommon();
 				bash( [ 'custom', 'KEY', 'global output aplayname', values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();

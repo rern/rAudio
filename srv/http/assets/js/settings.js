@@ -87,11 +87,15 @@ function list2JSON( list ) {
 	return true
 }
 function notify( icon, title, message, delay ) {
-	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
+	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );
 }
 function notifyCommon( message ) {
-	if ( ! message ) message = S[ SW.id ] ? 'Disable ...' : 'Enable ...';
+	if ( ! message ) {
+		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
+	} else if ( typeof message === 'boolean' ) {
+		message = message ? 'Enable ...' : 'Disable ...'
+	}
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
 function refreshData() {
@@ -128,14 +132,13 @@ function switchCancel() {
 }
 function switchDisable() {
 	$( '#setting-'+ SW.id ).addClass( 'hide' );
-	notify( SW.icon, SW.title, 'Disable ...' );
+	notifyCommon( 'Disable ...' );
 	S[ SW.id ] = false;
 }
 function switchEnable() {
-	var values = infoVal( 'KEY' );
-	if ( typeof values === 'string' ) values = [ values ];
+	var values = infoVal( 'KEY' ); // [ 'KEY', keys, ...values ]
 	bash( [ SW.id, ...values ] );
-	notify( SW.icon, SW.title, S[ SW.id ] ? 'Change ...' : 'Enable ...' );
+	notifyCommon();
 	S[ SW.id ] = true;
 }
 function switchSet() {
@@ -415,7 +418,7 @@ $( '.switch' ).click( function() {
 		}
 	} else {
 		S[ SW.id ]  = checked;
-		notify( SW.icon, SW.title, checked );
+		notifyCommon( checked );
 		bash( [ SW.id, checked ? '' : 'disable' ], error => {
 			if ( error ) {
 				switchDisable();
