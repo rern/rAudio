@@ -54,7 +54,7 @@ EOF
 		  'label'   => 'Device'
 		, 'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
-		, 'setting' => false
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 HDMI audio:
  · Available when connected before boot only
@@ -73,7 +73,7 @@ EOF
 		  'label'   => 'Volume Control'
 		, 'id'      => 'mixertype'
 		, 'input'   => '<select id="mixertype"></select>'
-		, 'setting' => false
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
@@ -89,11 +89,10 @@ htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'       => 'No Volume'
-		, 'id'          => 'novolume'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'help'        => <<< EOF
+		  'label'   => 'No Volume'
+		, 'id'      => 'novolume'
+		, 'setting' => 'none'
+		, 'help'    => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume: <code>0dB</code>
@@ -107,7 +106,7 @@ EOF
 	, [
 		  'label'   => 'DSD over PCM'
 		, 'id'      => 'dop'
-		, 'setting' => false
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 <wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 

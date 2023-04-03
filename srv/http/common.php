@@ -71,7 +71,6 @@ if ( ! $page ) { // main
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
-	if ( $relays ) $css[]  = 'relays';
 	if ( $addons ) $css[]  = 'addons';
 	
 	$icon = $pagetitle = $page;
@@ -81,8 +80,6 @@ if ( ! $page ) { // main
 	} else if ( $guide ) {
 		$icon = 'help';
 		$pagetitle = 'user guide';
-	} else if ( $relays ) {
-		$icon = $pagetitle = 'system';
 	}
 	$title = strtoupper( $pagetitle );
 }
@@ -96,13 +93,9 @@ echo $links;
 </head>
 <body>
 <div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<?php if ( ! $addonsprogress && ! $guide && ! $relays ) { ?>
+	<?php if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="loader"><?=$logosvg?></div>
-	<?php }
-		  if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="banner" class="hide"></div>
-	<?php }
-		  if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 	<?php } ?>

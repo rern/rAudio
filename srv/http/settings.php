@@ -80,11 +80,11 @@ $body = [
 		, 'id'          => 'INPUT ID'   // REQUIRED
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
+		, 'setting'     =>  ***         // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
 		                                // false      = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'nobanner' = no icon, no setting, no banner
 		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
-		, 'settingicon' => (none)       // default = 'gear' 
+										// 'none'     = no setting - self trigger
+		, 'settingicon' => ***          // default = 'gear' 
 		                                // false   = no icon
 										// 'icon'  = 'i-icon'
 		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
@@ -138,8 +138,8 @@ function htmlSetting( $data ) {
 	$status      = $data[ 'status' ] ?? false;
 	$id          = $data[ 'id' ] ?? '';
 	$input       = $data[ 'input' ] ?? '';
-	$settingicon = $data[ 'settingicon' ] ?? 'gear';
 	$setting     = $data[ 'setting' ] ?? 'common';
+	$settingicon = $setting === 'none' ? '' : $data[ 'settingicon' ] ?? 'gear';
 	$disabled    = $data[ 'disabled' ] ?? '';
 	$help        = $data[ 'help' ] ?? '';
 	$html        = '<div id="div'.$id.'"><div class="col-l';

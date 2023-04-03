@@ -99,7 +99,7 @@ custom )
 	fi
 	;;
 dop )
-	[[ $enable ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
+	[[ $enable ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-${args[2]}"
 	$dirsettings/player-conf.sh
 	;;
 filetype )

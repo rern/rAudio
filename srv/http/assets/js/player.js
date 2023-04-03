@@ -122,7 +122,8 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	bash( checked ? [ 'dop', 'KEY', 'aplayname', D.aplayname ] : [ 'dop' ] );
+	var cmd = checked ? [ 'dop', 'KEY', 'aplayname', D.aplayname ] : [ 'dop', 'disable', D.aplayname ];
+	bash( cmd );
 } );
 $( '#setting-crossfade' ).click( function() {
 	info( {
@@ -397,7 +398,7 @@ function renderPage() {
 			.val( D.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 );
 		$( '#novolume' ).prop( 'checked', S.novolume );
-		$( '#divdop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
+//		$( '#dop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 		if ( S.camilladsp ) {

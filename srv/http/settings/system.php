@@ -262,7 +262,7 @@ $body = [
 		  'label'   => 'Player Name'
 		, 'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
-		, 'setting' => false
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 For:
  · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
@@ -306,7 +306,7 @@ $body = [
 	[
 		  'label'   => 'Backup'
 		, 'id'      => 'backup'
-		, 'setting' => 'nobanner'
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
@@ -318,7 +318,7 @@ EOF
 	, [
 		  'label'   => 'Restore'
 		, 'id'      => 'restore'
-		, 'setting' => 'nobanner'
+		, 'setting' => 'none'
 		, 'help'    => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN

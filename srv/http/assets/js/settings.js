@@ -405,7 +405,7 @@ $( '.switch' ).click( function() {
 		return
 	}
 	
-	if ( $this.is( '.custom, .nobanner' ) ) return
+	if ( $this.is( '.custom, .none' ) ) return
 	
 	var checked = $this.prop( 'checked' );
 	if ( $this.hasClass( 'common' ) ) {

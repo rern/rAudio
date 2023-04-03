@@ -9,10 +9,17 @@ $dirsystem    = '/srv/http/data/system/';
 switch( $_POST[ 'cmd' ] ) {
 
 case 'bash':
-	$args   = $_POST[ 'args' ];                     // js array > php array (no escape quote)
-	$script = $sudobash.array_shift( $args ).' "';   // script file = 1st element
-	$script.= escape( implode( "\n", $args ) ).'"'; // array > escaped > multiline
-	echo rtrim( shell_exec( $sudo.$script ) );      // multiline > bash
+	$args      = $_POST[ 'args' ];
+	$json      = $_POST[ 'json' ] ?? '';
+	$cmd       = array_shift( $args );                                 // bash script file = 1st element
+	if ( $json ) {                                                     // save json
+		$jsonstring = json_encode( json_decode( $json ), JSON_PRETTY_PRINT );
+		file_put_contents( $dirsystem.$args[ 0 ].'.json', $jsonstring );
+	}
+	$multiline = implode( "\n", $args );                               // array to multiline
+	$multiline = preg_replace( '/(["`])/', '\\\\\1', $multiline );     // escape multiline
+	$result    = shell_exec( $sudobash.$cmd.' "'.$multiline.'"' );     // multiline > bash
+	echo rtrim( $result );                                             // bash output
 	break;
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
@@ -43,12 +50,9 @@ case 'imagereplace':
 		$tmpfile = $imagedata;
 	}
 	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
-	$script       = $sudobash.'cmd-coverartsave.sh "'.escape( implode( "\n", $sh ) ).'"';
-	shell_exec( $script );
-	break;
-case 'fileconf':
-	$json = json_decode( $_POST[ 'json' ] );
-	file_put_contents( $dirsystem.$_POST[ 'fileconf' ].'.conf', json_encode( $json ) );
+	$multiline    = implode( "\n", $sh );
+	$multiline    = preg_replace( '/(["`])/', '\\\\\1', $multiline );
+	shell_exec( $sudobash.'cmd-coverartsave.sh "'.$multiline.'"' );
 	break;
 case 'login':
 	$file = $dirsystem.'login';
@@ -90,8 +94,4 @@ case 'selecttimezone':
 	}
 	echo $option;
 	
-}
-
-function escape( $string ) {
-	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
