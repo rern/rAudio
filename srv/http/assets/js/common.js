@@ -29,7 +29,7 @@ bash( { cmd: [ 'bashcmd', ... ], json: json } );        * with json
 	- array : covert to multiline with " ` escaped
 	- json  : decode - reencode - save to data/system/bashcmd.conf
 		- if set - { json: json }
-		- js cannot escape as \\" double backslash
+		- js cannot escape as \\" double backslash which disappeared in bash
 - bash - convert to array
 	- multiline: convert to values
 		- ${args[1]}=v1; ${args[2]}=v2; ...
@@ -1048,20 +1048,6 @@ function infoWarning( icon, title, message ) {
 		, title   : title
 		, message : iconwarning + message
 	} );
-}
-
-// json -----------------------------------------------------------------
-function escapeQuote( v ) {
-	return v.replace( /"|`/g, '\\\\"' )
-}
-function stringQuote( v ) {
-	var singlequote = v.includes( "'" );
-	var doublequote = v.includes( '"' );
-	var space       = v.includes( ' ' );
-	if ( ! singlequote && ! doublequote && ! space ) return v                                  //  v
-	if ( doublequote && ! singlequote )              return "'"+ v + "'"                       // 'v "v" v'
-	if ( singlequote || doublequote )                return '"'+ v.replace( /"/g, '\\"' ) +'"' // "v 'v' \"v\""
-	/* space */                                      return "'"+ v + "'"                       // 'v ...'
 }
 
 // ----------------------------------------------------------------------
