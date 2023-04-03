@@ -19,26 +19,23 @@ fi
 
 # args2var "command
 #	KEY
-#	key1 key2 ...
-#	value1
-#	value2
+#	k1 k2 ...
+#	v1
+#	v2
 #   ..."
 #
-# convert lines to variables: (lines need no variable escapes)
+# convert multiline to variables:
 #	cmd=command
-#	key1=value1 ...   (if 'KEY' and 'key1 key2 ...' are set)
-#	                   or
-#	${args[1]}=value1 (generic access)
-#	${args[2]}=value2
+#	${args[1]}=v1
+#	${args[2]}=v2
 #
-# json: avoid escape double quotes in values
-#	php > save to $dirshm/$cmd.json > mv to $dirsystem
+#	k1=v1 (if 'KEY' and 'k1 k2 ...' are set)
+#	k2=v2
 
 args2var() { # args2var "$1"
 	local i keys vals kL k v conf
 	readarray -t args <<< $1
 	cmd=${args[0]}
-	[[ -e $dirshm/$cmd.json ]] && mv -f $dirshm/$cmd.json $dirsystem
 	if [[ ${args[1]} == KEY ]]; then
 		enable=true
 	else
@@ -146,8 +143,8 @@ data2json() {
 }
 dirPermissions() {
 	chown -R root:root /srv
-	chown mpd:audio $dirmpd $dirmpd/mpd.db
-	chown -R mpd:audio $dirplaylists
+	chown -R http:http $dirdata
+	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R u+x $dirbash /srv/http/settings/camillagui/{backend,main.py}
 	[[ -L $dirshareddata ]] && dirPermissionsShared

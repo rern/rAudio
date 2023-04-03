@@ -16,21 +16,24 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-Avoid " ` escaping in js values:
+Avoid \" \` in js values for bash: 1 line for 1 argument
 
-js array >            php array - implode to multiline     > bash pair key=value
-js json - stringify > php decode - reencode - save to file > bash args2var move file to target (fix permissiom)
+bash( [ 'bashcmd', v1, v2, ... ], result => callback ); * accessed values by index
+bash( [ 'bashcmd', 'KEY', 'k1 k2 ...', v1, v2, ... ] ); * accessed values by key
+bash( { cmd: [ 'bashcmd', ... ], json: json } );        * with json
 
-json array/json <     php array/string - encode            < bash string or array/json literal
-
-	- js array:                                cmd = [ 'command', '"double"quotes and `backtick`' ];
-		> php escape - implode to multiline: $script = "command\n\"double\"quotes and \`backtick\`";
-			> bash readarray multiline to array: args=( command '"double"quotes and `backtick`' )
-	- js json:
-		> php decode - reencode - save to $dirshm
-			> bash mv fileconf to $dirsystem/$cmd.conf
-			
-*** multiline string value - js string:    value = '"'+ line0 +'\\n'+ line1'.replace( /"|`/g, '\\\\"' ) +'"';
+- js > php
+	- string : 'k1 k2 ...' - [ v1, v2, ... ]
+	- json   : sringify
+- php > bash
+	- array : covert to multiline with " ` escaped
+	- json  : decode - reencode - save to data/system/bashcmd.conf
+		- if set - { json: json }
+		- js cannot escape as \\" double backslash
+- bash - convert to array
+	- multiline: convert to values
+		- ${args[1]}=v1; ${args[2]}=v2; ...
+		- k1=v1; k2=v2; ... ('KEY', 'k1 k2 ...')
 */
 function bash( command, callback, json ) {
 	var data = { cmd: 'bash' }
