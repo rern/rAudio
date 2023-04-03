@@ -33,7 +33,7 @@ fi
 #	k2=v2
 
 args2var() { # args2var "$1"
-	local i keys vals kL k v conf
+	local i keys kL k v conf
 	readarray -t args <<< $1
 	cmd=${args[0]}
 	if [[ ${args[1]} == KEY ]]; then
@@ -43,11 +43,10 @@ args2var() { # args2var "$1"
 		return
 	fi
 	keys=( ${args[2]} )
-	vals=${args[@]:3} # values start from #3, after 'key1 key2 ...'
 	kL=${#keys[@]}
 	for (( i=0; i < kL; i++ )); do
 		k=${keys[i]}
-		v=${vals[i]}
+		v=${args[i+3]} # values start from #3, after 'key1 key2 ...'
 		[[ $v == false ]] && v=
 		printf -v $k '%s' "$v"
 		conf+="$k=$v"$'\n'

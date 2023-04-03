@@ -419,14 +419,26 @@ $( '.switch' ).click( function() {
 	} else {
 		S[ SW.id ]  = checked;
 		notifyCommon( checked );
-		bash( [ SW.id, checked ? '' : 'disable' ], error => {
+		var cmd = [ SW.id ];
+		if ( ! checked ) cmd.push( 'disable' );
+		bash( cmd, error => {
 			if ( error ) {
 				switchDisable();
 				bannerHide();
-				info( error );
+				info( {
+					  icon    : SW.icon
+					, title   : SW.title
+					, message : error
+				} );
 			}
 		}, 'json' );
 	}
+} ).press( function( e ) {
+	if ( $( '#setting-'+ e.target.id ).length ) return
+	
+	V.consolelog = true;
+	setTimeout( ()=>  delete V.consolelog, 300 );
+	$( e.target ).click();
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();

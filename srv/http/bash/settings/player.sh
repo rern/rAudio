@@ -62,8 +62,7 @@ buffer | outputbuffer )
 	;;
 crossfade )
 	if [[ $enable ]]; then
-		mpc -q crossfade $crossfade
-		echo $crossfade > $dirsystem/crossfade.conf
+		mpc -q crossfade $sec
 		touch $dirsystem/crossfade
 	else
 		mpc -q crossfade 0

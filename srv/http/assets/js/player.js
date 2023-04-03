@@ -131,7 +131,7 @@ $( '#setting-crossfade' ).click( function() {
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
-		, values       : S.crossfadeconf || { sec: 1 }
+		, values       : S.crossfadeconf
 		, checkchanged : S.crossfade
 		, checkblank   : true
 		, cancel       : switchCancel

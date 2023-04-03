@@ -6,7 +6,8 @@
 . $dirsettings/player-devices.sh
 
 camilladsp=$( exists $dirsystem/camilladsp )
-crossfade=$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )
+crossfadesec=$( mpc crossfade | cut -d' ' -f2 )
+crossfade=$( [[ $crossfadesec != 0 ]] && echo true )
 equalizer=$( exists $dirsystem/equalizer )
 normalization=$( exists $dirmpdconf/normalization.conf )
 replaygain=$( exists $dirmpdconf/replaygain.conf )
@@ -42,7 +43,7 @@ data='
 , "camilladsp"       : '$camilladsp'
 , "counts"           : '$( getContent $dirmpd/counts )'
 , "crossfade"        : '$crossfade'
-, "crossfadeconf"    : { "sec": '$( getContent $dirsystem/crossfade.conf )' }
+, "crossfadeconf"    : { "sec": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
