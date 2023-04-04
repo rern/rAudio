@@ -6,6 +6,10 @@ alias=r1
 [[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230324
+for file in display order; do
+	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
+done
+
 if ls $dirsystem/autoplay* 2> /dev/null; then
 	k=( startup bluetooth cd )
 	f=( autoplay autoplaybt autoplaycd )

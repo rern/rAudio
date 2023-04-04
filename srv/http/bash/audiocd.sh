@@ -89,7 +89,7 @@ if grep -q cd=true $dirsystem/autoplay.conf; then
 	pushstream playlist '{"autoplaycd":1}'
 fi
 # add tracks to playlist
-grep -q -m1 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
+grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do

@@ -70,12 +70,12 @@ if [[ $1 == withdisplay ]]; then
 	systemctl -q is-active rtsp-simple-server && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	if [[ -e $filesharedip ]]; then
-		display=$( grep -Ev 'sd|usb|}' $dirsystem/display )
+		display=$( grep -Ev 'sd|usb|}' $dirsystem/display.json )
 		display+='
 , "sd"  : false
 , "usb" : false'
 	else
-		display=$( grep -v } $dirsystem/display )
+		display=$( grep -v } $dirsystem/display.json )
 	fi
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
@@ -150,7 +150,7 @@ $( < $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
 filter='Album AlbumArtist Artist audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'

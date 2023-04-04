@@ -113,7 +113,7 @@ for i in $false; do
 	lines+='
 , "'$i'": false'
 done
-jq -S <<< {${lines:2}} > $dirsystem/display
+jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then

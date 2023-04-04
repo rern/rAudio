@@ -297,9 +297,9 @@ bookmarkadd )
 	[[ -e $bkfile ]] && echo -1 && exit
 	
 	echo $path > "$bkfile"
-	if [[ -e $dirsystem/order ]]; then
-		order=$( jq < $dirsystem/order | jq '. + ["'"$path"'"]' )
-		echo "$order" > $dirsystem/order
+	if [[ -e $dirsystem/order.json ]]; then
+		order=$( jq < $dirsystem/order.json | jq '. + ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order.json
 	fi
 	pushstream bookmark 1
 	;;
@@ -312,10 +312,10 @@ bookmarkcoverreset )
 	;;
 bookmarkremove )
 	file="$dirbookmarks/${args[1]//\//|}"
-	if [[ -e $dirsystem/order ]]; then
+	if [[ -e $dirsystem/order.json ]]; then
 		path=$( < "$file" )
-		order=$( jq < $dirsystem/order | jq '. - ["'"$path"'"]' )
-		echo "$order" > $dirsystem/order
+		order=$( jq < $dirsystem/order.json | jq '. - ["'"$path"'"]' )
+		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$file"
 	pushstream bookmark 1
@@ -452,12 +452,10 @@ dabscan )
 	$dirbash/dab-scan.sh &> /dev/null &
 	pushstream mpdupdate '{"type":"dabradio"}'
 	;;
-displaysave )
-	data=${args[1]}
+display )
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
-	jq -S <<< $data > $dirsystem/display
-	grep -q -m1 vumeter.*true $dirsystem/display && touch $dirsystem/vumeter && vumeter=1
-	pushstream display "$data"
+	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
+	pushstream display $( < $dirsystem/display.json )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	if [[ $vumeter ]]; then
@@ -734,15 +732,14 @@ mpcprevnext )
 		state=${args[4]}
 		elapsed=${args[5]}
 	else
-		status=( $( $dirbash/status.sh | jq -r .song,.pllength,.state,.elapsed ) )
-		current=$(( ${status[0]} + 1 ))
-		length=${status[1]}
-		state=${status[2]}
-		elapsed=${status[3]}
+		current=$( mpc status %songpos% )
+		length=$( mpc status %length% )
+		elapsed=$( getElapsed )
+		[[ $( mpc status %state% ) == playing ]] && playing=1
 	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
 	touch $dirshm/prevnextseek
-	if [[ $state == play ]]; then
+	if [[ $playing ]]; then
 		mpc -q stop
 		rm -f $dirshm/prevnextseek
 	fi
@@ -758,7 +755,7 @@ mpcprevnext )
 			(( $current != 1 )) && mpc -q play $(( current - 1 )) || mpc -q play $length
 		fi
 	fi
-	if [[ $state == play ]]; then
+	if [[ $playing ]]; then
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify -blink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
@@ -837,7 +834,7 @@ multiraudiolist )
 ordersave )
 	data=$( jq <<< ${args[1]} )
 	pushstream order "$data"
-	echo "$data" > $dirsystem/order
+	echo "$data" > $dirsystem/order.json
 	;;
 playerstart )
 	player=${args[1]}
@@ -1111,7 +1108,7 @@ volumeupdown )
 	pushstreamVolume updn $( volumeGet )
 	;;
 vumeter )
-	! grep -q vu.*true $dirsystem/display && exit
+	! grep -q vu.*true $dirsystem/display.json && exit
 	
 	html='<div id="vu" class="hide">'
 	html+="$( < /srv/http/assets/img/vu.svg )</div>"

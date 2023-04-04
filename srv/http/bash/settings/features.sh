@@ -272,7 +272,7 @@ nfsserver )
 		column -t <<< $list > /etc/exports
 		echo $ip > $filesharedip
 		cp -f $dirsystem/{display,order} $dirbackup
-		touch $dirshareddata/system/order # in case not exist
+		touch $dirshareddata/system/order.json # in case not exist
 		chmod 777 $filesharedip $dirshareddata/system/{display,order}
 		echo "\
 SD
@@ -290,7 +290,7 @@ USB" > /mnt/MPD/.mpdignore
 			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
 		systemctl enable --now nfs-server
-		pushstream display $( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display )
+		pushstream display $( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display.json )
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \
@@ -309,7 +309,7 @@ USB" > /mnt/MPD/.mpdignore
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order} $dirsystem
 		systemctl restart mpd
-		pushstream display $( < $dirsystem/display )
+		pushstream display $( < $dirsystem/display.json )
 	fi
 	pushRefresh
 	[[ ! $enable ]] && enable=false

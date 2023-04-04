@@ -390,7 +390,7 @@ function displayBottom() {
 function displayPlayback() {
 	$time.toggleClass( 'hide', ! D.time );                          // #time-knob hidden on load - set before get :hidden
 	var hidetime   = ! D.time || $( '#time-knob' ).is( ':hidden' ); // #time-knob hidden by css on small screen
-	var hidevolume = ! D.volume || D.volumenone;
+	var hidevolume = ! D.volume || D.volumenone
 	$volume.toggleClass( 'hide', hidevolume );
 	var $cover     = $( '#coverart-block' );
 	$cover.toggleClass( 'hide', ! D.cover );
@@ -409,18 +409,19 @@ function displayPlayback() {
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
-	$( '.volumeband' ).toggleClass( 'hide', D.volumenone || volume );
+	$( '#volume-bar, .volumeband' ).toggleClass( 'hide', D.volume );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
 }
-function displaySave( keys ) {
+function displaySave() {
 	var values  = infoVal();
-	var display = JSON.parse( JSON.stringify( D ) );
-	keys.forEach( ( k, i ) => display[ k ] = values[ i ] );
-	[ 'audiocd', 'color', 'equalizer', 'logout', 'order', 'relays', 'screenoff', 'snapclient', 'volumenone' ].forEach( item => delete display[ item ] );
-	bash( [ 'displaysave', JSON.stringify( display ) ] );
-	$( '#infoOk' ).addClass( 'disabled' );
+	[ 'libmain', 'liboption', 'playback' ].forEach( chk => {
+		$.each( chkdisplay[ chk ], ( k, v ) => {
+			if ( ! ( k in values ) && k !== '-' ) values[ k ] = D[ k ];
+		} );
+	} );
+	bash( { cmd: [ 'display' ], json: values } );
 }
 function displaySubMenu() {
 	if ( D.equalizer && typeof infoEqualizer !== 'function' ) {
@@ -676,36 +677,17 @@ function imageReplace( type, imagefilenoext, bookmarkname ) {
 	banner( 'coverart', I.title, 'Change ...', -1 );
 }
 function infoLibrary() {
-	var chk = {
-		  album          : ico( 'album' ) +'<gr>Album</gr>'
-			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
-		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
-			, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
-		, artist         : ico( 'artist' ) +'<gr>Artist</gr>'
-			, usb        : ico( 'usbdrive' ) +'<gr>USB</gr>'
-		, composer       : ico( 'composer' ) +'<gr>Composer</gr>'
-			, playlists  : ico( 'playlists' ) +'<gr>Playlists</gr>'
-		, conductor      : ico( 'conductor' ) +'<gr>Conductor</gr>'
-			, webradio   : ico( 'webradio' ) +'<gr>Web Radio</gr>'
-		, date           : ico( 'date' ) +'<gr>Date</gr>'
-			, '-'        : ''
-		, genre          : ico( 'genre' ) +'<gr>Genre</gr>'
-			, count      : 'Count'
-		, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
-			, label      : 'Label'
-	}
-	var checkbox = Object.values( chk );
-	var keys     = Object.keys( chk );
+	var keys     = Object.keys( chkdisplay.libmain );
 	keys         = keys.filter( k => k !== '-' );
-	var values   = [];
-	keys.forEach( k => values.push( D[ k ] ) );
+	var values   = {}
+	keys.forEach( k => { values[ k ] = D[ k ] } );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ '', infoLibraryOption ]
 		, messagealign : 'left'
-		, checkbox     : checkbox
+		, checkbox     : Object.values( chkdisplay.libmain )
 		, checkcolumn  : true
 		, values       : values
 		, checkchanged : true
@@ -714,32 +696,21 @@ function infoLibrary() {
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
-		, ok           : () => displaySave( keys )
+		, ok           : displaySave
 	} );
 }
 function infoLibraryOption() {
-	var chk = {
-		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
-		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
-		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
-		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
-		, '-'            : ''
-		, backonleft     : ico( 'arrow-left' ) +'Back button on left side'
-		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
-		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
-	}
-	var checkbox = Object.values( chk );
-	var keys     = Object.keys( chk );
+	var keys     = Object.keys( chkdisplay.liboption );
 	keys         = keys.filter( k => k !== '-' );
-	var values   = [];
-	keys.forEach( k => values.push( D[ k ] ) );
+	var values   = {}
+	keys.forEach( k => { values[ k ] = D[ k ] } );
 	info( {
 		  icon         : 'library'
 		, title        : 'Library'
 		, tablabel     : [ 'Show', 'Options' ]
 		, tab          : [ infoLibrary, '' ]
 		, messagealign : 'left'
-		, checkbox     : checkbox
+		, checkbox     : Object.values( chkdisplay.liboption )
 		, values       : values
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -761,7 +732,7 @@ function infoLibraryOption() {
 			} );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 		}
-		, ok           : () => displaySave( keys )
+		, ok           : displaySave
 	} );
 }
 function infoUpdate( path ) {
@@ -1796,6 +1767,7 @@ function setVolume() {
 	$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
+		.toggleClass( 'hide', D.volume )
 		.text( S.volumemute || S.volume )
 		.toggleClass( 'bl', mute );
 	if ( $volume.is( ':hidden' ) ) {

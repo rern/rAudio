@@ -68,11 +68,54 @@ var pagenext    = {
 	, library  : [ 'playlist', 'playback' ]
 }
 var icon_player = {
-	  airplay    : 'AirPlay'
-	, bluetooth  : 'Bluetooth'
-	, snapcast   : 'Snapcast'
-	, spotify    : 'Spotify'
-	, upnp       : 'UPnP'
+  airplay    : 'AirPlay'
+, bluetooth  : 'Bluetooth'
+, snapcast   : 'Snapcast'
+, spotify    : 'Spotify'
+, upnp       : 'UPnP'
+}
+var vumeter = '<img class="imgicon" src="'+ V.covervu +'"> ';
+var chkdisplay = {
+	  libmain   : {
+		  album          : ico( 'album' ) +'<gr>Album</gr>'
+			, nas        : ico( 'networks' ) +'<gr>Network</gr>'
+		, albumartist    : ico( 'albumartist' ) +'<gr>Album Artist</gr>'
+			, sd         : ico( 'microsd' ) +'<gr>SD</gr>'
+		, artist         : ico( 'artist' ) +'<gr>Artist</gr>'
+			, usb        : ico( 'usbdrive' ) +'<gr>USB</gr>'
+		, composer       : ico( 'composer' ) +'<gr>Composer</gr>'
+			, playlists  : ico( 'playlists' ) +'<gr>Playlists</gr>'
+		, conductor      : ico( 'conductor' ) +'<gr>Conductor</gr>'
+			, webradio   : ico( 'webradio' ) +'<gr>Web Radio</gr>'
+		, date           : ico( 'date' ) +'<gr>Date</gr>'
+			, '-'        : ''
+		, genre          : ico( 'genre' ) +'<gr>Genre</gr>'
+			, count      : 'Count'
+		, latest         : ico( 'latest' ) +'<gr>Latest</gr>'
+			, label      : 'Label'
+	}
+	, liboption : {
+		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
+		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
+		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
+		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
+		, '-'            : ''
+		, backonleft     : ico( 'arrow-left' ) +'Back button on left side'
+		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
+		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
+	}
+	, playback  : {
+		  bars             : 'Top-Bottom bars'
+			, barsalways   : 'Bars always on'
+		, time             : 'Time'
+			, radioelapsed : 'Web Radio time'
+		, cover            : 'Cover art'
+			, covervu      : vumeter +'As default'
+		, volume           : 'Volume'
+			, vumeter      : vumeter +'VU meter'
+		, buttons          : 'Buttons'
+			, noswipe      : 'Disable swipe'
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -281,29 +324,16 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 $( '#power' ).click( infoPower );
 $( '#displaylibrary' ).click( infoLibrary );
 $( '#displayplayback' ).click( function() {
-	var vumeter     = '<img class="imgicon" src="'+ V.covervu +'"> ';
-	var chkplayback = {
-		  bars             : 'Top-Bottom bars'
-			, barsalways   : 'Bars always on'
-		, time             : 'Time'
-			, radioelapsed : 'Web Radio time'
-		, cover            : 'Cover art'
-			, covervu      : vumeter +'As default'
-		, volume           : 'Volume'
-			, vumeter      : vumeter +'VU meter'
-		, buttons          : 'Buttons'
-			, noswipe      : 'Disable swipe'
-	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).click();
-	var keys   = Object.keys( chkplayback );
-	var values = [];
-	keys.forEach( k => values.push( D[ k ] ) );
+	var keys    = Object.keys( chkdisplay.playback );
+	var values  = {}
+	keys.forEach( k => { values[ k ] = D[ k ] } );
 	info( {
 		  icon         : 'playback'
 		, title        : 'Playback'
 		, message      : 'Show:<span style="margin-left: 117px">Options:</span>'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkplayback )
+		, checkbox     : Object.values( chkdisplay.playback )
 		, checkcolumn  : true
 		, values       : values
 		, checkchanged : true
@@ -380,7 +410,7 @@ $( '#displayplayback' ).click( function() {
 				if ( $( this ).prop( 'checked' ) ) $el.covervu.prop( 'checked', false );
 			} );
 		}
-		, ok           : () => displaySave( keys )
+		, ok           : displaySave
 	} );
 } );
 $( '#displayplaylist' ).click( function() {
