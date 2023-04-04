@@ -370,7 +370,6 @@ function info( json ) {
 </div>
 ` );
 	$infocontent = $( '#infoContent' );
-	$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	
 	// title
 	if ( I.width ) $( '#infoBox' ).css( 'width', I.width );
@@ -697,6 +696,8 @@ function info( json ) {
 		if ( I.beforeshow ) I.beforeshow();
 		$( '#infoContent input:password' ).parent().after( '<td>'+ ico( 'eye' ) +'</td>' );
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
+		// set at current scroll position
+		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	} );
 	$( '#infoContent .i-eye' ).click( function() {
 		var $this = $( this );
