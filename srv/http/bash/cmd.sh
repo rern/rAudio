@@ -298,7 +298,7 @@ bookmarkadd )
 	
 	echo $path > "$bkfile"
 	if [[ -e $dirsystem/order.json ]]; then
-		order=$( jq < $dirsystem/order.json | jq '. + ["'"$path"'"]' )
+		order=$( jq '. + ["'$path'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
 	pushstream bookmark 1
@@ -312,9 +312,9 @@ bookmarkcoverreset )
 	;;
 bookmarkremove )
 	file="$dirbookmarks/${args[1]//\//|}"
-	if [[ -e $dirsystem/order.json ]]; then
-		path=$( < "$file" )
-		order=$( jq < $dirsystem/order.json | jq '. - ["'"$path"'"]' )
+	path=$( < "$file" )
+	if grep -q "$path" $dirsystem/order.json 2> /dev/null; then
+		order=$( jq '. - ["'$path'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
 	rm "$file"
@@ -831,10 +831,8 @@ multiraudiolist )
 , "list"    : '$( < $dirsystem/multiraudio.conf )'
 }'
 	;;
-ordersave )
-	data=$( jq <<< ${args[1]} )
-	pushstream order "$data"
-	echo "$data" > $dirsystem/order.json
+order )
+	pushstream order $( < $dirsystem/order.json )
 	;;
 playerstart )
 	player=${args[1]}
