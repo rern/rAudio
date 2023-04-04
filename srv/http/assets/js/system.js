@@ -945,12 +945,9 @@ function infoNtpMirror() {
 	} );
 }
 function infoRelayName() {
-	if ( ! S.relaysconf ) {
-		S.relaysconf = {};
-		[ 'name', 'sequence' ].forEach( k => S.relaysconf[ k ] = default_v.relaysconf[ k ] );
-	}
+	R = jsonClone( S.relaysconf || default_v.relaysconf );
 	var values   = [];
-	$.each( S.relaysconf.name, ( k, v ) => values.push( k, v ) );
+	$.each( R.name, ( k, v ) => values.push( k, v ) );
 	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
 	var content  = '<tr><td>'+ ico( 'gpiopins bl' ) +' Pin</td><td>'+ ico( 'tag bl' ) +' Name</td></tr>';
 	for( i = 0; i < 4; i++ ) content += pin_name;
@@ -972,40 +969,41 @@ function infoRelayName() {
 			var blank  = [];
 			var json   = {}
 			values.forEach( ( el, i ) => i % 2 ? json[ pin ] = el || '' : pin = el );
-			S.relaysconf.name = json;
+			R.name     = json;
 			[ 'on', 'off' ].forEach( k => {
-				var array  = S.relaysconf.sequence[ k ];
-				var arrayd = S.relaysconf.sequence[ k +'d' ];
+				var array  = R.sequence[ k ];
+				var arrayd = R.sequence[ k +'d' ];
 				array.forEach( p => {
-					if ( ! json[ p ] ) {               // no name
+					if ( ! json[ p ] ) {               // no name - move pin to last
 						var index = array.indexOf( p );
-						array.splice( index, 1 );      // remove pin
-						if ( k === 'on' ) index--;
-						arrayd.splice( index, 1 );     // remove delay
+						array.splice( index, 1 );
+						array.push( p );
+						if ( index ) {
+							arrayd.splice( index - 1, 1 );
+							arrayd.push( 2 );
+						}
 					}
 				} );
 			} );
-			bash( { cmd: [ 'relays' ], json: S.relaysconf } );
+			notifyCommon();
+			bash( { cmd: [ 'relays' ], json: R } );
 		}
 	} );
 }
 function infoRelaySequence() {
-	if ( ! S.relaysconf ) {
-		S.relaysconf = {};
-		[ 'name', 'sequence' ].forEach( k => S.relaysconf[ k ] = default_v.relaysconf[ k ] );
-	}
+	R = jsonClone( S.relaysconf || default_v.relaysconf );
 	var keys_seq = [ 'on', 'off', 'ond', 'offd' ];
 	var keys     = [];
-	var pL       = S.relaysconf.sequence.on.length;
+	var pL       = Object.values( R.name ).filter( Boolean ).length;
 	for ( i = 0; i < pL; i++ ) keys.push( keys_seq[ 0 ] + i, keys_seq[ 1 ] + i, keys_seq[ 2 ] + i, keys_seq[ 3 ] + i );
 	keys.splice( -2 );
 	var values   = {};
-	for ( i = 0; i < pL; i++ ) keys_seq.forEach( k => values[ k + i ] = S.relaysconf.sequence[ k ][ i ] );
+	for ( i = 0; i < pL; i++ ) keys_seq.forEach( k => values[ k + i ] = R.sequence[ k ][ i ] );
 	delete values.ond3;
 	delete values.offd3;
-	values.timer = S.relaysconf.sequence.timer;
+	values.timer = R.sequence.timer;
 	var option_name  = '';
-	$.each( S.relaysconf.name, ( k, v ) => {
+	$.each( R.name, ( k, v ) => {
 		if ( v ) option_name += '<option value="'+ k +'">'+ v +'</option>';
 	} );
 	var option_delay = htmlOption( [ ...Array(10).keys() ] );
@@ -1048,14 +1046,14 @@ function infoRelaySequence() {
 				var order = '';
 				for ( i = 0; i < pL; i++ ) {
 					k  = values[ kk + i ];
-					order += S.relaysconf.name[ k ] + ( i < ( pL - 1 ) ? '<br>\\n' : '' );
+					order += R.name[ k ] + ( i < ( pL - 1 ) ? '<br>\\n' : '' );
 				}
 				v[ 'order'+ kk ] = '"'+ order.replace( /"|`/g, '\\\\"' ) +'"';
 			} );
-			S.relaysconf.name = json;
+			notifyCommon();
 			bash( {
 				  cmd  : [ 'relays', 'KEY', Object.keys( v ).join( ' ' ), ...Object.values( v ) ]
-				, json : S.relaysconf
+				, json : R
 			} );
 		}
 	} );

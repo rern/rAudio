@@ -53,7 +53,8 @@ args2var() { # args2var "$1"
 	done
 	[[ ! $fileconf ]] && return
 	
-	# quote and escape values: k=vvv | k="v' \"v \`v" > save file conf
+	# escape : k=v' \"v\" \`v   - \" \`
+	# quote  : k="v' \"v\" \`v" - escaped or spaces
 	sed -E '/^fileconf|^$/d
 			s/ ["`]/ \\"/g
 			s/["`] /\\" /g

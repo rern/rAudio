@@ -1050,6 +1050,10 @@ function infoWarning( icon, title, message ) {
 	} );
 }
 
+function jsonClone( json ) {
+	return JSON.parse( JSON.stringify( json ) )
+}
+
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );

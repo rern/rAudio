@@ -64,39 +64,32 @@ if ( $addons ) exit;
 /*
 $head = [
 	  'title'   => 'TITLE'                  // REQUIRED
-	, 'subhead' => true                     // with no help icon
+	, 'subhead' => true/false               // with no help icon
 	, 'status'  => 'COMMAND'                // include status icon and status box
 	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
-	, 'back'    => true                     // back button
-	, 'nohelp'  => true
-	, 'help'    => <<< EOF
-HELP - PHP heredoc
-EOF
+	, 'back'    => true/false               // back button
+	, 'nohelp'  => true/false
+	, 'help'    => 'HELP'
 ];
 $body = [
 	[
 		  'label'       => 'LABEL'      // REQUIRED
 		, 'sublabel'    => 'SUB LABEL'
-		, 'id'          => 'INPUT ID'   // REQUIRED
+		, 'id'          => 'ID'         // REQUIRED
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     =>  ***         // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
-		                                // false      = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
-										// 'none'     = no setting - self trigger
-		, 'settingicon' => ***          // default = 'gear' 
+		, 'setting'     =>  ***         // default  = $( '#setting-'+ id ).click() before enable
+		                                // false    = no setting
+		                                // 'custom' = custom setting
+		                                // 'none'   = no setting - custom enable
+		, 'settingicon' => 'ICON'       // default = 'gear' 
 		                                // false   = no icon
-										// 'icon'  = 'i-icon'
-		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
-										// 'js' = set by js condition
-		, 'help'        => <<< EOF
-HELP
-EOF
-		, 'exist'       => EXIST        // return blank if not EXIST
+		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on setting
+		                                // 'js' = set by js condition
+		, 'help'        => 'HELP'
+		, 'exist'       => ***          // omit if not exist
 	]
-	, [
-		...
-	]
+	, ...
 ];
 htmlSection( $head, $body[, $id] );
 */
@@ -139,7 +132,7 @@ function htmlSetting( $data ) {
 	$id          = $data[ 'id' ] ?? '';
 	$input       = $data[ 'input' ] ?? '';
 	$setting     = $data[ 'setting' ] ?? 'common';
-	$settingicon = $setting === 'none' ? '' : $data[ 'settingicon' ] ?? 'gear';
+	$settingicon = ! $setting || $setting === 'none' ? '' : $data[ 'settingicon' ] ?? 'gear';
 	$disabled    = $data[ 'disabled' ] ?? '';
 	$help        = $data[ 'help' ] ?? '';
 	$html        = '<div id="div'.$id.'"><div class="col-l';
@@ -157,7 +150,7 @@ function htmlSetting( $data ) {
 	} else {
 		$html   .= $input;
 	}
-	$html       .= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
+	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
 			 </div>';
