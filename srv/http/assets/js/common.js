@@ -653,7 +653,9 @@ function info( json ) {
 		} );
 		// assign values
 		infoSetValues();
-		
+		// set height shorter if checkbox / radio only
+		if ( ! $inputbox.add( $( '#infoContent select' ) ).length ) $( '#infoContent tr' ).css( 'height', '36px' );
+		// show	
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		I.active = true;
 		if ( 'focus' in I ) {
