@@ -827,7 +827,7 @@ ${ htmllcdchar.sleep }
 }
 function infoLcdcharButton() {
 	$( '#infoContent svg .power' ).remove();
-	if ( S.lcdcharreboot ) return
+	if ( ! S.lcdchar || S.lcdcharreboot ) return
 	
 	$( '#infoOk' )
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
