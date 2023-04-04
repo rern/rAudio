@@ -1028,7 +1028,6 @@ function infoRelaySequence() {
 		, values       : values
 		, checkchanged : S.relays
 		, beforeshow   : () => {
-			$( '#infoContent tr' ).css( 'height', '42px' );
 			$( '#infoContent td' ).css( { width: '90px', padding: '0 0 0 5px' } );
 			$( 'tr:even .select2-selection__rendered' ).css( 'background', 'var( --cgd )' );
 		}

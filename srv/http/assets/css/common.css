@@ -689,8 +689,10 @@ hr {
 #infoContent table {
 	margin: 0 auto;
 }
+#infoContent tr {
+	height: 42px;
+}
 #infoContent td {
-	height: 32px;
 	padding: 0;
 	text-align: left;
 	white-space: nowrap;
@@ -811,7 +813,7 @@ input[type=password] {
 	color: var( --cw );
 	background-color: #000000;
 	border-radius: 5px;
-	border: 1px solid var( --cg );
+	border: none;
 	font-size: 16px;
 	font-family: Lato;
 }
@@ -819,7 +821,7 @@ input[type=text]:disabled,
 input[type=tel]:disabled,
 input[type=number]:disabled {
 	background: none !important;
-	outline: none;
+	border: 1px solid var( --cgl );
 	opacity: 1;
 }
 input::-webkit-outer-spin-button,
