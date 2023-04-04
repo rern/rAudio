@@ -17,17 +17,17 @@ if ls $dirsystem/autoplay* 2> /dev/null; then
 fi
 
 file=$dirsystem/localbrowser.conf
-if ! grep -q hdmi $file; then
+if [[ $( sed -n 6p $file ) != cursor* ]]; then
 	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
 	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
 	. $file
 	conf="\
 rotate=$rotate
 zoom=$zoom
-cursor=$( [[ $cursor == yes ]] && echo true )
 screenoff=$screenoff
 onwhileplay=$onwhileplay
-hdmi=$hdmi"
+hdmi=$hdmi
+cursor=$( [[ $cursor == yes ]] && echo true )"
 	echo "$conf" > $file
 fi
 

@@ -140,7 +140,7 @@ $( '#setting-localbrowser' ).click( function() {
 	var htmlbrightness = S.localbrowserconf.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
 	var content        = `
 <table>
-<tr><td style="width:130px">Rotation</td>
+<tr><td style="width:110px">Rotation</td>
 	<td><select>
 		<option value="NORMAL">Normal</option>
 		<option value="CW">90° CW</option>
@@ -151,9 +151,6 @@ $( '#setting-localbrowser' ).click( function() {
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
 	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon dn' ) + ico( 'plus-circle btnicon up' ) }</td></tr>
-<tr><td></td>
-	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
-<tr style="height: 10px"></tr>
 <tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
@@ -166,7 +163,8 @@ $( '#setting-localbrowser' ).click( function() {
 	</td><td>&nbsp;<gr>minutes</gr></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox" id="onwhileplay">On while play</label></td></tr>
 <tr><td></td><td colspan="2"><label><input type="checkbox">HDMI Hotplug</label></td></tr>
-<tr style="height: 10px"></tr>
+<tr><td></td>
+	<td colspan="2"><label><input type="checkbox">Mouse pointer</td></label></tr>
 </table>
 <div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
 <div class="btnbottom">
@@ -188,7 +186,7 @@ $( '#setting-localbrowser' ).click( function() {
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
-				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
+				$( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal( 'array' ).join( '' ) );
 			} );
 			$( '#infoContent' ).on( 'change', '#screenoff', function() {
 				if ( $( this ).val() != 0 ) {
@@ -253,6 +251,7 @@ $( '#setting-multiraudio' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : '<table>'+ content +'</table>'
+		, contentcssno : true
 		, values       : values
 		, checkchanged : S.multiraudio && values.length > 2
 		, checkblank   : I.checkblank
@@ -261,7 +260,6 @@ $( '#setting-multiraudio' ).click( function() {
 			$( '#infoContent input' ).each( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
 			} );
-			$( '#infoContent td' ).css( 'padding', 0 );
 			$( '#infoContent' ).on( 'click', 'i', function() {
 				var $this = $( this );
 				var add   = $this.hasClass( 'ipadd' );

@@ -745,7 +745,8 @@ function infoLibraryOption() {
 		, beforeshow   : () => {
 			var $el  = {}
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
-			$( '.infomessage, #infoContent td' ).css( 'width', '296' );
+			$( '#infoContent tr' ).css( 'height', '36px' );
+			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.tapaddplay.click( function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );

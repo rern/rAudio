@@ -114,7 +114,7 @@ $( '.img' ).click( function() {
 	info( {
 		  icon        : d[ 2 ] || name
 		, title       : d[ 0 ]
-		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' ) +'?v='+ Math.ceil( Date.now() / 1000 )
+		, message     : '<img src="/assets/img/'+ name +'.'+ ( d[ 4 ] || 'jpg' )
 						+'" style="height: '+ ( d[ 3 ] || '100%' ) +'; margin-bottom: 0;">'
 		, footer      : [ 'lcdchar', 'rotaryencoder', 'mpdoled' ].includes( name ) ? gpiosvg + d[ 1 ] : ''
 		, footeralign : 'left'
@@ -246,7 +246,7 @@ $( '#setting-wlan' ).click( function() {
 		var options  = htmlOption( list );
 		var infowifi = `\
 <table>
-<tr><td style="padding-right: 5px; text-align: right;">Country</td><td><select>${ options }</select></td></tr>
+<tr><td>Country</td><td><select>${ options }</select></td></tr>
 <tr><td></td><td><label><input type="checkbox">Auto start Access Point</label></td></tr>
 </table>`;
 		info( {

@@ -654,7 +654,10 @@ function info( json ) {
 		// assign values
 		infoSetValues();
 		// set height shorter if checkbox / radio only
-		if ( ! $inputbox.add( $( '#infoContent select' ) ).length ) $( '#infoContent tr' ).css( 'height', '36px' );
+		$( '#infoContent tr' ).each( ( i, el ) => {
+			var $this = $( el );
+			if ( $this.find( 'input:checkbox, input:radio' ).length ) $this.css( 'height', '36px' );
+		} );
 		// show	
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		I.active = true;
