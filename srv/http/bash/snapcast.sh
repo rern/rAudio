@@ -18,7 +18,8 @@ if [[ $1 == start ]]; then
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
 		echo $serverip > $dirshm/serverip
-		$dirbash/cmd.sh playerstart$'\n'snapcast
+		echo snapcast > $dirshm/player
+		$dirbash/cmd.sh playerstart
 		$dirbash/status-push.sh
 		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip

@@ -13,7 +13,11 @@
 . /srv/http/bash/common.sh
 
 ##### start
-[[ $( < $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
+if [[ $( < $dirshm/player ) != spotify ]]; then
+	echo spotify > $dirshm/player
+	$dirbash/cmd.sh playerstart
+	exit
+fi
 
 [[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
 

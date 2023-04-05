@@ -22,6 +22,8 @@ evtest /dev/input/$event | while read line; do
 		volumeup|volumedown ) 
 			[[ $key == volumeup ]] && updn=+ || updn=-
 			$cmdsh "volumeupdown
+KEY
+updn card control
 $updn
 
 $mixer";;

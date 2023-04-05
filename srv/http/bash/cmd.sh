@@ -271,7 +271,7 @@ webRadioSampling() {
 	rm /tmp/webradio
 }
 
-case ${args[0]} in
+case $cmd in
 
 albumignore )
 	album=${args[1]}
@@ -835,10 +835,9 @@ order )
 	pushstream order $( < $dirsystem/order.json )
 	;;
 playerstart )
-	player=${args[1]}
+	player=$( < $dirshm/player )
 	mpc -q stop
 	stopRadio
-	echo $player > $dirshm/player
 	case $player in
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
@@ -902,7 +901,7 @@ playlist )
 	;;
 poweroff|reboot )
 	[[ ${args[0]} == reboot ]] && reboot=1
-	rserverok=${args[2]}
+	rserverok=${args[1]}
 	if [[ -L $dirshareddata ]]; then # server rAudio
 		[[ ! $rserverok && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 		
@@ -929,7 +928,7 @@ poweroff|reboot )
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
-	[[ -e $dirshm/relayson ]] && $dirsettings/relays.sh && sleep 2
+	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh && sleep 2
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q -m1 $dirnas; then
@@ -953,11 +952,11 @@ radiorestart )
 	rm $disshm/radiorestart
 	;;
 relays )
-	$dirsettings/relays.sh ${args[1]}
+	$dirbash/relays.sh ${args[1]}
 	;;
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null
-	$dirsettings/relays-timer.sh &> /dev/null &
+	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{"state":"RESET"}'
 	;;
 rotatesplash )
@@ -1030,12 +1029,6 @@ savedplsave )
 screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
-scrobble )
-	$dirbash/scrobble.sh "\
-${args[1]}
-${args[2]}
-${args[3]}" &> /dev/null &
-	;;
 shairport )
 	[[ $( < $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport
@@ -1053,17 +1046,7 @@ shairportstop )
 shareddatadisconnect )
 	$dirsettings/system.sh shareddatadisconnect
 	;;
-snapcast )
-	$dirbash/snapcast.sh ${args[1]}
-	;;
-status )
-	$dirbash/status.sh ${args[1]}
-	;;
 volume ) # no args = toggle mute / unmute
-	current=${args[1]}
-	target=${args[2]}
-	card=${args[3]}
-	control=${args[4]}
 	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
 	
 	[[ ! $current ]] && current=$( volumeGet )
@@ -1091,9 +1074,6 @@ volumepushstream )
 	pushstream volume '{"val":'$( volumeGet )'}'
 	;;
 volumeupdown )
-	updn=${args[1]}
-	card=${args[2]}
-	control=${args[3]}
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" 1%$updn 2> /dev/null
 	else
@@ -1140,51 +1120,51 @@ webradiocoverreset )
 	filenoext=${args[1]}
 	type=${args[2]}
 	rm "$filenoext".* "$filenoext-thumb".*
-	pushstream coverart '{"type":"radio","url":""}'
+	pushstream coverart '{"type":"'$mode'","url":""}'
 	;;
 webradiodelete )
 	dir=${args[1]}
 	url=${args[2]}
-	type=${args[3]}
+	mode=${args[3]}
 	urlname=${url//\//|}
-	path=$dirdata/$type
+	path=$dirdata/$mode
 	[[ $dir ]] && path+="/$dir"
 	rm -f "$path/$urlname"
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
-	webradioCount $type
+	webradioCount $mode
 	;;
 webradioedit )
 	dir=${args[1]}
 	name=${args[2]}
-	url=${args[3]}
+	newurl=${args[3]}
 	charset=${args[4]}
-	urlprev=${args[5]}
+	url=${args[5]}
+	newurlname=${newurl//\//|}
 	urlname=${url//\//|}
-	prevurlname=${urlprev//\//|}
 	path=$dirwebradio/
 	[[ $dir ]] && path+="/$dir"
-	newfile="$path/$urlname"
-	prevfile="$path/$prevurlname"
-	if [[ $url == $urlprev ]]; then
+	newfile="$path/$newurlname"
+	prevfile="$path/$urlname"
+	if [[ $newurl == $url ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		
-		ext=${url##*.}
-		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
+		ext=${newurl##*.}
+		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $newurl
 		
 		rm "$prevfile"
 		# stationcover
-		previmgurl="$dirwebradio/img/$prevurlname"
-		previmg=$( ls -1 "$previmgurl".* | head -1 )
-		prevthumb="$previmgurl-thumb.jpg"
-		if [[ $previmg || -e $prevthumb ]]; then
-			newimgurl="$dirwebradio/img/$urlname"
-			newimg="$newimgurl.${previmg##*.}"
+		imgurl="$dirwebradio/img/$urlname"
+		img=$( ls -1 "$imgurl".* | head -1 )
+		thumb="$imgurl-thumb.jpg"
+		if [[ $img || -e $thumb ]]; then
+			newimgurl="$dirwebradio/img/$newurlname"
+			newimg="$newimgurl.${img##*.}"
 			newthumb="$newimgurl-thumb.jpg"
-			[[ ! -e $newimg && -e $previmg ]] && cp "$previmg" "$newimg"
-			[[ ! -e $newthumb && -e $prevthumb ]] && cp "$prevthumb" "$newthumb"
-			[[ ! $( find $dirwebradio -name "$prevurlname" ) ]] && rm -f "$previmgurl".* "$prevthumb"
+			[[ ! -e $newimg && -e $img ]] && cp "$img" "$newimg"
+			[[ ! -e $newthumb && -e $thumb ]] && cp "$thumb" "$newthumb"
+			[[ ! $( find $dirwebradio -name "$urlname" ) ]] && rm -f "$imgurl".* "$thumb"
 		fi
 	fi
 	echo "\
@@ -1214,8 +1194,7 @@ wrdirrename )
 	path=${args[1]}
 	name=${args[2]}
 	newname=${args[3]}
-	mode=${args[4]}
-	mv -f "$dirdata/$mode/$path/$name" "$dirdata/$mode/$path/$newname"
+	mv -f "$dirdata/$path/{$name,$newname}"
 	pushstreamRadioList
 	;;
 	

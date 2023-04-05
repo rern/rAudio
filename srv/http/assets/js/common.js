@@ -41,8 +41,8 @@ function bash( command, callback, json ) {
 		data.json = JSON.stringify( command.json );
 		command = command.cmd;
 	}
+	var cmd0= command[ 0 ];
 	if ( page ) {
-		var cmd0= command[ 0 ];
 		if ( cmd0 === 'refreshdata' ) {
 			data.args = [ 'settings/'+ page +'-data.sh' ];
 		} else if ( cmd0 === 'pkgstatus' ) {
@@ -51,7 +51,11 @@ function bash( command, callback, json ) {
 			data.args = [ 'settings/'+ page +'.sh', ...command ];
 		}
 	} else {
-		data.args = [ 'cmd.sh', ...command ];
+		if ( [ 'relays', 'scrobble', 'snapcast', 'status' ].includes( cmd0 ) ) {
+			data.args = [ cmd0 +'.sh', ...command.slice( 1 ) ];
+		} else {
+			data.args = [ 'cmd.sh', ...command ];
+		}
 	}
 	if ( V.consolelog ) {
 		var l    = data.args;

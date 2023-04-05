@@ -19,7 +19,7 @@ if [[ $1 == true ]]; then
 	done
 	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
 		echo $timer > $timerfile
-		$dirsettings/relays-timer.sh &> /dev/null &
+		$dirbash/relays-timer.sh &> /dev/null &
 	fi
 else
 	rm -f $dirshm/relayson $timerfile

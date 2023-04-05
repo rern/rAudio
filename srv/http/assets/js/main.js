@@ -714,13 +714,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', 'drag', e.value, S.card, S.control ] );
+		volumeCommand( [ 'drag', e.value, S.card, S.control ] );
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		bash( [ 'volume', S.volume, e.value, S.card, S.control ] );
+		volumeCommand( [ S.volume, e.value, S.card, S.control ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -764,7 +764,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( S.volume === 0 && voldn ) || ( S.volume === 100 && ! voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-' : '+', S.card, S.control ] );
+	bash( [ 'volumeupdown', 'KEY', 'updn card control', voldn ? '-' : '+', S.card, S.control ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( V.volhold ) {
 		V.volhold = false;
@@ -783,7 +783,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		bash( [ 'volume', 'drag', vol, S.card, S.control ] );
+		volumeCommand( [ 'drag', vol, S.card, S.control ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -822,7 +822,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		S.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, S.card, S.control ] );
+		volumeCommand( [ 'drag', vol, S.card, S.control ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute / unmute

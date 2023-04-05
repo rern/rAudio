@@ -339,23 +339,23 @@ function tagModeSwitch() {
 function webRadioCoverart() {
 	if ( V.playback ) {
 		var coverart  = S.stationcover || V.coverdefault;
-		var type      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
 		var url       = S.file;
 		var name      = S.station;
 	} else {
 		var coverart  = V.coverdefault;
 		var src       = V.list.li.find( '.li-icon' ).attr( 'src' );
-		var type      = V.mode;
+		var mode      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 		var name      = V.list.name;
 	}
-	var imagefilenoext = '/srv/http/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
+	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
 	$( '#coverart' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	info( {
 		  icon        : 'coverart'
-		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
+		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">'+ name +'</p>'
 		, filelabel   : ico( 'folder-open' ) +'File'
@@ -372,10 +372,10 @@ function webRadioCoverart() {
 				} );
 			}
 		}
-		, buttonlabel : ico( type ) +'Default'
+		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, type ] )
-		, ok          : () => imageReplace( type, imagefilenoext )
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, mode ] )
+		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }
 function webRadioDelete() {
@@ -639,7 +639,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				, checkblank   : true
 				, checkchanged : true
 				, oklabel      : 'Rename'
-				, ok           : () => bash( [ 'wrdirrename', path, name, infoVal(), V.mode ] )
+				, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal() ] )
 			} );
 			return
 		case 'wrsave':

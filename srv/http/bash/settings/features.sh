@@ -446,7 +446,7 @@ stoptimer )
 		if [[ -e $dirshm/relayson ]]; then
 			. $dirsystem/relays.conf
 			echo $timer > $timerfile
-			$dirsettings/relays-timer.sh &> /dev/null &
+			$dirbash/relays-timer.sh &> /dev/null &
 		fi
 	fi
 	pushRefresh
