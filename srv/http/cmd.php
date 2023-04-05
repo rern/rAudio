@@ -17,7 +17,7 @@ case 'bash':
 		file_put_contents( $dirsystem.$args[ 0 ].'.json', $jsonstring );
 	}
 	$multiline = implode( "\n", $args );                               // array to multiline
-	$multiline = preg_replace( '/(["`])/', '\\\\\1', $multiline );     // escape multiline
+	$multiline = preg_replace( '/(["`])/', '\\\$1', $multiline );     // escape multiline
 	$result    = shell_exec( $sudobash.$cmd.' "'.$multiline.'"' );     // multiline > bash
 	echo rtrim( $result );                                             // bash output
 	break;
@@ -51,7 +51,7 @@ case 'imagereplace':
 	}
 	$sh           = [ $type, $tmpfile, $imagefile, $bookmarkname ];
 	$multiline    = implode( "\n", $sh );
-	$multiline    = preg_replace( '/(["`])/', '\\\\\1', $multiline );
+	$multiline    = preg_replace( '/(["`])/', '\\\$1', $multiline );
 	shell_exec( $sudobash.'cmd-coverartsave.sh "'.$multiline.'"' );
 	break;
 case 'login':
