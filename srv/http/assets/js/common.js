@@ -24,14 +24,14 @@ bash( { cmd: [ 'bashcmd', ... ], json: json } );        * with json
 
 - js > php
 	- string : 'k1 k2 ...' - [ v1, v2, ... ]
+	- multiline string: 'l1\\nl2\\nl3...' (\\n)
 	- json   : sringify
 - php > bash
 	- array : covert to multiline with " ` escaped
-	- json  : decode - reencode - save to data/system/bashcmd.conf
+	- json  : decode > reencode > save to data/system/bashcmd.conf
 		- if set - { json: json }
 		- js cannot escape as \\" double backslash which disappeared in bash
-- bash - convert to array
-	- multiline: convert to values
+- bash - convert to array > assign values
 		- ${args[1]}=v1; ${args[2]}=v2; ...
 		- k1=v1; k2=v2; ... ('KEY', 'k1 k2 ...')
 */

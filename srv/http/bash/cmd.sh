@@ -4,7 +4,7 @@
 dirimg=/srv/http/assets/img
 
 # convert each line to each args
-readarray -t args <<< $1
+args2var "$1"
 
 equalizerAmixer() { # sudo - mixer equal is user dependent
 	local player=$( < $dirshm/player )
