@@ -1,15 +1,16 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-timerfile=$dirshm/relaystimer
-
 . $dirsystem/relays.conf
+
+timerfile=$dirshm/relaystimer
 
 if [[ $1 == true ]]; then
 	touch $dirshm/relayson
 	devices='<wh>'$( echo -e $orderon )
+	ond=( $ond )
 	i=0
-	for pin in ${on[$i]}; do
+	for pin in $on; do
 		gpio -1 mode $pin out
 		gpio -1 write $pin 1
 		message=$( sed "$(( i + 1 )) s|$|</wh>|" <<< $devices )
@@ -25,8 +26,9 @@ else
 	rm -f $dirshm/relayson $timerfile
 	killall relays-timer.sh &> /dev/null
 	devices='<gr>'$( echo -e $orderoff )
+	offd=( $offd )
 	i=0
-	for pin in ${off[$i]}; do
+	for pin in $off; do
 		gpio -1 write $pin 0
 		message=$( sed "$(( i + 1 )) s|$|</gr>|" <<< $devices )
 		pushstream relays '{ "state": "OFF", "message": '$message' }'

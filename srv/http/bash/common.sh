@@ -49,18 +49,9 @@ args2var() { # args2var "$1"
 		v=${args[i+3]} # values start from #3, after 'key1 key2 ...'
 		[[ $v == false ]] && v=
 		printf -v $k '%s' "$v"
-		conf+="$k=$v"$'\n'
+		[[ $k != fileconf ]] && conf+=$k'="'${v//\"/\\\"}'"'$'\n'
 	done
-	[[ ! $fileconf ]] && return
-	
-	# escape : k=v' \"v\" \`v   - \" \`
-	# quote  : k="v' \"v\" \`v" - escaped or spaces
-	sed -E '/^fileconf|^$/d
-			s/ ["`]/ \\"/g
-			s/["`] /\\" /g
-			s/=(.* )/="\1/
-			s/( .*)$/\1"/
-			' <<< $conf > $dirsystem/$cmd.conf
+	[[ $fileconf ]] && echo "$conf" > $dirsystem/$cmd.conf
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'

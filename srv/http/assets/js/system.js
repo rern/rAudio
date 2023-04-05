@@ -1034,24 +1034,24 @@ function infoRelaySequence() {
 		, cancel       : switchCancel
 		, ok           : () => {
 			values = infoVal();
-			var json = { timer: values.timer }; // json format for this setting
 			keys_seq.forEach( k => {
-				json[ k ] = [];
+				R.sequence[ k ] = [];           // json format for this setting
 				var L = k.slice( -1 ) === 'd' ? pL - 1 : pL;
-				for ( i = 0; i < L; i++ ) json[ k ].push( values[ k + i ] );
+				for ( i = 0; i < L; i++ ) R.sequence[ k ].push( values[ k + i ] );
 			} );
+			R.sequence.timer = values.timer;
 			var v  = {                          // bash var format for running
 				  fileconf : true
 				, timer    : values.timer
 			};
-			keys_seq.forEach( k => v[ k ] = '( '+ json[ k ].join( ' ' ) +' )' );
+			keys_seq.forEach( k => v[ k ] = R.sequence[ k ].join( ' ' ) );
 			[ 'on', 'off' ].forEach( kk => {    // bash multiline var for info
 				var order = '';
 				for ( i = 0; i < pL; i++ ) {
 					k  = values[ kk + i ];
 					order += R.name[ k ] + ( i < ( pL - 1 ) ? '<br>\\n' : '' );
 				}
-				v[ 'order'+ kk ] = '"'+ order.replace( /"|`/g, '\\\\"' ) +'"';
+				v[ 'order'+ kk ] = order;
 			} );
 			notifyCommon();
 			bash( {
