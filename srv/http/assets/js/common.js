@@ -18,22 +18,28 @@ var red         = '#bb2828';
 /*
 Avoid \" \` in js values for bash: 1 line for 1 argument
 
-bash( [ 'bashcmd', v1, v2, ... ], result => callback ); * accessed values by index
-bash( [ 'bashcmd', 'KEY', 'k1 k2 ...', v1, v2, ... ] ); * accessed values by key
-bash( { cmd: [ 'bashcmd', ... ], json: json } );        * with json
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ... ], result => *callback ); - accessed values by index
 
-- js > php
-	- string : 'k1 k2 ...' - [ v1, v2, ... ]
-	- multiline string: 'l1\\nl2\\nl3...' (\\n)
-	- json   : sringify
-- php > bash
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'fileconf'              - fileconf: save to $dirsystem/$CMD.conf
+                          , *'KEY   k1  k2  ...' ] );                     - accessed values by var names (if set)
+						  
+bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );               - json: save to $dirsystem/$CMD.json (if set)
+
+- js > php   --- common.js - bash()
+	- string    : [ 'CMD' v1, v2, ..., 'KEY k1 k2 ...' ]
+	- multiline : 'l1\\nl2\\nl3...' (\\n)
+	- json      : sringify
+	
+- php > bash --- cmd.php $cmd === 'bash'
 	- array : covert to multiline with " ` escaped
-	- json  : decode > reencode > save to data/system/bashcmd.conf
-		- if set - { json: json }
-		- js cannot escape as \\" double backslash which disappeared in bash
-- bash - convert to array > assign values
-		- ${args[1]}=v1; ${args[2]}=v2; ...
-		- k1=v1; k2=v2; ... ('KEY', 'k1 k2 ...')
+	- json  : decode > reencode > bash save to file
+		- js cannot escape " as \\" double backslash which disappeared in bash
+		
+- bash       --- common.sh - args2var
+	- convert to array > assign values
+		- No 'KEY'   - ${args[1]}=v1; ${args[2]}=v2; ...
+		- With 'KEY' - k1=v1; k2=v2; ... ( KEY k1 k2 ... )
+			- save to $dirsystem/$CMD.conf if 'fileconf' set
 */
 function bash( command, callback, json ) {
 	var data = { cmd: 'bash' }
@@ -73,7 +79,7 @@ function bash( command, callback, json ) {
 	
 	$.post( 
 		  'cmd.php'
-		, data // { cmd: 'bash', args: [ 'file.sh', ...command ], json: 'json string' }
+		, data // { cmd: 'bash', args: [ 'file.sh', ...command, *'fileconf', *'KEY keys ...' ], *json: 'json string' }
 		, callback || null
 		, json || null
 	);
@@ -1009,9 +1015,9 @@ function infoVal( format ) {
 	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array : single value as string
 	if ( format === 'array' ) return values
 	if ( format === 'KEY' ) {
-		var keys = I.keys.join( ' ' );
-		if ( I.fileconf ) keys += ' fileconf';
-		return [ 'KEY', keys, ...values ]
+		if ( I.fileconf ) values.push( 'fileconf' );
+		values.push( 'KEY '+ I.keys.join( ' ' ) );
+		return values
 	}
 	var v = {}
 	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );

@@ -904,7 +904,7 @@ function infoMount( val ) {
 			var values = infoVal();
 			values.protocol = nfs ? 'nfs' : 'cifs';
 			if ( shareddata ) values.shareddata = true;
-			var cmd = [ 'mount', 'KEY', keys, ...values ];
+			var cmd = [ 'mount', ...values, 'KEY '+ keys ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 			bash( cmd, error => {
 				if ( error ) {
@@ -945,9 +945,9 @@ function infoNtpMirror() {
 	} );
 }
 function infoRelayCommand() { // bash var format for running
-	var v  = { timer: R.sequence.timer };
+	var v      = { timer: R.sequence.timer };
+	var pL     = Object.values( R.name ).filter( Boolean ).length;
 	[ 'on', 'off', 'ond', 'offd' ].forEach( k => v[ k ] = R.sequence[ k ].join( ' ' ) ); // var='p1 p2 p3 p4'
-	var pL       = Object.values( R.name ).filter( Boolean ).length;
 	[ 'on', 'off' ].forEach( kk => {    // bash multiline var for info
 		var order = '';
 		for ( i = 0; i < pL; i++ ) {
@@ -956,14 +956,14 @@ function infoRelayCommand() { // bash var format for running
 		}
 		v[ 'order'+ kk ] = order;
 	} );
+	var keys   = Object.keys( v ).join( ' ' );
+	var values = Object.values( v );
+	values.push( 'fileconf', 'KEY '+ keys );
 	notifyCommon();
-	bash( {
-		  cmd  : [ 'relays', 'KEY', Object.keys( v ).join( ' ' ) +' fileconf', ...Object.values( v ) ]
-		, json : R
-	} );
+	bash( { cmd: [ 'relays', ...values ], json: R } );
 }
 function infoRelayName() {
-	R = jsonClone( S.relaysconf || default_v.relaysconf );
+	R            = jsonClone( S.relaysconf || default_v.relaysconf );
 	var values   = [];
 	$.each( R.name, ( k, v ) => values.push( k, v ) );
 	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
@@ -1009,7 +1009,7 @@ function infoRelayName() {
 	} );
 }
 function infoRelaySequence() {
-	R = jsonClone( S.relaysconf || default_v.relaysconf );
+	R            = jsonClone( S.relaysconf || default_v.relaysconf );
 	var keys_seq = [ 'on', 'off', 'ond', 'offd' ];
 	var keys     = [];
 	var pL       = Object.values( R.name ).filter( Boolean ).length;
@@ -1053,7 +1053,7 @@ function infoRelaySequence() {
 		, ok           : () => {
 			values = infoVal();
 			keys_seq.forEach( k => {
-				R.sequence[ k ] = [];           // json format for this setting
+				R.sequence[ k ] = [];           // json format
 				var L = k.slice( -1 ) === 'd' ? pL - 1 : pL;
 				for ( i = 0; i < L; i++ ) R.sequence[ k ].push( values[ k + i ] );
 			} );

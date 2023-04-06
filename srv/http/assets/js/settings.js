@@ -136,7 +136,7 @@ function switchDisable() {
 	S[ SW.id ] = false;
 }
 function switchEnable() {
-	var values = infoVal( 'KEY' ); // [ 'KEY', keys, ...values ]
+	var values = infoVal( 'KEY' ); // [ ...values, *'fileconf', *KEY keys  ]
 	bash( [ SW.id, ...values ] );
 	notifyCommon();
 	S[ SW.id ] = true;

@@ -71,7 +71,7 @@ $( '#setting-spotifyd' ).click( function() {
 				var values = infoVal();
 				var id     = values[ 0 ];
 				var secret = values[ 1 ];
-				bash( [ 'spotifykey', 'KEY', 'btoa', btoa( id +':'+ secret ) ] );
+				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'KEY btoa' ] );
 				var data   = {
 					  response_type : 'code'
 					, client_id     : id
@@ -474,7 +474,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobblekeyget', 'KEY', 'token', token ], function( error ) {
+		bash( [ 'scrobblekeyget', token, 'KEY token' ], function( error ) {
 			if ( error ) {
 				info( {
 					  icon    : 'scrobble'
@@ -488,7 +488,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', 'KEY', 'code', code ], () => showContent );
+		bash( [ 'spotifytoken', code, 'KEY code' ], () => showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

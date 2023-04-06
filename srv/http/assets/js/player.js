@@ -3,7 +3,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.playback' ).click( function() {
 	if ( $( this ).hasClass( 'disabled' ) ) return
 	
-	bash( [ 'playback', 'KEY', 'acttion', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+	bash( [ 'playback', S.player === 'mpd' ? 'mpcplayback' : 'playerstop', 'KEY acttion' ] );
 } );
 $( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';
@@ -23,11 +23,11 @@ $( '.btoutputall' ).click( function() {
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', 'KEY', 'asoundcard', $( this ).val() ] );
+	bash( [ 'audiooutput', $( this ).val(), 'KEY asoundcard' ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', 'KEY', 'aplayname hwmixer', D.aplayname, $( this ).val() ] );
+	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'KEY aplayname hwmixer' ] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -65,7 +65,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( [ 'volume', 'KEY', 'asoundcard mixer vol', S.asoundcard, mixer, $( this ).val() ] );
+					bash( [ 'volume', S.asoundcard, mixer, $( this ).val(), 'KEY asoundcard mixer vol' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ cmdpush ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
@@ -102,7 +102,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', 'KEY', 'aplayname hwmixer', D.aplayname, D.hwmixer ] );
+				bash( [ 'novolume', D.aplayname, D.hwmixer, 'KEY aplayname hwmixer' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -122,7 +122,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	var cmd = checked ? [ 'dop', 'KEY', 'aplayname', D.aplayname ] : [ 'dop', 'disable', D.aplayname ];
+	var cmd = checked ? [ 'dop', D.aplayname, 'KEY aplayname' ] : [ 'dop', 'disable', D.aplayname ];
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).click( function() {
@@ -217,7 +217,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', 'KEY', 'aplayname', D.aplayname ], val => {
+	bash( [ 'customget', D.aplayname, 'KEY aplayname' ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -237,7 +237,7 @@ $( '#setting-custom' ).click( function() {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', 'KEY', 'global output aplayname', values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
+				bash( [ 'custom', values[ 0 ], values[ 1 ], D.aplayname, 'KEY global output aplayname' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -428,5 +428,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', 'KEY', 'mixertype aplayname hwmixer', mixertype, D.aplayname, hwmixer ] );
+	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer, 'KEY mixertype aplayname hwmixer' ] );
 }

@@ -18,10 +18,10 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 fi
 
 # args2var "command
-#	KEY
-#	k1 k2 ...
 #	v1
 #	v2
+#	*fileconf      #2
+#	*KEY k1 k2 ... #1 ${args[@]: -1}
 #   ..."
 #
 # convert multiline to variables:
@@ -29,31 +29,34 @@ fi
 #	${args[1]}=v1
 #	${args[2]}=v2
 #
-#	k1=v1 (if 'KEY' and 'k1 k2 ...' are set)
+#	k1=v1 (if 'KEY k1 k2 ...' set)
 #	k2=v2
 
-args2var() { # args2var "$1"
+args2var() {
 	local i keys kL k v conf fileconf
 	readarray -t args <<< $1
 	cmd=${args[0]}
 	enable=true
-	if [[ ${args[1]} != KEY ]]; then
+	argslast=${args[@]: -1}
+	if [[ $argslast != "KEY "* ]]; then
 		[[ ${args[1]} == disable ]] && enable=
 		return
 	fi
 	
-	keys=${args[2]}
-	[[ $keys == *fileconf* ]] && fileconf=1 && keys=${keys/ fileconf}
-	keys=( $keys )
+	keys=( $argslast )
+	[[ ${args[@]: -2:1} == fileconf ]] && fileconf=1
 	kL=${#keys[@]}
-	for (( i=0; i < kL; i++ )); do
+	for (( i=1; i < kL; i++ )); do
 		k=${keys[i]}
-		v=${args[i+3]} # values start from #3, after 'key1 key2 ...'
+		v=${args[i]}
 		[[ $v == false ]] && v=
+		echo $k $v
 		printf -v $k '%s' "$v"
 		if [[ $fileconf ]]; then
-			v=$( stringEscape $v )
-			[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
+			if [[ $v ]]; then
+				v=$( stringEscape $v )
+				[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
+			fi
 			conf+=$k'='$v$'\n'
 		fi
 	done

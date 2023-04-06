@@ -1933,7 +1933,7 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeCommand( data, callback ) {
-	bash( [ 'volume', 'KEY', 'current target card control', ...data ], () => {
+	bash( [ 'volume', ...data, 'KEY current target card control' ], () => {
 		if ( callback ) callback();
 	} );
 }

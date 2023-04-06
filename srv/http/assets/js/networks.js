@@ -142,7 +142,7 @@ $( '.connect' ).click( function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Connect ...' );
-	bash( [ 'profileconnect', 'KEY', 'ssid', ssid ] );
+	bash( [ 'profileconnect', ssid, 'KEY ssid' ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( V.listid === 'listbt' ) {
@@ -196,7 +196,7 @@ $( '.forget' ).click( function() {
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', 'KEY', 'ssid', ssid ] );
+			bash( [ 'profileremove', ssid, 'KEY ssid', ] );
 		}
 	} );
 } );
@@ -207,10 +207,10 @@ $( '.info' ).click( function() {
 } );
 
 function bluetoothCommand( cmd, mac ) {
-	bash( [ 'bluetoothcommand', 'KEY', 'action mac', cmd, mac ] );
+	bash( [ 'bluetoothcommand', cmd, mac, 'KEY action mac' ] );
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', 'KEY', 'mac', mac ], data => {
+	bash( [ 'bluetoothinfo', mac, 'KEY mac' ], data => {
 		if ( ! data ) {
 			$( '#codebluetoothlist' )
 				.empty()
@@ -232,7 +232,7 @@ function connectWiFi( data, ip ) {
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', 'KEY', I.keys.join( ' ' ), ...data ], error => {
+	bash( [ 'connect', ...data, 'KEY '+ I.keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -273,7 +273,7 @@ function editLAN() {
 }
 function editLANSet( data, ip ) {
 	var icon = 'lan'
-	bash( [ 'lanedit', 'KEY', I.keys.join( ' ' ), ...data ], avail => {
+	bash( [ 'lanedit', ...data, 'KEY '+ I.keys.join( ' ' ) ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -302,7 +302,7 @@ function editReconnect( icon, ip, delay ) {
 	}, delay * 1000 );
 }
 function editWiFi() {
-	bash( [ 'profileget', 'KEY', 'ssid', V.li.data( 'ssid' ) ], v => {
+	bash( [ 'profileget', V.li.data( 'ssid' ), 'KEY ssid' ], v => {
 		var static = v.IP === 'static'
 		v.Security = v.Security === 'wep';
 		v.Hidden = 'Hidden' in v;
