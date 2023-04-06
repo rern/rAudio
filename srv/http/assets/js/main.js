@@ -274,7 +274,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).click();
-			bash( [ 'relays', ! S.relayson ] );
+			bash( [ 'relays', S.relayson || '' ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';

@@ -576,11 +576,7 @@ function getPlaybackStatus( withdisplay ) {
 				$( '#data' ).empty();
 				$( '#button-data, #data' ).addClass( 'hide' );
 			}
-			displayBars();
-			displayPlayback();
-			renderPlayback();
-			setButtonControl();
-			setButtonUpdating();
+			renderPlaybackAll();
 		} else {
 			$( '#data' ).html( highlightJSON( S ) )
 			$( '#button-data, #data' ).removeClass( 'hide' );
@@ -1221,6 +1217,13 @@ function renderPlayback() {
 	} else { //play
 		setProgressElapsed();
 	}
+}
+function renderPlaybackAll() {
+	displayBars();
+	displayPlayback();
+	renderPlayback();
+	setButtonControl();
+	setButtonUpdating();
 }
 function renderPlaylist( data ) { // current playlist
 	V.savedlist      = false;

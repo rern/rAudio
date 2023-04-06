@@ -16,7 +16,7 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( < $timerfile )
-		(( $i == 1 )) && $dirbash/relays.sh && exit
+		(( $i == 1 )) && $dirbash/relays.sh off && exit
 		
 		(( i-- ))
 		echo $i > $timerfile

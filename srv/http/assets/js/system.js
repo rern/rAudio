@@ -1049,7 +1049,7 @@ function infoRelaySequence() {
 				var order = '';
 				for ( i = 0; i < pL; i++ ) {
 					k  = values[ kk + i ];
-					order += R.name[ k ] + ( i < ( pL - 1 ) ? '<br>\\n' : '' );
+					order += R.name[ k ] + ( i < ( pL - 1 ) ? '\\n' : '' );
 				}
 				v[ 'order'+ kk ] = order;
 			} );

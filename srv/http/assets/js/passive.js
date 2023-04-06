@@ -199,8 +199,7 @@ function psMpdPlayer( data ) {
 		}
 		statusUpdate( data );
 		if ( V.playback ) {
-			displayPlayback();
-			renderPlayback();
+			renderPlaybackAll();
 		} else if ( V.playlist ) {
 			setPlaylistScroll();
 		}
@@ -330,21 +329,15 @@ function psRadioList( data ) {
 	$( '#mi-dabupdate' ).addClass( 'hide' );
 }
 function psRelays( response ) {
-	clearInterval( V.intRelaysTimer );
-	if ( 'on' in response ) {
-		$( '#device'+ response.on ).removeClass( 'gr' );
-	} else if ( 'off' in response ) {
-		$( '#device'+ response.off ).addClass( 'gr' );
-	} else if ( 'done' in response ) {
+	if ( 'done' in response || ! ( 'state' in response ) ) {
 		$( '#infoX' ).click();
+		return
 	}
-	if ( ! ( 'state' in response ) ) return
 	
+	clearInterval( V.intRelaysTimer );
+	var state = response.state;
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
-	var state     = response.state;
-	if ( state === 'RESET' ) {
-		$( '#infoX' ).click();
-	} else if ( state === 'IDLE' ) {
+	if ( state === 'IDLE' ) {
 		info( {
 			  icon        : 'relays'
 			, title       : 'Relays Countdown'
@@ -369,7 +362,12 @@ function psRelays( response ) {
 				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 			}
 		}, 1000 );
-	} else if ( [ 'ON', 'OFF' ].includes( state ) ) {
+	} else {
+		if ( I.active ) {
+			$( '#infoContent .msg-r' ).html( response.message );
+			return
+		}
+		
 		info( {
 			  icon       : 'relays'
 			, title      : 'Relays '+ state

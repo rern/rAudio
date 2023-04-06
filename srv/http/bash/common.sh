@@ -236,3 +236,7 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+stringEscape() {
+	data=${@//\"/\\\"}
+	echo ${data//\`/\\\`}
+}

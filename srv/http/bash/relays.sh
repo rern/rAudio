@@ -5,39 +5,43 @@
 
 timerfile=$dirshm/relaystimer
 
-if [[ $1 == true ]]; then
+if [[ ! $1 ]]; then # no args = ON
 	touch $dirshm/relayson
-	devices='<wh>'$( echo -e $orderon )
-	ond=( $ond )
-	i=0
-	for pin in $on; do
-		gpio -1 mode $pin out
-		gpio -1 write $pin 1
-		message=$( sed "$(( i + 1 )) s|$|</wh>|" <<< $devices )
-		pushstream relays '{ "state": "ON", "message": '$message' }'
-		sleep ${ond[$i]}
-		(( i++ ))
-	done
-	if [[ ! -e $dirshm/stoptimer && $timer > 0 ]]; then
-		echo $timer > $timerfile
-		$dirbash/relays-timer.sh &> /dev/null &
-	fi
+	action=ON
+	pins=$on
+	onoff=1
+	delay=( $ond )
+	order="<wh>$orderon"
+	color=wh
 else
-	rm -f $dirshm/relayson $timerfile
 	killall relays-timer.sh &> /dev/null
-	devices='<gr>'$( echo -e $orderoff )
-	offd=( $offd )
-	i=0
-	for pin in $off; do
-		gpio -1 write $pin 0
-		message=$( sed "$(( i + 1 )) s|$|</gr>|" <<< $devices )
-		pushstream relays '{ "state": "OFF", "message": '$message' }'
-		sleep ${offd[$i]}
-		(( i++ ))
-	done
+	rm -f $dirshm/{relayson,relaystimer}
+	action=OFF
+	pins=$off
+	onoff=0
+	delay=( $offd )
+	order="<gr>$orderoff"
+	color=gr
 fi
-
+dL=${#delay[@]}
+i=0
+for pin in $pins; do
+	gpio -1 mode $pin out
+	gpio -1 write $pin $onoff
+	line=$(( i + 1 ))
+	message=$( sed "$line s|$|</$color>|" <<< $( echo -e $order ) ) # \n      > newline > sed appends color close tag
+	message=$( sed -z 's/\n/\\n/g' <<< $message )                   # newline > \n for json
+	message=$( stringEscape $message )                              # escape " `
+	pushstream relays '{ "state": "'$action'", "message": "'$message'" }'
+	[[ $i < $dL ]] && sleep ${delay[i]}
+	(( i++ ))
+done
+if [[ $action == ON && ! -e $dirshm/stoptimer && $timer > 0 ]]; then
+	echo $timer > $timerfile
+	$dirbash/relays-timer.sh &> /dev/null &
+fi
 alsactl store
+status=$( $dirbash/status.sh )
+pushstream mpdplayer "$status"
 sleep 1
-$dirbash/status-push.sh
-pushstream relays '{ "state": "RESET" }'
+pushstream relays '{ "done": 1 }'

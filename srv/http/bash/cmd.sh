@@ -928,7 +928,7 @@ poweroff|reboot )
 	fi
 	cdda=$( mpc -f %file%^%position% playlist | grep ^cdda: | cut -d^ -f2 )
 	[[ $cdda ]] && mpc -q del $cdda
-	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh && sleep 2
+	[[ -e $dirshm/relayson ]] && $dirbash/relays.sh off && sleep 2
 	systemctl -q is-active camilladsp && camilladsp-gain.py
 	ply-image /srv/http/assets/img/splash.png &> /dev/null
 	if mount | grep -q -m1 $dirnas; then
@@ -951,13 +951,10 @@ radiorestart )
 	sleep 1
 	rm $disshm/radiorestart
 	;;
-relays )
-	$dirbash/relays.sh ${args[1]}
-	;;
 relaystimerreset )
 	killall relays-timer.sh &> /dev/null
 	$dirbash/relays-timer.sh &> /dev/null &
-	pushstream relays '{"state":"RESET"}'
+	pushstream relays '{ "done": 1 }'
 	;;
 rotatesplash )
 	rotateSplash ${args[1]}
