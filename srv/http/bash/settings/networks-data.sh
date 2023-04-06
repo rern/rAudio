@@ -51,11 +51,11 @@ listWlan() {
 	  "dbm"      : '$dbm'
 	, "gateway"  : "'$gateway'"
 	, "ip"       : "'$ipwl'"
-	, "ssid"     : "'${profile//\"/\\\"}'"
+	, "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			else
 				listwlnotconnected+=',{
-	  "ssid"     : "'${profile//\"/\\\"}'"
+	  "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			fi
 		done

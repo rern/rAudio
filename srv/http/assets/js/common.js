@@ -222,16 +222,16 @@ info( {                                       // default
 	content       : 'HTML'                    // ***            (custom html <table> input content)
 	height        : N                         // (fit)          (infocontent height)
 	
-	message       : 'MESSAGE'                 // (blank)        (message under title)
+	message       : 'MESSAGE'                 // --             (message under title)
 	messagealign  : 'CSS'                     // 'center'
-	footer        : 'FOOTER'                  // (blank)        (footer above buttons)
-	footeralign   : 'CSS'                     // (blank)
+	footer        : 'FOOTER'                  // --             (footer above buttons)
+	footeralign   : 'CSS'                     // 'center'
 	
 	textlabel     : [ 'LABEL', ... ]          // ***            (label array input label)
 	textalign     : 'CSS'                     // 'left'         (input text alignment)
 	focus         : N                         // --             (focused input)
 	
-	passwordlabel : 'LABEL'                   // (blank)        (password input label)
+	passwordlabel : 'LABEL'                   // ***            (password input label)
 	
 	textarea      : true                      // ***
 	
@@ -247,7 +247,7 @@ info( {                                       // default
 	
 	select        : { LABEL: 'VALUE', ... }   // ***
 	                [ LABEL, ... ]                              (option label = value)
-	selectlabel   : 'LABEL'                   // (blank)        (select input label)
+	selectlabel   : 'LABEL'                   // --             (select input label)
 	
 	rangelabel    : 'LABEL'                   // ***            (input range label)
 	rangesub      : 'SUBLABEL'                '' --             (sublabel under range)
@@ -287,6 +287,8 @@ info( {                                       // default
 	
 	values        : [ 'VALUE', ... ]          // --             (default values - in layout order)
 	                { KEY: 'VALUE', ... }                       (return bash var - [ 'KEY=value', ... ])
+	
+	fileconf      : true                      // --             (bash: save key=value to $system/$cmd.conf)
 } );
 `;
 
@@ -1008,10 +1010,7 @@ function infoVal( format ) {
 	if ( format === 'array' ) return values
 	if ( format === 'KEY' ) {
 		var keys = I.keys.join( ' ' );
-		if ( I.fileconf ) {
-			keys += ' fileconf';
-			values.push( I.fileconf );
-		}
+		if ( I.fileconf ) keys += ' fileconf';
 		return [ 'KEY', keys, ...values ]
 	}
 	var v = {}

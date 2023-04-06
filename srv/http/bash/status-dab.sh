@@ -4,7 +4,7 @@
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
-station=${tmpradio[1]//\"/\\\"}
+station=$( stringEscape ${tmpradio[1]} )
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 filelabel=$dirshm/webradio/DABlabel.txt

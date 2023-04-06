@@ -39,8 +39,8 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	cat << EOF > "$filebootwifi"
 Interface=$wlandev
 $( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
-ESSID="$( sed 's/"/\\"/g' <<< $ssid )"
-Key="$( sed 's/"/\\"/g' <<< $key )"
+ESSID="$( stringEscape $ssid )"
+Key="$( stringEscape $key )"
 EOF
 	$dirsettings/networks.sh profileconnect$'\n'"$ssid"
 fi
@@ -81,7 +81,7 @@ if [[ $connected  ]]; then
 	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
-			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
+			ip=$( grep $( space2ascii $mountpoint ) /etc/fstab \
 					| cut -d' ' -f1 \
 					| sed 's|^//||; s|:*/.*$||' )
 			[[ ! $ip ]] && continue

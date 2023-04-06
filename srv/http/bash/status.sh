@@ -176,12 +176,12 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Name | Title )
-			printf -v $key '%s' "$( sed 's/"/\\"/g; s/^\s*\|\s*$//g' <<< $val )"
+			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=${val//\"/\\\"}
+			file=$( stringEscape $val )
 			;;   # escape " for json
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false

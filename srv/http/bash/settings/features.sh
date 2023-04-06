@@ -264,7 +264,7 @@ nfsserver )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
 			chmod 777 "$path"
-			list+="${path// /\\040} $options"$'\n'
+			list+="$( space2ascii $path ) $options"$'\n'
 			name=$( basename "$path" )
 			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
 			ln -s "$path" "$dirnas/$name"
@@ -436,12 +436,11 @@ spotifytokenreset )
 	spotifyReset 'Reset ...'
 	;;
 stoptimer )
+	killall stoptimer.sh &> /dev/null
 	if [[ $enable ]]; then
 		touch $dirshm/stoptimer
-		killall features-stoptimer.sh &> /dev/null
-		$dirsettings/features-stoptimer.sh &> /dev/null &
+		$dirbash/stoptimer.sh &> /dev/null &
 	else
-		killall features-stoptimer.sh &> /dev/null
 		rm -f $dirshm/stoptimer
 		if [[ -e $dirshm/relayson ]]; then
 			. $dirsystem/relays.conf

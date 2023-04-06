@@ -297,7 +297,7 @@ mount )
 mountforget )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
-	fstab=$( grep -v ${mountpoint// /\\\\040} /etc/fstab )
+	fstab=$( grep -v $( space2ascii $mountpoint ) /etc/fstab )
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
@@ -477,7 +477,7 @@ shareddataconnect )
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
 		fstab+="
-$ip:${path// /\\040}  ${dir// /\\040}  $options"
+$ip:$( space2ascii $path )  $( space2ascii $dir )  $options"
 	done
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload

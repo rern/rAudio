@@ -29,7 +29,7 @@ fi
 [[ $extraoptions ]] && options+=,$extraoptions
 fstab="\
 $( < /etc/fstab )
-${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
+$( space2ascii $source )  $( space2ascii $mountpoint )  $protocol  $( space2ascii $options )  0  0"
 mv /etc/fstab{,.backup}
 column -t <<< $fstab > /etc/fstab
 systemctl daemon-reload

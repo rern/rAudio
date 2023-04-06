@@ -33,25 +33,31 @@ fi
 #	k2=v2
 
 args2var() { # args2var "$1"
-	local i keys kL k v conf
+	local i keys kL k v conf fileconf
 	readarray -t args <<< $1
 	cmd=${args[0]}
-	if [[ ${args[1]} == KEY ]]; then
-		enable=true
-	else
-		[[ ${args[1]} == disable ]] && enable= || enable=true
+	enable=true
+	if [[ ${args[1]} != KEY ]]; then
+		[[ ${args[1]} == disable ]] && enable=
 		return
 	fi
-	keys=( ${args[2]} )
+	
+	keys=${args[2]}
+	[[ $keys == *fileconf* ]] && fileconf=1 && keys=${keys/ fileconf}
+	keys=( $keys )
 	kL=${#keys[@]}
 	for (( i=0; i < kL; i++ )); do
 		k=${keys[i]}
 		v=${args[i+3]} # values start from #3, after 'key1 key2 ...'
 		[[ $v == false ]] && v=
 		printf -v $k '%s' "$v"
-		[[ $k != fileconf ]] && conf+=$k'="'${v//\"/\\\"}'"'$'\n'
+		if [[ $fileconf ]]; then
+			v=$( stringEscape $v )
+			[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
+			conf+=$k'='$v$'\n'
+		fi
 	done
-	[[ $fileconf ]] && echo "$conf" > $dirsystem/$cmd.conf
+	[[ $fileconf ]] && echo -n "$conf" > $dirsystem/$cmd.conf
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -84,7 +90,7 @@ conf2json() {
 						-e 's/^True$|^False$/\L&/
 							s/^yes$/true/
 							s/^no$/false/' <<< $v )
-			confNotString "$v" || v='"'${v//\"/\\\"}'"' # quote and escape string
+			confNotString "$v" || v='"'$( stringEscape $v )'"' # quote and escape string
 			json+=', "'$k'": '$v
 	done
 	echo { ${json:1} }
@@ -156,9 +162,11 @@ getElapsed() {
 	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
 }
 getVar(){
+	local line
 	line=$( grep -E "^${1// /|^}" $2 )
 	[[ $line != *=* ]] && line=$( sed 's/ \+/=/' <<< $line )
-	sed -E "s/.* *= *//; s/^[\"']|[\"']$//g; s/\"/\\\\\"/g" <<< $line
+	line=$( sed -E "s/.* *= *//; s/^[\"']|[\"']$//g" <<< $line )
+	stringEscape $line
 }
 internetConnected() {
 	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0 || return 1
@@ -179,7 +187,9 @@ notify() { # icon title message delayms
 	else
 		[[ $4 ]] && delay=$4 || delay=3000
 	fi
-	pushstream notify '{"icon":"'$1$blink'","title":"'${2//\"/\\\"}'","message":"'${3//\"/\\\"}'","delay":'$delay'}'
+	title=$( stringEscape $2 )
+	message=$( stringEscape $3 )
+	pushstream notify '{"icon":"'$1$blink'","title":"'$title'","message":"'$message'","delay":'$delay'}'
 }
 packageActive() {
 	local pkgs pkg active i
@@ -236,7 +246,11 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
+space2ascii() {
+	echo ${1// /\\040}
+}
 stringEscape() {
+	local data
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }

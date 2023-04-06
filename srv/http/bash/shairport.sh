@@ -3,12 +3,8 @@
 # shairport.service > this:
 #    - /tmp/shairport-sync-metadata emits data
 
-dirairplay=/srv/http/data/shm/airplay
-
-pushstreamAirplay() {
-	local json=$@ # for enclose in double quotes "$json" as single argument
-	curl -s -X POST http://127.0.0.1/pub?id=airplay -d "$json"
-}
+. /srv/http/bash/common.sh
+dirairplay=$dirshm/airplay
 
 cat /tmp/shairport-sync-metadata | while read line; do
 	[[ $line =~ 'encoding="base64"' || $line =~ '<code>'.*'<code>' ]] && continue # skip: no value / double codes
@@ -38,7 +34,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		pushstreamAirplay '{"coverart":"/data/shm/airplay/coverart.jpg"}'
+		pushstream airplay '{"coverart":"/data/shm/airplay/coverart.jpg"}'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
@@ -53,15 +49,15 @@ cat /tmp/shairport-sync-metadata | while read line; do
 				touch $dirshm/scrobble
 				( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 			fi
-			pushstreamAirplay '{"elapsed":'$elapsed',"Time":'$Time'}'
+			pushstream airplay '{"elapsed":'$elapsed',"Time":'$Time'}'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start
 			echo $Time > $dirairplay/Time
-			/srv/http/bash/status-push.sh
+			$dirbash/status-push.sh
 		else
 			echo $data > $dirairplay/$code
-			pushstreamAirplay '{"'$code'":"'${data//\"/\\\"}'"}'
+			pushstream airplay '{ "'$code'": "'$( stringEscape $data )'" }'
 		fi
 	fi
 	code= # reset after $code + $data were set

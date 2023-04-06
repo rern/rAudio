@@ -4,7 +4,7 @@
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
-station=${tmpradio[1]//\"/\\\"}
+station=$( stringEscape ${tmpradio[1]} )
 id=${tmpradio[2]}
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
@@ -68,9 +68,9 @@ metadataGet() {
 		icon=radiofrance
 		radiofranceData
 	fi
-	artist=${metadata[0]//\"/\\\"}
-	title=${metadata[1]//\"/\\\"}
-	album=${metadata[2]//\"/\\\"}
+	artist=$( stringEscape ${metadata[0]} )
+	title=$( stringEscape ${metadata[1]} )
+	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
 	if [[ ! $album && ! $title ]]; then

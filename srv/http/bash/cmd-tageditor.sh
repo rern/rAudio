@@ -12,7 +12,7 @@ if [[ $cue == false ]]; then
 	if [[ $album == false ]]; then
 		keys+=( title track )
 		for i in {0..8}; do
-			val=${args[$i]//\"/\\\"}
+			val=$( stringEscape ${args[i]} )
 			[[ ! $val ]] && continue
 			
 			[[ $val == -1 ]] && val=
@@ -21,7 +21,7 @@ if [[ $cue == false ]]; then
 		dir=$( dirname "$file" )
 	else
 		for i in {0..6}; do
-			val=${args[$i]//\"/\\\"}
+			val=$( stringEscape ${args[i]} )
 			[[ ! $val ]] && continue
 			
 			[[ $val == -1 ]] && val=

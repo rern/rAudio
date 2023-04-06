@@ -944,6 +944,24 @@ function infoNtpMirror() {
 		}
 	} );
 }
+function infoRelayCommand() { // bash var format for running
+	var v  = { timer: R.sequence.timer };
+	[ 'on', 'off', 'ond', 'offd' ].forEach( k => v[ k ] = R.sequence[ k ].join( ' ' ) ); // var='p1 p2 p3 p4'
+	var pL       = Object.values( R.name ).filter( Boolean ).length;
+	[ 'on', 'off' ].forEach( kk => {    // bash multiline var for info
+		var order = '';
+		for ( i = 0; i < pL; i++ ) {
+			k  = R.sequence[ kk ][ i ];
+			order += R.name[ k ] + ( i < ( pL - 1 ) ? '\\n' : '' );
+		}
+		v[ 'order'+ kk ] = order;
+	} );
+	notifyCommon();
+	bash( {
+		  cmd  : [ 'relays', 'KEY', Object.keys( v ).join( ' ' ) +' fileconf', ...Object.values( v ) ]
+		, json : R
+	} );
+}
 function infoRelayName() {
 	R = jsonClone( S.relaysconf || default_v.relaysconf );
 	var values   = [];
@@ -986,7 +1004,7 @@ function infoRelayName() {
 				} );
 			} );
 			notifyCommon();
-			bash( { cmd: [ 'relays' ], json: R } );
+			infoRelayCommand();
 		}
 	} );
 }
@@ -1040,24 +1058,7 @@ function infoRelaySequence() {
 				for ( i = 0; i < L; i++ ) R.sequence[ k ].push( values[ k + i ] );
 			} );
 			R.sequence.timer = values.timer;
-			var v  = {                          // bash var format for running
-				  fileconf : true
-				, timer    : values.timer
-			};
-			keys_seq.forEach( k => v[ k ] = R.sequence[ k ].join( ' ' ) );
-			[ 'on', 'off' ].forEach( kk => {    // bash multiline var for info
-				var order = '';
-				for ( i = 0; i < pL; i++ ) {
-					k  = values[ kk + i ];
-					order += R.name[ k ] + ( i < ( pL - 1 ) ? '\\n' : '' );
-				}
-				v[ 'order'+ kk ] = order;
-			} );
-			notifyCommon();
-			bash( {
-				  cmd  : [ 'relays', 'KEY', Object.keys( v ).join( ' ' ), ...Object.values( v ) ]
-				, json : R
-			} );
+			infoRelayCommand();
 		}
 	} );
 }

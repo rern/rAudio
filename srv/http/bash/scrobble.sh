@@ -38,6 +38,6 @@ response=$( curl -sX POST \
 if [[ $response =~ error ]]; then
 	msg="Error: $( jq -r .message <<< $response )"
 else
-	grep -q notify=true $dirsystem/scrobble.conf && msg="${Title//\"/\\\"}"
+	grep -q notify=true $dirsystem/scrobble.conf && msg=$( stringEscape $Title )
 fi
 [[ $msg ]] && notify lastfm Scrobble "$msg"
