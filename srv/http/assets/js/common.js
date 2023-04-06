@@ -22,7 +22,7 @@ bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'disable' ] );
                  accessed values by ${args[1]}  [[ $argslast == disable ]] && enable= || enable=true
 bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'fileconf' --- fileconf: 2nd last args - save to $dirsystem/$CMD.conf
                           , *'KEY   k1  k2  ...' ] );
-                 accessed values by $k1
+                 accessed values by $k1 or ${args[1]}
 bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $dirsystem/$CMD.json
 
 - js > php   --- common.js - bash()
