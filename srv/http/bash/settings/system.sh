@@ -289,7 +289,7 @@ mirrorlist )
 			codelist+=',"'$cc'":"'$line'"'
 		fi
 	done
-	echo '{ "current": "'$mirror'", "list": { '$codelist' } }'
+	echo '{ '$codelist' }'
 	;;
 mount )
 	$dirsettings/system-mount.sh "${args[@]:1}"

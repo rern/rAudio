@@ -210,6 +210,7 @@ data+='
 , "lcdcharconf"       : '$( conf2json lcdchar.conf )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$list'
+, "mirror"            : "'$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' /etc/pacman.d/mirrorlist )'"
 , "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'

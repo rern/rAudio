@@ -526,9 +526,8 @@ $( '#setting-timezone' ).click( function() {
 		infoNtpMirror();
 	} else {
 		notifyCommon( 'Get mirror server list ...' );
-		bash( [ 'mirrorlist' ], data => {
-			S.mirror     = data.current;
-			V.htmlmirror = htmlOption( data.list );
+		bash( [ 'mirrorlist' ], list => {
+			V.htmlmirror = htmlOption( list );
 			infoNtpMirror();
 			bannerHide();
 		}, 'json' );
