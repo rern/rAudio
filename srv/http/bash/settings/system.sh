@@ -339,6 +339,21 @@ mpdoled )
 	configTxt 'Spectrum OLED'
 	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
+ntpmirror )
+	file=/etc/systemd/timesyncd.conf
+	if [[ $ntp != $( getVar NTP $file ) ]]; then
+		echo "\
+[Time]
+NTP=$ntp" > $file
+		timedatectl set-ntp true
+	fi
+	[[ -e /boot/kernel.img ]] && pushRefresh && exit # armv6h
+	file=/etc/pacman.d/mirrorlist
+	[[ $mirror ]] && mirror+=.
+	server='Server = http://'$mirror'mirror.archlinuxarm.org/$arch/$repo'
+	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
+	pushRefresh
+	;;
 packagelist )
 	filepackages=/tmp/packages
 	if [[ ! -e $filepackages ]]; then
@@ -435,22 +450,6 @@ rotaryencoder )
 	else
 		systemctl disable --now rotaryencoder
 	fi
-	pushRefresh
-	;;
-servers )
-	file=/etc/systemd/timesyncd.conf
-	if [[ $ntp != $( getVar NTP $file ) ]]; then
-		echo "\
-[Time]
-NTP=$ntp" > $file
-		timedatectl set-ntp true
-	fi
-	[[ ! -e /boot/kernel.img ]] && pushRefresh && exit # armv6h
-	
-	file=/etc/pacman.d/mirrorlist
-	[[ $mirror ]] && mirror+=.
-	server='Server = http://'$mirror'mirror.archlinuxarm.org/$arch/$repo'
-	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
 	pushRefresh
 	;;
 shareddataconnect )

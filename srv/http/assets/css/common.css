@@ -817,6 +817,7 @@ input[type=password] {
 	font-size: 16px;
 	font-family: Lato;
 }
+.col-r input[type=text],
 input[type=text]:disabled,
 input[type=tel]:disabled,
 input[type=number]:disabled {

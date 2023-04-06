@@ -49,7 +49,6 @@ args2var() {
 		k=${keys[i]}
 		v=${args[i]}
 		[[ $v == false ]] && v=
-		echo $k $v
 		printf -v $k '%s' "$v"
 		if [[ $fileconf ]]; then
 			if [[ $v ]]; then

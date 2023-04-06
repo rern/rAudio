@@ -291,7 +291,7 @@ $( '#setting-i2smodule' ).click( function() {
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
-		, ok           : () => bash( [ 'i2seeprom', 'enable='+ ( infoVal() || '' ) ] )
+		, ok           : () => bash( [ 'i2seeprom', infoVal() ? '' : 'disable' ] )
 	} );
 } );
 $( '#gpioimgtxt' ).click( function() {
@@ -485,6 +485,7 @@ $( '#ledcalc' ).click( function() {
 	} );
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
+	SW.id     = 'hostname';
 	var icon  = 'system';
 	var title = 'Player Name';
 	info( {
@@ -500,10 +501,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 				$( this ).val( $( this ).val().replace( /[^a-zA-Z0-9-]+/g, '' ) );
 			} );
 		}
-		, ok           : () => {
-			notify( icon, title, 'Change ...' );
-			bash( [ 'hostname', ...infoVal() ] );
-		}
+		, ok           : switchEnable
 	} );
 } );
 $( '#timezone' ).change( function( e ) {
@@ -922,6 +920,7 @@ function infoMount( val ) {
 	} );
 }
 function infoNtpMirror() {
+	SW.id     = 'ntpmirror';
 	var title = 'Servers';
 	info( {
 		  icon         : SW.icon
@@ -936,11 +935,7 @@ function infoNtpMirror() {
 		, beforeshow   : () => {
 			selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } );
 		}
-		, ok           : () => {
-			if ( ! S.rpi01 ) S.mirror = $( '#infoContent select' ).val();
-			notify( SW.icon, title, 'Change ...' );
-			bash( [ 'servers', ...infoVal() ] );
-		}
+		, ok           : switchEnable
 	} );
 }
 function infoRelayCommand() { // bash var format for running
