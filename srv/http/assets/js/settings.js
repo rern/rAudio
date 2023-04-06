@@ -130,15 +130,10 @@ function switchCancel() {
 	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
 	delete SW.icon;
 }
-function switchDisable() {
-	$( '#setting-'+ SW.id ).addClass( 'hide' );
-	notifyCommon( 'Disable ...' );
-	S[ SW.id ] = false;
-}
 function switchEnable() {
 	var values = infoVal( 'KEY' ); // [ ...values, *'fileconf', *KEY keys  ]
-	bash( [ SW.id, ...values ] );
 	notifyCommon();
+	bash( [ SW.id, ...values ] );
 	S[ SW.id ] = true;
 }
 function switchSet() {
@@ -408,22 +403,23 @@ $( '.switch' ).click( function() {
 	if ( $this.is( '.custom, .none' ) ) return
 	
 	var checked = $this.prop( 'checked' );
+	if ( ! checked ) {
+		$( '#setting-'+ SW.id ).addClass( 'hide' );
+		notifyCommon( 'Disable ...' );
+		bash( [ SW.id, 'disable' ] );
+		S[ SW.id ] = false;
+		return
+	}
+	
 	if ( $this.hasClass( 'common' ) ) {
-		if ( checked ) {
-			$( '#setting-'+ SW.id ).click();
-		} else {
-			S[ SW.id ]  = false;
-			bash( [ SW.id, 'disable' ] );
-			switchDisable();
-		}
+		$( '#setting-'+ SW.id ).click();
 	} else {
-		S[ SW.id ]  = checked;
+		S[ SW.id ]  = true;
 		notifyCommon( checked );
-		var cmd = [ SW.id ];
-		if ( ! checked ) cmd.push( 'disable' );
-		bash( cmd, error => {
+		bash( [ SW.id ], error => {
 			if ( error ) {
-				switchDisable();
+				S[ SW.id ] = false;
+				$( '#setting-'+ SW.id ).addClass( 'hide' );
 				bannerHide();
 				info( {
 					  icon    : SW.icon

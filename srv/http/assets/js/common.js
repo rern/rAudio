@@ -18,27 +18,24 @@ var red         = '#bb2828';
 /*
 Avoid \" \` in js values for bash: 1 line for 1 argument
 
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ... ], result => *callback ); - accessed values by index
-
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'fileconf'              - fileconf: save to $dirsystem/$CMD.conf
-                          , *'KEY   k1  k2  ...' ] );                     - accessed values by var names (if set)
-						  
-bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );               - json: save to $dirsystem/$CMD.json (if set)
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'disable' ] );
+                 accessed values by ${args[1]}  [[ $argslast == disable ]] && enable= || enable=true
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'fileconf' --- fileconf: 2nd last args - save to $dirsystem/$CMD.conf
+                          , *'KEY   k1  k2  ...' ] );
+                 accessed values by $k1
+bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $dirsystem/$CMD.json
 
 - js > php   --- common.js - bash()
-	- string    : [ 'CMD' v1, v2, ..., 'KEY k1 k2 ...' ]
-	- multiline : 'l1\\nl2\\nl3...' (\\n)
-	- json      : sringify
-	
+	- string : [ 'CMD' v1, v2, ..., 'KEY k1 k2 ...' ] (multiline: 'l1\\nl2\\nl3...')
+	- json   : sringify
 - php > bash --- cmd.php $cmd === 'bash'
-	- array : covert to multiline with " ` escaped
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
 	- json  : decode > reencode > bash save to file
 		- js cannot escape " as \\" double backslash which disappeared in bash
-		
 - bash       --- common.sh - args2var
 	- convert to array > assign values
 		- No 'KEY'   - ${args[1]}=v1; ${args[2]}=v2; ...
-		- With 'KEY' - k1=v1; k2=v2; ... ( KEY k1 k2 ... )
+		- With 'KEY' - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
 			- save to $dirsystem/$CMD.conf if 'fileconf' set
 */
 function bash( command, callback, json ) {

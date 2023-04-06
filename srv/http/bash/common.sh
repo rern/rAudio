@@ -38,10 +38,9 @@ args2var() {
 	cmd=${args[0]}
 	enable=true
 	argslast=${args[@]: -1}
-	if [[ $argslast != "KEY "* ]]; then
-		[[ ${args[1]} == disable ]] && enable=
-		return
-	fi
+	[[ $argslast == disable ]] && enable= && return
+	
+	[[ $argslast != "KEY "* ]] && return
 	
 	keys=( $argslast )
 	[[ ${args[@]: -2:1} == fileconf ]] && fileconf=1
