@@ -30,14 +30,14 @@ audiooutput )
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
-	[[ $enable ]] && linkConf || rm $dirmpdconf/$cmd.conf
+	[[ $ON ]] && linkConf || rm $dirmpdconf/$cmd.conf
 	systemctl restart mpd
 	pushRefresh
 	;;
 btoutputall )
 	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
 	[[ -e $dirmpdconf/output.conf ]] && output=1
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		touch $dirsystem/btoutputall
 		[[ $bluetooth && ! $output ]] && restart=1
 	else
@@ -47,7 +47,7 @@ btoutputall )
 	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
 	;;
 buffer | outputbuffer )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		if [[ $cmd == buffer ]]; then
 			data='audio_buffer_size  "'$audio_buffer_size'"'
 			[[ $audio_buffer_size != 4096 ]] && link=1
@@ -61,7 +61,7 @@ buffer | outputbuffer )
 	$dirsettings/player-conf.sh
 	;;
 crossfade )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		mpc -q crossfade $sec
 		touch $dirsystem/crossfade
 	else
@@ -76,7 +76,7 @@ $( getContent $dirmpdconf/conf/custom.conf )
 $( getContent "$dirsystem/custom-output-$aplayname" )"
 	;;
 custom )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
 		fileoutput="$dirsystem/custom-output-$aplayname"
 		if [[ $global ]]; then
@@ -99,7 +99,8 @@ custom )
 	fi
 	;;
 dop )
-	[[ $enable ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-${args[2]}"
+	aplayname=${args[2]} # OFF with args - value by index
+	[[ $ON ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
 filetype )
@@ -151,7 +152,7 @@ playback )
 	;;
 replaygain )
 	fileoutput=$dirmpdconf/output.conf
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		echo 'replaygain  "'$type'"' > $dirmpdconf/conf/replaygain.conf
 		[[ $hardware ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
 		linkConf
@@ -165,7 +166,7 @@ restartmpd )
 	;;
 soxr )
 	rm -f $dirmpdconf/soxr* $dirsystem/soxr
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		if [[ $quality == custom ]]; then
 			data='
 	plugin          "soxr"

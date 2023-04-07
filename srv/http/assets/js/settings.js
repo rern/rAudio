@@ -131,7 +131,7 @@ function switchCancel() {
 	delete SW.icon;
 }
 function switchEnable() {
-	var values = infoVal( 'KEY' ); // [ ...values, *'fileconf', *KEY keys  ]
+	var values = infoVal( 'KEY' ); // [ ...values, *KEY keys  ]
 	notifyCommon();
 	bash( [ SW.id, ...values ] );
 	S[ SW.id ] = true;
@@ -406,7 +406,7 @@ $( '.switch' ).click( function() {
 	if ( ! checked ) {
 		$( '#setting-'+ SW.id ).addClass( 'hide' );
 		notifyCommon( 'Disable ...' );
-		bash( [ SW.id, 'disable' ] );
+		bash( [ SW.id, 'OFF' ] );
 		S[ SW.id ] = false;
 		return
 	}

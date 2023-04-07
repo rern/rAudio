@@ -399,7 +399,7 @@ $( '#nfsserver' ).click( function() {
 			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
-				bash( [ 'nfsserver', S.nfsserver ? 'disable' : '' ] ); // enable if not active
+				bash( S.nfsserver ? [ 'nfsserver', 'OFF' ] : [ 'nfsserver' ] ); // enable if not active
 				notify( ! S.nfsserver );
 			}
 		} );

@@ -33,24 +33,26 @@ fi
 #	k2=v2
 
 args2var() {
-	local i keys kL k v conf fileconf
+	local argslast type i keys kL k v conf fileconf
 	readarray -t args <<< $1
 	cmd=${args[0]}
-	enable=true
 	argslast=${args[@]: -1}
-	[[ $argslast == disable ]] && enable= && return
+	KEY_CFG_OFF=${argslast:0:3}
+	[[ $KEY_CFG_OFF == OFF ]] && TF=false && return
 	
-	[[ $argslast != "KEY "* ]] && return
+	ON=true
+	TF=true
+	[[ ! $KEY_CFG_OFF =~ ^(KEY|CFG)$ ]] && return
 	
 	keys=( $argslast )
-	[[ ${args[@]: -2:1} == fileconf ]] && fileconf=1
+	[[ $KEY_CFG_OFF == CFG ]] && CFG=1
 	kL=${#keys[@]}
 	for (( i=1; i < kL; i++ )); do
 		k=${keys[i]}
 		v=${args[i]}
 		[[ $v == false ]] && v=
 		printf -v $k '%s' "$v"
-		if [[ $fileconf ]]; then
+		if [[ $CFG ]]; then
 			if [[ $v ]]; then
 				v=$( stringEscape $v )
 				[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
@@ -58,7 +60,7 @@ args2var() {
 			conf+=$k'='$v$'\n'
 		fi
 	done
-	[[ $fileconf ]] && echo -n "$conf" > $dirsystem/$cmd.conf
+	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$cmd.conf
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'

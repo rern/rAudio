@@ -291,7 +291,7 @@ $( '#setting-i2smodule' ).click( function() {
 		, checkbox     : [ 'Disable I²S HAT EEPROM read' ]
 		, values       : S.i2seeprom
 		, checkchanged : S.i2seeprom
-		, ok           : () => bash( [ 'i2seeprom', infoVal() ? '' : 'disable' ] )
+		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
 } );
 $( '#gpioimgtxt' ).click( function() {
@@ -952,7 +952,7 @@ function infoRelayCommand() { // bash var format for running
 	} );
 	var keys   = Object.keys( v ).join( ' ' );
 	var values = Object.values( v );
-	values.push( 'fileconf', 'KEY '+ keys );
+	values.push( 'CFG '+ keys );
 	notifyCommon();
 	bash( { cmd: [ 'relays', ...values ], json: R } );
 }

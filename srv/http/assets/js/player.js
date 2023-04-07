@@ -17,7 +17,7 @@ $( '.btoutputall' ).click( function() {
 		, ok           : () => {
 			var checked = infoVal();
 			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
-			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'disable' ] );
+			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'OFF' ] );
 		}
 	} );
 } );
@@ -122,7 +122,7 @@ $( '#novolume' ).click( function() {
 $( '#dop' ).click( function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	var cmd = checked ? [ 'dop', D.aplayname, 'KEY aplayname' ] : [ 'dop', 'disable', D.aplayname ];
+	var cmd = checked ? [ 'dop', D.aplayname ] : [ 'dop', D.aplayname, 'OFF' ]; // OFF with args - value by index
 	bash( cmd );
 } );
 $( '#setting-crossfade' ).click( function() {

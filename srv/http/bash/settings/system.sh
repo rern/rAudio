@@ -128,13 +128,13 @@ case $cmd in
 
 audio )
 	config=$( grep -v dtparam=audio=on /boot/config.txt )
-	[[ $enable ]] && config+="
+	[[ $ON ]] && config+="
 dtparam=audio=on"
 	configTxt Audio
 	;;
 bluetooth )
 	config=$( grep -v dtparam=krnbt=on /boot/config.txt )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		config+="
 dtparam=krnbt=on"
 		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
@@ -183,7 +183,7 @@ $( hdparm -I $dev | sed '1,3 d' )
 "
 	;;
 hddsleep )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 		for dev in $devs; do
 			! hdparm -B $dev | grep -q -m1 'APM_level' && notsupport+=$dev'<br>' && continue
@@ -210,11 +210,10 @@ hddsleep )
 	;;
 hdmi )
 	config=$( grep -v hdmi_force_hotplug /boot/config.txt )
-	[[ $enable ]] && config+="
+	[[ $ON ]] && config+="
 hdmi_force_hotplug=1"
 	configTxt 'HDMI Hotplug'
-	[[ ! $enable ]] && enable=false
-	pushstream refresh '{"page":"features","hdmihotplug":'$enable'}'
+	pushstream refresh '{"page":"features","hdmihotplug":'$TF'}'
 	;;
 hostname )
 	hostnamectl set-hostname $hostname
@@ -227,7 +226,7 @@ hostname )
 	;;
 i2seeprom )
 	config=$( grep -v force_eeprom_read /boot/config.txt )
-	[[ $enable ]] && config+="
+	[[ $ON ]] && config+="
 force_eeprom_read=0"
 	configTxt 'I²S HAT EEPROM read'
 	;;
@@ -253,7 +252,7 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	file=$dirsystem/lcdchar.conf
-	[[ $enable ]] && touch $dirsystem/lcdchar || rm -f  $dirsystem/lcdchar
+	[[ $ON ]] && touch $dirsystem/lcdchar || rm -f  $dirsystem/lcdchar
 	i2cset=1
 	configTxt 'Character LCD'
 	;;
@@ -325,7 +324,7 @@ mpdoledlogo )
 	mpd_oled -o $type -L
 	;;
 mpdoled )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $chip ]]; then
 			sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
@@ -387,7 +386,7 @@ pkgstatus )
 	;;
 poweraudiophonics )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		config+="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
@@ -400,7 +399,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	;;
 powerbutton )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		systemctl restart powerbutton
 		systemctl enable powerbutton
 		if [[ $sw != 5 ]]; then
@@ -434,17 +433,17 @@ regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json
 	;;
 relays )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		touch $dirsystem/relays
 	else
 		rm -f $dirsystem/relays
 		enable=false
 	fi
 	pushRefresh
-	pushstream display '{"submenu":"relays","value":'$enable'}'
+	pushstream display '{"submenu":"relays","value":'$TF'}'
 	;;
 rotaryencoder )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		systemctl restart rotaryencoder
 		systemctl enable rotaryencoder
 	else
@@ -561,7 +560,7 @@ Server rAudio @<wh>$ip</wh> :
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )
-	[[ $enable ]] && config+="
+	[[ $ON ]] && config+="
 temp_soft_limit=$softlimit"
 	configTxt 'Custom Soft limit'
 	;;
@@ -569,7 +568,7 @@ soundprofileset )
 	soundProfile
 	;;
 soundprofile )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		if [[ "$swappiness $mtu $txqueuelen" == '60 1500 1000' ]]; then
 			rm -f $dirsystem/soundprofile.conf
 			soundProfile reset
@@ -685,7 +684,7 @@ statuswlan )
 tft )
 	config=$( grep -Ev 'hdmi_force_hotplug|:rotate=' /boot/config.txt )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		[[ $model != tft35a ]] && echo $model > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
 		config+="
@@ -735,11 +734,11 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
-	[[ $enable ]] && touch $dirsystem/usbautoupdate || rm -f $dirsystem/usbautoupdate
+	[[ $ON ]] && touch $dirsystem/usbautoupdate || rm -f $dirsystem/usbautoupdate
 	pushRefresh
 	;;
 vuled )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		touch $dirsystem/vuled
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 		killall cava &> /dev/null
@@ -761,7 +760,7 @@ vuled )
 	pushRefresh
 	;;
 wlan )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && modprobe brcmfmac
 		ifconfig wlan0 up
 		echo wlan0 > $dirshm/wlan

@@ -18,10 +18,10 @@ var red         = '#bb2828';
 /*
 Avoid \" \` in js values for bash: 1 line for 1 argument
 
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'disable' ] );
-                 accessed values by ${args[1]}  [[ $argslast == disable ]] && enable= || enable=true
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'fileconf' --- fileconf: 2nd last args - save to $dirsystem/$CMD.conf
-                          , *'KEY   k1  k2  ...' ] );
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'OFF' ] );
+                 accessed values by ${args[1]}  [[ $argslast == OFF ]] && enable= || enable=true
+bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ...
+                          , *'KEY   k1  k2  ...' ] ); --- 'CFG k1 k2 ...' save to $dirsystem/$CMD.conf
                  accessed values by $k1 or ${args[1]}
 bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $dirsystem/$CMD.json
 
@@ -35,8 +35,8 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 - bash       --- common.sh - args2var
 	- convert to array > assign values
 		- No 'KEY'   - ${args[1]}=v1; ${args[2]}=v2; ...
-		- With 'KEY' - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
-			- save to $dirsystem/$CMD.conf if 'fileconf' set
+		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
+			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
 function bash( command, callback, json ) {
 	var data = { cmd: 'bash' }
@@ -76,7 +76,7 @@ function bash( command, callback, json ) {
 	
 	$.post( 
 		  'cmd.php'
-		, data // { cmd: 'bash', args: [ 'file.sh', ...command, *'fileconf', *'KEY keys ...' ], *json: 'json string' }
+		, data // { cmd: 'bash', args: [ 'file.sh', ...command, *'KEY k1 k2 ...' ], *json: 'json string' }
 		, callback || null
 		, json || null
 	);
@@ -1012,8 +1012,8 @@ function infoVal( format ) {
 	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array : single value as string
 	if ( format === 'array' ) return values
 	if ( format === 'KEY' ) {
-		if ( I.fileconf ) values.push( 'fileconf' );
-		values.push( 'KEY '+ I.keys.join( ' ' ) );
+		I.keys.unshift( I.fileconf ? 'CFG' : 'KEY' );
+		values.push( I.keys.join( ' ' ) );
 		return values
 	}
 	var v = {}

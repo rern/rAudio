@@ -55,7 +55,7 @@ spotifyReset() {
 case $cmd in
 
 autoplay|lyricsembedded|scrobble )
-	[[ $enable ]] && touch $dirsystem/$cmd || rm -f $dirsystem/$cmd
+	[[ $ON ]] && touch $dirsystem/$cmd || rm -f $dirsystem/$cmd
 	pushRefresh
 	;;
 brightness )
@@ -76,7 +76,7 @@ camilladspasound )
 	alsactl nrestore &> /dev/null
 	;;
 camilladsp )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		sed -i -E "s/(interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
 		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
@@ -87,10 +87,10 @@ camilladsp )
 		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushRestartMpd camilladsp $enable
+	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
 			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg$'\n'true
@@ -104,11 +104,11 @@ dabradio )
 	pushRefresh
 	;;
 equalizer )
-	[[ $enable ]] && touch $dirsystem/equalizer || rm -f $dirsystem/equalizer
-	pushRestartMpd equalizer $enabled
+	[[ $ON ]] && touch $dirsystem/equalizer || rm -f $dirsystem/equalizer
+	pushRestartMpd equalizer $TF
 	;;
 hostapd )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan$'\n'true
 		ip012=${ip%.*}
 		ip3=$(( ${ip/*.} + 1 ))
@@ -131,11 +131,11 @@ hostapd )
 		$dirsettings/system.sh wlan$'\n'false
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","hostapd":'$enable'}'
+	pushstream refresh '{"page":"system","hostapd":'$TF'}'
 	pushRefresh networks
 	;;
 httpd )
-	[[ $enable ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
+	[[ $ON ]] && ln -s $dirmpdconf/{conf/,}httpd.conf || rm -f $dirmpdconf/httpd.conf
 	systemctl restart mpd
 	pushRefresh
 	$dirsettings/player-data.sh pushrefresh
@@ -144,7 +144,7 @@ lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2
 	;;
 localbrowser )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		file=$dirsystem/localbrowser.conf
 		sed -i '/brightness/ d' $file
 		diff=$( grep -Fxvf $file /tmp/localbrowser.conf )
@@ -235,7 +235,7 @@ logindisable )
 	pushSubmenu lock false
 	;;
 multiraudio )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		touch $dirsystem/multiraudio
 		fileconf=$dirsystem/multiraudio.json
 		conf=$( < $fileconf )
@@ -251,7 +251,7 @@ EOF
 		rm -f $dirsystem/multiraudio
 	fi
 	pushRefresh
-	pushSubmenu multiraudio $enable
+	pushSubmenu multiraudio $TF
 	;;
 multiraudioreset )
 	rm -f $dirsystem/multiraudio*
@@ -259,7 +259,7 @@ multiraudioreset )
 nfsserver )
 	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
@@ -312,8 +312,7 @@ USB" > /mnt/MPD/.mpdignore
 		pushstream display $( < $dirsystem/display.json )
 	fi
 	pushRefresh
-	[[ ! $enable ]] && enable=false
-	pushstream refresh '{"page":"system","nfsserver":'$enable'}'
+	pushstream refresh '{"page":"system","nfsserver":'$TF'}'
 	;;
 nfssharelist )
 	nfsShareList
@@ -350,7 +349,7 @@ sk=$( jq -r .session.key <<< $response )
 	fi
 	;;
 shairport-sync|spotifyd )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		featureSet $cmd
 	else
 		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
@@ -359,7 +358,7 @@ shairport-sync|spotifyd )
 	pushRefresh
 	;;
 smb )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
 		[[ $sd ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
@@ -372,7 +371,7 @@ smb )
 	;;
 snapclient )
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		echo 'SNAPCLIENT_OPTS="--latency='$latency'"' > /etc/default/snapclient
 		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
 		
@@ -389,7 +388,7 @@ snapclient )
 	pushRefresh
 	;;
 snapserver )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		avahi=$( timeout 0.2 avahi-browse -rp _snapcast._tcp 2> /dev/null | grep snapcast.*1704 )
 		if [[ $avahi ]]; then
 			echo '{
@@ -437,7 +436,7 @@ spotifytokenreset )
 	;;
 stoptimer )
 	killall stoptimer.sh &> /dev/null
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		touch $dirshm/stoptimer
 		$dirbash/stoptimer.sh &> /dev/null &
 	else
@@ -451,7 +450,7 @@ stoptimer )
 	pushRefresh
 	;;
 upmpdcli )
-	if [[ $enable ]]; then
+	if [[ $ON ]]; then
 		[[ $ownqueue ]] && ownqueue=1 || ownqueue=0
 		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
 		featureSet upmpdcli
