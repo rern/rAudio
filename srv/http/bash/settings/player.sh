@@ -99,7 +99,7 @@ custom )
 	fi
 	;;
 dop )
-	aplayname=${args[2]} # OFF with args - value by index
+	aplayname=${args[1]} # OFF with args - value by index
 	[[ $ON ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
 	$dirsettings/player-conf.sh
 	;;
