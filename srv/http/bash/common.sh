@@ -33,7 +33,7 @@ fi
 #	k2=v2
 
 args2var() {
-	local argslast type i keys kL k v conf fileconf
+	local argslast KEY_CFG_OFF CFG i keys kL k v conf
 	readarray -t args <<< $1
 	cmd=${args[0]}
 	argslast=${args[@]: -1}

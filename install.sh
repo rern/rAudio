@@ -5,7 +5,38 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
-# 20230324
+# 20230410
+if [[ -e $dirsystem/relays ]]; then
+	. $dirsystem/relays.conf
+	data="\
+on='${on[@]}'
+off='${off[@]}'
+ond='${ond[@]}'
+offd='${offd[@]}'
+timer=$timer"
+	p=( $( tr , ' ' <<< ${pin:2:-2} ) )
+	n=( $( tr , ' ' <<< ${name:2:-2} ) )
+	for (( i=0; i < 4; i++ )); do
+		pn+=', "'${p[i]}'" : '${n[i]}
+	done
+	json='{ '${pn:1}' }'
+	jq <<< $json > $dirsystem/relaysname.json
+	for p in ${on[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderon+=$name'\n'
+	done
+	for p in ${off[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderoff+=$name'\n'
+	done
+	data+='
+orderon="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderon )'"
+orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
+	echo "$data" > $dirsystem/relays.conf
+else
+	rm -f $dirsystem/relays.conf
+fi
+
 for file in display order; do
 	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
 done
@@ -20,19 +51,23 @@ if ls $dirsystem/autoplay* 2> /dev/null; then
 	rm -f $dirsystem/{autoplaybt,autoplaycd}
 fi
 
-file=$dirsystem/localbrowser.conf
-if [[ $( sed -n 6p $file ) != cursor* ]]; then
-	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
-	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
-	. $file
-	conf="\
-rotate=$rotate
-zoom=$zoom
-screenoff=$screenoff
-onwhileplay=$onwhileplay
-hdmi=$hdmi
-cursor=$( [[ $cursor == yes ]] && echo true )"
-	echo "$conf" > $file
+if systemctl -q is-active localbrowser; then
+	file=$dirsystem/localbrowser.conf
+	if [[ $( sed -n 6p $file ) != cursor* ]]; then
+		[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
+		grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
+		. $file
+		conf="\
+	rotate=$rotate
+	zoom=$zoom
+	screenoff=$screenoff
+	onwhileplay=$onwhileplay
+	hdmi=$hdmi
+	cursor=$( [[ $cursor == yes ]] && echo true )"
+		echo "$conf" > $file
+	fi
+else
+	rm -f $dirsystem/localbrowser.conf
 fi
 
 file=$dirsystem/lcdchar.conf

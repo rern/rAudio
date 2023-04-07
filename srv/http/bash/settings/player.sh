@@ -147,9 +147,6 @@ novolume )
 	$dirsettings/player-conf.sh
 	pushstream display '{"volumenone":true}'
 	;;
-playback )
-	$dirbash/cmd.sh $action
-	;;
 replaygain )
 	fileoutput=$dirmpdconf/output.conf
 	if [[ $ON ]]; then
@@ -159,9 +156,6 @@ replaygain )
 	else
 		rm $dirmpdconf/replaygain.conf
 	fi
-	$dirsettings/player-conf.sh
-	;;
-restartmpd )
 	$dirsettings/player-conf.sh
 	;;
 soxr )

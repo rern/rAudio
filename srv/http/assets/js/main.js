@@ -603,7 +603,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				} else if ( $this.hasClass( 'pladd' ) ) {
 					saveToPlaylist( S.Title, S.Album, S.file );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values ] );
+					bash( [ 'scrobble', ...values, 'KEY Artist Title Album' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).click();

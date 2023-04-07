@@ -38,28 +38,45 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
+var filesh = { // script files other than common page-data.sh
+	  bluetoothcommand : 'bluetoothcommand.sh'
+	, databackup       : 'settings/system-databackup.sh'
+	, datareset        : 'settings/system-datareset.sh'
+	, pkgstatus        : 'settings/pkgstatus.sh'
+	, playback         : 'cmd.sh'
+	, refreshdata      : 'settings/'+ page +'-data.sh'
+	, restartmpd       : 'settings/player-conf.sh'
+	, scanbluetooth    : 'settings/networks-scan.sh'
+	, scanwlan         : 'settings/networks-scan.sh wlan'
+}
+var args;
+
 function bash( command, callback, json ) {
+	args = command;
 	var data = { cmd: 'bash' }
-	if ( ! Array.isArray( command ) ) { // with json data
-		data.json = JSON.stringify( command.json );
-		command = command.cmd;
+	if ( 'json' in args ) {
+		data.json = JSON.stringify( args.json );
+		args = args.cmd;
 	}
-	var cmd0= command[ 0 ];
+	var cmd0 = args[ 0 ];
 	if ( page ) {
-		if ( cmd0 === 'refreshdata' ) {
-			data.args = [ 'settings/'+ page +'-data.sh' ];
-		} else if ( cmd0 === 'pkgstatus' ) {
-			data.args = [ 'settings/pkgstatus.sh', command[ 1 ] ];
+		if ( cmd0 in filesh ) {
+			data.filesh = bashFileArgs( filesh[ cmd0 ] );
+		} else if ( cmd0 === 'mount' ) { // multiline args
+			data.filesh = 'settings/system-mount.sh';
 		} else {
-			data.args = [ 'settings/'+ page +'.sh', ...command ];
+			data.filesh = 'settings/'+ page +'.sh';
 		}
 	} else {
-		if ( [ 'relays', 'scrobble', 'snapcast', 'status' ].includes( cmd0 ) ) {
-			data.args = [ cmd0 +'.sh', ...command.slice( 1 ) ];
+		if ( [ 'relays', 'snapcast', 'status' ].includes( cmd0 ) ) {
+			data.filesh = bashFileArgs( cmd0 +'.sh' );
+		} else if ( cmd0 === 'scrobble' ) {
+			data.filesh = 'scrobble.sh';
 		} else {
-			data.args = [ 'cmd.sh', ...command ];
+			data.filesh = 'cmd.sh';
 		}
 	}
+	if ( args ) data.args = args;
 	if ( V.consolelog ) {
 		var l    = data.args;
 		var bash = l[ 0 ].replace( 'settings/', '' ) +" \"$( cat << 'EOF'\n"
@@ -80,6 +97,12 @@ function bash( command, callback, json ) {
 		, callback || null
 		, json || null
 	);
+}
+function bashFileArgs( file ) { // simple args - split by spaces + no quote + no escape
+	args.shift();
+	if ( args.length ) file += ' '+ args.join( ' ' );
+	args = false;
+	return file
 }
 
 // ----------------------------------------------------------------------

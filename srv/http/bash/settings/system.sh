@@ -170,12 +170,6 @@ bluetoothstart )
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
 	;;
-databackup )
-	$dirsettings/system-databackup.sh
-	;;
-datareset )
-	$dirsettings/system-datareset.sh
-	;;
 hddinfo )
 	echo -n "\
 <bll># hdparm -I $dev</bll>
@@ -290,9 +284,6 @@ mirrorlist )
 	done
 	echo '{ '$codelist' }'
 	;;
-mount )
-	$dirsettings/system-mount.sh "${args[@]:1}"
-	;;
 mountforget )
 	umount -l "$mountpoint"
 	rmdir "$mountpoint" &> /dev/null
@@ -381,9 +372,6 @@ $description
 	fi
 	grep -B1 -A2 --no-group-separator "^${pkg,}" $filepackages
 	;;
-pkgstatus )
-	$dirsettings/system-pkgstatus.sh ${args[1]}
-	;;
 poweraudiophonics )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
@@ -419,9 +407,6 @@ rebootlist )
 	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
-refreshdata )
-	$dirsettings/${args[1]}-data.sh
-	;;
 refreshstart )
 	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
 	;;
@@ -435,6 +420,19 @@ regdomlist )
 relays )
 	if [[ $ON ]]; then
 		touch $dirsystem/relays
+		. $dirsystem/relays.conf
+		json=$( jq < $dirsystem/relaysname.json )
+		for p in $on; do
+			name=$( jq -r '.["'$p'"]' <<< $json )
+			[[ $name ]] && neworderon+=$name'\n'
+		done
+		for p in $off; do
+			name=$( jq -r '.["'$p'"]' <<< $json )
+			[[ $name ]] && neworderoff+=$name'\n'
+		done
+		echo '
+orderon="'$( stringEscape ${neworderon:0:-2} )'"
+orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
 	else
 		rm -f $dirsystem/relays
 		enable=false

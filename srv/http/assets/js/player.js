@@ -3,7 +3,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.playback' ).click( function() {
 	if ( $( this ).hasClass( 'disabled' ) ) return
 	
-	bash( [ 'playback', S.player === 'mpd' ? 'mpcplayback' : 'playerstop', 'KEY acttion' ] );
+	bash( [ 'playback', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
 $( '.btoutputall' ).click( function() {
 	SW.icon  = 'volume';

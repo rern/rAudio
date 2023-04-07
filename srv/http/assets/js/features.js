@@ -1,7 +1,8 @@
 var default_v      = {
-	  autoplay  : { bluetooth: true, cd: true, startup: true }
-	, scrobble  : { airplay: true, bluetooth: true, spotify: true, upnp: true, notify: true }
-	, stoptimer : { min: '', poweroff: false }
+	  autoplay     : { bluetooth: true, cd: true, startup: true }
+	, localbrowser : { rotate: 'NORMAL', zoom: 100, screenoff: 0, onwhileplay: false, hdmi: false,  cursor: false }
+	, scrobble     : { airplay: true, bluetooth: true, spotify: true, upnp: true, notify: true }
+	, stoptimer    : { min: '', poweroff: false }
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -176,7 +177,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, title        : SW.title
 		, content      : content
 		, boxwidth     : 110
-		, values       : S.localbrowserconf
+		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );

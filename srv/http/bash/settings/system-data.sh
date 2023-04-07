@@ -161,12 +161,34 @@ if [[ $nas ]]; then
 	done
 fi
 list="[ ${list:1} ]"
-
+# i2smodule
 if [[ -e $dirsystem/audio-aplayname && -e $dirsystem/audio-output ]]; then
 	audioaplayname=$( < $dirsystem/audio-aplayname )
 	audiooutput=$( < $dirsystem/audio-output )
 	i2smodulesw=$( grep -q "$audiooutput.*$audioaplayname" /srv/http/assets/data/system-i2s.json && echo true )
 fi
+# reboot
+if [[ -e $dirshm/reboot ]]; then
+	reboot=$( cat $dirshm/reboot )
+	grep -q TFT <<< $reboot && tftreboot=true
+	grep -q Character <<< $reboot && lcdcharreboot=true
+	grep -q Spectrum <<< $reboot && mpdoledreboot=true
+fi
+# relays
+. $dirsystem/relays.conf
+on=( $on )
+off=( $off )
+ond=( $ond )
+offd=( $offd )
+pL=${#on[@]}
+dL=$(( pL - 1 ))
+for (( i=0; i < $pL; i++ )); do
+	                conf+=', "on'$i'"  : '${on[i]}',  "off'$i'"  : '${off[i]}
+	(( i < dL )) && conf+=', "ond'$i'" : '${ond[i]}', "offd'$i'" : '${offd[i]}
+done
+conf+=', "timer": '$timer
+relaysconf='{ '${conf:1}' }'
+# tft
 tftmodel=$( getContent $dirsystem/lcdmodel )
 [[ $tftmodel ]] && tftconf='{ "model": "'$tftmodel'" }'
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
@@ -181,16 +203,11 @@ if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
 	fi
 fi
+# vuled
 chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
 mpdoledconf='{ "chip": "'$chip'", "baud": '$baud' }'
-if [[ -e $dirshm/reboot ]]; then
-	reboot=$( cat $dirshm/reboot )
-	grep -q TFT <<< $reboot && tftreboot=true
-	grep -q Character <<< $reboot && lcdcharreboot=true
-	grep -q Spectrum <<< $reboot && mpdoledreboot=true
-fi
 
 data+='
   "page"              : "system"
@@ -220,7 +237,8 @@ data+='
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
 , "poweraudiophonics" : '$( exists $dirsystem/audiophonics )'
 , "relays"            : '$( exists $dirsystem/relays )'
-, "relaysconf"        : '$( getContent $dirsystem/relays.json )'
+, "relaysconf"        : '$relaysconf'
+, "relaysnameconf"    : '$( getContent $dirsystem/relaysname.json )'
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'

@@ -49,9 +49,6 @@ wlanDevice() {
 
 case $cmd in
 
-bluetoothcommand )
-	$dirbash/bluetoothcommand.sh $action $mac
-	;;
 bluetoothinfo )
 	info=$( bluetoothctl info $mac )
 	grep -q -m1 'not available' <<< $info && exit
@@ -112,9 +109,6 @@ disconnect )
 	ifconfig $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
-hostapd )
-	echo $dirsettings/features.sh "$1"
-	;;
 lanedit )
 	if [[ $ip ]]; then
 		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
@@ -160,14 +154,8 @@ profileremove )
 	rm "/etc/netctl/$ssid"
 	$dirsettings/networks-data.sh pushwl
 	;;
-scanbluetooth )
-	$dirsettings/networks-scan.sh
-	;;
 scankill ) 
 	killall -q networks-scan.sh &> /dev/null
-	;;
-scanwlan )
-	$dirsettings/networks-scan.sh wlan
 	;;
 statusbt )
 	echo "\

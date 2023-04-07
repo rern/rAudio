@@ -116,32 +116,10 @@ done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
-if [[ -e /etc/systemd/system/localbrowser.service ]]; then
-	echo "\
-rotate=NORMAL
-zoom=100
-cursor=
-screenoff=0
-onwhileplay=
-hdmi=" > $dirsystem/localbrowser.conf
-	rm -rf /root/.config/chromium /root/.mozilla
-fi
+[[ -e /etc/systemd/system/localbrowser.service ]] && rm -rf /root/.config/chromium /root/.mozilla
 
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
-
-# relays
-cat << EOF > $dirsystem/relays.conf
-pin='[ 11,13,15,16 ]'
-name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
-on=( 11 13 15 16 )
-ond=( 2 2 2 )
-off=( 16 15 13 11 )
-offd=( 2 2 2 )
-timer=5
-EOF
 
 # system
 hostnamectl set-hostname rAudio

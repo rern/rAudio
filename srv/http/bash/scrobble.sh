@@ -11,10 +11,7 @@ sleep 2 # wait - after track change pushstream
 . /srv/http/bash/common.sh
 . $dirsystem/scrobblekey
 
-readarray -t args <<< $1
-Artist=${args[0]}
-Title=${args[1]}
-Album=${args[2]}
+args2var "$1"
 
 timestamp=$( date +%s )
 if [[ $album ]]; then
