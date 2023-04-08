@@ -59,7 +59,8 @@ $info"
 	;;
 connect )
 	file="/etc/netctl/$ESSID"
-	if [[ $IP == static && $Address != $( ipAddress ) ]]; then
+	[[ $Address ]] && IP=static || IP=dhcp
+	if [[ $Address && $Address != $( ipAddress ) ]]; then # static
 		if ping -c 1 -w 1 $Address &> /dev/null; then
 			rm "$file"
 			echo "IP <wh>$Address</wh> already in use."
