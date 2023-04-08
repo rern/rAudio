@@ -529,7 +529,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 } );
 $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', 'timezone='+ $( this ).val() ] );
+	bash( [ 'timezone', $( this ).val(), 'KEY timezone' ] );
 } );
 $( '#divtimezone .col-r' ).click( function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
