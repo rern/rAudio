@@ -6,8 +6,13 @@ var board2bcm      = {
 var html_optionpin = htmlOption( board2bcm );
 var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
 var default_v      = {
-	  bluetooth     : { discoverable: true, format: false }
-	, hddsleep      : { apm: 60 }
+	  bluetooth     : {
+		    discoverable : true
+		  , format       : false 
+	}
+	, hddsleep      : {
+		apm : 60
+	}
 	, lcdchar_gpio  : {
 		  inf       :'gpio'
 		, cols      : 20
@@ -29,31 +34,73 @@ var default_v      = {
 		, chip      : 'PCF8574'
 		, backlight : false
 	}
-	, mountcifs     : { protocol: 'cifs', name: '', ip: S.ipsub, share: '', user: '', password: '', options: '' }
-	, mpountnfs     : { protocol: 'nfs', name: '', ip: S.ipsub, share: '', options: '' }
-	, powerbutton   : { on: 5, sw: 5, led: 40, reserved: 5 }
-	, relays       : {
-		"on0": 11,
-		"off0": 16,
-		"ond0": 2,
-		"offd0": 2,
-		"on1": 11,
-		"off1": 16,
-		"ond1": 2,
-		"offd1": 2,
-		"on2": 11,
-		"off2": 16,
-		"ond2": 2,
-		"offd2": 2,
-		"on3": 11,
-		"off3": 16,
-		"timer": 5
+	, mountcifs     : {
+		  protocol : 'cifs'
+		, name     : ''
+		, ip       : S.ipsub
+		, share    : ''
+		, user     : ''
+		, password : ''
+		, options  : '' 
 	}
-	, relaysname    : { "11": "DAC", "13": "PreAmp", "15": "Amp", "16": "Subwoofer" }
-	, rotaryencoder : { pina: 27, pinb: 22, pins: 23, strp: 1 }
-	, softlimit     : { softlimit: 60 }
-	, vuled         : { p0: 14, p1: 15, p2: 18, p3: 23, p4: 24, p5: 25, p6: 8 }
-	, wlan          : { regdom: '00', apauto: true }
+	, mpountnfs     : {
+		  protocol : 'nfs'
+		, name     : ''
+		, ip       : S.ipsub
+		, share    : ''
+		, options  : ''
+	}
+	, powerbutton   : {
+		  on       : 5
+		, sw       : 5
+		, led      : 40
+		, reserved : 5
+	}
+	, relays       : {
+		  on0   : 11
+		, off0  : 16
+		, ond0  : 2
+		, offd0 : 2
+		, on1   : 11
+		, off1  : 16
+		, ond1  : 2
+		, offd1 : 2
+		, on2   : 11
+		, off2  : 16
+		, ond2  : 2
+		, offd2 : 2
+		, on3   : 11
+		, off3  : 16
+		, timer : 5
+	}
+	, relaysname    : {
+		  "11" : "DAC"
+		, "13" : "PreAmp"
+		, "15" : "Amp"
+		, "16" : "Subwoofer"
+	}
+	, rotaryencoder : {
+		  pina : 27
+		, pinb : 22
+		, pins : 23
+		, strp : 1
+	}
+	, softlimit     : {
+		softlimit : 60
+	}
+	, vuled         : {
+		  p0 : 14
+		, p1 : 15
+		, p2 : 18
+		, p3 : 23
+		, p4 : 24
+		, p5 : 25
+		, p6 : 8
+	}
+	, wlan          : {
+		  regdom : '00'
+		, apauto : true
+	}
 }
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 

@@ -1,8 +1,28 @@
 var default_v      = {
-	  autoplay     : { bluetooth: true, cd: true, startup: true }
-	, localbrowser : { rotate: 'NORMAL', zoom: 100, screenoff: 0, onwhileplay: false, hdmi: false,  cursor: false }
-	, scrobble     : { airplay: true, bluetooth: true, spotify: true, upnp: true, notify: true }
-	, stoptimer    : { min: '', poweroff: false }
+	  autoplay     : {
+		    bluetooth : true
+		  , cd        : true
+		  , startup   : true
+	  }
+	, localbrowser : {
+		  rotate      : 'NORMAL'
+		, zoom        : 100
+		, screenoff   : 0
+		, onwhileplay : false
+		, hdmi        : false
+		,  cursor     : false
+	}
+	, scrobble     : {
+		  airplay   : true
+		, bluetooth : true
+		, spotify   : true
+		, upnp      : true
+		, notify    : true
+	}
+	, stoptimer    : {
+		  min      : ''
+		, poweroff : false
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

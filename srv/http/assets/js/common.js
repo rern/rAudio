@@ -38,7 +38,7 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
-var filesh = { // script files other than common page-data.sh
+var args0_file  = { // script files other than common page-data.sh
 	  bluetoothcommand : 'bluetoothcommand.sh'
 	, databackup       : 'settings/system-databackup.sh'
 	, datareset        : 'settings/system-datareset.sh'
@@ -60,8 +60,8 @@ function bash( array, callback, json ) {
 	}
 	var args0 = args[ 0 ];
 	if ( page ) { // settings
-		if ( args0 in filesh ) { // spaced args: $1 ...
-			data.filesh = bashFileArgs( filesh[ args0 ] );
+		if ( args0 in args0_file ) { // spaced args: $1 ...
+			data.filesh = bashFileArgs( args0_file[ args0 ] );
 		} else { // multiline args: args2var > ${args[1]} ...
 			if ( args0 === 'mount' ) {
 				data.filesh = 'settings/system-mount.sh';
