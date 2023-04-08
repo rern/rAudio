@@ -232,7 +232,7 @@ $( '#setting-custom' ).click( function() {
 				var values = infoVal();
 				if ( ! values[ 0 ] && ! values[ 1 ] ) {
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
-					bash( [ 'custom', 'enable=' ] );
+					bash( [ 'custom', 'OFF' ] );
 					return
 				}
 				

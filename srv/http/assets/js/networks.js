@@ -52,10 +52,10 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, oklabel       : 'Connect'
-		, ok            : () => connectWiFi( [ 'ESSID='+ ESSID, 'Key='+ infoVal(), 'Security='+ ( Security || '' ) ] )
+		, ok            : () => connectWiFi( [ ESSID, infoVal(), Security ] )
 		} );
 	} else {
-		connectWiFi( [ 'ESSID='+ ESSID ] );
+		connectWiFi( [ ESSID ] );
 	}
 } );
 $( '.wladd' ).click( function() {

@@ -121,9 +121,6 @@ $( 'body' ).click( function( e ) {
 		i2sSelectHide();
 	}
 } );
-$( '.container' ).on( 'click', '.settings', function() {
-	location.href = 'settings.php?p='+ $( this ).data( 'setting' );
-} );
 $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
@@ -239,12 +236,12 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', 'mountpoint='+ mountpoint ] );
+			bash( [ 'mountforget', mountpoint, 'KEY mountpoint' ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', 'dev='+ source ], data => {
+				bash( [ 'hddinfo', source, 'KEY dev' ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -255,11 +252,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', 'mountpoint='+ mountpoint, 'source='+ source ] );
+			bash( [ 'mountremount', mountpoint, source, 'KEY mountpoint source' ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', 'mountpoint='+ mountpoint ] );
+			bash( [ 'mountunmount', mountpoint, 'KEY mountpoint' ] );
 			break;
 	}
 } );
@@ -335,7 +332,7 @@ $( '#i2smodule' ).change( function() {
 		output = '';
 		i2sSelectHide();
 	}
-	bash( [ 'i2smodule', 'aplayname='+ aplayname, 'output='+ output ] );
+	bash( [ 'i2smodule', aplayname, output, 'KEY aplayname output' ] );
 } );
 $( '#divi2s .col-r' ).click( function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
@@ -700,7 +697,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', 'pkg='+ $target.text() ], list => {
+		bash( [ 'packagelist', $target.text(), 'KEY pkg' ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -844,7 +841,7 @@ function infoLcdcharButton() {
 		.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
 	$( '#infoButtons gr' ).click( function() {
 		var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-		bash( [ 'lcdcharset', 'action='+ action ] );
+		bash( [ 'lcdcharset', action, 'KEY action' ] );
 	} );
 }
 var contentmount = {
@@ -1098,7 +1095,7 @@ function inforServer() {
 		, ok        : () => {
 			var ip = infoVal();
 			notify( icon, title, 'Connect rAudio Sever ...' );
-			bash( [ 'sharelist', 'ip='+ ip ], list => {
+			bash( [ 'sharelist', ip, 'KEY ip' ], list => {
 				var json = {
 					  icon    : Sw.icon
 					, title   : Sw.title
@@ -1110,7 +1107,7 @@ function inforServer() {
 					json.message = list +'<br>Connect?'
 					json.ok      = () => {
 						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-						bash( [ 'shareddataconnect', 'ip='+ ip ] );
+						bash( [ 'shareddataconnect', ip, 'KEY ip' ] );
 					}
 				}
 				info( json );
