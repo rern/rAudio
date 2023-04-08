@@ -82,14 +82,10 @@ function bash( array, callback, json ) {
 	}
 	if ( args ) data.args = args;
 	if ( V.consolelog ) {
-		var bash = data.filesh.replace( 'settings/', '' );
-		if ( data.args ) bash += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
-		if ( navigator.maxTouchPoints ) {
-			alert( JSON.stringify( data ) +'\n\n'+ bash );
-		} else {
-			console.log( data );
-			console.log( bash );
-		}
+		var bashcmd = data.filesh.replace( 'settings/', '' );
+		if ( data.args ) bashcmd += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
+		console.log( data );
+		console.log( bashcmd );
 		return
 	}
 	
