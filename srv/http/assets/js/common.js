@@ -51,29 +51,33 @@ var filesh = { // script files other than common page-data.sh
 }
 var args;
 
-function bash( command, callback, json ) {
-	args = command;
+function bash( array, callback, json ) {
+	args = array;
 	var data = { cmd: 'bash' }
 	if ( 'json' in args ) {
 		data.json = JSON.stringify( args.json );
 		args = args.cmd;
 	}
-	var cmd0 = args[ 0 ];
-	if ( page ) {
-		if ( cmd0 in filesh ) {
-			data.filesh = bashFileArgs( filesh[ cmd0 ] );
-		} else if ( cmd0 === 'mount' ) { // multiline args
-			data.filesh = 'settings/system-mount.sh';
-		} else {
-			data.filesh = 'settings/'+ page +'.sh';
+	var args0 = args[ 0 ];
+	if ( page ) { // settings
+		if ( args0 in filesh ) { // spaced args: $1 ...
+			data.filesh = bashFileArgs( filesh[ args0 ] );
+		} else { // multiline args: args2var > ${args[1]} ...
+			if ( args0 === 'mount' ) {
+				data.filesh = 'settings/system-mount.sh';
+			} else {
+				data.filesh = 'settings/'+ page +'.sh';
+			}
 		}
-	} else {
-		if ( [ 'relays', 'snapcast', 'status' ].includes( cmd0 ) ) {
-			data.filesh = bashFileArgs( cmd0 +'.sh' );
-		} else if ( cmd0 === 'scrobble' ) {
-			data.filesh = 'scrobble.sh';
+	} else { // playback
+		if ( [ 'relays', 'snapcast', 'status' ].includes( args0 ) ) {
+			data.filesh = bashFileArgs( args0 +'.sh' );
 		} else {
-			data.filesh = 'cmd.sh';
+			if ( args0 === 'scrobble' ) {
+				data.filesh = 'scrobble.sh';
+			} else {
+				data.filesh = 'cmd.sh';
+			}
 		}
 	}
 	if ( args ) data.args = args;
@@ -92,8 +96,8 @@ function bash( command, callback, json ) {
 	}
 	
 	$.post( 
-		  'cmd.php'
-		, data // { cmd: 'bash', args: [ 'file.sh', ...command, *'KEY k1 k2 ...' ], *json: 'json string' }
+		 'cmd.php'
+		, data
 		, callback || null
 		, json || null
 	);

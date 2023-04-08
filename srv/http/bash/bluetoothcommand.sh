@@ -5,16 +5,13 @@
 # Connect: trust > connect > get device type
 # Disconnect / Remove: disconnect
 
+[[ -e /srv/http/data/shm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
+
 . /srv/http/bash/common.sh
 
-[[ -e $dirshm/btflag ]] && exit # flag - suppress bluetooth.rules fires 2nd "connect" after paired / connect
-
-if [[ ! $2 ]]; then
-	udev=$1
-else
-	action=$1
-	mac=$2
-fi
+action=$1
+mac=$2
+[[ ! $mac ]] && udev=1
 icon=bluetooth
 
 disconnectRemove() {
@@ -39,7 +36,7 @@ disconnectRemove() {
 }
 #-------------------------------------------------------------------------------------------
 # from bluetooth.rules: disconnect from paired device
-if [[ $udev == disconnect ]]; then
+if [[ $udev && $action == disconnect ]]; then
 	sleep 2
 	readarray -t lines < $dirshm/btconnected
 	for line in "${lines[@]}"; do
@@ -58,7 +55,7 @@ fi
 
 #-------------------------------------------------------------------------------------------
 # from bluetooth.rules: 1. connect from paired device, 2. pair from sender
-if [[ $udev == connect ]]; then
+if [[ $udev && $action == connect ]]; then
 	sleep 2
 	macs=$( bluetoothctl devices | cut -d' ' -f2 )
 	if [[ $macs ]]; then
@@ -102,7 +99,7 @@ fi
 touch $dirshm/btflag
 ( sleep 5; rm $dirshm/btflag ) &> /dev/null &
 #-------------------------------------------------------------------------------------------
-# 1. continue from [[ $udev == connect ]], 2. from rAudio networks.js
+# 1. continue from [[ $udev && $action == connect ]], 2. from rAudio networks.js
 if [[ $action == connect || $action == pair ]]; then
 	bluetoothctl trust $mac # always trusr + pair to ensure proper connecting process
 	bluetoothctl pair $mac
