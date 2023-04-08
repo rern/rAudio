@@ -148,7 +148,9 @@ if [[ -e $dirmpd/updating ]]; then
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
 
-[[ -e $dirshm/btreceiver ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+if [[ -e $dirshm/btreceiver && -e $dirsystem/autoplay ]]; then
+	grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+fi
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 

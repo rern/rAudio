@@ -84,7 +84,7 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	echo "$tracks" > $diraudiocd/$discid
 fi
 # suppress getPlaybackStatus in passive.js
-if grep -q cd=true $dirsystem/autoplay.conf; then
+if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
 	autoplaycd=1
 	pushstream playlist '{"autoplaycd":1}'
 fi

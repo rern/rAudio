@@ -93,6 +93,7 @@ function bash( array, callback, json ) {
 		return
 	}
 	
+	if ( V.debug ) console.log( data );
 	$.post( 
 		 'cmd.php'
 		, data
@@ -1109,7 +1110,7 @@ function local( delay ) {
 // pushstream -----------------------------------------------------------------
 $( '#bar-top, .head' ).press( function() {
 	V.debug = true;
-	banner( 'gear', 'Pushstream', 'No disconnect.' )
+	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
 } );
 
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
