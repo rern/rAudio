@@ -206,8 +206,8 @@ $( '.info' ).click( function() {
 
 } );
 
-function bluetoothCommand( cmd, mac ) {
-	bash( [ 'bluetoothcommand', cmd, mac ] );
+function bluetoothCommand( action, mac ) {
+	bash( [ 'bluetoothcommand', action +' '+ mac ] ); // bluetoothcommand.sh action mac
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'KEY mac' ], data => {

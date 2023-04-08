@@ -379,9 +379,6 @@ poweraudiophonics )
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 		configTxt 'Power Button'
-		touch $dirsystem/audiophonics
-	else
-		rm -f $dirsystem/audiophonics
 	fi
 	configTxt 'Power Button'
 	;;

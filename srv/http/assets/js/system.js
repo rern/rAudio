@@ -779,50 +779,6 @@ function htmlOption( values ) {
 	}
 	return options
 }
-function infoPowerbutton() {
-	var optionpin = htmlOption( Object.keys( board2bcm ) );
-	var infopowerbutton = `\
-<table>
-<tr><td width="40">On</td><td><input type="text" disabled></td></tr>
-<tr><td>Off</td><td><select >${ optionpin }</select></td></tr>
-<tr><td>LED</td><td><select >${ optionpin }</select></td></tr>
-<tr class="reserved hide"><td>Reserved</td><td><select >${ optionpin }</select></td></tr>
-</table>
-`;
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Generic', 'Audiophonic' ]
-		, tab          : [ '', infoPowerbuttonAudiophonics ]
-		, content      : gpiosvg + infopowerbutton
-		, boxwidth     : 70
-		, values       : S.powerbuttonconf || default_v.powerbutton
-		, checkchanged : S.powerbutton
-		, beforeshow   : () => {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.on == 5 );
-			$( '#infoContent select' ).eq( 0 ).change( function() {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
-			} );
-		}
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
-	} );
-}
-function infoPowerbuttonAudiophonics() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, tablabel     : [ 'Generic', 'Audiophonic' ]
-		, tab          : [ infoPowerbutton, '' ]
-		, checkbox     : 'Enable'
-		, checkchanged : S.powerbutton
-		, values       : S.poweraudiophonics
-		, beforeshow   : () => $( '#infoContent' ).css( 'padding', '30px' )
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-}
 function infoLcdChar() {
 	var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
 	var i2caddress  = '';
@@ -992,6 +948,50 @@ function infoNtpMirror() {
 		, beforeshow   : () => {
 			selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } );
 		}
+		, ok           : switchEnable
+	} );
+}
+function infoPowerbutton() {
+	var optionpin = htmlOption( Object.keys( board2bcm ) );
+	var infopowerbutton = `\
+<table>
+<tr><td width="40">On</td><td><input type="text" disabled></td></tr>
+<tr><td>Off</td><td><select >${ optionpin }</select></td></tr>
+<tr><td>LED</td><td><select >${ optionpin }</select></td></tr>
+<tr class="reserved hide"><td>Reserved</td><td><select >${ optionpin }</select></td></tr>
+</table>
+`;
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Generic', 'Audiophonic' ]
+		, tab          : [ '', infoPowerbuttonAudiophonics ]
+		, content      : gpiosvg + infopowerbutton
+		, boxwidth     : 70
+		, values       : S.powerbuttonconf || default_v.powerbutton
+		, checkchanged : S.powerbutton
+		, beforeshow   : () => {
+			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.on == 5 );
+			$( '#infoContent select' ).eq( 0 ).change( function() {
+				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			} );
+		}
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+}
+function infoPowerbuttonAudiophonics() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Generic', 'Audiophonic' ]
+		, tab          : [ infoPowerbutton, '' ]
+		, checkbox     : 'Power management module'
+		, checkchanged : S.powerbutton
+		, values       : S.poweraudiophonics
+		, beforeshow   : () => $( '#infoContent' ).css( 'padding', '30px' )
+		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 }
