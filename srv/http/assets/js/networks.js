@@ -52,10 +52,10 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, oklabel       : 'Connect'
-		, ok            : () => connectWiFi( [ ESSID, infoVal(), Security ] )
+		, ok            : () => connectWiFi( { ESSID: ESSID, Key: infoVal(), Security: Security } )
 		} );
 	} else {
-		connectWiFi( [ ESSID ] );
+		connectWiFi( { ESSID: ESSID } );
 	}
 } );
 $( '.wladd' ).click( function() {
@@ -223,16 +223,18 @@ function bluetoothInfo( mac ) {
 		}
 	} );
 }
-function connectWiFi( data, ip ) {
+function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
-	if ( ip ) { // static
-		S.listeth ? notify( icon, title, 'Change ...' ) : editReconnect( icon, ip, 5 );
+	if ( 'ip' in data ) { // static
+		S.listeth ? notify( icon, title, 'Change ...' ) : editReconnect( icon, data.ip, 5 );
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
-	bash( [ 'connect', ...data, 'KEY '+ I.keys.join( ' ' ) ], error => {
+	var keys   = Object.keys( data );
+	var values = Object.values( data );
+	bash( [ 'connect', ...values, 'KEY '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -348,7 +350,7 @@ function infoWiFiStatic( values ) {
 		, checkip       : [ 2, 3 ]
 		, beforeshow    : () => $('#infoContent input' ).eq( 1 ).attr( 'type', 'password' )
 		, ok            : () => {
-			connectWiFi( infoVal(), infoVal( 'json' ).Address );
+			connectWiFi( infoVal() );
 		}
 	} );
 }
