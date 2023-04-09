@@ -17,7 +17,7 @@ function bannerReset() {
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
-	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
+	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
 	var services   = [ 'camilladsp',     'dabradio', 'hostapd',    'localbrowser', 'mpd',     'nfsserver'
 					 , 'shairport-sync', 'smb',      'snapclient', 'spotifyd',     'upmpdcli' ];
 	var command = services.includes( id ) ? [ 'pkgstatus', id ] : [ 'status'+ id ];
