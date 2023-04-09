@@ -229,15 +229,17 @@ $( '#setting-custom' ).click( function() {
 			, checkchanged : S.custom
 			, cancel       : switchCancel
 			, ok           : () => {
-				var values = infoVal();
-				if ( ! values[ 0 ] && ! values[ 1 ] ) {
+				var infoval = infoVal();
+				var global  = infoval[ 0 ];
+				var output  = infoval[ 1 ];
+				if ( ! global && ! output ) {
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
 					bash( [ 'custom', 'OFF' ] );
 					return
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', values[ 0 ], values[ 1 ], D.aplayname, 'KEY global output aplayname' ], mpdstart => {
+				bash( [ 'custom', global, output, D.aplayname, 'KEY global output aplayname' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {

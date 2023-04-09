@@ -908,11 +908,11 @@ function infoMount( val ) {
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
-			var values = infoVal();
-			var keys = Object.keys( values );
-			var vals = Object.values( values );
-			values.protocol = nfs ? 'nfs' : 'cifs';
-			if ( shareddata ) values.shareddata = true;
+			var infoval = infoVal();
+			var keys = Object.keys( infoval );
+			var vals = Object.values( infoval );
+			infoval.protocol = nfs ? 'nfs' : 'cifs';
+			if ( shareddata ) infoval.shareddata = true;
 			var cmd = [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 			bash( cmd, error => {
@@ -1034,13 +1034,13 @@ function infoRelays() {
 	} );
 }
 function infoRelaysCmd() {
-	var val = infoVal();
-	if ( 'on0' in val ) {
-		var pin  = val;
+	var infoval = infoVal();
+	if ( 'on0' in infoval ) {
+		var pin  = infoval;
 		var name = S.relaysnameconf || jsonClone( default_v.relaysname );
 	} else {
 		var pin  = S.relaysconf || jsonClone( default_v.relays );
-		var name = val;
+		var name = infoval;
 	}
 	var v   = {};
 	[ 'on', 'off', 'ond', 'offd' ].forEach( k => v[ k ] = [] );

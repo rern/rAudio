@@ -89,11 +89,11 @@ $( '#setting-spotifyd' ).click( function() {
 			}
 			, cancel      : switchCancel
 			, ok          : () => {
-				var values = infoVal();
-				var id     = values[ 0 ];
-				var secret = values[ 1 ];
+				var infoval = infoVal();
+				var id      = infoval[ 0 ];
+				var secret  = infoval[ 1 ];
 				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'KEY btoa' ] );
-				var data   = {
+				var data    = {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
@@ -299,15 +299,15 @@ $( '#setting-multiraudio' ).click( function() {
 		}
 		, cancel       : switchCancel
 		, ok           : () => {
-			var v = infoVal();
-			if ( v.length < 3 ) {
+			var infoval = infoVal();
+			if ( infoval.length < 3 ) {
 				notifyCommon( 'Disable ...' );
 				bash( [ 'multiraudioreset' ] );
 				return
 			}
 			
 			var val = {}
-			v.forEach( ( el, i ) => i % 2 ? val[ name ] = el : name = el );
+			infoval.forEach( ( el, i ) => i % 2 ? val[ name ] = el : name = el );
 			keys = Object.keys( val ).sort();
 			data = {}
 			keys.forEach( k => data[ k ] = val[ k ] );
@@ -351,12 +351,12 @@ $( '#setting-login' ).click( function() {
 		, checkblank    : true
 		, cancel        : switchCancel
 		, ok            : () => {
-			var values = infoVal();
+			var infoval = infoVal();
 			notifyCommon();
 			$.post( 'cmd.php', {
 				  cmd      : 'login'
-				, password : values[ 0 ]
-				, pwdnew   : S.login ? values[ 1 ] : values
+				, password : infoval[ 0 ]
+				, pwdnew   : S.login ? infoval[ 1 ] : infoval
 			}, function( verified ) {
 				if ( verified == -1 ) passwordWrong();
 			}, 'json' );
