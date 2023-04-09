@@ -909,9 +909,11 @@ function infoMount( val ) {
 		, cancel     : switchCancel
 		, ok         : () => {
 			var values = infoVal();
+			var keys = Object.keys( values );
+			var vals = Object.values( values );
 			values.protocol = nfs ? 'nfs' : 'cifs';
 			if ( shareddata ) values.shareddata = true;
-			var cmd = [ 'mount', ...values, 'KEY '+ keys ];
+			var cmd = [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
 			bash( cmd, error => {
 				if ( error ) {

@@ -66,7 +66,7 @@ function bash( array, callback, json ) {
 			if ( args0 === 'mount' ) {
 				data.filesh = 'settings/system-mount.sh';
 			} else {
-				data.filesh = 'settings/'+ page +'.sh';
+				data.filesh = bashFile( 'settings/'+ page +'.sh' );
 			}
 		}
 	} else { // playback
@@ -76,26 +76,33 @@ function bash( array, callback, json ) {
 			if ( args0 === 'scrobble' ) {
 				data.filesh = 'scrobble.sh';
 			} else {
-				data.filesh = 'cmd.sh';
+				data.filesh = bashFile( 'cmd.sh' );
 			}
 		}
 	}
 	if ( args ) data.args = args;
-	if ( V.consolelog ) {
+	
+	if ( V.debug || V.press ) { // press: $( '#bar-top, .head' ) || $( '#infoOk' ) / $( '.switch' )
 		var bashcmd = data.filesh.replace( 'settings/', '' );
 		if ( data.args ) bashcmd += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
 		console.log( data );
 		console.log( bashcmd );
-		return
+		if ( V.press ) return
 	}
 	
-	if ( V.debug ) console.log( data );
 	$.post( 
 		 'cmd.php'
 		, data
 		, callback || null
 		, json || null
 	);
+}
+function bashFile( file ) {
+	if ( args.length === 1 ) {
+		file += ' '+ args[ 0 ];
+		args  = false;
+	}
+	return file
 }
 function bashFileArgs( file ) { // simple args - split by spaces + no quote + no escape
 	args.shift();
@@ -318,10 +325,6 @@ info( {                                       // default
 `;
 
 $( '#infoOverlay' ).on( 'click', '#infoIcon', function() {
-	V.consolelog = true;
-	setTimeout( ()=>  delete V.consolelog, 300 );
-	$( '#infoOk' ).click();
-} ).press( '#infoIcon', function() {
 	info( {
 		  icon     : 'help'
 		, title    : 'Usage'
@@ -452,6 +455,8 @@ function info( json ) {
 		}
 	} );
 	$( '#infoOk' ).click( function() {
+		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
+		
 		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
 			infoButtonCommand( I.ok );
 		} else {
@@ -459,6 +464,8 @@ function info( json ) {
 				? $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' )
 				: infoButtonCommand( I.ok );
 		}
+	} ).press( function() {
+		I.ok();
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
@@ -770,7 +777,7 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( V.consolelog || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
+	if ( V.press || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
 	
 	if ( I.oknoreset ) {
 		$( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
@@ -1023,6 +1030,7 @@ function infoVal( format ) {
 				val = $this.val();
 		}
 		if (   typeof val !== 'string'              // boolean
+			|| val === ''                           // empty
 			|| isNaN( val )                         // NotaNumber 
 			|| val[ 0 ] === '0' && val[ 1 ] !== '.' // '0123' not 0.123
 		) {
@@ -1039,7 +1047,7 @@ function infoVal( format ) {
 		return values
 	}
 	var v = {}
-	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
+	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] || '' );
 	return v // json
 }
 

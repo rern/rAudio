@@ -136,6 +136,12 @@ function switchEnable() {
 	bash( [ SW.id, ...values ] );
 	S[ SW.id ] = true;
 }
+function switchIdIconTitle( id ) {
+	SW.id     = id;
+	var $this = $( '#'+ id );
+	SW.icon   = page !== 'player' ? id : ( $this.closest( '#divoptions' ).length ? 'mpd' : 'volume' );
+	SW.title  = $this.parent().prev().find( 'span' ).text();
+}
 function switchSet() {
 	if ( page === 'networks' || page === 'relays' ) return
 	
@@ -389,11 +395,11 @@ $( '.setting, .switch' ).click( function() {
 	if ( V.local ) return
 	
 	local();
-	SW.id    = this.id.replace( 'setting-', '' );
-	SW.icon = page !== 'player' ? SW.id : ( $( this ).closest( '#divoptions' ).length ? 'mpd' : 'volume' );
-	SW.title = $( this ).parent().prev().find( 'span' ).text();
+	switchIdIconTitle( this.id.replace( 'setting-', '' ) );
 } );
 $( '.switch' ).click( function() {
+	if ( V.press ) return
+	
 	var $this   = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
 		infoDisabled( $this );
@@ -430,11 +436,14 @@ $( '.switch' ).click( function() {
 		}, 'json' );
 	}
 } ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length ) return
+	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
+		$( '#setting-'+ e.target.id ).click();
+		return
+	}
 	
-	V.consolelog = true;
-	setTimeout( ()=>  delete V.consolelog, 300 );
-	$( e.target ).click();
+	switchIdIconTitle( e.target.id );
+	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
+	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();
