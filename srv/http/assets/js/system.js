@@ -940,20 +940,19 @@ function infoMount( values ) {
 	} );
 }
 function infoMountTab( protocol ) {
-	var v = infoVal();
-	if ( typeof v === 'string' ) v = default_v[ 'mount'+ protocol ];
-	console.log(v)
-	var cifs    = 'user' in v;
+	var v       = infoVal();
+	if ( typeof v === 'string' ) v = default_v[ 'mount'+ protocol ]; // from rServer
+	var nfs     = ! ( 'user' in v );
 	var options = v.options;
 	[ 'user', 'password', 'options', 'shareddata' ].forEach( k => delete v[ k ] );
-	if ( ! cifs ) { // nfs to cifs
+	if ( nfs ) { // nfs to cifs
 		v.protocol = 'cifs';
 		v.user     = '';
 		v.password = '';
 	} else {
 		v.protocol = 'nfs';
 	}
-	v.options = options;
+	v.options   = options;
 	infoMount( v );
 }
 function infoNtpMirror() {
