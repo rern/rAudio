@@ -30,16 +30,16 @@ var default_v      = {
 	, mountcifs     : {
 		  protocol : 'cifs'
 		, name     : ''
-		, ip       : S.ipsub
+		, ip       : ''
 		, share    : ''
 		, user     : ''
 		, password : ''
 		, options  : '' 
 	}
-	, mpountnfs     : {
+	, mountnfs      : {
 		  protocol : 'nfs'
 		, name     : ''
-		, ip       : S.ipsub
+		, ip       : ''
 		, share    : ''
 		, options  : ''
 	}
@@ -179,7 +179,7 @@ $( '.refresh' ).click( function( e ) {
 	bash( [ S.intervalstatus ? 'refreshstop' : 'refreshstart' ] );
 } );
 $( '.addnas' ).click( function() {
-	infoMount();
+	infoMount( 'cifs' );
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
@@ -870,17 +870,18 @@ var contentmount = {
 </tr>
 </table>`
 }
-function infoMount( val ) {
-	var nfs     = val === 'nfs';
-	if ( typeof val === 'object' ) {
-		if ( val.length < 5 ) nfs = false;
+function infoMount( values ) {
+	if ( typeof values === 'string' ) {
+		var nfs    = values === 'nfs';
+		var values = default_v[ nfs ? 'mountnfs' : 'mountcifs' ];
 	} else {
-		val     = false;
+		var nfs    = values.protocol === 'nfs';
 	}
+	values.ip      = S.ipsub;
 	var shareddata = SW.id === 'shareddata';
-	var icon    = 'networks';
-	var title   = shareddata ? 'Shared Data Server' : 'Add Network Storage';
-	var tab     = ! nfs ? [ '', () => infoMount( 'nfs' ) ] : [ infoMount, '' ];
+	var icon       = 'networks';
+	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
+	var tab        = nfs ? [ () => infoMount( 'cifs' ), '' ] : [ '', () => infoMount( 'nfs' ) ];
 	if ( shareddata ) tab.push( inforServer );
 	var content = contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option;
 	info( {
@@ -889,7 +890,7 @@ function infoMount( val ) {
 		, tablabel   : ! shareddata ? [ 'CIFS', 'NFS' ] : [ 'CIFS', 'NFS', 'rAudio' ]
 		, tab        : tab
 		, content    : content
-		, values     : default_v[ nfs ? 'mountnfs' : 'mountcifs' ]
+		, values     : values
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
@@ -921,7 +922,7 @@ function infoMount( val ) {
 						  icon    : icon
 						, title   : title
 						, message : error
-						, ok      : () => infoMount( nfs ? 'nfs' : '' )
+						, ok      : () => infoMount( infoval )
 					} );
 					bannerHide();
 				} else {
