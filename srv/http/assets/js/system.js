@@ -179,7 +179,7 @@ $( '.refresh' ).click( function( e ) {
 	bash( [ S.intervalstatus ? 'refreshstop' : 'refreshstart' ] );
 } );
 $( '.addnas' ).click( function() {
-	infoMount( 'cifs' );
+	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
@@ -871,7 +871,7 @@ var contentmount = {
 </table>`
 }
 function infoMount( values ) {
-	if ( typeof values === 'string' ) {
+	if ( ! values || typeof values === 'string' ) {
 		var nfs    = values === 'nfs';
 		var values = default_v[ nfs ? 'mountnfs' : 'mountcifs' ];
 	} else {
@@ -880,14 +880,20 @@ function infoMount( values ) {
 	values.ip      = S.ipsub;
 	var shareddata = SW.id === 'shareddata';
 	var icon       = 'networks';
-	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
-	var tab        = nfs ? [ () => infoMount( 'cifs' ), '' ] : [ '', () => infoMount( 'nfs' ) ];
-	if ( shareddata ) tab.push( inforServer );
+	var tablabel   = [ 'CIFS', 'NFS' ];
+	var tab        = nfs ? [ infoMount, '' ] : [ '', () => infoMount( 'nfs' ) ];
+	if ( shareddata ) {
+		var title = 'Shared Data Server';
+		tablabel.push( 'rAudio' );
+		tab.push( inforServer );
+	} else {
+		var title = 'Add Network Storage';
+	}
 	var content = contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option;
 	info( {
 		  icon       : icon
 		, title      : title
-		, tablabel   : ! shareddata ? [ 'CIFS', 'NFS' ] : [ 'CIFS', 'NFS', 'rAudio' ]
+		, tablabel   : tablabel
 		, tab        : tab
 		, content    : content
 		, values     : values
@@ -912,7 +918,6 @@ function infoMount( values ) {
 			var infoval = infoVal();
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
-			infoval.protocol = nfs ? 'nfs' : 'cifs';
 			if ( shareddata ) infoval.shareddata = true;
 			var cmd = [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
@@ -990,7 +995,6 @@ function infoPowerbuttonAudiophonics() {
 		, checkbox     : 'Power management module'
 		, checkchanged : S.powerbutton
 		, values       : S.poweraudiophonics
-		, beforeshow   : () => $( '#infoContent' ).css( 'padding', '30px' )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
@@ -1089,13 +1093,15 @@ function infoRelaysName() {
 }
 function inforServer() {
 	info( {
-		  icon      : SW.icon
-		, title     : SW.title
-		, textlabel : 'Server IP'
-		, values    : S.ipsub
-		, checkip   : [ 1 ]
-		, cancel    : switchCancel
-		, ok        : () => {
+		  icon       : SW.icon
+		, title      : SW.title
+		, tablabel   : [ 'CIFS', 'NFS', 'rServer' ]
+		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
+		, textlabel  : 'Server IP'
+		, values     : S.ipsub
+		, checkip    : [ 1 ]
+		, cancel     : switchCancel
+		, ok         : () => {
 			var ip = infoVal();
 			notify( icon, title, 'Connect rAudio Sever ...' );
 			bash( [ 'sharelist', ip, 'KEY ip' ], list => {

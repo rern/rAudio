@@ -128,7 +128,9 @@ function showContent() {
 }
 function switchCancel() {
 	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
+	delete SW.id;
 	delete SW.icon;
+	delete SW.title;
 }
 function switchEnable() {
 	var values = infoVal( 'KEY' ); // [ ...values, *KEY keys  ]

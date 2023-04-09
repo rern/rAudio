@@ -528,6 +528,10 @@ input[type=checkbox] {
 	box-shadow: none;
 	filter: none !important;
 }
+#infoOk.disabled {
+	pointer-events: auto;
+	cursor: default;
+}
 input[type=checkbox].disabled {
 	pointer-events: auto;
 }
@@ -680,7 +684,10 @@ hr {
 	background: var( --cga );
 }
 #infoTab a:not(:last-child) {
-/*	box-shadow: 2px -2px 4px #000000;*/
+	box-shadow: 2px -4px 4px #000000;
+}
+#infoTab a.active:last-child {
+	box-shadow: -2px -4px 4px #000000;
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;

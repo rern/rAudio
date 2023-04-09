@@ -736,6 +736,7 @@ function info( json ) {
 				$( '#infoRange .value' ).text( $( this ).val() );
 			} );
 		}
+		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// custom function before show
 		if ( I.beforeshow ) I.beforeshow();
 		$( '#infoContent input:password' ).parent().after( '<td>'+ ico( 'eye' ) +'</td>' );
