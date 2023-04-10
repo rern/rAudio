@@ -51,21 +51,15 @@ function bash( array, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( args0.slice( -3 ) === '.sh' ) { // [ 'CMD.sh', v1, v2, ... ]
+	if ( args0.slice( -3 ) === '.sh' ) { // CDM.sh
 		data.filesh = args.join( ' ' );
 		args = false;
-	} else if ( page ) {      // settings : [ 'CMD', v1, v2, ... ]
-		if ( args0 === 'mount' ) {
-			data.filesh = 'settings/system-mount.sh';
-		} else {
-			data.filesh = 'settings/'+ page +'.sh';
-		}
-	} else {                  // playback : [ 'CMD', v1, v2, ... ]
-		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) {
-			data.filesh = args0 +'.sh';
-		} else {
-			data.filesh = 'cmd.sh';
-		}
+	} else if ( page ) {                 // CMD - settings
+		data.filesh = 'settings/'+ page +'.sh';                            // default
+		if ( args0 === 'mount' ) data.filesh = 'settings/system-mount.sh'; // not default
+	} else {                             // CMD - playback
+		data.filesh = 'cmd.sh';
+		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) data.filesh = args0 +'.sh';
 	}
 	if ( args ) data.args = args;
 /*
@@ -896,7 +890,6 @@ function infoVal( array ) {
 				break;
 			case 'checkbox':
 				val = $this.prop( 'checked' );
-				console.log(val)
 				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
 				break;
 			case 'textarea':
