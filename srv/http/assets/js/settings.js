@@ -131,9 +131,9 @@ function switchCancel() {
 	SWreset();
 }
 function switchEnable() {
-	var values = infoVal( 'KEY' ); // [ ...values, *KEY keys  ]
+	var infoval = infoVal();
 	notifyCommon();
-	bash( [ SW.id, ...values ] );
+	bash( [ SW.id, ...Object.values( infoval ), 'KEY '+ Object.keys( infoval ).join( ' ' ) ] );
 	S[ SW.id ] = true;
 	SWreset();
 }

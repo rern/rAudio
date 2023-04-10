@@ -79,7 +79,7 @@ $( '.lanadd' ).click( function() {
 		, checkip   : [ 0, 1 ]
 		, focus     : 0
 		, ok           : () => {
-			editLANSet( infoVal(), infoVal( 'json' ).Address );
+			editLANSet( infoVal() );
 		}
 	} );
 } );
@@ -269,13 +269,14 @@ function editLAN() {
 			editReconnect( icon, S.hostname +'.local', 10 );
 		} : ''
 		, ok           : () => {
-			editLANSet( infoVal(), infoVal( 'json' ).Address );
+			editLANSet( infoVal() );
 		}
 	} );
 }
-function editLANSet( data, ip ) {
-	var icon = 'lan'
-	bash( [ 'lanedit', ...data, 'KEY '+ I.keys.join( ' ' ) ], avail => {
+function editLANSet( v ) {
+	var icon = 'lan';
+	var ip   = v.Address;
+	bash( [ 'lanedit', ...Object.values( v ), 'KEY '+ Object.keys( v ).join( ' ' ) ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );

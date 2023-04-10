@@ -888,7 +888,7 @@ function infoSetValues() {
 		}
 	} );
 }
-function infoVal( format ) {
+function infoVal( array ) {
 	var $this, type, name, val;
 	var values = [];
 	$input.each( ( i, el ) => {
@@ -929,16 +929,13 @@ function infoVal( format ) {
 			values.push( parseFloat( val ) );
 		}
 	} );
-	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array : single value as string
-	if ( format === 'array' ) return values
-	if ( format === 'KEY' ) {
-		I.keys.unshift( I.fileconf ? 'CFG' : 'KEY' );
-		values.push( I.keys.join( ' ' ) );
-		return values
-	}
+	if ( array ) return values                         // array
+	
+	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array or single value as string
+	
 	var v = {}
 	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] || '' );
-	return v // json
+	return v                                                        // json
 }
 
 // common info functions --------------------------------------------------
