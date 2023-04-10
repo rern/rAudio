@@ -716,6 +716,9 @@ hr {
 	text-align: center;
     color: var( --cw );
 }
+#infoContent .menu i {
+	width: 40px;
+}
 #infoContent pre {
 	margin: 0;
 	padding: 0 10px;
