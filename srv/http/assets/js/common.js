@@ -61,7 +61,7 @@ function bash( array, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( args0 in args0_file ) { // not common script file - spaced args: $1 ...
+	if ( args0 in args0_file ) { // not common script file - simple args > CMD.sh v1 v2 ...
 		data.filesh = bashFileArgs( args0_file[ args0 ] );
 	} else if ( page ) { // settings
 		if ( args0 === 'mount' ) {
@@ -72,12 +72,10 @@ function bash( array, callback, json ) {
 	} else { // playback
 		if ( [ 'relays', 'snapcast', 'status' ].includes( args0 ) ) {
 			data.filesh = bashFileArgs( args0 +'.sh' );
+		} else if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) {
+			data.filesh = args0 +'.sh';
 		} else {
-			if ( args0 === 'scrobble' ) {
-				data.filesh = 'scrobble.sh';
-			} else {
-				data.filesh = 'cmd.sh';
-			}
+			data.filesh = 'cmd.sh';
 		}
 	}
 	if ( args ) data.args = args;

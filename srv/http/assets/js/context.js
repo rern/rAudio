@@ -311,7 +311,7 @@ function tagEditor() {
 				} );
 				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
 				setTimeout( () => banner( 'tag blink', 'Tag Editor', 'Update Library ...' ), 3000 );
-				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
+				bash( [ 'tageditor', tag ] );
 				if ( V.list.licover ) {
 					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
 					for ( i = 0; i < 7; i++ ) {
@@ -482,11 +482,11 @@ function webRadioNew( name, url, charset ) {
 			var url     = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var dir     = $( '#lib-path .lipath' ).text();
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
 			bash( [ 'webradioadd', dir, name, url, charset ], error => {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
-			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
 		}
 	} );
 }
