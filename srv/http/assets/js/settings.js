@@ -129,6 +129,7 @@ function showContent() {
 function switchCancel() {
 	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
 	SWreset();
+	bannerHide();
 }
 function switchEnable() {
 	var infoval = infoVal();

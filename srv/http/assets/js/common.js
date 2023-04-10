@@ -66,7 +66,7 @@ function bash( array, callback, json ) {
 			if ( args0 === 'mount' ) {
 				data.filesh = 'settings/system-mount.sh';
 			} else {
-				data.filesh = bashFile( 'settings/'+ page +'.sh' );
+				data.filesh = 'settings/'+ page +'.sh';
 			}
 		}
 	} else { // playback
@@ -76,18 +76,29 @@ function bash( array, callback, json ) {
 			if ( args0 === 'scrobble' ) {
 				data.filesh = 'scrobble.sh';
 			} else {
-				data.filesh = bashFile( 'cmd.sh' );
+				data.filesh = 'cmd.sh';
 			}
 		}
 	}
 	if ( args ) data.args = args;
-	
-	if ( V.debug || V.press ) { // press: $( '#bar-top, .head' ) || $( '#infoOk' ) / $( '.switch' )
+/*
+V.debug - press: $( '#bar-top, .head' )
+	- all
+	- console.log commands
+	- active pushstream (no disconnect)
+V.press - press: $( '#infoOk' ) / $( '.switch' )
+	- each
+	- console.log commands only (NOT run)
+*/
+	if ( V.debug || V.press ) {
 		var bashcmd = data.filesh.replace( 'settings/', '' );
 		if ( data.args ) bashcmd += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
 		console.log( data );
 		console.log( bashcmd );
-		if ( V.press ) return
+		if ( V.press ) {
+			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
+			return
+		}
 	}
 	
 	$.post( 
@@ -96,13 +107,6 @@ function bash( array, callback, json ) {
 		, callback || null
 		, json || null
 	);
-}
-function bashFile( file ) {
-	if ( args.length === 1 ) {
-		file += ' '+ args[ 0 ];
-		args  = false;
-	}
-	return file
 }
 function bashFileArgs( file ) { // simple args - split by spaces + no quote + no escape
 	args.shift();
