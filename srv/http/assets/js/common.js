@@ -39,7 +39,8 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
 var args0_file  = { // script files other than common page-data.sh
-	  bluetoothcommand : 'bluetoothcommand.sh'
+	  audiocdeject     : 'audiocd.sh ejecticonclick'
+	, bluetoothcommand : 'bluetoothcommand.sh'
 	, databackup       : 'settings/system-databackup.sh'
 	, datareset        : 'settings/system-datareset.sh'
 	, pkgstatus        : 'settings/pkgstatus.sh'
@@ -48,6 +49,7 @@ var args0_file  = { // script files other than common page-data.sh
 	, restartmpd       : 'settings/player-conf.sh'
 	, scanbluetooth    : 'settings/networks-scan.sh'
 	, scanwlan         : 'settings/networks-scan.sh wlan'
+	, shareddisconnect : 'settings/system.sh shareddatadisconnect'
 }
 var args;
 
@@ -59,15 +61,13 @@ function bash( array, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( page ) { // settings
-		if ( args0 in args0_file ) { // spaced args: $1 ...
-			data.filesh = bashFileArgs( args0_file[ args0 ] );
-		} else { // multiline args: args2var > ${args[1]} ...
-			if ( args0 === 'mount' ) {
-				data.filesh = 'settings/system-mount.sh';
-			} else {
-				data.filesh = 'settings/'+ page +'.sh';
-			}
+	if ( args0 in args0_file ) { // not common script file - spaced args: $1 ...
+		data.filesh = bashFileArgs( args0_file[ args0 ] );
+	} else if ( page ) { // settings
+		if ( args0 === 'mount' ) {
+			data.filesh = 'settings/system-mount.sh';
+		} else {
+			data.filesh = 'settings/'+ page +'.sh';
 		}
 	} else { // playback
 		if ( [ 'relays', 'snapcast', 'status' ].includes( args0 ) ) {
@@ -909,6 +909,7 @@ function infoVal( array ) {
 				break;
 			case 'checkbox':
 				val = $this.prop( 'checked' );
+				console.log(val)
 				if ( val && $this.attr( 'value' ) ) val = $this.val(); // if value defined
 				break;
 			case 'textarea':
@@ -933,12 +934,12 @@ function infoVal( array ) {
 			values.push( parseFloat( val ) );
 		}
 	} );
-	if ( array ) return values                         // array
+	if ( array ) return values                                      // array
 	
 	if ( ! I.keys ) return values.length > 1 ? values : values[ 0 ] // array or single value as string
 	
 	var v = {}
-	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] || '' );
+	I.keys.forEach( ( k, i ) => v[ k ] = values[ i ] );
 	return v                                                        // json
 }
 

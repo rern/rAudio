@@ -672,7 +672,7 @@ $( '#shareddata' ).click( function() {
 			, okcolor : orange
 			, ok      : () => {
 				notifyCommon( 'Disable ...' );
-				bash( [ 'shareddatadisconnect', 'disable=true' ] );
+				bash( [ 'shareddatadisconnect', 'OFF' ] );
 			}
 		} );
 	} else {

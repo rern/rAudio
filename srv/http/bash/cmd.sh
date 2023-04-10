@@ -280,9 +280,6 @@ albumignore )
 	sed -i "/\^$artist^^$album^/ d" $dirmpd/albumbyartist
 	echo $album^^$artist >> $dirmpd/albumignore
 	;;
-audiocdeject )
-	$dirbash/audiocd.sh ejecticonclick
-	;;
 audiocdtag )
 	track=${args[1]}
 	tag=${args[2]}
@@ -1039,9 +1036,6 @@ shairportstop )
 	timestamp=$( date +%s%3N )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
 	$dirbash/status-push.sh
-	;;
-shareddatadisconnect )
-	$dirsettings/system.sh shareddatadisconnect
 	;;
 volume ) # no args = toggle mute / unmute
 	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
