@@ -572,7 +572,7 @@ $( '#backup' ).click( function() {
 		, message : 'Save all data and settings to file?'
 		, ok      : () => {
 			notifyCommon( 'Process ...' );
-			bash( [ 'databackup' ], data => {
+			bash( [ 'settings/system-databackup.sh' ], data => {
 				if ( data == 1 ) {
 					notifyCommon( 'Download ...' );
 					fetch( '/data/shm/backup.gz' )
@@ -641,7 +641,7 @@ $( '#restore' ).click( function() {
 		, ok          : () => {
 			if ( infoVal() === 'reset' ) {
 				notifyCommon( 'Reset to default ...' );
-				bash( [ 'datareset' ] );
+				bash( [ 'settings/system-datareset.sh' ] );
 			} else {
 				notifyCommon( 'Restore ...' );
 				var formdata = new FormData();

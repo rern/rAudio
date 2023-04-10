@@ -253,13 +253,13 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			var active = $( this ).hasClass( 'on' );
 			if ( active ) {
 				if ( S.snapclient ) {
-					bash( [ 'snapcast', 'stop' ] );
+					bash( [ 'snapcast.sh', 'stop' ] );
 				} else {
 					$( '#stop' ).click();
 				}
 			} else {
 				$( '#stop' ).click();
-				bash( [ 'snapcast', 'start' ], data => {
+				bash( [ 'snapcast.sh', 'start' ], data => {
 					bannerHide();
 					if ( data == -1 ) {
 						info( {
@@ -274,7 +274,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			break;
 		case 'relays':
 			$( '#stop' ).click();
-			bash( [ 'relays', S.relayson || '' ] );
+			bash( S.relayson ? [ 'relays.sh', 'OFF' ] : [ 'relays.sh' ] );
 			break;
 		case 'guide':
 			location.href = 'settings.php?p=guide';
@@ -621,7 +621,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 		, title   : 'Audio CD'
 		, oklabel : ico( 'minus-circle' ) +'Eject'
 		, okcolor : red
-		, ok      : () => bash( [ 'audiocdeject' ] )
+		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
 } );
 $( '#elapsed' ).click( function() {

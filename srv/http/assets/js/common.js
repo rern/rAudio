@@ -39,20 +39,7 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
 var args0_file  = { // script files other than common page-data.sh
-	  audiocdeject     : 'audiocd.sh ejecticonclick'
-	, bluetoothcommand : 'bluetoothcommand.sh'
-	, databackup       : 'settings/system-databackup.sh'
-	, datareset        : 'settings/system-datareset.sh'
-	, pkgstatus        : 'settings/pkgstatus.sh'
-	, playback         : 'cmd.sh'
-	, refreshdata      : 'settings/'+ page +'-data.sh'
-	, relays           : 'relays.sh'
-	, restartmpd       : 'settings/player-conf.sh'
-	, scanbluetooth    : 'settings/networks-scan.sh'
-	, scanwlan         : 'settings/networks-scan.sh wlan'
-	, shareddisconnect : 'settings/system.sh shareddatadisconnect'
-	, snapcast         : 'snapcast.sh'
-	, status           : 'status.sh'
+	  shareddisconnect : 'settings/system.sh shareddatadisconnect'
 }
 var args;
 
@@ -64,15 +51,16 @@ function bash( array, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( args0 in args0_file ) { // not common script file - simple args > CMD.sh v1 v2 ...
-		data.filesh = bashFileArgs( args0_file[ args0 ] );
-	} else if ( page ) { // settings
+	if ( args0.slice( -3 ) === '.sh' ) { // [ 'CMD.sh', v1, v2, ... ]
+		data.filesh = args.join( ' ' );
+		args = false;
+	} else if ( page ) {      // settings : [ 'CMD', v1, v2, ... ]
 		if ( args0 === 'mount' ) {
 			data.filesh = 'settings/system-mount.sh';
 		} else {
 			data.filesh = 'settings/'+ page +'.sh';
 		}
-	} else { // playback
+	} else {                  // playback : [ 'CMD', v1, v2, ... ]
 		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) {
 			data.filesh = args0 +'.sh';
 		} else {

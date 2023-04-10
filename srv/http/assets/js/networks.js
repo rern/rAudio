@@ -207,7 +207,7 @@ $( '.info' ).click( function() {
 } );
 
 function bluetoothCommand( action, mac ) {
-	bash( [ 'bluetoothcommand', action +' '+ mac ] ); // bluetoothcommand.sh action mac
+	bash( [ 'bluetoothcommand.sh', action, mac ] ); // bluetoothcommand.sh action mac
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'KEY mac' ], data => {
@@ -466,7 +466,7 @@ function renderWlan() {
 	bannerHide();
 }
 function scanBluetooth() {
-	bash( [ 'scanbluetooth' ], data => {
+	bash( [ 'settings/networks-scan.sh' ], data => {
 		if ( data ) {
 			S.listbtscan = data;
 			var htmlbt   = '';
@@ -477,7 +477,7 @@ function scanBluetooth() {
 	}, 'json' );
 }
 function scanWlan() {
-	bash( [ 'scanwlan' ], data => {
+	bash( [ 'settings/networks-scan.sh', 'wlan' ], data => {
 		if ( data ) {
 			S.listwlscan = data;
 			var htmlwl   = '';
