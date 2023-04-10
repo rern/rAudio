@@ -1100,7 +1100,7 @@ $( '.btn-cmd' ).click( function() {
 			$timeRS.setValue( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 			elapsedscrobble = S.webradio ? '' : S.elapsed || '';
-			bash( [ 'mpcprevnext', cmd, song, pllength, S.state, elapsedscrobble ] );
+			bash( [ 'mpcprevnext', cmd, elapsedscrobble ] );
 			if ( V.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )

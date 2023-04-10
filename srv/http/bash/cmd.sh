@@ -722,24 +722,15 @@ mpcplayback )
 	;;
 mpcprevnext )
 	command=${args[1]}
+	elapsed=${args[2]}
+	[[ ! $elapsed ]] && elapsed=$( getElapsed )
+	current=$( mpc status %songpos% )
+	length=$( mpc status %length% )
+	[[ $( mpc status %state% ) == playing ]] && playing=1
+	mpc -q stop
 	stopRadio
-	if [[ ${args[2]} ]]; then
-		current=$(( ${args[2]} + 1 ))
-		length=${args[3]}
-		state=${args[4]}
-		elapsed=${args[5]}
-	else
-		current=$( mpc status %songpos% )
-		length=$( mpc status %length% )
-		elapsed=$( getElapsed )
-		[[ $( mpc status %state% ) == playing ]] && playing=1
-	fi
 	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
-	touch $dirshm/prevnextseek
-	if [[ $playing ]]; then
-		mpc -q stop
-		rm -f $dirshm/prevnextseek
-	fi
+	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc -q play $pos
@@ -753,6 +744,7 @@ mpcprevnext )
 		fi
 	fi
 	if [[ $playing ]]; then
+		mpc -q play
 		[[ $( mpc | head -c 4 ) == cdda ]] && notify -blink audiocd 'Audio CD' 'Change track ...'
 	else
 		rm -f $dirshm/prevnextseek
