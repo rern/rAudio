@@ -221,8 +221,8 @@ function ico( cls, id ) {
 }
 
 // info ----------------------------------------------------------------------
-$( '#infoOverlay' ).on( 'click', '#infoIcon', function() { // usage
-	window.open( '/assets/data/info-usage.json', '_blank' );
+$( '#infoOverlay' ).press( '#infoIcon', function() { // usage
+	window.open( 'https://github.com/rern/js/blob/master/info/README.md#infojs', '_blank' );
 } );
 $( '#infoOverlay' ).on( 'click', '#infoContent', function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
