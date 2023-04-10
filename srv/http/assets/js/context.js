@@ -38,20 +38,20 @@ function addToPlaylistCommand( cmd, mpccmd, msg ) {
 	delete V.bkradio;
 	if ( S.state === 'play' && S.webradio ) sleep += 1;
 	if ( cmd.slice( -4 ) === 'play' ) sleep += 1;
-	var contextCommand = {
-		  add         : [ mpccmd,                                    'Add to Playlist' ]
-		, playnext    : [ mpccmd,                                    'Add to Playlist to play next' ]
-		, addplay     : [ mpccmd.concat( [ 'addplay', sleep ] ),     'Add to Playlist and play' ]
-		, replace     : [ mpccmd.concat(  'replace' ),               'Replace Playlist' ]
-		, replaceplay : [ mpccmd.concat( [ 'replaceplay', sleep ] ), 'Replace Playlist and play' ]
+	var cmd_title = {
+		  add         : { cmd: mpccmd,                              title: 'Add to Playlist' }
+		, playnext    : { cmd: mpccmd,                              title: 'Add to Playlist to play next' }
+		, addplay     : { cmd: [ ...mpccmd, 'addplay', sleep ],     title: 'Add to Playlist and play' }
+		, replace     : { cmd: [ ...mpccmd, 'replace' ],            title: 'Replace Playlist' }
+		, replaceplay : { cmd: [ ...mpccmd, 'replaceplay', sleep ], title: 'Replace Playlist and play' }
 	}
-	var cmd_title = contextCommand[ cmd ];
-	var command = cmd_title[ 0 ];
-	var title   = cmd_title[ 1 ];
+	var command = cmd_title[ cmd ].cmd;
+	var title   = cmd_title[ cmd ].title;
 	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).click();
 	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).click();
-	bash( command );
-	banner( 'playlist', title, msg );
+	var command = cmd_title[ cmd ];
+	bash( command.cmd );
+	banner( 'playlist', command.title, msg );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
