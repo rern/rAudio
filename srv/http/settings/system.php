@@ -79,6 +79,7 @@ htmlHead( [ //////////////////////////////////
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
+
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
@@ -135,7 +136,10 @@ EOF
 		, 'sublabel' => 'bluetoothctl'
 		, 'id'       => 'bluetooth'
 		, 'status'   => true
-		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit - Only for Bluetooth receivers with fixed sampling'
+		, 'help'     => <<< EOF
+{$Fi( 'gear btn' )}
+■ Sampling 16bit - Bluetooth receivers with fixed sampling
+EOF
 	]
 	, [
 		  'label'    => 'HDMI Hotplug'
@@ -182,11 +186,12 @@ $body = [
 			<select id="i2smodule"></select>
 			<i id="setting-i2smodule" class="i-gear setting"></i>
 		</div>
-		<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
-
-	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-	 · HAT with EEPROM could be automatically detected.
-	 · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+		<span class="helpblock hide"><!--
+-->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+ · HAT with EEPROM could be automatically detected.
+ · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+{$Fi( 'gear btn' )}
+Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
 	</div>
 </div>
@@ -208,12 +213,12 @@ EOF
 		, 'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
+{$Fi( 'gear btn' )}
  · On - Fixed to pin <code>5</code>
  · Off - Default: pin <code>5</code> (single pin on+off)
- 
-If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
- · Off - Default: pin <code>7</code>
- · Reserved - Default: pin <code>29</code>
+ · If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
+	 · Off - Default: pin <code>7</code>
+	 · Reserved - Default: pin <code>29</code>
 EOF
 	]
 	, [
@@ -277,7 +282,10 @@ EOF
 		, 'status'   => true
 		, 'input'    => '<select id="timezone"></select>'
 		, 'setting'  => 'custom'
-		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
+		, 'help'     => <<< EOF
+{$Fi( 'gear btn' )}
+Servers for time sync and package mirror
+EOF
 	]
 	, [
 		  'label'    => 'Sound Profile'
@@ -286,7 +294,7 @@ EOF
 		, 'status'   => true
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
-
+{$Fi( 'gear btn' )}
 Swapiness (default: <code>60</code>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
@@ -335,7 +343,7 @@ Connect shared data as client for:
  · Library database
  · Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
  · Display order of Library home
-	
+
 Note:
  · SSH password must be default.
  · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home

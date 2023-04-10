@@ -506,11 +506,11 @@ $( '#ledcalc' ).click( function() {
 } );
 $( '#hostname' ).on( 'mousedown touchdown', function() {
 	SW.id     = 'hostname';
-	var icon  = 'system';
-	var title = 'Player Name';
+	SW.icon  = 'system';
+	SW.title = 'Player Name';
 	info( {
-		  icon         : icon
-		, title        : title
+		  icon         : SW.icon
+		, title        : SW.title
 		, textlabel    : 'Name'
 		, focus        : 0
 		, values       : { hostname: S.hostname }
@@ -957,10 +957,10 @@ function infoMountTab( protocol ) {
 }
 function infoNtpMirror() {
 	SW.id     = 'ntpmirror';
-	var title = 'Servers';
+	SW.title = 'Servers';
 	info( {
 		  icon         : SW.icon
-		, title        : title
+		, title        : SW.title
 		, textlabel    : 'NTP'
 		, selectlabel  : S.rpi01 ? '' : 'Mirror'
 		, select       : S.rpi01 ? '' : V.htmlmirror
@@ -1069,16 +1069,16 @@ function infoRelaysCmd() {
 	[ 'on', 'off', 'ond', 'offd' ].forEach( k => v[ k ] = [] );
 	var pL  = Object.values( name ).filter( Boolean ).length;
 	for ( i = 0; i < pL; i++ ) {
-		var pon  = pin[ 'on'+ i ];
-		var poff = pin[ 'off'+ i ];
-		var pdly = i < pL -1;
+		var pon    = pin[ 'on'+ i ];
+		var poff   = pin[ 'off'+ i ];
+		var pdelay = i < pL -1;
 		if ( name[ pon ] ) {
 			v.on.push( pon );
-			if ( pdly ) v.ond.push( pin[ 'ond'+ i ] );
+			if ( pdelay ) v.ond.push( pin[ 'ond'+ i ] );
 		}
 		if ( name[ poff ] ) {
 			v.off.push( poff );
-			if ( pdly ) v.offd.push( pin[ 'offd'+ i ] );
+			if ( pdelay ) v.offd.push( pin[ 'offd'+ i ] );
 		}
 	}
 	var values = [];

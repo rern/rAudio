@@ -50,8 +50,6 @@ EOF
 		, 'id'       => 'spotifyd'
 		, 'status'   => true
 		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Reset client keys
-
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
@@ -70,7 +68,6 @@ To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bl
 	· Spotify Account: <code>(email)</code>
 	
 Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
-
 EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
@@ -189,8 +186,8 @@ EOF
 $browser - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
-	· Also by timer in {$Fi( 'gear btn' )}
 	· Backlight still on - no energy saved
+	· Sleep timer in {$Fi( 'gear btn' )}
 
 Note: HDMI Hotplug
  · Disabled - Display must be connected before boot.

@@ -9,17 +9,21 @@ $dirsystem    = '/srv/http/data/system/';
 switch( $_POST[ 'cmd' ] ) {
 
 case 'bash':
-	$args      = $_POST[ 'args' ];
+	$filesh    = $_POST[ 'filesh' ];
+	$args      = $_POST[ 'args' ] ?? '';
 	$json      = $_POST[ 'json' ] ?? '';
-	$cmd       = array_shift( $args );                                 // bash script file = 1st element
-	if ( $json ) {                                                     // save json
+	if ( $json ) {
 		$jsonstring = json_encode( json_decode( $json ), JSON_PRETTY_PRINT );
-		file_put_contents( $dirsystem.$args[ 0 ].'.json', $jsonstring );
+		file_put_contents( $dirsystem.$args[ 0 ].'.json', $jsonstring );   // save json
 	}
-	$multiline = implode( "\n", $args );                               // array to multiline
-	$multiline = escape( $multiline );                                 // escape multiline
-	$result    = shell_exec( $sudobash.$cmd.' "'.$multiline.'"' );     // multiline > bash
-	echo rtrim( $result );                                             // bash output
+	if ( $args ) {
+		$multiline = implode( "\n", $args );                               // array to multiline
+		$multiline = escape( $multiline );                                 // escape multiline
+		$result    = shell_exec( $sudobash.$filesh.' "'.$multiline.'"' );  // multiline > bash
+	} else {
+		$result    = shell_exec( $sudobash.$filesh );
+	}
+	echo rtrim( $result );
 	break;
 case 'datarestore':
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );

@@ -132,7 +132,7 @@ case 'home':
 		}
 	}
 	$counts = json_decode( file_get_contents( '/srv/http/data/mpd/counts' ) );
-	$order  = file_exists( '/srv/http/data/system/order' ) ? json_decode( file_get_contents( '/srv/http/data/system/order' ) ) : false;
+	$order  = file_exists( '/srv/http/data/system/order.json' ) ? json_decode( file_get_contents( '/srv/http/data/system/order.json' ) ) : false;
 	echo json_encode( [
 		  'html'   => $htmlmode
 		, 'counts' => $counts
@@ -141,7 +141,7 @@ case 'home':
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
-	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display' ) ) $filemode.= 'byartist';
+	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display.json' ) ) $filemode.= 'byartist';
 	$lists    = file( $filemode, FILE_IGNORE_NEW_LINES );
 	htmlList( $lists );
 	break;
@@ -521,7 +521,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	$file0      = $each0->file;
 	$ext        = pathinfo( $file0, PATHINFO_EXTENSION );
 	
-	$hidecover  = exec( 'grep "hidecover.*true" /srv/http/data/system/display' );
+	$hidecover  = exec( 'grep "hidecover.*true" /srv/http/data/system/display.json' );
 	$searchmode = $filemode === 'search';
 	$cuefile    = preg_replace( "/\.[^.]+$/", '.cue', $file0 );
 	if ( file_exists( '/mnt/MPD/'.$cuefile ) ) {

@@ -67,7 +67,10 @@ EOF
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
-		, 'help'        => i( 'volume btn' ).' Mixer device volume control'
+		, 'help'        => <<< EOF
+{$Fi( 'volume btn' )}
+Mixer device volume control
+EOF
 	]
 	, [
 		  'label'   => 'Volume Control'
@@ -147,7 +150,8 @@ EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-{$Fi( 'gear btn' )}  ■ Gain control - Mixer device:
+{$Fi( 'gear btn' )}
+■ Gain control - Mixer device:
  • <code>replay_gain_handler "mixer"</code>
  • Available when Volume Control = MPD software
 EOF
@@ -185,7 +189,7 @@ EOF
 		, 'setting'  => false
 		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
-<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for audio filetypes: {$Fi( 'chevron-down bl filetype' )}
+<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
 <pre id="prefiletype" class="hide"></pre>
 Note: Should be disabled for faster Library update if not used.
 EOF
