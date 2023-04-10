@@ -23,14 +23,14 @@ volumeGetBt() {
 	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
 }
 
-case $cmd in
+case $CMD in
 
 audiooutput )
 	echo $asoundcard > $dirsystem/asoundcard
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
-	[[ $ON ]] && linkConf || rm $dirmpdconf/$cmd.conf
+	[[ $ON ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	systemctl restart mpd
 	pushRefresh
 	;;
@@ -48,16 +48,16 @@ btoutputall )
 	;;
 buffer | outputbuffer )
 	if [[ $ON ]]; then
-		if [[ $cmd == buffer ]]; then
+		if [[ $CMD == buffer ]]; then
 			data='audio_buffer_size  "'$audio_buffer_size'"'
 			[[ $audio_buffer_size != 4096 ]] && link=1
 		else
 			data='max_output_buffer_size  "'$max_output_buffer_size'"'
 			[[ $max_output_buffer_size != 8192 ]] && link=1
 		fi
-		echo "$data" > $dirmpdconf/conf/$cmd.conf
+		echo "$data" > $dirmpdconf/conf/$CMD.conf
 	fi
-	[[ $link ]] && linkConf || rm $dirmpdconf/$cmd.conf
+	[[ $link ]] && linkConf || rm $dirmpdconf/$CMD.conf
 	$dirsettings/player-conf.sh
 	;;
 crossfade )
@@ -180,7 +180,7 @@ soxr )
 		echo "\
 resampler {\
 $data
-}" > $dirmpdconf/conf/$cmd.conf
+}" > $dirmpdconf/conf/$CMD.conf
 		linkConf
 		echo $quality > $dirsystem/soxr
 	fi

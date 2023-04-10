@@ -5,7 +5,7 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 
 args2var "$1"
 
-configTxt() { # each $cmd removes each own lines > reappends if enable or changed
+configTxt() { # each $CMD removes each own lines > reappends if enable or changed
 	local name tft I2Clcdchar chip SPImpdoled I2Clcdchar I2Cmpdoled module list
 	name=$1
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
@@ -13,7 +13,7 @@ configTxt() { # each $cmd removes each own lines > reappends if enable or change
 		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
 		grep -Ev '^#|^\s*$' $filemodule 2> /dev/null | sort -u > /tmp/raspberrypi.conf
 	fi
-	[[ ! $config ]] && config=$( < /boot/config.txt ) # if no config set from $cmd
+	[[ ! $config ]] && config=$( < /boot/config.txt ) # if no config set from $CMD
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
 		[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
@@ -124,7 +124,7 @@ timezoneAuto() {
 	[[ $timezone ]] && timedatectl set-timezone $timezone
 }
 
-case $cmd in
+case $CMD in
 
 audio )
 	config=$( grep -v dtparam=audio=on /boot/config.txt )
@@ -716,7 +716,7 @@ usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	[[ -e $dirshm/audiocd ]] && exit
 	
-	if [[ $cmd == usbconnect ]]; then
+	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
 		[[ ! $name ]] && name='USB Drive'

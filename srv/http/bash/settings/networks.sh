@@ -47,7 +47,7 @@ wlanDevice() {
 	fi
 }
 
-case $cmd in
+case $CMD in
 
 bluetoothinfo )
 	info=$( bluetoothctl info $mac )

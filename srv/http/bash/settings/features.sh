@@ -52,10 +52,10 @@ spotifyReset() {
 	pushRefresh
 }
 
-case $cmd in
+case $CMD in
 
 autoplay|lyricsembedded|scrobble )
-	[[ $ON ]] && touch $dirsystem/$cmd || rm -f $dirsystem/$cmd
+	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
 	pushRefresh
 	;;
 brightness )
@@ -350,10 +350,10 @@ sk=$( jq -r .session.key <<< $response )
 	;;
 shairport-sync|spotifyd )
 	if [[ $ON ]]; then
-		featureSet $cmd
+		featureSet $CMD
 	else
 		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
-		systemctl disable --now $cmd
+		systemctl disable --now $CMD
 	fi
 	pushRefresh
 	;;

@@ -271,7 +271,7 @@ webRadioSampling() {
 	rm /tmp/webradio
 }
 
-case $cmd in
+case $CMD in
 
 albumignore )
 	album=${args[1]}
@@ -566,20 +566,20 @@ librandom )
 lyrics )
 	artist=${args[1]}
 	title=${args[2]}
-	cmd=${args[3]}
+	command=${args[3]}
 	data=${args[4]}
 	name="$artist - $title"
 	name=${name//\/}
 	lyricsfile="$dirlyrics/${name,,}.txt"
-	if [[ $cmd == save ]]; then
+	if [[ $command == save ]]; then
 		echo -e "$data" > "$lyricsfile"
-	elif [[ $cmd == delete ]]; then
+	elif [[ $command == delete ]]; then
 		rm -f "$lyricsfile"
 	elif [[ -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
 		if [[ -e $dirsystem/lyricsembedded ]]; then
-			file=$cmd
+			file=$command
 			lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
@@ -600,11 +600,11 @@ lyrics )
 	;;
 mpcadd )
 	item=${args[1]}
-	cmd=${args[2]}
+	command=${args[2]}
 	delay=${args[3]}
-	plAddPosition $cmd
+	plAddPosition $command
 	mpc -q add "$item"
-	plAddPlay $cmd $delay
+	plAddPlay $command $delay
 	pushstreamPlaylist add
 	;;
 mpcaddplaynext )
@@ -630,33 +630,33 @@ mpcfindadd )
 	if [[ ${args[1]} != multi ]]; then
 		type=${args[1]}
 		string=${args[2]}
-		cmd=${args[3]}
-		plAddPosition $cmd
+		command=${args[3]}
+		plAddPosition $command
 		mpc -q findadd $type "$string"
 	else
 		type=${args[2]}
 		string=${args[3]}
 		type2=${args[4]}
 		string2=${args[5]}
-		cmd=${args[6]}
-		plAddPosition $cmd
+		command=${args[6]}
+		plAddPosition $command
 		mpc -q findadd $type "$string" $type2 "$string2"
 	fi
-	plAddPlay $cmd $delay
+	plAddPlay $command $delay
 	;;
 mpcload )
 	playlist=${args[1]}
-	cmd=${args[2]}
+	command=${args[2]}
 	delay=${args[3]}
-	plAddPosition $cmd
+	plAddPosition $command
 	mpc -q load "$playlist"
-	plAddPlay $cmd $delay
+	plAddPlay $command $delay
 	;;
 mpcls )
 	dir=${args[1]}
-	cmd=${args[2]}
+	command=${args[2]}
 	delay=${args[3]}
-	plAddPosition $cmd
+	plAddPosition $command
 	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$dir" | mpc -q add &> /dev/null
@@ -665,7 +665,7 @@ mpcls )
 			mpc -q load "$cuefile"
 		done
 	fi
-	plAddPlay $cmd $delay
+	plAddPlay $command $delay
 	;;
 mpcmove )
 	mpc -q move ${args[1]} ${args[2]}

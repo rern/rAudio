@@ -25,7 +25,7 @@ fi
 #   ..."
 #
 # convert multiline to variables:
-#	cmd=command
+#	${args[1]}=CMD
 #	${args[1]}=v1
 #	${args[2]}=v2
 #
@@ -35,7 +35,7 @@ fi
 args2var() {
 	local argslast KEY_CFG_OFF CFG i keys kL k v conf
 	readarray -t args <<< $1
-	cmd=${args[0]}
+	CMD=${args[0]}
 	argslast=${args[@]: -1}
 	KEY_CFG_OFF=${argslast:0:3}
 	[[ $KEY_CFG_OFF == OFF ]] && TF=false && return
@@ -60,7 +60,7 @@ args2var() {
 			conf+=$k'='$v$'\n'
 		fi
 	done
-	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$cmd.conf
+	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
