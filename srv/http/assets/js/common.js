@@ -46,10 +46,13 @@ var args0_file  = { // script files other than common page-data.sh
 	, pkgstatus        : 'settings/pkgstatus.sh'
 	, playback         : 'cmd.sh'
 	, refreshdata      : 'settings/'+ page +'-data.sh'
+	, relays           : 'relays.sh'
 	, restartmpd       : 'settings/player-conf.sh'
 	, scanbluetooth    : 'settings/networks-scan.sh'
 	, scanwlan         : 'settings/networks-scan.sh wlan'
 	, shareddisconnect : 'settings/system.sh shareddatadisconnect'
+	, snapcast         : 'snapcast.sh'
+	, status           : 'status.sh'
 }
 var args;
 
@@ -70,9 +73,7 @@ function bash( array, callback, json ) {
 			data.filesh = 'settings/'+ page +'.sh';
 		}
 	} else { // playback
-		if ( [ 'relays', 'snapcast', 'status' ].includes( args0 ) ) {
-			data.filesh = bashFileArgs( args0 +'.sh' );
-		} else if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) {
+		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) {
 			data.filesh = args0 +'.sh';
 		} else {
 			data.filesh = 'cmd.sh';

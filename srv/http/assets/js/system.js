@@ -921,9 +921,8 @@ function infoMount( values ) {
 			var infoval = infoVal();
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
-			var cmd = [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ];
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( cmd, error => {
+			bash( [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ], error => {
 				if ( error ) {
 					info( {
 						  icon    : icon
