@@ -1,11 +1,12 @@
 #!/bin/bash
 
-readarray -t args <<< $1
-file=${args[0]}
-album=${args[1]}
-cue=${args[2]}
+args2var "$1"
+
+file=${args[1]}
+album=${args[2]}
+cue=${args[3]}
 path="/mnt/MPD/$file"
-args=( "${args[@]:3}" )
+args=( "${args[@]:4}" )
 keys=( album albumartist artist composer conductor genre date )
 
 if [[ $cue == false ]]; then
