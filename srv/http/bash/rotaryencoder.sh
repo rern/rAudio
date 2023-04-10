@@ -6,8 +6,7 @@ card=$( < /srv/http/data/system/asoundcard )
 control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
 volume() {
 	/srv/http/bash/cmd.sh "volumeupdown
-KEY
-updn card control
+KEY updn card control
 $1
 $card
 $control"

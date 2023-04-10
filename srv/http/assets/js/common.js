@@ -16,7 +16,7 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-Avoid \" \` in js values for bash: 1 line for 1 argument
+Avoid escape \" \` in js values for bash > 1 line for 1 argument
 
 bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'OFF' ] );
                  accessed values by ${args[1]}  [[ $argslast == OFF ]] && enable= || enable=true
@@ -35,7 +35,7 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 - bash       --- common.sh - args2var
 	- convert to array > assign values
 		- No 'KEY'   - ${args[1]}=v1; ${args[2]}=v2; ...
-		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( KEY k1 k2 ... ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
+		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( 'KEY k1 k2 ...' ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
 var args0_file  = { // script files other than common page-data.sh
