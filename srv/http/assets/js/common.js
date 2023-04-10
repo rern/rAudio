@@ -38,13 +38,7 @@ bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $
 		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( 'KEY k1 k2 ...' ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
 			- save to $dirsystem/$CMD.conf if 'CFG' set
 */
-var args0_file  = { // script files other than common page-data.sh
-	  shareddisconnect : 'settings/system.sh shareddatadisconnect'
-}
-var args;
-
-function bash( array, callback, json ) {
-	args = array;
+function bash( args, callback, json ) {
 	var data = { cmd: 'bash' }
 	if ( 'json' in args ) {
 		data.json = JSON.stringify( args.json );
@@ -88,12 +82,6 @@ V.press - press: $( '#infoOk' ) / $( '.switch' )
 		, callback || null
 		, json || null
 	);
-}
-function bashFileArgs( file ) { // simple args - split by spaces + no quote + no escape
-	args.shift();
-	if ( args.length ) file += ' '+ args.join( ' ' );
-	args = false;
-	return file
 }
 
 // ----------------------------------------------------------------------
