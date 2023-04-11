@@ -5,7 +5,7 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
-# 20230410
+# 20230413
 if [[ ! -e $dirsystem/relays ]]; then
 	rm -f $dirsystem/relays.conf
 elif grep -q ^pin $dirsystem/relays.conf; then
@@ -118,11 +118,6 @@ if [[ -e /boot/kernel7.img ]]; then
 	! grep -q hdmi_force_hotplug=1 /boot/config.txt && echo hdmi_force_hotplug=1 >> /boot/config.txt
 fi
 
-# 20230212
-if [[ -e /boot/kernel8.img && ! $( ls /etc/systemd/network/et* 2> /dev/null ) ]]; then
-	sed 's/=en/=eth/' /etc/systemd/network/en.network > /etc/systemd/network/eth.network
-fi
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -135,7 +130,7 @@ hash=?v=$( date +%s )
 sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 
-# 20230330
+# 20230413
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
 
 file=$dirsystem/multiraudio.conf
