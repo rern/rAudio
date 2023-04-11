@@ -6,7 +6,7 @@ alias=r1
 [[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230410
-if [[ -e $dirsystem/relays ]]; then
+if [[ -e $dirsystem/relays ]] && grep -q ^pin $dirsystem/relays.conf; then
 	. $dirsystem/relays.conf
 	data="\
 on='${on[@]}'
