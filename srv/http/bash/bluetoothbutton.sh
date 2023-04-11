@@ -7,7 +7,7 @@ mac=$( bluetoothctl show \
 		| cut -d' ' -f2 )
 event=$( sed -n "/Phys=${mac,,}/,/Handlers=/ {/Handlers=/ {s/^.*=//; p}}" /proc/bus/input/devices | awk '{print $NF}' ) # /proc/... contains trailing space
 cmdsh=/srv/http/bash/cmd.sh
-mixer=$( < /srv/http/data/shm/btreceiver )
+control=$( < /srv/http/data/shm/btreceiver )
 
 # line='Event: time 1678155098.191722, type 1 (EV_KEY), code 200 (KEY_XXXXXX), value 1'
 evtest /dev/input/$event | while read line; do
@@ -19,12 +19,7 @@ evtest /dev/input/$event | while read line; do
 		play|pause ) $cmdsh mpcplayback;;
 		stop )       $cmdsh mpcplayback$'\n'stop;;
 		prev|next )  $cmdsh mpcprevnext$'\n'$key;;
-		volumeup|volumedown ) 
-			[[ $key == volumeup ]] && updn=+ || updn=-
-			$cmdsh "volumeupdown
-KEY updn card control
-$updn
-
-$mixer";;
+		volumeup )   amixer -MqD bluealsa sset "$control" 1%+ 2> /dev/null;;
+		volumedown ) amixer -MqD bluealsa sset "$control" 1%- 2> /dev/null;;
 	esac
 done

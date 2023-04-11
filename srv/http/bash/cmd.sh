@@ -3,7 +3,6 @@
 . /srv/http/bash/common.sh
 dirimg=/srv/http/assets/img
 
-# convert each line to each args
 args2var "$1"
 
 equalizerAmixer() { # sudo - mixer equal is user dependent
@@ -176,8 +175,7 @@ volumeGet() {
 	fi
 }
 volumeGetBt() {
-	local control val
-	control=$( < $dirshm/btreceiver )
+	local val
 	for i in {1..5}; do # takes some seconds to be ready
 		val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
 		[[ $val ]] && echo $val && break
