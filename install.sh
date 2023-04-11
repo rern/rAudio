@@ -6,7 +6,9 @@ alias=r1
 [[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230410
-if [[ -e $dirsystem/relays ]] && grep -q ^pin $dirsystem/relays.conf; then
+if [[ ! -e $dirsystem/relays ]]; then
+	rm -f $dirsystem/relays.conf
+elif grep -q ^pin $dirsystem/relays.conf; then
 	. $dirsystem/relays.conf
 	data="\
 on='${on[@]}'
@@ -33,8 +35,6 @@ timer=$timer"
 orderon="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderon )'"
 orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
 	echo "$data" > $dirsystem/relays.conf
-else
-	rm -f $dirsystem/relays.conf
 fi
 
 for file in display order; do
