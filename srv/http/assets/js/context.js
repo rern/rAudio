@@ -194,10 +194,10 @@ function tagEditor() {
 	var file   = V.list.path;
 	var dir    = dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
-	if ( !V.playlist && V.list.licover ) format = format.slice( 0, -2 );
+	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
 		  query  : 'track'
-		, file   : V.list.path
+		, file   : file
 		, format : format
 	}
 	list( query, function( values ) {
