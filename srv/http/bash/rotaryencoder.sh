@@ -1,16 +1,18 @@
 #!/bin/bash
 
-. /srv/http/data/system/rotaryencoder.conf
+. /srv/http/bash/common.sh
 
-if [[ -e /srv/http/data/shm/btreceiver ]]; then
-	control=$( < /srv/http/data/shm/btreceiver )
+. $dirsystem/rotaryencoder.conf
+
+if [[ -e $dirshm/btreceiver ]]; then
+	control=$( < $dirshm/btreceiver )
 else
-	card=$( < /srv/http/data/system/asoundcard )
-	control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
+	card=$( < $dirsystem/asoundcard )
+	control=$( cat $dirshm/amixercontrol 2> /dev/null )
 fi
 
 volume() {
-	/srv/http/bash/cmd.sh "volumeupdown
+	$dirbash/cmd.sh "volumeupdown
 KEY updn card control
 $1
 $card
@@ -22,7 +24,7 @@ $control"
 sleep 1
 devinputbutton=$( realpath /dev/input/by-path/*button* )
 evtest $devinputbutton | while read line; do
-	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && /srv/http/bash/cmd.sh mpcplayback
+	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
 /opt/vc/bin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
