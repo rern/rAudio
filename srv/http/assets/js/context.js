@@ -233,6 +233,9 @@ function tagEditor() {
 			, values       : values
 			, checkchanged : true
 			, beforeshow   : () => {
+				$( '#infoContent img' ).on( 'error', function() {
+					imageOnError( this );
+				} );
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
 				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
