@@ -126,9 +126,6 @@ curl -sSfLO $installurl
 [[ $? != 0 ]] && echo '<a class="cwbr"> ! </a> '$label script download failed. && exit
 
 chmod 755 $installfile
-cmd;
-$uninstall = <<<cmd
-/usr/bin/sudo /usr/local/bin/uninstall_$alias.sh
 EOF;
 
 if ( $alias === 'albumthumbnail' ) {
@@ -136,12 +133,11 @@ if ( $alias === 'albumthumbnail' ) {
 	if ( $path ) $commandtxt.= ' "'.$path.'"';
 	$command    = $sudosettings.$commandtxt;
 } else if ( $label === 'Uninstall' ) {
-	$command    = $uninstall;
-	$commandtxt = "uninstall_$alias.sh";
+	$command    = "uninstall_$alias.sh";
+	$commandtxt = $command;
 } else if ( $label === 'Update' && $uninstall ) {
 	$command    = <<< EOF
 $getinstall
-$uninstall
 /usr/bin/sudo ./$installfile "$options"
 EOF;
 	$commandtxt = <<< EOF

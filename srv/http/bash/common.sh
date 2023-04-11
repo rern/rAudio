@@ -142,8 +142,7 @@ data2json() {
 	[[ $2 ]] && pushstream refresh "$json" || echo "$json"
 }
 dirPermissions() {
-	chown -R root:root /srv
-	chown -R http:http $dirdata
+	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R u+x $dirbash /srv/http/settings/camillagui/{backend,main.py}
