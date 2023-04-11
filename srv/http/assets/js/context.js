@@ -204,11 +204,6 @@ function tagEditor() {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
-			if ( V.playlist && ! values[ i ] ) {
-				delete values[ i ];
-				return
-			}
-			
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
@@ -217,11 +212,10 @@ function tagEditor() {
 		} else {
 			var $img =  V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
-			values   = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div>'+ ico( 'folder' ) + file;
+					  +'<div>'+ ico( 'folder' ) + file;
 		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
 		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
@@ -302,26 +296,13 @@ function tagEditor() {
 			}
 			, okno         : V.playlist
 			, ok           : V.playlist ? '' : () => {
-				var tag       = [ 'cmd-tageditor.sh', file, V.list.licover, cue ];
-				var newvalues = infoVal();
-				var val;
-				newvalues.forEach( ( v, i ) => {
-					val = ( v === values[ i ] ) ? '' : ( v || -1 );
-					tag.push( val );
+				var infoval  = infoVal();
+				$.each( infoval, ( k, v ) => {
+					if ( values[ k ] === v ) delete infoval[ k ];
 				} );
-				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
-				setTimeout( () => banner( 'tag blink', 'Tag Editor', 'Update Library ...' ), 3000 );
-				bash( [ 'tageditor', tag ] );
-				if ( V.list.licover ) {
-					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
-					for ( i = 0; i < 7; i++ ) {
-						var v = newvalues[ i ];
-						if ( v !== '*' ) $( '.li'+ tags[ i ] ).text( v );
-					}
-				} else {
-					V.list.li.find( '.li1' ).text( newvalues[ 7 ] );
-					V.list.li.find( '.track' ).text( newvalues[ 8 ] );
-				}
+				infoval.file = file;
+				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
+				bash( [ 'tageditor', ...Object.values( infoval ), 'KEY '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );

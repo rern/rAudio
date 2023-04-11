@@ -262,7 +262,10 @@ case 'track': // for tag editor
 		$lists = exec( 'mpc ls -f "'.$format.'" "'.$file.'"' );
 		$array = explode( '^^', $lists );
 	}
-	echo json_encode( $array );
+	$tag = [];
+	$fL  = count( $f );
+	for ( $i = 0; $i < $fL; $i++ ) $tag[ $f[ $i ] ] = $array[ $i ];
+	echo json_encode( $tag, JSON_NUMERIC_CHECK );
 	break;
 }
 

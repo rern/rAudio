@@ -1,64 +1,47 @@
 #!/bin/bash
 
+. /srv/http/bash/common.sh
+
 args2var "$1"
 
-file=${args[1]}
-album=${args[2]}
-cue=${args[3]}
 path="/mnt/MPD/$file"
-args=( "${args[@]:4}" )
-keys=( album albumartist artist composer conductor genre date )
+argslast=${args[@]: -1} # KEY album albumartist ... file - omit unchanged
+[[ -f $path ]] && istrack=1
 
-if [[ $cue == false ]]; then
-	if [[ $album == false ]]; then
-		keys+=( title track )
-		for i in {0..8}; do
-			val=$( stringEscape ${args[i]} )
-			[[ ! $val ]] && continue
-			
-			[[ $val == -1 ]] && val=
-			kid3-cli -c "set ${keys[$i]} \"$val\"" "$path"
-		done
-		dir=$( dirname "$file" )
-	else
-		for i in {0..6}; do
-			val=$( stringEscape ${args[i]} )
-			[[ ! $val ]] && continue
-			
-			[[ $val == -1 ]] && val=
-			kid3-cli -c "set ${keys[$i]} \"$val\"" "$path/"*.*
-		done
-		dir=$file
-	fi
+if [[ $file != *.cue ]]; then
+	keys=( ${argslast:4:-5} )
+	for k in "${keys[@]}"; do
+		v=${!k}
+		[[ $v == '*' ]] && continue
+		
+		[[ $v ]] && v=$( stringEscape $v )
+		[[ $istrack ]] && kid3-cli -c "set $k \"$v\"" "$path" || kid3-cli -c "set $k \"$v\"" "$path/"*.*
+	done
+	[[ $istrack ]] && dirupdate=$( dirname "$file" ) || dirupdate=$file
 else
-	if [[ $album == false ]]; then
-		sed -i -E '/^\s+TRACK '${args[2]}'/ {
-n; s/^(\s+TITLE).*/\1 "'${args[1]}'"/
-n; s/^(\s+PERFORMER).*/\1 "'${args[0]}'"/
+	if [[ $istrack ]]; then
+		sed -i -E '/^\s+TRACK '$track'/ {
+n; s/^(\s+TITLE).*/\1 "'$title'"/
+n; s/^(\s+PERFORMER).*/\1 "'$artist'"/
 }
 ' "$path"
 	else
-		lines=( 'TITLE' 'PERFORMER' '' 'REM COMPOSER' 'REM CONDUCTOR' 'REM DATE' 'REM GENRE' )
-		for i in {0..6}; do
-			val=${args[$i]}
-			[[ ! $val ]] && continue
-			
-			[[ ${lines[$i]} ]] && sed -i "/^${lines[$i]}/ d" "$path"
-			[[ $val == -1 ]] && continue
-			
-			case $i in
-				0 ) sed -i "1 i\TITLE \"$val\"" "$path";;
-				1 ) sed -i "1 i\PERFORMER \"$val\"" "$path";;
-				2 ) sed -i -E 's/^(\s+PERFORMER).*/\1 "'$val'"/' "$path";;
-				3 ) sed -i "1 a\REM COMPOSER \"$val\"" "$path";;
-				4 ) sed -i "1 a\REM CONDUCTOR \"$val\"" "$path";;
-				5 ) sed -i "1 a\REM DATE \"$val\"" "$path";;
-				6 ) sed -i "1 a\REM GENRE \"$val\"" "$path";;
-			esac
+		[[ $album ]]       && data="\
+TITLE $album"
+		[[ $albumartist ]] && data+="
+PERFORMER $albumartist"
+		for k in composer conductor genre date; do
+			data+="
+REM ${k^^} ${!composer}"
 		done
+		data+="
+$( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$artist'/' "$path" )"
+		echo "$data" > "$path"
 	fi
+	dirupdate=$( dirname "$file" )
 fi
 
-curl -s -X POST http://127.0.0.1/pub?id=mpdupdate -d '{"type":"mpd"}'
-touch /srv/http/data/mpd/updating
-mpc update "$dir"
+touch $dirmpd/updating
+mpc update "$dirupdate"
+pushstream mpdupdate '{"type":"mpd"}'
+notify 'library blink' 'Library Database' 'Update ...'
