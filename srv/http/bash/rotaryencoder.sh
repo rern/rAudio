@@ -2,8 +2,13 @@
 
 . /srv/http/data/system/rotaryencoder.conf
 
-card=$( < /srv/http/data/system/asoundcard )
-control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
+if [[ -e /srv/http/data/shm/btreceiver ]]; then
+	control=$( < /srv/http/data/shm/btreceiver )
+else
+	card=$( < /srv/http/data/system/asoundcard )
+	control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
+fi
+
 volume() {
 	/srv/http/bash/cmd.sh "volumeupdown
 KEY updn card control
