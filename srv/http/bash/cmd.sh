@@ -817,7 +817,7 @@ mpcupdate )
 multiraudiolist )
 	echo '{
   "current" : "'$( ipAddress )'"
-, "list"    : '$( < $dirsystem/multiraudio.conf )'
+, "list"    : '$( < $dirsystem/multiraudio.json )'
 }'
 	;;
 order )
