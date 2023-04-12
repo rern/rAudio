@@ -153,7 +153,14 @@ urldecode() { # for webradio url to filename
 }
 volumeGet() {
 	local mixersoftware card control
-	[[ -e $dirshm/btreceiver ]] && volumeGetBt && return
+	if [[ -e $dirshm/btreceiver ]]; then
+		for i in {1..5}; do # takes some seconds to be ready
+			vol=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
+			[[ $vol ]] && echo $vol && break
+			sleep 1
+		done
+		return
+	fi
 	
 	[[ -e $dirshm/nosound ]] && echo -1 && return
 	
@@ -173,14 +180,6 @@ volumeGet() {
 			amixer -Mc $card sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
 		fi
 	fi
-}
-volumeGetBt() {
-	local val
-	for i in {1..5}; do # takes some seconds to be ready
-		val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-		[[ $val ]] && echo $val && break
-		sleep 1
-	done
 }
 volumeSet() {
 	local current target card control diff values
