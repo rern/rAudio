@@ -16,14 +16,14 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-Avoid escape \" \` in js values for bash > 1 line for 1 argument
-
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ..., *'OFF' ] );
-                 accessed values by ${args[1]}  [[ $argslast == OFF ]] && enable= || enable=true
-bash( { cmd: 'bash', args: [ 'CMD', v1, v2, ...
-                          , *'KEY   k1  k2  ...' ] ); --- 'CFG k1 k2 ...' save to $dirsystem/$CMD.conf
-                 accessed values by $k1 or ${args[1]}
-bash( { cmd: 'bash', args: [ 'CMD', ... ], *json: json } );  --- json: save to $dirsystem/$CMD.json
+Simple spaced arguments
+	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
+Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ 'CMD', v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ 'CMD', 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ 'CMD', v1, v2, ..., 'KEY k1 k2 ...' ] - script.sh $CMD ON=1 "$k1" "$k2" ...
+	- [ 'CMD', v1, v2, ..., 'CFG k1 k2 ...' ] -        ^^^                     and save k1=v1; k2=v2; ... to $dirsystem/$CMD.conf
+	- { cmd: [ 'CMD', ... ], json: JSON }     -        ^^^                     and save {"k1":"v1", ... } to $dirsystem/$CMD.json
 
 - js > php   --- common.js - bash()
 	- string : [ 'CMD' v1, v2, ..., 'KEY k1 k2 ...' ] (multiline: 'l1\\nl2\\nl3...')
@@ -45,7 +45,7 @@ function bash( args, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( args0.slice( -3 ) === '.sh' ) { // CDM.sh
+	if ( args0.slice( -3 ) === '.sh' ) { // CMD.sh
 		data.filesh = args.join( ' ' );
 		args = false;
 	} else if ( page ) {                 // CMD - settings
