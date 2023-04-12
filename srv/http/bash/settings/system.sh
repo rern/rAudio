@@ -80,11 +80,11 @@ sharedDataSet() {
 	done
 	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
 		mkdir $dirshareddata/system
-		cp -f $dirsystem/{display,order} $dirshareddata/system
+		cp -f $dirsystem/{display,order}.json $dirshareddata/system
 	fi
 	touch $filesharedip $dirshareddata/system/order.json # in case order not exist
 	for file in display order; do
-		mv $dirsystem/$file $dirbackup
+		mv $dirsystem/$file.json $dirbackup
 		ln -s $dirshareddata/system/$file $dirsystem
 	done
 	dirPermissionsShared
@@ -492,8 +492,8 @@ shareddatadisconnect )
 			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
 		fi
 	done
-	rm $dirsystem/{display,order}
-	mv -f $dirbackup/{display,order} $dirsystem
+	rm $dirsystem/{display,order}.json
+	mv -f $dirbackup/{display,order}.json $dirsystem
 	rmdir $dirbackup &> /dev/null
 	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
 	sed -i "/$( ipAddress )/ d" $filesharedip

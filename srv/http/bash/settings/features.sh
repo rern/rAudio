@@ -271,9 +271,9 @@ nfsserver )
 		done
 		column -t <<< $list > /etc/exports
 		echo $ip > $filesharedip
-		cp -f $dirsystem/{display,order} $dirbackup
-		touch $dirshareddata/system/order.json # in case not exist
-		chmod 777 $filesharedip $dirshareddata/system/{display,order}
+		touch $dirshareddata/system/order.json # in case not yet set
+		cp -f $dirsystem/{display,order}.json $dirbackup
+		chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
 		echo "\
 SD
 USB" > /mnt/MPD/.mpdignore
@@ -307,7 +307,7 @@ USB" > /mnt/MPD/.mpdignore
 		mkdir -p $dirbackup
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
-		mv -f $dirbackup/{display,order} $dirsystem
+		mv -f $dirbackup/{display,order}.json $dirsystem
 		systemctl restart mpd
 		pushstream display $( < $dirsystem/display.json )
 	fi

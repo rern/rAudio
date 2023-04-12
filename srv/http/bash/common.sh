@@ -151,7 +151,7 @@ dirPermissions() {
 dirPermissionsShared() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
 	chown -h mpd:audio $dirdata/{mpd,playlists}
-	chmod 777 $filesharedip $dirshareddata/system/{display,order}
+	chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
 }
 exists() {
 	[[ -e $1 ]] && echo true || echo false
