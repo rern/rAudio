@@ -774,7 +774,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'KEY updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( V.volhold ) {
-		V.volhold = false;
+		setTimeout( () => V.volhold = false, 300 );
 		clearInterval( V.intVolume );
 		bash( [ 'volumepushstream' ] );
 	}
