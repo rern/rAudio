@@ -773,13 +773,13 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	}
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'KEY updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
-	if ( V.volhold ) {
-		setTimeout( () => V.volhold = false, 300 );
+	if ( V.volupdnpress ) {
 		clearInterval( V.intVolume );
 		bash( [ 'volumepushstream' ] );
+		setTimeout( () => V.volupdnpress = false, 300 );
 	}
 } ).press( function( e ) {
-	V.volhold = true;
+	V.volupdnpress = true;
 	var voldn = e.currentTarget.id === 'voldn';
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	var vol   = S.volume;

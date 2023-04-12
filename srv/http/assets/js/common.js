@@ -65,7 +65,7 @@ V.press - press: $( '#infoOk' ) / $( '.switch' )
 	- each
 	- console.log commands only (NOT run)
 */
-	if ( ! V.volhold && ( V.debug || V.press ) ) {
+	if ( ! V.volupdnpress && ( V.debug || V.press ) ) {
 		var bashcmd = data.filesh.replace( 'settings/', '' );
 		if ( data.args ) bashcmd += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
 		console.log( data );
