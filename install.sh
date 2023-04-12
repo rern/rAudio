@@ -2,44 +2,17 @@
 
 alias=r1
 
+# restore 20230413
 #. /srv/http/bash/settings/addons.sh
-[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
 # 20230413
-if [[ ! -e $dirsystem/relays ]]; then
-	rm -f $dirsystem/relays.conf
-elif grep -q ^pin $dirsystem/relays.conf; then
-	. $dirsystem/relays.conf
-	data="\
-on='${on[@]}'
-off='${off[@]}'
-ond='${ond[@]}'
-offd='${offd[@]}'
-timer=$timer"
-	p=( $( tr , ' ' <<< ${pin:2:-2} ) )
-	n=( $( tr , ' ' <<< ${name:2:-2} ) )
-	for (( i=0; i < 4; i++ )); do
-		pn+=', "'${p[i]}'" : '${n[i]}
-	done
-	json='{ '${pn:1}' }'
-	jq <<< $json > $dirsystem/relaysname.json
-	for p in ${on[@]}; do
-		name=$( jq -r '.["'$p'"]' <<< $json )
-		[[ $name ]] && orderon+=$name'\n'
-	done
-	for p in ${off[@]}; do
-		name=$( jq -r '.["'$p'"]' <<< $json )
-		[[ $name ]] && orderoff+=$name'\n'
-	done
-	data+='
-orderon="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderon )'"
-orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
-	echo "$data" > $dirsystem/relays.conf
-fi
+[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
 
-for file in display order; do
-	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
-done
+if crontab -l | grep -q addonsupdates; then
+	echo "\
+00 01 * * * $dirsettings/addons-data.sh
+$( crontab -l | grep -v addonsupdates )" | crontab -
+fi
 
 if ls $dirsystem/autoplay* 2> /dev/null; then
 	k=( startup bluetooth cd )
@@ -50,6 +23,13 @@ if ls $dirsystem/autoplay* 2> /dev/null; then
 	echo "$data" >> $dirsystem/autoplay
 	rm -f $dirsystem/{autoplaybt,autoplaycd}
 fi
+
+rm -f $dirsystem/btoutputonly
+[[ -e $dirmpdconf/bluetooth.conf && -e $dirmpdconf/output.conf ]] && touch $dirsystem/btoutputall
+
+for file in display order; do
+	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
+done
 
 if systemctl -q is-active localbrowser; then
 	file=$dirsystem/localbrowser.conf
@@ -81,6 +61,37 @@ if [[ -e $file ]] && grep -q pins_data $file; then
 	echo "$data" > $file
 fi
 
+if [[ ! -e $dirsystem/relays ]]; then
+	rm -f $dirsystem/relays.conf
+elif grep -q ^pin $dirsystem/relays.conf; then
+	. $dirsystem/relays.conf
+	data="\
+on='${on[@]}'
+off='${off[@]}'
+ond='${ond[@]}'
+offd='${offd[@]}'
+timer=$timer"
+	p=( $( tr , ' ' <<< ${pin:2:-2} ) )
+	n=( $( tr , ' ' <<< ${name:2:-2} ) )
+	for (( i=0; i < 4; i++ )); do
+		pn+=', "'${p[i]}'" : '${n[i]}
+	done
+	json='{ '${pn:1}' }'
+	jq <<< $json > $dirsystem/relaysname.json
+	for p in ${on[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderon+=$name'\n'
+	done
+	for p in ${off[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderoff+=$name'\n'
+	done
+	data+='
+orderon="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderon )'"
+orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
+	echo "$data" > $dirsystem/relays.conf
+fi
+
 file=$dirsystem/vuled.conf
 if [[ -e $file ]]; then
 	pins=( $( < $file ) )
@@ -90,19 +101,6 @@ if [[ -e $file ]]; then
 	done
 	echo "$data" > $file
 fi
-
-[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
-
-if crontab -l | grep -q addonsupdates; then
-	cron="00 01 * * * $dirsettings/addons-data.sh"
-	current=$( crontab -l | grep -v addonsupdates )
-	[[ $current ]] && cron+="
-$current"
-	echo "$cron" | crontab -
-fi
-
-rm -f $dirsystem/btoutputonly
-[[ -e $dirmpdconf/bluetooth.conf && -e $dirmpdconf/output.conf ]] && touch $dirsystem/btoutputall
 
 # 20230218
 sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf &> /dev/null
