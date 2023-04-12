@@ -152,7 +152,7 @@ urldecode() { # for webradio url to filename
 	echo -e "${_//%/\\x}"
 }
 volumeGet() {
-	local mixersoftware card control
+	local mixersoftware control
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			vol=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
@@ -177,26 +177,25 @@ volumeGet() {
 		if [[ ! $control ]]; then
 			echo 100
 		else
-			amixer -Mc $card sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
+			amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
 		fi
 	fi
 }
 volumeSet() {
-	local current target card control diff values
+	local current target control diff values
 	current=$1
 	target=$2
-	card=$3
-	control=$4
+	control=$3
 	diff=$(( $target - $current ))
 	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
-		volumeSetAt $target $card "$control"
+		volumeSetAt $target "$control"
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		values=( $( seq $(( current + incr )) $incr $target ) )
 		(( $diff % 5 )) && values+=( $target )
 		for i in "${values[@]}"; do
-			volumeSetAt $i $card "$control"
+			volumeSetAt $i "$control"
 			sleep 0.2
 		done
 	fi
@@ -204,15 +203,14 @@ volumeSet() {
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
-	local target card control
+	local target control
 	target=$1
-	card=$2
-	control=$3
+	control=$2
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 		echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
-		amixer -Mqc $card sset "$control" $target%
+		amixer -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
 	fi
@@ -983,7 +981,7 @@ shairportstop )
 	$dirbash/status-push.sh
 	;;
 volume ) # no args = toggle mute / unmute
-	[[ $current == drag ]] && volumeSetAt $target $card "$control" && exit
+	[[ $current == drag ]] && volumeSetAt $target "$control" && exit
 	
 	[[ ! $current ]] && current=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
@@ -1001,20 +999,22 @@ volume ) # no args = toggle mute / unmute
 			pushstreamVolume unmute $target
 		fi
 	fi
-	volumeSet $current $target $card "$control"
+	volumeSet $current $target "$control"
+	;;
+volumeget )
+	volumeGet
 	;;
 volumepushstream )
 	pushstream volume '{"val":'$( volumeGet )'}'
 	;;
-volumeupdown )
-	if [[ $card == bluealsa ]]; then
-		amixer -MqD bluealsa sset "$control" 1%$updn 2> /dev/null
-	elif [[ $control ]]; then
-		amixer -Mqc $card sset "$control" 1%$updn
-	else
-		mpc -q volume ${updn}1
-	fi
-	pushstreamVolume updn $( volumeGet )
+volumeupdn )
+	volumeUpDn 1%$updn "$control"
+	;;
+volumeupdnbt )
+	volumeUpDnBt 1%$updn "$control"
+	;;
+volumeupdnmpc )
+	volumeUpDnMpc ${updn}1
 	;;
 vumeter )
 	! grep -q vu.*true $dirsystem/display.json && exit

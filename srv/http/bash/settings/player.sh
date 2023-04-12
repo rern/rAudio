@@ -18,7 +18,7 @@ volumeGet() {
 		[[ ! $control ]] && exit
 		
 		card=$( < $dirsystem/asoundcard )
-		amixer=$( amixer -Mc $card sget "$control" | grep -m1 % )
+		amixer=$( amixer -M sget "$control" | grep -m1 % )
 	fi
 	db=$( sed -E 's/.*\[(.*)dB.*/\1/' <<< $amixer )
 	vol=$( sed -E 's/.*\[(.*)%.*/\1/' <<< $amixer )
@@ -125,7 +125,7 @@ mixertype )
 	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
 		[[ $mixertype == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
-		amixer -Mqc $card sset "$hwmixer" $vol
+		amixer -Mq sset "$hwmixer" $vol
 	fi
 	if [[ $mixertype == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
@@ -139,7 +139,7 @@ mixertype )
 	;;
 novolume )
 	mpc -q crossfade 0
-	amixer -Mqc $card sset "$hwmixer" 0dB
+	amixer -Mq sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
@@ -233,7 +233,7 @@ $( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
 	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
 	if [[ $aplayname != snd_rpi_wsp ]]; then
 		devices+="
-$( amixer -c $card scontrols )
+$( amixer scontrols )
 "
 	else
 		devices+="\
@@ -249,7 +249,7 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -Mqc $card sset "$mixer" $vol%
+	amixer -Mq sset "$mixer" $vol%
 	;;
 volumebt )
 	amixer -MqD bluealsa sset "$mixer" $vol%
@@ -259,7 +259,7 @@ volume0db )
 	control=$( getContent $dirshm/amixercontrol )
 	[[ ! $control ]] && exit
 	
-	amixer -Mqc $card sset "$control" 0dB
+	amixer -Mq sset "$control" 0dB
 	alsactl store
 	pushstreamVolume
 	;;

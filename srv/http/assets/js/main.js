@@ -715,13 +715,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		volumeCommand( [ 'drag', e.value, S.card, S.control ] );
+		bash( [ 'volume', 'drag', e.value, S.control, 'KEY current target control' ] );
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		volumeCommand( [ S.volume, e.value, S.card, S.control ] );
+		bash( [ 'volume', S.volume, e.value, S.control, 'KEY current target control' ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -765,7 +765,13 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( S.volume === 0 && voldn ) || ( S.volume === 100 && ! voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-' : '+', S.control, S.card, 'KEY updn control card' ] );
+	var cmd = 'volumeupdn';
+	if ( S.btreceiver ) {
+		cmd += 'bt';
+	} else if ( ! S.control ) {
+		cmd += 'mpc';
+	}
+	bash( [ cmd, voldn ? '-' : '+', S.control, 'KEY updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( V.volhold ) {
 		V.volhold = false;
@@ -784,7 +790,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		volumeCommand( [ 'drag', vol, S.card, S.control ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -823,7 +829,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		S.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeCommand( [ 'drag', vol, S.card, S.control ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute / unmute

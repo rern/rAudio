@@ -4,21 +4,6 @@
 
 . $dirsystem/rotaryencoder.conf
 
-if [[ -e $dirshm/btreceiver ]]; then
-	control=$( < $dirshm/btreceiver )
-else
-	card=$( < $dirsystem/asoundcard )
-	control=$( cat $dirshm/amixercontrol 2> /dev/null )
-fi
-
-volume() {
-	$dirbash/cmd.sh "volumeupdown
-KEY updn card control
-$1
-$control
-$card"
-}
-
 # play/pause
 /opt/vc/bin/dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
 sleep 1
@@ -30,10 +15,30 @@ done &
 /opt/vc/bin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
-evtest $devinputrotary | while read line; do
-	if [[ $line =~ 'value 1'$ ]]; then
-		volume +
-	elif [[ $line =~ 'value -1'$ ]]; then
-		volume -
-	fi
-done
+if [[ -e $dirshm/btreceiver ]]; then
+	control=$( < $dirshm/btreceiver )
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDnBt 1%+ "$control"
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDnBt 1%- "$control"
+		fi
+	done
+elif [[ -e $dirshm/amixercontrol ]]; then
+	control=$( < $dirshm/amixercontrol )
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDn 1%+ "$control"
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDn 1%- "$control"
+		fi
+	done
+else
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDnMpc +1
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDnMpc -1
+		fi
+	done
+fi

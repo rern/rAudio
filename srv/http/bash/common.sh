@@ -256,3 +256,18 @@ stringEscape() {
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }
+volumeUpDn() { # cmd.sh, bluetoothcommand.sh, rotaryencoder.sh
+	amixer -Mq sset "$2" $1
+	val=$( amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
+	pushstream volume '{"type":"updn","val":'$val'}'
+}
+volumeUpDnBt() {
+	amixer -MqD bluealsa sset "$2" $1
+	val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
+	pushstream volume '{"type":"updn","val":'$val'}'
+}
+volumeUpDnMpc() {
+	mpc -q volume $1
+	val=$( mpc status %volume% | tr -dc [0-9] )
+	pushstream volume '{"type":"updn","val":'$val'}'
+}

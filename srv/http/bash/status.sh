@@ -41,7 +41,6 @@ else
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
-, "card"         : '$( < $dirsystem/asoundcard )'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'

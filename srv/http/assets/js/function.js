@@ -1877,11 +1877,11 @@ function volumeBarSet( pageX ) {
 		var bandW = $( '#volume-band' ).width();
 		posX      = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		var vol   = Math.round( posX / bandW * 100 );
-		var cmd   = [ S.volume, vol, S.card, S.control ]
+		var cmd   = [ 'volume', S.volume, vol, S.control, 'KEY current target control' ]
 	}
 	if ( V.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		volumeCommand( [ 'drag', vol, S.card, S.control ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - S.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
@@ -1893,7 +1893,7 @@ function volumeBarSet( pageX ) {
 			}
 		);
 		$( '.volumeband' ).addClass( 'disabled' );
-		volumeCommand( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
+		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
 	}
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
@@ -1931,11 +1931,6 @@ function volumeColorUnmute() {
 		.removeClass( 'i-mute active' )
 		.addClass( 'i-volume' );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
-}
-function volumeCommand( data, callback ) {
-	bash( [ 'volume', ...data, 'KEY current target card control' ], () => {
-		if ( callback ) callback();
-	} );
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
