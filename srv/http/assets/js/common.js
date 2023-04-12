@@ -925,7 +925,7 @@ function infoPower() {
 	} );
 }
 function infoPowerCommand( action ) {
-	bash( [ action ], nfs => {
+	bash( [ 'power.sh', action ], nfs => {
 		if ( nfs != -1 ) return
 		
 		var poweroff = action === 'poweroff';
@@ -939,7 +939,7 @@ function infoPowerCommand( action ) {
 			, oklabel : poweroff ? ico( 'power' ) +'Off' : ico( 'reboot' ) +'Reboot'
 			, okcolor : poweroff ? red : orange
 			, ok      : () => {
-				bash( [ action, 1 ] );
+				bash( [ 'power.sh', action, 1  ] );
 				banner( 'rserver', 'Server rAudio', 'Notify clients ...', -1 );
 			}
 		} );
