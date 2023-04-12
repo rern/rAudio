@@ -1,6 +1,8 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
+touch( '/srv/http/data/shm/addonsprogress' );
+
 $alias        = $_POST[ 'alias' ];
 $sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
 if ( $alias === 'albumthumbnail' ) {

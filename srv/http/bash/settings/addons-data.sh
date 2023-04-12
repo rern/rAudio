@@ -2,7 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-if internetConnected; then
+if [[ -e $dirshm/addonsprogress ]]; then
+	rm $dirshm/addonsprogress
+	data=$( < $diraddons/addonslist.json )
+elif internetConnected; then
 	data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
 	[[ $? == 0 ]] && echo "$data" > $diraddons/addonslist.json || error='Database download failed.'
 else
