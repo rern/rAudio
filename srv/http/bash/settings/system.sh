@@ -82,11 +82,9 @@ sharedDataSet() {
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order}.json $dirshareddata/system
 	fi
-	touch $filesharedip $dirshareddata/system/order.json # in case order not exist
-	for file in display order; do
-		mv $dirsystem/$file.json $dirbackup
-		ln -s $dirshareddata/system/$file $dirsystem
-	done
+	mv $dirsystem/{display,order}.json $dirbackup
+	touch $filesharedip $dirshareddata/system/order.json # in case not yet set
+	ln -s $dirshareddata/system/{display,order}.json $dirsystem
 	dirPermissionsShared
 	echo data > $dirnas/.mpdignore
 	echo "\
