@@ -23,7 +23,7 @@ $( '.btoutputall' ).click( function() {
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val(), 'KEY asoundcard' ] );
+	bash( [ 'audiooutput', $( this ).val(), 'KEY card' ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
@@ -39,18 +39,17 @@ var htmlvolume = `
 `;
 $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 	var bt = this.id === 'setting-btreceiver';
-	bash( [ bt ? 'volumegetbt' : 'volumeget' ], voldb => {
-		var voldb   = voldb.split( ' ' );
-		var vol     = voldb[ 0 ];
-		var db      = voldb[ 1 ];
-		var nodb    = typeof db === 'undefined';
+	bash( [ 'volumeget' ], v => {
+		var nodb    = v.db === false;
 		var nomixer = D.mixertype === 'none';
 		if ( bt ) {
-			var cmd       = 'volume0dbbt';
+			var cmd       = 'volumebt';
+			var cmdodb    = 'volume0dbbt';
 			var cmdpush   = 'volumepushbt';
 			var mixer     = S.btaplayname;
 		} else {
-			var cmd       = 'volume0db';
+			var cmd       = 'volume';
+			var cmdodb    = 'volume0db';
 			var cmdpush   = 'volumepush';
 			var mixer     = D.hwmixer;
 		}
@@ -58,25 +57,25 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			  icon       : SW.icon
 			, title      : SW.title
 			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, values     : vol
-			, rangesub   : nomixer ? '0dB (No Mixer)' : db +' dB'
+			, values     : v.vol
+			, rangesub   : nomixer ? '0dB (No Mixer)' : v.db +' dB'
 			, confirm    : warning
-			, confirmno  : () => $( '.sub' ).text() > '0.00 dB'
+			, confirmno  : () => v.db
 			, beforeshow : () => {
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( [ 'volume', S.asoundcard, mixer, $( this ).val(), 'KEY asoundcard mixer vol' ] );
+					bash( [ cmd, S.asoundcard, mixer, $( this ).val(), 'KEY card mixer vol' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ cmdpush ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => {
-				bash( [ cmd ] );
+				bash( [ cmdodb ] );
 			}
 			, oknoreset  : true
 		} );
-	} );
+	}, 'json' );
 } );
 $( '#mixertype' ).change( function() {
 	var mixertype = $( this ).val();
@@ -102,7 +101,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', D.aplayname, D.hwmixer, 'KEY aplayname hwmixer' ] );
+				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'KEY card hwmixer aplayname' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -413,15 +412,12 @@ function renderPage() {
 		$( '#divaudiooutput div' ).eq( 0 ).html( label );
 	}
 	if ( $( '#infoRange .value' ).length ) {
-		bash( I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ], voldb => {
-			var voldb = voldb.split( ' ' );
-			var vol   = voldb[ 0 ];
-			var db    = voldb[ 1 ];
-			$( '#infoRange .value' ).text( vol );
-			$( '#infoRange input' ).val( vol );
-			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButton a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
-		} );
+		bash( [ 'volumeget' ], v => {
+			$( '#infoRange .value' ).text( v.vol );
+			$( '#infoRange input' ).val( v.vol );
+			$( '.infofooter' ).text( v.db +' dB' );
+			$( '#infoButton a' ).eq( 1 ).toggleClass( 'hide', v.db === '0.00' );
+		}, 'json' );
 	}
 	$.each( S.lists, ( k, v ) => $( '#'+ k ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', $( '#divlists .subhead.hide' ).length === 3 );
@@ -430,5 +426,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer, 'KEY mixertype aplayname hwmixer' ] );
+	bash( [ 'mixertype', mixertype, D.card, hwmixer, D.aplayname, 'KEY mixertype card hwmixer aplayname' ] );
 }

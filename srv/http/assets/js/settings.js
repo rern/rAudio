@@ -257,11 +257,11 @@ function psVolume( data ) {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		var val = data.type !== 'mute' ? data.val : 0;
-		$( '#infoRange .value' ).text( val );
-		$( '#infoRange input' ).val( val );
+		var vol = data.type !== 'mute' ? data.vol : 0;
+		$( '#infoRange .value' ).text( vol );
+		$( '#infoRange input' ).val( vol );
 		$( '#infoRange .sub' ).text( data.db +' dB' );
-		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
+		$( '#infoOk' ).toggleClass( 'hide', data.db === 0 );
 		$( '#infoContent' ).removeClass( 'hide' );
 		$( '#infoConfirm' ).addClass( 'hide' );
 	}, 300 );

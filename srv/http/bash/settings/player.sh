@@ -5,28 +5,31 @@
 args2var "$1"
 
 linkConf() {
-	ln -sf $dirmpdconf/{conf/,}$cmd.conf
+	ln -sf $dirmpdconf/{conf/,}$CMD.conf
+}
+pushstreamVolume() {
+	pushstream volume $( volumeGet )
 }
 volumeGet() {
-	card=$( < $dirsystem/asoundcard )
-	control=$( getContent $dirshm/amixercontrol )
-	[[ ! $control ]] && exit
-	
-	amixer=$( amixer -c $card -M sget "$control" )
-	if grep -q dB <<< $amixer; then
-		awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}' <<< $amixer
+	if [[ -e $dirshm/btreceiver ]]; then
+		amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 	else
-		grep -m1 % <<< $amixer | sed -E 's/.*\[(.*)%].*/\1/'
+		control=$( getContent $dirshm/amixercontrol )
+		[[ ! $control ]] && exit
+		
+		card=$( < $dirsystem/asoundcard )
+		amixer=$( amixer -Mc $card sget "$control" | grep -m1 % )
 	fi
-}
-volumeGetBt() {
-	amixer -MD bluealsa 2> /dev/null | awk -F'[[%dB]' '/%.*dB/ {print $2" "$4;exit}'
+	db=$( sed -E 's/.*\[(.*)dB.*/\1/' <<< $amixer )
+	vol=$( sed -E 's/.*\[(.*)%.*/\1/' <<< $amixer )
+	[[ ! $db ]] && db=false
+	echo '{ "db": '$db', "vol": '$vol' }'
 }
 
 case $CMD in
 
 audiooutput )
-	echo $asoundcard > $dirsystem/asoundcard
+	echo $card > $dirsystem/asoundcard
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
@@ -121,12 +124,8 @@ hwmixer )
 mixertype )
 	if [[ $hwmixer ]]; then # set 0dB
 		mpc -q stop
-		if [[ $mixertype == hardware ]];then
-			vol=$( mpc status %volume% | tr -d ' %n/a' )
-			amixer -Mq sset "$hwmixer" $vol%
-		else
-			amixer -Mq sset "$hwmixer" 0dB
-		fi
+		[[ $mixertype == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
+		amixer -Mqc $card sset "$hwmixer" $vol
 	fi
 	if [[ $mixertype == hardware ]]; then
 		rm -f "$dirsystem/mixertype-$aplayname"
@@ -140,7 +139,7 @@ mixertype )
 	;;
 novolume )
 	mpc -q crossfade 0
-	amixer -Mq sset "$hwmixer" 0dB
+	amixer -Mqc $card sset "$hwmixer" 0dB
 	echo none > "$dirsystem/mixertype-$aplayname"
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
@@ -250,43 +249,34 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -c $asoundcard -Mq sset "$mixer" $vol%
+	amixer -Mqc $card sset "$mixer" $vol%
+	;;
+volumebt )
+	amixer -MqD bluealsa sset "$mixer" $vol%
 	;;
 volume0db )
 	card=$( < $dirsystem/asoundcard )
 	control=$( getContent $dirshm/amixercontrol )
 	[[ ! $control ]] && exit
 	
-	amixer -c $card -Mq sset "$control" 0dB
+	amixer -Mqc $card sset "$control" 0dB
 	alsactl store
-	voldb=$( volumeGet )
-	pushstream volume '{"val":'${voldb/ *}',"db":"0.00"}'
+	pushstreamVolume
 	;;
 volume0dbbt )
 	btdevice=$( < $dirshm/btreceiver )
-	amixer -MD bluealsa -q sset "$btdevice" 0dB 2> /dev/null
-	voldb=$( volumeGetBt )
-	vol=${voldb/ *}
+	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
+	pushstreamVolume
 	echo $vol > "$dirsystem/btvolume-$btdevice"
-	pushstream volume '{"val":'$vol',"db":"0.00"}'
 	;;
 volumeget )
 	volumeGet
 	;;
-volumegetbt )
-	volumeGetBt
-	;;
 volumepush )
-	voldb=$( volumeGet )
-	vol=${voldb/ *}
-	db=${voldb/* }
-	pushstream volume '{"val":'$vol',"db":"'$db'"}'
+	pushstreamVolume
 	;;
 volumepushbt )
-	voldb=$( volumeGetBt )
-	vol=${voldb/ *}
-	db=${voldb/* }
-	pushstream volume '{"val":'$vol',"db":"'$db'"}'
+	pushstreamVolume
 	btdevice=$( < $dirshm/btreceiver )
 	echo $vol > "$dirsystem/btvolume-$btdevice"
 	;;

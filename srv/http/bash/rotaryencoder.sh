@@ -15,8 +15,8 @@ volume() {
 	$dirbash/cmd.sh "volumeupdown
 KEY updn card control
 $1
-$card
-$control"
+$control
+$card"
 }
 
 # play/pause

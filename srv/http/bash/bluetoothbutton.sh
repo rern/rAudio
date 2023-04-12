@@ -14,8 +14,8 @@ volume() {
 	$dirbash/cmd.sh "volumeupdown
 KEY updn card control
 $1
-
-$control"
+$control
+bluealsa"
 }
 
 # line='Event: time 1678155098.191722, type 1 (EV_KEY), code 200 (KEY_XXXXXX), value 1'

@@ -163,14 +163,14 @@ volumeGet() {
 		mixersoftware=1
 	fi
 	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
-		mpc status %volume% | tr -d ' %n/a'
+		mpc status %volume% | tr -dc [0-9]
 	else
 		card=$( < $dirsystem/asoundcard )
 		control=$( getContent $dirshm/amixercontrol )
 		if [[ ! $control ]]; then
 			echo 100
 		else
-			amixer -c $card -M sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
+			amixer -Mc $card sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
 		fi
 	fi
 }
@@ -213,7 +213,7 @@ volumeSetAt() {
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 		echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
-		amixer -c $card -Mq sset "$control" $target%
+		amixer -Mqc $card sset "$control" $target%
 	else
 		mpc -q volume $target
 	fi
@@ -1004,21 +1004,16 @@ volume ) # no args = toggle mute / unmute
 	fi
 	volumeSet $current $target $card "$control"
 	;;
-volumeget )
-	volumeGet
-	;;
 volumepushstream )
 	pushstream volume '{"val":'$( volumeGet )'}'
 	;;
 volumeupdown )
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ $card == bluealsa ]]; then
 		amixer -MqD bluealsa sset "$control" 1%$updn 2> /dev/null
+	elif [[ $control ]]; then
+		amixer -Mqc $card sset "$control" 1%$updn
 	else
-		if [[ $control ]]; then
-			amixer -c $card -Mq sset "$control" 1%$updn
-		else
-			mpc -q volume ${updn}1
-		fi
+		mpc -q volume ${updn}1
 	fi
 	pushstreamVolume updn $( volumeGet )
 	;;

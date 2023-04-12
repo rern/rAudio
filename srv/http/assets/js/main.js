@@ -765,7 +765,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	if ( ( S.volume === 0 && voldn ) || ( S.volume === 100 && ! voldn ) ) return
 	
-	bash( [ 'volumeupdown', voldn ? '-' : '+', S.card, S.control, 'KEY updn card control' ] );
+	bash( [ 'volumeupdown', voldn ? '-' : '+', S.control, S.card, 'KEY updn control card' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( V.volhold ) {
 		V.volhold = false;
