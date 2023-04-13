@@ -236,12 +236,12 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'KEY mountpoint' ] );
+			bash( [ 'mountforget', mountpoint, 'CMD mountpoint' ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source, 'KEY dev' ], data => {
+				bash( [ 'hddinfo', source, 'CMD dev' ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -252,11 +252,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'KEY mountpoint source' ] );
+			bash( [ 'mountremount', mountpoint, source, 'CMD mountpoint source' ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'KEY mountpoint' ] );
+			bash( [ 'mountunmount', mountpoint, 'CMD mountpoint' ] );
 			break;
 	}
 } );
@@ -332,7 +332,7 @@ $( '#i2smodule' ).change( function() {
 		output = '';
 		i2sSelectHide();
 	}
-	bash( [ 'i2smodule', aplayname, output, 'KEY aplayname output' ] );
+	bash( [ 'i2smodule', aplayname, output, 'CMD aplayname output' ] );
 } );
 $( '#divi2s .col-r' ).click( function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
@@ -526,7 +526,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 } );
 $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', $( this ).val(), 'KEY timezone' ] );
+	bash( [ 'timezone', $( this ).val(), 'CMD timezone' ] );
 } );
 $( '#divtimezone .col-r' ).click( function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
@@ -697,7 +697,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text(), 'KEY pkg' ], list => {
+		bash( [ 'packagelist', $target.text(), 'CMD pkg' ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -841,7 +841,7 @@ function infoLcdcharButton() {
 		.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
 	$( '#infoButtons gr' ).click( function() {
 		var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-		bash( [ 'lcdcharset', action, 'KEY action' ] );
+		bash( [ 'lcdcharset', action, 'CMD action' ] );
 	} );
 }
 var contentmount = {
@@ -922,7 +922,7 @@ function infoMount( values ) {
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
-			bash( [ 'mount', ...vals, 'KEY '+ keys.join( ' ' ) ], error => {
+			bash( [ 'mount', ...vals, 'CMD '+ keys.join( ' ' ) ], error => {
 				if ( error ) {
 					info( {
 						  icon    : icon
@@ -1121,7 +1121,7 @@ function inforServer() {
 		, ok         : () => {
 			var ip = infoVal();
 			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
-			bash( [ 'sharelist', ip, 'KEY ip' ], list => {
+			bash( [ 'sharelist', ip, 'CMD ip' ], list => {
 				var json = {
 					  icon    : Sw.icon
 					, title   : Sw.title
@@ -1133,7 +1133,7 @@ function inforServer() {
 					json.message = list +'<br>Connect?'
 					json.ok      = () => {
 						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-						bash( [ 'shareddataconnect', ip, 'KEY ip' ] );
+						bash( [ 'shareddataconnect', ip, 'CMD ip' ] );
 					}
 				}
 				info( json );

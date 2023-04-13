@@ -17,35 +17,40 @@ if [[ -e $dirdata ]]; then # create-ros.sh - not yet exist
 	mpdconf=$dirmpdconf/mpd.conf
 fi
 
-# args2var "command
+# args2var "\
+#	command
 #	v1
 #	v2
-#	*fileconf      #2
-#	*KEY k1 k2 ... #1 ${args[@]: -1}
-#   ..."
+#	CMD k1 k2 ..."
 #
 # convert multiline to variables:
-#	${args[1]}=CMD
+#	${args[0]}=CMD
 #	${args[1]}=v1
 #	${args[2]}=v2
+#	...
+# if 'OFF'   / not set
+#	ON=      / ON=true
+#	TF=false / TF=true
 #
-#	k1=v1 (if 'KEY k1 k2 ...' set)
+# if 'CMD k1 k2 ...' set (CFG - also save to file)
+#	k1=v1
 #	k2=v2
+#	...
 
 args2var() {
-	local argslast KEY_CFG_OFF CFG i keys kL k v conf
+	local argslast CMD_CFG_OFF CFG i keys kL k v conf
 	readarray -t args <<< $1
 	CMD=${args[0]}
 	argslast=${args[@]: -1}
-	KEY_CFG_OFF=${argslast:0:3}
-	[[ $KEY_CFG_OFF == OFF ]] && TF=false && return
+	CMD_CFG_OFF=${argslast:0:3}
+	[[ $CMD_CFG_OFF == OFF ]] && TF=false && return
 	
 	ON=true
 	TF=true
-	[[ ! $KEY_CFG_OFF =~ ^(KEY|CFG)$ ]] && return
+	[[ ! $CMD_CFG_OFF =~ ^(CMD|CFG)$ ]] && return
 	
 	keys=( $argslast )
-	[[ $KEY_CFG_OFF == CFG ]] && CFG=1
+	[[ $CMD_CFG_OFF == CFG ]] && CFG=1
 	kL=${#keys[@]}
 	for (( i=1; i < kL; i++ )); do
 		k=${keys[i]}

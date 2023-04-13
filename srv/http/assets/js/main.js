@@ -604,7 +604,7 @@ $( '#title, #guide-lyrics' ).click( function() {
 				} else if ( $this.hasClass( 'pladd' ) ) {
 					saveToPlaylist( S.Title, S.Album, S.file );
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'KEY Artist Title Album' ] );
+					bash( [ 'scrobble', ...values, 'CMD Artist Title Album' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).click();
@@ -715,13 +715,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', 'drag', e.value, S.control, 'KEY current target control' ] );
+		bash( [ 'volume', 'drag', e.value, S.control, 'CMD current target control' ] );
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		bash( [ 'volume', S.volume, e.value, S.control, 'KEY current target control' ] );
+		bash( [ 'volume', S.volume, e.value, S.control, 'CMD current target control' ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -771,15 +771,15 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	} else if ( ! S.control ) {
 		cmd += 'mpc';
 	}
-	bash( [ cmd, voldn ? '-' : '+', S.control, 'KEY updn control' ] );
+	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
-	if ( V.volupdnpress ) {
+	if ( V.volupdn ) {
 		clearInterval( V.intVolume );
 		bash( [ 'volumepushstream' ] );
-		setTimeout( () => V.volupdnpress = false, 300 );
+		setTimeout( () => V.volupdn = false, 300 );
 	}
 } ).press( function( e ) {
-	V.volupdnpress = true;
+	V.volupdn = true;
 	var voldn = e.currentTarget.id === 'voldn';
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
 	var vol   = S.volume;
@@ -790,7 +790,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
@@ -829,7 +829,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 		S.volume = vol;
 		$( '#volume-text' ).text( vol );
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute / unmute

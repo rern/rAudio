@@ -1877,11 +1877,11 @@ function volumeBarSet( pageX ) {
 		var bandW = $( '#volume-band' ).width();
 		posX      = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
 		var vol   = Math.round( posX / bandW * 100 );
-		var cmd   = [ 'volume', S.volume, vol, S.control, 'KEY current target control' ]
+		var cmd   = [ 'volume', S.volume, vol, S.control, 'CMD current target control' ]
 	}
 	if ( V.drag ) {
 		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, S.control, 'KEY current target control' ] );
+		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
 	} else {
 		var ms = Math.ceil( Math.abs( vol - S.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(

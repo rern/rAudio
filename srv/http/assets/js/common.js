@@ -16,76 +16,6 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-Simple spaced arguments
-	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
-Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ 'CMD', v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ 'CMD', 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ 'CMD', v1, v2, ..., 'KEY k1 k2 ...' ] - script.sh $CMD ON=1 "$k1" "$k2" ...
-	- [ 'CMD', v1, v2, ..., 'CFG k1 k2 ...' ] -        ^^^                     and save k1=v1; k2=v2; ... to $dirsystem/$CMD.conf
-	- { cmd: [ 'CMD', ... ], json: JSON }     -        ^^^                     and save {"k1":"v1", ... } to $dirsystem/$CMD.json
-
-- js > php   --- common.js - bash()
-	- string : [ 'CMD' v1, v2, ..., 'KEY k1 k2 ...' ] (multiline: 'l1\\nl2\\nl3...')
-	- json   : sringify
-- php > bash --- cmd.php $cmd === 'bash'
-	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-	- json  : decode > reencode > bash save to file
-		- js cannot escape " as \\" double backslash which disappeared in bash
-- bash       --- common.sh - args2var
-	- convert to array > assign values
-		- No 'KEY'   - ${args[1]}=v1; ${args[2]}=v2; ...
-		- With 'KEY' or 'CFG" - k1=v1; k2=v2; ... ( 'KEY k1 k2 ...' ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
-			- save to $dirsystem/$CMD.conf if 'CFG' set
-*/
-function bash( args, callback, json ) {
-	var data = { cmd: 'bash' }
-	if ( 'json' in args ) {
-		data.json = JSON.stringify( args.json );
-		args = args.cmd;
-	}
-	var args0 = args[ 0 ];
-	if ( args0.slice( -3 ) === '.sh' ) { // CMD.sh
-		data.filesh = args.join( ' ' );
-		args = false;
-	} else if ( page ) {                 // CMD - settings
-		data.filesh = 'settings/'+ page +'.sh';                            // default
-		if ( args0 === 'mount' ) data.filesh = 'settings/system-mount.sh'; // not default
-	} else {                             // CMD - playback
-		data.filesh = 'cmd.sh';
-		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) data.filesh = args0 +'.sh';
-	}
-	if ( args ) data.args = args;
-/*
-V.debug - press: $( '#bar-top, .head' )
-	- all
-	- console.log commands
-	- active pushstream (no disconnect)
-V.press - press: $( '#infoOk' ) / $( '.switch' )
-	- each
-	- console.log commands only (NOT run)
-*/
-	if ( ! V.volupdnpress && ( V.debug || V.press ) ) {
-		var bashcmd = data.filesh.replace( 'settings/', '' );
-		if ( data.args ) bashcmd += ' "$( cat << EOF\n'+ data.args.join( '\n' ) +'\nEOF\n)"';
-		console.log( data );
-		console.log( bashcmd );
-		if ( V.press ) {
-			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
-			return
-		}
-	}
-	
-	$.post( 
-		 'cmd.php'
-		, data
-		, callback || null
-		, json || null
-	);
-}
-
-// ----------------------------------------------------------------------
-/*
 $( ELEMENT ).press( DELEGATE, function( e ) {
 	cannot be attached with .on
 	DELEGATE : optional - if not delegate, use e.target for this
@@ -116,6 +46,89 @@ $.fn.press = function( arg1, arg2 ) {
 	return this // allow chain
 }
 
+// ----------------------------------------------------------------------
+/*
+Simple spaced arguments
+	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
+Multiline arguments - no escape \" \` in js values > escape in php instead
+	- [ 'CMD', v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ 'CMD', 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ 'CMD', v1, v2, ..., 'CMD k1 k2 ...' ] - script.sh $CMD ON=1 "$k1" "$k2" ...
+	- [ 'CMD', v1, v2, ..., 'CFG k1 k2 ...' ] -        ^^^                     and save k1=v1; k2=v2; ... to $dirsystem/$CMD.conf
+	- { cmd: [ 'CMD', ... ], json: JSON }     -        ^^^                     and save {"k1":"v1", ... } to $dirsystem/$CMD.json
+
+- js > php   --- common.js - bash()
+	- string : [ 'CMD' v1, v2, ..., 'CMD k1 k2 ...' ] (multiline: 'l1\\nl2\\nl3...')
+	- json   : sringify
+- php > bash --- cmd.php $cmd === 'bash'
+	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
+	- json  : decode > reencode > bash save to file
+		- js cannot escape " as \\" double backslash which disappeared in bash
+- bash       --- common.sh - args2var
+	- convert to array > assign values
+		- No 'CMD'   - ${args[1]}=v1; ${args[2]}=v2; ...
+		- With 'CMD' or 'CFG" - k1=v1; k2=v2; ... ( 'CMD k1 k2 ...' ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
+			- save to $dirsystem/$CMD.conf if 'CFG' set
+*/
+function bash( args, callback, json ) {
+	var data = { cmd: 'bash' }
+	if ( 'json' in args ) {
+		data.json = JSON.stringify( args.json );
+		args = args.cmd;
+	}
+	var args0 = args[ 0 ];
+	if ( args0.slice( -3 ) === '.sh' ) { // CMD.sh
+		data.filesh = args.join( ' ' );
+		args = false;
+	} else if ( page ) {                 // CMD - settings
+		data.filesh = 'settings/'+ page +'.sh';                            // default
+		if ( args0 === 'mount' ) data.filesh = 'settings/system-mount.sh'; // not default
+	} else {                             // CMD - playback
+		data.filesh = 'cmd.sh';
+		if ( [ 'scrobble', 'tageditor' ].includes( args0 ) ) data.filesh = args0 +'.sh';
+	}
+	if ( args ) data.args = args;
+/*
+V.debug - press: $( '#debug' )
+	- all
+	- console.log commands
+	- active pushstream (no disconnect)
+V.press - press: $( '#infoOk' ) / $( '.switch' )
+	- each
+	- console.log commands only (NOT run)
+*/
+	if ( ! V.volupdn && ( V.debug || V.press ) ) {
+		var bashcmd = data.filesh.replace( 'settings/', '' );
+		if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
+		console.log( data );
+		console.log( bashcmd );
+		if ( V.press ) {
+			var $this   = $( '#'+ SW.id );
+			var ckecked = S[ SW.id ]
+			setTimeout( () => {
+				if ( page ) $this.prop( 'checked', ckecked );
+				bannerHide();
+			}, 5000 );
+			return
+		}
+	}
+	
+	$.post( 
+		 'cmd.php'
+		, data
+		, callback || null
+		, json || null
+	);
+}
+
+$( '#debug' ).press( function() {
+	V.debug = true;
+	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
+} );
+$( '#infoOverlay' ).press( '#infoOk', function() {
+	I.ok();
+} );
+	
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
@@ -326,8 +339,6 @@ function info( json ) {
 				? $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' )
 				: infoButtonCommand( I.ok );
 		}
-	} ).press( function() {
-		I.ok();
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
@@ -972,11 +983,6 @@ function local( delay ) {
 }
 
 // pushstream -----------------------------------------------------------------
-$( '#bar-top, .head' ).press( function() {
-	V.debug = true;
-	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
-} );
-
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 	var pushstream  = new PushStream( {
 		  modes                                 : 'websocket'

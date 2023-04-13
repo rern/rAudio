@@ -305,7 +305,7 @@ function tagEditor() {
 				} );
 				infoval.file = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
-				bash( [ 'tageditor', ...Object.values( infoval ), 'KEY '+ Object.keys( infoval ).join( ' ' ) ] );
+				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );

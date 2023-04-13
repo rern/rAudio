@@ -135,9 +135,9 @@ function switchEnable() {
 	var infoval = infoVal();
 	var keys  = Object.keys( infoval );
 	var values  = Object.values( infoval );
-	var KEY_CFG = I.fileconf ? 'CFG ' : 'KEY ';
+	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
 	notifyCommon();
-	bash( [ SW.id, ...values, KEY_CFG + keys.join( ' ' ) ] );
+	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 	S[ SW.id ] = true;
 	SWreset();
 }

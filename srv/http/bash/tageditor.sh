@@ -5,7 +5,7 @@
 args2var "$1"
 
 path="/mnt/MPD/$file"
-argslast=${args[@]: -1} # KEY album albumartist ... file - omit unchanged
+argslast=${args[@]: -1} # CMD album albumartist ... file - omit unchanged
 [[ -f $path ]] && istrack=1
 
 if [[ $file != *.cue ]]; then

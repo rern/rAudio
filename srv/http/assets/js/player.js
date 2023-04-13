@@ -23,11 +23,11 @@ $( '.btoutputall' ).click( function() {
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val(), 'KEY card' ] );
+	bash( [ 'audiooutput', $( this ).val(), 'CMD card' ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'KEY aplayname hwmixer' ] );
+	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD aplayname hwmixer' ] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -64,7 +64,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( [ cmd, S.asoundcard, mixer, $( this ).val(), 'KEY card mixer vol' ] );
+					bash( [ cmd, S.asoundcard, mixer, $( this ).val(), 'CMD card mixer vol' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ cmdpush ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
@@ -101,7 +101,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'KEY card hwmixer aplayname' ] );
+				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'CMD card hwmixer aplayname' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -216,7 +216,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', D.aplayname, 'KEY aplayname' ], val => {
+	bash( [ 'customget', D.aplayname, 'CMD aplayname' ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -238,7 +238,7 @@ $( '#setting-custom' ).click( function() {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, D.aplayname, 'KEY global output aplayname' ], mpdstart => {
+				bash( [ 'custom', global, output, D.aplayname, 'CMD global output aplayname' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -426,5 +426,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, D.card, hwmixer, D.aplayname, 'KEY mixertype card hwmixer aplayname' ] );
+	bash( [ 'mixertype', mixertype, D.card, hwmixer, D.aplayname, 'CMD mixertype card hwmixer aplayname' ] );
 }

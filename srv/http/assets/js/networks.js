@@ -142,7 +142,7 @@ $( '.connect' ).click( function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Connect ...' );
-	bash( [ 'profileconnect', ssid, 'KEY ssid' ] );
+	bash( [ 'profileconnect', ssid, 'CMD ssid' ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( V.listid === 'listbt' ) {
@@ -196,7 +196,7 @@ $( '.forget' ).click( function() {
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', ssid, 'KEY ssid', ] );
+			bash( [ 'profileremove', ssid, 'CMD ssid', ] );
 		}
 	} );
 } );
@@ -210,7 +210,7 @@ function bluetoothCommand( action, mac ) {
 	bash( [ 'bluetoothcommand.sh', action, mac ] ); // bluetoothcommand.sh action mac
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac, 'KEY mac' ], data => {
+	bash( [ 'bluetoothinfo', mac, 'CMD mac' ], data => {
 		if ( ! data ) {
 			$( '#codebluetoothlist' )
 				.empty()
@@ -234,7 +234,7 @@ function connectWiFi( data ) {
 	}
 	var keys   = Object.keys( data );
 	var values = Object.values( data );
-	bash( [ 'connect', ...values, 'KEY '+ keys.join( ' ' ) ], error => {
+	bash( [ 'connect', ...values, 'CMD '+ keys.join( ' ' ) ], error => {
 		if ( error == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -276,7 +276,7 @@ function editLAN() {
 function editLANSet( v ) {
 	var icon = 'lan';
 	var ip   = v.Address;
-	bash( [ 'lanedit', ...Object.values( v ), 'KEY '+ Object.keys( v ).join( ' ' ) ], avail => {
+	bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
 			clearTimeout( V.timeout );
@@ -305,7 +305,7 @@ function editReconnect( icon, ip, delay ) {
 	}, delay * 1000 );
 }
 function editWiFi() {
-	bash( [ 'profileget', V.li.data( 'ssid' ), 'KEY ssid' ], v => {
+	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD ssid' ], v => {
 		var static = v.IP === 'static'
 		v.Security = v.Security === 'wep';
 		v.Hidden = 'Hidden' in v;
