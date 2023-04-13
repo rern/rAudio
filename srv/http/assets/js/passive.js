@@ -184,8 +184,10 @@ function psDisplay( data ) {
 function psEqualizer( data ) {
 	if ( ! $( '#eqpreset' ).length ) return
 	
-	E = data;
-	infoEqualizer();
+	E.preset[ E.current ] = data;
+	I.values              = [ '', E.current, ...E.preset[ E.current ] ];
+	infoSetValues();
+	bash( { cmd: [ 'equalizer' ], json: E } );
 }
 function psMpdPlayer( data ) {
 	clearTimeout( V.debounce );

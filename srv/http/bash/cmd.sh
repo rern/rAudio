@@ -5,44 +5,6 @@ dirimg=/srv/http/assets/img
 
 args2var "$1"
 
-equalizerAmixer() { # sudo - mixer equal is user dependent
-	local player=$( < $dirshm/player )
-	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
-	sudo -u $user amixer -MD equal contents \
-					| grep ': values' \
-					| cut -d, -f2 \
-					| xargs
-}
-equalizerGet() {
-	local val filepresets current presets lines l name nameval data
-	val=$( equalizerAmixer )
-	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
-	[[ ! -e $filepresets ]] && echo Flat > "$filepresets"
-	
-	if [[ $2 == set ]]; then
-		current='(unnamed)'
-		sed -i "1 s/.*/(unnamed)/" "$filepresets"
-	else
-		current=$( head -1 "$filepresets" )
-	fi
-	[[ $current != '(unnamed)' ]] && presets+='"Flat"' || presets+='"(unnamed)","Flat"'
-	readarray -t lines <<< $( sed 1d "$filepresets" | grep -v '^Flat$' | sort )
-	if [[ $lines ]]; then
-		for l in "${lines[@]}"; do
-			name=${l/^*}
-			presets+=',"'$name'"'
-			nameval+=',"'$name'":"'${l/*^}'"'
-		done
-	fi
-	data='{
-  "current" : "'$current'"
-, "values"  : [ '${val// /,}' ]
-, "presets" : [ '$presets' ]
-, "nameval" : { '${nameval:1}' }
-}'
-	[[ $1 == pushstream ]] && pushstream equalizer "$data" || echo $data
-}
 plAddPlay() {
 	pushstreamPlaylist add
 	if [[ ${1: -4} == play ]]; then
@@ -93,6 +55,13 @@ plTail() {
 	total=$( mpc status %length% )
 	pos=$( mpc status %songpos% )
 	echo $(( total - pos ))
+}
+pushstreamEqualizer() {
+	values=$( sudo -u $user amixer -MD equal contents \
+					| grep ': values' \
+					| cut -d, -f2 \
+					| xargs )
+	pushstream equalizer '[ '${values// /,}' ]'
 }
 pushstreamPlaylist() {
 	local arg
@@ -464,54 +433,29 @@ display )
 	fi
 	$dirsettings/player-conf.sh
 	;;
-equalizer )
-	type=${args[1]} # preset, delete, rename, new, save
-	name=${args[2]}
-	newname=${args[3]}
-	filepresets=$dirsystem/equalizer.presets
-	[[ -e $dirshm/btreceiver ]] && filepresets+="-$( < $dirshm/btreceiver )"
-	if [[ $type == rename ]]; then
-		sed -i -e "1 s/.*/$newname/
-" -e "s/^$name^/$newname^/
-" "$filepresets"
-		equalizerGet pushstream
-		exit
-	fi
+equalizer ) ## preset, delete, rename, new, save
+	[[ ! $values ]] && exit
 	
-	flat='62 62 62 62 62 62 62 62 62 62'
-	if [[ $type == preset ]]; then
-		[[ $name == Flat ]] && v=( $flat ) || v=( $( grep "^$name\^" "$filepresets" | cut -d^ -f2- ) )
-	else # remove then save again with current values
-		append=1
-		sed -i "/^$name^/ d" "$filepresets" 2> /dev/null
-		if [[ $type == delete ]]; then
-			v=( $flat )
-			name=Flat
-		fi
-	fi
-	sed -i "1 s/.*/$name/" "$filepresets"
-	if [[ $type == preset || $type == delete ]]; then
-		player=$( < $dirshm/player )
-		[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
-		freq=( 31 63 125 250 500 1 2 4 8 16 )
-		for (( i=0; i < 10; i++ )); do
-			(( i < 5 )) && unit=Hz || unit=kHz
-			band=( "0$i. ${freq[i]} $unit" )
-			sudo -u $user amixer -MqD equal sset "$band" ${v[i]}
-		done
-	fi
-	val=$( equalizerAmixer )
-	[[ $append && $name != Flat ]] && echo $name^$val >> "$filepresets"
-	equalizerGet pushstream
+	freq=( 31 63 125 250 500 1 2 4 8 16 )
+	v=( $values )
+	for (( i=0; i < 10; i++ )); do
+		(( i < 5 )) && unit=Hz || unit=kHz
+		band=( "0$i. ${freq[i]} $unit" )
+		sudo -u $user amixer -MqD equal sset "$band" ${v[i]}
+	done
+	values=$( sudo -u $user amixer -MD equal contents \
+					| grep ': values' \
+					| cut -d, -f2 \
+					| xargs )
+	pushstreamEqualizer
 	;;
 equalizerget )
-	equalizerGet ${args[1]} ${args[2]}
+	cat $dirsystem/equalizer.json 2> /dev/null || echo false
+	;;
+equalizerpush )
+	pushstreamEqualizer
 	;;
 equalizerupdn )
-	band=${args[1]}
-	val=${args[2]}
-	player=$( < $dirshm/player )
-	[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
 	sudo -u $user amixer -MqD equal sset "$band" $val
 	;;
 getelapsed )

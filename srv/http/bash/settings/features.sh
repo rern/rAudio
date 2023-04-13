@@ -28,7 +28,7 @@ localbrowserDisable() {
 localbrowserXset() {
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	local off=$(( $screenoff * 60 ))
+	off=$(( $screenoff * 60 ))
 	xset s off
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
