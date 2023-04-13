@@ -517,6 +517,9 @@ equalizerupdn )
 getelapsed )
 	getElapsed
 	;;
+hashreset )
+	! grep -q ^.hash.*time /srv/http/common.php && sed -E -i "s/(^.hash.*v=).*/\1'.time();/" /srv/http/common.php
+	;;
 ignoredir )
 	touch $dirmpd/updating
 	path=${args[1]}

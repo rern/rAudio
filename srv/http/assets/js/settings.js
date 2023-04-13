@@ -443,15 +443,6 @@ $( '.switch' ).click( function() {
 			}
 		}, 'json' );
 	}
-} ).press( function( e ) {
-	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).click();
-		return
-	}
-	
-	switchIdIconTitle( e.target.id );
-	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
-	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
 $( '#bar-bottom div' ).click( function() {
 	loader();

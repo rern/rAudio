@@ -93,22 +93,17 @@ V.debug - press: $( '#debug' )
 	- all
 	- console.log commands
 	- active pushstream (no disconnect)
-V.press - press: $( '#infoOk' ) / $( '.switch' )
+V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 	- each
 	- console.log commands only (NOT run)
 */
-	if ( ! V.volupdn && ( V.debug || V.press ) ) {
+	if ( V.debug || V.consoleonly ) {
 		var bashcmd = data.filesh.replace( 'settings/', '' );
 		if ( data.args ) bashcmd += ' "\\\n'+ data.args.join( '\n' ).replace( /"/g, '\\"' ) +'"';
 		console.log( data );
 		console.log( bashcmd );
-		if ( V.press ) {
-			var $this   = $( '#'+ SW.id );
-			var ckecked = S[ SW.id ]
-			setTimeout( () => {
-				if ( page ) $this.prop( 'checked', ckecked );
-				bannerHide();
-			}, 5000 );
+		if ( V.consoleonly ) {
+			setTimeout( () => page ? switchCancel() : bannerHide(), 5000 );
 			return
 		}
 	}
@@ -120,13 +115,26 @@ V.press - press: $( '#infoOk' ) / $( '.switch' )
 		, json || null
 	);
 }
-
+// debug
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
+	bash( [ 'cmd.sh', 'hashreset' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
+	V.consoleonly = true;
 	I.ok();
+} );
+$( '.col-r .switch' ).press( function( e ) {
+	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
+		$( '#setting-'+ e.target.id ).click();
+		return
+	}
+	
+	V.consoleonly = true;
+	switchIdIconTitle( e.target.id );
+	notifyCommon( S[ SW.id ] ? 'Disable ...' : 'Enable ...' );
+	bash( S[ SW.id ] ? [ SW.id, 'OFF' ] : [ SW.id ] );
 } );
 	
 // ----------------------------------------------------------------------
