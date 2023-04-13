@@ -339,7 +339,7 @@ function infoWiFi( values ) {
 function infoWiFiStatic( values ) {
 	if ( ! values ) values = default_v.static;
 	values.Address = S.ipwl || S.ipsub;
-	values.Gateway = S.gatewaywl || S.ipsub;
+	values.Gateway = S.gateway || S.ipsub;
 	info( {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'

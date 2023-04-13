@@ -104,6 +104,8 @@ if [[ $ipeth ]]; then
 , "static"   : '$static'
 }'
 fi
+[[ ! $gateway ]] && gateway=$gatewaywl
+
 # hostapd
 if systemctl -q is-active hostapd; then
 	hostapd='{
@@ -120,7 +122,7 @@ data='
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
-, "gatewaywl"   : "'$gatewaywl'"
+, "gateway"     : "'$gateway'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"
