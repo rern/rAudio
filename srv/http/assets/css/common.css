@@ -3,13 +3,14 @@
 #infoOverlay,
 #keyboard,
 #button-data  { z-index: 115 }
-#data         { z-index: 110 }
+#data,
+#degug        { z-index: 110 }
 .head         { z-index: 95 }
 .albumrefresh { z-index: 1 }
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1679112028' );
+	src         : url( '/assets/fonts/rern.woff2?v=1681280575' );
 }
 @font-face {
 	font-family : Lato;
@@ -294,6 +295,15 @@ input::-moz-focus-inner {
 	overflow    : auto;
 	white-space : pre-wrap;
 	background  : #000;
+}
+#debug {
+	position: fixed;
+	display: none;
+	bottom: 0;
+	right: 0;
+	width: 40px;
+	height: 40px;
+	z-index: 110;
 }
 codered  {
 	padding       : 0px 5px 3px 5px;
@@ -946,6 +956,7 @@ input[type=radio]:disabled {
 	}
 }
 @media ( hover:hover ) {
+	#debug { display: block }
 	/* :hover *********************************************************/
 	#infoTab,
 	label,
