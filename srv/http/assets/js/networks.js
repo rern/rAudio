@@ -1,6 +1,6 @@
 var default_v = {
-	  dhcp   : { ESSID: '', Key: '', Security: false, Hidden: false }
-	, static : { ESSID: '', Key: '', Address: S.ipsub, Gateway: S.ipsub, Security: false, Hidden: false }
+	  dhcp   : { ESSID: '', Key: '',                           Security: false, Hidden: false }
+	, static : { ESSID: '', Key: '', Address: '', Gateway: '', Security: false, Hidden: false }
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -337,6 +337,9 @@ function infoWiFi( values ) {
 	} );
 }
 function infoWiFiStatic( values ) {
+	if ( ! values ) values = default_v.static;
+	values.Address = S.ipsub;
+	values.Gateway = S.ipsub;
 	info( {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
@@ -345,7 +348,7 @@ function infoWiFiStatic( values ) {
 		, boxwidth      : 180
 		, textlabel     : [ 'SSID', 'Password', 'IP', 'Gateway' ]
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
-		, values        : values || default_v.static
+		, values        : values
 		, checkblank    : [ 0 ]
 		, checkchanged  : values ? true : false
 		, checkip       : [ 2, 3 ]
