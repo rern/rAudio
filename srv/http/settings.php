@@ -47,7 +47,8 @@ foreach ( [ 'Features', 'Player', 'Networks', 'System', 'Addons' ] as $name ) {
 	$active  = $id === $pagetitle ? ' class="active"' : '';
 	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 }
-$htmlbar.= '</div>';
+$htmlbar.= '</div>
+<div id="debug"></div>';
 echo $htmlbar;
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 

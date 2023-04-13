@@ -314,6 +314,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<?=i( 'library', 'library' ).i( 'playback', 'playback' ).i( 'playlist', 'playlist' )?>
 </div>
 <div id="bio" class="hide"></div>
+<div id="debug"></div>
 
 <?php
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
