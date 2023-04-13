@@ -34,7 +34,7 @@ fi
 
 wldev=$( < $dirshm/wlan )
 listWlan() {
-	local profiles profile ipwl gateway dbm listwl listwlnotconnected
+	local profiles profile dbm listwlnotconnected
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
@@ -44,12 +44,12 @@ listWlan() {
 					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
 					[[ $ipwl ]] && break || sleep 1
 				done
-				gateway=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
+				gatewaywl=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
 				dbm=$( awk '/'$wldev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
 	  "dbm"      : '$dbm'
-	, "gateway"  : "'$gateway'"
+	, "gateway"  : "'$gatewaywl'"
 	, "ip"       : "'$ipwl'"
 	, "ssid"     : "'$( stringEscape $profile )'"
 	}'
@@ -61,12 +61,12 @@ listWlan() {
 		done
 	fi
 	[[ $listwlnotconnected ]] && listwl+="$listwlnotconnected"
-	[[ $listwl ]] && echo [ ${listwl:1} ]
+	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
 }
 if [[ $1 == pushwl ]]; then
-	listwl=$( listWlan )
-	[[ ! $listwl ]] && listwl=false
-	pushstream wlan "$listwl"
+	pushwl=1
+	listWlan
+	pushstream wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
 	exit
 fi
 
@@ -75,7 +75,7 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
 [[ $activebt ]] && listbt=$( listBluetooth )
 
 # wlan
-[[ -e $dirshm/wlan ]] && listwl=$( listWlan )
+[[ -e $dirshm/wlan ]] && listWlan
 
 # lan
 ifconfiglan=$( ifconfig | grep -A1 ^e )
@@ -120,6 +120,7 @@ data='
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
+, "gatewaywl"   : "'$gatewaywl'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
 , "ipwl"        : "'$ipwl'"

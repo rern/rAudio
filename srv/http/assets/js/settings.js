@@ -279,7 +279,7 @@ function psWlan( data ) {
 		return
 	}
 	
-	S.listwl = data;
+	$.each( data, ( k, v ) => { S[ k ] = v } );
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
