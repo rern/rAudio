@@ -27,6 +27,20 @@ fi
 rm -f $dirsystem/btoutputonly
 [[ -e $dirmpdconf/bluetooth.conf && -e $dirmpdconf/output.conf ]] && touch $dirsystem/btoutputall
 
+file=$dirsystem/equalizer.conf
+if [[ -e $file ]]; then
+	readarray -t lines <<< $( grep -v '^Flat$' $file )
+	for l in "${lines[@]}"; do
+		preset+=', "'${l/^*}'" : [ '$( tr ' ' , <<< ${l/*^} )' ]'
+	done
+	data='{
+  "active" : "'$( head -1 $file )'"
+, "preset" : { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'$preset' }
+}'
+	jq <<< $data > $dirsystem/equalizer.json
+	rm $file
+fi
+
 for file in display order; do
 	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
 done
