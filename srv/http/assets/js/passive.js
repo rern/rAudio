@@ -181,14 +181,6 @@ function psDisplay( data ) {
 		$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 	}
 }
-function psEqualizer( data ) {
-	if ( ! $( '#eqpreset' ).length ) return
-	
-	E.preset[ E.current ] = data;
-	I.values              = [ '', E.current, ...E.preset[ E.current ] ];
-	infoSetValues();
-	bash( { cmd: [ 'equalizer' ], json: E } );
-}
 function psMpdPlayer( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {

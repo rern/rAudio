@@ -433,7 +433,7 @@ display )
 	fi
 	$dirsettings/player-conf.sh
 	;;
-equalizer ) ## preset, delete, rename, new, save
+equalizer ) # preset ( delete, rename, new - save json only )
 	[[ ! $values ]] && exit
 	
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
@@ -443,19 +443,11 @@ equalizer ) ## preset, delete, rename, new, save
 		band=( "0$i. ${freq[i]} $unit" )
 		sudo -u $user amixer -MqD equal sset "$band" ${v[i]}
 	done
-	values=$( sudo -u $user amixer -MD equal contents \
-					| grep ': values' \
-					| cut -d, -f2 \
-					| xargs )
-	pushstreamEqualizer
 	;;
 equalizerget )
 	cat $dirsystem/equalizer.json 2> /dev/null || echo false
 	;;
-equalizerpush )
-	pushstreamEqualizer
-	;;
-equalizerupdn )
+equalizerset )
 	sudo -u $user amixer -MqD equal sset "$band" $val
 	;;
 getelapsed )

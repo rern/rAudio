@@ -105,6 +105,7 @@ dabradio )
 	;;
 equalizer )
 	[[ $ON ]] && touch $dirsystem/equalizer || rm -f $dirsystem/equalizer
+	pushstream reload 1
 	pushRestartMpd equalizer $TF
 	;;
 hostapd )

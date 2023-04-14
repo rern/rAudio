@@ -1,5 +1,6 @@
 C = {}; // counts
 D = {}; // display
+E = {}; // equalizer
 O = []; // order
 S = {}; // status
 V = {   // var global

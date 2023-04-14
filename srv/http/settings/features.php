@@ -138,9 +138,6 @@ EOF
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust &raquo; {$Fi( 'plus-circle btn' )} Add &raquo; {$Fi( 'save btn' )} Save
- · Existing: Adjust &raquo; {$Fi( 'save btn' )} Save
- · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
 	]

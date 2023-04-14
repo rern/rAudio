@@ -99,15 +99,19 @@
 #eq i {
 	position: relative;
 }
+#eqdelete {
+	margin-left: calc( var( --eqBandW ) * -1 );
+}
+#eqrename,
+#eqsave {
+	margin-right: calc( var( --eqBandW ) / 2 );
+}
 #eqname {
 	padding-right: 21px;
 	vertical-align: -5px;
 	text-align: center;
 }
-#eqsave {
-	margin-right: 25px;
-}
 #eqnew,
 #eqback {
-	margin-left: 25px;
+	margin-left: calc( var( --eqBandW ) / 2 );
 }
