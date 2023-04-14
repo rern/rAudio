@@ -424,11 +424,7 @@ function displaySave() {
 	bash( { cmd: [ 'display' ], json: values } );
 }
 function displaySubMenu() {
-	if ( D.equalizer && typeof infoEqualizer !== 'function' ) {
-		location.reload();
-		return
-	}
-	
+	if ( D.equalizer && typeof infoEqualizer !== 'function' ) $.getScript( 'assets/js/equalizer.js' );
 	$( '#dsp' )
 		.toggleClass( 'i-camilladsp', D.camilladsp )
 		.toggleClass( 'i-equalizer', D.equalizer );

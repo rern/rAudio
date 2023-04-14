@@ -1,39 +1,38 @@
-E           = {}
-var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+E             = {}
+var freq      = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var timeout;
-var band    = [];
-var opthz   = '';
+var band      = [];
+var labelhz   = '';
 freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
-	opthz  += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
+	labelhz  += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
 var content = `
 <div id="eq">
-<div class="hz">${ opthz }</div>
+<div class="hz">${ labelhz }</div>
 <div class="bottom">
 	${ ico( 'minus-circle hide', 'eqdelete' ) }
 	${ ico( 'edit-circle', 'eqrename' ) }
 	${ ico( 'save', 'eqsave' ) }
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	${ ico( 'plus-circle', 'eqnew' ) + ico( 'arrow-left bl hide', 'eqcancel' ) }
+	${ ico( 'plus-circle', 'eqnew' ) + ico( 'arrow-left bl hide', 'eqback' ) }
 	${ ico( 'undo', 'equndo' ) }
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		E      = data || { current: "Flat", preset: { Flat: [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] } }
+		E      = data || { active: "Flat", preset: { Flat: [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ] } }
 		E.user = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		infoEqualizer();
 	}, 'json' );
 }
 function infoEqualizer() {
-	var values    = [ '', E.current, ...E.preset[ E.current ] ];
 	info( {
 		  icon       : 'equalizer'
 		, title      : 'Equalizer'
 		, content    : content.replace( 'PRESETS', eqOptionPreset() )
-		, values     : values
+		, values     : [ '', E.active, ...E.preset[ E.active ] ]
 		, beforeshow : () => {
 			$( '#infoBox' ).css( 'width', 550 );
 			eqButtonSet();
@@ -65,7 +64,7 @@ function infoEqualizer() {
 			}
 			$( '#eqpreset' ).change( function() {
 				var name = $( this ).val();
-				E.current = name;
+				E.active = name;
 				var v = E.preset[ name ].join( ' ' );
 				bash( { cmd: [ 'equalizer', v, E.user, 'CMD values user' ], json: E } );
 			} );
@@ -74,7 +73,7 @@ function infoEqualizer() {
 				var blank  = val === '';
 				var exists = val in E.preset;
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
-					var changed = ! blank && ! exists && val !== E.current;
+					var changed = ! blank && ! exists && val !== E.active;
 				} else { // new
 					var changed = ! blank && ! exists;
 				}
@@ -82,54 +81,54 @@ function infoEqualizer() {
 				$( '#eqsave' ).toggleClass( 'disabled', ! changed );
 			} );
 			$( '#eqdelete' ).click( function() {
-				delete E.preset[ E.current ];
-				E.current = 'Flat';
+				delete E.preset[ E.active ];
+				E.active = 'Flat';
 				var v = E.preset.Flat.join( ' ' );
 				bash( { cmd: [ 'equalizer', v, E.user, 'CMD values user' ], json: E } );
-				$( '#eqcancel' ).click();
+				$( '#eqback' ).click();
 //				eqOptionPreset();
 			} );
 			$( '#eqrename' ).click( function() {
 				$( '#eqrename, #eqdelete' ).toggleClass( 'hide' );
-				$( '#eqname' ).val( E.current );
+				$( '#eqname' ).val( E.active );
 				$( '#eqnew' ).click();
 			} );
 			$( '#eqsave' ).click( function() {
 				if ( $( '#eqrename' ).hasClass( 'hide' ) ) {
 					var name            = $( '#eqpreset' ).val();
 					var newname         = $( '#eqname' ).val();
-					E.current           = newname;
+					E.active           = newname;
 					E.preset[ newname ] = E.preset[ name ];
 					delete E.preset[ name ];
 					bash( { cmd: [ 'equalizer' ], json: E } );
 				} else {
 					var name         = $( '#eqname' ).val();
-					E.current        = name;
+					E.active        = name;
 					E.preset[ name ] = infoVal().slice( 2 );
 					bash( { cmd: [ 'equalizer' ], json: E } )
 				}
-				$( '#eqcancel' ).click();
+				$( '#eqback' ).click();
 				$( '#eqrename' ).removeClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
 //				eqOptionPreset();
 			} );
 			$( '#eqnew' ).click( function() {
 				$( '#eqnew, #eq .select2-container' ).addClass( 'hide' );
-				$( '#eqname, #eqcancel' ).removeClass( 'hide' );
+				$( '#eqname, #eqback' ).removeClass( 'hide' );
 				$( '#eqname' ).css( 'display', 'inline-block' );
 				$( '#eqrename' ).addClass( 'disabled' );
 				$( '#eqsave' ).addClass( 'disabled' );
-				if ( E.current !== 'Flat' && E.current !== '(unnamed)' ) $( '#eqname' ).val( E.current )
+				if ( E.active !== 'Flat' && E.active !== '(unnamed)' ) $( '#eqname' ).val( E.active )
 //				eqOptionPreset();
 			} );
-			$( '#eqcancel' ).click( function() {
+			$( '#eqback' ).click( function() {
 				$( '#eqrename, #eqnew, #eq .select2-container' ).removeClass( 'hide' );
-				$( '#eqname, #eqcancel, #eqdelete' ).addClass( 'hide' );
+				$( '#eqname, #eqback, #eqdelete' ).addClass( 'hide' );
 				$( '#eqname' ).val( '' );
 				eqButtonSet();
 			} );
 			$( '#equndo' ).click( function() {
-				var v = E.preset[ E.current ].join( ' ' );
+				var v = E.preset[ E.active ].join( ' ' );
 				bash( [ 'equalizer', v, E.user, 'CMD values user' ] );
 			} );
 		}
@@ -137,12 +136,12 @@ function infoEqualizer() {
 	} );
 }
 function eqButtonSet() {
-	var flat    = E.current === 'Flat';
-	var unnamed = E.current === '(unnamed)';
+	var flat    = E.active === 'Flat';
+	var unnamed = E.active === '(unnamed)';
 	if ( flat || unnamed ) {
 		var changed = false;
 	} else {
-		var val     = E.preset[ E.current ];
+		var val     = E.preset[ E.active ];
 		var vnew    = infoVal().slice( 2 );
 		var changed = vnew.join( ' ' ) !== val.join( ' ' );
 	}
@@ -151,7 +150,7 @@ function eqButtonSet() {
 	$( '#equndo' ).toggleClass( 'disabled', flat || ! changed );
 }
 function eqOptionPreset() {
-	var name      = Object.keys( E.preset );
+	var name      = Object.keys( E.preset ).sort();
 	var optpreset = '';
 	name.forEach( n => optpreset += '<option>'+ n +'</option>' );
 	if ( ! I.active ) return optpreset
