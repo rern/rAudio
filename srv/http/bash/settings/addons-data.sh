@@ -2,15 +2,17 @@
 
 . /srv/http/bash/common.sh
 
+online=true
 if [[ -e $dirshm/addonsprogress ]]; then
 	rm $dirshm/addonsprogress
 	data=$( < $diraddons/addonslist.json )
 elif internetConnected; then
 	data=$( curl -sSfL https://github.com/rern/rAudio-addons/raw/main/addonslist.json )
-	[[ $? == 0 ]] && echo "$data" > $diraddons/addonslist.json || error='Database download failed.'
+	[[ $? == 0 ]] && echo "$data" > $diraddons/addonslist.json || notify addons Addons 'Database download failed.' -1
 else
+	online=false
 	data=$( < $diraddons/addonslist.json )
-	error='Internet is offline.'
+	notify addons Addons 'Internet is offline.' -1
 fi
 
 addons=$( sed -n '/^\s, .*{$/ {s/.*, "\(.*\)".*/\1/; p}' <<< $data )
@@ -43,6 +45,6 @@ echo $( head -n -1 <<< $data )'
 		, "installed"   : '$installed'
 		, "notverified" : '$notverified'
 		, "update"      : '$update'
-		, "error"       : "'$error'"
+		, "online"      : '$online'
 	}
 }'

@@ -25,7 +25,16 @@ $( '.container' ).on( 'click', '.revision', function() {
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
 } ).on( 'click', '.infobtn', function() {
 	$this       = $( this );
-	if ( $this.hasClass( 'disabled' ) ) return
+	if ( $this.hasClass( 'disabled' ) && ! $this.hasClass( 'uninstall' ) ) {
+		if ( ! S.status.online ) {
+			info( {
+				  icon    : 'addons'
+				, title   : 'Addons'
+				, message : 'Internet connection is offline.'
+			} );
+		}
+		return
+	}
 	
 	addonData( $this );
 	if ( 'option' in V.addon ) {
@@ -39,9 +48,9 @@ $( '.container' ).on( 'click', '.revision', function() {
 		} );
 	}
 } ).on( 'click', '.thumbnail', function() {
-	$( this ).prev().find( '.source' )[ 0 ].click();
+	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].click();
 } ).press( '.install', function( target ) {
-	if ( S.status.error ) return
+	if ( ! S.status.online ) return
 	
 	addonData( $( target ) );
 	info( {
@@ -94,14 +103,12 @@ function postInput( name, value ) {
 	return '<input type="hidden" name="'+ name +'" value="'+ ( value || '' ) +'">'
 }
 function renderPage() {
-	var list   = S.status.error ? iconwarning + S.status.error +'<br>&nbsp;' : '';
+	var list   = '';
 	var addons = '';
 	delete S.push;
 	$.each( S, ( alias, addon ) => {
 		if ( alias === 'status' || ( S.status.hide.includes( alias ) ) ) return
-		var installed   = S.status.installed.includes( alias ) ? ' installed' : '';
 		var notverified = S.status.notverified.includes( alias );
-		var update      = S.status.update.includes( alias ) ? ' update' : '';
 		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
 		if ( 'revision' in addon ) {
 			var revision = '<p class="revisiontext hide">';
@@ -113,6 +120,8 @@ function renderPage() {
 		if ( notverified ) {
 			var button   = iconwarning + addon.notverified;
 		} else {
+			var installed   = S.status.installed.includes( alias ) ? ' installed' : '';
+			var update      = S.status.update.includes( alias ) ? ' update' : '';
 			var disabled = ''
 			if ( installed ) {
 				disabled = update ? '' : ' disabled';
@@ -145,7 +154,7 @@ function renderPage() {
 	$( '.container' ).html( html ).promise().done( function() {
 		$( '.container' ).removeClass( 'hide' );
 		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
-		if ( S.status.error ) $( '.infobtn' ).addClass( 'disabled' );
+		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
 		loaderHide();
 	} );
 }
