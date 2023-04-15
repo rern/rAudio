@@ -328,7 +328,7 @@ function psRelays( response ) {
 		return
 	}
 	
-	clearInterval( V.intRelaysTimer );
+	clearInterval( V.interval.relays );
 	var state = response.state;
 	var stopwatch = '<div class="msg-l"><object type="image/svg+xml" data="/assets/img/stopwatch.svg"></object></div>';
 	if ( state === 'IDLE' ) {
@@ -346,12 +346,12 @@ function psRelays( response ) {
 				banner( 'relays', 'GPIO Relays', 'Reset idle timer to '+ response.timer +'m' );
 			}
 		} );
-		var delay = 59;
-		V.intRelaysTimer = setInterval( () => {
+		var delay     = 59;
+		V.interval.relays = setInterval( () => {
 			if ( delay ) {
 				$( '.infomessage .wh' ).text( delay-- );
 			} else {
-				clearInterval( V.intRelaysTimer );
+				clearInterval( V.interval.relays );
 				$( '#relays' ).removeClass( 'on' );
 				$( '#mi-relays, #ti-relays' ).addClass( 'hide' );
 			}

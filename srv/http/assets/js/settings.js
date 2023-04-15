@@ -282,7 +282,6 @@ function psWlan( data ) {
 //---------------------------------------------------------------------------------------
 var dirsystem  = '/srv/http/data/system';
 var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var timer;
 var pagenext   = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
@@ -366,9 +365,9 @@ $( '#button-data' ).click( function() {
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
 } ).on( 'mousedown touchdown', function() {
-	timer = setTimeout( () => location.reload(), 1000 );
+	V.timeout = setTimeout( () => location.reload(), 1000 );
 } ).on( 'mouseup mouseleave touchup touchleave', function() {
-	clearTimeout( timer );
+	clearTimeout( V.timeout );
 } );
 $( '.helphead' ).click( function() {
 	var $this = $( this );

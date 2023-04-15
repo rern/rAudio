@@ -12,6 +12,7 @@ V = {   // var global
 	, coverart      : '/assets/img/coverart.svg'
 	, icoveredit    : '<div class="coveredit cover-change">'+ ico( 'coverart' ) +'</div>'
 	, icoversave    : '<div class="coveredit cover-save">'+ ico( 'save' ) +'</div>'
+	, interval      : {}
 	, covervu       : '/assets/img/vu.svg'
 	, guide         : false
 	, library       : false
@@ -775,7 +776,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
 	if ( V.press ) {
-		clearInterval( V.intVolume );
+		clearInterval( V.interval.volume );
 		bash( [ 'volumepushstream' ] );
 	}
 } ).press( function( e ) {
@@ -784,7 +785,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	var vol   = S.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 	
-	V.intVolume = setInterval( () => {
+	V.interval.volume = setInterval( () => {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 		
 		voldn ? vol-- : vol++;
@@ -809,7 +810,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	$( '#volume-bar' ).css( 'width', vol +'%' );
 } ).on( 'touchend mouseup mouseleave', function() {
 	bash( [ 'volumepushstream' ] );
-	clearTimeout( V.intVolume );
+	clearTimeout( V.interval.volume );
 	clearTimeout( V.volumebar );
 	setTimeout( volumeBarHide, 3000 );
 } ).press( function( e ) {
@@ -821,7 +822,7 @@ $( '#volume-band-dn, #volume-band-up' ).click( function() {
 	var vol   = S.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 	
-	V.intVolume = setInterval( () => {
+	V.interval.volume = setInterval( () => {
 		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 		
 		voldn ? vol-- : vol++;
@@ -1048,8 +1049,8 @@ $( '.btn-cmd' ).click( function() {
 			vu();
 		} else if ( cmd === 'stop' ) {
 			S.state = cmd;
-			clearInterval( V.intElapsed );
-			clearInterval( V.intElapsedPl );
+			clearInterval( V.interval.elapsed );
+			clearInterval( V.interval.elapsedpl );
 			elapsedscrobble = S.webradio ? '' : S.elapsed;
 			if ( S.player !== 'mpd' ) {
 				bash( [ 'playerstop', elapsedscrobble ] );

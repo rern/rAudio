@@ -15,7 +15,7 @@ function blinkDot() {
 	var $d1 = $( '.dot1' );
 	var $d2 = $( '.dot2' );
 	var $d3 = $( '.dot3' );
-	V.intBlinkDot = setInterval( () => {
+	V.interval.blinkdot = setInterval( () => {
 		$d1.css( 'opacity', 1 );
 		$d2.css( 'opacity', 0.1 );
 		$d3.css( 'opacity', 0.50 );
@@ -34,7 +34,7 @@ function blinkDot() {
 function blinkUpdate() {
 	var $icons = $( '#library, #button-library, #mi-libupdate, #ti-libupdate' );
 	$icons.removeClass( 'blink' );
-	V.intBlinkUpdate = setInterval( () => {
+	V.interval.blinkupdate = setInterval( () => {
 		$icons.addClass( 'clear' );
 		setTimeout( () => $icons.removeClass( 'clear' ), 1500 );
 	}, 2500 );
@@ -71,9 +71,7 @@ function changeIP() { // for android app
 	} );
 }
 function clearIntervalAll() {
-	// .btn-cmd[play], #time[start change], #time-band[touchstart mousedown], #pl-list li, 
-	// psNotify, pushstream[disconnect], renderPlayback, setProgressElapsed, setPlaylistScroll, switchPage
-	[ V.intBlinkDot, V.intBlinkUpdate, V.intElapsedPl, V.intElapsed, V.intRelaysTimer, V.intVu ].forEach( el => clearInterval( el ) );
+	$.each( V.interval, ( k, v ) => clearInterval( v ) );
 	if ( S.state === 'play' && ! S.stream ) setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
@@ -1156,7 +1154,7 @@ function renderPlayback() {
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
 	setVolume();
-	clearInterval( V.intBlinkDot );
+	clearInterval( V.interval.blinkdot );
 	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
 		setPlaybackBlank();
@@ -1333,7 +1331,7 @@ function second2HMS( second ) {
 	return hh  +':'+ mm +':'+ ss;
 }
 function setBlinkDot() {
-	[ V.intBlinkDot, V.intElapsedPl, V.intElapsed, V.intVu ].forEach( el => clearInterval( el ) );
+	clearIntervalAll();
 	$( '#vuneedle' ).css( 'transform', '' );
 	$( '#elapsed, #total, #progress' ).empty();
 	if ( S.state === 'play' ) {
@@ -1433,7 +1431,7 @@ function setButtonUpdateAddons() {
 	}
 }
 function setButtonUpdating() {
-	clearInterval( V.intBlinkUpdate );
+	clearInterval( V.interval.blinkupdate );
 	if ( S.updating_db ) {
 		if ( $( '#bar-bottom' ).is( ':hidden' ) || $( '#bar-bottom' ).hasClass( 'transparent' ) ) {
 			var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
@@ -1656,7 +1654,7 @@ function setPlaylistScroll() {
 			var elapsedL0 = 0;
 			var elapsedL  = 0;
 			if ( S.elapsed ) $elapsed.html( ico( 'play' ) + second2HMS( S.elapsed ) + slash );
-			V.intElapsedPl = setInterval( () => {
+			V.interval.elapsedpl = setInterval( () => {
 				S.elapsed++;
 				if ( S.elapsed === S.Time ) {
 					clearIntervalAll();
@@ -1677,7 +1675,7 @@ function setPlaylistScroll() {
 	}
 }
 function setProgress( position ) {
-	if ( S.state !== 'play' || S.elapsed === 0 ) clearInterval( V.intElapsed );
+	if ( S.state !== 'play' || S.elapsed === 0 ) clearInterval( V.interval.elapsed );
 	if ( position !== 0 ) position = S.elapsed;
 	$timeprogress.css( 'transition-duration', '0s' );
 	$timeRS.setValue( position );
@@ -1692,7 +1690,7 @@ function setProgressAnimate() {
 	$( '#time-bar' ).css( 'width', '100%' );
 }
 function setProgressElapsed() {
-	clearInterval( V.intElapsed );
+	clearInterval( V.interval.elapsed );
 	if ( S.elapsed === false || S.state !== 'play' || 'autoplaycd' in V ) return // wait for cd cache on start
 	
 	var elapsedhms;
@@ -1707,7 +1705,7 @@ function setProgressElapsed() {
 		} else {
 			$timeprogress.css( 'transition-duration', '0s' );
 		}
-		V.intElapsed = setInterval( () => {
+		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			if ( S.elapsed < time ) {
 				if ( localhost ) {
@@ -1716,7 +1714,7 @@ function setProgressElapsed() {
 				}
 				elapsedhms = second2HMS( S.elapsed );
 				$elapsed.text( elapsedhms );
-				if ( S.state !== 'play' ) clearInterval( V.intElapsed );
+				if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 			} else {
 				S.elapsed = 0;
 				clearIntervalAll();
@@ -1728,11 +1726,11 @@ function setProgressElapsed() {
 		$( '#elapsed' ).html( V.blinkdot );
 		$elapsed = $( '#total, #progress span' );
 		$elapsed.text( second2HMS( S.elapsed ) );
-		V.intElapsed = setInterval( () => {
+		V.interval.elapsed = setInterval( () => {
 			S.elapsed++;
 			elapsedhms = second2HMS( S.elapsed );
 			$elapsed.text( elapsedhms );
-			if ( S.state !== 'play' ) clearInterval( V.intElapsed );
+			if ( S.state !== 'play' ) clearInterval( V.interval.elapsed );
 		}, 1000 );
 	}
 }
@@ -1929,7 +1927,7 @@ function volumeColorUnmute() {
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
-		clearInterval( V.intVu );
+		clearInterval( V.interval.vu );
 		$( '#vuneedle' ).css( 'transform', '' );
 		return
 	}
@@ -1938,9 +1936,9 @@ function vu() {
 		var range = 8; // -/+
 		var deg   = 0;
 		var inc;
-		clearInterval( V.intVu );
+		clearInterval( V.interval.vu );
 		$( '#vuneedle' ).css( 'transform', 'rotate( '+ Math.random() * range +'deg )' );
-		V.intVu = setInterval( () => {
+		V.interval.vu = setInterval( () => {
 			inc  = Math.random() * range * 2;
 			deg += inc;
 			if ( deg < -range ) {
