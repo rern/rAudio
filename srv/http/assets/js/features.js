@@ -289,12 +289,13 @@ $( '#setting-multiraudio' ).click( function() {
 				} else {
 					$this.parents( 'tr' ).remove();
 				}
-				$inputbox    = $( '#infoContent input' );
-				$input       = $inputbox;
+				$inputbox = $( '#infoContent input' );
+				$input    = $inputbox;
 				infoCheckEvenOdd( $input.length );
 				infoCheckSet();
-				$( '#infoOk' ).text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' );
-				if ( ! add ) $( '#infoOk' ).toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
+				$( '#infoOk' )
+					.text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' )
+					.toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
 			} );
 		}
 		, cancel       : switchCancel
