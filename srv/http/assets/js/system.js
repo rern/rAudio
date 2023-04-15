@@ -370,7 +370,7 @@ $( '#gpiopin, #gpiopin1' ).click( function() {
 } );
 $( '#setting-lcdchar' ).click( function() {
 	if ( S.lcdcharconf ) {
-		S.lcdcharconf.inf === 'i2c' ? infoLcdChar() : infoLcdCharGpio();
+		S.lcdcharconf.INF === 'i2c' ? infoLcdChar() : infoLcdCharGpio();
 	} else {
 		infoLcdChar();
 	}
@@ -1001,7 +1001,7 @@ function infoPowerbutton() {
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.on == 5 );
+			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.ON == 5 );
 			$( '#infoContent select' ).eq( 0 ).change( function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );

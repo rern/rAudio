@@ -158,7 +158,7 @@ $( '#setting-autoplay' ).click( function() {
 	} );
 } );
 $( '#setting-localbrowser' ).click( function() {
-	var htmlbrightness = S.localbrowserconf.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
+	var htmlbrightness = S.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
 	var content        = `
 <table>
 <tr><td style="width:110px">Rotation</td>
@@ -201,7 +201,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
-			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.screenoff === 0 );
+			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
 			$( '#infoContent .btnicon' ).click( function() {
 				var up   = $( this ).hasClass( 'up' );
