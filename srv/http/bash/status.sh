@@ -128,7 +128,7 @@ $( $dirbash/status-bluetooth.sh )"
 		serverip=$( < $dirshm/serverip )
 ########
 		status+="
-$( sshCommand --data $serverip $dirbash/status.sh snapclient \
+$( sshCommand --getdata $serverip $dirbash/status.sh snapclient \
 	| sed -E  -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
 			' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
 			' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"

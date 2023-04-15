@@ -239,11 +239,11 @@ pushstream() {
 		done
 	fi
 }
-sshCommand() { # $1=ip or -d/--data stdout(optional)
-	[[ $1 == '-d' || $1 == '--data' ]] && shift && data=1 || data=
+sshCommand() { # $1=ip or --getdata (optional)
+	[[ $1 == '--getdata' ]] && shift && getdata=1
 	! ping -c 1 -w 1 $1 &> /dev/null && return
 	
-	[[ $data ]] && sshpassCmd $@ || sshpassCmd $@ &> /dev/null
+	[[ $getdata ]] && sshpassCmd $@ || sshpassCmd $@ &> /dev/null &
 }
 sshpassCmd() {
 	sshpass -p ros ssh -q \

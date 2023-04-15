@@ -42,7 +42,9 @@ $( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
 ESSID="$( stringEscape $ssid )"
 Key="$( stringEscape $key )"
 EOF
-	$dirsettings/networks.sh profileconnect$'\n'"$ssid"
+	$dirsettings/networks.sh "profileconnect
+$ssid
+CMD ssid"
 fi
 # ----------------------------------------------------------------------------
 
@@ -71,7 +73,8 @@ if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	devprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
 	if [[ $devprofile ]]; then
 		$dirsettings/networks.sh "profileconnect
-$( basename "$devprofile" )"
+$( basename "$devprofile" )
+CMD ssid"
 		connectedCheck 30 3
 	fi
 fi
@@ -134,7 +137,11 @@ elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hos
 	systemctl -q disable hostapd
 fi
 
-[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( < $dirsystem/apm )
+if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
+	$dirsettings/system.sh "hddsleep
+$( < $dirsystem/apm )
+CMD apm"
+fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	$dirbash/cmd.sh mpcupdate$'\n'rescan

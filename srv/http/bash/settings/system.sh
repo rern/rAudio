@@ -94,7 +94,7 @@ USB" > /mnt/MPD/.mpdignore
 	systemctl restart mpd
 	sharedDataIPlist
 	pushRefresh
-	pushstream refresh '{"page":"features","shareddata":true}'
+	pushstream refresh '{ "page": "features", "shareddata": true }'
 }
 soundProfile() {
 	local swappiness mtu txqueuelen lan
@@ -759,12 +759,12 @@ wlan )
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
 		[[ $apauto ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
-		if ! grep -q $regdom /etc/conf.d/wireless-regdom; then
+		if [[ $regdom ]] && ! grep -q $regdom /etc/conf.d/wireless-regdom; then
 			sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
 			iw reg set $regdom
 		fi
 	else
-		systemctl -q is-active hostapd && $dirsettings/features.sh hostapddisable
+		systemctl -q is-active hostapd && $dirsettings/features.sh hostapd$'\n'OFF
 		ifconfig wlan0 down
 		rmmod brcmfmac
 	fi

@@ -227,9 +227,7 @@ $( '#setting-localbrowser' ).click( function() {
 			if ( S.brightness ) {
 				var $range = $( '#infoRange input' );
 				$range.on( 'click input keyup', function() {
-					bash( [ 'brightness', $range.val() ] );
-				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ 'brightness', $range.val() ] );
+					bash( [ 'brightness', $range.val(), 'CMD val' ] );
 				} );
 			} else {
 				$( '#infoRange' ).remove();

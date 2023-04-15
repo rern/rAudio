@@ -59,7 +59,7 @@ autoplay|lyricsembedded|scrobble )
 	pushRefresh
 	;;
 brightness )
-	echo ${args[1]} > /sys/class/backlight/rpi_backlight/brightness
+	echo $val > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladspasound )
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
@@ -93,7 +93,7 @@ dabradio )
 	if [[ $ON ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
 			systemctl enable --now rtsp-simple-server
-			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg$'\n'true
+			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 		else
 			notify dabradio 'DAB Radio' 'No DAB devices found.' 5000
 		fi
@@ -110,7 +110,7 @@ equalizer )
 	;;
 hostapd )
 	if [[ $ON ]]; then
-		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan$'\n'true
+		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
 		ip012=${ip%.*}
 		ip3=$(( ${ip/*.} + 1 ))
 		iprange=$ip012.$ip3,$ip012.254,24h
@@ -129,7 +129,7 @@ hostapd )
 		featureSet hostapd
 	else
 		systemctl disable --now hostapd
-		$dirsettings/system.sh wlan$'\n'false
+		$dirsettings/system.sh wlan$'\n'OFF
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","hostapd":'$TF'}'

@@ -21,7 +21,9 @@ sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig
 cp -rf $dirconfig/* /
 [[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
 [[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
-$dirsettings/system.sh hostname$'\n'$( < $dirsystem/hostname )
+$dirsettings/system.sh "hostname
+$( < $dirsystem/hostname )
+CMD hostname"
 [[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
 timedatectl set-timezone $( < $dirsystem/timezone )
 rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
@@ -42,5 +44,5 @@ if [[ $mountpoints ]]; then
 		mkdir -p "$mountpoint"
 	done
 fi
-grep -q -m1 $dirsd /etc/exports && $dirsettings/features.sh nfsserver$'\n'true
+grep -q -m1 $dirsd /etc/exports && $dirsettings/features.sh nfsserver
 $dirbash/cmd.sh reboot
