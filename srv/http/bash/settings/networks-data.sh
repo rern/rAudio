@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 listBluetooth() {
-	local devices dev mac info listbt 
+	local dev devices info listbt mac
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
@@ -34,15 +34,15 @@ fi
 
 wldev=$( < $dirshm/wlan )
 listWlan() {
-	local profiles profile dbm listwlnotconnected
+	local dbm listwl notconnected profiles profile
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
 			! grep -q 'Interface="*'$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
-					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
-					[[ $ipwl ]] && break || sleep 1
+					IPWL=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
+					[[ $IPWL ]] && break || sleep 1
 				done
 				gatewaywl=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
 				dbm=$( awk '/'$wldev'/ {print $4}' /proc/net/wireless | tr -d . )
@@ -50,23 +50,23 @@ listWlan() {
 				listwl=',{
 	  "dbm"      : '$dbm'
 	, "gateway"  : "'$gatewaywl'"
-	, "ip"       : "'$ipwl'"
+	, "ip"       : "'$IPWL'"
 	, "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			else
-				listwlnotconnected+=',{
+				notconnected+=',{
 	  "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			fi
 		done
 	fi
-	[[ $listwlnotconnected ]] && listwl+="$listwlnotconnected"
-	[[ $listwl ]] && listwl='[ '${listwl:1}' ]' || listwl=false
+	[[ $notconnected ]] && listwl+="$notconnected"
+	[[ $listwl ]] && LISTWL='[ '${listwl:1}' ]' || LISTWL=false
 }
 if [[ $1 == pushwl ]]; then
 	pushwl=1
 	listWlan
-	pushstream wlan '{ "listwl": '$listwl', "ipwl": "'$ipwl'", "gatewaywl": "'$gatewaywl'" }'
+	pushstream wlan '{ "listwl": '$LISTWL', "ipwl": "'$IPWL'", "gatewaywl": "'$gatewaywl'" }'
 	exit
 fi
 
@@ -125,10 +125,10 @@ data='
 , "gateway"     : "'$gateway'"
 , "ipeth"       : "'$ipeth'"
 , "ipsub"       : "'$( ipSub )'"
-, "ipwl"        : "'$ipwl'"
+, "ipwl"        : "'$IPWL'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
-, "listwl"      : '$listwl'
+, "listwl"      : '$LISTWL'
 , "hostapd"     : '$hostapd'
 , "hostname"    : "'$( hostname )'"
 , "wldev"       : "'$wldev'"'

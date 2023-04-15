@@ -5,7 +5,7 @@
 args2var "$1"
 
 netctlSwitch() {
-	local ssid wlandev connected active i
+	local active connected ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )

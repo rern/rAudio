@@ -180,9 +180,6 @@ function pushstreamDisconnect() {
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
 			$( '.back' ).click();
 		}
-	} else if ( page === 'system' && S.intervalstatus ) {
-		bash( [ 'statusstop' ] );
-		$( '.refresh' ).removeClass( 'blink wh' );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {

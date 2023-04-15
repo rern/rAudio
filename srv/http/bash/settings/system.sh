@@ -6,7 +6,7 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local name tft I2Clcdchar chip SPImpdoled I2Clcdchar I2Cmpdoled module list
+	local chip I2Clcdchar I2Cmpdoled list module name SPImpdoled tft
 	name=$1
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
 		cp /boot/cmdline.txt /tmp
@@ -58,7 +58,7 @@ $name"
 	fi
 }
 sharedDataIPlist() {
-	local list iplist ip
+	local ip iplist list
 	list=$( ipAddress )
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
@@ -97,7 +97,7 @@ USB" > /mnt/MPD/.mpdignore
 	pushstream refresh '{ "page": "features", "shareddata": true }'
 }
 soundProfile() {
-	local swappiness mtu txqueuelen lan
+	local lan mtu swappiness txqueuelen
 	if [[ $1 == reset ]]; then
 		swappiness=60
 		mtu=1500
@@ -115,7 +115,8 @@ soundProfile() {
 	fi
 }
 timezoneAuto() {
-	local timezone=$( curl -s https://ipapi.co/timezone )
+	local timezone
+	timezone=$( curl -s https://ipapi.co/timezone )
 	[[ ! $timezone ]] && timezone=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
 	[[ ! $timezone ]] && timezone=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
 	[[ ! $timezone ]] && timezone=UTC
@@ -401,13 +402,6 @@ rebootlist )
 	killall networks-scan.sh &> /dev/null
 	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
 	rm -f $dirshm/{reboot,backup.gz}
-	;;
-refreshstart )
-	! pgrep system-status.sh &> /dev/null && $dirsettings/system-status.sh &> /dev/null &
-	;;
-refreshstop )
-	killall system-status.sh &> /dev/null
-	pushstream refresh '{"page":"system","intervalstatus":false}'
 	;;
 regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json

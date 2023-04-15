@@ -17,7 +17,7 @@ usbdac=$1
 pushData() {
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
-	[[ $usbdac ]] && pushstream refresh '{"page":"system","audiocards":'$( aplay -l | grep ^card | grep -c -v Loopback )'}'
+	[[ $usbdac ]] && pushstream refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
 rm -f $dirmpdconf/{bluetooth,output}.conf

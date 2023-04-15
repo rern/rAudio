@@ -11,6 +11,7 @@ pushstreamVolume() {
 	pushstream volume $( volumeGet )
 }
 volumeGet() {
+	local amixer card control db vol
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 	else

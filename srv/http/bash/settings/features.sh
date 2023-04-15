@@ -26,6 +26,7 @@ localbrowserDisable() {
 	[[ -e $dirshm/btreceiver ]] && systemctl start bluetoothbutton
 }
 localbrowserXset() {
+	local off
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
 	off=$(( $screenoff * 60 ))

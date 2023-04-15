@@ -42,7 +42,7 @@ if [[ $throttled != 0x0 ]]; then
 fi
 ! internetConnected && warning+=" · <i class='i-networks'></i> Internet is offline"
 # for interval refresh
-[[ $1 == status ]] && pushstream refresh '{"page":"system","status":"'$status'","warning":"'$warning'","intervalstatus":true}' && exit
+[[ $1 == status ]] && pushstream refresh '{ "page": "system", "status": "'$status'", "warning": "'$warning'" }' && exit
 
 if [[ -e $dirshm/system ]]; then
 	system=$( < $dirshm/system )

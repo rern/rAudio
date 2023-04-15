@@ -175,8 +175,16 @@ $( '.img' ).click( function() {
 		, okno        : true
 	} );
 } );
-$( '.refresh' ).click( function( e ) {
-	bash( [ S.intervalstatus ? 'refreshstop' : 'refreshstart' ] );
+$( '.refresh' ).click( function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'blink' ) ) {
+		clearInterval( V.intstatus );
+		$this.removeClass( 'blink wh' )
+		return
+	}
+	
+	$this.addClass( 'blink wh' )
+	V.intstatus = setInterval( () => bash( [ 'settings/system-data.sh', 'status' ] ), 10000 );
 } );
 $( '.addnas' ).click( function() {
 	infoMount();
@@ -1149,9 +1157,6 @@ function renderPage() {
 		.empty()
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
-	$( '.refresh' ).toggleClass( 'blink wh', S.intervalstatus === true );
-	if ( S.intervalstatus && $( '#data' ).hasClass( 'hide' ) ) return
-	
 	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	var html  = '';
 	$.each( S.list, ( i, val ) => {
