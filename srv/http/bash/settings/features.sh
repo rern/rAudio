@@ -55,12 +55,12 @@ spotifyReset() {
 
 case $CMD in
 
-autoplay|lyricsembedded|scrobble )
+autoplay | lyricsembedded | scrobble )
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
 	pushRefresh
 	;;
 brightness )
-	echo $val > /sys/class/backlight/rpi_backlight/brightness
+	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
 camilladspasound )
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
@@ -78,7 +78,7 @@ camilladspasound )
 	;;
 camilladsp )
 	if [[ $ON ]]; then
-		sed -i -E "s/(interval: ).*/\1$refresh/" /srv/http/settings/camillagui/config/gui-config.yml
+		sed -i -E "s/(interval: ).*/\1$REFRESH/" /srv/http/settings/camillagui/config/gui-config.yml
 		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
 		touch $dirsystem/camilladsp
@@ -112,14 +112,14 @@ equalizer )
 hostapd )
 	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
-		ip012=${ip%.*}
-		ip3=$(( ${ip/*.} + 1 ))
+		ip012=${IP%.*}
+		ip3=$(( ${IP/*.} + 1 ))
 		iprange=$ip012.$ip3,$ip012.254,24h
 		sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
-" -e "s/^(.*option:router,).*/\1$ip/
-" -e "s/^(.*option:dns-server,).*/\1$ip/
+" -e "s/^(.*option:router,).*/\1$IP/
+" -e "s/^(.*option:dns-server,).*/\1$IP/
 " /etc/dnsmasq.conf
-		sed -i -E "s/(wpa_passphrase=).*/\1$wpa_passphrase/" /etc/hostapd/hostapd.conf
+		sed -i -E "s/(wpa_passphrase=).*/\1$PASSPHRASE/" /etc/hostapd/hostapd.conf
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
 		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
@@ -160,7 +160,7 @@ localbrowser )
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
 		fi
-		if [[ $hdmi ]]; then
+		if [[ $HDMI ]]; then
 			if ! grep -q hdmi_force_hotplug=1 /boot/config.txt; then
 				echo hdmi_force_hotplug=1 >> /boot/config.txt
 				if ! grep -q hdmi_force_hotplug=1 /tmp/config.txt; then
@@ -171,20 +171,21 @@ localbrowser )
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 		fi
-		pushstream refresh '{"page":"system","hdmi":'$hdmi'}'
+		[[ $HDMI ]] && tf=true || tf=false
+		pushstream refresh '{"page":"system","hdmi":'$tf'}'
 		if [[ $diffrotate ]]; then
-			case $rotate in
+			case $ROTATE in
 				NORMAL ) degree=0;;
 				CCW )    degree=270 && matrix='0 1 0 -1 0 1 0 0 1';;
 				CW )     degree=90  && matrix='0 -1 1 1 0 0 0 0 1';;
 				UD )     degree=180 && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			$dirbash/cmd.sh rotatesplash$'\n'$rotate # after set new data in conf file
+			$dirbash/cmd.sh rotatesplash$'\n'$ROTATE # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
 				sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 				pushRefresh
-				if ! grep -q "rotate=$rotate" /tmp/localbrowser.conf; then
+				if ! grep -q "rotate=$ROTATE" /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
 					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
@@ -194,14 +195,14 @@ localbrowser )
 			restart=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $matrix ]]; then
-				sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+				sed "s/ROTATION_SETTING/$ROTATE/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			else 
 				rm -f $rotateconf
 			fi
 		fi
 		if [[ $diffscreenoff ]]; then
 			localbrowserXset
-			[[ $screenoff == 0 ]] && pushSubmenu screenoff false || pushSubmenu screenoff true
+			[[ $SCREENOFF == 0 ]] && pushSubmenu screenoff false || pushSubmenu screenoff true
 		fi
 		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 			restartlocalbrowser=1
@@ -326,7 +327,7 @@ screenofftoggle )
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
 scrobblekeyget )
-	token=${token[1]:0:32}
+	token=${TOKEN[1]:0:32}
 	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
 	apikey=${keys[0]:0:32}
 	sharedsecret=${keys[1]:0:32}
@@ -350,7 +351,7 @@ sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
 	fi
 	;;
-shairport-sync|spotifyd )
+shairport-sync | spotifyd )
 	if [[ $ON ]]; then
 		featureSet $CMD
 	else
@@ -363,8 +364,8 @@ smb )
 	if [[ $ON ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
-		[[ $sd ]] && sed -i '/path = .*SD/ a\	read only = no' $smbconf
-		[[ $usb ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
+		[[ $SD ]] &&  sed -i '/path = .*SD/ a\  read only = no' $smbconf
+		[[ $USB ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
 		featureSet smb
 	else
 		systemctl disable --now smb
@@ -374,7 +375,7 @@ smb )
 snapclient )
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ $ON ]]; then
-		echo 'SNAPCLIENT_OPTS="--latency='$latency'"' > /etc/default/snapclient
+		echo 'SNAPCLIENT_OPTS="--latency='$LATENCY'"' > /etc/default/snapclient
 		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
 		
 		touch $dirsystem/snapclient
@@ -408,17 +409,17 @@ snapserver )
 	pushRefresh
 	;;
 spotifykey )
-	echo base64client=$btoa > $dirsystem/spotify
+	echo base64client=$BTOA > $dirsystem/spotify
 	;;
 spotifytoken )
-	[[ ! $code ]] && rm -f $dirsystem/spotify && exit
+	[[ ! $CODE ]] && rm -f $dirsystem/spotify && exit
 	
 	. $dirsystem/spotify
 	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-H 'Content-Type: application/x-www-form-urlencoded' \
-				-d "code=$code" \
+				-d "code=$CODE" \
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q -m1 error <<< $tokens; then
@@ -453,7 +454,7 @@ stoptimer )
 	;;
 upmpdcli )
 	if [[ $ON ]]; then
-		[[ $ownqueue ]] && ownqueue=1 || ownqueue=0
+		[[ $OWNQUEUE ]] && ownqueue=1 || ownqueue=0
 		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
 		featureSet upmpdcli
 	else

@@ -14,6 +14,7 @@ volumeGet() {
 	local amixer card control db vol
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
+		btdevice=$( < $dirshm/btreceiver )
 	else
 		control=$( getContent $dirshm/amixercontrol )
 		[[ ! $control ]] && exit
@@ -25,12 +26,13 @@ volumeGet() {
 	vol=$( sed -E 's/.*\[(.*)%.*/\1/' <<< $amixer )
 	[[ ! $db ]] && db=false
 	echo '{ "db": '$db', "vol": '$vol' }'
+	[[ $btdevice ]] && echo $vol > "$dirsystem/btvolume-$btdevice"
 }
 
 case $CMD in
 
 audiooutput )
-	echo $card > $dirsystem/asoundcard
+	echo $CARD > $dirsystem/asoundcard
 	$dirsettings/player-conf.sh
 	;;
 autoupdate | ffmpeg | normalization )
@@ -53,10 +55,10 @@ btoutputall )
 buffer | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
-			data='audio_buffer_size  "'$audio_buffer_size'"'
+			data='audio_buffer_size  "'$AUDIO_BUFFER_SIZE'"'
 			[[ $audio_buffer_size != 4096 ]] && link=1
 		else
-			data='max_output_buffer_size  "'$max_output_buffer_size'"'
+			data='max_output_buffer_size  "'$MAX_OUTPUT_BUFFER_SIZE'"'
 			[[ $max_output_buffer_size != 8192 ]] && link=1
 		fi
 		echo "$data" > $dirmpdconf/conf/$CMD.conf
@@ -66,7 +68,7 @@ buffer | outputbuffer )
 	;;
 crossfade )
 	if [[ $ON ]]; then
-		mpc -q crossfade $sec
+		mpc -q crossfade $SEC
 		touch $dirsystem/crossfade
 	else
 		mpc -q crossfade 0
@@ -77,20 +79,20 @@ customget )
 	echo "\
 $( getContent $dirmpdconf/conf/custom.conf )
 ^^
-$( getContent "$dirsystem/custom-output-$aplayname" )"
+$( getContent "$dirsystem/custom-output-$APLAYNAME" )"
 	;;
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		fileoutput="$dirsystem/custom-output-$aplayname"
-		if [[ $global ]]; then
-			echo -e "$global" > $fileglobal
+		fileoutput="$dirsystem/custom-output-$APLAYNAME"
+		if [[ $GLOBAL ]]; then
+			echo -e "$GLOBAL" > $fileglobal
 			linkConf
 		else
 			rm -f $fileglobal
 		fi
-		[[ $output ]] && echo -e "$output" > "$fileoutput" || rm -f "$fileoutput"
-		[[ $global || $output ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
+		[[ $OUTPUT ]] && echo -e "$OUTPUT" > "$fileoutput" || rm -f "$fileoutput"
+		[[ $GLOBAL || $OUTPUT ]] && touch $dirsystem/custom || rm -f $dirsystem/custom
 		$dirsettings/player-conf.sh
 		if ! systemctl -q is-active mpd; then # config errors
 			rm -f $fileglobal "$fileoutput" $dirsystem/custom
@@ -119,29 +121,29 @@ filetype )
 	echo "${list:0:-4}"
 	;;
 hwmixer )
-	echo $hwmixer > "$dirsystem/hwmixer-$aplayname"
+	echo $HWMIXER > "$dirsystem/hwmixer-$APLAYNAME"
 	$dirsettings/player-conf.sh
 	;;
 mixertype )
-	if [[ $hwmixer ]]; then # set 0dB
+	if [[ $HWMIXER ]]; then # set 0dB
 		mpc -q stop
-		[[ $mixertype == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
-		amixer -Mq sset "$hwmixer" $vol
+		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
+		amixer -Mq sset "$HWMIXER" $vol
 	fi
-	if [[ $mixertype == hardware ]]; then
-		rm -f "$dirsystem/mixertype-$aplayname"
+	if [[ $MIXERTYPE == hardware ]]; then
+		rm -f "$dirsystem/mixertype-$APLAYNAME"
 	else
-		echo $mixertype > "$dirsystem/mixertype-$aplayname"
+		echo $MIXERTYPE > "$dirsystem/mixertype-$APLAYNAME"
 	fi
-	[[ $mixertype != software ]] && rm -f $dirsystem/replaygain-hw
+	[[ $MIXERTYPE != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
-	[[ $mixertype == none ]] && none=true || none=false
+	[[ $MIXERTYPE == none ]] && none=true || none=false
 	pushstream display '{"volumenone":'$none'}'
 	;;
 novolume )
 	mpc -q crossfade 0
-	amixer -Mq sset "$hwmixer" 0dB
-	echo none > "$dirsystem/mixertype-$aplayname"
+	amixer -Mq sset "$HWMIXER" 0dB
+	echo none > "$dirsystem/mixertype-$APLAYNAME"
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
 	$dirsettings/player-conf.sh
@@ -150,8 +152,8 @@ novolume )
 replaygain )
 	fileoutput=$dirmpdconf/output.conf
 	if [[ $ON ]]; then
-		echo 'replaygain  "'$type'"' > $dirmpdconf/conf/replaygain.conf
-		[[ $hardware ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
+		echo 'replaygain  "'$TYPE'"' > $dirmpdconf/conf/replaygain.conf
+		[[ $HARDWARE ]] && touch $dirsystem/replaygain-hw || rm -f $dirsystem/replaygain-hw
 		linkConf
 	else
 		rm $dirmpdconf/replaygain.conf
@@ -161,28 +163,28 @@ replaygain )
 soxr )
 	rm -f $dirmpdconf/soxr* $dirsystem/soxr
 	if [[ $ON ]]; then
-		if [[ $quality == custom ]]; then
+		if [[ $QUALITY == custom ]]; then
 			data='
 	plugin          "soxr"
 	quality         "custom"
-	precision       "'$precision'"
-	phase_response  '$phase_response'"
-	passband_end    "'$passband_end'"
-	stopband_begin  "'$stopband_begin'"
-	attenuation     "'$attenuation'"
-	flags           "'$flags'"'
+	precision       "'$PRECISION'"
+	phase_response  '$PHASE_RESPONSE'"
+	passband_end    "'$PASSBAND_END'"
+	stopband_begin  "'$STOPBAND_BEGIN'"
+	attenuation     "'$ATTENUATION'"
+	flags           "'$FLAGS'"'
 		else
 			data='
 	plugin   "soxr"
-	quality  "'$quality'"
-	thread   "'$thread'"'
+	quality  "'$QUALITY'"
+	thread   "'$THREAD'"'
 		fi
 		echo "\
 resampler {\
 $data
 }" > $dirmpdconf/conf/$CMD.conf
 		linkConf
-		echo $quality > $dirsystem/soxr
+		echo $QUALITY > $dirsystem/soxr
 	fi
 	systemctl restart mpd
 	pushRefresh
@@ -250,10 +252,10 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -Mq sset "$mixer" $vol%
+	amixer -Mq sset "$MIXER" $VOL%
 	;;
 volumebt )
-	amixer -MqD bluealsa sset "$mixer" $vol%
+	amixer -MqD bluealsa sset "$MIXER" $VOL%
 	;;
 volume0db )
 	card=$( < $dirsystem/asoundcard )
@@ -268,18 +270,12 @@ volume0dbbt )
 	btdevice=$( < $dirshm/btreceiver )
 	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
 	pushstreamVolume
-	echo $vol > "$dirsystem/btvolume-$btdevice"
 	;;
 volumeget )
 	volumeGet
 	;;
 volumepush )
 	pushstreamVolume
-	;;
-volumepushbt )
-	pushstreamVolume
-	btdevice=$( < $dirshm/btreceiver )
-	echo $vol > "$dirsystem/btvolume-$btdevice"
 	;;
 	
 esac

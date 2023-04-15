@@ -19,7 +19,7 @@ data+='
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "camilladspconf"   : { "refresh": '$( getVar status_update_interval /srv/http/settings/camillagui/config/gui-config.yml )' }
+, "camilladspconf"   : { "REFRESH": '$( getVar status_update_interval /srv/http/settings/camillagui/config/gui-config.yml )' }
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"
 , "hostip"           : "'$( ipAddress )'"
@@ -46,7 +46,7 @@ if [[ -e /usr/bin/hostapd ]]; then
 	wpa_passphrase=$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )
 	data+='
 , "hostapd"          : '$hostapd'
-, "hostapdconf"      : { "ip": "'$ip'", "wpa_passphrase": "'$wpa_passphrase'" }
+, "hostapdconf"      : { "IP": "'$ip'", "PASSPHRASE": "'$wpa_passphrase'" }
 , "wlan"             : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconnected"    : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 fi
@@ -57,14 +57,14 @@ fi
 , "snapserver"       : '$( exists $dirmpdconf/snapserver.conf )'
 , "snapserveractive" : '$( [[ -e $dirshm/clientip ]] || ( [[ -e $dirsystem/snapclientserver ]] && systemctl -q is-active snapclient ) && echo true )'
 , "snapclient"       : '$( exists $dirsystem/snapclient )'
-, "snapclientconf"   : { "latency": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
+, "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$spotifyd'
 , "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotify 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli'
-, "upmpdcliconf"     : { "ownqueue": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
+, "upmpdcliconf"     : { "OWNQUEUE": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
 if [[ -e $dirsystem/localbrowser.conf ]]; then
 	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
 	if systemctl -q is-active localbrowser; then
@@ -81,7 +81,7 @@ if [[ -e /usr/bin/smbd ]]; then
 	file=/etc/samba/smb.conf
 	sed -n '/\[SD]/,/^\[/ p' $file | grep -q 'read only = no' && sd=true || sd=false
 	sed -n '/\[USB]/,/^\[/ p' $file | grep -q 'read only = no' && usb=true || usb=false
-	smbconf='{ "sd": '$sd', "usb": '$usb' }'
+	smbconf='{ "SD": '$sd', "USB": '$usb' }'
 	data+='
 , "smb"              : '$smb'
 , "smbconf"          : '$smbconf

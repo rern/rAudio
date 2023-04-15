@@ -1,27 +1,27 @@
 var default_v      = {
 	  autoplay     : {
-		    bluetooth : true
-		  , cd        : true
-		  , startup   : true
+		  BLUETOOTH : true
+		, CD        : true
+		, STARTUP   : true
 	  }
 	, localbrowser : {
-		  rotate      : 'NORMAL'
-		, zoom        : 100
-		, screenoff   : 0
-		, onwhileplay : false
-		, hdmi        : false
-		,  cursor     : false
+		  ROTATE      : 'NORMAL'
+		, ZOOM        : 100
+		, SCREENOFF   : 0
+		, ONWHILEPLAY : false
+		, HDMI        : false
+		, CURSOR      : false
 	}
 	, scrobble     : {
-		  airplay   : true
-		, bluetooth : true
-		, spotify   : true
-		, upnp      : true
-		, notify    : true
+		  AIRPLAY   : true
+		, BLUETOOTH : true
+		, SPOTIFY   : true
+		, UPNP      : true
+		, NOTIFY    : true
 	}
 	, stoptimer    : {
-		  min      : ''
-		, poweroff : false
+		  MIN      : ''
+		, POWEROFF : false
 	}
 }
 
@@ -92,7 +92,7 @@ $( '#setting-spotifyd' ).click( function() {
 				var infoval = infoVal();
 				var id      = infoval[ 0 ];
 				var secret  = infoval[ 1 ];
-				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD btoa' ] );
+				bash( [ 'spotifykey', btoa( id +':'+ secret ), 'CMD BTOA' ] );
 				var data    = {
 					  response_type : 'code'
 					, client_id     : id
@@ -227,7 +227,7 @@ $( '#setting-localbrowser' ).click( function() {
 			if ( S.brightness ) {
 				var $range = $( '#infoRange input' );
 				$range.on( 'click input keyup', function() {
-					bash( [ 'brightness', $range.val(), 'CMD val' ] );
+					bash( [ 'brightness', $range.val(), 'CMD VAL' ] );
 				} );
 			} else {
 				$( '#infoRange' ).remove();
@@ -494,7 +494,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobblekeyget', token, 'CMD token' ], function( error ) {
+		bash( [ 'scrobblekeyget', token, 'CMD TOKEN' ], function( error ) {
 			if ( error ) {
 				info( {
 					  icon    : 'scrobble'
@@ -508,7 +508,7 @@ function renderPage() {
 			}
 		} );
 	} else if ( code ) {
-		bash( [ 'spotifytoken', code, 'CMD code' ], () => showContent );
+		bash( [ 'spotifytoken', code, 'CMD CODE' ], () => showContent );
 	} else if ( error ) {
 		infoWarning( 'spotify', 'Spotify', 'Authorization failed:<br>'+ error );
 	}

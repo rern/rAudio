@@ -62,7 +62,7 @@ args2var() {
 				v=$( stringEscape $v )
 				[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
 			fi
-			conf+=$k'='$v$'\n'
+			conf+=${k,,}'='$v$'\n'
 		fi
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
@@ -99,7 +99,7 @@ conf2json() {
 							s/^yes$/true/
 							s/^no$/false/' <<< $v )
 			confNotString "$v" || v='"'$( stringEscape $v )'"' # quote and escape string
-			json+=', "'$k'": '$v
+			json+=', "'${k^^}'": '$v
 	done
 	echo { ${json:1} }
 }

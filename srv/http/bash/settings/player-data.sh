@@ -12,8 +12,8 @@ equalizer=$( exists $dirsystem/equalizer )
 normalization=$( exists $dirmpdconf/normalization.conf )
 replaygain=$( exists $dirmpdconf/replaygain.conf )
 replaygainconf='{
-  "type"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
-, "hardware" : '$( exists $dirsystem/replaygain-hw )'
+  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
 }'
 soxr=$( exists $dirsystem/soxr )
 resampled=$( [[ $camilladsp == true \
@@ -43,7 +43,7 @@ data='
 , "camilladsp"       : '$camilladsp'
 , "counts"           : '$( getContent $dirmpd/counts )'
 , "crossfade"        : '$crossfade'
-, "crossfadeconf"    : { "sec": '$crossfadesec' }
+, "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
 , "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'

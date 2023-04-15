@@ -23,11 +23,11 @@ $( '.btoutputall' ).click( function() {
 } );
 $( '#audiooutput' ).change( function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val(), 'CMD card' ] );
+	bash( [ 'audiooutput', $( this ).val(), 'CMD CARD' ] );
 } );
 $( '#hwmixer' ).change( function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD aplayname hwmixer' ] );
+	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
 var htmlvolume = `
 <div id="infoRange">
@@ -45,12 +45,10 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		if ( bt ) {
 			var cmd       = 'volumebt';
 			var cmdodb    = 'volume0dbbt';
-			var cmdpush   = 'volumepushbt';
 			var mixer     = S.btaplayname;
 		} else {
 			var cmd       = 'volume';
 			var cmdodb    = 'volume0db';
-			var cmdpush   = 'volumepush';
 			var mixer     = D.hwmixer;
 		}
 		info( {
@@ -64,9 +62,9 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
 				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( [ cmd, S.asoundcard, mixer, $( this ).val(), 'CMD card mixer vol' ] );
+					bash( [ cmd, mixer, $( this ).val(), 'CMD MIXER VOL' ] );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ cmdpush ] );
+					bash( [ 'volumepush' ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
@@ -101,7 +99,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'CMD card hwmixer aplayname' ] );
+				bash( [ 'novolume', D.hwmixer, D.aplayname, 'CMD HWMIXER APLAYNAME' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -145,7 +143,7 @@ $( '#setting-replaygain' ).click( function() {
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
-		, values       : hardware ? S.replaygainconf : { type: S.replaygainconf.type }
+		, values       : hardware ? S.replaygainconf : { TYPE: S.replaygainconf.TYPE }
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -216,7 +214,7 @@ audio_output {
 }</pre></td></tr>
 </table>`;
 $( '#setting-custom' ).click( function() {
-	bash( [ 'customget', D.aplayname, 'CMD aplayname' ], val => {
+	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
 		var val       = val.split( '^^' );
 		var valglobal = val[ 0 ].trim(); // remove trailing
 		var valoutput = val[ 1 ].trim();
@@ -238,7 +236,7 @@ $( '#setting-custom' ).click( function() {
 				}
 				
 				notifyCommon();
-				bash( [ 'custom', global, output, D.aplayname, 'CMD global output aplayname' ], mpdstart => {
+				bash( [ 'custom', global, output, D.aplayname, 'CMD GLOBAL OUTPUT APLAYNAME' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -316,7 +314,7 @@ Beware of too high volume.</wh>
 <br>`;
 
 function infoSoxr( quality ) {
-	delete S.soxrconf.plugin
+	delete S.soxrconf.PLUGIN
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -332,7 +330,7 @@ function infoSoxr( quality ) {
 	} );
 }
 function infoSoxrCustom() {
-	delete S.soxrcustomconf.plugin
+	delete S.soxrcustomconf.PLUGIN
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -426,5 +424,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, D.card, hwmixer, D.aplayname, 'CMD mixertype card hwmixer aplayname' ] );
+	bash( [ 'mixertype', mixertype, hwmixer, D.aplayname, 'CMD MIXERTYPE HWMIXER APLAYNAME' ] );
 }

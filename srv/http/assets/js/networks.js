@@ -1,6 +1,6 @@
 var default_v = {
-	  dhcp   : { ESSID: '', Key: '',                           Security: false, Hidden: false }
-	, static : { ESSID: '', Key: '', Address: '', Gateway: '', Security: false, Hidden: false }
+	  dhcp   : { ESSID: '', KEY: '',                           SECURITY: false, HIDDEN: false }
+	, static : { ESSID: '', KEY: '', ADDRESS: '', GATEWAY: '', SECURITY: false, HIDDEN: false }
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -41,21 +41,21 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	bluetoothCommand( 'pair', mac );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
-	var ESSID    = $( this ).data( 'ssid' );
-	var Security = $( this ).data( 'wpa' ) === 'wep';
+	var ssid    = $( this ).data( 'ssid' );
+	var security = $( this ).data( 'wpa' ) === 'wep';
 	var encrypt  = $( this ).data( 'encrypt' );
 	var v        = [ 'dhcp', ESSID ];
 	if ( encrypt === 'on' ) {
 		info( {
 			  icon          : 'wifi'
-			, title         : ESSID
+			, title         : ssid
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, oklabel       : 'Connect'
-		, ok            : () => connectWiFi( { ESSID: ESSID, Key: infoVal(), Security: Security } )
+		, ok            : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
 		} );
 	} else {
-		connectWiFi( { ESSID: ESSID } );
+		connectWiFi( { ESSID: ssid } );
 	}
 } );
 $( '.wladd' ).click( function() {
@@ -142,7 +142,7 @@ $( '.connect' ).click( function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	notify( 'wifi', ssid, 'Connect ...' );
-	bash( [ 'profileconnect', ssid, 'CMD ssid' ] );
+	bash( [ 'profileconnect', ssid, 'CMD SSID' ] );
 } );
 $( '.disconnect' ).click( function() {
 	if ( V.listid === 'listbt' ) {
@@ -196,7 +196,7 @@ $( '.forget' ).click( function() {
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );
-			bash( [ 'profileremove', ssid, 'CMD ssid', ] );
+			bash( [ 'profileremove', ssid, 'CMD SSID', ] );
 		}
 	} );
 } );
@@ -210,7 +210,7 @@ function bluetoothCommand( action, mac ) {
 	bash( [ 'bluetoothcommand.sh', action, mac ] ); // bluetoothcommand.sh action mac
 }
 function bluetoothInfo( mac ) {
-	bash( [ 'bluetoothinfo', mac, 'CMD mac' ], data => {
+	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {
 		if ( ! data ) {
 			$( '#codebluetoothlist' )
 				.empty()
@@ -227,8 +227,8 @@ function connectWiFi( data ) {
 	var icon  = 'wifi';
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
-	if ( 'ip' in data ) { // static
-		S.listeth ? notify( icon, title, 'Change ...' ) : editReconnect( icon, data.ip, 5 );
+	if ( 'ADDRESS' in data ) { // static
+		S.listeth ? notify( icon, title, 'Change ...' ) : editReconnect( icon, data.ADDRESS, 5 );
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
@@ -259,7 +259,7 @@ function editLAN() {
 		, title        : title
 		, textlabel    : [ 'IP', 'Gateway' ]
 		, focus        : 0
-		, values       : { Address: S.ipeth, Gateway: S.listeth.gateway }
+		, values       : { IP: S.ipeth, GATEWAY: S.listeth.gateway }
 		, checkchanged : true
 		, checkblank   : true
 		, checkip      : [ 0, 1 ]
@@ -275,7 +275,7 @@ function editLAN() {
 }
 function editLANSet( v ) {
 	var icon = 'lan';
-	var ip   = v.Address;
+	var ip   = v.IP;
 	bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
 		if ( avail == -1 ) {
 			clearInterval( V.interval );
@@ -305,11 +305,11 @@ function editReconnect( icon, ip, delay ) {
 	}, delay * 1000 );
 }
 function editWiFi() {
-	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD ssid' ], v => {
+	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
 		var static = v.IP === 'static'
-		v.Security = v.Security === 'wep';
-		v.Hidden = 'Hidden' in v;
-		[ 'Interface', 'Connection', 'IP' ].forEach( k => delete v[ k ] );
+		v.SECURITY = v.SECURITY === 'wep';
+		v.HIDDEN   = 'HIDDEN' in v;
+		[ 'INTERFACE', 'CONNECTION', 'IP' ].forEach( k => delete v[ k ] );
 		static ? infoWiFiStatic( v ) : infoWiFi( v );
 	}, 'json' );
 }
@@ -338,8 +338,8 @@ function infoWiFi( values ) {
 }
 function infoWiFiStatic( values ) {
 	if ( ! values ) values = default_v.static;
-	values.Address = S.ipwl || S.ipsub;
-	values.Gateway = S.gateway || S.ipsub;
+	values.ADDRESS = S.ipwl || S.ipsub;
+	values.GATEWAY = S.gateway || S.ipsub;
 	info( {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
@@ -359,7 +359,7 @@ function infoWiFiStatic( values ) {
 	} );
 }
 function infoWiFiSwitch( values ) {
-	var target = 'Address' in values ? 'dhcp' : 'static';
+	var target = 'ADDRESS' in values ? 'dhcp' : 'static';
 	var keys = Object.keys( default_v[ target ] );
 	var v = {}
 	keys.forEach( k => v[ k ] = values[ k ] );

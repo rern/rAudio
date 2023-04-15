@@ -1,53 +1,53 @@
 var default_v      = {
 	  bluetooth     : {
-		    discoverable : true
-		  , format       : false 
+		  DISCOVERABLE : true
+		, FORMAT       : false 
 	}
 	, hddsleep      : {
-		apm : 60
+		APM : 60
 	}
 	, lcdchar_gpio  : {
-		  inf       :'gpio'
-		, cols      : 20
-		, charmap   : 'A00'
-		, pin_rs    : 15
-		, pin_rw    : 18
-		, pin_e     : 16
-		, p0        : 21
-		, p1        : 22
-		, p2        : 23
-		, p3        : 24
-		, backlight : false
+		  INF       :'gpio'
+		, COLS      : 20
+		, CHARMAP   : 'A00'
+		, PIN_RS    : 15
+		, PIN_RW    : 18
+		, PIN_E     : 16
+		, P0        : 21
+		, P1        : 22
+		, P2        : 23
+		, P3        : 24
+		, BACKLIGHT : false
 	}
 	, lcdchar_i2c   : {
-		  inf       :'gpio'
-		, cols      : 20
-		, charmap   : 'A00'
-		, address   : 39
-		, chip      : 'PCF8574'
-		, backlight : false
+		  INF       :'gpio'
+		, COLS      : 20
+		, CHARMAP   : 'A00'
+		, ADDRESS   : 39
+		, CHIP      : 'PCF8574'
+		, BACKLIGHT : false
 	}
 	, mountcifs     : {
-		  protocol : 'cifs'
-		, name     : ''
-		, ip       : ''
-		, share    : ''
-		, user     : ''
-		, password : ''
-		, options  : '' 
+		  PROTOCOL : 'cifs'
+		, NAME     : ''
+		, IP       : ''
+		, SHARE    : ''
+		, USER     : ''
+		, PASSWORD : ''
+		, OPTIONS  : '' 
 	}
 	, mountnfs      : {
-		  protocol : 'nfs'
-		, name     : ''
-		, ip       : ''
-		, share    : ''
-		, options  : ''
+		  PROTOCOL : 'nfs'
+		, NAME     : ''
+		, IP       : ''
+		, SHARE    : ''
+		, OPTIONS  : ''
 	}
 	, powerbutton   : {
-		  on       : 5
-		, sw       : 5
-		, led      : 40
-		, reserved : 5
+		  ON       : 5
+		, SW       : 5
+		, LED      : 40
+		, RESERVED : 5
 	}
 	, relays       : {
 		  on0   : 11
@@ -73,26 +73,26 @@ var default_v      = {
 		, "16" : "Subwoofer"
 	}
 	, rotaryencoder : {
-		  pina : 27
-		, pinb : 22
-		, pins : 23
-		, strp : 1
+		  PINA : 27
+		, PINB : 22
+		, PINS : 23
+		, STRP : 1
 	}
 	, softlimit     : {
-		softlimit : 60
+		SOFTLIMIT : 60
 	}
 	, vuled         : {
-		  p0 : 14
-		, p1 : 15
-		, p2 : 18
-		, p3 : 23
-		, p4 : 24
-		, p5 : 25
-		, p6 : 8
+		  P0 : 14
+		, P1 : 15
+		, P2 : 18
+		, P3 : 23
+		, P4 : 24
+		, P5 : 25
+		, P6 : 8
 	}
 	, wlan          : {
-		  regdom : '00'
-		, apauto : true
+		  REGDOM : '00'
+		, APAUTO : true
 	}
 }
 var gpiosvg        = $( '#gpiosvg' ).html().replace( 'width="380px', 'width="330px' );
@@ -244,12 +244,12 @@ $( '#menu a' ).click( function() {
 	switch ( cmd ) {
 		case 'forget':
 			notify( icon, title, 'Forget ...' );
-			bash( [ 'mountforget', mountpoint, 'CMD mountpoint' ] );
+			bash( [ 'mountforget', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 		case 'info':
 			var $code = $( '#codehddinfo' );
 			if ( $code.hasClass( 'hide' ) ) {
-				bash( [ 'hddinfo', source, 'CMD dev' ], data => {
+				bash( [ 'hddinfo', source, 'CMD DEV' ], data => {
 					$code
 						.html( data )
 						.removeClass( 'hide' );
@@ -260,11 +260,11 @@ $( '#menu a' ).click( function() {
 			break;
 		case 'remount':
 			notify( icon, title, 'Remount ...' );
-			bash( [ 'mountremount', mountpoint, source, 'CMD mountpoint source' ] );
+			bash( [ 'mountremount', mountpoint, source, 'CMD MOUNTPOINT SOURCE' ] );
 			break;
 		case 'unmount':
 			notify( icon, title, 'Unmount ...' )
-			bash( [ 'mountunmount', mountpoint, 'CMD mountpoint' ] );
+			bash( [ 'mountunmount', mountpoint, 'CMD MOUNTPOINT' ] );
 			break;
 	}
 } );
@@ -285,7 +285,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, title        : SW.title
 		, message      : 'Timer:'
 		, radio        : { '2 minutes': 24, '5 minutes': 60, '10 minutes': 120 }
-		, values       : { apm: S.hddsleep } || default_v.hddsleep
+		, values       : { APM: S.hddsleep } || default_v.hddsleep
 		, checkchanged : S.hddsleep
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -340,7 +340,7 @@ $( '#i2smodule' ).change( function() {
 		output = '';
 		i2sSelectHide();
 	}
-	bash( [ 'i2smodule', aplayname, output, 'CMD aplayname output' ] );
+	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
 $( '#divi2s .col-r' ).click( function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
@@ -521,7 +521,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : SW.title
 		, textlabel    : 'Name'
 		, focus        : 0
-		, values       : { hostname: S.hostname }
+		, values       : { HOSTNAME: S.hostname }
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
@@ -534,7 +534,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 } );
 $( '#timezone' ).change( function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
-	bash( [ 'timezone', $( this ).val(), 'CMD timezone' ] );
+	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } );
 $( '#divtimezone .col-r' ).click( function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
@@ -705,7 +705,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text(), 'CMD pkg' ], list => {
+		bash( [ 'packagelist', $target.text(), 'CMD PKG' ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );
@@ -797,7 +797,7 @@ ${ htmllcdchar.common }
 </tr>
 ${ htmllcdchar.sleep }
 `;
-	var inf_i2c = S.lcdcharconf.inf === 'i2c';
+	var inf_i2c = S.lcdcharconf.INF === 'i2c';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -824,7 +824,7 @@ ${ htmllcdchar.common }
 <tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
 ${ htmllcdchar.sleep }
 `;
-	var inf_gpio = S.lcdcharconf.inf === 'gpio';
+	var inf_gpio = S.lcdcharconf.INF === 'gpio';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -849,7 +849,7 @@ function infoLcdcharButton() {
 		.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
 	$( '#infoButtons gr' ).click( function() {
 		var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-		bash( [ 'lcdcharset', action, 'CMD action' ] );
+		bash( [ 'lcdcharset', action, 'CMD ACTION' ] );
 	} );
 }
 var contentmount = {
@@ -883,9 +883,9 @@ function infoMount( values ) {
 	if ( ! values ) {
 		var nfs    = false;
 		var values = default_v.mountcifs;
-		values.ip  = S.ipsub;
+		values.IP  = S.ipsub;
 	} else {
-		var nfs    = values.protocol === 'nfs';
+		var nfs    = values.PROTOCOL === 'nfs';
 	}
 	var icon       = 'networks';
 	var tablabel   = [ 'CIFS', 'NFS' ];
@@ -897,7 +897,7 @@ function infoMount( values ) {
 		tablabel.push( 'rAudio' );
 		tab.push( inforServer );
 		content          += contentmount.shareddata
-		values.shareddata = true;
+		values.SHAREDDATA = true;
 	} else {
 		var title = 'Add Network Storage';
 	}
@@ -972,7 +972,7 @@ function infoNtpMirror() {
 		, selectlabel  : S.rpi01 ? '' : 'Mirror'
 		, select       : S.rpi01 ? '' : V.htmlmirror
 		, boxwidth     : 240
-		, values       : S.rpi01 ? { ntp: S.ntp } : { ntp: S.ntp, mirror: S.mirror }
+		, values       : S.rpi01 ? { NTP: S.ntp } : { NTP: S.ntp, MIRROR: S.mirror }
 		, checkchanged : true
 		, checkblank   : [ 0 ]
 		, beforeshow   : () => {
@@ -1129,7 +1129,7 @@ function inforServer() {
 		, ok         : () => {
 			var ip = infoVal();
 			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
-			bash( [ 'sharelist', ip, 'CMD ip' ], list => {
+			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
 				var json = {
 					  icon    : Sw.icon
 					, title   : Sw.title
@@ -1141,7 +1141,7 @@ function inforServer() {
 					json.message = list +'<br>Connect?'
 					json.ok      = () => {
 						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-						bash( [ 'shareddataconnect', ip, 'CMD ip' ] );
+						bash( [ 'shareddataconnect', ip, 'CMD IP' ] );
 					}
 				}
 				info( json );

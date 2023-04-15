@@ -88,7 +88,7 @@ if [[ $ifconfiglan ]]; then
 		swappiness=$( sysctl vm.swappiness | cut -d' ' -f3 )
 		mtu=$( awk '/mtu/ {print $4}' <<< $ifconfiglan )
 		txqueuelen=$( awk '/txqueuelen/ {print $4}' <<< $ifconfiglan )
-		soundprofileconf='{ "swappiness": '$swappiness', "mtu": '$mtu', "txqueuelen": '$txqueuelen' }'
+		soundprofileconf='{ "SWAPPINESS": '$swappiness', "MTU": '$mtu', "TXQUEUELEN": '$txqueuelen' }'
 	fi
 fi
 
@@ -175,22 +175,24 @@ if [[ -e $dirshm/reboot ]]; then
 	grep -q Spectrum <<< $reboot && mpdoledreboot=true
 fi
 # relays
-. $dirsystem/relays.conf
-on=( $on )
-off=( $off )
-ond=( $ond )
-offd=( $offd )
-pL=${#on[@]}
-dL=$(( pL - 1 ))
-for (( i=0; i < $pL; i++ )); do
-	                conf+=', "on'$i'"  : '${on[i]}',  "off'$i'"  : '${off[i]}
-	(( i < dL )) && conf+=', "ond'$i'" : '${ond[i]}', "offd'$i'" : '${offd[i]}
-done
-conf+=', "timer": '$timer
-relaysconf='{ '${conf:1}' }'
+if [[ -e $dirsystem/relays.conf ]]; then
+	. $dirsystem/relays.conf
+	on=( $on )
+	off=( $off )
+	ond=( $ond )
+	offd=( $offd )
+	pL=${#on[@]}
+	dL=$(( pL - 1 ))
+	for (( i=0; i < $pL; i++ )); do
+						conf+=', "on'$i'"  : '${on[i]}',  "off'$i'"  : '${off[i]}
+		(( i < dL )) && conf+=', "ond'$i'" : '${ond[i]}', "offd'$i'" : '${offd[i]}
+	done
+	conf+=', "timer": '$timer
+	relaysconf='{ '${conf:1}' }'
+fi
 # tft
 tftmodel=$( getContent $dirsystem/lcdmodel )
-[[ $tftmodel ]] && tftconf='{ "model": "'$tftmodel'" }'
+[[ $tftmodel ]] && tftconf='{ "MODEL": "'$tftmodel'" }'
 if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
@@ -207,7 +209,7 @@ fi
 chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
 baud=$( grep baudrate /boot/config.txt | cut -d= -f3 )
 [[ ! $baud ]] && baud=800000
-mpdoledconf='{ "chip": "'$chip'", "baud": '$baud' }'
+mpdoledconf='{ "CHIP": "'$chip'", "BAUD": '$baud' }'
 
 data+='
   "page"              : "system"
@@ -265,7 +267,7 @@ fi
 if [[ -e $dirshm/onboardwlan ]]; then
 	regdom=$( cut -d'"' -f2 /etc/conf.d/wireless-regdom )
 	apauto=$( [[ ! -e $dirsystem/wlannoap ]] && echo true )
-	wlanconf='{ "regdom": "'$regdom'", "apauto": '$apauto' }'
+	wlanconf='{ "REGDOM": "'$regdom'", "APAUTO": '$apauto' }'
 	data+='
 , "wlan"              : '$( lsmod | grep -q -m1 brcmfmac && echo true )'
 , "wlanconf"          : '$wlanconf'
@@ -279,7 +281,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 		fi
 	fi
 	format=$( exists $dirsystem/btformat )
-	bluetoothconf='{ "discoverable": '$discoverable', "format": '$format' }'
+	bluetoothconf='{ "DISCOVERABLE": '$discoverable', "FORMAT": '$format' }'
 	data+='
 , "bluetooth"         : '$bluetoothon'
 , "bluetoothactive"   : '$bluetoothactive'
@@ -289,7 +291,7 @@ fi
 if [[ $rpi3bplus ]]; then
 	data+='
 , "softlimit"         : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
-, "softlimitconf"     : { "softlimit": '$softlimit' }'
+, "softlimitconf"     : { "SOFTLIMIT": '$softlimit' }'
 fi
 
 data2json "$data" $1

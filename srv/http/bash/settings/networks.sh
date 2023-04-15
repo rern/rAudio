@@ -50,43 +50,42 @@ wlanDevice() {
 case $CMD in
 
 bluetoothinfo )
-	info=$( bluetoothctl info $mac )
+	info=$( bluetoothctl info $MAC )
 	grep -q -m1 'not available' <<< $info && exit
 	
 	echo "\
-<bll># bluetoothctl info $mac</bll>
+<bll># bluetoothctl info $MAC</bll>
 $info"
 	;;
 connect )
 	file="/etc/netctl/$ESSID"
-	[[ $Address ]] && IP=static || IP=dhcp
-	if [[ $Address && $Address != $( ipAddress ) ]]; then # static
-		if ping -c 1 -w 1 $Address &> /dev/null; then
+	[[ $ADDRESS ]] && ip=static || ip=dhcp
+	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
+		if ping -c 1 -w 1 $ADDRESS &> /dev/null; then
 			rm "$file"
-			echo "IP <wh>$Address</wh> already in use."
+			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
 			exit
 		fi
 	fi
 	
-	data="\
-Interface=$( < $dirshm/wlan )
+	data='Interface='$( < $dirshm/wlan )'
 Connection=wireless
-IP=$IP
-ESSID=$ESSID"
-	if [[ $Key ]]; then
-		[[ $Security ]] && Security=wep || Security=wpa
-		data+="
-Key=$Key"
+IP='$ip'
+ESSID="'$ESSID'"'
+	if [[ $KEY ]]; then
+		[[ $SECURITY ]] && security=wep || security=wpa
+		data+='
+Key="'$KEY'"'
 	else
-		Security=none
+		security=none
 	fi
-	[[ $Address ]] && data+="
-Address=$Address/24
-Gateway=$Gateway"
-	data+="
-Security=$Security"
-	[[ $Hidden ]] && data+="
-Hidden=yes"
+	[[ $ADDRESS ]] && data+='
+Address='$ADDRESS'/24
+Gateway='$GATEWAY
+	data+='
+Security='$security
+	[[ $HIDDEN ]] && data+='
+Hidden=yes'
 	echo "$data" > "/etc/netctl/$ESSID"
 	
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
@@ -111,8 +110,8 @@ disconnect )
 	$dirsettings/networks-data.sh pushwl
 	;;
 lanedit )
-	if [[ $ip ]]; then
-		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
+	if [[ $IP ]]; then
+		ping -c 1 -w 1 $IP &> /dev/null && echo -1 && exit
 	fi
 	
 	file=/etc/systemd/network/en.network
@@ -123,10 +122,10 @@ lanedit )
 		file=/etc/systemd/network/eth0.network
 	fi
 	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $ip ]]; then # static
+	if [[ $IP ]]; then # static
 		sed -i '/^DNSSEC/ i\
-Address='$ip'/24\
-Gateway='$gw $file
+Address='$IP'/24\
+Gateway='$GATEWAY $file
 	else               # dhcp - reset
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file
 	fi
@@ -140,19 +139,19 @@ profileconnect )
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "$ssid"
+	netctlSwitch "$SSID"
 	;;
 profileget )
-	conf2json "/etc/netctl/$ssid"
+	conf2json "/etc/netctl/$SSID"
 	;;
 profileremove )
-	netctl is-enabled "$ssid" && netctl disable "$ssid"
-	if netctl is-active "$ssid" &> /dev/null; then
-		netctl stop "$ssid"
+	netctl is-enabled "$SSID" && netctl disable "$SSID"
+	if netctl is-active "$SSID" &> /dev/null; then
+		netctl stop "$SSID"
 		killall wpa_supplicant &> /dev/null &
 		ifconfig $( < $dirshm/wlan ) up
 	fi
-	rm "/etc/netctl/$ssid"
+	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
 	;;
 scankill ) 

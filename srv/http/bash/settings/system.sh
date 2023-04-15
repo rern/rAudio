@@ -25,7 +25,7 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 		[[ $tft || $I2Clcdchar || $I2Cmpdoled ]] && config+="
 dtparam=i2c_arm=on"
 		[[ $I2Cmpdoled ]] && config+="
-dtparam=i2c_arm_baudrate=$baud" # $baud from mpdoled )
+dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
 		[[ $tft || $SPImpdoled ]] && config+="
 dtparam=spi=on"
 		
@@ -114,14 +114,6 @@ soundProfile() {
 		ip link set $lan txqueuelen $txqueuelen
 	fi
 }
-timezoneAuto() {
-	local timezone
-	timezone=$( curl -s https://ipapi.co/timezone )
-	[[ ! $timezone ]] && timezone=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
-	[[ ! $timezone ]] && timezone=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
-	[[ ! $timezone ]] && timezone=UTC
-	[[ $timezone ]] && timedatectl set-timezone $timezone
-}
 
 case $CMD in
 
@@ -141,7 +133,7 @@ dtparam=krnbt=on"
 			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 			rfkill | grep -q -m1 bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
 		fi
-		if [[ $discoverable ]]; then
+		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
 		else
@@ -150,8 +142,8 @@ dtparam=krnbt=on"
 		fi
 		bluetoothctl discoverable $yesno &> /dev/null
 		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=
-		[[ $format ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
-		[[ $format != $prevbtformat ]] && $dirsettings/player-conf.sh
+		[[ $FORMAT ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
+		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
@@ -171,8 +163,8 @@ bluetoothstart )
 	;;
 hddinfo )
 	echo -n "\
-<bll># hdparm -I $dev</bll>
-$( hdparm -I $dev | sed '1,3 d' )
+<bll># hdparm -I $DEV</bll>
+$( hdparm -I $DEV | sed '1,3 d' )
 "
 	;;
 hddsleep )
@@ -181,12 +173,12 @@ hddsleep )
 		for dev in $devs; do
 			! hdparm -B $dev | grep -q -m1 'APM_level' && notsupport+=$dev'<br>' && continue
 
-			hdparm -q -B $apm $dev
-			hdparm -q -S $apm $dev
+			hdparm -q -B $APM $dev
+			hdparm -q -S $APM $dev
 			support=1
 		done
 		[[ $notsupport ]] && echo -e "<wh>Devices not support sleep:</wh><br>$notsupport"
-		[[ $support ]] && echo $apm > $dirsystem/apm
+		[[ $support ]] && echo $APM > $dirsystem/apm
 	else
 		devs=$( mount | grep .*USB/ | cut -d' ' -f1 )
 		if [[ $devs ]]; then
@@ -209,10 +201,10 @@ hdmi_force_hotplug=1"
 	pushstream refresh '{"page":"features","hdmihotplug":'$TF'}'
 	;;
 hostname )
-	hostnamectl set-hostname $hostname
-	sed -i -E "s/^(ssid=).*/\1$hostname/" /etc/hostapd/hostapd.conf
-	sed -i -E 's/(name = ").*/\1'$hostname'"/' /etc/shairport-sync.conf
-	sed -i -E "s/^(friendlyname = ).*/\1$hostname/" /etc/upmpdcli.conf
+	hostnamectl set-hostname $HOSTNAME
+	sed -i -E "s/^(ssid=).*/\1$HOSTNAME/" /etc/hostapd/hostapd.conf
+	sed -i -E 's/(name = ").*/\1'$HOSTNAME'"/' /etc/shairport-sync.conf
+	sed -i -E "s/^(friendlyname = ).*/\1$HOSTNAME/" /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	pushRefresh
@@ -226,16 +218,16 @@ force_eeprom_read=0"
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
 	config=$( grep -Ev "dtparam=i2s=on|dtoverlay=$prevaplayname|gpio=25=op,dh|dtparam=audio=on" /boot/config.txt )
-	if [[ $aplayname != onboard ]]; then
+	if [[ $APLAYNAME != onboard ]]; then
 		config+="
 dtparam=i2s=on
-dtoverlay=$aplayname"
-		[[ $output == 'Pimoroni Audio DAC SHIM' ]] && config+="
+dtoverlay=$APLAYNAME"
+		[[ $OUTPUT == 'Pimoroni Audio DAC SHIM' ]] && config+="
 gpio=25=op,dh"
-		[[ $aplayname == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+		[[ $APLAYNAME == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
-		echo $aplayname > $dirsystem/audio-aplayname
-		echo $output > $dirsystem/audio-output
+		echo $APLAYNAME > $dirsystem/audio-aplayname
+		echo $OUTPUT > $dirsystem/audio-output
 	else
 		config+="
 dtparam=audio=on"
@@ -252,7 +244,7 @@ lcdchar )
 lcdcharset )
 	killall lcdchar.py &> /dev/null
 	lcdcharinit.py
-	lcdchar.py $action
+	lcdchar.py $ACTION
 	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
@@ -284,27 +276,27 @@ mirrorlist )
 	echo '{ '$codelist' }'
 	;;
 mountforget )
-	umount -l "$mountpoint"
-	rmdir "$mountpoint" &> /dev/null
-	fstab=$( grep -v $( space2ascii $mountpoint ) /etc/fstab )
+	umount -l "$MOUNTPOINT"
+	rmdir "$MOUNTPOINT" &> /dev/null
+	fstab=$( grep -v $( space2ascii $MOUNTPOINT ) /etc/fstab )
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	$dirbash/cmd.sh mpcupdate$'\n'NAS
 	pushRefresh
 	;;
 mountremount )
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		mount "$mountpoint"
+	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
+		mount "$MOUNTPOINT"
 	else
-		udevil mount "$source"
+		udevil mount "$SOURCE"
 	fi
 	pushRefresh
 	;;
 mountunmount )
-	if [[ ${mountpoint:9:3} == NAS ]]; then
-		umount -l "$mountpoint"
+	if [[ ${MOUNTPOINT:9:3} == NAS ]]; then
+		umount -l "$MOUNTPOINT"
 	else
-		udevil umount -l "$mountpoint"
+		udevil umount -l "$MOUNTPOINT"
 	fi
 	pushRefresh
 	;;
@@ -315,8 +307,8 @@ mpdoledlogo )
 	;;
 mpdoled )
 	if [[ $ON ]]; then
-		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $chip ]]; then
-			sed -i "s/-o ./-o $chip/" /etc/systemd/system/mpd_oled.service
+		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $CHIP ]]; then
+			sed -i "s/-o ./-o $CHIP/" /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
 		touch $dirsystem/mpdoled
@@ -330,16 +322,16 @@ mpdoled )
 	;;
 ntpmirror )
 	file=/etc/systemd/timesyncd.conf
-	if [[ $ntp != $( getVar NTP $file ) ]]; then
+	if [[ $NTP != $( getVar NTP $file ) ]]; then
 		echo "\
 [Time]
-NTP=$ntp" > $file
+NTP=$NTP" > $file
 		timedatectl set-ntp true
 	fi
 	[[ -e /boot/kernel.img ]] && pushRefresh && exit # armv6h
 	file=/etc/pacman.d/mirrorlist
-	[[ $mirror ]] && mirror+=.
-	server='Server = http://'$mirror'mirror.archlinuxarm.org/$arch/$repo'
+	[[ $MIRROR ]] && MIRROR+=.
+	server='Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo'
 	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
 	pushRefresh
 	;;
@@ -369,7 +361,7 @@ $description
 				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
 				> /tmp/packages
 	fi
-	grep -B1 -A2 --no-group-separator "^${pkg,}" $filepackages
+	grep -B1 -A2 --no-group-separator ^${PKG,} $filepackages
 	;;
 poweraudiophonics )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
@@ -386,9 +378,9 @@ powerbutton )
 	if [[ $ON ]]; then
 		systemctl restart powerbutton
 		systemctl enable powerbutton
-		if [[ $sw != 5 ]]; then
-			config+="
-dtoverlay=gpio-shutdown,gpio_pin=$reserved"
+		if [[ $SW != 5 ]]; then
+			config+='
+dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 		fi
 	else
 		if [[ ! -e $dirsystem/audiophonics ]]; then
@@ -424,7 +416,6 @@ orderon="'$( stringEscape ${neworderon:0:-2} )'"
 orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
 	else
 		rm -f $dirsystem/relays
-		enable=false
 	fi
 	pushRefresh
 	pushstream display '{"submenu":"relays","value":'$TF'}'
@@ -439,14 +430,14 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddataconnect )
-	if [[ ! $ip && -e $dirsystem/sharedipserver ]]; then # sshpass from server to reconnect
-		ip=$( < $dirsystem/sharedipserver )
-		! ping -c 1 -w 1 $ip &> /dev/null && exit
+	if [[ ! $IP && -e $dirsystem/sharedipserver ]]; then # sshpass from server to reconnect
+		IP=$( < $dirsystem/sharedipserver )
+		! ping -c 1 -w 1 $IP &> /dev/null && exit
 		
 		reconnect=1
 	fi
 	
-	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' )
+	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' )
 	for path in "${paths[@]}"; do
 		dir="$dirnas/$( basename "$path" )"
 		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
@@ -462,7 +453,7 @@ shareddataconnect )
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
 		fstab+="
-$ip:$( space2ascii $path )  $( space2ascii $dir )  $options"
+$IP:$( space2ascii $path )  $( space2ascii $dir )  $options"
 	done
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
@@ -527,28 +518,28 @@ shareddataset )
 	sharedDataSet
 	;;
 sharelist )
-	! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
+	! ping -c 1 -w 1 $IP &> /dev/null && echo "IP address not found: <wh>$IP</wh>" && exit
 	
 #	if [[ $protocol == smb ]]; then
-#		script -c "timeout 10 smbclient -NL $ip" $dirshm/smblist &> /dev/null # capture /dev/tty to file
+#		script -c "timeout 10 smbclient -NL $IP" $dirshm/smblist &> /dev/null # capture /dev/tty to file
 #		paths=$( sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//' $dirshm/smblist )
 #	else
-#		paths=$( timeout 5 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
+#		paths=$( timeout 5 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' | sort )
 #	fi
-	paths=$( timeout 5 showmount --no-headers -e $ip 2> /dev/null | awk 'NF{NF-=1};1' | sort )
+	paths=$( timeout 5 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' | sort )
 	if [[ $paths ]]; then
 		echo "\
-Server rAudio @<wh>$ip</wh> :
+Server rAudio @<wh>$IP</wh> :
 
 <pre><wh>$paths</wh></pre>"
 	else
-		echo "No NFS shares found @<wh>$ip</wh>"
+		echo "No NFS shares found @<wh>$IP</wh>"
 	fi
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )
 	[[ $ON ]] && config+="
-temp_soft_limit=$softlimit"
+temp_soft_limit=$SOFTLIMIT"
 	configTxt 'Custom Soft limit'
 	;;
 soundprofileset )
@@ -556,7 +547,7 @@ soundprofileset )
 	;;
 soundprofile )
 	if [[ $ON ]]; then
-		if [[ "$swappiness $mtu $txqueuelen" == '60 1500 1000' ]]; then
+		if [[ "$SWAPPINESS $MTU $TXQUEUELEN" == '60 1500 1000' ]]; then
 			rm -f $dirsystem/soundprofile.conf
 			soundProfile reset
 			notify soundprofile 'Sound Profile' 'Default setting.'
@@ -672,11 +663,11 @@ tft )
 	config=$( grep -Ev 'hdmi_force_hotplug|:rotate=' /boot/config.txt )
 	sed -i 's/ fbcon=map:10 fbcon=font:ProFont6x11//' /boot/cmdline.txt
 	if [[ $ON ]]; then
-		[[ $model != tft35a ]] && echo $model > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel
+		[[ $MODEL != tft35a ]] && echo $MODEL > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
 		config+="
 hdmi_force_hotplug=1
-dtoverlay=$model:rotate=0"
+dtoverlay=$MODEL:rotate=0"
 		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
 		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
@@ -698,13 +689,19 @@ tftcalibrate )
 	fi
 	;;
 timezone )
-	[[ $timezone == auto ]] && timezoneAuto || timedatectl set-timezone $timezone
+	if [[ $TIMEZONE == auto ]]; then
+		timezone=$( curl -s https://ipapi.co/timezone )
+		[[ ! $timezone ]] && timezone=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
+		[[ ! $timezone ]] && timezone=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
+		[[ ! $timezone ]] && timezone=UTC
+		[[ $timezone ]] && timedatectl set-timezone $timezone
+	else
+		timedatectl set-timezone $TIMEZONE
+	fi
 	pushRefresh
 	;;
-timezoneauto )
-	timezoneAuto
 	;;
-usbconnect|usbremove ) # for /etc/conf.d/devmon - devmon@http.service
+usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
 	[[ -e $dirshm/audiocd ]] && exit
 	
@@ -735,7 +732,7 @@ vuled )
 		killall cava &> /dev/null
 		. $dirsystem/vuled.conf
 		for (( i=0; i < 7; i++ )); do
-			pin=p$i
+			pin=P$i
 			echo 0 > /sys/class/gpio/gpio${!pin}/value
 		done
 		if [[ -e $dirsystem/vumeter ]]; then
@@ -752,10 +749,10 @@ wlan )
 		ifconfig wlan0 up
 		echo wlan0 > $dirshm/wlan
 		iw wlan0 set power_save off
-		[[ $apauto ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
-		if [[ $regdom ]] && ! grep -q $regdom /etc/conf.d/wireless-regdom; then
-			sed -i 's/".*"/"'$regdom'"/' /etc/conf.d/wireless-regdom
-			iw reg set $regdom
+		[[ $APAUTO ]] && rm -f $dirsystem/wlannoap || touch $dirsystem/wlannoap
+		if [[ $REGDOM ]] && ! grep -q $REGDOM /etc/conf.d/wireless-regdom; then
+			sed -i 's/".*"/"'$REGDOM'"/' /etc/conf.d/wireless-regdom
+			iw reg set $REGDOM
 		fi
 	else
 		systemctl -q is-active hostapd && $dirsettings/features.sh hostapd$'\n'OFF
