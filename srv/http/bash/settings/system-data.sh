@@ -184,10 +184,10 @@ if [[ -e $dirsystem/relays.conf ]]; then
 	pL=${#on[@]}
 	dL=$(( pL - 1 ))
 	for (( i=0; i < $pL; i++ )); do
-						conf+=', "on'$i'"  : '${on[i]}',  "off'$i'"  : '${off[i]}
-		(( i < dL )) && conf+=', "ond'$i'" : '${ond[i]}', "offd'$i'" : '${offd[i]}
+						conf+=', "ON'$i'"  : '${on[i]}',  "OFF'$i'"  : '${off[i]}
+		(( i < dL )) && conf+=', "OND'$i'" : '${ond[i]}', "OFFD'$i'" : '${offd[i]}
 	done
-	conf+=', "timer": '$timer
+	conf+=', "TIMER": '$timer
 	relaysconf='{ '${conf:1}' }'
 fi
 # tft
@@ -240,7 +240,7 @@ data+='
 , "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
 , "relays"            : '$( exists $dirsystem/relays )'
 , "relaysconf"        : '$relaysconf'
-, "relaysnameconf"    : '$( getContent $dirsystem/relaysname.json )'
+, "relaysnameconf"    : '$( getContent $dirsystem/relays.json )'
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'

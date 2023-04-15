@@ -402,7 +402,7 @@ relays )
 	if [[ $ON ]]; then
 		touch $dirsystem/relays
 		. $dirsystem/relays.conf
-		json=$( jq < $dirsystem/relaysname.json )
+		json=$( jq < $dirsystem/relays.json )
 		for p in $on; do
 			name=$( jq -r '.["'$p'"]' <<< $json )
 			[[ $name ]] && neworderon+=$name'\n'
@@ -699,7 +699,6 @@ timezone )
 		timedatectl set-timezone $TIMEZONE
 	fi
 	pushRefresh
-	;;
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ ! -e $dirshm/startup ]] && exit # suppress on startup

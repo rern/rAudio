@@ -91,7 +91,7 @@ timer=$timer"
 		pn+=', "'${p[i]}'" : '${n[i]}
 	done
 	json='{ '${pn:1}' }'
-	jq <<< $json > $dirsystem/relaysname.json
+	jq <<< $json > $dirsystem/relays.json
 	for p in ${on[@]}; do
 		name=$( jq -r '.["'$p'"]' <<< $json )
 		[[ $name ]] && orderon+=$name'\n'
