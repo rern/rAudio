@@ -50,7 +50,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 
 
 var freq      = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-var timeout;
+var timeout, user;
 var band      = [];
 var labelhz   = '';
 freq.forEach( ( hz, i ) => {
@@ -71,8 +71,8 @@ var content = `
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		E        = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
-		var user = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+		E    = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
+		user = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
@@ -100,13 +100,13 @@ function equalizer() {
 						
 						prevval   = v;
 						$this.val( v );
-						bash( [ 'equalizerset', band[ $this.index() ], v, user, 'CMD band val user' ] );
+						eqCommandSlide( band[ $this.index() ], v );
 						timeout = setTimeout( eqSave, 1000 );
 					} );
 				} else {
 /* slider */		$( '#infoRange input' ).on( 'click input keyup', function() {
 						var $this = $( this );
-						bash( [ 'equalizerset', band[ $this.index() ], +$this.val(), user, 'CMD band val user' ] );
+						eqCommandSlide( band[ $this.index() ], +$this.val() );
 					} ).on( 'touchend mouseup keyup', function() {
 						E.preset[ E.active ] = infoVal().slice( 2 );
 						bash( { cmd: [ 'equalizer' ], json: E } );
@@ -118,11 +118,19 @@ function equalizer() {
 	}, 'json' );
 }
 function eqCommand( v ) {
-	bash( { cmd: [ 'equalizer', v, eqUser(), 'CMD values user' ], json: E } );
+	bash( { cmd: [ 'equalizer', v, eqUser(), 'CMD VALUES USER' ], json: E } );
 }
 function eqCommandName() {
-	bash( { cmd: [ 'equalizer', eqUser(), 'CMD user' ], json: E } );
+	bash( { cmd: [ 'equalizer', eqUser(), 'CMD USER' ], json: E } );
 	eqOptionPreset();
+}
+function eqCommandSlide( band, val ) {
+	bash( [ 'equalizerset', band, val, user, 'CMD BAND VAL USER' ] );
+	if ( E.active === 'Flat' ) {
+		E.active                = '(unnamed)';
+		E.preset[ '(unnamed)' ] = E.preset.Flat;
+		eqOptionPreset();
+	}
 }
 function eqOptionPreset() {
 	var names     = Object.keys( E.preset ).sort();

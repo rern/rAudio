@@ -434,21 +434,21 @@ display )
 	$dirsettings/player-conf.sh
 	;;
 equalizer ) # preset ( delete, rename, new - save json only )
-	[[ ! $values ]] && exit
+	[[ ! $VALUES ]] && exit
 	
 	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	v=( $values )
+	v=( $VALUES )
 	for (( i=0; i < 10; i++ )); do
 		(( i < 5 )) && unit=Hz || unit=kHz
 		band=( "0$i. ${freq[i]} $unit" )
-		sudo -u $user amixer -MqD equal sset "$band" ${v[i]}
+		sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
 	done
 	;;
 equalizerget )
 	cat $dirsystem/equalizer.json 2> /dev/null || echo false
 	;;
 equalizerset )
-	sudo -u $user amixer -MqD equal sset "$band" $val
+	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
 	;;
 getelapsed )
 	getElapsed
