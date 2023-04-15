@@ -51,24 +51,28 @@ $.fn.press = function( arg1, arg2 ) {
 Simple spaced arguments
 	- [ 'CMD.sh', v1, v2, ... ] - CMD.sh $1 $2 ...
 Multiline arguments - no escape \" \` in js values > escape in php instead
-	- [ 'CMD', v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
-	- [ 'CMD', 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
-	- [ 'CMD', v1, v2, ..., 'CMD k1 k2 ...' ] - script.sh $CMD ON=1 "$k1" "$k2" ...
-	- [ 'CMD', v1, v2, ..., 'CFG k1 k2 ...' ] -        ^^^                     and save k1=v1; k2=v2; ... to $dirsystem/$CMD.conf
-	- { cmd: [ 'CMD', ... ], json: JSON }     -        ^^^                     and save {"k1":"v1", ... } to $dirsystem/$CMD.json
+	- [ CMD, v1, v2, ... ]                  - script.sh $CMD ON=1 "${args[1]}" "${args[2]}" ...
+	- [ CMD, 'OFF' ]                        - script.sh $CMD ON=  (disable CMD)
+	- [ CMD, v1, v2, ..., 'CMD K1 K2 ...' ] - script.sh $CMD ON=1 "$K1" "$K2" ...
+	- [ CMD, v1, v2, ..., 'CFG K1 K2 ...' ] -        ^^^                     and save K1=v1; K2=v2; ... to $dirsystem/$CMD.conf
+	- { cmd: [ CMD, ... ], json: JSON }     -        ^^^                     and save {"K1":"v1", ... } to $dirsystem/$CMD.json
 
-- js > php   --- common.js - bash()
-	- string : [ 'CMD' v1, v2, ..., 'CMD k1 k2 ...' ] (multiline: 'l1\\nl2\\nl3...')
-	- json   : sringify
-- php > bash --- cmd.php $cmd === 'bash'
+- js > php   >> common.js - bash()
+	- string : 
+		- array of lines : [ 'CMD' v1, v2, ..., 'CMD K1 K2 ...' ]
+		- multiline      : 'l1\\nl2\\nl3...'
+	- json   : json.sringify( JSON )
+- php > bash >> cmd.php   - $_POST[ 'cmd' ] === 'bash'
 	- array : covert to multiline with " ` escaped > CMD "...\"...\n...\`..."
-	- json  : decode > reencode > bash save to file
+	- json  : decode > reencode > save to $dirsystem/$CMD.json ($_POST[ 'json' ])
 		- js cannot escape " as \\" double backslash which disappeared in bash
-- bash       --- common.sh - args2var
+- bash       >> common.sh - args2var
 	- convert to array > assign values
-		- No 'CMD'   - ${args[1]}=v1; ${args[2]}=v2; ...
-		- With 'CMD' or 'CFG" - k1=v1; k2=v2; ... ( 'CMD k1 k2 ...' ) with " ` escaped and quote > k1="... ...\"...\n...\`..."
-			- save to $dirsystem/$CMD.conf if 'CFG' set
+		- No 'CMD'   : ${args[1]} == v1; ${args[2]} == v2; ...
+		- With 'CMD' : $K1        == v1; $K2        == v2; ... ($VAR in capital)
+		- With 'CFG' : 
+			- the same as 'CMD'
+			- save to $dirsystem/$CMD.conf  with " ` escaped and quote > K1="... ...\"...\n...\`..."
 */
 function bash( args, callback, json ) {
 	var data = { cmd: 'bash' }
