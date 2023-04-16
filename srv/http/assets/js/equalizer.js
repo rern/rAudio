@@ -30,6 +30,36 @@ function equalizer() {
 			, beforeshow : () => {
 				$( '#infoBox' ).css( 'width', 550 );
 				$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
+				if ( /Android.*Chrome/i.test( navigator.userAgent ) ) { // fix: chrome android drag
+					var $this, ystart, val, prevval;
+					var yH   = $( '#infoRange input' ).width() - 40;
+					var step = yH / 40;
+					$( '#infoRange input' ).on( 'touchstart', function( e ) {
+						$this  = $( this );
+						ystart = e.changedTouches[ 0 ].pageY;
+						val    = +$this.val();
+					} ).on( 'touchmove', function( e ) {
+						var pageY = e.changedTouches[ 0 ].pageY;
+						var diff  = ystart - pageY;
+						if ( Math.abs( diff ) < step ) return
+						
+						var v     = val + Math.round( diff / step );
+						if ( v === prevval || v > 80 || v < 40 ) return
+						
+						prevval   = v;
+						$this.val( v );
+						eqSlide( band[ $this.index() ], v );
+					} ).on( 'touchend', function() {
+						eqSlideEnd();
+					} );
+				} else {
+					$( '#infoRange input' ).on( 'input', function() {
+						var $this = $( this );
+						eqSlide( band[ $this.index() ], +$this.val() );
+					} ).on( 'touchend mouseup keyup', function() {
+						eqSlideEnd();
+					} );
+				}
 			}
 			, cancel     : () => E = {}
 			, okno       : true
@@ -52,6 +82,21 @@ function eqOptionPreset() {
 		.trigger( 'change' );
 	I.values = [ '', E.active, ...E.preset[ E.active ] ];
 	infoSetValues();
+}
+function eqSlide( band, v ) {
+	bash( [ 'equalizerset', band, v, user, 'CMD BAND VAL USER' ] );
+	if ( E.active === 'Flat' ) {
+		var newname         = 'New';
+		if ( Object.keys( E.preset ).includes( newname ) ) newname += '.1';
+		E.active            = newname;
+		E.preset[ newname ] = E.preset.Flat;
+		eqOptionPreset();
+	}
+}
+function eqSlideEnd() {
+	E.preset[ E.active ] = infoVal().slice( 2 );
+	bash( { cmd: [ 'equalizer' ], json: E } );
+	$( '#eqrename' ).removeClass( 'disabled' );
 }
 
 $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
@@ -100,18 +145,4 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	}
 	$( '#eqback' ).click();
 	bash( { cmd: [ 'equalizer' ], json: E } );
-} ).on( 'input', '.vertical', function() {       // slide
-	var $this = $( this );
-	bash( [ 'equalizerset', band[ $this.index() ], +$this.val(), user, 'CMD BAND VAL USER' ] );
-	if ( E.active === 'Flat' ) {
-		var newname         = 'New';
-		if ( Object.keys( E.preset ).includes( newname ) ) newname += '.1';
-		E.active            = newname;
-		E.preset[ newname ] = E.preset.Flat;
-		eqOptionPreset();
-	}
-} ).on( 'touchend mouseup keyup', '.vertical', function() {
-	E.preset[ E.active ] = infoVal().slice( 2 );
-	bash( { cmd: [ 'equalizer' ], json: E } );
-	$( '#eqrename' ).removeClass( 'disabled' );
-} );
+} )
