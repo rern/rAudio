@@ -1,4 +1,5 @@
 var names, timeout, user;
+var flat      = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
 var freq      = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var band      = [];
 var labelhz   = '';
@@ -67,7 +68,8 @@ function equalizer() {
 	}, 'json' );
 }
 function eqPreset( v ) {
-	var user = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd'
+	var user      = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd'
+	E.preset.Flat = flat;
 	bash( { cmd: [ 'equalizer', v, user, 'CMD VALUES USER' ], json: E } );
 }
 function eqOptionPreset() {
@@ -95,6 +97,7 @@ function eqSlide( band, v ) {
 }
 function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
+	E.preset.Flat        = flat;
 	bash( { cmd: [ 'equalizer' ], json: E } );
 	$( '#eqrename' ).removeClass( 'disabled' );
 }
@@ -133,7 +136,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqback' ).click();
 	eqOptionPreset();
 } ).on( 'click', '#eqsave', function() {
-	var name            = $( '#eqname' ).val();
+	var name = $( '#eqname' ).val();
 	if ( $( '#eqdelete' ).hasClass( 'hide' ) ) { // new
 		E.active         = name;
 		E.preset[ name ] = infoVal().slice( 2 );
@@ -144,5 +147,6 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 		delete E.preset[ oldname ];
 	}
 	$( '#eqback' ).click();
+	E.preset.Flat = flat;
 	bash( { cmd: [ 'equalizer' ], json: E } );
 } )
