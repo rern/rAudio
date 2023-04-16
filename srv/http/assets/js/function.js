@@ -1016,6 +1016,12 @@ function refreshData() {
 			getPlaylist();
 		}
 	}
+	if ( 'active' in E ) {
+		bash( [ 'equalizerget' ], function( data ) {
+			E = data;
+			eqOptionPreset();
+		}, 'json' );
+	}
 }
 function renderLibrary() { // home
 	V.mode             = '';

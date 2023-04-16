@@ -181,6 +181,12 @@ function psDisplay( data ) {
 		$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 	}
 }
+function psEqualizer( data ) {
+	if ( V.local || ! ( 'active' in E ) ) return
+	
+	E        = data;
+	eqOptionPreset();
+}
 function psMpdPlayer( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {

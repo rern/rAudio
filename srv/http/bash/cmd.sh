@@ -56,13 +56,6 @@ plTail() {
 	pos=$( mpc status %songpos% )
 	echo $(( total - pos ))
 }
-pushstreamEqualizer() {
-	values=$( sudo -u $user amixer -MD equal contents \
-					| grep ': values' \
-					| cut -d, -f2 \
-					| xargs )
-	pushstream equalizer '[ '${values// /,}' ]'
-}
 pushstreamPlaylist() {
 	local arg
 	[[ $1 ]] && arg=$1 || arg=current
@@ -433,21 +426,22 @@ display )
 	fi
 	$dirsettings/player-conf.sh
 	;;
-equalizer ) # preset ( delete, rename, new - save json only )
-	[[ ! $VALUES ]] && exit
-	
-	freq=( 31 63 125 250 500 1 2 4 8 16 )
-	v=( $VALUES )
-	for (( i=0; i < 10; i++ )); do
-		(( i < 5 )) && unit=Hz || unit=kHz
-		band=( "0$i. ${freq[i]} $unit" )
-		sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
-	done
+equalizer )
+	if [[ $VALUES ]]; then # preset ( delete, rename, new - save json only )
+		freq=( 31 63 125 250 500 1 2 4 8 16 )
+		v=( $VALUES )
+		for (( i=0; i < 10; i++ )); do
+			(( i < 5 )) && unit=Hz || unit=kHz
+			band=( "0$i. ${freq[i]} $unit" )
+			sudo -u $USER amixer -MqD equal sset "$band" ${v[i]}
+		done
+	fi
+	pushstream equalizer $( < $dirsystem/equalizer.json )
 	;;
 equalizerget )
 	cat $dirsystem/equalizer.json 2> /dev/null || echo false
 	;;
-equalizerset )
+equalizerset ) # slide
 	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
 	;;
 getelapsed )

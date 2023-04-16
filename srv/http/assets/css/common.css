@@ -988,6 +988,14 @@ input[type=radio]:disabled {
 	input[type=checkbox]:focus {
 		outline-offset: 1px;
 	}
+	#infoRange input:focus::-webkit-slider-thumb {
+		outline: 2px solid var( --cgl );
+		outline-offset: 1px;
+	}
+	#infoRange input:focus::-moz-range-thumb {
+		outline: 2px solid var( --cgl );
+		outline-offset: 1px;
+	}
 	.infobtn.active {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
 	}

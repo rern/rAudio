@@ -226,7 +226,7 @@ $( '#setting-localbrowser' ).click( function() {
 			} );
 			if ( S.brightness ) {
 				var $range = $( '#infoRange input' );
-				$range.on( 'click input keyup', function() {
+				$range.on( 'input', function() {
 					bash( [ 'brightness', $range.val(), 'CMD VAL' ] );
 				} );
 			} else {
@@ -275,6 +275,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, checkchanged : S.multiraudio && values.length > 2
 		, checkblank   : I.checkblank
 		, checkip      : I.checkip
+		, checkunique  : true
 		, beforeshow   : () => {
 			$( '#infoContent input' ).each( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
@@ -284,6 +285,7 @@ $( '#setting-multiraudio' ).click( function() {
 				var add   = $this.hasClass( 'ipadd' );
 				if ( add ) {
 					$( '#infoContent table' ).append( trhtml );
+					$( '#infoContent input' ).last().val( S.ipsub );
 				} else {
 					$this.parents( 'tr' ).remove();
 				}

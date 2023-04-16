@@ -61,7 +61,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, confirmno  : () => v.db
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
+				$( '#infoRange input' ).on( 'input', function() {
 					bash( [ cmd, mixer, $( this ).val(), 'CMD MIXER VOL' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
