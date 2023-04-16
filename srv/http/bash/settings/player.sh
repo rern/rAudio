@@ -41,13 +41,12 @@ autoupdate | ffmpeg | normalization )
 	pushRefresh
 	;;
 btoutputall )
+	enableFlagSet
 	[[ -e $dirmpdconf/bluetooth.conf ]] && bluetooth=1
 	[[ -e $dirmpdconf/output.conf ]] && output=1
 	if [[ $ON ]]; then
-		touch $dirsystem/btoutputall
 		[[ $bluetooth && ! $output ]] && restart=1
 	else
-		rm $dirsystem/btoutputall
 		[[ $bluetooth && $output ]] && restart=1
 	fi
 	[[ $restart ]] && $dirsettings/player-conf.sh || pushRefresh
@@ -55,11 +54,11 @@ btoutputall )
 buffer | outputbuffer )
 	if [[ $ON ]]; then
 		if [[ $CMD == buffer ]]; then
-			data='audio_buffer_size  "'$AUDIO_BUFFER_SIZE'"'
-			[[ $audio_buffer_size != 4096 ]] && link=1
+			data='audio_buffer_size  "'$KB'"'
+			[[ $KB != 4096 ]] && link=1
 		else
-			data='max_output_buffer_size  "'$MAX_OUTPUT_BUFFER_SIZE'"'
-			[[ $max_output_buffer_size != 8192 ]] && link=1
+			data='max_output_buffer_size  "'$KB'"'
+			[[ $KB != 8192 ]] && link=1
 		fi
 		echo "$data" > $dirmpdconf/conf/$CMD.conf
 	fi
@@ -67,12 +66,7 @@ buffer | outputbuffer )
 	$dirsettings/player-conf.sh
 	;;
 crossfade )
-	if [[ $ON ]]; then
-		mpc -q crossfade $SEC
-		touch $dirsystem/crossfade
-	else
-		mpc -q crossfade 0
-	fi
+	[[ $ON ]] && mpc -q crossfade $SEC || mpc -q crossfade 0
 	pushRefresh
 	;;
 customget )
@@ -84,7 +78,7 @@ $( getContent "$dirsystem/custom-output-$APLAYNAME" )"
 custom )
 	if [[ $ON ]]; then
 		fileglobal=$dirmpdconf/conf/custom.conf
-		fileoutput="$dirsystem/custom-output-$APLAYNAME"
+		fileoutput=$dirsystem/custom-output-$APLAYNAME
 		if [[ $GLOBAL ]]; then
 			echo -e "$GLOBAL" > $fileglobal
 			linkConf
@@ -105,8 +99,8 @@ custom )
 	fi
 	;;
 dop )
-	aplayname=${args[1]} # OFF with args - value by index
-	[[ $ON ]] && touch "$dirsystem/dop-$aplayname" || rm -f "$dirsystem/dop-$aplayname"
+	filedop=$dirsystem/dop-${args[1]} # OFF with args - value by index
+	[[ $ON ]] && touch "$filedop" || rm -f "$filedop"
 	$dirsettings/player-conf.sh
 	;;
 filetype )
@@ -130,15 +124,12 @@ mixertype )
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
 		amixer -Mq sset "$HWMIXER" $vol
 	fi
-	if [[ $MIXERTYPE == hardware ]]; then
-		rm -f "$dirsystem/mixertype-$APLAYNAME"
-	else
-		echo $MIXERTYPE > "$dirsystem/mixertype-$APLAYNAME"
-	fi
+	filemixertype=$dirsystem/mixertype-$APLAYNAME
+	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
 	[[ $MIXERTYPE != software ]] && rm -f $dirsystem/replaygain-hw
 	$dirsettings/player-conf.sh
-	[[ $MIXERTYPE == none ]] && none=true || none=false
-	pushstream display '{"volumenone":'$none'}'
+	[[ $MIXERTYPE == none ]] && tf=true || tf=false
+	pushstream display '{"volumenone":'$tf'}'
 	;;
 novolume )
 	mpc -q crossfade 0

@@ -158,6 +158,9 @@ dirPermissionsShared() {
 	chown -h mpd:audio $dirdata/{mpd,playlists}
 	chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
 }
+enableFlagSet() {
+	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
+}
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }

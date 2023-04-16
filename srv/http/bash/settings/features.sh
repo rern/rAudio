@@ -29,7 +29,7 @@ localbrowserXset() {
 	local off
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $screenoff * 60 ))
+	off=$(( $SCREENOFF * 60 ))
 	xset s off
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
@@ -56,7 +56,7 @@ spotifyReset() {
 case $CMD in
 
 autoplay | lyricsembedded | scrobble )
-	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
+	enableFlagSet
 	pushRefresh
 	;;
 brightness )
@@ -77,15 +77,14 @@ camilladspasound )
 	alsactl nrestore &> /dev/null
 	;;
 camilladsp )
+	enableFlagSet
 	if [[ $ON ]]; then
-		sed -i -E "s/(interval: ).*/\1$REFRESH/" /srv/http/settings/camillagui/config/gui-config.yml
+		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
 		$dirbash/cmd.sh playerstop
 		systemctl restart camillagui
-		touch $dirsystem/camilladsp
 	else
 		camilladsp-gain.py
 		systemctl stop camilladsp
-		rm $dirsystem/camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
 	pushRestartMpd camilladsp $TF
@@ -105,21 +104,22 @@ dabradio )
 	pushRefresh
 	;;
 equalizer )
-	[[ $ON ]] && touch $dirsystem/equalizer || rm -f $dirsystem/equalizer
+	enableFlagSet
 	pushstream reload 1
 	pushRestartMpd equalizer $TF
 	;;
 hostapd )
 	if [[ $ON ]]; then
 		! lsmod | grep -q -m1 brcmfmac && $dirsettings/system.sh wlan
-		ip012=${IP%.*}
-		ip3=$(( ${IP/*.} + 1 ))
-		iprange=$ip012.$ip3,$ip012.254,24h
-		sed -i -E -e "s/^(dhcp-range=).*/\1$iprange/
-" -e "s/^(.*option:router,).*/\1$IP/
-" -e "s/^(.*option:dns-server,).*/\1$IP/
-" /etc/dnsmasq.conf
-		sed -i -E "s/(wpa_passphrase=).*/\1$PASSPHRASE/" /etc/hostapd/hostapd.conf
+		ipsub=${IP%.*}
+		ipnext=$ipsub.$(( ${IP/*.} + 1 ))
+		iplast=$ipsub.254
+		iprange=$ipnext,$iplast,24h
+		sed -i -E -e 's/^(dhcp-range=).*/\1'$iprange'/
+' -e 's/^(.*option:router,).*/\1'$IP'/
+' -e 's/^(.*option:dns-server,).*/\1'$IP'/
+' /etc/dnsmasq.conf
+		sed -i -E 's/(wpa_passphrase=).*/\1'$PASSPHRASE'/' /etc/hostapd/hostapd.conf
 		netctl stop-all
 		wlandev=$( < $dirshm/wlan )
 		if [[ $wlandev == wlan0 ]] && ! lsmod | grep -q -m1 brcmfmac; then
@@ -148,7 +148,6 @@ lastfmkey )
 localbrowser )
 	if [[ $ON ]]; then
 		file=$dirsystem/localbrowser.conf
-		sed -i '/brightness/ d' $file
 		diff=$( grep -Fxvf $file /tmp/localbrowser.conf )
 		if [[ $diff ]]; then
 			for k in cursor rotate screenoff zoom; do
@@ -168,11 +167,11 @@ localbrowser )
 					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
 				fi
 			fi
+			pushstream refresh '{ "page":"system", "hdmi":true }'
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
+			pushstream refresh '{ "page":"system", "hdmi":false }'
 		fi
-		[[ $HDMI ]] && tf=true || tf=false
-		pushstream refresh '{"page":"system","hdmi":'$tf'}'
 		if [[ $diffrotate ]]; then
 			case $ROTATE in
 				NORMAL ) degree=0;;
@@ -182,10 +181,10 @@ localbrowser )
 			esac
 			$dirbash/cmd.sh rotatesplash$'\n'$ROTATE # after set new data in conf file
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
-				sed -i -E "/waveshare|tft35a/ s/(rotate=).*/\1$degree/" /boot/config.txt
+				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$degree'/' /boot/config.txt
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
 				pushRefresh
-				if ! grep -q "rotate=$ROTATE" /tmp/localbrowser.conf; then
+				if ! grep -q rotate=$ROTATE /tmp/localbrowser.conf; then
 					echo Rotate GPIO LCD screen >> $dirshm/reboot
 					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 					exit
@@ -195,7 +194,7 @@ localbrowser )
 			restart=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $matrix ]]; then
-				sed "s/ROTATION_SETTING/$ROTATE/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+				sed 's/ROTATION_SETTING/'$ROTATE'/; s/MATRIX_SETTING/'$matrix'/' /etc/X11/xinit/rotateconf > $rotateconf
 			else 
 				rm -f $rotateconf
 			fi
@@ -238,8 +237,8 @@ logindisable )
 	pushSubmenu lock false
 	;;
 multiraudio )
+	enableFlagSet
 	if [[ $ON ]]; then
-		touch $dirsystem/multiraudio
 		fileconf=$dirsystem/multiraudio.json
 		conf=$( < $fileconf )
 		iplist=$( grep -Ev "$( ipAddress )|{|}" <<< $conf | awk '{print $NF}' | tr -d '",' )
@@ -250,8 +249,6 @@ touch $dirsystem/multiraudio
 pushstream display '{"submenu":"multiraudio","value":true}'
 EOF
 		done
-	else
-		rm -f $dirsystem/multiraudio
 	fi
 	pushRefresh
 	pushSubmenu multiraudio $TF
@@ -373,18 +370,17 @@ smb )
 	pushRefresh
 	;;
 snapclient )
+	enableFlagSet
 	[[ -e $dirmpdconf/snapserver.conf ]] && snapserver=1
 	if [[ $ON ]]; then
 		echo 'SNAPCLIENT_OPTS="--latency='$LATENCY'"' > /etc/default/snapclient
 		[[ -e $dirsystem/snapclient ]] && systemctl try-restart snapclient
 		
-		touch $dirsystem/snapclient
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
 			grep -q state.*play $dirshm/status && systemctl start snapclient
 		fi
 	else
-		rm $dirsystem/snapclient
 		systemctl stop snapclient
 		[[ $snapserver ]] && rm $dirsystem/snapclientserver
 	fi

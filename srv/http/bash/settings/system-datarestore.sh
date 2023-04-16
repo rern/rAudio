@@ -26,8 +26,8 @@ $( < $dirsystem/hostname )
 CMD hostname"
 [[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
 timedatectl set-timezone $( < $dirsystem/timezone )
-rm -rf $backupfile $dirconfig $dirsystem/{enable,disable,hostname,netctlprofile,timezone}
-[[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade.conf )
+[[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade )
+rm -rf $backupfile $dirconfig $dirsystem/{crossfade,enable,disable,hostname,netctlprofile,timezone}
 readarray -t dirs <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
 for dir in "${dirs[@]}"; do
 	umount -l "$dir" &> /dev/null

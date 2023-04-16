@@ -33,6 +33,8 @@ for file in ${files[@]}; do
 		cp {,$dirconfig}$file
 	fi
 done
+crossfade=$( mpc crossfade | cut -d' ' -f2 )
+[[ $crossfade ]] && echo $crossfade > $dirsystem/crossfade
 hostname > $dirsystem/hostname
 timedatectl | awk '/zone:/ {print $3}' > $dirsystem/timezone
 readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
@@ -70,3 +72,4 @@ bsdtar \
 	2> /dev/null && echo 1
 
 rm -rf $dirdata/{config,disable,enable}
+rm -f $dirsystem/{crossfade,hostname,timezone}

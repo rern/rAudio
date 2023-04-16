@@ -58,7 +58,6 @@ bluetoothinfo )
 $info"
 	;;
 connect )
-	file="/etc/netctl/$ESSID"
 	[[ $ADDRESS ]] && ip=static || ip=dhcp
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
 		if ping -c 1 -w 1 $ADDRESS &> /dev/null; then
@@ -149,7 +148,8 @@ profileremove )
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
 		killall wpa_supplicant &> /dev/null &
-		ifconfig $( < $dirshm/wlan ) up
+		wlandev=$( < $dirshm/wlan )
+		ifconfig $wlandev up
 	fi
 	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl

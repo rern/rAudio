@@ -705,7 +705,7 @@ $( '.listtitle' ).click( function( e ) {
 			return
 		}
 		
-		bash( [ 'packagelist', $target.text(), 'CMD PKG' ], list => {
+		bash( [ 'packagelist', $target.text().toLowerCase(), 'CMD PKG' ], list => {
 			$list.html( list );
 			$target.addClass( 'wh' );
 			if ( localhost ) $( '.list a' ).removeAttr( 'href' );

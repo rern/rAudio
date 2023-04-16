@@ -202,9 +202,9 @@ hdmi_force_hotplug=1"
 	;;
 hostname )
 	hostnamectl set-hostname $HOSTNAME
-	sed -i -E "s/^(ssid=).*/\1$HOSTNAME/" /etc/hostapd/hostapd.conf
+	sed -i -E 's/^(ssid=).*/\1'$HOSTNAME'/' /etc/hostapd/hostapd.conf
 	sed -i -E 's/(name = ").*/\1'$HOSTNAME'"/' /etc/shairport-sync.conf
-	sed -i -E "s/^(friendlyname = ).*/\1$HOSTNAME/" /etc/upmpdcli.conf
+	sed -i -E 's/^(friendlyname = ).*/\1'$HOSTNAME'/' /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	pushRefresh
@@ -236,8 +236,7 @@ dtparam=audio=on"
 	configTxt 'Audio I&#178;S module'
 	;;
 lcdchar )
-	file=$dirsystem/lcdchar.conf
-	[[ $ON ]] && touch $dirsystem/lcdchar || rm -f  $dirsystem/lcdchar
+	enableFlagSet
 	i2cset=1
 	configTxt 'Character LCD'
 	;;
@@ -306,14 +305,13 @@ mpdoledlogo )
 	mpd_oled -o $type -L
 	;;
 mpdoled )
+	enableFlagSet
 	if [[ $ON ]]; then
 		if [[ $( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 ) != $CHIP ]]; then
-			sed -i "s/-o ./-o $CHIP/" /etc/systemd/system/mpd_oled.service
+			sed -i 's/-o ./-o '$CHIP'/' /etc/systemd/system/mpd_oled.service
 			systemctl daemon-reload
 		fi
-		touch $dirsystem/mpdoled
 	else
-		rm $dirsystem/mpdoled
 		$dirsettings/player-conf.sh
 	fi
 	i2cset=1
@@ -361,7 +359,7 @@ $description
 				s|^Desc.*: (.*)|<p>\1</p>|' <<< $lines \
 				> /tmp/packages
 	fi
-	grep -B1 -A2 --no-group-separator ^${PKG,} $filepackages
+	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
 	;;
 poweraudiophonics )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
@@ -399,8 +397,8 @@ regdomlist )
 	cat /srv/http/assets/data/regdomcodes.json
 	;;
 relays )
+	enableFlagSet
 	if [[ $ON ]]; then
-		touch $dirsystem/relays
 		. $dirsystem/relays.conf
 		json=$( jq < $dirsystem/relays.json )
 		for p in $on; do
@@ -414,8 +412,6 @@ relays )
 		echo '
 orderon="'$( stringEscape ${neworderon:0:-2} )'"
 orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
-	else
-		rm -f $dirsystem/relays
 	fi
 	pushRefresh
 	pushstream display '{"submenu":"relays","value":'$TF'}'
@@ -538,8 +534,8 @@ Server rAudio @<wh>$IP</wh> :
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )
-	[[ $ON ]] && config+="
-temp_soft_limit=$SOFTLIMIT"
+	[[ $ON ]] && config+='
+temp_soft_limit='$SOFTLIMIT
 	configTxt 'Custom Soft limit'
 	;;
 soundprofileset )
@@ -690,11 +686,11 @@ tftcalibrate )
 	;;
 timezone )
 	if [[ $TIMEZONE == auto ]]; then
-		timezone=$( curl -s https://ipapi.co/timezone )
-		[[ ! $timezone ]] && timezone=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
-		[[ ! $timezone ]] && timezone=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
-		[[ ! $timezone ]] && timezone=UTC
-		[[ $timezone ]] && timedatectl set-timezone $timezone
+		tz=$( curl -s https://ipapi.co/timezone )
+		[[ ! $tz ]] && tz=$( curl -s http://ip-api.com | grep '"timezone"' | cut -d'"' -f4 )
+		[[ ! $tz ]] && tz=$( curl -s https://worldtimeapi.org/api/ip | jq -r .timezone )
+		[[ ! $tz ]] && tz=UTC
+		timedatectl set-timezone $tz
 	else
 		timedatectl set-timezone $TIMEZONE
 	fi
@@ -717,17 +713,16 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
-	[[ $ON ]] && touch $dirsystem/usbautoupdate || rm -f $dirsystem/usbautoupdate
+	enableFlagSet
 	pushRefresh
 	;;
 vuled )
+	enableFlagSet
 	if [[ $ON ]]; then
-		touch $dirsystem/vuled
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 		killall cava &> /dev/null
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 	else
-		rm -f $dirsystem/vuled
 		killall cava &> /dev/null
 		. $dirsystem/vuled.conf
 		for (( i=0; i < 7; i++ )); do

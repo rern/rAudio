@@ -216,19 +216,19 @@ audio_output {
 $( '#setting-custom' ).click( function() {
 	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
 		var val       = val.split( '^^' );
-		var valglobal = val[ 0 ].trim(); // remove trailing
-		var valoutput = val[ 1 ].trim();
+		var global = val[ 0 ].trim(); // remove trailing
+		var output = val[ 1 ].trim();
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
 			, content      : custominfo.replace( 'N', S.asoundcard )
-			, values       : [ valglobal, valoutput ]
+			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel
 			, ok           : () => {
 				var infoval = infoVal();
-				var global  = infoval[ 0 ];
-				var output  = infoval[ 1 ];
+				global      = infoval[ 0 ];
+				output      = infoval[ 1 ];
 				if ( ! global && ! output ) {
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
 					bash( [ 'custom', 'OFF' ] );

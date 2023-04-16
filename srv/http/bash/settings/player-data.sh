@@ -39,7 +39,7 @@ data='
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
 , "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
-, "bufferconf"       : '$( conf2json $dirmpdconf/conf/buffer.conf )'
+, "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$camilladsp'
 , "counts"           : '$( getContent $dirmpd/counts )'
 , "crossfade"        : '$crossfade'
@@ -53,7 +53,7 @@ data='
 , "normalization"    : '$normalization'
 , "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
-, "outputbufferconf" : '$( conf2json $dirmpdconf/conf/outputbuffer.conf )'
+, "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$( < $dirshm/player )'"
 , "replaygain"       : '$replaygain'
 , "replaygainconf"   : '$replaygainconf'
