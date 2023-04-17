@@ -1,4 +1,4 @@
-var eqnames, eqtimeout, equser;
+var eqtimeout, equser;
 var flat    = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
 var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
 var band    = [];
@@ -73,7 +73,7 @@ function eqPreset( v ) {
 	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USER' ], json: E } );
 }
 function eqOptionPreset() {
-	eqnames       = Object.keys( E.preset ).sort();
+	var eqnames   = Object.keys( E.preset ).sort();
 	var optpreset = '';
 	eqnames.forEach( n => optpreset += '<option>'+ n +'</option>' );
 	if ( ! I.active ) return optpreset
