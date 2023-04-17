@@ -1,16 +1,17 @@
-var names, timeout, user;
-var flat      = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
-var freq      = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
-var band      = [];
-var labelhz   = '';
+var eqnames, eqtimeout, equser;
+var flat    = [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ];
+var freq    = [ 31, 63, 125, 250, 500, 1, 2, 4, 8, 16 ];
+var band    = [];
+var labelhz = '';
 freq.forEach( ( hz, i ) => {
 	band.push( '0'+ i +'. '+ freq[ i ] + ( i < 5 ? ' Hz' : ' kHz' ) );
-	labelhz  += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
+	labelhz += '<a>'+ hz + ( i < 5 ? '' : 'k' ) +'</a>';
 } );
-var content = `
+var content   = `
 <div id="eq">
-<div class="hz">${ labelhz }</div>
+<div class="label up">${ labelhz }</div>
 <div class="bottom">
+	<div class="label dn">${ labelhz }</div>
 	${ ico( 'minus-circle hide', 'eqdelete' ) }
 	${ ico( 'edit-circle', 'eqrename' ) }
 	${ ico( 'save disabled hide', 'eqsave' ) }
@@ -21,8 +22,8 @@ var content = `
 </div>`;
 function equalizer() {
 	bash( [ 'equalizerget' ], data => {
-		E    = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
-		user = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
+		E      = data || { active: "Flat", preset: { Flat: Array.from( new Array( 10 ), () => 62 ) } }
+		equser = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd';
 		info( {
 			  icon       : 'equalizer'
 			, title      : 'Equalizer'
@@ -68,14 +69,14 @@ function equalizer() {
 	}, 'json' );
 }
 function eqPreset( v ) {
-	var user      = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd'
+	equser        = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd'
 	E.preset.Flat = flat;
-	bash( { cmd: [ 'equalizer', v, user, 'CMD VALUES USER' ], json: E } );
+	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USER' ], json: E } );
 }
 function eqOptionPreset() {
-	names         = Object.keys( E.preset ).sort();
+	eqnames       = Object.keys( E.preset ).sort();
 	var optpreset = '';
-	names.forEach( n => optpreset += '<option>'+ n +'</option>' );
+	eqnames.forEach( n => optpreset += '<option>'+ n +'</option>' );
 	if ( ! I.active ) return optpreset
 	
 	local(); // suppress change event
@@ -86,7 +87,7 @@ function eqOptionPreset() {
 	infoSetValues();
 }
 function eqSlide( band, v ) {
-	bash( [ 'equalizerset', band, v, user, 'CMD BAND VAL USER' ] );
+	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USER' ] );
 	if ( E.active === 'Flat' ) {
 		var newname         = 'New';
 		if ( Object.keys( E.preset ).includes( newname ) ) newname += '.1';
@@ -118,7 +119,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 } ).on( 'keyup paste cut', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
-	$eqsave.toggleClass( 'disabled', names.includes( $( this ).val().trim() ) );
+	$eqsave.toggleClass( 'disabled', eqnames.includes( $( this ).val().trim() ) );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.click();
 } ).on( 'change', '#eqpreset', function() {      // preset
 	if ( V.local ) return
@@ -149,4 +150,20 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqback' ).click();
 	E.preset.Flat = flat;
 	bash( { cmd: [ 'equalizer' ], json: E } );
-} )
+} ).on( 'click', '.up, .dn', function( e ) {
+	clearTimeout( eqtimeout )
+	var $this = $( this );
+	if ( $this.hasClass( 'up' ) ) {
+		var i    = $( '.label.up a' ).index( e.target );
+		var v    = '1%+';
+		var updn = 1;
+	} else {
+		var i    = $( '.label.dn a' ).index( e.target );
+		var v    = '1%-';
+		var updn = -1;
+	}
+	var $range = $( '#infoRange input' ).eq( i );
+	$range.val( +$range.val() + updn );
+	eqSlide( band[ i ], v );
+	eqtimeout = setTimeout( eqSlideEnd, 1000 );
+} );
