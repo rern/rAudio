@@ -59,7 +59,7 @@ connectedCheck() {
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
-echo state=stop > $dirshm/status
+echo 'state="stop"' > $dirshm/status
 echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
@@ -117,6 +117,7 @@ $dirsettings/player-conf.sh # mpd.service started by this script
 # after all sources connected ........................................................
 
 if [[ -e $dirsystem/lcdchar ]]; then
+	cp $dirshm/status{,lcd.py}
 	lcdcharinit.py
 	lcdchar.py logo
 fi

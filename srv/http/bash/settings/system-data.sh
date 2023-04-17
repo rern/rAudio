@@ -197,12 +197,15 @@ if grep -q -m1 dtparam=i2c_arm=on /boot/config.txt; then
 	dev=$( ls /dev/i2c* 2> /dev/null | cut -d- -f2 )
 	lines=$( i2cdetect -y $dev 2> /dev/null )
 	if [[ $lines ]]; then
-		i2caddress=$( grep -v '^\s' <<< $lines \
-						| cut -d' ' -f2- \
-						| tr -d ' \-' \
-						| grep -E -v '^\s*$|UU' \
-						| sort -u )
-		lcdcharaddr="[ $(( "0x$i2caddress" )) ]"
+		hex=$( grep -v '^\s' <<< $lines \
+					| cut -d' ' -f2- \
+					| tr -d ' \-' \
+					| grep -E -v '^\s*$|UU' \
+					| sort -u )
+		for h in $hex; do
+			address+=','$(( 16#$h ))
+		done
+		lcdcharaddr='[ '${address:1}' ]'
 	fi
 fi
 # vuled

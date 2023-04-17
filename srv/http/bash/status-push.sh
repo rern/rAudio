@@ -10,14 +10,14 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh
 $( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
 timestamp=$( date +%s%3N )
 webradio=true
-player=mpd
+player="mpd"
 EOF
 	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
-					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file|^, "player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
-						s/^,* *"//; s/" *: */=/; s/(state=)"(.*)"/\1\2/; p
+					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
+						s/^,* *"//; s/" *: */=/; p
 						}' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then

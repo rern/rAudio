@@ -5,7 +5,7 @@
 backupfile=$dirshm/backup.gz
 dirconfig=$dirdata/config
 
-grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
+statePlay && $dirbash/cmd.sh playerstop
 				# features        mpd                                      updating_db      system
 rm -f $dirsystem/{autoplay,color,hddsleep,listing,login*,crossfade*,custom*,dop*,mixertype*,relays,soundprofile,soxr*,updating}
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink

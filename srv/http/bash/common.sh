@@ -242,6 +242,9 @@ pushstream() {
 		done
 	fi
 }
+space2ascii() {
+	echo ${1// /\\040}
+}
 sshCommand() { # $1=ip or --getdata (optional)
 	[[ $1 == '--getdata' ]] && shift && getdata=1
 	! ping -c 1 -w 1 $1 &> /dev/null && return
@@ -256,8 +259,8 @@ sshpassCmd() {
 		root@$1 \
 		"${@:2}"
 }
-space2ascii() {
-	echo ${1// /\\040}
+statePlay() {
+	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
 stringEscape() {
 	local data

@@ -4,18 +4,18 @@ from lcdcharconfig import *
 import sys
 import os
 
-icon = {
+ICON = {
       'pause' : '\x00 '
     , 'play'  : '\x01 '
     , 'stop'  : '\x02 '
 }
-irr = '\x03\x04'
-idots = '\x05  \x05  \x05'
-rn = '\r\n'
+RR = '\x03\x04'
+DOTS = '\x05  \x05  \x05'
+RN = '\r\n'
 
-spaces = ' ' * ( ( cols - 6 ) // 2 + 1 )
-logo = rows > 2 and rn or ''
-logo += spaces + irr + rn + spaces +'rAudio'
+SPACES = ' ' * ( ( cols - 6 ) // 2 + 1 )
+logo = rows > 2 and RN or ''
+logo += SPACES + RR + RN + SPACES +'rAudio'
 
 argvL = len( sys.argv )
 if argvL == 2: # 1 argument
@@ -27,7 +27,7 @@ if argvL == 2: # 1 argument
     elif val == 'clear':
         lcd.clear()
     else:            # string
-        lcd.write_string( val.replace( '\n', rn ) )
+        lcd.write_string( val.replace( '\n', RN ) )
     lcd.close()
     quit()
     
@@ -53,13 +53,9 @@ def second2hhmmss( sec ):
     return HH + MM + SS
     
 sys.path.append( '/srv/http/data/shm' )
-if os.path.isfile( '/srv/http/data/shm/statuslcd.py' ):
-    from statuslcd import *
-    if 'station' not in locals(): station=""
-    if 'webradio' not in locals(): webradio=False
-else:
-    station=""
-    webradio=False
+from statuslcd import *
+if 'station' not in locals(): station=""
+if 'webradio' not in locals(): webradio=False
 
 if charmap == 'A00':
     import unicodedata
@@ -87,16 +83,16 @@ if webradio:
         if not Artist and not Title: Artist = station
         if not Album: Album = station or file
         
-if not Artist: Artist = idots
-if not Title: Title = idots
-if not Album: Album = idots
+if not Artist: Artist = DOTS
+if not Title: Title = DOTS
+if not Album: Album = DOTS
 if rows == 2:
     if state == 'play':
         lines = Title
     elif backlight:
         backlightOff()
 else:
-    lines = Artist + rn + Title + rn + Album
+    lines = Artist + RN + Title + RN + Album
 
 Timehhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
@@ -113,7 +109,8 @@ else:
     if Time: Timehhmmss = slash + Timehhmmss
     progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
 
-lcd.write_string( lines + rn + icon[ state ] + progress + irr )
+print( lines + RN + ICON[ state ] + progress + RR )
+lcd.write_string( lines + RN + ICON[ state ] + progress + RR )
 
 if backlight and state != 'play': backlightOff()
 
@@ -122,7 +119,7 @@ if elapsed is False: quit()
 row = rows - 1
 starttime = time.time()
 elapsed += round( starttime - timestamp / 1000 )
-iplay = icon[ 'play' ]
+iplay = ICON[ 'play' ]
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )

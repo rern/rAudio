@@ -414,7 +414,7 @@ display )
 	
 	if [[ $vumeter ]]; then
 		if [[ -e $dirmpdconf/fifo.conf ]]; then
-			if grep -q -m1 '^state.*play' $dirshm/status && ! pgrep cava &> /dev/null; then
+			if statePlay && ! pgrep cava &> /dev/null; then
 				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 			fi
 			exit
@@ -543,7 +543,7 @@ mpcaddrandom )
 	plAddRandom
 	;;
 mpccrop )
-	if grep -q -m1 '^state.*play' $dirshm/status; then
+	if statePlay; then
 		mpc -q crop
 	else
 		mpc -q play
@@ -615,7 +615,7 @@ mpcplayback )
 			exit
 		fi
 		
-		if grep -q -m1 '^state.*play' $dirshm/status; then
+		if statePlay; then
 			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
 		else
 			command=play

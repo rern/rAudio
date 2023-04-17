@@ -61,7 +61,7 @@ data='
 , "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
 , "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$( grep -m1 ^state= $dirshm/status | cut -d= -f2 | tr -d '"' )'"
+, "state"            : "'$( getVar state $dirshm/status )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data" $1

@@ -35,7 +35,7 @@ localbrowserXset() {
 	if [[ $off == 0 ]]; then
 		xset -dpms
 	elif [[ -e $dirsystem/onwhileplay ]]; then
-		grep -q -m1 '^state.*play' $dirshm/status && xset -dpms || xset +dpms
+		statePlay && xset -dpms || xset +dpms
 	else
 		xset +dpms
 	fi
@@ -378,7 +378,7 @@ snapclient )
 		
 		if [[ $snapserver ]]; then
 			touch $dirsystem/snapclientserver
-			grep -q state.*play $dirshm/status && systemctl start snapclient
+			statePlay && systemctl start snapclient
 		fi
 	else
 		systemctl stop snapclient

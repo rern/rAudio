@@ -5,7 +5,7 @@
 # reset -------------------------------------------------------------------------------------------------------------->>>
 if [[ -e $diraddons ]]; then
 	reset=1
-	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
+	statePlay && $dirbash/cmd.sh playerstop
 	mpc -q clear
 # camilla 
 	sed -i -E "s/(status_update_interval: ).*/\1100/" /srv/http/settings/camillagui/config/gui-config.yml &> /dev/null
