@@ -89,10 +89,12 @@ function eqOptionPreset() {
 function eqSlide( band, v ) {
 	bash( [ 'equalizerset', band, v, equser, 'CMD BAND VAL USER' ] );
 	if ( E.active === 'Flat' ) {
-		var newname         = 'New';
-		if ( Object.keys( E.preset ).includes( newname ) ) newname += '.1';
-		E.active            = newname;
-		E.preset[ newname ] = E.preset.Flat;
+		for ( i = 1; i < 10; i++ ) {
+			var name = 'New '+ i;
+			if ( ! ( name in E.preset ) ) break;
+		}
+		E.active         = name;
+		E.preset[ name ] = E.preset.Flat;
 		eqOptionPreset();
 	}
 }
