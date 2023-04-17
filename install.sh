@@ -45,6 +45,26 @@ for file in display order; do
 	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
 done
 
+file=$dirsystem/lcdchar
+if [[ -e $file ]]; then
+	if grep -q var $file.conf; then
+		lines=$( < $file.conf )
+		data=$( grep -Ev 'var|backlight|pins_data' <<< $lines )
+		if grep -q pins_data <<< $lines; then
+			p=( $( sed -E -n '/pins_data/ {s/.*\[(.*)]/\1/; s/,/ /g; p}' <<< $lines ) )
+			for (( i=0; i < 4; i++ )); do
+				data+="
+p$i=$p"
+			done
+		fi
+		grep -q backlight=True <<< $lines && backlight=true
+		data+="
+backlight=$backlight" > $file.conf
+	fi
+else
+	rm -f $file.conf
+fi
+
 if systemctl -q is-active localbrowser; then
 	file=$dirsystem/localbrowser.conf
 	if [[ $( sed -n 6p $file ) != cursor* ]]; then
@@ -62,17 +82,6 @@ if systemctl -q is-active localbrowser; then
 	fi
 else
 	rm -f $dirsystem/localbrowser.conf
-fi
-
-file=$dirsystem/lcdchar.conf
-if [[ -e $file ]] && grep -q pins_data $file; then
-	lines=$( < $file )
-	data=$( grep -Ev 'var|pins_data' <<< $lines )
-	p=( $( sed -E -n '/pins_data/ {s/.*\[(.*)]/\1/; s/,/ /g; p}' <<< $lines ) )
-	for (( i=0; i < 4; i++ )); do
-		data+=$'\n'"p$i=$p"
-	done
-	echo "$data" > $file
 fi
 
 if [[ ! -e $dirsystem/relays ]]; then

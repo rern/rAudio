@@ -240,11 +240,6 @@ lcdchar )
 	i2cset=1
 	configTxt 'Character LCD'
 	;;
-lcdcharset )
-	killall lcdchar.py &> /dev/null
-	lcdcharinit.py
-	lcdchar.py $ACTION
-	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )

@@ -20,10 +20,10 @@ var default_v      = {
 		, BACKLIGHT : false
 	}
 	, lcdchar_i2c   : {
-		  INF       :'gpio'
+		  INF       :'i2c'
 		, COLS      : 20
 		, CHARMAP   : 'A00'
-		, ADDRESS   : 39
+		, ADDRESS   : '0x27'
 		, CHIP      : 'PCF8574'
 		, BACKLIGHT : false
 	}
@@ -787,7 +787,9 @@ function htmlOption( values ) {
 function infoLcdChar() {
 	var lcdcharaddr = S.lcdcharaddr || [ 39, 63 ];
 	var i2caddress  = '';
-	lcdcharaddr.forEach( el => i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>' );
+	lcdcharaddr.forEach( el => {
+		i2caddress += '<td><label><input type="radio" name="address" value="'+ el +'">0x'+ el.toString( 16 ) +'</label></td>';
+	} );
 	var options = htmlOption( [ 'PCF8574', 'MCP23008', 'MCP23017' ] );
 	var content = `
 ${ htmllcdchar.common }
@@ -846,10 +848,9 @@ function infoLcdcharButton() {
 	
 	$( '#infoOk' )
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
-		.after( '&emsp;<gr id="lcdsleep">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
-	$( '#infoButtons gr' ).click( function() {
-		var action = this.id === 'lcdlogo' ? 'logo' : 'off';
-		bash( [ 'lcdcharset', action, 'CMD ACTION' ] );
+		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
+	$( '#lcdlogo, #lcdoff' ).click( function() {
+		bash( [ 'lcdchar.py', this.id.slice( 3 ) ] )
 	} );
 }
 var contentmount = {
