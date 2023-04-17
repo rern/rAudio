@@ -46,7 +46,6 @@
 	#eq input::-moz-range-thumb     { width : var( --eqThumbW ) }
 } /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #eq .label {
-	display: inline-block; /* fix position jump when sum W > 100% */
 	margin-bottom: 10px;
 	white-space: nowrap;
 }
