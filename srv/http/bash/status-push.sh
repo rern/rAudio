@@ -42,9 +42,11 @@ fi
 [[ $trackchanged && $state == play \
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
-if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
-	export DISPLAY=:0
-	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
+if systemctl -q is-active localbrowser; then
+	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+		export DISPLAY=:0
+		[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
+	fi
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
