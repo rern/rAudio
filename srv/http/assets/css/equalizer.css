@@ -5,7 +5,7 @@
 #eq {
 	--eqSliderH : 300px;
 	--eqBandW   : 50px;
-	--eqAllH    : calc( var( --eqSliderH ) + 100px ); /* console H = 25 + sliderW + 40 */
+	--eqAllH    : calc( var( --eqSliderH ) + 125px ); /* console H = 25 + sliderW + 40 */
 	--eqSliderT : calc( ( var( --eqSliderH ) - var( --eqBandW ) * 10 ) / 2 ); /* ( sliderW - sliderH x 10 ) / 2 */
 	--eqPresetW : calc( var( --eqBandW ) * 5 );
 }
@@ -47,6 +47,7 @@
 } /* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< */
 #eq .label {
 	display: inline-block; /* fix position jump when sum W > 100% */
+	margin-bottom: 10px;
 	white-space: nowrap;
 }
 #eq .label a {
@@ -57,19 +58,18 @@
 	color: var( --cw );
 	text-align: center;
 	font-family: Inconsolata;
-}
-#eq .label a {
 	background: var( --cg );
 	border-radius: 3px;
 }
 #eq .label.dn {
-	margin-bottom: 10px;
+	margin-bottom: 15px;
 }
 #eq .label.dn a {
 	color: var( --cg60 );
 }
 #eq .bottom {
 	position: absolute;
+	padding-top: 10px;
 	bottom: 15px;
 	width: 100% !important;
 	left: 50%;
