@@ -69,7 +69,6 @@ function equalizer() {
 	}, 'json' );
 }
 function eqPreset( v ) {
-	equser        = [ 'airplay', 'spotify' ].includes( S.player ) ? 'root' : 'mpd'
 	E.preset.Flat = flat;
 	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USER' ], json: E } );
 }
@@ -111,6 +110,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqname' ).css( 'display', 'inline-block' );
 	$( '#eqname' ).val( E.active );
 } ).on( 'click', '#eqnew', function() {
+	$( '#eqname' ).val( E.active );
 	$( '#eqrename, #eqdelete, #eq .select2-container, #eqnew' ).addClass( 'hide' );
 	$( '#eqsave, #eqname, #eqback' ).removeClass( 'hide' );
 	$( '#eqname' ).css( 'display', 'inline-block' );
@@ -121,7 +121,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	$( '#eqrename' ).toggleClass( 'disabled', E.active === 'Flat' );
 } ).on( 'keyup paste cut', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
-	$eqsave.toggleClass( 'disabled', eqnames.includes( $( this ).val().trim() ) );
+	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
 	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.click();
 } ).on( 'change', '#eqpreset', function() {      // preset
 	if ( V.local ) return
