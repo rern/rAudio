@@ -54,8 +54,13 @@ def second2hhmmss( sec ):
     
 sys.path.append( '/srv/http/data/shm' )
 from statuslcd import *
-if 'station' not in locals(): station=""
-if 'webradio' not in locals(): webradio=False
+
+if 'Artist' not in locals(): Artist = ""
+if 'Title' not in locals(): Title = ""
+if 'Album' not in locals(): Album = ""
+if 'station' not in locals(): station = ""
+if 'file' not in locals(): file = ""
+if 'webradio' not in locals(): webradio = False
 
 if charmap == 'A00':
     import unicodedata
@@ -63,11 +68,11 @@ if charmap == 'A00':
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
                         if unicodedata.category( c ) != 'Mn' )
                         
-    Artist = normalize( Artist )
-    Title = normalize( Title )
-    Album = normalize( Album )
-    station = normalize( station )
-    file = normalize( file )
+    if Artist: Artist = normalize( Artist )
+    if Title: Title = normalize( Title )
+    if Album: Album = normalize( Album )
+    if station: station = normalize( station )
+    if file: file = normalize( file )
     
 Artist = Artist[ :cols ]
 Title = Title[ :cols ]
