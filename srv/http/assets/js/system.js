@@ -850,7 +850,7 @@ function infoLcdcharButton() {
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
 		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
 	$( '#lcdlogo, #lcdoff' ).click( function() {
-		bash( [ 'lcdchar.py', this.id.slice( 3 ) ] )
+		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
 	} );
 }
 var contentmount = {

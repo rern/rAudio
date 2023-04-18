@@ -246,6 +246,10 @@ lcdchar )
 	rm -f $dirsystem/lcdchar.conf
 	configTxt 'Character LCD'
 	;;
+lcdcharset )
+	killall lcdchar.py &> /dev/null
+	$dirbash/lcdchar.py $ACTION
+	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )

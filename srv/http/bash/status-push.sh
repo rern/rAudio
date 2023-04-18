@@ -49,13 +49,14 @@ if systemctl -q is-active localbrowser; then
 	fi
 fi
 
-if [[ -e $dirsystem/mpdoled ]]; then
-	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
-fi
-
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
-	lcdchar.py &> /dev/null &
+	killall lcdchar.py &> /dev/null
+	$dirbash/lcdchar.py &> /dev/null &
+fi
+
+if [[ -e $dirsystem/mpdoled ]]; then
+	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then

@@ -116,7 +116,7 @@ $dirsettings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected ........................................................
 
-[[ -e $dirsystem/lcdchar ]] && lcdchar.py logo
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
 
 [[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
 

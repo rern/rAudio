@@ -81,7 +81,7 @@ function bash( args, callback, json ) {
 		args = args.cmd;
 	}
 	var args0 = args[ 0 ];
-	if ( [ '.sh', '.py' ].includes( args0.slice( -3 ) ) ) { // CMD.sh / CMD.py
+	if ( args0.slice( -3 ) === '.sh' ) { // CMD.sh
 		data.filesh = args.join( ' ' );
 		args = false;
 	} else if ( page ) {                 // CMD - settings

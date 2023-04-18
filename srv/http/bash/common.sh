@@ -150,7 +150,7 @@ dirPermissions() {
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists
 	chmod -R u=rw,go=r,a+X /srv
-	chmod -R u+x $dirbash /srv/http/settings/camillagui/{backend,main.py}
+	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py}
 	[[ -L $dirshareddata ]] && dirPermissionsShared
 }
 dirPermissionsShared() {

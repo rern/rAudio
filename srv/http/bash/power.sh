@@ -40,6 +40,6 @@ fi
 if [[ $reboot ]]; then
 	reboot
 else
-	[[ -e $dirsystem/lcdchar ]] && lcdchar.py off
+	[[ -e $dirsystem/lcdchar ]] && killall lcdchar.py &> /dev/null && $dirbash/lcdchar.py off
 	poweroff
 fi
