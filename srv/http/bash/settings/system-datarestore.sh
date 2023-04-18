@@ -3,6 +3,11 @@
 . /srv/http/bash/common.sh
 
 backupfile=$dirshm/backup.gz
+if ! bsdtar tf $backupfile | grep -q display.json$; then
+	notify restore Restore 'Backup not made with latest update.'
+	exit
+fi
+
 dirconfig=$dirdata/config
 
 statePlay && $dirbash/cmd.sh playerstop
