@@ -19,6 +19,7 @@ fi
 [[ $reboot ]] && notify -blink reboot System 'Reboot ...' || notify -blink power System 'Off ...'
 touch $dirshm/power
 mpc -q stop
+[[ -e $dirsystem/lcdchar ]] && killall lcdchar.py &> /dev/null && $dirbash/lcdchar.py logo
 alsactl store
 pushstream btreceiver false
 if [[ -e $dirshm/clientip ]]; then
@@ -37,9 +38,4 @@ if mount | grep -q -m1 $dirnas; then
 	sleep 3
 fi
 [[ -e /boot/shutdown.sh ]] && . /boot/shutdown.sh
-if [[ $reboot ]]; then
-	reboot
-else
-	[[ -e $dirsystem/lcdchar ]] && killall lcdchar.py &> /dev/null && $dirbash/lcdchar.py off
-	poweroff
-fi
+[[ $reboot ]] && reboot || poweroff
