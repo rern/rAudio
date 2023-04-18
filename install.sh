@@ -14,7 +14,7 @@ if crontab -l | grep -q addonsupdates; then
 $( crontab -l | grep -v addonsupdates )" | crontab -
 fi
 
-if ls $dirsystem/autoplay* 2> /dev/null && [[ ! -s $dirsystem/autoplay ]]; then
+if ls $dirsystem/autoplay* &> /dev/null && [[ ! -s $dirsystem/autoplay ]]; then
 	k=( startup bluetooth cd )
 	f=( autoplay autoplaybt autoplaycd )
 	for (( i=0; i < 3; i++ )); do
@@ -115,7 +115,7 @@ fi
 
 file=$dirsystem/vuled.conf
 if [[ ! -e ${file/.*} ]]; then
-	rm $file
+	rm -f $file
 elif ! grep -q ^p0 $file; then
 	pins=( $( < $file ) )
 	data=
