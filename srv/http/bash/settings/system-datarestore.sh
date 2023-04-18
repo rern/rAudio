@@ -4,8 +4,7 @@
 
 backupfile=$dirshm/backup.gz
 if ! bsdtar tf $backupfile | grep -q display.json$; then
-	notify restore Restore 'Backup not made with latest update.'
-	exit
+	notify restore Restore 'Backup made before 20230401 update<br>will restore only Library database.'
 fi
 
 dirconfig=$dirdata/config
