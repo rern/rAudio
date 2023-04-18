@@ -87,13 +87,13 @@ ICON = {
     , 'play'  : '\x01 '
     , 'stop'  : '\x02 '
 }
-RR = '\x03\x04'
+RA = '\x03\x04'
 DOTS = '\x05  \x05  \x05'
 RN = '\r\n'
 
 SPACES = ' ' * ( ( cols - 6 ) // 2 + 1 )
 LOGO = rows > 2 and RN or ''
-LOGO += SPACES + RR + RN + SPACES +'rAudio'
+LOGO += SPACES + RA + RN + SPACES +'rAudio'
 
 argvL = len( sys.argv )
 if argvL == 2: # 1 argument
@@ -170,10 +170,10 @@ if rows == 2:
 else:
     lines = Artist + RN + Title + RN + Album
 
-Timehhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
+hhmmss = Time and second2hhmmss( round( float( Time ) ) ) or ''
 
 if state == 'stop':
-    progress = ( Timehhmmss + ' ' * cols )[ :cols - 4 ]
+    progress = ( hhmmss + ' ' * cols )[ :cols - 4 ]
 else:
     if elapsed is False: # can be 0
         elapsedhhmmss = ''
@@ -182,10 +182,10 @@ else:
         elapsed = round( float( elapsed ) )
         elapsedhhmmss = second2hhmmss( elapsed )
         slash = cols > 16 and ' / ' or '/'
-    if Time: Timehhmmss = slash + Timehhmmss
-    progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
+    if Time: hhmmss = slash + hhmmss
+    progress = ( elapsedhhmmss + hhmmss + ' ' * cols )[ :cols - 4 ]
 
-lcd.write_string( lines + RN + ICON[ state ] + progress + RR )
+lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
 if backlight and state != 'play': backlightOff()
 
@@ -194,12 +194,13 @@ if not elapsed: quit()
 row = rows - 1
 starttime = time.time()
 elapsed += round( starttime - timestamp / 1000 )
-iplay = ICON[ 'play' ]
+PLAY = ICON[ 'play' ]
 
 while True:
     sl = 1 - ( ( time.time() - starttime ) % 1 )
     lcd.cursor_pos = ( row, 0 )
-    lcd.write_string( iplay + second2hhmmss( elapsed ) + Timehhmmss )
+    elapsedhhmmss = second2hhmmss( elapsed )
+    lcd.write_string( PLAY + elapsedhhmmss + hhmmss )
     elapsed += 1
     time.sleep( sl )
     
