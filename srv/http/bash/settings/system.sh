@@ -6,7 +6,7 @@ filemodule=/etc/modules-load.d/raspberrypi.conf
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
-	local chip I2Clcdchar I2Cmpdoled list module name SPImpdoled tft
+	local chip i2clcdchar i2cmpdoled list module name spimpdoled tft
 	name=$1
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
 		cp /boot/cmdline.txt /tmp
@@ -16,23 +16,23 @@ configTxt() { # each $CMD removes each own lines > reappends if enable or change
 	[[ ! $config ]] && config=$( < /boot/config.txt ) # if no config set from $CMD
 	if [[ $i2cset ]]; then
 		grep -E -q 'dtoverlay=.*:rotate=' <<< $config && tft=1
-		[[ -e $dirsystem/lcdchar ]] && grep -q -m1 inf=i2c $dirsystem/lcdchar.conf && I2Clcdchar=1
+		[[ -e $dirsystem/lcdchar ]] && i2clcdchar=1
 		if [[ -e $dirsystem/mpdoled ]]; then
 			chip=$( grep mpd_oled /etc/systemd/system/mpd_oled.service | cut -d' ' -f3 )
-			[[ $chip == 1 || $chip == 7 ]] && SPImpdoled=1 || I2Cmpdoled=1
+			[[ $chip == 1 || $chip == 7 ]] && spimpdoled=1 || i2cmpdoled=1
 		fi
 		config=$( grep -Ev 'dtparam=i2c_arm=on|dtparam=spi=on|dtparam=i2c_arm_baudrate' <<< $config )
-		[[ $tft || $I2Clcdchar || $I2Cmpdoled ]] && config+="
+		[[ $tft || $i2clcdchar || $i2cmpdoled ]] && config+="
 dtparam=i2c_arm=on"
-		[[ $I2Cmpdoled ]] && config+="
+		[[ $i2cmpdoled ]] && config+="
 dtparam=i2c_arm_baudrate=$BAUD" # $baud from mpdoled )
-		[[ $tft || $SPImpdoled ]] && config+="
+		[[ $tft || $spimpdoled ]] && config+="
 dtparam=spi=on"
 		
 		module=$( grep -Ev 'i2c-bcm2708|i2c-dev|^#|^\s*$' $filemodule 2> /dev/null )
-		[[ $tft || $I2Clcdchar ]] && module+="
+		[[ $tft || $i2clcdchar ]] && module+="
 i2c-bcm2708"
-		if [[ $tft || $I2Clcdchar || $I2Cmpdoled ]]; then
+		if [[ $tft || $i2clcdchar || $i2cmpdoled ]]; then
 			module+="
 i2c-dev"
 			! ls /dev/i2c* &> /dev/null && rebooti2c=1
@@ -236,12 +236,14 @@ dtparam=audio=on"
 	configTxt 'Audio I&#178;S module'
 	;;
 lcdchar )
+	if [[ $ON && ! -e $dirsystem/lcdchar ]]; then
+		[[ $INF == i2c ]] && i2cset=1
+	fi
 	enableFlagSet
-	sed -E -i -e 's/(true|false)$/\u\1/
+	sed -E -e 's/(true|false)$/\u\1/
 ' -e '/^inf|^charmap|^chip/ {s/=/="/; s/$/"/}
-' $dirsystem/lcdchar.conf
-	mv -f $dirsystem/lcdchar{.conf,conf.py}
-	i2cset=1
+' $dirsystem/lcdchar.conf > $dirsystem/lcdcharconf.py
+	rm -f $dirsystem/lcdchar.conf
 	configTxt 'Character LCD'
 	;;
 mirrorlist )
