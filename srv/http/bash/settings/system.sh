@@ -237,6 +237,10 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	enableFlagSet
+	sed -E -i -e 's/(true|false)$/\u\1/
+' -e '/^inf|^charmap|^chip/ {s/=/="/; s/$/"/}
+' $dirsystem/lcdchar.conf
+	mv -f $dirsystem/lcdchar{.conf,conf.py}
 	i2cset=1
 	configTxt 'Character LCD'
 	;;

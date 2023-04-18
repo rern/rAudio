@@ -229,7 +229,7 @@ data+='
 , "ipsub"                : "'$( ipSub )'"
 , "lcdchar"           : '$( exists $dirsystem/lcdchar )'
 , "lcdcharaddr"       : '$lcdcharaddr'
-, "lcdcharconf"       : '$( conf2json lcdchar.conf )'
+, "lcdcharconf"       : '$( conf2json lcdcharconf.py )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$list'
 , "mirror"            : "'$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' /etc/pacman.d/mirrorlist )'"

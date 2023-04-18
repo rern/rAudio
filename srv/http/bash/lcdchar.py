@@ -1,8 +1,86 @@
 #!/usr/bin/python
 
-from lcdcharconfig import *
 import sys
 import os
+sys.path.append( '/srv/http/data/system' )
+from lcdcharconf import *
+
+rows = cols == 16 and 2 or 4
+
+if inf == 'i2c':
+    from RPLCD.i2c import CharLCD
+    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
+                 , address=address, i2c_expander=chip )
+else:
+    pins_data = [ p0, p1, p2, p3 ]
+    from RPLCD.gpio import CharLCD
+    from RPi import GPIO
+    lcd = CharLCD( cols=cols, rows=rows, charmap=charmap
+                 , numbering_mode=GPIO.BOARD, pin_rs=pin_rs, pin_rw=pin_rw, pin_e=pin_e, pins_data=pins_data )
+
+pause = (
+    0b00000,
+    0b11011,
+    0b11011,
+    0b11011,
+    0b11011,
+    0b11011,
+    0b00000,
+    0b00000,
+)
+play = (
+    0b10000,
+    0b11000,
+    0b11100,
+    0b11110,
+    0b11100,
+    0b11000,
+    0b10000,
+    0b00000,
+)
+stop = (
+    0b00000,
+    0b11111,
+    0b11111,
+    0b11111,
+    0b11111,
+    0b11111,
+    0b00000,
+    0b00000,
+)
+logol = (
+    0b11111,
+    0b11011,
+    0b11011,
+    0b00000,
+    0b11011,
+    0b11011,
+    0b11111,
+    0b11111,
+)
+logor = (
+    0b01110,
+    0b10110,
+    0b10110,
+    0b01110,
+    0b01110,
+    0b10110,
+    0b11010,
+    0b11100,
+)
+dot = (
+    0b00000,
+    0b00000,
+    0b00000,
+    0b00011,
+    0b00011,
+    0b00000,
+    0b00000,
+    0b00000,
+)
+char = [ pause, play, stop, logol, logor, dot ]
+for i in range( 6 ):
+    lcd.create_char( i, char[ i ] )
 
 ICON = {
       'pause' : '\x00 '
@@ -14,8 +92,8 @@ DOTS = '\x05  \x05  \x05'
 RN = '\r\n'
 
 SPACES = ' ' * ( ( cols - 6 ) // 2 + 1 )
-logo = rows > 2 and RN or ''
-logo += SPACES + RR + RN + SPACES +'rAudio'
+LOGO = rows > 2 and RN or ''
+LOGO += SPACES + RR + RN + SPACES +'rAudio'
 
 argvL = len( sys.argv )
 if argvL == 2: # 1 argument
@@ -23,7 +101,7 @@ if argvL == 2: # 1 argument
     if val == 'off': # backlight off
         lcd.backlight_enabled = False
     elif val == 'logo':
-        lcd.write_string( logo )
+        lcd.write_string( LOGO )
     elif val == 'clear':
         lcd.clear()
     else:            # string
@@ -53,14 +131,7 @@ def second2hhmmss( sec ):
     return HH + MM + SS
     
 sys.path.append( '/srv/http/data/shm' )
-from statuslcd import *
-
-if 'Artist' not in locals(): Artist = ""
-if 'Title' not in locals(): Title = ""
-if 'Album' not in locals(): Album = ""
-if 'station' not in locals(): station = ""
-if 'file' not in locals(): file = ""
-if 'webradio' not in locals(): webradio = False
+from lcdcharstatus import *
 
 if charmap == 'A00':
     import unicodedata
@@ -68,11 +139,11 @@ if charmap == 'A00':
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
                         if unicodedata.category( c ) != 'Mn' )
                         
-    if Artist: Artist = normalize( Artist )
-    if Title: Title = normalize( Title )
-    if Album: Album = normalize( Album )
-    if station: station = normalize( station )
-    if file: file = normalize( file )
+    Artist = normalize( Artist )
+    Title = normalize( Title )
+    Album = normalize( Album )
+    station = normalize( station )
+    file = normalize( file )
     
 Artist = Artist[ :cols ]
 Title = Title[ :cols ]
@@ -114,7 +185,6 @@ else:
     if Time: Timehhmmss = slash + Timehhmmss
     progress = ( elapsedhhmmss + Timehhmmss + ' ' * cols )[ :cols - 4 ]
 
-print( lines + RN + ICON[ state ] + progress + RR )
 lcd.write_string( lines + RN + ICON[ state ] + progress + RR )
 
 if backlight and state != 'play': backlightOff()

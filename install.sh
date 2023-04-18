@@ -49,7 +49,7 @@ file=$dirsystem/lcdchar
 if [[ -e $file ]]; then
 	if grep -q var $file.conf; then
 		lines=$( < $file.conf )
-		data=$( grep -Ev 'var|backlight|pins_data' <<< $lines )
+		data=$( grep -Ev 'var|pins_data' <<< $lines )
 		if grep -q pins_data <<< $lines; then
 			p=( $( sed -E -n '/pins_data/ {s/.*\[(.*)]/\1/; s/,/ /g; p}' <<< $lines ) )
 			for (( i=0; i < 4; i++ )); do
@@ -57,9 +57,7 @@ if [[ -e $file ]]; then
 p$i=$p"
 			done
 		fi
-		grep -q backlight=True <<< $lines && backlight=true
-		data+="
-backlight=$backlight" > $file.conf
+		echo $data > $dirsystem/lcdcharconf.py
 	fi
 else
 	rm -f $file.conf

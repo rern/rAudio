@@ -116,11 +116,8 @@ $dirsettings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected ........................................................
 
-if [[ -e $dirsystem/lcdchar ]]; then
-	cp $dirshm/status{,lcd.py}
-	lcdcharinit.py
-	lcdchar.py logo
-fi
+[[ -e $dirsystem/lcdchar ]] && lcdchar.py logo
+
 [[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
 
 [[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset

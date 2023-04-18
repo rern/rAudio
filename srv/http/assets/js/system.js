@@ -773,7 +773,7 @@ var htmllcdchar = {
 </tr>`
 	, sleep  : `\
 </table>
-<label style="margin-left: 40px"><input id="backlight" type="checkbox" value="True">Sleep <gr>(60s)</gr></label>`
+<label style="margin-left: 40px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label>`
 }
 function htmlOption( values ) {
 	var options = '';
