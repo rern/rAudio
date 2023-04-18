@@ -236,14 +236,12 @@ dtparam=audio=on"
 	configTxt 'Audio I&#178;S module'
 	;;
 lcdchar )
-	if [[ $ON && ! -e $dirsystem/lcdchar ]]; then
-		[[ $INF == i2c ]] && i2cset=1
-	fi
 	enableFlagSet
 	sed -E -e 's/(true|false)$/\u\1/
 ' -e '/^inf|^charmap|^chip/ {s/=/="/; s/$/"/}
 ' $dirsystem/lcdchar.conf > $dirsystem/lcdcharconf.py
 	rm -f $dirsystem/lcdchar.conf
+	i2cset=1
 	configTxt 'Character LCD'
 	;;
 lcdcharset )
