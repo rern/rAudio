@@ -3,18 +3,30 @@
 . /srv/http/bash/common.sh
 
 backupfile=$dirshm/backup.gz
-if ! bsdtar tf $backupfile | grep -q display.json$; then
-	notify restore Restore 'Backup made before 20230401 update<br>will restore only Library database.'
-fi
-
 dirconfig=$dirdata/config
 
 statePlay && $dirbash/cmd.sh playerstop
-				# features        mpd                                      updating_db      system
-rm -f $dirsystem/{autoplay,color,hddsleep,listing,login*,crossfade*,custom*,dop*,mixertype*,relays,soundprofile,soxr*,updating}
 find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
+if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
+	rm -f $dirsystem/{listing,updating}
+	systemctl restart mpd
+fi
 
-bsdtar -xpf $backupfile -C /srv/http
+if bsdtar tf $backupfile | grep -q display.json$; then
+	bsdtar -xpf $backupfile -C /srv/http
+else
+	echo notvalid
+	bsdtar -xpf $backupfile \
+		--exclude autoplay* \
+		--exclude localbrowser* \
+		--exclude lcdchar* \
+		--exclude equalizer* \
+		--exclude multiraudio* \
+		--exclude relays* \
+		--exclude vuled* \
+			-C /srv/http
+fi
+
 dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
 uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )

@@ -657,9 +657,24 @@ $( '#restore' ).click( function() {
 				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
-					.then( result => { // -1 / -2 = errors
-						infoWarning(  SW.icon,  SW.title, result == -1 ? 'Upload failed.' : 'Restore failed.' )
+					.then( error => { // -1 / -2 = errors
+						if ( error === 'notvalid' ) {
+							var message = `\
+Backup made before 20230420 update
+will not restore (if set):
+<p style="padding-left: 90px; text-align: left">\
+• Autoplay
+• Browser on RPi
+• Charater LCD
+• Equalizer
+• Multiple rAudios
+• Relay Module
+• Spectrum OLED</p>`;
+						} else {
+							var message = error == -1 ? 'Upload failed.' : 'Restore failed.';
+						}
 						bannerHide();
+						infoWarning(  SW.icon,  SW.title, message );
 					} );
 			}
 			setTimeout( loader, 0 );
