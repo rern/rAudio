@@ -85,7 +85,9 @@ pre hr.hrlight {
 
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
-		<div id="infoTopBg"><div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div></div>
+		<div id="infoTopBg">
+			<div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div><i class="i-close infox"></i>
+		</div>
 		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
 	</div>
@@ -95,7 +97,7 @@ pre hr.hrlight {
 <pre class="progress">
 <script> // js must be here before php flush start
 E        = {};
-[ 'close', 'container', 'helphead', 'info', 'infobtn', 'progress', 'titleicon' ].forEach( ( el ) => {
+[ 'close', 'container', 'helphead', 'info', 'infobtn', 'infox', 'progress', 'titleicon' ].forEach( ( el ) => {
 	E[ el ] = document.getElementsByClassName( el )[ 0 ];
 } );
 
@@ -205,7 +207,7 @@ pclose( $popencmd );
 setTimeout( () => clearInterval( scroll ), 1000 );
 E.titleicon.classList.remove( 'blink' );
 E.info.classList.remove( 'hide' );
-E.infobtn.addEventListener( 'click', () => E.info.remove() );
+[ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() );
 </script>
 
 </body>
