@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1681280575' );
+	src         : url( '/assets/fonts/rern.woff2?v=1681877018' );
 }
 @font-face {
 	font-family : Lato;
@@ -885,12 +885,11 @@ input:checked {
 input[type=checkbox]:checked:disabled,
 input[type=radio]:checked:disabled {
 	background-color: var( --cmd ) !important;
-	box-shadow: none;
 }
 input[type=checkbox]:disabled,
 input[type=radio]:disabled {
 	background-color: var( --cgd );
-	box-shadow: none;
+	box-shadow: var( --shadow-select );
 }
 #infoContent button {
 	height: 40px;
