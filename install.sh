@@ -113,6 +113,8 @@ orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
 	echo "$data" > $file
 fi
 
+[[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
+
 file=$dirsystem/vuled.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
