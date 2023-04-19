@@ -1,4 +1,4 @@
-r A u d i o &ensp; 1
+r A u d i o
 ---
 Audio player for 
 - **Raspberry Pi**s:
