@@ -207,7 +207,7 @@ pclose( $popencmd );
 setTimeout( () => clearInterval( scroll ), 1000 );
 E.titleicon.classList.remove( 'blink' );
 E.info.classList.remove( 'hide' );
-[ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() );
+[ E.infobtn, E.infox ].forEach( el => el.addEventListener( 'click', () => E.info.remove() ) );
 </script>
 
 </body>
