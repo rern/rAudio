@@ -21,13 +21,13 @@ EOF
 	]
 	, [
 		  'label'    => 'DAB Radio'
-		, 'sublabel' => 'rtsp-server'
+		, 'sublabel' => 'mediamtx'
 		, 'id'       => 'dabradio'
 		, 'setting'  => false
 		, 'status'   => true
 		, 'disabled' => 'No DAB devices found.'
 		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
-		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
+		, 'exist'    => file_exists( '/usr/bin/mediamtx' )
 	]
 	, [
 		  'label'    => 'SnapClient'

@@ -12,7 +12,7 @@
 
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-packageActive hostapd rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli
+packageActive hostapd mediamtx shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
   "page"             : "features"
@@ -86,10 +86,10 @@ if [[ -e /usr/bin/smbd ]]; then
 , "smb"              : '$smb'
 , "smbconf"          : '$smbconf
 fi
-if [[ -e /usr/bin/rtsp-simple-server ]]; then
-	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now rtsp-simple-server
+if [[ -e /usr/bin/mediamtx ]]; then
+	timeout 1 rtl_test -t &> /dev/null && dabdevice=true || systemctl disable --now mediamtx
 	data+='
 , "dabdevice"        : '$dabdevice'
-, "dabradio"         : '$rtspsimpleserver
+, "dabradio"         : '$mediamtx
 fi
 data2json "$data" $1

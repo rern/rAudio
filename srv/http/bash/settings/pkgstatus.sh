@@ -9,7 +9,7 @@ case $pkg in
 		fileconf=$dircamilladsp/configs/camilladsp.yml
 		;;
 	dabradio )
-		pkg=rtsp-simple-server
+		pkg=mediamtx
 		conf="\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"

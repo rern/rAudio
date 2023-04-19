@@ -77,7 +77,7 @@ over_voltage=2" # rpi 0
 	sed -i '3,$ d' /etc/fstab
 	sed -i '/^#/! d' /etc/exports
 	
-	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
+	systemctl -q disable bluetooth hostapd camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 	mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 	rm -rf $dirdata $dirshareddata \
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \

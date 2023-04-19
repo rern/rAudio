@@ -55,7 +55,7 @@ if [[ $xinitrcfiles ]]; then
 	cp -r /etc/X11/xinit/xinitrc.d $dirconfig/etc/X11/xinit
 fi
 
-services='bluetooth camilladsp hostapd localbrowser nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli'
+services='bluetooth camilladsp hostapd localbrowser mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli'
 for service in $services; do
 	systemctl -q is-active $service && enable+=" $service" || disable+=" $service"
 done

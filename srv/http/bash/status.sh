@@ -66,7 +66,7 @@ if [[ $1 == withdisplay ]]; then
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
-	systemctl -q is-active rtsp-simple-server && dabradio=true
+	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	if [[ -e $filesharedip ]]; then
 		display=$( grep -Ev 'sd|usb|}' $dirsystem/display.json )

@@ -45,7 +45,7 @@ data='
 , "crossfade"        : '$crossfade'
 , "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$equalizer'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'

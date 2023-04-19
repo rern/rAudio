@@ -41,7 +41,7 @@ $name
 "
 done
 
-fileyml=/etc/rtsp-simple-server/rtsp-simple-server.yml
+fileyml=/etc/mediamtx/mediamtx.yml
 sed -i '1,/^paths:/ !d' $fileyml
 echo "$list" >> $fileyml
 

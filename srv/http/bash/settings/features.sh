@@ -92,14 +92,14 @@ camilladsp )
 dabradio )
 	if [[ $ON ]]; then
 		if timeout 1 rtl_test -t &> /dev/null; then
-			systemctl enable --now rtsp-simple-server
+			systemctl enable --now mediamtx
 			[[ ! -e $dirmpdconf/ffmpeg.conf ]] && $dirsettings/player.sh ffmpeg
 		else
 			notify dabradio 'DAB Radio' 'No DAB devices found.' 5000
 		fi
 		
 	else
-		systemctl disable --now rtsp-simple-server
+		systemctl disable --now mediamtx
 	fi
 	pushRefresh
 	;;
