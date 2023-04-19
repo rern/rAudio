@@ -86,7 +86,7 @@ pre hr.hrlight {
 <div id="infoOverlay" class="info hide">
 	<div id="infoBox">
 		<div id="infoTopBg">
-			<div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div><i class="i-close infox"></i>
+			<div id="infoTop"><i class="i-jigsaw"></i><a id="infoTitle"><?=$title?></a></div><i id="infoX" class="i-close infox"></i>
 		</div>
 		<div id="infoContent"><div class="infomessage"><?=$postmsg?></div></div>
 		<div class="infobtn infobtn-primary">OK</div>
