@@ -19,7 +19,10 @@ fi
 [[ $reboot ]] && notify -blink reboot System 'Reboot ...' || notify -blink power System 'Off ...'
 touch $dirshm/power
 mpc -q stop
-[[ -e $dirsystem/lcdchar ]] && killall lcdchar.py &> /dev/null && $dirbash/lcdchar.py logo
+if [[ -e $dirsystem/lcdchar ]]; then
+	killall lcdchar.py &> /dev/null
+	$dirbash/lcdchar.py logo
+fi
 alsactl store
 pushstream btreceiver false
 if [[ -e $dirshm/clientip ]]; then
