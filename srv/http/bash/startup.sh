@@ -48,6 +48,18 @@ CMD ssid"
 fi
 # ----------------------------------------------------------------------------
 
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+
+[[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
+
+[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
+
+filebrightness=/sys/class/backlight/rpi_backlight/brightness
+if [[ -e $filebrightness ]]; then
+	chmod 666 $filebrightness
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
+fi
+
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
 		ifconfig | grep -q -m1 inet.*broadcast && connected=1 && break
@@ -70,10 +82,10 @@ connectedCheck 5 1
 [[ ! $connected ]] && connectedCheck 30 3
 # if wlan not connected, try connect with saved profile
 if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	devprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
-	if [[ $devprofile ]]; then
+	fileprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
+	if [[ $fileprofile ]]; then
 		$dirsettings/networks.sh "profileconnect
-$( basename "$devprofile" )
+$( basename "$fileprofile" )
 CMD ssid"
 		connectedCheck 30 3
 	fi
@@ -115,20 +127,7 @@ fi
 $dirsettings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected ........................................................
-
-[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
-
-[[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
-
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
-
-file=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $file ]]; then
-	chmod 666 $file
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
-fi
-
-if [[ $connected ]]; then
+\if [[ $connected ]]; then
 	internetConnected && $dirsettings/addons-data.sh &> /dev/null &
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	$dirsettings/features.sh hostapdset
