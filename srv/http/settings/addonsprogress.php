@@ -1,7 +1,13 @@
 <?php
 ignore_user_abort( TRUE ); // for 'connection_status()' to work
 
-touch( '/srv/http/data/shm/addonsprogress' );
+$fileflag = '/srv/http/data/shm/addonsprogress';
+if ( file_exists( $fileflag ) ) { // close on refresh
+	header( 'Location: settings.php?p=addons' );
+	exit();
+}
+
+touch( $fileflag );
 
 $alias        = $_POST[ 'alias' ];
 $sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
