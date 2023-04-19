@@ -211,7 +211,7 @@ $( '#logo, #button-library, #button-playlist, #refresh' ).press( function() {
 	location.reload();
 } );
 $( '#logo, #refresh' ).click( function() {
-	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio-1/discussions' );
+	if ( ! localhost ) window.open( 'https://github.com/rern/rAudio/discussions' );
 } );
 $( '#status' ).click( function() {
 	$( '#data' ).html( highlightJSON( S ) )
