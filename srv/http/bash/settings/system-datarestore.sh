@@ -12,10 +12,19 @@ if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 	systemctl restart mpd
 fi
 
-if bsdtar tf $backupfile | grep -q display.json$; then
+if bsdtar tf $backupfile | grep -q display.json$; then # 20230420
 	bsdtar -xpf $backupfile -C /srv/http
 else
-	echo notvalid
+	echo 'Backup done before version <wh>20230420</wh>:
+These will not be restored:
+<div style="padding-left: 90px; text-align: left">
+• Autoplay
+• Browser on RPi
+• Charater LCD
+• Equalizer
+• Multiple rAudios
+• Relay Module
+• Spectrum OLED</div>'
 	bsdtar -xpf $backupfile \
 		--exclude autoplay* \
 		--exclude localbrowser* \
