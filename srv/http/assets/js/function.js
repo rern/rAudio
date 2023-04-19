@@ -1769,7 +1769,6 @@ function setVolume() {
 	$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
 	$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	$( '#volume-text' )
-		.toggleClass( 'hide', D.volume )
 		.text( S.volumemute || S.volume )
 		.toggleClass( 'bl', mute );
 	if ( $volume.is( ':hidden' ) ) {
