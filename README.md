@@ -67,13 +67,13 @@ Audio player for
 	- RTL-SDR (for DAB radio)
 	- Wi-Fi
 - GPIO:
-	- [I²S audio module](https://github.com/rern/rAudio-1/blob/main/I2S_modules.md)
-	- [Character LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
+	- [I²S audio module](https://github.com/rern/rAudio/blob/main/I2S_modules.md)
+	- [Character LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcdchar.jpg) (16x2, 20x4)
 	- Power on/off button
-	- [Relay module](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/relays.jpg)
-	- [Rotary encoder](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/rotaryencoder.jpg)
-	- [Spectrum OLED](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
-	- [TFT 3.5" LCD](https://github.com/rern/rAudio-1/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
+	- [Relay module](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/relays.jpg)
+	- [Rotary encoder](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/rotaryencoder.jpg)
+	- [Spectrum OLED](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/mpdoled.jpg) (128x64)
+	- [TFT 3.5" LCD](https://github.com/rern/rAudio/raw/main/srv/http/assets/img/lcd.jpg) (320x420)
 	- VU LED (7 LEDs+Rs)
 - Not applicable on Raspberry Pi `1` or `Zero`:
 	- RTL-SDR (for DAB radio)
@@ -84,11 +84,11 @@ Audio player for
 - If enable SnapClient, Multiple rAudios or Shared Data, do not change password from default.
 
 ### Q&A
-- [**rAudio Discussions**](https://github.com/rern/rAudio-1/discussions) - Questions, comments and bug reports
+- [**rAudio Discussions**](https://github.com/rern/rAudio/discussions) - Questions, comments and bug reports
 
 ### Image files
-- Raspberry Pi - [**Release i20230212**](https://github.com/rern/rAudio-1/releases/tag/i20230212)
-- BeagleBone Black - [DIY](https://github.com/rern/rAudio-1/discussions/299)
+- Raspberry Pi - [**Release i20230212**](https://github.com/rern/rAudio/releases/tag/i20230212)
+- BeagleBone Black - [DIY](https://github.com/rern/rAudio/discussions/299)
 - CubieBoard2 - [DIY](https://github.com/jazzi/rOS)
 
 ### DIY Image file
