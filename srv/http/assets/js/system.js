@@ -880,46 +880,48 @@ var contentmount = {
 	<td><input type="text" placeholder="if required by server"></td>
 </tr>
 </table>`
-	, shareddata : '<input type="hidden">'
 }
-function infoMount( values ) {
-	if ( ! values ) {
-		var nfs    = false;
+function infoMount( tab ) {
+	var nfs        = false;
+	var shareddata = SW.id === 'shareddata';
+	if ( I.active ) {
+		var v = infoVal();
+		if ( 'USER' in v || tab === 'nfs' ) { // target nfs
+			var nfs    = true;
+			v.PROTOCOL = 'nfs';
+			var values = {};
+			Object.keys( default_v.mountnfs ).forEach( k => values[ k ] = v[ k ] || '' );
+		} else {
+			v.PROTOCOL = 'cifs';
+			var values = {};
+			Object.keys( default_v.mountcifs ).forEach( k => values[ k ] = v[ k ] || '' );
+		}
+	} else {
 		var values = default_v.mountcifs;
 		values.IP  = S.ipsub;
-	} else {
-		var nfs    = values.PROTOCOL === 'nfs';
 	}
+	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
+	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
-	var tablabel   = [ 'CIFS', 'NFS' ];
-	var tab        = nfs ? [ () => infoMountTab( 'nfs' ), '' ] : [ '', () => infoMountTab( 'cifs' ) ];
-	var content    = contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option;
-	var shareddata = SW.id === 'shareddata';
-	if ( shareddata ) {
-		var title         = 'Shared Data Server';
-		tablabel.push( 'rAudio' );
-		tab.push( inforServer );
-		content          += contentmount.shareddata
-		values.SHAREDDATA = true;
-	} else {
-		var title = 'Add Network Storage';
-	}
 	info( {
 		  icon       : icon
-		, title      : title
-		, tablabel   : tablabel
+		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
+		, tablabel   : shareddata ? [ 'CIFS', 'NFS', 'rAudio' ] : [ 'CIFS', 'NFS' ]
 		, tab        : tab
-		, content    : content
+		, content    : contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option
 		, values     : values
 		, checkblank : [ 0, 2 ]
 		, checkip    : [ 1 ]
 		, beforeshow : () => {
 			var $mountpoint = $( '#mountpoint' );
-			var $share = $( '#share' );
-			if ( shareddata ) $mountpoint.val( 'data' ).prop( 'disabled', true );
-			$mountpoint.on( 'keyup paste', function() {
-				setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
-			} );
+			var $share      = $( '#share' );
+			if ( shareddata ) {
+				$mountpoint.val( 'data' ).prop( 'disabled', true );
+			} else {
+				$mountpoint.on( 'keyup paste', function() {
+					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
+				} );
+			}
 			$share.on( 'keyup paste', function() {
 				setTimeout( () => {
 					var slash = $( '#infoContent input:radio:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
@@ -930,6 +932,7 @@ function infoMount( values ) {
 		, cancel     : switchCancel
 		, ok         : () => {
 			var infoval = infoVal();
+			infoval.SHAREDDATA = shareddata;
 			var keys = Object.keys( infoval );
 			var vals = Object.values( infoval );
 			notify( icon, title, shareddata ? 'Enable ...' : 'Add ...' );
@@ -949,21 +952,39 @@ function infoMount( values ) {
 		}
 	} );
 }
-function infoMountTab( protocol ) {
-	var v       = infoVal();
-	if ( typeof v === 'string' ) v = default_v[ 'mount'+ protocol ]; // from rServer
-	var nfs     = ! ( 'user' in v );
-	var options = v.options;
-	[ 'user', 'password', 'options', 'shareddata' ].forEach( k => delete v[ k ] );
-	if ( nfs ) { // nfs to cifs
-		v.protocol = 'cifs';
-		v.user     = '';
-		v.password = '';
-	} else {
-		v.protocol = 'nfs';
-	}
-	v.options   = options;
-	infoMount( v );
+function infoMountRserver() {
+	info( {
+		  icon       : SW.icon
+		, title      : SW.title
+		, tablabel   : [ 'CIFS', 'NFS', 'rServer' ]
+		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
+		, textlabel  : 'Server IP'
+		, values     : { IP: I.active ? infoVal().IP : S.ipsub }
+		, checkip    : [ 1 ]
+		, cancel     : switchCancel
+		, ok         : () => {
+			var ip = infoVal().IP;
+			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
+			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
+				var json = {
+					  icon    : Sw.icon
+					, title   : Sw.title
+					, message : list
+					, cancel  : switchCancel
+					, ok      : infoMountRserver
+				}
+				if ( list.slice( 0, 6 ) === 'Server' ) {
+					json.message = list +'<br>Connect?'
+					json.ok      = () => {
+						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
+						bash( [ 'shareddataconnect', ip, 'CMD IP' ] );
+					}
+				}
+				info( json );
+				bannerHide();
+			} );
+		}
+	} );
 }
 function infoNtpMirror() {
 	SW.id     = 'ntpmirror';
@@ -1122,40 +1143,6 @@ function infoRelaysName() {
 		}
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
-	} );
-}
-function inforServer() {
-	info( {
-		  icon       : SW.icon
-		, title      : SW.title
-		, tablabel   : [ 'CIFS', 'NFS', 'rServer' ]
-		, tab        : [ () => infoMountTab( 'nfs' ), () => infoMountTab( 'cifs' ), '' ]
-		, textlabel  : 'Server IP'
-		, values     : S.ipsub
-		, checkip    : [ 1 ]
-		, cancel     : switchCancel
-		, ok         : () => {
-			var ip = infoVal();
-			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
-			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
-				var json = {
-					  icon    : Sw.icon
-					, title   : Sw.title
-					, message : list
-					, cancel  : switchCancel
-					, ok      : inforServer
-				}
-				if ( list.slice( 0, 6 ) === 'Server' ) {
-					json.message = list +'<br>Connect?'
-					json.ok      = () => {
-						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-						bash( [ 'shareddataconnect', ip, 'CMD IP' ] );
-					}
-				}
-				info( json );
-				bannerHide();
-			} );
-		}
 	} );
 }
 function renderPage() {

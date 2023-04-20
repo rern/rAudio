@@ -4,32 +4,32 @@
 
 args2var "$1"
 
-mountpoint="$dirnas/$name"
+mountpoint="$dirnas/$NAME"
 
-! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
+! ping -c 1 -w 1 $IP &> /dev/null && echo "IP address not found: <wh>$IP</wh>" && exit
 
 [[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
 
 umount -ql "$mountpoint"
 mkdir -p "$mountpoint"
 chown mpd:audio "$mountpoint"
-if [[ $protocol == cifs ]]; then
-	source="//$ip/$share"
+if [[ $PROTOCOL == cifs ]]; then
+	source="//$IP/$SHARE"
 	options=noauto
-	if [[ ! $user ]]; then
+	if [[ ! $USER ]]; then
 		options+=,username=guest
 	else
-		options+=",username=$user,password=$password"
+		options+=",username=$USER,password=$PASSWORD"
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else
-	source="$ip:$share"
+	source="$IP:$SHARE"
 	options=defaults,noauto,bg,soft,timeo=5
 fi
-[[ $extraoptions ]] && options+=,$extraoptions
+[[ $OPTIONS ]] && options+=,$OPTIONS
 fstab="\
 $( < /etc/fstab )
-$( space2ascii $source )  $( space2ascii $mountpoint )  $protocol  $( space2ascii $options )  0  0"
+$( space2ascii $source )  $( space2ascii $mountpoint )  $PROTOCOL  $( space2ascii $options )  0  0"
 mv /etc/fstab{,.backup}
 column -t <<< $fstab > /etc/fstab
 systemctl daemon-reload
@@ -53,4 +53,4 @@ for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
-[[ $shareddata ]] && $dirsettings/system.sh shareddataset || pushRefresh
+[[ $SHAREDDATA ]] && $dirsettings/system.sh shareddataset || pushRefresh
