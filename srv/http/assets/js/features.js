@@ -293,9 +293,7 @@ $( '#setting-multiraudio' ).click( function() {
 				$input    = $inputbox;
 				infoCheckEvenOdd( $input.length );
 				infoCheckSet();
-				$( '#infoOk' )
-					.text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' )
-					.toggleClass( 'disabled', I.values.join( '' ) === infoVal().join( '' ) );
+				$( '#infoOk' ).text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' );
 			} );
 		}
 		, cancel       : switchCancel
