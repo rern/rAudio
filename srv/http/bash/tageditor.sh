@@ -13,6 +13,8 @@ if [[ $FILE != *.cue ]]; then
 	for K in "${KEYS[@]}"; do
 		k=${K,,}
 		v=${!K}
+		[[ $v == '*' ]] && continue
+		
 		[[ $v ]] && v=$( stringEscape $v )
 		[[ $istrack ]] && kid3-cli -c "set $k \"$v\"" "$path" || kid3-cli -c "set $k \"$v\"" "$path/"*.*
 	done
