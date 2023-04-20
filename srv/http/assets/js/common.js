@@ -549,6 +549,7 @@ function info( json ) {
 		htmlcontent    += htmls.footer || '';
 	}
 	if ( ! htmlcontent ) {
+		I.active = true;
 		$( '#infoButton' ).css( 'padding', '0 0 20px 0' );
 		$( '#infoOverlay' ).removeClass( 'hide' );
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
