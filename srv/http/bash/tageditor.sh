@@ -9,9 +9,10 @@ argslast=${args[@]: -1} # CMD ALBUM ALBUMARTIST ... FILE - omit unchanged
 [[ -f $path ]] && istrack=1
 
 if [[ $FILE != *.cue ]]; then
-	keys=( ${argslast:4:-5} )
-	for k in "${keys[@]}"; do
-		v=${!k}
+	KEYS=( ${argslast:4:-5} ) # remove CMD and FILE
+	for K in "${KEYS[@]}"; do
+		k=${K,,}
+		v=${!K}
 		[[ $v == '*' ]] && continue
 		
 		[[ $v ]] && v=$( stringEscape $v )
