@@ -303,7 +303,7 @@ function tagEditor() {
 				$.each( infoval, ( k, v ) => {
 					if ( values[ k ] === v ) delete infoval[ k ];
 				} );
-				infoval.file = file;
+				infoval.FILE = file;
 				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
 				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
