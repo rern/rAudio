@@ -277,6 +277,7 @@ $( '#setting-multiraudio' ).click( function() {
 		, checkip      : I.checkip
 		, checkunique  : true
 		, beforeshow   : () => {
+			setTimeout( () => $( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 ), 0 );
 			$( '#infoContent input' ).each( ( i, el ) => {
 				if ( $( el ).val() === S.hostip ) $( el ).addClass( 'disabled' );
 			} );
@@ -293,7 +294,11 @@ $( '#setting-multiraudio' ).click( function() {
 				$input    = $inputbox;
 				infoCheckEvenOdd( $input.length );
 				infoCheckSet();
-				$( '#infoOk' ).text( S.multiraudio && $inputbox.length < 3 ? 'Disable' : 'OK' );
+				if ( S.multiraudio ) {
+					$( '#infoOk' ).text( $inputbox.length < 3 ? 'Disable' : 'OK' );
+				} else {
+					$( '#infoOk' ).toggleClass( 'disabled', I.values.length < 3 );
+				}
 			} );
 		}
 		, cancel       : switchCancel
@@ -420,7 +425,7 @@ $( '#nfsserver' ).click( function() {
 			, okcolor : S.nfsserver ? orange : ''
 			, ok      : () => {
 				bash( S.nfsserver ? [ 'nfsserver', 'OFF' ] : [ 'nfsserver' ] ); // enable if not active
-				notify( ! S.nfsserver );
+				notifyCommon( ! S.nfsserver );
 			}
 		} );
 	} );

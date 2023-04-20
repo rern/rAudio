@@ -49,9 +49,10 @@ $( awk NF <<< $conf )"
 		skip='configuration file does not exist'
 		;;
 	nfsserver )
-		pkg=nfs-utils
+		pkg=nfs-server
 		systemctl -q is-active nfs-server && fileconf=/etc/exports
 		skip='Protocol not supported'
+		config="<code>$( pacman -Q nfs-utils )</code>"
 		;;
 	smb )
 		pkg=smb
