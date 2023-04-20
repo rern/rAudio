@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1681877018' );
+	src         : url( '/assets/fonts/rern.woff2?v=1681966016' );
 }
 @font-face {
 	font-family : Lato;
@@ -241,14 +241,7 @@ body {
 	-moz-box-sizing    :border-box;
 	box-sizing         :border-box;
 }
-*:focus,
 *:active {
-	outline: none !important;
-}
-input:focus { /* focus - cannot combine with others */
-	outline: none !important;
-}
-input:focus-visible {
 	outline: none !important;
 }
 input::-moz-focus-inner {
