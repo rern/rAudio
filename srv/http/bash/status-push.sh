@@ -104,4 +104,5 @@ pushstream refresh '{"page":"features","state":"'$state'"}'
 	&& $dirbash/scrobble.sh "\
 $Artist
 $Title
-$Album" &> /dev/null &
+$Album
+CMD ARTIST TITLE ALBUM" &> /dev/null &

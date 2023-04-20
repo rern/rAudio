@@ -95,7 +95,8 @@ scrobbleOnStop() {
 		$dirbash/scrobble.sh "\
 $Artist
 $Title
-$Album" &> /dev/null &
+$Album
+CMD ARTIST TITLE ALBUM" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
