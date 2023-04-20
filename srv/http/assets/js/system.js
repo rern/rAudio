@@ -903,9 +903,10 @@ function infoMount( tab ) {
 	var tab = nfs ? [ infoMount, '' ] : [ '', infoMount ];
 	if ( shareddata ) tab.push( infoMountRserver );
 	var icon       = 'networks';
+	var title      = shareddata ? 'Shared Data Server' : 'Add Network Storage';
 	info( {
 		  icon       : icon
-		, title      : shareddata ? 'Shared Data Server' : 'Add Network Storage'
+		, title      : title
 		, tablabel   : shareddata ? [ 'CIFS', 'NFS', 'rAudio' ] : [ 'CIFS', 'NFS' ]
 		, tab        : tab
 		, content    : contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option
