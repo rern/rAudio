@@ -972,7 +972,7 @@ input[ type=radio ]:disabled {
 	#infoX:active {
 		color: var( --cma );
 	}
-	input[ type=text ]:focus:focus-visible,
+	input[ type=text ]:focus-visible,
 	input[ type=number ]:focus-visible,
 	input[ type=password ]:focus-visible,
 	#infoContent textarea:focus-visible {
