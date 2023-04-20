@@ -2003,10 +2003,6 @@ li.active .li2 bl {
 	float: right;
 }
 /************************************************************************************/
-@media (min-width: 2038px) {
-	.coverart { width: 200px }
-}
-/************************************************************************************/
 @media ( max-height: 768px ) {
 	#page-playback { padding: 80px 0 60px }
 }
@@ -2046,17 +2042,18 @@ li.active .li2 bl {
 	#pl-savedlist-count { margin-left: -20px }
 }
 /************************************************************************************/
+@media (max-width: 2638px) { .coverart, .lib-mode { width: calc( 100% / 13 ) } }
+@media (max-width: 2438px) { .coverart, .lib-mode { width: calc( 100% / 12 ) } }
+@media (max-width: 2238px) { .coverart, .lib-mode { width: calc( 100% / 11 ) } }
 @media (max-width: 2038px) { .coverart, .lib-mode { width: calc( 100% / 10 ) } }
 @media (max-width: 1838px) { .coverart, .lib-mode { width: calc( 100% / 9 ) } }
 @media (max-width: 1638px) { .coverart, .lib-mode { width: calc( 100% / 8 ) } }
 @media (max-width: 1438px) { .coverart, .lib-mode { width: calc( 100% / 7 ) } }
 @media (max-width: 1238px) { .coverart, .lib-mode { width: calc( 100% / 6 ) } }
 @media (max-width: 1038px) { .coverart, .lib-mode { width: calc( 100% / 5 ) } }
-
 @media (max-width: 838px)  { .coverart { width: calc( 100% / 4 ) } }
 @media (max-width: 638px)  { .coverart { width: calc( 100% / 3 ) } }
 @media (max-width: 438px)  { .coverart { width: calc( 100% / 2 ) } }
-
 @media (max-width: 540px)  { .lib-mode { width: calc( 100% / 4 ) } }
 @media (max-width: 440px)  { .lib-mode { width: calc( 100% / 3 ) } }
 @media (max-width: 340px)  { .mode gr { display: none } }
