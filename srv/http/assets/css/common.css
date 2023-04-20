@@ -244,10 +244,6 @@ body {
 *:active {
 	outline: none !important;
 }
-input::-moz-focus-inner {
-	outline : 0 !important;
-	border  : 0;
-}
 .hide { display: none !important }
 .hidden { visibility: hidden }
 @keyframes blinkopaque { 50% { opacity: 0 } }
