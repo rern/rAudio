@@ -490,8 +490,8 @@ codered  {
 
 /* info */
 .infobtn,
-input[type=radio],
-input[type=checkbox] {
+input[ type=radio ],
+input[ type=checkbox ] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
@@ -542,7 +542,7 @@ input[type=checkbox] {
 	pointer-events: auto;
 	cursor: default;
 }
-input[type=checkbox].disabled {
+input[ type=checkbox ].disabled {
 	pointer-events: auto;
 }
 .infobtn i {
@@ -821,9 +821,9 @@ hr {
 	resize: none;
 	white-space: pre;
 }
-input[type=text],
-input[type=number],
-input[type=password] {
+input[ type=text ],
+input[ type=number ],
+input[ type=password ] {
 	display: inline-block;
 	margin: 0;
 	width: 100%;
@@ -836,9 +836,9 @@ input[type=password] {
 	font-size: 16px;
 	font-family: Lato;
 }
-.col-r input[type=text],
-input[type=text]:disabled,
-input[type=number]:disabled {
+.col-r input[ type=text ],
+input[ type=text ]:disabled,
+input[ type=number ]:disabled {
 	background: none !important;
 	border: 1px solid var( --cgl );
 	opacity: 1;
@@ -847,7 +847,7 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
 	-webkit-appearance: none;
 }
-input[type=number] {
+input[ type=number ] {
 	-moz-appearance:textfield;
 }
 #infoPasswordBox {
@@ -860,8 +860,8 @@ input[type=number] {
 	text-align: center;
 	font-size: 20px;
 }
-input[type=radio],
-input[type=checkbox] {
+input[ type=radio ],
+input[ type=checkbox ] {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
@@ -871,7 +871,7 @@ input[type=checkbox] {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
-input[type=radio] {
+input[ type=radio ] {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
@@ -880,12 +880,12 @@ input[type=radio] {
 input:checked {
 	background-color: var( --cm );
 }
-input[type=checkbox]:checked:disabled,
-input[type=radio]:checked:disabled {
+input[ type=checkbox ]:checked:disabled,
+input[ type=radio ]:checked:disabled {
 	background-color: var( --cmd ) !important;
 }
-input[type=checkbox]:disabled,
-input[type=radio]:disabled {
+input[ type=checkbox ]:disabled,
+input[ type=radio ]:disabled {
 	background-color: var( --cgd );
 	box-shadow: var( --shadow-select );
 }
@@ -957,8 +957,8 @@ input[type=radio]:disabled {
 	/* :hover *********************************************************/
 	#infoTab,
 	label,
-	input[type=checkbox],
-	input[type=radio],
+	input[ type=checkbox ],
+	input[ type=radio ],
 	.i-eye,
 	.pointer {
 		cursor: pointer;
@@ -972,31 +972,21 @@ input[type=radio]:disabled {
 	#infoX:active {
 		color: var( --cma );
 	}
-	input[type=text]:focus,
-	input[type=number]:focus,
-	input[type=password]:focus,
-	input[type=radio]:focus,
-	input[type=checkbox]:focus,
-	#infoContent textarea:focus {
+	input[ type=text ]:focus:focus-visible,
+	input[ type=number ]:focus-visible,
+	input[ type=password ]:focus-visible,
+	#infoContent textarea:focus-visible {
 		outline: 1px solid var( --cgl ) !important;
 	}
-	input[type=radio]:focus,
-	input[type=checkbox]:focus {
-		outline-offset: 1px;
-	}
+	input[ type=radio ]:focus-visible,
+	input[ type=checkbox ]:focus-visible,
 	#infoRange input:focus-visible::-webkit-slider-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}
-	#infoRange input:focus:not(:focus-visible)::-webkit-slider-thumb {
-		outline: none;
-	}
 	#infoRange input:focus-visible::-moz-range-thumb {
 		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
-	}
-	#infoRange input:focus:not(:focus-visible)::-moz-range-thumb {
-		outline: none;
 	}
 	.infobtn.active {
 		box-shadow: 0 0 2px 1px var( --cgl ) !important;
@@ -1007,7 +997,7 @@ input[type=radio]:disabled {
 	.head i {
 		line-height: 42px;
 	}
-	input[type=checkbox]:checked:disabled {
+	input[ type=checkbox ]:checked:disabled {
 		background-color: var( --cml );
 	}
 	.input-group input {
