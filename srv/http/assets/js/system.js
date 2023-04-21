@@ -23,7 +23,7 @@ var default_v      = {
 		  INF       :'i2c'
 		, COLS      : 20
 		, CHARMAP   : 'A00'
-		, ADDRESS   : '0x27'
+		, ADDRESS   : 39
 		, CHIP      : 'PCF8574'
 		, BACKLIGHT : false
 	}
