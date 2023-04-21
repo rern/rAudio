@@ -2051,7 +2051,6 @@ li.active .li2 bl {
 @media ( max-width: 440px ) {
 	#lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 100px, auto ) ) }
 }
-@media (max-width: 340px) { .mode gr { display: none } }
 /************************************************************************************/
 @media ( orientation: landscape ) {
 	@media ( max-width: 768px ) { #page-playback { --scale: 0.95 } }
