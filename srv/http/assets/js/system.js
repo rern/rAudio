@@ -1050,8 +1050,8 @@ function infoPowerbuttonAudiophonics() {
 	} );
 }
 function infoRelays() {
-	var values       = S.relaysconf || jsonClone( default_v.relays );
-	var name         = S.relaysnameconf || jsonClone( default_v.relaysname );
+	var values       = S.relaysconf || default_v.relays;
+	var name         = S.relaysnameconf || default_v.relaysname;
 	var pL           = 0;
 	var option_name  = '';
 	$.each( name, ( k, v ) => {
@@ -1094,9 +1094,9 @@ function infoRelaysCmd() {
 	var infoval = infoVal();
 	if ( 'ON0' in infoval ) {
 		var pin  = infoval;
-		var name = S.relaysnameconf || jsonClone( default_v.relaysname );
+		var name = S.relaysnameconf || default_v.relaysname;
 	} else {
-		var pin  = S.relaysconf || jsonClone( default_v.relays );
+		var pin  = S.relaysconf || default_v.relays;
 		var name = {};
 		infoval.forEach( ( el, i ) => i % 2 ? name[ p ] = el : p = el );
 	}
@@ -1124,7 +1124,7 @@ function infoRelaysCmd() {
 	bash( { cmd: [ 'relays', ...values, 'CFG '+ keys.join( ' ' ) ], json: name } );
 }
 function infoRelaysName() {
-	var name     = S.relaysnameconf || jsonClone( default_v.relaysname );
+	var name     = S.relaysnameconf || default_v.relaysname;
 	var values   = [];
 	$.each( name, ( k, v ) => values.push( k, v ) );
 	var pin_name = '<tr><td><select>'+ html_boardpin +'</select></td><td><input type="text"></td></tr>';
