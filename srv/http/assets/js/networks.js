@@ -79,7 +79,7 @@ $( '.lanadd' ).click( function() {
 		, checkip   : [ 0, 1 ]
 		, focus     : 0
 		, ok           : () => {
-			editLANSet( infoVal() );
+			infoLanSet( infoVal() );
 		}
 	} );
 } );
@@ -166,7 +166,7 @@ $( '.disconnect' ).click( function() {
 	} );
 } );
 $( '.edit' ).click( function() {
-	V.listid === 'listwl' ? editWiFi() : editLAN();
+	V.listid === 'listwl' ? infoWiFiGet() : infoLan();
 } );
 $( '.forget' ).click( function() {
 	if ( V.listid === 'listbt' ) {
@@ -228,7 +228,7 @@ function connectWiFi( data ) {
 	var title = 'Connect Wi-Fi'
 	clearTimeout( V.timeoutscan );
 	if ( 'ADDRESS' in data ) { // static
-		S.listeth ? notify( icon, title, 'Change ...' ) : editReconnect( icon, data.ADDRESS, 5 );
+		S.listeth ? notify( icon, title, 'Change ...' ) : reconnect( icon, data.ADDRESS, 5 );
 	} else {
 		notify( icon, title, S.connectedwl ? 'Change ...' : 'Connect ...' );
 	}
@@ -244,13 +244,20 @@ function connectWiFi( data ) {
 					  icon    : icon
 					, title   : title
 					, message : error
-					, ok      : editWiFi
+					, ok      : infoWiFiGet
 				} );
 			}
 		}
 	} );
 }
-function editLAN() {
+function infoAccesspoint() {
+	info( {
+		  icon    : 'wifi'
+		, title   : 'Wi-Fi'
+		, message : 'Access Point is currently active.'
+	} );
+}
+function infoLan() {
 	var icon   = 'lan';
 	var title  = 'Edit LAN Connection';
 	var static = S.listeth.static;
@@ -266,14 +273,14 @@ function editLAN() {
 		, buttonlabel  : static ? ico( 'undo' ) +'DHCP' : ''
 		, button       : static ? () => {
 			bash( [ 'lanedit' ] );
-			editReconnect( icon, S.hostname +'.local', 10 );
+			reconnect( icon, S.hostname +'.local', 10 );
 		} : ''
 		, ok           : () => {
-			editLANSet( infoVal() );
+			infoLanSet( infoVal() );
 		}
 	} );
 }
-function editLANSet( v ) {
+function infoLanSet( v ) {
 	var icon = 'lan';
 	var ip   = v.IP;
 	bash( [ 'lanedit', ...Object.values( v ), 'CMD '+ Object.keys( v ).join( ' ' ) ], avail => {
@@ -285,26 +292,36 @@ function editLANSet( v ) {
 				  icon    : icon
 				, title   : 'Duplicate IP'
 				, message : 'IP <wh>'+ ip +'</wh> already in use.'
-				, ok      : editLAN
+				, ok      : infoLan
 			} );
 		} else {
-			editReconnect( icon, ip, 3 );
+			reconnect( icon, ip, 3 );
 		}
 	} );
 }
-function editReconnect( icon, ip, delay ) {
-	loader();
-	notify( icon, 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
-	var i      = delay;
-	V.interval = setInterval( () => {
-		i--
-		i > 0 ? $( '#bannerMessage a' ).text( i ) : clearInterval( V.interval );
-	}, 1000 );
-	V.timeout  = setTimeout( () => {
-		location.href = 'http://'+ ip +'/settings.php?p=networks';
-	}, delay * 1000 );
+function infoWiFi( v ) {
+	if ( v ) {
+		var values = {};
+		Object.keys( default_v.dhcp ).forEach( k => values[ k ] = v[ k ] );
+	} else {
+		var values = jsonClone( default_v.dhcp );
+	}
+	info( {
+		  icon          : 'wifi'
+		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		, tablabel      : [ 'DHCP', 'Static IP' ]
+		, tab           : [ '', () => infoWiFiTab( infoVal() ) ]
+		, boxwidth      : 180
+		, textlabel     : [ 'SSID' ]
+		, passwordlabel : 'Password'
+		, checkbox      : [ 'WEP', 'Hidden SSID' ]
+		, values        : values
+		, checkblank    : [ 0 ]
+		, checkchanged  :true
+		, ok            : () => connectWiFi( infoVal() )
+	} );
 }
-function editWiFi() {
+function infoWiFiGet() {
 	bash( [ 'profileget', V.li.data( 'ssid' ), 'CMD SSID' ], v => {
 		var static = v.IP === 'static'
 		v.SECURITY = v.SECURITY === 'wep';
@@ -313,44 +330,26 @@ function editWiFi() {
 		static ? infoWiFiStatic( v ) : infoWiFi( v );
 	}, 'json' );
 }
-function infoAccesspoint() {
-	info( {
-		  icon    : 'wifi'
-		, title   : 'Wi-Fi'
-		, message : 'Access Point is currently active.'
-	} );
-}
-function infoWiFi( values ) {
-	info( {
-		  icon          : 'wifi'
-		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
-		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ '', () => infoWiFiSwitch( infoVal() ) ]
-		, boxwidth      : 180
-		, textlabel     : [ 'SSID' ]
-		, passwordlabel : 'Password'
-		, checkbox      : [ 'WEP', 'Hidden SSID' ]
-		, values        : values || default_v.dhcp
-		, checkblank    : [ 0 ]
-		, checkchanged  : values ? true : false
-		, ok            : () => connectWiFi( infoVal() )
-	} );
-}
-function infoWiFiStatic( values ) {
-	if ( ! values ) values = default_v.static;
+function infoWiFiStatic( v ) {
+	if ( v ) {
+		var values = {};
+		Object.keys( default_v.static ).forEach( k => values[ k ] = v[ k ] );
+	} else {
+		var values = jsonClone( default_v.static );
+	}
 	values.ADDRESS = S.ipwl || S.ipsub;
 	values.GATEWAY = S.gateway || S.ipsub;
 	info( {
 		  icon          : 'wifi'
 		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
 		, tablabel      : [ 'DHCP', 'Static IP' ]
-		, tab           : [ () => infoWiFiSwitch( infoVal() ), '' ]
+		, tab           : [ () => infoWiFiTab( infoVal() ), '' ]
 		, boxwidth      : 180
 		, textlabel     : [ 'SSID', 'Password', 'IP', 'Gateway' ]
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
 		, values        : values
 		, checkblank    : [ 0 ]
-		, checkchanged  : values ? true : false
+		, checkchanged  : true
 		, checkip       : [ 2, 3 ]
 		, beforeshow    : () => $('#infoContent input' ).eq( 1 ).attr( 'type', 'password' )
 		, ok            : () => {
@@ -358,7 +357,7 @@ function infoWiFiStatic( values ) {
 		}
 	} );
 }
-function infoWiFiSwitch( values ) {
+function infoWiFiTab( values ) {
 	var target = 'ADDRESS' in values ? 'dhcp' : 'static';
 	var keys = Object.keys( default_v[ target ] );
 	var v = {}
@@ -371,6 +370,18 @@ function qr( msg ) {
 		, dim : 130
 		, pad : 0
 	} );
+}
+function reconnect( icon, ip, delay ) {
+	loader();
+	notify( icon, 'IP Address', 'Change to '+ ip +' in <a>'+ delay +'</a>s ...' );
+	var i      = delay;
+	V.interval = setInterval( () => {
+		i--
+		i > 0 ? $( '#bannerMessage a' ).text( i ) : clearInterval( V.interval );
+	}, 1000 );
+	V.timeout  = setTimeout( () => {
+		location.href = 'http://'+ ip +'/settings.php?p=networks';
+	}, delay * 1000 );
 }
 function renderBluetooth() {
 	if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) ) $( '#divbluetooth .back' ).click();
