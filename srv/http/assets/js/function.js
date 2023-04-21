@@ -1227,9 +1227,10 @@ function renderPlaybackAll() {
 	setButtonUpdating();
 }
 function renderPlaylist( data ) { // current playlist
-	V.savedlist      = false;
-	V.savedplaylist  = false;
-	S.elapsed        = data.elapsed;
+	V.savedlist     = false;
+	V.savedplaylist = false;
+	S.elapsed       = data.elapsed;
+	S.song          = data.song;
 	$( '#savedpl-path' ).addClass( 'hide' );
 	$( '#pl-path' ).removeClass( 'hide' );
 	$( '#pl-search-close' ).click();
