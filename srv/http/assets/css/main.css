@@ -1208,7 +1208,7 @@ i.map.disabled, .map.disabled i {
 }
 #lib-mode-list {
 	display: grid;
-	grid-template-columns: repeat( auto-fit, minmax( 120px, auto ) );
+	grid-template-columns: repeat( auto-fit, minmax( 140px, auto ) );
 	padding: 90px 7px 7px 7px;
 }
 .lib-mode {
