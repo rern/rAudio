@@ -2034,7 +2034,10 @@ li.active .li2 bl {
 	#sampling .station { display: none }
 	#pl-count .title { display: none }
 }
-@media (max-width: 540px) {
+@media ( max-width: 575px ) {
+	#lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 120px, auto ) ) }
+}
+@media ( max-width: 540px ) {
 	#bio .container { padding : 0 10px }
 	#pl-count,
 	#pl-path,
@@ -2042,7 +2045,13 @@ li.active .li2 bl {
 	.pl-title.name { display: inline }
 	#pl-savedlist-count { margin-left: -20px }
 }
-@media (max-width: 340px)  { .mode gr { display: none } }
+@media ( max-width: 515px ) {
+	#lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 110px, auto ) ) }
+}
+@media ( max-width: 440px ) {
+	#lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 100px, auto ) ) }
+}
+@media (max-width: 340px) { .mode gr { display: none } }
 /************************************************************************************/
 @media ( orientation: landscape ) {
 	@media ( max-width: 768px ) { #page-playback { --scale: 0.95 } }
