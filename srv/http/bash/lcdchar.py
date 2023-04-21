@@ -141,7 +141,13 @@ if charmap == 'A00':
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
                         if unicodedata.category( c ) != 'Mn' )
     for k in keys:
-        data[ k ] = k in locals() and normalize( locals()[ k ] ) or ''
+        if k in locals():
+            if k in [ 'elapsed', 'Time' ]:
+                data[ k ] = locals()[ k ]
+            else:
+                data[ k ] = normalize( locals()[ k ] )
+        else:
+            data[ k ] = ''
 else:
     for k in keys:
         data[ k ] = k in locals() and locals()[ k ] or ''
