@@ -237,7 +237,8 @@ dtparam=audio=on"
 	;;
 lcdchar )
 	enableFlagSet
-	sed -E -e 's/(true|false)$/\u\1/
+	sed -E -e 's/(true)$/\u\1/
+' -e 's/=$/=False/
 ' -e '/^inf|^charmap|^chip/ {s/=/="/; s/$/"/}
 ' $dirsystem/lcdchar.conf > $dirsystem/lcdcharconf.py
 	rm -f $dirsystem/lcdchar.conf
