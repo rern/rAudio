@@ -1134,7 +1134,9 @@ function renderLibraryList( data ) {
 				$( '#lib-breadcrumbs' ).append( '<span class="btntitle" id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
-			$( '#lib-list' ).removeClass( 'hide' );
+			$( '#lib-list' )
+				.addClass( 'album' )
+				.removeClass( 'hide' );
 		} else {
 			V.albumlist = false;
 			$( '#lib-list p' )

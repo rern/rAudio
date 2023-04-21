@@ -1555,12 +1555,9 @@ i.map.disabled, .map.disabled i {
 }
 .coverart img {
 	position: absolute;
-	left: 0;
-	right: 0;
 	bottom: 0;
-	margin: auto;
-	max-width: 100%;
-	max-height: 100%;
+	width: 100%;
+	object-fit: cover;
 	border-right: 1px solid hsl(0,0%,15%);
 	pointer-events: none;
 }
@@ -1625,6 +1622,10 @@ i.map.disabled, .map.disabled i {
 #lib-list,
 #pl-savedlist {
 	width: calc( 100% - 38px );
+}
+#lib-list.album {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 180px, auto ) );
 }
 #lib-list,
 #pl-list,
@@ -2032,6 +2033,7 @@ li.active .li2 bl {
 	#sampling .radio { display: inline }
 	#sampling .station { display: none }
 	#pl-count .title { display: none }
+	.mode gr { display: none }
 }
 @media (max-width: 540px) {
 	#bio .container { padding : 0 10px }
@@ -2041,21 +2043,6 @@ li.active .li2 bl {
 	.pl-title.name { display: inline }
 	#pl-savedlist-count { margin-left: -20px }
 }
-/************************************************************************************/
-@media (max-width: 2638px) { .coverart, .lib-mode { width: calc( 100% / 13 ) } }
-@media (max-width: 2438px) { .coverart, .lib-mode { width: calc( 100% / 12 ) } }
-@media (max-width: 2238px) { .coverart, .lib-mode { width: calc( 100% / 11 ) } }
-@media (max-width: 2038px) { .coverart, .lib-mode { width: calc( 100% / 10 ) } }
-@media (max-width: 1838px) { .coverart, .lib-mode { width: calc( 100% / 9 ) } }
-@media (max-width: 1638px) { .coverart, .lib-mode { width: calc( 100% / 8 ) } }
-@media (max-width: 1438px) { .coverart, .lib-mode { width: calc( 100% / 7 ) } }
-@media (max-width: 1238px) { .coverart, .lib-mode { width: calc( 100% / 6 ) } }
-@media (max-width: 1038px) { .coverart, .lib-mode { width: calc( 100% / 5 ) } }
-@media (max-width: 838px)  { .coverart { width: calc( 100% / 4 ) } }
-@media (max-width: 638px)  { .coverart { width: calc( 100% / 3 ) } }
-@media (max-width: 438px)  { .coverart { width: calc( 100% / 2 ) } }
-@media (max-width: 540px)  { .lib-mode { width: calc( 100% / 4 ) } }
-@media (max-width: 440px)  { .lib-mode { width: calc( 100% / 3 ) } }
 @media (max-width: 340px)  { .mode gr { display: none } }
 /************************************************************************************/
 @media ( orientation: landscape ) {
