@@ -132,24 +132,27 @@ def second2hhmmss( sec ):
     
 sys.path.append( '/srv/http/data/shm' )
 from lcdcharstatus import *
+keys = [ 'Album', 'Artist', 'elapsed', 'file', 'station', 'Time', 'Title' ]
+data = {}
 
 if charmap == 'A00':
     import unicodedata
     def normalize( str ):
         return ''.join( c for c in unicodedata.normalize( 'NFD', str )
                         if unicodedata.category( c ) != 'Mn' )
-                        
-    Artist = normalize( Artist )
-    Title = normalize( Title )
-    Album = normalize( Album )
-    station = normalize( station )
-    file = normalize( file )
-    
-Artist = Artist[ :cols ]
-Title = Title[ :cols ]
-Album = Album[ :cols ]
-station = station[ :cols ]
-file = file[ :cols ]
+    for k in keys:
+        data[ k ] = k in locals() and normalize( locals()[ k ] ) or ''
+else:
+    for k in keys:
+        data[ k ] = k in locals() and locals()[ k ] or ''
+
+Album = data[ 'Album' ][ :cols ]
+Artist = data[ 'Artist' ][ :cols ]
+file = data[ 'file' ][ :cols ]
+station = data[ 'station' ][ :cols ]
+Title = data[ 'Title' ][ :cols ]
+elapsed = data[ 'elapsed' ]
+Time = data[ 'Time' ]
 
 if webradio:
     if state != 'play':
