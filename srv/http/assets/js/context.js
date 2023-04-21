@@ -441,7 +441,6 @@ function webRadioNew( name, url, charset ) {
 		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
-		, focus        : 0
 		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : () => {

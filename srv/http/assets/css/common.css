@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1681966016' );
+	src         : url( '/assets/fonts/rern.woff2?v=1682064698' );
 }
 @font-face {
 	font-family : Lato;
@@ -940,6 +940,9 @@ input[ type=radio ]:disabled {
 		width: calc( 100% / 0.9 );
 		left: calc( -100% / 18 );
 	}
+}
+input:focus {
+	outline: none;
 }
 @media ( hover:hover ) {
 	#debug { display: block }
