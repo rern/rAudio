@@ -304,7 +304,7 @@ function infoWiFi( v ) {
 		var values = {};
 		Object.keys( default_v.dhcp ).forEach( k => values[ k ] = v[ k ] );
 	} else {
-		var values = jsonClone( default_v.dhcp );
+		var values = default_v.dhcp;
 	}
 	info( {
 		  icon          : 'wifi'
@@ -335,7 +335,7 @@ function infoWiFiStatic( v ) {
 		var values = {};
 		Object.keys( default_v.static ).forEach( k => values[ k ] = v[ k ] );
 	} else {
-		var values = jsonClone( default_v.static );
+		var values = default_v.static;
 	}
 	values.ADDRESS = S.ipwl || S.ipsub;
 	values.GATEWAY = S.gateway || S.ipsub;
