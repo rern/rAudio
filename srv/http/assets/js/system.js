@@ -801,7 +801,6 @@ ${ htmllcdchar.common }
 </tr>
 ${ htmllcdchar.sleep }
 `;
-	var inf_i2c = S.lcdcharconf.INF === 'i2c';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -809,8 +808,8 @@ ${ htmllcdchar.sleep }
 		, tab          : [ '', infoLcdCharGpio ]
 		, content      : content
 		, boxwidth     : 180
-		, values       : inf_i2c ? S.lcdcharconf : default_v.lcdchar_i2c
-		, checkchanged : S.lcdchar && inf_i2c
+		, values       : S.lcdcharconf || default_v.lcdchar_i2c
+		, checkchanged : S.lcdchar
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -828,7 +827,6 @@ ${ htmllcdchar.common }
 <tr><td>D4</td><td>${ optpins }</td><td>D5</td><td>${ optpins }</td><td>D6</td><td>${ optpins }</td><td>D7</td><td>${ optpins }</td></tr>
 ${ htmllcdchar.sleep }
 `;
-	var inf_gpio = S.lcdcharconf.INF === 'gpio';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -836,8 +834,8 @@ ${ htmllcdchar.sleep }
 		, tab          : [ infoLcdChar, '' ]
 		, content      : content
 		, boxwidth     : 180
-		, values       : inf_gpio ? S.lcdcharconf : default_v.lcdchar_gpio
-		, checkchanged : S.lcdchar && inf_gpio
+		, values       : S.lcdcharconf || default_v.lcdchar_gpio
+		, checkchanged : S.lcdchar
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
 		, ok           : switchEnable
