@@ -50,16 +50,28 @@ done
 file=$dirsystem/lcdchar.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
-elif [[ ! -e $dirsystem/lcdcharconf.py ]]; then
-	lines=$( < $file )
-	data=$( grep -Ev 'var|pins_data' <<< $lines )
-	if grep -q pins_data <<< $lines; then
-		p=( $( sed -E -n '/pins_data/ {s/.*\[(.*)]/\1/; s/,/ /g; p}' <<< $lines ) )
+else
+	. $file
+	data='inf="$inf"
+cols='$cols'
+charmap="'$charmap'"'
+	if [[ $address ]]; then
+		data+='
+address='$(( 16#${address: -2} ))'
+chip="'$chip'"'
+	else
+		data+='
+pin_rs='$pin_rs'
+pin_rw='$pin_rw'
+pin_e='$pin_e
+		p=( $( tr [,] ' ' <<< $pins_data ) )
 		for (( i=0; i < 4; i++ )); do
 			data+="
-p$i=$p"
+p$i=${p[i]}"
 		done
 	fi
+	data+='
+backlight='$backlight
 	echo $data > $dirsystem/lcdcharconf.py
 	rm -f $file
 fi
