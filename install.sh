@@ -129,6 +129,11 @@ fi
 
 [[ -e $dirsystem/spotify ]] && mv $dirsystem/spotify{,key}
 
+if [[ ! -e $dirshm/cpuinfo ]]; then
+	file=$dirsystem/usbautoupdate
+	[[ -e $file ]] && rm $file || touch $file{,no}
+fi
+
 file=$dirsystem/vuled.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file

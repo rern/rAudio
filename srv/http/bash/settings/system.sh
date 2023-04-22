@@ -714,10 +714,10 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	notify usbdrive "$name" $action
 	pushRefresh
-	[[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	[[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
 	;;
 usbautoupdate )
-	enableFlagSet
+	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
 	pushRefresh
 	;;
 vuled )

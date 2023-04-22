@@ -257,7 +257,7 @@ data+='
 , "tftreboot"         : '$tftreboot'
 , "timezone"          : "'$timezone'"
 , "timezoneoffset"    : "'$timezoneoffset'"
-, "usbautoupdate"     : '$( [[ -e $dirsystem/usbautoupdate && ! -e $filesharedip ]] && echo true )'
+, "usbautoupdate"     : '$( [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]] && echo true )'
 , "vuled"             : '$( exists $dirsystem/vuled )'
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
