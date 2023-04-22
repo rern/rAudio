@@ -76,7 +76,7 @@ var default_v      = {
 		  PINA : 27
 		, PINB : 22
 		, PINS : 23
-		, STRP : 1
+		, STEP : 1
 	}
 	, softlimit     : {
 		SOFTLIMIT : 60
@@ -296,7 +296,10 @@ $( '#setting-bluetooth' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : S.bluetoothconf || default_v.bluetooth
+		, values       : values2info(
+			  Object.keys( default_v.bluetooth )
+			, S.bluetoothconf || default_v.bluetooth
+		)
 		, checkchanged : S.bluetooth
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -315,7 +318,10 @@ $( '#setting-wlan' ).click( function() {
 			, title        : SW.title
 			, content      : infowifi
 			, boxwidth     : 250
-			, values       : S.wlanconf || default_v.wlan
+			, values       : values2info(
+				  Object.keys( default_v.wlan )
+				, S.wlanconf || default_v.wlan
+			)
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : switchCancel
@@ -398,7 +404,10 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 70
-		, values       : S.rotaryencoderconf || default_v.rotaryencoder
+		, values       : values2info(
+			  Object.keys( default_v.rotaryencoder )
+			, S.rotaryencoderconf || default_v.rotaryencoder
+		)
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
 		, cancel       : switchCancel
@@ -420,7 +429,10 @@ $( '#setting-mpdoled' ).click( function() {
 		, title        : SW.title
 		, selectlabel  : [ 'Controller', 'Refresh <gr>(baud)</gr>' ]
 		, select       : [ chip, [ 800000, 1000000, 1200000 ] ]
-		, values       : S.mpdoledconf
+		, values       : values2info(
+			  [ 'CHIP', 'BAUD' ]
+			, S.mpdoledconf
+		)
 		, checkchanged : S.mpdoled
 		, boxwidth     : 140
 		, beforeshow   : () => {
@@ -479,7 +491,10 @@ $( '#setting-vuled' ).click( function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg +'<table>'+ htmlpins +'</table>'
-		, values       : S.vuledconf || default_v.vuled
+		, values       : values2info(
+			  Object.keys( default_v.vuled )
+			, S.vuledconf || default_v.vuled
+		)
 		, checkchanged : S.vuled
 		, boxwidth     : 70
 		, cancel       : switchCancel
@@ -565,7 +580,10 @@ $( '#setting-soundprofile' ).click( function() {
 		, title        : SW.title
 		, textlabel    : [ 'Swappiness', 'Maximum Transmission Unit <gr>(B)</gr>', 'Transmit Queue Length' ]
 		, boxwidth     : 80
-		, values       : S.soundprofileconf
+		, values       : values2info(
+			  [ 'SWAPPINESS', 'MTU', 'TXQUEUELEN' ]
+			, S.soundprofileconf
+		)
 		, checkchanged : true
 		, checkblank   : true
 		, cancel       : switchCancel
@@ -808,7 +826,10 @@ ${ htmllcdchar.sleep }
 		, tab          : [ '', infoLcdCharGpio ]
 		, content      : content
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_i2c
+		, values       : values2info(
+			  Object.keys( default_v.lcdchar_i2c )
+			, S.lcdcharconf || default_v.lcdchar_i2c
+		)
 		, checkchanged : S.lcdchar
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -834,7 +855,10 @@ ${ htmllcdchar.sleep }
 		, tab          : [ infoLcdChar, '' ]
 		, content      : content
 		, boxwidth     : 180
-		, values       : S.lcdcharconf || default_v.lcdchar_gpio
+		, values       : values2info(
+			  Object.keys( default_v.lcdchar_gpio )
+			, S.lcdcharconf || default_v.lcdchar_gpio
+		)
 		, checkchanged : S.lcdchar
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
@@ -1021,7 +1045,10 @@ function infoPowerbutton() {
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 70
-		, values       : S.powerbuttonconf || default_v.powerbutton
+		, values       : values2info(
+			  Object.keys( default_v.powerbutton )
+			, S.powerbuttonconf || default_v.powerbutton
+		)
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
 			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.ON == 5 );

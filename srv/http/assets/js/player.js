@@ -143,7 +143,7 @@ $( '#setting-replaygain' ).click( function() {
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
-		, values       : hardware ? S.replaygainconf : { TYPE: S.replaygainconf.TYPE }
+		, values       : hardware ? values2info( [ 'TYPE', 'HARDWARE' ], S.hostapd ) : { TYPE: S.replaygainconf.TYPE }
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -321,7 +321,10 @@ function infoSoxr( quality ) {
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ '', infoSoxrCustom ]
 		, content      : soxr
-		, values       : S.soxrconf
+		, values       : values2info(
+			  [ 'QUALITY', 'THREAD' ]
+			, S.soxrconf
+		)
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 180
@@ -337,7 +340,10 @@ function infoSoxrCustom() {
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ infoSoxr, '' ]
 		, content      : soxrcustom
-		, values       : S.soxrcustomconf
+		, values       : values2info(
+			  [ 'QUALITY', 'PRECISION', 'PHASE_RESPONSE', 'PASSBAND_END', 'STOPBAND_BEGIN', 'ATTENUATION', 'FLAGS' ]
+			, S.soxrcustomconf
+		)
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 85

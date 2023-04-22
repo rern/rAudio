@@ -8,11 +8,9 @@
 
 . /srv/http/bash/common.sh
 
-[[ ! -e /tmp/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
-
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-packageActive hostapd mediamtx shairport-sync smb snapclient spotifyd upmpdcli
+packageActive hostapd localbrowser mediamtx shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
   "page"             : "features"
@@ -65,12 +63,9 @@ fi
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli'
 , "upmpdcliconf"     : { "OWNQUEUE": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
-if [[ -e $dirsystem/localbrowser.conf ]]; then
-	[[ ! -e /tmp/localbrowser.conf  ]] && cp $dirsystem/localbrowser.conf /tmp
-	if systemctl -q is-active localbrowser; then
-		localbrowser=true
-	else
-		systemctl -q is-enabled localbrowser && $dirsettings/features.sh localbrowser
+if [[ -e /etc/systemd/system/localbrowser.service ]]; then
+	if [[ ! -e /tmp/localbrowser.conf ]]; then
+		[[ -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp || touch /tmp/localbrowser.conf
 	fi
 	data+='
 , "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
