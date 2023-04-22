@@ -419,7 +419,6 @@ function info( json ) {
 		$( '#infoTab a' ).click( function() {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
-		$( '#infoTab a' ).css( 'width', 100 / I.tablabel.length +'%' );
 	}
 	
 	if ( I.content ) { // custom html content

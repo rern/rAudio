@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1682064698' );
+	src         : url( '/assets/fonts/rern.woff2?v=1682085867' );
 }
 @font-face {
 	font-family : Lato;
@@ -669,6 +669,8 @@ hr {
 	letter-spacing: 2px;
 }
 #infoTab {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 100px, auto ) );
 	width: 100%;
 	height: 39px;
 	font-size: 16px;
