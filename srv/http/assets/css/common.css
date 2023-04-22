@@ -680,12 +680,10 @@ hr {
 #infoTab a {
 	display: inline-block;
 	border-radius: 6px 6px 0 0;
+	box-shadow: 2px -4px 4px #000000;
 }
 #infoTab a.active {
 	background: var( --cga );
-}
-#infoTab a:not(:last-child) {
-	box-shadow: 2px -4px 4px #000000;
 }
 #infoTab a.active:last-child {
 	box-shadow: -2px -4px 4px #000000;
