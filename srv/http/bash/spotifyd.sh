@@ -29,7 +29,7 @@ done
 if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
 	token=$( < $filetoken )
 else
-	. $dirsystem/spotify # base64client, refreshtoken
+	. $dirsystem/spotifykey # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-d grant_type=refresh_token \

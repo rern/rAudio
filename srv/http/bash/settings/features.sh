@@ -48,7 +48,7 @@ $dirdata"
 }
 spotifyReset() {
 	notify -blink spotify 'Spotify Client' "$1"
-	rm -f $dirsystem/spotify $dirshm/spotify/*
+	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
 }
@@ -405,12 +405,12 @@ snapserver )
 	pushRefresh
 	;;
 spotifykey )
-	echo base64client=$BTOA > $dirsystem/spotify
+	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
 spotifytoken )
-	[[ ! $CODE ]] && rm -f $dirsystem/spotify && exit
+	[[ ! $CODE ]] && rm -f $dirsystem/spotifykey && exit
 	
-	. $dirsystem/spotify
+	. $dirsystem/spotifykey
 	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
@@ -424,7 +424,7 @@ spotifytoken )
 	fi
 	
 	tokens=( $( jq -r .refresh_token,.access_token <<< $tokens ) )
-	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotify
+	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotifykey
 	echo ${tokens[1]} > $dirshm/spotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
 	featureSet spotifyd

@@ -127,6 +127,8 @@ fi
 
 [[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
 
+[[ -e $dirsystem/spotify ]] && mv $dirsystem/spotify{,key}
+
 file=$dirsystem/vuled.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
