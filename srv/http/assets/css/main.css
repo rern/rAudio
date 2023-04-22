@@ -1546,6 +1546,9 @@ i.map.disabled, .map.disabled i {
 	height: 100%;
 	color: var( --cgl );
 }
+.index wh {
+	text-shadow: var( --shadow-text );
+}
 .coverart div {
 	position: relative;
 	padding-bottom: 100%;
@@ -1624,6 +1627,7 @@ i.map.disabled, .map.disabled i {
 	display: grid;
 	grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) );
 }
+@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
 .coverart {
 	display: inline-block;
 }
@@ -2042,7 +2046,6 @@ li.active .li2 bl {
 	.pl-title.name { display: inline }
 	#pl-savedlist-count { margin-left: -20px }
 }
-@media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
 /************************************************************************************/
 @media ( orientation: landscape ) {
 	@media ( max-width: 768px ) { #page-playback { --scale: 0.95 } }
