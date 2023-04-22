@@ -167,7 +167,7 @@ function SWreset() {
 }
 function values2info( keys, v ) {
 	var values = {}
-	keys.forEach( k => values[ k ] = v[ k ] );
+	keys.forEach( k => values[ k ] = v[ k ] || '' );
 	return values
 }
 

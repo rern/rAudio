@@ -903,21 +903,14 @@ var contentmount = {
 </tr>
 </table>`
 }
-function infoMount( tab ) {
-	var nfs        = false;
+function infoMount( nfs ) {
+	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
 	if ( I.active ) {
 		var v = infoVal();
-		if ( 'USER' in v || tab === 'nfs' ) { // target nfs
-			var nfs    = true;
-			v.PROTOCOL = 'nfs';
-			var values = {};
-			Object.keys( default_v.mountnfs ).forEach( k => values[ k ] = v[ k ] || '' );
-		} else {
-			v.PROTOCOL = 'cifs';
-			var values = {};
-			Object.keys( default_v.mountcifs ).forEach( k => values[ k ] = v[ k ] || '' );
-		}
+		if ( 'USER' in v || nfs ) var nfs = true;
+		v.PROTOCOL = nfs ? 'nfs' : 'cifs';
+		var values = values2info( Object.keys( default_v[ nfs ? 'mountnfs' : 'mountcifs' ] ), v );
 	} else {
 		var values = default_v.mountcifs;
 		values.IP  = S.ipsub;
@@ -965,7 +958,7 @@ function infoMount( tab ) {
 						  icon    : icon
 						, title   : title
 						, message : error
-						, ok      : () => infoMount( infoval )
+						, ok      : infoMount
 					} );
 					bannerHide();
 				} else {
