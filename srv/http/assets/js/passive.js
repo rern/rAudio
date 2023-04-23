@@ -405,26 +405,20 @@ function psSavedPlaylists( data ) {
 function psVolume( data ) {
 	if ( data.type === 'disable' ) {
 		$( '#volume-knob, #button-volume i' ).toggleClass( 'disabled', data.val );
-		return
+	} else if ( data.type === 'mute' ) {
+		S.volume     = 0;
+		S.volumemute = data.val;
+		setVolume();
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
-		return
-	}
-	
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
-		if ( data.type === 'mute' ) {
-			S.volume     = 0;
-			S.volumemute = data.val;
-		} else {
-			if ( data.type === 'updn' ) V.volumeupdn = S.volume;
-			S.volume     = data.val;
-			S.volumemute = 0;
-		}
+	} else {
+		if ( data.type === 'updn' ) V.volumeupdn = S.volume;
+		S.volume     = data.val;
+		S.volumemute = 0;
 		setVolume();
 		delete V.volumeupdn;
-	}, 300 );
+	}
 }
 function psVUmeter( data ) {
 	$( '#vuneedle' ).css( 'transform', 'rotate( '+ data.val +'deg )' ); // 0-100 : 0-42 degree

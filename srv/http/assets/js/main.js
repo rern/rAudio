@@ -767,10 +767,12 @@ $( '#volmute, #volM' ).click( function() {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 	bash( [ 'volume' ] );
 } );
-$( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
-	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
+$( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).click( function( e ) {
+	var voldn = $( e.currentTarget ).hasClass( 'dn' );
 	if ( ( S.volume === 0 && voldn ) || ( S.volume === 100 && ! voldn ) ) return
 	
+	voldn ? S.volume-- : S.volume++;
+	$volumeRS.setValue( S.volume );
 	var cmd = 'volumeupdn';
 	if ( S.btreceiver ) {
 		cmd += 'bt';
@@ -778,11 +780,15 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		cmd += 'mpc';
 	}
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
-} ).on( 'touchend mouseup mouseleave', function() {
+} ).on( 'touchend mouseup', function( e ) {
 	if ( V.press ) clearInterval( V.interval.volume );
+	if ( $( e.currentTarget ).hasClass( 'band' ) ) {
+		clearTimeout( V.interval.volume );
+		clearTimeout( V.volumebar );
+		setTimeout( volumeBarHide, 3000 );
+	}
 } ).press( function( e ) {
-	var voldn = e.currentTarget.id === 'voldn';
-	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
+	var voldn = $( e.currentTarget ).hasClass( 'dn' );
 	var vol   = S.volume;
 	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
 	
@@ -798,45 +804,12 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 			cmd += 'mpc';
 		}
 		bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
-	}, 100 );
-} );
-$( '#volume-band-dn, #volume-band-up' ).click( function() {
-	hideGuide();
-	if ( S.volumenone ) return
-	
-	var updn = this.id.slice( -2 );
-	var vol = S.volume;
-	if ( updn === 'dn' ) {
-		if ( vol > 0 ) vol--;
-	} else {
-		if ( vol < 100 ) vol++;
-	}
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	$( '#vol'+ updn ).click();
-	$( '#volume-text' ).text( vol );
-	$( '#volume-bar' ).css( 'width', vol +'%' );
-} ).on( 'touchend mouseup mouseleave', function() {
-	bash( [ 'volumepushstream' ] );
-	clearTimeout( V.interval.volume );
-	clearTimeout( V.volumebar );
-	setTimeout( volumeBarHide, 3000 );
-} ).press( function( e ) {
-	if ( S.volumenone ) return
-	
-	clearTimeout( V.volumebar );
-	$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-	var voldn = e.currentTarget.id === 'volume-band-dn';
-	var vol   = S.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
-	
-	V.interval.volume = setInterval( () => {
-		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
-		
-		voldn ? vol-- : vol++;
-		S.volume = vol;
-		$( '#volume-text' ).text( vol );
-		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
+		if ( $( e.currentTarget ).hasClass( 'band' ) ) {
+			clearTimeout( V.volumebar );
+			$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
+			$( '#volume-text' ).text( vol );
+			$( '#volume-bar' ).css( 'width', vol +'%' );
+		}
 	}, 100 );
 } );
 $( '#volume-text' ).click( function() { // mute / unmute

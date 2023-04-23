@@ -268,17 +268,30 @@ stringEscape() {
 	echo ${data//\`/\\\`}
 }
 volumeUpDn() { # cmd.sh, bluetoothcommand.sh, rotaryencoder.sh
+	[[ -e $dirshm/updn ]] && kill -9 $( < $dirshm/updn )
 	amixer -Mq sset "$2" $1
-	val=$( amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-	pushstream volume '{"type":"updn","val":'$val'}'
+	volumeUpDnPush updn &> /dev/null &
+	echo $! > $dirshm/updn
 }
 volumeUpDnBt() {
+	[[ -e $dirshm/updn ]] && kill -9 $( < $dirshm/updn )
 	amixer -MqD bluealsa sset "$2" $1
-	val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-	pushstream volume '{"type":"updn","val":'$val'}'
+	volumeUpDnPush updn &> /dev/null &
+	echo $! > $dirshm/updn
 }
 volumeUpDnMpc() {
+	[[ -e $dirshm/updn ]] && kill -9 $( < $dirshm/updn )
 	mpc -q volume $1
-	val=$( mpc status %volume% | tr -dc [0-9] )
+	volumeUpDnPush updn &> /dev/null &
+	echo $! > $dirshm/updn
+}
+volumeUpDnPush() {
+	sleep 0.5
+	case $1 in
+		updn ) val=$( amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' );;
+		bt )   val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' );;
+		mpc )  val=$( mpc status %volume% | tr -dc [0-9] );;
+	esac
 	pushstream volume '{"type":"updn","val":'$val'}'
+	rm $dirshm/updn
 }
