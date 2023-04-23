@@ -370,10 +370,6 @@ $( '#button-data' ).click( function() {
 	switchSet();
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
-} ).on( 'mousedown touchdown', function() {
-	V.timeout = setTimeout( () => location.reload(), 1000 );
-} ).on( 'mouseup mouseleave touchup touchleave', function() {
-	clearTimeout( V.timeout );
 } );
 $( '.helphead' ).click( function() {
 	var $this = $( this );
