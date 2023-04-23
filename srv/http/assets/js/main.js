@@ -779,10 +779,7 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 	}
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
 } ).on( 'touchend mouseup mouseleave', function() {
-	if ( V.press ) {
-		clearInterval( V.interval.volume );
-		bash( [ 'volumepushstream' ] );
-	}
+	if ( V.press ) clearInterval( V.interval.volume );
 } ).press( function( e ) {
 	var voldn = e.currentTarget.id === 'voldn';
 	var voldn = [ 'voldn', 'volB', 'volL' ].includes( e.currentTarget.id );
@@ -794,7 +791,13 @@ $( '#volup, #voldn, #volT, #volB, #volL, #volR' ).click( function( e ) {
 		
 		voldn ? vol-- : vol++;
 		$volumeRS.setValue( vol );
-		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
+		var cmd = 'volumeupdn';
+		if ( S.btreceiver ) {
+			cmd += 'bt';
+		} else if ( ! S.control ) {
+			cmd += 'mpc';
+		}
+		bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
 	}, 100 );
 } );
 $( '#volume-band-dn, #volume-band-up' ).click( function() {
