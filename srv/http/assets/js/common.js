@@ -40,8 +40,6 @@ $.fn.press = function( arg1, arg2 ) {
 			callback( delegate ? this : e );
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
-		if ( ! V.press ) return
-		
 		clearTimeout( timeout );
 		setTimeout( () => V.press = false, 300 ); // needed for mouse events
 	} );

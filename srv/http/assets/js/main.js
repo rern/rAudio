@@ -781,9 +781,8 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	}
 	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
 } ).on( 'touchend mouseup', function( e ) {
-	if ( V.press ) clearInterval( V.interval.volume );
+	clearInterval( V.interval.volume );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) {
-		clearTimeout( V.interval.volume );
 		clearTimeout( V.volumebar );
 		setTimeout( volumeBarHide, 3000 );
 	}
