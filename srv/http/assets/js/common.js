@@ -16,9 +16,10 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( DELEGATE, function( e ) {
-	cannot be attached with .on
-	DELEGATE : optional - if not delegate, use e.target for this
+$( ELEMENT ).press( DELEGATE, function( e ) { // e.currentTarget = ELEMENT
+	- this not applicable
+	- cannot be attached with .on
+	- DELEGATE : optional
 } );
 events:
 	- move  : mouseenter > mousemove > mouseleave > mouseout
@@ -28,10 +29,10 @@ events:
 $.fn.press = function( arg1, arg2 ) {
 	var callback, delegate, timeout;
 	if ( arg2 ) { 
-		delegate = arg1; // this = delegate
+		delegate = arg1;
 		callback = arg2;
 	} else {
-		delegate = '';   // this not applicable
+		delegate = '';
 		callback = arg1;
 	}
 	this.on( 'touchstart mousedown', delegate, function( e ) {
