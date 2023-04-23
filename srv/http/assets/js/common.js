@@ -16,7 +16,7 @@ var red         = '#bb2828';
 
 // ----------------------------------------------------------------------
 /*
-$( ELEMENT ).press( DELEGATE, function( e ) { // e.currentTarget = ELEMENT
+$( ELEMENT ).press( DELEGATE, function( e ) {
 	- this not applicable
 	- cannot be attached with .on
 	- DELEGATE : optional
@@ -38,7 +38,7 @@ $.fn.press = function( arg1, arg2 ) {
 	this.on( 'touchstart mousedown', delegate, function( e ) {
 		timeout = setTimeout( () => {
 			V.press = true;
-			callback( delegate ? this : e );
+			callback( e ); // e.currentTarget = ELEMENT
 		}, 1000 );
 	} ).on( 'touchend mouseup mouseleave', delegate, function() {
 		clearTimeout( timeout );
