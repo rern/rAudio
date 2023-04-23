@@ -198,7 +198,7 @@ lcd.write_string( lines + RN + ICON[ state ] + progress + RA )
 
 if backlight and state != 'play': backlightOff()
 
-if not elapsed: sys.exit()
+if state != 'play': sys.exit()
 
 row = rows - 1
 starttime = time.time()
