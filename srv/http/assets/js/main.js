@@ -709,7 +709,11 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( V.local || V.drag ) return
 		
-		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		if ( 'volumeupdn' in V ) {
+			var diff  = e.value - V.volumeupdn;
+		} else {
+			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		}
 		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
 		setTimeout( () => $volumehandlerotate.css( 'transition-duration','' ), speed * 1000 + 500 );

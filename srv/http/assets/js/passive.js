@@ -418,10 +418,12 @@ function psVolume( data ) {
 			S.volume     = 0;
 			S.volumemute = data.val;
 		} else {
+			if ( data.type === 'updn' ) V.volumeupdn = S.volume;
 			S.volume     = data.val;
 			S.volumemute = 0;
 		}
 		setVolume();
+		delete V.volumeupdn;
 	}, 300 );
 }
 function psVUmeter( data ) {
