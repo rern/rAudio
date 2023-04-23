@@ -150,7 +150,6 @@ volumeSet() {
 	target=$2
 	control=$3
 	diff=$(( $target - $current ))
-	pushstreamVolume disable true
 	if (( -5 < $diff && $diff < 5 )); then
 		volumeSetAt $target "$control"
 	else # increment
@@ -162,7 +161,6 @@ volumeSet() {
 			sleep 0.2
 		done
 	fi
-	pushstreamVolume disable false
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {

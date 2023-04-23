@@ -403,9 +403,8 @@ function psSavedPlaylists( data ) {
 	$( '#mode-playlists gr' ).text( count || '' );
 }
 function psVolume( data ) {
-	if ( data.type === 'disable' ) {
-		$( '#volume-knob, #button-volume i' ).toggleClass( 'disabled', data.val );
-	} else if ( data.type === 'mute' ) {
+	if ( data.type === 'mute' ) {
+		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 		S.volume     = 0;
 		S.volumemute = data.val;
 		setVolume();
@@ -413,7 +412,11 @@ function psVolume( data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
-		if ( data.type === 'updn' ) V.volumeupdn = S.volume;
+		if ( data.type === 'updn' ) {
+			V.volumeupdn = S.volume;
+		} else {
+			$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
+		}
 		S.volume     = data.val;
 		S.volumemute = 0;
 		setVolume();

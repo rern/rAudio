@@ -716,7 +716,10 @@ $( '#volume' ).roundSlider( {
 		}
 		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
-		setTimeout( () => $volumehandlerotate.css( 'transition-duration','' ), speed * 1000 + 500 );
+		setTimeout( () => {
+			$volumehandlerotate.css( 'transition-duration','' );
+			$( '#volume-knob, #button-volume i' ).removeClass( 'disabled' );
+		}, speed * 1000 );
 	}
 	, drag              : function( e ) {
 		S.volume = e.value;
