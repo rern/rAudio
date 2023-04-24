@@ -740,6 +740,9 @@ hr {
 .infomessage pre {
 	font-size: 16px;
 }
+.infomessage p {
+	text-align: left;
+}
 .infomessage,
 .infofooter {
 	width: fit-content;

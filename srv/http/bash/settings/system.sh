@@ -394,7 +394,7 @@ dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
-	[[ -e $dirshm/reboot ]] && awk NF $dirshm/reboot | sort -u
+	[[ -e $dirshm/reboot ]] && sed '/^$/ d; s/^/• /' $dirshm/reboot | sort -u
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
 regdomlist )

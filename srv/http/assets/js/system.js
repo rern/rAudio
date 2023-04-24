@@ -131,8 +131,8 @@ $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 		info( {
 			  icon    : page
 			, title   : 'System Setting'
-			, message : 'Reboot required for:<br><br>'
-						+'<pre><wh>'+ list +'</wh></pre>'
+			, message : '<wh>Reboot required for:</wh>'
+						+'<p>'+ list +'</p>'
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : ico( 'reboot' ) +'Reboot'
