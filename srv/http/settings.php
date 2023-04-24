@@ -136,7 +136,7 @@ function htmlSetting( $data ) {
 		$sublabel = $name[ 'sub' ];
 		$name     = $name[ 'name' ];
 	}
-	$label       = '<span class="name">'.$name.'</span>';
+	$label       = '<span class="label">'.$name.'</span>';
 	$status      = $data[ 'status' ] ?? false;
 	$input       = $data[ 'input' ] ?? '';
 	$setting     = $data[ 'setting' ] ?? 'common';
