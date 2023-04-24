@@ -1130,6 +1130,7 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
 		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			V.albumlist = true;
+			if ( window.innerWidth / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span class="btntitle" id="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
