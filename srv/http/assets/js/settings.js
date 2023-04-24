@@ -142,10 +142,10 @@ function switchEnable() {
 	SWreset();
 }
 function switchIdIconTitle( id ) {
-	SW.id     = id;
-	var $this = $( '#'+ id );
-	SW.icon   = page !== 'player' ? id : ( $this.closest( '#divoptions' ).length ? 'mpd' : 'volume' );
-	SW.title  = $( '#div'+ id +' .label' ).text();
+	SW.id    = id;
+	SW.icon  = id;
+	if ( page === 'player' ) SW.icon =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume'
+	SW.title = $( '#div'+ id +' .label' ).text();
 }
 function switchSet() {
 	if ( page === 'networks' || page === 'relays' ) return
