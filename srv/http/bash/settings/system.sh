@@ -1,13 +1,12 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
-filemodule=/etc/modules-load.d/raspberrypi.conf
 
+filemodule=/etc/modules-load.d/raspberrypi.conf
 args2var "$1"
 
 configTxt() { # each $CMD removes each own lines > reappends if enable or changed
 	local chip i2clcdchar i2cmpdoled list module name spimpdoled tft
-	name=$1
 	if [[ ! -e /tmp/config.txt ]]; then # files at boot for comparison: cmdline.txt, config.txt, raspberrypi.conf
 		cp /boot/cmdline.txt /tmp
 		grep -Ev '^#|^\s*$' /boot/config.txt | sort -u > /tmp/config.txt
@@ -43,19 +42,16 @@ i2c-dev"
 	fi
 	grep -Ev '^#|^\s*$' <<< $config | sort -u > /boot/config.txt
 	pushRefresh
-	list=$( grep -v "$name" $dirshm/reboot 2> /dev/null )
+	list=$( grep -v "$CMD" $dirshm/reboot 2> /dev/null )
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		notify system "$name" 'Reboot required.' 5000
+		name=$( sed -n "/^\t, '$CMD'/ {s/, *'sub'.*//; s/.*=> //; s/'//g; p}" /srv/http/settings/system.php )
+		notify $CMD "$name" 'Reboot required.' 5000
 		list+="
-$name"
+$CMD"
 	fi
-	if [[ $list ]]; then
-		sort -u <<< $list | awk NF > $dirshm/reboot
-	else
-		rm -f $dirshm/reboot
-	fi
+	[[ $list ]] && awk NF <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
 sharedDataIPlist() {
 	local ip iplist list
@@ -121,7 +117,7 @@ audio )
 	config=$( grep -v dtparam=audio=on /boot/config.txt )
 	[[ $ON ]] && config+="
 dtparam=audio=on"
-	configTxt Audio
+	configTxt
 	;;
 bluetooth )
 	config=$( grep -v dtparam=krnbt=on /boot/config.txt )
@@ -152,7 +148,7 @@ dtparam=krnbt=on"
 			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
 	fi
-	configTxt Bluetooth
+	configTxt
 	;;
 bluetoothstart )
 	sleep 3
@@ -197,7 +193,7 @@ hdmi )
 	config=$( grep -v hdmi_force_hotplug /boot/config.txt )
 	[[ $ON ]] && config+="
 hdmi_force_hotplug=1"
-	configTxt 'HDMI Hotplug'
+	configTxt
 	pushstream refresh '{"page":"features","hdmihotplug":'$TF'}'
 	;;
 hostname )
@@ -213,7 +209,7 @@ i2seeprom )
 	config=$( grep -v force_eeprom_read /boot/config.txt )
 	[[ $ON ]] && config+="
 force_eeprom_read=0"
-	configTxt 'I²S HAT EEPROM read'
+	configTxt
 	;;
 i2smodule )
 	prevaplayname=$( getContent $dirsystem/audio-aplayname )
@@ -233,7 +229,7 @@ gpio=25=op,dh"
 dtparam=audio=on"
 		rm -f $dirsystem/audio-* /etc/modprobe.d/cirrus.conf
 	fi
-	configTxt 'Audio I&#178;S module'
+	configTxt
 	;;
 lcdchar )
 	enableFlagSet
@@ -243,7 +239,7 @@ lcdchar )
 ' $dirsystem/lcdchar.conf > $dirsystem/lcdcharconf.py
 	rm -f $dirsystem/lcdchar.conf
 	i2cset=1
-	configTxt 'Character LCD'
+	configTxt
 	;;
 lcdcharset )
 	killall lcdchar.py &> /dev/null
@@ -319,7 +315,7 @@ mpdoled )
 		$dirsettings/player-conf.sh
 	fi
 	i2cset=1
-	configTxt 'Spectrum OLED'
+	configTxt
 	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
 ntpmirror )
@@ -371,9 +367,8 @@ poweraudiophonics )
 		config+="
 dtoverlay=gpio-poweroff,gpiopin=22
 dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
-		configTxt 'Power Button'
 	fi
-	configTxt 'Power Button'
+	configTxt
 	;;
 powerbutton )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
@@ -390,11 +385,11 @@ dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 			gpio -1 write $( getVar led $dirsystem/powerbutton.conf ) 0
 		fi
 	fi
-	configTxt 'Power Button'
+	configTxt
 	;;
 rebootlist )
 	killall networks-scan.sh &> /dev/null
-	[[ -e $dirshm/reboot ]] && sed '/^$/ d; s/^/• /' $dirshm/reboot | sort -u
+	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
 regdomlist )
@@ -502,7 +497,7 @@ shareddatadisconnect )
 	systemctl restart mpd
 	pushRefresh
 	pushstream refresh '{"page":"features","shareddata":false}'
-	if [[ ! $disable ]]; then
+	if [[ ! ${args[1]} ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		notify rserver 'Server rAudio' 'Offline ...'
 	fi
@@ -540,7 +535,7 @@ softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )
 	[[ $ON ]] && config+='
 temp_soft_limit='$SOFTLIMIT
-	configTxt 'Custom Soft limit'
+	configTxt
 	;;
 soundprofileset )
 	soundProfile
@@ -676,7 +671,7 @@ dtoverlay=$MODEL:rotate=0"
 		sed -i 's/fb1/fb0/' /etc/X11/xorg.conf.d/99-fbturbo.conf
 	fi
 	i2cset=1
-	configTxt 'TFT 3.5&quot; LCD'
+	configTxt
 	;;
 tftcalibrate )
 	degree=$( grep rotate /boot/config.txt | cut -d= -f3 )
