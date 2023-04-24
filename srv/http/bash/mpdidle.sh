@@ -6,18 +6,8 @@ mpc idleloop | while read changed; do
 	case $changed in
 		mixer ) # for upmpdcli
 			if [[ $( < $dirshm/player ) == upnp ]]; then
-				echo 5 > $dirshm/vol
-				( for (( i=0; i < 5; i++ )); do
-					sleep 0.1
-					s=$(( $( < $dirshm/vol ) - 1 )) # debounce volume long-press on client
-					(( $s == 4 )) && i=0
-					if (( $s > 0 )); then
-						echo $s > $dirshm/vol
-					else
-						rm -f $dirshm/vol
-						$dirbash/cmd.sh volumepushstream
-					fi
-				done ) &> /dev/null &
+				volumePushReset
+				volumePushSet
 			fi
 			;;
 		playlist )

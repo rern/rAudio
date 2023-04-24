@@ -3,9 +3,31 @@
 </div>
 <div id="divsystem" class="section">
 <?php
+$id_name = [
+	  'audio'         => 'Audio'
+	, 'backup'        => 'Backup'
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl' ]
+	, 'hddsleep'      => 'Hard Drive Sleep'
+	, 'hdmi'          => 'HDMI'
+	, 'hostname'      => 'Player Name'
+	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
+	, 'mpdoled'       => 'Spectrum OLED'
+	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Power LED' ]
+	, 'relays'        => 'Relay Module'
+	, 'restore'       => 'Restore'
+	, 'rotaryencoder' => 'Rotary Encoder'
+	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client' ]
+	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
+	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl' ]
+	, 'tft'           => 'TFT 3.5" LCD'
+	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl' ]
+	, 'usbautoupdate' => 'Hotplug Update'
+	, 'vuled'         => 'VU LED'
+	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw' ]
+];
+
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
-	, 'id'     => 'system'
 	, 'status' => true
 	, 'button' => [ 'power' => 'power' ]
 	, 'help'   => i( 'power btn' ).' Power'
@@ -26,7 +48,6 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
-	, 'id'     => 'status'
 	, 'status' => true
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
@@ -58,9 +79,7 @@ htmlHead( [ //////////////////////////////////
 </div>
 <?php
 htmlSetting( [
-	  'label'    => 'Custom Soft Limit'
-	, 'sublabel' => 'CPU throttling'
-	, 'id'       => 'softlimit'
+	  'id'       => 'softlimit'
 	, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
 ] );
 ?>
@@ -71,7 +90,6 @@ $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
-	, 'id'     => 'storage'
 	, 'status' => true
 	, 'button' => [ 'addnas' => 'plus-circle' ]
 	, 'help'   => <<< EOF
@@ -99,15 +117,12 @@ EOF
 	<pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-	  'label'    => 'Hard Drive Sleep'
-	, 'id'       => 'hddsleep'
+	  'id'       => 'hddsleep'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
-	  'label'    => 'Hotplug Update'
-	, 'sublabel' => 'data on USB'
-	, 'id'       => 'usbautoupdate'
+	  'id'       => 'usbautoupdate'
 	, 'setting'  => false
 	, 'disabled' => 'js'
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
@@ -117,13 +132,11 @@ if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
-	, 'id'     => 'onboard'
 	, 'status' => true
 ];
 $body = [
 	[
-		  'label'    => 'Audio'
-		, 'id'       => 'audio'
+		  'id'       => 'audio'
 		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
 		, 'help'     => <<< EOF
@@ -132,9 +145,7 @@ $body = [
 EOF
 	]
 	, [
-		  'label'    => 'Bluetooth'
-		, 'sublabel' => 'bluetoothctl'
-		, 'id'       => 'bluetooth'
+		  'id'       => 'bluetooth'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
@@ -142,8 +153,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => 'HDMI Hotplug'
-		, 'id'       => 'hdmi'
+		  'id'       => 'hdmi'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
  · Force enable HDMI without connecting before boot
@@ -152,9 +162,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => 'Wi-Fi'
-		, 'sublabel' => 'iw'
-		, 'id'       => 'wlan'
+		  'id'       => 'wlan'
 		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
@@ -170,7 +178,7 @@ htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ //////////////////////////////////
-	  'title'  => 'GPIO Devices'
+	  'title' => 'GPIO Devices'
 ];
 $body = [
 	[
@@ -198,9 +206,7 @@ Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF
 	]
 	, [
-		  'label'    => 'Character LCD'
-		, 'sublabel' => 'HD44780'
-		, 'id'       => 'lcdchar'
+		  'id'       => 'lcdchar'
 		, 'help'     => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
@@ -208,9 +214,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => 'Power Button'
-		, 'sublabel' => 'Power LED'
-		, 'id'       => 'powerbutton'
+		  'id'       => 'powerbutton'
 		, 'help'     => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 {$Fi( 'gear btn' )}
@@ -222,8 +226,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'   => 'Relay Module'
-		, 'id'      => 'relays'
+		  'id'      => 'relays'
 		, 'help'    => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
@@ -232,8 +235,7 @@ On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
 EOF
 	],
 	[
-		  'label'    => 'Rotary Encoder'
-		, 'id'       => 'rotaryencoder'
+		  'id'       => 'rotaryencoder'
 		, 'help'     => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
@@ -241,19 +243,16 @@ EOF
 EOF
 	]
 	,[
-		  'label'    => 'Spectrum OLED'
-		, 'id'       => 'mpdoled'
+		  'id'       => 'mpdoled'
 		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
-		  'label'    => 'TFT 3.5" LCD'
-		, 'id'       => 'tft'
+		  'id'       => 'tft'
 		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
 	]
 	, [
-		  'label'   => 'VU LED'
-		, 'id'      => 'vuled'
+		  'id'      => 'vuled'
 		, 'help'    => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
@@ -264,8 +263,7 @@ htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'Player Name'
-		, 'id'      => 'hostname'
+		  'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
@@ -276,9 +274,7 @@ For:
 EOF
 	]
 	, [
-		  'label'    => 'Time Zone'
-		, 'sublabel' => 'timedatectl'
-		, 'id'       => 'timezone'
+		  'id'       => 'timezone'
 		, 'status'   => true
 		, 'input'    => '<select id="timezone"></select>'
 		, 'setting'  => 'custom'
@@ -288,9 +284,7 @@ Servers for time sync and package mirror
 EOF
 	]
 	, [
-		  'label'    => 'Sound Profile'
-		, 'sublabel' => 'sysctl'
-		, 'id'       => 'soundprofile'
+		  'id'       => 'soundprofile'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
@@ -312,8 +306,7 @@ htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'Backup'
-		, 'id'      => 'backup'
+		  'id'      => 'backup'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Backup all data and settings:
@@ -324,8 +317,7 @@ Backup all data and settings:
 EOF
 	]
 	, [
-		  'label'   => 'Restore'
-		, 'id'      => 'restore'
+		  'id'      => 'restore'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
  · Restore all data and settings from a backup file.
@@ -333,9 +325,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => 'Shared Data'
-		, 'sublabel' => 'client'
-		, 'id'       => 'shareddata'
+		  'id'       => 'shareddata'
 		, 'setting'  => 'custom'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
@@ -369,7 +359,7 @@ Note:
 EOF
 	]
 ];
-htmlSection( $head, $body, 'dataandsettings' );
+htmlSection( $head, $body, 'datasetting' );
 $listui = [
 	[
 	    'HTML5-Color-Picker'

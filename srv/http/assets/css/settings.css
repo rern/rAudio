@@ -141,6 +141,9 @@ heading + .helpblock {
 #infoContent .helpmenu.label {
 	background: var( --cg );
 }
+#infoContent p i {
+	width: 40px;
+}
 .helpmenu.label i {
 	margin: 0 0 0 8px;
 	text-align: left;

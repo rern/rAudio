@@ -128,11 +128,12 @@ $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 			return
 		}
 		
+		var line = '<wh>Reboot required for:</wh><p>';
+		list.split( '\n' ).forEach( id => line += ico( id ) + $( '#div'+ id +' .name' ).text() +'\n' );
 		info( {
 			  icon    : page
 			, title   : 'System Setting'
-			, message : '<wh>Reboot required for:</wh>'
-						+'<p>'+ list +'</p>'
+			, message : line +'</p>'
 			, cancel  : () => location.href = '/'
 			, okcolor : orange
 			, oklabel : ico( 'reboot' ) +'Reboot'

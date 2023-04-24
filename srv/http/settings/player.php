@@ -1,5 +1,22 @@
 <div id="divmpd" class="section">
 <?php
+$id_name = [
+	  'audiooutput'   => 'Device'
+	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update' ]
+	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluetoothctl' ]
+	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
+	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
+	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]
+	, 'dop'           => 'DSD over PCM'
+	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder' ]
+	, 'hwmixer'       => 'Mixer Device'
+	, 'mixertype'     => 'Volume Control'
+	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization' ]
+	, 'novolume'      => 'No Volume'
+	, 'outputbuffer'  => [ 'name' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
+	, 'replaygain'    => [ 'name' => 'ReplayGain',            'sub' => 'replaygain' ]
+	, 'soxr'          => [ 'name' => 'SoX Resampler',         'sub' => 'resampler' ]
+];
 htmlHead( [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'id'     => 'mpd'
@@ -36,23 +53,19 @@ $head = [ //////////////////////////////////
 EOF
 ];
 $body = [
-	[
-			  'label'       => 'Bluetooth'
-			, 'sublabel'    => 'bluetoothctl'
-			, 'icon'        => 'bluetooth'
-			, 'id'          => 'btreceiver'
-			, 'status'      => true
-			, 'input'       => '<select id="btaplayname"></select>'
-			, 'setting'     => 'custom'
-			, 'settingicon' => 'volume'
-			, 'help'        => <<< EOF
+[
+		  'id'          => 'btreceiver'
+		, 'status'      => true
+		, 'input'       => '<select id="btaplayname"></select>'
+		, 'setting'     => 'custom'
+		, 'settingicon' => 'volume'
+		, 'help'        => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
-		  'label'   => 'Device'
-		, 'id'      => 'audiooutput'
+		  'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
@@ -62,8 +75,7 @@ HDMI audio:
 EOF
 	]
 	, [
-		  'label'       => 'Mixer Device'
-		, 'id'          => 'hwmixer'
+		  'id'          => 'hwmixer'
 		, 'input'       => '<select id="hwmixer"></select>'
 		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
@@ -73,8 +85,7 @@ Mixer device volume control
 EOF
 	]
 	, [
-		  'label'   => 'Volume Control'
-		, 'id'      => 'mixertype'
+		  'id'      => 'mixertype'
 		, 'input'   => '<select id="mixertype"></select>'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
@@ -92,8 +103,7 @@ htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'No Volume'
-		, 'id'      => 'novolume'
+		  'id'      => 'novolume'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
@@ -107,8 +117,7 @@ Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
-		  'label'   => 'DSD over PCM'
-		, 'id'      => 'dop'
+		  'id'      => 'dop'
 		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 <wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
@@ -126,26 +135,20 @@ EOF
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'label'    => 'Cross-Fading'
-		, 'sublabel' => 'crossfade'
-		, 'id'       => 'crossfade'
+	[	  'id'       => 'crossfade'
 		, 'help'     => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
 EOF
 	]
 	, [
-		  'label'    => 'Normalization'
-		, 'sublabel' => 'volume_normalization'
-		, 'id'       => 'normalization'
+		  'id'       => 'normalization'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
 	] 
 	, [
-		  'label'    => 'ReplayGain'
-		, 'sublabel' => 'replaygain'
-		, 'id'       => 'replaygain'
+		  'id'       => 'replaygain'
 		, 'help'     => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
@@ -163,9 +166,7 @@ htmlSection( $head, $body, 'volume' );
 $head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'Buffer - Audio'
-		, 'sublabel' => 'audio_buffer'
-		, 'id'       => 'buffer'
+		  'id'       => 'buffer'
 		, 'help'     => <<< EOF
 Increase to fix intermittent audio.
 
@@ -173,9 +174,7 @@ Increase to fix intermittent audio.
 EOF
 	]
 	, [
-		  'label'    => 'Buffer - Output'
-		, 'sublabel' => 'max_output_buffer'
-		, 'id'       => 'outputbuffer'
+		  'id'       => 'outputbuffer'
 		, 'help'     => <<< EOF
 Increase to fix missing Album list with large Library.
 
@@ -183,9 +182,7 @@ Increase to fix missing Album list with large Library.
 EOF
 	]
 	, [
-		  'label'    => 'FFmpeg'
-		, 'sublabel' => 'decoder'
-		, 'id'       => 'ffmpeg'
+		  'id'       => 'ffmpeg'
 		, 'setting'  => false
 		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
@@ -195,16 +192,12 @@ Note: Should be disabled for faster Library update if not used.
 EOF
 	]
 	, [
-		  'label'    => 'Library Auto Update'
-		, 'sublabel' => 'auto_update'
-		, 'id'       => 'autoupdate'
+		  'id'       => 'autoupdate'
 		, 'setting'  => false
 		, 'help'     => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		  'label'    => 'SoX Resampler'
-		, 'sublabel' => 'resampler'
-		, 'id'       => 'soxr'
+		 'id'       => 'soxr'
 		, 'help'     => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 {$Fi( 'gear btn' )}
@@ -229,9 +222,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => "User's Configurations"
-		, 'sublabel' => 'custom'
-		, 'id'       => 'custom'
+		  'id'       => 'custom'
 		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];

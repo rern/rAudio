@@ -2,14 +2,32 @@
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-
+$id_name = [
+	  'autoplay'       => 'AutoPlay'
+	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp' ]
+	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx' ]
+	, 'equalizer'      => [ 'name' => 'Equalizer',        'sub' => 'alsaequal' ]
+	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd' ]
+	, 'httpd'          => [ 'name' => 'For browsers',     'sub' => 'MPD httpd' ]
+	, 'localbrowser'   => [ 'name' => 'Browser on RPi',   'sub' => 'localbrowser' ]
+	, 'login'          => [ 'name' => 'Password Login',   'sub' => 'password_hash' ]
+	, 'lyricsembedded' => [ 'name' => 'Lyrics in File',   'sub' => 'embedded ID3' ]
+	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
+	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server' ]
+	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
+	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync' ]
+	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'smb' ]
+	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient' ]
+	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'MPD snapcast' ]
+	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd' ]
+	, 'stoptimer'      => 'Stop Timer'
+	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli' ]
+];
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'AirPlay'
-		, 'sublabel' => 'shairport-sync'
-		, 'id'       => 'shairport-sync'
+		  'id'       => 'shairport-sync'
 		, 'setting'  => false
 		, 'status'   => true
 		, 'help'     => <<< EOF
@@ -20,9 +38,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
-		  'label'    => 'DAB Radio'
-		, 'sublabel' => 'mediamtx'
-		, 'id'       => 'dabradio'
+		  'id'       => 'dabradio'
 		, 'setting'  => false
 		, 'status'   => true
 		, 'disabled' => 'No DAB devices found.'
@@ -30,9 +46,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/mediamtx' )
 	]
 	, [
-		  'label'    => 'SnapClient'
-		, 'sublabel' => 'snapclient'
-		, 'id'       => 'snapclient'
+		  'id'       => 'snapclient'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
@@ -45,9 +59,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 	, [
-		  'label'    => 'Spotify'
-		, 'sublabel' => 'spotifyd'
-		, 'id'       => 'spotifyd'
+		  'id'       => 'spotifyd'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
@@ -72,9 +84,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
 	, [
-		  'label'    => 'UPnP'
-		, 'sublabel' => 'upmpdcli'
-		, 'id'       => 'upmpdcli'
+		  'id'       => 'upmpdcli'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
@@ -90,18 +100,14 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'For browsers'
-		, 'sublabel' => 'MPD httpd'
-		, 'id'       => 'httpd'
+		  'id'       => 'httpd'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
-		  'label'    => 'SnapServer'
-		, 'sublabel' => 'MPD snapcast'
-		, 'id'       => 'snapserver'
+		  'id'       => 'snapserver'
 		, 'setting'  => false
 		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
 		, 'help'     => <<< EOF
@@ -116,9 +122,7 @@ htmlSection( $head, $body, 'streamers' );
 $head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'DSP'
-		, 'sublabel' => 'camilladsp'
-		, 'id'       => 'camilladsp'
+		  'id'       => 'camilladsp'
 		, 'status'   => true
 		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
 		, 'help'     => <<< EOF
@@ -128,9 +132,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
 	, [
-		  'label'    => 'Equalizer'
-		, 'sublabel' => 'alsaequal'
-		, 'id'       => 'equalizer'
+		  'id'       => 'equalizer'
 		, 'setting'  => false
 		, 'disabled' => labelIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
 		, 'help'     => <<< EOF
@@ -152,9 +154,7 @@ if ( file_exists( '/usr/bin/firefox' ) ) {
 }
 $body = [
 	[
-		  'label'    => 'Access Point'
-		, 'sublabel' => 'hostapd'
-		, 'id'       => 'hostapd'
+		  'id'       => 'hostapd'
 		, 'status'   => true
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
 		, 'help'     => <<< EOF
@@ -165,8 +165,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	]
 	, [
-		  'label'   => 'AutoPlay'
-		, 'id'      => 'autoplay'
+		  'id'      => 'autoplay'
 		, 'help'    => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
@@ -175,9 +174,7 @@ Start playing automatically on:
 EOF
 	]
 	, [
-		  'label'    => 'Browser on RPi'
-		, 'sublabel' => 'localbrowser'
-		, 'id'       => 'localbrowser'
+		  'id'       => 'localbrowser'
 		, 'status'   => true
 		, 'help'     => <<< EOF
 $browser - Browser on RPi connected screen.
@@ -193,9 +190,7 @@ EOF
 		, 'exist'    => $browser
 	]
 	, [
-		  'label'    => 'File Sharing'
-		, 'sublabel' => 'smb'
-		, 'id'       => 'smb'
+		  'id'       => 'smb'
 		, 'status'   => true
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
@@ -209,9 +204,7 @@ EOF
 		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'    => 'Lyrics in File'
-		, 'sublabel' => 'embedded ID3'
-		, 'id'       => 'lyricsembedded'
+		  'id'       => 'lyricsembedded'
 		, 'setting'  => false
 		, 'help'     => <<< EOF
  · Get embedded lyrics from local files.
@@ -223,8 +216,7 @@ Note: Should be disabled if none embedded.
 EOF
 	]
 	, [
-		  'label'   => 'Multiple rAudios'
-		, 'id'      => 'multiraudio'
+		  'id'      => 'multiraudio'
 		, 'help'    => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
@@ -233,9 +225,7 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'label'    => 'Password Login'
-		, 'sublabel' => 'password_hash'
-		, 'id'       => 'login'
+		  'id'       => 'login'
 		, 'setting'  => 'custom'
 		, 'help'     => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
@@ -243,9 +233,7 @@ Lock: {$Fmenu( 'player', 'Player', 'lock' )}
 EOF
 	]
 	, [
-		  'label'    => 'Scrobbler'
-		, 'sublabel' => 'Last.fm'
-		, 'id'       => 'scrobble'
+		  'id'       => 'scrobble'
 		, 'help'     => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
@@ -255,9 +243,7 @@ EOF
 EOF
 	]
 	, [
-		  'label'       => 'Server rAudio'
-		, 'sublabel'    => 'nfs-server'
-		, 'id'          => 'nfsserver'
+		  'id'          => 'nfsserver'
 		, 'setting'     => 'custom'
 		, 'settingicon' => false
 		, 'status'      => true
@@ -285,8 +271,7 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'label'    => 'Stop Timer'
-		, 'id'       => 'stoptimer'
+		  'id'       => 'stoptimer'
 		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:

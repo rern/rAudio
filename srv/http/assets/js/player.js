@@ -366,6 +366,7 @@ function renderPage() {
 					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
+		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
 		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
@@ -413,7 +414,7 @@ function renderPage() {
 		} else {
 			var label = 'Device';
 		}
-		$( '#divaudiooutput div' ).eq( 0 ).html( label );
+		$( '#divaudiooutput .col-l' ).html( label );
 	}
 	if ( $( '#infoRange .value' ).length ) {
 		bash( [ 'volumeget' ], v => {
