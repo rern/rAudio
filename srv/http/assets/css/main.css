@@ -1213,12 +1213,11 @@ i.map.disabled, .map.disabled i {
 }
 #lib-mode-list {
 	display: grid;
-	grid-template-columns: repeat( auto-fit, minmax( 140px, auto ) );
+	grid-template-columns: repeat( auto-fit, minmax( 190px, auto ) );
 	padding: 90px 7px 7px 7px;
 }
-.lib-mode {
-	display: inline-block;
-}
+@media ( max-width: 773px ) { #lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 160px, auto ) ) } }
+@media ( max-width: 493px ) { #lib-mode-list { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
 #lib-mode-list::after { /* fix 0 height */
 	content: " "; 
 	display: block;
