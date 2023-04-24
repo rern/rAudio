@@ -1636,9 +1636,6 @@ i.map.disabled, .map.disabled i {
 	grid-template-columns: repeat( auto-fit, minmax( 160px, 200px ) );
 }
 @media ( max-width: 518px ) { #lib-list.album { grid-template-columns: repeat( auto-fit, minmax( 130px, auto ) ) } }
-.coverart {
-	display: inline-block;
-}
 #lib-list,
 #pl-list,
 #pl-savedlist {
