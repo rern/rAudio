@@ -1936,11 +1936,10 @@ function volumeColorUnmute() {
 }
 function volumeUpDown( up ) {
 	var vol = S.volume;
-	if ( ( vol === 0 && ! up ) || ( vol === 100 && up ) ) return
-	
 	up ? vol++ : vol--;
+	if ( vol < 0 || vol > 100 ) return
+	
 	$volumeRS.setValue( vol );
-	S.volume = vol;
 	var cmd = 'volumeupdn';
 	if ( S.btreceiver ) {
 		cmd += 'bt';
