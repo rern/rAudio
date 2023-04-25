@@ -218,7 +218,6 @@ data+='
   "page"              : "system"
 , "audioaplayname"    : "'$audioaplayname'"
 , "audiooutput"       : "'$audiooutput'"
-, "display"           : { "logout" : '$( exists $dirsystem/login )' }
 , "hddapm"            : '$hddapm'
 , "hddsleep"          : '${hddapm/128/false}'
 , "hdmi"              : '$( grep -q hdmi_force_hotplug=1 /boot/config.txt && echo true )'
