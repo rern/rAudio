@@ -1934,6 +1934,21 @@ function volumeColorUnmute() {
 		.addClass( 'i-volume' );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
+function volumeUpDown( up ) {
+	var vol = S.volume;
+	if ( ( vol === 0 && ! up ) || ( vol === 100 && up ) ) return
+	
+	up ? vol++ : vol--;
+	$volumeRS.setValue( vol );
+	S.volume = vol;
+	var cmd = 'volumeupdn';
+	if ( S.btreceiver ) {
+		cmd += 'bt';
+	} else if ( ! S.control ) {
+		cmd += 'mpc';
+	}
+	bash( [ cmd, up ? '+' : '-', S.control, 'CMD updn control' ] );
+}
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {
 		clearInterval( V.interval.vu );

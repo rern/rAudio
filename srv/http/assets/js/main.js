@@ -709,12 +709,8 @@ $( '#volume' ).roundSlider( {
 	, beforeValueChange : function( e ) {
 		if ( V.local || V.drag ) return
 		
-		if ( 'volumeupdn' in V ) {
-			var diff  = e.value - V.volumeupdn;
-		} else {
-			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
-		}
-		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
+		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		var speed = Math.round( Math.abs( diff ) / 5 * 0.3 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
 		$volumehandlerotate.css( 'transition-duration', speed +'s' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration','' );
@@ -771,18 +767,7 @@ $( '#volmute, #volM' ).click( function() {
 	bash( [ 'volume' ] );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).click( function( e ) {
-	var voldn = $( e.currentTarget ).hasClass( 'dn' );
-	if ( ( S.volume === 0 && voldn ) || ( S.volume === 100 && ! voldn ) ) return
-	
-	voldn ? S.volume-- : S.volume++;
-	$volumeRS.setValue( S.volume );
-	var cmd = 'volumeupdn';
-	if ( S.btreceiver ) {
-		cmd += 'bt';
-	} else if ( ! S.control ) {
-		cmd += 'mpc';
-	}
-	bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
+	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) {
@@ -790,22 +775,9 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 		setTimeout( volumeBarHide, 3000 );
 	}
 } ).press( function( e ) {
-	var voldn = $( e.currentTarget ).hasClass( 'dn' );
-	var vol   = S.volume;
-	if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
-	
+	var up = $( e.currentTarget ).hasClass( 'up' );
 	V.interval.volume = setInterval( () => {
-		if ( ( vol === 0 && voldn ) || ( vol === 100 && ! voldn ) ) return
-		
-		voldn ? vol-- : vol++;
-		$volumeRS.setValue( vol );
-		var cmd = 'volumeupdn';
-		if ( S.btreceiver ) {
-			cmd += 'bt';
-		} else if ( ! S.control ) {
-			cmd += 'mpc';
-		}
-		bash( [ cmd, voldn ? '-' : '+', S.control, 'CMD updn control' ] );
+		volumeUpDown( up );
 		if ( $( e.currentTarget ).hasClass( 'band' ) ) {
 			clearTimeout( V.volumebar );
 			$( '#volume-bar, #volume-text' ).removeClass( 'hide' );

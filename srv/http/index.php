@@ -237,23 +237,23 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="volume-bar" class="hide"></div>
 				<?=i( 'volume-band', 'volume transparent volumeband band' )?>
 				<?=i( 'volume-band-dn', 'minus transparent volumeband band dn' )?>
-				<?=i( 'volume-band-up', 'plus transparent volumeband band' )?>
+				<?=i( 'volume-band-up', 'plus transparent volumeband band up' )?>
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="map-volume">
-				<?=i( 'volT', 'plus map mapvolume' )?>
+				<?=i( 'volT', 'plus map mapvolume up' )?>
 				<?=i( 'volL', 'minus map mapvolume dn' )?>
 				<?=i( 'volM', 'volume map mapvolume' )?>
-				<?=i( 'volR', 'plus map mapvolume' )?>
+				<?=i( 'volR', 'plus map mapvolume up' )?>
 				<?=i( 'volB', 'minus map mapvolume dn' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
 				<?=i( 'voldn', 'minus btn btn-default dn' )?>
 				<?=i( 'volmute', 'volume btn btn-default' )?>
-				<?=i( 'volup', 'plus btn btn-default' )?>
+				<?=i( 'volup', 'plus btn btn-default up' )?>
 			</div>
 		</div>
 	</div>

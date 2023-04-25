@@ -412,15 +412,10 @@ function psVolume( data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
-		if ( data.type === 'updn' ) {
-			V.volumeupdn = S.volume;
-		} else {
-			$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		}
+		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 		S.volume     = data.val;
 		S.volumemute = 0;
 		setVolume();
-		delete V.volumeupdn;
 	}
 }
 function psVUmeter( data ) {
