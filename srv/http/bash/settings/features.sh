@@ -259,17 +259,16 @@ nfsserver )
 		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
-			chmod 777 "$path"
 			list+="$( space2ascii $path ) $options"$'\n'
 			name=$( basename "$path" )
 			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
 			ln -s "$path" "$dirnas/$name"
 		done
 		column -t <<< $list > /etc/exports
+		cp -f $dirsystem/{display,order}.json $dirbackup
 		echo $ip > $filesharedip
 		touch $dirshareddata/system/order.json # in case not yet set
-		cp -f $dirsystem/{display,order}.json $dirbackup
-		chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
+		dirPermissionsShared
 		echo "\
 SD
 USB" > /mnt/MPD/.mpdignore

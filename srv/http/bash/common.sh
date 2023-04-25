@@ -157,6 +157,7 @@ dirPermissionsShared() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
 	chown -h mpd:audio $dirdata/{mpd,playlists}
 	chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
+	chmod -R 777 $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
 }
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
