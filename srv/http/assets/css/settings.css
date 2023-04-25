@@ -206,7 +206,7 @@ heading.status .headtitle::after,
 }
 .col-l.status gr::after {
 	width: 17px;
-	font-size: 15px;
+	font-size: 14px;
 	text-align: right;
 }
 heading i {
