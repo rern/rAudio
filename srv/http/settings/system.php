@@ -28,7 +28,7 @@ $id_data = [
 
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
-	, 'status' => true
+	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
 	, 'help'   => i( 'power btn' ).' Power'
 ] );
@@ -48,7 +48,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
-	, 'status' => true
+	, 'status' => 'status'
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ] );
@@ -90,7 +90,7 @@ $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
-	, 'status' => true
+	, 'status' => 'storage'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
 	, 'help'   => <<< EOF
 {$Fi( 'plus-circle btn' )} Add network storage
@@ -131,7 +131,7 @@ if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
-	, 'status' => true
+	, 'status' => 'onboard'
 ];
 $body = [
 	[

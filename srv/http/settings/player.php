@@ -19,8 +19,7 @@ $id_data = [
 ];
 htmlHead( [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
-	, 'id'     => 'mpd'
-	, 'status' => true
+	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
@@ -44,8 +43,7 @@ Through plugins and libraries it can play a variety of sound files while being c
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
-	, 'id'     => 'output'
-	, 'status' => true
+	, 'status' => 'output'
 	, 'button' => [ 'btoutputall' => 'gear' ]
 	, 'help'   => <<< EOF
 {$Fi( 'gear btn' )} Other outputs while Bluetooth connected
@@ -223,9 +221,8 @@ echo '
 	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
 	  'title'   => 'Ignored Album'
-	, 'id'      => 'albumignore'
 	, 'subhead' => true
-	, 'status'  => true
+	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
 List of albums excluded from Album page.
 To restore:
@@ -236,9 +233,8 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Ignored Directory'
-	, 'id'      => 'mpdignore'
 	, 'subhead' => true
-	, 'status'  => true
+	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
 List of <c>.mpdignore</c> files contain directories excluded from database.
 To restore:
@@ -249,9 +245,8 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Non UTF-8 Files'
-	, 'id'      => 'nonutf8'
 	, 'subhead' => true
-	, 'status'  => true
+	, 'status'  => 'nonutf8'
 	, 'help'    => 'List of files with metadata is not UTF-8 encoding which must be corrected.'
 ] );
 echo '
