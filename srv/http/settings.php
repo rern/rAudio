@@ -97,7 +97,6 @@ htmlSection( $head, $body[, $id] );
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
-	global $page;
 	$title   = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
 	$status  = $data[ 'status' ] ?? '';
@@ -107,7 +106,6 @@ function htmlHead( $data ) {
 	$class  .= $subhead ? ' subhead' : '';
 	
 	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
-	$html   .= $subhead && $page === 'player' ? ' id="'.$status.'"' : '';
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );

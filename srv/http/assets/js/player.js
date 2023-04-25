@@ -424,8 +424,8 @@ function renderPage() {
 			$( '#infoButton a' ).eq( 1 ).toggleClass( 'hide', v.db === '0.00' );
 		}, 'json' );
 	}
-	$.each( S.lists, ( k, v ) => $( '#'+ k ).toggleClass( 'hide', ! v ) );
-	$( '#divlists' ).toggleClass( 'hide', $( '#divlists .subhead.hide' ).length === 3 );
+	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
+	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
 	showContent();
 }
 function setMixerType( mixertype ) {

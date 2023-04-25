@@ -350,9 +350,10 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	
 	var $this = $( this );
 	if ( ! $this.hasClass( 'single' ) ) {
-		var id   = $this.parent().prop( 'id' ).replace( /^div/, '' );
+		var id   = $this.data( 'status' );
 		var $code = $( '#code'+ id );
 		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
+	console.log(id)
 	}
 } );
 $( '.close' ).click( function() {
