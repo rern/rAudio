@@ -172,7 +172,7 @@ $( '#setting-buffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.bufferconf
-		, checkchanged : S.buffer || S.bufferconf.AUDIO_BUFFER_SIZE === 4096
+		, checkchanged : true
 		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -188,7 +188,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
-		, checkchanged : S.outputbuffer || S.outputbufferconf.MAX_OUTPUT_BUFFER_SIZE === 8192
+		, checkchanged : true
 		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
