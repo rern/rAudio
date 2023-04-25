@@ -658,7 +658,7 @@ hr {
 }
 #infoTitle {
 	display: inline-block;
-	width: calc( 100% - 45px );
+	max-width: calc( 100% - 45px );
 	margin-left: 10px;
 	font-size: 22px;
 	font-weight: 300;

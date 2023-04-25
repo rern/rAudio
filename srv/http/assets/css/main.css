@@ -1405,27 +1405,31 @@ i.map.disabled, .map.disabled i {
 #lib-breadcrumbs a:last-of-type {
 	color: var( --cw );
 }
-#button-coverart {
+.button-coverart {
 	position:relative;
 	display: inline-block;
 	width: 40px;
 	padding-left: 13px;
 	text-align: center;
 }
-#button-coverart::after {
+.button-coverart::after {
 	content: '\f528';
 	font-family: rern;
 	position: relative;
 	margin-left: -31px;
 	font-size: 26px;
+	text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
-#button-coverart img {
-	position: relative;
-	left: -10px;
-	width: 18px;
+.button-coverart img {
+	position: absolute;
+	top: 5px;
+	left: -4px;
+	width: 30px;
 	border: 1px solid hsl(0,0%,30%);
 }
-.btntitle { margin-left: 20px }
+#lib-breadcrumbs .button-coverart {
+	margin-left: 20px;
+}
 #mode-title,
 .pl-title {
 	font-size: 24px;
@@ -2183,7 +2187,7 @@ li.active .li2 bl {
 		}
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
-		.btntitle { margin-left: 0 }
+		#lib-breadcrumbs .button-coverart { margin-left: 0 }
 		#bioimg {
 			float: none;
 			width: 100%;

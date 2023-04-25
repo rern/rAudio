@@ -1147,7 +1147,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		} );
 	}
 } );
-$( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
+$( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 	if ( $( this ).find( 'img' ).length ) {
 		var message = 'Update thumbnails and directory icons?'
 	} else {
@@ -1156,7 +1156,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '#button-coverart', function() {
 					 +'<br>  • Create directory icons'
 	}
 	info( {
-		  icon         : 'coverart'
+		  icon         : $( '.button-coverart' )[ 0 ].outerHTML
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
