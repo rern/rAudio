@@ -291,7 +291,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 		case 'displaycolor':
 			V.color = true;
 			if ( V.library ) {
-				V.librarylist ? colorSet() : $( '#mode-webradio' ).click();
+				V.librarylist && V.mode !== 'album' ? colorSet() : $( '#mode-webradio' ).click();
 			} else if ( V.playlist && S.pllength ) {
 				colorSet();
 			} else {
