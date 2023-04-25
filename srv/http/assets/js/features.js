@@ -507,7 +507,7 @@ function renderPage() {
 		return
 	}
 	
-	// scrobble token
+	// spotify / scrobble token
 	var url   = new URL( window.location.href );
 	window.history.replaceState( '', '', '/settings.php?p=features' );
 	var token = url.searchParams.get( 'token' );

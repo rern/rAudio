@@ -12,10 +12,6 @@ pushRestartMpd() {
 pushSubmenu() {
 	pushstream display '{"submenu":"'$1'","value":'$2'}'
 }
-featureSet() {
-	systemctl restart $@
-	systemctl -q is-active $@ && systemctl enable $@
-}
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
 	systemctl disable --now bootsplash localbrowser
@@ -127,7 +123,7 @@ hostapd )
 			iw wlan0 set power_save off
 		fi
 		ifconfig $wlandev $router
-		featureSet hostapd
+		serviceRestartEnable
 	else
 		systemctl disable --now hostapd
 		$dirsettings/system.sh wlan$'\n'OFF
@@ -350,7 +346,7 @@ sk=$( jq -r .session.key <<< $response )
 	;;
 shairport-sync | spotifyd )
 	if [[ $ON ]]; then
-		featureSet $CMD
+		serviceRestartEnable
 	else
 		[[ $( < $dirshm/player ) == airplay ]] && $dirbash/cmd.sh playerstop
 		systemctl disable --now $CMD
@@ -363,7 +359,7 @@ smb )
 		sed -i '/read only = no/ d' $smbconf
 		[[ $SD ]] &&  sed -i '/path = .*SD/ a\  read only = no' $smbconf
 		[[ $USB ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
-		featureSet smb
+		serviceRestartEnable
 	else
 		systemctl disable --now smb
 	fi
@@ -408,8 +404,6 @@ spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
 spotifytoken )
-	[[ ! $CODE ]] && rm -f $dirsystem/spotifykey && exit
-	
 	. $dirsystem/spotifykey
 	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
 	tokens=$( curl -X POST https://accounts.spotify.com/api/token \
@@ -427,7 +421,8 @@ spotifytoken )
 	echo "refreshtoken=${tokens[0]}" >> $dirsystem/spotifykey
 	echo ${tokens[1]} > $dirshm/spotify/token
 	echo $(( $( date +%s ) + 3550 )) > $dirshm/spotify/expire
-	featureSet spotifyd
+	CMD=spotifyd
+	serviceRestartEnable
 	pushRefresh
 	;;
 spotifytokenreset )
@@ -452,7 +447,7 @@ upmpdcli )
 	if [[ $ON ]]; then
 		[[ $OWNQUEUE ]] && ownqueue=1 || ownqueue=0
 		sed -i "/^ownqueue/ s/= ./= $ownqueue/" /etc/upmpdcli.conf
-		featureSet upmpdcli
+		serviceRestartEnable
 	else
 		systemctl disable --now upmpdcli
 	fi

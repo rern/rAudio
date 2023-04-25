@@ -373,8 +373,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 powerbutton )
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
-		systemctl restart powerbutton
-		systemctl enable powerbutton
+		serviceRestartEnable
 		if [[ $SW != 5 ]]; then
 			config+='
 dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
@@ -417,8 +416,7 @@ orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
-		systemctl restart rotaryencoder
-		systemctl enable rotaryencoder
+		serviceRestartEnable
 	else
 		systemctl disable --now rotaryencoder
 	fi

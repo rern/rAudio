@@ -164,6 +164,10 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
+serviceRestartEnable() {
+	systemctl restart $CMD
+	systemctl -q is-active $CMD && systemctl enable $CMD
+}
 getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
