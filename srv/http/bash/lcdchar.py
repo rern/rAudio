@@ -113,7 +113,6 @@ import math
 import time
 
 def backlightOff():
-    global backlight
     time.sleep( 60 )
     lcd.backlight_enabled = False
     lcd.close()
