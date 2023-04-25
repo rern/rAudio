@@ -98,10 +98,10 @@ function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
 	$title   = $data[ 'title' ];
-	$subhead = $data[ 'subhead' ] ?? '';
-	$status  = $data[ 'status' ] ?? '';
-	$button  = $data[ 'button' ] ?? '';
-	$help    = $data[ 'help' ] ?? '';
+	$subhead = $data[ 'subhead' ] ?? false;
+	$status  = $data[ 'status' ] ?? false;
+	$button  = $data[ 'button' ] ?? false;
+	$help    = $data[ 'help' ] ?? false;
 	$class   = $status ? 'status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
@@ -126,19 +126,21 @@ function htmlSetting( $data ) {
 	
 	global $page;
 	global $id_data;
-	// col-l
-	$id          = $data[ 'id' ] ?? '';
+	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
 	$name        = $iddata[ 'name' ];
-	$sublabel    = $iddata[ 'sub' ] ?? '';
+	$sublabel    = $iddata[ 'sub' ] ?? false;
 	$status      = $iddata[ 'status' ] ?? false;
 	$setting     = $iddata[ 'setting' ] ?? 'common';
 	$label       = '<span class="label">'.$name.'</span>';
-	$input       = $data[ 'input' ] ?? '';
-	$settingicon = ! $setting || $setting === 'none' ? '' : $data[ 'settingicon' ] ?? 'gear';
-	$disabled    = $data[ 'disabled' ] ?? '';
-	$help        = $data[ 'help' ] ?? '';
-	$html        = '<div id="div'.$id.'"><div class="col-l';
+	$input       = $data[ 'input' ] ?? false;
+	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
+	$disabled    = $data[ 'disabled' ] ?? false;
+	$help        = $data[ 'help' ] ?? false;
+	
+	$html        = '<div id="div'.$id.'">';
+	// col-l
+	$html       .= '<div class="col-l';
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
@@ -148,15 +150,17 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'">';
-		$html   .= '</div>';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html   .= $input;
 	}
+	// setting
 	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';
+	// help
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
-			 </div>';
+					</div>';
+	// status
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	echo $html;
 }
