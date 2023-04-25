@@ -353,7 +353,6 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 		var id   = $this.data( 'status' );
 		var $code = $( '#code'+ id );
 		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
-	console.log(id)
 	}
 } );
 $( '.close' ).click( function() {
