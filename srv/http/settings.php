@@ -97,7 +97,6 @@ htmlSection( $head, $body[, $id] );
 function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
-	global $id_name;
 	$id      = $data[ 'id' ] ?? '';
 	$title   = $data[ 'title' ];
 	$subhead = $data[ 'subhead' ] ?? '';
@@ -127,19 +126,16 @@ function htmlSetting( $data ) {
 	}
 	
 	global $page;
-	global $id_name;
+	global $id_data;
 	// col-l
 	$id          = $data[ 'id' ] ?? '';
-	$name        = $id_name[ $id ];
-	$sublabel    = '';
-	if ( is_array( $name ) ) {
-		$sublabel = $name[ 'sub' ];
-		$name     = $name[ 'name' ];
-	}
+	$iddata      = $id_data[ $id ];
+	$name        = $iddata[ 'name' ];
+	$sublabel    = $iddata[ 'sub' ] ?? '';
+	$status      = $iddata[ 'status' ] ?? false;
+	$setting     = $iddata[ 'setting' ] ?? 'common';
 	$label       = '<span class="label">'.$name.'</span>';
-	$status      = $data[ 'status' ] ?? false;
 	$input       = $data[ 'input' ] ?? '';
-	$setting     = $data[ 'setting' ] ?? 'common';
 	$settingicon = ! $setting || $setting === 'none' ? '' : $data[ 'settingicon' ] ?? 'gear';
 	$disabled    = $data[ 'disabled' ] ?? '';
 	$help        = $data[ 'help' ] ?? '';

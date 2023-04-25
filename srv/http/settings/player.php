@@ -1,18 +1,18 @@
 <div id="divmpd" class="section">
 <?php
-$id_name = [
-	  'audiooutput'   => 'Device'
-	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update' ]
-	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluetoothctl' ]
+$id_data = [
+	  'audiooutput'   => [ 'name' => 'Device',                                                 'setting' => 'none' ]
+	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
+	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluetoothctl',         'setting' => 'custom', 'status' => true ]
 	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]
-	, 'dop'           => 'DSD over PCM'
-	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder' ]
-	, 'hwmixer'       => 'Mixer Device'
-	, 'mixertype'     => 'Volume Control'
-	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization' ]
-	, 'novolume'      => 'No Volume'
+	, 'dop'           => [ 'name' => 'DSD over PCM',                                           'setting' => 'none' ]
+	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
+	, 'hwmixer'       => [ 'name' => 'Mixer Device',                                           'setting' => 'custom' ]
+	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'none' ]
+	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
+	, 'novolume'      => [ 'name' => 'No Volume',                                              'setting' => 'none' ]
 	, 'outputbuffer'  => [ 'name' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
 	, 'replaygain'    => [ 'name' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'name' => 'SoX Resampler',         'sub' => 'resampler' ]
@@ -55,9 +55,7 @@ EOF
 $body = [
 [
 		  'id'          => 'btreceiver'
-		, 'status'      => true
 		, 'input'       => '<select id="btaplayname"></select>'
-		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'        => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
@@ -67,7 +65,6 @@ EOF
 	, [
 		  'id'      => 'audiooutput'
 		, 'input'   => '<select id="audiooutput"></select>'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 HDMI audio:
  · Available when connected before boot only
@@ -77,7 +74,6 @@ EOF
 	, [
 		  'id'          => 'hwmixer'
 		, 'input'       => '<select id="hwmixer"></select>'
-		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
 		, 'help'        => <<< EOF
 {$Fi( 'volume btn' )}
@@ -87,7 +83,6 @@ EOF
 	, [
 		  'id'      => 'mixertype'
 		, 'input'   => '<select id="mixertype"></select>'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
@@ -104,7 +99,6 @@ $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'      => 'novolume'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
@@ -118,7 +112,6 @@ EOF
 	]
 	, [
 		  'id'      => 'dop'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 <wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
@@ -142,7 +135,6 @@ EOF
 	]
 	, [
 		  'id'       => 'normalization'
-		, 'setting'  => false
 		, 'help'     => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
@@ -183,7 +175,6 @@ EOF
 	]
 	, [
 		  'id'       => 'ffmpeg'
-		, 'setting'  => false
 		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
@@ -193,7 +184,6 @@ EOF
 	]
 	, [
 		  'id'       => 'autoupdate'
-		, 'setting'  => false
 		, 'help'     => 'Automatic update MPD database when files changed.'
 	]
 	, [

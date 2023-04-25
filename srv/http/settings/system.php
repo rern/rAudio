@@ -3,27 +3,27 @@
 </div>
 <div id="divsystem" class="section">
 <?php
-$id_name = [
-	  'audio'         => 'Audio'
-	, 'backup'        => 'Backup'
-	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl' ]
-	, 'hddsleep'      => 'Hard Drive Sleep'
-	, 'hdmi'          => 'HDMI'
-	, 'hostname'      => 'Player Name'
+$id_data = [
+	  'audio'         => [ 'name' => 'Audio',                                     'setting' => false ]
+	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true ]
+	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
+	, 'hdmi'          => [ 'name' => 'HDMI',                                      'setting' => false ]
+	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
-	, 'mpdoled'       => 'Spectrum OLED'
+	, 'mpdoled'       => [ 'name' => 'Spectrum OLED' ]
 	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Power LED' ]
-	, 'relays'        => 'Relay Module'
-	, 'restore'       => 'Restore'
-	, 'rotaryencoder' => 'Rotary Encoder'
-	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client' ]
+	, 'relays'        => [ 'name' => 'Relay Module' ]
+	, 'restore'       => [ 'name' => 'Restore',                                   'setting' => 'none' ]
+	, 'rotaryencoder' => [ 'name' => 'Rotary Encoder' ]
+	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client',      'setting' => 'custom' ]
 	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
-	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl' ]
-	, 'tft'           => 'TFT 3.5" LCD'
-	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl' ]
-	, 'usbautoupdate' => 'Hotplug Update'
-	, 'vuled'         => 'VU LED'
-	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw' ]
+	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'tft'           => [ 'name' => 'TFT 3.5" LCD' ]
+	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
+	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
+	, 'vuled'         => [ 'name' => 'VU LED' ]
+	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true ]
 ];
 
 htmlHead( [ //////////////////////////////////
@@ -123,7 +123,6 @@ htmlSetting( [
 ] );
 htmlSetting( [
 	  'id'       => 'usbautoupdate'
-	, 'setting'  => false
 	, 'disabled' => 'js'
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
@@ -137,7 +136,6 @@ $head = [ //////////////////////////////////
 $body = [
 	[
 		  'id'       => 'audio'
-		, 'setting'  => false
 		, 'disabled' => 'No other audio devices available.'
 		, 'help'     => <<< EOF
  · For 3.5mm jack and HDMI audio output
@@ -146,7 +144,6 @@ EOF
 	]
 	, [
 		  'id'       => 'bluetooth'
-		, 'status'   => true
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
@@ -154,7 +151,6 @@ EOF
 	]
 	, [
 		  'id'       => 'hdmi'
-		, 'setting'  => false
 		, 'help'     => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
@@ -163,7 +159,6 @@ EOF
 	]
 	, [
 		  'id'       => 'wlan'
-		, 'status'   => true
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
@@ -265,7 +260,6 @@ $body = [
 	[
 		  'id'      => 'hostname'
 		, 'input'   => '<input type="text" id="hostname" readonly>'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 For:
  · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
@@ -275,9 +269,7 @@ EOF
 	]
 	, [
 		  'id'       => 'timezone'
-		, 'status'   => true
 		, 'input'    => '<select id="timezone"></select>'
-		, 'setting'  => 'custom'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Servers for time sync and package mirror
@@ -285,7 +277,6 @@ EOF
 	]
 	, [
 		  'id'       => 'soundprofile'
-		, 'status'   => true
 		, 'help'     => <<< EOF
 Tweak kernel parameters to improve sound quality.
 {$Fi( 'gear btn' )}
@@ -307,7 +298,6 @@ $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
 		  'id'      => 'backup'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
@@ -318,7 +308,6 @@ EOF
 	]
 	, [
 		  'id'      => 'restore'
-		, 'setting' => 'none'
 		, 'help'    => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN
@@ -326,7 +315,6 @@ EOF
 	]
 	, [
 		  'id'       => 'shareddata'
-		, 'setting'  => 'custom'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
