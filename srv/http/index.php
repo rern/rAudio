@@ -266,15 +266,6 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active' )
 		  .i( 'button-pl-back',  'arrow-left hide' )?>
-		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
-			<div class="input-group">
-				<input id="pl-search-input" type="text">
-				<span class="input-group-btn">
-					<button id="pl-search-btn" class="btn btn-default" type="button"><?=i( '', 'search' )?></button>
-				</span>
-			</div>
-		</form>
-		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'button-pl-playlists', 'playlists' )
 			  .i( 'button-pl-save',      'save-plus pllength' )
@@ -284,6 +275,15 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 			  .i( 'button-pl-clear',     'minus-circle pllength' )
 			  .i( 'button-pl-search',    'search pllength' )?>
 		</div>
+		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
+			<div class="input-group">
+				<input id="pl-search-input" type="text">
+				<span class="input-group-btn">
+					<button id="pl-search-btn" class="btn btn-default" type="button"><?=i( '', 'search' )?></button>
+				</span>
+			</div>
+		</form>
+		<div id="pl-search-close" class="hide"></div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
 	<ul id="pl-savedlist" class="list hide"></ul>
