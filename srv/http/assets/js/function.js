@@ -1287,14 +1287,11 @@ function renderPlaylistList( data ) { // list of saved playlists
 		var hash = versionHash();
 		var html = data.html.replace( /\^\^\^/g, hash );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
-			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
 			$( '#pl-index' ).html( data.index[ 0 ] );
 			$( '#pl-index1' ).html( data.index[ 1 ] );
 			pageScroll( 0 );
 		} );
-	} else {
-		$( '.list p' ).toggleClass( 'bars-on', barvisible );
 	}
 }
 function renderSavedPlaylist( name ) { // tracks in a playlist
@@ -1307,7 +1304,6 @@ function renderSavedPlaylist( name ) { // tracks in a playlist
 		var html = data.html.replace( /\^\^\^/g, hash );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
-			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 			$( '#pl-savedlist' ).css( 'width', '100%' );
 			$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 			pageScroll( 0 );
