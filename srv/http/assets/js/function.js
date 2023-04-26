@@ -1160,7 +1160,7 @@ function renderLibraryPadding() {
 	}
 	$( '#lib-list' ).css( {
 		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
-		, 'width'          :  $( '#lib-index' ).length ? '' : '100%'
+		, 'width'          :  V.librarytracklist ? '100%' : ''
 	} )
 }
 function renderPlayback() {
