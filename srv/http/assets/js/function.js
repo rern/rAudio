@@ -1149,7 +1149,8 @@ function renderLibraryList( data ) {
 		if ( V.librarytracklist && D.fixedcover ) {
 			padding += 230;
 		} else if ( V.mode === 'album' ) {
-			padding += 180;
+			$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar
+			padding += $( '.coverart' ).eq( 0 ).height() - 49;
 		}
 		$( '#lib-list' ).css( {
 			  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
