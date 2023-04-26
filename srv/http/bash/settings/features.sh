@@ -302,6 +302,7 @@ nfsserver )
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
+		dirPermissions
 		systemctl restart mpd
 		pushstream display $( < $dirsystem/display.json )
 	fi
