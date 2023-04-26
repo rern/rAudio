@@ -1024,11 +1024,11 @@ function refreshData() {
 		}, 'json' );
 	}
 }
-function renderLibrary() { // home
-	V.mode             = '';
-	V.librarylist      = false;
+function renderLibrary() { // library home
+	V.mode         = '';
+	V.librarylist  = false;
 	V.librarytrack = false;
-	V.query            = [];
+	V.query        = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
 	$( '#lib-path .lipath' ).empty()
@@ -1068,7 +1068,7 @@ function renderLibraryCounts() {
 	$( '#li-count' ).html( songs );
 	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
 }
-function renderLibraryList( data ) {
+function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {
 		if ( V.color ) colorSet()
 		return
@@ -1125,7 +1125,7 @@ function renderLibraryList( data ) {
 	var hash = versionHash();
 	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
-		if ( $( '.licover' ).length ) {
+		if ( $( '.licover' ).length ) { // V.librarytrack
 			V.librarytrack = true;
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
@@ -1133,7 +1133,7 @@ function renderLibraryList( data ) {
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
+		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) { // V.albumlist
 			V.albumlist = true;
 			if ( V.wW / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
@@ -1233,7 +1233,7 @@ function renderPlaybackAll() {
 	setButtonControl();
 	setButtonUpdating();
 }
-function renderPlaylist( data ) { // current playlist
+function renderPlaylist( data ) { // V.plhome - current playlist
 	V.plhome       = true;
 	V.savedpl      = false;
 	V.savedpltrack = false;
