@@ -267,6 +267,7 @@ nfsserver )
 		column -t <<< $list > /etc/exports                 # save for nfs: /etc/exports
 		cp -f $dirsystem/{display,order}.json $dirbackup   # backup: display.json, order.json
 		echo $ip > $filesharedip                           # save ip for broadcast update
+		touch $dirshareddata/system/order.json # in case not set yet
 		dirPermissionsShared                               # set symlink permissions
 		chmod -R 777 \
 			$dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} \

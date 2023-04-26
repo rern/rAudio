@@ -153,7 +153,6 @@ dirPermissions() {
 	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py} &> /dev/null
 }
 dirPermissionsShared() {
-	touch $filesharedip $dirshareddata/system/order.json # in case not set yet
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
 	chown -h mpd:audio $dirmpd $dirplaylists
 	echo SD$'\n'USB > /mnt/MPD/.mpdignore
