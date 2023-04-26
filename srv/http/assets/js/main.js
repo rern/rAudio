@@ -28,6 +28,7 @@ V = {   // var global
 	, pladd         : {}
 	, playback      : true
 	, playlist      : false
+	, plhome        : true
 	, query         : []
 	, rotate        : 0
 	, scrollspeed   : 80 // pixel/s
@@ -475,11 +476,10 @@ $( '#playback' ).click( function() {
 } );
 $( '#playlist, #button-playlist' ).click( function() {
 	if ( ! V.local ) V.pladd = {}
-	var savedpl = V.savedpl || V.savedpltrack;
 	if ( V.playlist ) {
-		if ( savedpl ) getPlaylist();
+		if ( ! V.plhome ) getPlaylist();
 	} else {
-		savedpl ? switchPage( 'playlist' ) : getPlaylist(); // switchPage( 'playlist' ) in setPlaylistScroll()
+		V.plhome ? getPlaylist() : switchPage( 'playlist' );
 	}
 } );
 $( '#bar-top, #bar-bottom, #page-library' ).click( function() {
