@@ -88,11 +88,11 @@ function colorSet() {
 			$( '#lib-list .li-icon' ).eq( 0 ).click();
 		}
 	} else {
-		if ( V.savedpl || V.savedpltrack ) {
-			$( '#pl-savedlist .li-icon' ).eq( 0 ).click();
-		} else {
+		if ( V.plhome ) {
 			$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
 			$( '#pl-list li.active .li-icon' ).click();
+		} else {
+			$( '#pl-savedlist .li-icon' ).eq( 0 ).click();
 		}
 	}
 	pageScroll( 0 );
@@ -122,7 +122,7 @@ function colorSetPicker() {
 		var $bg_cga = D.bars ? $( '.content-top, #playback, #pl-index' ) : $( '.content-top, #pl-index' );
 		var $t_cg   = $( '#colorcancel, #button-pl-back' );
 		var $t_cgl  = $( '#pl-index a' );
-		var $t_cg60 = V.savedpl || V.savedpltrack ? $( '#pl-savedlist li' ) : $( '#pl-list li' );
+		var $t_cg60 = V.plhome ? $( '#pl-list li' ) : $( '#pl-savedlist li' );
 	}
 	var $menu_a     = $( '.menu a' ).not( '.hide' );
 	V.colorelements = $( 'body' ).add( $bg_cg ).add( $bg_cm ).add( $bg_cga ).add( $t_cg ).add( $t_cgl ).add( $t_cg60 ).add( $menu_a );
@@ -1234,6 +1234,7 @@ function renderPlaybackAll() {
 	setButtonUpdating();
 }
 function renderPlaylist( data ) { // current playlist
+	V.plhome       = true;
 	V.savedpl      = false;
 	V.savedpltrack = false;
 	S.elapsed      = data.elapsed;
@@ -1280,20 +1281,21 @@ function renderPlaylistPadding() {
 }
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
-	if ( V.savedpl || V.savedpltrack ) {
+	if ( V.plhome ) {
+		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
+		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
+		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
+	} else {
 		$( '#pl-index, #pl-index1' ).toggleClass( 'hide', V.savedpltrack );
 		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
 		$( '#pl-list, #pl-path, #pl-manage' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
-	} else {
-		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
-		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
-		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
 	}
 	renderPlaylistPadding();
 }
 function renderSavedPl( data ) { // V.savedpl - list of saved playlists
+	V.plhome       = false;
 	V.savedpl      = true;
 	V.savedpltrack = false;
 	$( '#savedpl-path' ).html( data.counthtml );
@@ -1308,6 +1310,7 @@ function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	} );
 }
 function renderSavedPlTrack( name ) { // V.savedpltrack - tracks in a playlist
+	V.plhome       = false;
 	V.savedpl      = false;
 	V.savedpltrack = true;
 	menuHide();
@@ -1821,8 +1824,7 @@ function switchPage( page ) {
 		}
 		if ( V.colorpicker ) $( '#colorcancel' ).click();
 	} else if ( V.playlist ) {
-		var savedlist = V.savedpl || V.savedpltrack;
-		if ( savedlist ) V.plscrolltop = $( window ).scrollTop();
+		if ( ! V.plhome ) V.plscrolltop = $( window ).scrollTop();
 	}
 	V.library = V.playback = V.playlist = false;
 	V[ page ] = true;
@@ -1835,7 +1837,7 @@ function switchPage( page ) {
 	} else if ( V.library ) {
 		V.librarylist ? pageScroll( V.liscrolltop ) : renderLibrary();
 	} else {
-		if ( savedlist ) pageScroll( V.plscrolltop );
+		if ( ! V.plhome ) pageScroll( V.plscrolltop );
 	}
 	$( '.page, .menu' ).addClass( 'hide' );
 	$( '#page-'+ page ).removeClass( 'hide' );
