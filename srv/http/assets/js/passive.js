@@ -5,40 +5,34 @@ window.onresize = () => { // rotate / resize
 	
 	V.wH = window.innerHeight;
 	V.wW = wW;
-	var barvisible = $bartop.is( ':visible' );
-	if ( V.playback ) {
-		if ( $( '#bio' ).hasClass( 'hide' ) ) {
-			displayPlayback();
-			setButtonControl();
-			setTimeout( renderPlayback, 50 );
-		} else {
-			if ( wW > 480 ) {
-				$( '#biocontent .artist' ).insertAfter( '#bioimg' );
+	setTimeout( () => {
+		var barvisible = $bartop.is( ':visible' );
+		if ( V.playback ) {
+			if ( $( '#bio' ).hasClass( 'hide' ) ) {
+				displayPlayback();
+				setButtonControl();
+				setTimeout( renderPlayback, 50 );
 			} else {
-				$( '#biocontent .artist' ).insertBefore( '#bioimg' );
-			}
-		}
-	} else if ( V.library ) {
-		if ( V.librarylist ) {
-			setTimeout( () => {
-				if ( V.librarytracklist ) {
-					$( '#lib-list p' ).css( 'min-height', ( barvisible ? 40 : 0 ) );
-					$( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
+				if ( wW > 480 ) {
+					$( '#biocontent .artist' ).insertAfter( '#bioimg' );
 				} else {
-					$( '#lib-list p' ).css( 'min-height', wH - ( barvisible ? 130 : 90 ));
+					$( '#biocontent .artist' ).insertBefore( '#bioimg' );
 				}
-			}, 0 );
-		}
-	} else {
-		if ( V.playlist && ! V.savedpl && ! V.savedpltrack ) {
-			setTimeout( () => {
+			}
+		} else if ( V.library ) {
+			if ( V.librarylist ) {
+				if ( V.librarytracklist ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
+				renderLibraryPadding();
+			}
+		} else {
+			renderPlaylistPadding();
+			if ( ! V.savedpl && ! V.savedpltrack ) {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
-				$( '#pl-list p' ).css( 'min-height', wH - ( barvisible ? 277 : 237 ) );
-			}, 0 );
+			}
 		}
-	}
-	displayBars();
+		displayBars();
+	}, 0 );
 }
 function radioRefresh() {
 	if ( V.query.length ) {

@@ -1145,19 +1145,23 @@ function renderLibraryList( data ) {
 			V.albumlist = false;
 			V.color ? colorSet() : setTrackCoverart();
 		}
-		var padding = D.bars ? 129 : 89;
-		if ( V.librarytracklist && D.fixedcover ) {
-			padding += 230;
-		} else if ( V.mode === 'album' ) {
-			$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar
-			padding += $( '.coverart' ).eq( 0 ).height() - 49;
-		}
-		$( '#lib-list' ).css( {
-			  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
-			, 'width'          :  $( '#lib-index' ).length ? '' : '100%'
-		} ).removeClass( 'hide' );
+		renderLibraryPadding();
+		$( '#lib-list' ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
 	} );
+}
+function renderLibraryPadding() {
+	var padding = D.bars ? 129 : 89;
+	if ( V.librarytracklist && D.fixedcover ) {
+		padding += 230;
+	} else if ( V.mode === 'album' ) {
+		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
+		padding += $( '.coverart' ).eq( 0 ).height() - 49;
+	}
+	$( '#lib-list' ).css( {
+		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
+		, 'width'          :  $( '#lib-index' ).length ? '' : '100%'
+	} )
 }
 function renderPlayback() {
 	if ( ! S.state ) return // suppress on reboot
@@ -1270,23 +1274,24 @@ function renderPlaylist( data ) { // current playlist
 		setPlaylistScroll();
 	}
 }
+function renderPlaylistPadding() {
+	var padding = D.bars ? 129 : 89;
+	$( '#pl-savedlist, #pl-list' ).css( 'padding-bottom', 'calc( 100vh - '+ padding +'px )' );
+}
 function renderPlaylistSet() {
 	$( '.emptyadd, #menu-plaction' ).addClass( 'hide' );
 	if ( V.savedpl || V.savedpltrack ) {
-		var $list = $( '#pl-savedlist' );
 		$( '#pl-index, #pl-index1' ).toggleClass( 'hide', V.savedpltrack );
 		$( '#pl-savedlist' ).css( 'width', V.savedpl ? '' : '100%' );
 		$( '#pl-list, #pl-path, #pl-manage' ).addClass( 'hide' );
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).removeClass( 'hide' );
 	} else {
-		var $list = $( '#pl-list' );
 		$( '#pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
 		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
 	}
-	var padding = D.bars ? 129 : 89;
-	$list.css( 'padding-bottom', 'calc( 100vh - '+ padding +'px )' );
+	renderPlaylistPadding();
 }
 function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	V.savedpl      = true;
