@@ -660,7 +660,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
 			} else { // directory / album / saved playlist track
-				mpccmd = [ V.savedplaylist ? 'mpcadd' : 'mpcls', path ];
+				mpccmd = [ V.savedpltrack ? 'mpcadd' : 'mpcls', path ];
 			}
 			break;
 		case 'pl':

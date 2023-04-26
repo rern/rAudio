@@ -1645,10 +1645,6 @@ i.map.disabled, .map.disabled i {
 	margin: 0;
 	list-style: none
 }
-#pl-list,
-#pl-savedlist {
-	padding-bottom: calc( 100vh - 129px );
-}
 #lib-list li,
 #pl-list li,
 #pl-savedlist li {

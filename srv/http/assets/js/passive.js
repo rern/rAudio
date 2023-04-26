@@ -30,7 +30,7 @@ window.onresize = () => { // rotate / resize
 			}, 0 );
 		}
 	} else {
-		if ( V.playlist && ! V.savedlist && ! V.savedplaylist ) {
+		if ( V.playlist && ! V.savedpl && ! V.savedpltrack ) {
 			setTimeout( () => {
 				setPlaylistInfoWidth();
 				setPlaylistScroll()
@@ -128,10 +128,7 @@ function psCoverart( data ) {
 	}
 	if ( V.library && data.url.slice( 0, 13 ) === '/data/audiocd' ) return
 	
-	V.libraryhtml      = '';
-	V.librarylisthtml  = '';
-	V.playlisthtml     = '';
-	V.playlistlisthtml = '';
+	V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 	if ( ! V.playback ) refreshData();
 }
 function psDisplay( data ) {
@@ -235,7 +232,7 @@ function psMpdUpdate( data ) {
 			S.updating_db = false;
 			S.updatingdab = false;
 			setButtonUpdating();
-			V.libraryhtml = V.librarylisthtml = V.playlisthtml = V.playlistlisthtml = '';
+			V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
 			refreshData();
 			setTimeout( () => banner( 'refresh-library', 'Library Update', 'Done' ), 2000 );
 		}, 2000 );
@@ -301,10 +298,10 @@ function psPlaylist( data ) {
 			setTimeout( () => delete V.autoplaycd, 5000 );
 		} else if ( 'html' in data ) {
 			S.song = data.song;
-			if ( V.playlist && ! V.savedlist && ! V.savedplaylist ) renderPlaylist( data );
+			if ( V.playlist && ! V.savedpl && ! V.savedpltrack ) renderPlaylist( data );
 		} else {
 			var name = $( '#pl-path .lipath' ).text();
-			if ( V.savedplaylist && data.playlist === name ) renderSavedPlaylist( name );
+			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
 		}
 		getPlaybackStatus();
 	}, 300 );
@@ -317,10 +314,10 @@ function psRadioList( data ) {
 	if ( V.library ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
 	} else if ( V.playlist ) {
-		if ( V.savedlist ) {
+		if ( V.savedpl ) {
 			$( '#button-pl-playlists' ).click();
-		} else if ( V.savedplaylist ) {
-			renderSavedPlaylist( $( '#savedpl-path .lipath' ).text() );
+		} else if ( V.savedpltrack ) {
+			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
 			getPlaylist();
 		}
@@ -394,9 +391,9 @@ function psRestore( data ) {
 function psSavedPlaylists( data ) {
 	var count   = data.count;
 	C.playlists = count;
-	if ( V.savedlist ) {
-		count ? renderPlaylistList( data ) : $( '#playlist' ).click();
-	} else if ( V.savedplaylist ) {
+	if ( V.savedpl ) {
+		count ? renderSavedPl( data ) : $( '#playlist' ).click();
+	} else if ( V.savedpltrack ) {
 		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );

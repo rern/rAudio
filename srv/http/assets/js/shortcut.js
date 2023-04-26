@@ -116,7 +116,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		if ( V.library ) {
 			var $liactive = $( '#lib-list li.active' );
 		} else if ( V.playlist ) {
-			if ( ! V.savedlist ) {
+			if ( ! V.savedpl ) {
 				var $liactive = $( '#pl-list li.updn' );
 				if ( ! $liactive.length ) $liactive = $( '#pl-list li.active' );
 			} else {
@@ -293,7 +293,7 @@ $( document ).keydown( function( e ) { // keyup cannot e.preventDefault() page s
 		}
 		menuHide();
 	} else if ( V.playlist ) {
-		if ( V.savedplaylist || V.savedlist ) {
+		if ( V.savedpltrack || V.savedpl ) {
 			switch ( key ) {
 				case 'ArrowUp':
 				case 'ArrowDown':

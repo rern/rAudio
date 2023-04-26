@@ -157,8 +157,8 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="page-library" class="page hide">
 	<div class="content-top">
-		<?=i( 'button-library', 'library active' )?>
-		<?=i( 'button-lib-search', 'search' )?>
+		<?=i( 'button-library',    'library active' )
+		  .i( 'button-lib-search', 'search' )?>
 		<div id="lib-search" class="hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
@@ -180,9 +180,9 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 
 <div id="page-playback" class="page">
 	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
-	<?=i( 'guide-bio', 'bio map guide hide' )?>
-	<?=i( 'guide-lyrics', 'lyrics map guide hide' )?>
-	<?=i( 'guide-album', 'lastfm map guide hide' )?>
+	<?=i( 'guide-bio',    'bio map guide hide' )
+	  .i( 'guide-lyrics', 'lyrics map guide hide' )
+	  .i( 'guide-album',  'lastfm map guide hide' )?>
 	<div id="info">
 		<div id="divartist"><span id="artist"></span></div>
 		<div id="divtitle"><span id="title"></i></span></div>
@@ -202,19 +202,19 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 			<span id="total" class="controls1"></span>
 			<div id="map-time">
 				<i id="timeTL" class="map maptime"></i>
-				<?=i( 'timeT', 'guide map maptime' )?>
-				<?=i( 'timeTR', 'gear map maptime' )?>
-				<?=i( 'timeL', 'previous map maptime' )?>
+				<?=i( 'timeT',  'guide map maptime' )
+				  .i( 'timeTR', 'gear map maptime' )
+				  .i( 'timeL',  'previous map maptime' )?>
 				<div id="timeM" class="map maptime"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-				<?=i( 'timeR', 'next map maptime' )?>
-				<?=i( 'timeBL', 'random map maptime' )?>
-				<?=i( 'timeB', 'stop map maptime' )?>
-				<?=i( 'timeBR', 'repeat map maptime' )?>
+				<?=i( 'timeR',  'next map maptime' )
+				  .i( 'timeBL', 'random map maptime' )
+				  .i( 'timeB',  'stop map maptime' )
+				  .i( 'timeBR', 'repeat map maptime' )?>
 			</div>
 			<div id="button-time" class="btn-group">
-				<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )?>
-				<?=i( 'single', 'single btn btn-default btn-cmd btn-toggle' )?>
-				<?=i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
+				<?=i( 'random', 'random btn btn-default btn-cmd btn-toggle' )
+				  .i( 'single', 'single btn btn-default btn-cmd btn-toggle' )
+				  .i( 'repeat', 'repeat btn btn-default btn-cmd btn-toggle' )?>
 			</div>
 		</div>
 		<div id="coverart-block" class="hide">
@@ -224,36 +224,36 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<img id="coverart" src="" class="cover hide">
 				<?=( shell_exec( '/usr/bin/sudo /srv/http/bash/cmd.sh vumeter' ) )?>
 				<div id="map-cover">
-					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )?>
-					<?=i( 'coverT', 'guide map mapcover r1 c2 wl hs' )?>
-					<?=i( 'coverTR', 'gear map mapcover r1 c3 ws hs' )?>
-					<?=i( 'coverL', 'previous map mapcover r2 c1 ws hl' )?>
+					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )
+					  .i( 'coverT',  'guide map mapcover r1 c2 wl hs' )
+					  .i( 'coverTR', 'gear map mapcover r1 c3 ws hs' )
+					  .i( 'coverL',  'previous map mapcover r2 c1 ws hl' )?>
 					<div id="coverM" class="map mapcover r2 c2 wl hl"><?=i( '', 'play' ).'&emsp;'.i( '', 'pause' )?></div>
-					<?=i( 'coverR', 'next map mapcover r2 c3 ws hl' )?>
-					<?=i( 'coverBL', 'random map mapcover r3 c1 ws hs' )?>
-					<?=i( 'coverB', 'stop map mapcover r3 c2 wl hs' )?>
-					<?=i( 'coverBR', 'repeat map mapcover r3 c3 ws hs' )?>
+					<?=i( 'coverR',  'next map mapcover r2 c3 ws hl' )
+					  .i( 'coverBL', 'random map mapcover r3 c1 ws hs' )
+					  .i( 'coverB',  'stop map mapcover r3 c2 wl hs' )
+					  .i( 'coverBR', 'repeat map mapcover r3 c3 ws hs' )?>
 				</div>
 				<div id="volume-bar" class="hide"></div>
-				<?=i( 'volume-band', 'volume transparent volumeband band' )?>
-				<?=i( 'volume-band-dn', 'minus transparent volumeband band dn' )?>
-				<?=i( 'volume-band-up', 'plus transparent volumeband band up' )?>
+				<?=i( 'volume-band',    'volume transparent volumeband band' )
+				  .i( 'volume-band-dn', 'minus transparent volumeband band dn' )
+				  .i( 'volume-band-up', 'plus transparent volumeband band up' )?>
 				<div id="volume-text" class="hide"></div>
 			</div>
 		</div>
 		<div id="volume-knob" class="hide">
 			<div id="volume"></div>
 			<div id="map-volume">
-				<?=i( 'volT', 'plus map mapvolume up' )?>
-				<?=i( 'volL', 'minus map mapvolume dn' )?>
-				<?=i( 'volM', 'volume map mapvolume' )?>
-				<?=i( 'volR', 'plus map mapvolume up' )?>
-				<?=i( 'volB', 'minus map mapvolume dn' )?>
+				<?=i( 'volT', 'plus map mapvolume up' )
+				  .i( 'volL', 'minus map mapvolume dn' )
+				  .i( 'volM', 'volume map mapvolume' )
+				  .i( 'volR', 'plus map mapvolume up' )
+				  .i( 'volB', 'minus map mapvolume dn' )?>
 			</div>
 			<div id="button-volume" class="btn-group">
-				<?=i( 'voldn', 'minus btn btn-default dn' )?>
-				<?=i( 'volmute', 'volume btn btn-default' )?>
-				<?=i( 'volup', 'plus btn btn-default up' )?>
+				<?=i( 'voldn',   'minus btn btn-default dn' )
+				  .i( 'volmute', 'volume btn btn-default' )
+				  .i( 'volup',   'plus btn btn-default up' )?>
 			</div>
 		</div>
 	</div>
@@ -264,9 +264,8 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
-		<?=i( 'button-playlist', 'playlist active' )?>
-		<?=i( 'button-pl-back', 'arrow-left hide' )?>
-		<?=i( 'button-pl-search', 'search pllength' )?>
+		<?=i( 'button-playlist', 'playlist active' )
+		  .i( 'button-pl-back',  'arrow-left hide' )?>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">
@@ -277,12 +276,13 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 		</form>
 		<div id="pl-search-close" class="hide"></div>
 		<div id="pl-manage" class="playlist">
-			<?=i( 'button-pl-playlists', 'playlists' )?>
-			<?=i( 'button-pl-save', 'save-plus pllength' )?>
-			<?=i( 'button-pl-consume', 'flash' )?>
-			<?=i( 'button-pl-librandom', 'librandom' )?>
-			<?=i( 'button-pl-shuffle', 'shuffle pllength' )?>
-			<?=i( 'button-pl-clear', 'minus-circle pllength' )?>
+			<?=i( 'button-pl-playlists', 'playlists' )
+			  .i( 'button-pl-save',      'save-plus pllength' )
+			  .i( 'button-pl-consume',   'flash' )
+			  .i( 'button-pl-librandom', 'librandom' )
+			  .i( 'button-pl-shuffle',   'shuffle pllength' )
+			  .i( 'button-pl-clear',     'minus-circle pllength' )
+			  .i( 'button-pl-search',    'search pllength' )?>
 		</div>
 	</div>
 	<ul id="pl-list" class="list playlist"></ul>
@@ -300,10 +300,10 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	<div id="divlyricsartist">
 		<span id="lyricsartist"></span><?=i( 'lyricsedit', 'edit-circle' )?>
 		<div id="lyricseditbtngroup" class="hide">
-			<?=i( 'lyricsundo', 'undo hide' )?>
-			<?=i( 'lyricssave', 'save hide' )?>
-			<?=i( 'lyricsdelete', 'minus-circle' )?>
-			<?=i( 'lyricsback', 'arrow-left bl' )?>
+			<?=i( 'lyricsundo',   'undo hide' )
+			  .i( 'lyricssave',   'save hide' )
+			  .i( 'lyricsdelete', 'minus-circle' )
+			  .i( 'lyricsback',   'arrow-left bl' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext"></div>
