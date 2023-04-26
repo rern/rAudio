@@ -290,8 +290,7 @@ function htmlDirectory( $lists ) {
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
 	$html    .=
-'<p></p>
-</ul>
+'</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
@@ -347,8 +346,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
 	$html    .=
-'<p></p>
-</ul>
+'</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
@@ -392,8 +390,7 @@ function htmlList( $lists ) { // non-file 'list' command
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) ); // faster than array_unique
 	$html    .=
-'<p></p>
-</ul>
+'</ul>
 <div id="lib-index" class="index index0">'.$indexbar[ 0 ].'</div>
 <div id="lib-index1" class="index index1">'.$indexbar[ 1 ].'</div>';
 	echo $html;
@@ -472,8 +469,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 		}
 	}
 	$html.=
-'<p></p>
-</ul>';
+'</ul>';
 	if ( $mode !== 'search' ) {
 		$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
 		$html.=
@@ -601,8 +597,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 </li>';
 	}
 	$html.=
-'<p></p>
-</ul>';
+'</ul>';
 	if ( $searchmode ) {
 		echo json_encode( [ 'html' => $html, 'count' => $i ] );
 	} else {

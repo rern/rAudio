@@ -1645,6 +1645,10 @@ i.map.disabled, .map.disabled i {
 	margin: 0;
 	list-style: none
 }
+#pl-list,
+#pl-savedlist {
+	padding-bottom: calc( 100vh - 129px );
+}
 #lib-list li,
 #pl-list li,
 #pl-savedlist li {
@@ -1653,20 +1657,6 @@ i.map.disabled, .map.disabled i {
 	line-height: 20px;
 	border-bottom: 1px solid var( --cga );
 	font-size: 15px;
-}
-#lib-list p,
-#pl-list p,
-#pl-savedlist p {
-	height: calc( 100vh - 90px );
-}
-.bars-on {
-	height: calc( 100vh - 130px ) !important;
-}
-.bars-on.fixedcover {
-	height: calc( 100vh - 360px ) !important;
-}
-.fixedcover {
-	height: calc( 100vh - 320px ) !important;
 }
 .lib-mode.updn .mode {
 	background: var( --cga );
@@ -1687,11 +1677,6 @@ i.map.disabled, .map.disabled i {
 #lib-list .single {
 	line-height: 48px;
 	vertical-align: 5%;
-}
-#lib-list p,
-#pl-list p,
-#pl-savedlist p {
-	margin: 0;
 }
 #indexcover,
 .lipath,
@@ -2187,7 +2172,6 @@ li.active .li2 bl {
 		}
 		#lib-list .li2 { line-height: 20px }
 		#biocontent img { width: 33vw }
-		#lib-breadcrumbs .button-coverart { margin-left: 0 }
 		#bioimg {
 			float: none;
 			width: 100%;

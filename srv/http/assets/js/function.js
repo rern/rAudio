@@ -1134,7 +1134,7 @@ function renderLibraryList( data ) {
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
 		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
 			V.albumlist = true;
-			if ( window.innerWidth / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
+			if ( V.wW / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
@@ -1144,9 +1144,6 @@ function renderLibraryList( data ) {
 				.removeClass( 'hide' );
 		} else {
 			V.albumlist = false;
-			$( '#lib-list p' )
-				.toggleClass( 'fixedcover', D.fixedcover )
-				.toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 			$( '#lib-list' ).removeClass( 'hide' );
 			V.color ? colorSet() : setTrackCoverart();
 		}
@@ -1154,10 +1151,8 @@ function renderLibraryList( data ) {
 		var pH = V.wH - 80;
 		pH -= V.albumlist ? $( '.coverart' ).height() : 49;
 		if ( $bartop.is( ':hidden' ) ) pH += 40;
-		$( '#lib-list p' )
-			.removeClass( 'bars-on' )
-			.toggleClass( 'fixedcover', D.fixedcover && V.librarytracklist )
-			.css( 'height', pH );
+		if ( V.librarytracklist && D.fixedcover ) pH -= 230;
+		$( '#lib-list' ).css( 'padding-bottom', pH +'px' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
 	} );
 }
@@ -1266,7 +1261,7 @@ function renderPlaylist( data ) { // current playlist
 	if ( data.html !== V.playlisthtml ) {
 		V.playlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash );
 		$( '#pl-list' ).html( html ).promise().done( () => {
 			setPlaylistScroll();
 			imageLoad( 'pl-list' );
@@ -1274,7 +1269,6 @@ function renderPlaylist( data ) { // current playlist
 	} else {
 		setPlaylistScroll();
 	}
-	$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
 }
 function renderPlaylistList( data ) { // list of saved playlists
 	$( '.playlist, #button-pl-search, #menu-plaction' ).addClass( 'hide' );
@@ -1291,7 +1285,7 @@ function renderPlaylistList( data ) { // list of saved playlists
 	if ( data.html !== V.playlistlisthtml ) {
 		V.playlistlisthtml = data.html;
 		var hash = versionHash();
-		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			$( '.list p' ).toggleClass( 'bars-on', barvisible );
 			$( '#pl-savedlist' ).css( 'width', '' );
@@ -1310,7 +1304,7 @@ function renderSavedPlaylist( name ) { // tracks in a playlist
 		$( '#button-pl-back' ).toggleClass( 'back-left', D.backonleft );
 		$( '#button-pl-back, #pl-savedlist' ).removeClass( 'hide' );
 		var hash = versionHash();
-		var html = data.html.replace( /\^\^\^/g, hash ) +'<p></p>';
+		var html = data.html.replace( /\^\^\^/g, hash );
 		$( '#pl-savedlist' ).html( html ).promise().done( () => {
 			imageLoad( 'pl-savedlist' );
 			$( '.list p' ).toggleClass( 'bars-on', $bartop.is( ':visible' ) );
