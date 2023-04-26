@@ -82,7 +82,8 @@ function colorSet() {
 		if ( V.librarytracklist && $( '.licover' ).is( ':visible' ) ) {
 			$( '.licover' ).css( 'margin-top', '-230px' );
 			$( '#lib-list li.track1' ).css( 'margin-top', 0 );
-			$( '#lib-list .li-icon' ).eq( 1 ).click();
+			$( '#lib-list li' ).eq( 1 ).click()
+			setTimeout( () => $( '#lib-list li' ).eq( 1 ).addClass( 'active' ), 0 );
 		} else {
 			$( '#lib-list .li-icon' ).eq( 0 ).click();
 		}
@@ -1139,20 +1140,21 @@ function renderLibraryList( data ) {
 				$( '#lib-breadcrumbs' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
-			$( '#lib-list' )
-				.addClass( 'album' )
-				.removeClass( 'hide' );
+			$( '#lib-list' ).addClass( 'album' );
 		} else {
 			V.albumlist = false;
-			$( '#lib-list' ).removeClass( 'hide' );
 			V.color ? colorSet() : setTrackCoverart();
 		}
-		$( '#lib-list' ).css( 'width', $( '#lib-index' ).length ? '' : '100%' );
-		var pH = V.wH - 80;
-		pH -= V.albumlist ? $( '.coverart' ).height() : 49;
-		if ( $bartop.is( ':hidden' ) ) pH += 40;
-		if ( V.librarytracklist && D.fixedcover ) pH -= 230;
-		$( '#lib-list' ).css( 'padding-bottom', pH +'px' );
+		var padding = D.bars ? 129 : 89;
+		if ( V.librarytracklist && D.fixedcover ) {
+			padding += 230;
+		} else if ( V.mode === 'album' ) {
+			padding += 180;
+		}
+		$( '#lib-list' ).css( {
+			  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
+			, 'width'          :  $( '#lib-index' ).length ? '' : '100%'
+		} ).removeClass( 'hide' );
 		pageScroll( V.scrolltop[ data.path ] || 0 );
 	} );
 }
@@ -1282,7 +1284,8 @@ function renderPlaylistSet() {
 		$( '#pl-savedlist, #savedpl-path, #button-pl-back' ).addClass( 'hide' );
 		$( '#pl-list, #pl-path, #pl-manage' ).removeClass( 'hide' );
 	}
-	$list.css( 'padding-bottom', 'calc( 100vh - '+ ( D.bars ? '129px )' : '89px )' ) );
+	var padding = D.bars ? 129 : 89;
+	$list.css( 'padding-bottom', 'calc( 100vh - '+ padding +'px )' );
 }
 function renderSavedPl( data ) { // V.savedpl - list of saved playlists
 	V.savedpl      = true;
