@@ -132,7 +132,7 @@ function htmlSetting( $data ) {
 	$sublabel    = $iddata[ 'sub' ] ?? false;
 	$status      = $iddata[ 'status' ] ?? false;
 	$setting     = $iddata[ 'setting' ] ?? 'common';
-	$label       = '<span class="label">'.$name.'</span>';
+	$label       = '<span class="name">'.$name.'</span>';
 	$input       = $data[ 'input' ] ?? false;
 	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
 	$disabled    = $data[ 'disabled' ] ?? false;

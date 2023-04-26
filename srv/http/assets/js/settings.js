@@ -145,7 +145,7 @@ function switchIdIconTitle( id ) {
 	SW.id    = id;
 	SW.icon  = id;
 	if ( page === 'player' ) SW.icon =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume'
-	SW.title = $( '#div'+ id +' .label' ).text();
+	SW.title = $( '#div'+ id +' .name' ).text();
 }
 function switchSet() {
 	if ( page === 'networks' || page === 'relays' ) return
