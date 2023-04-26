@@ -154,13 +154,10 @@ dirPermissions() {
 }
 dirPermissionsShared() {
 	touch $filesharedip $dirshareddata/system/order.json # in case not set yet
-	echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
-	echo data > $dirnas/.mpdignore
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
 	chown -h mpd:audio $dirmpd $dirplaylists
-	chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
+	echo SD$'\n'USB > /mnt/MPD/.mpdignore
+	echo data > $dirnas/.mpdignore
 }
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD

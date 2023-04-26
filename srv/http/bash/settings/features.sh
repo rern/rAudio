@@ -268,7 +268,10 @@ nfsserver )
 		cp -f $dirsystem/{display,order}.json $dirbackup   # backup: display.json, order.json
 		echo $ip > $filesharedip                           # save ip for broadcast update
 		dirPermissionsShared                               # set symlink permissions
-		chmod -R 777 $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} # set shares rwx for all users
+		chmod -R 777 \                                     # set shares rwx for all users
+			$dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
+			$filesharedip \
+			$dirshareddata/system/{display,order}.json
 		if [[ -e $dirbackup/mpdnfs ]]; then                # if exists: use previous mpd data - backup current
 			mv -f $dirmpd $dirbackup
 			mv -f $dirbackup/mpdnfs $dirdata/mpd          
