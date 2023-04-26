@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+echo $$ > $dirshm/pidpush
+
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
 	data=$2
@@ -51,8 +53,9 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
-	killall lcdchar.py &> /dev/null
+	killProcess lcdchar
 	$dirbash/lcdchar.py &> /dev/null &
+	echo $! > $dirshm/lcdchar
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
@@ -60,12 +63,11 @@ if [[ -e $dirsystem/mpdoled ]]; then
 fi
 
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
+	killProcess cava
 	if [[ $state == play ]]; then
-		if ! pgrep cava &> /dev/null; then
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		fi
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		echo $! > $dirshm/pidcava
 	else
-		killall cava &> /dev/null
 		pushstream vumeter '{"val":0}'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( < $dirsystem/vuled.conf )

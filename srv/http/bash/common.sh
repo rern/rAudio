@@ -192,6 +192,14 @@ ipSub() {
 	ip=$( ipAddress )
 	echo ${ip%.*}.
 }
+killProcess() {
+	local filepid
+	filepid=$dirshm/pid$1
+	if [[ -e $filepid ]]; then
+		kill -9 $( < $filepid ) &> /dev/null
+		rm $filepid
+	fi
+}
 notify() { # icon title message delayms
 	local blink delay
 	if [[ $1 == -blink ]]; then
@@ -272,17 +280,17 @@ stringEscape() {
 	echo ${data//\`/\\\`}
 }
 volumeUpDn() { # cmd.sh, bluetoothcommand.sh, rotaryencoder.sh
-	volumePushReset
+	killProcess vol
 	amixer -Mq sset "$2" $1
 	volumePushSet
 }
 volumeUpDnBt() {
-	volumePushReset
+	killProcess vol
 	amixer -MqD bluealsa sset "$2" $1
 	volumePushSet
 }
 volumeUpDnMpc() {
-	volumePushReset
+	killProcess vol
 	mpc -q volume $1
 	volumePushSet
 }
@@ -297,9 +305,6 @@ volumePush() {
 	fi
 	pushstream volume '{"type":"updn","val":'$val'}'
 	rm $dirshm/pidvol
-}
-volumePushReset() {
-	[[ -e $dirshm/pidvol ]] && kill -9 $( < $dirshm/pidvol )
 }
 volumePushSet() {
 	volumePush &> /dev/null &

@@ -10,7 +10,7 @@ plAddPlay() {
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
-		$dirbash/status-push.sh
+		statusPush
 	fi
 }
 plAddPosition() {
@@ -100,13 +100,17 @@ CMD ARTIST TITLE ALBUM" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
+statusPush() {
+	killProcess push
+	$dirbash/status-push.sh
+}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		mpc -q stop
 		systemctl stop radio
 		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
 		rm -f $dirshm/radio
-		[[ $1 == stop ]] && $dirbash/status-push.sh
+		[[ $1 == stop ]] && statusPush
 		sleep 1
 	fi
 }
@@ -411,16 +415,17 @@ display )
 	pushstream display $( < $dirsystem/display.json )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
+	killProcess cava
 	if [[ $vumeter ]]; then
 		if [[ -e $dirmpdconf/fifo.conf ]]; then
-			if statePlay && ! pgrep cava &> /dev/null; then
+			if statePlay; then
 				cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+				echo $! > $dirshm/pidcava
 			fi
 			exit
 			
 		fi
 	else
-		killall cava &> /dev/null
 		rm -f $dirsystem/vumeter $dirshm/status
 	fi
 	$dirsettings/player-conf.sh
@@ -550,7 +555,7 @@ mpccrop )
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
-	$dirbash/status-push.sh
+	statusPush
 	pushstreamPlaylist
 	;;
 mpcfindadd )
@@ -628,7 +633,7 @@ mpcplayback )
 	else
 		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $command
-		killall cava &> /dev/null
+		killProcess cava
 		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
@@ -691,7 +696,7 @@ mpcremove )
 	else
 		mpc -q clear
 	fi
-	$dirbash/status-push.sh
+	statusPush
 	pushstreamPlaylist
 	;;
 mpcseek )
@@ -710,7 +715,7 @@ mpcseek )
 mpcsetcurrent )
 	mpc -q play ${args[1]}
 	mpc -q stop
-	$dirbash/status-push.sh
+	statusPush
 	;;
 mpcshuffle )
 	mpc -q shuffle
@@ -772,9 +777,9 @@ playerstop )
 	if [[ -e $dirsystem/scrobble ]] && grep -q $player=true $dirsystem/scrobble.conf; then
 		cp -f $dirshm/{status,scrobble}
 	fi
-	killall cava &> /dev/null
+	killProcess cava
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && $dirbash/status-push.sh
+	[[ $player != upnp ]] && statusPush
 	case $player in
 		airplay )
 			systemctl stop shairport
@@ -798,7 +803,7 @@ playerstop )
 			for i in $tracks; do
 				mpc -q del $i
 			done
-			$dirbash/status-push.sh
+			statusPush
 			systemctl restart upmpdcli
 			;;
 	esac
@@ -824,7 +829,7 @@ radiorestart )
 	rm $disshm/radiorestart
 	;;
 relaystimerreset )
-	killall relays-timer.sh &> /dev/null
+	killProcess relays
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{ "done": 1 }'
 	;;
@@ -902,7 +907,7 @@ shairport )
 	[[ $( < $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport
 	echo play > $dirshm/airplay/state
-	$dirbash/status-push.sh
+	statusPush
 	;;
 shairportstop )
 	systemctl stop shairport
@@ -910,7 +915,7 @@ shairportstop )
 	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
 	timestamp=$( date +%s%3N )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
-	$dirbash/status-push.sh
+	statusPush
 	;;
 volume ) # no args = toggle mute / unmute
 	[[ $current == drag ]] && volumeSetAt $target "$control" && exit

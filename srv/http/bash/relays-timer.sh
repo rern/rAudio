@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+echo $$ > $dirshm/pidrelays
+
 timerfile=$dirshm/relaystimer
 timer=$( < $timerfile )
 i=$timer

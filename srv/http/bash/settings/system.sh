@@ -238,7 +238,7 @@ lcdchar )
 	configTxt
 	;;
 lcdcharset )
-	killall lcdchar.py &> /dev/null
+	killProcess lcdchar
 	$dirbash/lcdchar.py $ACTION
 	;;
 mirrorlist )
@@ -383,7 +383,7 @@ dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 	configTxt
 	;;
 rebootlist )
-	killall networks-scan.sh &> /dev/null
+	killProcess scan
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;
@@ -711,12 +711,12 @@ usbautoupdate )
 	;;
 vuled )
 	enableFlagSet
+	killProcess cava
 	if [[ $ON ]]; then
 		[[ ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
-		killall cava &> /dev/null
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		echo $! > $dirshm/pidcava
 	else
-		killall cava &> /dev/null
 		. $dirsystem/vuled.conf
 		for (( i=0; i < 7; i++ )); do
 			pin=P$i
@@ -724,6 +724,7 @@ vuled )
 		done
 		if [[ -e $dirsystem/vumeter ]]; then
 			cava -p /etc/cava.conf | $dirsettings/vu.sh &> /dev/null &
+			echo $! > $dirshm/pidcava
 		else
 			$dirsettings/player-conf.sh
 		fi

@@ -2,6 +2,8 @@
 
 . /srv/http/bash/common.sh
 
+echo $$ > $dirshm/pidscan
+
 if [[ $1 == wlan ]]; then
 	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up
