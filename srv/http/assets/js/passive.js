@@ -21,7 +21,7 @@ window.onresize = () => { // rotate / resize
 			}
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
-				if ( V.librarytracklist ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
+				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
 				renderLibraryPadding();
 			}
 		} else {

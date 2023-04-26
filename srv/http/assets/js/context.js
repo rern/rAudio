@@ -207,7 +207,7 @@ function tagEditor() {
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
-			var $img = V.librarytracklist ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
+			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
 		} else {
 			var $img =  V.list.li.find( 'img' );
@@ -657,7 +657,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 		case '':
 			if ( V.list.singletrack || V.mode.slice( -5 ) === 'radio' ) { // single track
 				mpccmd = [ 'mpcadd', path ];
-			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
+			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
 				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
 			} else { // directory / album / saved playlist track
 				mpccmd = [ V.savedpltrack ? 'mpcadd' : 'mpcls', path ];

@@ -79,7 +79,7 @@ function colorSet() {
 	V.color = false;
 	$( 'body' ).css( 'overflow', 'hidden' );
 	if ( V.library ) {
-		if ( V.librarytracklist && $( '.licover' ).is( ':visible' ) ) {
+		if ( V.librarytrack && $( '.licover' ).is( ':visible' ) ) {
 			$( '.licover' ).css( 'margin-top', '-230px' );
 			$( '#lib-list li.track1' ).css( 'margin-top', 0 );
 			$( '#lib-list li' ).eq( 1 ).click()
@@ -167,7 +167,7 @@ function contextmenuLibrary( $li, $target ) {
 	if ( V.playlist ) {
 		V.list.name   = $li.find( '.liname' ).text() || '';
 		V.list.artist = $li.find( '.liartist' ).text() || '';
-	} else if ( V.librarytracklist && ! V.list.licover ) {
+	} else if ( V.librarytrack && ! V.list.licover ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
@@ -192,7 +192,7 @@ function contextmenuLibrary( $li, $target ) {
 	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode && V.mode !== 'album' );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytracklist || ! filemode );
+	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
@@ -1027,7 +1027,7 @@ function refreshData() {
 function renderLibrary() { // home
 	V.mode             = '';
 	V.librarylist      = false;
-	V.librarytracklist = false;
+	V.librarytrack = false;
 	V.query            = [];
 	$( '#lib-path' ).css( 'max-width', '' );
 	$( '#lib-title, #lib-path>i, #button-lib-search' ).removeClass( 'hide' );
@@ -1126,10 +1126,10 @@ function renderLibraryList( data ) {
 	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
 		if ( $( '.licover' ).length ) {
-			V.librarytracklist = true;
+			V.librarytrack = true;
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
-			V.librarytracklist = false;
+			V.librarytrack = false;
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
@@ -1152,7 +1152,7 @@ function renderLibraryList( data ) {
 }
 function renderLibraryPadding() {
 	var padding = D.bars ? 129 : 89;
-	if ( V.librarytracklist && D.fixedcover ) {
+	if ( V.librarytrack && D.fixedcover ) {
 		padding += 230;
 	} else if ( V.mode === 'album' ) {
 		$( '#lib-list' ).css( 'padding-bottom', '100vh' ); // force scrollbar to get .coverart height
@@ -1160,7 +1160,7 @@ function renderLibraryPadding() {
 	}
 	$( '#lib-list' ).css( {
 		  'padding-bottom' : 'calc( 100vh - '+ padding +'px )'
-		, 'width'          :  V.librarytracklist ? '100%' : ''
+		, 'width'          :  V.librarytrack ? '100%' : ''
 	} )
 }
 function renderPlayback() {

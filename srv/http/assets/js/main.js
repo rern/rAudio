@@ -1125,7 +1125,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 		, ok       : () => bash( [ 'dabscan' ] )
 	} );
 } ).on( 'click', '.button-latest-clear', function() {
-	if ( V.librarytracklist ) {
+	if ( V.librarytrack ) {
 		info( {
 			  icon         : 'latest'
 			, title        : 'Latest'
