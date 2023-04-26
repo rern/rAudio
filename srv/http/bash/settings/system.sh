@@ -74,21 +74,16 @@ sharedDataSet() {
 		mv -f $dirdata/$dir $dirbackup
 		ln -s $dirshareddata/$dir $dirdata
 	done
-	if [[ ! -e $dirshareddata/system ]]; then # not server rAudio - initial setup
+	if [[ ! -e $dirshareddata/system ]]; then                                 # not server rAudio - initial setup
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order}.json $dirshareddata/system
 	fi
 	mv $dirsystem/{display,order}.json $dirbackup
-	touch $filesharedip $dirshareddata/system/order.json # in case not yet set
 	ln -s $dirshareddata/system/{display,order}.json $dirsystem
 	dirPermissionsShared
-	echo data > $dirnas/.mpdignore
-	echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
+	sharedDataIPlist
 	mpc -q clear
 	systemctl restart mpd
-	sharedDataIPlist
 	pushRefresh
 	pushstream refresh '{ "page": "features", "shareddata": true }'
 }
@@ -430,10 +425,10 @@ shareddataconnect )
 		reconnect=1
 	fi
 	
-	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' )
+	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' ) # get shred path by server ip
 	for path in "${paths[@]}"; do
 		dir="$dirnas/$( basename "$path" )"
-		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit
+		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit                    # stop if dir not empty
 		
 		umount -ql "$dir"
 	done
@@ -446,7 +441,7 @@ shareddataconnect )
 		mkdir -p "$dir"
 		mountpoints+=( "$dir" )
 		fstab+="
-$IP:$( space2ascii $path )  $( space2ascii $dir )  $options"
+$IP:$( space2ascii $path )  $( space2ascii $dir )  $options"                                             # set as mount to /mnt/MPD/NAS in fstab
 	done
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload

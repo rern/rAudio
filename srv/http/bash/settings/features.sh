@@ -253,7 +253,7 @@ multiraudioreset )
 	rm -f $dirsystem/multiraudio*
 	;;
 nfsserver )
-	readarray -t paths <<< $( nfsShareList )
+	readarray -t paths <<< $( nfsShareList )               # get shred path: USB/*/ (root dirs), /mnt/MPD/SD, /srv/http/data
 	mpc -q clear
 	if [[ $ON ]]; then
 		ip=$( ipAddress )
@@ -262,30 +262,26 @@ nfsserver )
 			list+="$( space2ascii $path ) $options"$'\n'
 			name=$( basename "$path" )
 			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			ln -s "$path" "$dirnas/$name"
+			ln -s "$path" "$dirnas/$name"                  # set as symlink to /mnt/MPD/NAS
 		done
-		column -t <<< $list > /etc/exports
-		cp -f $dirsystem/{display,order}.json $dirbackup
-		echo $ip > $filesharedip
-		touch $dirshareddata/system/order.json # in case not yet set
-		dirPermissionsShared
-		echo "\
-SD
-USB" > /mnt/MPD/.mpdignore
-		echo data > $dirnas/.mpdignore
-		if [[ -e $dirbackup/mpdnfs ]]; then
+		column -t <<< $list > /etc/exports                 # save for nfs: /etc/exports
+		cp -f $dirsystem/{display,order}.json $dirbackup   # backup: display.json, order.json
+		echo $ip > $filesharedip                           # save ip for broadcast update
+		dirPermissionsShared                               # set symlink permissions
+		chmod -R 777 $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} # set shares rwx for all users
+		if [[ -e $dirbackup/mpdnfs ]]; then                # if exists: use previous mpd data - backup current
 			mv -f $dirmpd $dirbackup
-			mv -f $dirbackup/mpdnfs $dirdata/mpd
+			mv -f $dirbackup/mpdnfs $dirdata/mpd          
 			systemctl restart mpd
-		else
+		else                                               # else: build new mpd data
 			rm -f $dirmpd/{listing,updating}
 			mkdir -p $dirbackup
 			cp -r $dirmpd $dirbackup
 			systemctl restart mpd
 			$dirbash/cmd.sh mpcupdate$'\n'rescan
 		fi
-		systemctl enable --now nfs-server
-		pushstream display $( sed -E 's/("sd"|"usb").*/\1: false,/' $dirsystem/display.json )
+		systemctl enable --now nfs-server                  # start nfs server
+		pushstream display '{ "sd": false, "usb": false }' # hide sd, usb while not yet refreshed
 	else
 		systemctl disable --now nfs-server
 		rm -f /mnt/MPD/.mpdignore \

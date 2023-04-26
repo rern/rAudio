@@ -148,16 +148,19 @@ data2json() {
 }
 dirPermissions() {
 	chown -R http:http /srv
-	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists
+	chown mpd:audio $dirmpd $dirplaylists $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py} &> /dev/null
-	[[ -L $dirshareddata ]] && dirPermissionsShared
 }
 dirPermissionsShared() {
+	touch $filesharedip $dirshareddata/system/order.json # in case not set yet
+	echo "\
+SD
+USB" > /mnt/MPD/.mpdignore
+	echo data > $dirnas/.mpdignore
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
-	chown -h mpd:audio $dirdata/{mpd,playlists}
+	chown -h mpd:audio $dirmpd $dirplaylists
 	chmod 777 $filesharedip $dirshareddata/system/{display,order}.json
-	chmod -R 777 $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
 }
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
