@@ -78,6 +78,7 @@ sharedDataSet() {
 		mkdir $dirshareddata/system
 		cp -f $dirsystem/{display,order}.json $dirshareddata/system
 	fi
+	touch $filesharedip $dirshareddata/system/order.json
 	mv $dirsystem/{display,order}.json $dirbackup
 	ln -s $dirshareddata/system/{display,order}.json $dirsystem
 	dirPermissionsShared
