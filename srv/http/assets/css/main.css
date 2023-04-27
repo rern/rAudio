@@ -2001,7 +2001,7 @@ li.active .li2 bl {
 @media ( max-height: 768px ) {
 	#page-playback { padding: 80px 0 60px }
 }
-@media ( max-height: 767px ) {
+@media ( max-height: 734px ) {
 	.licover { position: relative }
 	#lib-list li.track1 { margin-top: 0 }
 }
