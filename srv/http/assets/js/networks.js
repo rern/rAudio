@@ -13,8 +13,11 @@ $( 'body' ).click( function() {
 		.empty();
 	$( 'li' ).removeClass( 'active' );
 } );
-$( '.back' ).click( function() {
+$( '.close, .back' ).click( function() {
 	clearTimeout( V.timeoutscan );
+	bash( [ 'scankill' ] );
+} );
+$( '.back' ).click( function() {
 	$( '#help, #divinterface' ).removeClass( 'hide' );
 	$( '#divbluetooth, #divwifi, #divwebui' ).addClass( 'hide' );
 	$( '#listwlscan, #listbtscan' ).empty();
