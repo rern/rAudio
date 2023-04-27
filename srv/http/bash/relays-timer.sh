@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-echo $$ > $dirshm/pidrelays
+killProcess relaystimer
+echo $$ > $dirshm/pidrelaystimer
 
 timerfile=$dirshm/relaystimer
 timer=$( < $timerfile )

@@ -155,7 +155,7 @@ profileremove )
 	$dirsettings/networks-data.sh pushwl
 	;;
 scankill ) 
-	killProcess scan
+	killProcess networksscan
 	;;
 statusbt )
 	echo "\

@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+killProcess dabscan
+echo $$ > $dirshm/piddabscan
+
 script -c 'dab-scanner-rtlsdr -C 5A' $dirshm/dabscan &> /dev/null # capture /dev/tty to file
 if ! grep -q ^audioservice $dirshm/dabscan; then
 	notify dabradio 'DAB Radio' 'No stations found.'

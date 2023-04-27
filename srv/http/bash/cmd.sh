@@ -10,7 +10,7 @@ plAddPlay() {
 	if [[ ${1: -4} == play ]]; then
 		sleep $2
 		mpc -q play $pos
-		statusPush
+		$dirbash/status-push.sh
 	fi
 }
 plAddPosition() {
@@ -100,17 +100,13 @@ CMD ARTIST TITLE ALBUM" &> /dev/null &
 	fi
 	rm -f $dirshm/scrobble
 }
-statusPush() {
-	killProcess push
-	$dirbash/status-push.sh
-}
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		mpc -q stop
 		systemctl stop radio
 		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
 		rm -f $dirshm/radio
-		[[ $1 == stop ]] && statusPush
+		[[ $1 == stop ]] && $dirbash/status-push.sh
 		sleep 1
 	fi
 }
@@ -555,7 +551,7 @@ mpccrop )
 		mpc -q stop
 	fi
 	[[ -e $dirsystem/librandom ]] && plAddRandom
-	statusPush
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 mpcfindadd )
@@ -696,7 +692,7 @@ mpcremove )
 	else
 		mpc -q clear
 	fi
-	statusPush
+	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 mpcseek )
@@ -715,7 +711,7 @@ mpcseek )
 mpcsetcurrent )
 	mpc -q play ${args[1]}
 	mpc -q stop
-	statusPush
+	$dirbash/status-push.sh
 	;;
 mpcshuffle )
 	mpc -q shuffle
@@ -779,7 +775,7 @@ playerstop )
 	fi
 	killProcess cava
 	echo mpd > $dirshm/player
-	[[ $player != upnp ]] && statusPush
+	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
 			systemctl stop shairport
@@ -803,7 +799,7 @@ playerstop )
 			for i in $tracks; do
 				mpc -q del $i
 			done
-			statusPush
+			$dirbash/status-push.sh
 			systemctl restart upmpdcli
 			;;
 	esac
@@ -829,7 +825,7 @@ radiorestart )
 	rm $disshm/radiorestart
 	;;
 relaystimerreset )
-	killProcess relays
+	killProcess relaystimer
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{ "done": 1 }'
 	;;
@@ -907,7 +903,7 @@ shairport )
 	[[ $( < $dirshm/player ) != airplay ]] && $dirbash/cmd.sh playerstart$'\n'airplay
 	systemctl start shairport
 	echo play > $dirshm/airplay/state
-	statusPush
+	$dirbash/status-push.sh
 	;;
 shairportstop )
 	systemctl stop shairport
@@ -915,7 +911,7 @@ shairportstop )
 	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
 	timestamp=$( date +%s%3N )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
-	statusPush
+	$dirbash/status-push.sh
 	;;
 volume ) # no args = toggle mute / unmute
 	[[ $current == drag ]] && volumeSetAt $target "$control" && exit

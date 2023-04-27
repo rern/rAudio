@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-echo $$ > $dirshm/pidscan
+killProcess networksscan
+echo $$ > $dirshm/pidnetworksscan
 
 if [[ $1 == wlan ]]; then
 	wlandev=$( < $dirshm/wlan )

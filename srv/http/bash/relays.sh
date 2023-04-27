@@ -14,7 +14,7 @@ if [[ ! $1 ]]; then # no args = ON
 	order="<wh>$orderon"
 	color=wh
 else
-	killProcess relays
+	killProcess relaystimer
 	rm -f $dirshm/{relayson,relaystimer}
 	action=OFF
 	pins=$off

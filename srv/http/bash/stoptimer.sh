@@ -4,9 +4,10 @@
 
 . $dirsystem/stoptimer.conf
 
+killProcess stoptimer
 echo $$ > $dirshm/pidstoptimer
 
-killProcess relays
+killProcess relaystimer
 rm -f $dirshm/relaystimer
 
 sleep $(( min * 60 ))

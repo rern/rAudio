@@ -383,7 +383,6 @@ dtoverlay=gpio-shutdown,gpio_pin='$RESERVED
 	configTxt
 	;;
 rebootlist )
-	killProcess scan
 	[[ -e $dirshm/reboot ]] && cat $dirshm/reboot
 	rm -f $dirshm/{reboot,backup.gz}
 	;;

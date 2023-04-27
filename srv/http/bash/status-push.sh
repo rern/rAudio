@@ -2,7 +2,8 @@
 
 . /srv/http/bash/common.sh
 
-echo $$ > $dirshm/pidpush
+killProcess statuspush
+echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
