@@ -1,5 +1,5 @@
 // page resize -----------------------------------------------------------------
-window.onresize = () => { // rotate / resize
+window.addEventListener( 'resize', () => { // resize / rotate
 	var wW = window.innerWidth;
 	if ( V.wW === wW ) return // wH changes with address bar toggle on scroll up-down
 	
@@ -8,11 +8,10 @@ window.onresize = () => { // rotate / resize
 	setTimeout( () => {
 		var barvisible = $bartop.is( ':visible' );
 		if ( V.playback ) {
+			displayPlayback();
+			setButtonControl();
+			setTimeout( renderPlayback, 50 );
 			if ( $( '#bio' ).hasClass( 'hide' ) ) {
-				displayPlayback();
-				setButtonControl();
-				setTimeout( renderPlayback, 50 );
-			} else {
 				if ( wW > 480 ) {
 					$( '#biocontent .artist' ).insertAfter( '#bioimg' );
 				} else {
@@ -33,7 +32,7 @@ window.onresize = () => { // rotate / resize
 		}
 		displayBars();
 	}, 0 );
-}
+} );
 function radioRefresh() {
 	if ( V.query.length ) {
 		var query = V.query.slice( -1 )[ 0 ];
