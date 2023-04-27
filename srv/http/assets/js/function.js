@@ -470,7 +470,8 @@ function getBio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<a class="name hide">${ artist }</a>
-	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist over"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist under"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
 	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -500,10 +501,10 @@ function getBio( artist, getsimilar ) {
 						if ( ! img0 ) img0 = src;
 					} );
 					imageshtml    += '</div>';
-					var $artist    = $( '#biocontent .artist' );
+					var $artist    = $( '#biocontent .artist.over' );
 					var $name      = $( '#biocontent .artist a' );
-					window.innerWidth > 480 ? $artist.before( imageshtml ) : $artist.after( imageshtml );
-					$name.prepend( '<img class="img0 hide" src="'+ img0 +'">' )
+					$artist.after( imageshtml );
+					$name.append( '<img class="img0 hide" src="'+ img0 +'">' )
 					var $img       = $( '#biocontent .img0' );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {

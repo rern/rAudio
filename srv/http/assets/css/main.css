@@ -1036,6 +1036,12 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
+#biocontent .artist.over { display: none }
+#biocontent .artist.under { display: block }
+@media ( max-width: 480px ) {
+	#biocontent .artist.over { display: block }
+	#biocontent .artist.under { display: none }
+}
 #biocontent .img0 {
 	height: 40px;
 	margin-right: 10px;

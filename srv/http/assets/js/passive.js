@@ -41,13 +41,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			displayPlayback();
 			setButtonControl();
 			setTimeout( renderPlayback, 50 );
-			if ( $( '#bio' ).hasClass( 'hide' ) ) {
-				if ( wW > 480 ) {
-					$( '#biocontent .artist' ).insertAfter( '#bioimg' );
-				} else {
-					$( '#biocontent .artist' ).insertBefore( '#bioimg' );
-				}
-			}
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
