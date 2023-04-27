@@ -238,7 +238,7 @@ lcdchar )
 	configTxt
 	;;
 lcdcharset )
-	killProcess lcdchar
+	killall lcdchar.py
 	$dirbash/lcdchar.py $ACTION
 	;;
 mirrorlist )

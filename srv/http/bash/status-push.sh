@@ -54,9 +54,8 @@ fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
-	killProcess lcdchar
+	killall lcdchar.py
 	$dirbash/lcdchar.py &> /dev/null &
-	echo $! > $dirshm/lcdchar
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
