@@ -1,3 +1,33 @@
+function radioRefresh() {
+	if ( V.query.length ) {
+		var query = V.query.slice( -1 )[ 0 ];
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : query.modetitle
+				, path      : query.path
+			}
+			renderLibraryList( data );
+		} );
+	} else {
+		$( '#mode-'+ V.mode ).click();
+	}
+}
+function statusUpdate( data ) {
+	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
+	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
+	setButtonControl();
+	setButtonOptions();
+	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
+}
+function webradioIcon( srcnoext ) {
+	var radiourl = decodeURIComponent( srcnoext )
+					.split( '/' ).pop()
+					.replace( /\|/g, '/' );
+	return $( '#lib-list li' ).filter( ( i, el ) => {
+		return $( el ).find( '.lipath' ).text() === radiourl;
+	} ).find( '.li-icon' );
+}
 // page resize -----------------------------------------------------------------
 window.addEventListener( 'resize', () => { // resize / rotate
 	var wW = window.innerWidth;
@@ -33,36 +63,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		displayBars();
 	}, 0 );
 } );
-function radioRefresh() {
-	if ( V.query.length ) {
-		var query = V.query.slice( -1 )[ 0 ];
-		list( query, function( html ) {
-			var data = {
-				  html      : html
-				, modetitle : query.modetitle
-				, path      : query.path
-			}
-			renderLibraryList( data );
-		} );
-	} else {
-		$( '#mode-'+ V.mode ).click();
-	}
-}
-function statusUpdate( data ) {
-	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	setButtonControl();
-	setButtonOptions();
-	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
-}
-function webradioIcon( srcnoext ) {
-	var radiourl = decodeURIComponent( srcnoext )
-					.split( '/' ).pop()
-					.replace( /\|/g, '/' );
-	return $( '#lib-list li' ).filter( ( i, el ) => {
-		return $( el ).find( '.lipath' ).text() === radiourl;
-	} ).find( '.li-icon' );
-}
 // pushstreamChannel() in common.js
 var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
 				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
