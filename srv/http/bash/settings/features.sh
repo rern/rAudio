@@ -274,17 +274,11 @@ nfsserver )
 			$dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} \
 			$filesharedip \
 			$dirshareddata/system/{display,order}.json     # set shares rwx for all users
-		if [[ -e $dirbackup/mpdnfs ]]; then                # if exists: use previous mpd data - backup current
-			mv -f $dirmpd $dirbackup
-			mv -f $dirbackup/mpdnfs $dirdata/mpd          
-			systemctl restart mpd
-		else                                               # else: build new mpd data
-			rm -f $dirmpd/{listing,updating}
-			mkdir -p $dirbackup
-			cp -r $dirmpd $dirbackup
-			systemctl restart mpd
-			$dirbash/cmd.sh mpcupdate$'\n'rescan
-		fi
+		rm -f $dirmpd/{listing,updating}
+		mkdir -p $dirbackup
+		cp -r $dirmpd $dirbackup
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate$'\n'rescan
 		systemctl enable --now nfs-server                  # start nfs server
 		pushstream display '{ "sd": false, "usb": false }' # hide sd, usb while not yet refreshed
 	else
@@ -300,9 +294,9 @@ nfsserver )
 			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
 		done
 		> /etc/exports
-		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
+		rm -rf $dirbackup
 		dirPermissions
 		systemctl restart mpd
 		pushstream display $( < $dirsystem/display.json )
