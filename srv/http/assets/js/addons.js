@@ -49,10 +49,10 @@ $( '.container' ).on( 'click', '.revision', function() {
 	}
 } ).on( 'click', '.thumbnail', function() {
 	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].click();
-} ).press( '.install', function( target ) {
+} ).press( '.install', function( e ) {
 	if ( ! S.status.online ) return
 	
-	addonData( $( target ) );
+	addonData( $( e.target ) );
 	info( {
 		  icon      : icon
 		, title     : V.addon.title
