@@ -128,7 +128,7 @@ $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 			return
 		}
 		
-		var line = '<wh>Reboot required for:</wh><p style="margin-top: 16px; line-height: 24px;">';
+		var line = '<wh>Reboot required for:</wh><p>';
 		list.split( '\n' ).forEach( id => line += ico( id ) + $( '#div'+ id +' .name' ).text() +'\n' );
 		info( {
 			  icon    : page
@@ -981,25 +981,29 @@ function infoMountRserver() {
 		, cancel     : switchCancel
 		, ok         : () => {
 			var ip = infoVal().IP;
-			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
 			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
-				var json = {
+				if ( list.slice( 0, 11 ) !== '/mnt/MPD/SD' ) {
+					info( {
+						  icon    : SW.icon
+						, title   : SW.title
+						, message : list
+						, ok      : infoMountRserver
+					} );
+					return
+				}
+				
+				info( {
 					  icon    : SW.icon
 					, title   : SW.title
 					, message : 'Server rAudio @<wh>'+ ip +'</wh> :'
 								+'<br><p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
+								+'<br>Connect?'
 					, cancel  : switchCancel
-					, ok      : infoMountRserver
-				}
-				if ( list.slice( 0, 6 ) === 'Server' ) {
-					json.message = list +'<br>Connect?'
-					json.ok      = () => {
+					, ok      : () => {
 						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
 						bash( [ 'shareddataconnect', ip, 'CMD IP' ] );
 					}
-				}
-				info( json );
-				bannerHide();
+				} );
 			} );
 		}
 	} );
