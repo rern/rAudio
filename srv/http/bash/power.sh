@@ -20,7 +20,7 @@ fi
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then
-	killall -w lcdchar.py &> /dev/null
+	systemctl stop lcdchar
 	$dirbash/lcdchar.py logo
 fi
 alsactl store

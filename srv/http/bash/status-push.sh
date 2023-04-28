@@ -9,12 +9,12 @@ if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
 	data=$2
 	pushstream mpdradio "$data"
-	cat << EOF > $dirshm/status
-$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
-timestamp=$( date +%s%3N )
+	statusnew=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
+	statusnew+='
+timestamp='$( date +%s%3N )'
 webradio=true
-player="mpd"
-EOF
+player="mpd"'
+	echo "$statusnew" > $dirshm/status
 	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
@@ -53,9 +53,8 @@ if systemctl -q is-active localbrowser; then
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
-	killall -w lcdchar.py &> /dev/null
-	$dirbash/lcdchar.py &> /dev/null &
+	sed -E 's/(true|false)$/\u\1/'  <<< $statusnew > $dirshm/lcdcharstatus.py
+	systemctl restart lcdchar
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then

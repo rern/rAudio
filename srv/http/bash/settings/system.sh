@@ -139,6 +139,7 @@ dtparam=krnbt=on"
 	else
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
+			killall bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
 			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
@@ -237,7 +238,7 @@ lcdchar )
 	configTxt
 	;;
 lcdcharset )
-	killall -w lcdchar.py &> /dev/null
+	systemctl stop lcdchar
 	$dirbash/lcdchar.py $ACTION
 	;;
 mirrorlist )
