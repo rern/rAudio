@@ -52,7 +52,7 @@ body {
 }
 pre hr {
 	margin : 10px 0 -10px -10px;
-	border : 1px solid #00ffff;
+	border : 1px solid var( --cml );
 }
 pre hr.hrlight {
 	border-top: none;
@@ -71,16 +71,16 @@ pre hr.hrlight {
 	user-select  : text;
 	-webkit-overflow-scrolling: touch;
 }
-.cbc  { color: #00ffff; background: #00ffff; }
+.cbc  { color: #00ffff; background: var( --cml ); }
 .cbg  { color: #00ff00; background: #00ff00; }
-.cbgr { color: #808080; background: #808080; }
+.cbgr { color: #808080; background: var( --cg ); }
 .cbr  { color: #ff0000; background: #ff0000; }
-.cbw  { color: #ffffff; background: #ffffff; }
+.cbw  { color: #ffffff; background: var( --cw ); }
 .cby  { color: #ffff00; background: #ffff00; }
-.cc   { color: #00ffff }
-.cgr  { color: #808080 }
+.cc   { color: var( --cml ) }
+.cgr  { color: var( --cg ) }
 .ck   { color: #000 }
-.cw   { color: #fff }
+.cw   { color: var( --cw ) }
 </style>
 
 <div id="infoOverlay" class="info hide">
