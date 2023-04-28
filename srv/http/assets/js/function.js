@@ -1038,10 +1038,6 @@ function renderLibrary() { // library home
 	$( '#lib-search-input' ).val( '' );
 	$( '#page-library .content-top, #lib-list' ).addClass( 'hide' );
 	$( '#page-library .content-top, #lib-mode-list' ).removeClass( 'hide' );
-	if ( D.shareddata ) {
-		D.sd  === false;
-		D.usb === false;
-	}
 	$( '.mode:not( .mode-bookmark )' ).each( ( i, el ) => {
 		var name = el.id.replace( 'mode-', '' );
 		$( el ).parent().toggleClass( 'hide', ! D[ name ] );
