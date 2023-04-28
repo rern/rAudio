@@ -300,7 +300,6 @@ nfsserver )
 			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
 		done
 		> /etc/exports
-		mkdir -p $dirbackup
 		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
