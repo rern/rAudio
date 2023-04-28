@@ -997,7 +997,7 @@ function infoMountRserver() {
 					, title   : SW.title
 					, message : 'Server rAudio @<wh>'+ ip +'</wh> :'
 								+'<br><p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
-								+'<br>Connect?'
+								+'Connect?'
 					, cancel  : switchCancel
 					, ok      : () => {
 						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
