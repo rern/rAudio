@@ -102,7 +102,7 @@ if [[ $connected  ]]; then
 			[[ ! $ip ]] && continue
 			
 			for i in {1..10}; do
-				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
+				if ipOnline $ip; then
 					mount "$mountpoint" && break
 				else
 					(( i == 10 )) && nasfailed=1

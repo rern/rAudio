@@ -164,10 +164,6 @@ enableFlagSet() {
 exists() {
 	[[ -e $1 ]] && echo true || echo false
 }
-serviceRestartEnable() {
-	systemctl restart $CMD
-	systemctl -q is-active $CMD && systemctl enable $CMD
-}
 getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
@@ -183,7 +179,7 @@ getVar(){
 	stringEscape $line
 }
 internetConnected() {
-	ping -c 1 -w 1 8.8.8.8 &> /dev/null && return 0 || return 1
+	ipOnline 8.8.8.8
 }
 ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
@@ -191,6 +187,9 @@ ipAddress() {
 ipSub() {
 	ip=$( ipAddress )
 	echo ${ip%.*}.
+}
+ipOnline() {
+	ping -c 1 -w 1 $1 &> /dev/null && return 0
 }
 killProcess() {
 	local filepid
@@ -254,12 +253,16 @@ pushstream() {
 		done
 	fi
 }
+serviceRestartEnable() {
+	systemctl restart $CMD
+	systemctl -q is-active $CMD && systemctl enable $CMD
+}
 space2ascii() {
 	echo ${1// /\\040}
 }
 sshCommand() { # $1=ip or --getdata (optional)
 	[[ $1 == '--getdata' ]] && shift && getdata=1
-	! ping -c 1 -w 1 $1 &> /dev/null && return
+	! ipOnline $1 && return
 	
 	[[ $getdata ]] && sshpassCmd $@ || sshpassCmd $@ &> /dev/null &
 }

@@ -6,7 +6,7 @@ args2var "$1"
 
 mountpoint="$dirnas/$NAME"
 
-! ping -c 1 -w 1 $IP &> /dev/null && echo "IP address not found: <wh>$IP</wh>" && exit
+! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
 
 [[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
 

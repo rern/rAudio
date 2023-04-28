@@ -58,7 +58,7 @@ sharedDataIPlist() {
 	list=$( ipAddress )
 	iplist=$( grep -v $list $filesharedip )
 	for ip in $iplist; do
-		if ping -c 1 -w 1 $ip &> /dev/null; then
+		if ipOnline $ip; then
 			list+=$'\n'$ip
 			[[ $1 ]] && sshCommand $ip $dirsettings/system.sh shareddatarestart
 		fi
@@ -420,7 +420,7 @@ rotaryencoder )
 shareddataconnect )
 	if [[ ! $IP && -e $dirsystem/sharedipserver ]]; then # sshpass from server to reconnect
 		IP=$( < $dirsystem/sharedipserver )
-		! ping -c 1 -w 1 $IP &> /dev/null && exit
+		! ipOnline $IP && exit
 		
 		reconnect=1
 	fi
@@ -506,7 +506,7 @@ shareddataset )
 	sharedDataSet
 	;;
 sharelist )
-	! ping -c 1 -w 1 $IP &> /dev/null && echo "IP address not found: <wh>$IP</wh>" && exit
+	! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
 	
 #	if [[ $protocol == smb ]]; then
 #		script -c "timeout 10 smbclient -NL $IP" $dirshm/smblist &> /dev/null # capture /dev/tty to file

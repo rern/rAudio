@@ -60,7 +60,7 @@ $info"
 connect )
 	[[ $ADDRESS ]] && ip=static || ip=dhcp
 	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
-		if ping -c 1 -w 1 $ADDRESS &> /dev/null; then
+		if ipOnline $ADDRESS; then
 			rm "$file"
 			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
 			exit
@@ -110,7 +110,7 @@ disconnect )
 	;;
 lanedit )
 	if [[ $IP ]]; then
-		ping -c 1 -w 1 $IP &> /dev/null && echo -1 && exit
+		ipOnline $IP && echo -1 && exit
 	fi
 	
 	file=/etc/systemd/network/en.network
