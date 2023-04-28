@@ -37,7 +37,7 @@ localbrowserXset() {
 	fi
 }
 nfsShareList() {
-	sed '/^$/ d; s|^|<i class="i-folder gr"></i>|' <<< "\
+	awk NF <<< "\
 $dirsd
 $( find $dirusb -mindepth 1 -maxdepth 1 -type d )
 $dirdata"

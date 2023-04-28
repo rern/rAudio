@@ -514,8 +514,7 @@ sharelist )
 #	fi
 	paths=$( timeout 5 showmount --no-headers -e $IP 2> /dev/null \
 				| awk 'NF{NF-=1};1' \
-				| sort \
-				| sed '/^$/ d; s|^|<i class="i-folder gr"></i>|' )
+				| sort )
 	[[ $paths ]] && echo "$paths" || echo "No NFS shares found."
 	;;
 softlimit )
