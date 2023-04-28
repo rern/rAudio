@@ -455,8 +455,8 @@ $IP:$( space2ascii $path )  $( space2ascii $dir )  $options"                    
 	fi
 	;;
 shareddatadisconnect )
-	! grep -q $dirshareddata /etc/fstab && echo -1 && exit
-	
+	list=$( grep -v $( ipAddress ) $filesharedip )
+	echo "$list" > $filesharedip # fix: sed temp file permission
 	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
 		if [[ -L $dirdata/$dir ]]; then
 			rm -rf $dirdata/$dir
@@ -467,7 +467,6 @@ shareddatadisconnect )
 	mv -f $dirbackup/{display,order}.json $dirsystem
 	rmdir $dirbackup &> /dev/null
 	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
-	sed -i "/$( ipAddress )/ d" $filesharedip
 	mpc -q clear
 	if grep -q -m1 ":$dirsd " /etc/fstab; then # client of server rAudio
 		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
