@@ -139,7 +139,6 @@ dtparam=krnbt=on"
 	else
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
-			killall bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
 			grep -q -m1 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 		fi
