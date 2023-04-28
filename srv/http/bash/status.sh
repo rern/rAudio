@@ -70,7 +70,7 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	if [[ -e $filesharedip && $nfsserver ]]; then
+	if [[ -e $filesharedip && ! $nfsserver ]]; then
 		display=$( grep -Ev 'sd|usb|}' $dirsystem/display.json )
 		display+='
 , "sd"  : false
