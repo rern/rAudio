@@ -38,7 +38,7 @@ else
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
-	nfsserver=$( grep -q /srv/http/data /etc/exports && echo true )
+	nfsserver=$( [[ -L $dirshareddata ]] && echo true )
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
