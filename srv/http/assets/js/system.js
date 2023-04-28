@@ -983,7 +983,6 @@ function infoMountRserver() {
 			var ip = infoVal().IP;
 			notify( SW.icon, SW.title, 'Connect rAudio Sever ...' );
 			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
-				consolee.log(list)
 				var json = {
 					  icon    : SW.icon
 					, title   : SW.title
