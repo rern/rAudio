@@ -38,6 +38,7 @@ else
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
+	nfsserver=$( grep -q /srv/http/data /etc/exports && echo true )
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
@@ -47,6 +48,7 @@ else
 , "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
+, "nfsserver"    : '$nfsserver'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
@@ -68,7 +70,7 @@ if [[ $1 == withdisplay ]]; then
 	fi
 	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	if [[ -e $filesharedip ]]; then
+	if [[ -e $filesharedip && $nfsserver ]]; then
 		display=$( grep -Ev 'sd|usb|}' $dirsystem/display.json )
 		display+='
 , "sd"  : false
