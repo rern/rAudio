@@ -104,7 +104,7 @@ disconnect )
 	connected=$( iwgetid $wlandev -r )
 	netctl stop "$connected"
 	netctl disable "$connected"
-	killall wpa_supplicant
+	killall -w wpa_supplicant &> /dev/null
 	ifconfig $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
@@ -147,7 +147,7 @@ profileremove )
 	netctl is-enabled "$SSID" && netctl disable "$SSID"
 	if netctl is-active "$SSID" &> /dev/null; then
 		netctl stop "$SSID"
-		killall wpa_supplicant &> /dev/null &
+		killall -w wpa_supplicant &> /dev/null
 		wlandev=$( < $dirshm/wlan )
 		ifconfig $wlandev up
 	fi

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $1 == abort ]]; then
-	killall $2 wget pacman &> /dev/null
+	killall $2 wget pacman &> /dev/null &
 	rm -f /var/lib/pacman/db.lck /srv/http/*.zip /usr/local/bin/uninstall_$3.sh
 	exit
 fi
