@@ -977,7 +977,7 @@ function infoMountRserver() {
 		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
 		, textlabel  : 'Server IP'
 		, values     : { IP: I.active ? infoVal().IP : S.ipsub }
-		, checkip    : [ 1 ]
+		, checkip    : [ 0 ]
 		, cancel     : switchCancel
 		, ok         : () => {
 			var ip = infoVal().IP;
