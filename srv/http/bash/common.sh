@@ -264,7 +264,11 @@ sshCommand() { # $1=ip or --getdata (optional)
 	[[ $1 == '--getdata' ]] && shift && getdata=1
 	! ipOnline $1 && return
 	
-	[[ $getdata ]] && sshpassCmd $@ || sshpassCmd $@ &> /dev/null &
+	if [[ $getdata ]]; then
+		sshpassCmd $@
+	else
+		sshpassCmd $@ &> /dev/null &
+	fi
 }
 sshpassCmd() {
 	sshpass -p ros ssh -q \
