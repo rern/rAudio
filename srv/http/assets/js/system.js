@@ -831,7 +831,7 @@ ${ htmllcdchar.sleep }
 			  Object.keys( default_v.lcdchar_i2c )
 			, S.lcdcharconf || default_v.lcdchar_i2c
 		)
-		, checkchanged : S.lcdchar
+		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'i2c'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -860,7 +860,7 @@ ${ htmllcdchar.sleep }
 			  Object.keys( default_v.lcdchar_gpio )
 			, S.lcdcharconf || default_v.lcdchar_gpio
 		)
-		, checkchanged : S.lcdchar
+		, checkchanged : S.lcdchar && S.lcdcharconf.INF === 'gpio'
 		, beforeshow   : infoLcdcharButton
 		, cancel       : switchCancel
 		, ok           : switchEnable
