@@ -986,7 +986,8 @@ function infoMountRserver() {
 				var json = {
 					  icon    : SW.icon
 					, title   : SW.title
-					, message : list
+					, message : 'Server rAudio @<wh>'+ ip +'</wh> :'
+								+'<br><p class="wh">'+ list +'</p>'
 					, cancel  : switchCancel
 					, ok      : infoMountRserver
 				}
