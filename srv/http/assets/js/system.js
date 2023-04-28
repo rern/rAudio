@@ -987,7 +987,7 @@ function infoMountRserver() {
 					  icon    : SW.icon
 					, title   : SW.title
 					, message : 'Server rAudio @<wh>'+ ip +'</wh> :'
-								+'<br><p class="wh">'+ list +'</p>'
+								+'<br><p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
 					, cancel  : switchCancel
 					, ok      : infoMountRserver
 				}

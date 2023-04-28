@@ -434,7 +434,7 @@ $( '#nfsserver' ).click( function() {
 			  icon    : SW.icon
 			, title   : SW.title
 			, message : ( S.nfsserver ? 'Shared directories:' : 'Directories to share:' )
-						+'<br><p class="wh">'+ list +'</p>'
+						+'<p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
 						+ ( S.nfsserver ? 'Disable all shares?' : 'Continue?' )
 			, cancel  : switchCancel
 			, okcolor : S.nfsserver ? orange : ''
