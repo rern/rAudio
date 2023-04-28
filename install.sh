@@ -47,6 +47,15 @@ for file in display order; do
 	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
 done
 
+file=/etc/systemd/system/lcdchar.service
+if [[ ! -e $file ]]; then
+	echo '[Unit]
+Description=Character LCD
+
+[Service]
+ExecStart=/srv/http/bash/lcdchar.py' > $file
+	systemctl daemon-reload
+fi
 file=$dirsystem/lcdchar.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
