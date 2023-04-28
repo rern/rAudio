@@ -61,7 +61,7 @@ if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
 elif [[ -e $file ]]; then
 	. $file
-	data='inf="$inf"
+	data='inf="'$inf'"
 cols='$cols'
 charmap="'$charmap'"'
 	if [[ $address ]]; then
