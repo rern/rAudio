@@ -98,11 +98,11 @@ pushstream refresh '{"page":"features","state":"'$state'"}'
 [[ ! $scrobble ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 
 . <( echo "$statusprev" )
-[[ $webradio == false && $player != snapcast \
-	&& ( $player == mpd || grep -q $player=true $dirsystem/scrobble.conf ) \
-	&& $Artist && $Title ]] \
-	&& (( $Time > 30 )) \
-	&& $dirbash/scrobble.sh "\
+[[ ! $Artist || ! $Title || $Time < 30 || $webradio != false || $player == snapcast ]] && exit
+
+[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
+
+$dirbash/scrobble.sh "\
 $Artist
 $Title
 $Album

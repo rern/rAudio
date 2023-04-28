@@ -127,8 +127,10 @@ fi
 $dirsettings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected ........................................................
-\if [[ $connected ]]; then
-	internetConnected && $dirsettings/addons-data.sh &> /dev/null &
+if [[ $connected ]]; then
+	if internetConnected; then
+		$dirsettings/addons-data.sh &> /dev/null &
+	fi
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	$dirsettings/features.sh hostapdset
 	systemctl -q disable hostapd

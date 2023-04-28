@@ -825,7 +825,6 @@ radiorestart )
 	rm $disshm/radiorestart
 	;;
 relaystimerreset )
-	killProcess relaystimer
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{ "done": 1 }'
 	;;

@@ -114,9 +114,8 @@ if [[ ! $artist || ! $album ]]; then
 fi
 [[ ! $artist || ! $album ]] && exit
 
-args="\
+$dirbash/status-coverartonline.sh "\
 $artist
 $album
 audiocd
-$discid"
-$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+$discid" &> /dev/null &
