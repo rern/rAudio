@@ -260,11 +260,10 @@ serviceRestartEnable() {
 space2ascii() {
 	echo ${1// /\\040}
 }
-sshCommand() { # $1=ip or --getdata (optional)
-	[[ $1 == '--getdata' ]] && shift && getdata=1
+sshCommand() {
 	! ipOnline $1 && return
 	
-	if [[ $getdata ]]; then
+	if [[ ${@: -1} == snapclient ]]; then
 		sshpassCmd $@
 	else
 		sshpassCmd $@ &> /dev/null &
