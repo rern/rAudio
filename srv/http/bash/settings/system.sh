@@ -464,7 +464,7 @@ shareddatadisconnect )
 	done
 	rm $dirsystem/{display,order}.json
 	mv -f $dirbackup/{display,order}.json $dirsystem
-	rmdir $dirbackup &> /dev/null
+	rm -rf $dirbackup
 	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
 	mpc -q clear
 	if grep -q -m1 ":$dirsd " /etc/fstab; then # client of server rAudio
