@@ -102,6 +102,10 @@ cursor=$( [[ $cursor == yes ]] && echo true )"
 	echo "$conf" > $file
 fi
 
+if grep -q /srv/http/data /etc/exports; then
+	[[ -e /mnt/MPD/.mpdignore ]] && rm /mnt/MPD/.mpdignore
+fi
+
 file=$dirsystem/relays.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
