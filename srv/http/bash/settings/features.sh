@@ -277,13 +277,12 @@ nfsserver )
 		systemctl enable --now nfs-server                  # start nfs server
 	else
 		systemctl disable --now nfs-server
-		rm -f $filesharedip $dirmpd/{listing,updating}
 		> /etc/exports
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
-		rm -rf $dirbackup
+		rm -rf $dirbackup $dirshareddata
+		rm -f $filesharedip $dirmpd/{listing,updating} $dirnas/.mpdignore
 		dirPermissions
-		pushstream display $( < $dirsystem/display.json )
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$TF'}'
