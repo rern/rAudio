@@ -155,7 +155,7 @@ dirPermissions() {
 dirPermissionsShared() {
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
 	chown -h mpd:audio $dirmpd $dirplaylists
-	[[ ! -L $dirshareddata ]] && echo SD$'\n'USB > /mnt/MPD/.mpdignore
+	! grep -q /srv/http/data /etc/exports && echo SD$'\n'USB > /mnt/MPD/.mpdignore
 	echo data > $dirnas/.mpdignore
 }
 enableFlagSet() {

@@ -261,13 +261,12 @@ nfsserver )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
 			list+="$( space2ascii $path ) $options"$'\n'
-			name=$( basename "$path" )
-			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			ln -s "$path" "$dirnas/$name"                  # set as symlink to /mnt/MPD/NAS
 		done
 		column -t <<< $list > /etc/exports                 # save for nfs: /etc/exports
+		mkdir -p $dirbackup $dirshareddata
+		cp -r $dirmpd $dirbackup
 		cp -f $dirsystem/{display,order}.json $dirbackup   # backup: display.json, order.json
-		echo $ip > $filesharedip                           # save ip for broadcast update
+		ipAddress > $filesharedip                           # save ip for broadcast update
 		touch $dirshareddata/system/order.json # in case not set yet
 		dirPermissionsShared                               # set symlink permissions
 		chmod -R 777 \
@@ -275,30 +274,15 @@ nfsserver )
 			$filesharedip \
 			$dirshareddata/system/{display,order}.json     # set shares rwx for all users
 		rm -f $dirmpd/{listing,updating}
-		mkdir -p $dirbackup
-		cp -r $dirmpd $dirbackup
-		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate$'\n'rescan
 		systemctl enable --now nfs-server                  # start nfs server
-		pushstream display '{ "sd": false, "usb": false }' # hide sd, usb while not yet refreshed
 	else
 		systemctl disable --now nfs-server
-		rm -f /mnt/MPD/.mpdignore \
-			$dirnas/.mpdignore \
-			$filesharedip \
-			$dirmpd/{listing,updating}
-		for path in "${paths[@]}"; do
-			chmod 755 "$path"
-			name=$( basename "$path" )
-			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
-		done
+		rm -f $filesharedip $dirmpd/{listing,updating}
 		> /etc/exports
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
 		rm -rf $dirbackup
 		dirPermissions
-		systemctl restart mpd
 		pushstream display $( < $dirsystem/display.json )
 	fi
 	pushRefresh

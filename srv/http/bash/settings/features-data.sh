@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ -L $dirshareddata ]]       = server rAudio
-#    [[ -L $dirmpd ]]              = clients
-#    grep -q -m1 ":$dirsd" /etc/fstab  = clients with server rAudio
-#    [[ -e $filesharedip ]]        = server + clients
+#    grep -q /srv/http/data /etc/exports = server rAudio
+#    [[ -L $dirmpd ]]                    = clients
+#    grep -q -m1 ":$dirsd" /etc/fstab    = clients with server rAudio
+#    [[ -e $filesharedip ]]              = server + clients
 
 . /srv/http/bash/common.sh
 
@@ -30,7 +30,7 @@ data+='
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
-, "nfsserver"        : '$( [[ -L $dirshareddata ]] && echo true )'
+, "nfsserver"        : '$( grep -q /srv/http/data /etc/exports && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
