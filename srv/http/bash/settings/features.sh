@@ -254,35 +254,58 @@ multiraudioreset )
 	rm -f $dirsystem/multiraudio*
 	;;
 nfsserver )
-	readarray -t paths <<< $( nfsShareList )               # get shred path: USB/*/ (root dirs), /mnt/MPD/SD, /srv/http/data
+	active=${args[1]}
+	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $ON ]]; then
+		mkdir -p $dirbackup $dirshareddata
 		ip=$( ipAddress )
 		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
 		for path in "${paths[@]}"; do
-			list+="$( space2ascii $path ) $options"$'\n'
+			chmod 777 "$path"
+			list+="${path// /\\040} $options"$'\n'
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			ln -s "$path" "$dirnas/$name"
 		done
-		column -t <<< $list > /etc/exports                 # save for nfs: /etc/exports
-		mkdir -p $dirbackup $dirshareddata
-		cp -r $dirmpd $dirbackup
-		cp -f $dirsystem/{display,order}.json $dirbackup   # backup: display.json, order.json
-		ipAddress > $filesharedip                           # save ip for broadcast update
-		touch $dirshareddata/system/order.json # in case not set yet
-		dirPermissionsShared                               # set symlink permissions
+		column -t <<< $list > /etc/exports
+		systemctl enable --now nfs-server
+		echo $ip > $filesharedip
+		cp -f $dirsystem/{display,order}.json $dirbackup
+		cp -rf $dirmpd $dirbackup
+		touch $dirshareddata/system/order.json # in case not exist
 		chmod -R 777 \
 			$dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} \
 			$filesharedip \
-			$dirshareddata/system/{display,order}.json     # set shares rwx for all users
-		rm -f $dirmpd/{listing,updating}
-		systemctl enable --now nfs-server                  # start nfs server
+			$dirshareddata/system/{display,order}.json
+		dirPermissionsShared
+		if [[ -e $dirbackup/mpdnfs ]]; then
+			mv -f $dirbackup/mpdnfs $dirdata/mpd
+			systemctl restart mpd
+		else
+			rm -f $dirmpd/{listing,updating}
+			systemctl restart mpd
+			$dirbash/cmd.sh mpcupdate$'\n'rescan
+		fi
 	else
 		systemctl disable --now nfs-server
 		> /etc/exports
+		rm -f /mnt/MPD/.mpdignore \
+			$dirnas/.mpdignore \
+			$filesharedip \
+			$dirmpd/{listing,updating}
+		for path in "${paths[@]}"; do
+			chmod 755 "$path"
+			name=$( basename "$path" )
+			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
+			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
+		done
+		mv -f $dirmpd $dirbackup/mpdnfs
 		mv -f $dirbackup/mpd $dirdata
 		mv -f $dirbackup/{display,order}.json $dirsystem
-		rm -rf $dirbackup $dirshareddata
-		rm -f $filesharedip $dirmpd/{listing,updating} $dirnas/.mpdignore
 		dirPermissions
+		systemctl restart mpd
+		pushstream display $( < $dirsystem/display )
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$TF'}'
