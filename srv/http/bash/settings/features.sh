@@ -37,9 +37,11 @@ localbrowserXset() {
 	fi
 }
 nfsShareList() {
-	awk NF <<< "\
+	usbsubdir=$( find $dirusb -mindepth 1 -maxdepth 1 -type d )
+	[[ ! $usbsubdir ]] && usbsubdir=$dirusb
+	echo "\
 $dirsd
-$( find $dirusb -mindepth 1 -maxdepth 1 -type d )
+$usbsubdir
 $dirdata"
 }
 spotifyReset() {
@@ -258,9 +260,7 @@ nfsserver )
 	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $ON ]]; then
-		mkdir -p $dirbackup $dirshareddata
-		ip=$( ipAddress )
-		options="${ip%.*}.0/24(rw,sync,no_subtree_check)"
+		options=$( ipSub )'0/24(rw,sync,no_subtree_check)'
 		for path in "${paths[@]}"; do
 			chmod 777 "$path"
 			list+="${path// /\\040} $options"$'\n'
@@ -270,7 +270,8 @@ nfsserver )
 		done
 		column -t <<< $list > /etc/exports
 		systemctl enable --now nfs-server
-		echo $ip > $filesharedip
+		ipAddress > $filesharedip
+		mkdir -p $dirbackup
 		cp -f $dirsystem/{display,order}.json $dirbackup
 		cp -rf $dirmpd $dirbackup
 		touch $dirshareddata/system/order.json # in case not exist
@@ -294,6 +295,7 @@ nfsserver )
 			$dirnas/.mpdignore \
 			$filesharedip \
 			$dirmpd/{listing,updating}
+		rm -rf $dirshareddata
 		for path in "${paths[@]}"; do
 			chmod 755 "$path"
 			name=$( basename "$path" )
