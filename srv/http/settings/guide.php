@@ -62,7 +62,7 @@ echo $html;
 nlibrary  = 23;
 nplaylist = 40;
 nsettings = 48;
-ntotal    = 60;
+ntotal    = 59;
 n         = 1;
 E         = {};
 [ 'close', 'container', 'count', 'helpblock', 'helphead', 'image', 'next', 'prev' ].forEach( ( el ) => {
