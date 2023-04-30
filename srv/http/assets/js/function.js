@@ -751,7 +751,7 @@ function infoUpdate( path ) {
 	} );
 }
 function libraryHome() {
-	$.post( 'mpdlibrary.php', { query: 'home' }, function( data ) {
+	list( { query: 'home' }, function( data ) {
 		C        = data.counts;
 		O        = data.order;
 		var html = data.html;

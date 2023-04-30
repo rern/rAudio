@@ -142,8 +142,7 @@ case 'ls':
 	if ( isset( $subdirs ) ) {
 		exec( 'mpc ls -f %file% "'.$string.'" 2> /dev/null'
 			, $lists );
-		$count = count( $lists );
-		if ( ! $count ) exit( '-1' );
+		if ( ! count( $lists ) ) exit;
 		
 		htmlDirectory( $lists );
 	} else {
@@ -296,7 +295,7 @@ function htmlDirectory( $lists ) {
 	echo $html;
 }
 function htmlFind( $lists, $f ) { // non-file 'find' command
-	if ( ! count( $lists ) ) exit( '-1' );
+	if ( ! count( $lists ) ) exit;
 	
 	global $mode;
 	global $gmode;
@@ -352,7 +351,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
-	if ( ! count( $lists ) ) exit( '-1' );
+	if ( ! count( $lists ) ) exit;
 	
 	global $mode;
 	global $gmode;
@@ -479,10 +478,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	echo $html;
 }
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
-	if ( ! count( $lists ) ) {
-		echo -1;
-		exit;
-	}
+	if ( ! count( $lists ) ) exit;
 	
 	global $mode;
 	global $gmode;
