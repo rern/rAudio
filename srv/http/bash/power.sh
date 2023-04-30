@@ -4,16 +4,15 @@
 
 [[ $1 == reboot ]] && reboot=1
 if [[ -s /etc/exports ]]; then # server rAudio
-	[[ ! $2 && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
+	[[ ! $2 && (( $( wc -l < $filesharedip ) > 1 )) ]] && echo -1 && exit
 	
-	cp $filesharedip{,.backup}
 	ips=$( grep -v $( ipAddress ) $filesharedip )
 	if [[ $ips ]]; then
 		for ip in $ips; do
 			sshCommand $ip $dirsettings/system.sh shareddatadisconnect
 		done
 	fi
-elif [[ -e $filesharedip ]]; then # rclient
+elif [[ -e $filesharedip ]]; then # shareddata client
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
 [[ $reboot ]] && notify -blink reboot System 'Reboot ...' || notify -blink power System 'Off ...'

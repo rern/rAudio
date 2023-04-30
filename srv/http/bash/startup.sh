@@ -112,7 +112,6 @@ if [[ $connected  ]]; then
 		done
 	fi
 	if [[ -s /etc/exports ]]; then # server rAudio
-		mv -f $filesharedip{.backup,}
 		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do
 			sshCommand $ip $dirsettings/system.sh shareddataconnect
