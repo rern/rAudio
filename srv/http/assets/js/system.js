@@ -1183,7 +1183,7 @@ function renderPage() {
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	$( '#usbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
+	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! S.bluetoothactive );
