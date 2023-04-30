@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # shareddata:
-#    grep -q /srv/http/data /etc/exports = server rAudio
-#    [[ -L $dirmpd ]]                    = clients
-#    grep -q -m1 ":$dirsd" /etc/fstab    = clients with server rAudio
-#    [[ -e $filesharedip ]]              = server + clients
+#    [[ -s /etc/exports ]]                 = server rAudio
+#    [[ -L $dirmpd && ! -s /etc/exports ]] = clients
+#    grep -q -m1 :/mnt/MPD/NAS /etc/fstab  = clients with server rAudio
+#    [[ -e $dirdata/sharedip ]]            = server + clients
 
 . /srv/http/bash/common.sh
 
@@ -30,12 +30,12 @@ data+='
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
 , "nfsconnected"     : '$( [[ $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo true )'
-, "nfsserver"        : '$( grep -q /srv/http/data /etc/exports && echo true )'
+, "nfsserver"        : '$( [[ -s /etc/exports ]] && echo true )'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
 , "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
-, "shareddata"       : '$( [[ -L $dirmpd ]] && echo true )'
+, "shareddata"       : '$( [[ -L $dirmpd && ! -s /etc/exports ]] && echo true )'
 , "state"            : "'$( getVar state $dirshm/status )'"
 , "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )

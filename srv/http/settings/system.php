@@ -123,7 +123,6 @@ htmlSetting( [
 ] );
 htmlSetting( [
 	  'id'       => 'usbautoupdate'
-	, 'disabled' => 'js'
 	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';

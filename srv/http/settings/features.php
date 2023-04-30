@@ -13,7 +13,7 @@ $id_data = [
 	, 'login'          => [ 'name' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
 	, 'lyricsembedded' => [ 'name' => 'Lyrics in File',   'sub' => 'embedded ID3',   'setting' => false ]
 	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
-	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => 'custom', 'status' => true ]
+	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
 	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
 	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
 	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'smb',                                   'status' => true ]

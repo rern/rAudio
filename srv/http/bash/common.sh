@@ -152,12 +152,6 @@ dirPermissions() {
 	chmod -R u=rw,go=r,a+X /srv
 	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py} &> /dev/null
 }
-dirPermissionsShared() {
-	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio}
-	chown -h mpd:audio $dirmpd $dirplaylists
-	echo data > $dirnas/.mpdignore
-	! grep -q /srv/http/data /etc/exports && echo SD$'\n'USB > /mnt/MPD/.mpdignore
-}
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
 }
@@ -213,7 +207,7 @@ notify() { # icon title message delayms
 	pushstream notify '{"icon":"'$1$blink'","title":"'$title'","message":"'$message'","delay":'$delay'}'
 }
 packageActive() {
-	local pkgs pkg active i
+	local pkgs pkg active
 	pkgs=$@
 	active=( $( systemctl is-active $pkgs | sed 's/inactive/false/; s/active/true/' ) )
 	i=0
@@ -256,6 +250,32 @@ pushstream() {
 serviceRestartEnable() {
 	systemctl restart $CMD
 	systemctl -q is-active $CMD && systemctl enable $CMD
+}
+sharedDataBackupLink() {
+	mv -f $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirbackup
+	mv -f $dirsystem/{display,order}.json $dirbackup
+	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
+	ln -s $dirshareddata/{display,order}.json $dirsystem
+	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
+	chown -h mpd:audio $dirdata/{mpd,playlists}
+	echo data > $dirnas/.mpdignore
+	touch $dirsystem/usbautoupdateno
+}
+sharedDataCopy() {
+	rm -f $dirmpd/{listing,updating}
+	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
+	rm $dirshareddata/{bookmarks,playlists}/*
+	cp $dirsystem/{display,order}.json $dirshareddata
+	touch $dirshareddata/order.json
+}
+sharedDataReset() {
+	mpc -q clear
+	rm -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio}
+	rm $dirsystem/{display,order}.json
+	mv -f $dirbackup/{display,order}.json $dirsystem
+	mv -f $dirbackup/* $dirdata
+	rm -rf $dirbackup
+	dirPermissions
 }
 space2ascii() {
 	echo ${1// /\\040}

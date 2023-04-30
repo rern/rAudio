@@ -683,9 +683,9 @@ function infoLibrary() {
 		, values       : values
 		, checkchanged : true
 		, beforeshow   : () => {
-			var $el  = {}
+			var $el  = {};
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
-			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata && ! S.nfsserver );
+			$el.sd.add( $el.usb ).prop( 'disabled', S.shareddata );
 		}
 		, ok           : displaySave
 	} );

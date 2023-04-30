@@ -417,34 +417,6 @@ $( '#setting-scrobble' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#nfsserver' ).click( function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : $this.prev().html()
-		} );
-		$this.prop( 'checked', S.nfsserver );
-		return
-	}
-	
-	bash( [ 'nfssharelist' ], list => {
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : ( S.nfsserver ? 'Shared directories:' : 'Directories to share:' )
-						+'<p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
-						+ ( S.nfsserver ? 'Disable all shares?' : 'Continue?' )
-			, cancel  : switchCancel
-			, okcolor : S.nfsserver ? orange : ''
-			, ok      : () => {
-				bash( S.nfsserver ? [ 'nfsserver', 'OFF' ] : [ 'nfsserver' ] ); // enable if not active
-				notifyCommon( ! S.nfsserver );
-			}
-		} );
-	} );
-} );
 $( '#setting-stoptimer' ).click( function() {
 	info( {
 		  icon         : SW.icon

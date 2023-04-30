@@ -92,10 +92,9 @@ if [[ $ifconfiglan ]]; then
 	fi
 fi
 
-packageActive bluetooth hostapd nfs-server rotaryencoder smb
+packageActive bluetooth hostapd rotaryencoder smb
 
 # sd, usb and nas
-smb=$smb
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
@@ -104,8 +103,6 @@ if mount | grep -q -m1 'mmcblk0p2 on /'; then
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q -m1 $dirsd /etc/exports && echo true )'
-, "smb"        : '$smb'
 }'
 fi
 usb=$( mount | grep ^/dev/sd | cut -d' ' -f1 )
@@ -121,8 +118,6 @@ if [[ $usb ]]; then
 , "mounted"    : true
 , "source"     : "'$source'"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
-, "nfs"        : '$( grep -q -m1 "$mountpoint" /etc/exports && echo true )'
-, "smb"        : '$( [[ $smb == true && $mountpoint == $dirusb ]] && echo true )'
 }'
 		else
 			label=$( e2label $source )
@@ -235,7 +230,7 @@ data+='
 , "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
-, "nfsserver"         : '$nfsserver'
+, "nfsserver"         : '$( [[ -s /etc/exports ]] && echo true )'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
 , "powerbutton"       : '$( grep -q gpio-shutdown /boot/config.txt && echo true )'
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
@@ -246,7 +241,7 @@ data+='
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd ]] && echo true )'
+, "shareddata"        : '$( [[ -L $dirmpd && ! -s /etc/exports ]] && echo true )'
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"

@@ -36,14 +36,6 @@ localbrowserXset() {
 		xset +dpms
 	fi
 }
-nfsShareList() {
-	usbsubdir=$( find $dirusb -mindepth 1 -maxdepth 1 -type d )
-	[[ ! $usbsubdir ]] && usbsubdir=$dirusb
-	echo "\
-$dirsd
-$usbsubdir
-$dirdata"
-}
 spotifyReset() {
 	notify -blink spotify 'Spotify Client' "$1"
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
@@ -256,64 +248,39 @@ multiraudioreset )
 	rm -f $dirsystem/multiraudio*
 	;;
 nfsserver )
-	active=${args[1]}
-	readarray -t paths <<< $( nfsShareList )
 	mpc -q clear
 	if [[ $ON ]]; then
-		options=$( ipSub )'0/24(rw,sync,no_subtree_check)'
-		for path in "${paths[@]}"; do
-			chmod 777 "$path"
-			list+="${path// /\\040} $options"$'\n'
-			name=$( basename "$path" )
-			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			ln -s "$path" "$dirnas/$name"
-		done
-		column -t <<< $list > /etc/exports
+		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
+		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
+		systemctl restart devmon@http
+		echo "/mnt/MPD/NAS  $( ipSub )0/24(rw,sync,no_subtree_check)" > /etc/exports
 		systemctl enable --now nfs-server
+		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
-		mkdir -p $dirbackup
-		cp -f $dirsystem/{display,order}.json $dirbackup
-		cp -rf $dirmpd $dirbackup
-		touch $dirshareddata/system/order.json # in case not exist
-		chmod -R 777 \
-			$dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} \
-			$filesharedip \
-			$dirshareddata/system/{display,order}.json
-		dirPermissionsShared
-		if [[ -e $dirbackup/mpdnfs ]]; then
-			mv -f $dirbackup/mpdnfs $dirdata/mpd
-			systemctl restart mpd
-		else
-			rm -f $dirmpd/{listing,updating}
-			systemctl restart mpd
-			$dirbash/cmd.sh mpcupdate$'\n'rescan
+		if [[ ! -e $dirshareddata/mpd ]]; then
+			rescan=$'\n'rescan
+			sharedDataCopy
+			chown -R http:http $dirshareddata
+			chown -R mpd:audio $dirshareddata/{mpd,playlists}
 		fi
+		chmod 777 $dirnas
+		chmod -R 777 $dirshareddata
+		sharedDataBackupLink
+		systemctl restart mpd
+		$dirbash/cmd.sh mpcupdate$rescan
 	else
+		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
+		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+		systemctl restart devmon@http
+		chmod 755 $dirnas
 		systemctl disable --now nfs-server
 		> /etc/exports
-		rm -f /mnt/MPD/.mpdignore \
-			$dirnas/.mpdignore \
-			$filesharedip \
-			$dirmpd/{listing,updating}
-		rm -rf $dirshareddata
-		for path in "${paths[@]}"; do
-			chmod 755 "$path"
-			name=$( basename "$path" )
-			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			[[ -L "$dirnas/$name" ]] && rm "$dirnas/$name"
-		done
-		mv -f $dirmpd $dirbackup/mpdnfs
-		mv -f $dirbackup/mpd $dirdata
-		mv -f $dirbackup/{display,order}.json $dirsystem
-		dirPermissions
+		rm $filesharedip
+		sharedDataReset
 		systemctl restart mpd
-		pushstream display $( < $dirsystem/display )
 	fi
 	pushRefresh
 	pushstream refresh '{"page":"system","nfsserver":'$TF'}'
-	;;
-nfssharelist )
-	nfsShareList
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1

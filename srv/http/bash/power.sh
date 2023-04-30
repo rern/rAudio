@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 [[ $1 == reboot ]] && reboot=1
-if grep -q /srv/http/data /etc/exports; then # server rAudio
+if [[ -s /etc/exports ]]; then # server rAudio
 	[[ ! $2 && $( ls /proc/fs/nfsd/clients 2> /dev/null ) ]] && echo -1 && exit
 	
 	cp $filesharedip{,.backup}

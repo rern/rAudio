@@ -25,6 +25,7 @@ files=(
 	/etc/fstab
 	/etc/mpdscribble.conf
 	/etc/upmpdcli.conf
+	/mnt/MPD/NAS/data
 	/var/lib/alsa/asound.state
 )
 for file in ${files[@]}; do

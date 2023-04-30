@@ -66,25 +66,16 @@ sharedDataIPlist() {
 	sort -u <<< $list | awk NF > $filesharedip
 }
 sharedDataSet() {
-	rm -f $dirmpd/{listing,updating}
 	mkdir -p $dirbackup
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		[[ ! -e $dirshareddata/$dir ]] && cp -r $dirdata/$dir $dirshareddata  # not server rAudio - initial setup
-		rm -rf $dirbackup/$dir
-		mv -f $dirdata/$dir $dirbackup
-		ln -s $dirshareddata/$dir $dirdata
-	done
-	if [[ ! -e $dirshareddata/system ]]; then                                 # not server rAudio - initial setup
-		mkdir $dirshareddata/system
-		cp -f $dirsystem/{display,order}.json $dirshareddata/system
+	if [[ ! -e $dirshareddata/mpd ]]; then
+		rescan=1
+		sharedDataCopy
 	fi
-	touch $filesharedip $dirshareddata/system/order.json
-	mv $dirsystem/{display,order}.json $dirbackup
-	ln -s $dirshareddata/system/{display,order}.json $dirsystem
-	dirPermissionsShared
+	sharedDataBackupLink
 	sharedDataIPlist
 	mpc -q clear
 	systemctl restart mpd
+	[[ $rescan ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
 	pushRefresh
 	pushstream refresh '{ "page": "features", "shareddata": true }'
 }
@@ -417,72 +408,41 @@ rotaryencoder )
 	pushRefresh
 	;;
 shareddataconnect )
-	if [[ ! $IP && -e $dirsystem/sharedipserver ]]; then # sshpass from server to reconnect
-		IP=$( < $dirsystem/sharedipserver )
-		! ipOnline $IP && exit
-		
-		reconnect=1
+	[[ $IP ]] && connect=1 || IP=$( < $dirsystem/sharedipserver )
+	[[ ! $IP ]] && exit
+	
+	! ipOnline $IP && echo "IP address not online: <wh>$IP</wh>" && exit
+	
+	if [[ $connect ]]; then
+		paths=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+		[[ ! $paths ]] && echo '<i class="i-networks"></i>Server rAudio not found.' && exit
 	fi
 	
-	readarray -t paths <<< $( timeout 3 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' ) # get shred path by server ip
-	for path in "${paths[@]}"; do
-		dir="$dirnas/$( basename "$path" )"
-		[[ $( ls "$dir" ) ]] && echo "Directory not empty: <code>$dir</code>" && exit                    # stop if dir not empty
-		
-		umount -ql "$dir"
-	done
-	options="nfs  defaults,noauto,bg,soft,timeo=5  0  0"
-	fstab=$( < /etc/fstab )
-	for path in "${paths[@]}"; do
-		name=$( basename "$path" )
-		[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-		dir="$dirnas/$name"
-		mkdir -p "$dir"
-		mountpoints+=( "$dir" )
-		fstab+="
-$IP:$( space2ascii $path )  $( space2ascii $dir )  $options"                                             # set as mount to /mnt/MPD/NAS in fstab
-	done
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	fstab="\
+$( < /etc/fstab )
+$IP:/mnt/MPD/NAS  /mnt/MPD/NAS  nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	for dir in "${mountpoints[@]}"; do
-		mount "$dir"
-	done
+	mount /mnt/MPD/NAS
 	sharedDataSet
-	if [[ $reconnect ]]; then
+	if [[ ! $connect ]]; then
 		rm $dirsystem/sharedipserver
 		notify rserver 'Server rAudio' 'Online ...'
 	fi
+	pushRefresh
 	;;
 shareddatadisconnect )
+	mv /mnt/{SD,USB} /mnt/MPD
+	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
 	list=$( grep -v $( ipAddress ) $filesharedip )
 	echo "$list" > $filesharedip # fix: sed temp file permission
-	for dir in audiocd bookmarks lyrics mpd playlists webradio; do
-		if [[ -L $dirdata/$dir ]]; then
-			rm -rf $dirdata/$dir
-			[[ -e $dirbackup/$dir ]] && mv $dirbackup/$dir $dirdata || mkdir $dirdata/$dir
-		fi
-	done
-	rm $dirsystem/{display,order}.json
-	mv -f $dirbackup/{display,order}.json $dirsystem
-	rm -rf $dirbackup
-	rm -f $dirshareddata $dirnas/.mpdignore /mnt/MPD/.mpdignore
-	mpc -q clear
-	if grep -q -m1 ":$dirsd " /etc/fstab; then # client of server rAudio
-		ipserver=$( grep $dirshareddata /etc/fstab | cut -d: -f1 )
-		fstab=$( grep -v ^$ipserver /etc/fstab )
-		readarray -t paths <<< $( timeout 3 showmount --no-headers -e $ipserver 2> /dev/null | awk 'NF{NF-=1};1' )
-		for path in "${paths[@]}"; do
-			name=$( basename "$path" )
-			[[ $path == $dirusb/SD || $path == $dirusb/data ]] && name=usb$name
-			dir="$dirnas/$name"
-			umount -l "$dir"
-			rmdir "$dir" &> /dev/null
-		done
-	else # other servers
-		fstab=$( grep -v $dirshareddata /etc/fstab )
-		umount -l $dirshareddata
-		rmdir $dirshareddata
-	fi
+	sharedDataReset
+	fstab=$( grep -v /mnt/MPD/NAS /etc/fstab )
+	umount -l /mnt/MPD/NAS $dirshareddata &> /dev/null
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
@@ -502,20 +462,6 @@ shareddatarestart )
 	;;
 shareddataset )
 	sharedDataSet
-	;;
-sharelist )
-	! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
-	
-#	if [[ $protocol == smb ]]; then
-#		script -c "timeout 10 smbclient -NL $IP" $dirshm/smblist &> /dev/null # capture /dev/tty to file
-#		paths=$( sed -e '/Disk/! d' -e '/\$/d' -e 's/^\s*//; s/\s\+Disk\s*$//' $dirshm/smblist )
-#	else
-#		paths=$( timeout 5 showmount --no-headers -e $IP 2> /dev/null | awk 'NF{NF-=1};1' | sort )
-#	fi
-	paths=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null \
-				| awk 'NF{NF-=1};1' \
-				| sort )
-	[[ $paths ]] && echo "$paths" || echo "No NFS shares found."
 	;;
 softlimit )
 	config=$( grep -v temp_soft_limit /boot/config.txt )

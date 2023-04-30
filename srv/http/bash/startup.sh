@@ -111,7 +111,7 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	if grep -q /srv/http/data /etc/exports; then # server rAudio
+	if [[ -s /etc/exports ]]; then # server rAudio
 		mv -f $filesharedip{.backup,}
 		ips=$( grep -v $( ipAddress ) $filesharedip )
 		for ip in $ips; do

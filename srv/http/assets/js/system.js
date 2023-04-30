@@ -980,30 +980,17 @@ function infoMountRserver() {
 		, checkip    : [ 0 ]
 		, cancel     : switchCancel
 		, ok         : () => {
-			var ip = infoVal().IP;
-			bash( [ 'sharelist', ip, 'CMD IP' ], list => {
-				if ( list.slice( 0, 11 ) !== '/mnt/MPD/SD' ) {
+			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
+			bash( [ 'shareddataconnect', infoVal().IP, 'CMD IP' ], error => {
+				if ( error ) {
 					info( {
 						  icon    : SW.icon
 						, title   : SW.title
-						, message : list
+						, message : error
 						, ok      : infoMountRserver
 					} );
 					return
 				}
-				
-				info( {
-					  icon    : SW.icon
-					, title   : SW.title
-					, message : 'Server rAudio @<wh>'+ ip +'</wh> :'
-								+'<br><p class="wh">'+ list.replace( /^|\n/g, '\n'+ ico( 'folder gr' ) ) +'</p>'
-								+'Connect?'
-					, cancel  : switchCancel
-					, ok      : () => {
-						notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-						bash( [ 'shareddataconnect', ip, 'CMD IP' ] );
-					}
-				} );
 			} );
 		}
 	} );
@@ -1191,16 +1178,12 @@ function renderPage() {
 		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
 		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
 		html +=  val.size ? val.size : '';
-		html += val.nfs ? ' <gr>• NFS</gr>' : '';
-		html += val.smb ? ' <gr>• SMB</gr>' : '';
 		html += '</li>';
 	} );
 	$( '#list' ).html( html );
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
-	$( '#usbautoupdate' )
-		.toggleClass( 'disabled', S.shareddata || S.nfsserver )
-		.prev().html( 'wh'+ ( S.shareddata ? 'Server rAudio '+ ico( 'rserver' ) : 'Shared Data '+ ico( 'networks' ) ) +'</wh> is currently enabled.' );
+	$( '#usbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
 	if ( 'bluetooth' in S || 'wlan' in S ) {
 		if ( 'bluetooth' in S ) {
 			$( '#bluetooth' ).parent().prev().toggleClass( 'single', ! S.bluetoothactive );

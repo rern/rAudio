@@ -46,6 +46,7 @@ sed -i "s/^PARTUUID=.*-01  /$uuid1  /; s/^PARTUUID=.*-02  /$uuid2  /" $dirconfig
 cp -rf $dirconfig/* /
 [[ -e $dirsystem/enable ]] && systemctl -q enable $( < $dirsystem/enable )
 [[ -e $dirsystem/disable ]] && systemctl -q disable $( < $dirsystem/disable )
+grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 $dirsettings/system.sh "hostname
 $( < $dirsystem/hostname )
 CMD hostname"
@@ -69,5 +70,4 @@ if [[ $mountpoints ]]; then
 		mkdir -p "$mountpoint"
 	done
 fi
-grep -q -m1 $dirsd /etc/exports && $dirsettings/features.sh nfsserver
 $dirbash/cmd.sh reboot
