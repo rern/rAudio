@@ -263,7 +263,7 @@ nfsserver )
 			chown -R http:http $dirshareddata
 			chown -R mpd:audio $dirshareddata/{mpd,playlists}
 		fi
-		chmod 777 $dirnas
+		chmod 777 $dirnas $dirnas/{SD,USB}
 		chmod -R 777 $dirshareddata
 		sharedDataBackupLink
 		systemctl restart mpd
@@ -272,7 +272,7 @@ nfsserver )
 		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
 		systemctl restart devmon@http
-		chmod 755 $dirnas
+		chmod 755 $dirnas $dirnas/{SD,USB}
 		systemctl disable --now nfs-server
 		> /etc/exports
 		rm $filesharedip
