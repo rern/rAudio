@@ -415,7 +415,7 @@ shareddataconnect )
 	
 	if [[ $connect ]]; then
 		paths=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-		[[ ! $paths ]] && echo '<i class="i-networks"></i>Server rAudio not found.' && exit
+		[[ ! $paths ]] && echo '<i class="i-networks"></i> Server rAudio not found.' && exit
 	fi
 	
 	mv /mnt/MPD/{SD,USB} /mnt

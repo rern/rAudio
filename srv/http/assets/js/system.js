@@ -976,18 +976,20 @@ function infoMountRserver() {
 		, tablabel   : [ 'CIFS', 'NFS', 'rServer' ]
 		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
 		, textlabel  : 'Server IP'
-		, values     : { IP: I.active ? infoVal().IP : S.ipsub }
+		, values     : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
 		, checkip    : [ 0 ]
 		, cancel     : switchCancel
 		, ok         : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
 			bash( [ 'shareddataconnect', infoVal().IP, 'CMD IP' ], error => {
+				bannerHide();
 				if ( error ) {
 					info( {
 						  icon    : SW.icon
 						, title   : SW.title
 						, message : error
-						, ok      : infoMountRserver
+						, cancel  : switchCancel
+						, ok      : () => setTimeout( infoMountRserver, 0 )
 					} );
 					return
 				}
