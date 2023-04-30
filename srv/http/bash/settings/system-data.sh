@@ -96,10 +96,13 @@ packageActive bluetooth hostapd rotaryencoder smb
 
 # sd, usb and nas
 if mount | grep -q -m1 'mmcblk0p2 on /'; then
+	for pathsd in /mnt/MPD/SD /mnt/SD/ /mnt/MPD/NAS/SD; do
+		[[ -e $pathsd ]] && break
+	done
 	used_size=( $( df -lh --output=used,size,target | grep '/$' ) )
 	list+=',{
   "icon"       : "microsd"
-, "mountpoint" : "/<g>mnt/MPD/SD</g>"
+, "mountpoint" : "/<g>'${pathsd:1}'</g>"
 , "mounted"    : true
 , "source"     : "/dev/mmcblk0p2"
 , "size"       : "'${used_size[0]}'B/'${used_size[1]}'B"
