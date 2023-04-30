@@ -1130,14 +1130,16 @@ function renderLibraryList( data ) { // V.librarylist
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
-		if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) { // V.albumlist
-			V.albumlist = true;
+		if ( [ 'album', 'latest' ].includes( V.mode ) && $( '#lib-list .coverart' ).length ) {
 			if ( V.wW / 200 > $( '#lib-list .coverart' ).length ) $( '#lib-list' ).addClass( 'max200px' );
+			$( '#lib-list' ).addClass( 'album' );
+		}
+		if ( V.mode === 'album' ) { // V.albumlist
+			V.albumlist = true;
 			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
-			$( '#lib-list' ).addClass( 'album' );
 		} else {
 			V.albumlist = false;
 			V.color ? colorSet() : setTrackCoverart();
