@@ -73,7 +73,6 @@
 }
 #eq .bottom {
 	position: absolute;
-	padding-top: 10px;
 	bottom: 15px;
 	width: 100% !important;
 	left: 50%;
