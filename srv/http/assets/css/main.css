@@ -895,10 +895,6 @@ i.map.disabled, .map.disabled i {
 	background-color: var( --cg );
 }
 /* ------------------- roundSlider ------------------- */
-.rs-handle,
-.rs-transition {
-	transition: all 0s linear;
-}
 .rs-container {
 	box-shadow: 0 0 8px 2px #555;
 	border-radius: 50%;
@@ -968,6 +964,10 @@ i.map.disabled, .map.disabled i {
 	width: 40px !important;
 	opacity: 0;
 }
+#time .rs-handle,
+#time .rs-transition {
+	transition: all 0s linear;
+}
 #volume .rs-container::before {
 	top: 5px;
 	left: 5px;
@@ -986,9 +986,9 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm );
 	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
-#volume .rs-transition,
-#volume .rs-handle {
-	transition-duration: 100ms;
+#volume .rs-handle,
+#volume .rs-transition {
+	transition: all 100ms linear;
 }
 #volume { /* volume up/down */
 	position: relative;
