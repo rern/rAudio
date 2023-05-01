@@ -17,6 +17,7 @@
 <?php
 $hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
+$addons    = $addonsprogress = $guide = $networks = false;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 if ( file_exists( '/srv/http/data/system/login' ) ) {
@@ -64,11 +65,10 @@ if ( ! $page ) { // main
 	$title = 'STATUS';
 } else {         // settings
 //	foreach( [ 'addons', 'addonsprogress', 'guide', 'networks' ] as $k ) ${ $k } = $page === $k;
-	$addons = $addonsprogress = $guide = $networks = false;
-	$$page  = true; // $$ - variable variables
-	$css[]  = 'settings';
-	$jsp    = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
-	$js     = [ 'common', 'settings', $page ];
+	$$page = true; // $$ - variable variables
+	$css[] = 'settings';
+	$jsp   = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
+	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
