@@ -63,10 +63,12 @@ if ( ! $page ) { // main
 	// hovercursor.css and shortcut.js - appended last
 	$title = 'STATUS';
 } else {         // settings
-	$$page = true;
-	$css[] = 'settings';
-	$jsp   = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
-	$js    = [ 'common', 'settings', $page ];
+//	foreach( [ 'addons', 'addonsprogress', 'guide', 'networks' ] as $k ) ${ $k } = $page === $k;
+	$addons = $addonsprogress = $guide = $networks = false;
+	$$page  = true; // $$ - variable variables
+	$css[]  = 'settings';
+	$jsp    = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
+	$js     = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
