@@ -184,7 +184,7 @@ function pushstreamDisconnect() {
 			bash( [ 'scankill' ] );
 			clearTimeout( V.timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-			$( '.back' ).click();
+			$( '.back' ).trigger( 'click' );
 		}
 	}
 }
@@ -245,7 +245,7 @@ function psRefresh( data ) {
 		if ( page === 'relays' ) {
 			Rs = JSON.stringify( R );
 		} else if ( page === 'networks' ) {
-			$( '.back' ).click();
+			$( '.back' ).trigger( 'click' );
 		} else {
 			switchSet();
 		}
@@ -299,7 +299,7 @@ document.title = page;
 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
-$( document ).keyup( function( e ) {
+$( document ).on( 'keyup', function( e ) {
 	if ( I.active ) return
 	
 	var $focus;
@@ -337,10 +337,10 @@ $( document ).keyup( function( e ) {
 			break;
 		case 'Enter':
 			if ( $( '#bar-bottom .bgr' ).length ) {
-				$( '#bar-bottom .bgr' ).click();
+				$( '#bar-bottom .bgr' ).trigger( 'click' );
 			} else {
 				$focus = $( '.setting.focus' );
-				if ( $focus.length ) $focus.click();
+				if ( $focus.length ) $focus.trigger( 'click' );
 			}
 			break;
 	}
@@ -355,10 +355,10 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	}
 } );
-$( '.close' ).click( function() {
+$( '.close' ).on( 'click', function() {
 	location.href = '/'; 
 } );
-$( '.page-icon' ).click( function() {
+$( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
 	$( '#data' ).html( highlightJSON( S ) )
@@ -366,12 +366,12 @@ $( '.page-icon' ).click( function() {
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( 'html, body' ).scrollTop( 0 );
 } );
-$( '#button-data' ).click( function() {
+$( '#button-data' ).on( 'click', function() {
 	switchSet();
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
 } );
-$( '.helphead' ).click( function() {
+$( '.helphead' ).on( 'click', function() {
 	var $this = $( this );
 	var eltop = $( 'heading' ).filter( ( i, el ) => el.getBoundingClientRect().top > 0 )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
@@ -392,18 +392,18 @@ $( '.helphead' ).click( function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
-$( '.help' ).click( function() {
+$( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 
-$( '.setting, .switch' ).click( function() {
+$( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
 	switchIdIconTitle( this.id.replace( 'setting-', '' ) );
 } );
-$( '.switch' ).click( function() {
+$( '.switch' ).on( 'click', function() {
 	if ( V.press ) return
 	
 	var $this   = $( this );
@@ -424,7 +424,7 @@ $( '.switch' ).click( function() {
 	}
 	
 	if ( $this.hasClass( 'common' ) ) {
-		$( '#setting-'+ SW.id ).click();
+		$( '#setting-'+ SW.id ).trigger( 'click' );
 	} else {
 		S[ SW.id ]  = true;
 		notifyCommon( checked );
@@ -442,7 +442,7 @@ $( '.switch' ).click( function() {
 		}, 'json' );
 	}
 } );
-$( '#bar-bottom div' ).click( function() {
+$( '#bar-bottom div' ).on( 'click', function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );

@@ -82,17 +82,17 @@ function colorSet() {
 		if ( V.librarytrack && $( '.licover' ).is( ':visible' ) ) {
 			$( '.licover' ).css( 'margin-top', '-230px' );
 			$( '#lib-list li.track1' ).css( 'margin-top', 0 );
-			$( '#lib-list li' ).eq( 1 ).click()
+			$( '#lib-list li' ).eq( 1 ).trigger( 'click' )
 			setTimeout( () => $( '#lib-list li' ).eq( 1 ).addClass( 'active' ), 0 );
 		} else {
-			$( '#lib-list .li-icon' ).eq( 0 ).click();
+			$( '#lib-list .li-icon' ).eq( 0 ).trigger( 'click' );
 		}
 	} else {
 		if ( V.plhome ) {
 			$( '#pl-list li' ).slice( 0, S.song ).css( 'display', 'none' );
-			$( '#pl-list li.active .li-icon' ).click();
+			$( '#pl-list li.active .li-icon' ).trigger( 'click' );
 		} else {
-			$( '#pl-savedlist .li-icon' ).eq( 0 ).click();
+			$( '#pl-savedlist .li-icon' ).eq( 0 ).trigger( 'click' );
 		}
 	}
 	pageScroll( 0 );
@@ -181,7 +181,7 @@ function contextmenuLibrary( $li, $target ) {
 		&& S.player === 'mpd'
 	) {
 		var i = D.tapaddplay ? 0 : 1;
-		$menu.find( '.submenu' ).eq( i ).click();
+		$menu.find( '.submenu' ).eq( i ).trigger( 'click' );
 		$li.addClass( 'active' );
 		return
 	}
@@ -709,13 +709,13 @@ function infoLibraryOption() {
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
-			$el.tapaddplay.click( function() {
+			$el.tapaddplay.on( 'click', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );
-			$el.tapreplaceplay.click( function() {
+			$el.tapreplaceplay.on( 'click', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 			} );
-			$el.hidecover.change( function() {
+			$el.hidecover.on( 'change', function() {
 				var enable = $( this ).prop( 'checked' ) ? false : true;
 				$el.fixedcover
 					.prop( 'disabled', ! enable )
@@ -773,7 +773,7 @@ function libraryHome() {
 			imageOnError( this, $( this ).prev().text() );
 		} );
 		$( '#lib-path span' ).removeClass( 'hide' );
-		if ( V.color ) $( '#mode-webradio' ).click();
+		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
 	}, 'json' );
 }
 function lyricsShow( data ) {
@@ -901,9 +901,9 @@ function playlistInsertTarget() {
 		, radio      : { First : 'first', Select: 'select', Last: 'last' }
 		, values     : 'last'
 		, beforeshow : () => {
-			$( '#infoContent input' ).eq( 1 ).click( function() {
+			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {
 				local();
-				$( '#infoX' ).click();
+				$( '#infoX' ).trigger( 'click' );
 			} );
 		}
 		, cancel     : () => {
@@ -990,9 +990,9 @@ function refreshData() {
 			libraryHome();
 		} else {
 			if ( [ 'sd', 'nas', 'usb' ].includes( V.mode ) ) {
-				$( '#lib-breadcrumbs a' ).last().click();
+				$( '#lib-breadcrumbs a' ).last().trigger( 'click' );
 			} else if ( V.mode === 'album' && $( '#lib-list .coverart' ).length ) {
-				$( '#mode-album' ).click();
+				$( '#mode-album' ).trigger( 'click' );
 			} else if ( V.query.length ) {
 				var query = V.query.slice( -1 )[ 0 ];
 				list( query, function( html ) {
@@ -1004,14 +1004,14 @@ function refreshData() {
 					renderLibraryList( data );
 				} );
 			} else {
-				$( '#mode-'+ V.mode ).click();
+				$( '#mode-'+ V.mode ).trigger( 'click' );
 			}
 		}
 	} else if ( V.playback ) {
 		getPlaybackStatus( 'withdisplay' );
 	} else {
 		if ( V.savedpl ) {
-			$( '#button-pl-playlists' ).click();
+			$( '#button-pl-playlists' ).trigger( 'click' );
 		} else if ( V.savedpltrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
@@ -1238,14 +1238,14 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	V.savedpltrack = false;
 	S.elapsed      = data.elapsed;
 	S.song         = data.song;
-	$( '#pl-search-close' ).click();
+	$( '#pl-search-close' ).trigger( 'click' );
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
 		V.playlisthtml = '';
 		$( '#playback-controls' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
-		$( '#pl-search-close' ).click();
+		$( '#pl-search-close' ).trigger( 'click' );
 		$( '#pl-list' ).empty();
 		$( '.playlist, #page-playlist .emptyadd' ).removeClass( 'hide' );
 		pageScroll( 0 );
@@ -1329,8 +1329,8 @@ function saveToPlaylist( title, album, file ) {
 	V.pladd.album = album;
 	V.pladd.file  = file;
 	local();
-	$( '#button-pl-playlists' ).click();
-	if ( ! V.playlist ) $( '#button-playlist' ).click();
+	$( '#button-pl-playlists' ).trigger( 'click' );
+	if ( ! V.playlist ) $( '#button-playlist' ).trigger( 'click' );
 	banner( 'file-playlist blink', 'Add to a playlist', 'Select target playlist', 5000 );
 }
 function second2HMS( second ) {
@@ -1809,7 +1809,7 @@ function stopAirplay() {
 		, title   : 'AirPlay'
 		, message : 'AirPlay is playing.'
 				   +'<br>Stop AirPlay?'
-		, ok      : () => $( '#stop' ).click()
+		, ok      : () => $( '#stop' ).trigger( 'click' )
 	} );
 }
 function switchPage( page ) {
@@ -1821,7 +1821,7 @@ function switchPage( page ) {
 		} else {
 			V.modescrolltop = $( window ).scrollTop();
 		}
-		if ( V.colorpicker ) $( '#colorcancel' ).click();
+		if ( V.colorpicker ) $( '#colorcancel' ).trigger( 'click' );
 	} else if ( V.playlist ) {
 		if ( ! V.plhome ) V.plscrolltop = $( window ).scrollTop();
 	}

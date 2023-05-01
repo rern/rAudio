@@ -9,7 +9,7 @@ $( '.page-icon' ).press( function() {
 	V.label = 'Debug';
 	postData();
 } );
-$( '.helphead' ).off( 'click' ).click( function() {
+$( '.helphead' ).off( 'click' ).on( 'click', function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
@@ -48,7 +48,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 		} );
 	}
 } ).on( 'click', '.thumbnail', function() {
-	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].click();
+	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].trigger( 'click' );
 } ).press( '.install', function( e ) {
 	if ( ! S.status.online ) return
 	

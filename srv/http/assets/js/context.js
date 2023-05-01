@@ -47,8 +47,8 @@ function addToPlaylistCommand( cmd, mpccmd, msg ) {
 	}
 	var command = cmd_title[ cmd ].cmd;
 	var title   = cmd_title[ cmd ].title;
-	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).click();
-	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).click();
+	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).trigger( 'click' );
+	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 	var command = cmd_title[ cmd ];
 	bash( command.cmd );
 	banner( 'playlist', command.title, msg );
@@ -276,7 +276,7 @@ function tagEditor() {
 						V.query.push( query );
 					} );
 				} );
-				$( '.infomessage' ).click( function() {
+				$( '.infomessage' ).on( 'click', function() {
 					if ( V.library ) return
 					
 					var query = {
@@ -311,7 +311,7 @@ function tagEditor() {
 	}, 'json' );
 }
 function tagModeSwitch() {
-	$( '#infoX' ).click();
+	$( '#infoX' ).trigger( 'click' );
 	if ( V.playlist ) {
 		$( '#page-playlist' ).addClass( 'hide' );
 		$( '#page-library' ).removeClass( 'hide' );
@@ -447,7 +447,7 @@ function webRadioNew( name, url, charset ) {
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
-				$( '#addwebradiodir' ).click( function() {
+				$( '#addwebradiodir' ).on( 'click', function() {
 					info( {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
@@ -474,7 +474,7 @@ function webRadioNew( name, url, charset ) {
 	} );
 }
 //----------------------------------------------------------------------------------------------
-$( '.contextmenu a, .contextmenu .submenu' ).click( function() {
+$( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var $this = $( this );
 	var cmd   = $this.data( 'cmd' );
 	menuHide();
@@ -483,12 +483,12 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		if ( cmd === 'play' ) {
 			if ( S.player !== 'mpd' ) {
-				$( '#stop' ).click();
+				$( '#stop' ).trigger( 'click' );
 				S.player = 'mpd';
 			}
-			$( '#pl-list li' ).eq( V.list.li.index() ).click();
+			$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
 		} else {
-			$( '#'+ cmd ).click();
+			$( '#'+ cmd ).trigger( 'click' );
 		}
 		return
 	}
@@ -518,7 +518,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 				query.modetitle = modetitle;
 				V.query.push( query );
 			} else {
-				$( '#lib-list .liinfopath' ).click();
+				$( '#lib-list .liinfopath' ).trigger( 'click' );
 			}
 			return
 		case 'exclude':

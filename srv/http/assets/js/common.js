@@ -132,7 +132,7 @@ $( '#infoOverlay' ).press( '#infoOk', function() {
 } );
 $( '.col-r .switch' ).press( function( e ) {
 	if ( $( '#setting-'+ e.target.id ).length && ! S[ e.target.id ] ) {
-		$( '#setting-'+ e.target.id ).click();
+		$( '#setting-'+ e.target.id ).trigger( 'click' );
 		return
 	}
 	
@@ -226,7 +226,7 @@ $( '#infoOverlay' ).press( '#infoIcon', function() { // usage
 $( '#infoOverlay' ).on( 'click', '#infoContent', function() {
 	$( '.infobtn, .filebtn' ).removeClass( 'active' );
 } );
-$( '#infoOverlay' ).keydown( function( e ) {
+$( '#infoOverlay' ).on( 'keydown', function( e ) {
 /*
 all:      [Tab]       - focus / next input
 		  [Shift+Tab] - previous input
@@ -239,11 +239,11 @@ select:   [U] [D]     - check
 	var key = e.key;
 	switch ( key ) {
 		case 'Enter':
-			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).click();
+			if ( ! $( '#infoOk' ).hasClass( 'disabled' ) && ! $( 'textarea' ).is( ':focus' ) ) $( '#infoOk' ).trigger( 'click' );
 			break;
 		case 'Escape':
 			local(); // prevent toggle setting menu
-			$( '#infoX' ).click();
+			$( '#infoX' ).trigger( 'click' );
 			break;
 		case 'ArrowLeft':
 		case 'ArrowRight':
@@ -252,9 +252,9 @@ select:   [U] [D]     - check
 			
 			var $tabactive = $( '#infoTab a.active' );
 			if ( key === 'ArrowLeft' ) {
-				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).click() : $tabactive.prev().click();
+				$tabactive.is(':first-child') ? $( '#infoTab a:last-child' ).trigger( 'click' ) : $tabactive.prev().trigger( 'click' );
 			} else {
-				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).click() : $tabactive.next().click();
+				$tabactive.is(':last-child') ? $( '#infoTab a:first-child' ).trigger( 'click' ) : $tabactive.next().trigger( 'click' );
 			}
 			break;
 	}
@@ -333,7 +333,7 @@ function info( json ) {
 			infoButtonCommand( buttonfn );
 		} );
 	}
-	$( '#infoX, #infoCancel' ).click( function() {
+	$( '#infoX, #infoCancel' ).on( 'click', function() {
 		if ( ! I.confirm ) {
 			infoButtonCommand( I.cancel, 'cancel' );
 		} else {
@@ -342,7 +342,7 @@ function info( json ) {
 				: $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
 		}
 	} );
-	$( '#infoOk' ).click( function() {
+	$( '#infoOk' ).on( 'click', function() {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
 		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
@@ -365,10 +365,10 @@ function info( json ) {
 		$( '#infoOk' )
 			.html( I.fileoklabel )
 			.addClass( 'hide' );
-		$( '#infoFileLabel' ).click( function() {
-			$( '#infoFileBox' ).click();
+		$( '#infoFileLabel' ).on( 'click', function() {
+			$( '#infoFileBox' ).trigger( 'click' );
 		} );
-		$( '#infoFileBox' ).change( function() {
+		$( '#infoFileBox' ).on( 'change', function() {
 			if ( ! this.files.length ) return
 			
 			I.infofile    = this.files[ 0 ];
@@ -417,7 +417,7 @@ function info( json ) {
 		} );
 		htmltab += '</div>';
 		$( '#infoTopBg' ).after( htmltab );
-		$( '#infoTab a' ).click( function() {
+		$( '#infoTab a' ).on( 'click', function() {
 			if ( ! $( this ).hasClass( 'active' ) ) I.tab[ $( this ).index() ]();
 		} );
 	}
@@ -630,7 +630,7 @@ function info( json ) {
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
 	} );
-	$( '#infoContent .i-eye' ).click( function() {
+	$( '#infoContent .i-eye' ).on( 'click', function() {
 		var $this = $( this );
 		var $pwd  = $this.parent().prev().find( 'input' );
 		if ( $pwd.prop( 'type' ) === 'text' ) {

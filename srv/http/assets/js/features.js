@@ -27,7 +27,7 @@ var default_v      = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.screenshot' ).click( function() {
+$( '.screenshot' ).on( 'click', function() {
 	info( {
 		  icon        : 'spotify'
 		, title       : 'Spotify for Developers'
@@ -35,7 +35,7 @@ $( '.screenshot' ).click( function() {
 		, okno        : true
 	} );
 } );
-$( '#setting-snapclient' ).click( function() {
+$( '#setting-snapclient' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -50,7 +50,7 @@ $( '#setting-snapclient' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-spotifyd' ).click( function() {
+$( '#setting-spotifyd' ).on( 'click', function() {
 	var active = infoPlayerActive( $( this ) );
 	if ( active ) return
 	
@@ -82,9 +82,9 @@ $( '#setting-spotifyd' ).click( function() {
 			, boxwidth    : 320
 			, checklength : { 0: 32, 1: 32 }
 			, beforeshow  : () => {
-				$( '#infoContent .help' ).click( function() {
-					$( '.container .help' ).eq( 0 ).click();
-					$( '#infoX' ).click();
+				$( '#infoContent .help' ).on( 'click', function() {
+					$( '.container .help' ).eq( 0 ).trigger( 'click' );
+					$( '#infoX' ).trigger( 'click' );
 				} );
 			}
 			, cancel      : switchCancel
@@ -105,7 +105,7 @@ $( '#setting-spotifyd' ).click( function() {
 		} );
 	}
 } );
-$( '#setting-upmpdcli' ).click( function() {
+$( '#setting-upmpdcli' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -116,7 +116,7 @@ $( '#setting-upmpdcli' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-camilladsp' ).click( function() {
+$( '#setting-camilladsp' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -130,7 +130,7 @@ $( '#setting-camilladsp' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-hostapd' ).click( function() {
+$( '#setting-hostapd' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -148,7 +148,7 @@ $( '#setting-hostapd' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-autoplay' ).click( function() {
+$( '#setting-autoplay' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -163,7 +163,7 @@ $( '#setting-autoplay' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#setting-localbrowser' ).click( function() {
+$( '#setting-localbrowser' ).on( 'click', function() {
 	var htmlbrightness = S.brightness ? '<div id="infoRange"><input type="range" min="0" max="255"><div>Brightness</div></div><br>' : '';
 	var content        = `
 <table>
@@ -212,7 +212,7 @@ $( '#setting-localbrowser' ).click( function() {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
 			$( '#onwhileplay' ).prop( 'disabled', S.localbrowserconf.SCREENOFF === 0 );
 			$( '.btnbottom' ).toggleClass( 'hide', ! S.localbrowser );
-			$( '#infoContent .btnicon' ).click( function() {
+			$( '#infoContent .btnicon' ).on( 'click', function() {
 				var up   = $( this ).hasClass( 'up' );
 				var zoom = +$( '#zoom' ).val();
 				if ( ( up && zoom < 300 ) || ( ! up && zoom > 50 ) ) $( '#zoom' ).val( up ? zoom += 10 : zoom -= 10 );
@@ -227,10 +227,10 @@ $( '#setting-localbrowser' ).click( function() {
 						.prop( 'disabled', 1 );
 				}
 			} );
-			$( '.reload' ).click( function() {
+			$( '.reload' ).on( 'click', function() {
 				bash( [ 'localbrowserreload' ] );
 			} );
-			$( '.screenoff' ).click( function() {
+			$( '.screenoff' ).on( 'click', function() {
 				bash( [ 'screenofftoggle' ] );
 			} );
 			if ( S.brightness ) {
@@ -247,7 +247,7 @@ $( '#setting-localbrowser' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#setting-smb' ).click( function() {
+$( '#setting-smb' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -262,7 +262,7 @@ $( '#setting-smb' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-multiraudio' ).click( function() {
+$( '#setting-multiraudio' ).on( 'click', function() {
 	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
 					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ S.ipsub +'" spellcheck="false"></td>'
 					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
@@ -332,9 +332,9 @@ $( '#setting-multiraudio' ).click( function() {
 		}
 	} );
 } );
-$( '#login' ).click( function() {
+$( '#login' ).on( 'click', function() {
 	if ( $( this ).prop( 'checked' ) ) {
-		$( '#setting-login' ).click();
+		$( '#setting-login' ).trigger( 'click' );
 	} else {
 		info( {
 			  icon          : SW.icon
@@ -357,7 +357,7 @@ $( '#login' ).click( function() {
 		} );
 	}
 } );
-$( '#setting-login' ).click( function() {
+$( '#setting-login' ).on( 'click', function() {
 	info( {
 		  icon          : SW.icon
 		, title         : SW.title
@@ -379,7 +379,7 @@ $( '#setting-login' ).click( function() {
 		}
 	} );
 } );
-$( '#setting-scrobble' ).click( function() {
+$( '#setting-scrobble' ).on( 'click', function() {
 	if ( ! S.scrobblekey ) { // api account page: https://www.last.fm/api/accounts
 		info( {
 			  icon    : SW.icon
@@ -417,7 +417,7 @@ $( '#setting-scrobble' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#setting-stoptimer' ).click( function() {
+$( '#setting-stoptimer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -496,7 +496,7 @@ function renderPage() {
 			} else {
 				S.scrobblekey = true;
 				showContent();
-				$( '#setting-scrobble' ).click();
+				$( '#setting-scrobble' ).trigger( 'click' );
 			}
 		} );
 	} else if ( code ) {

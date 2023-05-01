@@ -10,7 +10,7 @@ function radioRefresh() {
 			renderLibraryList( data );
 		} );
 	} else {
-		$( '#mode-'+ V.mode ).click();
+		$( '#mode-'+ V.mode ).trigger( 'click' );
 	}
 }
 function statusUpdate( data ) {
@@ -64,7 +64,7 @@ pushstreamChannel( channels );
 function pushstreamDisconnect() {
 	clearIntervalAll();
 	hideGuide();
-	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).click();
+	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
@@ -236,7 +236,7 @@ function psNotify( data ) {
 	} else if ( title === 'Latest' ) {
 		C.latest = 0;
 		$( '#mode-latest gr' ).empty();
-		if ( V.mode === 'latest' ) $( '#button-library' ).click();
+		if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
 		setTimeout( () => location.href = '/', 3000 );
 	} else if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
@@ -301,7 +301,7 @@ function psRadioList( data ) {
 		if ( V.librarylist && V.mode === data.type ) radioRefresh();
 	} else if ( V.playlist ) {
 		if ( V.savedpl ) {
-			$( '#button-pl-playlists' ).click();
+			$( '#button-pl-playlists' ).trigger( 'click' );
 		} else if ( V.savedpltrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
@@ -313,7 +313,7 @@ function psRadioList( data ) {
 }
 function psRelays( response ) {
 	if ( 'done' in response || ! ( 'state' in response ) ) {
-		$( '#infoX' ).click();
+		$( '#infoX' ).trigger( 'click' );
 		return
 	}
 	
@@ -378,9 +378,9 @@ function psSavedPlaylists( data ) {
 	var count   = data.count;
 	C.playlists = count;
 	if ( V.savedpl ) {
-		count ? renderSavedPl( data ) : $( '#playlist' ).click();
+		count ? renderSavedPl( data ) : $( '#playlist' ).trigger( 'click' );
 	} else if ( V.savedpltrack ) {
-		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).click();
+		if ( 'delete' in data && $( '#pl-path .lipath' ).text() === data.delete ) $( '#playlist' ).trigger( 'click' );
 	}
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', count === 0 );
 	$( '#mode-playlists gr' ).text( count || '' );

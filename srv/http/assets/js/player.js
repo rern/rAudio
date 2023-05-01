@@ -1,11 +1,11 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.playback' ).click( function() {
+$( '.playback' ).on( 'click', function() {
 	if ( $( this ).hasClass( 'disabled' ) ) return
 	
 	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
-$( '.btoutputall' ).click( function() {
+$( '.btoutputall' ).on( 'click', function() {
 	SW.icon  = 'volume';
 	SW.title = 'Output All';
 	info( {
@@ -21,11 +21,11 @@ $( '.btoutputall' ).click( function() {
 		}
 	} );
 } );
-$( '#audiooutput' ).change( function() {
+$( '#audiooutput' ).on( 'change', function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
 	bash( [ 'audiooutput', $( this ).val(), 'CMD CARD' ] );
 } );
-$( '#hwmixer' ).change( function() {
+$( '#hwmixer' ).on( 'change', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
@@ -37,7 +37,7 @@ var htmlvolume = `
 </div
 ><div class="infofooter">-6.83 dB</div>
 `;
-$( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
+$( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 	var bt = this.id === 'setting-btreceiver';
 	bash( [ 'volumeget' ], v => {
 		var nodb    = v.db === false;
@@ -77,7 +77,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		} );
 	}, 'json' );
 } );
-$( '#mixertype' ).change( function() {
+$( '#mixertype' ).on( 'change', function() {
 	var mixertype = $( this ).val();
 	if ( mixertype === 'none' ) {
 		info( {
@@ -91,7 +91,7 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
-$( '#novolume' ).click( function() {
+$( '#novolume' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
 		info( {
@@ -118,13 +118,13 @@ $( '#novolume' ).click( function() {
 		$( this ).prop( 'checked', true );
 	}
 } );
-$( '#dop' ).click( function() {
+$( '#dop' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
 	var cmd = checked ? [ 'dop', D.aplayname ] : [ 'dop', D.aplayname, 'OFF' ]; // OFF with args - value by index
 	bash( cmd );
 } );
-$( '#setting-crossfade' ).click( function() {
+$( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -138,7 +138,7 @@ $( '#setting-crossfade' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-replaygain' ).click( function() {
+$( '#setting-replaygain' ).on( 'click', function() {
 	var hardware = D.mixertype === 'software' && D.mixers;
 	info( {
 		  icon         : SW.icon
@@ -151,7 +151,7 @@ $( '#setting-replaygain' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '.filetype' ).click( function() {
+$( '.filetype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
 	if ( $pre.is( ':empty' ) ) {
 		bash( [ 'filetype' ], data => {
@@ -164,7 +164,7 @@ $( '.filetype' ).click( function() {
 	}
 	$( this ).toggleClass( 'i-chevron-down i-chevron-up' );
 } );
-$( '#setting-buffer' ).click( function() {
+$( '#setting-buffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -180,7 +180,7 @@ $( '#setting-buffer' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-outputbuffer' ).click( function() {
+$( '#setting-outputbuffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -196,7 +196,7 @@ $( '#setting-outputbuffer' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-soxr' ).click( function() {
+$( '#setting-soxr' ).on( 'click', function() {
 	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );
 var custominfo = `\
@@ -215,7 +215,7 @@ audio_output {
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-$( '#setting-custom' ).click( function() {
+$( '#setting-custom' ).on( 'click', function() {
 	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
 		var val       = val.split( '^^' );
 		var global = val[ 0 ].trim(); // remove trailing

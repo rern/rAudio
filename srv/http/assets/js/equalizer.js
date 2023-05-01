@@ -123,7 +123,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 } ).on( 'keyup paste cut', '#eqname', function( e ) {
 	var $eqsave = $( '#eqsave' );
 	$eqsave.toggleClass( 'disabled', $( this ).val().trim() in E.preset );
-	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.click();
+	if ( e.key === 'Enter' && ! $eqsave.hasClass( 'disabled' ) ) $eqsave.trigger( 'click' );
 } ).on( 'change', '#eqpreset', function() {      // preset
 	if ( V.local ) return
 	
@@ -137,7 +137,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	delete E.preset[ E.active ];
 	E.active = 'Flat';
 	eqPreset( E.preset.Flat.join( ' ' ) );
-	$( '#eqback' ).click();
+	$( '#eqback' ).trigger( 'click' );
 	eqOptionPreset();
 } ).on( 'click', '#eqsave', function() {
 	var name = $( '#eqname' ).val();
@@ -150,7 +150,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 		E.preset[ name ] = E.preset[ oldname ];
 		delete E.preset[ oldname ];
 	}
-	$( '#eqback' ).click();
+	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
 	bash( { cmd: [ 'equalizer' ], json: E } );
 } ).on( 'click', '.up, .dn', function( e ) {

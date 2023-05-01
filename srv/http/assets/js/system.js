@@ -105,7 +105,7 @@ var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( 'body' ).click( function( e ) {
+$( 'body' ).on( 'click', function( e ) {
 	$( '#menu' ).addClass( 'hide' );
 	if ( e.target.id !== 'codehddinfo' ) $( '#codehddinfo' ).addClass( 'hide' );
 	$( 'li' ).removeClass( 'active' );
@@ -115,13 +115,13 @@ $( 'body' ).click( function( e ) {
 	) {
 		i2sSelectHide();
 	}
-} ).keyup( function( e ) {
+} ).on( 'keyup', function( e ) {
 	if ( e.key === 'Escape' ) {
 		$( 'select' ).select2( 'close' );
 		i2sSelectHide();
 	}
 } );
-$( '.close' ).off( 'click' ).click( function() { // off close in settings.js
+$( '.close' ).off( 'click' ).on( 'click', function() { // off close in settings.js
 	bash( [ 'rebootlist' ], list => {
 		if ( ! list ) {
 			location.href = '/';
@@ -141,8 +141,8 @@ $( '.close' ).off( 'click' ).click( function() { // off close in settings.js
 		} );
 	} );
 } );
-$( '.power' ).click( infoPower );
-$( '.img' ).click( function() {
+$( '.power' ).on( 'click', infoPower );
+$( '.img' ).on( 'click', function() {
 	var name             = $( this ).data( 'name' );
 	var txtlcdchar       = `\
 <code>GND:(any black pin)</code>
@@ -176,7 +176,7 @@ $( '.img' ).click( function() {
 		, okno        : true
 	} );
 } );
-$( '.refresh' ).click( function() {
+$( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'blink' ) ) {
 		clearInterval( V.intstatus );
@@ -187,7 +187,7 @@ $( '.refresh' ).click( function() {
 	$this.addClass( 'blink wh' )
 	V.intstatus = setInterval( () => bash( [ 'settings/system-data.sh', 'status' ] ), 10000 );
 } );
-$( '.addnas' ).click( function() {
+$( '.addnas' ).on( 'click', function() {
 	infoMount();
 } );
 $( '#list' ).on( 'click', 'li', function( e ) {
@@ -229,7 +229,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	var wH      = window.innerHeight;
 	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 } );
-$( '#menu a' ).click( function() {
+$( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );
 	var cmd        = $this.prop( 'class' );
 	var list       = S.list[ V.li.index() ];
@@ -269,7 +269,7 @@ $( '#menu a' ).click( function() {
 			break;
 	}
 } );
-$( '#setting-softlimit' ).click( function() {
+$( '#setting-softlimit' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -280,7 +280,7 @@ $( '#setting-softlimit' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-hddsleep' ).click( function() {
+$( '#setting-hddsleep' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -292,7 +292,7 @@ $( '#setting-hddsleep' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-bluetooth' ).click( function() {
+$( '#setting-bluetooth' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -306,7 +306,7 @@ $( '#setting-bluetooth' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-wlan' ).click( function() {
+$( '#setting-wlan' ).on( 'click', function() {
 	bash( [ 'regdomlist' ], list => {
 		var options  = htmlOption( list );
 		var infowifi = `\
@@ -330,10 +330,10 @@ $( '#setting-wlan' ).click( function() {
 		} );
 	}, 'json' );
 } );
-$( '#i2smodulesw' ).click( function() {
+$( '#i2smodulesw' ).on( 'click', function() {
 	setTimeout( i2sOptionSet, 0 );
 } );
-$( '#i2smodule' ).change( function() {
+$( '#i2smodule' ).on( 'change', function() {
 	var aplayname = $( this ).val();
 	var output    = $( this ).find( ':selected' ).text();
 	var icon      = 'volume';
@@ -349,10 +349,10 @@ $( '#i2smodule' ).change( function() {
 	}
 	bash( [ 'i2smodule', aplayname, output, 'CMD APLAYNAME OUTPUT' ] );
 } );
-$( '#divi2s .col-r' ).click( function( e ) {
+$( '#divi2s .col-r' ).on( 'click', function( e ) {
 	if ( $( e.target ).parents( '.select2' ).length ) i2sOptionSet();
 } );
-$( '#setting-i2smodule' ).click( function() {
+$( '#setting-i2smodule' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -362,7 +362,7 @@ $( '#setting-i2smodule' ).click( function() {
 		, ok           : () => bash( infoVal() ? [ 'i2seeprom' ] : [ 'i2seeprom', 'OFF' ] )
 	} );
 } );
-$( '#gpioimgtxt' ).click( function() {
+$( '#gpioimgtxt' ).on( 'click', function() {
 	if ( $( '#gpiopin' ).is( ':hidden' ) && $( '#gpiopin1' ).is( ':hidden' ) ) {
 		$( '#gpiopin' ).slideToggle();
 		$( '#fliptxt, #close-img' ).toggle();
@@ -372,23 +372,23 @@ $( '#gpioimgtxt' ).click( function() {
 	}
 	$( this ).find( 'i' ).toggleClass( 'i-chevron-down i-chevron-up' );
 } );
-$( '#gpiopin, #gpiopin1' ).click( function() {
+$( '#gpiopin, #gpiopin1' ).on( 'click', function() {
 	$( '#gpiopin, #gpiopin1' ).toggle();
 } );
-$( '#setting-lcdchar' ).click( function() {
+$( '#setting-lcdchar' ).on( 'click', function() {
 	if ( S.lcdcharconf ) {
 		S.lcdcharconf.INF === 'i2c' ? infoLcdChar() : infoLcdCharGpio();
 	} else {
 		infoLcdChar();
 	}
 } );
-$( '#setting-powerbutton' ).click( function() {
+$( '#setting-powerbutton' ).on( 'click', function() {
 	S.poweraudiophonics ? infoPowerbuttonAudiophonics() : infoPowerbutton();
 } );
-$( '#setting-relays' ).click( function() {
+$( '#setting-relays' ).on( 'click', function() {
 	S.relays ? infoRelays() : infoRelaysName();
 } );
-$( '#setting-rotaryencoder' ).click( function() {
+$( '#setting-rotaryencoder' ).on( 'click', function() {
 	var pin  = '<td><select >'+ html_optionpin +'</select></td>';
 	var inforotaryencoder = `\
 <table>
@@ -416,7 +416,7 @@ $( '#setting-rotaryencoder' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#setting-mpdoled' ).click( function() {
+$( '#setting-mpdoled' ).on( 'click', function() {
 	var buttonlogo = S.mpdoled && ! S.mpdoledreboot;
 	var chip       = {
 		  'SSD130x SP'  : 1
@@ -439,7 +439,7 @@ $( '#setting-mpdoled' ).click( function() {
 		, beforeshow   : () => {
 			var i2c = ! S.mpdoled || ( S.mpdoled && S.mpdoledconf[ 1 ] );
 			$( '.baud' ).toggleClass( 'hide', ! i2c );
-			$( '.oledchip' ).change( function() {
+			$( '.oledchip' ).on( 'change', function() {
 				var val = $( this ).val();
 				$( '.baud' ).toggleClass( 'hide', val < 3 || val > 6 );
 			} );
@@ -450,7 +450,7 @@ $( '#setting-mpdoled' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-tft' ).click( function() {
+$( '#setting-tft' ).on( 'click', function() {
 	var buttoncalibrate = S.tft && ! S.tftreboot;
 	info( {
 		  icon         : SW.icon
@@ -483,7 +483,7 @@ $( '#setting-tft' ).click( function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-vuled' ).click( function() {
+$( '#setting-vuled' ).on( 'click', function() {
 	var htmlpins = '';
 	for ( i = 1; i < 8; i++ ) {
 		htmlpins += '<tr><td>'+ i +'<gr>/7</gr></td><td><select>'+ html_optionpin +'</select></td></tr>';
@@ -503,7 +503,7 @@ $( '#setting-vuled' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#ledcalc' ).click( function() {
+$( '#ledcalc' ).on( 'click', function() {
 	info( {
 		  icon       : 'led'
 		, title      : 'LED Resister Calculator'
@@ -548,11 +548,11 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#timezone' ).change( function( e ) {
+$( '#timezone' ).on( 'change', function( e ) {
 	notify( 'globe', 'Timezone', 'Change ...' );
 	bash( [ 'timezone', $( this ).val(), 'CMD TIMEZONE' ] );
 } );
-$( '#divtimezone .col-r' ).click( function( e ) {
+$( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	if ( ! $( e.target ).parents( '.select2' ).length || $( '#timezone option' ).length > 2 ) return
 	
 	$( '#timezone' ).select2( 'close' )
@@ -563,7 +563,7 @@ $( '#divtimezone .col-r' ).click( function( e ) {
 			.select2( 'open' );
 	} );
 } );
-$( '#setting-timezone' ).click( function() {
+$( '#setting-timezone' ).on( 'click', function() {
 	if ( 'htmlmirror' in V || S.rpi01 ) {
 		infoNtpMirror();
 	} else {
@@ -575,7 +575,7 @@ $( '#setting-timezone' ).click( function() {
 		}, 'json' );
 	}
 } );
-$( '#setting-soundprofile' ).click( function() {
+$( '#setting-soundprofile' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -592,7 +592,7 @@ $( '#setting-soundprofile' ).click( function() {
 		, fileconf     : true
 	} );
 } );
-$( '#backup' ).click( function() {
+$( '#backup' ).on( 'click', function() {
 	info( {
 		  icon    : SW.icon
 		, title   : SW.title
@@ -611,7 +611,7 @@ $( '#backup' ).click( function() {
 							a.href = url;
 							a.download = 'backup.gz';
 							document.body.appendChild( a );
-							a.click();
+							a.trigger( 'click' );
 							setTimeout( () => {
 								a.remove();
 								window.URL.revokeObjectURL( url );
@@ -634,7 +634,7 @@ $( '#backup' ).click( function() {
 	} );
 	$( '#backup' ).prop( 'checked', 0 );
 } );
-$( '#restore' ).click( function() {
+$( '#restore' ).on( 'click', function() {
 	info( {
 		  icon        : SW.icon
 		, title       : SW.title
@@ -647,7 +647,7 @@ $( '#restore' ).click( function() {
 		, fileoklabel : ico( 'restore' ) +'Restore'
 		, filetype    : '.gz'
 		, beforeshow  : () => {
-			$( '#infoContent input' ).click( function() {
+			$( '#infoContent input' ).on( 'click', function() {
 				if ( infoVal() === 'reset' ) {
 					$( '#infoFilename' ).addClass( 'hide' );
 					$( '#infoFileBox' ).val( '' );
@@ -688,7 +688,7 @@ $( '#restore' ).click( function() {
 	} );
 	$( '#restore' ).prop( 'checked', 0 );
 } );
-$( '#shareddata' ).click( function() {
+$( '#shareddata' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) {
 		infoDisabled( $this );
@@ -709,7 +709,7 @@ $( '#shareddata' ).click( function() {
 		infoMount();
 	}
 } );
-$( '.listtitle' ).click( function( e ) {
+$( '.listtitle' ).on( 'click', function( e ) {
 	var $this    = $( this );
 	var $chevron = $this.find( 'i' );
 	var $list    = $this.next();
@@ -874,7 +874,7 @@ function infoLcdcharButton() {
 	$( '#infoOk' )
 		.before( '<gr id="lcdlogo">'+ ico( 'raudio i-lg wh' ) +'&ensp;Logo</gr>&ensp;' )
 		.after( '&emsp;<gr id="lcdoff">'+ ico( 'screenoff i-lg wh' ) +'&ensp;Sleep</gr>' );
-	$( '#lcdlogo, #lcdoff' ).click( function() {
+	$( '#lcdlogo, #lcdoff' ).on( 'click', function() {
 		bash( [ 'lcdcharset', this.id.slice( 3 ), 'CMD ACTION' ] )
 	} );
 }
@@ -1040,7 +1040,7 @@ function infoPowerbutton() {
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
 			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.ON == 5 );
-			$( '#infoContent select' ).eq( 0 ).change( function() {
+			$( '#infoContent select' ).eq( 0 ).on( 'change', function() {
 				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
