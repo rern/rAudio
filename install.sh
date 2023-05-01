@@ -2,10 +2,10 @@
 
 alias=r1
 
-# restore 20230413
+# restore 20230501
 #. /srv/http/bash/settings/addons.sh
 
-# 20230430
+# 20230501
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 if crontab -l | grep -q addonsupdates; then
@@ -171,7 +171,10 @@ hash=?v=$( date +%s )
 sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 
-# 20230413
+installfinish
+#-------------------------------------------------------------------------------
+
+# 20230501
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
 
 file=$dirsystem/multiraudio.conf
@@ -179,12 +182,4 @@ if [[ -e $file ]]; then
 	filejson=${file/conf/json}
 	grep -q '{' $file && jq < $file > $filejson || conf2json $file | jq > $filejson
 	rm -f $file
-fi
-
-installfinish
-#-------------------------------------------------------------------------------
-
-# 20230224
-if [[ -e $dirmpdconf/replaygain.conf ]]; then
-	! grep -q mixer_type.*software $dirmpdconf/output.conf && $dirsettings/player-conf.sh
 fi
