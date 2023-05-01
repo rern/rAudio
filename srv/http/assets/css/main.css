@@ -1575,7 +1575,7 @@ i.map.disabled, .map.disabled i {
 	bottom: 0;
 	width: 100%;
 	height: 100%;
-	object-fit: scale-down;
+	object-fit: contain;
 	border-right: 1px solid hsl(0,0%,15%);
 	pointer-events: none;
 }
