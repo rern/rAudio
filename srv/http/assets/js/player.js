@@ -43,13 +43,15 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 		var nodb    = v.db === false;
 		var nomixer = D.mixertype === 'none';
 		if ( bt ) {
-			var cmd       = 'volumebt';
-			var cmdodb    = 'volume0dbbt';
-			var mixer     = S.btaplayname;
+			var cmd    = 'volumebt';
+			var cmdodb = 'volume0dbbt';
+			var mixer  = S.btaplayname;
+			var card   = '';
 		} else {
-			var cmd       = 'volume';
-			var cmdodb    = 'volume0db';
-			var mixer     = D.hwmixer;
+			var cmd    = 'volume';
+			var cmdodb = 'volume0db';
+			var mixer  = D.hwmixer;
+			var card   = D.card;
 		}
 		info( {
 			  icon       : SW.icon
@@ -62,7 +64,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
 			, beforeshow : () => {
 				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
 				$( '#infoRange input' ).on( 'input', function() {
-					bash( [ cmd, mixer, $( this ).val(), 'CMD MIXER VOL' ] );
+					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VOL MIXER CARD' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
 				} ).prop( 'disabled', D.mixertype === 'none' );
@@ -99,7 +101,7 @@ $( '#novolume' ).click( function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				S.novolume = true;
-				bash( [ 'novolume', D.hwmixer, D.aplayname, 'CMD HWMIXER APLAYNAME' ] );
+				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'CMD CARD HWMIXER APLAYNAME' ] );
 				notifyCommon( 'Enable ...' );
 			}
 		} );
@@ -431,5 +433,5 @@ function renderPage() {
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, hwmixer, D.aplayname, 'CMD MIXERTYPE HWMIXER APLAYNAME' ] );
+	bash( [ 'mixertype', D.card, mixertype, hwmixer, D.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
 }

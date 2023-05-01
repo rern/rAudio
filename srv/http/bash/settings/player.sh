@@ -8,19 +8,19 @@ linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
 pushstreamVolume() {
-	pushstream volume $( volumeGet )
+	pushstream volume $( volumePlayerGet )
 }
-volumeGet() {
+volumePlayerGet() {
 	local amixer card control db vol
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 		btdevice=$( < $dirshm/btreceiver )
 	else
-		control=$( getContent $dirshm/amixercontrol )
-		[[ ! $control ]] && exit
+		[[ ! -e $dirshm/amixercontrol ]] && exit
 		
 		card=$( < $dirsystem/asoundcard )
-		amixer=$( amixer -M sget "$control" | grep -m1 % )
+		control=$( < $dirshm/amixercontrol )
+		amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
 	fi
 	db=$( sed -E 's/.*\[(.*)dB.*/\1/' <<< $amixer )
 	vol=$( sed -E 's/.*\[(.*)%.*/\1/' <<< $amixer )
@@ -122,7 +122,7 @@ mixertype )
 	if [[ $HWMIXER ]]; then # set 0dB
 		mpc -q stop
 		[[ $MIXERTYPE == hardware ]] && vol=$( mpc status %volume% ) || vol=0dB
-		amixer -Mq sset "$HWMIXER" $vol
+		amixer -c $CARD -Mq sset "$HWMIXER" $vol
 	fi
 	filemixertype=$dirsystem/mixertype-$APLAYNAME
 	[[ $MIXERTYPE == hardware ]] && rm -f "$filemixertype" || echo $MIXERTYPE > "$filemixertype"
@@ -133,7 +133,7 @@ mixertype )
 	;;
 novolume )
 	mpc -q crossfade 0
-	amixer -Mq sset "$HWMIXER" 0dB
+	amixer -c $CARD -Mq sset "$HWMIXER" 0dB
 	echo none > "$dirsystem/mixertype-$APLAYNAME"
 	rm -f $dirsystem/{camilladsp,crossfade,equalizer}
 	rm -f $dirmpdconf/{normalization,replaygain,soxr}.conf
@@ -243,17 +243,17 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -Mq sset "$MIXER" $VOL%
+	amixer -c $CARD -Mq sset "$MIXER" $VOL%
 	;;
 volumebt )
 	amixer -MqD bluealsa sset "$MIXER" $VOL%
 	;;
 volume0db )
-	card=$( < $dirsystem/asoundcard )
-	control=$( getContent $dirshm/amixercontrol )
-	[[ ! $control ]] && exit
+	[[ ! -e $dirshm/amixercontrol ]] && exit
 	
-	amixer -Mq sset "$control" 0dB
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	amixer -c $card -Mq sset "$control" 0dB
 	alsactl store
 	pushstreamVolume
 	;;
@@ -263,7 +263,7 @@ volume0dbbt )
 	pushstreamVolume
 	;;
 volumeget )
-	volumeGet
+	volumePlayerGet
 	;;
 volumepush )
 	pushstreamVolume

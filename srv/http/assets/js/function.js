@@ -1882,21 +1882,20 @@ function volumeBarSet( pageX ) {
 		var vol = S.volumemute || 0;
 		var cmd = [ 'volume' ];
 	} else {
-		var posX  = pageX - $( '#volume-band' ).offset().left;
-		var bandW = $( '#volume-band' ).width();
-		posX      = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
-		var vol   = Math.round( posX / bandW * 100 );
-		var cmd   = [ 'volume', S.volume, vol, S.control, 'CMD current target control' ]
+		var posX    = pageX - $( '#volume-band' ).offset().left;
+		var bandW   = $( '#volume-band' ).width();
+		posX        = posX < 0 ? 0 : ( posX > bandW ? bandW : posX );
+		var current = V.drag ? 'drag' : S.volume;
+		var vol     = Math.round( posX / bandW * 100 );
+		var cmd     = [ 'volume', current, vol, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ];
 	}
 	if ( V.drag ) {
-		$( '#volume-bar' ).css( 'width', vol +'%' );
-		bash( [ 'volume', 'drag', vol, S.control, 'CMD current target control' ] );
+		bash( cmd );
 	} else {
-		var ms = Math.ceil( Math.abs( vol - S.volume ) / 5 ) * 0.2 * 1000;
 		$( '#volume-bar' ).animate(
 			  { width: vol +'%' }
 			, {
-				  duration : ms
+				  duration : Math.abs( vol - S.volume ) * 40
 				, easing   : 'linear'
 				, complete : () => V.volumebar = setTimeout( volumeBarHide, 3000 )
 			}
@@ -1904,6 +1903,7 @@ function volumeBarSet( pageX ) {
 		$( '.volumeband' ).addClass( 'disabled' );
 		bash( cmd, () => $( '.volumeband' ).removeClass( 'disabled' ) );
 	}
+	$( '#volume-bar' ).css( 'width', vol +'%' );
 	$( '#volume-text' ).text( S.volumemute || vol );
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 	S.volume = vol;
@@ -1953,7 +1953,7 @@ function volumeUpDown( up ) {
 	} else if ( ! S.control ) {
 		cmd += 'mpc';
 	}
-	bash( [ cmd, up ? '+' : '-', S.control, 'CMD updn control' ] );
+	bash( [ cmd, up ? '+' : '-', S.control, S.card, 'CMD UPDN CONTROL CARD' ] );
 }
 function vu() {
 	if ( S.state !== 'play' || D.vumeter || $( '#vu' ).hasClass( 'hide' ) ) {

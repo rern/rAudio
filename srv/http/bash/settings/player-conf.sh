@@ -58,7 +58,6 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	hwmixer=${Ahwmixer[asoundcard]}
 	mixertype=${Amixertype[asoundcard]}
 	name=${Aname[asoundcard]}
-	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop

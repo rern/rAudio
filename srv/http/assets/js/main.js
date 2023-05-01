@@ -704,13 +704,13 @@ $( '#volume' ).roundSlider( {
 	, drag              : function( e ) {
 		S.volume = e.value;
 		$volumehandle.rsRotate( - this._handle1.angle );
-		bash( [ 'volume', 'drag', e.value, S.control, 'CMD current target control' ] );
+		bash( [ 'volume', 'drag', e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	}
 	, change            : function( e ) {
 		if ( V.drag ) return
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		bash( [ 'volume', S.volume, e.value, S.control, 'CMD current target control' ] );
+		bash( [ 'volume', S.volume, e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 		$volumehandle.rsRotate( - this._handle1.angle );
 	}
 	, valueChange       : function( e ) {
@@ -755,9 +755,9 @@ $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
-	if ( $( e.currentTarget ).hasClass( 'band' ) ) {
+	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		clearTimeout( V.volumebar );
-		setTimeout( volumeBarHide, 3000 );
+		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
 } ).press( function( e ) {
 	var up = $( e.currentTarget ).hasClass( 'up' );

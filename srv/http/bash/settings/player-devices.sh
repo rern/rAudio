@@ -127,9 +127,10 @@ else
 	echo $card > $dirsystem/asoundcard
 fi
 asoundcard=$( < $dirsystem/asoundcard )
+echo ${Ahwmixer[asoundcard]} > $dirshm/amixercontrol
 
 devices="[ ${devices:1} ]"
-aplayname=${Aaplayname[card]}
-mixertype=${Amixertype[card]}
-output=${Aname[card]}
+aplayname=${Aaplayname[asoundcard]}
+mixertype=${Amixertype[asoundcard]}
+output=${Aname[asoundcard]}
 

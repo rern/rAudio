@@ -305,9 +305,37 @@ stringEscape() {
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }
-volumeUpDn() { # cmd.sh, bluetoothcommand.sh, rotaryencoder.sh
+volumeGet() {
+	local mixersoftware control vol
+	if [[ -e $dirshm/btreceiver ]]; then
+		for i in {1..5}; do # takes some seconds to be ready
+			vol=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
+			[[ $vol ]] && echo $vol && break
+			sleep 1
+		done
+		return
+	fi
+	
+	[[ -e $dirshm/nosound ]] && echo -1 && return
+	
+	if [[ -e $dirsystem/snapclientserver ]]; then
+		mixersoftware=
+	elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+		mixersoftware=1
+	fi
+	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
+		mpc status %volume% | tr -dc [0-9]
+	elif [[ -e $dirshm/amixercontrol ]]; then
+		card=$( < $dirsystem/asoundcard )
+		control=$( < $dirshm/amixercontrol )
+		amixer -c $card -M sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
+	else
+		echo 100
+	fi
+}
+volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
-	amixer -Mq sset "$2" $1
+	amixer -c $3 -Mq sset "$2" $1
 	volumePushSet
 }
 volumeUpDnBt() {
@@ -322,14 +350,7 @@ volumeUpDnMpc() {
 }
 volumePush() {
 	sleep 0.5
-	if [[ -e $dirshm/btreceiver ]]; then
-		val=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		val=$( amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-	else
-		val=$( mpc status %volume% | tr -dc [0-9] )
-	fi
-	pushstream volume '{"type":"updn","val":'$val'}'
+	pushstream volume '{"type":"updn","val":'$( volumeGet )'}'
 	rm $dirshm/pidvol
 }
 volumePushSet() {

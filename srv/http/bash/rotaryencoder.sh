@@ -25,12 +25,13 @@ if [[ -e $dirshm/btreceiver ]]; then
 		fi
 	done
 elif [[ -e $dirshm/amixercontrol ]]; then
+	card=$( < $dirsystem/asoundcard )
 	control=$( < $dirshm/amixercontrol )
 	evtest $devinputrotary | while read line; do
 		if [[ $line =~ 'value 1'$ ]]; then
-			volumeUpDn 1%+ "$control"
+			volumeUpDn 1%+ "$control" $card
 		elif [[ $line =~ 'value -1'$ ]]; then
-			volumeUpDn 1%- "$control"
+			volumeUpDn 1%- "$control" $card
 		fi
 	done
 else

@@ -114,64 +114,36 @@ urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
 }
-volumeGet() {
-	local mixersoftware control
-	if [[ -e $dirshm/btreceiver ]]; then
-		for i in {1..5}; do # takes some seconds to be ready
-			vol=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-			[[ $vol ]] && echo $vol && break
-			sleep 1
-		done
-		return
-	fi
-	
-	[[ -e $dirshm/nosound ]] && echo -1 && return
-	
-	if [[ -e $dirsystem/snapclientserver ]]; then
-		mixersoftware=
-	elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
-		mixersoftware=1
-	fi
-	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
-		mpc status %volume% | tr -dc [0-9]
-	else
-		card=$( < $dirsystem/asoundcard )
-		control=$( getContent $dirshm/amixercontrol )
-		if [[ ! $control ]]; then
-			echo 100
-		else
-			amixer -M | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
-		fi
-	fi
-}
 volumeSet() {
-	local current target control diff values
+	local card control current diff target values
 	current=$1
 	target=$2
 	control=$3
+	card=$4
 	diff=$(( $target - $current ))
 	if (( -5 < $diff && $diff < 5 )); then
-		volumeSetAt $target "$control"
+		volumeSetAt $target "$control" $card
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
 		values=( $( seq $(( current + incr )) $incr $target ) )
 		(( $diff % 5 )) && values+=( $target )
 		for i in "${values[@]}"; do
-			volumeSetAt $i "$control"
+			volumeSetAt $i "$control" $card
 			sleep 0.2
 		done
 	fi
 	[[ $control && ! -e $dirshm/btreceiver ]] && alsactl store
 }
 volumeSetAt() {
-	local target control
+	local card control target
 	target=$1
 	control=$2
+	card=$3
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 		echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
-		amixer -Mq sset "$control" $target%
+		amixer -c $card -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
 	fi
@@ -913,25 +885,25 @@ shairportstop )
 	$dirbash/status-push.sh
 	;;
 volume ) # no args = toggle mute / unmute
-	[[ $current == drag ]] && volumeSetAt $target "$control" && exit
+	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
 	
-	[[ ! $current ]] && current=$( volumeGet )
+	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
 	filevolumemute=$dirsystem/volumemute
-	if [[ $target > 0 ]]; then      # set
+	if [[ $TARGET > 0 ]]; then      # set
 		rm -f $filevolumemute
-		pushstreamVolume set $target
+		pushstreamVolume set $TARGET
 	else
-		if (( $current > 0 )); then # mute
-			target=0
-			echo $current > $filevolumemute
-			pushstreamVolume mute $current
+		if (( $CURRENT > 0 )); then # mute
+			TARGET=0
+			echo $CURRENT > $filevolumemute
+			pushstreamVolume mute $CURRENT
 		else                        # unmute
-			target=$( < $filevolumemute )
+			TARGET=$( < $filevolumemute )
 			rm -f $filevolumemute
-			pushstreamVolume unmute $target
+			pushstreamVolume unmute $TARGET
 		fi
 	fi
-	volumeSet $current $target "$control"
+	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
 	;;
 volumeget )
 	volumeGet
@@ -940,10 +912,10 @@ volumepushstream )
 	pushstream volume '{"val":'$( volumeGet )'}'
 	;;
 volumeupdn )
-	volumeUpDn 1%$updn "$control"
+	volumeUpDn 1%$UPDN "$CONTROL" $CARD
 	;;
 volumeupdnbt )
-	volumeUpDnBt 1%$updn "$control"
+	volumeUpDnBt 1%$UPDN "$CONTROL"
 	;;
 volumeupdnmpc )
 	volumeUpDnMpc ${updn}1

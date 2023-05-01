@@ -32,6 +32,7 @@ else
 		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
 			control=
 		else
+			card=$( getContent $dirsystem/asoundcard )
 			control=$( getContent $dirshm/amixercontrol )
 		fi
 		volume=$( $dirbash/cmd.sh volumeget )
@@ -41,6 +42,7 @@ else
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
+, "card"         : '$card'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
