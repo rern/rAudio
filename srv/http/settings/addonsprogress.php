@@ -45,10 +45,7 @@ body {
 	letter-spacing : 5px;
 }
 .flushdot {
-	height   : 0;
-	margin   : 0;
-	color    : #191a1a;
-	overflow : hidden;
+	display: none;
 }
 pre hr {
 	margin : 10px 0 -10px -10px;
