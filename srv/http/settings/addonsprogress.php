@@ -44,9 +44,6 @@ body {
 	font-size      : 18px;
 	letter-spacing : 5px;
 }
-.flushdot {
-	display: none;
-}
 pre hr {
 	margin : 10px 0 -10px -10px;
 	border : 1px solid var( --cml );
@@ -169,7 +166,7 @@ echo $commandtxt.'<br>';
 
 $skip       = ['warning:', 'permissions differ', 'filesystem:', 'uninstall:', 'y/n' ];
 $skippacman = [ 'downloading core.db', 'downloading extra.db', 'downloading alarm.db', 'downloading aur.db' ];
-$fillbuffer = '<p class="flushdot">'.str_repeat( '.', 40960 ).'</p>';
+$fillbuffer = '<p class="hide">'.str_repeat( '.', 40960 ).'</p>';
 ob_implicit_flush( true ); // start flush: bypass buffer - output to screen
 ob_end_flush();            // force flush: current buffer (run after flush started)
 
