@@ -694,12 +694,16 @@ $( '#volume' ).roundSlider( {
 		if ( V.local || V.drag ) return
 		
 		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
-		var speed = Math.round( Math.abs( diff ) / 5 * 0.2 * 10 ) / 10; // @5 0.2s > round 1 digit: * 10 / 10
-		$volumehandlerotate.css( 'transition-duration', speed +'s' );
+		if ( V.press || V.volupdn ) {
+			var speed = 100;
+		} else {
+			var speed = Math.abs( diff ) * 40; // 1% : 40ms
+		}
+		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration','' );
 			$( '#volume-knob, #button-volume i' ).removeClass( 'disabled' );
-		}, speed * 1000 );
+		}, speed );
 	}
 	, drag              : function( e ) {
 		S.volume = e.value;
@@ -751,7 +755,9 @@ $( '#volmute, #volM' ).click( function() {
 	bash( [ 'volume' ] );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).click( function( e ) {
+	V.volupdn = true;
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
+	delete V.volupdn;
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) {
