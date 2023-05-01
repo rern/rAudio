@@ -65,13 +65,13 @@ pre hr.hrlight {
 	user-select  : text;
 	-webkit-overflow-scrolling: touch;
 }
-.cbc  { color: #00ffff; background: var( --cml ); }
-.cbg  { color: #00ff00; background: #00ff00; }
-.cbgr { color: #808080; background: var( --cg ); }
-.cbr  { color: #ff0000; background: #ff0000; }
-.cbw  { color: #ffffff; background: var( --cw ); }
-.cby  { color: #ffff00; background: #ffff00; }
-.cc   { color: var( --cml ) }
+.cbm  { background: var( --cml ); }
+.cbg  { background: #00ff00; }
+.cbgr { background: var( --cg ); }
+.cbr  { background: #ff0000; }
+.cbw  { background: var( --cw ); }
+.cby  { background: #ffff00; }
+.cc   { color: var( --cm60 ) }
 .cgr  { color: var( --cg ) }
 .ck   { color: #000 }
 .cw   { color: var( --cw ) }
@@ -111,11 +111,11 @@ chmod 755 installfile
 ./installfile "options"
 
 <hr>
-<a class="cbc"> . </a> Debug
+<a class="cbm">  </a> Debug
 <hr>
 stdout
 
-<a class="cbc"> . </a> Done
+<a class="cbm">  </a> Done
 <hr class="hrlight">
 </pre>
 <script>setTimeout( () => clearInterval( scroll ), 1000 );</script>

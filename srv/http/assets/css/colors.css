@@ -1,7 +1,7 @@
 :root {
 	--cd   : hsl(200,100%,35%); /* default main */
 	--cw   : hsl(0,0%,90%);     /* white */
-	--cml  : hsl(200,100%,40%); /* main-light */
+	--cm60 : hsl(200,100%,60%); /* main-60% */
 	--cm   : hsl(200,100%,35%); /* main */
 	--cma  : hsl(200,100%,30%); /* main-active */
 	--cmd  : hsl(200,100%,20%); /* main-dark */
@@ -25,7 +25,7 @@
 }
 
 bl,  .bl  { color : var( --cm ) !important }
-bll       { color : var( --cml ) !important }
+bll       { color : var( --cm60 ) !important }
 g         { color : var( --cgl ) }
 gr,  .gr  { color : var( --cg60 ) !important }
 grn, .grn { color : #0f0 !important }
