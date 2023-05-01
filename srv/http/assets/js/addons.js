@@ -74,7 +74,6 @@ function addonData( $this ) {
 	V.branch = 'main';
 	V.label  = $this.find( '.label' ).text();
 	keys.forEach( k => V[ k ] = V.addon[ k ] );
-	console.log(V.label)
 }
 function buttonLabel( icon, label ) {
 	return ico( icon ) +' <span class="label">'+ label +'</span>';
