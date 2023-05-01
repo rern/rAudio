@@ -613,7 +613,7 @@ function info( json ) {
 				, 'text-align'   : input ? '' : 'right'   // text label
 			} ); 
 		}
-		if ( ( I.messagealign || I.footeralign ) && htmlinputs ) {
+		if ( htmlinputs && ( I.messagealign || I.footeralign ) ) {
 			var tblW = $( '#infoContent table' ).width();
 			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
 		}
