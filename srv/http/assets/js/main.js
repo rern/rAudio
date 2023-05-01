@@ -691,14 +691,10 @@ $( '#volume' ).roundSlider( {
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, beforeValueChange : function( e ) {
-		if ( V.local || V.drag ) return
+		if ( V.local || V.drag || V.press ) return
 		
 		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
-		if ( V.press || V.volupdn ) {
-			var speed = 100;
-		} else {
-			var speed = Math.abs( diff ) * 40; // 1% : 40ms
-		}
+		var speed = Math.abs( diff ) * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration','' );
@@ -755,9 +751,8 @@ $( '#volmute, #volM' ).click( function() {
 	bash( [ 'volume' ] );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).click( function( e ) {
-	V.volupdn = true;
+	local();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
-	delete V.volupdn;
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) {

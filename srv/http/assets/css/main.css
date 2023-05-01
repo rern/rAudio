@@ -986,7 +986,10 @@ i.map.disabled, .map.disabled i {
 	background: var( --cm );
 	box-shadow: inset var( --cga ) -1px 5px 5px;
 }
-
+#volume .rs-transition,
+#volume .rs-handle {
+	transition-duration: 100ms;
+}
 #volume { /* volume up/down */
 	position: relative;
 }
