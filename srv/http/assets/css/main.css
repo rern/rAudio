@@ -1588,6 +1588,9 @@ i.map.disabled, .map.disabled i {
 	padding-top: 3px;
 	line-height: 15px;
 }
+.coverart2 {
+	color: var( --cg60 );
+}
 .coverart.active .coverart2 {
 	color: var( --cga ) !important;
 }

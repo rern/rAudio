@@ -394,13 +394,12 @@ function htmlList( $lists ) { // non-file 'list' command
 			$path      = $data[ 3 ];
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
-			$space     = $data[ 2 ] ?: '&nbsp;';
 			$html     .=
 '<div class="coverart" data-index="'.$index.'">
 	<a class="lipath">'.$path.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
-	<span class="coverart1">'.$data[ 1 ].'</span>
-	<gr class="coverart2">'.$space.'</gr>
+	<a class="coverart1">'.$data[ 1 ].'</a>
+	<a class="coverart2">'.$data[ 2 ].'</a>
 </div>';
 		}
 	}
