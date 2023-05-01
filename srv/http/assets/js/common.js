@@ -159,7 +159,7 @@ function bannerHide() {
 		.addClass( 'hide' )
 		.empty();
 }
-$( '#banner' ).click( bannerHide );
+$( '#banner' ).on( 'click', bannerHide );
 
 // ----------------------------------------------------------------------
 $( '#data' ).on( 'click', '.copy', function() {
