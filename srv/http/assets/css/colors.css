@@ -2,6 +2,7 @@
 	--cd   : hsl(200,100%,35%); /* default main */
 	--cw   : hsl(0,0%,90%);     /* white */
 	--cm60 : hsl(200,100%,60%); /* main-60% */
+	--cml  : hsl(200,100%,40%); /* main-light */
 	--cm   : hsl(200,100%,35%); /* main */
 	--cma  : hsl(200,100%,30%); /* main-active */
 	--cmd  : hsl(200,100%,20%); /* main-dark */
