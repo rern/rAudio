@@ -6,7 +6,7 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 
 # 20230430
-[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
+[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 if crontab -l | grep -q addonsupdates; then
 	echo "\
