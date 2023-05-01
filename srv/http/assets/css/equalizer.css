@@ -74,7 +74,6 @@
 #eq .bottom {
 	position: absolute;
 	bottom: 15px;
-	width: 100% !important;
 	left: 50%;
 	transform: translateX( -50% );
 	font-size: 0; /* force no space between inline-block */

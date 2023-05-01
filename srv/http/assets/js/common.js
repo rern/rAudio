@@ -600,10 +600,10 @@ function info( json ) {
 			var allW = $( '#infoContent' ).width();
 			var labelW = $( '#infoContent td:first-child' ).width() || 0;
 			I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
-		} else {
+		} else if ( ! I.contentcssno ) {
 			I.boxW = 230;
 		}
-		$( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
+		if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
 		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
 		if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
 			var $td1st = $( '#infoContent td:first-child' );
