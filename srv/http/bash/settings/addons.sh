@@ -8,7 +8,7 @@ fi
 
 . /srv/http/bash/common.sh
 addonsjson=$diraddons/addonslist.json
-bar='<a class="cbc">   </a>'
+bar='<a class="cbc">  </a>'
 info='<a class="cby ck"> i </a>'
 warn='<a class="cbr cw"> ! </a>'
 

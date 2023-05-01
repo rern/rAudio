@@ -2,9 +2,9 @@
 
 path=$1
 fullpath="/mnt/MPD/$path"
-padw='<a class="cbw">   </a>'
-padg='<a class="cbg">   </a>'
-padgr='<a class="cbgr">   </a>'
+padw='<a class="cbw">  </a>'
+padg='<a class="cbg">  </a>'
+padgr='<a class="cbgr">  </a>'
 
 . /srv/http/bash/settings/addons.sh
 
