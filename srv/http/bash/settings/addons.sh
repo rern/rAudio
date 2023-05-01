@@ -19,14 +19,14 @@ $1
 <hr>"
 }
 getinstallzip() {
-	echo $bar Get files ...
+	echo "$bar Get files ..."
 	installfile=$branch.tar.gz
 	fileurl=$( jq -r .$alias.installurl $addonsjson | sed "s|raw/main/install.sh|archive/$installfile|" )
 	curl -sfLO $fileurl
 	[[ $? != 0 ]] && echo -e "$warn Get files failed." && exit
 	
 	echo
-	echo $bar Install new files ...
+	echo "$bar Install new files ..."
 	filelist=$( bsdtar tf $installfile \
 					| grep /srv/ \
 					| sed -e '/\/$/ d' -e 's|^.*/srv/|/srv/|' ) # stdout as a block to avoid blank lines
