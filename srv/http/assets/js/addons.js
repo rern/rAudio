@@ -52,7 +52,7 @@ $( '.container' ).on( 'click', '.revision', function() {
 } ).press( '.install', function( e ) {
 	if ( ! S.status.online ) return
 	
-	addonData( $( e.target ) );
+	addonData( $( e.currentTarget ) );
 	info( {
 		  icon      : icon
 		, title     : V.addon.title
@@ -74,6 +74,7 @@ function addonData( $this ) {
 	V.branch = 'main';
 	V.label  = $this.find( '.label' ).text();
 	keys.forEach( k => V[ k ] = V.addon[ k ] );
+	console.log(V.label)
 }
 function buttonLabel( icon, label ) {
 	return ico( icon ) +' <span class="label">'+ label +'</span>';
