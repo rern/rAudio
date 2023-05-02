@@ -691,9 +691,13 @@ $( '#volume' ).roundSlider( {
 		$( '.map' ).removeClass( 'mapshow' );
 	}
 	, beforeValueChange : function( e ) {
-		if ( V.local || V.drag || V.press ) return
+		if ( V.local || V.drag ) return
 		
-		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		if ( V.press ) {
+			var diff  = 3;
+		} else {
+			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		}
 		S.volume  = e.value;
 		var speed = Math.abs( diff ) * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
