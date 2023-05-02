@@ -263,7 +263,7 @@ function psVolume( data ) {
 		var vol = data.type !== 'mute' ? data.vol : 0;
 		$( '#infoRange .value' ).text( vol );
 		$( '#infoRange input' ).val( vol );
-		$( '#infoRange .sub' ).text( data.db +' dB' );
+		$( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
 		$( '#infoOk' ).toggleClass( 'hide', data.db === 0 );
 		$( '#infoContent' ).removeClass( 'hide' );
 		$( '#infoConfirm' ).addClass( 'hide' );

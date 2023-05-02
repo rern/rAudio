@@ -29,14 +29,6 @@ $( '#hwmixer' ).on( 'change', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
 	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
-var htmlvolume = `
-<div id="infoRange">
-	<div class="name"></div>
-	<div class="value"></div>
-	<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
-</div
-><div class="infofooter">-6.83 dB</div>
-`;
 $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 	var bt = this.id === 'setting-btreceiver';
 	bash( [ 'volumeget' ], v => {
@@ -58,7 +50,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			, title      : SW.title
 			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
 			, values     : v.vol
-			, rangesub   : nomixer ? '0dB (No Mixer)' : v.db +' dB'
+			, rangesub   : nomixer ? '0dB (No Mixer)' : v.db.replace( 'dB', ' dB' )
 			, confirm    : warning
 			, confirmno  : () => v.db
 			, beforeshow : () => {
