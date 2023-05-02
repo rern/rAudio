@@ -1037,7 +1037,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		}
 	}
 	// page visibility -----------------------------------------------------------------
-	var active  = true; // fix: multiple firings
+	var active  = true;  // fix: multiple firings
 	var select2 = false; // fix: closing > blur > disconnect
 	function connect() {
 		if ( active || V.off ) return

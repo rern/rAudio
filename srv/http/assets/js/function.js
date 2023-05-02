@@ -1167,7 +1167,7 @@ function renderPlayback() {
 	
 	local();
 	if ( S.state === 'stop' ) setProgress( 0 );
-	setVolume();
+	setVolume( S.volume );
 	clearInterval( V.interval.blinkdot );
 	$( '#qrwebui, #qrip' ).remove();
 	if ( S.player === 'mpd' && S.state === 'stop' && ! S.pllength ) { // empty queue
@@ -1771,17 +1771,16 @@ function setTrackCoverart() {
 		$( '#lib-list li' ).eq( 1 ).removeClass( 'track1' );
 	}
 }
-function setVolume() {
+function setVolume( val ) {
 	var mute = S.volumemute !== 0;
-	$volumeRS.setValue( S.volume );
-	if ( S.volume === 0 ) $volumehandle.rsRotate( -310 );
+	$volumeRS.setValue( val );
 	mute ? volumeColorMute( S.volumemute ) : volumeColorUnmute();
-	$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
-	$( '#volmute' ).toggleClass( 'disabled', S.volume === 0 && ! mute );
-	$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
-	$( '#volume-bar' ).css( 'width', S.volume +'%' );
+	$( '#voldn' ).toggleClass( 'disabled', val === 0 );
+	$( '#volmute' ).toggleClass( 'disabled', val === 0 && ! mute );
+	$( '#volup' ).toggleClass( 'disabled', val === 100 );
+	$( '#volume-bar' ).css( 'width', val +'%' );
 	$( '#volume-text' )
-		.text( S.volumemute || S.volume )
+		.text( S.volumemute || val )
 		.toggleClass( 'bl', mute );
 	if ( $volume.is( ':hidden' ) ) {
 		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';

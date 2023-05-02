@@ -694,16 +694,17 @@ $( '#volume' ).roundSlider( {
 		if ( V.local || V.drag || V.press ) return
 		
 		var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
+		S.volume  = e.value;
 		var speed = Math.abs( diff ) * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
-			$volumehandlerotate.css( 'transition-duration','' );
+			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #button-volume i' ).removeClass( 'disabled' );
 		}, speed );
 	}
 	, drag              : function( e ) {
 		S.volume = e.value;
-		$volumehandle.rsRotate( - this._handle1.angle );
+		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 		bash( [ 'volume', 'drag', e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 	}
 	, change            : function( e ) {
@@ -711,13 +712,13 @@ $( '#volume' ).roundSlider( {
 		
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
 		bash( [ 'volume', S.volume, e.value, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
-		$volumehandle.rsRotate( - this._handle1.angle );
+		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, valueChange       : function( e ) {
 		if ( V.drag || ! V.create ) return // ! V.create - suppress fire before 'create'
 		
 		S.volume = e.value;
-		$volumehandle.rsRotate( - this._handle1.angle );
+		$volumehandle.rsRotate( e.value ? -this._handle1.angle : -310 );
 	}
 	, stop              : function() {
 		V.drag = false;

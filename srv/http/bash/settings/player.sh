@@ -7,9 +7,6 @@ args2var "$1"
 linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
-pushstreamVolume() {
-	pushstream volume $( volumeGet withdb )
-}
 
 case $CMD in
 
@@ -237,18 +234,18 @@ volume0db )
 	control=$( < $dirshm/amixercontrol )
 	amixer -c $card -Mq sset "$control" 0dB
 	alsactl store
-	pushstreamVolume
+	volumeGet push
 	;;
 volume0dbbt )
 	btdevice=$( < $dirshm/btreceiver )
 	amixer -MqD bluealsa sset "$btdevice" 0dB 2> /dev/null
-	pushstreamVolume
+	volumeGet push
 	;;
 volumeget )
 	volumeGet withdb
 	;;
 volumepush )
-	pushstreamVolume
+	volumeGet push
 	;;
 	
 esac

@@ -305,8 +305,8 @@ stringEscape() {
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }
-volumeGet() { # $1-withdb from player.sh
-	local amixer card control mixersoftware vol_db
+volumeGet() { # $1-withdb/push from player.sh
+	local amixer card control data mixersoftware val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
@@ -331,8 +331,13 @@ volumeGet() { # $1-withdb from player.sh
 		fi
 	fi
 	if [[ $amixer ]]; then
-		vol_db=$( sed -E 's/.*\[(.*)%.*\[(.*dB).*/\1 \2/' <<< $amixer )
-		[[ $1 ]] && echo '{ "vol": '${vol_db/ *}', "db": "'${vol_db/* }'" }' || echo ${vol_db/ *}
+		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*dB).*/\1 \2/' <<< $amixer )
+		if [[ $1 ]]; then
+			data='{ "type": "player", "val": '${val_db/ *}', "db": "'${val_db/* }'" }'
+			[[ $1 == withdb ]] && echo $data || pushstream volume $data
+		else
+			echo ${val_db/ *}
+		fi
 	fi
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh

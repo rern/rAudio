@@ -388,17 +388,15 @@ function psSavedPlaylists( data ) {
 function psVolume( data ) {
 	if ( data.type === 'mute' ) {
 		$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		S.volume     = 0;
 		S.volumemute = data.val;
-		setVolume();
+		setVolume( 0 );
 	} else if ( 'volumenone' in data ) {
 		D.volumenone = data.volumenone;
 		$volume.toggleClass( 'hide', ! D.volume || D.volumenone );
 	} else {
 		if ( ! data.type === 'updn' ) $( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-		S.volume     = data.val;
 		S.volumemute = 0;
-		setVolume();
+		setVolume( data.val );
 	}
 }
 function psVUmeter( data ) {

@@ -49,7 +49,7 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			  icon       : SW.icon
 			, title      : SW.title
 			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, values     : v.vol
+			, values     : v.val
 			, rangesub   : nomixer ? '0dB (No Mixer)' : v.db.replace( 'dB', ' dB' )
 			, confirm    : warning
 			, confirmno  : () => v.db

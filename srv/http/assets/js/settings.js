@@ -256,17 +256,26 @@ function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
-	if ( ! $( '#infoRange .value' ).text() ) return
+	if ( page !== 'player' || ! $( '#infoRange' ).length ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
-		var vol = data.type !== 'mute' ? data.vol : 0;
-		$( '#infoRange .value' ).text( vol );
-		$( '#infoRange input' ).val( vol );
-		$( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
+		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoOk' ).toggleClass( 'hide', data.db === 0 );
 		$( '#infoContent' ).removeClass( 'hide' );
 		$( '#infoConfirm' ).addClass( 'hide' );
+		if ( data.db ) {
+			$( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
+		} else {
+			var diff = Math.abs( +$( '#infoRange .value' ).text() - val );
+			setTimeout( () => {
+				bash( [ 'volumeget' ], function( data ) {
+					if ( data.db ) $( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
+				}, 'json' );
+			}, diff * 50 );
+		}
+		$( '#infoRange .value' ).text( val );
+		$( '#infoRange input' ).val( val );
 	}, 300 );
 }
 function psWlan( data ) {
