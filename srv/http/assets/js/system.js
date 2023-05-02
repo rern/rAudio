@@ -883,13 +883,13 @@ var contentmount = {
 <input type="hidden">
 <table>
 <tr><td style="width: 90px">Name</td>
-<td><input id="mountpoint" type="text" placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;"></td>
+<td><input id="mountpoint" type="text" placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;">&ensp;*</td>
 </tr>
 <tr><td>Server IP</td>
-	<td><input type="text"></td>
+	<td><input type="text">&ensp;*</td>
 </tr>
 <tr><td id="sharelabel">Share</td>
-	<td><input id="share" type="text" placeholder="Share name/path on server"></td>
+	<td><input id="share" type="text" placeholder="Share name/path on server">&ensp;*</td>
 </tr>`
 	, cifs       : `\
 <tr><td>User</td>
