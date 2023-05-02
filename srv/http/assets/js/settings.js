@@ -266,7 +266,7 @@ function psVolume( data ) {
 		if ( data.db ) {
 			psVolumeSet( data.db );
 		} else {
-			var diff = Math.abs( +$( '#infoRange .value' ).text() - val );
+			var diff = Math.abs( +$( '#infoRange input' ).val() - val );
 			setTimeout( () => {
 				bash( [ 'volumeget' ], function( data ) {
 					if ( data.db ) psVolumeSet( data.db );
