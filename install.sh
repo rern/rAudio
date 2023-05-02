@@ -102,10 +102,6 @@ cursor=$( [[ $cursor == yes ]] && echo true )"
 	echo "$conf" > $file
 fi
 
-if grep -q /srv/http/data /etc/exports; then
-	[[ -e /mnt/MPD/.mpdignore ]] && rm /mnt/MPD/.mpdignore
-fi
-
 file=$dirsystem/relays.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
@@ -182,4 +178,11 @@ if [[ -e $file ]]; then
 	filejson=${file/conf/json}
 	grep -q '{' $file && jq < $file > $filejson || conf2json $file | jq > $filejson
 	rm -f $file
+fi
+
+if grep -q /srv/http/data /etc/exports; then
+	echo "$info Server rAudio:
+- Disconnect client
+- Disable server
+- Re-enable again" 
 fi
