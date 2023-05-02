@@ -883,7 +883,9 @@ var contentmount = {
 <input type="hidden">
 <table>
 <tr><td style="width: 90px">Name</td>
-<td><input id="mountpoint" type="text" placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /" style="font-family: rern, Lato;">&ensp;*</td>
+<td><input id="mountpoint" type="text"
+		placeholder="for&ensp;&#xF506;&ensp;·&ensp;&#xF551;&ensp;NAS / Name /"
+		style="font-family: rern, Lato;"><a>&ensp;*</a></td>
 </tr>
 <tr><td>Server IP</td>
 	<td><input type="text">&ensp;*</td>
@@ -934,6 +936,7 @@ function infoMount( nfs ) {
 			var $share      = $( '#share' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
+				$mountpoint.next().remove();
 			} else {
 				$mountpoint.on( 'keyup paste', function() {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
