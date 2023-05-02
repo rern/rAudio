@@ -54,12 +54,12 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			, confirm    : warning
 			, confirmno  : () => v.db
 			, beforeshow : () => {
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === 0 );
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === '0.00dB' );
 				$( '#infoRange input' ).on( 'input', function() {
 					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VOL MIXER CARD' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
-				} ).prop( 'disabled', D.mixertype === 'none' );
+				} ).prop( 'disabled', nomixer || D.mixertype === 'none' );
 			}
 			, oklabel    : ico( 'set0' ) +'0dB'
 			, ok         : () => {

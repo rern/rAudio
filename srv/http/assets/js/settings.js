@@ -261,22 +261,25 @@ function psVolume( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		var val = data.type !== 'mute' ? data.val : 0;
-		$( '#infoOk' ).toggleClass( 'hide', data.db === 0 );
 		$( '#infoContent' ).removeClass( 'hide' );
 		$( '#infoConfirm' ).addClass( 'hide' );
 		if ( data.db ) {
-			$( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
+			psVolumeSet( data.db );
 		} else {
 			var diff = Math.abs( +$( '#infoRange .value' ).text() - val );
 			setTimeout( () => {
 				bash( [ 'volumeget' ], function( data ) {
-					if ( data.db ) $( '#infoRange .sub' ).text( data.db.replace( 'dB', ' dB' ) );
+					if ( data.db ) psVolumeSet( data.db );
 				}, 'json' );
 			}, diff * 50 );
 		}
 		$( '#infoRange .value' ).text( val );
 		$( '#infoRange input' ).val( val );
 	}, 300 );
+}
+function psVolumeSet( db ) {
+	$( '#infoRange .sub' ).text( db.replace( 'dB', ' dB' ) );
+	$( '#infoOk' ).toggleClass( 'hide', db === '0.00dB' );
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
