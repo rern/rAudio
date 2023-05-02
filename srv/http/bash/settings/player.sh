@@ -8,25 +8,7 @@ linkConf() {
 	ln -sf $dirmpdconf/{conf/,}$CMD.conf
 }
 pushstreamVolume() {
-	pushstream volume $( volumePlayerGet )
-}
-volumePlayerGet() {
-	local amixer card control db vol
-	if [[ -e $dirshm/btreceiver ]]; then
-		amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
-		btdevice=$( < $dirshm/btreceiver )
-	else
-		[[ ! -e $dirshm/amixercontrol ]] && exit
-		
-		card=$( < $dirsystem/asoundcard )
-		control=$( < $dirshm/amixercontrol )
-		amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
-	fi
-	db=$( sed -E 's/.*\[(.*)dB.*/\1/' <<< $amixer )
-	vol=$( sed -E 's/.*\[(.*)%.*/\1/' <<< $amixer )
-	[[ ! $db ]] && db=false
-	echo '{ "db": '$db', "vol": '$vol' }'
-	[[ $btdevice ]] && echo $vol > "$dirsystem/btvolume-$btdevice"
+	pushstream volume $( volumeGet withdb )
 }
 
 case $CMD in
@@ -263,7 +245,7 @@ volume0dbbt )
 	pushstreamVolume
 	;;
 volumeget )
-	volumePlayerGet
+	volumeGet withdb
 	;;
 volumepush )
 	pushstreamVolume

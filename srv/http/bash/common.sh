@@ -305,32 +305,34 @@ stringEscape() {
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }
-volumeGet() {
-	local mixersoftware control vol
+volumeGet() { # $1-withdb from player.sh
+	local amixer card control mixersoftware vol_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
-			vol=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/' )
-			[[ $vol ]] && echo $vol && break
-			sleep 1
+			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
+			[[ $amixer ]] && break || sleep 1
 		done
-		return
-	fi
-	
-	[[ -e $dirshm/nosound ]] && echo -1 && return
-	
-	if [[ -e $dirsystem/snapclientserver ]]; then
-		mixersoftware=
-	elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
-		mixersoftware=1
-	fi
-	if [[ $( < $dirshm/player ) == mpd && $mixersoftware ]]; then
-		mpc status %volume% | tr -dc [0-9]
-	elif [[ -e $dirshm/amixercontrol ]]; then
-		card=$( < $dirsystem/asoundcard )
-		control=$( < $dirshm/amixercontrol )
-		amixer -c $card -M sget "$control" | grep -m1 % | sed -E 's/.*\[(.*)%].*/\1/'
 	else
-		echo 100
+		[[ -e $dirshm/nosound ]] && echo -1 && return
+		
+		if [[ -e $dirsystem/snapclientserver ]]; then
+			mixersoftware=
+		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+			mixersoftware=1
+		fi
+		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then
+			mpc status %volume% | tr -dc [0-9]
+		elif [[ -e $dirshm/amixercontrol ]]; then
+			card=$( < $dirsystem/asoundcard )
+			control=$( < $dirshm/amixercontrol )
+			amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
+		else
+			echo 100
+		fi
+	fi
+	if [[ $amixer ]]; then
+		vol_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
+		[[ $1 ]] && echo '{ "db": '${vol_db/* }', "vol": '${vol_db/ *}' }' || echo ${vol_db/ *}
 	fi
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
