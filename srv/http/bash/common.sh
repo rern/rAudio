@@ -331,8 +331,8 @@ volumeGet() { # $1-withdb from player.sh
 		fi
 	fi
 	if [[ $amixer ]]; then
-		vol_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
-		[[ $1 ]] && echo '{ "db": '${vol_db/* }', "vol": '${vol_db/ *}' }' || echo ${vol_db/ *}
+		vol_db=$( sed -E 's/.*\[(.*)%.*\[(.*dB).*/\1 \2/' <<< $amixer )
+		[[ $1 ]] && echo '{ "vol": '${vol_db/ *}', "db": "'${vol_db/* }'" }' || echo ${vol_db/ *}
 	fi
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
