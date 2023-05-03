@@ -121,7 +121,7 @@ volumeSet() {
 	control=$3
 	card=$4
 	diff=$(( $target - $current ))
-	if (( -5 < $diff && $diff < 5 )); then
+	if (( ${diff#-} < 5 )); then
 		volumeSetAt $target "$control" $card
 	else # increment
 		(( $diff > 0 )) && incr=5 || incr=-5
