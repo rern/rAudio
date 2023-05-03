@@ -1136,7 +1136,7 @@ function renderLibraryList( data ) { // V.librarylist
 		}
 		if ( V.mode === 'album' ) { // V.albumlist
 			V.albumlist = true;
-			$( '#lib-list img' ).eq( 0 ).on( 'load', function() {
+			if ( ! $( '.licover' ).length ) $( '#lib-list img' ).eq( 0 ).on( 'load', function() {
 				$( '#lib-breadcrumbs' ).append( '<span class="button-coverart"><img src="'+ $( this ).attr( 'src' ) +'"></span>' );
 			} );
 			if ( V.iactive ) $( '#lib-list .coverart' ).eq( V.iactive ).addClass( 'active' );
