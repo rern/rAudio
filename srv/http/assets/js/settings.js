@@ -260,26 +260,37 @@ function psVolume( data ) {
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
+		V.local = true;
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoContent' ).removeClass( 'hide' );
 		$( '#infoConfirm' ).addClass( 'hide' );
 		if ( data.db ) {
+			$( '#infoRange .value' ).text( val );
+			$( '#infoRange input' ).val( val );
 			psVolumeSet( data.db );
 		} else {
-			var diff = Math.abs( +$( '#infoRange input' ).val() - val );
+			var current = +$( '#infoRange input' ).val();
+			var diff    = Math.abs( current - val );
+			var up      = current < val;
+			var i       = current
+			var interval = setInterval( () => {
+				up ? i++ : i--;
+				$( '#infoRange .value' ).text( i );
+				$( '#infoRange input' ).val( i );
+				if ( i === val ) clearInterval( interval );
+			}, 40 );
 			setTimeout( () => {
 				bash( [ 'volumeget' ], function( data ) {
 					if ( data.db ) psVolumeSet( data.db );
 				}, 'json' );
 			}, diff * 50 );
 		}
-		$( '#infoRange .value' ).text( val );
-		$( '#infoRange input' ).val( val );
 	}, 300 );
 }
 function psVolumeSet( db ) {
 	$( '#infoRange .sub' ).text( db.replace( 'dB', ' dB' ) );
 	$( '#infoOk' ).toggleClass( 'hide', db === '0.00dB' );
+	V.local = false;
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {
