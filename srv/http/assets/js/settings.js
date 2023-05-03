@@ -289,7 +289,7 @@ function psVolume( data ) {
 }
 function psVolumeSet( db ) {
 	$( '#infoRange .sub' ).text( db );
-	$( '#infoOk' ).toggleClass( 'hide', db === '0.00 dB' );
+	$( '#infoOk' ).toggleClass( 'disabled', db === '0 dB' );
 	V.local = false;
 }
 function psWlan( data ) {

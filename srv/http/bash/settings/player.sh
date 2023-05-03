@@ -222,10 +222,11 @@ $( < /etc/asound.conf )"
 	echo "$devices"
 	;;
 volume )
-	amixer -c $CARD -Mq sset "$MIXER" $VOL%
+	amixer -c $CARD -Mq sset "$MIXER" $VAL%
+	[[ $VAL > 0 ]] && rm -f $dirsystem/volumemute
 	;;
 volumebt )
-	amixer -MqD bluealsa sset "$MIXER" $VOL%
+	amixer -MqD bluealsa sset "$MIXER" $VAL%
 	;;
 volume0db )
 	[[ ! -e $dirshm/amixercontrol ]] && exit

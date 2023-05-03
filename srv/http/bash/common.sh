@@ -334,7 +334,12 @@ volumeGet() { # $1-withdb/push from player.sh
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
 		if [[ $1 ]]; then
 			db=${val_db/* }
-			[[ $db == -99999.99 ]] && db=Mute || db+=' dB'
+			if [[ $db == -99999.99 ]]; then
+				db=Mute
+			else
+				[[ $db == 0.00 ]] && db=0
+				db+=' dB'
+			fi
 			data='{ "type": "player", "val": '${val_db/ *}', "db": "'$db'" }'
 			[[ $1 == withdb ]] && echo $data || pushstream volume $data
 		else

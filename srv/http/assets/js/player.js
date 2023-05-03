@@ -32,8 +32,6 @@ $( '#hwmixer' ).on( 'change', function() {
 $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 	var bt = this.id === 'setting-btreceiver';
 	bash( [ 'volumeget' ], v => {
-		var nodb    = v.db === false;
-		var nomixer = D.mixertype === 'none';
 		if ( bt ) {
 			var cmd    = 'volumebt';
 			var cmdodb = 'volume0dbbt';
@@ -46,28 +44,28 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			var card   = D.card;
 		}
 		info( {
-			  icon       : SW.icon
-			, title      : SW.title
-			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, values     : v.val
-			, rangesub   : nomixer ? '0 dB (No Mixer)' : v.db
-			, confirm    : warning
-			, confirmno  : () => v.db
-			, beforeshow : () => {
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === '0.00 dB' );
+			  icon         : SW.icon
+			, title        : SW.title
+			, rangelabel   : bt ? mixer.replace( ' - A2DP', '' ) : mixer
+			, values       : v.val
+			, rangesub     : v.db
+			, checkchanged : v.db === '' || v.db === '0 dB'
+			, confirm      : warning
+			, confirmno    : () => v.db
+			, beforeshow   : () => {
 				$( '#infoRange input' ).on( 'input', function() {
 					if ( V.local ) return
 					
-					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VOL MIXER CARD' ] );
+					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VAL MIXER CARD' ] );
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
-				} ).prop( 'disabled', nomixer || D.mixertype === 'none' );
+				} );
 			}
-			, oklabel    : ico( 'set0' ) +'0dB'
-			, ok         : () => {
+			, oklabel      : ico( 'set0' ) +'0dB'
+			, ok           : () => {
 				bash( [ cmdodb ] );
 			}
-			, oknoreset  : true
+			, oknoreset    : true
 		} );
 	}, 'json' );
 } );
@@ -398,7 +396,7 @@ function renderPage() {
 		$( '#mixertype' )
 			.html( htmlmixertype )
 			.val( D.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 || D.mixertype === 'none' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
 //		$( '#dop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', S.dop );
