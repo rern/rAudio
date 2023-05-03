@@ -321,24 +321,25 @@ volumeGet() {
 			mixersoftware=1
 		fi
 		if [[ $mixersoftware && $( < $dirshm/player ) == mpd ]]; then
-			mpc status %volume% | tr -dc [0-9]
+			val=$( mpc status %volume% | tr -dc [0-9] )
 		elif [[ -e $dirshm/amixercontrol ]]; then
 			card=$( < $dirsystem/asoundcard )
 			control=$( < $dirshm/amixercontrol )
 			amixer=$( amixer -c $card -M sget "$control" | grep -m1 % )
-		else
-			echo 100
 		fi
 	fi
 	if [[ $amixer ]]; then
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
-		if [[ $1 == value ]]; then
-			echo ${val_db/ *}
-		else
-			data='{ "type": "'$1'", "val": '${val_db/ *}', "db": '${val_db/* }' }'
-			[[ $1 ]] && pushstream volume $data || echo $data
-		fi
+		val=${val_db/ *}
+		db=${val_db/* }
 	fi
+	[[ ! $val ]] && val=100
+	[[ ! $db ]] && db=0
+	case $1 in
+		value ) echo $val;;
+		valdb ) echo '{ "val": '$val', "db": '$db' }';;
+		* )     pushstream volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
+	esac
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol

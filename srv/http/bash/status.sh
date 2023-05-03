@@ -35,7 +35,7 @@ else
 			card=$( getContent $dirsystem/asoundcard )
 			control=$( getContent $dirshm/amixercontrol )
 		fi
-		volume=$( $dirbash/cmd.sh volumeget )
+		volume=$( volumeGet value )
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
