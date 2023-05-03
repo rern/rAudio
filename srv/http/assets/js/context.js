@@ -45,8 +45,6 @@ function addToPlaylistCommand( cmd, mpccmd, msg ) {
 		, replace     : { cmd: [ ...mpccmd, 'replace' ],            title: 'Replace Playlist' }
 		, replaceplay : { cmd: [ ...mpccmd, 'replaceplay', sleep ], title: 'Replace Playlist and play' }
 	}
-	var command = cmd_title[ cmd ].cmd;
-	var title   = cmd_title[ cmd ].title;
 	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).trigger( 'click' );
 	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 	var command = cmd_title[ cmd ];
