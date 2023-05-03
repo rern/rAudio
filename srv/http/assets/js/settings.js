@@ -288,8 +288,8 @@ function psVolume( data ) {
 	}, 300 );
 }
 function psVolumeSet( db ) {
-	$( '#infoRange .sub' ).text( db.replace( 'dB', ' dB' ) );
-	$( '#infoOk' ).toggleClass( 'hide', db === '0.00dB' );
+	$( '#infoRange .sub' ).text( db );
+	$( '#infoOk' ).toggleClass( 'hide', db === '0.00 dB' );
 	V.local = false;
 }
 function psWlan( data ) {

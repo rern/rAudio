@@ -50,11 +50,11 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			, title      : SW.title
 			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
 			, values     : v.val
-			, rangesub   : nomixer ? '0dB (No Mixer)' : v.db.replace( 'dB', ' dB' )
+			, rangesub   : nomixer ? '0 dB (No Mixer)' : v.db
 			, confirm    : warning
 			, confirmno  : () => v.db
 			, beforeshow : () => {
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === '0.00dB' );
+				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || v.db === '0.00 dB' );
 				$( '#infoRange input' ).on( 'input', function() {
 					if ( V.local ) return
 					
