@@ -334,24 +334,12 @@ function info( json ) {
 		} );
 	}
 	$( '#infoX, #infoCancel' ).on( 'click', function() {
-		if ( ! I.confirm ) {
-			infoButtonCommand( I.cancel, 'cancel' );
-		} else {
-			$( '#infoConfirm' ).hasClass( 'hide' )
-				? infoButtonCommand( I.cancel, 'cancel' )
-				: $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
-		}
+		infoButtonCommand( I.cancel, 'cancel' );
 	} );
 	$( '#infoOk' ).on( 'click', function() {
 		if ( V.press || $( this ).hasClass( 'disabled' ) ) return
 		
-		if ( ! I.confirm || ( 'confirmno' in I && I.confirmno() ) ) {
-			infoButtonCommand( I.ok );
-		} else {
-			$( '#infoConfirm' ).hasClass( 'hide' )
-				? $( '#infoContent, #infoConfirm' ).toggleClass( 'hide' )
-				: infoButtonCommand( I.ok );
-		}
+		infoButtonCommand( I.ok );
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
@@ -558,8 +546,6 @@ function info( json ) {
 	}
 	
 	// populate layout //////////////////////////////////////////////////////////////////////////////
-	if ( I.confirm ) $( '#infoContent' ).after( '<div id="infoConfirm" class="infomessage hide">'+ I.confirm +'</div>' );
-	
 	$( '#infoContent' ).html( htmlcontent ).promise().done( function() {
 		
 		$( '#infoContent input:text' ).prop( 'spellcheck', false );
@@ -624,11 +610,29 @@ function info( json ) {
 		}
 		if ( I.tab && $input.length === 1 ) $( '#infoContent' ).css( 'padding', '30px' );
 		// custom function before show
-		if ( I.beforeshow ) I.beforeshow();
 		$( '#infoContent input:password' ).parent().after( '<td>'+ ico( 'eye' ) +'</td>' );
 		if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( '#infoContent a' ).removeAttr( 'href' );
 		// set at current scroll position
 		$( '#infoBox' ).css( 'margin-top', $( window ).scrollTop() );
+		// check inputs: blank / length / change
+		if ( I.checkblank ) {
+			if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];
+			infoKey2array( 'checkblank' );
+			infoCheckBlank();
+		} else {
+			I.blank = false;
+		}
+		if ( I.checkip ) {
+			infoKey2array( 'checkip' );
+			infoCheckIP();
+		} else {
+			I.notip = false;
+		}
+		I.checklength  ? infoCheckLength() : I.short = false;
+		I.nochange = I.values && I.checkchanged ? true : false;
+		$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
+		infoCheckSet();
+		if ( I.beforeshow ) I.beforeshow();
 	} );
 	$( '#infoContent .i-eye' ).on( 'click', function() {
 		var $this = $( this );
@@ -641,24 +645,6 @@ function info( json ) {
 			$pwd.prop( 'type', 'text' );
 		}
 	} );
-	// check inputs: blank / length / change
-	if ( I.checkblank ) {
-		if ( I.checkblank === true ) I.checkblank = [ ...Array( $inputbox.length ).keys() ];
-		infoKey2array( 'checkblank' );
-		infoCheckBlank();
-	} else {
-		I.blank = false;
-	}
-	if ( I.checkip ) {
-		infoKey2array( 'checkip' );
-		infoCheckIP();
-	} else {
-		I.notip = false;
-	}
-	I.checklength  ? infoCheckLength() : I.short = false;
-	I.nochange = I.values && I.checkchanged ? true : false;
-	$( '#infoOk' ).toggleClass( 'disabled', I.blank || I.notip || I.short || I.nochange ); // initial check
-	infoCheckSet();
 }
 
 function infoButtonCommand( fn, cancel ) {
@@ -667,7 +653,7 @@ function infoButtonCommand( fn, cancel ) {
 	if ( V.press || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
 	
 	if ( I.oknoreset ) {
-		$( '#infoContent, #infoConfirm' ).toggleClass( 'hide' );
+		$( '#infoContent' ).toggleClass( 'hide' );
 		return
 	}
 	

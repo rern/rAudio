@@ -99,7 +99,7 @@ function notifyCommon( message ) {
 	banner( SW.icon +' blink', SW.title, message, -1 );
 }
 function refreshData() {
-	if ( page === 'guide' || I.active ) return
+	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
 	bash( [ 'settings/'+ page +'-data.sh' ], data => {
 		if ( typeof data === 'string' ) { // on load, try catching any errors
@@ -256,19 +256,19 @@ function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
-	if ( page !== 'player' || ! $( '#infoRange' ).length ) return
+	if ( page !== 'player' || ! I.rangelabel ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		V.local = true;
 		var val = data.type !== 'mute' ? data.val : 0;
 		$( '#infoContent' ).removeClass( 'hide' );
-		$( '#infoConfirm' ).addClass( 'hide' );
-		if ( data.db ) {
+		$( '.confirm' ).addClass( 'hide' );
+		if ( 'db' in data ) {
 			$( '#infoRange .value' ).text( val );
 			$( '#infoRange input' ).val( val );
-			psVolumeSet( data.db );
-		} else {
+			volumeSet( data );
+		} else { // from playback
 			var current = +$( '#infoRange input' ).val();
 			var diff    = Math.abs( current - val );
 			var up      = current < val;
@@ -281,16 +281,11 @@ function psVolume( data ) {
 			}, 40 );
 			setTimeout( () => {
 				bash( [ 'volumeget' ], function( data ) {
-					if ( data.db ) psVolumeSet( data.db );
+					if ( data.db ) volumeSet( data );
 				}, 'json' );
 			}, diff * 50 );
 		}
 	}, 300 );
-}
-function psVolumeSet( db ) {
-	$( '#infoRange .sub' ).text( db );
-	$( '#infoOk' ).toggleClass( 'disabled', db === '0 dB' );
-	V.local = false;
 }
 function psWlan( data ) {
 	if ( data && 'reboot' in data ) {

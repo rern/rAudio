@@ -31,7 +31,7 @@ $( '#hwmixer' ).on( 'change', function() {
 } );
 $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 	var bt = this.id === 'setting-btreceiver';
-	bash( [ 'volumeget' ], v => {
+	bash( [ 'volumeget' ], data => {
 		if ( bt ) {
 			var cmd    = 'volumebt';
 			var cmdodb = 'volume0dbbt';
@@ -47,12 +47,10 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 			  icon         : SW.icon
 			, title        : SW.title
 			, rangelabel   : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, values       : v.val
-			, rangesub     : v.db
-			, checkchanged : v.db === '' || v.db === '0 dB'
-			, confirm      : warning
-			, confirmno    : () => v.db
+			, values       : data.val
+			, rangesub     : data.db +' dB'
 			, beforeshow   : () => {
+				$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
 				$( '#infoRange input' ).on( 'input', function() {
 					if ( V.local ) return
 					
@@ -60,10 +58,15 @@ $( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 				} ).on( 'touchend mouseup keyup', function() {
 					bash( [ 'volumepush' ] );
 				} );
+				volumeSet( data );
 			}
 			, oklabel      : ico( 'set0' ) +'0dB'
 			, ok           : () => {
-				bash( [ cmdodb ] );
+				if ( $( '#infoRange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
+					$( '#infoContent, .confirm' ).toggleClass( 'hide' );
+				} else {
+					bash( [ cmdodb ] );
+				}
 			}
 			, oknoreset    : true
 		} );
@@ -398,7 +401,6 @@ function renderPage() {
 			.val( D.mixertype );
 		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 || D.mixertype === 'none' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
-//		$( '#dop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 		if ( S.camilladsp ) {
@@ -410,20 +412,18 @@ function renderPage() {
 		}
 		$( '#divaudiooutput .col-l' ).html( label );
 	}
-	if ( $( '#infoRange .value' ).length ) {
-		bash( [ 'volumeget' ], v => {
-			$( '#infoRange .value' ).text( v.vol );
-			$( '#infoRange input' ).val( v.vol );
-			$( '.infofooter' ).text( v.db +' dB' );
-			$( '#infoButton a' ).eq( 1 ).toggleClass( 'hide', v.db === '0.00' );
-		}, 'json' );
-	}
 	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
 	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
+	if ( I.rangelabel ) bash( [ 'volumepush' ] );
 	showContent();
 }
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
 	bash( [ 'mixertype', D.card, mixertype, hwmixer, D.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
+}
+function volumeSet( data ) {
+	$( '#infoRange .sub' ).text( data.val === 0 ? 'Mute' : data.db +' dB' );
+	$( '#infoOk' ).toggleClass( 'disabled', data.db === 0 || data.db === '' );
+	V.local = false;
 }

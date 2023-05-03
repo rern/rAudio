@@ -887,7 +887,7 @@ shairportstop )
 volume ) # no args = toggle mute / unmute
 	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
 	
-	[[ ! $CURRENT ]] && CURRENT=$( volumeGet )
+	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
 	filevolumemute=$dirsystem/volumemute
 	if [[ $TARGET > 0 ]]; then      # set
 		rm -f $filevolumemute
@@ -906,10 +906,10 @@ volume ) # no args = toggle mute / unmute
 	volumeSet $CURRENT $TARGET "$CONTROL" $CARD
 	;;
 volumeget )
-	volumeGet
+	volumeGet value
 	;;
 volumepushstream )
-	pushstream volume '{"val":'$( volumeGet )'}'
+	volumeGet push
 	;;
 volumeupdn )
 	volumeUpDn 1%$UPDN "$CONTROL" $CARD

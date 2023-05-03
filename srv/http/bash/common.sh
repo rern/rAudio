@@ -305,7 +305,7 @@ stringEscape() {
 	data=${@//\"/\\\"}
 	echo ${data//\`/\\\`}
 }
-volumeGet() { # $1-withdb/push from player.sh
+volumeGet() {
 	local amixer card control data mixersoftware val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
@@ -332,18 +332,11 @@ volumeGet() { # $1-withdb/push from player.sh
 	fi
 	if [[ $amixer ]]; then
 		val_db=$( sed -E 's/.*\[(.*)%.*\[(.*)dB.*/\1 \2/' <<< $amixer )
-		if [[ $1 ]]; then
-			db=${val_db/* }
-			if [[ $db == -99999.99 ]]; then
-				db=Mute
-			else
-				[[ $db == 0.00 ]] && db=0
-				db+=' dB'
-			fi
-			data='{ "type": "player", "val": '${val_db/ *}', "db": "'$db'" }'
-			[[ $1 == withdb ]] && echo $data || pushstream volume $data
-		else
+		if [[ $1 == value ]]; then
 			echo ${val_db/ *}
+		else
+			data='{ "type": "'$1'", "val": '${val_db/ *}', "db": '${val_db/* }' }'
+			[[ $1 ]] && pushstream volume $data || echo $data
 		fi
 	fi
 }
@@ -364,7 +357,7 @@ volumeUpDnMpc() {
 }
 volumePush() {
 	sleep 0.5
-	pushstream volume '{"type":"updn","val":'$( volumeGet )'}'
+	volumeGet updn
 	rm $dirshm/pidvol
 }
 volumePushSet() {

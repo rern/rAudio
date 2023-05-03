@@ -243,7 +243,7 @@ volume0dbbt )
 	volumeGet push
 	;;
 volumeget )
-	volumeGet withdb
+	volumeGet
 	;;
 volumepush )
 	volumeGet push
