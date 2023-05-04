@@ -259,7 +259,7 @@ nfsserver )
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
 		if [[ ! -e $dirshareddata/mpd ]]; then
-			rescan=$'\n'rescan
+			echo rescan > $dirmpd/updating
 			sharedDataCopy
 			chown -R http:http $dirshareddata
 			chown -R mpd:audio $dirshareddata/{mpd,playlists}
@@ -268,7 +268,7 @@ nfsserver )
 		chmod -R 777 $dirshareddata
 		sharedDataBackupLink
 		systemctl restart mpd
-		$dirbash/cmd.sh mpcupdate$rescan
+		[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )
 		files+=$'\n'$( ls -1 $dirplaylists/* )
