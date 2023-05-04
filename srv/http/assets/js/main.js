@@ -1474,7 +1474,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, filetype    : 'image/*'
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', imagepath, name ] )
+		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name ] )
 		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
 	} );
 } ).press( '.mode-bookmark', setBookmarkEdit );
