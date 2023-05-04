@@ -272,8 +272,8 @@ nfsserver )
 		files=$( ls -1 $dirbookmarks/* )
 		files+=$'\n'$( ls -1 $dirplaylists/* )
 		files=$( awk NF <<< $files )
-		readarray -t files <<< $files
 		if [[ $files ]]; then
+			readarray -t files <<< $files
 			for file in "${files[@]}"; do
 				sed -E -i '/^SD|^USB/ s|^|NAS/|' "$file"
 			done
