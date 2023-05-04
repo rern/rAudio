@@ -268,6 +268,16 @@ nfsserver )
 		sharedDataBackupLink
 		systemctl restart mpd
 		$dirbash/cmd.sh mpcupdate$rescan
+		# prepend path
+		files=$( ls -1 $dirbookmarks/* )
+		files+=$'\n'$( ls -1 $dirplaylists/* )
+		files=$( awk NF <<< $files )
+		readarray -t files <<< $files
+		if [[ $files ]]; then
+			for file in "${files[@]}"; do
+				sed -E -i '/^SD|^USB/ s|^|NAS/|' "$file"
+			done
+		fi
 	else
 		mv /mnt/MPD/NAS/{SD,USB} /mnt/MPD
 		sed -i 's|/mnt/MPD/NAS/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
