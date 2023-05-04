@@ -264,7 +264,6 @@ sharedDataBackupLink() {
 sharedDataCopy() {
 	rm -f $dirmpd/{listing,updating}
 	cp -rf $dirdata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirshareddata
-	rm $dirshareddata/{bookmarks,playlists}/*
 	cp $dirsystem/{display,order}.json $dirshareddata
 	touch $dirshareddata/order.json
 }
