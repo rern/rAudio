@@ -4,7 +4,7 @@
 #   - start: set Player dest file
 #   - connect/disconnect: networks-data.sh bt
 #   - status: dbus emits events and data
-#       start play - cmd.sh playerstart$'\n'bluetooth
+#       start play - cmd.sh playerstart
 #       changed - status-push.sh
 
 import dbus

@@ -257,7 +257,7 @@ sharedDataBackupLink() {
 	ln -s $dirshareddata/{audiocd,bookmarks,lyrics,mpd,playlists,webradio} $dirdata
 	ln -s $dirshareddata/{display,order}.json $dirsystem
 	chown -h http:http $dirdata/{audiocd,bookmarks,lyrics,webradio} $dirsystem/{display,order}.json
-	chown -h mpd:audio $dirdata/{mpd,playlists}
+	chown -h mpd:audio $dirdata/{mpd,playlists} $dirmpd/mpd.db
 	echo data > $dirnas/.mpdignore
 	touch $dirsystem/usbautoupdateno
 }
