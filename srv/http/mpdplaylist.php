@@ -246,11 +246,11 @@ function htmlTrack( $lists, $plname = '' ) {
 	}
 	if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
-	$song = exec( 'mpc status %songpos%' ) - 1;
-	if ( $song === -1 ) $song = 0;
 	$mmss = exec( 'mpc status %currenttime%' );
 	$mmss = explode( ':', $mmss );
 	$elapsed = $mmss[ 0 ] * 60 + $mmss[ 1 ];
+	$song = exec( 'mpc status %songpos%' ) - 1;
+	if ( $song < 0 ) $song = 0;
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
