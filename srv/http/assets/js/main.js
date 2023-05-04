@@ -1463,7 +1463,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
-	var imagepath = '/srv/http/data/webradio/'+ $this.find( '.lipath' ).text();
+	var imagefilenoext = '/mnt/MPD/'+ $this.find( '.lipath' ).text() +'/coverart';
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
@@ -1474,7 +1474,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
 		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name ] )
-		, ok          : () => imageReplace( 'bookmark', imagepath +'/coverart', name ) // no ext
+		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
 } ).press( '.mode-bookmark', setBookmarkEdit );
 new Sortable( document.getElementById( 'lib-mode-list' ), {
