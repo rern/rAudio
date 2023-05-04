@@ -10,7 +10,7 @@
 
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-packageActive hostapd localbrowser mediamtx shairport-sync smb snapclient spotifyd upmpdcli
+packageActive hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
   "page"             : "features"
@@ -29,8 +29,8 @@ data+='
 , "lyricsembedded"   : '$( exists $dirsystem/lyricsembedded )'
 , "multiraudio"      : '$( exists $dirsystem/multiraudio )'
 , "multiraudioconf"  : '$( getContent $dirsystem/multiraudio.json )'
-, "nfsconnected"     : '$( (( $( wc -l < $filesharedip ) > 1 )) && echo true )'
-, "nfsserver"        : '$( [[ -s /etc/exports ]] && echo true )'
+, "nfsconnected"     : '$( [[ -e $filesharedip && $( wc -l < $filesharedip ) > 1 ]] && echo true )'
+, "nfsserver"        : '$nfsserver'
 , "nosound"          : '$( exists $dirshm/nosound )'
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
