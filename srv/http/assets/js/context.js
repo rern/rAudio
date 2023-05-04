@@ -695,7 +695,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	}
 	if ( ! mpccmd ) mpccmd = [];
 	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
-	if ( V.librarylist || V.list.li.find( '.li1' ).length ) {
+	if ( V.list.li.find( '.li1' ).length ) {
 		var $li2 = V.list.li.find( '.li2' );
 		if ( V.list.licover ) {
 			var l1 = '.lialbum';

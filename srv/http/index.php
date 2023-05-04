@@ -115,6 +115,7 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 	$html = menucommon( $mode.'add', $mode.'replace' );
 	$menu.= menudiv( $mode, $html );
 }
+
 $menu = '<div id="contextmenu">'.$menu.'</div>';
 $ids = [ 'random',   'repeat',     'single',    'repeat1',   'consume', 'librandom', 'mute'
 	   , 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons',  'relays',    'stoptimer' ];
