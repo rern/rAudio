@@ -1247,6 +1247,7 @@ i.map.disabled, .map.disabled i {
 .mode {
 	position: relative;
 	height: 110px;
+	border: 2px solid #000;
 	border-radius: 5px;
 	color: var( --cg60 );
 	text-align: center;

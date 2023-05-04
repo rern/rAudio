@@ -1463,8 +1463,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		var message = '<div class="infobookmark">'+ ico( 'bookmark' )
 					 +'<br><span class="bklabel">'+ name +'</span></div>';
 	}
-	var path      = $this.find( '.lipath' ).text();
-	var imagepath = path.slice( 3, 8 ) !== 'radio' ? '/mnt/MPD/'+ path : '/srv/http/data/'+ path;
+	var imagepath = '/srv/http/data/webradio/'+ $this.find( '.lipath' ).text();
 	info( {
 		  icon        : icon
 		, title       : 'Bookmark Thumbnail'
