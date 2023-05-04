@@ -8,6 +8,8 @@
 
 . /srv/http/bash/common.sh
 
+mpc | grep ^Updating && updating_db=true || rm $dirmpd/updating
+
 [[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit # >>>>>>>>>>
 
 outputStatus() {
@@ -56,7 +58,7 @@ else
 , "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
-, "updating_db"  : '$( exists $dirmpd/updating )'
+, "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
 , "volumemute"   : '$volumemute'
