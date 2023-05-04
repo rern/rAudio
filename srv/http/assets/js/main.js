@@ -1607,7 +1607,7 @@ Exclude this thumbnail?`
 	} else if ( $target.hasClass( 'lialbum' ) ) {
 		if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $this.find( '.liartist' ).text() +'/'+ $this.find( '.lialbum' ).text(), '_blank' );
 		return
-	} else if ( $this.find( '.i-music' ).length || $target.data( 'target' ) ) {
+	} else if ( $this.find( '.i-music' ).length || $target.data( 'menu' ) ) {
 		contextmenuLibrary( $this, $target );
 		return
 	}
@@ -1962,10 +1962,10 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 		if ( pladd ) {
 			playlistInsertSelect( $this );
 		} else {
-			var datatarget = $target.data( 'target' ) || $this.find( '.li-icon' ).data ( 'target' );
-			var $menu      = $( datatarget );
-			V.list         = {};
-			V.list.li      = $this; // for contextmenu
+			var menu  = $target.data( 'menu' ) || $this.find( '.li-icon' ).data ( 'menu' );
+			var $menu = $( '#menu-'+ menu );
+			V.list    = {};
+			V.list.li = $this; // for contextmenu
 			$( '#pl-savedlist li' ).removeClass( 'active' );
 			if ( V.savedpl ) {
 				V.list.name = $this.find( '.plname' ).text().trim();

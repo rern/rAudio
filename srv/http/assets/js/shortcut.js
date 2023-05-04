@@ -283,8 +283,8 @@ $( document ).on( 'keydown', function( e ) { // keyup cannot e.preventDefault() 
 				var $liactive = $( '#lib-list li.active' );
 				if ( $( '.licover' ).length || $( '#lib-list li.mode-webradio' ).length ) {
 					if ( $( '.menu:not(.hide)' ).length ) { // context menu
-						var menu = $liactive.find( '.li-icon' ).data( 'target' );
-						$( menu ).find( 'a' ).eq( 1 ).trigger( 'click' );
+						var menu = $liactive.find( '.li-icon' ).data( 'menu' );
+						$( '#menu-'+ menu ).find( 'a' ).eq( 1 ).trigger( 'click' );
 					}
 				} else {
 					$liactive.trigger( 'click' );

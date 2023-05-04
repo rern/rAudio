@@ -1,13 +1,13 @@
 <?php
-function i( $class, $target = '' ) {
+function i( $class, $menu = '' ) {
 	$icon = '<i class="i-'.$class;
-	$icon.= $target ? ' li-icon" data-target="#menu-'.$target.'"></i>' : '"></i>';
+	$icon.= $menu ? ' li-icon" data-menu="'.$menu.'"></i>' : '"></i>';
 	return $icon;
 }
-function imgIcon( $thumbsrc, $target, $icon = '' ) {
+function imgIcon( $thumbsrc, $menu, $icon = '' ) {
 	$img = '<img class="lazyload iconthumb li-icon '.$icon.'"';
 	$img.= $icon ? ' data-icon="'.$icon.'"' : '';
-	$img.= ' data-src="'.$thumbsrc.'^^^" data-target="#menu-'.$target.'">';
+	$img.= ' data-src="'.$thumbsrc.'^^^" data-menu="'.$menu.'">';
 	return $img;
 }
 function indexbar( $indexes ) {

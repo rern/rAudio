@@ -155,7 +155,7 @@ function colorSetPicker() {
 }
 function contextmenuLibrary( $li, $target ) {
 	menuHide();
-	var $menu          = $( $li.find( '.li-icon' ).data( 'target' ) );
+	var $menu          = $( '#menu-'+ $li.find( '.li-icon' ).data( 'menu' ) );
 	V.list             = {};
 	V.list.li          = $li; // for contextmenu
 	V.list.licover     = $li.hasClass( 'licover' );
