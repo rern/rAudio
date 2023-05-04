@@ -77,14 +77,11 @@ a {
 	min-width: 100px;
 	height: 100px;
 }
-.infobookmark i {
-	width: 100px;
-	font-size: 3em;
-	color: var( --cm );
-	text-shadow: var( --shadow-btn );
-}
 .infobookmark .i-bookmark {
-	margin-top: 20px;
+	width: 100px !important;
+	font-size: 48px !important;
+	line-height: 72px;
+	color: var( --cm ) !important;
 }
 #time-knob.disabled .btn {
 	background-color: var( --cgd ) !important;
@@ -1254,7 +1251,7 @@ i.map.disabled, .map.disabled i {
 	color: var( --cg60 );
 	text-align: center;
 }
-.mode i {
+.mode i:not( .bkedit ) {
 	display: inline-block;
 	padding-top: 20px;
 	font-size: 48px;
