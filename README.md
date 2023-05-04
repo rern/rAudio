@@ -10,7 +10,7 @@ Audio player for
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
-- Based on [Arch Linux Arm](https://archlinuxarm.org) OS
+- Based on [Arch Linux Arm](https://archlinuxarm.org)
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
