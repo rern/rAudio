@@ -128,6 +128,7 @@ function playlistLoad( path, play, replace ) {
 	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
 	bash( [ 'playlist', path, play, replace ], function() {
 		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
+		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
 function playlistNew( name ) {
