@@ -31,15 +31,17 @@ file=$dirsystem/equalizer.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file
 elif [[ ! -e$dirsystem/equalizer.json ]]; then
+	active=$( head -1 $file )
+	current=$( sed -n "/^$active^/ {s/^.*\^//; p}" $file )
 	readarray -t lines <<< $( grep -v '^Flat$' $file )
 	for l in "${lines[@]}"; do
 		preset+=', "'${l/^*}'" : [ '$( tr ' ' , <<< ${l/*^} )' ]'
 	done
 	data='{
-  "active"  : "Flat"
-, "current" : "62 62 62 62 62 62 62 62 62 62"
+  "active"  : "'$active'"
+, "current" : "'$current'"
 , "preset"  : {
-	"Flat" : [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'
+	"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'
 	$preset'
 	}
 }'
