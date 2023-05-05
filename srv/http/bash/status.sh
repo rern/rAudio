@@ -497,10 +497,11 @@ fi
 
 if [[ $ext != CD && ! $stream ]]; then
 	getcover=1
-	coverart=$( $dirbash/status-coverart.sh "\
+	coverart=$( $dirbash/status-coverart.sh "cmd
 $AlbumArtist
 $Album
-$filenoesc" )
+$filenoesc
+CMD ARTIST ALBUM FILE" )
 	[[ $coverart ]] && coverart="$coverart"
 fi
 elapsed=$( getElapsed )
