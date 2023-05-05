@@ -170,7 +170,7 @@ localbrowser )
 				CW )     degree=90  && matrix='0 -1 1 1 0 0 0 0 1';;
 				UD )     degree=180 && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			$dirbash/cmd.sh rotatesplash$'\n'$ROTATE # after set new data in conf file
+			$dirbash/cmd.sh rotatesplash
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
 				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$degree'/' /boot/config.txt
 				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}

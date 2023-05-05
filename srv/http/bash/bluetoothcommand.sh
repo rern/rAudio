@@ -26,7 +26,7 @@ disconnectRemove() {
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
-		$dirbash/cmd.sh mpcplayback$'\n'stop
+		$dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION'
 		$dirsettings/player-conf.sh
 	fi
 #-----

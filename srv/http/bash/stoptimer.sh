@@ -13,7 +13,7 @@ rm -f $dirshm/relaystimer
 sleep $(( min * 60 ))
 
 $dirbash/cmd.sh volume # mute
-[[ $( < $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop || $dirbash/cmd.sh playerstop
+[[ $( < $dirshm/player ) == mpd ]] && $dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION' || $dirbash/cmd.sh playerstop
 $dirbash/cmd.sh volume # unmute
 
 if [[ $poweroff ]]; then

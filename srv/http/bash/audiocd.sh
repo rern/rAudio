@@ -103,7 +103,8 @@ if [[ $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc status %length% ) - $trackL + 1 ))
 	$dirbash/cmd.sh "mpcplayback
 play
-$cdtrack1"
+$cdtrack1
+CMD ACTION POS"
 fi
 
 # coverart

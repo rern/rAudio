@@ -173,7 +173,7 @@ fi
 
 touch $dirshm/startup
 if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
-	$dirbash/cmd.sh mpcplayback$'\n'play
+	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
 fi
 
 if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed

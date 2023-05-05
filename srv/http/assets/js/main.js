@@ -982,7 +982,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			if ( ! S.elapsed ) $( '#elapsed' ).empty(); // 0 or false
 			if ( ! S.stream && S.elapsed !== false ) setProgressAnimate();
-			bash( [ 'mpcplayback', 'play' ] );
+			bash( [ 'mpcplayback', 'play', 'CMD ACTION' ] );
 			$( '#title' ).removeClass( 'gr' );
 			$( '#elapsed' ).removeClass( 'bl gr' );
 			$( '#total' )
@@ -1005,7 +1005,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			$( '#title' ).removeClass( 'gr' );
 			if ( ! S.pllength ) return
 			
-			bash( [ 'mpcplayback', 'stop', elapsedscrobble ] );
+			bash( [ 'mpcplayback', 'stop', elapsedscrobble, 'CMD ACTION POS' ] );
 			$( '#pl-list .elapsed' ).empty();
 			if ( V.playback ) {
 				$( '#total' ).empty();
@@ -1037,7 +1037,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			if ( S.state === 'stop' ) return
 			
 			S.state = cmd;
-			bash( [ 'mpcplayback', 'pause' ] );
+			bash( [ 'mpcplayback', 'pause', 'CMD ACTION' ] );
 			$( '#title' ).addClass( 'gr' );
 			$( '#elapsed' ).addClass( 'bl' );
 			$( '#total' ).addClass( 'wh' );
@@ -1051,7 +1051,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			$timeRS.setValue( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
 			elapsedscrobble = S.webradio ? '' : S.elapsed || '';
-			bash( [ 'mpcprevnext', cmd, elapsedscrobble ] );
+			bash( [ 'mpcprevnext', cmd, elapsedscrobble, 'CMD ACTION ELAPSED' ] );
 			if ( V.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )
@@ -1886,7 +1886,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	} else {
 		clearIntervalAll();
 		$( '.elapsed' ).empty();
-		bash( [ 'mpcplayback', 'play', listnumber ] );
+		bash( [ 'mpcplayback', 'play', listnumber, 'CMD ACTION POS' ] );
 		$( '#pl-list li.active, #playback-controls .btn' ).removeClass( 'active' );
 		$this.add( '#play' ).addClass( 'active' );
 	}

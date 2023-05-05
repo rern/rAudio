@@ -72,7 +72,8 @@ pushstreamVolume() {
 	pushstream volume '{"type":"'$1'","val":'$2'}'
 }
 rotateSplash() {
-	case $1 in
+	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
+	case $rotate in
 		NORMAL ) degree=0;;
 		CCW )    degree=-90;;
 		CW )     degree=90;;
@@ -295,9 +296,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
-	rotate=$( grep ^rotate /etc/localbrowser.conf 2> /dev/null | cut -d= -f2 )
-	[[ ! $rotate ]] && rotate=NORMAL
-	rotateSplash $rotate
+	rotateSplash
 	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
@@ -579,9 +578,7 @@ mpcoption )
 	pushstream option '{"'$option'":'$onoff'}'
 	;;
 mpcplayback )
-	command=${args[1]}
-	pos=${args[2]} # if stop = elapsed
-	if [[ ! $command ]]; then
+	if [[ ! $ACTION ]]; then
 		player=$( < $dirshm/player )
 		if [[ $( < $dirshm/player ) != mpd ]]; then
 			$dirbash/cmd.sh playerstop
@@ -589,25 +586,25 @@ mpcplayback )
 		fi
 		
 		if statePlay; then
-			grep -q -m1 webradio=true $dirshm/status && command=stop || command=pause
+			grep -q -m1 webradio=true $dirshm/status && ACTION=stop || ACTION=pause
 		else
-			command=play
+			ACTION=play
 		fi
 	fi
-	stopRadio $command
-	if [[ $command == play ]]; then
+	stopRadio $ACTION
+	if [[ $ACTION == play ]]; then
 		[[ $( mpc status %state% ) == paused ]] && pause=1
-		mpc -q $command $pos
+		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
-		[[ -e $dirsystem/scrobble && $command == stop && $pos ]] && cp -f $dirshm/{status,scrobble}
-		mpc -q $command
+		[[ -e $dirsystem/scrobble && $ACTION == stop && $POS ]] && cp -f $dirshm/{status,scrobble}
+		mpc -q $ACTION
 		killProcess cava
-		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $pos
+		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $POS # elapsed
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
 	# snapclient
-	if [[ $command == play ]]; then
+	if [[ $ACTION == play ]]; then
 		action=start
 		active=true
 		sleep 2 # fix stutter
@@ -622,21 +619,19 @@ mpcplayback )
 	pushstream refresh '{"page":"features","snapclientactive":'$active'}'
 	;;
 mpcprevnext )
-	command=${args[1]}
-	elapsed=${args[2]}
-	[[ ! $elapsed ]] && elapsed=$( getElapsed )
+	[[ ! $ELAPSED ]] && ELAPSED=$( getElapsed )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
 	mpc -q stop
 	stopRadio
-	[[ -e $dirsystem/scrobble && $elapsed ]] && cp -f $dirshm/{status,scrobble}
+	[[ -e $dirsystem/scrobble && $ELAPSED ]] && cp -f $dirshm/{status,scrobble}
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
 		mpc -q play $pos
 	else
-		if [[ $command == next ]]; then
+		if [[ $ACTION == next ]]; then
 			(( $current != $length )) && mpc -q play $(( current + 1 )) || mpc -q play 1
 			[[ $( mpc status %consume% ) == on ]] && mpc -q del $current
 			[[ -e $dirsystem/librandom ]] && plAddRandom
@@ -653,7 +648,7 @@ mpcprevnext )
 	fi
 	if [[ -e $dirshm/scrobble ]]; then
 		sleep 2
-		scrobbleOnStop $elapsed
+		scrobbleOnStop $ELAPSED
 	fi
 	;;
 mpcremove )
@@ -802,7 +797,7 @@ relaystimerreset )
 	pushstream relays '{ "done": 1 }'
 	;;
 rotatesplash )
-	rotateSplash ${args[1]}
+	rotateSplash
 	;;
 savedpldelete )
 	name=${args[1]}
