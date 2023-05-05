@@ -436,7 +436,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		var s = 0;
 		var l = L * 100;
 	}
-	bash( [ 'color', h +' '+ s +' '+ l ] );
+	bash( [ 'color', h +' '+ s +' '+ l, 'CMD HSL' ] );
 	loader();
 } ).on( 'click', '#colorreset', function() {
 	info( {
@@ -444,7 +444,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		, title   : 'Colors'
 		, message : 'Reset colors to default?'
 		, ok      : () => {
-			bash( [ 'color', 'reset' ] );
+			bash( [ 'color' ] );
 			loader();
 		}
 	} );
@@ -576,7 +576,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 				if ( $this.hasClass( 'lyrics' ) ) {
 					V.lyricsArtist = artist;
 					V.lyricsTitle  = title;
-					bash( [ 'lyrics', artist, title, file ], data => {
+					bash( [ 'lyrics', artist, title, file, 'CMD ARTIST TITLE ACTION' ], data => {
 						lyricsShow( data );
 					} );
 					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
@@ -948,8 +948,8 @@ $( '.map' ).on( 'click', function( e ) {
 					S.single = false;
 					setButtonOptions();
 					local( 600 );
-					bash( [ 'mpcoption', 'repeat', false ] );
-					bash( [ 'mpcoption', 'single', false ] );
+					bash( [ 'mpcoption', 'repeat', false, 'CMD OPTION ONOFF' ] );
+					bash( [ 'mpcoption', 'single', false, 'CMD OPTION ONOFF' ] );
 				} else {
 					$( '#single' ).trigger( 'click' );
 				}
@@ -968,7 +968,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 	if ( $this.hasClass( 'btn-toggle' ) ) {
 		var onoff = ! S[ cmd ];
 		S[ cmd ] = onoff;
-		bash( [ 'mpcoption', cmd, onoff ] );
+		bash( [ 'mpcoption', cmd, onoff, 'CMD OPTION ONOFF' ] );
 		setButtonOptions();
 		local( 600 );
 	} else {
@@ -1123,7 +1123,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 			, title        : 'Latest'
 			, message      : 'Clear from Latest album list:<br><br>'+ $( '.licover .lialbum' ).text()
 			, ok           : () => {
-				bash( [ 'latestclear', $( '.licover .lipath' ).text() ], () => $( '#button-lib-back' ).trigger( 'click' ) );
+				bash( [ 'latestclear', $( '.licover .lipath' ).text(), 'CMD PATH' ], () => $( '#button-lib-back' ).trigger( 'click' ) );
 			}
 		} );
 	} else {
@@ -1433,7 +1433,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, message : icon
 		, oklabel : ico( 'minus-circle' ) +'Remove'
 		, okcolor : red
-		, ok      : () => bash( [ 'bookmarkremove', name ] )
+		, ok      : () => bash( [ 'bookmarkremove', name, 'CMD NAME' ] )
 	} );
 } ).on( 'click', '.bk-rename', function() {
 	var $this = $( this ).parent();
@@ -1448,7 +1448,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, checkblank   : true
 		, checkchanged : true
 		, oklabel      : ico( 'flash' ) +'Rename'
-		, ok           : () => bash( [ 'bookmarkrename', name, infoVal() ] )
+		, ok           : () => bash( [ 'bookmarkrename', name, infoVal(), 'CMD NAME NEWNAME' ] )
 	} );
 } ).on( 'click', '.bk-cover', function() {
 	var $this = $( this ).parent().parent();
@@ -1473,7 +1473,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, filetype    : 'image/*'
 		, buttonlabel : ! thumbnail ? '' : ico( 'bookmark' ) +'Default'
 		, buttoncolor : ! thumbnail ? '' : orange
-		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name ] )
+		, button      : ! thumbnail ? '' : () => bash( [ 'bookmarkcoverreset', name, 'CMD NAME' ] )
 		, ok          : () => imageReplace( 'bookmark', imagefilenoext, name ) // no ext
 	} );
 } ).press( '.mode-bookmark', setBookmarkEdit );
@@ -1533,7 +1533,7 @@ Exclude this thumbnail?`
 		, okcolor : orange
 		, oklabel : ico( 'minus-circle' ) +'Exclude'
 		, ok      : () => {
-			bash( [ 'albumignore', album, artist ] );
+			bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
 			$this.remove();
 		}
 	} );
@@ -1741,7 +1741,7 @@ $( '#button-pl-consume' ).on( 'click', function() {
 		banner( icon, title, 'On - Remove each song after played.' );
 	}
 	S.consume = ! S.consume;
-	bash( [ 'mpcoption', 'consume', S.consume ] );
+	bash( [ 'mpcoption', 'consume', S.consume, 'CMD OPTION ONOFF' ] );
 } );
 $( '#button-pl-librandom' ).on( 'click', function() {
 	var $this = $( this );
@@ -1751,7 +1751,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 		S.librandom = false;
 		$this.removeClass( 'bl' );
 		banner( icon, title, 'Off ...' );
-		bash( [ 'librandom', false ] );
+		bash( [ 'librandom', 'OFF' ] );
 	} else {
 		info( {
 			  icon       : icon
@@ -1764,7 +1764,7 @@ $( '#button-pl-librandom' ).on( 'click', function() {
 				S.librandom = true;
 				$this.addClass( 'bl' );
 				banner( icon, title, 'On ...' );
-				bash( [ 'librandom', true, infoVal() ] );
+				bash( [ 'librandom', infoVal(), 'CMD PLAY' ] );
 			}
 		} );
 	}
@@ -2057,7 +2057,7 @@ $( '#lyricssave' ).on( 'click', function() {
 			V.lyrics   = $( '#lyricstextarea' ).val();
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'save', V.lyrics.replace( /\n/g, '\\n' ) ] );
+			bash( [ 'lyrics', artist, title, 'save', V.lyrics.replace( /\n/g, '\\n' ), 'CMD ARTIST TITLE ACTION DATA' ] );
 			lyricstop  = $( '#lyricstextarea' ).scrollTop();
 			lyricsShow( V.lyrics );
 			$( '#lyricseditbtngroup' ).addClass( 'hide' );
@@ -2075,7 +2075,7 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();
 			var title  = $( '#lyricstitle' ).text();
-			bash( [ 'lyrics', artist, title, 'delete' ] );
+			bash( [ 'lyrics', artist, title, 'delete', 'CMD ARTIST TITLE ACTION' ] );
 			V.lyrics   = '';
 			lyricsHide();
 		}

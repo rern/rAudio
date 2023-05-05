@@ -89,7 +89,7 @@ function bookmarkNew() {
 		}
 		, ok         : () => {
 			var name = infoVal();
-			bash( [ 'bookmarkadd', name, path ], std => {
+			bash( [ 'bookmarkadd', name, path, 'CMD NAME PATH' ], std => {
 				if ( std == -1 ) {
 					bannerHide();
 					info( {
@@ -326,8 +326,7 @@ function webRadioCoverart() {
 		var url       = S.file;
 		var name      = S.station;
 	} else {
-		var coverart  = V.coverdefault;
-		var src       = V.list.li.find( '.li-icon' ).attr( 'src' );
+		var coverart  = V.list.li.find( '.li-icon' ).attr( 'src' ).replace( '-thumb', '' ) || V.coverdefault;
 		var mode      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
@@ -345,15 +344,10 @@ function webRadioCoverart() {
 		, fileoklabel : ico( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
 		, beforeshow  : () => {
+			$( '.imgold' ).on( 'error', function() {
+				imageOnError( this );
+			} );
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
-			if ( src ) {
-				bash( [ 'coverartget', imagefilenoext, 'radio' ], coverart => {
-					if ( coverart ) {
-						$( '#infoContent .imgold' ).attr( 'src', coverart );
-						$( '.extrabtn' ).removeClass( 'hide' );
-					}
-				} );
-			}
 		}
 		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
@@ -527,7 +521,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 				, message : 'Exclude from Library:'
 							+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
 				, ok      : () => {
-					bash( [ 'ignoredir', V.list.path ], () => V.list.li.remove() );
+					bash( [ 'ignoredir', V.list.path, 'CMD PATH' ], () => V.list.li.remove() );
 					var dir = V.list.path.split( '/' ).pop();
 				}
 			} );

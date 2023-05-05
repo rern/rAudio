@@ -265,7 +265,7 @@ function coverartChange() {
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
-			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album ] );
+			bash( [ 'coverartreset', imagefilenoext +'.'+ ext, path, artist, album, 'CMD COVERFILE MPDPATH ARTIST ALBUM' ] );
 		}
 		, ok          : () => {
 			imageReplace( type, imagefilenoext );
@@ -1791,7 +1791,7 @@ function sortPlaylist( pl, iold, inew ) {
 	V.sortable = true;
 	setTimeout( () => V.sortable = false, 500 );
 	if ( pl === 'pl-list' ) {
-		bash( [ 'mpcmove', iold + 1, inew + 1 ] );
+		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
 		bash( [ 'savedpledit', $( '#pl-path .lipath' ).text(), 'move', iold, inew ] );
 	}

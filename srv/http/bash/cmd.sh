@@ -22,7 +22,7 @@ plAddPosition() {
 	fi
 }
 plAddRandom() {
-	local tail dir mpcls cuefile plL range file diffcount
+	local cuefile diffcount dir file mpcls plL range tail
 	tail=$( plTail )
 	(( $tail > 1 )) && pushstreamPlaylist add && return
 	
@@ -51,7 +51,7 @@ plAddRandom() {
 	(( $tail > 1 )) || plAddRandom
 }
 plTail() {
-	local total pos
+	local pos total
 	total=$( mpc status %length% )
 	pos=$( mpc status %songpos% )
 	echo $(( total - pos ))
@@ -72,6 +72,7 @@ pushstreamVolume() {
 	pushstream volume '{"type":"'$1'","val":'$2'}'
 }
 rotateSplash() {
+	local degree rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 	case $rotate in
 		NORMAL ) degree=0;;
@@ -104,8 +105,7 @@ CMD ARTIST TITLE ALBUM" &> /dev/null &
 stopRadio() {
 	if [[ -e $dirshm/radio ]]; then
 		mpc -q stop
-		systemctl stop radio
-		[[ -e /etc/systemd/system/dab.service ]] && systemctl stop dab
+		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
 		[[ $1 == stop ]] && $dirbash/status-push.sh
 		sleep 1
@@ -159,7 +159,7 @@ webradioCopyBackup() {
 	fi
 }
 webradioCount() {
-	local type count
+	local count type
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
 	pushstream radiolist '{"type":"'$type'","count":'$count'}'
@@ -178,7 +178,7 @@ webradioPlaylistVerify() {
 	[[ ! $url ]] && echo 'No valid URL found in:' && exit
 }
 webRadioSampling() {
-	local url file data samplerate bitrate sample kb rate
+	local bitrate data file kb rate sample samplerate url
 	url=$1
 	file=$2
 	timeout 3 curl -sL $url -o /tmp/webradio
@@ -203,11 +203,9 @@ webRadioSampling() {
 case $CMD in
 
 albumignore )
-	album=${args[1]}
-	artist=${args[2]}
-	sed -i "/\^$album^^$artist^/ d" $dirmpd/album
-	sed -i "/\^$artist^^$album^/ d" $dirmpd/albumbyartist
-	echo $album^^$artist >> $dirmpd/albumignore
+	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
+	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
+	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
 audiocdtag )
 	track=${args[1]}
@@ -217,39 +215,34 @@ audiocdtag )
 	pushstreamPlaylist
 	;;
 bookmarkadd )
-	name=${args[1]//\//|}
-	path=${args[2]}
-	bkfile="$dirbookmarks/$name"
+	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo $path > "$bkfile"
+	echo $PATH > "$bkfile"
 	if [[ -e $dirsystem/order.json ]]; then
-		order=$( jq '. + ["'$path'"]' $dirsystem/order.json )
+		order=$( jq '. + ["'$PATH'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
 	pushstream bookmark 1
 	;;
 bookmarkcoverreset )
-	name=${args[1]}
-	path=$( < "$dirbookmarks/$name" )
+	path=$( < "$dirbookmarks/$NAME" )
 	[[ ${path:0:1} != '/' ]] && path="/mnt/MPD/$path"
 	rm -f "$path/coverart".*
 	pushstream bookmark 1
 	;;
 bookmarkremove )
-	file="$dirbookmarks/${args[1]//\//|}"
-	path=$( < "$file" )
+	bkfile="$dirbookmarks/${NAME//\//|}"
+	path=$( < "$bkfile" )
 	if grep -q "$path" $dirsystem/order.json 2> /dev/null; then
 		order=$( jq '. - ["'$path'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
-	rm "$file"
+	rm "$bkfile"
 	pushstream bookmark 1
 	;;
 bookmarkrename )
-	name=${args[1]//\//|}
-	newname=${args[2]//\//|}
-	mv $dirbookmarks/{"$name","$newname"} 
+	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
 	pushstream bookmark 1
 	;;
 camillagui )
@@ -257,21 +250,15 @@ camillagui )
 	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
 	;;
 color )
-	hsl=${args[1]}
 	file=$dirsystem/color
-	[[ $hsl == reset ]] && rm -f $file && hsl=
-	if [[ $hsl ]]; then
-		echo $hsl > $file
-		hsl=( $( echo $hsl ) )
-	else  # from addons.sh, system.sh datarestore
-		if [[ -e $file ]]; then
-			hsl=( $( < $file ) )
-		else
-			hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
-						| sed 's/.*(\(.*\)).*/\1/' \
-						| tr ',' ' ' \
-						| tr -d % ) )
-		fi
+	if [[ $HSL ]]; then
+		echo $HSL > $file
+		hsl=( $HSL )
+	else
+		hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
+					| sed 's/.*(\(.*\)).*/\1/' \
+					| tr ',' ' ' \
+					| tr -d % ) )
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
@@ -300,52 +287,22 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
-coverartget )
-	path=${args[1]}
-	radio=${args[2]}
-	if [[ $radio ]]; then
-		coverartfile=$( ls -1 "$path".{gif,jpg} 2> /dev/null )
-		[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http}
-		exit
-	fi
-	
-	coverartfile=$( ls -1X "$path"/coverart.{gif,jpg,png} 2> /dev/null | head -1 )
-	[[ $coverartfile ]] && echo ${coverartfile/\/srv\/http} && exit
-	
-	[[ ${path:0:4} == /srv ]] && exit
-	
-	coverfile=$( ls -1X "$path" \
-					| grep -E -i '^cover\.|^folder\.|^front\.|^album\.' \
-					| grep -E -i -m1 '\.gif$|\.jpg$|\.png$' ) # filename only
-	if [[ $coverfile ]]; then
-		ext=${coverfile: -3}
-		coverartfile="$path/coverart.${ext,,}"
-		cp "$path/$coverfile" "$coverartfile" 2> /dev/null
-		[[ -e $coverartfile ]] && echo $coverartfile
-	fi
-	;;
 coverartreset )
-	coverfile=${args[1]}
-	mpdpath=${args[2]}
-	artist=${args[3]}
-	album=${args[4]}
-	dir=$( dirname "$coverfile" )
-	filename=$( basename "$coverfile" )
+	dir=$( dirname "$COVERFILE" )
+	filename=$( basename "$COVERFILE" )
 	if [[ $( basename "$dir" ) == audiocd ]]; then
 		discid=${filename/.*}
-		rm -f "$coverfile"
+		rm -f "$COVERFILE"
 		$dirbash/status-coverartonline.sh "cmd
-$artist
-$album
+$ARTIST
+$ALBUM
 audiocd
 $discid
 CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 		exit
 	fi
 	
-	rm -f "$coverfile" \
-		"$dir/{coverart,thumb}".* \
-		$dirshm/{embedded,local}/*
+	rm -f "$COVERFILE" "$dir/{coverart,thumb}".* $dirshm/{embedded,local}/*
 	backupfile=$( ls -p "$dir"/*.backup | head -1 )
 	if [[ -e $backupfile ]]; then
 		restorefile=${backupfile:0:-7}
@@ -359,9 +316,9 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 		fi
 	fi
 	url=$( $dirbash/status-coverart.sh "\
-$artist
-$album
-$mpdpath" )
+$ARTIST
+$ALBUM
+$MPDPATH" )
 	[[ ! $url ]] && url=reset
 	pushstream coverart '{"url":"'$url'","type":"coverart"}'
 	;;
@@ -424,18 +381,16 @@ hashreset )
 	;;
 ignoredir )
 	touch $dirmpd/updating
-	path=${args[1]}
-	dir=$( basename "$path" )
-	mpdpath=$( dirname "$path" )
+	dir=$( basename "$PATH" )
+	mpdpath=$( dirname "$PATH" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
 	pushstream mpdupdate '{"type":"mpd"}'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	path=${args[1]}
-	if [[ $path ]]; then
-		sed -i "\|\^$path$| d" $dirmpd/latest
+	if [[ $PATH ]]; then
+		sed -i "\|\^$PATH$| d" $dirmpd/latest
 		count=$( wc -l < $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
@@ -446,46 +401,40 @@ latestclear )
 	sed -i -E 's/("latest": ).*/\1'$count',/' $dirmpd/counts
 	;;
 librandom )
-	enable=${args[1]}
-	if [[ $enable == false ]]; then
-		rm -f $dirsystem/librandom
-	else
-		[[ ${args[2]} == true ]] && play=1
+	if [[ $ON ]]; then
 		mpc -q random 0
 		tail=$( plTail )
-		if [[ $play ]]; then
+		if [[ $PLAY ]]; then
 			playnext=$(( total + 1 ))
 			(( $tail > 0 )) && mpc -q play $total && mpc -q stop
 		fi
 		touch $dirsystem/librandom
 		plAddRandom
-		[[ $play ]] && mpc -q play $playnext
+		[[ $PLAY ]] && mpc -q play $playnext
+	else
+		rm -f $dirsystem/librandom
 	fi
-	pushstream option '{"librandom":'$enable'}'
+	pushstream option '{"librandom":'$TF'}'
 	;;
 lyrics )
-	artist=${args[1]}
-	title=${args[2]}
-	command=${args[3]}
-	data=${args[4]}
-	name="$artist - $title"
+	name="$ARTIST - $TITLE"
 	name=${name//\/}
 	lyricsfile="$dirlyrics/${name,,}.txt"
-	if [[ $command == save ]]; then
-		echo -e "$data" > "$lyricsfile"
-	elif [[ $command == delete ]]; then
+	if [[ $ACTION == save ]]; then
+		echo -e "$DATA" > "$lyricsfile"
+	elif [[ $ACTION == delete ]]; then
 		rm -f "$lyricsfile"
 	elif [[ -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
 		if [[ -e $dirsystem/lyricsembedded ]]; then
-			file=$command
+			file=$ACTION
 			lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
 			[[ $lyrics ]] && echo "$lyrics" && exit
 		fi
 		
-		artist=$( sed -E 's/^A |^The |\///g' <<< $artist )
-		title=${title//\/}
+		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
+		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
 		if [[ $lyrics ]]; then
@@ -568,14 +517,13 @@ mpcls )
 	plAddPlay $command $delay
 	;;
 mpcmove )
-	mpc -q move ${args[1]} ${args[2]}
+	mpc -q move $FROM $TO
 	pushstreamPlaylist
 	;;
 mpcoption )
-	option=${args[1]}
-	onoff=${args[2]}
-	mpc -q $option $onoff
-	pushstream option '{"'$option'":'$onoff'}'
+	[[ ! $ONOFF ]] && ONOFF=false
+	mpc -q $OPTION $ONOFF
+	pushstream option '{"'$OPTION'":'$ONOFF'}'
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then

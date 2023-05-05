@@ -37,7 +37,10 @@ These will not be restored:
 fi
 
 dirPermissions
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh "\
+color
+$( < $dirsystem/color )
+CMD HSL"
 uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )
 uuid2=${uuid1:0:-1}2
 sed -i "s/root=.* rw/root=$uuid2 rw/; s/elevator=noop //" $dirconfig/boot/cmdline.txt
