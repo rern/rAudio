@@ -32,7 +32,14 @@ while true; do
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
 }'
-		$dirbash/status-push.sh statusradio "$data" &
+		pushstream mpdradio "$data"
+		status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
+		status+='
+timestamp='$( date +%s%3N )'
+webradio=true
+player="mpd"'
+		echo "$status" > $dirshm/status
+		$dirbash/status-push.sh statusradio &
 	fi
 	# coverart
 	[[ ! $( awk NF $filecover ) ]] && sleep 10 && continue

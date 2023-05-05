@@ -62,7 +62,7 @@ max_usb_current=1
 over_voltage=2" # rpi 0
 	echo "$config" > /boot/config.txt
 	# css color
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset
+	[[ -e $dirsystem/color ]] && rm $dirsystem/color && $dirbash/cmd.sh color
 	# lcd
 	if [[ -e $dirbash/xinitrc ]]; then
 		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc

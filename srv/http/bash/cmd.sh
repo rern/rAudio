@@ -258,18 +258,18 @@ camillagui )
 color )
 	hsl=${args[1]}
 	file=$dirsystem/color
-	if [[ $hsl == reset ]]; then
-		rm -f $file
-		hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
-					| sed 's/.*(\(.*\)).*/\1/' \
-					| tr ',' ' ' \
-					| tr -d % ) )
-	else
-		if [[ $hsl ]]; then
-			echo $hsl > $file
-			hsl=( $( echo $hsl ) )
-		else  # from addons.sh, system.sh datarestore
+	[[ $hsl == reset ]] && rm -f $file && hsl=
+	if [[ $hsl ]]; then
+		echo $hsl > $file
+		hsl=( $( echo $hsl ) )
+	else  # from addons.sh, system.sh datarestore
+		if [[ -e $file ]]; then
 			hsl=( $( < $file ) )
+		else
+			hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
+						| sed 's/.*(\(.*\)).*/\1/' \
+						| tr ',' ' ' \
+						| tr -d % ) )
 		fi
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}

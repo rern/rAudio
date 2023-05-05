@@ -71,6 +71,7 @@ function equalizer() {
 }
 function eqPreset( v ) {
 	E.preset.Flat = flat;
+	E.current = v;
 	bash( { cmd: [ 'equalizer', v, equser, 'CMD VALUES USER' ], json: E } );
 }
 function eqOptionPreset() {
@@ -101,6 +102,7 @@ function eqSlide( band, v ) {
 function eqSlideEnd() {
 	E.preset[ E.active ] = infoVal().slice( 2 );
 	E.preset.Flat        = flat;
+	E.current = E.preset[ E.active ].join( ' ' );
 	bash( { cmd: [ 'equalizer' ], json: E } );
 	$( '#eqrename' ).removeClass( 'disabled' );
 }
@@ -152,6 +154,7 @@ $( '#infoOverlay' ).on( 'click', '#eqrename', function() {
 	}
 	$( '#eqback' ).trigger( 'click' );
 	E.preset.Flat = flat;
+	E.current = E.preset[ name ].join( ' ' );
 	bash( { cmd: [ 'equalizer' ], json: E } );
 } ).on( 'click', '.up, .dn', function( e ) {
 	clearTimeout( eqtimeout )
