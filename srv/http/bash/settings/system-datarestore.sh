@@ -49,7 +49,7 @@ cp -rf $dirconfig/* /
 grep -q nfs-server $dirsystem/enable && $dirsettings/features.sh nfsserver
 $dirsettings/system.sh "hostname
 $( < $dirsystem/hostname )
-CMD hostname"
+CMD HOSTNAME"
 [[ -e $dirsystem/netctlprofile ]] && netctl enable "$( < $dirsystem/netctlprofile )"
 timedatectl set-timezone $( < $dirsystem/timezone )
 [[ -e $dirsystem/crossfade ]] && mpc crossfade $( < $dirsystem/crossfade )

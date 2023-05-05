@@ -16,7 +16,9 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
-	[[ ! -e /boot/backup.gz ]] && $dirsettings/system.sh timezone$'\n'auto
+	[[ ! -e /boot/backup.gz ]] && $dirsettings/system.sh 'timezone
+auto
+CMD TIMEZONE'
 	# no on-board wireless - remove bluetooth
 	. $dirshm/cpuinfo
 	[[ $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
@@ -44,7 +46,7 @@ Key="$( stringEscape $key )"
 EOF
 	$dirsettings/networks.sh "profileconnect
 $ssid
-CMD ssid"
+CMD SSID"
 fi
 # ----------------------------------------------------------------------------
 
@@ -86,7 +88,7 @@ if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	if [[ $fileprofile ]]; then
 		$dirsettings/networks.sh "profileconnect
 $( basename "$fileprofile" )
-CMD ssid"
+CMD SSID"
 		connectedCheck 30 3
 	fi
 fi
@@ -138,7 +140,7 @@ fi
 if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
 	$dirsettings/system.sh "hddsleep
 $( < $dirsystem/apm )
-CMD apm"
+CMD APM"
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
