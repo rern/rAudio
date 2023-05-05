@@ -711,7 +711,7 @@ mpcsimilar )
 	;;
 mpcupdate )
 	path=${args[1]}
-	echo $path > $dirmpd/updating
+	[[ $path ]] && echo $path > $dirmpd/updating || path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;

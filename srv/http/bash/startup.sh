@@ -144,7 +144,9 @@ CMD APM"
 fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh mpcupdate$'\n'rescan
+	echo rescan > $dirmpd/updating
+	mpc -q rescan
+	pushstream mpdupdate '{"type":"mpd"}'
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"

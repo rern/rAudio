@@ -75,7 +75,11 @@ sharedDataSet() {
 	sharedDataIPlist
 	mpc -q clear
 	systemctl restart mpd
-	[[ $rescan ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
+	if [[ $rescan ]]; then
+		echo rescan > $dirmpd/updating
+		mpc -q rescan
+		pushstream mpdupdate '{"type":"mpd"}'
+	fi
 	pushRefresh
 	pushstream refresh '{ "page": "features", "shareddata": true }'
 }
@@ -266,7 +270,8 @@ mountforget )
 	fstab=$( grep -v $( space2ascii $MOUNTPOINT ) /etc/fstab )
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	$dirbash/cmd.sh mpcupdate$'\n'NAS
+	echo NAS > $dirmpd/updating
+	$dirbash/cmd.sh mpcupdate
 	pushRefresh
 	;;
 mountremount )
@@ -641,7 +646,10 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	notify usbdrive "$name" $action
 	pushRefresh
-	[[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]] && $dirbash/cmd.sh mpcupdate$'\n'USB
+	if [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]]; then
+		echo USB > $dirmpd/updating
+		$dirbash/cmd.sh mpcupdate
+	fi
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno

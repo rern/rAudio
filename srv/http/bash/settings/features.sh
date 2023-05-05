@@ -249,7 +249,10 @@ multiraudioreset )
 	;;
 nfsserver )
 	mpc -q clear
-	[[ -e $dirmpd/listing || -e $dirmpd/updating ]] && systemctl restart mpd
+	if [[ -e $dirmpd/listing || -e $dirmpd/updating ]]; then
+		rm -f $dirmpd/{listing,updating}
+		systemctl restart mpd
+	fi
 	if [[ $ON ]]; then
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf
@@ -259,7 +262,7 @@ nfsserver )
 		mkdir -p $dirbackup $dirshareddata
 		ipAddress > $filesharedip
 		if [[ ! -e $dirshareddata/mpd ]]; then
-			echo rescan > $dirmpd/updating
+			rescan=1
 			sharedDataCopy
 			chown -R http:http $dirshareddata
 			chown -R mpd:audio $dirshareddata/{mpd,playlists}
@@ -268,7 +271,11 @@ nfsserver )
 		chmod -R 777 $dirshareddata
 		sharedDataBackupLink
 		systemctl restart mpd
-		[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate$'\n'rescan
+		if [[ $rescan ]]; then
+			echo rescan > $dirmpd/updating
+			mpc -q rescan
+			pushstream mpdupdate '{"type":"mpd"}'
+		fi
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )
 		files+=$'\n'$( ls -1 $dirplaylists/* )
