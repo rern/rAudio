@@ -209,10 +209,11 @@ notify() { # icon title message delayms
 packageActive() {
 	local pkgs pkg active
 	pkgs=$@
-	active=( $( systemctl is-active $pkgs | sed 's/inactive/false/; s/active/true/' ) )
+	status=( $( systemctl is-active $pkgs ) )
 	i=0
 	for pkg in ${pkgs[@]}; do
-		printf -v ${pkg//-} '%s' ${active[i]}
+		[[ $status[ i ] == active ]] active=true || active=false
+		printf -v ${pkg//-} '%s' $active
 		(( i++ ))
 	done
 }
