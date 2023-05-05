@@ -159,17 +159,22 @@ fi
 
 # renderers ----------------------------------------------------------------------------
 
-if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N,0";
+if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N";
 	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
 ########
-	conf='alsa = {
-	output_device = "hw:'$card'";'
-	[[ $hwmixer && ! $dsp && ! $equalizer ]] && conf+='
+	conf="\
+$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+alsa = {
+	output_device = \"hw:$card\";"
+	
+	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
+		conf+='
 	mixer_control_name = "'$hwmixer'";'
+	
+	conf+='
+}'
 #-------
-	echo "\
-$conf
-}" > /etc/shairport-sync.conf
+	echo "$conf" > /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync
 fi
 

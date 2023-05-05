@@ -872,11 +872,13 @@ screenoff )
 	DISPLAY=:0 xset ${args[1]}
 	;;
 shairport )
-	[[ $( < $dirshm/player ) != airplay ]] && echp airplay > $dirshm/player && $dirbash/cmd.sh playerstart
+	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && $dirbash/cmd.sh playerstart
+	systemctl start shairport
 	echo play > $dirshm/airplay/state
 	$dirbash/status-push.sh
 	;;
 shairportstop )
+	systemctl stop shairport
 	echo pause > $dirshm/airplay/state
 	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
 	timestamp=$( date +%s%3N )
