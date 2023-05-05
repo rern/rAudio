@@ -212,7 +212,7 @@ packageActive() {
 	status=( $( systemctl is-active $pkgs ) )
 	i=0
 	for pkg in ${pkgs[@]}; do
-		[[ $status[ i ] == active ]] active=true || active=false
+		[[ ${status[i]} == active ]] && active=true || active=false
 		printf -v ${pkg//-} '%s' $active
 		(( i++ ))
 	done
