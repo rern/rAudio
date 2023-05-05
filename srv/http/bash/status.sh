@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-mpc | grep ^Updating && updating_db=true || rm $dirmpd/updating
+mpc | grep ^Updating && updating_db=true || rm -f $dirmpd/updating
 
 [[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit # >>>>>>>>>>
 
