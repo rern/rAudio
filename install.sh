@@ -36,8 +36,12 @@ elif [[ ! -e$dirsystem/equalizer.json ]]; then
 		preset+=', "'${l/^*}'" : [ '$( tr ' ' , <<< ${l/*^} )' ]'
 	done
 	data='{
-  "active" : "'$( head -1 $file )'"
-, "preset" : { "Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'$preset' }
+  "active"  : "Flat"
+, "current" : "62 62 62 62 62 62 62 62 62 62"
+, "preset"  : {
+	"Flat" : [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'
+	$preset'
+	}
 }'
 	jq <<< $data > $dirsystem/equalizer.json
 	rm $file
