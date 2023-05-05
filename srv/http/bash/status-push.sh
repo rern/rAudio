@@ -7,15 +7,6 @@ echo $$ > $dirshm/pidstatuspush
 
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
-	data=$2
-	pushstream mpdradio "$data"
-	statusnew=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
-	statusnew+='
-timestamp='$( date +%s%3N )'
-webradio=true
-player="mpd"'
-	echo "$statusnew" > $dirshm/status
-	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
@@ -53,7 +44,7 @@ if systemctl -q is-active localbrowser; then
 fi
 
 if [[ -e $dirsystem/lcdchar ]]; then
-	sed -E 's/(true|false)$/\u\1/'  <<< $statusnew > $dirshm/lcdcharstatus.py
+	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
 	systemctl restart lcdchar
 fi
 
@@ -95,9 +86,9 @@ fi
 pushstream refresh '{"page":"player","state":"'$state'"}'
 pushstream refresh '{"page":"features","state":"'$state'"}'
 
-[[ ! $scrobble ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
+[[ ! $scrobble || ! $statusprev ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 
-. <( echo "$statusprev" )
+. <( echo "$statusprev" ) # status-radio.sh - no $statusprev
 [[ ! $Artist || ! $Title || $Time < 30 || $webradio != false || $player == snapcast ]] && exit
 
 [[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
