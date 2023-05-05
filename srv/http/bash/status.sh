@@ -523,6 +523,8 @@ elif [[ $Album ]]; then
 $Artist
 $Album"
 fi
-if [[ $args ]]; then # no shorthand for ... &> /dev/null &
-	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+[[ ! $args ]] && exit
+
+$dirbash/status-coverartonline.sh "cmd
+$args
+CMD ARTIST ALBUM TYPE" &> /dev/null &

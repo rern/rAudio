@@ -612,7 +612,7 @@ function imageLoad( list ) {
 		} else if ( [ 'artist', 'albumartist', 'composer', 'conductor', 'date', 'genre' ].includes( V.mode ) ) {
 			$lazyload.off( 'error' ).on( 'error', function() {
 				var $this = $( this );
-				$this.replaceWith( '<i class="i-album li-icon" data-target="#menu-album"></i>' );
+				$this.replaceWith( '<i class="i-album li-icon" data="album"></i>' );
 			} );
 		} else {
 			$lazyload.off( 'error' ).on( 'error', function() {
@@ -630,13 +630,13 @@ function imageLoad( list ) {
 					var icon = $this.parent().data( 'index' ) !== 'undefined' ? 'folder' : V.mode;
 					var menu = 'folder';
 				}
-				$this.replaceWith( '<i class="i-'+ icon +' li-icon" data-target="#menu-'+ menu +'"></i>' );
+				$this.replaceWith( '<i class="i-'+ icon +' li-icon" data-menu="'+ menu +'"></i>' );
 			} );
 		}
 	} else {
 		$lazyload.off( 'error' ).on( 'error', function() {
 			var $this = $( this );
-			$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-target="#menu-filesavedpl"></i>' );
+			$this.replaceWith( '<i class="i-'+ $this.data( 'icon' ) +' li-icon" data-menu="filesavedpl"></i>' );
 		} );
 	}
 }

@@ -333,13 +333,14 @@ coverartreset )
 	dir=$( dirname "$coverfile" )
 	filename=$( basename "$coverfile" )
 	if [[ $( basename "$dir" ) == audiocd ]]; then
-		id=${filename/.*}
+		discid=${filename/.*}
 		rm -f "$coverfile"
-		$dirbash/status-coverartonline.sh "\
+		$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
 audiocd
-$id" &> /dev/null &
+$discid
+CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 		exit
 	fi
 	

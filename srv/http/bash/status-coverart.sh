@@ -55,6 +55,7 @@ fi
 [[ ! $artist || ! $album ]] && exit
 
 ##### online
-$dirbash/status-coverartonline.sh "\
+$dirbash/status-coverartonline.sh "cmd
 $artist
-$album" &> /dev/null &
+$album
+CMD ARTIST ALBUM" &> /dev/null &
