@@ -120,14 +120,13 @@ function playlistDelete() {
 				   +'<br><wh>'+ V.list.name +'</wh>'
 		, oklabel : ico( 'minus-circle' ) +'Delete'
 		, okcolor : red
-		, ok      : () => bash( [ 'savedpldelete', V.list.name ] )
+		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
 	} );
 }
-function playlistLoad( path, play, replace ) {
+function playlistLoad( name, play, replace ) {
 	V.local = true;
-	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
-	bash( [ 'playlist', path, play, replace ], function() {
-		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
+	banner( 'file-playlist blink', NAME, 'Load ...', -1 );
+	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
@@ -160,11 +159,11 @@ function playlistRename() {
 }
 function playlistSave( name, oldname, replace ) {
 	if ( oldname ) {
-		bash( [ 'savedplrename', oldname, name, replace ], data => {
+		bash( [ 'savedplrename', oldname, name, replace, 'CMD NAME NEWNAME REPLACE' ], data => {
 			if ( data == -1 ) playlistSaveExist( 'rename', name, oldname );
 		} );
 	} else {
-		bash( [ 'savedplsave', name, replace ], data => {
+		bash( [ 'savedplsave', name, replace, 'CMD NAME REPLACE' ], data => {
 			if ( data == -1 ) {
 				playlistSaveExist( 'save', name );
 			} else {
@@ -351,7 +350,7 @@ function webRadioCoverart() {
 		}
 		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, mode ] )
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, mode, 'CMD FILENOEXT MODE' ] )
 		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }
@@ -371,7 +370,7 @@ function webRadioDelete() {
 		, ok      : () => {
 			V.list.li.remove();
 			var dir = $( '#lib-path .lipath' ).text();
-			bash( ['webradiodelete', dir, url, V.mode ] );
+			bash( ['webradiodelete', dir, url, V.mode, 'CMD DIR URL MODE' ] );
 		}
 	} );
 }
@@ -413,7 +412,7 @@ function webRadioEdit() {
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', dir, name, newurl, charset, url ], error => {
+			bash( [ 'webradioedit', dir, name, newurl, charset, url, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -446,7 +445,7 @@ function webRadioNew( name, url, charset ) {
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
 						, checkblank : true
-						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
+						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 					} );
 				} );
 			}
@@ -459,7 +458,7 @@ function webRadioNew( name, url, charset ) {
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var dir     = $( '#lib-path .lipath' ).text();
 			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
-			bash( [ 'webradioadd', dir, name, url, charset ], error => {
+			bash( [ 'webradioadd', dir, name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
@@ -488,7 +487,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	
 	switch ( cmd ) {
 		case 'current':
-			bash( [ 'mpcsetcurrent', V.list.index + 1 ] );
+			bash( [ 'mpcsetcurrent', V.list.index + 1, 'CMD POS' ] );
 			return
 		case 'directory':
 			if ( V.mode === 'latest' ) {
@@ -544,7 +543,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		case 'savedplremove':
 			local();
 			var plname = $( '#pl-path .lipath' ).text();
-			bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1 ] );
+			bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME TYPE POS' ] );
 			V.list.li.remove();
 			return
 		case 'similar':
@@ -595,7 +594,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 											+'<br>Confirm delete?'
 								, oklabel : ico( 'minus-circle' ) +'Delete'
 								, okcolor : red
-								, ok      : () => bash( [ 'wrdirdelete', path, V.mode, 'noconfirm' ] )
+								, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD PATH MODE CONFIRM' ] )
 							} );
 						}
 					} );
@@ -615,7 +614,7 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 				, checkblank   : true
 				, checkchanged : true
 				, oklabel      : 'Rename'
-				, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal() ] )
+				, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD PATH NAME NEWNAME' ] )
 			} );
 			return
 		case 'wrsave':

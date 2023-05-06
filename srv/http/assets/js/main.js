@@ -995,17 +995,15 @@ $( '.btn-cmd' ).on( 'click', function() {
 			S.state = cmd;
 			clearInterval( V.interval.elapsed );
 			clearInterval( V.interval.elapsedpl );
-			elapsedscrobble = S.webradio ? '' : S.elapsed;
 			if ( S.player !== 'mpd' ) {
-				bash( [ 'playerstop', elapsedscrobble ] );
+				bash( [ 'playerstop' ] );
 				banner( S.player, icon_player[ S.player ], 'Stop ...' );
 				return
 			}
 			
 			$( '#title' ).removeClass( 'gr' );
 			if ( ! S.pllength ) return
-			
-			bash( [ 'mpcplayback', 'stop', elapsedscrobble, 'CMD ACTION POS' ] );
+			bash( [ 'mpcplayback', 'stop', 'CMD ACTION' ] );
 			$( '#pl-list .elapsed' ).empty();
 			if ( V.playback ) {
 				$( '#total' ).empty();
@@ -1050,8 +1048,7 @@ $( '.btn-cmd' ).on( 'click', function() {
 			clearIntervalAll();
 			$timeRS.setValue( 0 );
 			$( '#elapsed, #total, #progress' ).empty();
-			elapsedscrobble = S.webradio ? '' : S.elapsed || '';
-			bash( [ 'mpcprevnext', cmd, elapsedscrobble, 'CMD ACTION ELAPSED' ] );
+			bash( [ 'mpcprevnext', cmd, 'CMD ACTION' ] );
 			if ( V.playlist ) {
 				$( '#pl-list li.active' )
 					.removeClass( 'active' )

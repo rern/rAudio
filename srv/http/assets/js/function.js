@@ -747,7 +747,7 @@ function infoUpdate( path ) {
 				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
-		, ok         : () => bash( [ 'mpcupdate', path || infoVal() ] )
+		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD PATH' ] )
 	} );
 }
 function libraryHome() {
@@ -828,7 +828,7 @@ function mpcSeek( elapsed ) {
 		$( '#pause' ).addClass( 'active' );
 		$( '#title' ).addClass( 'gr' );
 	}
-	bash( [ 'mpcseek', elapsed, S.state ] );
+	bash( [ 'mpcseek', elapsed, S.state, 'CMD ELAPSED STATE' ] );
 }
 function mpcSeekBar( pageX ) {
 	var $timeband  = $( '#time-band' );
@@ -858,7 +858,7 @@ function pageScroll( pos ) {
 }
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
-	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file ], () => {
+	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
 		renderSavedPlTrack( plname );
 		if ( indextarget === 'last' ) {
 			setTimeout( () => $( 'html, body' ).animate( { scrollTop: ( $( '#pl-savedlist li' ).length - 3 ) * 49 } ), 300 );
@@ -898,7 +898,7 @@ function playlistInsertTarget() {
 					  +'<br>'+ V.pladd.album
 					  +'<hr>'
 					  +'Select where to add:'
-		, radio      : { First : 'first', Select: 'select', Last: 'last' }
+		, radio      : { First : 1, Select: 'select', Last: 'last' }
 		, values     : 'last'
 		, beforeshow : () => {
 			$( '#infoContent input' ).eq( 1 ).on( 'click', function() {
@@ -974,7 +974,7 @@ function playlistRemove( $li ) {
 				$li.prev().addClass( 'active' );
 			}
 		}
-		bash( [ 'mpcremove', pos, poscurent ] );
+		bash( [ 'mpcremove', pos, poscurent, 'CMD POS CURRENT' ] );
 		$( '#pl-list li .pos' ).slice( pos ).each( ( i, el ) => {
 			$( el ).text( pos );
 			pos++
@@ -1793,7 +1793,7 @@ function sortPlaylist( pl, iold, inew ) {
 	if ( pl === 'pl-list' ) {
 		bash( [ 'mpcmove', iold + 1, inew + 1, 'CMD FROM TO' ] );
 	} else {
-		bash( [ 'savedpledit', $( '#pl-path .lipath' ).text(), 'move', iold, inew ] );
+		bash( [ 'savedpledit', $( '#savedpl-path .lipath' ).text(), 'move', iold + 1, inew + 1, 'CMD NAME TYPE FROM TO' ] );
 	}
 	var i    = Math.min( iold, inew );
 	var imax = Math.max( iold, inew ) + 1;

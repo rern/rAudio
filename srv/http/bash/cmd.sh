@@ -90,16 +90,17 @@ rotateSplash() {
 		$dirimg/splash.png
 }
 scrobbleOnStop() {
-	local elapsed
 	. $dirshm/scrobble
-	elapsed=$1
-	if (( $Time > 30 && ( $elapsed > 240 || $elapsed > $Time / 2 ) )) && [[ $Artist && $Title ]]; then
-		$dirbash/scrobble.sh "\
+	if [[ ! $Artist || ! $Title || $webradio == true || $Time < 30 ]] \
+		|| ! ( $elapsed > 240 || $elapsed > $(( Time / 2 )) ); then
+		return
+	fi
+	
+	$dirbash/scrobble.sh "\
 $Artist
 $Title
 $Album
 CMD ARTIST TITLE ALBUM" &> /dev/null &
-	fi
 	rm -f $dirshm/scrobble
 }
 stopRadio() {
@@ -545,10 +546,10 @@ mpcplayback )
 		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
-		[[ -e $dirsystem/scrobble && $ACTION == stop && $POS ]] && cp -f $dirshm/{status,scrobble}
+		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $ACTION
 		killProcess cava
-		[[ -e $dirshm/scrobble ]] && scrobbleOnStop $POS # elapsed
+		[[ -e $dirshm/scrobble ]] && scrobbleOnStop
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
 	# snapclient
@@ -567,13 +568,12 @@ mpcplayback )
 	pushstream refresh '{"page":"features","snapclientactive":'$active'}'
 	;;
 mpcprevnext )
-	[[ ! $ELAPSED ]] && ELAPSED=$( getElapsed )
 	current=$( mpc status %songpos% )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
 	mpc -q stop
 	stopRadio
-	[[ -e $dirsystem/scrobble && $ELAPSED ]] && cp -f $dirshm/{status,scrobble}
+	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/{status,scrobble}
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -596,15 +596,13 @@ mpcprevnext )
 	fi
 	if [[ -e $dirshm/scrobble ]]; then
 		sleep 2
-		scrobbleOnStop $ELAPSED
+		scrobbleOnStop
 	fi
 	;;
 mpcremove )
-	pos=${args[1]}
-	posprev=${args[2]}
-	if [[ $pos ]]; then
-		mpc -q del $pos
-		[[ $posprev ]] && mpc -q play $posprev && mpc -q stop
+	if [[ $POS ]]; then
+		mpc -q del $POS
+		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
 	else
 		mpc -q clear
 	fi
@@ -612,20 +610,18 @@ mpcremove )
 	pushstreamPlaylist
 	;;
 mpcseek )
-	seek=${args[1]}
-	state=${args[2]}
 	touch $dirshm/scrobble
-	if [[ $state == stop ]]; then
+	if [[ $STATE == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
 		mpc -q pause
 		rm $dirshm/prevnextseek
 	fi
-	mpc -q seek $seek
+	mpc -q seek $ELAPSED
 	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
-	mpc -q play ${args[1]}
+	mpc -q play $POS
 	mpc -q stop
 	$dirbash/status-push.sh
 	;;
@@ -653,9 +649,12 @@ mpcsimilar )
 	echo $(( $( mpc status %length% ) - plLprev ))
 	;;
 mpcupdate )
-	path=${args[1]}
-	[[ $path ]] && echo $path > $dirmpd/updating || path=$( < $dirmpd/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
+	if [[ $PATH ]]; then
+		echo $PATH > $dirmpd/updating
+	elif [[ -e $dirmpd/updating ]]; then
+		PATH=$( < $dirmpd/updating )
+	fi
+	[[ $PATH == rescan ]] && mpc -q rescan || mpc -q update "$PATH"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 multiraudiolist )
@@ -684,9 +683,9 @@ playerstart )
 	pushstream player '{"player":"'$player'","active":true}'
 	;;
 playerstop )
-	elapsed=${args[1]}
 	player=$( < $dirshm/player )
 	if [[ -e $dirsystem/scrobble ]] && grep -q $player=true $dirsystem/scrobble.conf; then
+		scrobble=1
 		cp -f $dirshm/{status,scrobble}
 	fi
 	killProcess cava
@@ -720,16 +719,13 @@ playerstop )
 			;;
 	esac
 	pushstream player '{"player":"'$player'","active":false}'
-	[[ -e $dirshm/scrobble && $elapsed ]] && scrobbleOnStop $elapsed
+	[[ $scrobble ]] && scrobbleOnStop
 	;;
 playlist )
-	name=${args[1]}
-	[[ ${args[2]} == true ]] && play=1
-	[[ ${args[3]} == true ]] && replace=1
-	[[ $replace ]] && mpc -q clear
-	mpc -q load "$name"
-	[[ $play ]] && sleep 1 && mpc -q play
-	[[ $play || $replace ]] && $dirbash/push-status.sh
+	[[ $REPLACE ]] && mpc -q clear
+	mpc -q load "$NAME"
+	[[ $PLAY ]] && sleep 1 && mpc -q play
+	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushstreamPlaylist
 	;;
 radiorestart )
@@ -748,64 +744,46 @@ rotatesplash )
 	rotateSplash
 	;;
 savedpldelete )
-	name=${args[1]}
-	rm "$dirplaylists/$name.m3u"
+	rm "$dirplaylists/$NAME.m3u"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -i -E 's/(.*playlists": ).*/\1'$count',/' $dirmpd/counts
 	pushstreamSavedPlaylist
 	;;
-savedpledit )
-	name=${args[1]}
-	type=${args[2]}
-	data=${args[3]} # remove - file, add - position-file, move - from-to
-	plfile="$dirplaylists/$name.m3u"
-	if [[ $type == remove ]]; then
-		sed -i "$data d" "$plfile"
-	elif [[ $type == add ]]; then
-		file=${args[4]}
-		if [[ $data == first ]]; then
-			sed -i "1 i$file" "$plfile"
-		elif [[ $data == last ]]; then
-			echo $file >> "$plfile"
-		else
-			sed -i "$data i$file" "$plfile"
-		fi
-	else
-		from=$(( $data + 1 ))
-		to=${args[4]}
-		file=$( sed -n "$from p" "$plfile" )
-		sed -i "$from d" "$plfile"
-		[[ $to == 0 ]] && sed -i "1 i$file" "$plfile" || sed -i "$to a$file" "$plfile"
+savedpledit ) # $DATA: remove - file, add - position-file, move - from-to
+	plfile="$dirplaylists/$NAME.m3u"
+	if [[ $TYPE == remove ]]; then
+		sed -i "$POS d" "$plfile"
+	elif [[ $TYPE == add ]]; then
+		[[ $TO == last ]] && echo $FILE >> "$plfile" || sed -i "$TO i$FILE" "$plfile"
+	else # move
+		file=$( sed -n "$FROM p" "$plfile" )
+		[[ $FROM < $TO ]] && (( TO++ ))
+		sed -i -e "$FROM d" -e "$TO i$file" "$plfile"
 	fi
 	pushstreamSavedPlaylist
 	;;
 savedplrename )
-	oldname=${args[1]}
-	name=${args[2]}
-	replace=${args[3]}
-	plfile="$dirplaylists/$name.m3u"
-	if [[ $replace ]]; then
+	plfile="$dirplaylists/$NEWNAME.m3u"
+	if [[ $REPLACE ]]; then
 		rm -f "$plfile"
 	elif [[ -e "$plfile" ]]; then
 		echo -1
 		exit
 	fi
 	
-	mv "$dirplaylists/$oldname.m3u" "$plfile"
+	mv "$dirplaylists/$NAME.m3u" "$plfile"
 	pushstreamSavedPlaylist
 	;;
 savedplsave )
-	name=${args[1]}
-	replace=${args[2]}
-	plfile="$dirplaylists/$name.m3u"
-	if [[ $replace ]]; then
+	plfile="$dirplaylists/$NAME.m3u"
+	if [[ $REPLACE ]]; then
 		rm -f "$plfile"
 	elif [[ -e "$plfile" ]]; then
 		echo -1
 		exit
 	fi
 	
-	mpc -q save "$name"
+	mpc -q save "$NAME"
 	chmod 777 "$plfile"
 	count=$( ls -1 $dirplaylists | wc -l )
 	sed -E -i 's/(,*)(.*playlists" *: ).*(,)/\1\2'$count'\3/' $dirmpd/counts
@@ -872,22 +850,19 @@ vumeter )
 	echo "$html"
 	;;
 webradioadd )
-	dir=${args[1]}
-	name=${args[2]}
-	url=$( urldecode ${args[3]} )
-	charset=${args[4]}
+	url=$( urldecode $URL )
 	urlname=${url//\//|}
 	ext=${url/*.}
 	[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $url
 	
 	file=$dirwebradio
-	[[ $dir ]] && file+="/$dir"
+	[[ $DIR ]] && file+="/$DIR"
 	file+="/$urlname"
 	[[ -e $file ]] && echo 'Already exists as <wh>'$( head -1 "$file" )'</wh>:' && exit
 	echo "\
-$name
+$NAME
 
-$charset" > "$file"
+$CHARSET" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	webRadioSampling $url "$file" &> /dev/null &
@@ -896,41 +871,31 @@ webradiocopybackup )
 	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
-	filenoext=${args[1]}
-	type=${args[2]}
-	rm "$filenoext".* "$filenoext-thumb".*
-	pushstream coverart '{"type":"'$mode'","url":""}'
+	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
+	pushstream coverart '{"type":"'$MODE'","url":""}'
 	;;
 webradiodelete )
-	dir=${args[1]}
-	url=${args[2]}
-	mode=${args[3]}
-	urlname=${url//\//|}
-	path=$dirdata/$mode
-	[[ $dir ]] && path+="/$dir"
+	urlname=${URL//\//|}
+	path=$dirdata/$MODE
+	[[ $DIR ]] && path+="/$DIR"
 	rm -f "$path/$urlname"
 	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
-	webradioCount $mode
+	webradioCount $MODE
 	;;
 webradioedit )
-	dir=${args[1]}
-	name=${args[2]}
-	newurl=${args[3]}
-	charset=${args[4]}
-	url=${args[5]}
-	newurlname=${newurl//\//|}
-	urlname=${url//\//|}
+	newurlname=${NEWURL//\//|}
+	urlname=${URL//\//|}
 	path=$dirwebradio/
-	[[ $dir ]] && path+="/$dir"
+	[[ $DIR ]] && path+="/$DIR"
 	newfile="$path/$newurlname"
 	prevfile="$path/$urlname"
-	if [[ $newurl == $url ]]; then
+	if [[ $NEWURL == $URL ]]; then
 		sampling=$( sed -n 2p "$prevfile" )
 	else
 		[[ -e $newfile ]] && echo 'URL exists:' && exit
 		
-		ext=${newurl##*.}
-		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $newurl
+		ext=${NEWURL##*.}
+		[[ $ext == m3u || $ext == pls ]] && webradioPlaylistVerify $ext $NEWURL
 		
 		rm "$prevfile"
 		# stationcover
@@ -947,33 +912,24 @@ webradioedit )
 		fi
 	fi
 	echo "\
-$name
+$NAME
 $sampling
-$charset" > "$newfile"
+$CHARSET" > "$newfile"
 	pushstreamRadioList
 	;;
 wrdirdelete )
-	path=${args[1]}
-	mode=${args[2]}
-	noconfirm=${args[3]}
-	if [[ ! $noconfirm && $( ls -A "$dirdata/$mode/$path" ) ]]; then
-		echo -1
-	else
-		rm -rf "$dirdata/$mode/$path"
-		pushstreamRadioList
-	fi
+	file="$dirdata/$MODE/$PATH"
+	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
+	
+	rm -rf "$file"
+	pushstreamRadioList
 	;;
 wrdirnew )
-	dir=${args[1]}
-	sub=${args[2]}
-	[[ $dir ]] && mkdir -p "$dirwebradio/$dir/$path" || mkdir -p "$dirwebradio/$sub"
+	[[ $DIR ]] && mkdir -p "$dirwebradio/$DIR/$SUB" || mkdir -p "$dirwebradio/$SUB"
 	pushstreamRadioList
 	;;
 wrdirrename )
-	path=${args[1]}
-	name=${args[2]}
-	newname=${args[3]}
-	mv -f "$dirdata/$path/{$name,$newname}"
+	mv -f "$dirdata/$PATH/{$NAME,$NEWNAME}"
 	pushstreamRadioList
 	;;
 	
