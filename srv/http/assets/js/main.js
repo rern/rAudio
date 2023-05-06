@@ -1120,7 +1120,7 @@ $( '#lib-breadcrumbs' ).on( 'click', '.button-webradio-new', function() {
 			, title        : 'Latest'
 			, message      : 'Clear from Latest album list:<br><br>'+ $( '.licover .lialbum' ).text()
 			, ok           : () => {
-				bash( [ 'latestclear', $( '.licover .lipath' ).text(), 'CMD PATH' ], () => $( '#button-lib-back' ).trigger( 'click' ) );
+				bash( [ 'latestclear', $( '.licover .lipath' ).text(), 'CMD DIR' ], () => $( '#button-lib-back' ).trigger( 'click' ) );
 			}
 		} );
 	} else {
@@ -1340,15 +1340,16 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	var $this = $( this );
 	var path  = $this.find( '.lipath' ).text();
 	var name  = $this.find( '.bkname' ).text();
-	var msg   = '<div class="li1">'+ name +'</div>'
-				+'<a class="li2">'+ path +'</a>';
+	V.mpccmd  = [ 'mpcadd', path ];
 	if ( D.tapaddplay ) {
-		addToPlaylistCommand( 'addplay', [ 'mpcadd', path ], msg );
+		V.action = 'addplay';
+		addToPlaylistCommand();
 		return
 	}
 	
 	if ( D.tapreplaceplay ) {
-		addToPlaylistCommand( 'replaceplay', [ 'mpcadd', path ], msg );
+		V.action = 'replaceplay';
+		addToPlaylistCommand();
 		return
 	}
 	
@@ -1364,17 +1365,17 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 <a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>`;
 	info( {
-		  icon      : 'playlist'
-		, title     : 'Add to Playlist'
-		, content   : content
-		, values    : 'addplay'
+		  icon       : 'playlist'
+		, title      : 'Add to Playlist'
+		, content    : content
+		, values     : 'addplay'
 		, beforeshow : () => {
 			$( '#infoContent' ).on( 'click', '.cmd', function() {
-				V.bkradio   = true;
-				var cmd     = $( this ).data( 'cmd' );
-				var action  = cmd === 'playnext' ? 'mpcaddplaynext' : 'mpcadd';
+				V.bkradio = true;
+				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
+				V.action  = $( this ).data( 'cmd' );
 				$( '#infoX' ).trigger( 'click' );
-				addToPlaylist( cmd, [ action, path ], msg );
+				addToPlaylist();
 			} );
 		}
 		, okno      : true
@@ -1927,7 +1928,6 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
 	$menu.find( '.tag' ).toggleClass( 'hide', audiocd || radio || upnp );
-	$menu.find( '.tagcd' ).toggleClass( 'hide', ! audiocd );
 	$menu.find( '.wrsave' ).toggleClass( 'hide', ! notsaved );
 	contextmenuScroll( $menu, $thisli.offset().top + 48 );
 } ).on( 'click', '.pl-remove', function() { // remove from playlist

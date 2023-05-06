@@ -81,7 +81,7 @@ if [[ -e $dirshm/clientip ]]; then
 	done
 fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
 pushstream refresh '{"page":"player","state":"'$state'"}'
 pushstream refresh '{"page":"features","state":"'$state'"}'

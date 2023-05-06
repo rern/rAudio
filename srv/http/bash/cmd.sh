@@ -219,9 +219,9 @@ bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
 	
-	echo $PATH > "$bkfile"
+	echo $DIR > "$bkfile"
 	if [[ -e $dirsystem/order.json ]]; then
-		order=$( jq '. + ["'$PATH'"]' $dirsystem/order.json )
+		order=$( jq '. + ["'$DIR'"]' $dirsystem/order.json )
 		echo "$order" > $dirsystem/order.json
 	fi
 	pushstream bookmark 1
@@ -382,16 +382,16 @@ hashreset )
 	;;
 ignoredir )
 	touch $dirmpd/updating
-	dir=$( basename "$PATH" )
-	mpdpath=$( dirname "$PATH" )
+	dir=$( basename "$DIR" )
+	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
 	pushstream mpdupdate '{"type":"mpd"}'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
 latestclear )
-	if [[ $PATH ]]; then
-		sed -i "\|\^$PATH$| d" $dirmpd/latest
+	if [[ $DIR ]]; then
+		sed -i "\|\^$DIR$| d" $dirmpd/latest
 		count=$( wc -l < $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
@@ -449,20 +449,41 @@ lyrics )
 	fi
 	;;
 mpcadd )
-	item=${args[1]}
-	command=${args[2]}
-	delay=${args[3]}
-	plAddPosition $command
-	mpc -q add "$item"
-	plAddPlay $command $delay
+	plAddPosition $ACTION
+	mpc -q add "$FILE"
+	plAddPlay $ACTION $DELAY
 	pushstreamPlaylist add
 	;;
 mpcaddplaynext )
-	mpc -q insert "${args[1]}"
+	mpc -q insert "$FILE"
 	pushstreamPlaylist add
 	;;
-mpcaddrandom )
-	plAddRandom
+mpcaddfind )
+	if [[ $TYPE2 ]]; then
+		plAddPosition $ACTION
+		mpc -q findadd $TYPE "$STRING" $TYPE2 "$STRING2"
+	else
+		plAddPosition $ACTION
+		mpc -q findadd $TYPE "$STRING"
+	fi
+	plAddPlay $ACTION $DELAY
+	;;
+mpcaddload )
+	plAddPosition $ACTION
+	mpc -q load "$FILE"
+	plAddPlay $ACTION $DELAY
+	;;
+mpcaddls )
+	plAddPosition $ACTION
+	readarray -t cuefiles <<< $( mpc ls "$DIR" | grep '\.cue$' | sort -u )
+	if [[ ! $cuefiles ]]; then
+		mpc ls "$DIR" | mpc -q add &> /dev/null
+	else
+		for cuefile in "${cuefiles[@]}"; do
+			mpc -q load "$cuefile"
+		done
+	fi
+	plAddPlay $ACTION $DELAY
 	;;
 mpccrop )
 	if statePlay; then
@@ -476,46 +497,8 @@ mpccrop )
 	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
-mpcfindadd )
-	if [[ ${args[1]} != multi ]]; then
-		type=${args[1]}
-		string=${args[2]}
-		command=${args[3]}
-		plAddPosition $command
-		mpc -q findadd $type "$string"
-	else
-		type=${args[2]}
-		string=${args[3]}
-		type2=${args[4]}
-		string2=${args[5]}
-		command=${args[6]}
-		plAddPosition $command
-		mpc -q findadd $type "$string" $type2 "$string2"
-	fi
-	plAddPlay $command $delay
-	;;
-mpcload )
-	playlist=${args[1]}
-	command=${args[2]}
-	delay=${args[3]}
-	plAddPosition $command
-	mpc -q load "$playlist"
-	plAddPlay $command $delay
-	;;
-mpcls )
-	dir=${args[1]}
-	command=${args[2]}
-	delay=${args[3]}
-	plAddPosition $command
-	readarray -t cuefiles <<< $( mpc ls "$dir" | grep '\.cue$' | sort -u )
-	if [[ ! $cuefiles ]]; then
-		mpc ls "$dir" | mpc -q add &> /dev/null
-	else
-		for cuefile in "${cuefiles[@]}"; do
-			mpc -q load "$cuefile"
-		done
-	fi
-	plAddPlay $command $delay
+mpclibrandom )
+	plAddRandom
 	;;
 mpcmove )
 	mpc -q move $FROM $TO
@@ -649,12 +632,12 @@ mpcsimilar )
 	echo $(( $( mpc status %length% ) - plLprev ))
 	;;
 mpcupdate )
-	if [[ $PATH ]]; then
-		echo $PATH > $dirmpd/updating
+	if [[ $DIR ]]; then
+		echo $DIR > $dirmpd/updating
 	elif [[ -e $dirmpd/updating ]]; then
-		PATH=$( < $dirmpd/updating )
+		DIR=$( < $dirmpd/updating )
 	fi
-	[[ $PATH == rescan ]] && mpc -q rescan || mpc -q update "$PATH"
+	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	pushstream mpdupdate '{"type":"mpd"}'
 	;;
 multiraudiolist )
@@ -918,7 +901,7 @@ $CHARSET" > "$newfile"
 	pushstreamRadioList
 	;;
 wrdirdelete )
-	file="$dirdata/$MODE/$PATH"
+	file="$dirdata/$MODE/$NAME"
 	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
 	
 	rm -rf "$file"
@@ -929,7 +912,7 @@ wrdirnew )
 	pushstreamRadioList
 	;;
 wrdirrename )
-	mv -f "$dirdata/$PATH/{$NAME,$NEWNAME}"
+	mv -f "$dirdata/$MODE/{$NAME,$NEWNAME}"
 	pushstreamRadioList
 	;;
 	

@@ -747,7 +747,7 @@ function infoUpdate( path ) {
 				$( '#infoContent input' ).eq( 1 ).prop( 'checked', true );
 			}
 		}
-		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD PATH' ] )
+		, ok         : () => bash( [ 'mpcupdate', path || infoVal(), 'CMD DIR' ] )
 	} );
 }
 function libraryHome() {
