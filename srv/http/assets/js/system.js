@@ -537,7 +537,7 @@ $( '#hostname' ).on( 'mousedown touchdown', function() {
 		, title        : SW.title
 		, textlabel    : 'Name'
 		, focus        : 0
-		, values       : { HOSTNAME: S.hostname }
+		, values       : { NAME: S.hostname }
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {

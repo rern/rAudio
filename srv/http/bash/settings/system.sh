@@ -187,10 +187,10 @@ hdmi_force_hotplug=1"
 	pushstream refresh '{"page":"features","hdmihotplug":'$TF'}'
 	;;
 hostname )
-	hostnamectl set-hostname $HOSTNAME
-	sed -i -E 's/^(ssid=).*/\1'$HOSTNAME'/' /etc/hostapd/hostapd.conf
-	sed -i -E 's/(name = ").*/\1'$HOSTNAME'"/' /etc/shairport-sync.conf
-	sed -i -E 's/^(friendlyname = ).*/\1'$HOSTNAME'/' /etc/upmpdcli.conf
+	hostnamectl set-hostname $NAME
+	sed -i -E 's/^(ssid=).*/\1'$NAME'/' /etc/hostapd/hostapd.conf
+	sed -i -E 's/(name = ").*/\1'$NAME'"/' /etc/shairport-sync.conf
+	sed -i -E 's/^(friendlyname = ).*/\1'$NAME'/' /etc/upmpdcli.conf
 	rm -f /root/.config/chromium/SingletonLock 	# 7" display might need to rm: SingletonCookie SingletonSocket
 	systemctl try-restart avahi-daemon bluetooth hostapd localbrowser mpd smb shairport-sync shairport spotifyd upmpdcli
 	pushRefresh
