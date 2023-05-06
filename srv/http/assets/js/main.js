@@ -267,7 +267,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			location.href = 'settings.php?p=guide';
 			break;
 		case 'screenoff':
-			bash( [ 'screenoff', 'dpms force off' ] );
+			bash( [ 'screenoff' ] );
 			V.screenoff = true;
 			break;
 		case 'update':

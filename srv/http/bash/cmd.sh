@@ -208,13 +208,6 @@ albumignore )
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
-audiocdtag )
-	track=${args[1]}
-	tag=${args[2]}
-	discid=${args[3]}
-	sed -i "$track s|.*|$tag|" $diraudiocd/$discid
-	pushstreamPlaylist
-	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
@@ -617,18 +610,14 @@ mpcshuffle )
 	;;
 mpcsimilar )
 	plLprev=$( mpc status %length% )
-	linesL=${#args[@]}
-	for (( i=1; i < linesL; i++ )); do
-		artist=${args[$i]}
-		(( i++ ))
-		title=${args[$i]}
+	lines=${args:1}
+	for l in "${lines[@]}"; do
+		artist=${args/^*}
+		title=${args/*^}
 		[[ ! $artist || ! $title ]] && continue
 		
 		file=$( mpc find artist "$artist" title "$title" )
-		[[ ! $file ]] && continue
-		
-		list+="$( mpc find artist "$artist" title "$title" )
-"
+		[[ $file ]] && list+="$file"$'\n'
 	done
 	awk NF <<< $list | mpc -q add
 	pushstreamPlaylist
@@ -776,7 +765,7 @@ savedplsave )
 	pushstreamSavedPlaylist
 	;;
 screenoff )
-	DISPLAY=:0 xset ${args[1]}
+	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
 	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && $dirbash/cmd.sh playerstart

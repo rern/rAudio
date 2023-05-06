@@ -7,7 +7,7 @@ function addSimilar() {
 			+'&format=json'
 			+'&autocorrect=1';
 	$.post( url, function( data ) {
-		var title = 'Playlist - Add Similar';
+		var title = 'Add Similar';
 		if ( 'error' in data || ! data.similartracks.track.length ) {
 			banner( 'lastfm', title, 'Track not found.' );
 		} else {
@@ -15,7 +15,7 @@ function addSimilar() {
 			var iL = val.length;
 			var similar = '';
 			for ( i = 0; i < iL; i++ ) {
-				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
+				similar += val[ i ].artist.name +'^'+ val[ i ].name +'\n';
 			}
 			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
 			bash( [ 'mpcsimilar', similar ], count => {
