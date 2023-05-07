@@ -419,8 +419,10 @@ shareddataconnect )
 	! ipOnline $IP && echo "IP address not online: <wh>$IP</wh>" && exit
 	
 	if [[ $connect ]]; then
-		paths=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-		[[ ! $paths ]] && echo '<i class="i-networks"></i> Server rAudio not found.' && exit
+		path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+		if [[ ! $path ]] || ! grep -q /mnt/MPD/NAS <<< $path; then
+			echo '<i class="i-networks"></i> Server rAudio not found.' && exit
+		fi
 	fi
 	
 	mv /mnt/MPD/{SD,USB} /mnt
