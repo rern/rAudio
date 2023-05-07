@@ -165,7 +165,7 @@ getContent() {
 getElapsed() {
 	local mmss
 	mmss=$( mpc status %currenttime% )
-	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
+	echo $(( ( ${mmss/:*} * 60 ) + ${mmss/*:} ))
 }
 getVar(){
 	local line
