@@ -27,23 +27,24 @@ $id_data = [
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'       => 'shairport-sync'
-		, 'help'     => <<< EOF
+		  'id'    => 'shairport-sync'
+		, 'exist' => file_exists( '/usr/bin/shairport-sync' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
 		  'id'       => 'dabradio'
 		, 'disabled' => 'No DAB devices found.'
-		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 		, 'exist'    => file_exists( '/usr/bin/mediamtx' )
+		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
 	]
 	, [
-		  'id'       => 'snapclient'
-		, 'help'     => <<< EOF
+		  'id'    => 'snapclient'
+		, 'exist' => file_exists( '/usr/bin/snapclient' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
@@ -51,11 +52,11 @@ EOF
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 	, [
-		  'id'       => 'spotifyd'
-		, 'help'     => <<< EOF
+		  'id'    => 'spotifyd'
+		, 'exist' => file_exists( '/usr/bin/spotifyd' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
@@ -75,16 +76,15 @@ To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bl
 	
 Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
 EOF
-		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
 	, [
-		  'id'       => 'upmpdcli'
-		, 'help'     => <<< EOF
+		  'id'    => 'upmpdcli'
+		, 'exist' => file_exists( '/usr/bin/upmpdcli' )
+		, 'help'  => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
 htmlSection( $head, $body, 'renderers' );
@@ -93,20 +93,20 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'       => 'httpd'
-		, 'help'     => <<< EOF
+		  'id'   => 'httpd'
+		, 'help' => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
 		  'id'       => 'snapserver'
 		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 
 Note: SSH passwords must be default. (For metadata update)
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 ];
 htmlSection( $head, $body, 'streamers' );
@@ -115,11 +115,11 @@ $body = [
 	[
 		  'id'       => 'camilladsp'
 		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
+		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
 EOF
-		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
 	, [
 		  'id'       => 'equalizer'
@@ -145,16 +145,16 @@ $body = [
 	[
 		  'id'       => 'hostapd'
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
+		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
  · Avoid double quotes <code>"</code> in password.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	]
 	, [
-		  'id'      => 'autoplay'
-		, 'help'    => <<< EOF
+		  'id'   => 'autoplay'
+		, 'help' => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
  · Audio CD inserting
@@ -162,8 +162,9 @@ Start playing automatically on:
 EOF
 	]
 	, [
-		  'id'       => 'localbrowser'
-		, 'help'     => <<< EOF
+		  'id'    => 'localbrowser'
+		, 'exist' => $browser
+		, 'help'  => <<< EOF
 $browser - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
@@ -174,11 +175,11 @@ Note: HDMI Hotplug
  · Disabled - Display must be connected before boot.
  · Enable - If connect before boot but not detected properly.
 EOF
-		, 'exist'    => $browser
 	]
 	, [
 		  'id'       => 'smb'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'exist'    => file_exists( '/usr/bin/smbd' )
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
@@ -187,11 +188,10 @@ EOF
  
 Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performance.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'id'       => 'lyricsembedded'
-		, 'help'     => <<< EOF
+		  'id'   => 'lyricsembedded'
+		, 'help' => <<< EOF
  · Get embedded lyrics from local files.
  · Search online if not available.
  · Should be disable if most lyrics are not embedded.
@@ -201,8 +201,8 @@ Note: Should be disabled if none embedded.
 EOF
 	]
 	, [
-		  'id'      => 'multiraudio'
-		, 'help'    => <<< EOF
+		  'id'   => 'multiraudio'
+		, 'help' => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
 
@@ -210,15 +210,15 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'id'       => 'login'
-		, 'help'     => <<< EOF
+		  'id'   => 'login'
+		, 'help' => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: {$Fmenu( 'player', 'Player', 'lock' )}
 EOF
 	]
 	, [
-		  'id'       => 'scrobble'
-		, 'help'     => <<< EOF
+		  'id'   => 'scrobble'
+		, 'help' => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.

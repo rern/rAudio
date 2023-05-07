@@ -79,8 +79,8 @@ htmlHead( [ //////////////////////////////////
 </div>
 <?php
 htmlSetting( [
-	  'id'       => 'softlimit'
-	, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
+	  'id'   => 'softlimit'
+	, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
 ] );
 ?>
 </div>
@@ -122,8 +122,8 @@ htmlSetting( [
 	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
-	  'id'       => 'usbautoupdate'
-	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
+	  'id'   => 'usbautoupdate'
+	, 'help' => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
@@ -142,15 +142,15 @@ $body = [
 EOF
 	]
 	, [
-		  'id'       => 'bluetooth'
-		, 'help'     => <<< EOF
+		  'id'   => 'bluetooth'
+		, 'help' => <<< EOF
 {$Fi( 'gear btn' )}
 ■ Sampling 16bit - Bluetooth receivers with fixed sampling
 EOF
 	]
 	, [
-		  'id'       => 'hdmi'
-		, 'help'     => <<< EOF
+		  'id'   => 'hdmi'
+		, 'help' => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
  · Should be disabled if not used.
@@ -176,7 +176,7 @@ $head = [ //////////////////////////////////
 ];
 $body = [
 	[
-		  'html'    => <<< EOF
+		  'html' => <<< EOF
 <div id="divi2s">
 	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
@@ -200,16 +200,16 @@ Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 EOF
 	]
 	, [
-		  'id'       => 'lcdchar'
-		, 'help'     => <<< EOF
+		  'id'   => 'lcdchar'
+		, 'help' => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
  · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
-		  'id'       => 'powerbutton'
-		, 'help'     => <<< EOF
+		  'id'   => 'powerbutton'
+		, 'help' => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 {$Fi( 'gear btn' )}
  · On - Fixed to pin <code>5</code>
@@ -220,8 +220,8 @@ EOF
 EOF
 	]
 	, [
-		  'id'      => 'relays'
-		, 'help'    => <<< EOF
+		  'id'   => 'relays'
+		, 'help' => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
@@ -229,25 +229,25 @@ On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
 EOF
 	],
 	[
-		  'id'       => 'rotaryencoder'
-		, 'help'     => <<< EOF
+		  'id'   => 'rotaryencoder'
+		, 'help' => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
  · Push to play/pause
 EOF
 	]
 	,[
-		  'id'       => 'mpdoled'
-		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
+		  'id'   => 'mpdoled'
+		, 'help' => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
-		  'id'       => 'tft'
-		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
-		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
+		  'id'    => 'tft'
+		, 'exist' => file_exists( '/etc/systemd/system/localbrowser.service' )
+		, 'help'  => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
 	, [
-		  'id'      => 'vuled'
-		, 'help'    => <<< EOF
+		  'id'   => 'vuled'
+		, 'help' => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
 EOF
@@ -257,9 +257,9 @@ htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'      => 'hostname'
-		, 'input'   => '<input type="text" id="hostname" readonly>'
-		, 'help'    => <<< EOF
+		  'id'    => 'hostname'
+		, 'input' => '<input type="text" id="hostname" readonly>'
+		, 'help'  => <<< EOF
 For:
  · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  · Web Interface URL: <c id="avahiurl"></c>
@@ -267,16 +267,16 @@ For:
 EOF
 	]
 	, [
-		  'id'       => 'timezone'
-		, 'input'    => '<select id="timezone"></select>'
-		, 'help'     => <<< EOF
+		  'id'    => 'timezone'
+		, 'input' => '<select id="timezone"></select>'
+		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )}
 Servers for time sync and package mirror
 EOF
 	]
 	, [
-		  'id'       => 'soundprofile'
-		, 'help'     => <<< EOF
+		  'id'   => 'soundprofile'
+		, 'help' => <<< EOF
 Tweak kernel parameters to improve sound quality.
 {$Fi( 'gear btn' )}
 Swapiness (default: <code>60</code>)
@@ -296,8 +296,8 @@ htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
-		  'id'      => 'backup'
-		, 'help'    => <<< EOF
+		  'id'   => 'backup'
+		, 'help' => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
  · Playback: Lyrics
@@ -306,8 +306,8 @@ Backup all data and settings:
 EOF
 	]
 	, [
-		  'id'      => 'restore'
-		, 'help'    => <<< EOF
+		  'id'   => 'restore'
+		, 'help' => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN
 EOF
@@ -390,12 +390,12 @@ $listui = [
 	  , 'https://github.com/SortableJS/Sortable'
 	]
 ];
-$uihtml = '';
+$uihtml     = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> - '.$ui[ 1 ].'<br>';
 }
 $hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
-$indexhtml = '';
+$indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';

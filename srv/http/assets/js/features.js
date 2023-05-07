@@ -457,15 +457,18 @@ function renderPage() {
 	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
-	var disablednfs = '<wh>Shared Data '+ ico( 'networks' ) +'</wh> is currently enabled.';
-	if ( S.smb ) {
-		disablednfs = disablednfs.replace( 'Shared Data', 'File Sharing' );
-	} else if ( S.nfsconnected ) {
-		disablednfs = 'Currently connected by clients';
+	if ( S.nfsconnected || S.shareddata || S.smb ) {
+		var nfsdisabled = '<a class="helpmenu label">Shared Data'+ ico( 'networks' ) +'</a> is currently enabled.';
+		$( '#nfsserver' ).addClass( 'disabled' );
+		if ( S.smb ) {
+			nfsdisabled = nfsdisabled.replace( 'Shared Data', 'File Sharing' );
+		} else if ( S.nfsserver && S.nfsconnected ) {
+			nfsdisabled = 'Currently connected by clients';
+		}
+		$( '#nfsserver' ).prev().html( nfsdisabled );
+	} else {
+		$( '#nfsserver' ).removeClass( 'disabled' );
 	}
-	$( '#nfsserver' )
-		.toggleClass( 'disabled', S.nfsconnected || S.shareddata || S.smb )
-		.prev().html( disablednfs );
 	$( '#stoptimer' ).toggleClass( 'disabled', ! S.stoptimer && S.state !== 'play' );
 	if ( S.nosound ) {
 		$( '#divdsp' ).addClass( 'hide' );

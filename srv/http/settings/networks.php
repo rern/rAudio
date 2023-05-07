@@ -35,9 +35,9 @@ echo $html;
 <div id="divwl" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'   => 'Wi-Fi'
-	, 'status'  => 'wl'
-	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
+	  'title'  => 'Wi-Fi'
+	, 'status' => 'wl'
+	, 'button' => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
@@ -75,7 +75,7 @@ htmlHead( [ //////////////////////////////////
 <div id="divaccesspoint" class="section hide">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'Access Point'
+	  'title' => 'Access Point'
 ] );
 ?>
 	<div id="boxqr" class="hide">
