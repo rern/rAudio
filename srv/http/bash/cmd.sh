@@ -375,9 +375,6 @@ equalizerget )
 equalizerset ) # slide
 	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
 	;;
-getelapsed )
-	getElapsed
-	;;
 hashreset )
 	! grep -q ^.hash.*time /srv/http/common.php && sed -E -i "s/(^.hash.*v=).*/\1'.time();/" /srv/http/common.php
 	;;

@@ -21,7 +21,7 @@ while true; do
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
 , "coverart" : ""
-, "elapsed"  : '$( getElapsed )'
+, "elapsed"  : '$( mpcElapsed )'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
 , "sampling" : "'$pos'/'$total' • 48 kHz 160 kbit/s • DAB"

@@ -89,11 +89,12 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 		curl -s $coverurl -o $dirshm/webradio/$name.jpg
 	fi
+	elapsed=$( mpcElapsed )
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "elapsed"  : '$( getElapsed )'
+, "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"

@@ -162,9 +162,6 @@ exists() {
 getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
-getElapsed() {
-	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
-}
 getVar(){
 	local line
 	line=$( grep -E "^${1// /|^}" $2 )
@@ -193,6 +190,9 @@ killProcess() {
 		kill -9 $( < $filepid ) &> /dev/null
 		rm $filepid
 	fi
+}
+mpcElapsed() {
+	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 notify() { # icon title message delayms
 	local blink delay
