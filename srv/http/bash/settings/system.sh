@@ -421,7 +421,7 @@ shareddataconnect )
 	if [[ $connect ]]; then
 		path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
 		if ! grep -q /mnt/MPD/NAS <<< $path; then
-			echo '<i class="i-networks"></i> Server rAudio not found.' && exit
+			echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 		fi
 	fi
 	
