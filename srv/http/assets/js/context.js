@@ -1,34 +1,17 @@
 function addSimilar() {
-	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
-	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-			+'&artist='+ encodeURI( V.list.artist )
-			+'&track='+ encodeURI( V.list.name )
-			+'&api_key='+ V.apikeylastfm
-			+'&format=json'
-			+'&autocorrect=1';
-	$.post( url, function( data ) {
-		var title = 'Add Similar';
-		if ( 'error' in data || ! data.similartracks.track.length ) {
-			banner( 'lastfm', title, 'Track not found.' );
-		} else {
-			var val = data.similartracks.track;
-			var iL = val.length;
-			var similar = '';
-			for ( i = 0; i < iL; i++ ) {
-				similar += val[ i ].artist.name +'^'+ val[ i ].name +'\n';
-			}
-			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
-			bash( [ 'mpcsimilar', similar ], count => {
-				if ( count ) {
-					getPlaylist();
-					setButtonControl();
-					banner( 'library', title, count +' tracks added.' );
-				} else {
-					banner( 'library', title, 'No similar tracks found in Library.' );
-				}
+	var icon  = 'lastfm';
+	var title = 'Add Similar';
+	banner( icon +' blink', title, 'Get similar tracks ...', -1 );
+	bash( [ 'mpcsimilar', V.list.artist, V.list.name, V.apikeylastfm, 'CMD ARTIST TITLE APIKEY' ], error => {
+		if ( error ) {
+			bannerHide();
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : error
 			} );
 		}
-	}, 'json' );
+	} );
 }
 function addToPlaylist() {
 	if ( D.plclear && V.action.slice( 0, 7 ) === 'replace' ) {
@@ -206,7 +189,7 @@ function playlistDelete() {
 }
 function playlistLoad( name, play, replace ) {
 	V.local = true;
-	banner( 'file-playlist blink', NAME, 'Load ...', -1 );
+	banner( 'file-playlist blink', name, 'Load ...', -1 );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );

@@ -609,19 +609,34 @@ mpcshuffle )
 	pushstreamPlaylist
 	;;
 mpcsimilar )
-	plLprev=$( mpc status %length% )
-	lines=${args:1}
-	for l in "${lines[@]}"; do
-		artist=${args/^*}
-		title=${args/*^}
-		[[ ! $artist || ! $title ]] && continue
-		
-		file=$( mpc find artist "$artist" title "$title" )
-		[[ $file ]] && list+="$file"$'\n'
+	readarray -t lines <<< $( curl -sfG -m 5 \
+								--data-urlencode "artist=$ARTIST" \
+								--data-urlencode "track=$TITLE" \
+								--data "method=track.getsimilar" \
+								--data "api_key=$APIKEY" \
+								--data "format=json" \
+								--data "autocorrect=1" \
+								http://ws.audioscrobbler.com/2.0 \
+									| jq .similartracks.track \
+									| sed -n '/"name": "/ {s/.*": "\|",$//g; p}' )
+	[[ ! $lines ]] && echo 'No similar tracks found in database.' && exit
+	
+	for l in "${lines[@]}"; do # title \n artist
+		if [[ $title ]]; then
+			file=$( mpc find artist "$l" title "$title" )
+			[[ $file ]] && list+="$file"$'\n'
+			title=
+		else
+			title=$l
+		fi
 	done
+	[[ ! $list ]] && echo 'No similar tracks found in Library.' 5000 && exit
+	
+	plLprev=$( mpc status %length% )
 	awk NF <<< $list | mpc -q add
 	pushstreamPlaylist
-	echo $(( $( mpc status %length% ) - plLprev ))
+	added=$(( $( mpc status %length% ) - plLprev ))
+	notify lastfm 'Add Similar' "$added tracks added."
 	;;
 mpcupdate )
 	if [[ $DIR ]]; then
