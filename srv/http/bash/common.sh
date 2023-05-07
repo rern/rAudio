@@ -104,7 +104,7 @@ conf2json() {
 	echo { ${json:1} }
 }
 confNotString() {
-	local var string boolean number array
+	local array boolean number string var
 	var=$1
 	[[ $var =~ ^true$|^false$ ]]                          && boolean=1
 	[[ $var != 0 && ${var:0:1} == 0 && ${var:1:1} != . ]] && string=1  # not 0 and not 0.123
@@ -116,6 +116,7 @@ confFromJson() { # $1 - file
 	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
 }
 cpuInfo() {
+	local BB C hwrevision
 	hwrevision=$( grep ^Revision /proc/cpuinfo )
 	BB=${hwrevision: -3:2}
 	C=${hwrevision: -4:1}
@@ -162,7 +163,8 @@ getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
 getElapsed() {
-	local mmss=$( mpc status %currenttime% )
+	local mmss
+	mmss=$( mpc status %currenttime% )
 	echo $(( ${mmss/:*} * 60 + ${mmss/*:} ))
 }
 getVar(){
@@ -179,6 +181,7 @@ ipAddress() {
 	ifconfig | awk '/inet.*broadcast/ {print $2;exit}' | head -1
 }
 ipSub() {
+	local ip
 	ip=$( ipAddress )
 	echo ${ip%.*}.
 }
@@ -207,7 +210,7 @@ notify() { # icon title message delayms
 	pushstream notify '{"icon":"'$1$blink'","title":"'$title'","message":"'$message'","delay":'$delay'}'
 }
 packageActive() {
-	local pkgs pkg active
+	local active pkg pkgs status
 	pkgs=$@
 	status=( $( systemctl is-active $pkgs ) )
 	i=0
@@ -225,7 +228,7 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushstream() {
-	local channel json path ips ip
+	local channel ip ips json path
 	channel=$1
 	json=${@:2} # $@=( function channel {"data":"value"...} ) > {"data":"value"...}
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
