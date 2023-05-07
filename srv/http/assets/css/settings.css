@@ -139,7 +139,7 @@ heading + .helpblock {
 	text-align: center;
 }
 #infoContent .helpmenu.label {
-	background: var( --cg );
+	background: var( --cgd );
 }
 #infoContent p i {
 	width: 40px;
