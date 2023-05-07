@@ -15,7 +15,7 @@ if [[ -s /etc/exports ]]; then # server rAudio
 elif [[ -e $filesharedip ]]; then # shareddata client
 	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
-[[ $reboot ]] && notify -blink reboot rAudio 'Reboot ...' || notify -blink power rAudio 'Power off ...'
+[[ $reboot ]] && notify -blink reboot Power 'Reboot ...' || notify -blink power Power 'Off ...'
 touch $dirshm/power
 mpc -q stop
 if [[ -e $dirsystem/lcdchar ]]; then
