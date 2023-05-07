@@ -796,7 +796,7 @@ shairportstop )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
 	$dirbash/status-push.sh
 	;;
-volume ) # no args = toggle mute / unmute
+volume ) # no TARGET = toggle mute / unmute
 	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
 	
 	[[ ! $CURRENT ]] && CURRENT=$( volumeGet value )
