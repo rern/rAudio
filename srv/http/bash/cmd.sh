@@ -798,6 +798,12 @@ shairportstop )
 	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
 	$dirbash/status-push.sh
 	;;
+shareddatampdupdate )
+	systemctl restart mpd
+	pushstream mpdupdate '{"done":1}'
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
+	;;
 volume ) # no TARGET = toggle mute / unmute
 	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
 	

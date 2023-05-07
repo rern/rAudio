@@ -219,7 +219,6 @@ function psMpdUpdate( data ) {
 			S.updatingdab = false;
 			setButtonUpdating();
 			V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
-			refreshData();
 			setTimeout( () => banner( 'refresh-library', 'Library Update', 'Done' ), 2000 );
 		}, 2000 );
 	}

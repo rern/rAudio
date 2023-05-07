@@ -108,14 +108,7 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	if [[ -s /etc/exports ]]; then # server rAudio
-		ips=$( grep -v $( ipAddress ) $filesharedip )
-		for ip in $ips; do
-			sshCommand $ip $dirsettings/system.sh shareddataconnect
-		done
-	elif [[ -e $filesharedip ]]; then # rclient
-		$dirsettings/system.sh shareddataiplist
-	fi
+	[[ -e $filesharedip ]] && appendSortUnique $( ipAddress ) $filesharedip
 else
 	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi

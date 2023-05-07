@@ -36,7 +36,14 @@ fi
 #	k1=v1
 #	k2=v2
 #	...
-
+appendSortUnique() {
+	data=$1
+	file=$2
+	lines=$( echo "\
+$( < $file )
+$data" | sort -u | awk NF )
+	[[ $lines ]] && echo "$lines" > $file || rm -f $file
+}
 args2var() {
 	local argslast CMD_CFG_OFF CFG i keys kL k v conf
 	readarray -t args <<< $1

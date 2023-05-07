@@ -13,6 +13,8 @@ updateDone() {
 	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
 	rm -f $dirmpd/{updating,listing}
 	pushstream mpdupdate '{"done":1}'
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
 }
 
 trap updateDone EXIT
@@ -162,7 +164,13 @@ counts='{
 }'
 updateDone
 
-[[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist
+if [[ -e $filesharedip ]]; then
+	list=$( ipAddress )
+	iplist=$( grep -v $list $filesharedip )
+	for ip in $iplist; do
+		ipOnline $ip && sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+	done
+fi
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )

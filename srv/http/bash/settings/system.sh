@@ -53,18 +53,6 @@ $CMD"
 	fi
 	[[ $list ]] && awk NF <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
-sharedDataIPlist() {
-	local ip iplist list
-	list=$( ipAddress )
-	iplist=$( grep -v $list $filesharedip )
-	for ip in $iplist; do
-		if ipOnline $ip; then
-			list+=$'\n'$ip
-			[[ $1 ]] && sshCommand $ip $dirsettings/system.sh shareddatarestart
-		fi
-	done
-	sort -u <<< $list | awk NF > $filesharedip
-}
 sharedDataSet() {
 	mkdir -p $dirbackup
 	if [[ ! -e $dirshareddata/mpd ]]; then
@@ -72,7 +60,7 @@ sharedDataSet() {
 		sharedDataCopy
 	fi
 	sharedDataBackupLink
-	sharedDataIPlist
+	appendSortUnique $( ipAddress ) $filesharedip
 	mpc -q clear
 	systemctl restart mpd
 	if [[ $rescan ]]; then
@@ -459,13 +447,6 @@ shareddatadisconnect )
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		notify rserver 'Server rAudio' 'Offline ...'
 	fi
-	;;
-shareddataiplist )
-	sharedDataIPlist
-	;;
-shareddatarestart )
-	systemctl restart mpd
-	pushstream mpdupdate $( < $dirmpd/counts )
 	;;
 shareddataset )
 	sharedDataSet
