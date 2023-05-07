@@ -245,7 +245,7 @@ camillagui )
 	;;
 color )
 	file=$dirsystem/color
-	[[ $HSL == reset ]] && rm -f $file
+	[[ $HSL == reset ]] && rm -f $file && HSL=
 	if [[ $HSL ]]; then
 		echo $HSL > $file
 		hsl=( $HSL )
