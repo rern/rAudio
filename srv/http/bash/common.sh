@@ -163,9 +163,7 @@ getContent() {
 	[[ -e "$1" ]] && cat "$1"
 }
 getElapsed() {
-	local mmss
-	mmss=$( mpc status %currenttime% )
-	echo $(( ( ${mmss/:*} * 60 ) + ${mmss/*:} ))
+	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 getVar(){
 	local line
