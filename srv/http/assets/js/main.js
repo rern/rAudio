@@ -444,7 +444,7 @@ $( 'body' ).on( 'click', '#colorok', function() {
 		, title   : 'Colors'
 		, message : 'Reset colors to default?'
 		, ok      : () => {
-			bash( [ 'color' ] );
+			bash( [ 'color', 'reset', 'CMD HSL' ] );
 			loader();
 		}
 	} );

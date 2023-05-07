@@ -245,14 +245,19 @@ camillagui )
 	;;
 color )
 	file=$dirsystem/color
+	[[ $HSL == reset ]] && rm -f $file
 	if [[ $HSL ]]; then
 		echo $HSL > $file
 		hsl=( $HSL )
 	else
-		hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
-					| sed 's/.*(\(.*\)).*/\1/' \
-					| tr ',' ' ' \
-					| tr -d % ) )
+		if [[ -e $file ]]; then
+			hsl=( $( < $file ) )
+		else
+			hsl=( $( grep '\--cd *:' /srv/http/assets/css/colors.css \
+						| sed 's/.*(\(.*\)).*/\1/' \
+						| tr ',' ' ' \
+						| tr -d % ) )
+		fi
 	fi
 	h=${hsl[0]}; s=${hsl[1]}; l=${hsl[2]}
 	hs="$h,$s%,"
