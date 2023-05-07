@@ -19,9 +19,13 @@ function addSimilar() {
 			}
 			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
 			bash( [ 'mpcsimilar', similar ], count => {
-				getPlaylist();
-				setButtonControl();
-				banner( 'library', title, count +' tracks added.' );
+				if ( count ) {
+					getPlaylist();
+					setButtonControl();
+					banner( 'library', title, count +' tracks added.' );
+				} else {
+					banner( 'library', title, 'No similar tracks found in Library.' );
+				}
 			} );
 		}
 	}, 'json' );

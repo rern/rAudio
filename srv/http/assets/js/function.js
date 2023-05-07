@@ -1330,7 +1330,7 @@ function saveToPlaylist( title, album, file ) {
 	V.pladd.file  = file;
 	local();
 	$( '#button-pl-playlists' ).trigger( 'click' );
-	if ( ! V.playlist ) $( '#button-playlist' ).trigger( 'click' );
+	if ( ! V.playlist ) setTimeout( () => $( '#button-playlist' ).trigger( 'click' ), 100 );
 	banner( 'file-playlist blink', 'Add to a playlist', 'Select target playlist', 5000 );
 }
 function second2HMS( second ) {

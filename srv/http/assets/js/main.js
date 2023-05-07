@@ -542,15 +542,16 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
 	<span class="bio">&emsp;${ ico( 'bio' ) } Bio</span>
-	<span class="pladd">&emsp;${ ico( 'file-playlist' ) } Add</span>
+	<span class="similar">&emsp;${ ico( 'lastfm' ) } Add Similar</span>
 	<span class="scrobble">&emsp;${ ico( 'lastfm' ) } Scrobble</span>
 	</td></tr>
 </table>`;
 	info( {
-		  icon        : 'Music'
-		, title       : 'Track'
+		  icon        : 'music'
+		, title       : 'Playing'
 		, content     : content
-		, boxwidth    : 320
+		, width       : 460
+		, boxwidth    : 'max'
 		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
 		, beforeshow  : () => {
 			if ( noparen ) {
@@ -566,7 +567,6 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
-			$( '#infoContent .pladd' ).toggleClass( 'hide', S.player !== 'mpd' );
 			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
 				var values = infoVal();
@@ -587,8 +587,8 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
 						$( '#bio' ).removeClass( 'hide' );
 					}
-				} else if ( $this.hasClass( 'pladd' ) ) {
-					saveToPlaylist( S.Title, S.Album, S.file );
+				} else if ( $this.hasClass( 'similar' ) ) {
+					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
 					bash( [ 'scrobble', ...values, 'CMD Artist Title Album' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
