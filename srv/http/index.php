@@ -80,7 +80,6 @@ $menulist = [
 	, [ 'remove',     'minus-circle',  'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'tag',        'info-circle',   'Track Info' ]
-	, [ 'tagcd',      'tag',           'CD Tag Editor' ]
 ];
 htmlmenu( $menulist, 'plaction' );
 // playlist
@@ -144,6 +143,11 @@ foreach( $settinglist as $l ) {
 $htmlcontrols     = '';
 foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 	$htmlcontrols.= i( $l, $l.' btn btn-default btn-cmd' );
+}
+if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
+	$htmlvumeter = '<div id="vu" class="hide">'.file_get_contents( '/srv/http/assets/img/vu.svg' ).'</div>';
+} else {
+	$htmlvumeter = '';
 }
 ?>
 
@@ -223,7 +227,7 @@ foreach( [ 'previous', 'stop', 'play', 'pause', 'next' ] as $l ) {
 				<div id="time-bar"></div>
 				<div id="time-band" class="band transparent"></div>
 				<img id="coverart" src="" class="cover hide">
-				<?=( shell_exec( '/usr/bin/sudo /srv/http/bash/cmd.sh vumeter' ) )?>
+				<?=$htmlvumeter?>
 				<div id="map-cover">
 					<?=i( 'coverTL', 'scale-dn map mapcover r1 c1 ws hs' )
 					  .i( 'coverT',  'guide map mapcover r1 c2 wl hs' )

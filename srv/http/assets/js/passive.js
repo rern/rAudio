@@ -136,7 +136,7 @@ function psDisplay( data ) {
 	if ( ! D.covervu && ! D.vumeter ) {
 		$( '#vu' ).remove();
 	} else if ( ! $( '#vu' ).length ) {
-		$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu" class="hide">'+ data +'</div>' ), 'text' );
+		$.get( '/assets/img/vu.svg', data => $( '#coverart' ).after( '<div id="vu">'+ data +'</div>' ), 'text' );
 	}
 	displayBars();
 	if ( V.playback ) {

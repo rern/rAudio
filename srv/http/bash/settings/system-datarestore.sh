@@ -37,8 +37,7 @@ These will not be restored:
 fi
 
 dirPermissions
-[[ -e $dirsystem/color ]] && $dirbash/cmd.sh "\
-color
+[[ -e $dirsystem/color ]] && $dirbash/cmd.sh "color
 $( < $dirsystem/color )
 CMD HSL"
 uuid1=$( head -1 /etc/fstab | cut -d' ' -f1 )

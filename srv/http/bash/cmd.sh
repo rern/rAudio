@@ -96,7 +96,7 @@ scrobbleOnStop() {
 		return
 	fi
 	
-	$dirbash/scrobble.sh "\
+	$dirbash/scrobble.sh "cmd
 $Artist
 $Title
 $Album
@@ -332,9 +332,9 @@ dabscan )
 	pushstream mpdupdate '{"type":"dabradio"}'
 	;;
 display )
+	pushstream display $( < $dirsystem/display.json )
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
-	pushstream display $( < $dirsystem/display.json )
 	[[ $prevvumeter == $vumeter ]] && exit
 	
 	killProcess cava
@@ -816,13 +816,6 @@ volumeupdnbt )
 	;;
 volumeupdnmpc )
 	volumeUpDnMpc ${updn}1
-	;;
-vumeter )
-	! grep -q vu.*true $dirsystem/display.json && exit
-	
-	html='<div id="vu" class="hide">'
-	html+="$( < /srv/http/assets/img/vu.svg )</div>"
-	echo "$html"
 	;;
 webradioadd )
 	url=$( urldecode $URL )

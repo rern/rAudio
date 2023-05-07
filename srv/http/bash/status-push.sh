@@ -93,7 +93,7 @@ pushstream refresh '{"page":"features","state":"'$state'"}'
 
 [[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
-$dirbash/scrobble.sh "\
+$dirbash/scrobble.sh "cmd
 $Artist
 $Title
 $Album
