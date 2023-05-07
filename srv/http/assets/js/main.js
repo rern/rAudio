@@ -50,19 +50,7 @@ var picaOption  = { // pica.js
 //	, alpha            : true // Default = false (black crop background)
 };
 // color icon
-$( '.submenu.i-color' ).html( '<canvas></canvas>' );
-var canvas      = $( '.submenu.i-color canvas' )[ 0 ];
-var ctx         = canvas.getContext( '2d' );
-var cw          = canvas.width / 2;
-var ch          = canvas.height / 2;
-for( i = 0; i < 360; i += 0.25 ) {
-	var rad         = i * Math.PI / 180;
-	ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
-	ctx.beginPath();
-	ctx.moveTo( cw, ch );
-	ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
-	ctx.stroke();
-}
+colorIcon( '.submenu.i-color' );
 var pagenext    = {
 	  playback : [ 'library',  'playlist' ]
 	, playlist : [ 'playback', 'library' ]
@@ -440,10 +428,11 @@ $( 'body' ).on( 'click', '#colorok', function() {
 	loader();
 } ).on( 'click', '#colorreset', function() {
 	info( {
-		  icon    : 'gear'
-		, title   : 'Colors'
-		, message : 'Reset colors to default?'
-		, ok      : () => {
+		  icon       : 'color'
+		, title      : 'Colors'
+		, message    : 'Reset colors to default?'
+		, beforeshow : () => colorIcon( '#infoIcon' )
+		, ok         : () => {
 			bash( [ 'color', 'reset', 'CMD HSL' ] );
 			loader();
 		}

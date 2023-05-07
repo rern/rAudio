@@ -75,6 +75,21 @@ function clearIntervalAll() {
 	if ( S.state === 'play' && ! S.stream ) setProgress(); // stop progress animation
 	$( '#vuneedle' ).css( 'transform', '' );
 }
+function colorIcon( el ) {
+	$( el ).html( '<canvas></canvas>' );
+	var canvas      = $( el ).find( 'canvas' )[ 0 ];
+	var ctx         = canvas.getContext( '2d' );
+	var cw          = canvas.width / 2;
+	var ch          = canvas.height / 2;
+	for( i = 0; i < 360; i += 0.25 ) {
+		var rad         = i * Math.PI / 180;
+		ctx.strokeStyle = 'hsl('+ i +', 100%, 50%)';
+		ctx.beginPath();
+		ctx.moveTo( cw, ch );
+		ctx.lineTo( cw + cw * Math.cos( rad ), ch + ch * Math.sin( rad ) );
+		ctx.stroke();
+	}
+}
 function colorSet() {
 	V.color = false;
 	$( 'body' ).css( 'overflow', 'hidden' );

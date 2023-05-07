@@ -190,6 +190,7 @@ i.map.disabled, .map.disabled i {
 #settings .gr {
 	font-size: 22px;
 }
+#infoIcon.i-color canvas,
 .submenu.i-color canvas {
 	width: 20px;
 	height: 20px;
