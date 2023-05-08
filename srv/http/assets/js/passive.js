@@ -236,8 +236,6 @@ function psNotify( data ) {
 		C.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-	} else if ( message === 'Online ...' || message === 'Offline ...' ) { // server rAudio power on/off
-		setTimeout( () => location.href = '/', 3000 );
 	} else if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
 		pushstreamPower( message );
 	}

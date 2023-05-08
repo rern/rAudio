@@ -165,8 +165,7 @@ counts='{
 updateDone
 
 if [[ -e $filesharedip ]]; then
-	list=$( ipAddress )
-	iplist=$( grep -v $list $filesharedip )
+	iplist=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $iplist; do
 		ipOnline $ip && sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
 	done
