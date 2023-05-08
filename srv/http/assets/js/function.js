@@ -1506,9 +1506,11 @@ function setCoverart() {
 	}
 }
 function setInfo() {
-	V.prevartist = $( '#artist' ).text();
-	V.prevtitle  = $( '#title' ).text();
-	V.prevalbum  = $( '#album' ).text();
+	var prev = {
+		  Artist : $( '#artist' ).text()
+		, Title  : $( '#title' ).text()
+		, Album  : $( '#album' ).text()
+	}
 	if ( ! S.stream || S.player === 'upnp' ) {
 		$( '#artist' ).text( S.Artist );
 		$( '#title' )
@@ -1531,7 +1533,10 @@ function setInfo() {
 	$( '#artist' ).toggleClass( 'disabled', S.Artist === '' );
 	$( '#title' ).toggleClass( 'disabled', S.Title === '' );
 	$( '#album' ).toggleClass( 'disabled', S.Album === '' );
-	setInfoScroll();
+	var changed = [ 'Artist', 'Title', 'Album' ].some( k => {
+		return prev[ k ] !== S[ k ]
+	} );
+	if ( changed ) setInfoScroll();
 	var sampling = S.sampling;
 	if ( S.stream ) {
 		if ( S.icon === 'dabradio' ) {
