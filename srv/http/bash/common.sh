@@ -233,36 +233,37 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushstream() {
-	local channel ip ips json path webradiocopy
+	local channel ip json path sharedip updatedone webradiocopy
 	channel=$1
 	json=${@:2} # $@=( function channel {"data":"value"...} ) > {"data":"value"...}
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
-	# shared data
 	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
-	
+	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
 	
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
-		
-	elif [[ $channel == mpdupdate ]]; then
-		[[ $json == *done* ]] && updatedone=1 || return
-		
-	elif [[ $channel == radiolist ]]; then
-		[[ $json == *webradio* ]] && webradiocopy=1
 	fi
-	ips=$( grep -v $( ipAddress ) $filesharedip )
-	for ip in $ips; do
+	
+	if [[ $channel == mpdupdate ]]; then
+		if [[ $json == *done* ]]; then
+			sharedip=$( grep -v $( ipAddress ) $filesharedip )
+			for ip in $sharedip; do
+				ipOnline $ip && sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+			done
+		fi
+		return
+	fi
+	
+	[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1
+	sharedip=$( grep -v $( ipAddress ) $filesharedip )
+	for ip in $sharedip; do
 		! ipOnline $ip && continue
 		
-		if [[ $updatedone ]]; then
-			sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
-		else
-			curl -s -X POST http://$ip/pub?id=$channel -d "$json"
-			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
-		fi
+		curl -s -X POST http://$ip/pub?id=$channel -d "$json"
+		[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
 	done
 }
 serviceRestartEnable() {

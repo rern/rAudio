@@ -110,9 +110,9 @@ if [[ $connected  ]]; then
 	fi
 	if [[ -e $filesharedip ]]; then
 		if [[ -s /etc/exports && -s $filesharedip ]]; then
-			ipclients=$( < $filesharedip )
-			for ip in $ipclients; do
-				curl -s -X POST http://$ip/pub?id=notify -d '{"icon":"networks","title":"Server rAudio","message":"Online"}'
+			sharedip=$( < $filesharedip )
+			for ip in $sharedip; do
+				curl -s -X POST http://$ip/pub?id=notify -d '{ "icon": "networks", "title": "Server rAudio", "message": "Online" }'
 			done
 		fi
 		appendSortUnique $( ipAddress ) $filesharedip
