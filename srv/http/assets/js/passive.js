@@ -40,6 +40,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			displayPlayback();
 			setButtonControl();
 			setTimeout( renderPlayback, 50 );
+			setInfoScroll();
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
