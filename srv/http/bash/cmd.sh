@@ -800,7 +800,7 @@ shairportstop )
 	;;
 shareddatampdupdate )
 	systemctl restart mpd
-	pushstream mpdupdate '{ "done": 1 }'
+	notify refresh-library 'Library Update' Done
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
