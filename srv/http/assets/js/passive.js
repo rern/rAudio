@@ -182,8 +182,8 @@ function psMpdPlayer( data ) {
 		statusUpdate( data );
 		if ( V.playback ) {
 			renderPlaybackAll();
-		} else if ( V.libarry ) {
-			if ( V.librarylist ) console.log('library')
+		} else if ( V.library ) {
+			refreshData();
 		} else {
 			setPlaylistScroll();
 		}
