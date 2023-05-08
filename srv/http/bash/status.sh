@@ -10,7 +10,13 @@
 
 mpc | grep ^Updating && updating_db=true || rm -f $dirmpd/updating
 
-[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit # >>>>>>>>>>
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then
+	for i in {1..10}; do
+		sleep 1
+		[[ -e $dirmpd/counts ]] && mounted=1 && break
+	done
+	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
+fi
 
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
