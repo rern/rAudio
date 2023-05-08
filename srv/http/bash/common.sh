@@ -241,13 +241,13 @@ pushstream() {
 	# shared data
 	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
 	
-	[[ 'bookmark coverart display order mppdupdate playlists radiolist' != *$channel* ]] && return
+	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
 	
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
 		
-	elif [[ $channel == mppdupdate ]]; then
+	elif [[ $channel == mpdupdate ]]; then
 		[[ $json == *done* ]] && updatedone=1 || return
 		
 	elif [[ $channel == radiolist ]]; then
