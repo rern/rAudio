@@ -53,12 +53,14 @@ $( awk NF <<< $conf )"
 	nfsserver )
 		PKG=nfs-utils
 		SERVICE=nfs-server
+		sharedip=$( grep -v $( ipAddress ) $filesharedip )
+		[[ ! $sharedip ]] && sharedip='(none)'
 		systemctl -q is-active nfs-server && conf="\
 <bll># cat /etc/exports</bll>
 $( cat /etc/exports )
 
-<bll># Shared Data IPs:</bll>
-$( cat $filesharedip )"
+<bll># Active clients:</bll>
+$sharedip"
 		skip='Protocol not supported'
 		;;
 	smb )
