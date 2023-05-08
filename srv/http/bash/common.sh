@@ -253,8 +253,8 @@ pushstream() {
 			for ip in $sharedip; do
 				ipOnline $ip && sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
 			done
+			return
 		fi
-		return
 	fi
 	
 	[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1
