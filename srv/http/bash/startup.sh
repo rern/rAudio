@@ -90,10 +90,11 @@ fi
 
 if [[ $connected  ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
-	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+	readarray -t nas <<< $( grep -v ^PARTUUID /etc/fstab | awk '{print $2}' )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
-			ip=$( grep $( space2ascii $mountpoint ) /etc/fstab \
+			mp=$( space2ascii $mountpoint )
+			ip=$( grep $mp /etc/fstab \
 					| cut -d' ' -f1 \
 					| sed 's|^//||; s|:*/.*$||' )
 			[[ ! $ip ]] && continue
