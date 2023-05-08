@@ -191,6 +191,7 @@ function playlistLoad( name, play, replace ) {
 	V.local = true;
 	banner( 'file-playlist blink', name, 'Load ...', -1 );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
+		bannerHide();
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
