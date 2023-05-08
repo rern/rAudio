@@ -171,8 +171,10 @@ function psEqualizer( data ) {
 	eqOptionPreset();
 }
 function psMpdPlayer( data ) {
-	clearTimeout( V.debounce );
-	V.debounce = setTimeout( () => {
+	if ( S.updating_db ) return
+	
+	clearTimeout( V.debouncempdplayer );
+	V.debouncempdplayer = setTimeout( () => {
 		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
 			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
 		}
@@ -219,8 +221,8 @@ function psMpdUpdate( data ) {
 			S.updatingdab = false;
 			setButtonUpdating();
 			V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
-			setTimeout( () => banner( 'refresh-library', 'Library Update', 'Done' ), 2000 );
-		}, 2000 );
+			banner( 'refresh-library', 'Library Update', 'Done' );
+		}, 3000 );
 	}
 }
 function psNotify( data ) {
