@@ -2,10 +2,10 @@
 
 alias=r1
 
-# restore 20230501
+# restore 20230511
 #. /srv/http/bash/settings/addons.sh
 
-# 20230501
+# 20230511
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 if crontab -l | grep -q addonsupdates; then
@@ -176,8 +176,10 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20230501
+# 20230511
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
+
+! grep -q listing $dirbash/mpdidle.sh && systemctl restart mpd
 
 file=$dirsystem/multiraudio.conf
 if [[ -e $file ]]; then
