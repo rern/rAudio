@@ -24,7 +24,7 @@ if [[ $1 == pushbt ]]; then
 	if [[ $listbt ]]; then
 		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
 		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
+		pushstream bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
 	else
 		listbt=false
 	fi

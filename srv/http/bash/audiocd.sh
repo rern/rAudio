@@ -86,7 +86,7 @@ fi
 # suppress getPlaybackStatus in passive.js
 if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
 	autoplaycd=1
-	pushstream playlist '{"autoplaycd":1}'
+	pushstream playlist '{ "autoplaycd": 1 }'
 fi
 # add tracks to playlist
 grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear

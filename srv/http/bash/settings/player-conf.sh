@@ -46,8 +46,8 @@ fi
 
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
-		pushstream display '{"volumenone":true}'
-		pushstream refresh '{"page":"features","nosound":true}'
+		pushstream display '{ "volumenone": true }'
+		pushstream refresh '{ "page": "features", "nosound": true }'
 		systemctl stop camilladsp &> /dev/null
 		outputswitch='(None)'
 	fi
@@ -62,8 +62,8 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		pushstream display '{"volumenone":'$volumenone'}'
-		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
+		pushstream display '{ "volumenone": '$volumenone' }'
+		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
 		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi

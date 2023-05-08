@@ -66,7 +66,7 @@ sharedDataSet() {
 	if [[ $rescan ]]; then
 		echo rescan > $dirmpd/updating
 		mpc -q rescan
-		pushstream mpdupdate '{"type":"mpd"}'
+		pushstream mpdupdate '{ "type": "mpd" }'
 	fi
 	pushRefresh
 	pushstream refresh '{ "page": "features", "shareddata": true }'
@@ -106,7 +106,7 @@ dtparam=krnbt=on"
 		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
 			systemctl start bluetooth
 			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-			rfkill | grep -q -m1 bluetooth && pushstream refresh '{"page":"networks","activebt":true}'
+			rfkill | grep -q -m1 bluetooth && pushstream refresh '{ "page": "networks", "activebt": true }'
 		fi
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
@@ -172,7 +172,7 @@ hdmi )
 	[[ $ON ]] && config+="
 hdmi_force_hotplug=1"
 	configTxt
-	pushstream refresh '{"page":"features","hdmihotplug":'$TF'}'
+	pushstream refresh '{ "page": "features", "hdmihotplug": '$TF' }'
 	;;
 hostname )
 	hostnamectl set-hostname $NAME
@@ -390,7 +390,7 @@ orderon="'$( stringEscape ${neworderon:0:-2} )'"
 orderoff="'$( stringEscape ${neworderoff:0:-2} )'"' >> $dirsystem/relays.conf
 	fi
 	pushRefresh
-	pushstream display '{"submenu":"relays","value":'$TF'}'
+	pushstream display '{ "submenu": "relays", "value": '$TF' }'
 	;;
 rotaryencoder )
 	if [[ $ON ]]; then
@@ -442,7 +442,7 @@ shareddatadisconnect )
 	systemctl daemon-reload
 	systemctl restart mpd
 	pushRefresh
-	pushstream refresh '{"page":"features","shareddata":false}'
+	pushstream refresh '{ "page": "features", "shareddata": false }'
 	if [[ ! ${args[1]} ]]; then
 		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
 		notify rserver 'Server rAudio' 'Offline ...'
@@ -678,7 +678,7 @@ wlan )
 	fi
 	pushRefresh
 	ifconfig wlan0 | grep -q -m1 wlan0.*UP && active=true || active=false
-	pushstream refresh '{"page":"networks","activewlan":'$active'}'
+	pushstream refresh '{ "page": "networks", "activewlan": '$active' }'
 	;;
 	
 esac

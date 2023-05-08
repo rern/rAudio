@@ -44,5 +44,5 @@ fi
 
 touch $dirmpd/updating
 mpc update "$dirupdate"
-pushstream mpdupdate '{"type":"mpd"}'
+pushstream mpdupdate '{ "type": "mpd" }'
 notify 'library blink' 'Library Database' 'Update ...'

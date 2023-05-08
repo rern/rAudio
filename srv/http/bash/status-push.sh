@@ -58,7 +58,7 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
 		echo $! > $dirshm/pidcava
 	else
-		pushstream vumeter '{"val":0}'
+		pushstream vumeter '{ "val": 0 }'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( < $dirsystem/vuled.conf )
 			for i in $p; do
@@ -83,8 +83,8 @@ fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
-pushstream refresh '{"page":"player","state":"'$state'"}'
-pushstream refresh '{"page":"features","state":"'$state'"}'
+pushstream refresh '{ "page": "player", "state": "'$state'" }'
+pushstream refresh '{ "page": "features", "state": "'$state'" }'
 
 [[ ! $scrobble || ! $statusprev ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 

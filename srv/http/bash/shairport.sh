@@ -34,7 +34,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 	
 	if [[ $code == coverart ]]; then
 		base64 -d <<< $base64 > $dirairplay/coverart.jpg
-		pushstream airplay '{"coverart":"/data/shm/airplay/coverart.jpg"}'
+		pushstream airplay '{ "coverart": "/data/shm/airplay/coverart.jpg" }'
 	else
 		data=$( base64 -d <<< $base64 2> /dev/null )
 		if [[ $code == progress ]]; then # format: start/elapsed/end @44100/s
@@ -49,7 +49,7 @@ cat /tmp/shairport-sync-metadata | while read line; do
 				touch $dirshm/scrobble
 				( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
 			fi
-			pushstream airplay '{"elapsed":'$elapsed',"Time":'$Time'}'
+			pushstream airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))
 			echo $starttime > $dirairplay/start

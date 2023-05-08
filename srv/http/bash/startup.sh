@@ -142,7 +142,7 @@ fi
 if [[ ! -e $dirmpd/mpd.db ]]; then
 	echo rescan > $dirmpd/updating
 	mpc -q rescan
-	pushstream mpdupdate '{"type":"mpd"}'
+	pushstream mpdupdate '{ "type": "mpd" }'
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
@@ -158,8 +158,8 @@ if (( $( rfkill | grep -c wlan ) > 1 )) \
 else
 	onboardwlan=true
 fi
-pushstream refresh '{"page":"system","wlan":'$onboardwlan'}'
-pushstream refresh '{"page":"networks","activewl":'$onboardwlan'}'
+pushstream refresh '{ "page": "system", "wlan": '$onboardwlan' }'
+pushstream refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000

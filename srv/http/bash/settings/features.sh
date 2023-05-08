@@ -10,7 +10,7 @@ pushRestartMpd() {
 	$dirsettings/features-data.sh pushrefresh
 }
 pushSubmenu() {
-	pushstream display '{"submenu":"'$1'","value":'$2'}'
+	pushstream display '{ "submenu": "'$1'", "value": '$2' }'
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
@@ -124,7 +124,7 @@ hostapd )
 		$dirsettings/system.sh wlan$'\n'OFF
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","hostapd":'$TF'}'
+	pushstream refresh '{ "page": "system", "hostapd": '$TF' }'
 	pushRefresh networks
 	;;
 httpd )
@@ -158,10 +158,10 @@ localbrowser )
 					notify hdmi 'HDMI Hotplug' 'Reboot required.' 5000
 				fi
 			fi
-			pushstream refresh '{ "page":"system", "hdmi":true }'
+			pushstream refresh '{ "page": "system", "hdmi": true }'
 		else
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
-			pushstream refresh '{ "page":"system", "hdmi":false }'
+			pushstream refresh '{ "page": "system", "hdmi": false }'
 		fi
 		if [[ $diffrotate ]]; then
 			case $ROTATE in
@@ -237,7 +237,7 @@ multiraudio )
 			sshCommand $ip << EOF
 echo "$conf" > $fileconf
 touch $dirsystem/multiraudio
-pushstream display '{"submenu":"multiraudio","value":true}'
+pushstream display '{ "submenu": "multiraudio", "value": true }'
 EOF
 		done
 	fi
@@ -274,7 +274,7 @@ nfsserver )
 		if [[ $rescan ]]; then
 			echo rescan > $dirmpd/updating
 			mpc -q rescan
-			pushstream mpdupdate '{"type":"mpd"}'
+			pushstream mpdupdate '{ "type": "mpd" }'
 		fi
 		# prepend path
 		files=$( ls -1 $dirbookmarks/* )
@@ -298,7 +298,7 @@ nfsserver )
 		systemctl restart mpd
 	fi
 	pushRefresh
-	pushstream refresh '{"page":"system","nfsserver":'$TF'}'
+	pushstream refresh '{ "page": "system", "nfsserver": '$TF' }'
 	;;
 screenofftoggle )
 #	[[ $( /opt/vc/bin/vcgencmd display_power ) == display_power=1 ]] && toggle=0 || toggle=1
