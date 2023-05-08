@@ -65,11 +65,11 @@ pushstreamSavedPlaylist() {
 	pushstream savedplaylist $( php /srv/http/mpdplaylist.php list )
 }
 pushstreamRadioList() {
-	pushstream radiolist '{"type":"webradio"}'
+	pushstream radiolist '{ "type": "webradio" }'
 	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
-	pushstream volume '{"type":"'$1'","val":'$2'}'
+	pushstream volume '{ "type": "'$1'", "val": '$2' }'
 }
 rotateSplash() {
 	local degree rotate
@@ -163,7 +163,7 @@ webradioCount() {
 	local count type
 	[[ $1 == dabradio ]] && type=dabradio || type=webradio
 	count=$( find -L $dirdata/$type -type f ! -path '*/img/*' | wc -l )
-	pushstream radiolist '{"type":"'$type'","count":'$count'}'
+	pushstream radiolist '{ "type": "'$type'", "count": '$count' }'
 	grep -q -m1 "$type.*,"$ $dirmpd/counts && count+=,
 	sed -i -E 's/("'$type'": ).*/\1'$count'/' $dirmpd/counts
 }
@@ -313,7 +313,7 @@ CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &
 			gifsicle -O3 --resize-fit 200x200 "$restorefile" > "$dir/coverart.gif"
 			convert "$restorefile" -thumbnail 80x80\> -unsharp 0x.5 "$dir/thumb.jpg"
 		fi
-		pushstream coverart '{"url":"'$restorefile'","type":"coverart"}'
+		pushstream coverart '{ "url": "'$restorefile'", "type": "coverart" }'
 		exit
 	fi
 		url=$( $dirbash/status-coverart.sh "cmd
@@ -322,7 +322,7 @@ $ALBUM
 $COVERFILE
 CMD ARTIST ALBUM FILE" )
 	[[ ! $url ]] && url=reset
-	pushstream coverart '{"url":"'$url'","type":"coverart"}'
+	pushstream coverart '{ "url": "'$url'", "type": "coverart" }'
 	;;
 coverfileslimit )
 	for type in local online webradio; do
@@ -334,7 +334,7 @@ coverfileslimit )
 dabscan )
 	touch $dirshm/updatingdab
 	$dirbash/dab-scan.sh &> /dev/null &
-	pushstream mpdupdate '{"type":"dabradio"}'
+	pushstream mpdupdate '{ "type": "dabradio" }'
 	;;
 display )
 	pushstream display $( < $dirsystem/display.json )
@@ -383,7 +383,7 @@ ignoredir )
 	dir=$( basename "$DIR" )
 	mpdpath=$( dirname "$DIR" )
 	echo $dir >> "/mnt/MPD/$mpdpath/.mpdignore"
-	pushstream mpdupdate '{"type":"mpd"}'
+	pushstream mpdupdate '{ "type": "mpd" }'
 	mpc -q update "$mpdpath" #1 get .mpdignore into database
 	mpc -q update "$mpdpath" #2 after .mpdignore was in database
 	;;
@@ -413,7 +413,7 @@ librandom )
 	else
 		rm -f $dirsystem/librandom
 	fi
-	pushstream option '{"librandom":'$TF'}'
+	pushstream option '{ "librandom": '$TF' }'
 	;;
 lyrics )
 	name="$ARTIST - $TITLE"
@@ -505,7 +505,7 @@ mpcmove )
 mpcoption )
 	[[ ! $ONOFF ]] && ONOFF=false
 	mpc -q $OPTION $ONOFF
-	pushstream option '{"'$OPTION'":'$ONOFF'}'
+	pushstream option '{ "'$OPTION'": '$ONOFF' }'
 	;;
 mpcplayback )
 	if [[ ! $ACTION ]]; then
@@ -545,8 +545,8 @@ mpcplayback )
 		rm $dirshm/snapclient
 	fi
 	systemctl $action snapclient
-	pushstream option '{"snapclient":'$active'}'
-	pushstream refresh '{"page":"features","snapclientactive":'$active'}'
+	pushstream option '{ "snapclient": '$active' }'
+	pushstream refresh '{ "page": "features", "snapclientactive": '$active' }'
 	;;
 mpcprevnext )
 	current=$( mpc status %songpos% )
@@ -647,7 +647,7 @@ mpcupdate )
 		DIR=$( < $dirmpd/updating )
 	fi
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
-	pushstream mpdupdate '{"type":"mpd"}'
+	pushstream mpdupdate '{ "type": "mpd" }'
 	;;
 multiraudiolist )
 	echo '{
@@ -672,7 +672,7 @@ playerstart )
 		ionice -c 0 -n 0 -p $pid &> /dev/null 
 		renice -n -19 -p $pid &> /dev/null
 	done
-	pushstream player '{"player":"'$player'","active":true}'
+	pushstream player '{ "player": "'$player'", "active": true }'
 	;;
 playerstop )
 	player=$( < $dirshm/player )
@@ -710,7 +710,7 @@ playerstop )
 			systemctl restart upmpdcli
 			;;
 	esac
-	pushstream player '{"player":"'$player'","active":false}'
+	pushstream player '{ "player": "'$player'", "active": false }'
 	[[ $scrobble ]] && scrobbleOnStop
 	;;
 playlist )
@@ -800,7 +800,7 @@ shairportstop )
 	;;
 shareddatampdupdate )
 	systemctl restart mpd
-	pushstream mpdupdate '{"done":1}'
+	pushstream mpdupdate '{ "done": 1 }'
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
@@ -863,7 +863,7 @@ webradiocopybackup )
 	;;
 webradiocoverreset )
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*
-	pushstream coverart '{"type":"'$MODE'","url":""}'
+	pushstream coverart '{ "url": "", "type": "'$MODE'" }'
 	;;
 webradiodelete )
 	urlname=${URL//\//|}

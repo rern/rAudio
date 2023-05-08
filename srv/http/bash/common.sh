@@ -212,7 +212,7 @@ notify() { # icon title message delayms
 	fi
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
-	pushstream notify '{"icon":"'$1$blink'","title":"'$title'","message":"'$message'","delay":'$delay'}'
+	pushstream notify '{ "icon": "'$1$blink'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
 }
 packageActive() {
 	local active pkg pkgs status
@@ -233,28 +233,37 @@ pushRefresh() {
 	$dirsettings/$page-data.sh $push
 }
 pushstream() {
-	local channel ip ips json path
+	local channel ip ips json path webradiocopy
 	channel=$1
 	json=${@:2} # $@=( function channel {"data":"value"...} ) > {"data":"value"...}
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
-	[[ ! -e $filesharedip  ]] && return
+	# shared data
+	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
+	
+	[[ 'bookmark coverart display order mppdupdate playlists radiolist' != *$channel* ]] && return
 	
 	if [[ $channel == coverart ]]; then
 		path=$( sed -E -n '/"url"/ {s/.*"url" *: *"(.*)",*.*/\1/; s|%2F|/|g; p}' | cut -d/ -f3 )
 		[[ 'MPD bookmark webradio' != *$path* ]] && return
+		
+	elif [[ $channel == mppdupdate ]]; then
+		[[ $json == *done* ]] && updatedone=1 || return
+		
+	elif [[ $channel == radiolist ]]; then
+		[[ $json == *webradio* ]] && webradiocopy=1
 	fi
-	
-	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return # no shared data / no other cilents
-	
-	if [[ 'bookmark coverart display mpdupdate order playlists radiolist' == *$channel* ]] || grep -q -m1 'line.*rserver' <<< $json; then # 'Server rAudio' 'Online/Offline ...' rserver
-		[[ $channel == radiolist && $json == *webradio* ]] && local webradiocopy=1
-		ips=$( grep -v $( ipAddress ) $filesharedip )
-		for ip in $ips; do
+	ips=$( grep -v $( ipAddress ) $filesharedip )
+	for ip in $ips; do
+		! ipOnline $ip && continue
+		
+		if [[ $updatedone ]]; then
+			sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+		else
 			curl -s -X POST http://$ip/pub?id=$channel -d "$json"
 			[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
-		done
-	fi
+		fi
+	done
 }
 serviceRestartEnable() {
 	systemctl restart $CMD

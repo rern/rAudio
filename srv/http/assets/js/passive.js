@@ -17,7 +17,6 @@ function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
 	setButtonControl();
-	setButtonOptions();
 	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
 }
 function webradioIcon( srcnoext ) {
@@ -171,8 +170,6 @@ function psEqualizer( data ) {
 	eqOptionPreset();
 }
 function psMpdPlayer( data ) {
-	if ( S.updating_db ) return
-	
 	clearTimeout( V.debouncempdplayer );
 	V.debouncempdplayer = setTimeout( () => {
 		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
@@ -185,7 +182,9 @@ function psMpdPlayer( data ) {
 		statusUpdate( data );
 		if ( V.playback ) {
 			renderPlaybackAll();
-		} else if ( V.playlist ) {
+		} else if ( V.libarry ) {
+			if ( V.librarylist ) console.log('library')
+		} else {
 			setPlaylistScroll();
 		}
 	}, 300 );
@@ -215,14 +214,11 @@ function psMpdUpdate( data ) {
 		}
 		setButtonUpdating();
 	} else if ( 'done' in data ) {
-		clearTimeout( V.debounce );
-		V.debounce = setTimeout( () => {
-			S.updating_db = false;
-			S.updatingdab = false;
-			setButtonUpdating();
-			V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
-			banner( 'refresh-library', 'Library Update', 'Done' );
-		}, 3000 );
+		S.updating_db = false;
+		S.updatingdab = false;
+		setButtonUpdating();
+		V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
+		banner( 'refresh-library', 'Library Update', 'Done' );
 	}
 }
 function psNotify( data ) {

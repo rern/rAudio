@@ -53,7 +53,7 @@ player="mpd"'
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushstream coverart '{"type":"coverart","url":"'$coverart'"}'
+		pushstream coverart '{ "url": "'$coverart'", "type": "coverart" }'
 	fi
 	sleep 10
 done
