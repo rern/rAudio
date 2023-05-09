@@ -909,7 +909,7 @@ var contentmount = {
 function infoMount( nfs ) {
 	var nfs        = nfs || false;
 	var shareddata = SW.id === 'shareddata';
-	if ( I.active ) {
+	if ( I.active && $input.length ) {
 		var v = infoVal();
 		if ( 'USER' in v || nfs ) var nfs = true;
 		v.PROTOCOL = nfs ? 'nfs' : 'cifs';
@@ -962,7 +962,7 @@ function infoMount( nfs ) {
 						  icon    : icon
 						, title   : title
 						, message : error
-						, ok      : infoMount
+						, ok      : () => setTimeout( infoMount, 0 )
 					} );
 					bannerHide();
 				} else {

@@ -532,9 +532,6 @@ statusstorage )
 	echo -n "\
 <bll># cat /etc/fstab</bll>
 $( < /etc/fstab )
-
-<bll># mount | grep ^/dev</bll>
-$( mount | grep ^/dev | sort | column -t )
 "
 	;;
 statussystem )
