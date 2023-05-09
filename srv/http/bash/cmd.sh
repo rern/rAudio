@@ -66,7 +66,6 @@ pushstreamSavedPlaylist() {
 }
 pushstreamRadioList() {
 	pushstream radiolist '{ "type": "webradio" }'
-	webradioCopyBackup &> /dev/null &
 }
 pushstreamVolume() {
 	pushstream volume '{ "type": "'$1'", "val": '$2' }'
@@ -148,15 +147,6 @@ volumeSetAt() {
 		amixer -c $card -Mq sset "$control" $target%
 	else
 		mpc -q volume $target
-	fi
-}
-webradioCopyBackup() {
-	local webradio
-	if [[ -e $dirbackup/webradio ]]; then
-		rm -rf $dirbackup/webradio
-		cp -r $dirwebradio $dirbackup
-		webradio=$( grep webradio $dirmpd/counts )
-		sed -i "s/.*webradio.*/$webradio/" $dirbackup/mpd/counts
 	fi
 }
 webradioCount() {
@@ -857,9 +847,6 @@ $CHARSET" > "$file"
 	chown http:http "$file" # for edit in php
 	webradioCount
 	webRadioSampling $url "$file" &> /dev/null &
-	;;
-webradiocopybackup )
-	webradioCopyBackup &> /dev/null &
 	;;
 webradiocoverreset )
 	rm "$FILENOEXT".* "$FILENOEXT-thumb".*

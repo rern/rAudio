@@ -259,19 +259,15 @@ pushstream() {
 		if [[ $json == *done* ]]; then
 			sharedip=$( grep -v $( ipAddress ) $filesharedip )
 			for ip in $sharedip; do
-				ipOnline $ip && sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
+				sshCommand $ip $dirbash/cmd.sh shareddatampdupdate
 			done
 			return
 		fi
 	fi
 	
-	[[ $channel == radiolist && $json == *webradio* ]] && webradio=1
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
-		! ipOnline $ip && continue
-		
-		curl -s -X POST http://$ip/pub?id=$channel -d "$json"
-		[[ $webradio ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
+		ipOnline $ip && curl -s -X POST http://$ip/pub?id=$channel -d "$json"
 	done
 }
 serviceRestartEnable() {
