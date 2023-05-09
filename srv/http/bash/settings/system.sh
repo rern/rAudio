@@ -400,7 +400,7 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
-shareddataconnect )
+shareddataconnect ) # rserver
 	[[ $IP ]] && connect=1 || IP=$( < $dirsystem/sharedipserver )
 	[[ ! $IP ]] && exit
 	
@@ -408,9 +408,7 @@ shareddataconnect )
 	
 	if [[ $connect ]]; then
 		path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-		if ! grep -q /mnt/MPD/NAS <<< $path; then
-			echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
-		fi
+		! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
 	fi
 	
 	mv /mnt/MPD/{SD,USB} /mnt
@@ -418,10 +416,10 @@ shareddataconnect )
 	systemctl restart devmon@http
 	fstab="\
 $( < /etc/fstab )
-$IP:/mnt/MPD/NAS  /mnt/MPD/NAS  nfs  defaults,noauto,bg,soft,timeo=5  0  0"
+$IP:$dirnas  $dirnas  nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
-	mount /mnt/MPD/NAS
+	mount $dirnas
 	sharedDataSet
 	if [[ ! $connect ]]; then
 		rm $dirsystem/sharedipserver
@@ -429,15 +427,21 @@ $IP:/mnt/MPD/NAS  /mnt/MPD/NAS  nfs  defaults,noauto,bg,soft,timeo=5  0  0"
 	fi
 	pushRefresh
 	;;
-shareddatadisconnect )
-	mv /mnt/{SD,USB} /mnt/MPD
-	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	list=$( grep -v $( ipAddress ) $filesharedip )
-	echo "$list" > $filesharedip # fix: sed temp file permission
+shareddatadisconnect )  # rserver / other server
+	sed -i "/$( ipAddress )/ d" $filesharedip
+	if [[ -e /mnt/SD ]]; then
+		mv /mnt/{SD,USB} /mnt/MPD
+		sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+		systemctl restart devmon@http
+		umount -l $dirnas &> /dev/null
+		fstab=$( grep -v $dirnas /etc/fstab )
+	else
+		umount -l $dirshareddata &> /dev/null
+		rm -rf $dirshareddata $dirnas/.mpdignore
+		fstab=$( grep -v $dirshareddata /etc/fstab )
+		rm -rf $dirshareddata $dirnas/.mpdignore
+	fi
 	sharedDataReset
-	fstab=$( grep -v /mnt/MPD/NAS /etc/fstab )
-	umount -l /mnt/MPD/NAS $dirshareddata &> /dev/null
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	systemctl restart mpd
