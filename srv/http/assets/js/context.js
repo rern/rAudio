@@ -60,18 +60,22 @@ function addToPlaylistCommand() {
 		, replaceplay : 'Replace Playlist and play'
 	}
 	V.title  = cmd_title[ V.action ];
-	if ( V.list.li.find( '.li1' ).length ) {
-		var $li2 = V.list.li.find( '.li2' );
-		if ( V.list.licover ) {
-			var l1 = '.lialbum';
+	if ( ! V.msg ) {
+		if ( V.list.li.find( '.li1' ).length ) {
+			var $li2 = V.list.li.find( '.li2' );
+			if ( V.list.licover ) {
+				var l1 = '.lialbum';
+			} else {
+				var l1 = '.li1 .name';
+				if ( V.playlist ) $li2 = $li2.find( '.name' );
+			}
+			V.msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
+					+'<a class="li2">'+ $li2.text() +'</a>';
+		} else if ( V.list.li.find( '.liname' ).length ) {
+			V.msg = V.list.li.find( '.liname' ).text();
 		} else {
-			var l1 = '.li1 .name';
-			if ( V.playlist ) $li2 = $li2.find( '.name' );
+			V.msg = V.list.path;
 		}
-		V.msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
-				+'<a class="li2">'+ $li2.text() +'</a>';
-	} else {
-		V.msg = V.list.li.find( '.liname' ).text() || V.list.path;
 	}
 	bash( V.mpccmd );
 	banner( 'playlist', V.title, V.msg );

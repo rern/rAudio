@@ -1363,6 +1363,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 				V.bkradio = true;
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
 				V.action  = $( this ).data( 'cmd' );
+				V.msg     = name;
 				$( '#infoX' ).trigger( 'click' );
 				addToPlaylist();
 			} );
