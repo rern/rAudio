@@ -203,16 +203,22 @@ mpcElapsed() {
 }
 notify() { # icon title message delayms
 	local blink delay
-	if [[ $1 == -blink ]]; then
-		blink=' blink'
-		shift
-		[[ $4 ]] && delay=$4 || delay=-1
+	[[ $1 == '-blink' ]] && blink=' blink' && shift
+	[[ $1 == *.*.*.* ]] && ip=$1 && shift
+	if [[ $4 ]]; then
+		delay=$4
 	else
-		[[ $4 ]] && delay=$4 || delay=3000
+		[[ $blink ]] && delay=-1 || delay=3000
 	fi
+	icon=$1$blink
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )
-	pushstream notify '{ "icon": "'$1$blink'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+	json='{ "icon": "'$icon'", "title": "'$title'", "message": "'$message'", "delay": '$delay' }'
+	if [[ $ip ]]; then
+		curl -s -X POST http://$ip/pub?id=notify -d "$json"
+	else
+		pushstream notify "$json"
+	fi
 }
 packageActive() {
 	local active pkg pkgs status
@@ -235,7 +241,7 @@ pushRefresh() {
 pushstream() {
 	local channel ip json path sharedip updatedone webradiocopy
 	channel=$1
-	json=${@:2} # $@=( function channel {"data":"value"...} ) > {"data":"value"...}
+	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
 	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
@@ -257,13 +263,13 @@ pushstream() {
 		fi
 	fi
 	
-	[[ $channel == radiolist && $json == *webradio* ]] && webradiocopy=1
+	[[ $channel == radiolist && $json == *webradio* ]] && webradio=1
 	sharedip=$( grep -v $( ipAddress ) $filesharedip )
 	for ip in $sharedip; do
 		! ipOnline $ip && continue
 		
 		curl -s -X POST http://$ip/pub?id=$channel -d "$json"
-		[[ $webradiocopy ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
+		[[ $webradio ]] && sshCommand $ip $dirbash/cmd.sh webradiocopybackup
 	done
 }
 serviceRestartEnable() {

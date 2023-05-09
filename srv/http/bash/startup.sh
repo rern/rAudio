@@ -113,7 +113,7 @@ if [[ $connected  ]]; then
 		if [[ -s /etc/exports && -s $filesharedip ]]; then
 			sharedip=$( < $filesharedip )
 			for ip in $sharedip; do
-				curl -s -X POST http://$ip/pub?id=notify -d '{ "icon": "networks", "title": "Server rAudio", "message": "Online" }'
+				notify $ip networks 'Server rAudio' Online
 			done
 		fi
 		appendSortUnique $( ipAddress ) $filesharedip

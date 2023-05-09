@@ -43,6 +43,19 @@ if systemctl -q is-active localbrowser; then
 	fi
 fi
 
+if [[ -e $dirshm/clientip ]]; then
+	serverip=$( ipAddress )
+	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
+	status=$( sed -E -e '1,/^, "single" *:/ d
+					' -e '/^, "file" *:/ s/^,/{/
+					' -e '/^, "icon" *:/ d
+					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
+	clientip=$( < $dirshm/clientip )
+	for ip in $clientip; do
+		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+	done
+fi
 if [[ -e $dirsystem/lcdchar ]]; then
 	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
 	systemctl restart lcdchar
@@ -66,19 +79,6 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 			done
 		fi
 	fi
-fi
-if [[ -e $dirshm/clientip ]]; then
-	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
-	status=$( sed -E -e '1,/^, "single" *:/ d
-					' -e '/^, "file" *:/ s/^,/{/
-					' -e '/^, "icon" *:/ d
-					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
-	clientip=$( < $dirshm/clientip )
-	for ip in $clientip; do
-		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-	done
 fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom

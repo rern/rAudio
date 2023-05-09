@@ -3,18 +3,23 @@
 . /srv/http/bash/common.sh
 
 [[ $1 == reboot ]] && reboot=1
-[[ -e $filesharedip ]] && sed -i "/$( ipAddress )/ d" $filesharedip
 if [[ -s /etc/exports ]]; then # server rAudio
-	ipclients=$( < $filesharedip )
+	ipserver=$( ipAddress )
+	ipclients=$( grep -v $ipserver $filesharedip )
 	if [[ $ipclients ]]; then
 		[[ ! $2 ]] && echo -1 && exit # $2 confirm proceed
 		
-		msg='{"icon":"networks blink","title":"Server rAudio","message":"Offline ...","delay":-1}'
-		[[ ! $reboot ]] && msg=${msg/ blink} && msg=${msg/line ...}
 		for ip in $ipclients; do
-			curl -s -X POST http://$ip/pub?id=notify -d "$msg"
+			if [[ $reboot ]]; then
+				notify -blink $ip networks 'Server rAudio' 'Reboot ...'
+			else
+				notify $ip 'networks' 'Server rAudio' 'Power off' -1
+			fi
 		done
 	fi
+	sed -i "/$ipserver/ d" $filesharedip
+elif [[ -e $filesharedip ]]; then
+	sed -i "/$( ipAddress )/ d" $filesharedip
 fi
 [[ $reboot ]] && notify -blink reboot Power 'Reboot ...' || notify -blink power Power 'Off ...'
 touch $dirshm/power
