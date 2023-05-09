@@ -45,12 +45,10 @@ fi
 
 if [[ -e $dirshm/clientip ]]; then
 	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
-	status=$( sed -E -e '1,/^, "single" *:/ d
-					' -e '/^, "file" *:/ s/^,/{/
-					' -e '/^, "icon" *:/ d
-					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
+	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
+	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
+					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
+	status="{ ${status:1} }"
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
 		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"

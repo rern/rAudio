@@ -79,13 +79,14 @@ calc() { # $1 - decimal precision, $2 - math without spaces
 }
 conf2json() {
 	local file lines l json v
+	[[ $1 == '-nocap' ]] && nocap=1 && shift
 	file=$1
 	[[ ${file:0:1} != / ]] && file=$dirsystem/$file
-	[[ ! -e $file ]] && echo false && exit
+	[[ ! -e $file ]] && echo false && return
 	
 	# omit lines  blank, comment / group [xxx]
 	lines=$( awk 'NF && !/^\s*[#[}]|{$/' "$file" ) # exclude: (blank lines) ^# ^[ ^} ^' #' {$
-	[[ ! $lines ]] && echo false && exit
+	[[ ! $lines ]] && echo false && return
 	
 	if [[ $2 ]]; then # $2 - specific keys
 		shift
@@ -93,7 +94,7 @@ conf2json() {
 		only="^\s*${keys// /|^\\s*}"
 		lines=$( grep -E "$only" <<< $lines )
 	fi
-	[[ ! $lines ]] && echo false && exit
+	[[ ! $lines ]] && echo false && return
 	
 	[[ $( head -1 <<< $lines ) != *=* ]] && lines=$( sed 's/^\s*//; s/ \+"/="/' <<< $lines ) # key "value" > key="value"
 	readarray -t lines <<< $lines
@@ -106,7 +107,8 @@ conf2json() {
 							s/^yes$/true/
 							s/^no$/false/' <<< $v )
 			confNotString "$v" || v='"'$( stringEscape $v )'"' # quote and escape string
-			json+=', "'${k^^}'": '$v
+			[[ ! $nocap ]] && k=${k^^}
+			json+=', "'$k'": '$v
 	done
 	echo { ${json:1} }
 }
@@ -138,7 +140,7 @@ cpuInfo() {
 data2json() {
 	local data json
 	data="$1"
-	if [[ ${data:0:1} != , ]]; then
+	if [[ ${data:0:1} != , ]]; then # status.sh PAGE-data.sh
 		data+='
 , "login" : '$( exists $dirsystem/login )
 		json="{ $data }"
