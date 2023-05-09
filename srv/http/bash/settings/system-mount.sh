@@ -4,12 +4,18 @@
 
 args2var "$1"
 
-mountpoint="$dirnas/$NAME"
-
 ! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
 
-[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
-
+if [[ $PROTOCOL ]]; then
+	mountpoint="$dirnas/$NAME"
+else # server rAudio client
+	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	
+	PROTOCOL=nfs
+	mountpoint=$dirnas
+	SHARE=$dirnas
+fi
 umount -ql "$mountpoint"
 mkdir -p "$mountpoint"
 chown mpd:audio "$mountpoint"

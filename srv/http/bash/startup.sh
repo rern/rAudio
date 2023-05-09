@@ -94,16 +94,11 @@ if [[ $connected  ]]; then
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
 			mp=$( space2ascii $mountpoint )
-			ip=$( grep $mp /etc/fstab \
-					| cut -d' ' -f1 \
-					| sed 's|^//||; s|:*/.*$||' )
-			[[ ! $ip ]] && continue
-			
+			ip=$( grep $mp /etc/fstab | cut -d: -f1 )
+			[[ ${ip:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $ip )
 			for i in {1..10}; do
 				if ipOnline $ip; then
-					mount "$mountpoint" && break
-				else
-					(( i == 10 )) && nasfailed=1
+					mount "$mountpoint" && nasonline=1 && break
 					sleep 2
 				fi
 			done
@@ -164,7 +159,7 @@ pushstream refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
-elif [[ $nasfailed ]]; then
+elif [[ ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 

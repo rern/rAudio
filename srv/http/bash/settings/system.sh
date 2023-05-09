@@ -54,6 +54,9 @@ $CMD"
 	[[ $list ]] && awk NF <<< $list > $dirshm/reboot || rm -f $dirshm/reboot
 }
 sharedDataSet() {
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
 	mkdir -p $dirbackup
 	if [[ ! -e $dirshareddata/mpd ]]; then
 		rescan=1
@@ -400,46 +403,19 @@ rotaryencoder )
 	fi
 	pushRefresh
 	;;
-shareddataconnect ) # rserver
-	[[ $IP ]] && connect=1 || IP=$( < $dirsystem/sharedipserver )
-	[[ ! $IP ]] && exit
-	
-	! ipOnline $IP && echo "IP address not online: <wh>$IP</wh>" && exit
-	
-	if [[ $connect ]]; then
-		path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
-		! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
-	fi
-	
-	mv /mnt/MPD/{SD,USB} /mnt
-	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
-	systemctl restart devmon@http
-	fstab="\
-$( < /etc/fstab )
-$IP:$dirnas  $dirnas  nfs  defaults,noauto,bg,soft,timeo=5  0  0"
-	column -t <<< $fstab > /etc/fstab
-	systemctl daemon-reload
-	mount $dirnas
-	sharedDataSet
-	if [[ ! $connect ]]; then
-		rm $dirsystem/sharedipserver
-		notify rserver 'Server rAudio' 'Online ...'
-	fi
-	pushRefresh
-	;;
-shareddatadisconnect )  # rserver / other server
+shareddatadisable )  # server rAudio / other server
 	sed -i "/$( ipAddress )/ d" $filesharedip
-	if [[ -e /mnt/SD ]]; then
-		mv /mnt/{SD,USB} /mnt/MPD
-		sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
-		systemctl restart devmon@http
-		umount -l $dirnas &> /dev/null
-		fstab=$( grep -v $dirnas /etc/fstab )
-	else
+	mv /mnt/{SD,USB} /mnt/MPD
+	sed -i 's|/mnt/USB|/mnt/MPD/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	if grep -q $dirshareddata /etc/fstab; then # other server
 		umount -l $dirshareddata &> /dev/null
 		rm -rf $dirshareddata $dirnas/.mpdignore
 		fstab=$( grep -v $dirshareddata /etc/fstab )
 		rm -rf $dirshareddata $dirnas/.mpdignore
+	else                                       # server rAudio
+		umount -l $dirnas &> /dev/null
+		fstab=$( grep -v $dirnas /etc/fstab )
 	fi
 	sharedDataReset
 	column -t <<< $fstab > /etc/fstab
@@ -447,10 +423,6 @@ shareddatadisconnect )  # rserver / other server
 	systemctl restart mpd
 	pushRefresh
 	pushstream refresh '{ "page": "features", "shareddata": false }'
-	if [[ ! ${args[1]} ]]; then
-		echo $ipserver > $dirsystem/sharedipserver # for sshpass reconnect
-		notify rserver 'Server rAudio' 'Offline ...'
-	fi
 	;;
 shareddataset )
 	sharedDataSet

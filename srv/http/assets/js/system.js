@@ -701,7 +701,7 @@ $( '#shareddata' ).on( 'click', function() {
 			, okcolor : orange
 			, ok      : () => {
 				notifyCommon( 'Disable ...' );
-				bash( [ 'shareddatadisconnect', 'OFF' ] );
+				bash( [ 'shareddatadisable', 'OFF' ] );
 			}
 		} );
 	} else {
@@ -984,7 +984,7 @@ function infoMountRserver() {
 		, cancel     : switchCancel
 		, ok         : () => {
 			notify( SW.icon, SW.title, 'Connect Server rAudio ...' );
-			bash( [ 'shareddataconnect', infoVal().IP, 'CMD IP' ], error => {
+			bash( [ 'mount', infoVal().IP, 'CMD IP' ], error => {
 				bannerHide();
 				if ( error ) {
 					info( {

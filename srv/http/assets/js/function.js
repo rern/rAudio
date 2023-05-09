@@ -556,7 +556,7 @@ function getPlaybackStatus( withdisplay ) {
 							+'<br><br>Disable and restore local data?'
 				, cancel  : loader
 				, okcolor : orange
-				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisconnect' ], () => location.reload() )
+				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
 			} );
 			return
 		}
