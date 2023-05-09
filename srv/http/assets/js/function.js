@@ -1861,10 +1861,15 @@ function switchPage( page ) {
 	$( '#page-'+ page ).removeClass( 'hide' );
 }
 function thumbUpdate( path ) {
-	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-				  +'<input type="hidden" name="alias" value="albumthumbnail">';
+	var htmlform = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
+				  +'<input type="hidden" name="alias" value="albumthumbnail">'
 				  +'<input type="hidden" name="path" value="'+ ( path || '' ) +'">';
-	$( 'body' ).append( htmlform +'</form>' );
+	$( 'body' ).append(
+		 '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'
+		+'<input type="hidden" name="alias" value="albumthumbnail">'
+		+'<input type="hidden" name="path" value="'+ ( path || '' ) +'">'
+		+'</form>'
+	);
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {
