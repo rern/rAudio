@@ -60,7 +60,7 @@ function addToPlaylistCommand() {
 		, replaceplay : 'Replace Playlist and play'
 	}
 	V.title  = cmd_title[ V.action ];
-	if ( ! V.msg ) {
+	if ( ! V.msg ) { // not bkradio
 		if ( V.list.li.find( '.li1' ).length ) {
 			var $li2 = V.list.li.find( '.li2' );
 			if ( V.list.licover ) {
