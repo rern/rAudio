@@ -16,7 +16,7 @@ $id_data = [
 	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
 	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
 	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
-	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'smb',                                   'status' => true ]
+	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true ]
 	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true ]
 	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'MPD snapcast',   'setting' => false ]
 	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true ]
