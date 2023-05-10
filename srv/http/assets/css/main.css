@@ -1417,6 +1417,9 @@ i.map.disabled, .map.disabled i {
 	display: inline-block;
 	margin-left: 15px;
 }
+#infoIcon .button-coverart {
+	margin-left: 0;
+}
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
