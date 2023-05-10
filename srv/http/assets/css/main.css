@@ -1361,6 +1361,9 @@ i.map.disabled, .map.disabled i {
 	font-size: 24px;
 	text-align: center;
 }
+.button-webradio-new {
+	margin-left: 10px;
+}
 #button-lib-search,
 #button-pl-search {
 	float: right;
