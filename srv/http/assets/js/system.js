@@ -925,7 +925,7 @@ function infoMount( nfs ) {
 	info( {
 		  icon       : icon
 		, title      : title
-		, tablabel   : shareddata ? [ 'CIFS', 'NFS', 'rAudio' ] : [ 'CIFS', 'NFS' ]
+		, tablabel   : shareddata ? [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ] : [ 'CIFS', 'NFS' ]
 		, tab        : tab
 		, content    : contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option
 		, values     : values
@@ -976,7 +976,7 @@ function infoMountRserver() {
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
-		, tablabel   : [ 'CIFS', 'NFS', 'rServer' ]
+		, tablabel   : [ 'CIFS', 'NFS', ico( 'rserver' ) +' rServer' ]
 		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
 		, textlabel  : 'Server IP'
 		, values     : { IP: I.active && I.values ? infoVal().IP : S.ipsub }

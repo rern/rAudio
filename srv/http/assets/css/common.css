@@ -689,6 +689,11 @@ hr {
 #infoTab a.active {
 	background: var( --cga );
 }
+#infoTab i {
+	font-size: 20px;
+	width: 24px;
+	color: var( --cg60 );
+}
 #infoContent {
 	padding: 20px 10px 10px 10px;
 	font-size: 16px;
