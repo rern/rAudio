@@ -142,6 +142,13 @@ fi
 
 [[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
 
+if [[ -L $dirmpd && ! -s /etc/exports ]]; then
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	rm /mnt/MPD/.mpdignore
+fi
+
 [[ -e $dirsystem/spotify ]] && mv $dirsystem/spotify{,key}
 
 if [[ ! -e $dirshm/cpuinfo ]]; then

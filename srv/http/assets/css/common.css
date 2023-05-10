@@ -126,7 +126,7 @@ i {
 .i-nas::before             { content: '\F551' }
 .i-networks::before        { content: '\F551' }
 .i-next::before            { content: '\F505' }
-.i-nfsserver::before       { content: '\F551' }
+.i-nfsserver::before       { content: '\F53C' }
 .i-output::before          { content: '\F52A' }
 .i-pause::before           { content: '\F504' }
 .i-play::before            { content: '\F503' }

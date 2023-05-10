@@ -323,7 +323,9 @@ Connect shared data as client for:
 
 Note:
  · SSH password must be default.
- · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
+ · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
+	 · Moved to <code>/mnt/SD</code> and <code>/mnt/USB</code>
+	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
@@ -333,7 +335,7 @@ Note:
 	Server: Create a share for data with full permissions
 	 · Linux:
 		NFS: <c>777</c>
-		CIFS/SMB: <c>read only = no</c>
+		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
 			<btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn>
