@@ -59,12 +59,8 @@ function addToPlaylistCommand() {
 		, replaceplay : 'Replace Playlist and play'
 	}
 	V.title  = cmd_title[ V.action ];
-	if ( V.list.li.find( '.li2' ).length ) {
-		V.msg =  '<div class="li1">'+ V.list.name +'</div>'
-				+'<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	} else {
-		V.msg = '<i class="i-'+ V.mode +'"></i>'+ V.list.name;
-	}
+	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
+	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
 	bash( V.mpccmd );
 	banner( 'playlist', V.title, V.msg );
 }
