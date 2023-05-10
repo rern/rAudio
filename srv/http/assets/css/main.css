@@ -1415,27 +1415,21 @@ i.map.disabled, .map.disabled i {
 .button-coverart {
 	position:relative;
 	display: inline-block;
-	width: 40px;
-	padding-left: 13px;
-	text-align: center;
+	margin-left: 15px;
 }
 .button-coverart::after {
+	position: relative;
+	margin-left: 4px;
 	content: '\f528';
 	font-family: rern;
-	position: relative;
-	margin-left: -31px;
 	font-size: 26px;
 	text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 .button-coverart img {
 	position: absolute;
 	top: 5px;
-	left: -4px;
 	width: 30px;
 	border: 1px solid hsl(0,0%,30%);
-}
-#lib-breadcrumbs .button-coverart {
-	margin-left: 20px;
 }
 #mode-title,
 .pl-title {
