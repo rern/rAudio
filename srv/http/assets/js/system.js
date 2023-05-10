@@ -102,6 +102,7 @@ var board2bcm      = {
 }
 var html_optionpin = htmlOption( board2bcm );
 var html_boardpin  = htmlOption( Object.keys( board2bcm ) );
+var tabshareddata = [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ];
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -925,7 +926,7 @@ function infoMount( nfs ) {
 	info( {
 		  icon       : icon
 		, title      : title
-		, tablabel   : shareddata ? [ 'CIFS', 'NFS', ico( 'rserver' ) +' rAudio' ] : [ 'CIFS', 'NFS' ]
+		, tablabel   : shareddata ? tabshareddata : [ 'CIFS', 'NFS' ]
 		, tab        : tab
 		, content    : contentmount.common + ( nfs ? '' : contentmount.cifs ) + contentmount.option
 		, values     : values
@@ -976,7 +977,7 @@ function infoMountRserver() {
 	info( {
 		  icon       : SW.icon
 		, title      : SW.title
-		, tablabel   : [ 'CIFS', 'NFS', ico( 'rserver' ) +' rServer' ]
+		, tablabel   : tabshareddata
 		, tab        : [ infoMount, () => infoMount( 'nfs' ), '' ]
 		, textlabel  : 'Server IP'
 		, values     : { IP: I.active && I.values ? infoVal().IP : S.ipsub }
