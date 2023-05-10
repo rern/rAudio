@@ -324,7 +324,7 @@ Connect shared data as client for:
 Note:
  · SSH password must be default.
  · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
-	 · Moved to <code>/mnt/SD</code> and <code>/mnt/USB</code>
+	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
