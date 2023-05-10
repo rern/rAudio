@@ -124,8 +124,8 @@ case 'home':
 			$htmlmode.=
 '<div class="lib-mode bookmark">
 	<div class="mode mode-bookmark '.$bkradio.'" data-mode="bookmark">
-	<a class="lipath">'.$bkpath.'</a>
-	<a class="bkname hide">'.$name.'</a>
+	<a class="lipath li2">'.$bkpath.'</a>
+	<a class="bkname name hide">'.$name.'</a>
 	<img class="bkcoverart" src="'.$src.'^^^">
 	</div>
 </div>';
@@ -301,7 +301,7 @@ function htmlDirectory( $lists ) {
 		$html.=
 '<li data-mode="'.$mode.'" data-index="'.$index.'">'.$htmlicon.'
 <a class="lipath">'.$path.'</a>
-<span class="single">'.$each->dir.'</span>
+<span class="single name">'.$each->dir.'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -357,7 +357,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 		$html     .=
 '<li data-mode="'.$datamode.'" data-index="'.$index.'">
 	<a class="liname">'.$liname.'</a>
-	'.$icon.'<span class="single">'.$name.'</span>
+	'.$icon.'<span class="single name">'.$name.'</span>
 </li>';
 	}
 	$indexbar = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -383,7 +383,7 @@ function htmlList( $lists ) { // non-file 'list' command
 			$html     .=
 '<li data-mode="'.$mode.'" data-index="'.$index.'">
 	<a class="lipath">'.$name.'</a>
-	'.i( $gmode, $mode ).'<span class="single">'.$name.'</span>
+	'.i( $gmode, $mode ).'<span class="single name">'.$name.'</span>
 </li>';
 		}
 	} else {
@@ -440,7 +440,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 			$html    .=
 	imgIcon( '/data/'.$gmode.'/'.$subdir.'/thumb.jpg', 'wrdir' ).'
 	<a class="lipath">'.$path.$subdir.'</a>
-	<span class="single">'.$subdir.'</span>
+	<span class="single name">'.$subdir.'</span>
 </li>';
 		}
 	}
@@ -474,10 +474,10 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	<a class="liname">'.$liname.'</a>';
 			if ( $gmode === 'webradio' ) {
 				$html.=
-	'<div class="li1">'.$name.'</div><div class="li2">'.$url.'</div>';
+	'<div class="li1 name">'.$name.'</div><div class="li2">'.$url.'</div>';
 			} else {
 				$html.=
-	'<span class="single">'.$name.'</span>';
+	'<span class="single name">'.$name.'</span>';
 			}
 			$html.=
 '</li>';
@@ -569,7 +569,7 @@ function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // 
 	<a class="lipath">'.$mpdpath.'</a>
 	<div class="licoverimg"><img id="liimg" src="'.$coverart.'^^^"></div>
 	<div class="liinfo '.$gmode.'">
-	<div class="lialbum'.$hidealbum.'">'.$album.'</div>
+	<div class="lialbum name'.$hidealbum.'">'.$album.'</div>
 	<div class="liartist'.$hideartist.'">'.i( $iconartist ).$artist.'</div>
 	<div class="licomposer'.$hidecomposer.'">'.i( 'composer' ).$each0->composer.'</div>
 	<div class="liconductor'.$hideconductor.'">'.i( 'conductor' ).$each0->conductor.'</div>

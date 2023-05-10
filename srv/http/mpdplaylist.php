@@ -111,12 +111,13 @@ function htmlSavedPlaylist() {
 	foreach( $array as $each ) {
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$name      = $each->name;
 		$html     .=
 '<li class="pl-folder" data-index="'.$index.'">
 	'.i( 'playlists', 'playlist' ).'
-	<a class="liname">'.$each->name.'</a></i>
-	<a class="lipath">'.$each->name.'</a></i>
-	<span class="plname">'.$each->name.'</span>
+	<a class="liname">'.$name.'</a></i>
+	<a class="lipath">'.$name.'</a></i>
+	<span class="plname">'.$name.'</span>
 </li>';
 	}
 	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );

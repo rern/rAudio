@@ -21,10 +21,9 @@ function addToPlaylist() {
 	}
 }
 function addToPlaylistCommand() {
-	var sleep = V.bkradio || V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
-	delete V.bkradio;
 	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+	var sleep = [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ? 1 : 0.2;
 	if ( S.state === 'play' && S.webradio ) sleep += 1;
 	if ( V.action.slice( -4 ) === 'play' ) sleep += 1;
 	var varaction = '';
@@ -60,22 +59,11 @@ function addToPlaylistCommand() {
 		, replaceplay : 'Replace Playlist and play'
 	}
 	V.title  = cmd_title[ V.action ];
-	if ( ! V.msg ) { // not bkradio
-		if ( V.list.li.find( '.li1' ).length ) {
-			var $li2 = V.list.li.find( '.li2' );
-			if ( V.list.licover ) {
-				var l1 = '.lialbum';
-			} else {
-				var l1 = '.li1 .name';
-				if ( V.playlist ) $li2 = $li2.find( '.name' );
-			}
-			V.msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
-					+'<a class="li2">'+ $li2.text() +'</a>';
-		} else if ( V.list.li.find( '.liname' ).length ) {
-			V.msg = V.list.li.find( '.liname' ).text();
-		} else {
-			V.msg = V.list.path;
-		}
+	if ( V.list.li.find( '.li2' ).length ) {
+		V.msg =  '<div class="li1">'+ V.list.name +'</div>'
+				+'<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
+	} else {
+		V.msg = '<i class="i-'+ V.mode +'"></i>'+ V.list.name;
 	}
 	bash( V.mpccmd );
 	banner( 'playlist', V.title, V.msg );
@@ -193,9 +181,8 @@ function playlistDelete() {
 }
 function playlistLoad( name, play, replace ) {
 	V.local = true;
-	banner( 'file-playlist blink', name, 'Load ...', -1 );
+	banner( 'file-playlist', name, 'Load ...' );
 	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
-		bannerHide();
 		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }

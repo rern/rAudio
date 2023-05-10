@@ -186,7 +186,7 @@ function contextmenuLibrary( $li, $target ) {
 		V.list.name   = $li.find( '.li1' ).html().replace( /<span.*/, '' ) || '';
 		V.list.artist = $( '.licover .liartist' ).text() || '';
 	} else {
-		V.list.name = $li.find( '.li1' ).text() || $li.find( '.liname' ).text();
+		V.list.name   = $li.find( '.name' ).text() || V.list.path;
 	}
 	V.list.track = $li.data( 'track' ) || '';  // cue - in contextmenu
 	if ( ( D.tapaddplay || D.tapreplaceplay )

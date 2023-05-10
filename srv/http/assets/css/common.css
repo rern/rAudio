@@ -379,6 +379,10 @@ codered  {
 #bannerMessage {
 	font-size: 16px;
 }
+#bannerMessage i {
+	margin-right: 5px;
+	color: var( --cg75 );
+}
 #bannerMessage,
 #banner .time,
 #banner .li2 {

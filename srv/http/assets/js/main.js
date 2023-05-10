@@ -1326,10 +1326,10 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 } ).on( 'click', '.bkradio', function( e ) { // delegate - id changed on renamed
 	if ( V.press || $( '.bkedit' ).length ) return
 	
-	var $this = $( this );
-	var path  = $this.find( '.lipath' ).text();
-	var name  = $this.find( '.bkname' ).text();
-	V.mpccmd  = [ 'mpcadd', path ];
+	V.list.li   = $( this );
+	V.list.name = V.list.li.find( '.bkname' ).text();
+	V.list.path = V.list.li.find( '.lipath' ).text();
+	V.mpccmd  = [ 'mpcadd', V.list.path ];
 	if ( D.tapaddplay ) {
 		V.action = 'addplay';
 		addToPlaylistCommand();
@@ -1342,11 +1342,12 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		return
 	}
 	
-	var $img = $this.find( '.bkcoverart' );
+	var $img = V.list.li.find( '.bkcoverart' );
 	var icon = $img.length ? '<img src="'+ $img.attr( 'src' ) +'">' : ico( 'bookmark bl' );
 	var content = `\
 <div class="infomessage">${ icon }
-<wh>${ name }</wh>
+<wh>${ V.list.name }</wh>
+<a class="li2 hide">${ V.list.path }</a>
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
@@ -1360,10 +1361,9 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, values     : 'addplay'
 		, beforeshow : () => {
 			$( '#infoContent' ).on( 'click', '.cmd', function() {
-				V.bkradio = true;
-				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', path ] : [ 'mpcadd', path ];
+				V.list.li = $( '.infomessage' );
+				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];
 				V.action  = $( this ).data( 'cmd' );
-				V.msg     = name;
 				$( '#infoX' ).trigger( 'click' );
 				addToPlaylist();
 			} );
