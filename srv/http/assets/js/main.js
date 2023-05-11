@@ -537,7 +537,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 </table>`;
 	info( {
 		  icon        : 'music'
-		, title       : 'Playing'
+		, title       : 'Current Track'
 		, content     : content
 		, width       : 460
 		, boxwidth    : 'max'
