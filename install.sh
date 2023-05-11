@@ -94,7 +94,7 @@ fi
 file=$dirsystem/localbrowser.conf
 if ! systemctl -q is-active localbrowser; then
 	rm -f $file
-elif [[ $( sed -n 6p $file ) != cursor* ]]; then
+elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
 	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
 	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
 	. $file
@@ -142,7 +142,7 @@ fi
 
 [[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
 
-if [[ -L $dirmpd && ! -s /etc/exports ]]; then
+if [[ -L $dirmpd && ! -s /etc/exports && -e /mnt/MPD/SD ]]; then
 	mv /mnt/MPD/{SD,USB} /mnt
 	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
 	systemctl restart devmon@http
