@@ -262,8 +262,7 @@ i.map.disabled, .map.disabled i {
 .licover,
 #bar-top,
 #bar-bottom,
-#biocontent .artist,
-#divlyricsartist {
+#biocontent .artist {
 	box-shadow: var( --shadow-bar );
 }
 #bar-top i {
@@ -1105,7 +1104,7 @@ i.map.disabled, .map.disabled i {
 	max-width: 510px;
 	height: calc(100vh - 50px);
 	background: var( --cgd );
-	box-shadow: var( --shadow-menu );
+	box-shadow: 2px -2px 4px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
 #lyrics i {
@@ -1117,9 +1116,11 @@ i.map.disabled, .map.disabled i {
 #divlyricsartist {
 	position: relative;
 	height: 40px;
+	background: #000;
 }
-#divlyricstitle {
+#divlyricsartist {
 	background: var( --cga );
+	box-shadow: -4px 2px 4px #000;
 }
 #divlyricstitle img {
 	display: inline-block;
@@ -1127,8 +1128,8 @@ i.map.disabled, .map.disabled i {
 }
 #lyricstitle {
 	display: inline-block;
-	margin-left: 5px;
-	width: calc( 100vw - 84px );
+	margin-left: 10px;
+	width: calc( 100% - 84px );
 	font-size: 26px;
 	font-weight: 300;
 	line-height: 40px;
@@ -1147,7 +1148,7 @@ i.map.disabled, .map.disabled i {
 }
 #lyricsartist {
 	font-size: 18px;
-	color: var( --cg60 );
+	color: var( --cg75 );
 }
 #lyricsedit,
 #lyricseditbtngroup {

@@ -526,7 +526,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 <tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
 <tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
 <tr class="album"><td>${ ico( 'album wh' ) }</td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox"><gr>Title includes:</gr>&emsp;${ paren }</label></td></tr>
+<tr id="paren"><td></td><td><label><input type="checkbox"><gr>${ ico( 'music wh' ) }Title includes:</gr> ${ paren }</label></td></tr>
 <tr style="height: 10px;"></tr>
 <tr><td colspan="2" class="btnbottom">
 	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
@@ -546,7 +546,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 			if ( noparen ) {
 				$( '#paren' ).addClass( 'hide' );
 			} else {
-				$( '#infoContent input' ).on( 'change', function() {
+				$( '#infoContent input:checkbox' ).on( 'change', function() {
 					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
 				} );
 			}
