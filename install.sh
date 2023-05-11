@@ -154,7 +154,6 @@ fi
 if [[ ! -e $dirshm/cpuinfo ]]; then
 	file=$dirsystem/usbautoupdate
 	[[ -e $file ]] && rm $file || touch $file{,no}
-	rm -f $diraddons/addons-list.json
 fi
 
 file=$dirsystem/vuled.conf
