@@ -10,11 +10,7 @@
 
 mpc | grep ^Updating && updating_db=true || rm -f $dirmpd/updating
 
-if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then
-	ipserver=$( grep /mnt/MPD/NAS /etc/fstab | head -1 | cut -d: -f1 )
-	[[ ${ipserver:0:2} == // ]] && ipserver=$( cut -d/ -f3 <<< $ipserver )
-	! ipOnline $ip && -1 && exit # >>>>>>>>>>
-	
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	for i in {1..10}; do
 		sleep 1
 		[[ -e $dirmpd/counts ]] && mounted=1 && break
