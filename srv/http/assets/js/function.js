@@ -11,6 +11,9 @@ function list( args, callback, json ) {
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).eq( 0 ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
+		if ( $( '#bioimg img' ).last()[ 0 ].getBoundingClientRect().bottom > 0 ) {
+			if ( $( '#biocontent .artist' ).eq( 0 ).hasClass( 'hide' ) ) $( '#biocontent .artist' ).toggleClass( 'hide' );
+		}
 		return
 	}
 	
