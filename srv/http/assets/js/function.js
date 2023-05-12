@@ -794,26 +794,11 @@ function libraryHome() {
 function lyricsGet( artist, title, file ) {
 	V.lyricsartist = artist || S.Artist;
 	V.lyricstitle  = title || S.Title;
-	var file       = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
-	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
-}
-function lyricsShow( data ) {
-	if ( data !== 'current' ) {
-		V.lyrics       = data;
-		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-		if ( V.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', V.lyricsCover );
-		$( '#lyricstitle' ).text( V.lyricstitle );
-		$( '#lyricsartist' ).text( V.lyricsartist );
-		$( '#lyricstext' ).html( lyricshtml );
-	}
-	if ( $bartop.is( ':visible' ) ) {
-		$( '#lyrics' ).css( { top: '', height: '' } )
-	} else {
-		$( '#lyrics' ).css( { top: 0, height: '100vh' } )
-	}
-	$( '#lyrics' ).removeClass( 'hide' );
-	$( '#lyricstext' ).scrollTop( 0 );
-	bannerHide();
+	$( '#lyricsrefresh' ).addClass( 'blink' );
+	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, 'CMD ARTIST TITLE' ], data => {
+		lyricsShow( data );
+		$( '#lyricsrefresh' ).removeClass( 'blink' );
+	} );
 }
 function lyricsHide() {
 	if ( $( '#artist' ).text() !== V.lyricsartist || $( '#title' ).text() !== V.lyricstitle ) {
@@ -824,6 +809,22 @@ function lyricsHide() {
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
+}
+function lyricsShow( data ) {
+	V.lyrics       = data;
+	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
+	if ( V.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', V.lyricsCover );
+	$( '#lyricstitle' ).text( V.lyricstitle );
+	$( '#lyricsartist' ).text( V.lyricsartist );
+	$( '#lyricstext' ).html( lyricshtml );
+	if ( $bartop.is( ':visible' ) ) {
+		$( '#lyrics' ).css( { top: '', height: '' } )
+	} else {
+		$( '#lyrics' ).css( { top: 0, height: '100vh' } )
+	}
+	$( '#lyrics' ).removeClass( 'hide' );
+	$( '#lyricstext' ).scrollTop( 0 );
+	bannerHide();
 }
 function menuHide() {
 	$( '.menu' ).addClass( 'hide' );

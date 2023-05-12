@@ -1120,11 +1120,10 @@ i.map.disabled, .map.disabled i {
 #divlyricsartist {
 	position: relative;
 	height: 40px;
-	background: #000;
 }
 #divlyricsartist {
-	background: var( --cga );
-	box-shadow: -4px 2px 4px #000;
+	background: var( --cg );
+	box-shadow: -4px 2px 6px #000;
 }
 #divlyricstitle img {
 	display: inline-block;
@@ -1171,7 +1170,7 @@ i.map.disabled, .map.disabled i {
 	-ms-overflow-style: none;
 }
 #lyricstext {
-	padding: 21px 15px 180px 15px;
+	padding: 20px 15px 180px 15px;
 	overflow: auto;
 }
 #lyricstextarea {

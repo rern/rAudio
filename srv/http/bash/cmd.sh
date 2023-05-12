@@ -416,24 +416,27 @@ lyrics )
 	elif [[ -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
-		if [[ -e $dirsystem/lyricsembedded ]]; then
-			file=$ACTION
-			lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
-			[[ $lyrics ]] && echo "$lyrics" && exit
+		if [[ -e $dirsystem/lyricsembedded && $( < $dirshm/player ) == mpd ]]; then
+			file=$( getVar file $dirshm/status )
+			dir=${file/\/*}
+			if [[ $dir == SD || $dir == USB ]]; then
+				file="/mnt/MPD/$file"
+				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
+				[[ $lyrics ]] && echo "$lyrics" && exit
+			fi
 		fi
 		
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
-		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html )
+		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html | sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' )
 		if [[ $lyrics ]]; then
-			sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' <<< $lyrics \
-				| sed -e '/^\s*$\|^</ d
-					' -e '/\/div>/,/<br>/ {N;d}
-					' -e 's/<br>//
-					' -e 's/&quot;/"/g' \
-				| tee "$lyricsfile"
+			lyrics=$( sed -e '/^\s*$\|^</ d
+						' -e '/\/div>/,/<br>/ {N;d}
+						' -e 's/<br>//
+						' -e 's/&quot;/"/g' <<< $lyrics )
 		fi
+		[[ $lyrics ]] && echo "$lyrics" | tee "$lyricsfile"
 	fi
 	;;
 mpcadd )
