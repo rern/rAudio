@@ -811,7 +811,7 @@ function lyricsHide() {
 function lyricsShow( data ) {
 	V.lyrics       = data;
 	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-	if ( V.lyricscover ) $( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' ) );
+	$( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' ) );
 	$( '#lyricstitle' ).text( V.lyricstitle );
 	$( '#lyricsartist' ).text( V.lyricsartist );
 	$( '#lyricstext' ).html( lyricshtml );
