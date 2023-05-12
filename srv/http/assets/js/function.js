@@ -8,6 +8,103 @@ function list( args, callback, json ) {
 }
 
 //----------------------------------------------------------------------
+function bio( artist, getsimilar ) {
+	if ( artist === $( '#biocontent .artist.over' ).text() ) {
+		$( '#bio' ).removeClass( 'hide' );
+		return
+	}
+	
+	loader();
+	var url = 'http://ws.audioscrobbler.com/2.0/'
+			 +'?autocorrect=1'
+			 +'&format=json'
+			 +'&method=artist.getinfo'
+			 +'&api_key='+ V.apikeylastfm
+			 +'&artist='+ encodeURI( artist.replace( '&', 'and' ) );
+	$.post( url, function( data ) {
+		if ( 'error' in data || ( ! data.artist.bio.content ) ) {
+			info( {
+				  icon    : 'bio'
+				, title   : 'Bio'
+				, message : 'No data available.'
+			} );
+			loaderHide();
+			return
+		}
+		
+		V.bioartist.push( artist );
+		var data     = data.artist;
+		artistname   = data.name;
+		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
+		var genre    = data.tags.tag[ 0 ].name;
+		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
+		var similar  =  data.similar.artist;
+		if ( similar ) {
+			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
+			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
+			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
+		}
+		var biohtml = `
+<div class="container">
+<div id="biocontent">
+	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist hide"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
+	${ similarhtml }
+	<p>${ content }</p>
+	<div style="clear: both;"></div>
+	<br><br>
+	<p id="biosource">
+		<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
+		<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
+	</p>
+</div>
+</div>`;
+		$( '#bio' ).html( biohtml ).promise().done( () => {
+			$( '#bio' ).removeClass( 'hide' );
+			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
+				if ( 'error message' in data ) {
+					loaderHide();
+					return
+				}
+				
+				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
+					var img0        = '';
+					var imageshtml  = '<div id="bioimg">';
+					data.artistthumb.forEach( el => {
+						var src     = el.url.replace( '/fanart/', '/preview/' );
+						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
+						if ( ! img0 ) img0 = src;
+					} );
+					imageshtml    += '</div>'
+									+''
+					var $artist    = $( '#biocontent .artist' ).eq( 0 );
+					$artist
+						.prepend( '<img class="img0" src="'+ img0 +'">' )
+						.after( imageshtml );
+					var observer   = new IntersectionObserver( function( entries ) {
+						entries.forEach( entry => {
+							if ( window.innerWidth <= 480 ) return
+							
+							if ( entry.isIntersecting ) {
+								$( '#biocontent .artist' ).toggleClass( 'hide' );
+							} else if ( entry.boundingClientRect.top < 0 ) {
+								$( '#biocontent .artist' ).toggleClass( 'hide' );
+							}
+						} );
+					} );
+					observer.observe( $( '#bioimg img' ).last()[ 0 ] );
+					loaderHide();
+				} else {
+					loaderHide();
+				}
+			} ).fail( function() { // 404 not found
+				loaderHide();
+			} );
+		} );
+	} );
+}
 function blinkDot() {
 	if ( ! localhost ) return
 	
@@ -445,153 +542,7 @@ function displaySubMenu() {
 	[ 'dsp', 'logout', 'relays', 'snapclient', 'multiraudio' ].forEach( el => $( '#'+ el ).prev().toggleClass( 'sub', D[ el ] ) ); // submenu toggled by css .settings + .submenu
 	if ( localhost ) $( '#power' ).addClass( 'sub' );
 }
-function getBio( artist, getsimilar ) {
-	if ( artist === $( '#biocontent .artist.over' ).text() ) {
-		$( '#bio' ).removeClass( 'hide' );
-		return
-	}
-	
-	loader();
-	var url = 'http://ws.audioscrobbler.com/2.0/'
-			 +'?autocorrect=1'
-			 +'&format=json'
-			 +'&method=artist.getinfo'
-			 +'&api_key='+ V.apikeylastfm
-			 +'&artist='+ encodeURI( artist.replace( '&', 'and' ) );
-	$.post( url, function( data ) {
-		if ( 'error' in data || ( ! data.artist.bio.content ) ) {
-			info( {
-				  icon    : 'bio'
-				, title   : 'Bio'
-				, message : 'No data available.'
-			} );
-			loaderHide();
-			return
-		}
-		
-		V.bioartist.push( artist );
-		var data     = data.artist;
-		artistname   = data.name;
-		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
-		var genre    = data.tags.tag[ 0 ].name;
-		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
-		var similar  =  data.similar.artist;
-		if ( similar ) {
-			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';
-			similar.forEach( a => similarhtml += '<a class="biosimilar">'+ a.name +'</a>,&ensp;' );
-			similarhtml = similarhtml.slice( 0, -7 ) +'</span><br><br>';
-		}
-		var biohtml = `
-<div class="container">
-<div id="biocontent">
-	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
-	<p class="artist hide"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
-	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
-	${ similarhtml }
-	<p>${ content }</p>
-	<div style="clear: both;"></div>
-	<br><br>
-	<p id="biosource">
-		<gr>Text:</gr> <a href="https://www.last.fm">last.fm</a>&emsp;
-		<gr>Image:</gr> <a href="https://www.fanart.tv">fanart.tv</a>
-	</p>
-</div>
-</div>`;
-		$( '#bio' ).html( biohtml ).promise().done( () => {
-			$( '#bio' ).removeClass( 'hide' );
-			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
-				if ( 'error message' in data ) {
-					loaderHide();
-					return
-				}
-				
-				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
-				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var img0        = '';
-					var imageshtml  = '<div id="bioimg">';
-					data.artistthumb.forEach( el => {
-						var src     = el.url.replace( '/fanart/', '/preview/' );
-						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
-						if ( ! img0 ) img0 = src;
-					} );
-					imageshtml    += '</div>';
-					var $artist    = $( '#biocontent .artist' ).eq( 0 );
-					$artist.after( imageshtml );
-					$artist.prepend( '<img class="img0" src="'+ img0 +'">' )
-					var observer   = new IntersectionObserver( function( entries ) {
-						entries.forEach( entry => {
-							if ( window.innerWidth <= 480 ) return
-							
-							if ( entry.isIntersecting ) {
-								$( '#biocontent .artist' ).toggleClass( 'hide' );
-							} else if ( entry.boundingClientRect.top < 0 ) {
-								$( '#biocontent .artist' ).toggleClass( 'hide' );
-							}
-						} );
-					} );
-					observer.observe( $( '#bioimg img' ).last()[ 0 ] );
-					loaderHide();
-				} else {
-					loaderHide();
-				}
-			} ).fail( function() { // 404 not found
-				loaderHide();
-			} );
-		} );
-	} );
-}
-function getPlaybackStatus( withdisplay ) {
-	bash( [ 'status.sh', withdisplay ], list => {
-		if ( list == -1 ) {
-			loaderHide();
-			info( {
-				  icon    : 'networks'
-				, title   : 'Shared Data'
-				, message : iconwarning +'Server offline'
-							+'<br><br>Disable and restore local data?'
-				, cancel  : loader
-				, okcolor : orange
-				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
-			} );
-			return
-		}
-		
-		try {
-			var status = JSON.parse( list );
-		} catch( e ) {
-			errorDisplay( e.message, list );
-			return false
-		}
-		
-		C = status.counts;
-		delete status.counts;
-		if ( 'display' in status ) {
-			D              = status.display;
-			D.logout       = status.login;
-			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
-			delete status.display;
-			delete V.coverTL;
-			displaySubMenu();
-			bannerHide();
-		}
-		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
-		var dataerror = $( '#data .copy' ).length;
-		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
-			if ( dataerror ) {
-				$( '#data' ).empty();
-				$( '#button-data, #data' ).addClass( 'hide' );
-			}
-			renderPlaybackAll();
-		} else {
-			$( '#data' ).html( highlightJSON( S ) )
-			$( '#button-data, #data' ).removeClass( 'hide' );
-		}
-	} );
-}
-function getPlaylist() {
-	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
-}
-function hideGuide() {
+function guideHide() {
 	if ( V.guide ) {
 		V.guide        = false;
 		var barvisible = $bartop.is( ':visible' );
@@ -867,6 +818,54 @@ function orderLibrary() {
 function pageScroll( pos ) {
 	$( 'html, body' ).scrollTop( pos );
 }
+function playbackStatusGet( withdisplay ) {
+	bash( [ 'status.sh', withdisplay ], list => {
+		if ( list == -1 ) {
+			loaderHide();
+			info( {
+				  icon    : 'networks'
+				, title   : 'Shared Data'
+				, message : iconwarning +'Server offline'
+							+'<br><br>Disable and restore local data?'
+				, cancel  : loader
+				, okcolor : orange
+				, ok      : () => bash( [ 'settings/system.sh', 'shareddatadisable' ], () => location.reload() )
+			} );
+			return
+		}
+		
+		try {
+			var status = JSON.parse( list );
+		} catch( e ) {
+			errorDisplay( e.message, list );
+			return false
+		}
+		
+		C = status.counts;
+		delete status.counts;
+		if ( 'display' in status ) {
+			D              = status.display;
+			D.logout       = status.login;
+			V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
+			delete status.display;
+			delete V.coverTL;
+			displaySubMenu();
+			bannerHide();
+		}
+		$.each( status, ( k, v ) => { S[ k ] = v } ); // need braces
+		var dataerror = $( '#data .copy' ).length;
+		if ( $( '#data' ).hasClass( 'hide' ) || dataerror ) {
+			if ( dataerror ) {
+				$( '#data' ).empty();
+				$( '#button-data, #data' ).addClass( 'hide' );
+			}
+			renderPlaybackAll();
+		} else {
+			$( '#data' ).html( highlightJSON( S ) )
+			$( '#button-data, #data' ).removeClass( 'hide' );
+		}
+	} );
+}
 function playlistInsert( indextarget ) {
 	var plname = $( '#pl-path .lipath' ).text();
 	bash( [ 'savedpledit', plname, 'add', indextarget, V.pladd.file, 'CMD NAME TYPE TO FILE' ], () => {
@@ -953,6 +952,9 @@ function playlistFilter() {
 		$( '#pl-search-close' ).empty();
 	}
 }
+function playlistGet() {
+	list( { playlist: 'current' }, ( data ) => renderPlaylist( data ), 'json' );
+}
 function playlistRemove( $li ) {
 	if ( $( '#pl-list li' ).length === 1 ) {
 		bash( [ 'mpcremove' ] );
@@ -1019,14 +1021,14 @@ function refreshData() {
 			}
 		}
 	} else if ( V.playback ) {
-		getPlaybackStatus( 'withdisplay' );
+		playbackStatusGet( 'withdisplay' );
 	} else {
 		if ( V.savedpl ) {
 			$( '#button-pl-playlists' ).trigger( 'click' );
 		} else if ( V.savedpltrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
-			getPlaylist();
+			playlistGet();
 		}
 	}
 	if ( 'active' in E ) {

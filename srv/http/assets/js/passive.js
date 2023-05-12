@@ -65,7 +65,7 @@ if ( ! localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamDisconnect() {
 	clearIntervalAll();
-	hideGuide();
+	guideHide();
 	if ( $( '#infoIcon' ).hasClass( 'i-relays' ) ) $( '#infoX' ).trigger( 'click' );
 }
 pushstream.onmessage = ( data, id, channel ) => {
@@ -287,7 +287,7 @@ function psPlaylist( data ) {
 			var name = $( '#pl-path .lipath' ).text();
 			if ( V.savedpltrack && data.playlist === name ) renderSavedPlTrack( name );
 		}
-		getPlaybackStatus();
+		playbackStatusGet();
 	}, 300 );
 }
 function psRadioList( data ) {
@@ -303,7 +303,7 @@ function psRadioList( data ) {
 		} else if ( V.savedpltrack ) {
 			renderSavedPlTrack( $( '#savedpl-path .lipath' ).text() );
 		} else {
-			getPlaylist();
+			playlistGet();
 		}
 	}
 	S.updatingdab = false;
