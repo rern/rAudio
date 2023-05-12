@@ -1107,10 +1107,6 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 2px -2px 4px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
-#lyrics,
-#divlyricstitle {
-	border-radius: 0 10px 0 0;
-}
 #lyrics i {
 	width: 40px;
 	line-height: 40px;
