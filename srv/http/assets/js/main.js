@@ -2006,7 +2006,7 @@ $( '#lyricsedit' ).on( 'click', function() {
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
 } );
 $( '#lyricsrefresh' ).on( 'click', function() {
-	S.stream && ! [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ? $( '#title' ).trigger( 'click' ) : lyricsGet();
+	lyricsGet();
 } );
 $( '#lyricsclose' ).on( 'click', function() {
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
