@@ -797,8 +797,10 @@ function lyricsGet( artist, title, file ) {
 	$( '#lyricsrefresh' ).addClass( 'blink' );
 	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, 'CMD ARTIST TITLE' ], data => {
 		lyricsShow( data );
+		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
 	} );
+	if ( ! V.lyrics ) banner( 'lyrics blink', 'Lyrics', 'Fetch ...' );
 }
 function lyricsHide() {
 	if ( $( '#artist' ).text() !== V.lyricsartist || $( '#title' ).text() !== V.lyricstitle ) {

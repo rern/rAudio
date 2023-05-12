@@ -504,12 +504,8 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	var title  = $( '#title' ).text();
 	var album  = $( '#album' ).text();
 	if ( album.includes( '://' ) ) album = '';
-	if ( V.lyrics
-		&& ! S.webradio
-		&& artist === $( '#lyricsartist' ).text()
-		&& title === $( '#lyricstitle' ).text()
-	) {
-		lyricsShow( 'current' );
+	if ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) {
+		lyricsGet();
 		return
 	}
 	
