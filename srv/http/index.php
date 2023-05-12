@@ -303,7 +303,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<img src=""><span id="lyricstitle"></span><?=i( 'lyricsclose', 'close' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=i( 'lyricsedit', 'edit-circle' )?>
+		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit-circle' )?>
 		<div id="lyricseditbtngroup" class="hide">
 			<?=i( 'lyricsundo',   'undo hide' )
 			  .i( 'lyricssave',   'save hide' )

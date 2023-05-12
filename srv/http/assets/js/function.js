@@ -791,17 +791,22 @@ function libraryHome() {
 		if ( V.color ) $( '#mode-webradio' ).trigger( 'click' );
 	}, 'json' );
 }
+function lyricsGet( artist, title, file ) {
+	V.lyricsartist = artist || S.Artist;
+	V.lyricstitle  = title || S.Title;
+	var file       = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
+	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
+}
 function lyricsShow( data ) {
 	if ( data !== 'current' ) {
 		V.lyrics       = data;
 		var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
 		if ( V.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', V.lyricsCover );
-		$( '#lyricstitle' ).text( V.lyricsTitle );
-		$( '#lyricsartist' ).text( V.lyricsArtist );
+		$( '#lyricstitle' ).text( V.lyricstitle );
+		$( '#lyricsartist' ).text( V.lyricsartist );
 		$( '#lyricstext' ).html( lyricshtml );
 	}
 	if ( $bartop.is( ':visible' ) ) {
-		$( '#bar-bottom' ).addClass( 'lyrics-bar-bottom' );
 		$( '#lyrics' ).css( { top: '', height: '' } )
 	} else {
 		$( '#lyrics' ).css( { top: 0, height: '100vh' } )
@@ -811,17 +816,14 @@ function lyricsShow( data ) {
 	bannerHide();
 }
 function lyricsHide() {
-	if ( $( '#artist' ).text() !== V.lyricsArtist || $( '#title' ).text() !== V.lyricsTitle ) {
-		V.lyrics       = '';
-		V.lyricsArtist = '';
-		V.lyricsTitle  = '';
+	if ( $( '#artist' ).text() !== V.lyricsartist || $( '#title' ).text() !== V.lyricstitle ) {
+		[ 'lyrics', 'lyricsartist', 'lyricstitle' ].forEach( k => delete V[ k ] );
 		$( '#lyricstext' ).empty();
 		$( '#lyricstextarea' ).val( '' );
 	}
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
-	$( '#bar-bottom' ).removeClass( 'lyrics-bar-bottom' );
 }
 function menuHide() {
 	$( '.menu' ).addClass( 'hide' );

@@ -92,7 +92,7 @@ backlight='$backlight
 fi
 
 file=$dirsystem/localbrowser.conf
-if ! systemctl -q is-active localbrowser; then
+if ! systemctl -q is-enabled localbrowser; then
 	rm -f $file
 elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
 	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay

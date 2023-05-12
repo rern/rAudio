@@ -20,8 +20,8 @@ V = {   // var global
 	, list          : {}
 	, local         : false
 	, lyrics        : ''
-	, lyricsArtist  : ''
-	, lyricsTitle   : ''
+	, lyricsartist  : ''
+	, lyricstitle   : ''
 	, mode          : ''
 	, modescrolltop : 0
 	, page          : 'playback'
@@ -515,7 +515,6 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	
 	artist  = artist.replace( /(["`])/g, '\\$1' );
 	title   = title.replace( /(["`])/g, '\\$1' );
-	file    = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
 	var src = $( '#coverart' ).attr( 'src' );
 	V.lyricsCover = src.slice( 0, 7 ) === '/asses' ? '' : src;
 	var noparen      = title.slice( -1 ) !== ')';
@@ -563,11 +562,10 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 				var title  = values[ 1 ]
 				var $this  = $( this );
 				if ( $this.hasClass( 'lyrics' ) ) {
-					V.lyricsArtist = artist;
-					V.lyricsTitle  = title;
-					bash( [ 'lyrics', artist, title, file, 'CMD ARTIST TITLE ACTION' ], data => {
-						lyricsShow( data );
-					} );
+					V.lyricsartist = artist || S.Artist;
+					V.lyricstitle  = title || S.Title;
+					var file       = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
+					bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
 					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
 				} else if ( $this.hasClass( 'bio' ) ) {
 					if ( $( '#bio legend' ).text() != S.Artist ) {
@@ -2006,6 +2004,9 @@ $( '#lyricsedit' ).on( 'click', function() {
 	$( '#lyricstextarea' )
 		.val( V.lyrics )
 		.scrollTop( $( '#lyricstext' ).scrollTop() );
+} );
+$( '#lyricsrefresh' ).on( 'click', function() {
+	S.stream && ! [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ? $( '#title' ).trigger( 'click' ) : lyricsGet();
 } );
 $( '#lyricsclose' ).on( 'click', function() {
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {

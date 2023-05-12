@@ -1,16 +1,16 @@
 #colorpicker,
+#lyrics,
+#lyricsfade,
 #status { z-index: 110 }
 #bar-top,
 #bar-bottom,
 #bio { z-index: 106 }
-#lyrics,
 #settings { z-index: 105 }
 .content-top { z-index: 104 }
 .band,
 .emptyadd,
 #volume-text { z-index: 102 }
 #refresh { z-index: 100 }
-#lyricsfade { z-index: 97 }
 #lib-search,
 #pl-search { z-index: 96 }
 .coveredit,
@@ -1107,6 +1107,10 @@ i.map.disabled, .map.disabled i {
 	box-shadow: 2px -2px 4px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
+#lyrics,
+#divlyricstitle {
+	border-radius: 0 10px 0 0;
+}
 #lyrics i {
 	width: 40px;
 	line-height: 40px;
@@ -1150,6 +1154,7 @@ i.map.disabled, .map.disabled i {
 	font-size: 18px;
 	color: var( --cg75 );
 }
+#lyricsrefresh,
 #lyricsedit,
 #lyricseditbtngroup {
 	float: right;
@@ -1187,10 +1192,6 @@ i.map.disabled, .map.disabled i {
 	background: -moz-linear-gradient(top,  transparent, #000000);
 	background: -webkit-linear-gradient(top,  transparent,#000000);
 	background: linear-gradient(to bottom,  transparent,#000000);
-}
-.lyrics-bar-bottom {
-	margin-left: 510px;
-	width: calc(100vw - 510px) !important;
 }
 
 @media (max-width: 500px) {
