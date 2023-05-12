@@ -9,7 +9,7 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
-	if ( artist === $( '#biocontent .artist.over' ).text() ) {
+	if ( artist === $( '#biocontent .artist' ).eq( 0 ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
 	}
