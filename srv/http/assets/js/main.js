@@ -500,19 +500,17 @@ $( '#artist, #guide-bio' ).on( 'click', function() {
 	}
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
-	var artist = $( '#artist' ).text();
-	var title  = $( '#title' ).text();
-	var album  = $( '#album' ).text();
-	if ( album.includes( '://' ) ) album = '';
 	if ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) {
 		lyricsGet();
 		return
 	}
 	
+	var artist = $( '#artist' ).text();
+	var title  = $( '#title' ).text();
+	var album  = $( '#album' ).text();
+	if ( album.includes( '://' ) ) album = '';
 	artist  = artist.replace( /(["`])/g, '\\$1' );
 	title   = title.replace( /(["`])/g, '\\$1' );
-	var src = $( '#coverart' ).attr( 'src' );
-	V.lyricsCover = src.slice( 0, 7 ) === '/asses' ? '' : src;
 	var noparen      = title.slice( -1 ) !== ')';
 	var titlenoparen = title.replace( / $|\(.*$/, '' );
 	var paren        = title.replace( /^.*\(/, '(' );

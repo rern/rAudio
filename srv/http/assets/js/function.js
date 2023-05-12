@@ -800,22 +800,18 @@ function lyricsGet( artist, title, file ) {
 		bannerHide();
 		$( '#lyricsrefresh' ).removeClass( 'blink' );
 	} );
-	if ( ! V.lyrics ) banner( 'lyrics blink', 'Lyrics', 'Fetch ...' );
+	if ( $( '#lyrics' ).hasClass( 'hide' ) ) banner( 'lyrics blink', 'Lyrics', 'Fetch ...' );
 }
 function lyricsHide() {
-	if ( $( '#artist' ).text() !== V.lyricsartist || $( '#title' ).text() !== V.lyricstitle ) {
-		[ 'lyrics', 'lyricsartist', 'lyricstitle' ].forEach( k => delete V[ k ] );
-		$( '#lyricstext' ).empty();
-		$( '#lyricstextarea' ).val( '' );
-	}
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
+	[ 'lyrics', 'lyricsartist', 'lyricstitle' ].forEach( k => delete V[ k ] );
 }
 function lyricsShow( data ) {
 	V.lyrics       = data;
 	var lyricshtml = data ? data.replace( /\n/g, '<br>' ) +'<br><br><br>·&emsp;·&emsp;·' : '<gr>(Lyrics not available.)</gr>';
-	if ( V.lyricsCover ) $( '#divlyricstitle img' ).attr( 'src', V.lyricsCover );
+	if ( V.lyricscover ) $( '#divlyricstitle img' ).attr( 'src', $( '#coverart' ).attr( 'src' ) );
 	$( '#lyricstitle' ).text( V.lyricstitle );
 	$( '#lyricsartist' ).text( V.lyricsartist );
 	$( '#lyricstext' ).html( lyricshtml );
