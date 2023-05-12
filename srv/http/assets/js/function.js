@@ -446,7 +446,7 @@ function displaySubMenu() {
 	if ( localhost ) $( '#power' ).addClass( 'sub' );
 }
 function getBio( artist, getsimilar ) {
-	if ( artist === $( '#biocontent .name' ).text() ) {
+	if ( artist === $( '#biocontent .artist.over' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
 	}
@@ -484,9 +484,8 @@ function getBio( artist, getsimilar ) {
 		var biohtml = `
 <div class="container">
 <div id="biocontent">
-	<a class="name hide">${ artist }</a>
-	<p class="artist over"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
-	<p class="artist under"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist hide"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
 	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -516,21 +515,17 @@ function getBio( artist, getsimilar ) {
 						if ( ! img0 ) img0 = src;
 					} );
 					imageshtml    += '</div>';
-					var $artist    = $( '#biocontent .artist.over' );
-					var $name      = $( '#biocontent .artist a' );
+					var $artist    = $( '#biocontent .artist' ).eq( 0 );
 					$artist.after( imageshtml );
-					$name.append( '<img class="img0 hide" src="'+ img0 +'">' )
-					var $img       = $( '#biocontent .img0' );
+					$artist.prepend( '<img class="img0" src="'+ img0 +'">' )
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
 							if ( window.innerWidth <= 480 ) return
 							
-							if ( entry.isIntersecting ) { // visible = true
-								$name.css( 'margin-left', '' );
-								$img.addClass( 'hide' );
-							} else if ( entry.boundingClientRect.top < 0 ) { // above page top
-								$name.css( 'margin-left', ( -1 * $name[ 0 ].offsetLeft ) +'px' );
-								$img.removeClass( 'hide' );
+							if ( entry.isIntersecting ) {
+								$( '#biocontent .artist' ).toggleClass( 'hide' );
+							} else if ( entry.boundingClientRect.top < 0 ) {
+								$( '#biocontent .artist' ).toggleClass( 'hide' );
 							}
 						} );
 					} );

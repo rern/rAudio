@@ -1032,12 +1032,6 @@ i.map.disabled, .map.disabled i {
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
-#biocontent .artist.over { display: none }
-#biocontent .artist.under { display: block }
-@media ( max-width: 480px ) {
-	#biocontent .artist.over { display: block }
-	#biocontent .artist.under { display: none }
-}
 #biocontent .img0 {
 	height: 40px;
 	margin-right: 10px;
@@ -1103,7 +1097,7 @@ i.map.disabled, .map.disabled i {
 	width: 100vw;
 	max-width: 510px;
 	height: calc(100vh - 50px);
-	background: var( --cgd );
+	background: #000;
 	box-shadow: 2px -2px 4px var( --cg );
 	-webkit-overflow-scrolling: touch;
 }
