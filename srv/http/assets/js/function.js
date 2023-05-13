@@ -742,6 +742,12 @@ function libraryHome() {
 function lyricsGet( artist, title, file ) {
 	V.lyricsartist = artist || S.Artist;
 	V.lyricstitle  = title || S.Title;
+	if ( $( '#lyricstitle' ).text() === V.lyricstitle && $( '#lyricsartist' ).text() === V.lyricsartist ) {
+		$( '#lyrics' ).removeClass( 'hide' );
+		$( '#lyricstext' ).scrollTop( 0 );
+		return
+	}
+	
 	$( '#lyricsrefresh' ).addClass( 'blink' );
 	bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, 'CMD ARTIST TITLE' ], data => {
 		lyricsShow( data );
@@ -754,7 +760,6 @@ function lyricsHide() {
 	$( '#lyricsedit, #lyricstext' ).removeClass( 'hide' );
 	$( '#lyricseditbtngroup' ).addClass( 'hide' );
 	$( '#lyrics' ).addClass( 'hide' );
-	[ 'lyrics', 'lyricsartist', 'lyricstitle' ].forEach( k => delete V[ k ] );
 }
 function lyricsShow( data ) {
 	V.lyrics       = data;
