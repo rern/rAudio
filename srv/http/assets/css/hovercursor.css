@@ -45,6 +45,8 @@
 #button-lib-search:hover,
 #lib-search-btn:hover,
 #pl-manage i:hover,
+#button-lib-back:hover,
+#button-pl-back:hover,
 #button-pl-search:hover,
 #pl-search-btn:hover {
 	background-color: var( --cg ) !important;
@@ -124,6 +126,8 @@ li:not( .licover ),
 #bar-top i,
 #button-data i,
 #button-library,
+#button-lib-back,
+#button-pl-back,
 #button-playlist,
 #colorcancel,
 #colorok,
