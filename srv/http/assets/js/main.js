@@ -110,27 +110,28 @@ var chkdisplay = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 if ( navigator.maxTouchPoints ) { // swipeleft / right ////////////////////////////////
-	var xstart;
-	window.addEventListener( 'touchstart', function( e ) {
-		var $target = $( e.target );
-		if ( D.noswipe
-			|| [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
-			|| $target.parents( '#time-knob' ).length
-			|| $target.parents( '#volume-knob' ).length
-			|| ! $( '#bio' ).hasClass( 'hide' )
-			|| I.active
-			|| ! $( '#data' ).hasClass( 'hide' )
-		) return
-		
-		xstart = e.changedTouches[ 0 ].pageX;
-	} );
-	window.addEventListener( 'touchend', function( e ) {
-		if ( ! xstart ) return
-		
-		var diff = xstart - e.changedTouches[ 0 ].pageX;
-		if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ V.page ][ diff > 0 ? 1 : 0 ] ).trigger( 'click' );
-		xstart = false;
-	} );
+	if ( ! D.noswipe ) {
+		var xstart;
+		window.addEventListener( 'touchstart', function( e ) {
+			var $target = $( e.target );
+			if ( [ 'time-band', 'time-knob', 'volume-band', 'volume-knob' ].includes( e.target.id )
+				|| $target.parents( '#time-knob' ).length
+				|| $target.parents( '#volume-knob' ).length
+				|| ! $( '#bio' ).hasClass( 'hide' )
+				|| I.active
+				|| ! $( '#data' ).hasClass( 'hide' )
+			) return
+			
+			xstart = e.changedTouches[ 0 ].pageX;
+		} );
+		window.addEventListener( 'touchend', function( e ) {
+			if ( ! xstart ) return
+			
+			var diff = xstart - e.changedTouches[ 0 ].pageX;
+			if ( Math.abs( diff ) > 100 ) $( '#'+ pagenext[ V.page ][ diff > 0 ? 1 : 0 ] ).trigger( 'click' );
+			xstart = false;
+		} );
+	}
 	$( '.page' ).on( 'contextmenu', function( e ) { // on press - disable default context menu
 		e.preventDefault();
 		e.stopPropagation();
