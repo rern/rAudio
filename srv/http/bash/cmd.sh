@@ -429,15 +429,8 @@ lyrics )
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
-		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html | sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' )
-		if [[ $lyrics ]]; then
-			lyrics=$( sed -e '1,/<!-- Usage/ d
-						' -e '/<.div>/,$ d
-						' -e 's/<br>//
-						' -e 's/&quot;/"/g
-						' -e '/^</ d' <<< $lyrics )
-		fi
-		[[ $lyrics ]] && echo "$lyrics" | tee "$lyricsfile"
+		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html | sed -n '/<!-- Usage/,/<.div>/ p' )
+		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;
 mpcadd )
