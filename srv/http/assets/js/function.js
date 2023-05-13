@@ -9,11 +9,8 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
-	if ( artist === $( '#biocontent .artist' ).eq( 0 ).text() ) {
+	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
-		if ( $( '#bioimg img' ).last()[ 0 ].getBoundingClientRect().bottom > 0 ) {
-			if ( $( '#biocontent .artist' ).eq( 0 ).hasClass( 'hide' ) ) $( '#biocontent .artist' ).toggleClass( 'hide' );
-		}
 		return
 	}
 	
@@ -51,7 +48,6 @@ function bio( artist, getsimilar ) {
 <div class="container">
 <div id="biocontent">
 	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
-	<p class="artist hide"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
 	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -73,27 +69,30 @@ function bio( artist, getsimilar ) {
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var img0        = '';
+					var titleimg = '';
 					var imageshtml  = '<div id="bioimg">';
 					data.artistthumb.forEach( el => {
 						var src     = el.url.replace( '/fanart/', '/preview/' );
 						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
-						if ( ! img0 ) img0 = src;
+						if ( ! titleimg ) titleimg = src;
 					} );
-					imageshtml    += '</div>'
-									+''
-					var $artist    = $( '#biocontent .artist' ).eq( 0 );
-					$artist
-						.prepend( '<img class="img0" src="'+ img0 +'">' )
+					imageshtml     += '</div>';
+					var $title      = $( '#biocontent .artist' );
+					$title
+						.prepend( '<img id="biotitleimg" src="'+ titleimg +'">' )
 						.after( imageshtml );
+					var $bioimg     = $( '#bioimg' );
+					var $imgartist = $( '#biotitleimg' );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
 							if ( window.innerWidth <= 480 ) return
 							
 							if ( entry.isIntersecting ) {
-								$( '#biocontent .artist' ).toggleClass( 'hide' );
-							} else if ( entry.boundingClientRect.top < 0 ) {
-								$( '#biocontent .artist' ).toggleClass( 'hide' );
+								$title.insertAfter( $bioimg );
+								$imgartist.addClass( 'hide' );
+							} else if ( entry.boundingClientRect.top < 0 ) { // images obove $title
+								$title.insertBefore( $bioimg );
+								$imgartist.removeClass( 'hide' );
 							}
 						} );
 					} );
