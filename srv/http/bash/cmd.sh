@@ -431,10 +431,11 @@ lyrics )
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
 		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html | sed -n '/id="cf_text_top"/,/id="azmxmbanner"/ p' )
 		if [[ $lyrics ]]; then
-			lyrics=$( sed -e '/^\s*$\|^</ d
-						' -e '/\/div>/,/<br>/ {N;d}
+			lyrics=$( sed -e '1,/<!-- Usage/ d
+						' -e '/<.div>/,$ d
 						' -e 's/<br>//
-						' -e 's/&quot;/"/g' <<< $lyrics )
+						' -e 's/&quot;/"/g
+						' -e '/^</ d' <<< $lyrics )
 		fi
 		[[ $lyrics ]] && echo "$lyrics" | tee "$lyricsfile"
 	fi
