@@ -1,7 +1,28 @@
 #infoOverlay { /* no on-screen keyboard */
 	min-height: 100%;
 }
+input[ type=text ]:focus-visible,
+input[ type=number ]:focus-visible,
+input[ type=password ]:focus-visible,
+#infoContent textarea:focus-visible {
+	outline: 1px solid var( --cgl ) !important;
+}
+input[ type=radio ]:focus-visible,
+input[ type=checkbox ]:focus-visible,
+#infoRange input:focus-visible::-webkit-slider-thumb {
+	outline: 2px solid var( --cgl );
+	outline-offset: 1px;
+}
+#infoRange input:focus-visible::-moz-range-thumb {
+	outline: 2px solid var( --cgl );
+	outline-offset: 1px;
+}
 /* :hover *********************************************************/
+.i-close:hover,
+.infobtn-primary:hover,
+.infobtn-default:hover {
+	filter: brightness( 115% );
+}
 #lib-path a:hover {
 	color: var( --cm );
 }
@@ -93,6 +114,9 @@
 
 /* cursor *********************************************************/
 button,
+input[ type=checkbox ],
+input[ type=radio ],
+label,
 li:not( .licover ),
 .band,
 .btn,
@@ -106,6 +130,7 @@ li:not( .licover ),
 .coveredit,
 .bkedit,
 .emptyadd i,
+.i-eye,
 .i-search,
 .infomessage img,
 .infomessage .tagpath,
@@ -117,6 +142,7 @@ li:not( .licover ),
 .map,
 .menu a,
 .mode,
+.pointer,
 .rs-container,
 .savedlist,
 .submenu,
@@ -135,6 +161,8 @@ li:not( .licover ),
 #elapsed,
 #eq i,
 #eq .label a,
+#infoTab,
+#infoButton gr,
 #liboptions,
 #lib-path a,
 #lib-search-close,

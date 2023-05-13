@@ -531,6 +531,9 @@ input[ type=checkbox ] {
 	box-shadow: none;
 	filter: none !important;
 }
+.infobtn.active {
+	box-shadow: 0 0 2px 1px var( --cgl ) !important;
+}
 #infoOk.disabled {
 	pointer-events: auto;
 	cursor: default;
@@ -948,47 +951,6 @@ input[ type=radio ]:disabled {
 }
 input:focus {
 	outline: none;
-}
-@media ( hover:hover ) {
-	#debug { display: block }
-	/* :hover *********************************************************/
-	#infoTab,
-	#infoButton gr,
-	label,
-	input[ type=checkbox ],
-	input[ type=radio ],
-	.i-eye,
-	.pointer {
-		cursor: pointer;
-	}
-	#infoX:hover,
-	.infobtn-primary:hover,
-	.infobtn-default:hover {
-		filter: brightness( 115% );
-	}
-	/* :active *********************************************************/
-	#infoX:active {
-		color: var( --cma );
-	}
-	input[ type=text ]:focus-visible,
-	input[ type=number ]:focus-visible,
-	input[ type=password ]:focus-visible,
-	#infoContent textarea:focus-visible {
-		outline: 1px solid var( --cgl ) !important;
-	}
-	input[ type=radio ]:focus-visible,
-	input[ type=checkbox ]:focus-visible,
-	#infoRange input:focus-visible::-webkit-slider-thumb {
-		outline: 2px solid var( --cgl );
-		outline-offset: 1px;
-	}
-	#infoRange input:focus-visible::-moz-range-thumb {
-		outline: 2px solid var( --cgl );
-		outline-offset: 1px;
-	}
-	.infobtn.active {
-		box-shadow: 0 0 2px 1px var( --cgl ) !important;
-	}
 }
 
 @supports ( -webkit-touch-callout: none ) { /* ios only */
