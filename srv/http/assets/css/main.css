@@ -1033,7 +1033,7 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cg );
 }
 #biotitleimg {
-	width: 40px !important;
+	width: 40px;
 	margin-right: 10px;
 	vertical-align: -6px;
 }
