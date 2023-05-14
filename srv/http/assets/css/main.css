@@ -592,6 +592,8 @@ i.map.disabled, .map.disabled i {
 }
 #coverart,
 #vu,
+#biotitleimg,
+#divlyricstitle img,
 .licover img {
 	border: 1px solid hsl(0,0%,15%);
 }
