@@ -60,7 +60,9 @@ function bio( artist, getsimilar ) {
 </div>
 </div>`;
 		$( '#bio' ).html( biohtml ).promise().done( () => {
-			$( '#bio' ).removeClass( 'hide' );
+			$( '#bio' )
+				.removeClass( 'hide' )
+				.scrollTop( 0 );
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
 				if ( 'error message' in data ) {
 					loaderHide();
@@ -81,6 +83,7 @@ function bio( artist, getsimilar ) {
 					$title
 						.prepend( '<img id="biotitleimg" src="'+ titleimg +'">' )
 						.before( imageshtml );
+					$( '#bio' ).scrollTop( 0 );
 					var $bioimg     = $( '#bioimg' );
 					var $imgartist = $( '#biotitleimg' );
 					if ( V.wW < 481 ) $title.insertBefore( $bioimg );
