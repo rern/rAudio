@@ -86,7 +86,7 @@ function bio( artist, getsimilar ) {
 					if ( V.wW < 481 ) $title.insertBefore( $bioimg );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
-							if ( window.innerWidth < 481 ) {
+							if ( V.wW < 481 ) {
 								$imgartist.toggleClass( 'hide', entry.isIntersecting );
 							} else if ( entry.isIntersecting ) {
 								$imgartist

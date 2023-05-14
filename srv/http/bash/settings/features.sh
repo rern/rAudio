@@ -45,7 +45,7 @@ spotifyReset() {
 
 case $CMD in
 
-autoplay | lyricsembedded | scrobble )
+autoplay | lyrics | scrobble )
 	enableFlagSet
 	pushRefresh
 	;;

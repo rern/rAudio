@@ -429,7 +429,9 @@ lyrics )
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
-		lyrics=$( curl -s -A firefox https://www.azlyrics.com/lyrics/${query,,}.html | sed -n '/<!-- Usage/,/<.div>/ p' )
+		. $dirsystem/lyrics.conf
+		[[ ${url: -1} == / ]] && url=${url:0:-1}
+		lyrics=$( curl -s -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p" )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi
 	;;

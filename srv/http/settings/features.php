@@ -11,7 +11,7 @@ $id_data = [
 	, 'httpd'          => [ 'name' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
 	, 'localbrowser'   => [ 'name' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true ]
 	, 'login'          => [ 'name' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
-	, 'lyricsembedded' => [ 'name' => 'Lyrics in File',   'sub' => 'embedded ID3',   'setting' => false ]
+	, 'lyrics'         => [ 'name' => 'Lyrics' ]
 	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
 	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
 	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
@@ -190,14 +190,13 @@ Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performanc
 EOF
 	]
 	, [
-		  'id'   => 'lyricsembedded'
+		  'id'   => 'lyrics'
 		, 'help' => <<< EOF
- · Get embedded lyrics from local files.
- · Search online if not available.
- · Should be disable if most lyrics are not embedded.
- · Online fetched lyrics are saved as separate files, not embedded.
- 
-Note: Should be disabled if none embedded.
+ · Search lyrics from user specified URL and tags.
+ · Embedded lyrics:
+	 · Get lyrics from local files.
+	 · If not available, search online.
+	 · Should be disabled if most lyrics are not embedded.
 EOF
 	]
 	, [

@@ -197,7 +197,9 @@ function highlightJSON( json ) {
 					.sort()
 					.reduce( ( r, k ) => ( r[ k ] = json[ k ], r ), {} ); // https://stackoverflow.com/a/29622653
 	json = '\n\n'+ JSON.stringify( json, null, '\t' );
-	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]/g, function( match ) {
+	console.log(json)
+	json = json.replace( /</g, '&lt;' );
+	return json.replace( /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)|[{}\[\]]|<.*>/g, function( match ) {
 		if ( /^"/.test( match ) ) {              // string
 			if ( /:$/.test( match ) ) { // key
 				return match

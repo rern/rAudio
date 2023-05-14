@@ -12,6 +12,12 @@ var default_v      = {
 		, HDMI        : false
 		, CURSOR      : false
 	}
+	, lyrics       : {
+		  URL      : 'https://'
+		, START    : '<'
+		, END      : '</div>'
+		, EMBEDDED : false
+	}
 	, scrobble     : {
 		  AIRPLAY   : true
 		, BLUETOOTH : true
@@ -260,6 +266,20 @@ $( '#setting-smb' ).on( 'click', function() {
 		, checkchanged : S.smb
 		, cancel       : switchCancel
 		, ok           : switchEnable
+	} );
+} );
+$( '#setting-lyrics' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, textlabel    : [ 'URL', 'Start tag', 'End tag' ]
+		, checkbox     : 'Embedded lyrics'
+		, boxwidth     : 300
+		, values       : S.lyricsconf || default_v.lyrics
+		, checkchanged : S.lyrics
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
 	} );
 } );
 $( '#setting-multiraudio' ).on( 'click', function() {

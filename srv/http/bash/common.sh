@@ -67,7 +67,7 @@ args2var() {
 		if [[ $CFG ]]; then
 			if [[ $v ]]; then
 				v=$( stringEscape $v )
-				[[ $v =~ \ |\"|\'|\` ]] && v='"'$v'"' # quote if contains space " ' `
+				[[ $v =~ \ |\"|\'|\`|\<|\> ]] && v='"'$v'"' # quote if contains space " ' ` <
 			fi
 			conf+=${k,,}'='$v$'\n'
 		fi

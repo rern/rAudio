@@ -41,6 +41,11 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			setButtonControl();
 			setTimeout( renderPlayback, 50 );
 			setInfoScroll();
+			var $bioimg = $( '#bioimg' );
+			if ( $bioimg.length ) {
+				var $title = $( '#biocontent .artist' );
+				V.wW < 481 ? $title.insertBefore( $bioimg ) : $title.insertAfter( $bioimg );
+			}
 		} else if ( V.library ) {
 			if ( V.librarylist ) {
 				if ( V.librarytrack ) $( '.liinfo' ).css( 'width', ( wW - $( '.licoverimg img' ).width() - 50 ) );
