@@ -85,12 +85,14 @@ function bio( artist, getsimilar ) {
 					var $imgartist = $( '#biotitleimg' );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
-							if ( V.wW <= 480 || entry.isIntersecting < 1 ) {
-								$title.insertBefore( $bioimg );
-								$imgartist.removeClass( 'hide' );
-							} else { // images visible
+							if ( window.innerWidth <= 480 ) return
+							
+							if ( entry.isIntersecting ) {
 								$title.insertAfter( $bioimg );
 								$imgartist.addClass( 'hide' );
+							} else if ( entry.boundingClientRect.top < 0 ) { // images obove $title
+								$title.insertBefore( $bioimg );
+								$imgartist.removeClass( 'hide' );
 							}
 						} );
 					} );
