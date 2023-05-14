@@ -1135,6 +1135,7 @@ i.map.disabled, .map.disabled i {
 	padding-left: 15px;
 	line-height: 40px;
 	font-size: 18px;
+	font-weight: 300;
 }
 #lyricsclose {
 	position: absolute;
