@@ -9,6 +9,7 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
+	artist = 'bee gees';
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
@@ -85,18 +86,19 @@ function bio( artist, getsimilar ) {
 					var $imgartist = $( '#biotitleimg' );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
-							if ( window.innerWidth <= 480 ) return
-							
-							if ( entry.isIntersecting ) {
+							if ( V.wW < 480 ) {
+								$title.insertBefore( $bioimg );
+								$imgartist.toggleClass( 'hide', entry.isIntersecting );
+							} else if ( entry.isIntersecting ) {
 								$title.insertAfter( $bioimg );
 								$imgartist.addClass( 'hide' );
-							} else if ( entry.boundingClientRect.top < 0 ) { // images obove $title
+							} else { // images above $title
 								$title.insertBefore( $bioimg );
 								$imgartist.removeClass( 'hide' );
 							}
 						} );
 					} );
-					observer.observe( $( '#bioimg img' ).last()[ 0 ] );
+					observer.observe( $bioimg[ 0 ] );
 					loaderHide();
 				} else {
 					loaderHide();

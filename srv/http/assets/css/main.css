@@ -1033,7 +1033,7 @@ i.map.disabled, .map.disabled i {
 	border-bottom: 1px solid var( --cg );
 }
 #biotitleimg {
-	height: 40px;
+	width: 40px !important;
 	margin-right: 10px;
 	vertical-align: -6px;
 }
@@ -2183,9 +2183,6 @@ li.active .li2 bl {
 		}
 		#bioimg img {
 			width: 100%;
-		}
-		#biocontent .artist img {
-			display: none;
 		}
 	}
 	@media ( max-width: 400px ) {
