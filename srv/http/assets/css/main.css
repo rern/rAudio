@@ -1056,6 +1056,7 @@ i.map.disabled, .map.disabled i {
 }
 #biocontent p {
 	margin: 0;
+	line-height: 24px;
 	color: var( --cw );
 }
 #biocontent i {
