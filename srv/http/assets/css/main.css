@@ -1113,6 +1113,7 @@ i.map.disabled, .map.disabled i {
 #divlyricsartist {
 	position: relative;
 	height: 40px;
+	box-shadow: 0px 0px 10px #000;
 }
 #divlyricsartist {
 	background: var( --cg );
