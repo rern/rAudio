@@ -9,6 +9,7 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
+	artist = 'bee gees';
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
@@ -47,7 +48,7 @@ function bio( artist, getsimilar ) {
 		var biohtml = `
 <div class="container">
 <div id="biocontent">
-	<p class="artist"><a>${ artistname + ico( 'close close-root closebio' ) }</a></p>
+	<p class="artist">${ artistname + ico( 'close close-root closebio' ) }</p>
 	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
@@ -80,20 +81,22 @@ function bio( artist, getsimilar ) {
 					var $title      = $( '#biocontent .artist' );
 					$title
 						.prepend( '<img id="biotitleimg" src="'+ titleimg +'">' )
-						.after( imageshtml );
+						.before( imageshtml );
 					var $bioimg     = $( '#bioimg' );
 					var $imgartist = $( '#biotitleimg' );
+					if ( V.wW < 481 ) $title.insertBefore( $bioimg );
 					var observer   = new IntersectionObserver( function( entries ) {
 						entries.forEach( entry => {
-							if ( V.wW < 481 ) {
-								$title.insertBefore( $bioimg );
+							if ( window.innerWidth < 481 ) {
 								$imgartist.toggleClass( 'hide', entry.isIntersecting );
 							} else if ( entry.isIntersecting ) {
-								$title.insertAfter( $bioimg );
-								$imgartist.addClass( 'hide' );
+								$imgartist
+									.addClass( 'hide' )
+									.css( 'margin-left', '' );
 							} else { // images above $title
-								$title.insertBefore( $bioimg );
-								$imgartist.removeClass( 'hide' );
+								$imgartist
+									.removeClass( 'hide' )
+									.css( 'margin-left', ( -20 - $bioimg.width() ) +'px' );
 							}
 						} );
 					} );
