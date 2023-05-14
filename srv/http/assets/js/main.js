@@ -501,7 +501,9 @@ $( '#artist, #guide-bio' ).on( 'click', function() {
 	}
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
-	if ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) {
+	if ( S.lyrics
+		&& ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) )
+	) {
 		lyricsGet();
 		return
 	}
@@ -549,6 +551,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 				$this.css( 'border-color', $this.val() ? '' : 'red' );
 				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
 			} );
+			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
 			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
 			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio );
 			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {

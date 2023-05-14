@@ -57,6 +57,7 @@ else
 , "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
+, "lyrics"       : '$( exists $dirsystem/lyrics )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
