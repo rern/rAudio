@@ -504,85 +504,17 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
 		&& ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) )
 	) {
-		lyricsGet();
-		return
+		if ( S.Title.includes( '(' ) ) {
+			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
+				paren === '-1' ? infoTitle() : lyricsGet();
+			} );
+		} else {
+			lyricsGet();
+		}
+	} else {
+		infoTitle();
 	}
 	
-	var artist = $( '#artist' ).text();
-	var title  = $( '#title' ).text();
-	var album  = $( '#album' ).text();
-	if ( album.includes( '://' ) ) album = '';
-	artist  = artist.replace( /(["`])/g, '\\$1' );
-	title   = title.replace( /(["`])/g, '\\$1' );
-	var noparen      = title.slice( -1 ) !== ')';
-	var titlenoparen = title.replace( / $|\(.*$/, '' );
-	var paren        = title.replace( /^.*\(/, '(' );
-	var content      = `\
-<table>
-<tr><td>${ ico( 'artist wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr><td>${ ico( 'music wh' ) }</td><td><input class="required" type="text"></td></tr>
-<tr class="album"><td>${ ico( 'album wh' ) }</td><td><input type="text"></td></tr>
-<tr id="paren"><td></td><td><label><input type="checkbox"><gr>${ ico( 'music wh' ) }Title includes:</gr> ${ paren }</label></td></tr>
-<tr style="height: 10px;"></tr>
-<tr><td colspan="2" class="btnbottom">
-	<span class="lyrics">${ ico( 'lyrics' ) } Lyrics</span>
-	<span class="bio">&emsp;${ ico( 'bio' ) } Bio</span>
-	<span class="similar">&emsp;${ ico( 'lastfm' ) } Add Similar</span>
-	<span class="scrobble">&emsp;${ ico( 'lastfm' ) } Scrobble</span>
-	</td></tr>
-</table>`;
-	info( {
-		  icon        : 'playback'
-		, title       : 'Current Track'
-		, content     : content
-		, width       : 460
-		, boxwidth    : 'max'
-		, values      : noparen ? [ artist, title, album ] : [ artist, titlenoparen, album ]
-		, beforeshow  : () => {
-			if ( noparen ) {
-				$( '#paren' ).addClass( 'hide' );
-			} else {
-				$( '#infoContent input:checkbox' ).on( 'change', function() {
-					$( '#infoContent input:text' ).eq( 1 ).val( $( this ).prop( 'checked' ) ? title : titlenoparen );
-				} );
-			}
-			$( '#infoContent input.required' ).on( 'keyup paste cut', function() {
-				var $this = $( this );
-				$this.css( 'border-color', $this.val() ? '' : 'red' );
-				$( '#infoContent .scrobble' ).toggleClass( 'disabled', $this.val() === '' );
-			} );
-			$( '#infoContent .lyrics' ).toggleClass( 'hide', ! S.lyrics );
-			$( '#infoContent .album' ).toggleClass( 'hide', album === '' );
-			$( '#infoContent .scrobble' ).toggleClass( 'hide', ! S.scrobble || ! S.webradio );
-			$( '#infoContent' ).on( 'click', '.btnbottom span', function() {
-				var values = infoVal();
-				var artist = values[ 0 ]
-				var title  = values[ 1 ]
-				var $this  = $( this );
-				if ( $this.hasClass( 'lyrics' ) ) {
-					V.lyricsartist = artist || S.Artist;
-					V.lyricstitle  = title || S.Title;
-					var file       = S.player === 'mpd' ? '/mnt/MPD/'+ S.file : '';
-					bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
-					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
-				} else if ( $this.hasClass( 'bio' ) ) {
-					if ( $( '#bio legend' ).text() != S.Artist ) {
-						bio( artist );
-					} else {
-						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
-						$( '#bio' ).removeClass( 'hide' );
-					}
-				} else if ( $this.hasClass( 'similar' ) ) {
-					addSimilar();
-				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD Artist Title Album' ] );
-					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
-				}
-				$( '#infoX' ).trigger( 'click' );
-			} );
-		}
-		, okno        : true
-	} );
 } );
 $( '#album, #guide-album' ).on( 'click', function() {
 	if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );

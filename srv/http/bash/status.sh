@@ -322,7 +322,7 @@ $radiosampling" > $dirshm/radio
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
-					! grep -q "$Title" /srv/http/assets/data/songs_with_trailing && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
+					! grep -q "$Title" /srv/http/assets/data/titles_with_paren && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
 				else
 					Artist=$station
 				fi

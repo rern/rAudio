@@ -792,6 +792,9 @@ shareddatampdupdate )
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
 	;;
+titlewithparen )
+	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1
+	;;
 volume ) # no TARGET = toggle mute / unmute
 	[[ $CURRENT == drag ]] && volumeSetAt $TARGET "$CONTROL" $CARD && exit
 	
