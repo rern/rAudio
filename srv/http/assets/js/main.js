@@ -147,12 +147,12 @@ $( 'body' ).on( 'click', function( e ) {
 	var $target = $( e.target );
 	if ( ! $target.is( '.bkcoverart, .bkradio, .savedlist' ) ) menuHide();
 	if ( ! V.local && $( '.pl-remove' ).length && ! $target.hasClass( 'pl-remove' ) ) $( '.pl-remove' ).remove();
+	if ( V.guide ) guideHide();
 } );
 $( '#page-playback' ).on( 'click', function( e ) {
 	if ( V.press
 		|| [ 'coverT', 'timeT', 'volume-bar', 'volume-band', 'volume-band-dn', 'volume-band-up' ].includes( e.target.id ) ) return
 	
-	if ( V.guide ) guideHide();
 	if ( $( '#divcover .coveredit' ).length ) {
 		if ( ! $( e.target ).hasClass( 'coveredit' ) ) {
 			$( '#divcover .cover-change' ).remove();
@@ -471,9 +471,6 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 	} else {
 		V.plhome ? playlistGet() : switchPage( 'playlist' );
 	}
-} );
-$( '#bar-top, #bar-bottom, #page-library' ).on( 'click', function() {
-	if ( V.guide ) guideHide();
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
 	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
