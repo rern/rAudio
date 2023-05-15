@@ -41,7 +41,7 @@ data='
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
 , "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
 , "camilladsp"       : '$camilladsp'
-, "counts"           : { '$( getContent $dirmpd/counts | grep -E 'album"|"artist|song|webradio' )' }
+, "counts"           : '$( < $dirmpd/counts )'
 , "crossfade"        : '$crossfade'
 , "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'

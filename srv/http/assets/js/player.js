@@ -356,11 +356,8 @@ function playbackIcon() {
 }
 function renderPage() {
 	playbackIcon();
-	var htmlstatus =  S.version +'<br>'
-					+ ico( 'song' ) + ( S.counts.song || 0 ).toLocaleString()
-					+ ico( 'album' ) + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
-					+ ico( 'artist' ) + ( S.counts.arttist || 0 ).toLocaleString()
-					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
+	var htmlstatus =  S.version +'<br>';
+	[ 'song', 'album', 'artist', 'webradio' ].forEach( k => htmlstatus += ico( k ) + ( S.counts[ k ] || 0 ).toLocaleString() );
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
