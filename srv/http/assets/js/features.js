@@ -13,7 +13,7 @@ var default_v      = {
 		, CURSOR      : false
 	}
 	, lyrics       : {
-		  URL      : 'https://'
+		  URL      : ''
 		, START    : '<'
 		, END      : '</div>'
 		, EMBEDDED : false
@@ -277,6 +277,8 @@ $( '#setting-lyrics' ).on( 'click', function() {
 		, boxwidth     : 300
 		, values       : S.lyricsconf || default_v.lyrics
 		, checkchanged : S.lyrics
+		, checkblank   : true
+		, beforeshow   : () => $( '#infoContent tr' ).eq( 1 ).after( '<tr><td></td><td><gr>Lyrics content ...</gr></td></tr>' )
 		, cancel       : switchCancel
 		, ok           : switchEnable
 		, fileconf     : true

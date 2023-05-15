@@ -416,7 +416,8 @@ lyrics )
 	elif [[ -e "$lyricsfile" ]]; then
 		cat "$lyricsfile"
 	else
-		if [[ -e $dirsystem/lyricsembedded && $( < $dirshm/player ) == mpd ]]; then
+		. $dirsystem/lyrics.conf
+		if [[ $embedded && $( < $dirshm/player ) == mpd ]]; then
 			file=$( getVar file $dirshm/status )
 			dir=${file/\/*}
 			if [[ $dir == SD || $dir == USB ]]; then
@@ -429,8 +430,6 @@ lyrics )
 		artist=$( sed -E 's/^A |^The |\///g' <<< $ARTIST )
 		title=${TITLE//\/}
 		query=$( tr -d " '\-\"\!*\(\);:@&=+$,?#[]." <<< "$artist/$title" )
-		. $dirsystem/lyrics.conf
-		[[ ${url: -1} == / ]] && url=${url:0:-1}
 		lyrics=$( curl -s -A firefox $url/${query,,}.html | sed -n "/$start/,\|$end| p" )
 		[[ $lyrics ]] && sed -e 's/<br>//; s/&quot;/"/g' -e '/^</ d' <<< $lyrics | tee "$lyricsfile"
 	fi

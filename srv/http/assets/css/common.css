@@ -114,7 +114,6 @@ i {
 .i-lock::before            { content: '\F574' }
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
-.i-lyricsembedded::before  { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
 .i-minus-circle::before    { content: '\F563' }
