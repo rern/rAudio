@@ -1939,6 +1939,7 @@ $( '#lyricsrefresh' ).on( 'click', function() {
 	lyricsGet();
 } );
 $( '#lyricsclose' ).on( 'click', function() {
+	if ( 'observer' in V ) V.observer.disconnect();
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
