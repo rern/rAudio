@@ -11,6 +11,7 @@ function list( args, callback, json ) {
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
+		bioTitleSet();
 		return
 	}
 	
@@ -743,12 +744,7 @@ function infoTitle() {
 					bash( [ 'lyrics', V.lyricsartist, V.lyricstitle, file, 'CMD ARTIST TITLE ACTION' ], data => lyricsShow( data ) );
 					banner( 'search blink', 'Lyrics', 'Fetch ...', 20000 );
 				} else if ( $this.hasClass( 'bio' ) ) {
-					if ( $( '#bio legend' ).text() != S.Artist ) {
-						bio( artist );
-					} else {
-						$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
-						$( '#bio' ).removeClass( 'hide' );
-					}
+					bio( artist );
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {

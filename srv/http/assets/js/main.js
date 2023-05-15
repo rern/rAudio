@@ -493,12 +493,7 @@ $( '.emptyadd' ).on( 'click', function( e ) {
 	}
 } );
 $( '#artist, #guide-bio' ).on( 'click', function() {
-	if ( $( '#bio legend' ).text() != S.Artist ) {
-		bio( $( '#artist' ).text() );
-	} else {
-		$( '#bar-top, #bar-bottom' ).addClass( 'hide' );
-		$( '#bio' ).removeClass( 'hide' );
-	}
+	bio( S.Artist );
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
@@ -989,6 +984,7 @@ $( '#bio' ).on( 'click', '.bioback', function() {
 $( '#bio' ).on( 'click', '.closebio', function() {
 	V.bioartist = [];
 	$( '#bio' ).addClass( 'hide' );
+	if ( 'observer' in V ) V.observer.disconnect();
 } );
 // LIBRARY /////////////////////////////////////////////////////////////////////////////////////
 $( '#lib-breadcrumbs' ).on( 'click', 'a', function() {
@@ -1939,7 +1935,6 @@ $( '#lyricsrefresh' ).on( 'click', function() {
 	lyricsGet();
 } );
 $( '#lyricsclose' ).on( 'click', function() {
-	if ( 'observer' in V ) V.observer.disconnect();
 	if ( $( '#lyricstextarea' ).val() === V.lyrics || ! $( '#lyricstextarea' ).val() ) {
 		lyricsHide();
 	} else {
