@@ -10,6 +10,7 @@
 . /srv/http/bash/common.sh
 
 updateDone() {
+	rm -f $dirmpd/listing
 	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
 	pushstream mpdupdate '{ "done": 1 }'
 	status=$( $dirbash/status.sh )
