@@ -76,7 +76,7 @@ function bio( artist, getsimilar ) {
 					data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
 					$( '#biocontent .artist' )
 						.before( '<div id="bioimg">'+ imageshtml +'</div>' )
-						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' );
+						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
 					bioTitleSet();
 				}
 				loaderHide();
