@@ -9,6 +9,7 @@ function list( args, callback, json ) {
 
 //----------------------------------------------------------------------
 function bio( artist, getsimilar ) {
+	artist = 'bee gees';
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
 		return
@@ -71,47 +72,35 @@ function bio( artist, getsimilar ) {
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var titleimg = '';
-					var imageshtml  = '<div id="bioimg">';
-					data.artistthumb.forEach( el => {
-						var src     = el.url.replace( '/fanart/', '/preview/' );
-						imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ src +'"></a>';
-						if ( ! titleimg ) titleimg = src;
-					} );
-					imageshtml     += '</div>';
-					var $title      = $( '#biocontent .artist' );
-					$title
-						.prepend( '<img id="biotitleimg" src="'+ titleimg +'">' )
-						.before( imageshtml );
-					$( '#bio' ).scrollTop( 0 );
-					var $bioimg     = $( '#bioimg' );
-					var $imgartist = $( '#biotitleimg' );
-					if ( V.wW < 481 ) $title.insertBefore( $bioimg );
-					var observer   = new IntersectionObserver( function( entries ) {
-						entries.forEach( entry => {
-							if ( V.wW < 481 ) {
-								$imgartist.toggleClass( 'hide', entry.isIntersecting );
-							} else if ( entry.isIntersecting ) {
-								$imgartist
-									.addClass( 'hide' )
-									.css( 'margin-left', '' );
-							} else { // images above $title
-								$imgartist
-									.removeClass( 'hide' )
-									.css( 'margin-left', ( -20 - $bioimg.width() ) +'px' );
-							}
-						} );
-					} );
-					observer.observe( $bioimg[ 0 ] );
+					var imageshtml = '';
+					data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
+					$( '#biocontent .artist' )
+						.before( '<div id="bioimg">'+ imageshtml +'</div>' )
+						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).eq( 0 ).attr( 'src' ) +'">' );
+					bioTitleSet();
+					var observer   = new IntersectionObserver( entries => $( '#biotitleimg' ).toggleClass( 'hide', entries[ 0 ].isIntersecting ) );
+					observer.observe( $( '#bioimg' )[ 0 ] );
 					loaderHide();
 				} else {
 					loaderHide();
 				}
+				$( '#bio' ).scrollTop( 0 );
 			} ).fail( function() { // 404 not found
 				loaderHide();
 			} );
 		} );
 	} );
+}
+function bioTitleSet() {
+	var $artist    = $( '#biocontent .artist' );
+	var titleafter = $artist.prev().prop('id') === 'bioimg';
+	if ( V.wW < 481 ) {
+		if ( titleafter ) $artist.insertBefore( $( '#bioimg' ) );
+		$( '#biotitleimg' ).css( 'margin-left', 0 );
+	} else {
+		if ( ! titleafter ) $artist.insertAfter( $( '#bioimg' ) );
+		$( '#biotitleimg' ).css( 'margin-left', -1 * ( V.wW / 3 > 200 ? 220 : V.wW / 3 + 20 ) +'px' );
+	}
 }
 function blinkDot() {
 	if ( ! localhost ) return
