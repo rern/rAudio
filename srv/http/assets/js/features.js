@@ -13,7 +13,7 @@ var default_v      = {
 		, CURSOR      : false
 	}
 	, lyrics       : {
-		  URL      : ''
+		  URL      : 'https://'
 		, START    : '<'
 		, END      : '</div>'
 		, EMBEDDED : false
