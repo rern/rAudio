@@ -29,7 +29,7 @@ EOF
 	<div class="col-l text gr">
 		Version
 		<br>Database
-		<br>Last Update
+		<br>Since
 	</div>
 	<div class="col-r text">
 		<div id="statusvalue"></div>
