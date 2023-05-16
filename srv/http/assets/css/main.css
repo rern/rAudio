@@ -1,10 +1,10 @@
+#bio,
 #colorpicker,
 #lyrics,
 #lyricsfade,
 #status { z-index: 110 }
 #bar-top,
-#bar-bottom,
-#bio { z-index: 106 }
+#bar-bottom { z-index: 106 }
 #settings { z-index: 105 }
 .content-top { z-index: 104 }
 .band,
