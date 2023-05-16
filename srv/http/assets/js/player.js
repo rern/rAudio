@@ -358,6 +358,7 @@ function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'album', 'artist', 'webradio' ].forEach( k => htmlstatus += ico( k ) + ( S.counts[ k ] || 0 ).toLocaleString() );
+	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );

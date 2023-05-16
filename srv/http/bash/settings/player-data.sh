@@ -49,6 +49,7 @@ data='
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
 , "equalizer"        : '$equalizer'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
+, "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>•</gr> %H:%M' )'"
 , "lists"            : '$lists'
 , "normalization"    : '$normalization'
 , "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
