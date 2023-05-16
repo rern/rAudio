@@ -450,15 +450,6 @@ soundprofile )
 	fi
 	pushRefresh
 	;;
-statusbluetooth )
-	if rfkill | grep -q -m1 bluetooth; then
-		hci=$( ls -l /sys/class/bluetooth | sed -n '/serial/ {s|.*/||; p}' )
-		mac=$( cut -d' ' -f1 /sys/kernel/debug/bluetooth/$hci/identity )
-	fi
-	echo "\
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show $mac )"
-	;;
 statusonboard )
 	onboard=$( aplay -l | grep 'bcm2835' )
 	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'

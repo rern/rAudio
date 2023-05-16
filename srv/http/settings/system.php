@@ -6,7 +6,7 @@
 $id_data = [
 	  'audio'         => [ 'name' => 'Audio',                                     'setting' => false ]
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
-	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluetoothctl',                       'status' => true ]
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
 	, 'hdmi'          => [ 'name' => 'HDMI',                                      'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]

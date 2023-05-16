@@ -7,6 +7,9 @@ PKG=$1
 SERVICE=$1
 
 case $CMD in
+	bluetooth )
+		PKG=bluez
+		;;
 	camilladsp )
 		fileconf=$dircamilladsp/configs/camilladsp.yml
 		;;
