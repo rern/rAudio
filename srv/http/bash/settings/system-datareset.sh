@@ -96,7 +96,8 @@ else # from create-ros.sh
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
-	echo $1 > $diraddons/r1
+	release=$( curl -sI https://github.com/rern/rAudio/releases/latest | sed -E -n '/^location/ {s/.*\/|[\n\r]//g; p}' )
+	echo $release > $diraddons/r1
 fi
 
 # display
