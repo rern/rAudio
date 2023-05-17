@@ -1,4 +1,4 @@
-r A u d i o &ensp; 1
+r A u d i o
 ---
 Audio player for 
 - **Raspberry Pi**s:
@@ -10,8 +10,7 @@ Audio player for
 
 ![guide](https://github.com/rern/_assets/raw/master/guide/guide.gif)
 
-- A new release after [**R+R e6**](https://www.runeaudio.com/forum/runeaudio-r-e6-t7141.html)
-- Based on [Arch Linux Arm](https://archlinuxarm.org) OS
+- Based on [Arch Linux Arm](https://archlinuxarm.org)
 - Control via GUI
 	- Remote with any browsers
 	- Android - [rAudio app](https://play.google.com/store/apps/details?id=com.raudio)
