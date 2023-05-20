@@ -159,7 +159,7 @@ pushstream refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
-elif [[ ! $nasonline ]]; then
+elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
