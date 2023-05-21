@@ -298,10 +298,7 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Discoverable <gr>by senders</gr>', 'Sampling 16bit 44.1kHz <gr>to receivers</gr>' ]
-		, values       : values2info(
-			  Object.keys( default_v.bluetooth )
-			, S.bluetoothconf || default_v.bluetooth
-		)
+		, values       : S.bluetoothconf || default_v.bluetooth
 		, checkchanged : S.bluetooth
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -320,10 +317,7 @@ $( '#setting-wlan' ).on( 'click', function() {
 			, title        : SW.title
 			, content      : infowifi
 			, boxwidth     : 250
-			, values       : values2info(
-				  Object.keys( default_v.wlan )
-				, S.wlanconf || default_v.wlan
-			)
+			, values       : S.wlanconf || default_v.wlan
 			, checkchanged : S.wlan
 			, beforeshow   : () => selectText2Html( { '00': '00 <gr>(allowed worldwide)</gr>' } )
 			, cancel       : switchCancel
@@ -406,10 +400,7 @@ $( '#setting-rotaryencoder' ).on( 'click', function() {
 		, title        : SW.title
 		, content      : gpiosvg + inforotaryencoder
 		, boxwidth     : 70
-		, values       : values2info(
-			  Object.keys( default_v.rotaryencoder )
-			, S.rotaryencoderconf || default_v.rotaryencoder
-		)
+		, values       : S.rotaryencoderconf || default_v.rotaryencoder
 		, checkchanged : S.rotaryencoder
 		, beforeshow   : () => $( '#infoContent svg .power' ).remove()
 		, cancel       : switchCancel
@@ -431,10 +422,7 @@ $( '#setting-mpdoled' ).on( 'click', function() {
 		, title        : SW.title
 		, selectlabel  : [ 'Controller', 'Refresh <gr>(baud)</gr>' ]
 		, select       : [ chip, [ 800000, 1000000, 1200000 ] ]
-		, values       : values2info(
-			  [ 'CHIP', 'BAUD' ]
-			, S.mpdoledconf
-		)
+		, values       : S.mpdoledconf
 		, checkchanged : S.mpdoled
 		, boxwidth     : 140
 		, beforeshow   : () => {
@@ -493,10 +481,7 @@ $( '#setting-vuled' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, content      : gpiosvg +'<table>'+ htmlpins +'</table>'
-		, values       : values2info(
-			  Object.keys( default_v.vuled )
-			, S.vuledconf || default_v.vuled
-		)
+		, values       : S.vuledconf || default_v.vuled
 		, checkchanged : S.vuled
 		, boxwidth     : 70
 		, cancel       : switchCancel
@@ -580,12 +565,9 @@ $( '#setting-soundprofile' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : [ 'Swappiness', 'Maximum Transmission Unit <gr>(B)</gr>', 'Transmit Queue Length' ]
+		, numberlabel  : [ 'Swappiness', 'Maximum Transmission Unit <gr>(B)</gr>', 'Transmit Queue Length' ]
 		, boxwidth     : 80
-		, values       : values2info(
-			  [ 'SWAPPINESS', 'MTU', 'TXQUEUELEN' ]
-			, S.soundprofileconf
-		)
+		, values       : S.soundprofileconf
 		, checkchanged : true
 		, checkblank   : true
 		, cancel       : switchCancel
@@ -1037,10 +1019,7 @@ function infoPowerbutton() {
 		, tab          : [ '', infoPowerbuttonAudiophonics ]
 		, content      : gpiosvg + infopowerbutton
 		, boxwidth     : 70
-		, values       : values2info(
-			  Object.keys( default_v.powerbutton )
-			, S.powerbuttonconf || default_v.powerbutton
-		)
+		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
 			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.ON == 5 );
@@ -1235,4 +1214,9 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
+}
+function values2info( keys, v ) {
+	var values = {}
+	keys.forEach( k => values[ k ] = v[ k ] || '' );
+	return values
 }
