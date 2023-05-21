@@ -344,6 +344,7 @@ $description
 	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
 	;;
 poweraudiophonics )
+	enableFlagSet
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
 		config+="
