@@ -1364,12 +1364,8 @@ i.map.disabled, .map.disabled i {
 #lib-search-btn,
 #pl-search-btn {
 	height: 32px;
-	padding: 0;
-}
-#lib-search-btn i,
-#pl-search-btn i {
-	font-size: 22px;
-	line-height: 18px;
+	line-height: 32px;
+	border-radius: 0 4px 4px 0;
 }
 #button-lib-back {
 	position: relative;
@@ -1486,10 +1482,6 @@ i.map.disabled, .map.disabled i {
 }
 .input-group-btn {
 	vertical-align:middle;
-}
-.input-group-btn > .btn {
-	border-top-left-radius: 0;
-	border-bottom-left-radius: 0;
 }
 .input-group input {
     height: 32px !important;
