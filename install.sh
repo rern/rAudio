@@ -2,10 +2,10 @@
 
 alias=r1
 
-# restore 20230511
+# restore 20230521
 #. /srv/http/bash/settings/addons.sh
 
-# 20230511
+# 20230521
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 if crontab -l | grep -q addonsupdates; then
