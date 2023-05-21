@@ -17,6 +17,7 @@
 <?php
 $hash      = '?v='.time();
 $page      = $_GET[ 'p' ] ?? '';
+$addons    = $addonsprogress = $guide = $networks = false;
 $css       = [ 'colors', 'common' ];
 $logosvg   = file_get_contents( '/srv/http/assets/img/icon.svg' );
 if ( file_exists( '/srv/http/data/system/login' ) ) {
@@ -63,23 +64,16 @@ if ( ! $page ) { // main
 	// hovercursor.css and shortcut.js - appended last
 	$title = 'STATUS';
 } else {         // settings
-	$$page = true;
+//	foreach( [ 'addons', 'addonsprogress', 'guide', 'networks' ] as $k ) ${ $k } = $page === $k;
+	$$page = true; // $$ - variable variables
 	$css[] = 'settings';
-	$jsp   = [ 'jquery' ];
-	$js    = [ 'common' ];
+	$jsp   = [ 'jquery', 'pushstream', $networks ? 'qrcode' : 'select2' ];
+	$js    = [ 'common', 'settings', $page ];
 	if ( ! $guide && ! $networks && ! $addonsprogress ) {
 		$cssp[] = 'select2';
 		$css[]  = 'select2';
 	}
-	if ( $relays ) $css[]  = 'relays';
-	if ( $addons ) {
-		$css[]  = 'addons';
-	} else {
-		$jsp[]  = 'pushstream';
-		$js[]   = 'settings';
-	}
-	$jsp[]  = $networks ? 'qrcode' : 'select2';
-	$js[]   = $page;
+	if ( $addons ) $css[]  = 'addons';
 	
 	$icon = $pagetitle = $page;
 	if ( $addonsprogress ) {
@@ -88,8 +82,6 @@ if ( ! $page ) { // main
 	} else if ( $guide ) {
 		$icon = 'help';
 		$pagetitle = 'user guide';
-	} else if ( $relays ) {
-		$icon = $pagetitle = 'system';
 	}
 	$title = strtoupper( $pagetitle );
 }
@@ -103,13 +95,9 @@ echo $links;
 </head>
 <body>
 <div id="infoOverlay" class="hide" tabindex="-1"></div>
-	<?php if ( !$addons && ! $addonsprogress && ! $guide && ! $relays ) { ?>
+	<?php if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="loader"><?=$logosvg?></div>
-	<?php }
-		  if ( !$addons && ! $addonsprogress && ! $guide ) { ?>
 <div id="banner" class="hide"></div>
-	<?php }
-		  if ( ! $addonsprogress && ! $guide ) { ?>
 <div id="button-data" class="head hide"><i class="i-close"></i><span class="title"><?=$title?>-DATA</span></div>
 <pre id="data" class="hide"></pre>
 	<?php } ?>

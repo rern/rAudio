@@ -2,41 +2,40 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t args <<< $1
+args2var "$1"
 
-protocol=${args[1]}
-mountpoint="$dirnas/${args[2]}"
-ip=${args[3]}
-directory=${args[4]}
-user=${args[5]}
-password=${args[6]}
-extraoptions=${args[7]}
-shareddata=${args[8]}
+! ipOnline $IP && echo "IP address not found: <wh>$IP</wh>" && exit
 
-! ping -c 1 -w 1 $ip &> /dev/null && echo "IP address not found: <wh>$ip</wh>" && exit
-
-[[ $( ls "$mountpoint" ) ]] && echo "Mount name <code>$mountpoint</code> not empty." && exit
-
+if [[ $PROTOCOL ]]; then
+	mountpoint="$dirnas/$NAME"
+else # server rAudio client
+	path=$( timeout 3 showmount --no-headers -e $IP 2> /dev/null )
+	! grep -q $dirnas <<< $path && echo '<i class="i-networks"></i> <wh>Server rAudio</wh> not found.' && exit
+	
+	PROTOCOL=nfs
+	mountpoint=$dirnas
+	SHARE=$dirnas
+fi
 umount -ql "$mountpoint"
 mkdir -p "$mountpoint"
 chown mpd:audio "$mountpoint"
-if [[ $protocol == cifs ]]; then
-	source="//$ip/$directory"
+if [[ $PROTOCOL == cifs ]]; then
+	source="//$IP/$SHARE"
 	options=noauto
-	if [[ ! $user ]]; then
+	if [[ ! $USER ]]; then
 		options+=,username=guest
 	else
-		options+=",username=$user,password=$password"
+		options+=",username=$USER,password=$PASSWORD"
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else
-	source="$ip:$directory"
+	source="$IP:$SHARE"
 	options=defaults,noauto,bg,soft,timeo=5
 fi
-[[ $extraoptions ]] && options+=,$extraoptions
+[[ $OPTIONS ]] && options+=,$OPTIONS
 fstab="\
 $( < /etc/fstab )
-${source// /\\040}  ${mountpoint// /\\040}  $protocol  ${options// /\\040}  0  0"
+$( space2ascii $source )  $( space2ascii $mountpoint )  $PROTOCOL  $( space2ascii $options )  0  0"
 mv /etc/fstab{,.backup}
 column -t <<< $fstab > /etc/fstab
 systemctl daemon-reload
@@ -55,9 +54,12 @@ else
 	rm /etc/fstab.backup
 fi
 
-[[ $update == true ]] && $dirbash/cmd.sh mpcupdate$'\n'"${mountpoint:9}"  # /mnt/MPD/NAS/... > NAS/...
+if [[ $update == true ]]; then
+	echo ${mountpoint:9} > $dirmpd/updating # /mnt/MPD/NAS/... > NAS/...
+	$dirbash/cmd.sh mpcupdate
+fi
 for i in {1..5}; do
 	sleep 1
 	mount | grep -q -m1 "$mountpoint" && break
 done
-[[ $shareddata == true ]] && sharedDataSet || pushRefresh
+[[ $SHAREDDATA ]] && $dirsettings/system.sh shareddataset || pushRefresh

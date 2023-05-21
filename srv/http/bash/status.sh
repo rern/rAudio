@@ -8,7 +8,15 @@
 
 . /srv/http/bash/common.sh
 
-[[ -L $dirmpd && ! -e $dirmpd/counts ]] && echo -1 && exit # >>>>>>>>>>
+mpc | grep ^Updating && updating_db=true || rm -f $dirmpd/updating
+
+if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
+	for i in {1..10}; do
+		sleep 1
+		[[ -e $dirmpd/counts ]] && mounted=1 && break
+	done
+	[[ ! $mounted ]] && echo -1 && exit # >>>>>>>>>>
+fi
 
 outputStatus() {
 	[[ ! $snapclient ]] && data2json "$status" || echo "$status" # - no braces
@@ -32,22 +40,24 @@ else
 		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
 			control=
 		else
+			card=$( getContent $dirsystem/asoundcard )
 			control=$( getContent $dirshm/amixercontrol )
 		fi
-		volume=$( $dirbash/cmd.sh volumeget )
+		volume=$( volumeGet value )
 	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
   "player"       : "'$player'"
 , "btreceiver"   : '$( exists $dirshm/btreceiver )'
-, "card"         : '$( < $dirsystem/asoundcard )'
+, "card"         : '$card'
 , "consume"      : '$consume'
 , "control"      : "'$control'"
 , "counts"       : '$( getContent $dirmpd/counts )'
 , "file"         : ""
 , "icon"         : "'$icon'"
 , "librandom"    : '$( exists $dirsystem/librandom )'
+, "lyrics"       : '$( exists $dirsystem/lyrics )'
 , "relays"       : '$( exists $dirsystem/relays )'
 , "relayson"     : '$( exists $dirshm/relayson )'
 , "scrobble"     : '$( exists $dirsystem/scrobble )'
@@ -55,7 +65,7 @@ else
 , "snapclient"   : '$( exists $dirshm/snapclient )'
 , "stoptimer"    : '$( exists $dirshm/stoptimer )'
 , "updateaddons" : '$( exists $diraddons/update )'
-, "updating_db"  : '$( exists $dirmpd/updating )'
+, "updating_db"  : '$updating_db'
 , "updatingdab"  : '$( exists $dirshm/updatingdab )'
 , "volume"       : '$volume'
 , "volumemute"   : '$volumemute'
@@ -67,16 +77,10 @@ if [[ $1 == withdisplay ]]; then
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
-	systemctl -q is-active rtsp-simple-server && dabradio=true
+	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	if [[ -e $filesharedip ]]; then
-		display=$( grep -Ev 'sd|usb|}' $dirsystem/display )
-		display+='
-, "sd"  : false
-, "usb" : false'
-	else
-		display=$( grep -v } $dirsystem/display )
-	fi
+	display=$( grep -v } $dirsystem/display.json )
+	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
 , "camilladsp"       : '$( exists $dirsystem/camilladsp )'
@@ -127,12 +131,11 @@ $( $dirbash/status-bluetooth.sh )"
 		;;
 	snapcast )
 		serverip=$( < $dirshm/serverip )
+		serverstatus=$( sshCommand $serverip $dirbash/status.sh snapclient )
 ########
-		status+="
-$( sshCommand $serverip $dirbash/status.sh snapclient \
-	| sed -E  -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-			' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
-			' -e 's|^, *"icon".*|, "icon" : "snapcast"|' )"
+		status+=$( sed -E  -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
+						 ' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|
+						 ' -e 's|^, *"icon".*|, "icon" : "snapcast"|' <<< $serverstatus )
 		;;
 	spotify )
 		. $dirshm/spotify/state
@@ -150,21 +153,16 @@ $( < $dirshm/spotify/status )"
 	outputStatus
 fi
 
-(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display ) == 2 )) && displaycover=1
+(( $( grep -cE '"cover".*true|"vumeter".*false' $dirsystem/display.json ) == 2 )) && displaycover=1
 
 filter='Album AlbumArtist Artist audio bitrate duration file Name state Time Title'
 [[ ! $snapclient ]] && filter+=' playlistlength random repeat single'
 filter=^${filter// /:|^}: # ^Album|^AlbumArtist|^Artist...
-mpdStatus() {
-	mpdtelnet=$( { echo clearerror; echo status; echo $1; sleep 0.05; } \
-					| telnet 127.0.0.1 6600 2> /dev/null \
-					| grep -E $filter )
-}
 songpos=$( mpc status %songpos% )                       # mpc songpos : start at 1
 (( $songpos > 0 )) && song=$(( songpos - 1 )) || song=0 # mpd song    : start at 0
-mpdStatus "playlistinfo $song"
-
-readarray -t lines <<< $mpdtelnet
+readarray -t lines <<< $( { echo clearerror; echo status; echo playlistinfo $song; sleep 0.05; } \
+								| telnet 127.0.0.1 6600 2> /dev/null \
+								| grep -E $filter )
 for line in "${lines[@]}"; do
 	key=${line/:*}
 	val=${line#*: }
@@ -181,12 +179,12 @@ for line in "${lines[@]}"; do
 			printf -v $key '%s' $val
 			;; # value of $key as "var name" - value of $val as "var value"
 		Album | AlbumArtist | Artist | Name | Title )
-			printf -v $key '%s' "$( sed 's/"/\\"/g; s/^\s*\|\s*$//g' <<< $val )"
+			printf -v $key '%s' "$( stringEscape $val )"
 			;;                   # string to escape " for json and trim leading/trailing spaces
 		file )
 			filenoesc=$val # no escape " for coverart and ffprobe
 			[[ $filenoesc == *".cue/track"* ]] && filenoesc=$( dirname "$filenoesc" )
-			file=${val//\"/\\\"}
+			file=$( stringEscape $val )
 			;;   # escape " for json
 		random | repeat | single )
 			[[ $val == 1 ]] && tf=true || tf=false
@@ -324,7 +322,7 @@ $radiosampling" > $dirshm/radio
 					readarray -t radioname <<< $( sed -E 's/ - |: /\n/' <<< $Title )
 					Artist=${radioname[0]}
 					Title=${radioname[1]}
-					! grep -q "$Title" /srv/http/assets/data/songs_with_trailing && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
+					! grep -q "$Title" /srv/http/assets/data/titles_with_paren && Title=$( sed -E 's/ +\(.*$| +\[.*$| +- .*$//' <<< $Title )
 				else
 					Artist=$station
 				fi
@@ -356,7 +354,7 @@ $radiosampling" > $dirshm/radio
 , "webradio"     : true'
 	if [[ $id ]]; then
 		sampling="$(( song + 1 ))/$pllength • $radiosampling"
-		elapsed=$( getElapsed )
+		elapsed=$( mpcElapsed )
 ########
 		status+='
 , "coverart"     : "'$coverart'"
@@ -497,7 +495,7 @@ status+='
 , "sampling" : "'$sampling'"'
 
 if [[ $coverart || ! $displaycover ]]; then # webradio $coverart exists
-	elapsed=$( getElapsed )
+	elapsed=$( mpcElapsed )
 # >>>>>>>>>> webradio with found coverart
 	status+='
 , "elapsed"  : '$elapsed
@@ -506,13 +504,14 @@ fi
 
 if [[ $ext != CD && ! $stream ]]; then
 	getcover=1
-	coverart=$( $dirbash/status-coverart.sh "\
+	coverart=$( $dirbash/status-coverart.sh "cmd
 $AlbumArtist
 $Album
-$filenoesc" )
+$filenoesc
+CMD ARTIST ALBUM FILE" )
 	[[ $coverart ]] && coverart="$coverart"
 fi
-elapsed=$( getElapsed )
+elapsed=$( mpcElapsed )
 ########
 	status+='
 , "elapsed"  : '$elapsed'
@@ -532,6 +531,8 @@ elif [[ $Album ]]; then
 $Artist
 $Album"
 fi
-if [[ $args ]]; then # no shorthand for ... &> /dev/null &
-	$dirbash/status-coverartonline.sh "$args" &> /dev/null &
-fi
+[[ ! $args ]] && exit
+
+$dirbash/status-coverartonline.sh "cmd
+$args
+CMD ARTIST ALBUM TYPE" &> /dev/null &

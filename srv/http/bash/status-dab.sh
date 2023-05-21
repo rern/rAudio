@@ -4,7 +4,7 @@
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
-station=${tmpradio[1]//\"/\\\"}
+station=$( stringEscape ${tmpradio[1]} )
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
 filelabel=$dirshm/webradio/DABlabel.txt
@@ -21,7 +21,7 @@ while true; do
   "Album"    : "DAB Radio"
 , "Artist"   : "'$station'"
 , "coverart" : ""
-, "elapsed"  : '$( getElapsed )'
+, "elapsed"  : '$( mpcElapsed )'
 , "file"     : "'$file'"
 , "icon"     : "dabradio"
 , "sampling" : "'$pos'/'$total' • 48 kHz 160 kbit/s • DAB"
@@ -32,7 +32,14 @@ while true; do
 , "Time"     : false
 , "Title"    : "'$( < $filetitle )'"
 }'
-		$dirbash/status-push.sh statusradio "$data" &
+		pushstream mpdradio "$data"
+		status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
+		status+='
+timestamp='$( date +%s%3N )'
+webradio=true
+player="mpd"'
+		echo "$status" > $dirshm/status
+		$dirbash/status-push.sh statusradio &
 	fi
 	# coverart
 	[[ ! $( awk NF $filecover ) ]] && sleep 10 && continue
@@ -46,7 +53,7 @@ while true; do
 ' -e "$ a\
 coverart=$coverart
 " $dirshm/status
-		pushstream coverart '{"type":"coverart","url":"'$coverart'"}'
+		pushstream coverart '{ "url": "'$coverart'", "type": "coverart" }'
 	fi
 	sleep 10
 done

@@ -13,7 +13,11 @@
 . /srv/http/bash/common.sh
 
 ##### start
-[[ $( < $dirshm/player ) != spotify ]] && $dirbash/cmd.sh playerstart$'\n'spotify && exit
+if [[ $( < $dirshm/player ) != spotify ]]; then
+	echo spotify > $dirshm/player
+	$dirbash/cmd.sh playerstart
+	exit
+fi
 
 [[ $PLAYER_EVENT == volumeset ]] && $dirbash/cmd.sh volumepushstream
 
@@ -25,7 +29,7 @@ done
 if [[ -e $fileexpire && $( < $fileexpire ) > $( date +%s ) ]]; then
 	token=$( < $filetoken )
 else
-	. $dirsystem/spotify # base64client, refreshtoken
+	. $dirsystem/spotifykey # base64client, refreshtoken
 	token=$( curl -s -X POST https://accounts.spotify.com/api/token \
 				-H "Authorization: Basic $base64client" \
 				-d grant_type=refresh_token \

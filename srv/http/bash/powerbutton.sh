@@ -27,4 +27,4 @@ else
 	gpio -1 wfi $sw falling
 fi
 
-/srv/http/bash/cmd.sh power$'\n'off
+/srv/http/bash/cmd.sh poweroff

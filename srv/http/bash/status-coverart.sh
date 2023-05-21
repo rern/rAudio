@@ -2,13 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-readarray -t args <<< $1
-artist=${args[0]}
-album=${args[1]}
-file=${args[2]}
-type=${args[3]}
-filename=$( basename "$file" )
-path="/mnt/MPD/$file"
+args2var "$1"
+
+filename=$( basename "$FILE" )
+path="/mnt/MPD/$FILE"
 [[ -f "$path" ]] && path=$( dirname "$path" )
 
 # found cover file
@@ -29,7 +26,7 @@ embeddedname=$( tr -d ' "`?/#&'"'" <<< $filename ).jpg
 embeddedfile=$dirshm/embedded/$embeddedname
 [[ -f "$embeddedfile" ]] && echo ${embeddedfile:9} && exit
 # found online
-covername=$( tr -d ' "`?/#&'"'" <<< $artist$album )
+covername=$( tr -d ' "`?/#&'"'" <<< $ARTIST$ALBUM )
 onlinefile=$( ls -1X $dirshm/online/${covername,,}.{jpg,png} 2> /dev/null | head -1 )
 [[ -f $onlinefile ]] && echo ${onlinefile:9} && exit
 
@@ -52,9 +49,10 @@ if [[ -f $embeddedfile ]]; then
 	exit
 fi
 
-[[ ! $artist || ! $album ]] && exit
+[[ ! $ARTIST || ! $ALBUM ]] && exit
 
 ##### online
-$dirbash/status-coverartonline.sh "\
-$artist
-$album" &> /dev/null &
+$dirbash/status-coverartonline.sh "cmd
+$ARTIST
+$ALBUM
+CMD ARTIST ALBUM" &> /dev/null &

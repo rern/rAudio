@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+cpuInfo
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
 
@@ -15,10 +16,7 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
-	[[ ! -e /boot/backup.gz ]] && $dirsettings/system.sh timezoneauto
-	# no on-board wireless - remove bluetooth
-	cpuInfo
-	[[ ! $onboardwireless ]] && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
+	! grep -q onboardwireless=true $dirshm/cpuinfo && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
@@ -38,12 +36,26 @@ if [[ -e /boot/wifi && $wlandev ]]; then
 	cat << EOF > "$filebootwifi"
 Interface=$wlandev
 $( grep -E -v '^#|^\s*$|^Interface|^ESSID|^Key' <<< $wifi )
-ESSID="$( sed 's/"/\\"/g' <<< $ssid )"
-Key="$( sed 's/"/\\"/g' <<< $key )"
+ESSID="$( stringEscape $ssid )"
+Key="$( stringEscape $key )"
 EOF
-	$dirsettings/networks.sh profileconnect$'\n'"$ssid"
+	$dirsettings/networks.sh "profileconnect
+$ssid
+CMD SSID"
 fi
 # ----------------------------------------------------------------------------
+
+[[ -e $dirsystem/lcdchar ]] && $dirbash/lcdchar.py logo
+
+[[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
+
+[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
+
+filebrightness=/sys/class/backlight/rpi_backlight/brightness
+if [[ -e $filebrightness ]]; then
+	chmod 666 $filebrightness
+	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $filebrightness
+fi
 
 connectedCheck() {
 	for (( i=0; i < $1; i++ )); do
@@ -56,8 +68,8 @@ connectedCheck() {
 mkdir -p $dirshm/{airplay,embedded,spotify,local,online,sampling,webradio}
 chmod -R 777 $dirshm
 chown -R http:http $dirshm
-echo state=stop > $dirshm/status
-echo mpd $dirshm/player
+echo 'state="stop"' > $dirshm/status
+echo mpd > $dirshm/player
 
 lsmod | grep -q -m1 brcmfmac && touch $dirshm/onboardwlan # initial status
 
@@ -67,42 +79,39 @@ connectedCheck 5 1
 [[ ! $connected ]] && connectedCheck 30 3
 # if wlan not connected, try connect with saved profile
 if [[ ! $connected && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
-	devprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
-	if [[ $devprofile ]]; then
+	fileprofile=$( grep -rl $wlandev /etc/netctl | head -1 )
+	if [[ $fileprofile ]]; then
 		$dirsettings/networks.sh "profileconnect
-$( basename "$devprofile" )"
+$( basename "$fileprofile" )
+CMD SSID"
 		connectedCheck 30 3
 	fi
 fi
 
 if [[ $connected  ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
-	readarray -t nas <<< $( find $dirnas -mindepth 1 -maxdepth 1 -type d )
+	readarray -t nas <<< $( grep -v ^PARTUUID /etc/fstab | awk '{print $2}' )
 	if [[ $nas ]]; then
 		for mountpoint in "${nas[@]}"; do # ping target before mount
-			ip=$( grep "${mountpoint// /\\\\040}" /etc/fstab \
-					| cut -d' ' -f1 \
-					| sed 's|^//||; s|:*/.*$||' )
-			[[ ! $ip ]] && continue
-			
+			mp=$( space2ascii $mountpoint )
+			ip=$( grep $mp /etc/fstab | cut -d: -f1 )
+			[[ ${ip:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $ip )
 			for i in {1..10}; do
-				if ping -4 -c 1 -w 1 $ip &> /dev/null; then
-					mount "$mountpoint" && break
-				else
-					(( i == 10 )) && nasfailed=1
+				if ipOnline $ip; then
+					mount "$mountpoint" && nasonline=1 && break
 					sleep 2
 				fi
 			done
 		done
 	fi
-	if [[ -L $dirshareddata ]]; then # server rAudio
-		mv -f $filesharedip{.backup,}
-		ips=$( grep -v $( ipAddress ) $filesharedip )
-		for ip in $ips; do
-			sshCommand $ip $dirsettings/system.sh shareddataconnect
-		done
-	elif [[ -e $filesharedip ]]; then # rclient
-		$dirsettings/system.sh shareddataiplist
+	if [[ -e $filesharedip ]]; then
+		if [[ -s /etc/exports && -s $filesharedip ]]; then
+			sharedip=$( < $filesharedip )
+			for ip in $sharedip; do
+				notify $ip networks 'Server rAudio' Online
+			done
+		fi
+		appendSortUnique $( ipAddress ) $filesharedip
 	fi
 else
 	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
@@ -111,32 +120,25 @@ fi
 $dirsettings/player-conf.sh # mpd.service started by this script
 
 # after all sources connected ........................................................
-
-if [[ -e $dirsystem/lcdchar ]]; then
-	lcdcharinit.py
-	lcdchar.py logo
-fi
-[[ -e $dirsystem/mpdoled ]] && $dirsettings/system.sh mpdoledlogo
-
-[[ -e $dirsystem/soundprofile ]] && $dirsettings/system.sh soundprofileset
-
-file=/sys/class/backlight/rpi_backlight/brightness
-if [[ -e $file ]]; then
-	chmod 666 $file
-	[[ -e $dirsystem/brightness ]] && cat $dirsystem/brightness > $file
-fi
-
 if [[ $connected ]]; then
-	internetConnected && $dirbash/cmd.sh addonsupdates
+	if internetConnected; then
+		$dirsettings/addons-data.sh &> /dev/null &
+	fi
 elif [[ ! -e $dirsystem/wlannoap && $wlandev ]] && ! systemctl -q is-enabled hostapd; then
 	$dirsettings/features.sh hostapdset
 	systemctl -q disable hostapd
 fi
 
-[[ -e $dirsystem/hddsleep ]] && $dirsettings/system.sh hddsleep$'\n'$( < $dirsystem/apm )
+if [[ -e $dirsystem/hddsleep && -e $dirsystem/apm ]]; then
+	$dirsettings/system.sh "hddsleep
+$( < $dirsystem/apm )
+CMD APM"
+fi
 
 if [[ ! -e $dirmpd/mpd.db ]]; then
-	$dirbash/cmd.sh mpcupdate$'\n'rescan
+	echo rescan > $dirmpd/updating
+	mpc -q rescan
+	pushstream mpdupdate '{ "type": "mpd" }'
 elif [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
@@ -152,18 +154,19 @@ if (( $( rfkill | grep -c wlan ) > 1 )) \
 else
 	onboardwlan=true
 fi
-pushstream refresh '{"page":"system","wlan":'$onboardwlan'}'
-pushstream refresh '{"page":"networks","activewl":'$onboardwlan'}'
+pushstream refresh '{ "page": "system", "wlan": '$onboardwlan' }'
+pushstream refresh '{ "page": "networks", "activewl": '$onboardwlan' }'
 
 if [[ $restorefailed ]]; then
 	notify restore "$restorefailed" 10000
-elif [[ $nasfailed ]]; then
+elif [[ $nas && ! $nasonline ]]; then
 	notify nas NAS "NAS @$ip cannot be reached." -1
 fi
 
 touch $dirshm/startup
-
-[[ -e $dirsystem/autoplay ]] && $dirbash/cmd.sh mpcplayback$'\n'play
+if [[ -e $dirsystem/autoplay ]] && grep -q startup=true $dirsystem/autoplay.conf; then
+	$dirbash/cmd.sh mpcplayback$'\n'play$'\nCMD ACTION'
+fi
 
 if [[ -e /boot/startup.sh ]]; then # no shorthand for last if else - startup.service failed
 	/boot/startup.sh

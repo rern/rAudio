@@ -3,6 +3,7 @@
 . /srv/http/bash/common.sh
 
 listBluetooth() {
+	local dev devices info listbt mac
 	readarray -t devices <<< $( bluetoothctl devices Paired | sort -k3 -fh  )
 	if [[ $devices ]]; then
 		for dev in "${devices[@]}"; do
@@ -15,63 +16,63 @@ listBluetooth() {
 , "type"      : "'$( awk '/UUID: Audio/ {print $3}' <<< $info | tr -d '\n' )'"
 }'
 		done
-		listbt="[ ${listbt:1} ]"
+		echo [ ${listbt:1} ]
 	fi
 }
+if [[ $1 == pushbt ]]; then
+	listbt=$( listBluetooth )
+	if [[ $listbt ]]; then
+		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
+		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
+		pushstream bluetooth '{ "connected": '$connected', "btreceiver": '$btreceiver' }'
+	else
+		listbt=false
+	fi
+	pushstream bluetooth "$listbt"
+	exit
+fi
+
+wldev=$( < $dirshm/wlan )
 listWlan() {
-	wldev=$( < $dirshm/wlan )
+	local dbm listwl notconnected profiles profile
 	readarray -t profiles <<< $( ls -1p /etc/netctl | grep -v /$ )
 	if [[ $profiles ]]; then
 		for profile in "${profiles[@]}"; do
 			! grep -q 'Interface="*'$wldev "/etc/netctl/$profile" && continue
 			if netctl is-active "$profile" &> /dev/null; then
 				for i in {1..10}; do
-					ipwl=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
-					[[ $ipwl ]] && break || sleep 1
+					IPWL=$( ifconfig $wldev | awk '/inet.*broadcast/ {print $2}' )
+					[[ $IPWL ]] && break || sleep 1
 				done
-				gateway=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
+				gatewaywl=$( ip r | grep "^default.*$wldev" | cut -d' ' -f3 )
 				dbm=$( awk '/'$wldev'/ {print $4}' /proc/net/wireless | tr -d . )
 				[[ ! $dbm ]] && dbm=0
 				listwl=',{
 	  "dbm"      : '$dbm'
-	, "gateway"  : "'$gateway'"
-	, "ip"       : "'$ipwl'"
-	, "ssid"     : "'${profile//\"/\\\"}'"
+	, "gateway"  : "'$gatewaywl'"
+	, "ip"       : "'$IPWL'"
+	, "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			else
-				listwlnotconnected+=',{
-	  "ssid"     : "'${profile//\"/\\\"}'"
+				notconnected+=',{
+	  "ssid"     : "'$( stringEscape $profile )'"
 	}'
 			fi
 		done
 	fi
-	[[ $$listwlnotconnected ]] && listwl+="$listwlnotconnected"
-	[[ $listwl ]] && listwl="[ ${listwl:1} ]"
+	[[ $notconnected ]] && listwl+="$notconnected"
+	[[ $listwl ]] && LISTWL='[ '${listwl:1}' ]' || LISTWL=false
 }
-
-if [[ $1 == pushbt ]]; then
-	listBluetooth
-	if [[ $listbt ]]; then
-		grep -q -m1 '"type" : "Sink"' <<< $listbt && btreceiver=true || btreceiver=false
-		grep -q -m1 '"connected" : true' <<< $listbt && connected=true || connected=false
-		pushstream bluetooth '{"connected":'$connected',"btreceiver":'$btreceiver'}'
-	else
-		listbt=false
-	fi
-	pushstream bluetooth "$listbt"
-	exit
-	
-elif [[ $1 == pushwl ]]; then
+if [[ $1 == pushwl ]]; then
+	pushwl=1
 	listWlan
-	[[ ! $listwl ]] && listwl=false
-	pushstream wlan "$listwl"
+	pushstream wlan '{ "listwl": '$LISTWL', "ipwl": "'$IPWL'", "gatewaywl": "'$gatewaywl'" }'
 	exit
-	
 fi
 
 # bluetooth
 rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
-[[ $activebt ]] && listBluetooth
+[[ $activebt ]] && listbt=$( listBluetooth )
 
 # wlan
 [[ -e $dirshm/wlan ]] && listWlan
@@ -103,17 +104,14 @@ if [[ $ipeth ]]; then
 , "static"   : '$static'
 }'
 fi
+[[ ! $gateway ]] && gateway=$gatewaywl
 
 # hostapd
 if systemctl -q is-active hostapd; then
-	ssid=$( awk -F'=' '/^ssid/ {print $2}' /etc/hostapd/hostapd.conf )
-	passphrase=$( awk -F'=' '/^wpa_passphrase/ {print $2}' /etc/hostapd/hostapd.conf )
-	ip=$( awk -F',' '/router/ {print $2}' /etc/dnsmasq.conf )
-	ap='{
-  "ssid"       : "'${ssid//\"/\\\"}'"
-, "passphrase" : "'${passphrase//\"/\\\"}'"
-, "ip"         : "'$ip'"
-, "conf"       : '$( $dirsettings/features.sh hostapdget )'
+	hostapd='{
+  "ssid"       : "'$( hostname )'"
+, "ip"         : "'$( grep router /etc/dnsmasq.conf | cut -d, -f2 )'"
+, "passphrase" : "'$( getVar wpa_passphrase /etc/hostapd/hostapd.conf )'"
 }'
 fi
 
@@ -124,12 +122,15 @@ data='
 , "activewl"    : '$( rfkill | grep -q -m1 wlan && echo true )'
 , "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "connectedwl" : '$( netctl list | grep -q -m1 '^\*' && echo true )'
+, "gateway"     : "'$gateway'"
 , "ipeth"       : "'$ipeth'"
-, "ipwl"        : "'$ipwl'"
+, "ipsub"       : "'$( ipSub )'"
+, "ipwl"        : "'$IPWL'"
 , "listbt"      : '$listbt'
 , "listeth"     : '$listeth'
-, "listwl"      : '$listwl'
-, "hostapd"     : '$ap'
-, "hostname"    : "'$( hostname )'"'
+, "listwl"      : '$LISTWL'
+, "hostapd"     : '$hostapd'
+, "hostname"    : "'$( hostname )'"
+, "wldev"       : "'$wldev'"'
 
 data2json "$data" $1

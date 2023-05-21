@@ -2,87 +2,180 @@
 
 alias=r1
 
-[[ -e /srv/http/bash/addons.sh ]] && . /srv/http/bash/addons.sh || . /srv/http/bash/settings/addons.sh
+# restore 20230511
+#. /srv/http/bash/settings/addons.sh
 
-# 20230310
-[[ ! -e $dirmpdconf/bluetooth.conf ]] && touch $dirsystem/btoutputonly
+# 20230511
+[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230218
-sed -E -i 's/(cursor=)true/\1yes/; s/(cursor=)false/\1no/' $dirsystem/localbrowser.conf &> /dev/null
+if crontab -l | grep -q addonsupdates; then
+	echo "\
+00 01 * * * $dirsettings/addons-data.sh
+$( crontab -l | grep -v addonsupdates )" | crontab -
+fi
 
-[[ -d $dirsystem/scrobble.conf ]] && rm -rf $dirsystem/scrobble.conf
-if [[ -e /boot/kernel7.img ]]; then
-	if [[ ! -e /usr/bin/firefox ]]; then
-		echo -e "$bar Switch Browser on RPi to Firefox ..."
-		pacman -R --noconfirm chromium
-		pacman -Sy --noconfirm firefox
-		timeout 1 firefox --headless &> /dev/null
+if ls $dirsystem/autoplay* &> /dev/null && [[ ! -s $dirsystem/autoplay ]]; then
+	k=( startup bluetooth cd )
+	f=( autoplay autoplaybt autoplaycd )
+	for (( i=0; i < 3; i++ )); do
+		[[ -e $dirsystem/${f[i]} ]] && data+=${k[i]}=true || data+=${k[i]}=false
+	done
+	echo "$data" >> $dirsystem/autoplay
+	rm -f $dirsystem/{autoplaybt,autoplaycd}
+fi
+
+rm -f $dirsystem/btoutputonly
+[[ -e $dirmpdconf/bluetooth.conf && -e $dirmpdconf/output.conf ]] && touch $dirsystem/btoutputall
+
+file=$dirsystem/equalizer.conf
+if [[ ! -e ${file/.*} ]]; then
+	rm -f $file
+elif [[ ! -e$dirsystem/equalizer.json ]]; then
+	active=$( head -1 $file )
+	current=$( sed -n "/^$active^/ {s/^.*\^//; p}" $file )
+	readarray -t lines <<< $( grep -v '^Flat$' $file )
+	for l in "${lines[@]}"; do
+		preset+=', "'${l/^*}'" : [ '$( tr ' ' , <<< ${l/*^} )' ]'
+	done
+	data='{
+  "active"  : "'$active'"
+, "current" : "'$current'"
+, "preset"  : {
+	"Flat": [ 62, 62, 62, 62, 62, 62, 62, 62, 62, 62 ]'
+	$preset'
+	}
+}'
+	jq <<< $data > $dirsystem/equalizer.json
+	rm $file
+fi
+
+for file in display order; do
+	[[ -e $dirsystem/$file ]] && mv $dirsystem/$file{,.json}
+done
+
+file=/etc/systemd/system/lcdchar.service
+if [[ ! -e $file ]]; then
+	echo '[Unit]
+Description=Character LCD
+
+[Service]
+ExecStart=/srv/http/bash/lcdchar.py' > $file
+	systemctl daemon-reload
+fi
+file=$dirsystem/lcdchar.conf
+if [[ ! -e ${file/.*} ]]; then
+	rm -f $file
+elif [[ -e $file ]]; then
+	. $file
+	data='inf="'$inf'"
+cols='$cols'
+charmap="'$charmap'"'
+	if [[ $address ]]; then
+		data+='
+address='$(( 16#${address: -2} ))'
+chip="'$chip'"'
+	else
+		data+='
+pin_rs='$pin_rs'
+pin_rw='$pin_rw'
+pin_e='$pin_e
+		p=( $( tr [,] ' ' <<< $pins_data ) )
+		for (( i=0; i < 4; i++ )); do
+			data+="
+p$i=${p[i]}"
+		done
 	fi
-	! grep -q hdmi_force_hotplug=1 /boot/config.txt && echo hdmi_force_hotplug=1 >> /boot/config.txt
+	data+='
+backlight='$backlight
+	echo $data > $dirsystem/lcdcharconf.py
+	rm -f $file
 fi
 
-# 20230212
-if [[ -e /boot/kernel8.img && ! $( ls /etc/systemd/network/et* 2> /dev/null ) ]]; then
-	sed 's/=en/=eth/' /etc/systemd/network/en.network > /etc/systemd/network/eth.network
+file=$dirsystem/localbrowser.conf
+if ! systemctl -q is-enabled localbrowser; then
+	rm -f $file
+elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
+	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
+	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
+	. $file
+	conf="\
+rotate=$rotate
+zoom=$zoom
+screenoff=$screenoff
+onwhileplay=$onwhileplay
+hdmi=$hdmi
+cursor=$( [[ $cursor == yes ]] && echo true )"
+	echo "$conf" > $file
 fi
 
-# 20230130
-if ! grep -q onevent /etc/spotifyd.conf; then
-	echo '[global]
-bitrate = 320
-onevent = "/srv/http/bash/spotifyd.sh"
-use_mpris = false
-backend = "alsa"
-volume_controller = "alsa"' > /etc/spotifyd.conf
-	$dirsettings/player-conf.sh
+file=$dirsystem/relays.conf
+if [[ ! -e ${file/.*} ]]; then
+	rm -f $file
+elif [[ ! -e $dirsystem/relays.json ]]; then
+	. $file
+	data="\
+on='${on[@]}'
+off='${off[@]}'
+ond='${ond[@]}'
+offd='${offd[@]}'
+timer=$timer"
+	p=( $( tr , ' ' <<< ${pin:2:-2} ) )
+	n=( $( tr , ' ' <<< ${name:2:-2} ) )
+	for (( i=0; i < 4; i++ )); do
+		pn+=', "'${p[i]}'" : '${n[i]}
+	done
+	json='{ '${pn:1}' }'
+	jq <<< $json > $dirsystem/relays.json
+	for p in ${on[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderon+=$name'\n'
+	done
+	for p in ${off[@]}; do
+		name=$( jq -r '.["'$p'"]' <<< $json )
+		[[ $name ]] && orderoff+=$name'\n'
+	done
+	data+='
+orderon="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderon )'"
+orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
+	echo "$data" > $file
 fi
 
-# 20130129
-file=/srv/http/settings/camillagui/backend/views.py
-if [[ -e $file ]] && ! grep -q 'name == "mute"' $file; then
-	sed -i -e '/cdsp.get_volume/ a\
-    elif name == "mute":\
-        config = cdsp.get_config()\
-        mute = True if cdsp.get_mute() else False\
-        volume = cdsp.get_volume()\
-        result = {"config": config, "mute": mute, "volume": volume}\
-        return web.json_response(result)\
-        
-' -e '/cdsp.set_volume/ a\
-    elif name == "mute":\
-        cdsp.set_mute(value == "true")
-' $file
-	file=$dircamilladsp/configs/camilladsp.yml
-	! grep -q '\- Volume' $file && sed -i '/names:/ a\  - Volume' $file
+[[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
+
+if [[ -L $dirmpd && ! -s /etc/exports && -e /mnt/MPD/SD ]]; then
+	mv /mnt/MPD/{SD,USB} /mnt
+	sed -i 's|/mnt/MPD/USB|/mnt/USB|' /etc/udevil/udevil.conf
+	systemctl restart devmon@http
+	rm /mnt/MPD/.mpdignore
 fi
 
-# 20130123
-if [[ -e $dircamilladsp/configs/default_config.yml ]]; then
-	file=$dircamilladsp/configs/camilladsp.yml
-	! grep -q '\- Volume' $file && sed -i '/names:/ a\  - Volume' $file
-	mv $dircamilladsp/{configs/,}default_config.yml
-	rm $dircamilladsp/configs/active_config.yml
-	ln -s $dircamilladsp/{configs/camilladsp,active_config}.yml
+[[ -e $dirsystem/spotify ]] && mv $dirsystem/spotify{,key}
+
+if [[ ! -e $dirshm/cpuinfo ]]; then
+	file=$dirsystem/usbautoupdate
+	[[ -e $file ]] && rm $file || touch $file{,no}
 fi
 
-# 20230117
-file=/etc/systemd/system/spotifyd.service
-! grep -q ^User $file && sed -i '/CPUAffinity/ a\User=root' $file
-systemctl daemon-reload
-systemctl try-restart spotifyd
+file=$dirsystem/vuled.conf
+if [[ ! -e ${file/.*} ]]; then
+	rm -f $file
+elif ! grep -q ^p0 $file; then
+	pins=( $( < $file ) )
+	data=
+	for (( i=0; i < 7; i++ )); do
+		data+="p$i=${pins[i]}"$'\n'
+	done
+	echo "$data" > $file
+fi
 
 #-------------------------------------------------------------------------------
 installstart "$1"
 
-rm -rf /srv/http/assets/{css,fonts,js}
-
 getinstallzip
 
-[[ ! -e /usr/bin/camilladsp ]] && rm -rf /srv/http/settings/camillagui
-
-$dirsettings/system-datareset.sh dirpermissions
+. $dirbash/common.sh
+dirPermissions
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-
 hash=?v=$( date +%s )
 sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
 sed -i "s/?v=.*/$hash';/" /srv/http/common.php
@@ -90,7 +183,21 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20230224
-if [[ -e $dirmpdconf/replaygain.conf ]]; then
-	! grep -q mixer_type.*software $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+# 20230511
+[[ ! -e $dirshm/cpuinfo ]] && cpuInfo
+
+! grep -q listing $dirbash/mpdidle.sh && systemctl restart mpd
+
+file=$dirsystem/multiraudio.conf
+if [[ -e $file ]]; then
+	filejson=${file/conf/json}
+	grep -q '{' $file && jq < $file > $filejson || conf2json $file | jq > $filejson
+	rm -f $file
+fi
+
+if grep -q /srv/http/data /etc/exports; then
+	echo "$info Server rAudio:
+- Disconnect client
+- Disable server
+- Re-enable again" 
 fi

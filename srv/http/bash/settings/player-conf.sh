@@ -17,7 +17,7 @@ usbdac=$1
 pushData() {
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
-	[[ $usbdac ]] && pushstream refresh '{"page":"system","audiocards":'$( aplay -l | grep ^card | grep -c -v Loopback )'}'
+	[[ $usbdac ]] && pushstream refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
 }
 
 rm -f $dirmpdconf/{bluetooth,output}.conf
@@ -25,7 +25,7 @@ rm -f $dirmpdconf/{bluetooth,output}.conf
 # outputs -----------------------------------------------------------------------------
 if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
-	[[ -e $dirsystem/btoutputonly ]] && btoutputonly=1
+	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
 #---------------< bluetooth
 	audiooutputbt='
 	name        "'$btmixer'"
@@ -46,8 +46,8 @@ fi
 
 if [[ $asoundcard == -1 ]]; then # no audio devices
 	if [[ $usbdac == remove ]]; then
-		pushstream display '{"volumenone":true}'
-		pushstream refresh '{"page":"features","nosound":true}'
+		pushstream display '{ "volumenone": true }'
+		pushstream refresh '{ "page": "features", "nosound": true }'
 		systemctl stop camilladsp &> /dev/null
 		outputswitch='(None)'
 	fi
@@ -58,13 +58,12 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	hwmixer=${Ahwmixer[asoundcard]}
 	mixertype=${Amixertype[asoundcard]}
 	name=${Aname[asoundcard]}
-	echo $hwmixer > $dirshm/amixercontrol
 	# usbdac.rules
 	if [[ $usbdac ]]; then
 		$dirbash/cmd.sh playerstop
 		[[ $mixertype == none ]] && volumenone=true || volumenone=false
-		pushstream display '{"volumenone":'$volumenone'}'
-		pushstream refresh '{"page":"features","nosound":'$volumenone'}'
+		pushstream display '{ "volumenone": '$volumenone' }'
+		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
 		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
@@ -129,7 +128,7 @@ $( sed 's/  *"/^"/' <<< $audiooutput | column -t -s^ )
 ########
 fi
 
-if [[ ( ! $audiooutput && ! -e $dirsystem/snapclientserver && ! -e $dirsystem/btoutputonly )
+if [[ ( ! $audiooutput && ! $btoutputonly && ! -e $dirsystem/snapclientserver )
 	|| -e $dirsystem/vumeter || -e $dirsystem/vuled || -e $dirsystem/mpdoled ]]; then
 	ln -sf $dirmpdconf/{conf/,}fifo.conf
 else
@@ -147,7 +146,10 @@ if [[ -e $dirmpd/updating ]]; then
 	path=$( < $dirmpd/updating )
 	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
 fi
-[[ -e $dirsystem/autoplaybt && -e $dirshm/btreceiver ]] && mpc -q play
+
+if [[ -e $dirshm/btreceiver && -e $dirsystem/autoplay ]]; then
+	grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+fi
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
@@ -157,12 +159,13 @@ fi
 
 # renderers ----------------------------------------------------------------------------
 
-if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N,0";
+if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N";
 	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
 ########
-	conf="$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+	conf="\
+$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 alsa = {
-	output_device = \"$hw\";"
+	output_device = \"hw:$card\";"
 	
 	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
 		conf+='

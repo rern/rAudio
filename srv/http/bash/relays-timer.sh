@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+killProcess relaystimer
+echo $$ > $dirshm/pidrelaystimer
+
 timerfile=$dirshm/relaystimer
 timer=$( < $timerfile )
 i=$timer
@@ -16,12 +19,12 @@ while sleep 60; do
 		[[ $i != $timer ]] && echo $timer > $timerfile
 	else
 		i=$( < $timerfile )
-		(( $i == 1 )) && $dirsettings/relays.sh && exit
+		(( $i == 1 )) && $dirbash/relays.sh off && exit
 		
 		(( i-- ))
 		echo $i > $timerfile
 		(( $i > 1 )) && continue
 		
-		pushstream relays '{"state":"IDLE","timer":'$timer'}'
+		pushstream relays '{ "state": "IDLE", "timer": '$timer' }'
 	fi
 done

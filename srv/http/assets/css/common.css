@@ -1,15 +1,16 @@
 #banner       { z-index: 125 }
 #loader       { z-index: 120 }
 #infoOverlay,
+#keyboard,
 #button-data  { z-index: 115 }
-#data         { z-index: 110 }
-#keyboard     { z-index: 108 }
+#data,
+#degug        { z-index: 110 }
 .head         { z-index: 95 }
 .albumrefresh { z-index: 1 }
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1677937520' );
+	src         : url( '/assets/fonts/rern.woff2?v=1683942340' );
 }
 @font-face {
 	font-family : Lato;
@@ -103,7 +104,6 @@ i {
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }
 .i-latest::before          { content: '\F55E' }
-.i-lcd::before             { content: '\F577' }
 .i-lcdchar::before         { content: '\F578' }
 .i-led::before             { content: '\F52B' }
 .i-librandom::before       { content: '\F569' }
@@ -114,7 +114,6 @@ i {
 .i-lock::before            { content: '\F574' }
 .i-login::before           { content: '\F574' }
 .i-lyrics::before          { content: '\F54B' }
-.i-lyricsembedded::before  { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
 .i-minus-circle::before    { content: '\F563' }
@@ -126,8 +125,7 @@ i {
 .i-nas::before             { content: '\F551' }
 .i-networks::before        { content: '\F551' }
 .i-next::before            { content: '\F505' }
-.i-nfsserver::before       { content: '\F551' }
-.i-off::before             { content: '\F520' }
+.i-nfsserver::before       { content: '\F53C' }
 .i-output::before          { content: '\F52A' }
 .i-pause::before           { content: '\F504' }
 .i-play::before            { content: '\F503' }
@@ -196,6 +194,7 @@ i {
 .i-stoptimer::before       { content: '\F570' }
 .i-system::before          { content: '\F590' }
 .i-tag::before             { content: '\F55B' }
+.i-tft::before             { content: '\F577' }
 .i-times::before           { content: '\F51A' }
 .i-timezone::before        { content: '\F575' }
 .i-title::before           { content: '\F54A' }
@@ -241,19 +240,8 @@ body {
 	-moz-box-sizing    :border-box;
 	box-sizing         :border-box;
 }
-*:focus,
 *:active {
 	outline: none !important;
-}
-input:focus { /* focus - cannot combine with others */
-	outline: none !important;
-}
-input:focus-visible {
-	outline: none !important;
-}
-input::-moz-focus-inner {
-	outline : 0 !important;
-	border  : 0;
 }
 .hide { display: none !important }
 .hidden { visibility: hidden }
@@ -296,6 +284,15 @@ input::-moz-focus-inner {
 	white-space : pre-wrap;
 	background  : #000;
 }
+#debug {
+	position: fixed;
+	display: none;
+	bottom: 0;
+	right: 0;
+	width: 40px;
+	height: 40px;
+	z-index: 110;
+}
 codered  {
 	padding       : 0px 5px 3px 5px;
 	border-radius : 3px;
@@ -309,7 +306,7 @@ codered  {
 	height: 40px;
 	padding-right: 10px;
 	background: var( --cga );
-	box-shadow: 0px 4px 10px #000000;
+	box-shadow: var( --shadow-bar );
 }
 .head i {
 	width: 40px;
@@ -317,7 +314,7 @@ codered  {
 	line-height: 38px;
 	text-align: center;
 	font-size: 24px;
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 .head .i-close {
 	color: var( --cm );
@@ -381,6 +378,10 @@ codered  {
 #bannerMessage {
 	font-size: 16px;
 }
+#bannerMessage i {
+	margin-right: 5px;
+	color: var( --cg75 );
+}
 #bannerMessage,
 #banner .time,
 #banner .li2 {
@@ -422,7 +423,7 @@ codered  {
 	background: var( --wkgloss );
 	background-color: var( --cm );
 	-webkit-appearance: none;
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 #infoRange input::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
@@ -432,7 +433,7 @@ codered  {
 	background: var( --gloss );
 	background: var( --wkgloss );
 	background-color: var( --cm );
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 #infoRange input:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
@@ -481,13 +482,13 @@ codered  {
 
 /* info */
 .infobtn,
-input[type=radio],
-input[type=checkbox] {
+input[ type=radio ],
+input[ type=checkbox ] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 									  /* x   y   w    h */
-	box-shadow: -1px 1px 2px 1px #000000;  /* x, y, blurw, shadoww, color */
+	box-shadow: var( --shadow-check );  /* x, y, blurw, shadoww, color */
 }
 .infobtn {
 	display: inline-block;
@@ -505,7 +506,7 @@ input[type=checkbox] {
 	text-align: center;
 	color: var( --cw ) !important;
 	background-color: var( --cg );
-	box-shadow: -2px 2px 3px 1px #000000;
+	box-shadow: var( --shadow-btn );
 	cursor: pointer;
 	user-select: none;
 	-webkit-user-select: none;
@@ -519,12 +520,22 @@ input[type=checkbox] {
 .infobtn-default {
 	background-color: var( --cg );
 }
-.infobtn.disabled {
+.disabled,
+.disabled i {
 	color: var( --cg60 ) !important;
+	pointer-events: none;
+}
+.infobtn.disabled {
 	background-color: var( --cgd ) !important;
 	box-shadow: none;
-	pointer-events: none;
 	filter: none !important;
+}
+#infoOk.disabled {
+	pointer-events: auto;
+	cursor: default;
+}
+input[ type=checkbox ].disabled {
+	pointer-events: auto;
 }
 .infobtn i {
 	font-size: 18px;
@@ -592,7 +603,7 @@ hr {
 #infoOverlay a,
 #infoBox i,
 .infobtn {
-	text-shadow: -1px 1px 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 #infoContent .bklabel {
 	height: auto;
@@ -650,7 +661,7 @@ hr {
 }
 #infoTitle {
 	display: inline-block;
-	width: calc( 100% - 45px );
+	max-width: calc( 100% - 45px );
 	margin-left: 10px;
 	font-size: 22px;
 	font-weight: 300;
@@ -661,6 +672,8 @@ hr {
 	letter-spacing: 2px;
 }
 #infoTab {
+	display: grid;
+	grid-template-columns: repeat( auto-fit, minmax( 100px, auto ) );
 	width: 100%;
 	height: 39px;
 	font-size: 16px;
@@ -669,20 +682,29 @@ hr {
 }
 #infoTab a {
 	display: inline-block;
+	border-radius: 6px 6px 0 0;
+	box-shadow: 2px -4px 4px #000000;
 }
 #infoTab a.active {
 	background: var( --cga );
-	border-radius: 6px 6px 0 0;
+}
+#infoTab i {
+	font-size: 20px;
+	width: 24px;
+	color: var( --cg60 );
 }
 #infoContent {
 	padding: 20px 10px 10px 10px;
 	font-size: 16px;
+	box-shadow: -2px -2px 2px rgba( 0, 0, 0, 0.5 );
 }
 #infoContent table {
 	margin: 0 auto;
 }
+#infoContent tr {
+	height: 42px;
+}
 #infoContent td {
-	height: 32px;
 	padding: 0;
 	text-align: left;
 	white-space: nowrap;
@@ -693,12 +715,10 @@ hr {
 	font-size: 20px;
 	margin-right: 5px;
 }
-#infoContent td:first-child i {
-	font-size: 20px;
-	width: 24px;
-	text-align: center;
-}
 #infoContent i {
+	width: 24px;
+	font-size: 20px;
+	text-align: center;
     color: var( --cw );
 }
 #infoContent pre {
@@ -714,7 +734,9 @@ hr {
 	left: 0;
 	margin: 10px auto;
 	text-align: left;
-	box-shadow: none;
+}
+#infoContent .menu i {
+	width: 40px;
 }
 .infomessage {
 	user-select: text;
@@ -722,6 +744,10 @@ hr {
 }
 .infomessage pre {
 	font-size: 16px;
+}
+.infomessage p {
+	margin-top: 0;
+	text-align: left;
 }
 .infomessage,
 .infofooter {
@@ -742,11 +768,6 @@ hr {
 	width: 25px;
 	vertical-align: 0;
 	font-size: 20px;
-}
-.infomessage .i-bookmark {
-	font-size: 48px;
-	width: 48px;
-	height: 58px;
 }
 .infomessage img {
 	width: auto;
@@ -793,10 +814,9 @@ hr {
 	resize: none;
 	white-space: pre;
 }
-input[type=text],
-input[type=tel],
-input[type=number],
-input[type=password] {
+input[ type=text ],
+input[ type=number ],
+input[ type=password ] {
 	display: inline-block;
 	margin: 0;
 	width: 100%;
@@ -805,16 +825,23 @@ input[type=password] {
 	color: var( --cw );
 	background-color: #000000;
 	border-radius: 5px;
-	border: 1px solid var( --cg );
+	border: none;
 	font-size: 16px;
 	font-family: Lato;
 }
-input[type=text]:disabled,
-input[type=tel]:disabled,
-input[type=number]:disabled {
+.col-r input[ type=text ],
+input[ type=text ]:disabled,
+input[ type=number ]:disabled {
 	background: none !important;
-	outline: none;
+	border: 1px solid var( --cgl );
 	opacity: 1;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+}
+input[ type=number ] {
+	-moz-appearance:textfield;
 }
 #infoPasswordBox {
 	margin-top: 0 !important;
@@ -826,8 +853,8 @@ input[type=number]:disabled {
 	text-align: center;
 	font-size: 20px;
 }
-input[type=radio],
-input[type=checkbox] {
+input[ type=radio ],
+input[ type=checkbox ] {
 	-webkit-appearance: none;
 	width: 24px;
 	height: 24px;
@@ -837,7 +864,7 @@ input[type=checkbox] {
 	border-radius: 3px;
 	background-color: var( --cg );
 }
-input[type=radio] {
+input[ type=radio ] {
 	width: 26px;
 	height: 26px;
 	border-radius: 50%;
@@ -846,15 +873,14 @@ input[type=radio] {
 input:checked {
 	background-color: var( --cm );
 }
-input[type=checkbox]:checked:disabled,
-input[type=radio]:checked:disabled {
+input[ type=checkbox ]:checked:disabled,
+input[ type=radio ]:checked:disabled {
 	background-color: var( --cmd ) !important;
-	box-shadow: none;
 }
-input[type=checkbox]:disabled,
-input[type=radio]:disabled {
+input[ type=checkbox ]:disabled,
+input[ type=radio ]:disabled {
 	background-color: var( --cgd );
-	box-shadow: none;
+	box-shadow: var( --shadow-select );
 }
 #infoContent button {
 	height: 40px;
@@ -919,12 +945,17 @@ input[type=radio]:disabled {
 		left: calc( -100% / 18 );
 	}
 }
+input:focus {
+	outline: none;
+}
 @media ( hover:hover ) {
+	#debug { display: block }
 	/* :hover *********************************************************/
 	#infoTab,
+	#infoButton gr,
 	label,
-	input[type=checkbox],
-	input[type=radio],
+	input[ type=checkbox ],
+	input[ type=radio ],
 	.i-eye,
 	.pointer {
 		cursor: pointer;
@@ -938,17 +969,20 @@ input[type=radio]:disabled {
 	#infoX:active {
 		color: var( --cma );
 	}
-	input[type=text]:focus,
-	input[type=tel]:focus,
-	input[type=number]:focus,
-	input[type=password]:focus,
-	input[type=radio]:focus,
-	input[type=checkbox]:focus,
-	#infoContent textarea:focus {
-		outline: 2px solid var( --cgl ) !important;
+	input[ type=text ]:focus-visible,
+	input[ type=number ]:focus-visible,
+	input[ type=password ]:focus-visible,
+	#infoContent textarea:focus-visible {
+		outline: 1px solid var( --cgl ) !important;
 	}
-	input[type=radio]:focus,
-	input[type=checkbox]:focus {
+	input[ type=radio ]:focus-visible,
+	input[ type=checkbox ]:focus-visible,
+	#infoRange input:focus-visible::-webkit-slider-thumb {
+		outline: 2px solid var( --cgl );
+		outline-offset: 1px;
+	}
+	#infoRange input:focus-visible::-moz-range-thumb {
+		outline: 2px solid var( --cgl );
 		outline-offset: 1px;
 	}
 	.infobtn.active {
@@ -960,7 +994,7 @@ input[type=radio]:disabled {
 	.head i {
 		line-height: 42px;
 	}
-	input[type=checkbox]:checked:disabled {
+	input[ type=checkbox ]:checked:disabled {
 		background-color: var( --cml );
 	}
 	.input-group input {

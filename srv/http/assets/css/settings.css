@@ -9,7 +9,7 @@
 	width: 150px;
 	padding: 0;
 	background: var( --cg );
-	box-shadow: -4px 4px 10px #000000;
+	box-shadow: var( --shadow-menu );
 }
 .menu a {
 	display: inline-block;
@@ -27,15 +27,9 @@
 	text-align: center;
 	font-size: 22px;
 	color: var( --cw );
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 
-.entries li,
-.entries li span {
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
 heading,
 .col-l,
 .entries li {
@@ -47,7 +41,7 @@ heading,
 }
 .head,
 #bar-bottom {
-	box-shadow: 0 0 10px 4px #000000;
+	box-shadow: var( --shadow-bar );
 }
 #bar-bottom .active {
 	background: var( --cm );
@@ -99,11 +93,15 @@ div.helpblock {
 	color: var( --cg75 );
 	white-space: pre-wrap;
 }
+heading + .helpblock {
+	margin-bottom: 30px;
+}
 .helpblock i {
 	width: 20px;
 	line-height: 16px;
 	font-size: 16px !important;
 	text-align: center;
+	vertical-align: -1px;
 }
 .helpblock .tab i {
 	margin-left: 0;
@@ -127,7 +125,7 @@ div.helpblock {
 	display: inline-block;
 	width: 125px;
 	height: 25px !important;
-	line-height: 27px;
+	line-height: 26px;
 	padding-left: 3px;
 	background: var( --cg );
 }
@@ -141,7 +139,10 @@ div.helpblock {
 	text-align: center;
 }
 #infoContent .helpmenu.label {
-	background: var( --cg );
+	background: var( --cgd );
+}
+#infoContent p i {
+	width: 40px;
 }
 .helpmenu.label i {
 	margin: 0 0 0 8px;
@@ -205,7 +206,7 @@ heading.status .headtitle::after,
 }
 .col-l.status gr::after {
 	width: 17px;
-	font-size: 15px;
+	font-size: 14px;
 	text-align: right;
 }
 heading i {
@@ -264,10 +265,11 @@ heading .disabled {
 }
 @supports ( -webkit-touch-callout: none ) { /* ios only */
 	#bar-bottom { line-height: 30px }
+	.helpblock i { vertical-align: 0 }
 }
 #bar-bottom div {
 	display: inline-block;
-	width: calc( 100% / 4 );
+	width: calc( 100% / 5 );
 	max-width: 165px;
 	height: 40px;
 	cursor: pointer;
@@ -280,7 +282,7 @@ heading .disabled {
 	vertical-align: -3px;
 	font-size: 24px;
 	color: var( --cw );
-	text-shadow: -1px 0 2px #000000;
+	text-shadow: var( --shadow-text );
 }
 #bar-bottom a {
 	font-size: 16px;
@@ -310,10 +312,19 @@ cy {
 }
 .entries {
 	display: block;
-	margin: -10px 0 10px 0;
+	margin: -16px 0 10px 0;
 	padding: 0;
 	line-height: 42px;
 	list-style: none;
+}
+.entries li,
+.entries li span {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.entries li:first-of-type {
+	border-top: 1px solid var( --cg );
 }
 .entries i {
 	width: 40px;
@@ -442,7 +453,7 @@ input:checked + .switchlabel:after {
 input:checked + .switchlabel:after {
 	left: 50%;
 	background-color: var( --cm );
-	box-shadow: -2px 2px 4px #000000;
+	box-shadow: var( --shadow-btn );
 }
 .switchlabel:active:after {
 	width: 40px;
@@ -490,10 +501,11 @@ input.disabled + .switchlabel:after {
 	background: #000000;
 }
 .container {
-	max-width: 768px;
+	max-width: 658px;
 	min-height: 100vh;
 	height: 100%;
-	padding: 30px 55px 100px 55px;
+	margin: 0 auto;
+	padding: 30px 0 100px 0;
 }
 .col-l,
 .col-r {
@@ -579,6 +591,14 @@ input.disabled + .switchlabel:after {
 	border-radius: 6px;
 	background: var( --cw );
 }
+#infoContent .gpio tr td:nth-child( odd ) {
+	width: 35px !important;
+	padding-right: 2px !important;
+	text-align: right !important;
+}
+#infoContent .gpio tr td:nth-child( even ) {
+	width: 55px !important;
+}
 #hostname {
 	height: 40px !important;
 }
@@ -604,18 +624,25 @@ input.disabled + .switchlabel:after {
 	}
 	#bar-bottom { display: none }
 }
-@media (min-width: 768px) {
-	.container { margin: 0 auto }
+@media (max-width: 800px) {
+	#bar-bottom {
+		padding: 0 20px;
+	}
 }
-@media (max-width: 768px) {
+@media (max-width: 700px) {
+	.container {
+		padding: 30px 10px 100px 10px;
+	}
+}
+@media (max-width: 658px) {
 	body {
 		height: 100%;
 		overflow: hidden;
 	}
 	.container {
-		padding: 30px 10px 200px 10px;
 		overflow-y: auto;
 	}
+	#bar-bottom { padding: 0 }
 }
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
@@ -627,7 +654,6 @@ input.disabled + .switchlabel:after {
 		padding-bottom: 10px;
 		border-bottom: 1px solid var( --cga );
 	}
-	#bar-bottom { padding: 0 }
 }
 @media (max-width: 465px) {
 	.settingedit { display: none }
@@ -645,7 +671,7 @@ input.disabled + .switchlabel:after {
 	.listtitle a { width: calc( 100% / 13 ) }
 	.brindex { display: block }
 }
-@media (max-width: 419px) {
+@media (max-width: 615px) {
 	#bar-bottom a { display: none }
 }
 @media (max-width: 375px) {
@@ -690,5 +716,8 @@ input.disabled + .switchlabel:after {
 	#button-data,
 	#gpioimgtxt,
 	#menu { cursor: pointer }
-	.switchlabel.focus { box-shadow: 0 0 2px 2px var( --cg75 ) !important }
+	.switchlabel.focus {
+		outline: 2px solid var(--cgl );
+		outline-offset: 1px;
+	}
 }

@@ -1,214 +1,160 @@
 document.title = 'Addons';
 V              = {} // var global
 var icon       = 'jigsaw';
-
-$( '.container' ).removeClass( 'hide' );
-$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
-loaderHide();
+var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.close' ).click( function() {
-	location.href = '/';
+$( '.page-icon' ).press( function() {
+	V.addon = { title: 'Debug' }
+	V.label = 'Debug';
+	postData();
 } );
-$( '.page-icon' ).click( function() {
-	fetch( '/data/addons/addons-list.json' )
-		.then( response => response.text() )
-		.then( data => {
-			$( '#data' ).text( '\n\n'+ data );
-			$( '.container' ).addClass( 'hide' );
-			$( '#button-data, #data' ).removeClass( 'hide' );
-		} );
-} ).press( function() {
-	location.href = 'settings.php?p=addonsprogress';
-} );
-$( '#button-data' ).click( function() {
-	$( '.container' ).removeClass( 'hide' );
-	$( '#button-data, #data' ).addClass( 'hide' );
-} );
-$( '.helphead' ).click( function() {
+$( '.helphead' ).off( 'click' ).on( 'click', function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
 	$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
 } );
-$( '.revision' ).click( function( e ) {
-	e.stopPropagation();
+$( '.container' ).on( 'click', '.revision', function() {
 	$this = $( this );
-	$revisiontext = $this.parent().parent().next();
+	$revisiontext = $this.parent().next();
 	var hidden = $revisiontext.hasClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', hidden );
 	$revisiontext.toggleClass( 'hide', ! hidden );
-} );
-$( '#list li' ).click( function() {
+} ).on( 'click', '#list li', function() {
 	alias = $( this ).data( 'alias' );
 	$( 'html, body' ).scrollTop( $( '#'+ alias ).offset().top - 50 );
-} );
-$( '.boxed-group .infobtn' ).click( function() {
+} ).on( 'click', '.infobtn', function() {
 	$this       = $( this );
-	if ( $this.hasClass( 'disabled' ) ) return
+	if ( $this.hasClass( 'disabled' ) && ! $this.hasClass( 'uninstall' ) ) {
+		if ( ! S.status.online ) {
+			info( {
+				  icon    : 'addons'
+				, title   : 'Addons'
+				, message : 'Internet connection is offline.'
+			} );
+		}
+		return
+	}
 	
-	alias  = $this.parent().data( 'alias' );
-	addon  = addons[ alias ];
-	title  = addon.title;
-	type   = $this.text();
-	option = addons.option;
-	opt    = [ alias, type, addon.version || 'main' ];
-	if ( option && type !== 'Update' && type !== 'Uninstall' ) {
-		j = 0;
-		getOption();
+	addonData( $this );
+	if ( 'option' in V.addon ) {
+		optionGet();
 	} else {
 		info( {
 			  icon    : icon
-			, title   : title
-			, message : addon.version ? type +' to <wh>'+ addon.version +'</wh> ?' : type +'?'
-			, ok      : formPost
+			, title   : V.addon.title
+			, message : V.addon.version ? V.label +' to <wh>'+ V.addon.version +'</wh> ?' : V.label +'?'
+			, ok      : postData
 		} );
 	}
-} ).press( function( e ) {
-	$this = $( e.target );
-	alias = $this.parents( 'form' ).data( 'alias' );
-	title = addons[ alias ].title;
-	type  = $this.text();
+} ).on( 'click', '.thumbnail', function() {
+	if ( S.status.online ) $( this ).prev().find( '.source' )[ 0 ].trigger( 'click' );
+} ).press( '.install', function( e ) {
+	if ( ! S.status.online ) return
+	
+	addonData( $( e.currentTarget ) );
 	info( {
 		  icon      : icon
-		, title     : title
+		, title     : V.addon.title
 		, textlabel : 'Branch / Release'
 		, values    : 'UPDATE'
 		, ok        : () => {
-			opt    = [ alias, type, infoVal() ];
-			option = addons[ alias ].option;
-			if ( option && type !== 'Update' && type !== 'Uninstall' ) {
-				j = 0;
-				getOption();
-			} else {
-				formPost();
-			}
+			V.branch = infoVal();
+			if ( ! V.branch ) return
+			
+			V.installurl = V.addon.installurl.replace( 'raw/main', 'raw/'+ V.branch );
+			'option' in V.addon ? optionGet() : postData();
 		}
 	} );
 } );
-$( '.thumbnail' ).click( function() {
-	$( this ).prev().find( '.source' )[ 0 ].click();
-} );
 
-function formPost() { // post submit with temporary form
-	var htmlform  = '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">';
-	opt.forEach( o => htmlform += '<input type="hidden" name="opt[]" value="'+ o.trim() +'">' );
-	$( 'body' ).append( htmlform +'</form>' );
+function addonData( $this ) {
+	V.alias  = $this.parents( 'form' ).data( 'alias' );
+	V.addon  = S[ V.alias ];
+	V.branch = 'main';
+	V.label  = $this.find( '.label' ).text();
+	keys.forEach( k => V[ k ] = V.addon[ k ] );
+}
+function buttonLabel( icon, label ) {
+	return ico( icon ) +' <span class="label">'+ label +'</span>';
+}
+function optionGet() {
+	info( $.extend(
+		{
+			  icon  : icon
+			, title : V.addon.title
+			, ok    : () => postData( infoVal() )
+		}
+		, V.addon.option )
+	);
+}
+function postData( opt ) {
+	var htmlform = '';
+	keys = [ 'alias', 'branch', 'label' ].concat( keys );
+	keys.forEach( k => htmlform += postInput( k, V[ k ] ) );
+	if ( opt ) {
+		if ( typeof opt === 'string' ) opt = [ opt ];
+		opt.forEach( v => htmlform += postInput( 'opt[]', v ) );
+	}
+	$( 'body' ).append( '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'+ htmlform +'</form>' );
 	$( '#formtemp' ).submit();
 }
-function getOption() {
-	okey    = Object.keys( option );
-	olength = okey.length;
-	oj      = okey[ j ];
-	oj0     = oj.replace( /[0-9]/, '' ); // remove trailing # from option keys
-	switch ( oj0 ) {
-		case 'wait': // only 1 'Ok' = continue
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : setOption
-			} );
-			break;
-		case 'confirm': // 'Cancel' = close
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : option[ oj ]
-				, oklabel : 'Continue'
-				, ok      : setOption
-			} );
-			break;
-		case 'yesno': // 'Cancel' = 0
-			var ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, buttonlabel : 'No'
-				, button      : () => setOption( 0 )
-				, ok          : () => setOption( 1 )
-			} );
-			break;
-		case 'skip': // 'Cancel' = continue, 'Ok' = skip options
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : option[ oj ]
-				, buttonlabel : 'No'
-				, button      : setOption
-				, oklabel     : 'Yes'
-				, ok          : formPost
-			} );
-			break;
-		case 'text':
-			var ojson = option[ oj ];
-			info( {
-				  icon      : icon
-				, title     : title
-				, message   : ojson.message
-				, textlabel : ojson.label
-				, values    : ojson.value
-				, boxwidth  : ojson.width
-				, ok        : () => setOption( infoVal() || 0 )
-			} );
-			break;
-		case 'password':
-			ojson = option[ oj ];
-			info( {
-				  icon          : icon
-				, title         : title
-				, message       : ojson.message
-				, passwordlabel : ojson.label
-				, ok:          () => {
-					var pwd = infoVal();
-					if ( pwd ) {
-						infoVerifyPassword( title, pwd, () => setOption( pwd ) );
-					} else {
-						setOption( 0 );
-					}
-				}
-			} );
-			break;
-		case 'radio': // single value
-			ojson = option[ oj ];
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : ojson.message
-				, radio   : ojson.list
-				, values  : ojson.checked
-				, ok      : () => setOption( infoVal() )
-			} );
-			break;
-		case 'select': // long single value
-			ojson = option[ oj ];
-			info( {
-				  icon        : icon
-				, title       : title
-				, message     : ojson.message
-				, selectlabel : ojson.label
-				, select      : ojson.list
-				, values      : ojson.checked
-				, boxwidth    : ojson.width
-				, ok          : () => setOption( infoVal() )
-			} );
-			break;
-		case 'checkbox': // multiple values
-			ojson = option[ oj ];
-			info( {
-				  icon     : icon
-				, title    : title
-				, message  : ojson.message
-				, checkbox : ojson.list
-				, values   : ojson.checked
-				, ok       : () => setOption( infoVal() )
-			} );
-			break;
-	}
+function postInput( name, value ) {
+	return '<input type="hidden" name="'+ name +'" value="'+ ( value || '' ) +'">'
 }
-function setOption( val ) {
-	if ( val ) opt.push( val );
-	j++;
-	j < olength ? getOption() : formPost();
+function renderPage() {
+	var list   = '';
+	var addons = '';
+	delete S.push;
+	$.each( S, ( alias, addon ) => {
+		if ( alias === 'status' || ( S.status.hide.includes( alias ) ) ) return
+		var notverified = S.status.notverified.includes( alias );
+		var version     = 'version' in addon ? '&emsp;<a class="revision">'+ addon.version +' <i class="i-help"></i></a>' : '';
+		if ( 'revision' in addon ) {
+			var revision = '<p class="revisiontext hide">';
+			addon.revision.forEach( el => revision += '<gr>•</gr>'+ el +'<br>' );
+			revision    += '</p>';
+		} else {
+			var revision = '';
+		}
+		if ( notverified ) {
+			var button   = iconwarning + addon.notverified;
+		} else {
+			var installed   = S.status.installed.includes( alias ) ? ' installed' : '';
+			var update      = S.status.update.includes( alias ) ? ' update' : '';
+			var disabled = ''
+			if ( installed ) {
+				disabled = update ? '' : ' disabled';
+				var buttonlabel = buttonLabel( 'update', 'Update' );
+			} else if ( addon.buttonlabel ) {
+				var buttonlabel = buttonLabel( addon.buttonlabel[ 0 ], addon.buttonlabel[ 1 ] );
+			} else {
+				var buttonlabel = buttonLabel( 'plus-circle', 'Install' );
+			}
+			var button   = '<a class="install infobtn'+ disabled +'">'+ buttonlabel +'</a>';
+			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';
+		}
+		addons         += `\
+<div id="${ alias }" class="divaddon">
+	<div class="content">
+		<legend><span class="title${ installed + update }">${ addon.title }</span>${ version }</legend>
+		${ revision }
+		<form class="form-horizontal" data-alias="${ alias }">
+			<p class="detailtext">${ addon.description }<br><a href="${ addon.sourcecode }" class="source" target="_blank">source <i class="i-github"></i></a></p>
+			${ button }
+		</form>
+	</div>
+	<img src="${ addon.thumbnail }" class="thumbnail">
+	<div style="clear: both;"></div>
+</div>
+`;
+		list           += '<li class="'+ alias + installed + update +'" data-alias="'+ alias +'">'+ addon.title +'</li>';
+	} );
+	html       = '<ul id="list">'+ list +'</ul>'+ addons +'<p class="bottom"></p>';
+	$( '.container' ).html( html ).promise().done( function() {
+		$( '.container' ).removeClass( 'hide' );
+		$( '.bottom' ).height( window.innerHeight - $( '.container div:last' ).height() - 200 );
+		if ( ! S.status.online ) $( '.infobtn' ).addClass( 'disabled' );
+		loaderHide();
+	} );
 }

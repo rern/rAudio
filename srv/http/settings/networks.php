@@ -3,9 +3,9 @@
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Bluetooth'
-	, 'status' => 'bluetooth'
+	, 'status' => 'bt'
 	, 'button' => [ 'btscan' => 'search' ]
-	, 'help'   => i( 'search btn' ).' Scan to connect'
+	, 'help'   => i( 'search btn' ).' Available devices'
 ] );
 $html = <<< EOF
 	<ul id="listbt" class="entries"></ul>
@@ -35,14 +35,14 @@ echo $html;
 <div id="divwl" class="section">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'   => 'Wi-Fi'
-	, 'status'  => 'ifconfigwlan'
-	, 'button'  => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
+	  'title'  => 'Wi-Fi'
+	, 'status' => 'wl'
+	, 'button' => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
 	<div class="helpblock hide"><?=i( 'plus-circle btn' )?> Manual connect
-<?=i( 'search btn' )?> Scan to connect
+<?=i( 'search btn' )?> Available networks
 <?=i( 'wifi btn' )?> Context menu
 
 Note:
@@ -65,7 +65,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Web <a class="hideN">User </a>Interface'
-	, 'status' => 'avahi'
+	, 'status' => 'webui'
 ] );
 ?>
 	<gr>http://</gr><span id="ipwebui"></span>
@@ -75,8 +75,7 @@ htmlHead( [ //////////////////////////////////
 <div id="divaccesspoint" class="section hide">
 <?php
 htmlHead( [ //////////////////////////////////
-	  'title'  => 'Access Point'
-	, 'button' => [ 'hostapdset' => 'gear' ]
+	  'title' => 'Access Point'
 ] );
 ?>
 	<div id="boxqr" class="hide">
@@ -95,6 +94,7 @@ htmlHead( [ //////////////////////////////////
 	<div class="helpblock hide">
 • Scan QR code or find the SSID and use the password to connect remote devices with RPi access point.
 • Scan QR code or use the IP address to connect with web user interface with any browsers from remote devices.
+• Access point setting: <?=( tab( 'features', 'Features' ).labelIcon( 'Access Point', 'hostapd' ) )?>
 </div>
 <div style="clear:both"></div>
 </div>

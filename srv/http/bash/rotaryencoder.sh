@@ -1,31 +1,45 @@
 #!/bin/bash
 
-. /srv/http/data/system/rotaryencoder.conf
+. /srv/http/bash/common.sh
 
-card=$( < /srv/http/data/system/asoundcard )
-control=$( cat /srv/http/data/shm/amixercontrol 2> /dev/null )
-volume() {
-	/srv/http/bash/cmd.sh "volumeupdown
-$1
-$card
-$control"
-}
+. $dirsystem/rotaryencoder.conf
 
 # play/pause
 /opt/vc/bin/dtoverlay gpio-key gpio=$pins label=PLAYCD keycode=200
 sleep 1
 devinputbutton=$( realpath /dev/input/by-path/*button* )
 evtest $devinputbutton | while read line; do
-	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && /srv/http/bash/cmd.sh mpcplayback
+	[[ $line =~ .*EV_KEY.*KEY_PLAYCD.*1 ]] && $dirbash/cmd.sh mpcplayback
 done &
 
 /opt/vc/bin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
-evtest $devinputrotary | while read line; do
-	if [[ $line =~ 'value 1'$ ]]; then
-		volume +
-	elif [[ $line =~ 'value -1'$ ]]; then
-		volume -
-	fi
-done
+if [[ -e $dirshm/btreceiver ]]; then
+	control=$( < $dirshm/btreceiver )
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDnBt 1%+ "$control"
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDnBt 1%- "$control"
+		fi
+	done
+elif [[ -e $dirshm/amixercontrol ]]; then
+	card=$( < $dirsystem/asoundcard )
+	control=$( < $dirshm/amixercontrol )
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDn 1%+ "$control" $card
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDn 1%- "$control" $card
+		fi
+	done
+else
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			volumeUpDnMpc +1
+		elif [[ $line =~ 'value -1'$ ]]; then
+			volumeUpDnMpc -1
+		fi
+	done
+fi

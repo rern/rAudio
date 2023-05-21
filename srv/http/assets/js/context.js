@@ -1,57 +1,68 @@
 function addSimilar() {
-	banner( 'lastfm blink', 'Playlist - Add Similar', 'Fetch similar list ...', -1 );
-	var url = 'http://ws.audioscrobbler.com/2.0/?method=track.getsimilar'
-			+'&artist='+ encodeURI( V.list.artist )
-			+'&track='+ encodeURI( V.list.name )
-			+'&api_key='+ V.apikeylastfm
-			+'&format=json'
-			+'&autocorrect=1';
-	$.post( url, function( data ) {
-		var title = 'Playlist - Add Similar';
-		if ( 'error' in data || ! data.similartracks.track.length ) {
-			banner( 'lastfm', title, 'Track not found.' );
-		} else {
-			var val = data.similartracks.track;
-			var iL = val.length;
-			var similar = '';
-			for ( i = 0; i < iL; i++ ) {
-				similar += val[ i ].artist.name +'\n'+ val[ i ].name +'\n';
-			}
-			banner( 'library blink', title, 'Find similar tracks from Library ...', -1 );
-			bash( [ 'mpcsimilar', similar ], count => {
-				getPlaylist();
-				setButtonControl();
-				banner( 'library', title, count +' tracks added.' );
+	var icon  = 'lastfm';
+	var title = 'Add Similar';
+	banner( icon +' blink', title, 'Get similar tracks ...', -1 );
+	bash( [ 'mpcsimilar', V.list.artist, V.list.name, V.apikeylastfm, 'CMD ARTIST TITLE APIKEY' ], error => {
+		if ( error ) {
+			bannerHide();
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : error
 			} );
 		}
-	}, 'json' );
+	} );
 }
-function addToPlaylist( cmd, mpccmd, msg ) {
-	if ( D.plclear && cmd.slice( 0, 7 ) === 'replace' ) {
-		infoReplace( () => addToPlaylistCommand( cmd, mpccmd, msg ) );
+function addToPlaylist() {
+	if ( D.plclear && V.action.slice( 0, 7 ) === 'replace' ) {
+		infoReplace( addToPlaylistCommand );
 	} else {
-		addToPlaylistCommand( cmd, mpccmd, msg );
+		addToPlaylistCommand();
 	}
 }
-function addToPlaylistCommand( cmd, mpccmd, msg ) {
-	var sleep = V.bkradio || V.mode.slice( -5 ) === 'radio' ? 1 : 0.2;
-	delete V.bkradio;
+function addToPlaylistCommand() {
+	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
+	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+	var sleep = [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ? 1 : 0.2;
 	if ( S.state === 'play' && S.webradio ) sleep += 1;
-	if ( cmd.slice( -4 ) === 'play' ) sleep += 1;
-	var contextCommand = {
-		  add         : [ mpccmd,                                    'Add to Playlist' ]
-		, playnext    : [ mpccmd,                                    'Add to Playlist to play next' ]
-		, addplay     : [ mpccmd.concat( [ 'addplay', sleep ] ),     'Add to Playlist and play' ]
-		, replace     : [ mpccmd.concat(  'replace' ),               'Replace Playlist' ]
-		, replaceplay : [ mpccmd.concat( [ 'replaceplay', sleep ] ), 'Replace Playlist and play' ]
+	if ( V.action.slice( -4 ) === 'play' ) sleep += 1;
+	var varaction = '';
+	if ( V.action === 'addplay' ) {
+		varaction = ' ACTION DELAY';
+		V.mpccmd.push( 'addplay', sleep );
+	} else if (  V.action === 'replace' ) {
+		varaction = ' ACTION';
+		V.mpccmd.push( 'replace' );
+	} else if (  V.action === 'replaceplay' ) {
+		varaction = ' ACTION DELAY';
+		V.mpccmd.push( 'replaceplay', sleep );
 	}
-	var cmd_title = contextCommand[ cmd ];
-	var command = cmd_title[ 0 ];
-	var title   = cmd_title[ 1 ];
-	if ( cmd !== 'add' && cmd !== 'playnext' ) $( '#stop' ).click();
-	if ( D.playbackswitch && cmd.slice( -4 ) === 'play' ) $( '#playback' ).click();
-	bash( command );
-	banner( 'playlist', title, msg );
+	var mpccmd0   = V.mpccmd[ 0 ];
+	if ( mpccmd0 === 'mpcaddls' ) {
+		V.mpccmd.push( 'CMD DIR'+ varaction );
+	} else if ( [ 'mpcadd', 'mpcaddload' ].includes( mpccmd0 ) ) {
+		V.mpccmd.push( 'CMD FILE'+ varaction );
+	} else if ( mpccmd0 === 'mpcaddfind' ) {
+		if ( V.mpccmd.length < 5 ) {
+			V.mpccmd.push( 'CMD TYPE STRING'+ varaction );
+		} else {
+			V.mpccmd.push( 'CMD TYPE STRING TYPE2 STRING2'+ varaction );
+		}
+	} else if ( mpccmd0 === 'mpcaddplaynext' ) {
+		V.mpccmd.push( 'CMD FILE' );
+	}
+	var cmd_title = {
+		  add         : 'Add to Playlist'
+		, playnext    : 'Add to Playlist to play next'
+		, addplay     : 'Add to Playlist and play'
+		, replace     : 'Replace Playlist'
+		, replaceplay : 'Replace Playlist and play'
+	}
+	V.title  = cmd_title[ V.action ];
+	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
+	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
+	bash( V.mpccmd );
+	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {
 	// #1 - track list - show image from licover
@@ -82,7 +93,7 @@ function bookmarkNew() {
 		, textlabel  : 'As:'
 		, focus      : 0
 		, values     : name
-		, checkblank : 1
+		, checkblank : true
 		, beforeshow : () => {
 			$( '#infoContent input' ).parents( 'tr' ).addClass( 'hide' );
 			$( '#infoContent img' ).off( 'error' ).on( 'error', function() {
@@ -91,7 +102,7 @@ function bookmarkNew() {
 		}
 		, ok         : () => {
 			var name = infoVal();
-			bash( [ 'bookmarkadd', name, path ], std => {
+			bash( [ 'bookmarkadd', name, path, 'CMD NAME DIR' ], std => {
 				if ( std == -1 ) {
 					bannerHide();
 					info( {
@@ -103,6 +114,45 @@ function bookmarkNew() {
 					banner( 'bookmark', 'Bookmark Added', name );
 				}
 			} );
+		}
+	} );
+}
+function currentSet() {
+	bash( [ 'mpcsetcurrent', V.list.index + 1, 'CMD POS' ] );
+}
+function directoryList() {
+	if ( V.mode === 'latest' ) {
+		var path      = dirName( V.list.path );
+		var query     = {
+			  query  : 'ls'
+			, string : path
+			, format : [ 'file' ]
+		}
+		var modetitle = path;
+		query.gmode   = V.mode;
+		list( query, function( data ) {
+			V.mode         = path.split( '/' )[ 0 ].toLowerCase();
+			V.gmode        = 'latest';
+			data.path      = path;
+			data.modetitle = modetitle;
+			renderLibraryList( data );
+		}, 'json' );
+		query.path      = path;
+		query.modetitle = modetitle;
+		V.query.push( query );
+	} else {
+		$( '#lib-list .liinfopath' ).trigger( 'click' );
+	}
+}
+function excludeDirectory() {
+	info( {
+		  icon    : 'folder-forbid'
+		, title   : 'Exclude Directory'
+		, message : 'Exclude from Library:'
+					+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
+		, ok      : () => {
+			bash( [ 'ignoredir', V.list.path, 'CMD DIR' ], () => V.list.li.remove() );
+			var dir = V.list.path.split( '/' ).pop();
 		}
 	} );
 }
@@ -122,14 +172,14 @@ function playlistDelete() {
 				   +'<br><wh>'+ V.list.name +'</wh>'
 		, oklabel : ico( 'minus-circle' ) +'Delete'
 		, okcolor : red
-		, ok      : () => bash( [ 'savedpldelete', V.list.name ] )
+		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
 	} );
 }
-function playlistLoad( path, play, replace ) {
+function playlistLoad( name, play, replace ) {
 	V.local = true;
-	banner( 'file-playlist blink', 'Saved Playlist', 'Load ...', -1 );
-	bash( [ 'playlist', path, play, replace ], function() {
-		banner( 'playlist', replace ? 'Playlist Replaced' : 'Playlist Added', 'Done' );
+	banner( 'file-playlist', name, 'Load ...' );
+	bash( [ 'playlist', name, play, replace, 'CMD NAME PLAY REPLACE' ], function() {
+		if ( ! S.pllength ) $( '#playback-controls, #playback-controls i' ).removeClass( 'hide' );
 	} );
 }
 function playlistNew( name ) {
@@ -140,7 +190,7 @@ function playlistNew( name ) {
 		, textlabel    : 'Name'
 		, focus        : 0
 		, values       : name
-		, checkblank   : 1
+		, checkblank   : true
 		, ok           : () => playlistSave( infoVal() )
 	} );
 }
@@ -153,19 +203,19 @@ function playlistRename() {
 		, textlabel    : 'To'
 		, focus        : 0
 		, values       : name
-		, checkchanged : 1
-		, checkblank   : 1
+		, checkchanged : true
+		, checkblank   : true
 		, oklabel      : ico( 'flash' ) +'Rename'
 		, ok           : () => playlistSave( infoVal(), name )
 	} );
 }
 function playlistSave( name, oldname, replace ) {
 	if ( oldname ) {
-		bash( [ 'savedplrename', oldname, name, replace ], data => {
+		bash( [ 'savedplrename', oldname, name, replace, 'CMD NAME NEWNAME REPLACE' ], data => {
 			if ( data == -1 ) playlistSaveExist( 'rename', name, oldname );
 		} );
 	} else {
-		bash( [ 'savedplsave', name, replace ], data => {
+		bash( [ 'savedplsave', name, replace, 'CMD NAME REPLACE' ], data => {
 			if ( data == -1 ) {
 				playlistSaveExist( 'save', name );
 			} else {
@@ -188,40 +238,67 @@ function playlistSaveExist( type, name, oldname ) {
 		, ok          : () => rename ? playlistSave( name, oldname, 'replace' ) : playlistSave( name, '' , 'replace' )
 	} );
 }
+function removeFromPlaylist() {
+	V.contextmenu = true;
+	setTimeout( () => V.contextmenu = false, 500 );
+	playlistRemove( V.list.li );
+}
+function savedPlaylistAdd() {
+	if ( V.playlist ) {
+		var album = V.list.li.find( '.album' ).text();
+		var file  = V.list.path;
+	} else {
+		var album = $( '.licover .lialbum' ).text();
+		var file  = V.list.li.find( '.lipath' ).text();
+	}
+	saveToPlaylist( V.list.name, album, file );
+}
+function savedPlaylistRemove() {
+	local();
+	var plname = $( '#pl-path .lipath' ).text();
+	bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1, 'CMD NAME TYPE POS' ] );
+	V.list.li.remove();
+}
+function similarAdd() {
+	if ( D.plsimilar ) {
+		info( {
+			  icon    : 'lastfm'
+			, title   : 'Add Similar'
+			, message : 'Search and add similar tracks from Library?'
+			, ok      : addSimilar
+		} );
+	} else {
+		addSimilar();
+	}
+}
 function tagEditor() {
 	var name   = [ 'Album', 'AlbumArtist', 'Artist', 'Composer', 'Conductor', 'Genre', 'Date', 'Title', 'Track' ];
 	var format = name.map( el => el.toLowerCase() );
 	var file   = V.list.path;
 	var dir    = dirName( file );
 	var cue    = file.slice( -4 ) === '.cue';
-	if ( !V.playlist && V.list.licover ) format = format.slice( 0, -2 );
+	if ( V.list.licover ) format = format.slice( 0, -2 );
 	var query = {
 		  query  : 'track'
-		, file   : V.list.path
+		, file   : file
 		, format : format
 	}
 	list( query, function( values ) {
 		name[ 1 ]    = 'Album Artist';
 		var label    = [];
 		format.forEach( ( el, i ) => {
-			if ( V.playlist && ! values[ i ] ) {
-				delete values[ i ];
-				return
-			}
-			
 			label.push( '<span class="taglabel gr hide">'+ name[ i ] +'</span> <i class="i-'+ el +' wh" data-mode="'+ el +'"></i>' );
 		} );
 		if ( V.library ) {
-			var $img = V.librarytracklist ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
+			var $img = V.librarytrack ? $( '.licoverimg img' ) : V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ) : V.coverdefault;
 		} else {
 			var $img =  V.list.li.find( 'img' );
 			var src  = $img.length ? $img.attr( 'src' ).replace( '/thumb.', '/coverart.' ) : V.coverdefault;
-			values   = values.filter( val => val ); // reindex after deleting blank elements
 		}
 		var fileicon = cue ? 'file-music' : 'file-playlist';
 		var message  = '<img src="'+ src +'"><a class="tagpath hide">'+ file +'</a>'
-					 +'<div>'+ ico( 'folder' ) + file;
+					  +'<div>'+ ico( 'folder' ) + file;
 		if ( ! V.list.licover ) message += '<br>'+ ico( fileicon ) + file.split( '/' ).pop();
 		message     += '</div>';
 		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
@@ -237,8 +314,11 @@ function tagEditor() {
 			, textlabel    : label
 			, boxwidth     : 'max'
 			, values       : values
-			, checkchanged : 1
+			, checkchanged : true
 			, beforeshow   : () => {
+				$( '#infoContent img' ).on( 'error', function() {
+					imageOnError( this );
+				} );
 				$( '#infoContent .infomessage' ).addClass( 'tagmessage' );
 				$( '#infoContent .infofooter' ).addClass( 'tagfooter' );
 				$( '#infoContent td i' ).css( 'cursor', 'pointer' );
@@ -279,7 +359,7 @@ function tagEditor() {
 						V.query.push( query );
 					} );
 				} );
-				$( '.infomessage' ).click( function() {
+				$( '.infomessage' ).on( 'click', function() {
 					if ( V.library ) return
 					
 					var query = {
@@ -302,32 +382,19 @@ function tagEditor() {
 			}
 			, okno         : V.playlist
 			, ok           : V.playlist ? '' : () => {
-				var tag       = [ 'cmd-tageditor.sh', file, V.list.licover, cue ];
-				var newvalues = infoVal();
-				var val;
-				newvalues.forEach( ( v, i ) => {
-					val = ( v === values[ i ] ) ? '' : ( v || -1 );
-					tag.push( val );
+				var infoval  = infoVal();
+				$.each( infoval, ( k, v ) => {
+					if ( values[ k ] === v ) delete infoval[ k ];
 				} );
-				banner( 'tag blink', 'Tag Editor', 'Change tags ...', -1 );
-				setTimeout( () => banner( 'tag blink', 'Tag Editor', 'Update Library ...' ), 3000 );
-				$.post( 'cmd.php', { cmd: 'sh', sh: tag } );
-				if ( V.list.licover ) {
-					var tags = [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', 'date' ];
-					for ( i = 0; i < 7; i++ ) {
-						var v = newvalues[ i ];
-						if ( v !== '*' ) $( '.li'+ tags[ i ] ).text( v );
-					}
-				} else {
-					V.list.li.find( '.li1' ).text( newvalues[ 7 ] );
-					V.list.li.find( '.track' ).text( newvalues[ 8 ] );
-				}
+				infoval.FILE = file;
+				banner( 'tag blink', 'Tag Editor', 'Change ...', -1 );
+				bash( [ 'tageditor', ...Object.values( infoval ), 'CMD '+ Object.keys( infoval ).join( ' ' ) ] );
 			}
 		} );
 	}, 'json' );
 }
 function tagModeSwitch() {
-	$( '#infoX' ).click();
+	$( '#infoX' ).trigger( 'click' );
 	if ( V.playlist ) {
 		$( '#page-playlist' ).addClass( 'hide' );
 		$( '#page-library' ).removeClass( 'hide' );
@@ -336,46 +403,53 @@ function tagModeSwitch() {
 		V.page     = 'library';
 	}
 }
+function thumbnailUpdate() {
+	info( {
+		  icon    : 'coverart'
+		, title   : 'Album Thumbnails'
+		, message : 'Update album thumbnails in:'
+					+'<br>'+ ico( 'folder' ) +' <wh>'+ V.list.path +'</wh>'
+		, ok      : () => thumbUpdate( V.list.path )
+	} );
+}
+function updateDirectory() {
+	if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );
+	infoUpdate( V.list.path );
+}
 function webRadioCoverart() {
 	if ( V.playback ) {
 		var coverart  = S.stationcover || V.coverdefault;
-		var type      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
+		var mode      = S.icon === 'dabradio' ? 'dabradio' : 'webradio';
 		var url       = S.file;
 		var name      = S.station;
 	} else {
-		var coverart  = V.coverdefault;
-		var src       = V.list.li.find( '.li-icon' ).attr( 'src' );
-		var type      = V.mode;
+		var coverart  = V.list.li.find( '.li-icon' ).attr( 'src' ).replace( '-thumb', '' ) || V.coverdefault;
+		var mode      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 		var name      = V.list.name;
 	}
-	var imagefilenoext = '/srv/http/data/'+ type +'/img/'+ url.replace( /\//g, '|' );
+	var imagefilenoext = '/srv/http/data/'+ mode +'/img/'+ url.replace( /\//g, '|' );
 	$( '#coverart' ).removeAttr( 'style' );
 	$( '.coveredit' ).remove();
 	info( {
 		  icon        : 'coverart'
-		, title       : ( type === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
+		, title       : ( mode === 'webradio' ? 'Web' : 'DAB' ) +' Radio Cover Art'
 		, message     : '<img class="imgold" src="'+ coverart +'" >'
 					  + '<p class="infoimgname">'+ name +'</p>'
 		, filelabel   : ico( 'folder-open' ) +'File'
 		, fileoklabel : ico( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
 		, beforeshow  : () => {
+			$( '.imgold' ).on( 'error', function() {
+				imageOnError( this );
+			} );
 			$( '.extrabtn' ).toggleClass( 'hide', coverart === V.coverdefault );
-			if ( src ) {
-				bash( [ 'coverartget', imagefilenoext, 'radio' ], coverart => {
-					if ( coverart ) {
-						$( '#infoContent .imgold' ).attr( 'src', coverart );
-						$( '.extrabtn' ).removeClass( 'hide' );
-					}
-				} );
-			}
 		}
-		, buttonlabel : ico( type ) +'Default'
+		, buttonlabel : ico( mode ) +'Default'
 		, buttoncolor : orange
-		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, type ] )
-		, ok          : () => imageReplace( type, imagefilenoext )
+		, button      : () => bash( [ 'webradiocoverreset', imagefilenoext, mode, 'CMD FILENOEXT MODE' ] )
+		, ok          : () => imageReplace( mode, imagefilenoext )
 	} );
 }
 function webRadioDelete() {
@@ -394,8 +468,54 @@ function webRadioDelete() {
 		, ok      : () => {
 			V.list.li.remove();
 			var dir = $( '#lib-path .lipath' ).text();
-			bash( ['webradiodelete', dir, url, V.mode ] );
+			bash( ['webradiodelete', dir, url, V.mode, 'CMD DIR URL MODE' ] );
 		}
+	} );
+}
+function webRadioSave() {
+	webRadioNew( '', V.list.li.find( '.lipath' ).text() );
+}
+function wrDirectoryDelete() {
+	var path = V.list.li.find( '.lipath' ).text();
+	info( {
+		  icon    : V.mode
+		, title   : 'Delete Folder'
+		, message : 'Folder:'
+					+'<br><wh>'+ path +'</wh>'
+		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, okcolor : red
+		, ok      : () => {
+			bash( [ 'wrdirdelete', path, V.mode, 'CMD NAME MODE' ], std => {
+				if ( std == -1 ) {
+					info( {
+						  icon    : 'webradio'
+						, title   : 'Web Radio Delete'
+						, message : 'Folder not empty:'
+									+'<br><wh>'+ path +'</wh>'
+									+'<br>Confirm delete?'
+						, oklabel : ico( 'minus-circle' ) +'Delete'
+						, okcolor : red
+						, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
+					} );
+				}
+			} );
+		}
+	} );
+}
+function wrDirectoryRename() {
+	var path = V.list.li.find( '.lipath' ).text().split( '/' );
+	var name = path.pop();
+	var path = path.join( '/' );
+	info( {
+		  icon         : V.mode
+		, title        : 'Rename Folder'
+		, textlabel    : 'Name'
+		, focus        : 0
+		, values       : name
+		, checkblank   : true
+		, checkchanged : true
+		, oklabel      : 'Rename'
+		, ok           : () => bash( [ 'wrdirrename', V.mode +'/'+ path, name, infoVal(), 'CMD MODE NAME NEWNAME' ] )
 	} );
 }
 var htmlwebradio = `\
@@ -417,7 +537,7 @@ function webRadioEdit() {
 		, title        : 'Edit Web Radio'
 		, content      : htmlwebradio
 		, values       : [ V.list.name, url, V.list.li.data( 'charset' ) || 'UTF-8' ]
-		, checkchanged : 1
+		, checkchanged : true
 		, checkblank   : [ 0, 1 ]
 		, boxwidth     : 'max'
 		, beforeshow   : () => {
@@ -436,7 +556,7 @@ function webRadioEdit() {
 			var name    = values[ 0 ];
 			var newurl  = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
-			bash( [ 'webradioedit', dir, name, newurl, charset, url ], error => {
+			bash( [ 'webradioedit', dir, name, newurl, charset, url, 'CMD DIR NAME NEWURL CHARSET URL' ], error => {
 				if ( error ) webRadioExists( error, '', newurl );
 			} );
 		}
@@ -457,20 +577,19 @@ function webRadioNew( name, url, charset ) {
 		, title        : ( V.library ? 'Add' : 'Save' ) +' Web Radio'
 		, boxwidth     : 'max'
 		, content      : htmlwebradio
-		, focus        : 0
 		, values       : [ name, url, charset || 'UTF-8' ]
 		, checkblank   : [ 0, 1 ]
 		, beforeshow   : () => {
 			if ( $( '#lib-path .lipath' ).text() ) {
 				$( '#addwebradiodir' ).remove();
 			} else {
-				$( '#addwebradiodir' ).click( function() {
+				$( '#addwebradiodir' ).on( 'click', function() {
 					info( {
 						  icon       : 'webradio'
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
-						, checkblank : 1
-						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal() ] )
+						, checkblank : true
+						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 					} );
 				} );
 			}
@@ -482,208 +601,95 @@ function webRadioNew( name, url, charset ) {
 			var url     = values[ 1 ];
 			var charset = values[ 2 ].replace( /UTF-8|iso *-*/, '' );
 			var dir     = $( '#lib-path .lipath' ).text();
-			bash( [ 'webradioadd', dir, name, url, charset ], error => {
+			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
+			bash( [ 'webradioadd', dir, name, url, charset, 'CMD DIR NAME URL CHARSET' ], error => {
 				if ( error ) webRadioExists( error, name, url, charset );
 				bannerHide();
 			} );
-			if ( [ 'm3u', 'pls' ].includes( url.slice( -3 ) ) ) banner( 'webradio blink', 'Web Radio', 'Add ...', -1 );
 		}
 	} );
 }
 //----------------------------------------------------------------------------------------------
-$( '.contextmenu a, .contextmenu .submenu' ).click( function() {
+$( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 	var $this = $( this );
 	var cmd   = $this.data( 'cmd' );
 	menuHide();
 	$( 'li.updn' ).removeClass( 'updn' );
-	// playback //////////////////////////////////////////////////////////////
+	
+	var cmd_function = {
+		  bookmark      : bookmarkNew
+		, current       : currentSet
+		, directory     : directoryList
+		, exclude       : excludeDirectory
+		, plrename      : playlistRename
+		, pldelete      : playlistDelete
+		, remove        : removeFromPlaylist
+		, savedpladd    : savedPlaylistAdd
+		, savedplremove : savedPlaylistRemove
+		, similar       : similarAdd
+		, tag           : tagEditor
+		, thumb         : thumbnailUpdate
+		, update        : updateDirectory
+		, wrcoverart    : webRadioCoverart
+		, wrdelete      : webRadioDelete
+		, wrdirdelete   : wrDirectoryDelete
+		, wrdirrename   : wrDirectoryRename
+		, wredit        : webRadioEdit
+		, wrsave        : webRadioSave
+	}
+	if ( cmd in cmd_function ) {
+		cmd_function[ cmd ]();
+		return
+	}
+	
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
 		if ( cmd === 'play' ) {
 			if ( S.player !== 'mpd' ) {
-				$( '#stop' ).click();
+				$( '#stop' ).trigger( 'click' );
 				S.player = 'mpd';
 			}
-			$( '#pl-list li' ).eq( V.list.li.index() ).click();
+			$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
 		} else {
-			$( '#'+ cmd ).click();
+			$( '#'+ cmd ).trigger( 'click' );
 		}
 		return
 	}
 	
-	switch ( cmd ) {
-		case 'current':
-			bash( [ 'mpcsetcurrent', V.list.index + 1 ] );
-			return
-		case 'directory':
-			if ( V.mode === 'latest' ) {
-				var path      = dirName( V.list.path );
-				var query     = {
-					  query  : 'ls'
-					, string : path
-					, format : [ 'file' ]
-				}
-				var modetitle = path;
-				query.gmode   = V.mode;
-				list( query, function( data ) {
-					V.mode         = path.split( '/' )[ 0 ].toLowerCase();
-					V.gmode        = 'latest';
-					data.path      = path;
-					data.modetitle = modetitle;
-					renderLibraryList( data );
-				}, 'json' );
-				query.path      = path;
-				query.modetitle = modetitle;
-				V.query.push( query );
-			} else {
-				$( '#lib-list .liinfopath' ).click();
-			}
-			return
-		case 'exclude':
-			info( {
-				  icon    : 'folder-forbid'
-				, title   : 'Exclude Directory'
-				, message : 'Exclude from Library:'
-							+'<br>'+ ico( 'folder' ) +'&ensp;<wh>'+ V.list.path +'</wh>'
-				, ok      : () => {
-					bash( [ 'ignoredir', V.list.path ], () => V.list.li.remove() );
-					var dir = V.list.path.split( '/' ).pop();
-				}
-			} );
-			return
-		case 'remove':
-			V.contextmenu = true;
-			setTimeout( () => V.contextmenu = false, 500 );
-			playlistRemove( V.list.li );
-			return
-		case 'savedpladd':
-			if ( V.playlist ) {
-				var album = V.list.li.find( '.album' ).text();
-				var file  = V.list.path;
-			} else {
-				var album = $( '.licover .lialbum' ).text();
-				var file  = V.list.li.find( '.lipath' ).text();
-			}
-			saveToPlaylist( V.list.name, album, file );
-			return
-		case 'savedplremove':
-			local();
-			var plname = $( '#pl-path .lipath' ).text();
-			bash( [ 'savedpledit', plname, 'remove', V.list.li.index() + 1 ] );
-			V.list.li.remove();
-			return
-		case 'similar':
-			if ( D.plsimilar ) {
-				info( {
-					  icon    : 'lastfm'
-					, title   : 'Add Similar'
-					, message : 'Search and add similar tracks from Library?'
-					, ok      : addSimilar
-				} );
-			} else {
-				addSimilar();
-			}
-			return
-		case 'tag':
-			tagEditor();
-			return
-		case 'thumb':
-			info( {
-				  icon    : 'coverart'
-				, title   : 'Album Thumbnails'
-				, message : 'Update album thumbnails in:'
-							+'<br>'+ ico( 'folder' ) +' <wh>'+ V.list.path +'</wh>'
-				, ok      : () => thumbUpdate( V.list.path )
-			} );
-			return
-		case 'update':
-			if ( V.list.path.slice( -3 ) === 'cue' ) V.list.path = dirName( V.list.path );
-			infoUpdate( V.list.path );
-			return
-		case 'wrdirdelete':
-			var path = V.list.li.find( '.lipath' ).text();
-			info( {
-				  icon    : V.mode
-				, title   : 'Delete Folder'
-				, message : 'Folder:'
-							+'<br><wh>'+ path +'</wh>'
-				, oklabel : ico( 'minus-circle' ) +'Delete'
-				, okcolor : red
-				, ok      : () => {
-					bash( [ 'wrdirdelete', path, V.mode ], std => {
-						if ( std == -1 ) {
-							info( {
-								  icon    : 'webradio'
-								, title   : 'Web Radio Delete'
-								, message : 'Folder not empty:'
-											+'<br><wh>'+ path +'</wh>'
-											+'<br>Confirm delete?'
-								, oklabel : ico( 'minus-circle' ) +'Delete'
-								, okcolor : red
-								, ok      : () => bash( [ 'wrdirdelete', path, V.mode, 'noconfirm' ] )
-							} );
-						}
-					} );
-				}
-			} );
-			return
-		case 'wrdirrename':
-			var path = V.list.li.find( '.lipath' ).text().split( '/' );
-			var name = path.pop();
-			var path = path.join( '/' );
-			info( {
-				  icon        : V.mode
-				, title       : 'Rename Folder'
-				, textlabel   : 'Name'
-				, focus       : 0
-				, values      : name
-				, checkblank  : 1
-				, checkchange : 1
-				, oklabel     : 'Rename'
-				, ok          : () => bash( [ 'wrdirrename', path, name, infoVal(), V.mode ] )
-			} );
-			return
-		case 'wrsave':
-			webRadioNew( '', V.list.li.find( '.lipath' ).text() );
-			return
-	}
-	
-	// functions with dialogue box ////////////////////////////////////////////
-	var contextFunction = {
-		  bookmark   : bookmarkNew
-		, plrename   : playlistRename
-		, pldelete   : playlistDelete
-		, wrcoverart : webRadioCoverart
-		, wrdelete   : webRadioDelete
-		, wredit     : webRadioEdit
-	}
-	if ( cmd in contextFunction ) {
-		contextFunction[ cmd ]();
-		return
-	}
-	
-	// replaceplay|replace|addplay|add //////////////////////////////////////////
+	/* '' album albumartist artist composer conductor date genre pl wr
+	_add
+	_addplay
+	playnext
+	_replace
+	_replaceplay
+	*/
 	var path = V.list.path;
 	if ( V.mode.slice( -5 ) === 'radio' ) {
 		var pathsplit = path.split( '//' );
 		path = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
 	}
-	var mpccmd;
-	// must keep order otherwise replaceplay -> play, addplay -> play
-	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' );
+	// mpccmd:
+	// [ 'mpcadd', path ]
+	// [ 'mpcaddplaynext', path ]
+	// [ 'mpcaddfind', 'multi', V.mode, path, 'album', V.list.album ]
+	// [ 'mpcaddfind', 'multi', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ]
+	// [ 'mpcaddfind',  mode,   path ];
+	// [ 'mpcaddload', path ]
+	// [ 'mpcaddls', path ]
+	var mode = cmd.replace( /replaceplay|replace|addplay|add/, '' ); // must keep order otherwise replaceplay -> play, addplay -> play
 	switch ( mode ) {
 		case '':
 			if ( V.list.singletrack || V.mode.slice( -5 ) === 'radio' ) { // single track
-				mpccmd = [ 'mpcadd', path ];
-			} else if ( V.librarytracklist && ! $( '.licover .lipath' ).length ) {
-				mpccmd = [ 'mpcfindadd', 'multi', V.mode, path, 'album', V.list.album ];
+				V.mpccmd = [ 'mpcadd', path ];
+			} else if ( V.librarytrack && ! $( '.licover .lipath' ).length ) {
+				V.mpccmd = [ 'mpcaddfind', V.mode, path, 'album', V.list.album ];
 			} else { // directory / album / saved playlist track
-				mpccmd = [ V.savedplaylist ? 'mpcadd' : 'mpcls', path ];
+				V.mpccmd = V.savedpltrack ? [ 'mpcadd', path ] : [ 'mpcaddls', path ];
 			}
 			break;
 		case 'pl':
 			cmd = cmd.slice( 2 );
 			if ( V.library ) {
-				mpccmd = [ 'mpcload', path ];
+				V.mpccmd = [ 'mpcaddload', path ];
 			} else { // saved playlist
 				var play = cmd.slice( -1 ) === 'y';
 				var replace = cmd.slice( 0, 1 ) === 'r';
@@ -696,36 +702,22 @@ $( '.contextmenu a, .contextmenu .submenu' ).click( function() {
 			}
 			break;
 		case 'playnext':
-			mpccmd = [ 'mpcaddplaynext', path ];
+			V.mpccmd = [ 'mpcaddplaynext', path ];
 			break
 		case 'wr':
 			cmd = cmd.slice( 2 );
 			var charset = V.list.li.data( 'charset' );
 			if ( charset ) path += '#charset='+ charset
-			mpccmd = [ 'mpcadd', path ];
+			V.mpccmd = [ 'mpcadd', path ];
 			break;
-		default:
+		default: // album albumartist artist composer conductor date genre
 			if ( ! V.list.name ) {
-				mpccmd = [ 'mpcfindadd', mode, path ];
-				if ( V.list.artist ) mpccmd.push( 'artist', V.list.artist );
+				V.mpccmd = [ 'mpcaddfind', V.mode, path ];
+				if ( V.list.artist ) V.mpccmd.push( 'artist', V.list.artist );
 			} else {
-				mpccmd = [ 'mpcfindadd', 'multi', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ];
+				V.mpccmd = [ 'mpcaddfind', V.mode, $( '#mode-title' ).text(), 'album', V.list.name ];
 			}
 	}
-	if ( ! mpccmd ) mpccmd = [];
-	cmd       = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' );
-	if ( V.librarylist || V.list.li.find( '.li1' ).length ) {
-		var $li2 = V.list.li.find( '.li2' );
-		if ( V.list.licover ) {
-			var l1 = '.lialbum';
-		} else {
-			var l1 = '.li1 .name';
-			if ( V.playlist ) $li2 = $li2.find( '.name' );
-		}
-		var msg = '<div class="li1">'+ V.list.li.find( l1 ).text() +'</div>'
-				+'<a class="li2">'+ $li2.text() +'</a>';
-	} else {
-		var msg = V.list.li.find( '.liname' ).text() || V.list.path;
-	}
-	addToPlaylist( cmd, mpccmd, msg );
+	V.action = cmd.replace( /album|artist|composer|conductor|date|genre/g, '' ); // add addplay playnext replace replaceplay
+	addToPlaylist();
 } );

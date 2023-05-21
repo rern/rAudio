@@ -4,7 +4,7 @@
 
 readarray -t tmpradio < $dirshm/radio
 file=${tmpradio[0]}
-station=${tmpradio[1]//\"/\\\"}
+station=$( stringEscape ${tmpradio[1]} )
 id=${tmpradio[2]}
 pos=$( mpc status %songpos% )
 total=$( mpc status %length% )
@@ -68,9 +68,9 @@ metadataGet() {
 		icon=radiofrance
 		radiofranceData
 	fi
-	artist=${metadata[0]//\"/\\\"}
-	title=${metadata[1]//\"/\\\"}
-	album=${metadata[2]//\"/\\\"}
+	artist=$( stringEscape ${metadata[0]} )
+	title=$( stringEscape ${metadata[1]} )
+	album=$( stringEscape ${metadata[2]} )
 	coverurl=${metadata[3]}
 	countdown=${metadata[4]} # countdown
 	if [[ ! $album && ! $title ]]; then
@@ -89,11 +89,12 @@ metadataGet() {
 		coverart=/data/shm/webradio/$name.jpg
 		curl -s $coverurl -o $dirshm/webradio/$name.jpg
 	fi
+	elapsed=$( mpcElapsed )
 	data='{
   "Album"    : "'$album'"
 , "Artist"   : "'$artist'"
 , "coverart" : "'$coverart'"
-, "elapsed"  : '$( getElapsed )'
+, "elapsed"  : '$elapsed'
 , "file"     : "'$file'"
 , "icon"     : "'$icon'"
 , "sampling" : "'$sampling'"
@@ -104,7 +105,15 @@ metadataGet() {
 , "Time"     : false
 , "Title"    : "'$title'"
 }'
-	$dirbash/status-push.sh statusradio "$data" & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	pushstream mpdradio "$data"
+	status=$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
+	status+='
+timestamp='$( date +%s%3N )'
+webradio=true
+player="mpd"'
+	echo "$status" > $dirshm/status
+	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
+	$dirbash/cmd.sh coverfileslimit
 	# next fetch
 	sleep $(( countdown + 5 )) # add 5s delay
 	metadataGet

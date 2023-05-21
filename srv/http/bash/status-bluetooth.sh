@@ -34,7 +34,10 @@ onlinefile=$( ls $dirshm/online/$name.* 2> /dev/null ) # jpg / png
 if [[ -e $onlinefile ]]; then
 	coverart="${onlinefile:9}"
 else
-	$dirbash/status-coverartonline.sh "$Artist"$'\n'"$Album" &> /dev/null &
+	$dirbash/status-coverartonline.sh "cmd
+$Artist
+$Album
+CMD ARTIST ALBUM" &> /dev/null &
 fi
 [[ ! $Position ]] && elapsed=false || elapsed=$( calc 0 $Position/1000 )
 [[ ! $Duration ]] && Time=false || Time=$( calc 0 $Duration/1000 )

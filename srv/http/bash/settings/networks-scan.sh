@@ -2,6 +2,9 @@
 
 . /srv/http/bash/common.sh
 
+killProcess networksscan
+echo $$ > $dirshm/pidnetworksscan
+
 if [[ $1 == wlan ]]; then
 	wlandev=$( < $dirshm/wlan )
 	ip link set $wlandev up

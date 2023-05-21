@@ -21,11 +21,12 @@ if [[ ! $aplay ]]; then
 	devices=false
 	touch $dirshm/nosound
 	rm -f $dirshm/amixercontrol
-	pushstream display '{"volumenone":true}'
+	pushstream display '{ "volumenone": true }'
 	return
 fi
 
 getControls() {
+	local amixer controls
 	amixer=$( amixer -c $1 scontents )
 	[[ ! $amixer ]] && controls= && return
 	
@@ -37,6 +38,7 @@ getControls() {
 	controls=$( grep -E 'volume.*pswitch|Master.*volume' <<< $amixer )
 	[[ ! $controls ]] && controls=$( grep volume <<< $amixer )
 	[[ $controls ]] && controls=$( cut -d"'" -f2 <<< $controls )
+	[[ $controls ]] && echo "$controls"
 }
 
 rm -f $dirshm/nosound
@@ -65,7 +67,7 @@ for line in "${aplay[@]}"; do
 		fi
 		mixertypefile="$dirsystem/mixertype-$aplayname"
 		[[ -e $mixertypefile ]] && mixertype=$( < "$mixertypefile" ) || mixertype=hardware
-		getControls $card
+		controls=$( getControls $card )
 		if [[ ! $controls ]]; then
 			mixerdevices=false
 			mixers=0
@@ -125,7 +127,10 @@ else
 	echo $card > $dirsystem/asoundcard
 fi
 asoundcard=$( < $dirsystem/asoundcard )
+echo ${Ahwmixer[asoundcard]} > $dirshm/amixercontrol
 
 devices="[ ${devices:1} ]"
-aplayname=${Aaplayname[i]}
-output=${Aname[i]}
+aplayname=${Aaplayname[asoundcard]}
+mixertype=${Amixertype[asoundcard]}
+output=${Aname[asoundcard]}
+

@@ -58,14 +58,11 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		filepresets=$dirsystem/equalizer.presets
 		if [[ $btmixer ]]; then
 			slavepcm=bluealsa
-			filepresets+="-$btmixer"
 		elif [[ $asoundcard != -1 ]]; then
 			slavepcm='"plughw:'$asoundcard',0"'
 		fi
-		preset=$( head -1 "$filepresets" 2> /dev/null || echo Flat )
 		if [[ $slavepcm ]]; then
 			equalizer=1
 ########
@@ -108,7 +105,13 @@ else
 	else
 		systemctl stop bluetoothbutton
 	fi
-	[[ $equalizer ]] && $dirbash/cmd.sh "equalizer
-preset
-$preset"
+	if [[ -e $dirsystem/equalizer ]]; then
+		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
+		player=$( < $dirshm/player )
+		[[ $player == airplay || $player == spotify ]] && user=root || user=mpd
+		$dirbash/cmd.sh "equalizer
+$value
+$user
+CMD VALUE USER"
+	fi
 fi

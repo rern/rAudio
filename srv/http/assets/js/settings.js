@@ -1,32 +1,13 @@
+/*
+Naming must be the same for:
+	system - NAME.service
+	js     - id = icon = NAME, #setting-NAME
+	bash   - cmd=NAME, save to NAME.conf
+*/
+
 S              = {} // status
 SW             = {} // switch
 V              = {} // var global
-
-var dirbash    = '/srv/http/bash/settings/';
-var playersh   = dirbash +'player.sh ';
-var networkssh = dirbash +'networks.sh ';
-var systemsh   = dirbash +'system.sh ';
-var cmd        = {
-	  albumignore  : playersh   +'albumignore'
-	, asound       : playersh   +'devices'
-	, avahi        : networkssh +'avahi'
-	, bluetooth    : networkssh +'bluetoothshow'
-	, btreceiver   : playersh   +'bluetoothinfo'
-	, journalctl   : systemsh   +'journalctl'
-	, lan          : networkssh +'ifconfigeth'
-	, mount        : systemsh   +'storage'
-	, mpdignore    : playersh   +'mpdignorelist'
-	, nonutf8      : playersh   +'nonutf8'
-	, rfkill       : systemsh   +'rfkilllist'
-	, shareddata   : systemsh   +'shareddataname'
-	, soundprofile : systemsh   +'soundprofileget'
-	, system       : systemsh   +'systemconfig'
-	, timezone     : systemsh   +'timedate'
-	, wlan         : networkssh +'iwlist'
-	, ifconfigwlan : networkssh +'ifconfigwlan'
-}
-var services   = [ 'camilladsp',     'dabradio', 'hostapd',    'localbrowser', 'mpd',     'nfsserver'
-				 , 'shairport-sync', 'smb',      'snapclient', 'spotifyd',     'upmpdcli' ];
 
 function bannerReset() {
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
@@ -36,10 +17,10 @@ function bannerReset() {
 }
 function currentStatus( id ) {
 	var $el = $( '#code'+ id );
-	if ( $el.hasClass( 'hide' ) ) {
-		var timeoutGet = setTimeout( () => notify( page, 'Get Data', id ), 1000 );
-	}
-	var command = services.includes( id ) ? '/srv/http/bash/settings/system-pkgstatus.sh '+ id : cmd[ id ]+' 2> /dev/null';
+	if ( $el.hasClass( 'hide' ) ) var timeoutGet = setTimeout( () => notify( page, 'Status', 'Get data ...' ), 2000 );
+	var services   = [ 'bluetooth', 'camilladsp',     'dabradio', 'hostapd',    'localbrowser', 'mpd'
+					 , 'nfsserver', 'shairport-sync', 'smb',      'snapclient', 'spotifyd',     'upmpdcli' ];
+	var command = services.includes( id ) ? [ 'settings/pkgstatus.sh', id ] : [ 'status'+ id ];
 	bash( command, status => {
 		clearTimeout( timeoutGet );
 		$el.html( status ).promise().done( () => {
@@ -50,6 +31,14 @@ function currentStatus( id ) {
 			if ( id === 'albumignore' || id === 'mpdignore' ) $( 'html, body' ).scrollTop( $( '#code'+ id ).offset().top - 90 );
 		} );
 		bannerReset();
+	} );
+}
+function infoDisabled( $this ) {
+	$this.prop( 'checked', ! $this.prop( 'checked' ) );
+	info( {
+		  icon    : SW.icon
+		, title   : SW.title
+		, message : $this.prev().html()
 	} );
 }
 function infoPlayerActive( $this ) {
@@ -63,9 +52,16 @@ function infoPlayerActive( $this ) {
 		return true
 	}
 }
+function json2array( keys, json ) {
+	if ( ! json ) return false
+	
+	var values = [];
+	keys.forEach( k => values.push( json[ k ] ) );
+	return values
+}
 function list2JSON( list ) {
 	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( '/srv/http/bash/settings/system-pkgstatus.sh mpd', status => {
+		bash( [ 'settings/pkgstatus.sh', 'mpd' ], status => {
 			var error =  iconwarning +'MPD is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
@@ -74,7 +70,7 @@ function list2JSON( list ) {
 				.html( error )
 				.removeClass( 'hide' )
 				.on( 'click', '.restart', function() {
-					bash( '/srv/http/bash/settings/player-conf.sh', refreshData );
+					bash( [ 'settings/player-conf.sh' ], refreshData );
 					notify( 'mpd', 'MPD', 'Start ...' );
 				} );
 		loaderHide();
@@ -91,17 +87,25 @@ function list2JSON( list ) {
 	return true
 }
 function notify( icon, title, message, delay ) {
-	if ( typeof message === 'boolean' || typeof message === 'number' ) var message = message ? 'Enable ...' : 'Disable ...';
+	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );
 }
+function notifyCommon( message ) {
+	if ( ! message ) {
+		message = S[ SW.id ] ? 'Change ...' : 'Enable ...';
+	} else if ( typeof message === 'boolean' ) {
+		message = message ? 'Enable ...' : 'Disable ...'
+	}
+	banner( SW.icon +' blink', SW.title, message, -1 );
+}
 function refreshData() {
-	if ( page === 'addons' || page === 'guide' || ! I.hidden ) return
+	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
-	bash( dirbash + page +'-data.sh', list => {
-		if ( typeof list === 'string' ) { // on load, try catching any errors
-			var list2G = list2JSON( list );
+	bash( [ 'settings/'+ page +'-data.sh' ], data => {
+		if ( typeof data === 'string' ) { // on load, try catching any errors
+			var list2G = list2JSON( data );
 		} else {
-			S = list;
+			S = data;
 		}
 		if ( ! list2G ) return
 		
@@ -123,19 +127,25 @@ function showContent() {
 	loaderHide();
 }
 function switchCancel() {
-	delete I.active;
 	$( '#'+ SW.id ).prop( 'checked', S[ SW.id ] );
-}
-function switchDisable() {
-	S[ SW.id ] = false;
-	$( '#setting-'+ SW.id ).addClass( 'hide' );
+	SWreset();
+	bannerHide();
 }
 function switchEnable() {
-	var val = infoVal();
-	var cmd = typeof val === 'object' ? [ SW.id, true, ...val ] : [ SW.id, true, val ];
-	bash( cmd );
-	notify( SW.icon, SW.title, S[ SW.id ] ? 'Change ...' : 'Enable ...' );
+	var infoval = infoVal();
+	var keys  = Object.keys( infoval );
+	var values  = Object.values( infoval );
+	var CMD_CFG = I.fileconf ? 'CFG ' : 'CMD ';
+	notifyCommon();
+	bash( [ SW.id, ...values, CMD_CFG + keys.join( ' ' ) ] );
 	S[ SW.id ] = true;
+	SWreset();
+}
+function switchIdIconTitle( id ) {
+	SW.id    = id;
+	SW.icon  = id;
+	if ( page === 'player' ) SW.icon =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume'
+	SW.title = $( '#div'+ id +' .name' ).text();
 }
 function switchSet() {
 	if ( page === 'networks' || page === 'relays' ) return
@@ -149,23 +159,33 @@ function switchSet() {
 		$this.toggleClass( 'hide', ! S[ sw ] );
 	} );
 	$( 'pre.status' ).each( ( i, el ) => { // refresh code block
-		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.slice( 4 ) ); // codeid > id
+		if ( ! $( el ).hasClass( 'hide' ) ) currentStatus( el.id.replace( /^code/, '' ) ); // codeid > id
 	} );
 }
+function SWreset() {
+	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
+}
+function values2info( keys, v ) {
+	var values = {}
+	keys.forEach( k => values[ k ] = v[ k ] || '' );
+	return values
+}
+
 
 // pushstreamChannel() in common.js
-pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
+if ( page === 'addons' ) {
+	pushstreamChannel( [ 'notify' ] );
+} else {
+	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
+}
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
 		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( 'killall -q networks-scan.sh &> /dev/null' );
+			bash( [ 'scankill' ] );
 			clearTimeout( V.timeoutscan );
 			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-			$( '.back' ).click();
+			$( '.back' ).trigger( 'click' );
 		}
-	} else if ( page === 'system' && S.intervalstatus ) {
-		bash( [ 'statusstop' ] );
-		$( '.refresh' ).removeClass( 'blink wh' );
 	}
 }
 pushstream.onmessage = function( data, id, channel ) {
@@ -204,7 +224,7 @@ function psNotify( data ) {
 	var message  = data.message;
 	var delay    = data.delay;
 	banner( icon, title, message, delay );
-	if ( title === 'Power' ) pushstreamPower( message );
+	if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) pushstreamPower( message );
 }
 function psPlayer( data ) {
 	var player_id = {
@@ -225,7 +245,7 @@ function psRefresh( data ) {
 		if ( page === 'relays' ) {
 			Rs = JSON.stringify( R );
 		} else if ( page === 'networks' ) {
-			$( '.back' ).click();
+			$( '.back' ).trigger( 'click' );
 		} else {
 			switchSet();
 		}
@@ -236,17 +256,35 @@ function psReload( data ) {
 	if ( localhost ) location.reload();
 }
 function psVolume( data ) {
-	if ( ! $( '#infoRange .value' ).text() ) return
+	if ( page !== 'player' || ! I.rangelabel ) return
 	
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
+		V.local = true;
 		var val = data.type !== 'mute' ? data.val : 0;
-		$( '#infoRange .value' ).text( val );
-		$( '#infoRange input' ).val( val );
-		$( '#infoRange .sub' ).text( data.db +' dB' );
-		$( '#infoOk' ).toggleClass( 'hide', data.db === '0.00' );
 		$( '#infoContent' ).removeClass( 'hide' );
-		$( '#infoConfirm' ).addClass( 'hide' );
+		$( '.confirm' ).addClass( 'hide' );
+		if ( 'db' in data ) {
+			$( '#infoRange .value' ).text( val );
+			$( '#infoRange input' ).val( val );
+			volumeSet( data );
+		} else { // from playback
+			var current = +$( '#infoRange input' ).val();
+			var diff    = Math.abs( current - val );
+			var up      = current < val;
+			var i       = current
+			var interval = setInterval( () => {
+				up ? i++ : i--;
+				$( '#infoRange .value' ).text( i );
+				$( '#infoRange input' ).val( i );
+				if ( i === val ) clearInterval( interval );
+			}, 40 );
+			setTimeout( () => {
+				bash( [ 'volumeget' ], function( data ) {
+					if ( data.db ) volumeSet( data );
+				}, 'json' );
+			}, diff * 50 );
+		}
 	}, 300 );
 }
 function psWlan( data ) {
@@ -262,13 +300,12 @@ function psWlan( data ) {
 		return
 	}
 	
-	S.listwl = data;
+	$.each( data, ( k, v ) => { S[ k ] = v } );
 	renderWlan();
 }
 //---------------------------------------------------------------------------------------
 var dirsystem  = '/srv/http/data/system';
 var page       = location.href.replace( /.*p=/, '' ).split( '&' )[ 0 ];
-var timer;
 var pagenext   = {
 	  features : [ 'system', 'player' ]
 	, player   : [ 'features', 'networks' ]
@@ -280,8 +317,8 @@ document.title = page;
 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
-$( document ).keyup( function( e ) {
-	if ( ! I.hidden ) return
+$( document ).on( 'keyup', function( e ) {
+	if ( I.active ) return
 	
 	var $focus;
 	var key = e.key;
@@ -318,10 +355,10 @@ $( document ).keyup( function( e ) {
 			break;
 		case 'Enter':
 			if ( $( '#bar-bottom .bgr' ).length ) {
-				$( '#bar-bottom .bgr' ).click();
+				$( '#bar-bottom .bgr' ).trigger( 'click' );
 			} else {
 				$focus = $( '.setting.focus' );
-				if ( $focus.length ) $focus.click();
+				if ( $focus.length ) $focus.trigger( 'click' );
 			}
 			break;
 	}
@@ -331,15 +368,15 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	
 	var $this = $( this );
 	if ( ! $this.hasClass( 'single' ) ) {
-		var id    = $this.data( 'status' );
+		var id   = $this.data( 'status' );
 		var $code = $( '#code'+ id );
 		$code.hasClass( 'hide' ) ? currentStatus( id ) : $code.addClass( 'hide' );
 	}
 } );
-$( '.close' ).click( function() {
+$( '.close' ).on( 'click', function() {
 	location.href = '/'; 
 } );
-$( '.page-icon' ).click( function() {
+$( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
 	
 	$( '#data' ).html( highlightJSON( S ) )
@@ -347,24 +384,13 @@ $( '.page-icon' ).click( function() {
 	$( '#button-data, #data' ).removeClass( 'hide' );
 	$( 'html, body' ).scrollTop( 0 );
 } );
-$( '#button-data' ).click( function() {
+$( '#button-data' ).on( 'click', function() {
 	switchSet();
 	renderPage();
 	$( '#button-data, #data' ).addClass( 'hide' );
-} ).on( 'mousedown touchdown', function() {
-	timer = setTimeout( () => location.reload(), 1000 );
-} ).on( 'mouseup mouseleave touchup touchleave', function() {
-	clearTimeout( timer );
 } );
-$( '.helphead' ).click( function() {
+$( '.helphead' ).on( 'click', function() {
 	var $this = $( this );
-	if ( page === 'addons' ) {
-		var hidden = $( '.revisiontext' ).hasClass( 'hide' );
-		$this.toggleClass( 'bl', hidden );
-		$( '.revisiontext' ).toggleClass( 'hide', ! hidden );
-		return
-	}
-	
 	var eltop = $( 'heading' ).filter( ( i, el ) => el.getBoundingClientRect().top > 0 )[ 0 ]; // return 1st element
 	if ( eltop ) var offset0 = eltop.getBoundingClientRect().top;
 	if ( window.innerHeight > 570 ) {
@@ -384,56 +410,57 @@ $( '.helphead' ).click( function() {
 	if ( eltop ) $( 'html, body' ).scrollTop( eltop.offsetTop - offset0 );
 	$( '.sub' ).next().toggleClass( 'hide', visible );
 } );
-$( '.help' ).click( function() {
+$( '.help' ).on( 'click', function() {
 	$( this ).parents( '.section' ).find( '.helpblock' ).toggleClass( 'hide' );
 	$( '.helphead' ).toggleClass( 'bl', $( '.helpblock:not( .hide ), .help-sub:not( .hide )' ).length > 0 );
 } );
 
-$( '.setting, .switch' ).click( function() {
+$( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	SW.id    = this.id.replace( 'setting-', '' );
-	SW.icon = page !== 'player' ? SW.id : $( this ).closest( '#divoptions' ).length ? 'mpd' : 'volume';
-	SW.title = $( this ).parent().prev().find( 'span' ).text();
+	switchIdIconTitle( this.id.replace( 'setting-', '' ) );
 } );
-$( '.switch' ).click( function() {
+$( '.switch' ).on( 'click', function() {
+	if ( V.press ) return
+	
 	var $this   = $( this );
-	if ( $this.is( '.custom, .nobanner' ) ) return
+	if ( $this.hasClass( 'disabled' ) ) {
+		infoDisabled( $this );
+		return
+	}
+	
+	if ( $this.is( '.custom, .none' ) ) return
 	
 	var checked = $this.prop( 'checked' );
-	if ( $this.hasClass( 'disabled' ) ) {
-		$this.prop( 'checked', ! checked );
-		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : $this.prev().html()
-		} );
+	if ( ! checked ) {
+		$( '#setting-'+ SW.id ).addClass( 'hide' );
+		notifyCommon( 'Disable ...' );
+		bash( [ SW.id, 'OFF' ] );
+		S[ SW.id ] = false;
 		return
 	}
 	
 	if ( $this.hasClass( 'common' ) ) {
-		if ( checked ) {
-			$( '#setting-'+ SW.id ).click();
-		} else {
-			S[ SW.id ]  = false;
-			notify( SW.icon, SW.title, 'Disable ...' );
-			bash( [ SW.id, false ] );
-			switchDisable();
-		}
+		$( '#setting-'+ SW.id ).trigger( 'click' );
 	} else {
-		S[ SW.id ]  = checked;
-		notify( SW.icon, SW.title, checked );
-		bash( [ SW.id, checked ], error => {
+		S[ SW.id ]  = true;
+		notifyCommon( checked );
+		bash( [ SW.id ], error => {
 			if ( error ) {
-				switchDisable();
+				S[ SW.id ] = false;
+				$( '#setting-'+ SW.id ).addClass( 'hide' );
 				bannerHide();
-				info( error );
+				info( {
+					  icon    : SW.icon
+					, title   : SW.title
+					, message : error
+				} );
 			}
 		}, 'json' );
 	}
 } );
-$( '#bar-bottom div' ).click( function() {
+$( '#bar-bottom div' ).on( 'click', function() {
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );

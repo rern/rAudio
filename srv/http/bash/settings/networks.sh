@@ -2,10 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-# convert each line to each args
-readarray -t args <<< $1
+args2var "$1"
 
 netctlSwitch() {
+	local active connected ssid wlandev
 	ssid=$1
 	wlandev=$( < $dirshm/wlan )
 	connected=$( iwgetid $wlandev -r )
@@ -28,9 +28,10 @@ netctlSwitch() {
 	fi
 }
 wlanDevice() {
+	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep ^w )
 	if [[ ! $iplinkw ]]; then
-		cpuInfo
+		. $dirshm/cpuinfo
 		if [[ $onboardwireless ]]; then
 			modprobe brcmfmac
 			sleep 1
@@ -46,69 +47,52 @@ wlanDevice() {
 	fi
 }
 
-case ${args[0]} in
+case $CMD in
 
-avahi )
-	hostname=$( hostname )
-	echo "\
-<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
-$( timeout 1 avahi-browse -arp \
-	| cut -d';' -f7,8 \
-	| grep $hostname \
-	| grep -v 127.0.0.1 \
-	| sed 's/;/ : /' \
-	| sort -u )"
-	;;
 bluetoothinfo )
-	mac=${args[1]}
-	info=$( bluetoothctl info $mac )
+	info=$( bluetoothctl info $MAC )
 	grep -q -m1 'not available' <<< $info && exit
 	
 	echo "\
-<bll># bluetoothctl info $mac</bll>
+<bll># bluetoothctl info $MAC</bll>
 $info"
 	;;
-bluetoothshow )
-	echo "\
-<bll># bluetoothctl show</bll>
-$( bluetoothctl show )"
-	;;
 connect )
-	data=${args[1]}
-	ESSID=$( jq -r .ESSID <<< $data )
-	Key=$( jq -r .Key <<< $data )
-	wlandev=$( < $dirshm/wlan )
-	profile="\
-Interface=$wlandev
-Connection=wireless
-ESSID=\"$ESSID\"
-IP=$( jq -r .IP <<< $data )
-"
-	if [[ $Key ]]; then
-		profile+="\
-Security=$( jq -r .Security <<< $data )
-Key=\"$Key\"
-"
-	else
-		profile+="\
-Security=none
-"
+	[[ $ADDRESS ]] && ip=static || ip=dhcp
+	if [[ $ADDRESS && $ADDRESS != $( ipAddress ) ]]; then # static
+		if ipOnline $ADDRESS; then
+			rm "$file"
+			echo 'IP <wh>'$ADDRESS'</wh> already in use.'
+			exit
+		fi
 	fi
-	[[ $( jq -r .Hidden <<< $data ) == true ]] && profile+="\
-Hidden=yes
-"
-	[[ $( jq -r .IP <<< $data ) == static ]] && profile+="\
-Address=$( jq -r .Address <<< $data )/24
-Gateway=$( jq -r .Gateway <<< $data )
-"
+	
+	data='Interface='$( < $dirshm/wlan )'
+Connection=wireless
+IP='$ip'
+ESSID="'$ESSID'"'
+	if [[ $KEY ]]; then
+		[[ $SECURITY ]] && security=wep || security=wpa
+		data+='
+Key="'$KEY'"'
+	else
+		security=none
+	fi
+	[[ $ADDRESS ]] && data+='
+Address='$ADDRESS'/24
+Gateway='$GATEWAY
+	data+='
+Security='$security
+	[[ $HIDDEN ]] && data+='
+Hidden=yes'
+	echo "$data" > "/etc/netctl/$ESSID"
+	
 	if systemctl -q is-active hostapd && ! systemctl -q is-enabled hostapd; then # boot to hostapd when no network connection
-		echo "$profile" > /boot/wifi                                             # save for next boot
 		pushstream wlan '{"ssid":"'$ESSID'","reboot":1}'
 		exit
 	fi
 	
-	echo "$profile" > "/etc/netctl/$ESSID"
-	if [[ $( jq -r .add <<< $data ) == true ]]; then
+	if ! netctl is-active "$ESSID" &> /dev/null; then
 		netctlSwitch "$ESSID"
 		avahi-daemon --kill # flush cache and restart
 	else
@@ -120,41 +104,13 @@ disconnect )
 	connected=$( iwgetid $wlandev -r )
 	netctl stop "$connected"
 	netctl disable "$connected"
-	killall wpa_supplicant
+	systemctl stop wpa_supplicant
 	ifconfig $wlandev up
 	$dirsettings/networks-data.sh pushwl
 	;;
-hostapd )
-	echo $dirsettings/features.sh "$1"
-	;;
-ifconfigeth )
-	lan=$( ifconfig | grep ^e | cut -d: -f1 )
-	echo "\
-<bll># ifconfig $lan</bll>
-$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
-	;;
-ifconfigwlan )
-	wlandev=$( < $dirshm/wlan )
-	echo "\
-<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
-$( ifconfig $wlandev | grep -E -v 'RX|TX')
-$( iwconfig $wlandev | awk NF )"
-	;;
-ipused )
-	ping -c 1 -w 1 ${args[1]} &> /dev/null && echo 1 || echo 0
-	;;
-iwlist )
-	echo '<bll># iw reg get</bll>'
-	iw reg get
-	echo
-	echo '<bll># iw list</bll>'
-	iw list
-	;;
 lanedit )
-	ip=${args[1]}
-	gw=${args[2]}
-	if [[ $ip ]]; then
-		ping -c 1 -w 1 $ip &> /dev/null && echo -1 && exit
+	if [[ $IP ]]; then
+		ipOnline $IP && echo -1 && exit
 	fi
 	
 	file=/etc/systemd/network/en.network
@@ -165,11 +121,11 @@ lanedit )
 		file=/etc/systemd/network/eth0.network
 	fi
 	sed -E -i '/^DHCP|^Address|^Gateway/ d' $file
-	if [[ $ip ]]; then
+	if [[ $IP ]]; then # static
 		sed -i '/^DNSSEC/ i\
-Address='$ip'/24\
-Gateway='$gw $file
-	else
+Address='$IP'/24\
+Gateway='$GATEWAY $file
+	else               # dhcp - reset
 		sed -i '/^DNSSEC/ i\DHCP=yes' $file
 	fi
 	systemctl restart systemd-networkd
@@ -182,37 +138,53 @@ profileconnect )
 		ifconfig $wlandev 0.0.0.0
 		sleep 2
 	fi
-	netctlSwitch "${args[1]}"
+	netctlSwitch "$SSID"
 	;;
 profileget )
-	ssid=${args[1]}
-	data='"'$ssid'"'
-	if netctl is-active "$ssid" &> /dev/null; then
-		status=( $( netctl status Home5GHz \
-					| grep -E 'rebinding lease|default route' \
-					| awk '{print $NF}' ) )
-		data+=',"'${status[0]}'","'${status[1]}'"'
-	else
-		data+=',"",""'
-	fi
-	netctl=$( < "/etc/netctl/$ssid" )
-	password=$( grep ^Key <<< $netctl | cut -d= -f2- | tr -d '"' )
-	grep -q -m1 ^IP=dhcp <<< $netctl && static=false || static=true
-	grep -q -m1 ^Hidden <<< $netctl && hidden=true || hidden=false
-	grep -q -m1 ^Security=wep <<< $netctl && wep=true || wep=false
-	data+=',"'$password'", '$static', '$hidden', '$wep
-	echo "[$data]"
+	conf2json "/etc/netctl/$SSID"
 	;;
 profileremove )
-	ssid=${args[1]}
-	netctl is-enabled "$ssid" && netctl disable "$ssid"
-	if netctl is-active "$ssid" &> /dev/null; then
-		netctl stop "$ssid"
-		killall wpa_supplicant &> /dev/null &
-		ifconfig $( < $dirshm/wlan ) up
+	netctl is-enabled "$SSID" && netctl disable "$SSID"
+	if netctl is-active "$SSID" &> /dev/null; then
+		netctl stop "$SSID"
+		systemctl stop wpa_supplicant
+		wlandev=$( < $dirshm/wlan )
+		ifconfig $wlandev up
 	fi
-	rm "/etc/netctl/$ssid"
+	rm "/etc/netctl/$SSID"
 	$dirsettings/networks-data.sh pushwl
+	;;
+scankill ) 
+	killProcess networksscan
+	;;
+statusbt )
+	echo "\
+<bll># bluetoothctl show</bll>
+$( bluetoothctl show )"
+	;;
+statuslan )
+	lan=$( ifconfig | grep ^e | cut -d: -f1 )
+	echo "\
+<bll># ifconfig $lan</bll>
+$( ifconfig $lan | grep -E -v 'RX|TX|^\s*$' )"
+	;;
+statuswebui )
+	hostname=$( hostname )
+	echo "\
+<bll># avahi-browse -arp | cut -d';' -f7,8 | grep $hostname</bll>
+$( timeout 1 avahi-browse -arp \
+	| cut -d';' -f7,8 \
+	| grep $hostname \
+	| grep -v 127.0.0.1 \
+	| sed 's/;/ : /' \
+	| sort -u )"
+	;;
+statuswl )
+	wlandev=$( < $dirshm/wlan )
+	echo "\
+<bll># ifconfig $wlandev; iwconfig $wlandev</bll>
+$( ifconfig $wlandev | grep -E -v 'RX|TX')
+$( iwconfig $wlandev | awk NF )"
 	;;
 usbbluetoothon ) # from usbbluetooth.rules
 	! systemctl -q is-active bluetooth && systemctl start bluetooth

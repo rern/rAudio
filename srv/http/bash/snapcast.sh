@@ -18,12 +18,13 @@ if [[ $1 == start ]]; then
 	serverip=$( timeout 0.2 snapclient | awk '/Connected to/ {print $NF}' )
 	if [[ $serverip ]]; then
 		echo $serverip > $dirshm/serverip
-		$dirbash/cmd.sh playerstart$'\n'snapcast
+		echo snapcast > $dirshm/player
+		$dirbash/cmd.sh playerstart
 		$dirbash/status-push.sh
 		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 		touch $dirshm/snapclient
-		pushstream option '{"snapclient":true}'
+		pushstream option '{ "snapclient": true }'
 	else
 		systemctl stop snapclient
 		echo -1
@@ -34,15 +35,12 @@ elif [[ $1 == stop ]]; then
 	clientip=$( ipAddress )
 	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/{serverip,snapclient}
-	pushstream option '{"snapclient":false}'
+	pushstream option '{ "snapclient": false }'
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $fileclientip
 	[[ ! $( awk NF $fileclientip ) ]] && rm -f $fileclientip
 else # sshpass add clientip from connected client
 	clientip=$1
-	iplist="\
-$( getContent $fileclientip )
-$clientip"
-	awk NF <<< $iplist | sort -u > $fileclientip
+	appendSortUnique $clientip $fileclientip
 fi

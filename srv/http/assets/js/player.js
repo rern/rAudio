@@ -1,86 +1,78 @@
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.playback' ).click( function() {
-	if ( ! $( this ).hasClass( 'disabled' ) ) {
-		var cmd = S.player === 'mpd' ? 'mpcplayback' : 'playerstop';
-		bash( '/srv/http/bash/cmd.sh '+ cmd );
-	}
+$( '.playback' ).on( 'click', function() {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
 } );
-$( '.btoutputonly' ).click( function() {
+$( '.btoutputall' ).on( 'click', function() {
 	SW.icon  = 'volume';
-	SW.title = 'Audio Output';
+	SW.title = 'Output All';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, checkbox     : [ 'Disable while Bluetooth connected' ]
-		, values       : S.btoutputonly
-		, checkchanged : 1
+		, checkbox     : [ 'Enable all while Bluetooth connected' ]
+		, values       : S.btoutputall
+		, checkchanged : true
 		, ok           : () => {
-			notify( SW.icon, SW.title, ( S.btoutputonly ? 'Enable' : 'Disable' ) +' while Bluetooth connected' );
-			bash( [ 'btoutputonly', ! S.btoutputonly ] );
+			var checked = infoVal();
+			notify( SW.icon, SW.title, ( checked ? 'Enable' : 'Disable' ) +' all while Bluetooth connected' );
+			bash( checked ? [ 'btoutputall' ] : [ 'btoutputall', 'OFF' ] );
 		}
 	} );
 } );
-$( '#audiooutput' ).change( function() {
+$( '#audiooutput' ).on( 'change', function() {
 	notify( 'volume', 'Audio Output Device', 'Change ...' );
-	bash( [ 'audiooutput', $( this ).val() ] );
+	bash( [ 'audiooutput', $( this ).val(), 'CMD CARD' ] );
 } );
-$( '#hwmixer' ).change( function() {
+$( '#hwmixer' ).on( 'change', function() {
 	notify( 'volume', 'Hardware Mixer', 'Change ...' );
-	bash( [ 'hwmixer', D.aplayname, $( this ).val() ] );
+	bash( [ 'hwmixer', D.aplayname, $( this ).val(), 'CMD APLAYNAME HWMIXER' ] );
 } );
-var htmlvolume = `
-<div id="infoRange">
-	<div class="name"></div>
-	<div class="value"></div>
-	<a class="min">0</a><input type="range" min="0" max="100"><a class="max">100</a>
-</div
-><div class="infofooter">-6.83 dB</div>
-`;
-$( '#setting-hwmixer, #setting-btreceiver' ).click( function() {
+$( '#setting-hwmixer, #setting-btreceiver' ).on( 'click', function() {
 	var bt = this.id === 'setting-btreceiver';
-	bash( [ bt ? 'volumegetbt' : 'volumeget' ], voldb => {
-		var voldb   = voldb.split( ' ' );
-		var vol     = voldb[ 0 ];
-		var db      = voldb[ 1 ];
-		var nodb    = typeof db === 'undefined';
-		var nomixer = D.mixertype === 'none';
+	bash( [ 'volumeget' ], data => {
 		if ( bt ) {
-			var cmd       = 'volume0dbbt';
-			var cmdamixer = 'amixer -D bluealsa';
-			var cmdpush   = 'volumepushbt';
-			var mixer     = S.btaplayname;
+			var cmd    = 'volumebt';
+			var cmdodb = 'volume0dbbt';
+			var mixer  = S.btaplayname;
+			var card   = '';
 		} else {
-			var cmd       = 'volume0db';
-			var cmdamixer = 'amixer -c '+ S.asoundcard;
-			var cmdpush   = 'volumepush';
-			var mixer     = D.hwmixer;
+			var cmd    = 'volume';
+			var cmdodb = 'volume0db';
+			var mixer  = D.hwmixer;
+			var card   = D.card;
 		}
 		info( {
-			  icon       : SW.icon
-			, title      : SW.title
-			, rangelabel : bt ? mixer.replace( ' - A2DP', '' ) : mixer
-			, values     : vol
-			, rangesub   : nomixer ? '0dB (No Mixer)' : db +' dB'
-			, confirm    : warning
-			, confirmno  : () => $( '.sub' ).text() > '0.00 dB'
-			, beforeshow : () => {
-				$( '#infoOk' ).toggleClass( 'hide', nodb || nomixer || db === '0.00' );
-				$( '#infoRange input' ).on( 'click input keyup', function() {
-					bash( cmdamixer +' -Mq sset "'+ mixer +'" '+ $( this ).val() +'%' );
+			  icon         : SW.icon
+			, title        : SW.title
+			, rangelabel   : bt ? mixer.replace( ' - A2DP', '' ) : mixer
+			, values       : data.val
+			, rangesub     : data.db +' dB'
+			, beforeshow   : () => {
+				$( '#infoContent' ).after( '<div class="confirm infomessage hide" style="padding: 15px">'+ warning +'</div>' );
+				$( '#infoRange input' ).on( 'input', function() {
+					if ( V.local ) return
+					
+					bash( [ cmd, $( this ).val(), mixer, card, 'CMD VAL MIXER CARD' ] );
 				} ).on( 'touchend mouseup keyup', function() {
-					bash( [ cmdpush ] );
-				} ).prop( 'disabled', D.mixertype === 'none' );
+					bash( [ 'volumepush' ] );
+				} );
+				volumeSet( data );
 			}
-			, oklabel    : ico( 'set0' ) +'0dB'
-			, ok         : () => {
-				bash( [ cmd ] );
+			, oklabel      : ico( 'set0' ) +'0dB'
+			, ok           : () => {
+				if ( $( '#infoRange .sub' ).text() < '0 dB' && $( '.confirm' ).hasClass( 'hide' ) ) {
+					$( '#infoContent, .confirm' ).toggleClass( 'hide' );
+				} else {
+					bash( [ cmdodb ] );
+				}
 			}
-			, oknoreset  : 1
+			, oknoreset    : true
 		} );
-	} );
+	}, 'json' );
 } );
-$( '#mixertype' ).change( function() {
+$( '#mixertype' ).on( 'change', function() {
 	var mixertype = $( this ).val();
 	if ( mixertype === 'none' ) {
 		info( {
@@ -94,7 +86,7 @@ $( '#mixertype' ).change( function() {
 		setMixerType( mixertype );
 	}
 } );
-$( '#novolume' ).click( function() {
+$( '#novolume' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	if ( checked ) {
 		info( {
@@ -103,8 +95,9 @@ $( '#novolume' ).click( function() {
 			, message : warning
 			, cancel  : switchCancel
 			, ok      : () => {
-				notify( SW.icon, SW.title, 'Enable ...' );
-				bash( [ 'novolume', D.aplayname, D.card, D.hwmixer ] );
+				S.novolume = true;
+				bash( [ 'novolume', D.card, D.hwmixer, D.aplayname, 'CMD CARD HWMIXER APLAYNAME' ] );
+				notifyCommon( 'Enable ...' );
 			}
 		} );
 	} else {
@@ -117,41 +110,43 @@ $( '#novolume' ).click( function() {
 &emsp; • Enable any Volume options`
 			, messagealign : 'left'
 		} );
-		$( this ).prop( 'checked', 1 );
+		$( this ).prop( 'checked', true );
 	}
 } );
-$( '#dop' ).click( function() {
+$( '#dop' ).on( 'click', function() {
 	var checked = $( this ).prop( 'checked' );
 	notify( 'mpd', 'DSP over PCM', checked );
-	bash( [ 'dop', checked, D.aplayname ] );
+	var cmd = checked ? [ 'dop', D.aplayname ] : [ 'dop', D.aplayname, 'OFF' ]; // OFF with args - value by index
+	bash( cmd );
 } );
-$( '#setting-crossfade' ).click( function() {
+$( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, textlabel    : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
-		, values       : S.crossfadeconf || 1
+		, values       : S.crossfadeconf
 		, checkchanged : S.crossfade
-		, checkblank   : 1
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-replaygain' ).click( function() {
+$( '#setting-replaygain' ).on( 'click', function() {
+	var hardware = D.mixertype === 'software' && D.mixers;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
-		, footer       : D.mixertype === 'software' && D.mixers ? '<label><input type="checkbox"><wh>Gain control - Mixer device</wh></label>' : ''
-		, values       : S.replaygainconf
+		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
+		, values       : hardware ? values2info( [ 'TYPE', 'HARDWARE' ], S.hostapd ) : { TYPE: S.replaygainconf.TYPE }
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
-$( '.filetype' ).click( function() {
+$( '.filetype' ).on( 'click', function() {
 	var $pre = $( '#prefiletype' );
 	if ( $pre.is( ':empty' ) ) {
 		bash( [ 'filetype' ], data => {
@@ -164,7 +159,7 @@ $( '.filetype' ).click( function() {
 	}
 	$( this ).toggleClass( 'i-chevron-down i-chevron-up' );
 } );
-$( '#setting-buffer' ).click( function() {
+$( '#setting-buffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -174,13 +169,13 @@ $( '#setting-buffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.bufferconf
-		, checkchanged : S.buffer
-		, checkblank   : 1
+		, checkchanged : true
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-outputbuffer' ).click( function() {
+$( '#setting-outputbuffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
@@ -190,14 +185,14 @@ $( '#setting-outputbuffer' ).click( function() {
 		, footeralign  : 'right'
 		, boxwidth     : 110
 		, values       : S.outputbufferconf
-		, checkchanged : S.outputbuffer
-		, checkblank   : 1
+		, checkchanged : true
+		, checkblank   : true
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-soxr' ).click( function() {
-	infoSoxr( S.soxrquality || 'very high' );
+$( '#setting-soxr' ).on( 'click', function() {
+	S.soxrquality === 'custom' ? infoSoxrCustom() : infoSoxr();
 } );
 var custominfo = `\
 <table width="100%">
@@ -215,27 +210,30 @@ audio_output {
 <tr><td><pre style="margin-top: -20px">
 }</pre></td></tr>
 </table>`;
-$( '#setting-custom' ).click( function() {
-	bash( [ 'customget', D.aplayname ], val => {
+$( '#setting-custom' ).on( 'click', function() {
+	bash( [ 'customget', D.aplayname, 'CMD APLAYNAME' ], val => {
 		var val       = val.split( '^^' );
-		var valglobal = val[ 0 ].trim(); // remove trailing
-		var valoutput = val[ 1 ].trim();
+		var global = val[ 0 ].trim(); // remove trailing
+		var output = val[ 1 ].trim();
 		info( {
 			  icon         : SW.icon
 			, title        : SW.title
 			, content      : custominfo.replace( 'N', S.asoundcard )
-			, values       : [ valglobal, valoutput ]
+			, values       : [ global, output ]
 			, checkchanged : S.custom
 			, cancel       : switchCancel
 			, ok           : () => {
-				var values = infoVal();
-				if ( ! values[ 0 ] && ! values[ 1 ] ) {
-					bash( [ 'customdisable' ] );
+				var infoval = infoVal();
+				global      = infoval[ 0 ];
+				output      = infoval[ 1 ];
+				if ( ! global && ! output ) {
 					notify( SW.icon, SW.title, 'Disable ...', 3000 );
+					bash( [ 'custom', 'OFF' ] );
 					return
 				}
 				
-				bash( [ 'custom', true, values[ 0 ], values[ 1 ], D.aplayname ], mpdstart => {
+				notifyCommon();
+				bash( [ 'custom', global, output, D.aplayname, 'CMD GLOBAL OUTPUT APLAYNAME' ], mpdstart => {
 					if ( ! mpdstart ) {
 						bannerHide();
 						info( {
@@ -246,7 +244,6 @@ $( '#setting-custom' ).click( function() {
 						} );
 					}
 				}, 'json' );
-				notify( SW.icon, SW.title, S.custom ? 'Change ...' : 'Enable ...' );
 			}
 		} );
 	} );
@@ -314,27 +311,42 @@ Beware of too high volume.</wh>
 <br>`;
 
 function infoSoxr( quality ) {
-	var custom = quality === 'custom';
+	delete S.soxrconf.PLUGIN
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, tab          : [ 'Presets', 'Custom' ]
-		, tabfunction  : [ infoSoxrPreset, infoSoxrCustom ]
-		, tabactive    : custom ? 1 : 0
-		, content      : custom ? soxrcustom : soxr
-		, values       : custom ? S.soxrcustomconf : S.soxrconf
-		, checkblank   : 1
-		, checkchanged : S.soxr && quality === S.soxrquality
-		, boxwidth     : custom ? 85 : 180
+		, tablabel     : [ 'Presets', 'Custom' ]
+		, tab          : [ '', infoSoxrCustom ]
+		, content      : soxr
+		, values       : values2info(
+			  [ 'QUALITY', 'THREAD' ]
+			, S.soxrconf
+		)
+		, checkblank   : true
+		, checkchanged : S.soxr
+		, boxwidth     : 180
 		, cancel       : switchCancel
 		, ok           : switchEnable
 	} );
 }
 function infoSoxrCustom() {
-	infoSoxr( 'custom' );
-}
-function infoSoxrPreset() {
-	infoSoxr( S.soxrquality === 'custom' ? 'very high' : S.soxrquality );
+	delete S.soxrcustomconf.PLUGIN
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Presets', 'Custom' ]
+		, tab          : [ infoSoxr, '' ]
+		, content      : soxrcustom
+		, values       : values2info(
+			  [ 'QUALITY', 'PRECISION', 'PHASE_RESPONSE', 'PASSBAND_END', 'STOPBAND_BEGIN', 'ATTENUATION', 'FLAGS' ]
+			, S.soxrcustomconf
+		)
+		, checkblank   : true
+		, checkchanged : S.soxr
+		, boxwidth     : 85
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
 }
 function playbackIcon() {
 	$( '.playback' )
@@ -344,27 +356,24 @@ function playbackIcon() {
 }
 function renderPage() {
 	playbackIcon();
-	var htmlstatus =  S.version +'<br>'
-					+ ico( 'song' ) + ( S.counts.song || 0 ).toLocaleString()
-					+ ico( 'album' ) + ( S.counts.album || 0 ).toLocaleString() +'<wide>'
-					+ ico( 'artist' ) + ( S.counts.arttist || 0 ).toLocaleString()
-					+ ico( 'webradio' ) + ( S.counts.webradio || 0 ).toLocaleString() +'</wide>';
+	var htmlstatus =  S.version +'<br>';
+	[ 'song', 'album', 'artist', 'webradio' ].forEach( k => htmlstatus += ico( k ) + ( S.counts[ k ] || 0 ).toLocaleString() );
+	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
-		$( '#divbtreceiver, #divbtoutputonly' ).removeClass( 'hide' );
+		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
+		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
-		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', S.btoutputonly );
+		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
-		$( '#divbtreceiver, #divbtoutputonly' ).addClass( 'hide' );
+		$( '#divbtreceiver' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
 	if ( S.asoundcard === -1 ) {
 		$( '#divoutput, #divbitperfect, #divvolume' ).addClass( 'hide' );
 	} else {
 		D               = S.devices[ S.asoundcard ];
-		S.resampled     = S.crossfade || S.normalization || S.replaygain || S.camilladsp || S.equalizer || S.soxr;
-		S.novolume      = D.mixertype === 'none' && ! S.resampled;
 		var htmldevices = '';
 		$.each( S.devices, ( i, el ) => {
 			if ( el.aplayname !== 'Loopback' ) htmldevices += '<option value="'+ el.card +'">'+ el.name +'</option>';
@@ -388,9 +397,8 @@ function renderPage() {
 		$( '#mixertype' )
 			.html( htmlmixertype )
 			.val( D.mixertype );
-		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 );
+		$( '#setting-hwmixer' ).toggleClass( 'hide', D.mixers === 0 || D.mixertype === 'none' );
 		$( '#novolume' ).prop( 'checked', S.novolume );
-		$( '#divdop' ).toggleClass( 'disabled', D.aplayname.slice( 0, 7 ) === 'bcm2835' );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
 		if ( S.camilladsp ) {
@@ -400,26 +408,20 @@ function renderPage() {
 		} else {
 			var label = 'Device';
 		}
-		$( '#divaudiooutput div' ).eq( 0 ).html( label );
+		$( '#divaudiooutput .col-l' ).html( label );
 	}
-	if ( $( '#infoRange .value' ).length ) {
-		var cmd = I.title === 'Mixer Device Volume' ? [ 'volumeget' ] : [ 'volumegetbt' ];
-		bash( cmd, voldb => {
-			var voldb = voldb.split( ' ' );
-			var vol   = voldb[ 0 ];
-			var db    = voldb[ 1 ];
-			$( '#infoRange .value' ).text( vol );
-			$( '#infoRange input' ).val( vol );
-			$( '.infofooter' ).text( db +' dB' );
-			$( '#infoButtons a' ).eq( 1 ).toggleClass( 'hide', db === '0.00' );
-		} );
-	}
-	$( '#divlists' ).toggleClass( 'hide', ! S.lists.includes( true ) );
-	for ( i = 0; i < 3; i++ ) $( '#divlists .sub' ).eq( i ).toggleClass( 'hide', ! S.lists[ i ] );
+	$.each( S.lists, ( k, v ) => $( '#divlists .subhead[data-status="'+ k +'"]' ).toggleClass( 'hide', ! v ) );
+	$( '#divlists' ).toggleClass( 'hide', ! Object.values( S.lists ).includes( true ) );
+	if ( I.rangelabel ) bash( [ 'volumepush' ] );
 	showContent();
 }
 function setMixerType( mixertype ) {
 	var hwmixer = D.mixers ? D.hwmixer : '';
 	notify( 'mpd', 'Mixer Control', 'Change ...' );
-	bash( [ 'mixertype', mixertype, D.aplayname, hwmixer ] );
+	bash( [ 'mixertype', D.card, mixertype, hwmixer, D.aplayname, 'CMD CARD MIXERTYPE HWMIXER APLAYNAME' ] );
+}
+function volumeSet( data ) {
+	$( '#infoRange .sub' ).text( data.val === 0 ? 'Mute' : data.db +' dB' );
+	$( '#infoOk' ).toggleClass( 'disabled', data.db === 0 || data.db === '' );
+	V.local = false;
 }

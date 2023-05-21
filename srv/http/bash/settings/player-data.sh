@@ -5,6 +5,30 @@
 . /srv/http/bash/common.sh
 . $dirsettings/player-devices.sh
 
+camilladsp=$( exists $dirsystem/camilladsp )
+crossfadesec=$( mpc crossfade | cut -d' ' -f2 )
+crossfade=$( [[ $crossfadesec != 0 ]] && echo true )
+equalizer=$( exists $dirsystem/equalizer )
+normalization=$( exists $dirmpdconf/normalization.conf )
+replaygain=$( exists $dirmpdconf/replaygain.conf )
+replaygainconf='{
+  "TYPE"     : "'$( getVar replaygain $dirmpdconf/conf/replaygain.conf )'"
+, "HARDWARE" : '$( exists $dirsystem/replaygain-hw )'
+}'
+soxr=$( exists $dirsystem/soxr )
+resampled=$( [[ $camilladsp == true \
+				|| $crossfade == true \
+				|| $equalizer == true \
+				|| $normalization == true \
+				|| $replaygain == true \
+				|| $soxr == true \
+					]] && echo true );
+lists='{
+  "albumignore" : '$( exists $dirmpd/albumignore )'
+, "mpdignore"   : '$( exists $dirmpd/mpdignorelist )'
+, "nonutf8"     : '$( exists $dirmpd/nonutf8 )'
+}'
+
 data='
   "page"             : "player"
 , "devices"          : '$devices'
@@ -13,30 +37,32 @@ data='
 , "audiooutput"      : "'$output'"
 , "autoupdate"       : '$( exists $dirmpdconf/autoupdate.conf )'
 , "btaplayname"      : "'$( getContent $dirshm/btreceiver )'"
-, "btoutputonly"     : '$( exists $dirsystem/btoutputonly )'
+, "btoutputall"      : '$( exists $dirsystem/btoutputall )'
 , "buffer"           : '$( exists $dirmpdconf/buffer.conf )'
-, "bufferconf"       : '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
-, "counts"           : '$( getContent $dirmpd/counts )'
-, "crossfade"        : '$( [[ $( mpc crossfade | tr -dc [0-9] ) != 0 ]] && echo true )'
-, "crossfadeconf"    : '$( getContent $dirsystem/crossfade.conf )'
+, "bufferconf"       : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/buffer.conf )' }
+, "camilladsp"       : '$camilladsp'
+, "counts"           : '$( < $dirmpd/counts )'
+, "crossfade"        : '$crossfade'
+, "crossfadeconf"    : { "SEC": '$crossfadesec' }
 , "custom"           : '$( exists $dirmpdconf/custom.conf )'
-, "dabradio"         : '$( systemctl -q is-active rtsp-simple-server && echo true )'
+, "dabradio"         : '$( systemctl -q is-active mediamtx && echo true )'
 , "dop"              : '$( exists "$dirsystem/dop-$aplayname" )'
-, "equalizer"        : '$( exists $dirsystem/equalizer )'
+, "equalizer"        : '$equalizer'
 , "ffmpeg"           : '$( exists $dirmpdconf/ffmpeg.conf )'
-, "lists"            : ['$( exists $dirmpd/albumignore )','$( exists $dirmpd/pdignorelist )','$( exists $dirmpd/nonutf8 )']
-, "normalization"    : '$( exists $dirmpdconf/normalization.conf )'
+, "lastupdate"       : "'$( date -d "$( mpc stats | sed -n '/^DB Updated/ {s/.*: \+//; p }' )" '+%Y-%m-%d <gr>• %H:%M</gr>' )'"
+, "lists"            : '$lists'
+, "normalization"    : '$normalization'
+, "novolume"         : '$( [[ $mixertype == none && ! $resampled ]] && echo true )'
 , "outputbuffer"     : '$( exists $dirmpdconf/outputbuffer.conf )'
-, "outputbufferconf" : '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )'
+, "outputbufferconf" : { "KB": '$( cut -d'"' -f2 $dirmpdconf/conf/outputbuffer.conf )' }
 , "player"           : "'$( < $dirshm/player )'"
-, "replaygain"       : '$( exists $dirmpdconf/replaygain.conf )'
-, "replaygainconf"   : [ "'$( cut -d'"' -f2 $dirmpdconf/conf/replaygain.conf )'", '$( exists $dirsystem/replaygain-hw )' ]
-, "soxr"             : '$( exists $dirsystem/soxr )'
-, "soxrconf"         : ['$( sed -E '/\{|plugin|}/ d; s/.*quality.*(".*")/\1/; s/.*thread.*"(.*)"/,\1/' $dirmpdconf/conf/soxr.conf )']
-, "soxrcustomconf"   : ["custom"'$( sed -E '/\{|plugin|quality|}/ d; s/.*"(.*)"/,\1/' $dirmpdconf/conf/soxr-custom.conf )']
+, "replaygain"       : '$replaygain'
+, "replaygainconf"   : '$replaygainconf'
+, "soxr"             : '$soxr'
+, "soxrconf"         : '$( conf2json $dirmpdconf/conf/soxr.conf )'
+, "soxrcustomconf"   : '$( conf2json $dirmpdconf/conf/soxr-custom.conf )'
 , "soxrquality"      : "'$( getContent $dirsystem/soxr )'"
-, "state"            : "'$( grep -m1 ^state= $dirshm/status | cut -d= -f2 | tr -d '"' )'"
+, "state"            : "'$( getVar state $dirshm/status )'"
 , "version"          : "'$( pacman -Q mpd 2> /dev/null |  cut -d' ' -f2 )'"'
 
 data2json "$data" $1

@@ -1,17 +1,35 @@
 <div id="divmpd" class="section">
 <?php
+$id_data = [
+	  'audiooutput'   => [ 'name' => 'Device',                                                 'setting' => 'none' ]
+	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
+	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluetoothctl',         'setting' => 'custom', 'status' => true ]
+	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
+	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
+	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]
+	, 'dop'           => [ 'name' => 'DSD over PCM',                                           'setting' => 'none' ]
+	, 'ffmpeg'        => [ 'name' => 'FFmpeg',                'sub' => 'decoder',              'setting' => false ]
+	, 'hwmixer'       => [ 'name' => 'Mixer Device',                                           'setting' => 'custom' ]
+	, 'mixertype'     => [ 'name' => 'Volume Control',                                         'setting' => 'none' ]
+	, 'normalization' => [ 'name' => 'Normalization',         'sub' => 'volume_normalization', 'setting' => false ]
+	, 'novolume'      => [ 'name' => 'No Volume',                                              'setting' => 'none' ]
+	, 'outputbuffer'  => [ 'name' => 'Buffer - Output',       'sub' => 'max_output_buffer' ]
+	, 'replaygain'    => [ 'name' => 'ReplayGain',            'sub' => 'replaygain' ]
+	, 'soxr'          => [ 'name' => 'SoX Resampler',         'sub' => 'resampler' ]
+];
 htmlHead( [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
-{$Fi( 'stop btn' )} {$Fi( 'play btn' )} {$Fi( 'pause btn' )} Playback control
+{$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 EOF
 ] );
 ?>
 	<div class="col-l text gr">
 		Version
 		<br>Database
+		<br>Since
 	</div>
 	<div class="col-r text">
 		<div id="statusvalue"></div>
@@ -26,53 +44,45 @@ Through plugins and libraries it can play a variety of sound files while being c
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
-	, 'status' => 'asound'
-	, 'button' => [ 'btoutputonly' => 'gear' ]
+	, 'status' => 'output'
+	, 'button' => [ 'btoutputall' => 'gear' ]
 	, 'help'   => <<< EOF
 {$Fi( 'gear btn' )} Other outputs while Bluetooth connected
  · Should be disabled if not used simultaneously
 EOF
 ];
 $body = [
-	[
-			  'label'       => 'Bluetooth'
-			, 'sublabel'    => 'bluetoothctl'
-			, 'icon'        => 'bluetooth'
-			, 'id'          => 'btreceiver'
-			, 'status'      => 'bluetooth'
-			, 'input'       => '<select id="btaplayname"></select>'
-			, 'setting'     => 'custom'
-			, 'settingicon' => 'volume'
-			, 'help'        => <<< EOF
+[
+		  'id'          => 'btreceiver'
+		, 'input'       => '<select id="btaplayname"></select>'
+		, 'settingicon' => 'volume'
+		, 'help'        => <<< EOF
 {$Fi( 'volume btn' )} Sender volume control
  · Should be set at 0dB and use Bluetooth buttons to control volume
 EOF
 	]
 	, [
-		  'label'   => 'Device'
-		, 'id'      => 'audiooutput'
-		, 'input'   => '<select id="audiooutput"></select>'
-		, 'setting' => false
-		, 'help'    => <<< EOF
+		  'id'    => 'audiooutput'
+		, 'input' => '<select id="audiooutput"></select>'
+		, 'help'  => <<< EOF
 HDMI audio:
  · Available when connected before boot only
  · Enable plug and play: {$Ftab( 'mpd', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [
-		  'label'       => 'Mixer Device'
-		, 'id'          => 'hwmixer'
+		  'id'          => 'hwmixer'
 		, 'input'       => '<select id="hwmixer"></select>'
-		, 'setting'     => 'custom'
 		, 'settingicon' => 'volume'
-		, 'help'        => i( 'volume btn' ).' Mixer device volume control'
+		, 'help'        => <<< EOF
+{$Fi( 'volume btn' )}
+Mixer device volume control
+EOF
 	]
 	, [
-		  'label'   => 'Volume Control'
-		, 'id'      => 'mixertype'
-		, 'input'   => '<select id="mixertype"></select>'
-		, 'setting' => false
-		, 'help'    => <<< EOF
+		  'id'    => 'mixertype'
+		, 'input' => '<select id="mixertype"></select>'
+		, 'help'  => <<< EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
 <pre>
@@ -87,11 +97,8 @@ htmlSection( $head, $body, 'output' );
 $head = [ 'title' => 'Bit-Perfect' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'       => 'No Volume'
-		, 'id'          => 'novolume'
-		, 'setting'     => 'custom'
-		, 'settingicon' => false
-		, 'help'        => <<< EOF
+		  'id'   => 'novolume'
+		, 'help' => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
  · Mixer device volume: <code>0dB</code>
@@ -103,10 +110,8 @@ Note: Not for DACs with on-board amplifier.
 EOF
 	]
 	, [
-		  'label'   => 'DSD over PCM'
-		, 'id'      => 'dop'
-		, 'setting' => false
-		, 'help'    => <<< EOF
+		  'id'   => 'dop'
+		, 'help' => <<< EOF
 <wh>D</wh>SD <wh>o</wh>ver <wh>P</wh>CM for DSD-capable devices that not support native DSD
  · DoP repacks 16bit DSD stream into 24bit PCM frames. 
  · PCM frames transmitted to DAC and reassembled back to original DSD stream.
@@ -122,31 +127,25 @@ EOF
 htmlSection( $head, $body, 'bitperfect' );
 $head = [ 'title' => 'Volume' ]; //////////////////////////////////
 $body = [
-	[	  'label'    => 'Cross-Fading'
-		, 'sublabel' => 'crossfade'
-		, 'id'       => 'crossfade'
-		, 'help'     => <<< EOF
+	[	  'id'   => 'crossfade'
+		, 'help' => <<< EOF
 Fade-out to fade-in between playing tracks (same audio format only)
 EOF
 	]
 	, [
-		  'label'    => 'Normalization'
-		, 'sublabel' => 'volume_normalization'
-		, 'id'       => 'normalization'
-		, 'setting'  => false
-		, 'help'     => <<< EOF
+		  'id'   => 'normalization'
+		, 'help' => <<< EOF
 Normalize the volume level of songs as they play. (16 bit PCM only)
 EOF
 	] 
 	, [
-		  'label'    => 'ReplayGain'
-		, 'sublabel' => 'replaygain'
-		, 'id'       => 'replaygain'
-		, 'help'     => <<< EOF
+		  'id'   => 'replaygain'
+		, 'help' => <<< EOF
 <a href="https://en.wikipedia.org/wiki/ReplayGain">ReplayGain</a> - Normalize perceived loudness via ID3v2 ReplayGain tag
 Support: FLAC, Ogg Vorbis, Musepack and MP3
 
-{$Fi( 'gear btn' )}  ■ Gain control - Mixer device:
+{$Fi( 'gear btn' )}
+■ Gain control - Mixer device:
  • <code>replay_gain_handler "mixer"</code>
  • Available when Volume Control = MPD software
 EOF
@@ -158,49 +157,37 @@ htmlSection( $head, $body, 'volume' );
 $head = [ 'title' => 'Options' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'Buffer - Audio'
-		, 'sublabel' => 'audio_buffer'
-		, 'id'       => 'buffer'
-		, 'help'     => <<< EOF
+		  'id'   => 'buffer'
+		, 'help' => <<< EOF
 Increase to fix intermittent audio.
 
 (default: <code>4096</code> kB - 24s of CD-quality audio)
 EOF
 	]
 	, [
-		  'label'    => 'Buffer - Output'
-		, 'sublabel' => 'max_output_buffer'
-		, 'id'       => 'outputbuffer'
-		, 'help'     => <<< EOF
+		  'id'   => 'outputbuffer'
+		, 'help' => <<< EOF
 Increase to fix missing Album list with large Library.
 
 (default: <code>8192</code> kB)
 EOF
 	]
 	, [
-		  'label'    => 'FFmpeg'
-		, 'sublabel' => 'decoder'
-		, 'id'       => 'ffmpeg'
-		, 'setting'  => false
+		  'id'       => 'ffmpeg'
 		, 'disabled' => labelIcon( 'DAB Radio', 'dabradio' ).' is currently enabled.'
 		, 'help'     => <<< EOF
-<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for audio filetypes: {$Fi( 'chevron-down bl filetype' )}
+<a href="https://ffmpeg.org/about.html">FFmpeg</a> - Decoder for more audio filetypes {$Fi( 'help filetype' )}
 <pre id="prefiletype" class="hide"></pre>
 Note: Should be disabled for faster Library update if not used.
 EOF
 	]
 	, [
-		  'label'    => 'Library Auto Update'
-		, 'sublabel' => 'auto_update'
-		, 'id'       => 'autoupdate'
-		, 'setting'  => false
-		, 'help'     => 'Automatic update MPD database when files changed.'
+		  'id'   => 'autoupdate'
+		, 'help' => 'Automatic update MPD database when files changed.'
 	]
 	, [
-		  'label'    => 'SoX Resampler'
-		, 'sublabel' => 'resampler'
-		, 'id'       => 'soxr'
-		, 'help'     => <<< EOF
+		 'id'    => 'soxr'
+		, 'help' => <<< EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 {$Fi( 'gear btn' )}
  • Presets:
@@ -224,10 +211,8 @@ EOF
 EOF
 	]
 	, [
-		  'label'    => "User's Configurations"
-		, 'sublabel' => 'custom'
-		, 'id'       => 'custom'
-		, 'help'     => 'Insert custom configurations into <c>mpd.conf</c>.'
+		  'id'   => 'custom'
+		, 'help' => 'Insert custom configurations into <c>mpd.conf</c>.'
 	]
 ];
 htmlSection( $head, $body, 'options' );
@@ -237,7 +222,6 @@ echo '
 	<heading><span class="headtitle">Lists</span></heading>';
 htmlHead( [
 	  'title'   => 'Ignored Album'
-	, 'id'      => 'albumignore'
 	, 'subhead' => true
 	, 'status'  => 'albumignore'
 	, 'help'    => <<< EOF
@@ -250,7 +234,6 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Ignored Directory'
-	, 'id'      => 'mpdignore'
 	, 'subhead' => true
 	, 'status'  => 'mpdignore'
 	, 'help'    => <<< EOF
@@ -263,7 +246,6 @@ EOF
 ] );
 htmlHead( [
 	  'title'   => 'Non UTF-8 Files'
-	, 'id'      => 'nonutf8'
 	, 'subhead' => true
 	, 'status'  => 'nonutf8'
 	, 'help'    => 'List of files with metadata is not UTF-8 encoding which must be corrected.'

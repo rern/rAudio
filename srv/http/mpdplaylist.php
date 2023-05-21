@@ -111,12 +111,13 @@ function htmlSavedPlaylist() {
 	foreach( $array as $each ) {
 		$index     = strtoupper( mb_substr( $each->sort, 0, 1, 'UTF-8' ) );
 		$indexes[] = $index;
+		$name      = $each->name;
 		$html     .=
 '<li class="pl-folder" data-index="'.$index.'">
 	'.i( 'playlists', 'playlist' ).'
-	<a class="liname">'.$each->name.'</a></i>
-	<a class="lipath">'.$each->name.'</a></i>
-	<span class="plname">'.$each->name.'</span>
+	<a class="liname">'.$name.'</a></i>
+	<a class="lipath">'.$name.'</a></i>
+	<span class="plname">'.$name.'</span>
 </li>';
 	}
 	$indexbar  = indexbar( array_keys( array_flip( $indexes ) ) );
@@ -246,11 +247,16 @@ function htmlTrack( $lists, $plname = '' ) {
 	}
 	if ( $countradio ) $counthtml.= i( 'webradio' ).'<wh id="pl-radiocount">'.$countradio.'</wh>';
 	if ( $countupnp )  $counthtml.= '&emsp;'.i( 'upnp' );
-	$elapsed = exec( '/srv/http/bash/cmd.sh getelapsed' );
+	$mmss = exec( 'mpc status %currenttime%' );
+	$mmss = explode( ':', $mmss );
+	$elapsed = $mmss[ 0 ] * 60 + $mmss[ 1 ];
+	$song = exec( 'mpc status %songpos%' ) - 1;
+	if ( $song < 0 ) $song = 0;
 	echo json_encode( [
 		  'html'      => $html
 		, 'counthtml' => $counthtml
 		, 'elapsed'   => $elapsed
+		, 'song'      => $song
 		, 'add'       => $add
 	], JSON_NUMERIC_CHECK );
 }

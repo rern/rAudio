@@ -27,7 +27,7 @@ $Ftab       = 'tab';
 
 echo '<div class="container hide">';
 
-include 'settings/'.$page.'.php';
+if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
 
 echo '</div>';
 
@@ -41,16 +41,15 @@ if ( $addonsprogress || $guide ) {
 // .................................................................................
 
 // bottom bar
-if ( ! $addons ) {
-	$htmlbar = '<div id="bar-bottom">';
-	foreach ( [ 'Features', 'Player', 'Networks', 'System' ] as $name ) {
-		$id      = strtolower( $name );
-		$active  = $id === $pagetitle ? ' class="active"' : '';
-		$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
-	}
-	$htmlbar.= '</div>';
-	echo $htmlbar;
+$htmlbar = '<div id="bar-bottom">';
+foreach ( [ 'Features', 'Player', 'Networks', 'System', 'Addons' ] as $name ) {
+	$id      = strtolower( $name );
+	$active  = $id === $pagetitle ? ' class="active"' : '';
+	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
 }
+$htmlbar.= '</div>
+<div id="debug"></div>';
+echo $htmlbar;
 if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keyboard"></div></div>';
 
 // <script> -----------------------------------------------------
@@ -66,39 +65,32 @@ if ( $addons ) exit;
 /*
 $head = [
 	  'title'   => 'TITLE'                  // REQUIRED
-	, 'subhead' => true                     // with no help icon
+	, 'subhead' => true/false               // with no help icon
 	, 'status'  => 'COMMAND'                // include status icon and status box
 	, 'button'  => [ 'ID' => 'ICON', ... ]  // icon button
-	, 'back'    => true                     // back button
-	, 'nohelp'  => true
-	, 'help'    => <<< EOF
-HELP - PHP heredoc
-EOF
+	, 'back'    => true/false               // back button
+	, 'nohelp'  => true/false
+	, 'help'    => 'HELP'
 ];
 $body = [
 	[
 		  'label'       => 'LABEL'      // REQUIRED
 		, 'sublabel'    => 'SUB LABEL'
-		, 'id'          => 'INPUT ID'   // REQUIRED
+		, 'id'          => 'ID'         // REQUIRED
 		, 'status'      => 'COMMAND'    // include status icon and status box
 		, 'input'       => 'HTML'       // alternative - if not switch
-		, 'setting'     => (none)       // default    = '.common'              > $( '.switch' ).click( ... > $( '#setting-'+ id ).click() before enable
-		                                // false      = no icon, no setting    > $( '.switch' ).click( ... > [ id, true/false ]
-		                                // 'nobanner' = no icon, no setting, no banner
-		                                // 'custom'   = custom script / prompt > $( '#id' ).click( ...     > [ command ] (no setting -'settingicon' => false)
-		, 'settingicon' => (none)       // default = 'gear' 
+		, 'setting'     =>  ***         // default  = $( '#setting-'+ id ).click() before enable
+		                                // false    = no setting
+		                                // 'custom' = custom setting
+		                                // 'none'   = no setting - custom enable
+		, 'settingicon' => 'ICON'       // default = 'gear' 
 		                                // false   = no icon
-										// 'icon'  = 'i-icon'
-		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on click
-										// 'js' = set by js condition
-		, 'help'        => <<< EOF
-HELP
-EOF
-		, 'exist'       => EXIST        // return blank if not EXIST
+		, 'disabled'    => 'MESSAGE'    // set data-diabled - prompt on setting
+		                                // 'js' = set by js condition
+		, 'help'        => 'HELP'
+		, 'exist'       => ***          // omit if not exist
 	]
-	, [
-		...
-	]
+	, ...
 ];
 htmlSection( $head, $body[, $id] );
 */
@@ -106,17 +98,17 @@ function htmlHead( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
 	$title   = $data[ 'title' ];
-	$subhead = $data[ 'subhead' ] ?? '';
-	$status  = $data[ 'status' ] ?? '';
-	$button  = $data[ 'button' ] ?? '';
-	$help    = $data[ 'help' ] ?? '';
+	$subhead = $data[ 'subhead' ] ?? false;
+	$status  = $data[ 'status' ] ?? false;
+	$button  = $data[ 'button' ] ?? false;
+	$help    = $data[ 'help' ] ?? false;
 	$class   = $status ? 'status' : '';
 	$class  .= $subhead ? ' subhead' : '';
 	
-	$html    = $status ? '<heading data-status="'.$status.'"' : '<heading';
+	$html    = '<heading '.( $status ? ' data-status="'.$status.'"' : '' );
 	$html   .= $class ? ' class="'.$class.'">' : '>';
 	$html   .= '<span class="headtitle">'.$title.'</span>';
-	if ( $button ) foreach( $button as $id => $icon ) $html.= i( $icon.' '.$id );
+	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
 	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
 	$html   .= '</heading>';
@@ -133,17 +125,22 @@ function htmlSetting( $data ) {
 	}
 	
 	global $page;
+	global $id_data;
+	$id          = $data[ 'id' ];
+	$iddata      = $id_data[ $id ];
+	$name        = $iddata[ 'name' ];
+	$sublabel    = $iddata[ 'sub' ] ?? false;
+	$status      = $iddata[ 'status' ] ?? false;
+	$setting     = $iddata[ 'setting' ] ?? 'common';
+	$label       = '<span class="name">'.$name.'</span>';
+	$input       = $data[ 'input' ] ?? false;
+	$settingicon = ! $setting || $setting === 'none' ? false : $data[ 'settingicon' ] ?? 'gear';
+	$disabled    = $data[ 'disabled' ] ?? false;
+	$help        = $data[ 'help' ] ?? false;
+	
+	$html        = '<div id="div'.$id.'">';
 	// col-l
-	$label       = '<span>'.$data[ 'label' ].'</span>';
-	$sublabel    = $data[ 'sublabel' ] ?? '';
-	$status      = $data[ 'status' ] ?? false;
-	$id          = $data[ 'id' ] ?? '';
-	$input       = $data[ 'input' ] ?? '';
-	$settingicon = $data[ 'settingicon' ] ?? 'gear';
-	$setting     = $data[ 'setting' ] ?? 'common';
-	$disabled    = $data[ 'disabled' ] ?? '';
-	$help        = $data[ 'help' ] ?? '';
-	$html        = '<div id="div'.$id.'"><div class="col-l';
+	$html       .= '<div class="col-l';
 	$html       .= $sublabel ? '' : ' single';
 	$html       .= $status ? ' status" data-status="'.$id.'">' : '">';
 	$html       .= $sublabel ? '<a>'.$label.'<gr>'.$sublabel.'</gr></a>' : $label;
@@ -153,15 +150,17 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'">';
-		$html   .= '</div>';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'"></div>';
 	} else {
 		$html   .= $input;
 	}
-	$html       .= $setting && $settingicon ? i( $settingicon.' setting', $id ) : '';
+	// setting
+	$html       .= $settingicon ? i( $settingicon.' setting', $id ) : '';
+	// help
 	$html       .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html       .= '</div>
-			 </div>';
+					</div>';
+	// status
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	echo $html;
 }

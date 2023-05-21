@@ -2,27 +2,10 @@
 
 . /srv/http/bash/common.sh
 
-dirPermissions() {
-	chmod 755 /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chown http:http /srv /srv/http /srv/http/* /mnt /mnt/MPD /mnt/MPD/*/
-	chmod -R 755 /srv/http/{assets,bash,data,settings}
-	chown -R http:http /srv/http/{assets,bash,data,settings}
-	chown mpd:audio $dirmpd $dirmpd/mpd.db $dirplaylists 2> /dev/null
-	if [[ -L $dirshareddata ]]; then # server rAudio
-		chmod 777 $filesharedip $dirshareddata/system/{display,order}
-		readarray -t dirs <<< $( showmount --no-headers -e localhost | awk 'NF{NF-=1};1' )
-		for dir in "${dirs[@]}"; do
-			chmod 777 "$dir"
-		done
-	fi
-}
-
-[[ $1 == dirpermissions ]] && dirPermissions && exit
-
 # reset -------------------------------------------------------------------------------------------------------------->>>
 if [[ -e $diraddons ]]; then
 	reset=1
-	grep -q '^status=.*play' $dirshm/status && $dirbash/cmd.sh playerstop
+	statePlay && $dirbash/cmd.sh playerstop
 	mpc -q clear
 # camilla 
 	sed -i -E "s/(status_update_interval: ).*/\1100/" /srv/http/settings/camillagui/config/gui-config.yml &> /dev/null
@@ -60,7 +43,7 @@ if [[ -e $diraddons ]]; then
 	fi
 	echo $cmdline > /boot/cmdline.txt
 	# config.txt
-	cpuInfo
+	. $dirshm/cpuinfo
 	config="\
 initramfs initramfs-linux.img followkernel
 disable_overscan=1
@@ -70,7 +53,7 @@ dtparam=audio=on"
 dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
-	[[ $BB =~ ^(09|0c)$ ]] && config+="
+	[[ $rpi0 ]] && config+="
 gpu_mem=32
 force_turbo=1
 gpu_mem=32
@@ -79,7 +62,7 @@ max_usb_current=1
 over_voltage=2" # rpi 0
 	echo "$config" > /boot/config.txt
 	# css color
-	[[ -e $dirsystem/color ]] && $dirbash/cmd.sh color$'\n'reset
+	[[ -e $dirsystem/color ]] && rm $dirsystem/color && $dirbash/cmd.sh color
 	# lcd
 	if [[ -e $dirbash/xinitrc ]]; then
 		! grep -q disable-software-rasterizer $dirbash/xinitrc && sed -i '/incognito/ i\	--disable-software-rasterizer \\' $dirbash/xinitrc
@@ -92,9 +75,8 @@ over_voltage=2" # rpi 0
 		rmdir "$dir" &> /dev/null
 	done
 	sed -i '3,$ d' /etc/fstab
-	sed -i '/^#/! d' /etc/exports
 	
-	systemctl -q disable bluetooth hostapd camilladsp nfs-server powerbutton rtsp-simple-server shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
+	systemctl -q disable bluetooth hostapd camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 	mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
 	rm -rf $dirdata $dirshareddata \
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
@@ -114,7 +96,7 @@ else # from create-ros.sh
 	for dir in $dirs; do
 		printf -v dir$dir '%s' $dirdata/$dir
 	done
-	echo $1 > $diraddons/r1
+	curl -sL https://github.com/rern/rAudio-addons/raw/main/addonslist.json | sed -E -n '/"rAudio"/ {n;s/.*: *"(.*)"/\1/; p}' > $diraddons/r1
 fi
 
 # display
@@ -130,34 +112,13 @@ for i in $false; do
 	lines+='
 , "'$i'": false'
 done
-jq -S <<< {${lines:2}} > $dirsystem/display
+jq -S <<< {${lines:2}} > $dirsystem/display.json
 
 # localbrowser
-if [[ -e /etc/systemd/system/localbrowser.service ]]; then
-	echo "\
-rotate=NORMAL
-zoom=100
-screenoff=0
-onwhileplay=false
-cursor=no" > $dirsystem/localbrowser.conf
-	rm -rf /root/.config/chromium /root/.mozilla
-fi
+[[ -e /etc/systemd/system/localbrowser.service ]] && rm -rf /root/.config/chromium /root/.mozilla
 
 # mirror
 sed -i '/^Server/ s|//.*mirror|//mirror|' /etc/pacman.d/mirrorlist
-
-# relays
-cat << EOF > $dirsystem/relays.conf
-pin='[ 11,13,15,16 ]'
-name='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-onorder='[ "DAC","PreAmp","Amp","Subwoofer" ]'
-offorder='[ "Subwoofer","Amp","PreAmp", "DAC" ]'
-on=( 11 13 15 16 )
-ond=( 2 2 2 )
-off=( 16 15 13 11 )
-offd=( 2 2 2 )
-timer=5
-EOF
 
 # system
 hostnamectl set-hostname rAudio
@@ -165,7 +126,6 @@ sed -i 's/#NTP=.*/NTP=pool.ntp.org/' /etc/systemd/timesyncd.conf
 sed -i 's/".*"/"00"/' /etc/conf.d/wireless-regdom
 timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
-touch $dirsystem/{btoutputonly,usbautoupdate}
 
 # webradio
 curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
@@ -176,7 +136,6 @@ if [[ ! -e $dirmpd/counts ]]; then
 }' > $dirmpd/counts
 fi
 
-# set ownership and permissions
 dirPermissions
 
-[[ $reset ]] && $dirbash/cmd.sh power$'\n'reboot
+[[ $reset ]] && $dirbash/cmd.sh reboot

@@ -2,39 +2,49 @@
 $hostname     = getHostName();
 $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
-
+$id_data = [
+	  'autoplay'       => [ 'name' => 'AutoPlay' ]
+	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',                            'status' => true ]
+	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true ]
+	, 'equalizer'      => [ 'name' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
+	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd',                               'status' => true ]
+	, 'httpd'          => [ 'name' => 'For browsers',     'sub' => 'MPD httpd',      'setting' => false ]
+	, 'localbrowser'   => [ 'name' => 'Browser on RPi',   'sub' => 'localbrowser',                          'status' => true ]
+	, 'login'          => [ 'name' => 'Password Login',   'sub' => 'password_hash',  'setting' => 'custom' ]
+	, 'lyrics'         => [ 'name' => 'Lyrics' ]
+	, 'multiraudio'    => [ 'name' => 'Multiple rAudios', 'sub' => 'multiraudio' ]
+	, 'nfsserver'      => [ 'name' => 'Server rAudio',    'sub' => 'nfs-server',     'setting' => false,    'status' => true ]
+	, 'scrobble'       => [ 'name' => 'Scrobbler',        'sub' => 'Last.fm' ]
+	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
+	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true ]
+	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true ]
+	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'MPD snapcast',   'setting' => false ]
+	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true ]
+	, 'stoptimer'      => [ 'name' => 'Stop Timer' ]
+	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',                              'status' => true ]
+];
 // ----------------------------------------------------------------------------------
 $head = ['title' => 'Renderers' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'AirPlay'
-		, 'sublabel' => 'shairport-sync'
-		, 'id'       => 'shairport-sync'
-		, 'setting'  => false
-		, 'status'   => true
-		, 'help'     => <<< EOF
+		  'id'    => 'shairport-sync'
+		, 'exist' => file_exists( '/usr/bin/shairport-sync' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/shairport-sync' )
 	]
 	, [
-		  'label'    => 'DAB Radio'
-		, 'sublabel' => 'rtsp-server'
-		, 'id'       => 'dabradio'
-		, 'setting'  => false
-		, 'status'   => true
+		  'id'       => 'dabradio'
 		, 'disabled' => 'No DAB devices found.'
+		, 'exist'    => file_exists( '/usr/bin/mediamtx' )
 		, 'help'     => 'Digital Audio Broadcasting radio for USB RTL-SDR devices.'
-		, 'exist'    => file_exists( '/usr/bin/rtsp-simple-server' )
 	]
 	, [
-		  'label'    => 'SnapClient'
-		, 'sublabel' => 'snapclient'
-		, 'id'       => 'snapclient'
-		, 'status'   => true
-		, 'help'     => <<< EOF
+		  'id'    => 'snapclient'
+		, 'exist' => file_exists( '/usr/bin/snapclient' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
  · SSH passwords must be default.
  · Connect: {$Fmenu( 'networks', 'Networks', 'snapcast' )}
@@ -42,16 +52,11 @@ EOF
 	· Enable SnapServer before SnapClient
 	· SnapClient auto connect/disconnect on play/stop (no connect icon)
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 	, [
-		  'label'    => 'Spotify'
-		, 'sublabel' => 'spotifyd'
-		, 'id'       => 'spotifyd'
-		, 'status'   => true
-		, 'help'     => <<< EOF
-{$Fi( 'gear btn' )} Reset client keys
-
+		  'id'    => 'spotifyd'
+		, 'exist' => file_exists( '/usr/bin/spotifyd' )
+		, 'help'  => <<< EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
@@ -70,21 +75,16 @@ To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bl
 	· Spotify Account: <code>(email)</code>
 	
 Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
-
 EOF
-		, 'exist'    => file_exists( '/usr/bin/spotifyd' )
 	]
 	, [
-		  'label'    => 'UPnP'
-		, 'sublabel' => 'upmpdcli'
-		, 'id'       => 'upmpdcli'
-		, 'status'   => true
-		, 'help'     => <<< EOF
+		  'id'    => 'upmpdcli'
+		, 'exist' => file_exists( '/usr/bin/upmpdcli' )
+		, 'help'  => <<< EOF
 <a href="https://www.lesbonscomptes.com/upmpdcli/">upmpdcli</a> - UPnP / DLNA rendering device
 
 Note: Playing files directly on rAudio yields better quality.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/upmpdcli' )
 	]
 ];
 htmlSection( $head, $body, 'renderers' );
@@ -93,57 +93,42 @@ htmlSection( $head, $body, 'renderers' );
 $head = [ 'title' => 'Streamers' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'For browsers'
-		, 'sublabel' => 'MPD httpd'
-		, 'id'       => 'httpd'
-		, 'setting'  => false
-		, 'help'     => <<< EOF
+		  'id'   => 'httpd'
+		, 'help' => <<< EOF
 <a href="https://wiki.archlinux.org/index.php/Music_Player_Daemon/Tips_and_tricks#HTTP_streaming">HTTP streaming</a> - Asynchronous streaming for browsers via <c>http://$ip:8000</c> (Latency - several seconds)
 EOF
 	]
 	, [
-		  'label'    => 'SnapServer'
-		, 'sublabel' => 'MPD snapcast'
-		, 'id'       => 'snapserver'
-		, 'setting'  => false
+		  'id'       => 'snapserver'
 		, 'disabled' => labelIcon( 'SnapClient', 'snapcast' ).' is currently connected.'
+		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/badaix/snapcast">Snapcast</a> - Multiroom client-server audio player.
 
 Note: SSH passwords must be default. (For metadata update)
 EOF
-		, 'exist'    => file_exists( '/usr/bin/snapclient' )
 	]
 ];
 htmlSection( $head, $body, 'streamers' );
 $head = [ 'title' => 'Signal Processors' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'    => 'DSP'
-		, 'sublabel' => 'camilladsp'
-		, 'id'       => 'camilladsp'
-		, 'status'   => true
+		  'id'       => 'camilladsp'
 		, 'disabled' => labelIcon( 'Equalizer', 'equalizer' ).' is currently enabled.'
+		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 		, 'help'     => <<< EOF
 <a href="https://github.com/HEnquist/camilladsp">CamillaDSP</a> - A flexible cross-platform IIR and FIR engine for crossovers, room correction etc.
 Settings: {$Fmenu( 'features', 'Features', 'camilladsp' )}
 EOF
-		, 'exist'    => file_exists( '/usr/bin/camilladsp' )
 	]
 	, [
-		  'label'    => 'Equalizer'
-		, 'sublabel' => 'alsaequal'
-		, 'id'       => 'equalizer'
-		, 'setting'  => false
+		  'id'       => 'equalizer'
 		, 'disabled' => labelIcon( 'DSP', 'camilladsp' ).' is currently enabled.'
 		, 'help'     => <<< EOF
 <a href="https://github.com/raedwulf/alsaequal">Alsaequal</a> - 10 band graphic equalizer with user presets.
 Control: {$Fmenu( 'features', 'Features', 'equalizer' )}
 Presets:
  · <c>Flat</c>: All bands at 0dB
- · New: Adjust &raquo; {$Fi( 'plus-circle btn' )} Add &raquo; {$Fi( 'save btn' )} Save
- · Existing: Adjust &raquo; {$Fi( 'save btn' )} Save
- · Adjusted values will be listed as <c>(unnamed)</c> until saved.
  · If distortions occurred, lower all bands collectively and increase volume
 EOF
 	]
@@ -158,22 +143,18 @@ if ( file_exists( '/usr/bin/firefox' ) ) {
 }
 $body = [
 	[
-		  'label'    => 'Access Point'
-		, 'sublabel' => 'hostapd'
-		, 'id'       => 'hostapd'
-		, 'status'   => true
+		  'id'       => 'hostapd'
 		, 'disabled' => labelIcon( 'Wi-Fi', 'wifi' ).' is currently connected.'
+		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
  · Avoid double quotes <code>"</code> in password.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/hostapd' )
 	]
 	, [
-		  'label'   => 'AutoPlay'
-		, 'id'      => 'autoplay'
-		, 'help'    => <<< EOF
+		  'id'   => 'autoplay'
+		, 'help' => <<< EOF
 Start playing automatically on:
  · Bluetooth connected
  · Audio CD inserting
@@ -181,29 +162,24 @@ Start playing automatically on:
 EOF
 	]
 	, [
-		  'label'    => 'Browser on RPi'
-		, 'sublabel' => 'localbrowser'
-		, 'id'       => 'localbrowser'
-		, 'status'   => true
-		, 'help'     => <<< EOF
+		  'id'    => 'localbrowser'
+		, 'exist' => $browser
+		, 'help'  => <<< EOF
 $browser - Browser on RPi connected screen.
  · TFT 3.5" LCD: Rotate needs reboot.
  · Screen off: {$Fmenu( 'power', 'Power', 'screenoff' )}
-	· Also by timer in {$Fi( 'gear btn' )}
 	· Backlight still on - no energy saved
+	· Sleep timer in {$Fi( 'gear btn' )}
 
 Note: HDMI Hotplug
  · Disabled - Display must be connected before boot.
  · Enable - If connect before boot but not detected properly.
 EOF
-		, 'exist'    => $browser
 	]
 	, [
-		  'label'    => 'File Sharing'
-		, 'sublabel' => 'smb'
-		, 'id'       => 'smb'
-		, 'status'   => true
+		  'id'       => 'smb'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
+		, 'exist'    => file_exists( '/usr/bin/smbd' )
 		, 'help'     => <<< EOF
 <a href="https://www.samba.org">Samba</a> - Share files on network for Windows clients.
  · Much faster than SCP / WinSCP when transfer large or a lot of files
@@ -212,26 +188,20 @@ EOF
  
 Note: {$FlabelIcon( 'Server rAudio', 'rserver' )} should yield better performance.
 EOF
-		, 'exist'    => file_exists( '/usr/bin/smbd' )
 	]
 	, [
-		  'label'    => 'Lyrics in File'
-		, 'sublabel' => 'embedded ID3'
-		, 'id'       => 'lyricsembedded'
-		, 'setting'  => false
-		, 'help'     => <<< EOF
- · Get embedded lyrics from local files.
- · Search online if not available.
- · Should be disable if most lyrics are not embedded.
- · Online fetched lyrics are saved as separate files, not embedded.
- 
-Note: Should be disabled if none embedded.
+		  'id'   => 'lyrics'
+		, 'help' => <<< EOF
+ · Search lyrics from user specified URL and tags.
+ · Embedded lyrics:
+	 · Get lyrics from local files.
+	 · If not available, search online.
+	 · Should be disabled if most lyrics are not embedded.
 EOF
 	]
 	, [
-		  'label'   => 'Multiple rAudios'
-		, 'id'      => 'multiraudio'
-		, 'help'    => <<< EOF
+		  'id'   => 'multiraudio'
+		, 'help' => <<< EOF
 Switch between multiple rAudio devices.
 Switch: {$Fmenu( 'playlist', 'Playlist', 'multiraudio' )}
 
@@ -239,20 +209,15 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'label'    => 'Password Login'
-		, 'sublabel' => 'password_hash'
-		, 'id'       => 'login'
-		, 'setting'  => 'custom'
-		, 'help'     => <<< EOF
+		  'id'   => 'login'
+		, 'help' => <<< EOF
 <a href="https://www.php.net/manual/en/function.password-hash.php">password_hash</a> - Force browser interface login with password using <c>PASSWORD_BCRYPT</c>.
 Lock: {$Fmenu( 'player', 'Player', 'lock' )}
 EOF
 	]
 	, [
-		  'label'    => 'Scrobbler'
-		, 'sublabel' => 'Last.fm'
-		, 'id'       => 'scrobble'
-		, 'help'     => <<< EOF
+		  'id'   => 'scrobble'
+		, 'help' => <<< EOF
  · Send artist, title and album of played tracks to <a href="https://www.last.fm/">Last.fm</a> to save in user's database.
  · Require Last.fm account.
  · SnapClient already scrobbled by SnapServer.
@@ -261,12 +226,8 @@ EOF
 EOF
 	]
 	, [
-		  'label'       => 'Server rAudio'
-		, 'sublabel'    => 'nfs-server'
-		, 'id'          => 'nfsserver'
-		, 'setting'     => 'custom'
+		  'id'          => 'nfsserver'
 		, 'settingicon' => false
-		, 'status'      => true
 		, 'disabled'    => 'js'
 		, 'help'        => <<< EOF
 <a href="https://en.wikipedia.org/wiki/Network_File_System">NFS</a> - Network File System - Server for files and {$FlabelIcon( 'Shared Data', 'networks' )}
@@ -291,8 +252,7 @@ Note: SSH password must be default.
 EOF
 	]
 	, [
-		  'label'    => 'Stop Timer'
-		, 'id'       => 'stoptimer'
+		  'id'       => 'stoptimer'
 		, 'disabled' => 'Player is currently not playing.'
 		, 'help'     => <<< EOF
 Stop timer:

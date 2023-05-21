@@ -83,13 +83,13 @@ if [[ ! -e $diraudiocd/$discid ]]; then
 	done
 	echo "$tracks" > $diraudiocd/$discid
 fi
-# suppress getPlaybackStatus in passive.js
-if [[ -e $dirsystem/autoplaycd ]]; then
+# suppress laybackStatusGet in passive.js
+if [[ -e $dirsystem/autoplay ]] && grep -q cd=true $dirsystem/autoplay.conf; then
 	autoplaycd=1
-	pushstream playlist '{"autoplaycd":1}'
+	pushstream playlist '{ "autoplaycd": 1 }'
 fi
 # add tracks to playlist
-grep -q -m1 'audiocdplclear.*true' $dirsystem/display && mpc -q clear
+grep -q -m1 'audiocdplclear.*true' $dirsystem/display.json && mpc -q clear
 notify audiocd 'Audio CD' 'Add tracks to Playlist ...'
 trackL=${cddiscid[1]}
 for i in $( seq 1 $trackL ); do
@@ -103,7 +103,8 @@ if [[ $autoplaycd ]]; then
 	cdtrack1=$(( $( mpc status %length% ) - $trackL + 1 ))
 	$dirbash/cmd.sh "mpcplayback
 play
-$cdtrack1"
+$cdtrack1
+CMD ACTION POS"
 fi
 
 # coverart
@@ -114,9 +115,9 @@ if [[ ! $artist || ! $album ]]; then
 fi
 [[ ! $artist || ! $album ]] && exit
 
-args="\
+$dirbash/status-coverartonline.sh "cmd
 $artist
 $album
 audiocd
-$discid"
-$dirbash/status-coverartonline.sh "$args" &> /dev/null &
+$discid
+CMD ARTIST ALBUM TYPE DISCID" &> /dev/null &

@@ -2,22 +2,16 @@
 
 . /srv/http/bash/common.sh
 
+killProcess statuspush
+echo $$ > $dirshm/pidstatuspush
+
 if [[ $1 == statusradio ]]; then # from status-radio.sh
 	state=play
-	data=$2
-	pushstream mpdradio "$data"
-	cat << EOF > $dirshm/status
-$( sed -e '/^{\|^}/ d' -e 's/^.."//; s/" *: /=/' <<< $data )
-timestamp=$( date +%s%3N )
-webradio=true
-player=mpd
-EOF
-	$dirbash/cmd.sh coverfileslimit
 else
 	status=$( $dirbash/status.sh )
 	statusnew=$( sed '/^, "counts"/,/}/ d' <<< $status \
-					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file|^, "player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
-						s/^,* *"//; s/" *: */=/; s/(state=)"(.*)"/\1\2/; p
+					| sed -E -n '/^, "Artist|^, "Album|^, "elapsed|^, "file| *"player|^, "station"|^, "state|^, "Time|^, "timestamp|^, "Title|^, "webradio"/ {
+						s/^,* *"//; s/" *: */=/; p
 						}' )
 	echo "$statusnew" > $dirshm/statusnew
 	if [[ -e $dirshm/status ]]; then
@@ -42,28 +36,40 @@ fi
 [[ $trackchanged && $state == play \
 	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
-if [[ -e $dirsystem/onwhileplay ]]; then
-	export DISPLAY=:0
-	[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
+if systemctl -q is-active localbrowser; then
+	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
+		export DISPLAY=:0
+		[[ $state == play ]] && sudo xset -dpms || sudo xset +dpms
+	fi
+fi
+
+if [[ -e $dirshm/clientip ]]; then
+	serverip=$( ipAddress )
+	[[ ! $status ]] && status=$( $dirbash/status.sh ) # $statusradio
+	status=$( sed -E -e '1,/^, "single" *:/ d;/^, "icon" *:/ d; /^, "login" *:/ d; /^}/ d
+					' -e '/^, "stationcover"|^, "coverart"/ s|(" *: *")|\1http://'$serverip'|' <<< $status )
+	status="{ ${status:1} }"
+	clientip=$( < $dirshm/clientip )
+	for ip in $clientip; do
+		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
+	done
+fi
+if [[ -e $dirsystem/lcdchar ]]; then
+	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/lcdcharstatus.py
+	systemctl restart lcdchar
 fi
 
 if [[ -e $dirsystem/mpdoled ]]; then
 	[[ $state == play ]] && systemctl start mpd_oled || systemctl stop mpd_oled
 fi
 
-if [[ -e $dirsystem/lcdchar ]]; then
-	sed -E 's/(true|false)$/\u\1/' $dirshm/status > $dirshm/statuslcd.py
-	lcdchar.py &> /dev/null &
-fi
-
 if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
+	killProcess cava
 	if [[ $state == play ]]; then
-		if ! pgrep cava &> /dev/null; then
-			cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
-		fi
+		cava -p /etc/cava.conf | $dirbash/vu.sh &> /dev/null &
+		echo $! > $dirshm/pidcava
 	else
-		killall cava &> /dev/null
-		pushstream vumeter '{"val":0}'
+		pushstream vumeter '{ "val": 0 }'
 		if [[ -e $dirsystem/vuled ]]; then
 			p=$( < $dirsystem/vuled.conf )
 			for i in $p; do
@@ -72,34 +78,21 @@ if [[ -e $dirsystem/vumeter || -e $dirsystem/vuled ]]; then
 		fi
 	fi
 fi
-if [[ -e $dirshm/clientip ]]; then
-	serverip=$( ipAddress )
-	[[ ! $status ]] && status=$( $dirbash/status.sh ) # status-radio.sh
-	status=$( sed -E -e '1,/^, "single" *:/ d
-					' -e '/^, "file" *:/ s/^,/{/
-					' -e '/^, "icon" *:/ d
-					' -e 's|^(, "stationcover" *: ")(.+")|\1http://'$serverip'\2|
-					' -e 's|^(, "coverart" *: ")(.+")|\1http://'$serverip'\2|' <<< $status )
-	clientip=$( < $dirshm/clientip )
-	for ip in $clientip; do
-		curl -s -X POST http://$ip/pub?id=mpdplayer -d "$status"
-	done
-fi
 
-[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpcaddrandom
+[[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
-pushstream refresh '{"page":"player","state":"'$state'"}'
-pushstream refresh '{"page":"features","state":"'$state'"}'
+pushstream refresh '{ "page": "player", "state": "'$state'" }'
+pushstream refresh '{ "page": "features", "state": "'$state'" }'
 
-[[ ! $scrobble ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
+[[ ! $scrobble || ! $statusprev ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
 
-. $dirsystem/scrobble.conf
-. <( echo "$statusprev" )
-[[ $webradio == false && $player != snapcast \
-	&& ( $player == mpd || ${!player} == true ) \
-	&& $Artist && $Title ]] \
-	&& (( $Time > 30 )) \
-	&& $dirbash/scrobble.sh "\
+. <( echo "$statusprev" ) # status-radio.sh - no $statusprev
+[[ ! $Artist || ! $Title || $Time < 30 || $webradio != false || $player == snapcast ]] && exit
+
+[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
+
+$dirbash/scrobble.sh "cmd
 $Artist
 $Title
-$Album" &> /dev/null &
+$Album
+CMD ARTIST TITLE ALBUM" &> /dev/null &

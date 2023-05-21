@@ -2,14 +2,20 @@
 
 . /srv/http/bash/common.sh
 
-pkg=$1
+CMD=$1
+PKG=$1
+SERVICE=$1
 
-case $pkg in
+case $CMD in
+	bluetooth )
+		PKG=bluez
+		;;
 	camilladsp )
 		fileconf=$dircamilladsp/configs/camilladsp.yml
 		;;
 	dabradio )
-		pkg=rtsp-simple-server
+		PKG=mediamtx
+		SERVICE=mediamtx
 		conf="\
 <bll># rtl_test -t</bll>
 $( script -c "timeout 1 rtl_test -t" | grep -v ^Script )"
@@ -23,9 +29,13 @@ $( < /etc/hostapd/hostapd.conf )
 $( < /etc/dnsmasq.conf )"
 		;;
 	localbrowser )
-		[[ -e /usr/bin/firefox ]] && pkg=firefox || pkg=chromium
 		fileconf=$dirsystem/localbrowser.conf
-		[[ $pkg == chromium ]] && skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+		if [[ -e /usr/bin/firefox ]]; then
+			PKG=firefox
+		else
+			PKG=chromium
+			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+		fi
 		;;
 	mpd )
 		conf=$( grep -v ^i $mpdconf )
@@ -44,16 +54,24 @@ $( awk NF <<< $conf )"
 		skip='configuration file does not exist'
 		;;
 	nfsserver )
-		pkg=nfs-utils
-		systemctl -q is-active nfs-server && fileconf=/etc/exports
+		PKG=nfs-utils
+		SERVICE=nfs-server
+		sharedip=$( grep -v $( ipAddress ) $filesharedip )
+		[[ ! $sharedip ]] && sharedip='(none)'
+		systemctl -q is-active nfs-server && conf="\
+<bll># cat /etc/exports</bll>
+$( cat /etc/exports )
+
+<bll># Active clients:</bll>
+$sharedip"
 		skip='Protocol not supported'
 		;;
 	smb )
-		pkg=samba
+		PKG=samba
 		fileconf=/etc/samba/smb.conf
 		;;
 	snapclient )
-		pkg=snapcast
+		PKG=snapcast
 		fileconf=/etc/default/snapclient
 		;;
 	upmpdcli )
@@ -61,10 +79,10 @@ $( awk NF <<< $conf )"
 		fileconf=/etc/upmpdcli.conf
 		;;
 	* )
-		fileconf=/etc/$pkg.conf
+		fileconf=/etc/$PKG.conf
 		;;
 esac
-config="<code>$( pacman -Q $pkg )</code>"
+config="<code>$( pacman -Q $PKG )</code>"
 if [[ $conf ]]; then
 	config+="
 $conf"
@@ -73,7 +91,7 @@ elif [[ -e $fileconf ]]; then
 <bll># cat $fileconf</bll>
 $( grep -v ^# $fileconf )"
 fi
-status=$( systemctl status $pkg \
+status=$( systemctl status $SERVICE \
 				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|

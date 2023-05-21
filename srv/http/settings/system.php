@@ -3,6 +3,29 @@
 </div>
 <div id="divsystem" class="section">
 <?php
+$id_data = [
+	  'audio'         => [ 'name' => 'Audio',                                     'setting' => false ]
+	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
+	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true ]
+	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
+	, 'hdmi'          => [ 'name' => 'HDMI',                                      'setting' => false ]
+	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
+	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
+	, 'mpdoled'       => [ 'name' => 'Spectrum OLED' ]
+	, 'powerbutton'   => [ 'name' => 'Power Button',      'sub' => 'Power LED' ]
+	, 'relays'        => [ 'name' => 'Relay Module' ]
+	, 'restore'       => [ 'name' => 'Restore',                                   'setting' => 'none' ]
+	, 'rotaryencoder' => [ 'name' => 'Rotary Encoder' ]
+	, 'shareddata'    => [ 'name' => 'Shared Data',       'sub' => 'client',      'setting' => 'custom' ]
+	, 'softlimit'     => [ 'name' => 'Custom Soft Limit', 'sub' => 'CPU throttling' ]
+	, 'soundprofile'  => [ 'name' => 'Sound Profile',     'sub' => 'sysctl',                             'status' => true ]
+	, 'tft'           => [ 'name' => 'TFT 3.5" LCD' ]
+	, 'timezone'      => [ 'name' => 'Time Zone',         'sub' => 'timedatectl', 'setting' => 'custom', 'status' => true ]
+	, 'usbautoupdate' => [ 'name' => 'Hotplug Update',                            'setting' => false ]
+	, 'vuled'         => [ 'name' => 'VU LED' ]
+	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true ]
+];
+
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
@@ -25,7 +48,7 @@ htmlHead( [ //////////////////////////////////
 <?php
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Status'
-	, 'status' => 'journalctl'
+	, 'status' => 'status'
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ] );
@@ -37,7 +60,7 @@ htmlHead( [ //////////////////////////////////
 		<br>Up Time
 		<div id="warning"><i class="i-warning yl"></i>&ensp;<wh>Warning</wh></div>
 	</div>
-	<div id="status" class="col-r text"></div>
+	<div id="statustext" class="col-r text"></div>
 	<div style="clear:both"></div>
 	<div class="helpblock hide">
 <wh>• CPU Load:</wh>
@@ -51,74 +74,67 @@ htmlHead( [ //////////////////////////////////
 	· 80-84°C: CPU cores throttled.
 	· 85°C: CPU cores and GPU throttled.</a><!--
 --><a class="softlimit">
-	· 60°C: Optimized throttling CPU cores and GPU (Soft limit)</a>
+	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
+· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)
 </div>
 <?php
 htmlSetting( [
-	  'label'    => 'Custom Soft Limit'
-	, 'sublabel' => 'CPU throttling'
-	, 'id'       => 'softlimit'
-	, 'help'     => 'Temperature level for CPU optimized throttling (default: 60°C)'
+	  'id'   => 'softlimit'
+	, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
 ] );
 ?>
 </div>
 <div id="divstorage" class="section">
 <?php
+$uid = exec( 'id -u mpd' );
+$gid = exec( 'id -g mpd' );
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Storage'
-	, 'status' => 'mount'
+	, 'status' => 'storage'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
-	, 'help'   => i( 'plus-circle btn' ).' Add network storage'
-				.'<br><br><wh>USB drives:</wh> Will be found and mounted automatically.'
+	, 'help'   => <<< EOF
+{$Fi( 'plus-circle btn' )} Add network storage
+
+ · USB drives  Will be found and mounted automatically.
+ · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
+
+<pre class="gr">
+mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
+
+<g># CIFS: no user - username=guest, no password - password=""</g>
+mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
+      -o noauto,username=<wh>USER</wh>,password=<wh>PASSWORD</wh>,uid=$uid,gid=$gid,iocharset=utf8
+
+<g># NFS:</g>
+mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
+      -o defaults,noauto,bg,soft,timeo=5
+</pre>
+EOF
 ] );
 ?>
-	<ul id="list" class="entries" data-ip="<?=$_SERVER['SERVER_ADDR']?>"></ul>
-	<div class="helpblock hide">
-<?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?>
-<br>
-<wh>Network shares:</wh> If <?=i( 'plus-circle btn' )?> Add network storage failed, try SSH terminal: (replace <cy>YELLOW</cy> with actual values)
-
-<wh>• CIFS:</wh>
-<pre>
-mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-mount -t cifs "//<yl>SERVER_IP</yl>/<yl>SHARENAME</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
-      -o noauto,username=<yl>USER</yl>,password=<yl>PASSWORD</yl>,uid=<?=( exec( 'id -u mpd' ) )?>,gid=<?=( exec( 'id -g mpd' ) )?>,iocharset=utf8
-<gr>#	 (no user - username=guest, no password - password="")</gr>
-</pre><!--
---><wh>• NFS:</wh>
-<pre>
-mkdir -p "/mnt/MPD/NAS/<yl>NAME</yl>"
-mount -t nfs "<yl>SERVER_IP</yl>:<yl>/SHARE/PATH</yl>" "/mnt/MPD/NAS/<yl>NAME</yl>" \
-      -o defaults,noauto,bg,soft,timeo=5
-</pre></div>
-<pre id="codehddinfo" class="hide"></pre>
+	<ul id="list" class="entries"></ul>
+	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?></div>
+	<pre id="codehddinfo" class="hide"></pre>
 <?php
 htmlSetting( [
-	  'label'    => 'Hard Drive Sleep'
-	, 'id'       => 'hddsleep'
+	  'id'       => 'hddsleep'
 	, 'disabled' => 'HDD not support sleep'
 	, 'help'     => 'Sleep timer for USB hard drives.'
 ] );
 htmlSetting( [
-	  'label'    => 'Hotplug Update'
-	, 'sublabel' => 'data on USB'
-	, 'id'       => 'usbautoupdate'
-	, 'setting'  => false
-	, 'disabled' => 'js'
-	, 'help'     => 'Auto update Library database on insert/remove USB drives.'
+	  'id'   => 'usbautoupdate'
+	, 'help' => 'Auto update Library database on insert/remove USB drives.'
 ] );
 echo '</div>';
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
-	, 'status' => 'rfkill'
+	, 'status' => 'onboard'
 ];
 $body = [
 	[
-		  'label'    => 'Audio'
-		, 'id'       => 'audio'
-		, 'setting'  => false
+		  'id'       => 'audio'
 		, 'disabled' => 'No other audio devices available.'
 		, 'help'     => <<< EOF
  · For 3.5mm jack and HDMI audio output
@@ -126,27 +142,22 @@ $body = [
 EOF
 	]
 	, [
-		  'label'    => 'Bluetooth'
-		, 'sublabel' => 'bluetoothctl'
-		, 'id'       => 'bluetooth'
-		, 'status'   => true
-		, 'help'     => i( 'gear btn' ).' ■ Sampling 16bit - Only for Bluetooth receivers with fixed sampling'
+		  'id'   => 'bluetooth'
+		, 'help' => <<< EOF
+{$Fi( 'gear btn' )}
+■ Sampling 16bit - Bluetooth receivers with fixed sampling
+EOF
 	]
 	, [
-		  'label'    => 'HDMI Hotplug'
-		, 'id'       => 'hdmi'
-		, 'setting'  => false
-		, 'help'     => <<< EOF
+		  'id'   => 'hdmi'
+		, 'help' => <<< EOF
  · Force enable HDMI without connecting before boot
  · Enable if not detected properly
  · Should be disabled if not used.
 EOF
 	]
 	, [
-		  'label'    => 'Wi-Fi'
-		, 'sublabel' => 'iw'
-		, 'id'       => 'wlan'
-		, 'status'   => true
+		  'id'       => 'wlan'
 		, 'disabled' => 'js'
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
@@ -161,11 +172,11 @@ htmlSection( $head, $body, 'onboard' );
 // ----------------------------------------------------------------------------------
 }
 $head = [ //////////////////////////////////
-	  'title'  => 'GPIO Devices'
+	  'title' => 'GPIO Devices'
 ];
 $body = [
 	[
-		  'html'    => <<< EOF
+		  'html' => <<< EOF
 <div id="divi2s">
 	<div class="col-l single">Audio - I²S<i class="i-i2smodule"></i></div>
 	<div class="col-r">
@@ -177,44 +188,40 @@ $body = [
 			<select id="i2smodule"></select>
 			<i id="setting-i2smodule" class="i-gear setting"></i>
 		</div>
-		<span class="helpblock hide">{$Fi( 'gear btn' )} Option to disable I²S EEPROM read for HAT with obsolete EEPROM
-
-	I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
-	 · HAT with EEPROM could be automatically detected.
-	 · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+		<span class="helpblock hide"><!--
+-->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
+ · HAT with EEPROM could be automatically detected.
+ · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+{$Fi( 'gear btn' )}
+Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
 	</div>
 </div>
 EOF
 	]
 	, [
-		  'label'    => 'Character LCD'
-		, 'sublabel' => 'HD44780'
-		, 'id'       => 'lcdchar'
-		, 'help'     => <<< EOF
+		  'id'   => 'lcdchar'
+		, 'help' => <<< EOF
 <a class="img" data-name="lcdchar">LCD module</a> - display playback data
  · Support 16x2 and 20x4 LCD modules.
  · {$Fi( 'warning yl' )} LCD with I²C backpack must be modified: <a class="img" data-name="i2cbackpack">5V to 3.3V I²C and 5V LCD</a>
 EOF
 	]
 	, [
-		  'label'    => 'Power Button'
-		, 'sublabel' => 'Power LED'
-		, 'id'       => 'powerbutton'
-		, 'help'     => <<< EOF
+		  'id'   => 'powerbutton'
+		, 'help' => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
+{$Fi( 'gear btn' )}
  · On - Fixed to pin <code>5</code>
  · Off - Default: pin <code>5</code> (single pin on+off)
- 
-If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
- · Off - Default: pin <code>7</code>
- · Reserved - Default: pin <code>29</code>
+ · If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
+	 · Off - Default: pin <code>7</code>
+	 · Reserved - Default: pin <code>29</code>
 EOF
 	]
 	, [
-		  'label'   => 'Relay Module'
-		, 'id'      => 'relays'
-		, 'help'    => <<< EOF
+		  'id'   => 'relays'
+		, 'help' => <<< EOF
 <a class="img" data-name="relays">Relay module</a> - power on/off peripheral equipments
 On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
  · More info: <a href="https://github.com/rern/R_GPIO/blob/master/README.md">+R GPIO</a>
@@ -222,29 +229,25 @@ On/Off: {$Fmenu( 'raudio', 'System', 'relays' )}
 EOF
 	],
 	[
-		  'label'    => 'Rotary Encoder'
-		, 'id'       => 'rotaryencoder'
-		, 'help'     => <<< EOF
+		  'id'   => 'rotaryencoder'
+		, 'help' => <<< EOF
 <a class="img" data-name="rotaryencoder">Rotary encoder</a> for:
  · Turn volume up/down
  · Push to play/pause
 EOF
 	]
 	,[
-		  'label'    => 'Spectrum OLED'
-		, 'id'       => 'mpdoled'
-		, 'help'     => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
+		  'id'   => 'mpdoled'
+		, 'help' => '<a class="img" data-name="mpdoled">OLED module</a> - display audio level spectrum'
 	]
 	, [
-		  'label'    => 'TFT 3.5" LCD'
-		, 'id'       => 'lcd'
-		, 'help'     => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
-		, 'exist'    => file_exists( '/etc/systemd/system/localbrowser.service' )
+		  'id'    => 'tft'
+		, 'exist' => file_exists( '/etc/systemd/system/localbrowser.service' )
+		, 'help'  => '<a class="img" data-name="lcd">TFT LCD module</a> with resistive touchscreen - local display'
 	]
 	, [
-		  'label'   => 'VU LED'
-		, 'id'      => 'vuled'
-		, 'help'    => <<< EOF
+		  'id'   => 'vuled'
+		, 'help' => <<< EOF
 <a class="img" data-name="vuled">7 LEDs</a> - display audio level
  · <bl id="ledcalc">LED resister calculator</bl>
 EOF
@@ -254,11 +257,9 @@ htmlSection( $head, $body, 'gpio' );
 $head = [ 'title' => 'Environment' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'Player Name'
-		, 'id'      => 'hostname'
-		, 'input'   => '<input type="text" id="hostname" readonly>'
-		, 'setting' => false
-		, 'help'    => <<< EOF
+		  'id'    => 'hostname'
+		, 'input' => '<input type="text" id="hostname" readonly>'
+		, 'help'  => <<< EOF
 For:
  · Access point, AirPlay, Bluetooth, SnapCast, Spotify, UPnP
  · Web Interface URL: <c id="avahiurl"></c>
@@ -266,30 +267,37 @@ For:
 EOF
 	]
 	, [
-		  'label'    => 'Time Zone'
-		, 'sublabel' => 'timedatectl'
-		, 'id'       => 'timezone'
-		, 'status'   => true
-		, 'input'    => '<select id="timezone"></select>'
-		, 'setting'  => 'custom'
-		, 'help'     => i( 'gear btn' ).' Servers for time sync and package mirror'
+		  'id'    => 'timezone'
+		, 'input' => '<select id="timezone"></select>'
+		, 'help'  => <<< EOF
+{$Fi( 'gear btn' )}
+Servers for time sync and package mirror
+EOF
 	]
 	, [
-		  'label'    => 'Sound Profile'
-		, 'sublabel' => 'sysctl'
-		, 'id'       => 'soundprofile'
-		, 'status'   => true
-		, 'help'     => 'Tweak kernel parameters for sound profiles.'
+		  'id'   => 'soundprofile'
+		, 'help' => <<< EOF
+Tweak kernel parameters to improve sound quality.
+{$Fi( 'gear btn' )}
+Swapiness (default: <code>60</code>)
+	· Balance between swap disk vs system memory cache
+	· Low - less swap
+Maximum Transmission Unit (default: <code>1500</code> bytes)
+	· Maximum size of one packet that can be transmitted in a network
+	· High - less overhead more efficiency
+	· Low - less delay
+Transmit Queue Length (default: <code>1000</code>)
+	· Number of packets allowed per kernel transmit queue in a network
+	· High - improve performance under high load
+EOF
 	]
 ];
 htmlSection( $head, $body, 'environment' );
 $head = [ 'title' => 'Data and Settings' ]; //////////////////////////////////
 $body = [
 	[
-		  'label'   => 'Backup'
-		, 'id'      => 'backup'
-		, 'setting' => 'nobanner'
-		, 'help'    => <<< EOF
+		  'id'   => 'backup'
+		, 'help' => <<< EOF
 Backup all data and settings:
  · Library: Database, Bookmarks, DAB Radio, Web Radio
  · Playback: Lyrics
@@ -298,29 +306,26 @@ Backup all data and settings:
 EOF
 	]
 	, [
-		  'label'   => 'Restore'
-		, 'id'      => 'restore'
-		, 'setting' => 'nobanner'
-		, 'help'    => <<< EOF
+		  'id'   => 'restore'
+		, 'help' => <<< EOF
  · Restore all data and settings from a backup file.
  · Reset to default - Reset everything except Wi-Fi connection and custom LAN
 EOF
 	]
 	, [
-		  'label'    => 'Shared Data'
-		, 'sublabel' => 'client'
-		, 'id'       => 'shareddata'
-		, 'setting'  => 'custom'
+		  'id'       => 'shareddata'
 		, 'disabled' => labelIcon( 'Server rAudio', 'rserver' ).' is currently active.'
 		, 'help'     => <<< EOF
 Connect shared data as client for:
  · Library database
  · Data - Audio CD, bookmarks, lyrics, saved playlists and Web Radio
  · Display order of Library home
-	
+
 Note:
  · SSH password must be default.
- · {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB will be hidden in Library home
+ · Enabled - {$Fi( 'microsd btn' )} SD and {$Fi( 'usbdrive btn' )} USB:
+	 · Moved to <c>/mnt/SD</c> and <c>/mnt/USB</c>
+	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
 	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
@@ -330,7 +335,7 @@ Note:
 	Server: Create a share for data with full permissions
 	 · Linux:
 		NFS: <c>777</c>
-		CIFS/SMB: <c>read only = no</c>
+		CIFS (SMB): <c>read only = no</c>
 	 · Windows:
 		Right-click Folder &raquo; Properties &raquo; 
 			<btn>Sharing</btn> &raquo; <btn>Advanced Sharing...</btn> &raquo; <btn>Permissions</btn>
@@ -343,7 +348,7 @@ Note:
 EOF
 	]
 ];
-htmlSection( $head, $body, 'dataandsettings' );
+htmlSection( $head, $body, 'datasetting' );
 $listui = [
 	[
 	    'HTML5-Color-Picker'
@@ -387,19 +392,19 @@ $listui = [
 	  , 'https://github.com/SortableJS/Sortable'
 	]
 ];
-$uihtml = '';
+$uihtml     = '';
 foreach( $listui as $ui ) {
 	$uihtml.= '<a href="'.$ui[ 2 ].'">'.$ui[ 0 ].'</a> - '.$ui[ 1 ].'<br>';
 }
 $hdparmhide = ! file_exists( '/usr/bin/hdparm' ) ? ' style="display: none"' : '';
-$indexhtml = '';
+$indexhtml  = '';
 for( $i = 'A'; $i !== 'AA'; $i++ ) {
 	$indexhtml.= '<a>'.$i.'</a>';
 	if ( $i === 'M' ) $indexhtml.= '<br class="brindex">';
 }
 ?>
 <div id="divabout" class="section">
-	<a href="https://github.com/rern/rAudio-1/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
+	<a href="https://github.com/rern/rAudio/discussions"><img src="/assets/img/icon.svg<?=$hash?>" style="width: 40px"></a>
 	<div id="logotext">rAudio
 	<br><gr>b y&emsp;r e r n</gr></div>
 	

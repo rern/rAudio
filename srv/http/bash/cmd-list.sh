@@ -10,13 +10,12 @@
 . /srv/http/bash/common.sh
 
 updateDone() {
+	rm -f $dirmpd/listing
 	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
-	chown -R mpd:audio $dirmpd
-	rm -f $dirmpd/{updating,listing}
-	pushstream mpdupdate '{"done":1}'
+	pushstream mpdupdate '{ "done": 1 }'
+	status=$( $dirbash/status.sh )
+	pushstream mpdplayer "$status"
 }
-
-trap updateDone EXIT
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
 webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
@@ -143,11 +142,7 @@ if [[ -e $filealbumprev ]]; then # latest
 	[[ -e $dirmpd/latest ]] && latest=$( wc -l < $dirmpd/latest ) || latest=0
 fi
 ##### count #############################################
-for mode in NAS SD USB; do
-	printf -v $mode '%s' $( mpc ls $mode 2> /dev/null | wc -l )
-done
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
-playlists=$( ls -1 $dirplaylists | wc -l )
 counts='{
   "album"       : '$album'
 , "albumartist" : '$albumartist'
@@ -158,16 +153,14 @@ counts='{
 , "date"        : '$date'
 , "genre"       : '$genre'
 , "latest"      : '$latest'
-, "nas"         : '$NAS'
-, "playlists"   : '$playlists'
-, "sd"          : '$SD'
+, "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
+, "playlists"   : '$( ls -1 $dirplaylists | wc -l )'
+, "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
 , "song"        : '$song'
-, "usb"         : '$USB'
+, "usb"         : '$( mpc ls USB 2> /dev/null | wc -l )'
 , "webradio"    : '$webradio'
 }'
 updateDone
-
-[[ -e $filesharedip ]] && $dirsettings/system.sh shareddataiplist$'\n'reload
 
 (
 	nonutf8=$( mpc -f '/mnt/MPD/%file% [• %albumartist% ]• %artist% • %album% • %title%' listall | grep -axv '.*' )
