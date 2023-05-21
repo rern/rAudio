@@ -107,10 +107,7 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre> · Windows shares without password (Guest account)
-	 · Edit Group Policy > Computer Configuration
-		Windows Settings > Local Policies > Security Options
-			- Accout: Guest account status - Enabled
+</pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ] );
 ?>
