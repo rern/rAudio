@@ -124,19 +124,6 @@ confNotString() {
 confFromJson() { # $1 - file
 	sed -E '/\{|}/d; s/,//; s/^\s*"(.*)": "*(.*)"*$/\1="\2"/' "$1"
 }
-cpuInfo() {
-	local BB C hwrevision
-	hwrevision=$( grep ^Revision /proc/cpuinfo )
-	BB=${hwrevision: -3:2}
-	C=${hwrevision: -4:1}
-	                                      data=BB=$BB$'\n'
-	                                      data+=C=$C$'\n'
-	[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
-	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
-	[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero
-	[[ $BB == 0d ]]                    && data+=rpi3bplus=true$'\n'       # 3B+
-	echo "$data" > $dirshm/cpuinfo
-}
 data2json() {
 	local data json
 	data="$1"
