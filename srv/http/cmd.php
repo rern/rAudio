@@ -87,6 +87,7 @@ case 'selecti2s':
 	$option = '<option value="none">None / Auto detect</option>';
 	foreach( $list as $name => $sysname ) $option .= '<option value="'.$sysname.'">'.$name.'</option>';
 	echo $option;
+	break;
 case 'selecttimezone':
 	$list   = timezone_identifiers_list();
 	$option = '<option value="auto">Auto</option>';
@@ -97,6 +98,7 @@ case 'selecttimezone':
 		$option  .= '<option value="'.$zone.'">'.$zonename.'&ensp;'.$offset.'</option>';
 	}
 	echo $option;
+	break;
 	
 }
 
