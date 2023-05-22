@@ -419,8 +419,7 @@ lyrics )
 		. $dirsystem/lyrics.conf
 		if [[ $embedded && $( < $dirshm/player ) == mpd ]]; then
 			file=$( getVar file $dirshm/status )
-			dir=${file/\/*}
-			if [[ $dir == SD || $dir == USB ]]; then
+			if [[ ${file/\/*} =~ ^(USB|NAS|SD)$ ]]; then
 				file="/mnt/MPD/$file"
 				lyrics=$( kid3-cli -c "select \"$file\"" -c "get lyrics" )
 				[[ $lyrics ]] && echo "$lyrics" && exit
