@@ -97,7 +97,6 @@ htmlHead( [ //////////////////////////////////
 
  · USB drives  Will be found and mounted automatically.
  · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
-
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 
@@ -108,7 +107,7 @@ mount -t cifs "//<wh>SERVER_IP</wh>/<wh>SHARENAME</wh>" "/mnt/MPD/NAS/<wh>NAME</
 <g># NFS:</g>
 mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</wh>" \
       -o defaults,noauto,bg,soft,timeo=5
-</pre>
+</pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
 ] );
 ?>

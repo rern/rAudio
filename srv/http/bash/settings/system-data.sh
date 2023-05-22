@@ -234,7 +234,7 @@ data+='
 , "mpdoledreboot"     : '$mpdoledreboot'
 , "nfsserver"         : '$( [[ -s /etc/exports ]] && echo true )'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
-, "powerbutton"       : '$( grep -q gpio-shutdown /boot/config.txt && echo true )'
+, "powerbutton"       : '$( exists $dirsystem/powerbutton )'
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
 , "poweraudiophonics" : '$( grep -q 'poweroff,gpiopin=22' /boot/config.txt && echo true )'
 , "relays"            : '$( exists $dirsystem/relays )'

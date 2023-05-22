@@ -602,13 +602,6 @@ input.disabled + .switchlabel:after {
 #hostname {
 	height: 40px !important;
 }
-#statusvalue i {
-	margin: 0 5px 0 12px;
-	color: var( --cg60 );
-}
-#statusvalue .i-song {
-    margin-left: 0;
-}
 #warning {
 	margin-top: -1px;
 }

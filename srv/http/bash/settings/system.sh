@@ -344,6 +344,7 @@ $description
 	grep -B1 -A2 --no-group-separator ^$PKG $filepackages
 	;;
 poweraudiophonics )
+	enableFlagSet
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
 		config+="
@@ -353,6 +354,7 @@ dtoverlay=gpio-shutdown,gpio_pin=17,active_low=0,gpio_pull=down"
 	configTxt
 	;;
 powerbutton )
+	enableFlagSet
 	config=$( grep -Ev 'gpio-poweroff|gpio-shutdown' /boot/config.txt )
 	if [[ $ON ]]; then
 		serviceRestartEnable

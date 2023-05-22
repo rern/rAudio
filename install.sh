@@ -108,6 +108,8 @@ cursor=$( [[ $cursor == yes ]] && echo true )"
 	echo "$conf" > $file
 fi
 
+systemctl is-enabled powerbutton && touch $dirsystem/powerbutton
+
 file=$dirsystem/relays.conf
 if [[ ! -e ${file/.*} ]]; then
 	rm -f $file

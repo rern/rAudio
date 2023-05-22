@@ -165,12 +165,6 @@ function switchSet() {
 function SWreset() {
 	[ 'id', 'icon', 'title' ].forEach( k => delete SW[ k ] );
 }
-function values2info( keys, v ) {
-	var values = {}
-	keys.forEach( k => values[ k ] = v[ k ] || '' );
-	return values
-}
-
 
 // pushstreamChannel() in common.js
 if ( page === 'addons' ) {

@@ -167,9 +167,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<div id="lib-search" class="hide">
 			<div class="input-group">
 				<input id="lib-search-input" type="text">
-				<span class="input-group-btn">
-					<button id="lib-search-btn" class="btn btn-default"><?=i( '', 'search' )?></button>
-				</span>
+				<?=i( 'lib-search-btn', 'search btn btn-default input-group-btn' )?>
 			</div>
 		</div>
 		<div id="lib-search-close"></div>
@@ -283,9 +281,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
 			<div class="input-group">
 				<input id="pl-search-input" type="text">
-				<span class="input-group-btn">
-					<button id="pl-search-btn" class="btn btn-default" type="button"><?=i( '', 'search' )?></button>
-				</span>
+				<?=i( 'pl-search-btn', 'search btn btn-default input-group-btn' )?>
 			</div>
 		</form>
 		<div id="pl-search-close" class="hide"></div>

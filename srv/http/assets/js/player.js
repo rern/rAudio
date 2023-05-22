@@ -123,7 +123,7 @@ $( '#setting-crossfade' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'Seconds'
+		, numberlabel  : 'Seconds'
 		, focus        : 0
 		, boxwidth     : 60
 		, values       : S.crossfadeconf
@@ -135,12 +135,13 @@ $( '#setting-crossfade' ).on( 'click', function() {
 } );
 $( '#setting-replaygain' ).on( 'click', function() {
 	var hardware = D.mixertype === 'software' && D.mixers;
+	if ( ! hardware ) delete S.replaygainconf.HARDWARE;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, radio        : { Auto: 'auto', Album: 'album', Track: 'track' }
 		, footer       : hardware ? '<label><input type="checkbox"><wh>Gain control by Mixer device</wh></label>' : ''
-		, values       : hardware ? values2info( [ 'TYPE', 'HARDWARE' ], S.hostapd ) : { TYPE: S.replaygainconf.TYPE }
+		, values       : S.replaygainconf
 		, checkchanged : S.replaygain
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -163,7 +164,7 @@ $( '#setting-buffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'audio_buffer_size <gr>(kB)</gr>'
+		, numberlabel  : 'audio_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 4096)'
 		, footeralign  : 'right'
@@ -179,7 +180,7 @@ $( '#setting-outputbuffer' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'max_output_buffer_size <gr>(kB)</gr>'
+		, numberlabel  : 'max_output_buffer_size <gr>(kB)</gr>'
 		, focus        : 0
 		, footer       : '(default: 8192)'
 		, footeralign  : 'right'
@@ -280,16 +281,16 @@ var soxrcustom = `
 		</select></td><td>&nbsp;<gr>bit</gr></td>
 </tr>
 <tr><td>Phase Response</td>
-	<td><input type="text"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
+	<td><input type="number"></td><td style="width: 115px">&nbsp;<gr>0-100</gr></td>
 </tr>
 <tr><td>Passband End</td>
-	<td><input type="text"></td><td>&nbsp;<gr>0-100%</gr></td>
+	<td><input type="number"></td><td>&nbsp;<gr>0-100%</gr></td>
 </tr>
 <tr><td>Stopband Begin</td>
-	<td><input type="text"></td><td>&nbsp;<gr>100-150%</gr></td>
+	<td><input type="number"></td><td>&nbsp;<gr>100-150%</gr></td>
 </tr>
 <tr><td>Attenuation</td>
-	<td><input type="text"></td><td>&nbsp;<gr>0-30dB</gr></td>
+	<td><input type="number"></td><td>&nbsp;<gr>0-30dB</gr></td>
 </tr>
 <tr><td>Bitmask Flag</td>
 	<td colspan="2"><select>
@@ -318,10 +319,7 @@ function infoSoxr( quality ) {
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ '', infoSoxrCustom ]
 		, content      : soxr
-		, values       : values2info(
-			  [ 'QUALITY', 'THREAD' ]
-			, S.soxrconf
-		)
+		, values       : S.soxrconf
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 180
@@ -337,10 +335,7 @@ function infoSoxrCustom() {
 		, tablabel     : [ 'Presets', 'Custom' ]
 		, tab          : [ infoSoxr, '' ]
 		, content      : soxrcustom
-		, values       : values2info(
-			  [ 'QUALITY', 'PRECISION', 'PHASE_RESPONSE', 'PASSBAND_END', 'STOPBAND_BEGIN', 'ATTENUATION', 'FLAGS' ]
-			, S.soxrcustomconf
-		)
+		, values       : S.soxrcustomconf
 		, checkblank   : true
 		, checkchanged : S.soxr
 		, boxwidth     : 85
@@ -357,7 +352,7 @@ function playbackIcon() {
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>';
-	[ 'song', 'album', 'artist', 'webradio' ].forEach( k => htmlstatus += ico( k ) + ( S.counts[ k ] || 0 ).toLocaleString() );
+	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {

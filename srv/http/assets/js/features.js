@@ -142,10 +142,7 @@ $( '#setting-hostapd' ).on( 'click', function() {
 		, title        : SW.title
 		, footer       : '(8 characters or more)'
 		, textlabel    : [ 'IP', 'Password' ]
-		, values       : values2info(
-			  [ 'IP', 'PASSPHRASE' ]
-			, S.hostapd
-		)
+		, values       : S.hostapd
 		, checkchanged : S.hostapd
 		, checkblank   : true
 		, checkip      : [ 0 ]
@@ -159,10 +156,7 @@ $( '#setting-autoplay' ).on( 'click', function() {
 		  icon         : SW.icon
 		, title        : SW.title
 		, checkbox     : [ 'Bluetooth connected', 'Audio CD inserted', 'Power on <gr>/ Reboot</gr>' ]
-		, values       : values2info( 
-			  Object.keys( default_v.autoplay )
-			, S.autoplayconf || default_v.autoplay
-		)
+		, values       : S.autoplayconf || default_v.autoplay
 		, checkchanged : S.autoplay
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -209,10 +203,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 		, title        : SW.title
 		, content      : content
 		, boxwidth     : 110
-		, values       : values2info(
-			  Object.keys( default_v.localbrowser )
-			, S.localbrowserconf || default_v.localbrowser
-		)
+		, values       : S.localbrowserconf || default_v.localbrowser
 		, checkchanged : S.localbrowser
 		, beforeshow   : () => {
 			selectText2Html( { '90° CW': '90°&emsp;'+ ico( 'redo' ), '90° CCW': '90°&emsp;'+ ico( 'undo' ) } );
@@ -259,10 +250,7 @@ $( '#setting-smb' ).on( 'click', function() {
 		, title        : SW.title
 		, message      : '<wh>Write</wh> permission:'
 		, checkbox     : [ '<gr>/mnt/MPD/</gr>SD', '<gr>/mnt/MPD/</gr>USB' ]
-		, values       : values2info(
-			  [ 'SD', 'USB' ]
-			, S.smbconf
-		)
+		, values       : S.smbconf
 		, checkchanged : S.smb
 		, cancel       : switchCancel
 		, ok           : switchEnable
@@ -429,10 +417,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 		]
 		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
 		, boxwidth     : 170
-		, values       : values2info(
-			  Object.keys( default_v.scrobble )
-			, S.scrobbleconf || default_v.scrobble
-		)
+		, values       : S.scrobbleconf || default_v.scrobble
 		, checkchanged : S.scrobble
 		, cancel       : switchCancel
 		, ok           : switchEnable
