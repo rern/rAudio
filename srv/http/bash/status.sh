@@ -8,7 +8,7 @@
 
 . /srv/http/bash/common.sh
 
-mpc | grep ^Updating && updating_db=true || rm -f $dirmpd/updating
+mpc | grep -q ^Updating && updating_db=true || rm -f $dirmpd/updating
 
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	for i in {1..10}; do
