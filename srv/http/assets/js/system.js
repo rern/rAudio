@@ -594,7 +594,7 @@ $( '#backup' ).on( 'click', function() {
 							a.href = url;
 							a.download = 'backup.gz';
 							document.body.appendChild( a );
-							a.trigger( 'click' );
+							a.click();
 							setTimeout( () => {
 								a.remove();
 								window.URL.revokeObjectURL( url );
