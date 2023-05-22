@@ -352,8 +352,7 @@ function playbackIcon() {
 function renderPage() {
 	playbackIcon();
 	var htmlstatus =  S.version +'<br>';
-	htmlstatus += ico( 'song' ) + ( S.countsong || 0 ).toLocaleString() +'&emsp;';
-	htmlstatus += ico( 'webradio' ) + ( S.countwebradio || 0 ).toLocaleString();
+	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#statusvalue' ).html( htmlstatus );
 	if ( S.btaplayname ) {
