@@ -258,7 +258,7 @@ mirrorlist )
 mountforget )
 	umount -l "$MOUNTPOINT"
 	rmdir "$MOUNTPOINT" &> /dev/null
-	fstab=$( grep -v $( space2ascii $MOUNTPOINT ) /etc/fstab )
+	fstab=$( grep -v ${MOUNTPOINT// /\\\\040} /etc/fstab )
 	column -t <<< $fstab > /etc/fstab
 	systemctl daemon-reload
 	echo NAS > $dirmpd/updating

@@ -639,6 +639,8 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
+	if ( D.volumenone ) return
+	
 	guideHide();
 	clearTimeout( V.volumebar );
 	if ( S.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
@@ -650,6 +652,8 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } ).on( 'touchend mouseup', function( e ) {
+	if ( D.volumenone ) return
+	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return

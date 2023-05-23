@@ -286,9 +286,6 @@ sharedDataReset() {
 	rm -rf $dirbackup
 	dirPermissions
 }
-space2ascii() {
-	echo ${1// /\\040}
-}
 sshCommand() {
 	! ipOnline $1 && return
 	
