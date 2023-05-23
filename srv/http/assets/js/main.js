@@ -613,7 +613,7 @@ $( '#volume' ).roundSlider( {
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
-			$( '#voldn, #volmute' ).toggleClass( 'disabled', S.volume === 0 );
+			$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
 			$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
 		}, speed );
 	}
