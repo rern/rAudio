@@ -639,11 +639,9 @@ $( '#volume' ).roundSlider( {
 	}
 } );
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
-	if ( D.volumenone ) return
-	
 	guideHide();
 	clearTimeout( V.volumebar );
-	if ( S.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.start = true;
 } ).on( 'touchmove mousemove', function( e ) {
@@ -652,8 +650,6 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	V.drag = true;
 	volumeBarSet( e.pageX || e.changedTouches[ 0 ].pageX );
 } ).on( 'touchend mouseup', function( e ) {
-	if ( D.volumenone ) return
-	
 	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) {
 		volumeBarShow();
 		return
@@ -840,7 +836,6 @@ $( '.map' ).on( 'click', function( e ) {
 			}
 			$( '.band' ).addClass( 'transparent' );
 			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-			$( '.volumeband' ).toggleClass( 'hide', D.volumenone );
 			displayBars();
 			setButtonControl();
 			displayPlayback();
