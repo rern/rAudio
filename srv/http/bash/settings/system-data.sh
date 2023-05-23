@@ -227,7 +227,7 @@ data+='
 , "lcdcharconf"       : '$( conf2json lcdcharconf.py )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$list'
-, "mirror"            : "'$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' /etc/pacman.d/mirrorlist )'"
+, "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//(.*).mirror.*|\1|' )'"
 , "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
