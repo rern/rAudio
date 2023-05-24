@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1683942340' );
+	src         : url( '/assets/fonts/rern.woff2?v=1684895381' );
 }
 @font-face {
 	font-family : Lato;
@@ -400,7 +400,6 @@ codered  {
 
 #infoRange {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--track: linear-gradient( 90deg, transparent 10px, #000000 10px, #000000 calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
 }
@@ -420,7 +419,6 @@ codered  {
 	border: none;
 	border-radius: 4px;
 	background: var( --gloss );
-	background: var( --wkgloss );
 	background-color: var( --cm );
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
@@ -431,7 +429,6 @@ codered  {
 	border: none;
 	border-radius: 4px;
 	background: var( --gloss );
-	background: var( --wkgloss );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
@@ -485,10 +482,8 @@ codered  {
 input[ type=radio ],
 input[ type=checkbox ] {
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x   y   w    h */
-	box-shadow: var( --shadow-check );  /* x, y, blurw, shadoww, color */
+	background: radial-gradient( 125% 100% at 50% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	box-shadow: var( --shadow-check );
 }
 .infobtn {
 	display: inline-block;

@@ -606,8 +606,6 @@ i.map.disabled, .map.disabled i {
 	content: '';
 									  /* w    h      x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 55% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-	background: -webkit-radial-gradient( 75% 0%, 160% 55%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-									  /* x   y   w    h */
 }
 
 .controls {
@@ -623,8 +621,6 @@ i.map.disabled, .map.disabled i {
 	color: var( --cw );
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x   y   w    h */
 }
 .btn-default {
 	background-color: var( --cg );
@@ -862,18 +858,10 @@ i.map.disabled, .map.disabled i {
 #voldn {
 									  /* w    h      x    y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x    y   w    h */
 	background-color: var( --cg );
 }
 #single,
 #volmute {
-	background: -webkit-linear-gradient(
-		top,
-		hsla(0,0%,100%,.3) 0%,
-		hsla(0,0%,100%,.3) 45%,
-		rgba(0,0,0,0) 50%,
-		rgba(0,0,0,0) 100% );
 	background: linear-gradient(
 		to bottom,
 		hsla(0,0%,100%,.3) 0%,
@@ -888,8 +876,6 @@ i.map.disabled, .map.disabled i {
 #volup {
 									  /* w    h      x  y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-									  /* x  y   w    h */
 	background-color: var( --cg );
 }
 /* ------------------- roundSlider ------------------- */
@@ -907,8 +893,6 @@ i.map.disabled, .map.disabled i {
 .rs-container::after { /* glossy overlay */
 									  /* w    h       x   y   inner(color)       w    outer(color)      w */
 	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-	background: -webkit-radial-gradient( 75% 0%, 160% 100%,   hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
-									  /* x   y   w    h */
 	border-radius: 50%;
 }
 .rs-handle,
