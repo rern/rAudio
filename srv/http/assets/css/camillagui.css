@@ -237,14 +237,12 @@ input[type=checkbox] {
 	border-radius: 3px;
 	background-color: var(--cg) !important;
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 input:checked {
 	background-color: var( --cm ) !important;
 }
 input[type=range] {
 	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	--wkgloss: -webkit-radial-gradient( 100% 0%, 225% 90%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--track: linear-gradient( 90deg, transparent 10px, var( --cg ) 10px, var( --cg ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
 	display: block;
@@ -265,7 +263,6 @@ input[type=range]::-webkit-slider-thumb {
 	border: none;
 	border-radius: 3px;
 	background: var( --gloss );
-	background: var( --wkgloss );
 	background-color: var( --cm );
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
@@ -276,7 +273,6 @@ input[type=range]::-moz-range-thumb {
 	border: none;
 	border-radius: 3px;
 	background: var( --gloss );
-	background: var( --wkgloss );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
@@ -316,7 +312,6 @@ input[data-tip='Mixer name, must be unique'] {
 	border: none;
 	background-color: var( --cg ) !important;
 	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 50% -50%, 160% 200%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	text-shadow: var( --shadow-text );
 	width:36px;
 	height: 36px;
@@ -350,7 +345,6 @@ input[data-tip='Mixer name, must be unique'] {
 	margin-right: 0 !important;
 	border-radius: 3px 0 0 3px;
 	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 100% 0%, 225% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 #button-mute {
 	border-radius: 0;
@@ -372,7 +366,6 @@ input[data-tip='Mixer name, must be unique'] {
 #button-redo {
 	border-radius: 0 3px 3px 0;
 	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
-	background: -webkit-radial-gradient( 0% 0%, 300% 90%,   hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 /* compact view */
 ::marker {

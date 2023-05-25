@@ -612,7 +612,9 @@ $( '#volume' ).roundSlider( {
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
-			$( '#volume-knob, #button-volume i' ).removeClass( 'disabled' );
+			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
+			$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
+			$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
 		}, speed );
 	}
 	, drag              : function( e ) {
@@ -641,7 +643,7 @@ $( '#volume' ).roundSlider( {
 $( '#volume-band' ).on( 'touchstart mousedown', function() {
 	guideHide();
 	clearTimeout( V.volumebar );
-	if ( S.volumenone || $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	if ( $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.start = true;
 } ).on( 'touchmove mousemove', function( e ) {
@@ -667,6 +669,7 @@ $( '#volmute, #volM' ).on( 'click', function() {
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
+	if ( [ 'volume-band-dn', 'volume-band-up' ].includes( e.currentTarget.id ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
 	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) {
@@ -836,7 +839,6 @@ $( '.map' ).on( 'click', function( e ) {
 			}
 			$( '.band' ).addClass( 'transparent' );
 			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
-			$( '.volumeband' ).toggleClass( 'hide', D.volumenone );
 			displayBars();
 			setButtonControl();
 			displayPlayback();

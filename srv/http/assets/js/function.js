@@ -518,7 +518,7 @@ function displayPlayback() {
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
-	$( '.volumeband' ).toggleClass( 'hide', D.volume );
+	$( '.volumeband' ).toggleClass( 'disabled', ! hidevolume );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
@@ -2007,7 +2007,7 @@ function volumeBarSet( pageX ) {
 	$volumeRS.setValue( S.volume );
 }
 function volumeBarShow() {
-	if ( S.volumenone || ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
+	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) return
 	
 	V.volumebar = setTimeout( volumeBarHide, 3000 );
 	$( '#volume-text' )

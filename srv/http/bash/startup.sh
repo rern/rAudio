@@ -100,15 +100,14 @@ fi
 
 if [[ $connected  ]]; then
 	[[ -e $filebootwifi ]] && rm -f /boot/wifi
-	readarray -t nas <<< $( grep -v ^PARTUUID /etc/fstab | awk '{print $2}' )
-	if [[ $nas ]]; then
-		for mountpoint in "${nas[@]}"; do # ping target before mount
-			mp=$( space2ascii $mountpoint )
-			ip=$( grep $mp /etc/fstab | cut -d: -f1 )
-			[[ ${ip:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $ip )
+	readarray -t lines <<< $( grep $dirnas /etc/fstab )
+	if [[ $lines ]]; then
+		for line in "${lines[@]}"; do # ping target before mount
+			[[ ${line:0:2} == // ]] && ip=$( cut -d/ -f3 <<< $line ) || ip=$( cut -d: -f1 <<< $line )
 			for i in {1..10}; do
 				if ipOnline $ip; then
-					mount "$mountpoint" && nasonline=1 && break
+					mountpoint=$( awk '{print $2}' <<< $line )
+					mount "${mountpoint//\\040/ }" && nasonline=1 && break
 					sleep 2
 				fi
 			done

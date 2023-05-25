@@ -286,9 +286,6 @@ sharedDataReset() {
 	rm -rf $dirbackup
 	dirPermissions
 }
-space2ascii() {
-	echo ${1// /\\040}
-}
 sshCommand() {
 	! ipOnline $1 && return
 	
@@ -349,6 +346,7 @@ volumeGet() {
 		valdb ) echo '{ "val": '$val', "db": '$db' }';;
 		* )     pushstream volume '{ "type": "'$1'", "val": '$val', "db": '$db' }';;
 	esac
+	[[ $val > 0 ]] && rm -rf $dirsystem/volumemute
 }
 volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 	killProcess vol
@@ -371,6 +369,7 @@ volumePush() {
 	rm $dirshm/pidvol
 }
 volumePushSet() {
+	rm -rf $dirsystem/volumemute
 	volumePush &> /dev/null &
 	echo $! > $dirshm/pidvol
 }
