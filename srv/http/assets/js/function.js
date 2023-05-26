@@ -499,7 +499,7 @@ function displayBottom() {
 function displayPlayback() {
 	$time.toggleClass( 'hide', ! D.time );                          // #time-knob hidden on load - set before get :hidden
 	var hidetime   = ! D.time || $( '#time-knob' ).is( ':hidden' ); // #time-knob hidden by css on small screen
-	var hidevolume = ! D.volume || D.volumenone
+	var hidevolume = ! D.volume || D.volumenone;
 	$volume.toggleClass( 'hide', hidevolume );
 	var $cover     = $( '#coverart-block' );
 	$cover.toggleClass( 'hide', ! D.cover );
@@ -518,7 +518,7 @@ function displayPlayback() {
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
 	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
-	$( '.volumeband' ).toggleClass( 'disabled', ! hidevolume );
+	$( '.volumeband' ).toggleClass( 'disabled', hidevolume );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
 	$( '#playback-row' ).css( 'align-items', D.buttons ? '' : 'center' );
