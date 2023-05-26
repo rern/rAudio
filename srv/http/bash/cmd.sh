@@ -198,6 +198,9 @@ albumignore )
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
+booklet )
+	[[ -e "$FILE" ]] && echo true
+	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit

@@ -514,8 +514,7 @@ $( '#album, #guide-album' ).on( 'click', function() {
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
 	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
 		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
-		fetch( urlbooklet )
-			.then( response => window.open( response.status === 200 ? urlbooklet : urllastfm, '_blank' ) );
+		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], exists => window.open( exists ? urlbooklet : urllastfm, '_blank' ) );
 	} else {
 		window.open( urllastfm, '_blank' );
 	}
