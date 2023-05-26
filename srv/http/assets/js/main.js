@@ -329,7 +329,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					, volume : $el.volume.prop( 'checked' )
 				}
 			}
-			if ( D.volumenone ) $el.volume.prop( 'disabled', true );
+			if ( D.volumenone ) $el.volume.prop( 'disabled', true ).prop( 'checked', false );
 			$el.bars.on( 'change', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.barsalways.prop( 'disabled', false );
