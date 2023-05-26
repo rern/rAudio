@@ -509,7 +509,14 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	
 } );
 $( '#album, #guide-album' ).on( 'click', function() {
-	if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
+	if ( localhost ) return
+	
+	var url = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
+	var xhr = new XMLHttpRequest();
+	xhr.open( 'HEAD', url, false )
+	xhr.send();
+	if ( xhr.status !== 200 ) url = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
+	window.open( url, '_blank' );
 } );
 $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
