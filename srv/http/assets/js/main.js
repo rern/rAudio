@@ -473,7 +473,7 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 	}
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
-	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
+	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
 } );
 $( '#settings' ).on( 'click', function() {
 	$( this ).addClass( 'hide' );
@@ -494,7 +494,7 @@ $( '#artist, #guide-bio' ).on( 'click', function() {
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
-		&& ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) )
+		&& ( ! S.stream || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
 			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
@@ -503,7 +503,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 		} else {
 			lyricsGet();
 		}
-	} else {
+	} else if ( S.Artist || S.Title ) {
 		infoTitle();
 	}
 	
