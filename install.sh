@@ -187,6 +187,13 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 installfinish
 #-------------------------------------------------------------------------------
 
+# 20230528
+if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
+	rm -f $dirshm/mixernone $dirsystem/mixertype-*
+	$dirsettings/player-conf.sh
+	echo "$info Re-enable again: Volume Control - None/0dB"
+fi
+
 # 20230511
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
 
