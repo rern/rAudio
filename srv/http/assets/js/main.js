@@ -511,12 +511,14 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 $( '#album, #guide-album' ).on( 'click', function() {
 	if ( localhost ) return
 	
-	var url = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
-	var xhr = new XMLHttpRequest();
-	xhr.open( 'HEAD', url, false )
-	xhr.send();
-	if ( xhr.status !== 200 ) url = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
-	window.open( url, '_blank' );
+	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
+	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
+		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
+		fetch( urlbooklet )
+			.then( response => window.open( response.status === 200 ? urlbooklet : urllastfm, '_blank' ) );
+	} else {
+		window.open( urllastfm, '_blank' );
+	}
 } );
 $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
