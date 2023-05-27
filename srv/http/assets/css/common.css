@@ -504,6 +504,7 @@ input[ type=checkbox ] {
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
 	cursor: pointer;
+	-webkit-user-select: none;
 	user-select: none;
 }
 #infoBox > .infobtn {
@@ -568,6 +569,7 @@ hr {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
+	-webkit-user-select: none;
 	user-select: none;
 }
 #infoOverlay i {
@@ -733,6 +735,7 @@ hr {
 	width: 40px;
 }
 .infomessage {
+	-webkit-user-select: text;
 	user-select: text;
 }
 .infomessage pre {

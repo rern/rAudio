@@ -234,6 +234,7 @@ i.map.disabled, .map.disabled i {
 #bar-bottom,
 #bar-top,
 #settings {
+	-webkit-user-select: none;
 	user-select: none;
 }
 /* ---------------------- bars ----------------------*/

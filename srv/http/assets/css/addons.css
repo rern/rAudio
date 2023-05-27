@@ -119,6 +119,7 @@ a:hover {
 }
 .infobtn.disabled {
 	pointer-events: auto;
+	-webkit-user-select: none;
 	user-select: none;
 }
 #list,

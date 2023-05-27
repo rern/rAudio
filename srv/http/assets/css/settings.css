@@ -33,6 +33,7 @@
 heading,
 .col-l,
 .entries li {
+	-webkit-user-select: none;
 	user-select: none;
 }
 #loader {
