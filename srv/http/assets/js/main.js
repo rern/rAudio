@@ -1282,8 +1282,10 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
+<div class="pllength">
 <a data-cmd="playnext" class="cmd"><i class="i-plus-circle"></i>Play next</a>
 <a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
+</div>
 </div>`;
 	info( {
 		  icon       : 'playlist'
@@ -1291,6 +1293,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, content    : content
 		, values     : 'addplay'
 		, beforeshow : () => {
+			$( '#infoContent .pllength' ).toggleClass( 'hide', ! S.pllength );
 			$( '#infoContent' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];

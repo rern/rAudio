@@ -242,7 +242,7 @@ data+='
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd && ! -s /etc/exports ]] && echo true )'
+, "shareddata"        : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
