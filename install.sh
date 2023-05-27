@@ -99,21 +99,23 @@ backlight='$backlight
 	rm -f $file
 fi
 
-file=$dirsystem/localbrowser.conf
-if ! systemctl -q is-enabled localbrowser; then
-	rm -f $file
-elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
-	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
-	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
-	. $file
-	conf="\
+if [[ ! -e /boot/kernel.img ]]; then
+	file=$dirsystem/localbrowser.conf
+	if ! systemctl -q is-enabled localbrowser; then
+		rm -f $file
+	elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
+		[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
+		grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
+		. $file
+		conf="\
 rotate=$rotate
 zoom=$zoom
 screenoff=$screenoff
 onwhileplay=$onwhileplay
 hdmi=$hdmi
 cursor=$( [[ $cursor == yes ]] && echo true )"
-	echo "$conf" > $file
+		echo "$conf" > $file
+	fi
 fi
 
 systemctl is-enabled powerbutton && touch $dirsystem/powerbutton
