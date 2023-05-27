@@ -5,6 +5,14 @@ alias=r1
 # restore 20230521
 #. /srv/http/bash/settings/addons.sh
 
+# 20230527
+if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
+	pkg='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
+	packman -R --noconfirm $pkg
+	rm -rf /lib/python3.10
+	packman -Sy --noconfirm $pkg
+fi
+
 # 20230521
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
