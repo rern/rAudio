@@ -91,7 +91,7 @@ if [[ $ifconfiglan ]]; then
 	fi
 fi
 
-packageActive bluetooth hostapd rotaryencoder smb
+packageActive bluetooth hostapd nfs-server rotaryencoder smb
 
 # sd, usb and nas
 if [[ ! -e $filesharedip ]]; then
@@ -231,7 +231,7 @@ data+='
 , "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
-, "nfsserver"         : '$( [[ -s /etc/exports ]] && echo true )'
+, "nfsserver"         : '$nfsserver'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
 , "powerbutton"       : '$( exists $dirsystem/powerbutton )'
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
