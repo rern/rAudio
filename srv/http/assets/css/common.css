@@ -489,6 +489,7 @@ input[ type=checkbox ] {
 	display: inline-block;
 	margin: 0 5px;
 	width: fit-content;
+	width: -moz-fit-content;
 	min-width: 70px;
 	padding: 0 10px;
 	height: 34px !important;
