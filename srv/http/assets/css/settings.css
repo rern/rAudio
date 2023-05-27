@@ -34,7 +34,6 @@ heading,
 .col-l,
 .entries li {
 	user-select: none;
-	-webkit-user-select: none;
 }
 #loader {
 	background: #000000;
