@@ -47,7 +47,7 @@ var default_v      = {
 		  ON       : 5
 		, SW       : 5
 		, LED      : 40
-		, RESERVED : 5
+		, RESERVED : 29
 	}
 	, relays       : {
 		  ON0   : 11
@@ -1022,9 +1022,11 @@ function infoPowerbutton() {
 		, values       : S.powerbuttonconf || default_v.powerbutton
 		, checkchanged : S.powerbutton
 		, beforeshow   : () => {
-			$( '#infoContent .reserved' ).toggleClass( 'hide', S.powerbuttonconf.ON == 5 );
-			$( '#infoContent select' ).eq( 0 ).on( 'change', function() {
-				$( '#infoContent .reserved' ).toggleClass( 'hide', $( this ).val() == 5 );
+			var $sw       = $( '#infoContent select' ).eq( 0 );
+			var $reserved = $( '#infoContent .reserved' );
+			$reserved.toggleClass( 'hide', $sw.val() == 5 );
+			$sw.on( 'change', function() {
+				$reserved.toggleClass( 'hide', $( this ).val() == 5 );
 			} );
 		}
 		, cancel       : switchCancel
