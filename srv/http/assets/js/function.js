@@ -1496,7 +1496,6 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
-	$( '#'+ prefix +'-snapclient' ).toggleClass( 'hide', ! S.snapclient );
 	if ( ! S.stream && S.player === 'mpd' ) {
 		if ( $( '#button-time' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', S.random );

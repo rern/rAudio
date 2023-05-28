@@ -246,7 +246,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					}
 				} );
 			}
-			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), -1 );
+			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
