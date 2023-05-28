@@ -387,13 +387,6 @@ snapserver )
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
 	$dirsettings/player-conf.sh
-	if [[ $ON ]]; then # must initiate play
-		$dirbash/cmd.sh volume
-		mpc -q play
-		sleep 1
-		mpc -q stop
-		$dirbash/cmd.sh volume
-	fi
 	pushRefresh
 	;;
 spotifykey )

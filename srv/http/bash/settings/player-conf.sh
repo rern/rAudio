@@ -15,6 +15,13 @@ usbdac=$1
 . $dirsettings/player-asound.sh
 
 pushData() {
+	if [[ -e $dirmpdconf/snapserver.conf ]]; then
+		$dirbash/cmd.sh volume
+		mpc -q play
+		sleep 1
+		mpc -q stop
+		$dirbash/cmd.sh volume
+	fi
 	$dirbash/status-push.sh
 	$dirsettings/player-data.sh pushrefresh
 	[[ $usbdac ]] && pushstream refresh '{ "page": "system", "audiocards": '$( aplay -l | grep ^card | grep -c -v Loopback )' }'
