@@ -658,10 +658,12 @@ playerstart )
 		spotify )   service=spotifyd;;
 		upnp )      service=upmpdcli;;
 	esac
-	for pid in $( pgrep $service ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
 	pushstream player '{ "player": "'$player'", "active": true }'
 	;;
 playerstop )
