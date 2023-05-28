@@ -206,7 +206,7 @@ status+='
 , "song"      : '$song'
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
-if (( $pllength  == 0 )); then
+if [[ $pllength  == 0 && ! $snapclient ]]; then
 	ip=$( ipAddress )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
