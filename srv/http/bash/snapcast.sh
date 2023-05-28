@@ -30,6 +30,8 @@ if [[ $1 == start ]]; then
 	fi
 elif [[ $1 == stop ]]; then
 	systemctl stop snapclient
+	$dirbash/cmd.sh playerstop
+	$dirbash/status-push.sh
 	serverip=$( < $dirshm/serverip )
 	clientip=$( ipAddress )
 	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
