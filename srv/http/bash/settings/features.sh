@@ -383,8 +383,10 @@ snapserver )
 		fi
 		
 		ln -s $dirmpdconf/{conf/,}snapserver.conf
+		serviceRestartEnable
 	else
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
+		systemctl disable --now snapserver
 	fi
 	$dirsettings/player-conf.sh
 	pushRefresh
