@@ -5,7 +5,17 @@ alias=r1
 # restore 20230521
 #. /srv/http/bash/settings/addons.sh
 
-# 20230527
+# 20230528
+file=$dirmpdconf/conf/snapserver.conf
+if grep -q port $file; then
+	echo 'audio_output {
+	name    "SnapServer"
+	type    "fifo"
+	path    "/tmp/snapfifo"
+	format  "48000:16:2"
+}' > $file
+fi
+
 if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
 	pkg='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
 	pacman -R --noconfirm $pkg
