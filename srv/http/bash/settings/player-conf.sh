@@ -15,7 +15,7 @@ usbdac=$1
 . $dirsettings/player-asound.sh
 
 pushData() {
-	if [[ -e $dirmpdconf/snapserver.conf ]]; then
+	if [[ -e $dirmpdconf/snapserver.conf ]] && ! statePlay; then
 		$dirbash/cmd.sh volume
 		mpc -q play
 		sleep 1
