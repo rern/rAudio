@@ -116,8 +116,8 @@ foreach( [ 'album', 'albumartist', 'artist', 'composer', 'conductor', 'genre', '
 }
 
 $menu = '<div id="contextmenu">'.$menu.'</div>';
-$ids = [ 'random',   'repeat',     'single',    'repeat1',   'consume', 'librandom', 'mute'
-	   , 'btsender', 'snapclient', 'libupdate', 'dabupdate', 'addons',  'relays',    'stoptimer' ];
+$ids = [ 'random',   'repeat',    'single',    'repeat1', 'consume', 'librandom', 'mute'
+	   , 'btsender', 'libupdate', 'dabupdate', 'addons',  'relays',  'stoptimer' ];
 $modeicon = '';
 foreach( $ids as $id ) {
 	$modeicon.= i( 'mi-'.$id, $id.' hide' );
