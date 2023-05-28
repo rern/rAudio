@@ -250,14 +250,6 @@ function psOption( data ) {
 		return
 	}
 	
-	/*if ( 'snapclient' in data ) {
-		S.snapclient = data.snapclient;
-		//$( '#mi-snapclient' ).toggleClass( 'hide', ! S.snapclient );
-		$( '#snapclient' ).toggleClass( 'active', ! S.snapclient );
-		bannerHide();
-		return
-	}*/
-	
 	var option = Object.keys( data )[ 0 ];
 	S[ option ] = Object.values( data )[ 0 ];
 	setButtonOptions();
