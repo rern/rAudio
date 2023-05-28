@@ -386,6 +386,7 @@ snapserver )
 	else
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
+	$dirsettings/player-conf.sh
 	pushRefresh
 	;;
 spotifykey )
