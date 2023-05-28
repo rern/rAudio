@@ -7,7 +7,7 @@ alias=r1
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
-if grep -q port $file; then
+if [[ -e $file ]] && grep -q port $file; then
 	echo 'audio_output {
 	name    "SnapServer"
 	type    "fifo"
