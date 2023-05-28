@@ -5,6 +5,24 @@ alias=r1
 # restore 20230521
 #. /srv/http/bash/settings/addons.sh
 
+# 20230528
+file=$dirmpdconf/conf/snapserver.conf
+if grep -q port $file; then
+	echo 'audio_output {
+	name    "SnapServer"
+	type    "fifo"
+	path    "/tmp/snapfifo"
+	format  "48000:16:2"
+}' > $file
+fi
+
+if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
+	pkg='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
+	pacman -R --noconfirm $pkg
+	rm -rf /lib/python3.10
+	pacman -Sy --noconfirm $pkg
+fi
+
 # 20230521
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
@@ -91,24 +109,26 @@ backlight='$backlight
 	rm -f $file
 fi
 
-file=$dirsystem/localbrowser.conf
-if ! systemctl -q is-enabled localbrowser; then
-	rm -f $file
-elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
-	[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
-	grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
-	. $file
-	conf="\
+if [[ ! -e /boot/kernel.img ]]; then
+	file=$dirsystem/localbrowser.conf
+	if ! systemctl -q is-enabled localbrowser; then
+		rm -f $file
+	elif [[ -e $file && $( sed -n 6p $file ) != cursor* ]]; then
+		[[ -e $dirsystem/onwhileplay ]] && onwhileplay=true && rm $dirsystem/onwhileplay
+		grep -q hdmi_force_hotplug=1 /boot/config.txt && hdmi=true
+		. $file
+		conf="\
 rotate=$rotate
 zoom=$zoom
 screenoff=$screenoff
 onwhileplay=$onwhileplay
 hdmi=$hdmi
 cursor=$( [[ $cursor == yes ]] && echo true )"
-	echo "$conf" > $file
+		echo "$conf" > $file
+	fi
 fi
 
-systemctl is-enabled powerbutton && touch $dirsystem/powerbutton
+systemctl -q is-enabled powerbutton && touch $dirsystem/powerbutton
 
 file=$dirsystem/relays.conf
 if [[ ! -e ${file/.*} ]]; then
@@ -186,6 +206,13 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 
 installfinish
 #-------------------------------------------------------------------------------
+
+# 20230528
+if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
+	rm -f $dirshm/mixernone $dirsystem/mixertype-*
+	$dirsettings/player-conf.sh
+	echo "$info Re-enable again: Volume Control - None/0dB"
+fi
 
 # 20230511
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo

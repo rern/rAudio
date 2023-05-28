@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1684895381' );
+	src         : url( '/assets/fonts/rern.woff2?v=1685082452' );
 }
 @font-face {
 	font-family : Lato;
@@ -503,8 +503,8 @@ input[ type=checkbox ] {
 	background-color: var( --cg );
 	box-shadow: var( --shadow-btn );
 	cursor: pointer;
-	user-select: none;
 	-webkit-user-select: none;
+	user-select: none;
 }
 #infoBox > .infobtn {
 	margin-top: 10px;
@@ -568,8 +568,8 @@ hr {
 	scrollbar-width: none;
 	-ms-overflow-style: none;
 	-webkit-overflow-scrolling: touch;
-	user-select: none;
 	-webkit-user-select: none;
+	user-select: none;
 }
 #infoOverlay i {
 	vertical-align: -2px;
@@ -734,8 +734,8 @@ hr {
 	width: 40px;
 }
 .infomessage {
-	user-select: text;
 	-webkit-user-select: text;
+	user-select: text;
 }
 .infomessage pre {
 	font-size: 16px;
@@ -747,7 +747,6 @@ hr {
 .infomessage,
 .infofooter {
 	width: fit-content;
-	width: -moz-fit-content;
 	max-width: 100%;
 	max-height: 800px;
 	margin: 0 auto 5px;

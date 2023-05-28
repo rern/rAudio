@@ -3,7 +3,7 @@
 . /srv/http/bash/common.sh
 
 [[ $1 == reboot ]] && reboot=1
-if [[ -s /etc/exports ]]; then # server rAudio
+if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )
 	ipclients=$( grep -v $ipserver $filesharedip )
 	if [[ $ipclients ]]; then

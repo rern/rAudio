@@ -91,7 +91,7 @@ if [[ $ifconfiglan ]]; then
 	fi
 fi
 
-packageActive bluetooth hostapd rotaryencoder smb
+packageActive bluetooth hostapd nfs-server rotaryencoder smb
 
 # sd, usb and nas
 if [[ ! -e $filesharedip ]]; then
@@ -227,11 +227,11 @@ data+='
 , "lcdcharconf"       : '$( conf2json lcdcharconf.py )'
 , "lcdcharreboot"     : '$lcdcharreboot'
 , "list"              : '$list'
-, "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//(.*).mirror.*|\1|' )'"
+, "mirror"            : "'$( grep -m1 ^Server /etc/pacman.d/mirrorlist | sed -E 's|.*//\|\.*mirror.*||g' )'"
 , "mpdoled"           : '$( exists $dirsystem/mpdoled )'
 , "mpdoledconf"       : '$mpdoledconf'
 , "mpdoledreboot"     : '$mpdoledreboot'
-, "nfsserver"         : '$( [[ -s /etc/exports ]] && echo true )'
+, "nfsserver"         : '$nfsserver'
 , "ntp"               : "'$( getVar NTP /etc/systemd/timesyncd.conf )'"
 , "powerbutton"       : '$( exists $dirsystem/powerbutton )'
 , "powerbuttonconf"   : '$( conf2json powerbutton.conf )'
@@ -242,7 +242,7 @@ data+='
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd && ! -s /etc/exports ]] && echo true )'
+, "shareddata"        : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"

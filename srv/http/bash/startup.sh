@@ -113,8 +113,8 @@ if [[ $connected  ]]; then
 			done
 		done
 	fi
-	if [[ -e $filesharedip ]]; then
-		if [[ -s /etc/exports && -s $filesharedip ]]; then
+	if systemctl -q is-active nfs-server; then
+		if [[ -s $filesharedip ]]; then
 			sharedip=$( < $filesharedip )
 			for ip in $sharedip; do
 				notify $ip networks 'Server rAudio' Online

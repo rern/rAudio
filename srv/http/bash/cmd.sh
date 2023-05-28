@@ -198,6 +198,9 @@ albumignore )
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
+booklet )
+	[[ -e "$FILE" ]] && echo true
+	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
 	[[ -e $bkfile ]] && echo -1 && exit
@@ -655,10 +658,12 @@ playerstart )
 		spotify )   service=spotifyd;;
 		upnp )      service=upmpdcli;;
 	esac
-	for pid in $( pgrep $service ); do
-		ionice -c 0 -n 0 -p $pid &> /dev/null 
-		renice -n -19 -p $pid &> /dev/null
-	done
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
 	pushstream player '{ "player": "'$player'", "active": true }'
 	;;
 playerstop )
@@ -903,7 +908,10 @@ wrdirdelete )
 	pushstreamRadioList
 	;;
 wrdirnew )
-	[[ $DIR ]] && mkdir -p "$dirwebradio/$DIR/$SUB" || mkdir -p "$dirwebradio/$SUB"
+	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
+	mkdir -p "$path"
+	chown http:http "$path"
+	chmod 755 "$path"
 	pushstreamRadioList
 	;;
 wrdirrename )

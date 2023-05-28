@@ -17,7 +17,7 @@ $dirbash/cmd.sh volume # mute
 $dirbash/cmd.sh volume # unmute
 
 if [[ $poweroff ]]; then
-	$dirbash/cmd.sh poweroff
+	$dirbash/power.sh
 elif [[ -e $dirshm/relayson ]]; then
 	$dirbash/relays.sh off
 fi

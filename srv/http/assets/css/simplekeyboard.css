@@ -9,8 +9,6 @@
 	background: var( --cga ) !important;
 	box-shadow: var( --shadow-bar );
 	-webkit-touch-callout: none; /* iOS Safari */
-	user-select: none;
-	-webkit-user-select: none;   /* Safari */
 }
 .simple-keyboard {
 /*	max-width: 560px;*/

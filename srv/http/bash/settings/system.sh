@@ -239,7 +239,7 @@ mirrorlist )
 		fi
 	fi
 	readarray -t lines <<< $( sed -E -n '/^### Mirror/,$ {/^\s*$|^### Mirror/ d; s|.*//(.*)\.mirror.*|\1|; p}' $file )
-	codelist='"":"Auto"'
+	codelist='"Auto":""'
 	for line in "${lines[@]}"; do
 		if [[ ${line:0:4} == '### ' ]];then
 			city=

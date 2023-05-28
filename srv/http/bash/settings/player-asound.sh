@@ -83,6 +83,7 @@ ctl.equal {
 fi
 
 echo "$asound" > /etc/asound.conf
+alsactl store &> /dev/null
 alsactl nrestore &> /dev/null # notify changes to running daemons
 
 # ----------------------------------------------------------------------------

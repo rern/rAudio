@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # shareddata:
-#    [[ -s /etc/exports ]]                 = server rAudio
-#    [[ -L $dirmpd && ! -s /etc/exports ]] = clients
+#    $nfsserver                            = server rAudio
+#    [[ -L $dirmpd && ! $nfsserver ]]      = clients
 #    grep -q -m1 :/mnt/MPD/NAS /etc/fstab  = clients with server rAudio
 #    [[ -e $dirdata/sharedip ]]            = server + clients
 
@@ -36,7 +36,7 @@ data+='
 , "scrobble"         : '$( exists $dirsystem/scrobble )'
 , "scrobbleconf"     : '$( conf2json scrobble.conf )'
 , "scrobblekey"      : '$( exists $dirsystem/scrobblekey )'
-, "shareddata"       : '$( [[ -L $dirmpd && ! -s /etc/exports ]] && echo true )'
+, "shareddata"       : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
 , "state"            : "'$( getVar state $dirshm/status )'"
 , "stoptimer"        : '$( exists $dirshm/stoptimer )'
 , "stoptimerconf"    : '$( conf2json stoptimer.conf )

@@ -74,6 +74,9 @@ $sharedip"
 		PKG=snapcast
 		fileconf=/etc/default/snapclient
 		;;
+	snapserver )
+		PKG=snapcast
+		;;
 	upmpdcli )
 		skip='not creating entry for'
 		fileconf=/etc/upmpdcli.conf

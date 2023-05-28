@@ -246,7 +246,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 					}
 				} );
 			}
-			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ), -1 );
+			banner( 'snapcast blink', 'Snapcast', ( active ? 'Disconnect ...' : 'Connect ...' ) );
 			break;
 		case 'relays':
 			$( '#stop' ).trigger( 'click' );
@@ -329,7 +329,7 @@ $( '#displayplayback' ).on( 'click', function() {
 					, volume : $el.volume.prop( 'checked' )
 				}
 			}
-			if ( D.volumenone ) $el.volume.prop( 'disabled', true );
+			if ( D.volumenone ) $el.volume.prop( 'disabled', true ).prop( 'checked', false );
 			$el.bars.on( 'change', function() {
 				if ( $( this ).prop( 'checked' ) ) {
 					$el.barsalways.prop( 'disabled', false );
@@ -473,7 +473,7 @@ $( '#playlist, #button-playlist' ).on( 'click', function() {
 	}
 } );
 $( '#bar-top' ).on( 'click', function( e ) {
-	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide' );
+	if ( e.target.id !== 'button-settings' ) $( '#settings' ).addClass( 'hide ' );
 } );
 $( '#settings' ).on( 'click', function() {
 	$( this ).addClass( 'hide' );
@@ -494,7 +494,7 @@ $( '#artist, #guide-bio' ).on( 'click', function() {
 } );
 $( '#title, #guide-lyrics' ).on( 'click', function() {
 	if ( S.lyrics
-		&& ( ! S.stream || [ 'radiofrance', 'radioparadise' ].includes( S.icon ) )
+		&& ( ! S.stream || ( S.state === 'play' && [ 'radiofrance', 'radioparadise' ].includes( S.icon ) ) )
 	) {
 		if ( S.Title.includes( '(' ) ) {
 			bash( [ 'titlewithparen', S.Title, 'CMD TITLE' ], function( paren ) {
@@ -503,13 +503,21 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 		} else {
 			lyricsGet();
 		}
-	} else {
+	} else if ( S.Artist || S.Title ) {
 		infoTitle();
 	}
 	
 } );
 $( '#album, #guide-album' ).on( 'click', function() {
-	if ( ! localhost ) window.open( 'https://www.last.fm/music/'+ $( '#artist' ).text() +'/'+ $( '#album' ).text(), '_blank' );
+	if ( localhost ) return
+	
+	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
+	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
+		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
+		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], exists => window.open( exists ? urlbooklet : urllastfm, '_blank' ) );
+	} else {
+		window.open( urllastfm, '_blank' );
+	}
 } );
 $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
@@ -1274,8 +1282,10 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 </div>
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
+<div class="pllength">
 <a data-cmd="playnext" class="cmd"><i class="i-plus-circle"></i>Play next</a>
 <a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
+</div>
 </div>`;
 	info( {
 		  icon       : 'playlist'
@@ -1283,6 +1293,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		, content    : content
 		, values     : 'addplay'
 		, beforeshow : () => {
+			$( '#infoContent .pllength' ).toggleClass( 'hide', ! S.pllength );
 			$( '#infoContent' ).on( 'click', '.cmd', function() {
 				V.list.li = $( '.infomessage' );
 				V.mpccmd  = V.action === 'playnext' ? [ 'mpcaddplaynext', V.list.path ] : [ 'mpcadd', V.list.path ];

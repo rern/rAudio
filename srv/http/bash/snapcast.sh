@@ -24,18 +24,18 @@ if [[ $1 == start ]]; then
 		clientip=$( ipAddress )
 		sshCommand $serverip $dirbash/snapcast.sh $clientip
 		touch $dirshm/snapclient
-		pushstream option '{ "snapclient": true }'
 	else
 		systemctl stop snapclient
 		echo -1
 	fi
 elif [[ $1 == stop ]]; then
 	systemctl stop snapclient
+	$dirbash/cmd.sh playerstop
+	$dirbash/status-push.sh
 	serverip=$( < $dirshm/serverip )
 	clientip=$( ipAddress )
 	sshCommand $serverip $dirbash/snapcast.sh remove $clientip
 	rm $dirshm/{serverip,snapclient}
-	pushstream option '{ "snapclient": false }'
 elif [[ $1 == remove ]]; then # sshpass remove clientip from disconnected client
 	clientip=$2
 	sed -i "/$clientip/ d" $fileclientip

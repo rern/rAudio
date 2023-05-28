@@ -206,7 +206,7 @@ status+='
 , "song"      : '$song'
 , "state"     : "'$state'"
 , "timestamp" : '$( date +%s%3N )
-if (( $pllength  == 0 )); then
+if [[ $pllength  == 0 && ! $snapclient ]]; then
 	ip=$( ipAddress )
 	[[ $ip ]] && hostname=$( avahi-resolve -a4 $ip | awk '{print $NF}' )
 ########
@@ -355,7 +355,8 @@ $radiosampling" > $dirshm/radio
 , "Title"        : "'$Title'"
 , "webradio"     : true'
 	if [[ $id ]]; then
-		sampling="$(( song + 1 ))/$pllength • $radiosampling"
+		[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
+		sampling="$pos$radiosampling"
 		elapsed=$( mpcElapsed )
 ########
 		status+='
@@ -488,8 +489,8 @@ else
 fi
 
 ########
-pos="$(( song + 1 ))/$pllength"
-sampling="$pos • $sampling"
+[[ ! $snapclient ]] && pos="$(( song + 1 ))/$pllength • "
+sampling="$pos$sampling"
 status+='
 , "ext"      : "'$ext'"
 , "coverart" : "'$coverart'"

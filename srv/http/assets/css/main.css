@@ -562,7 +562,6 @@ i.map.disabled, .map.disabled i {
 #divcover {
 	margin: 0 auto;
 	width: fit-content;
-	width: -moz-fit-content;
 	min-width: 230px;
 }
 .cover {
