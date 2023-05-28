@@ -18,7 +18,7 @@ $id_data = [
 	, 'shairport-sync' => [ 'name' => 'AirPlay',          'sub' => 'shairport-sync', 'setting' => false,    'status' => true ]
 	, 'smb'            => [ 'name' => 'File Sharing',     'sub' => 'samba',                                 'status' => true ]
 	, 'snapclient'     => [ 'name' => 'SnapClient',       'sub' => 'snapclient',                            'status' => true ]
-	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'MPD snapcast',   'setting' => false ]
+	, 'snapserver'     => [ 'name' => 'SnapServer',       'sub' => 'snapserver',     'setting' => false,    'status' => true ]
 	, 'spotifyd'       => [ 'name' => 'Spotify',          'sub' => 'spotifyd',                              'status' => true ]
 	, 'stoptimer'      => [ 'name' => 'Stop Timer' ]
 	, 'upmpdcli'       => [ 'name' => 'UPnP',             'sub' => 'upmpdcli',                              'status' => true ]
