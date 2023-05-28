@@ -387,6 +387,9 @@ snapserver )
 		rm -f $dirmpdconf/snapserver.conf $dirsystem/snapclientserver
 	fi
 	$dirsettings/player-conf.sh
+	mpc -q play
+	sleep 1
+	mpc -q stop
 	pushRefresh
 	;;
 spotifykey )
