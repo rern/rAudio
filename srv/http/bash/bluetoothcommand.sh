@@ -19,17 +19,17 @@ disconnectRemove() {
 	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
-	[[ $1 ]] && msg=$1 || msg=Disconnected
 	if [[ $type == Source ]]; then
 		icon=btsender
 		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
 		pushstream btreceiver false
-		$dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION'
+		$dirbash/cmd.sh mpcplayback
 		$dirsettings/player-conf.sh
 	fi
 #-----
+	[[ $action == remove ]] && msg=Removed || msg=Disconnected
 	notify $icon "$name" $msg
 	$dirsettings/features-data.sh pushrefresh
 	$dirsettings/networks-data.sh pushbt
@@ -178,6 +178,6 @@ elif [[ $action == disconnect || $action == remove ]]; then
 			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 			[[ -e /var/lib/bluetooth/$controller/$mac ]] && sleep 1 || break
 		done
-		disconnectRemove Removed
+		disconnectRemove
 	fi
 fi
