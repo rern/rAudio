@@ -98,7 +98,7 @@ function psAirplay( data ) {
 	if ( V.playback ) renderPlayback();
 }
 function psBtReceiver( connected ) {
-	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
+	var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
 function psBookmark() {
