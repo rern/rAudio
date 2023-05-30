@@ -515,8 +515,8 @@ $( '#album, #guide-album' ).on( 'click', function() {
 	if ( [ 'NAS', 'SD/', 'USB' ].includes( S.file.slice( 0, 3 ) ) ) {
 		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
 		var newwindow  = window.open( '', '_blank' );  // fix: popup blocked on mobile
-		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], exists => {
-			newwindow.location.href = exists ? urlbooklet : urllastfm;
+		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], url => {
+			newwindow.location.href = url || urllastfm;
 		} );
 	} else {
 		window.open( urllastfm, '_blank' );
