@@ -97,9 +97,19 @@ function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
 }
-function psBtReceiver( connected ) {
-	var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
-	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
+function psBtReceiver( data ) {
+	var icon = 'bluetooth';
+	if ( data.msg.slice( -3 ) === '...' ) {
+		icon += ' blink';
+		var delay = -1
+	} else {
+		var delay = data.delay || 3000;
+	}
+	banner( icon, data.name, data.msg, delay );
+	if ( 'connected' in data ) {
+		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
+		$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! data.connected );
+	}
 }
 function psBookmark() {
 	V.libraryhtml = '';
