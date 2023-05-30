@@ -28,6 +28,7 @@ if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-p
 	pacman -Sy --noconfirm $pkg
 fi
 
+# 20230522
 if crontab -l | grep -q addonsupdates; then
 	echo "\
 00 01 * * * $dirsettings/addons-data.sh
