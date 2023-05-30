@@ -874,7 +874,7 @@ var contentmount = {
 	<td><input type="text">&ensp;*</td>
 </tr>
 <tr><td id="sharelabel">Share</td>
-	<td><input id="share" type="text" placeholder="Share name/path on server">&ensp;*</td>
+	<td><input id="share" type="text">&ensp;*</td>
 </tr>`
 	, cifs       : `\
 <tr><td>User</td>
@@ -917,6 +917,7 @@ function infoMount( nfs ) {
 		, beforeshow : () => {
 			var $mountpoint = $( '#mountpoint' );
 			var $share      = $( '#share' );
+			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
@@ -925,11 +926,9 @@ function infoMount( nfs ) {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
+			var slash = 'nfs' ? /\\/g : /^[\/\\]/;
 			$share.on( 'keyup paste', function() {
-				setTimeout( () => {
-					var slash = $( '#infoContent input:radio:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
-					$share.val( $share.val().replace( slash, '' ) );
-				}, 0 );
+				setTimeout( () => $share.val( $share.val().replace( slash, '' ) ), 0 );
 			} );
 		}
 		, cancel     : switchCancel
