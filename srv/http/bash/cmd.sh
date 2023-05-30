@@ -199,7 +199,7 @@ albumignore )
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
 booklet )
-	[[ -e "$FILE" ]] && echo true
+	[[ -e "$FILE" ]] && echo $FILE
 	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"
