@@ -7,6 +7,9 @@ alias=r1
 # 20230521
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
+# 20230601
+[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
+
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
 if grep -q port $file; then
