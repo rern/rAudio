@@ -4,6 +4,8 @@ alias=r1
 
 # restore 20230521
 #. /srv/http/bash/settings/addons.sh
+# 20230521
+[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
@@ -22,9 +24,6 @@ if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-p
 	rm -rf /lib/python3.10
 	pacman -Sy --noconfirm $pkg
 fi
-
-# 20230521
-[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 if crontab -l | grep -q addonsupdates; then
 	echo "\
