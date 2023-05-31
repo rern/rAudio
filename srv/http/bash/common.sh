@@ -192,13 +192,15 @@ mpcElapsed() {
 }
 notify() { # icon title message delayms
 	local blink delay
-	[[ $1 == '-blink' ]] && blink=' blink' && shift
-	[[ $1 == *.*.*.* ]] && ip=$1 && shift
-	if [[ $4 ]]; then
-		delay=$4
-	else
-		[[ $blink ]] && delay=-1 || delay=3000
+	blink=
+	delay=3000
+	if [[ $1 == '-blink' ]]; then
+		blink=' blink'
+		delay=-1
+		shift
 	fi
+	[[ $1 == *.*.*.* ]] && ip=$1 && shift
+	[[ $4 ]] && delay=$4
 	icon=$1$blink
 	title=$( stringEscape $2 )
 	message=$( stringEscape $3 )

@@ -19,20 +19,20 @@ disconnectRemove() {
 	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
+	$dirbash/cmd.sh playerstop
 	if [[ $type == Source ]]; then
 		icon=btsender
-		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
-		notify $icon "$name" "${action^} ..."
-		$dirbash/cmd.sh playerstop
+		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
-#-----
+	refreshFeaturesNetworks
+}
+refreshFeaturesNetworks() {
 	$dirsettings/features-data.sh pushrefresh
+	sleep 1
 	$dirsettings/networks-data.sh pushbt
-	[[ $action == remove ]] && msg=Removed || msg=Disconnected
-	notify $icon "$name" $msg
 }
 #-------------------------------------------------------------------------------------------
 # from bluetooth.rules: disconnect from paired device
@@ -85,7 +85,7 @@ if [[ $udev && $action == connect ]]; then
 		
 	fi
 #-----
-	notify $icon "$name" "$msg"
+	notify -blink $icon "$name" "$msg"
 	if (( $( bluetoothctl info $mac | grep -cE 'Paired: yes|Trusted: yes' ) == 2 )); then
 		action=connect
 	else
@@ -116,7 +116,7 @@ if [[ $action == connect || $action == pair ]]; then
 		notify $icon "$name" 'Paired successfully.'
 		sleep 3
 #-----
-		notify $icon "$name" 'Connect ...'
+		notify -blink $icon "$name" 'Connect ...'
 	fi
 	bluetoothctl info $mac | grep -q -m1 'Connected: no' && bluetoothctl connect $mac
 	for i in {1..5}; do
@@ -127,7 +127,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
-		notify $icon "$name" Ready
+		refreshFeaturesNetworks
 		exit
 		
 	fi
@@ -152,15 +152,13 @@ if [[ $action == connect || $action == pair ]]; then
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
-		notify $icon "$name" 'Connect ...'
+		notify -blink $icon "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
 #-----
-	notify $icon "$name" Ready
-	$dirsettings/features-data.sh pushrefresh
-	sleep 1
-	$dirsettings/networks-data.sh pushbt
+	msg=Ready
+	refreshFeaturesNetworks
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then
