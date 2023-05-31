@@ -926,10 +926,6 @@ function infoMount( nfs ) {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
-			var slash = 'nfs' ? /\\/g : /^[\/\\]/;
-			$share.on( 'keyup paste', function() {
-				setTimeout( () => $share.val( $share.val().replace( slash, '' ) ), 0 );
-			} );
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
