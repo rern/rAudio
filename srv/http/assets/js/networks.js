@@ -175,17 +175,8 @@ $( '.forget' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
 		var name = V.li.data( 'name' );
 		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-		info( {
-			  icon    : icon
-			, title   : name
-			, message : S.listeth ? '' : iconwarning +'No network connections after this.'
-			, oklabel : ico( 'minus-circle' ) +'Forget'
-			, okcolor : red
-			, ok      : () => {
-				notify( icon, name, 'Forget ...' );
-				bluetoothCommand( 'remove', V.li.data( 'mac' ) );
-			}
-		} );
+		notify( icon, name, 'Forget ...' );
+		bluetoothCommand( 'remove', V.li.data( 'mac' ) );
 		return
 	}
 	
