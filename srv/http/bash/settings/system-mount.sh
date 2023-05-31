@@ -19,9 +19,9 @@ fi
 umount -ql "$mountpoint"
 mkdir -p "$mountpoint"
 chown mpd:audio "$mountpoint"
-[[ ${SHARE:0:1} == / ]] && SHARE=${SHARE:1}
+share=$( sed 's|^[\\/]*||; s|\\|/|g' <<< $SHARE )
 if [[ $PROTOCOL == cifs ]]; then
-	source="//$IP/$SHARE"
+	source="//$IP/$share"
 	options=noauto
 	if [[ ! $USER ]]; then
 		options+=,username=guest
@@ -30,7 +30,7 @@ if [[ $PROTOCOL == cifs ]]; then
 	fi
 	options+=,uid=$( id -u mpd ),gid=$( id -g mpd ),iocharset=utf8
 else
-	source="$IP:/$SHARE"
+	source="$IP:/$share"
 	options=defaults,noauto,bg,soft,timeo=5
 fi
 [[ $OPTIONS ]] && options+=,$OPTIONS
