@@ -1000,6 +1000,26 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		V[ type ] = true;
 		loader();
 	}
+	function psNotify( data ) {
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		
+		banner( icon, title, message, delay );
+		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
+			pushstreamPower( message );
+		} else if ( ! page ) {
+			if ( message === 'Change track ...' ) { // audiocd
+				clearIntervalAll();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '#mode-latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
+	}
+
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {

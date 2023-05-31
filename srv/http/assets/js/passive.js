@@ -79,7 +79,7 @@ pushstream.onmessage = ( data, id, channel ) => {
 		case 'mpdplayer':     psMpdPlayer( data );      break;
 		case 'mpdradio':      psMpdRadio( data );       break;
 		case 'mpdupdate':     psMpdUpdate( data );      break;
-		case 'notify':        psNotify( data );         break;
+		case 'notify':        psNotify( data );         break; // in common.js
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
 		case 'playlist':      psPlaylist( data );       break;
@@ -186,6 +186,7 @@ function psMpdPlayer( data ) {
 		} else {
 			setPlaylistScroll();
 		}
+		setTimeout( bannerHide, 3000 );
 	}, 300 );
 }
 function psMpdRadio( data ) {
@@ -216,25 +217,8 @@ function psMpdUpdate( data ) {
 		S.updating_db = false;
 		S.updatingdab = false;
 		setButtonUpdating();
-		V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
+		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		banner( 'refresh-library', 'Library Update', 'Done' );
-	}
-}
-function psNotify( data ) {
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
-	
-	banner( icon, title, message, delay );
-	if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-		pushstreamPower( message );
-	} else if ( message === 'Change track ...' ) { // audiocd
-		clearIntervalAll();
-	} else if ( title === 'Latest' ) {
-		C.latest = 0;
-		$( '#mode-latest gr' ).empty();
-		if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 	}
 }
 function psOption( data ) {

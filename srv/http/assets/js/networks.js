@@ -41,7 +41,7 @@ $( '#listbtscan' ).on( 'click', 'li', function() {
 	var name = $( this ).data( 'name' );
 	var mac  = $( this ).data( 'mac' );
 	notify( 'bluetooth', name, 'Pair ...' );
-	bluetoothCommand( 'pair', mac );
+	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
 	var ssid    = $( this ).data( 'ssid' );
@@ -132,9 +132,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );
 	if ( V.listid === 'listbt' ) {
-		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( icon, V.li.data( 'name' ), 'Connect ...' );
-		bluetoothCommand( 'connect', V.li.data( 'mac' ) );
+		bluetoothCommand( 'Connect' );
 		return
 	}
 	
@@ -149,9 +147,7 @@ $( '.connect' ).on( 'click', function() {
 } );
 $( '.disconnect' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
-		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( icon, V.li.data( 'name' ), 'Disconnect ...' );
-		bluetoothCommand( 'disconnect', V.li.data( 'mac' ) );
+		bluetoothCommand( 'Disconnect' );
 		return
 	}
 	
@@ -173,10 +169,7 @@ $( '.edit' ).on( 'click', function() {
 } );
 $( '.forget' ).on( 'click', function() {
 	if ( V.listid === 'listbt' ) {
-		var name = V.li.data( 'name' );
-		var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
-		notify( icon, name, 'Forget ...' );
-		bluetoothCommand( 'remove', V.li.data( 'mac' ) );
+		bluetoothCommand( 'Remove' );
 		return
 	}
 	
@@ -200,8 +193,10 @@ $( '.info' ).on( 'click', function() {
 
 } );
 
-function bluetoothCommand( action, mac ) {
-	bash( [ 'bluetoothcommand.sh', action, mac ] ); // bluetoothcommand.sh action mac
+function bluetoothCommand( action ) {
+	var icon = V.li.find( 'i' ).hasClass( 'i-btsender' ) ? 'btsender' : 'bluetooth';
+	notify( icon, V.li.data( 'name' ), action +' ...', -1 );
+	bash( [ 'bluetoothcommand.sh', action.toLowerCase(), V.li.data( 'mac' ) ] );
 }
 function bluetoothInfo( mac ) {
 	bash( [ 'bluetoothinfo', mac, 'CMD MAC' ], data => {

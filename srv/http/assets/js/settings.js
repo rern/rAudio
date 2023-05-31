@@ -213,14 +213,6 @@ function psBluetooth( data ) { // from networks-data,sh
 	}
 	bannerHide();
 }
-function psNotify( data ) {
-	var icon     = data.icon;
-	var title    = data.title;
-	var message  = data.message;
-	var delay    = data.delay;
-	banner( icon, title, message, delay );
-	if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) pushstreamPower( message );
-}
 function psPlayer( data ) {
 	var player_id = {
 		  airplay   : 'shairport-sync'
