@@ -60,8 +60,8 @@ window.addEventListener( 'resize', () => { // resize / rotate
 	}, 0 );
 } );
 // pushstreamChannel() in common.js
-var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
-				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
+var channels = [ 'airplay', 'bookmark', 'coverart',  'display',   'equalizer', 'mpdplayer', 'mpdradio',      'mpdupdate', 'notify'
+			   , 'option',  'order',    'playlist',  'radiolist', 'relays',    'reload',    'savedplaylist', 'volume',    'webradio' ];
 if ( ! localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamDisconnect() {
@@ -73,7 +73,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
-		case 'btreceiver':    psBtReceiver( data );     break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
@@ -96,20 +95,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
-}
-function psBtReceiver( data ) {
-	var icon = 'bluetooth';
-	if ( data.msg.slice( -3 ) === '...' ) {
-		icon += ' blink';
-		var delay = -1
-	} else {
-		var delay = data.delay || 3000;
-	}
-	banner( icon, data.name, data.msg, delay );
-	if ( 'connected' in data ) {
-		var prefix = $time.is( ':visible' ) ? 'ti' : 'mi';
-		$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! data.connected );
-	}
 }
 function psBookmark() {
 	V.libraryhtml = '';
@@ -242,14 +227,14 @@ function psNotify( data ) {
 	var delay   = data.delay;
 	
 	banner( icon, title, message, delay );
-	if ( message === 'Change track ...' ) { // audiocd
+	if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
+		pushstreamPower( message );
+	} else if ( message === 'Change track ...' ) { // audiocd
 		clearIntervalAll();
 	} else if ( title === 'Latest' ) {
 		C.latest = 0;
 		$( '#mode-latest gr' ).empty();
 		if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-	} else if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-		pushstreamPower( message );
 	}
 }
 function psOption( data ) {

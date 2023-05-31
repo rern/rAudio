@@ -193,7 +193,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'wlan':      psWlan( data );      break;
 	}
 }
-function psBluetooth( data ) {
+function psBluetooth( data ) { // from networks-data,sh
 	if ( ! data ) {
 		if ( page === 'networks' ) {
 			S.listbt = data;
@@ -211,6 +211,7 @@ function psBluetooth( data ) {
 		S.listbt = data;
 		renderBluetooth();
 	}
+	bannerHide();
 }
 function psNotify( data ) {
 	var icon     = data.icon;
