@@ -1102,7 +1102,7 @@ function infoRestore( reset ) {
 		, ok          : reset ? () => {
 				notifyCommon( 'Reset to default ...' );
 				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
-				setTimeout( loader, 0 );
+				loader();
 			} : () => {
 				notifyCommon( 'Restore ...' );
 				var formdata = new FormData();
@@ -1117,7 +1117,7 @@ function infoRestore( reset ) {
 							infoWarning(  SW.icon,  SW.title, message );
 						}
 					} );
-				setTimeout( loader, 0 );
+				loader();
 			}
 	} );
 	$( '#restore' ).prop( 'checked', 0 );

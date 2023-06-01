@@ -995,11 +995,6 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		channels.forEach( channel => pushstream.addChannel( channel ) );
 		pushstream.connect();
 	}
-	function pushstreamPower( message ) {
-		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		V[ type ] = true;
-		loader();
-	}
 	function psNotify( data ) {
 		var icon    = data.icon;
 		var title   = data.title;
@@ -1008,7 +1003,9 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		
 		banner( icon, title, message, delay );
 		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-			pushstreamPower( message );
+			var type  = message.split( ' ' )[ 0 ].toLowerCase();
+			V[ type ] = true;
+			setTimeout( loader, 0 );
 		} else if ( ! page ) {
 			if ( message === 'Change track ...' ) { // audiocd
 				clearIntervalAll();

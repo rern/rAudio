@@ -10,6 +10,8 @@ SW             = {} // switch
 V              = {} // var global
 
 function bannerReset() {
+	if ( V.off || V.reboot ) return
+	
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	clearTimeout( I.timeoutbanner );
