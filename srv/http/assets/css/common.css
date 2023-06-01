@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1685082452' );
+	src         : url( '/assets/fonts/rern.woff2?v=1685410296' );
 }
 @font-face {
 	font-family : Lato;
@@ -578,9 +578,6 @@ hr {
 	height: 40px;
 	text-decoration: none;
 }
-#infoOverlay code {
-	color: var( --cw );
-}
 #infoBox {
 	position: relative;
 	top: 50vh;
@@ -895,7 +892,8 @@ input[ type=radio ]:disabled {
 	line-height: 14px;
 	border-radius: 3px;
 	background: #000000;
-	font-family: Inconsolata;
+	font-family: Inconsolata !important;
+	color: var( --cw );
 }
 .infomenu {
 	display: inline-block;
