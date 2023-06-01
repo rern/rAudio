@@ -67,10 +67,10 @@ for dir in "${dirs[@]}"; do
 	umount -l "$dir" &> /dev/null
 	rmdir "$dir" &> /dev/null
 done
-readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' )
+readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 if [[ $mountpoints ]]; then
 	for mountpoint in $mountpoints; do
-		mkdir -p "${mountpoint//\\040/ }"
+		mkdir -p "$mountpoint"
 	done
 fi
 $dirbash/power.sh reboot
