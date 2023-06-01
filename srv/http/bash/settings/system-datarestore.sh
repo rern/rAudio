@@ -12,9 +12,7 @@ if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 	systemctl restart mpd
 fi
 
-if [[ $1 == true ]]; then
-	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
-elif bsdtar tf $backupfile | grep -q display.json$; then # 20230522
+if bsdtar tf $backupfile | grep -q display.json$; then # 20230420
 	bsdtar -xpf $backupfile -C /srv/http
 else
 	echo 'Backup done before version <wh>20230420</wh>:
@@ -61,10 +59,10 @@ for dir in "${dirs[@]}"; do
 	umount -l "$dir" &> /dev/null
 	rmdir "$dir" &> /dev/null
 done
-readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' )
+readarray -t mountpoints <<< $( grep $dirnas /etc/fstab | awk '{print $2}' | sed 's/\\040/ /g' )
 if [[ $mountpoints ]]; then
 	for mountpoint in $mountpoints; do
-		mkdir -p "${mountpoint//\\040/ }"
+		mkdir -p "$mountpoint"
 	done
 fi
-$dirbash/power.sh reboot
+$dirbash/cmd.sh reboot
