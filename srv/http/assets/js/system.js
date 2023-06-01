@@ -1095,7 +1095,7 @@ function infoRestore( reset ) {
 		, tablabel    : [ 'From Backup', 'Reset To Default' ]
 		, tab         : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
 		, checkbox    : reset ? [ 'Keep Library data', 'Keep Network settings' ] : [ 'Library data only' ]
-		, values      : reset ? [ true, true ] : false
+		, values      : false
 		, fileoklabel : reset ? '' : ico( 'restore' ) +'Restore'
 		, filetype    : '.gz'
 		, okcolor     : orange
