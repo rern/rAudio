@@ -17,13 +17,14 @@ files=(
 	/etc/modules-load.d/loopback.conf
 	/etc/pacman.d/mirrorlist
 	/etc/samba/smb.conf
+	/etc/systemd/network/en.network
 	/etc/systemd/network/eth.network
 	/etc/systemd/timesyncd.conf
 	/etc/X11/xorg.conf.d/99-calibration.conf
 	/etc/X11/xorg.conf.d/99-raspi-rotate.conf
+	/etc/dnsmasq.conf
 	/etc/exports
 	/etc/fstab
-	/etc/mpdscribble.conf
 	/etc/upmpdcli.conf
 	/mnt/MPD/NAS/data
 	/var/lib/alsa/asound.state
