@@ -618,58 +618,7 @@ $( '#backup' ).on( 'click', function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).on( 'click', function() {
-	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, message     : 'Restore from:'
-		, radio       : {
-			  'Backup file <code>*.gz</code>' : 'restore'
-			, 'Reset to default'              : 'reset'
-		}
-		, values      : 'restore'
-		, fileoklabel : ico( 'restore' ) +'Restore'
-		, filetype    : '.gz'
-		, beforeshow  : () => {
-			$( '#infoContent input' ).on( 'click', function() {
-				if ( infoVal() === 'reset' ) {
-					$( '#infoFilename' ).addClass( 'hide' );
-					$( '#infoFileBox' ).val( '' );
-					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
-					$( '#infoOk' )
-						.html( ico( 'reset' ) +'Reset' )
-						.css( 'background-color', orange )
-						.removeClass( 'hide' );
-				} else {
-					$( '#infoOk' )
-						.html( ico( 'restore' ) +'Restore' )
-						.css( 'background-color', '' )
-						.addClass( 'hide' );
-					$( '#infoFileLabel' ).removeClass( 'hide' );
-				}
-			} );
-		}
-		, ok          : () => {
-			if ( infoVal() === 'reset' ) {
-				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh' ] );
-			} else {
-				notifyCommon( 'Restore ...' );
-				var formdata = new FormData();
-				formdata.append( 'cmd', 'datarestore' );
-				formdata.append( 'file', I.infofile );
-				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( response => response.text() )
-					.then( message => {
-						if ( message ) {
-							bannerHide();
-							infoWarning(  SW.icon,  SW.title, message );
-						}
-					} );
-			}
-			setTimeout( loader, 0 );
-		}
-	} );
-	$( '#restore' ).prop( 'checked', 0 );
+	infoRestore();
 } );
 $( '#shareddata' ).on( 'click', function() {
 	var $this = $( this );
@@ -1138,6 +1087,40 @@ function infoRelaysName() {
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
 	} );
+}
+function infoRestore( reset ) {
+	info( {
+		  icon        : SW.icon
+		, title       : SW.title
+		, tablabel    : [ 'From Backup', 'Reset To Default' ]
+		, tab         : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
+		, checkbox    : reset ? [ 'Keep Library data', 'Keep Network settings' ] : [ 'Library data only' ]
+		, values      : reset ? [ true, true ] : false
+		, fileoklabel : reset ? '' : ico( 'restore' ) +'Restore'
+		, filetype    : '.gz'
+		, okcolor     : orange
+		, ok          : reset ? () => {
+				notifyCommon( 'Reset to default ...' );
+				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
+				setTimeout( loader, 0 );
+			} : () => {
+				notifyCommon( 'Restore ...' );
+				var formdata = new FormData();
+				formdata.append( 'cmd', 'datarestore' );
+				formdata.append( 'file', I.infofile );
+				formdata.append( 'dataonly', infoVal() );
+				fetch( 'cmd.php', { method: 'POST', body: formdata } )
+					.then( response => response.text() )
+					.then( message => {
+						if ( message ) {
+							bannerHide();
+							infoWarning(  SW.icon,  SW.title, message );
+						}
+					} );
+				setTimeout( loader, 0 );
+			}
+	} );
+	$( '#restore' ).prop( 'checked', 0 );
 }
 function renderPage() {
 	$( '#statustext' ).html( S.status + S.warning );
