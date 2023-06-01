@@ -4,16 +4,17 @@
 
 backupfile=$dirshm/backup.gz
 dirconfig=$dirdata/config
+[[ $1 == true ]] && libraryonly=1
 
 statePlay && $dirbash/cmd.sh playerstop
 if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 	rm -f $dirsystem/{listing,updating}
-	systemctl restart mpd
+	[[ ! $libraryonly ]] && systemctl restart mpd
 fi
 
-if [[ $1 == true ]]; then
+if [[ $libraryonly ]]; then
 	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
-	$dirbash/cmd.sh mpcremove
+	systemctl restart mpd
 	exit
 fi
 
