@@ -152,4 +152,4 @@ fi
 
 dirPermissions
 
-[[ $reset ]] && $dirbash/cmd.sh reboot
+[[ $reset ]] && $dirbash/power.sh reboot
