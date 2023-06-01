@@ -13,7 +13,7 @@ if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 fi
 
 if [[ $1 == true ]]; then
-	bsdtar -xpf $backupfile -C /srv/http data/mpd data/playlists data/webradio
+	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
 elif bsdtar tf $backupfile | grep -q display.json$; then # 20230522
 	bsdtar -xpf $backupfile -C /srv/http
 else
