@@ -12,7 +12,9 @@ if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 	systemctl restart mpd
 fi
 
-if bsdtar tf $backupfile | grep -q display.json$; then # 20230420
+if [[ $1 == true ]]; then
+	bsdtar -xpf $backupfile -C /srv/http data/mpd data/playlists data/webradio
+elif bsdtar tf $backupfile | grep -q display.json$; then # 20230522
 	bsdtar -xpf $backupfile -C /srv/http
 else
 	echo 'Backup done before version <wh>20230420</wh>:

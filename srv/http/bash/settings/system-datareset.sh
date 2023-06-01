@@ -78,9 +78,22 @@ over_voltage=2" # rpi 0
 	
 	systemctl -q disable bluetooth hostapd camilladsp mediamtx nfs-server powerbutton shairport-sync smb snapclient spotifyd upmpdcli &> /dev/null
 	mv $dirdata/{addons,camilladsp,mpdconf} /tmp &> /dev/null
+	if [[ $1 == true ]]; then
+		keeplibrary=1
+		mv $dirdata/{mpd,playlists,webradio} /tmp
+	fi
 	rm -rf $dirdata $dirshareddata \
 			/mnt/MPD/.mpdignore $dirnas/.mpdignore \
 			/etc/modules-load.d/{loopback,raspberrypi}.conf /etc/modprobe.d/cirrus.conf /etc/X11/xorg.conf.d/99-raspi-rotate.conf
+	if [[ $2 != true ]]; then
+		readarray -t profiles <<< $( ls -p /etc/netctl | grep -v / )
+		if [[ $profiles ]]; then
+			for profile in "${profiles[@]}"; do
+				[[ $( netctl is-enabled "$profile" ) == enabled ]] && netctl disable "$profile"
+				rm "/etc/netctl/$profile"
+			done
+		fi
+	fi
 fi
 # reset --------------------------------------------------------------------------------------------------------------<<<
 
@@ -91,6 +104,7 @@ ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
 if [[ $reset ]]; then
 	mv /tmp/{addons,camilladsp,mpdconf} $dirdata &> /dev/null
+	[[ $keeplibrary ]] && mv /tmp/{mpd,playlists,webradio} $dirdata
 else # from create-ros.sh
 	dirs=$( ls $dirdata )
 	for dir in $dirs; do
@@ -128,10 +142,10 @@ timedatectl set-timezone UTC
 usermod -a -G root http # add user http to group root to allow /dev/gpiomem access
 
 # webradio
-curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
-if [[ ! -e $dirmpd/counts ]]; then
+if [[ ! $keeplibrary ]]; then
+	curl -sL https://github.com/rern/rAudio-addons/raw/main/webradio/radioparadise.tar.xz | bsdtar xf - -C $dirwebradio
 	echo '{
-  "playlists" : '$( ls -1 $dirplaylists | wc -l )'
+  "playlists" : 0
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )'
 }' > $dirmpd/counts
 fi
