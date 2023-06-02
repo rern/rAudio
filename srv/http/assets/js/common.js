@@ -1069,10 +1069,10 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 function selectSet( $select ) {
 	var options = {}
 	if ( $select ) {
-		var searchbox = page === 'system' ? 1 : 0;
+		var searchbox = page === 'system';
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = false;
+		var searchbox = SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
