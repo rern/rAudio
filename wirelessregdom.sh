@@ -12,9 +12,10 @@ iso3166=$( sed -E -n '/alpha_2_code=|\s+name=/ {s/^.*name=/:/; s/^.*code=/, /; s
 list=$( echo '{ "00": "00"'$iso3166' }' \
 			| jq \
 			| grep -E "$codes" \
-			| sort -k2 )
+			| sed -E 's/\s*"(.*)": "(.*)",*/"\2": "\1",/' \
+			| sort )
 echo "{
-$list
+${list:0:-1}
 }" > /srv/http/assets/data/regdomcodes.json
 
 echo Updated: /srv/http/settings/regdomcodes.json
