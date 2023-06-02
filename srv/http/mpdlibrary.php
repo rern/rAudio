@@ -201,11 +201,9 @@ case 'radio':
 	$files   = [];
 	$indexes = [];
 	if ( $mode === 'search' ) {
-		$searchmode = 1;
 		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
-		$searchmode = 0;
 		$dir.= $string;
 		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
@@ -414,6 +412,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 	global $mode;
 	global $gmode;
 	global $html;
+	$searchmode = $mode === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each         = ( object )[];
