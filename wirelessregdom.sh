@@ -18,4 +18,4 @@ echo "{
 ${list:0:-1}
 }" > /srv/http/assets/data/regdomcodes.json
 
-echo Updated: /srv/http/settings/regdomcodes.json
+echo Updated: /srv/http/assets/data/regdomcodes.json
