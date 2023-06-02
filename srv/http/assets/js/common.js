@@ -148,7 +148,7 @@ function banner( icon, title, message, delay ) {
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
-		.css( 'bottom', $( '#bar-bottom' ).hasClass( 'transparent' ) ? '10px' : '' )
+		.css( 'bottom', $( '#bar-bottom' ).is( ':hidden' ) ? '10px' : '' )
 		.removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
