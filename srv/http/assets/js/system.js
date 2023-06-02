@@ -306,7 +306,7 @@ $( '#setting-bluetooth' ).on( 'click', function() {
 } );
 $( '#setting-wlan' ).on( 'click', function() {
 	bash( [ 'regdomlist' ], list => {
-		var options  = htmlOption( list );
+		var options  = htmlOption( list, 'kv' );
 		var infowifi = `\
 <table>
 <tr><td>Country</td><td><select>${ options }</select></td></tr>
@@ -728,10 +728,12 @@ var htmllcdchar = {
 </table>
 <label style="margin-left: 40px"><input id="backlight" type="checkbox">Sleep <gr>(60s)</gr></label>`
 }
-function htmlOption( values ) {
+function htmlOption( values, kv ) {
 	var options = '';
 	if ( Array.isArray( values ) ) {
 		values.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
+	} else if ( kv ) {
+		$.each( values, ( k, v ) => options += '<option value="'+ k +'">'+ v +'</option>' );
 	} else {
 		$.each( values, ( k, v ) => options += '<option value="'+ v +'">'+ k +'</option>' );
 	}
