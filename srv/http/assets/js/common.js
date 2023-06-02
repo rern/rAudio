@@ -145,10 +145,12 @@ $( '.col-r .switch' ).press( function( e ) {
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
+	var $bar       = $( '#bar-bottom' );
+	var bottomhide = $bar.is( ':hidden ') || $bar.hasClass( 'transparent' );
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
-		.css( 'bottom', $( '#bar-bottom' ).is( ':hidden' ) ? '10px' : '' )
+		.css( 'bottom', bottomhide ? '10px' : '' )
 		.removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
