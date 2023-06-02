@@ -3,15 +3,18 @@
 # bash <( curl -skL https://github.com/rern/rOS/raw/main/wirelessregdom.sh )
 
 codes=$( curl -skL https://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git/plain/db.txt \
-			| grep ^country \
-			| cut -d' ' -f2 \
-			| tr -d : )
-iso3166=$( curl -skL https://gist.github.com/ssskip/5a94bfcd2835bf1dea52/raw/3b2e5355eb49336f0c6bc0060c05d927c2d1e004/ISO3166-1.alpha2.json )
-
-for k in ${codes[@]}; do
-	list+=$'\n'$( grep $k <<< "$iso3166" )
-done
-
-echo { '"00": "00 - (Allowed worldwide)"', $( echo "$list" | sort -k2 ) } | jq . > /srv/http/settings/regdomcodes.json
+				| grep ^country \
+				| cut -d' ' -f2 \
+				| tr -d : \
+				| xargs \
+				| tr ' ' '|')
+iso3166=$( sed -E -n '/alpha_2_code=|\s+name=/ {s/^.*name=/:/; s/^.*code=/, /; s/ .>$//; p}' /usr/share/xml/iso-codes/iso_3166.xml )
+list=$( echo '{ "00": "00"'$iso3166' }' \
+			| jq \
+			| grep -E "$codes" \
+			| sort -k2 )
+echo "{
+$list
+}" > /srv/http/assets/data/regdomcodes.json
 
 echo Updated: /srv/http/settings/regdomcodes.json
