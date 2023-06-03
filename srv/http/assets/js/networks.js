@@ -38,16 +38,17 @@ $( '.btscan' ).on( 'click', function() {
 	scanBluetooth();
 } );
 $( '#listbtscan' ).on( 'click', 'li', function() {
-	var name = $( this ).data( 'name' );
-	var mac  = $( this ).data( 'mac' );
+	var $this = $( this );
+	var name  = $this.data( 'name' );
+	var mac   = $this.data( 'mac' );
 	notify( 'bluetooth', name, 'Pair ...' );
 	bash( [ 'bluetoothcommand.sh', 'pair', mac ] );
 } );
 $( '#listwlscan' ).on( 'click', 'li', function() {
-	var ssid    = $( this ).data( 'ssid' );
-	var security = $( this ).data( 'wpa' ) === 'wep';
-	var encrypt  = $( this ).data( 'encrypt' );
-	var v        = [ 'dhcp', ESSID ];
+	var $this    = $( this );
+	var ssid     = $this.data( 'ssid' );
+	var security = $this.data( 'wpa' ) === 'wep';
+	var encrypt  = $this.data( 'encrypt' );
 	if ( encrypt === 'on' ) {
 		info( {
 			  icon          : 'wifi'
@@ -55,7 +56,7 @@ $( '#listwlscan' ).on( 'click', 'li', function() {
 			, passwordlabel : 'Password'
 			, focus         : 0
 			, oklabel       : 'Connect'
-		, ok            : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
+			, ok            : () => connectWiFi( { ESSID: ssid, KEY: infoVal(), SECURITY: security } )
 		} );
 	} else {
 		connectWiFi( { ESSID: ssid } );
@@ -72,19 +73,6 @@ $( '.wlscan' ).on( 'click', function() {
 		$( '#divwifi' ).removeClass( 'hide' );
 		scanWlan();
 	}
-} );
-$( '.lanadd' ).on( 'click', function() {
-	info( {
-		  icon      : 'lan'
-		, title     : 'New LAN Connection'
-		, textlabel : [ 'IP', 'Gateway' ]
-		, values    : { Address: '', Gateway: '' }
-		, checkip   : [ 0, 1 ]
-		, focus     : 0
-		, ok           : () => {
-			infoLanSet( infoVal() );
-		}
-	} );
 } );
 $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 	e.stopPropagation();
@@ -264,9 +252,7 @@ function infoLan() {
 			bash( [ 'lanedit' ] );
 			reconnect( icon, S.hostname +'.local', 10 );
 		} : ''
-		, ok           : () => {
-			infoLanSet( infoVal() );
-		}
+		, ok           : () => infoLanSet( infoVal() )
 	} );
 }
 function infoLanSet( v ) {
@@ -297,7 +283,7 @@ function infoWiFi( v ) {
 	}
 	info( {
 		  icon          : 'wifi'
-		, title         : values ? 'Edit Saved Connection' : 'New Wi-Fi Connection'
+		, title         : v ? 'Saved Connection' : 'Add Connection'
 		, tablabel      : [ 'DHCP', 'Static IP' ]
 		, tab           : [ '', () => infoWiFiTab( infoVal() ) ]
 		, boxwidth      : 180
@@ -306,7 +292,7 @@ function infoWiFi( v ) {
 		, checkbox      : [ 'WEP', 'Hidden SSID' ]
 		, values        : values
 		, checkblank    : [ 0 ]
-		, checkchanged  :true
+		, checkchanged  : true
 		, ok            : () => connectWiFi( infoVal() )
 	} );
 }
@@ -341,15 +327,13 @@ function infoWiFiStatic( v ) {
 		, checkchanged  : true
 		, checkip       : [ 2, 3 ]
 		, beforeshow    : () => $('#infoContent input' ).eq( 1 ).attr( 'type', 'password' )
-		, ok            : () => {
-			connectWiFi( infoVal() );
-		}
+		, ok            : () => connectWiFi( infoVal() )
 	} );
 }
 function infoWiFiTab( values ) {
 	var target = 'ADDRESS' in values ? 'dhcp' : 'static';
-	var keys = Object.keys( default_v[ target ] );
-	var v = {}
+	var keys   = Object.keys( default_v[ target ] );
+	var v      = {}
 	keys.forEach( k => v[ k ] = values[ k ] );
 	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
@@ -385,10 +369,6 @@ function renderBluetooth() {
 	} else {
 		$( '#listbt' ).empty();
 	}
-/*	if ( ! $( '#codebluetooth' ).hasClass( 'hide' ) ) {
-		var mac = $( '#codebluetooth' ).data( 'mac' );
-		bluetoothInfo( mac );
-	}*/
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
