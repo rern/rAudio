@@ -71,7 +71,7 @@ if [[ $1 == pushwl ]]; then
 fi
 
 # bluetooth
-rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
+rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=true
 [[ $activebt ]] && listbt=$( listBluetooth )
 
 # wlan

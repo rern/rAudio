@@ -271,7 +271,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconf"          : '$wlanconf'
 , "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
-	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
+	if rfkill | grep -q -m1 bluetooth; then
 		bluetoothon=true
 		bluetoothactive=$bluetooth
 		if [[ $bluetoothactive == true ]]; then

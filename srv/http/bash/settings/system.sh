@@ -102,10 +102,8 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	config=$( grep -v dtparam=krnbt=on /boot/config.txt )
+	config=$( grep -v dtoverlay=disable-bt /boot/config.txt )
 	if [[ $ON ]]; then
-		config+="
-dtparam=krnbt=on"
 		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
 			systemctl start bluetooth
 			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
@@ -123,6 +121,8 @@ dtparam=krnbt=on"
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
+		config+='
+dtoverlay=disable-bt'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
@@ -137,6 +137,18 @@ bluetoothstart )
 	bluetoothctl discoverable $yesno &> /dev/null
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
+	;;
+cpuinfo )
+	hwrevision=$( grep ^Revision /proc/cpuinfo )
+	BB=${hwrevision: -3:2}
+	C=${hwrevision: -4:1}
+										  data=BB=$BB$'\n'
+										  data+=C=$C$'\n'
+	[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
+	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
+	[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero
+	[[ $BB == 0d ]]                    && data+=rpi3bplus=true$'\n'       # 3B+
+	echo "$data" > $dirshm/cpuinfo
 	;;
 hddinfo )
 	echo -n "\

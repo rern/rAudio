@@ -7,7 +7,7 @@ alias=r1
 # 20230522
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230601
+# 20230603
 [[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
 
 # 20230528
@@ -210,15 +210,8 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20230528
-if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
-	rm -f $dirshm/mixernone $dirsystem/mixertype-*
-	$dirsettings/player-conf.sh
-	echo "$info Re-enable again: Volume Control - None/0dB"
-fi
-
 # 20230522
-[[ ! -e $dirshm/cpuinfo ]] && cpuInfo
+[[ ! -e $dirshm/cpuinfo ]] && $dirsettings/system.sh cpuinfo
 
 ! grep -q listing $dirbash/mpdidle.sh && systemctl restart mpd
 
@@ -235,3 +228,19 @@ if grep -q /srv/http/data /etc/exports; then
 - Disable server
 - Re-enable again" 
 fi
+
+# 20230528
+if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
+	rm -f $dirshm/mixernone $dirsystem/mixertype-*
+	$dirsettings/player-conf.sh
+	echo "$info Re-enable again: Volume Control - None/0dB"
+fi
+
+# 20230610
+if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
+	sed -i '/^dtparam=krnbt=on/ d' /boot/config.txt
+else
+	grep -q onboardwireless $dirshm/cpuinfo && echo '
+dtoverlay=disable-bt' >> /boot/config.txt
+fi
+
