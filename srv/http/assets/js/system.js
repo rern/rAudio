@@ -618,58 +618,7 @@ $( '#backup' ).on( 'click', function() {
 	$( '#backup' ).prop( 'checked', 0 );
 } );
 $( '#restore' ).on( 'click', function() {
-	info( {
-		  icon        : SW.icon
-		, title       : SW.title
-		, message     : 'Restore from:'
-		, radio       : {
-			  'Backup file <code>*.gz</code>' : 'restore'
-			, 'Reset to default'              : 'reset'
-		}
-		, values      : 'restore'
-		, fileoklabel : ico( 'restore' ) +'Restore'
-		, filetype    : '.gz'
-		, beforeshow  : () => {
-			$( '#infoContent input' ).on( 'click', function() {
-				if ( infoVal() === 'reset' ) {
-					$( '#infoFilename' ).addClass( 'hide' );
-					$( '#infoFileBox' ).val( '' );
-					$( '#infoFileLabel' ).addClass( 'hide infobtn-primary' );
-					$( '#infoOk' )
-						.html( ico( 'reset' ) +'Reset' )
-						.css( 'background-color', orange )
-						.removeClass( 'hide' );
-				} else {
-					$( '#infoOk' )
-						.html( ico( 'restore' ) +'Restore' )
-						.css( 'background-color', '' )
-						.addClass( 'hide' );
-					$( '#infoFileLabel' ).removeClass( 'hide' );
-				}
-			} );
-		}
-		, ok          : () => {
-			if ( infoVal() === 'reset' ) {
-				notifyCommon( 'Reset to default ...' );
-				bash( [ 'settings/system-datareset.sh' ] );
-			} else {
-				notifyCommon( 'Restore ...' );
-				var formdata = new FormData();
-				formdata.append( 'cmd', 'datarestore' );
-				formdata.append( 'file', I.infofile );
-				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( response => response.text() )
-					.then( message => {
-						if ( message ) {
-							bannerHide();
-							infoWarning(  SW.icon,  SW.title, message );
-						}
-					} );
-			}
-			setTimeout( loader, 0 );
-		}
-	} );
-	$( '#restore' ).prop( 'checked', 0 );
+	infoRestore();
 } );
 $( '#shareddata' ).on( 'click', function() {
 	var $this = $( this );
@@ -874,7 +823,7 @@ var contentmount = {
 	<td><input type="text">&ensp;*</td>
 </tr>
 <tr><td id="sharelabel">Share</td>
-	<td><input id="share" type="text" placeholder="Share name/path on server">&ensp;*</td>
+	<td><input id="share" type="text">&ensp;*</td>
 </tr>`
 	, cifs       : `\
 <tr><td>User</td>
@@ -917,6 +866,7 @@ function infoMount( nfs ) {
 		, beforeshow : () => {
 			var $mountpoint = $( '#mountpoint' );
 			var $share      = $( '#share' );
+			$share.prop( 'placeholder', nfs ? 'Share path on server' : 'Share name on server' );
 			if ( shareddata ) {
 				$mountpoint.val( 'data' ).prop( 'disabled', true );
 				$mountpoint.next().remove();
@@ -925,12 +875,6 @@ function infoMount( nfs ) {
 					setTimeout( () => $mountpoint.val( $mountpoint.val().replace( /\//g, '' ) ), 0 );
 				} );
 			}
-			$share.on( 'keyup paste', function() {
-				setTimeout( () => {
-					var slash = $( '#infoContent input:radio:checked' ).val() === 'cifs' ? /^[\/\\]/ : /\\/g;
-					$share.val( $share.val().replace( slash, '' ) );
-				}, 0 );
-			} );
 		}
 		, cancel     : switchCancel
 		, ok         : () => {
@@ -1143,6 +1087,39 @@ function infoRelaysName() {
 		, cancel       : switchCancel
 		, ok           : infoRelaysCmd
 	} );
+}
+function infoRestore( reset ) {
+	info( {
+		  icon        : SW.icon
+		, title       : SW.title
+		, tablabel    : [ 'From Backup', 'Reset To Default' ]
+		, tab         : reset ? [ infoRestore, '' ] : [ '', () => infoRestore( 'reset' ) ]
+		, checkbox    : reset ? [ 'Keep Library data', 'Keep Network settings' ] : [ 'Library data only' ]
+		, fileoklabel : reset ? '' : ico( 'restore' ) +'Restore'
+		, filetype    : '.gz'
+		, okcolor     : orange
+		, ok          : reset ? () => {
+				notifyCommon( 'Reset to default ...' );
+				bash( [ 'settings/system-datareset.sh '+ infoVal().join( ' ' ) ] );
+				loader();
+			} : () => {
+				notifyCommon( 'Restore ...' );
+				var formdata = new FormData();
+				formdata.append( 'cmd', 'datarestore' );
+				formdata.append( 'file', I.infofile );
+				formdata.append( 'dataonly', infoVal() );
+				fetch( 'cmd.php', { method: 'POST', body: formdata } )
+					.then( response => response.text() )
+					.then( message => {
+						if ( message ) {
+							bannerHide();
+							infoWarning(  SW.icon,  SW.title, message );
+						}
+					} );
+				loader();
+			}
+	} );
+	$( '#restore' ).prop( 'checked', 0 );
 }
 function renderPage() {
 	$( '#statustext' ).html( S.status + S.warning );

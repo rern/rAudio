@@ -60,8 +60,8 @@ window.addEventListener( 'resize', () => { // resize / rotate
 	}, 0 );
 } );
 // pushstreamChannel() in common.js
-var channels = [ 'airplay', 'bookmark', 'btreceiver', 'coverart',  'display', 'equalizer', 'mpdplayer',     'mpdradio', 'mpdupdate', 'notify',
-				 'option',  'order',    'playlist',   'radiolist', 'relays',  'reload',    'savedplaylist', 'volume',   'webradio' ];
+var channels = [ 'airplay', 'bookmark', 'coverart',  'display',   'equalizer', 'mpdplayer', 'mpdradio',      'mpdupdate', 'notify'
+			   , 'option',  'order',    'playlist',  'radiolist', 'relays',    'reload',    'savedplaylist', 'volume',    'webradio' ];
 if ( ! localhost ) channels.push( 'vumeter' );
 pushstreamChannel( channels );
 function pushstreamDisconnect() {
@@ -73,14 +73,13 @@ pushstream.onmessage = ( data, id, channel ) => {
 	switch ( channel ) {
 		case 'airplay':       psAirplay( data );        break;
 		case 'bookmark':      psBookmark( data );       break;
-		case 'btreceiver':    psBtReceiver( data );     break;
 		case 'coverart':      psCoverart( data );       break;
 		case 'display':       psDisplay( data );        break;
 		case 'equalizer':     psEqualizer( data );      break;
 		case 'mpdplayer':     psMpdPlayer( data );      break;
 		case 'mpdradio':      psMpdRadio( data );       break;
 		case 'mpdupdate':     psMpdUpdate( data );      break;
-		case 'notify':        psNotify( data );         break;
+		case 'notify':        psNotify( data );         break; // in common.js
 		case 'option':        psOption( data );         break;
 		case 'order':         psOrder( data );          break;
 		case 'playlist':      psPlaylist( data );       break;
@@ -96,10 +95,6 @@ pushstream.onmessage = ( data, id, channel ) => {
 function psAirplay( data ) {
 	statusUpdate( data );
 	if ( V.playback ) renderPlayback();
-}
-function psBtReceiver( connected ) {
-	var prefix = $time.is( ':visible' ) ? 'ti' : 'i';
-	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! connected );
 }
 function psBookmark() {
 	V.libraryhtml = '';
@@ -191,6 +186,7 @@ function psMpdPlayer( data ) {
 		} else {
 			setPlaylistScroll();
 		}
+		setTimeout( bannerHide, 3000 );
 	}, 300 );
 }
 function psMpdRadio( data ) {
@@ -221,25 +217,8 @@ function psMpdUpdate( data ) {
 		S.updating_db = false;
 		S.updatingdab = false;
 		setButtonUpdating();
-		V.libraryhtml = V.librarylisthtml = V.playlisthtml ='';
+		V.libraryhtml = V.librarylisthtml = V.playlisthtml = '';
 		banner( 'refresh-library', 'Library Update', 'Done' );
-	}
-}
-function psNotify( data ) {
-	var icon    = data.icon;
-	var title   = data.title;
-	var message = data.message;
-	var delay   = data.delay;
-	
-	banner( icon, title, message, delay );
-	if ( message === 'Change track ...' ) { // audiocd
-		clearIntervalAll();
-	} else if ( title === 'Latest' ) {
-		C.latest = 0;
-		$( '#mode-latest gr' ).empty();
-		if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
-	} else if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
-		pushstreamPower( message );
 	}
 }
 function psOption( data ) {

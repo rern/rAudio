@@ -19,19 +19,19 @@ disconnectRemove() {
 	[[ ! $type ]] && type=$( bluetoothctl info $mac | sed -E -n '/UUID: Audio/ {s/\s*UUID: Audio (.*) .*/\1/; p}' | xargs )
 	sed -i "/^$mac/ d" $dirshm/btconnected
 	[[ ! $( awk NF $dirshm/btconnected ) ]] && rm $dirshm/btconnected
-	[[ $1 ]] && msg=$1 || msg=Disconnected
+	$dirbash/cmd.sh playerstop
 	if [[ $type == Source ]]; then
 		icon=btsender
-		$dirbash/cmd.sh playerstop
 	elif [[ $type == Sink ]]; then
 		rm $dirshm/btreceiver
-		pushstream btreceiver false
-		$dirbash/cmd.sh mpcplayback$'\n'stop$'\nCMD ACTION'
+		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
-#-----
-	notify $icon "$name" $msg
+	refreshFeaturesNetworks
+}
+refreshFeaturesNetworks() {
 	$dirsettings/features-data.sh pushrefresh
+	sleep 1
 	$dirsettings/networks-data.sh pushbt
 }
 #-------------------------------------------------------------------------------------------
@@ -47,7 +47,6 @@ if [[ $udev && $action == disconnect ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
 #-----
-		notify -blink $icon "$name" 'Disconnect ...'
 		disconnectRemove
 	fi
 	exit
@@ -74,7 +73,7 @@ if [[ $udev && $action == connect ]]; then
 		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q -m1 'UUID: Audio Sink'; then
 			bluetoothctl disconnect $mac
 #-----X
-			notify $icon "$name" 'Disconnected<br><wh>DSP is currently enabled.</wh>' 6000
+			notify $icon "$name" 'Not connected.<br><wh>DSP is currently enabled.</wh>' 6000
 			exit
 			
 		fi
@@ -114,7 +113,7 @@ if [[ $action == connect || $action == pair ]]; then
 		
 		bluetoothctl disconnect $mac
 #-----
-		notify $icon "$name" 'Paired successfully.' -1
+		notify $icon "$name" 'Paired successfully.'
 		sleep 3
 #-----
 		notify -blink $icon "$name" 'Connect ...'
@@ -128,7 +127,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
-		notify $icon "$name" Ready
+		refreshFeaturesNetworks
 		exit
 		
 	fi
@@ -153,15 +152,13 @@ if [[ $action == connect || $action == pair ]]; then
 ##### receiver
 		echo $btmixer > $dirshm/btreceiver
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
-		pushstream btreceiver true
+		notify -blink $icon "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
 		$dirsettings/player-conf.sh
 	fi
 #-----
-	notify $icon "$name" Ready
-	$dirsettings/features-data.sh pushrefresh
-	sleep 1
-	$dirsettings/networks-data.sh pushbt
+	msg=Ready
+	refreshFeaturesNetworks
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then
@@ -171,13 +168,12 @@ elif [[ $action == disconnect || $action == remove ]]; then
 		for i in {1..5}; do
 			bluetoothctl info $mac | grep -q -m1 'Connected: yes' && sleep 1 || break
 		done
-		disconnectRemove
 	else
 		bluetoothctl remove $mac &> /dev/null
 		for i in {1..5}; do
 			controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
 			[[ -e /var/lib/bluetooth/$controller/$mac ]] && sleep 1 || break
 		done
-		disconnectRemove Removed
 	fi
+	disconnectRemove
 fi

@@ -297,7 +297,6 @@ heading .disabled {
 	color: var( --cm );
 }
 c,
-cy,
 code {
 	font-family: 'Inconsolata';
 	font-size: 15px;
@@ -305,10 +304,6 @@ code {
 	background-color: var( --cg );
 	padding: 0 4px;
 	border-radius: 3px;
-}
-cy {
-	color:yellow;
-	background: none;
 }
 .entries {
 	display: block;

@@ -2,10 +2,13 @@
 
 alias=r1
 
-# restore 20230521
+# restore 20230522
 #. /srv/http/bash/settings/addons.sh
-# 20230521
+# 20230522
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
+
+# 20230601
+[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
@@ -25,6 +28,7 @@ if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-p
 	pacman -Sy --noconfirm $pkg
 fi
 
+# 20230522
 if crontab -l | grep -q addonsupdates; then
 	echo "\
 00 01 * * * $dirsettings/addons-data.sh
@@ -213,7 +217,7 @@ if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
 	echo "$info Re-enable again: Volume Control - None/0dB"
 fi
 
-# 20230511
+# 20230522
 [[ ! -e $dirshm/cpuinfo ]] && cpuInfo
 
 ! grep -q listing $dirbash/mpdidle.sh && systemctl restart mpd

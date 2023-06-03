@@ -10,6 +10,8 @@ SW             = {} // switch
 V              = {} // var global
 
 function bannerReset() {
+	if ( V.off || V.reboot ) return
+	
 	var delay = $( '#bannerIcon i' ).hasClass( 'blink' ) ? 1000 : 3000;
 	$( '#bannerIcon i' ).removeClass( 'blink' );
 	clearTimeout( I.timeoutbanner );
@@ -193,7 +195,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'wlan':      psWlan( data );      break;
 	}
 }
-function psBluetooth( data ) {
+function psBluetooth( data ) { // from networks-data,sh
 	if ( ! data ) {
 		if ( page === 'networks' ) {
 			S.listbt = data;
@@ -211,14 +213,7 @@ function psBluetooth( data ) {
 		S.listbt = data;
 		renderBluetooth();
 	}
-}
-function psNotify( data ) {
-	var icon     = data.icon;
-	var title    = data.title;
-	var message  = data.message;
-	var delay    = data.delay;
-	banner( icon, title, message, delay );
-	if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) pushstreamPower( message );
+	bannerHide();
 }
 function psPlayer( data ) {
 	var player_id = {

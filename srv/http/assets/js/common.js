@@ -148,7 +148,7 @@ function banner( icon, title, message, delay ) {
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
-		.css( 'bottom', $( '#bar-bottom' ).hasClass( 'transparent' ) ? '10px' : '' )
+		.css( 'bottom', $( '#bar-bottom' ).is( '.transparent, :hidden' ) ? '10px' : '' )
 		.removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
@@ -995,11 +995,28 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 		channels.forEach( channel => pushstream.addChannel( channel ) );
 		pushstream.connect();
 	}
-	function pushstreamPower( message ) {
-		var type  = message.split( ' ' )[ 0 ].toLowerCase();
-		V[ type ] = true;
-		loader();
+	function psNotify( data ) {
+		var icon    = data.icon;
+		var title   = data.title;
+		var message = data.message;
+		var delay   = data.delay;
+		
+		banner( icon, title, message, delay );
+		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
+			var type  = message.split( ' ' )[ 0 ].toLowerCase();
+			V[ type ] = true;
+			setTimeout( loader, 0 );
+		} else if ( ! page ) {
+			if ( message === 'Change track ...' ) { // audiocd
+				clearIntervalAll();
+			} else if ( title === 'Latest' ) {
+				C.latest = 0;
+				$( '#mode-latest gr' ).empty();
+				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
+			}
+		}
 	}
+
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {
@@ -1052,10 +1069,10 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 function selectSet( $select ) {
 	var options = {}
 	if ( $select ) {
-		var searchbox = page === 'system' ? 1 : 0;
+		var searchbox = page === 'system';
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = false;
+		var searchbox = SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;

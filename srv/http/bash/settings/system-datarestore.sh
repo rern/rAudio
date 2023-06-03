@@ -4,15 +4,23 @@
 
 backupfile=$dirshm/backup.gz
 dirconfig=$dirdata/config
+[[ $1 == true ]] && libraryonly=1
 
 statePlay && $dirbash/cmd.sh playerstop
-find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
 if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
 	rm -f $dirsystem/{listing,updating}
-	systemctl restart mpd
+	[[ ! $libraryonly ]] && systemctl restart mpd
 fi
 
-if bsdtar tf $backupfile | grep -q display.json$; then # 20230420
+if [[ $libraryonly ]]; then
+	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}
+	systemctl restart mpd
+	exit
+fi
+
+find $dirmpdconf -maxdepth 1 -type l -exec rm {} \; # mpd.conf symlink
+
+if bsdtar tf $backupfile | grep -q display.json$; then # 20230522
 	bsdtar -xpf $backupfile -C /srv/http
 else
 	echo 'Backup done before version <wh>20230420</wh>:
@@ -65,4 +73,4 @@ if [[ $mountpoints ]]; then
 		mkdir -p "$mountpoint"
 	done
 fi
-$dirbash/cmd.sh reboot
+$dirbash/power.sh reboot

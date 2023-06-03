@@ -142,7 +142,7 @@ volumeSetAt() {
 	card=$3
 	if [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
-		echo $target > "$dirsystem/btvolume-$control"
+		#echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
 		amixer -c $card -Mq sset "$control" $target%
 	else
@@ -199,7 +199,7 @@ albumignore )
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
 booklet )
-	[[ -e "$FILE" ]] && echo true
+	[[ -e "$FILE" ]] && echo $FILE
 	;;
 bookmarkadd )
 	bkfile="$dirbookmarks/${NAME//\//|}"

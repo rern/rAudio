@@ -29,7 +29,6 @@ if [[ -e $dirsystem/lcdchar ]]; then
 	$dirbash/lcdchar.py logo
 fi
 alsactl store
-pushstream btreceiver false
 if [[ -e $dirshm/clientip ]]; then
 	clientip=$( < $dirshm/clientip )
 	for ip in $clientip; do
