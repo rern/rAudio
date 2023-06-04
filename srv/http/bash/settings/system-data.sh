@@ -57,6 +57,7 @@ else
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
+		. $dirshm/cpuinfo
 		soc=BCM
 		case $C in
 			0 ) soc+=2835;; # 0, 1

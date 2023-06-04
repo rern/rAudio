@@ -5,7 +5,7 @@ var default_v      = {
 		, STARTUP   : true
 	  }
 	, localbrowser : {
-		  ROTATE      : 'NORMAL'
+		  ROTATE      : 0
 		, ZOOM        : 100
 		, SCREENOFF   : 0
 		, ONWHILEPLAY : false
@@ -169,10 +169,10 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 <table>
 <tr><td style="width:110px">Rotation</td>
 	<td><select>
-		<option value="NORMAL">Normal</option>
-		<option value="CW">90° CW</option>
-		<option value="CCW">90° CCW</option>
-		<option value="UD">180°</option>
+		<option value="0">Normal</option>
+		<option value="90">90° CW</option>
+		<option value="270">90° CCW</option>
+		<option value="180">180°</option>
 		</select>
 	</td><td></td></tr>
 <tr><td>Zoom</td>

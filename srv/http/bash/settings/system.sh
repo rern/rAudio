@@ -558,9 +558,10 @@ tft )
 	if [[ $ON ]]; then
 		[[ $MODEL != tft35a ]] && echo $MODEL > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 		config+="
 hdmi_force_hotplug=1
-dtoverlay=$MODEL:rotate=0"
+dtoverlay=$MODEL:rotate=$rotate"
 		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
 		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
@@ -572,8 +573,8 @@ dtoverlay=$MODEL:rotate=0"
 	configTxt
 	;;
 tftcalibrate )
-	degree=$( grep rotate /boot/config.txt | cut -d= -f3 )
-	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
+	rotate=$( grep rotate /boot/config.txt | cut -d= -f3 )
+	cp -f /etc/X11/{lcd$rotate,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then

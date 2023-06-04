@@ -25,7 +25,7 @@ localbrowserXset() {
 	local off
 	. $dirsystem/localbrowser.conf
 	export DISPLAY=:0
-	off=$(( $SCREENOFF * 60 ))
+	off=$(( $screenoff * 60 ))
 	xset s off
 	xset dpms $off $off $off
 	if [[ $off == 0 ]]; then
@@ -139,14 +139,6 @@ lastfmkey )
 	;;
 localbrowser )
 	if [[ $ON ]]; then
-		file=$dirsystem/localbrowser.conf
-		diff=$( grep -Fxvf $file /tmp/localbrowser.conf )
-		if [[ $diff ]]; then
-			for k in cursor rotate screenoff zoom; do
-				grep -q -m1 ^$k <<< $diff && printf -v diff$k '%s' 1
-			done
-			[[ $diffcursor || $diffzoom ]] && restart=1
-		fi
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
 			sed -i -E 's/(console=).*/\1tty3 quiet loglevel=0 logo.nologo vt.global_cursor_default=0/' /boot/cmdline.txt
 			systemctl disable --now getty@tty1
@@ -164,29 +156,37 @@ localbrowser )
 			sed -i '/hdmi_force_hotplug=1/ d' /boot/config.txt
 			pushstream refresh '{ "page": "system", "hdmi": false }'
 		fi
-		if [[ $diffrotate ]]; then
+		if [[ -e /tmp/localbrowser.conf ]]; then
+			diff=$( grep -Fxvf $dirsystem/localbrowser.conf /tmp/localbrowser.conf )
+			if [[ $diff ]]; then
+				for k in cursor rotate screenoff zoom; do
+					grep -q -m1 ^$k <<< $diff && printf -v diff$k '%s' 1
+				done
+				[[ $diffcursor || $diffzoom ]] && restart=1
+			fi
+		else
+			restart=1
+		fi
+		if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
 			case $ROTATE in
-				NORMAL ) degree=0;;
-				CCW )    degree=270 && matrix='0 1 0 -1 0 1 0 0 1';;
-				CW )     degree=90  && matrix='0 -1 1 1 0 0 0 0 1';;
-				UD )     degree=180 && matrix='-1 0 1 0 -1 1 0 0 1';;
+				0 )   rotatetxt=NORMAL;;
+				270 ) rotatetxt=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
+				90)   rotatetxt=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
+				180)  rotatetxt=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
 			$dirbash/cmd.sh rotatesplash
 			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
-				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$degree'/' /boot/config.txt
-				cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
-				pushRefresh
-				if ! grep -q rotate=$ROTATE /tmp/localbrowser.conf; then
-					echo Rotate GPIO LCD screen >> $dirshm/reboot
-					notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
-					exit
-				fi
+				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
+				cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
+				echo Rotate GPIO LCD screen >> $dirshm/reboot
+				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+				exit
 			fi
 			
 			restart=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $matrix ]]; then
-				sed 's/ROTATION_SETTING/'$ROTATE'/; s/MATRIX_SETTING/'$matrix'/' /etc/X11/xinit/rotateconf > $rotateconf
+				sed 's/ROTATION_SETTING/'$rotatetxt'/; s/MATRIX_SETTING/'$matrix'/' /etc/X11/xinit/rotateconf > $rotateconf
 			else 
 				rm -f $rotateconf
 			fi

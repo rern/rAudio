@@ -4,15 +4,26 @@ alias=r1
 
 # restore 20230522
 #. /srv/http/bash/settings/addons.sh
-# 20230522
-if [[ -e /srv/http/bash/settings/addons.sh ]]; then
-	. /srv/http/bash/settings/addons.sh
-	rm -f /srv/http/bash/addons.sh
-else
-	. /srv/http/bash/addons.sh
-fi
+[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 # 20230610
+rm -f $dirshm/system
+
+file=$dirsystem/localbrowser.conf
+if [[ -e $file ]]; then
+	rotate=$( getVar rotate $file | tr -dc [A-Z] )
+	if [[ $rotate ]]; then
+		case $rotate in
+			NORMAL ) degree=0;;
+			CCW )    degree=270;;
+			CW )     degree=90;;
+			UD )     degree=180;;
+		esac
+		sed -i "s/^rotate.*/rotate=$degree/" $file
+	fi
+fi
+rm -f /tmp/localbrowser.conf
+
 [[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
 
 # 20230528

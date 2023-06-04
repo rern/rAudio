@@ -71,18 +71,12 @@ pushstreamVolume() {
 	pushstream volume '{ "type": "'$1'", "val": '$2' }'
 }
 rotateSplash() {
-	local degree rotate
+	local rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-	case $rotate in
-		NORMAL ) degree=0;;
-		CCW )    degree=-90;;
-		CW )     degree=90;;
-		UD )     degree=180;;
-	esac
 	convert \
 		-density 48 \
 		-background none $dirimg/icon.svg \
-		-rotate $degree \
+		-rotate $rotate \
 		-gravity center \
 		-background '#000' \
 		-extent 1920x1080 \
