@@ -988,25 +988,15 @@ function local( delay ) {
 
 // pushstream -----------------------------------------------------------------
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
 	function psNotify( data ) {
 		var icon    = data.icon;
 		var title   = data.title;
 		var message = data.message;
 		var delay   = data.delay;
-		
-		banner( icon, title, message, delay );
 		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
 			var type  = message.split( ' ' )[ 0 ].toLowerCase();
 			V[ type ] = true;
-			setTimeout( loader, 0 );
+			loader();
 		} else if ( ! page ) {
 			if ( message === 'Change track ...' ) { // audiocd
 				clearIntervalAll();
@@ -1016,8 +1006,17 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 			}
 		}
+		banner( icon, title, message, delay );
 	}
 
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, reconnectOnChannelUnavailableInterval : 3000
+	} );
+	function pushstreamChannel( channels ) {
+		channels.forEach( channel => pushstream.addChannel( channel ) );
+		pushstream.connect();
+	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {

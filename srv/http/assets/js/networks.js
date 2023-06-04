@@ -141,16 +141,21 @@ $( '.disconnect' ).on( 'click', function() {
 	
 	var ssid = V.li.data( 'ssid' );
 	var icon = 'wifi';
-	info( {
-		  icon    : icon
-		, title   : ssid
-		, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
-		, okcolor : orange
-		, ok      : () => {
-			notify( icon, ssid, 'Disconnect ...' );
-			bash( [ 'disconnect' ] )
-		}
-	} );
+	if ( S.ipeth ) {
+		notify( icon, ssid, 'Disconnect ...' );
+		bash( [ 'disconnect' ] )
+	} else {
+		info( {
+			  icon    : icon
+			, title   : ssid
+			, message : ( S.listeth ? '' : iconwarning +'No network connections after this.<br>' ) +'Disconnect?'
+			, okcolor : orange
+			, ok      : () => {
+				notify( icon, ssid, 'Disconnect ...' );
+				bash( [ 'disconnect' ] )
+			}
+		} );
+	}
 } );
 $( '.edit' ).on( 'click', function() {
 	V.listid === 'listwl' ? infoWiFiGet() : infoLan();
