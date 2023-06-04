@@ -680,24 +680,22 @@ $( '#volmute, #volM' ).on( 'click', function() {
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
-	if ( [ 'volume-band-dn', 'volume-band-up' ].includes( e.currentTarget.id ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
+	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
-	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) {
+	if ( D.volume ) {
+		$( '#volume-text' ).text( S.volume );
+		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+	} else {
+		$volumeRS.setValue( S.volume );
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
 } ).press( function( e ) {
+	clearTimeout( V.volumebar );
+	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
-	V.interval.volume = setInterval( () => {
-		volumeUpDown( up );
-		if ( $( e.currentTarget ).hasClass( 'band' ) ) {
-			clearTimeout( V.volumebar );
-			$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-			$( '#volume-text' ).text( vol );
-			$( '#volume-bar' ).css( 'width', vol +'%' );
-		}
-	}, 100 );
+	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );

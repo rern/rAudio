@@ -2038,11 +2038,15 @@ function volumeColorUnmute() {
 	$( '#mi-mute, #ti-mute' ).addClass( 'hide' );
 }
 function volumeUpDown( up ) {
-	var vol = S.volume;
-	up ? vol++ : vol--;
-	if ( vol < 0 || vol > 100 ) return
+	up ? S.volume++ : S.volume--;
+	if ( S.volume < 0 || S.volume > 100 ) return
 	
-	$volumeRS.setValue( vol );
+	if ( D.volume ) {
+		$volumeRS.setValue( S.volume );
+	} else {
+		$( '#volume-text' ).text( S.volume );
+		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+	}
 	var cmd = 'volumeupdn';
 	if ( S.btreceiver ) {
 		cmd += 'bt';
