@@ -11,7 +11,6 @@ function list( args, callback, json ) {
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
-		bioTitleSet();
 		return
 	}
 	
@@ -35,7 +34,7 @@ function bio( artist, getsimilar ) {
 		
 		V.bioartist.push( artist );
 		var data     = data.artist;
-		artistname   = data.name;
+		var name     = data.name;
 		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
 		var genre    = data.tags.tag[ 0 ].name;
 		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
@@ -48,8 +47,8 @@ function bio( artist, getsimilar ) {
 		var biohtml = `
 <div class="container">
 <div id="biocontent">
-	<p class="artist">${ ico( 'close close-root closebio' ) + artistname }</p>
-	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
+	<p class="artist">${ ico( 'close close-root closebio' ) + name }</p>
+	<p class="genre">${ backhtml + ico( 'genre i-lg' ) +'&ensp;'+ genre }</p>
 	${ similarhtml }
 	<p>${ content }</p>
 	<div style="clear: both;"></div>
@@ -82,7 +81,7 @@ function bio( artist, getsimilar ) {
 				loaderHide();
 				$( '#bio' ).scrollTop( 0 );
 			} ).fail( function() { // 404 not found
-				if ( S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
+				if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
 				loaderHide();
 			} );
 		} );
