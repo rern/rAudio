@@ -77,6 +77,8 @@ function bio( artist, getsimilar ) {
 						.before( '<div id="bioimg">'+ imageshtml +'</div>' )
 						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
 					bioTitleSet();
+				} else {
+					if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
 				}
 				loaderHide();
 				$( '#bio' ).scrollTop( 0 );
