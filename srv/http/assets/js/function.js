@@ -48,7 +48,7 @@ function bio( artist, getsimilar ) {
 		var biohtml = `
 <div class="container">
 <div id="biocontent">
-	<p class="artist">${ artistname + ico( 'close close-root closebio' ) }</p>
+	<p class="artist">${ ico( 'close close-root closebio' ) + artistname }</p>
 	<p class="genre">${ ico( 'genre i-lg' ) }&ensp;${ genre }${ backhtml }</p>
 	${ similarhtml }
 	<p>${ content }</p>
