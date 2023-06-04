@@ -65,35 +65,36 @@ function bio( artist, getsimilar ) {
 				.scrollTop( 0 );
 			$.get( 'https://webservice.fanart.tv/v3/music/'+ data.mbid +'?api_key='+ V.apikeyfanart ).done( data => {
 				if ( 'error message' in data ) {
-					loaderHide();
+					bioImageSet();
 					return
 				}
 				
 				if ( 'musicbanner' in data && data.musicbanner[ 0 ].url ) $( '#biocontent' ).before( '<img id="biobanner" src="'+ data.musicbanner[ 0 ].url +'">' )
+				var imageshtml = '';
 				if ( 'artistthumb' in data && data.artistthumb[ 0 ].url ) {
-					var imageshtml = '';
 					data.artistthumb.forEach( el => imageshtml += '<a href="'+ el.url +'" target="_blank"><img src="'+ el.url.replace( '/fanart/', '/preview/' ) +'"></a>' );
-					$( '#biocontent .artist' )
-						.before( '<div id="bioimg">'+ imageshtml +'</div>' )
-						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
-					bioTitleSet();
-				} else {
-					bioImageCoverart( artist );
 				}
-				loaderHide();
+				bioImageSet( imageshtml )
 				$( '#bio' ).scrollTop( 0 );
 			} ).fail( function() { // 404 not found
-				bioImageCoverart( artist );
-				loaderHide();
+				bioImageSet();
 			} );
 		} );
 	} );
 }
-function bioImageCoverart( artist ) {
-	if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
-}
-function bioTitleSet() {
+function bioImageSet( imageshtml ) {
 	var $artist    = $( '#biocontent .artist' );
+	if ( ! imageshtml ) {
+		if ( $artist.text() !== S.Artist || ! S.coverart ) {
+			loaderHide();
+			return
+		}
+		
+		imageshtml = '<a><img src="'+ S.coverart +'"></a>';
+	}
+	$artist
+		.before( '<div id="bioimg">'+ imageshtml +'</div>' )
+		.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
 	var titleafter = $artist.prev().prop('id') === 'bioimg';
 	if ( 'observer' in V ) V.observer.disconnect();
 	if ( V.wW < 481 ) {
@@ -107,6 +108,7 @@ function bioTitleSet() {
 	}
 	V.observer   = new IntersectionObserver( entries => $( '#biotitleimg' ).toggleClass( 'hide', entries[ 0 ].isIntersecting ), options );
 	V.observer.observe( $( '#bioimg' )[ 0 ] );
+	loaderHide();
 }
 function blinkDot() {
 	if ( ! localhost ) return
