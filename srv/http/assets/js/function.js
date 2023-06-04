@@ -78,16 +78,19 @@ function bio( artist, getsimilar ) {
 						.prepend( '<img id="biotitleimg" src="'+ $( '#bioimg img' ).last().attr( 'src' ) +'">' );
 					bioTitleSet();
 				} else {
-					if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
+					bioImageCoverart( artist );
 				}
 				loaderHide();
 				$( '#bio' ).scrollTop( 0 );
 			} ).fail( function() { // 404 not found
-				if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
+				bioImageCoverart( artist );
 				loaderHide();
 			} );
 		} );
 	} );
+}
+function bioImageCoverart( artist ) {
+	if ( artist === S.Artist && S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
 }
 function bioTitleSet() {
 	var $artist    = $( '#biocontent .artist' );
