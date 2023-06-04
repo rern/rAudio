@@ -5,7 +5,12 @@ alias=r1
 # restore 20230522
 #. /srv/http/bash/settings/addons.sh
 # 20230522
-[[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
+if [[ -e /srv/http/bash/settings/addons.sh ]]; then
+	. /srv/http/bash/settings/addons.sh
+	rm -f /srv/http/bash/addons.sh
+else
+	. /srv/http/bash/addons.sh
+fi
 
 # 20230610
 [[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
@@ -29,11 +34,8 @@ if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-p
 fi
 
 # 20230522
-if crontab -l | grep -q addonsupdates; then
-	echo "\
-00 01 * * * $dirsettings/addons-data.sh
-$( crontab -l | grep -v addonsupdates )" | crontab -
-fi
+crontab -l | grep -q addonsupdates && echo "00 01 * * * $dirsettings/addons-data.sh" | crontab -
+systemctl restart cronie
 
 if ls $dirsystem/autoplay* &> /dev/null && [[ ! -s $dirsystem/autoplay ]]; then
 	k=( startup bluetooth cd )
