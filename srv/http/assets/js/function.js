@@ -82,6 +82,7 @@ function bio( artist, getsimilar ) {
 				loaderHide();
 				$( '#bio' ).scrollTop( 0 );
 			} ).fail( function() { // 404 not found
+				if ( S.coverart ) $( '#biocontent .artist' ).prepend( '<img id="biotitleimg" src="'+ S.coverart +'">' );
 				loaderHide();
 			} );
 		} );
