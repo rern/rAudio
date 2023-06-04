@@ -23,9 +23,9 @@ function addToPlaylist() {
 function addToPlaylistCommand() {
 	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
-	var sleep = [ 'http', 'rtsp' ].includes( V.list.path.slice( 0, 4 ) ) ? 1 : 0.2;
-	if ( S.state === 'play' && S.webradio ) sleep += 1;
-	if ( V.action.slice( -4 ) === 'play' ) sleep += 1;
+	var sleep = 0;
+	if ( S.stream ) sleep++;
+	if ( V.action.slice( -4 ) === 'play' ) sleep++;
 	var varaction = '';
 	if ( V.action === 'addplay' ) {
 		varaction = ' ACTION DELAY';
