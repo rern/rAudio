@@ -1148,10 +1148,9 @@ function renderLibrary() { // library home
 	renderLibraryCounts();
 }
 function renderLibraryCounts() {
-	$( '.mode gr' ).toggleClass( 'hide', ! D.count );
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).text( v ? v.toLocaleString() : '' ) );
+	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? '&ensp;'+ v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {

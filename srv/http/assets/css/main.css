@@ -1237,9 +1237,6 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.mode gr {
-	margin-left: 8px;
-}
 #lib-mode-list gr {
 	font-size: 14px;
 }
