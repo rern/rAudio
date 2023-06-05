@@ -222,6 +222,18 @@ packageActive() {
 		(( i++ ))
 	done
 }
+package() {
+	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
+Package:
+" 8 0 0 \
+1 Build \
+2 'Update repo' )
+	case $file in
+		1 ) file=pkgbuild;;
+		2 ) file=repoupdate;;
+	esac
+	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
+}
 pushRefresh() {
 	local page push
 	[[ $1 ]] && page=$1 || page=$( basename $0 .sh )
