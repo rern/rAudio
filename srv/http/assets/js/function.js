@@ -302,14 +302,14 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
+	var filemode = [ 'album', 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
 	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.replace' ).next().toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode && V.mode !== 'album' );
+	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
+	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ( ! filemode ) );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
