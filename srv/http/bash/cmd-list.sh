@@ -103,7 +103,7 @@ fi
 
 filealbum=$dirmpd/album
 filealbumprev=$dirmpd/albumprev
-if [[ $( awk NF $dirmpd/album ) && $( getContent $dirmpd/updating ) != rescan ]]; then
+if [[ -s $filealbum && $( getContent $dirmpd/updating ) != rescan ]]; then
 	cp -f $filealbum{,prev}
 else
 	> $dirmpd/latest
@@ -140,7 +140,7 @@ if [[ -e $filealbumprev ]]; then # latest
 			mv -f $dirmpd/latest{new,}
 		fi
 	fi
-	[[ -e $dirmpd/latest ]] && latest=$( wc -l < $dirmpd/latest ) || latest=0
+	latest=$( wc -l < $dirmpd/latest )
 fi
 ##### count #############################################
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
