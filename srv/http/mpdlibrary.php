@@ -275,8 +275,7 @@ function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
 function htmlDirectory( $lists ) {
-	global $gmode;
-	global $html;
+	global $gmode, $html;
 	foreach( $lists as $list ) {
 		$dir        = basename( $list );
 		$each       = ( object )[];
@@ -316,9 +315,7 @@ function htmlDirectory( $lists ) {
 function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( ! count( $lists ) ) exit;
 	
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -370,9 +367,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
@@ -425,9 +420,7 @@ function htmlList( $lists ) { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio( $subdirs, $files, $dir ) {
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	$searchmode = $mode === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
@@ -511,9 +504,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) exit;
 	
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;

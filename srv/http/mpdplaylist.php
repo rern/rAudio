@@ -134,8 +134,7 @@ function htmlSavedPlaylist() {
 	], JSON_NUMERIC_CHECK );
 }
 function htmlTrack( $lists, $plname = '' ) {
-	global $headers;
-	global $add;
+	global $headers, $add;
 	$count      = count( $lists );
 	if ( ! $count ) exit( '-1' );
 	
