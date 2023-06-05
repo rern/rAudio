@@ -84,7 +84,7 @@ var chkdisplay = {
 			, label      : 'Label'
 	}
 	, liboption : {
-		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
+		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
 		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
