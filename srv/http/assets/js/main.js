@@ -1197,7 +1197,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 			  icon    : 'library'
 			, title   : 'Library Database'
 			, message : message
-			, okno    : V.mode !== 'latest'
+			, okno    : ! [ 'latest', 'playlists' ].includes( V.mode )
 			, beforeshow : () => {
 				$( '#infoContent' ).on( 'click', '.submenu', function() {
 					$( '#update' ).trigger( 'click' );
