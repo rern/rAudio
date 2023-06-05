@@ -727,6 +727,9 @@ hr {
 	margin: 10px auto;
 	text-align: left;
 }
+#infoContent .menu a {
+	height: 41px;
+}
 #infoContent .menu i {
 	width: 40px;
 }
