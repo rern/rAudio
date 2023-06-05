@@ -144,6 +144,7 @@ case 'list':
 	if ( $mode === 'album' ) {
 		$display = json_decode( file_get_contents( '/srv/http/data/system/display.json' ) );
 		if ( $display->albumbyartist ) $filemode.= 'byartist';
+		if ( $display->albumyear ) $filemode.= '-year';
 	}
 	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
 	if ( $mode === 'latest' ) $mode = 'album';
@@ -391,14 +392,12 @@ function htmlList( $lists ) { // non-file 'list' command
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$l1        = $data[ 1 ];
 			$l2        = $data[ 2 ];
-			if ( $display->albumbyartist ) {
+			if ( $display->albumyear ) {
 				$name = $data[ 3 ];
-				if ( $display->albumyear ) {
-					if ( $l2 === '' ) $l2 = '...';
-					$l2.= '<br>'.$name;
-				} else {
-					$l2.= $name;
-				}
+				if ( $l2 === '' ) $l2 = '...';
+				$l2.= '<br>'.$name;
+			} else if ( $display->albumbyartist ) {
+				$name = $l2;
 			} else {
 				$name = $l1;
 			}

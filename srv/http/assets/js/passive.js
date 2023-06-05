@@ -129,8 +129,8 @@ function psDisplay( data ) {
 		return
 	}
 	
-	var albumbyartistchanged = D.albumbyartist !== data.albumbyartist;
-	var hidecoverchanged     = D.hidecover !== data.hidecover;
+	var albumlistchanged = D.albumbyartist !== data.albumbyartist || D.albumyear !== data.albumyear;
+	var hidecoverchanged = D.hidecover !== data.hidecover;
 	$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
 	V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
 	if ( ! D.covervu && ! D.vumeter ) {
@@ -161,7 +161,7 @@ function psDisplay( data ) {
 					} );
 				}
 			} else if ( V.mode === 'album' ) {
-				if ( albumbyartistchanged ) $( '#mode-album' ).trigger( 'click' );
+				if ( albumlistchanged ) $( '#mode-album' ).trigger( 'click' );
 			}
 		}
 	}

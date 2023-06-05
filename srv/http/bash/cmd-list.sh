@@ -113,7 +113,7 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
-		filemode+=byartist
+		filemode+=byartist-year
 		album=$( awk NF <<< $album_artist_file | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
