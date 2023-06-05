@@ -3,8 +3,8 @@
 find, list, ls, search, track, webradio
 
 Album
-	/srv/http/data/mpd/album: album-artist^-file
-	/srv/http/data/mpd/albumbyartist: artist-album-file
+	/srv/http/data/mpd/album: album-artist-file
+	/srv/http/data/mpd/albumbyartist: artist-date-album-file
 			track list: mpc ls -f %*% $path
 Artist
 	mpc list artist > /srv/http/data/mpd/artist
@@ -385,19 +385,23 @@ function htmlList( $lists ) { // non-file 'list' command
 </li>';
 		}
 	} else {
+		$byartist = substr_count( $lists[ 0 ], '^^' ) === 4;
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$index     = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
-			$path      = $data[ 3 ];
+			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
+			$l1        = $data[ 1 ];
+			$l2        = $data[ 2 ];
+			if ( $byartist ) $l2.= '<br>'.$data[ 3 ];
 			$html     .=
 '<div class="coverart" data-index="'.$index.'">
 	<a class="lipath">'.$path.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
-	<a class="coverart1">'.$data[ 1 ].'</a>
-	<a class="coverart2">'.$data[ 2 ].'</a>
+	<a class="coverart1">'.$l1.'</a>
+	<a class="coverart2">'.$l2.'</a>
 </div>';
 		}
 	}

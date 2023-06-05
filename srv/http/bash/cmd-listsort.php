@@ -119,13 +119,13 @@ if ( isset( $argv[ 1 ] ) ) {
 	$file = $argv[ 1 ];
 	$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 	$sort = [];
-	if ( $file === '/srv/http/data/mpd/album' ) {
+	if ( $file === '/srv/http/data/mpd/albumbyartist' ) {
 		$sort1 = [];
 		foreach( $lines as $line ) {
 			if ( substr( $line, -4 ) === '.cue' ) $line = dirname( $line );
 			$sort[] = stripSort( $line ).'^x^'.$line;
 			$data1 = explode( '^^', $line );
-			$line1 = $data1[ 1 ].'^^'.$data1[ 0 ].'^^'.$data1[ 2 ];
+			$line1 = $data1[ 2 ].'^^'.$data1[ 0 ].'^^'.$data1[ 3 ];
 			$sort1[] = stripSort( $line1 ).'^x^'.$line1;
 		}
 		usort( $sort1, function( $a, $b ) {
@@ -136,7 +136,7 @@ if ( isset( $argv[ 1 ] ) ) {
 			$index = mb_substr( $line, 0, 1, 'UTF-8' );
 			$array1[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 		}
-		file_put_contents( $file.'byartist', implode( "\n", $array1 ) );
+		file_put_contents( '/srv/http/data/mpd/album', implode( "\n", $array1 ) );
 	} else {
 		foreach( $lines as $line ) {
 			$sort[] = stripSort( $line ).'^x^'.$line;

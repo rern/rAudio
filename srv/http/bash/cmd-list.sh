@@ -33,7 +33,7 @@ touch $dirmpd/listing
 
 ##### normal list #############################################
 listAll() {
-	mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' listall 2> /dev/null \
+	mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null \
 							| awk -F'/[^/]*$' 'NF && !/^\^/ {print $1}' \
 							| sort -u
 #	-F'/[^/]*$' - truncate %file% to path without filename
@@ -71,7 +71,7 @@ if [[ ! $album_artist_file ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			for album in "${albums[@]}"; do
-				album_artist_file+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%file%' find album "$album" \
+				album_artist_file+=$( mpc -f '[%albumartist%|%artist%]^^%date^^%album%^^%file%' find album "$album" \
 										| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
 										| sort -u )$'\n'
 			done
@@ -113,6 +113,7 @@ fi
 for mode in album albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
 	if [[ $mode == album ]]; then
+		filemode+=byartist
 		album=$( awk NF <<< $album_artist_file | sort -uf )
 		if [[ -e $dirmpd/albumignore ]]; then
 			readarray -t albumignore < $dirmpd/albumignore
@@ -120,7 +121,7 @@ for mode in album albumartist artist composer conductor genre date; do
 				album=$( sed "/^$line^/ d" <<< $album )
 			done
 		fi
-		album=$( awk NF <<< $album | tee $filealbum | wc -l )
+		album=$( awk NF <<< $album | tee $filemode | wc -l )
 	else
 		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
 	fi

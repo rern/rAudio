@@ -675,6 +675,7 @@ function infoLibraryOption() {
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
+			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.tapaddplay.on( 'click', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );
@@ -685,9 +686,8 @@ function infoLibraryOption() {
 				var enable = $( this ).prop( 'checked' ) ? false : true;
 				$el.fixedcover
 					.prop( 'disabled', ! enable )
-					.prop( 'checked', false );
+					.prop( 'checked', enable );
 			} );
-			$el.fixedcover.prop( 'disabled', D.hidecover );
 		}
 		, ok           : displaySave
 	} );
@@ -1216,11 +1216,10 @@ function renderLibraryList( data ) { // V.librarylist
 	var hash = versionHash();
 	var html = data.html.replace( /\^\^\^/g, hash );
 	$( '#lib-mode-list' ).after( html ).promise().done( () => {
+		V.librarytrack = $( '#lib-list .li-icon' ).hasClass( 'i-music' );
 		if ( $( '.licover' ).length ) { // V.librarytrack
-			V.librarytrack = true;
 			if ( $( '#liimg' ).attr( 'src' ).slice( 0, 16 ) === '/data/shm/online' ) $( '.licoverimg ' ).append( V.icoversave );
 		} else {
-			V.librarytrack = false;
 			imageLoad( 'lib-list' );
 		}
 		$( '.liinfopath' ).toggleClass( 'hide', [ 'sd', 'nas', 'usb', 'webradio' ].includes( V.mode ) );
