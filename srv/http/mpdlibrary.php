@@ -147,7 +147,6 @@ case 'list':
 		if ( $display->albumyear ) $filemode.= '-year';
 	}
 	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
-	if ( $mode === 'latest' ) $mode = 'album';
 	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
@@ -369,7 +368,7 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 }
 function htmlList( $lists ) { // non-file 'list' command
 	global $mode, $gmode, $html;
-	if ( $mode !== 'album' ) {
+	if ( $mode !== 'album' && $mode !== 'latest' ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$index     = strtoupper( $data[ 0 ] );
@@ -392,14 +391,13 @@ function htmlList( $lists ) { // non-file 'list' command
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$l1        = $data[ 1 ];
 			$l2        = $data[ 2 ];
+			$name      = $l1;
 			if ( $display->albumyear ) {
 				$name = $data[ 3 ];
 				$l2   = $l2 ? ( strlen( $l2 ) < 5 ? $l2 : date( 'Y', strtotime( $l2 ) ) ) : '...';
 				$l2  .= '<br>'.$name;
 			} else if ( $display->albumbyartist ) {
 				$name = $l2;
-			} else {
-				$name = $l1;
 			}
 			$html     .=
 '<div class="coverart" data-index="'.$index.'">

@@ -325,6 +325,11 @@ dabscan )
 	;;
 display )
 	pushstream display $( < $dirsystem/display.json )
+	# temp
+	if grep -q albumyear.*true $dirsystem/display.json && [[ ! -e $dirmpd/albumbyartist-year ]]; then
+		pushstream mpdupdate '{ "type": "mpd" }'
+		$dirbash/cmd-list.sh &> /dev/null &
+	fi
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
