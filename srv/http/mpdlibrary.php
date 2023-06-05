@@ -141,9 +141,13 @@ case 'home':
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
-	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display.json' ) ) $filemode.= 'byartist';
-	$lists    = file( $filemode, FILE_IGNORE_NEW_LINES );
-	htmlList( $lists );
+	if ( $mode === 'album' ) {
+		$display = json_decode( file_get_contents( '/srv/http/data/system/display.json' ) );
+		if ( $display->albumbyartist ) $filemode.= 'byartist';
+	}
+	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
+	if ( $mode === 'latest' ) $mode = 'album';
+	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
@@ -366,12 +370,9 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
-	if ( ! count( $lists ) ) exit;
-	
 	global $mode;
 	global $gmode;
 	global $html;
-	if ( $mode === 'latest' ) $mode = 'album';
 	if ( $mode !== 'album' ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
@@ -385,7 +386,7 @@ function htmlList( $lists ) { // non-file 'list' command
 </li>';
 		}
 	} else {
-		$byartist = substr_count( $lists[ 0 ], '^^' ) === 4;
+		global $display;
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$index     = strtoupper( $data[ 0 ] );
@@ -395,10 +396,21 @@ function htmlList( $lists ) { // non-file 'list' command
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
 			$l1        = $data[ 1 ];
 			$l2        = $data[ 2 ];
-			if ( $byartist ) $l2.= '<br>'.$data[ 3 ];
+			if ( $display->albumbyartist ) {
+				$name = $data[ 3 ];
+				if ( $display->albumyear ) {
+					if ( $l2 === '' ) $l2 = '...';
+					$l2.= '<br>'.$name;
+				} else {
+					$l2.= $name;
+				}
+			} else {
+				$name = $l1;
+			}
 			$html     .=
 '<div class="coverart" data-index="'.$index.'">
 	<a class="lipath">'.$path.'</a>
+	<a class="liname">'.$name.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
 	<a class="coverart1">'.$l1.'</a>
 	<a class="coverart2">'.$l2.'</a>

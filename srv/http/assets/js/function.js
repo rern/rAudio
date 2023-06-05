@@ -676,6 +676,11 @@ function infoLibraryOption() {
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
+			$el.albumbyartist.on( 'click', function() {
+				var enable = $( this ).prop( 'checked' );
+				if ( ! enable ) $el.albumyear.prop( 'checked', false );
+				$el.albumyear.prop( 'disabled', ! enable )
+			} );
 			$el.tapaddplay.on( 'click', function() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapreplaceplay.prop( 'checked', false );
 			} );
