@@ -1183,27 +1183,28 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( V.mode === 'bookmark' ) return
 	
 	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		if ( V.mode === 'playlists' ) {
-			var message = 'No saved playlists found.';
-		} else if ( V.mode === 'latest' ) {
-			var message = 'No new albums added since last update.';
-		} else {
-			var message = 'Database not yet available in this mode.'
-						 +'<br>If music files already in SD, NAS or USB,'
-						 +'<br>import them to database:'
-						 +'<div class="menu" style="width: 160px"><a class="sub nohover">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>'
-		}
-		info( {
+		var json = {
 			  icon    : 'library'
 			, title   : 'Library Database'
-			, message : message
-			, okno    : ! [ 'latest', 'playlists' ].includes( V.mode )
-			, beforeshow : () => {
+		}
+		if ( V.mode === 'playlists' ) {
+			json.message = 'No saved playlists found.';
+		} else if ( V.mode === 'latest' ) {
+			json.message = 'No new albums added since last update.';
+		} else {
+			json.message    = 'Database not yet available in this mode.'
+							 +'<br>If music files already in SD, NAS or USB,'
+							 +'<br>import them to database:'
+							 +'<div class="menu" style="width: 160px"><a class="sub nohover">'
+							 + ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>';
+			json.okno       = true;
+			json.beforeshow = () => {
 				$( '#infoContent' ).on( 'click', '.submenu', function() {
 					$( '#update' ).trigger( 'click' );
 				} );
 			}
-		} );
+		}
+		info( json );
 		return
 	}
 	
