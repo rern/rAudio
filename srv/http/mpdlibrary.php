@@ -394,8 +394,8 @@ function htmlList( $lists ) { // non-file 'list' command
 			$l2        = $data[ 2 ];
 			if ( $display->albumyear ) {
 				$name = $data[ 3 ];
-				if ( $l2 === '' ) $l2 = '...';
-				$l2.= '<br>'.$name;
+				$l2   = $l2 ? ( strlen( $l2 ) < 5 ? $l2 : date( 'Y', strtotime( $l2 ) ) ) : '...';
+				$l2  .= '<br>'.$name;
 			} else if ( $display->albumbyartist ) {
 				$name = $l2;
 			} else {
