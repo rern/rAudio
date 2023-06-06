@@ -205,7 +205,6 @@ localbrowser )
 	else
 		localbrowserDisable
 	fi
-	pushRefresh
 	if [[ $restartlocalbrowser ]]; then
 		if systemctl -q is-active localbrowser; then
 			systemctl enable bootsplash localbrowser
@@ -216,6 +215,7 @@ localbrowser )
 			localbrowserDisable
 		fi
 	fi
+	pushRefresh
 	;;
 localbrowserreload )
 	pushstream reload 1
