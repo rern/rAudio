@@ -182,11 +182,10 @@ localbrowser )
 				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
 				exit
 			fi
-			
 			restart=1
 			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 			if [[ $matrix ]]; then
-				sed 's/ROTATION_SETTING/'$rotatetxt'/; s/MATRIX_SETTING/'$matrix'/' /etc/X11/xinit/rotateconf > $rotateconf
+				sed "s/ROTATION_SETTING/$rotatetxt/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 			else 
 				rm -f $rotateconf
 			fi

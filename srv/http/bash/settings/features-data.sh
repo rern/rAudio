@@ -65,7 +65,7 @@ fi
 , "upmpdcli"         : '$upmpdcli'
 , "upmpdcliconf"     : { "OWNQUEUE": '$( grep -q -m1 'ownqueue = 1' /etc/upmpdcli.conf && echo true || echo false )' }'
 if [[ -e /etc/systemd/system/localbrowser.service ]]; then
-	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf
+	[[ ! -e /tmp/localbrowser.conf && -e $dirsystem/localbrowser.conf ]] && cp $dirsystem/localbrowser.conf /tmp
 	data+='
 , "brightness"       : '$( getContent /sys/class/backlight/rpi_backlight/brightness )'
 , "localbrowser"     : '$localbrowser'
