@@ -16,7 +16,7 @@ function stripSort( $str ) {
 	);
 	if ( !preg_match( '/[\x80-\xff]/', $string ) ) return $string;
 	
-	// strip accents
+	// strip accents: https://stackoverflow.com/a/10790734
 	$chars = array(
 		// Decompositions for Latin-1 Supplement
 		chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
@@ -26,27 +26,30 @@ function stripSort( $str ) {
 		chr(195).chr(137) => 'E', chr(195).chr(138) => 'E',
 		chr(195).chr(139) => 'E', chr(195).chr(140) => 'I',
 		chr(195).chr(141) => 'I', chr(195).chr(142) => 'I',
-		chr(195).chr(143) => 'I', chr(195).chr(145) => 'N',
+		chr(195).chr(143) => 'I',
+		chr(195).chr(145) => 'N',
 		chr(195).chr(146) => 'O', chr(195).chr(147) => 'O',
 		chr(195).chr(148) => 'O', chr(195).chr(149) => 'O',
 		chr(195).chr(150) => 'O', chr(195).chr(153) => 'U',
 		chr(195).chr(154) => 'U', chr(195).chr(155) => 'U',
-		chr(195).chr(156) => 'U', chr(195).chr(157) => 'Y',
-		chr(195).chr(159) => 's', chr(195).chr(160) => 'a',
-		chr(195).chr(161) => 'a', chr(195).chr(162) => 'a',
-		chr(195).chr(163) => 'a', chr(195).chr(164) => 'a',
-		chr(195).chr(165) => 'a', chr(195).chr(167) => 'c',
+		chr(195).chr(156) => 'U',
+		chr(195).chr(157) => 'Y',
+		chr(195).chr(159) => 's',
+		chr(195).chr(160) => 'a', chr(195).chr(161) => 'a',
+		chr(195).chr(162) => 'a', chr(195).chr(163) => 'a',
+		chr(195).chr(164) => 'a', chr(195).chr(165) => 'a',
+		chr(195).chr(167) => 'c',
 		chr(195).chr(168) => 'e', chr(195).chr(169) => 'e',
 		chr(195).chr(170) => 'e', chr(195).chr(171) => 'e',
 		chr(195).chr(172) => 'i', chr(195).chr(173) => 'i',
 		chr(195).chr(174) => 'i', chr(195).chr(175) => 'i',
-		chr(195).chr(177) => 'n', chr(195).chr(178) => 'o',
-		chr(195).chr(179) => 'o', chr(195).chr(180) => 'o',
-		chr(195).chr(181) => 'o', chr(195).chr(182) => 'o',
-		chr(195).chr(182) => 'o', chr(195).chr(185) => 'u',
-		chr(195).chr(186) => 'u', chr(195).chr(187) => 'u',
-		chr(195).chr(188) => 'u', chr(195).chr(189) => 'y',
-		chr(195).chr(191) => 'y',
+		chr(195).chr(177) => 'n',
+		chr(195).chr(178) => 'o', chr(195).chr(179) => 'o',
+		chr(195).chr(180) => 'o', chr(195).chr(181) => 'o',
+		chr(195).chr(182) => 'o', chr(195).chr(182) => 'o',
+		chr(195).chr(185) => 'u', chr(195).chr(186) => 'u',
+		chr(195).chr(187) => 'u', chr(195).chr(188) => 'u',
+		chr(195).chr(189) => 'y', chr(195).chr(191) => 'y',
 		// Decompositions for Latin Extended-A
 		chr(196).chr(128) => 'A', chr(196).chr(129) => 'a',
 		chr(196).chr(130) => 'A', chr(196).chr(131) => 'a',
@@ -90,12 +93,12 @@ function stripSort( $str ) {
 		chr(197).chr(142) => 'O', chr(197).chr(143) => 'o',
 		chr(197).chr(144) => 'O', chr(197).chr(145) => 'o',
 		chr(197).chr(146) => 'OE',chr(197).chr(147) => 'oe',
-		chr(197).chr(148) => 'R',chr(197).chr(149) => 'r',
-		chr(197).chr(150) => 'R',chr(197).chr(151) => 'r',
-		chr(197).chr(152) => 'R',chr(197).chr(153) => 'r',
-		chr(197).chr(154) => 'S',chr(197).chr(155) => 's',
-		chr(197).chr(156) => 'S',chr(197).chr(157) => 's',
-		chr(197).chr(158) => 'S',chr(197).chr(159) => 's',
+		chr(197).chr(148) => 'R', chr(197).chr(149) => 'r',
+		chr(197).chr(150) => 'R', chr(197).chr(151) => 'r',
+		chr(197).chr(152) => 'R', chr(197).chr(153) => 'r',
+		chr(197).chr(154) => 'S', chr(197).chr(155) => 's',
+		chr(197).chr(156) => 'S', chr(197).chr(157) => 's',
+		chr(197).chr(158) => 'S', chr(197).chr(159) => 's',
 		chr(197).chr(160) => 'S', chr(197).chr(161) => 's',
 		chr(197).chr(162) => 'T', chr(197).chr(163) => 't',
 		chr(197).chr(164) => 'T', chr(197).chr(165) => 't',
@@ -113,14 +116,17 @@ function stripSort( $str ) {
 		chr(197).chr(188) => 'z', chr(197).chr(189) => 'Z',
 		chr(197).chr(190) => 'z', chr(197).chr(191) => 's'
 	);
-	return strtr( $string, $chars );
+	$string = strtr($string, $chars);
+
+	return $string;
 }
 if ( isset( $argv[ 1 ] ) ) {
-	$file = $argv[ 1 ];
+	$file  = $argv[ 1 ];
 	$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
-	$sort = [];
+	$sort  = [];
 	if ( $file === '/srv/http/data/mpd/albumbyartist-year' ) {
-		$byalbumsort = [];
+		$byalbumsort  = [];
+		$byartistsort = [];
 		foreach( $lines as $line ) {
 			if ( substr( $line, -4 ) === '.cue' ) $line = dirname( $line );
 			$sort[]         = stripSort( $line ).'^x^'.$line;
@@ -133,33 +139,30 @@ if ( isset( $argv[ 1 ] ) ) {
 		usort( $byalbumsort, function( $a, $b ) {
 			return strnatcasecmp( $a, $b );
 		} );
-		$byalbum = [];
+		$byalbum      = [];
 		foreach( $byalbumsort as $line ) {
-			$index = mb_substr( $line, 0, 1, 'UTF-8' );
+			$index     = mb_substr( $line, 0, 1, 'UTF-8' );
 			$byalbum[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 		}
 		file_put_contents( '/srv/http/data/mpd/album', implode( "\n", $byalbum ) );
-		
 		usort( $byartistsort, function( $a, $b ) {
 			return strnatcasecmp( $a, $b );
 		} );
-		$byartist = [];
+		$byartist     = [];
 		foreach( $byartistsort as $line ) {
-			$index = mb_substr( $line, 0, 1, 'UTF-8' );
+			$index      = mb_substr( $line, 0, 1, 'UTF-8' );
 			$byartist[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 		}
 		file_put_contents( '/srv/http/data/mpd/albumbyartist', implode( "\n", $byartist ) );
 	} else {
-		foreach( $lines as $line ) {
-			$sort[] = stripSort( $line ).'^x^'.$line;
-		}
+		foreach( $lines as $line ) $sort[] = stripSort( $line ).'^x^'.$line;
 	}
 	usort( $sort, function( $a, $b ) {
 		return strnatcasecmp( $a, $b );
 	} );
 	$array = [];
 	foreach( $sort as $line ) {
-		$index = mb_substr( $line, 0, 1, 'UTF-8' );
+		$index   = mb_substr( $line, 0, 1, 'UTF-8' );
 		$array[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 	}
 	file_put_contents( $file, implode( "\n", $array ) );
