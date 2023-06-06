@@ -177,7 +177,8 @@ localbrowser )
 				
 			fi
 		else # hdmi
-			rotateprev=$( awk '/rotate/ {print $NF}' /etc/X11/xorg.conf.d/99-raspi-rotate.conf | tr -d '"' )
+			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
+			[[ -e $rotateconf ]] && rotateprev=$( awk '/rotate/ {print $NF}' $rotateconf | tr -d '"' )
 			case $ROTATE in
 				0 )   rotate=NORMAL;;
 				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
@@ -185,7 +186,6 @@ localbrowser )
 				180)  rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
 			if [[ $rotateprev != $rotate ]]; then
-				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 				if [[ $ROTATE == 0 ]]; then
 					rm -f $rotateconf
 				else 
@@ -200,12 +200,13 @@ localbrowser )
 		fi
 		if [[ $restart ]] || ! systemctl -q is-active localbrowser; then
 			restartlocalbrowser=1
-			systemctl restart bootsplash localbrowser
+			systemctl restart bootsplash localbrowser &> /dev/null
 		fi
 	else
 		localbrowserDisable
 	fi
 	if [[ $restartlocalbrowser ]]; then
+		sleep 2
 		if systemctl -q is-active localbrowser; then
 			systemctl enable bootsplash localbrowser
 			systemctl stop bluetoothbutton
