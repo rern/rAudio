@@ -53,7 +53,7 @@ for line in "${aplay[@]}"; do
 	device=${cnd[2]}
 	if [[ ${aplayname:0:8} == snd_rpi_ ]]; then
 		aplayname=$( tr _ - <<< ${aplayname:8} ) # some snd_rpi_xxx_yyy > xxx-yyy
-	elif grep -q "$aplayname" <<< $devices; then # rpi4: hdmi1 + hdmi1 > hdmi1 + hdmi2
+	elif grep -q "aplayname.*$aplayname" <<< $devices; then # rpi4: hdmi1 + hdmi1 > hdmi1 + hdmi2
 		lastchar=${aplayname: -1}
 		[[ $lastchar =~ [0-9] ]] && aplayname=${aplayname:0:-1}$(( $lastchar + 1 ))
 	fi
