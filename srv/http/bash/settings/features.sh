@@ -167,27 +167,31 @@ localbrowser )
 		else
 			restart=1
 		fi
-		if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
+		if grep -E -q 'waveshare|tft35a' /boot/config.txt; then # tft
+			sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
+			cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
+			if [[ ! -e /tmp/localbrowser.conf || $diffrotate ]]; then
+				echo Rotate GPIO LCD screen >> $dirshm/reboot
+				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
+				exit
+				
+			fi
+		else # hdmi
+			rotatetxtprev=$( awk '/rotate/ {print $NF}' /etc/X11/xorg.conf.d/99-raspi-rotate.conf | tr -d '"' )
 			case $ROTATE in
 				0 )   rotatetxt=NORMAL;;
 				270 ) rotatetxt=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
 				90)   rotatetxt=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
 				180)  rotatetxt=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			$dirbash/cmd.sh rotatesplash
-			if grep -E -q 'waveshare|tft35a' /boot/config.txt; then
-				sed -i -E '/waveshare|tft35a/ s/(rotate=).*/\1'$ROTATE'/' /boot/config.txt
-				cp -f /etc/X11/{lcd$ROTATE,xorg.conf.d/99-calibration.conf}
-				echo Rotate GPIO LCD screen >> $dirshm/reboot
-				notify lcd 'Rotate GPIO LCD screen' 'Reboot required.' 5000
-				exit
-			fi
-			restart=1
-			rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
-			if [[ $matrix ]]; then
-				sed "s/ROTATION_SETTING/$rotatetxt/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
-			else 
-				rm -f $rotateconf
+			if [[ $rotatetxtprev != $rotatetxt ]]; then
+				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
+				if [[ $ROTATE == 0 ]]; then
+					rm -f $rotateconf
+				else 
+					sed "s/ROTATION_SETTING/$rotatetxt/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+				fi
+				$dirbash/cmd.sh rotatesplash
 			fi
 		fi
 		if [[ $diffscreenoff ]]; then
