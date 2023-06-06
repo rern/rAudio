@@ -195,8 +195,8 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 </table>
 <div id="infoRange"><input type="range" min="0" max="255" value="${ S.brightness }"><div>Brightness</div></div><br>
 <div class="btnbottom">
-	&nbsp;<span class="reload">Reload${ ico( 'redo' ) }</span>
-	<span class="screenoff">${ ico( 'screenoff' ) }On/Off</span>
+	&nbsp;<span class="reload">Reload ${ ico( 'redo' ) }</span>&emsp;
+	<span class="screenoff">${ ico( 'screenoff' ) } On/Off</span><br>&nbsp;
 </div>`;
 	info( {
 		  icon         : SW.icon
