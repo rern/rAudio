@@ -909,7 +909,7 @@ wrdirdelete )
 wrdirnew )
 	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
 	mkdir -p "$path"
-	chown http:http "$path"
+	chown -h http:http "$path"
 	chmod 755 "$path"
 	pushstreamRadioList
 	;;
