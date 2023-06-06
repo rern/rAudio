@@ -177,19 +177,19 @@ localbrowser )
 				
 			fi
 		else # hdmi
-			rotatetxtprev=$( awk '/rotate/ {print $NF}' /etc/X11/xorg.conf.d/99-raspi-rotate.conf | tr -d '"' )
+			rotateprev=$( awk '/rotate/ {print $NF}' /etc/X11/xorg.conf.d/99-raspi-rotate.conf | tr -d '"' )
 			case $ROTATE in
-				0 )   rotatetxt=NORMAL;;
-				270 ) rotatetxt=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
-				90)   rotatetxt=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
-				180)  rotatetxt=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
+				0 )   rotate=NORMAL;;
+				270 ) rotate=CCW && matrix='0 1 0 -1 0 1 0 0 1';;
+				90)   rotate=CW  && matrix='0 -1 1 1 0 0 0 0 1';;
+				180)  rotate=UD  && matrix='-1 0 1 0 -1 1 0 0 1';;
 			esac
-			if [[ $rotatetxtprev != $rotatetxt ]]; then
+			if [[ $rotateprev != $rotate ]]; then
 				rotateconf=/etc/X11/xorg.conf.d/99-raspi-rotate.conf
 				if [[ $ROTATE == 0 ]]; then
 					rm -f $rotateconf
 				else 
-					sed "s/ROTATION_SETTING/$rotatetxt/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
+					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
 				$dirbash/cmd.sh rotatesplash
 			fi
