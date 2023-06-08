@@ -102,8 +102,11 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	config=$( grep -v dtoverlay=disable-bt /boot/config.txt )
+	grep -q 'krnbt.*off' /boot/overlays/README && newkernel=1 # temp
+	config=$( grep -E -v 'disable-bt|krnbt=on' /boot/config.txt )
 	if [[ $ON ]]; then
+		[[ ! $newkernel ]] && config+="
+dtparam=krnbt=on"
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -121,7 +124,7 @@ bluetooth )
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		config+='
+		[[ $newkernel ]] && config+='
 dtoverlay=disable-bt'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth

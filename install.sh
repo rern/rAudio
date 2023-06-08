@@ -248,12 +248,3 @@ if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
 	$dirsettings/player-conf.sh
 	echo "$info Re-enable again: Volume Control - None/0dB"
 fi
-
-# 20230610
-if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
-	sed -i '/^dtparam=krnbt=on/ d' /boot/config.txt
-else
-	grep -q onboardwireless $dirshm/cpuinfo && echo '
-dtoverlay=disable-bt' >> /boot/config.txt
-fi
-
