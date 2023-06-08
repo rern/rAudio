@@ -1389,13 +1389,18 @@ i.map.disabled, .map.disabled i {
 #infoIcon .button-coverart {
 	margin-left: 0;
 }
+.button-coverart::before,
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
 	content: '\f528';
 	font-family: rern;
 	font-size: 26px;
-	text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.button-coverart::before {
+	position: absolute;
+	content: '\f52C';
+	color: var( --cg );
 }
 .button-coverart img {
 	position: absolute;
