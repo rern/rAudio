@@ -6,7 +6,7 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230610
+# 20230609
 rm -f $dirshm/system
 
 file=$dirsystem/localbrowser.conf
