@@ -243,8 +243,10 @@ if grep -q /srv/http/data /etc/exports; then
 fi
 
 # 20230528
-if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
-	rm -f $dirshm/mixernone $dirsystem/mixertype-*
-	$dirsettings/player-conf.sh
-	echo "$info Re-enable again: Volume Control - None/0dB"
+if [[ -e $dirshm/mixernone && grep -q . $dirshm/amixercontrol ]]; then
+	if [[ $( volumeGet valdb | jq .db ) != 0 ]]; then
+		rm -f $dirshm/mixernone $dirsystem/mixertype-*
+		$dirsettings/player-conf.sh
+		echo "$info Re-enable again: Volume Control - None/0dB"
+	fi
 fi
