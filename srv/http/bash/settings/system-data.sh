@@ -258,7 +258,7 @@ data+='
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
 
-if [[ $onboardsound ]]; then
+if grep -q onboardsound=true $dirshm/cpuinfo; then
 	data+='
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
