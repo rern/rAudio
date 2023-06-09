@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. $dirshm/cpuinfo
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
@@ -57,7 +58,6 @@ else
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		. $dirshm/cpuinfo
 		soc=BCM
 		case $C in
 			0 ) soc+=2835;; # 0, 1
@@ -258,7 +258,7 @@ data+='
 , "vuledconf"         : '$( conf2json $dirsystem/vuled.conf )'
 , "warning"           : "'$warning'"'
 
-if grep -q onboardsound=true $dirshm/cpuinfo; then
+if [[ $onboardsound ]]; then
 	data+='
 , "audio"             : '$( grep -q ^dtparam=audio=on /boot/config.txt && echo true )'
 , "audiocards"        : '$( aplay -l 2> /dev/null | grep ^card | grep -q -v 'bcm2835\|Loopback' && echo true )
