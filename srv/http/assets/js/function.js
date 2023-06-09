@@ -1157,12 +1157,17 @@ function renderLibrary() { // library home
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-	renderLibraryCounts();
+	if ( D.count ) {
+		renderLibraryCounts();
+		$( '.mode gr' ).removeClass( 'hide' );
+	} else {
+		$( '.mode gr' ).addClass( 'hide' );
+	}
 }
 function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? '&ensp;'+ v.toLocaleString() : '' ) );
+	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' ) );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {
