@@ -452,7 +452,7 @@ $( '#setting-tft' ).on( 'click', function() {
 			, 'Waveshare (B) Rev 2.0' : 'waveshare35b-v2'
 			, 'Waveshare (C)'         : 'waveshare35c'
 		}
-		, values       : S.tftconf || 'tft35a'
+		, values       : { MODEL: S.tftconf || 'tft35a' }
 		, checkchanged : S.tft
 		, boxwidth     : 190
 		, buttonlabel  : ! buttoncalibrate ? '' : 'Calibrate'

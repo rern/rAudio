@@ -165,11 +165,10 @@ statusalbumignore )
 statusbtreceiver )
 	mac=$( cut -d' ' -f1 $dirshm/btconnected )
 	echo "\
-<bll># bluealsa-aplay -L</bll>
-$( bluealsa-aplay -L | grep -A2 $mac )
+<c>$( pacman -Q bluealsa )</c>
 
-<bll># bluetoothctl info $mac</bll>
-$( bluetoothctl info $mac )"
+<bll># bluealsa-aplay -L</bll>
+$( bluealsa-aplay -L | grep -A2 $mac )"
 	;;
 statusmpdignore )
 	file=$dirmpd/mpdignorelist

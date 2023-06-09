@@ -3,7 +3,7 @@
 $id_data = [
 	  'audiooutput'   => [ 'name' => 'Device',                                                 'setting' => 'none' ]
 	, 'autoupdate'    => [ 'name' => 'Library Auto Update',   'sub' => 'auto_update',          'setting' => false ]
-	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluetoothctl',         'setting' => 'custom', 'status' => true ]
+	, 'btreceiver'    => [ 'name' => 'Bluetooth',             'sub' => 'bluealsa',             'setting' => 'custom', 'status' => true ]
 	, 'buffer'        => [ 'name' => 'Buffer - Audio',        'sub' => 'audio_buffer' ]
 	, 'crossfade'     => [ 'name' => 'Cross-Fading',          'sub' => 'crossfade' ]
 	, 'custom'        => [ 'name' => "User's Configurations", 'sub' => 'custom' ]

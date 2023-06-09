@@ -84,11 +84,11 @@ var chkdisplay = {
 			, label      : 'Label'
 	}
 	, liboption : {
-		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artists'
+		  albumbyartist  : ico( 'album' ) +'<gr>Album</gr> - Sort by artist'
+		, albumyear      : ico( 'album' ) +'Sort by artist > year'
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
 		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
-		, '-'            : ''
 		, backonleft     : ico( 'arrow-left bl' ) +'Back button on left side'
 		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
@@ -397,8 +397,8 @@ $( '#displayplaylist' ).on( 'click', function() {
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
 	var keys   = Object.keys( chkplaylist );
-	var values = [];
-	keys.forEach( k => values.push( D[ k ] ) );
+	var values = {};
+	keys.forEach( k => values[ k ] = D[ k ] );
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Playlist'
@@ -680,24 +680,22 @@ $( '#volmute, #volM' ).on( 'click', function() {
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
-	if ( [ 'volume-band-dn', 'volume-band-up' ].includes( e.currentTarget.id ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
+	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup', function( e ) {
 	clearInterval( V.interval.volume );
-	if ( ! $( '#volume-bar' ).hasClass( 'hide' ) ) {
+	if ( D.volume ) {
+		$( '#volume-text' ).text( S.volume );
+		$( '#volume-bar' ).css( 'width', S.volume +'%' );
+	} else {
+		$volumeRS.setValue( S.volume );
 		clearTimeout( V.volumebar );
 		V.volumebar = setTimeout( volumeBarHide, 3000 );
 	}
 } ).press( function( e ) {
+	clearTimeout( V.volumebar );
+	if ( ! D.volume ) $( '#volume-bar, #volume-text' ).removeClass( 'hide' );
 	var up = $( e.currentTarget ).hasClass( 'up' );
-	V.interval.volume = setInterval( () => {
-		volumeUpDown( up );
-		if ( $( e.currentTarget ).hasClass( 'band' ) ) {
-			clearTimeout( V.volumebar );
-			$( '#volume-bar, #volume-text' ).removeClass( 'hide' );
-			$( '#volume-text' ).text( vol );
-			$( '#volume-bar' ).css( 'width', vol +'%' );
-		}
-	}, 100 );
+	V.interval.volume = setInterval( () => volumeUpDown( up ), 100 );
 } );
 $( '#volume-text' ).on( 'click', function() { // mute / unmute
 	clearTimeout( V.volumebar );
@@ -1185,27 +1183,28 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 	if ( V.mode === 'bookmark' ) return
 	
 	if ( ! C[ V.mode ] && V.mode.slice( -5 ) !== 'radio' ) {
-		if ( V.mode === 'playlists' ) {
-			var message = 'No saved playlists found.';
-		} else if ( V.mode === 'latest' ) {
-			var message = 'No new albums added since last update.';
-		} else {
-			var message = 'Database not yet available in this mode.'
-						 +'<br>If music files already in SD, NAS or USB,'
-						 +'<br>import them to database:'
-						 +'<div class="menu" style="width: 160px"><a class="sub nohover">'+ ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>'
-		}
-		info( {
+		var json = {
 			  icon    : 'library'
 			, title   : 'Library Database'
-			, message : message
-			, okno    : true
-			, beforeshow : () => {
+		}
+		if ( V.mode === 'playlists' ) {
+			json.message = 'No saved playlists found.';
+		} else if ( V.mode === 'latest' ) {
+			json.message = 'No new albums added since last update.';
+		} else {
+			json.message    = 'Database not yet available in this mode.'
+							 +'<br>If music files already in SD, NAS or USB,'
+							 +'<br>import them to database:'
+							 +'<div class="menu" style="width: 160px"><a class="sub nohover">'
+							 + ico( 'library' )+' Library</a>'+ ico( 'refresh-library submenu bgm' ) +'</div>';
+			json.okno       = true;
+			json.beforeshow = () => {
 				$( '#infoContent' ).on( 'click', '.submenu', function() {
 					$( '#update' ).trigger( 'click' );
 				} );
 			}
-		} );
+		}
+		info( json );
 		return
 	}
 	
@@ -1433,7 +1432,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 	list( query, function( html ) {
 		var data = {
 			  html      : html
-			, modetitle : $this.find( D.albumbyartist ? '.coverart2' : '.coverart1' ).text()
+			, modetitle : $this.find( '.liname' ).text()
 			, path      : 'ALBUM'
 		}
 		renderLibraryList( data );

@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1685410296' );
+	src         : url( '/assets/fonts/rern.woff2?v=1685865311' );
 }
 @font-face {
 	font-family : Lato;
@@ -726,6 +726,9 @@ hr {
 	left: 0;
 	margin: 10px auto;
 	text-align: left;
+}
+#infoContent .menu a {
+	height: 41px;
 }
 #infoContent .menu i {
 	width: 40px;

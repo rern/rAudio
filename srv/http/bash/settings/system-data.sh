@@ -57,6 +57,7 @@ else
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
+		. $dirshm/cpuinfo
 		soc=BCM
 		case $C in
 			0 ) soc+=2835;; # 0, 1
@@ -242,7 +243,7 @@ data+='
 , "rotaryencoder"     : '$rotaryencoder'
 , "rotaryencoderconf" : '$( conf2json rotaryencoder.conf )'
 , "rpi01"             : '$( exists /boot/kernel.img )'
-, "shareddata"        : '$( [[ -L $dirmpd && ! $nfsserver ]] && echo true )'
+, "shareddata"        : '$( [[ -L $dirmpd && $nfsserver == false ]] && echo true )'
 , "soundprofile"      : '$( exists $dirsystem/soundprofile )'
 , "soundprofileconf"  : '$soundprofileconf'
 , "status"            : "'$status'"
@@ -271,7 +272,7 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "wlanconf"          : '$wlanconf'
 , "wlanconnected"     : '$( ip r | grep -q -m1 "^default.*wlan0" && echo true )
 	discoverable=true
-	if grep -q -m1 ^dtparam=krnbt=on /boot/config.txt; then
+	if ! grep -q ^dtoverlay=disable-bt /boot/config.txt; then
 		bluetoothon=true
 		bluetoothactive=$bluetooth
 		if [[ $bluetoothactive == true ]]; then

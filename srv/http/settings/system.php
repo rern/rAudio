@@ -8,7 +8,7 @@ $id_data = [
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
-	, 'hdmi'          => [ 'name' => 'HDMI',                                      'setting' => false ]
+	, 'hdmi'          => [ 'name' => 'HDMI',              'sub' => 'hot plug',    'setting' => false ]
 	, 'hostname'      => [ 'name' => 'Player Name',                               'setting' => 'none' ]
 	, 'lcdchar'       => [ 'name' => 'Character LCD',     'sub' => 'HD44780' ]
 	, 'mpdoled'       => [ 'name' => 'Spectrum OLED' ]

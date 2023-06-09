@@ -145,10 +145,11 @@ $( '.col-r .switch' ).press( function( e ) {
 // ----------------------------------------------------------------------
 function banner( icon, title, message, delay ) {
 	clearTimeout( I.timeoutbanner );
+	var bottom = $( '#bar-bottom' ).is( '.transparent, :hidden' ) || ! $( '#loader' ).hasClass( 'hide' ) ? '10px' : '';
 	$( '#banner' )
 		.html( '<div id="bannerIcon">'+ ico( icon ) +'</div><div id="bannerTitle">'+ title +'</div>'
 			  +'<div id="bannerMessage">'+ message +'</div>' )
-		.css( 'bottom', $( '#bar-bottom' ).is( '.transparent, :hidden' ) ? '10px' : '' )
+		.css( 'bottom', bottom )
 		.removeClass( 'hide' );
 	if ( delay !== -1 ) I.timeoutbanner = setTimeout( bannerHide, delay || 3000 );
 }
@@ -987,25 +988,15 @@ function local( delay ) {
 
 // pushstream -----------------------------------------------------------------
 if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
-	var pushstream  = new PushStream( {
-		  modes                                 : 'websocket'
-		, reconnectOnChannelUnavailableInterval : 3000
-	} );
-	function pushstreamChannel( channels ) {
-		channels.forEach( channel => pushstream.addChannel( channel ) );
-		pushstream.connect();
-	}
 	function psNotify( data ) {
 		var icon    = data.icon;
 		var title   = data.title;
 		var message = data.message;
 		var delay   = data.delay;
-		
-		banner( icon, title, message, delay );
 		if ( [ 'Off ...', 'Reboot ...' ].includes( message ) ) {
 			var type  = message.split( ' ' )[ 0 ].toLowerCase();
 			V[ type ] = true;
-			setTimeout( loader, 0 );
+			loader();
 		} else if ( ! page ) {
 			if ( message === 'Change track ...' ) { // audiocd
 				clearIntervalAll();
@@ -1015,8 +1006,17 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 				if ( V.mode === 'latest' ) $( '#button-library' ).trigger( 'click' );
 			}
 		}
+		banner( icon, title, message, delay );
 	}
 
+	var pushstream  = new PushStream( {
+		  modes                                 : 'websocket'
+		, reconnectOnChannelUnavailableInterval : 3000
+	} );
+	function pushstreamChannel( channels ) {
+		channels.forEach( channel => pushstream.addChannel( channel ) );
+		pushstream.connect();
+	}
 	pushstream.onstatuschange = status => { // 0 - disconnected; 1 - reconnect; 2 - connected
 		if ( status === 2 ) {        // connected
 			if ( V.reboot ) {

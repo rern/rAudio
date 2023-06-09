@@ -102,15 +102,11 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	config=$( grep -v dtparam=krnbt=on /boot/config.txt )
+	grep -q 'krnbt.*off' /boot/overlays/README && newkernel=1 # temp
+	config=$( grep -E -v 'disable-bt|krnbt=on' /boot/config.txt )
 	if [[ $ON ]]; then
-		config+="
+		[[ ! $newkernel ]] && config+="
 dtparam=krnbt=on"
-		if ls -l /sys/class/bluetooth | grep -q -m1 serial; then
-			systemctl start bluetooth
-			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
-			rfkill | grep -q -m1 bluetooth && pushstream refresh '{ "page": "networks", "activebt": true }'
-		fi
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -118,11 +114,18 @@ dtparam=krnbt=on"
 			yesno=no
 			rm $dirsystem/btdiscoverable
 		fi
-		bluetoothctl discoverable $yesno &> /dev/null
-		[[ -e $dirsystem/btformat  ]] && prevbtformat=true || prevbtformat=
-		[[ $FORMAT ]] && touch $dirsystem/btformat || rm $dirsystem/btformat
+		if ls -l /sys/class/bluetooth 2> /dev/null | grep -q -m1 serial; then
+			systemctl start bluetooth
+			bluetoothctl discoverable $yesno &> /dev/null
+			! grep -q 'device.*bluealsa' $dirmpdconf/output.conf && $dirsettings/player-conf.sh
+			rfkill | grep -q -m1 bluetooth && pushstream refresh '{ "page": "networks", "activebt": true }'
+		fi
+		[[ -e $dirsystem/btformat  ]] && prevbtformat=true
+		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
+		[[ $newkernel ]] && config+='
+dtoverlay=disable-bt'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
 			rm -f $dirshm/{btdevice,btreceiver,btsender}
@@ -137,6 +140,18 @@ bluetoothstart )
 	bluetoothctl discoverable $yesno &> /dev/null
 	bluetoothctl discoverable-timeout 0 &> /dev/null
 	bluetoothctl pairable yes &> /dev/null
+	;;
+cpuinfo )
+	hwrevision=$( grep ^Revision /proc/cpuinfo )
+	BB=${hwrevision: -3:2}
+	C=${hwrevision: -4:1}
+										  data=BB=$BB$'\n'
+										  data+=C=$C$'\n'
+	[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
+	[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
+	[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero
+	[[ $BB == 0d ]]                    && data+=rpi3bplus=true$'\n'       # 3B+
+	echo "$data" > $dirshm/cpuinfo
 	;;
 hddinfo )
 	echo -n "\
@@ -546,9 +561,10 @@ tft )
 	if [[ $ON ]]; then
 		[[ $MODEL != tft35a ]] && echo $MODEL > $dirsystem/lcdmodel || rm $dirsystem/lcdmodel
 		sed -i '1 s/$/ fbcon=map:10 fbcon=font:ProFont6x11/' /boot/cmdline.txt
+		rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 		config+="
 hdmi_force_hotplug=1
-dtoverlay=$MODEL:rotate=0"
+dtoverlay=$MODEL:rotate=$rotate"
 		calibrationconf=/etc/X11/xorg.conf.d/99-calibration.conf
 		[[ ! -e $calibrationconf ]] && cp /etc/X11/lcd0 $calibrationconf
 		sed -i 's/fb0/fb1/' /etc/X11/xorg.conf.d/99-fbturbo.conf
@@ -560,8 +576,8 @@ dtoverlay=$MODEL:rotate=0"
 	configTxt
 	;;
 tftcalibrate )
-	degree=$( grep rotate /boot/config.txt | cut -d= -f3 )
-	cp -f /etc/X11/{lcd$degree,xorg.conf.d/99-calibration.conf}
+	rotate=$( grep rotate /boot/config.txt | cut -d= -f3 )
+	cp -f /etc/X11/{lcd$rotate,xorg.conf.d/99-calibration.conf}
 	systemctl stop localbrowser
 	value=$( DISPLAY=:0 xinput_calibrator | grep Calibration | cut -d'"' -f4 )
 	if [[ $value ]]; then

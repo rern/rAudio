@@ -3,8 +3,8 @@
 find, list, ls, search, track, webradio
 
 Album
-	/srv/http/data/mpd/album: album-artist^-file
-	/srv/http/data/mpd/albumbyartist: artist-album-file
+	/srv/http/data/mpd/album: album-artist-file
+	/srv/http/data/mpd/albumbyartist: artist-date-album-file
 			track list: mpc ls -f %*% $path
 Artist
 	mpc list artist > /srv/http/data/mpd/artist
@@ -141,9 +141,13 @@ case 'home':
 	break;
 case 'list':
 	$filemode = '/srv/http/data/mpd/'.$mode;
-	if ( $mode === 'album' && exec( 'grep "albumbyartist.*true" /srv/http/data/system/display.json' ) ) $filemode.= 'byartist';
-	$lists    = file( $filemode, FILE_IGNORE_NEW_LINES );
-	htmlList( $lists );
+	if ( $mode === 'album' ) {
+		$display = json_decode( file_get_contents( '/srv/http/data/system/display.json' ) );
+		if ( $display->albumbyartist ) $filemode.= 'byartist';
+		if ( $display->albumyear ) $filemode.= '-year';
+	}
+	$lists = file( $filemode, FILE_IGNORE_NEW_LINES );
+	if ( count( $lists ) ) htmlList( $lists );
 	break;
 case 'ls':
 	if ( $mode !== 'album' ) {
@@ -201,11 +205,9 @@ case 'radio':
 	$files   = [];
 	$indexes = [];
 	if ( $mode === 'search' ) {
-		$searchmode = 1;
 		exec( "grep -ril --exclude-dir=img '".$string."' ".$dir." | sed 's|^".$dir."||'"
 			, $files );
 	} else {
-		$searchmode = 0;
 		$dir.= $string;
 		exec( 'ls -1 "'.$dir.'" | grep -E -v "^img|\.jpg$|\.gif$"'
 			, $lists );
@@ -273,8 +275,7 @@ function escape( $string ) { // for passing bash arguments
 	return preg_replace( '/(["`])/', '\\\\\1', $string );
 }
 function htmlDirectory( $lists ) {
-	global $gmode;
-	global $html;
+	global $gmode, $html;
 	foreach( $lists as $list ) {
 		$dir        = basename( $list );
 		$each       = ( object )[];
@@ -314,9 +315,7 @@ function htmlDirectory( $lists ) {
 function htmlFind( $lists, $f ) { // non-file 'find' command
 	if ( ! count( $lists ) ) exit;
 	
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;
@@ -368,13 +367,8 @@ function htmlFind( $lists, $f ) { // non-file 'find' command
 	echo $html;
 }
 function htmlList( $lists ) { // non-file 'list' command
-	if ( ! count( $lists ) ) exit;
-	
-	global $mode;
-	global $gmode;
-	global $html;
-	if ( $mode === 'latest' ) $mode = 'album';
-	if ( $mode !== 'album' ) {
+	global $mode, $gmode, $html;
+	if ( $mode !== 'album' && $mode !== 'latest' ) {
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$index     = strtoupper( $data[ 0 ] );
@@ -387,19 +381,31 @@ function htmlList( $lists ) { // non-file 'list' command
 </li>';
 		}
 	} else {
+		global $display;
 		foreach( $lists as $list ) {
 			$data      = explode( '^^', $list );
 			$index     = strtoupper( $data[ 0 ] );
 			$indexes[] = $index;
-			$path      = $data[ 3 ];
+			$path      = end( $data );
 			if ( substr( $path, -4 ) === '.cue' ) $path = dirname( $path );
 			$coverfile = rawurlencode( '/mnt/MPD/'.$path.'/coverart.jpg' ); // replaced with icon on load error(faster than existing check)
+			$l1        = $data[ 1 ];
+			$l2        = $data[ 2 ];
+			$name      = $l1;
+			if ( $display->albumyear ) {
+				$name = $data[ 3 ];
+				$l2   = $l2 ? ( strlen( $l2 ) < 5 ? $l2 : date( 'Y', strtotime( $l2 ) ) ) : '...';
+				$l2  .= '<br>'.$name;
+			} else if ( $display->albumbyartist ) {
+				$name = $l2;
+			}
 			$html     .=
 '<div class="coverart" data-index="'.$index.'">
 	<a class="lipath">'.$path.'</a>
+	<a class="liname">'.$name.'</a>
 	<div><img class="lazyload" data-src="'.$coverfile.'^^^"></div>
-	<a class="coverart1">'.$data[ 1 ].'</a>
-	<a class="coverart2">'.$data[ 2 ].'</a>
+	<a class="coverart1">'.$l1.'</a>
+	<a class="coverart2">'.$l2.'</a>
 </div>';
 		}
 	}
@@ -411,9 +417,8 @@ function htmlList( $lists ) { // non-file 'list' command
 	echo $html;
 }
 function htmlRadio( $subdirs, $files, $dir ) {
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
+	$searchmode = $mode === 'search';
 	if ( count( $subdirs ) ) {
 		foreach( $subdirs as $subdir ) {
 			$each         = ( object )[];
@@ -496,9 +501,7 @@ function htmlRadio( $subdirs, $files, $dir ) {
 function htmlTrack( $lists, $f, $filemode = '', $string = '', $dirs = '' ) { // track list - no sort ($string: cuefile or search)
 	if ( ! count( $lists ) ) exit;
 	
-	global $mode;
-	global $gmode;
-	global $html;
+	global $mode, $gmode, $html;
 	$fL = count( $f );
 	foreach( $lists as $list ) {
 		if ( $list === '' ) continue;

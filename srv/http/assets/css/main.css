@@ -1237,9 +1237,6 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
-.mode gr {
-	margin-left: 8px;
-}
 #lib-mode-list gr {
 	font-size: 14px;
 }
@@ -1392,13 +1389,18 @@ i.map.disabled, .map.disabled i {
 #infoIcon .button-coverart {
 	margin-left: 0;
 }
+.button-coverart::before,
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
 	content: '\f528';
 	font-family: rern;
 	font-size: 26px;
-	text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+.button-coverart::before {
+	position: absolute;
+	content: '\f52C';
+	color: var( --cg );
 }
 .button-coverart img {
 	position: absolute;
@@ -1546,11 +1548,10 @@ i.map.disabled, .map.disabled i {
 .coverart2 {
 	display: block;
 	padding-left: 2px;
-	line-height: 18px;
+	line-height: 15px;
 }
 .coverart1 {
 	padding-top: 3px;
-	line-height: 15px;
 }
 .coverart2 {
 	color: var( --cg60 );
@@ -2184,7 +2185,7 @@ li.active .li2 bl {
 /************************************************************************************/
 @media ( max-width: 320px ) and ( max-height: 480px ) {
 	#page-playback {
-		padding-top: 30px !important;
+		padding: 30px 0 0 0;
 		overflow: hidden;
 	}
 	#sampling,
@@ -2197,6 +2198,7 @@ li.active .li2 bl {
 }
 @media ( max-width: 480px ) and ( max-height: 320px ) {
 	#page-playback {
+		height: 100vh;
 		--scale: 0.65;
 		padding: 40px 0 0 !important;
 	}

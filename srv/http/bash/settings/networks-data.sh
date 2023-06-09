@@ -71,7 +71,7 @@ if [[ $1 == pushwl ]]; then
 fi
 
 # bluetooth
-rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
+rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=true
 [[ $activebt ]] && listbt=$( listBluetooth )
 
 # wlan
@@ -81,11 +81,10 @@ rfkill | grep -q -m1 bluetooth && systemctl -q is-active bluetooth && activebt=1
 ifconfiglan=$( ifconfig | grep -A1 ^e )
 [[ $ifconfiglan ]] && ipeth=$( grep inet <<< $ifconfiglan | awk '{print $2}' )
 if [[ $ipeth ]]; then
-	ipr=$( ip r | grep ^default.*$lan )
+	landev=$( grep ^e <<< $ifconfiglan | cut -d: -f1 )
+	ipr=$( ip r | grep ^default.*$landev )
 	static=$( [[ $ipr != *"dhcp src $ipeth "* ]] && echo true )
 	gateway=$( cut -d' ' -f3 <<< $ipr )
-#	dns=$( sed -n '/^nameserver/ {s/.* //;p}' /etc/resolv.conf )
-#	subnet=$( ifconfig $lan | awk '/netmask/ {print $4}' )
 	[[ ! $gateway ]] && gateway=$( ip r | awk '/^default/ {print $3;exit}' )
 	if [[ $ipeth ]]; then
 		hostname=$( avahi-resolve -a4 $ipeth | awk '{print $NF}' )

@@ -71,18 +71,12 @@ pushstreamVolume() {
 	pushstream volume '{ "type": "'$1'", "val": '$2' }'
 }
 rotateSplash() {
-	local degree rotate
+	local rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
-	case $rotate in
-		NORMAL ) degree=0;;
-		CCW )    degree=-90;;
-		CW )     degree=90;;
-		UD )     degree=180;;
-	esac
 	convert \
 		-density 48 \
 		-background none $dirimg/icon.svg \
-		-rotate $degree \
+		-rotate $rotate \
 		-gravity center \
 		-background '#000' \
 		-extent 1920x1080 \
@@ -331,6 +325,11 @@ dabscan )
 	;;
 display )
 	pushstream display $( < $dirsystem/display.json )
+	# temp
+	if grep -q albumyear.*true $dirsystem/display.json && [[ ! -e $dirmpd/albumbyartist-year ]]; then
+		pushstream mpdupdate '{ "type": "mpd" }'
+		$dirbash/cmd-list.sh &> /dev/null &
+	fi
 	[[ -e $dirsystem/vumeter ]] && prevvumeter=1
 	grep -q -m1 vumeter.*true $dirsystem/display.json && touch $dirsystem/vumeter && vumeter=1
 	[[ $prevvumeter == $vumeter ]] && exit
@@ -910,7 +909,7 @@ wrdirdelete )
 wrdirnew )
 	[[ $DIR ]] && path="$dirwebradio/$DIR/$SUB" || path="$dirwebradio/$SUB"
 	mkdir -p "$path"
-	chown http:http "$path"
+	chown -h http:http "$path"
 	chmod 755 "$path"
 	pushstreamRadioList
 	;;

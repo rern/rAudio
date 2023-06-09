@@ -124,8 +124,7 @@ function htmlSetting( $data ) {
 		return;
 	}
 	
-	global $page;
-	global $id_data;
+	global $page, $id_data;
 	$id          = $data[ 'id' ];
 	$iddata      = $id_data[ $id ];
 	$name        = $iddata[ 'name' ];

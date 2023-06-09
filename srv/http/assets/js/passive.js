@@ -129,6 +129,8 @@ function psDisplay( data ) {
 		return
 	}
 	
+	var albumlistchanged = D.albumbyartist !== data.albumbyartist || D.albumyear !== data.albumyear;
+	var hidecoverchanged = D.hidecover !== data.hidecover;
 	$.each( data, ( k, v ) => { D[ k ] = v } ); // need braces
 	V.coverdefault = ! D.covervu && ! D.vumeter ? V.coverart : V.covervu;
 	if ( ! D.covervu && ! D.vumeter ) {
@@ -144,22 +146,24 @@ function psDisplay( data ) {
 	} else if ( V.library ) {
 		if ( ! V.librarylist ) {
 			renderLibrary();
-		} else if ( $( '.li-icon' ).eq( 0 ).hasClass( 'i-music' ) ) {
-			if ( D.hidecover ) {
-				$( '.licover' ).remove();
-			} else {
-				var query = V.query.slice( -1 )[ 0 ];
-				list( query, function( html ) {
-					var data = {
-						  html      : html
-						, modetitle : query.modetitle
-						, path      : query.path
-					}
-					renderLibraryList( data );
-				} );
+		} else {
+			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
+			if ( V.librarytrack ) {
+				if ( hidecoverchanged ) {
+					var query = V.query.slice( -1 )[ 0 ];
+					list( query, function( html ) {
+						var data = {
+							  html      : html
+							, modetitle : query.modetitle
+							, path      : query.path
+						}
+						renderLibraryList( data );
+					} );
+				}
+			} else if ( V.mode === 'album' ) {
+				if ( albumlistchanged ) $( '#mode-album' ).trigger( 'click' );
 			}
 		}
-		$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 	}
 }
 function psEqualizer( data ) {

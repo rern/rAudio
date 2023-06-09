@@ -49,8 +49,6 @@ initramfs initramfs-linux.img followkernel
 disable_overscan=1
 disable_splash=1
 dtparam=audio=on"
-	[[ $onboardwireless ]] && config+="
-dtparam=krnbt=on"
 	[[ -e /boot/kernel7.img && -e /usr/bin/firefox ]] && config+="
 hdmi_force_hotplug=1"
 	[[ $rpi0 ]] && config+="

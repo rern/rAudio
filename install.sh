@@ -4,8 +4,27 @@ alias=r1
 
 # restore 20230522
 #. /srv/http/bash/settings/addons.sh
-# 20230522
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
+
+# 20230610
+rm -f $dirshm/system
+
+file=$dirsystem/localbrowser.conf
+if [[ -e $file ]]; then
+	rotate=$( getVar rotate $file | tr -dc [A-Z] )
+	if [[ $rotate ]]; then
+		case $rotate in
+			NORMAL ) degree=0;;
+			CCW )    degree=270;;
+			CW )     degree=90;;
+			UD )     degree=180;;
+		esac
+		sed -i "s/^rotate.*/rotate=$degree/" $file
+	fi
+fi
+rm -f /tmp/localbrowser.conf
+
+[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
@@ -26,11 +45,8 @@ if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-p
 fi
 
 # 20230522
-if crontab -l | grep -q addonsupdates; then
-	echo "\
-00 01 * * * $dirsettings/addons-data.sh
-$( crontab -l | grep -v addonsupdates )" | crontab -
-fi
+crontab -l | grep -q addonsupdates && echo "00 01 * * * $dirsettings/addons-data.sh" | crontab -
+systemctl restart cronie
 
 if ls $dirsystem/autoplay* &> /dev/null && [[ ! -s $dirsystem/autoplay ]]; then
 	k=( startup bluetooth cd )
@@ -207,15 +223,8 @@ sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 installfinish
 #-------------------------------------------------------------------------------
 
-# 20230528
-if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
-	rm -f $dirshm/mixernone $dirsystem/mixertype-*
-	$dirsettings/player-conf.sh
-	echo "$info Re-enable again: Volume Control - None/0dB"
-fi
-
 # 20230522
-[[ ! -e $dirshm/cpuinfo ]] && cpuInfo
+[[ ! -e $dirshm/cpuinfo ]] && $dirsettings/system.sh cpuinfo
 
 ! grep -q listing $dirbash/mpdidle.sh && systemctl restart mpd
 
@@ -231,4 +240,11 @@ if grep -q /srv/http/data /etc/exports; then
 - Disconnect client
 - Disable server
 - Re-enable again" 
+fi
+
+# 20230528
+if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
+	rm -f $dirshm/mixernone $dirsystem/mixertype-*
+	$dirsettings/player-conf.sh
+	echo "$info Re-enable again: Volume Control - None/0dB"
 fi

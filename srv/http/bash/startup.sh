@@ -2,16 +2,7 @@
 
 . /srv/http/bash/common.sh
 
-hwrevision=$( grep ^Revision /proc/cpuinfo )
-BB=${hwrevision: -3:2}
-C=${hwrevision: -4:1}
-									  data=BB=$BB$'\n'
-									  data+=C=$C$'\n'
-[[ $BB =~ ^(09|0c|12)$ ]]          || data+=onboardsound=true$'\n'    # not zero, zero w, zero 2w
-[[ $BB =~ ^(00|01|02|03|04|09)$ ]] || data+=onboardwireless=true$'\n' # not zero, 1, 2
-[[ $BB =~ ^(09|0c)$ ]]             && data+=rpi0=true$'\n'            # zero
-[[ $BB == 0d ]]                    && data+=rpi3bplus=true$'\n'       # 3B+
-echo "$data" > $dirshm/cpuinfo
+$dirsettings/system.sh cpuinfo
 
 # wifi - on-board or usb
 wlandev=$( $dirsettings/networks.sh wlandevice )
@@ -26,7 +17,6 @@ if [[ -e /boot/expand ]]; then # run once
 		partprobe $dev
 		resize2fs $partition
 	fi
-	! grep -q onboardwireless=true $dirshm/cpuinfo && sed -i '/dtparam=krnbt=on/ d' /boot/config.txt
 fi
 
 if [[ -e /boot/backup.gz ]]; then
