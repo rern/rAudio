@@ -904,6 +904,8 @@ wrdirdelete )
 	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
 	
 	rm -rf "$file"
+	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+	sed -E -i 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushstreamRadioList
 	;;
 wrdirnew )

@@ -423,7 +423,8 @@ function webRadioCoverart() {
 		var url       = S.file;
 		var name      = S.station;
 	} else {
-		var coverart  = V.list.li.find( '.li-icon' ).attr( 'src' ).replace( '-thumb', '' ) || V.coverdefault;
+		var $liicon   = V.list.li.find( '.li-icon' );
+		var coverart  = $liicon.is( 'img' ) ? $liicon.attr( 'src' ).replace( '-thumb', '' ) : V.coverdefault;
 		var mode      = V.mode;
 		var pathsplit = V.list.li.find( '.lipath' ).text().split( '//' );
 		var url       = pathsplit[ 0 ].replace( /.*\//, '' ) +'//'+ pathsplit[ 1 ];
