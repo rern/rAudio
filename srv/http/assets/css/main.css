@@ -1393,14 +1393,16 @@ i.map.disabled, .map.disabled i {
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
-	content: '\f528';
+	content: '\f596';
 	font-family: rern;
 	font-size: 26px;
+	z-index: 2;
 }
 .button-coverart::before {
 	position: absolute;
-	content: '\f52C';
+	content: '\f595';
 	color: var( --cg );
+	z-index: 1;
 }
 .button-coverart img {
 	position: absolute;
