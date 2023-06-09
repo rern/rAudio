@@ -397,8 +397,8 @@ $( '#displayplaylist' ).on( 'click', function() {
 	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
 	var keys   = Object.keys( chkplaylist );
-	var values = [];
-	keys.forEach( k => values.push( D[ k ] ) );
+	var values = {};
+	keys.forEach( k => values[ k ] = D[ k ] );
 	info( {
 		  icon         : 'playlist'
 		, title        : 'Playlist'
