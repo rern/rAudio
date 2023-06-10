@@ -467,22 +467,10 @@ soundprofile )
 	fi
 	pushRefresh
 	;;
-statusonboard )
-	onboard=$( aplay -l | grep 'bcm2835' )
-	[[ ! $onboard ]] && onboard='<gr>(disabled)</gr>'
+statusaudio )
 	echo "\
-<bll># aplay -l | grep 'bcm2835'</bll>
-$onboard
-
-<bll># rfkill</bll>
-$( rfkill )"
-	;;
-statusonboard )
-	ifconfig
-	if systemctl -q is-active bluetooth; then
-		echo '<hr>'
-		bluetoothctl show | sed -E 's/^(Controller.*)/bluetooth: \1/'
-	fi
+<bll># aplay -l | grep bcm2835</bll>
+$( aplay -l | grep bcm2835 )"
 	;;
 statussoundprofile )
 	lan=$( ifconfig | grep ^e | cut -d: -f1 )

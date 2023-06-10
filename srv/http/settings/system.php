@@ -4,7 +4,7 @@
 <div id="divsystem" class="section">
 <?php
 $id_data = [
-	  'audio'         => [ 'name' => 'Audio',                                     'setting' => false ]
+	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
 	, 'backup'        => [ 'name' => 'Backup',                                    'setting' => 'none' ]
 	, 'bluetooth'     => [ 'name' => 'Bluetooth',         'sub' => 'bluez',                              'status' => true ]
 	, 'hddsleep'      => [ 'name' => 'Hard Drive Sleep' ]
@@ -129,7 +129,6 @@ if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'On-board Devices'
-	, 'status' => 'onboard'
 ];
 $body = [
 	[
