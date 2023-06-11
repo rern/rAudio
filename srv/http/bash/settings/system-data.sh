@@ -1,6 +1,7 @@
 #!/bin/bash
 
 . /srv/http/bash/common.sh
+. $dirshm/cpuinfo
 
 timezone=$( timedatectl | awk '/zone:/ {print $3}' )
 timezoneoffset=$( date +%z | sed -E 's/(..)$/:\1/' )
@@ -11,8 +12,11 @@ $( /opt/vc/bin/vcgencmd measure_temp | sed -E 's/temp=(.*).C/\1 °C/' )<br>\
 $( date +'%F <gr>•</gr> %T' )<wide class='gr'>&ensp;${timezone//\// · } $timezoneoffset</wide><br>\
 $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</gr></wide><br>"
 if [[ $rpi3bplus ]]; then
-	softlimit=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
-	[[ ! $softlimit ]] && softlimit=60
+	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
+	[[ $degree ]] && softlimit=true || degree=60
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
@@ -57,7 +61,6 @@ else
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
-		. $dirshm/cpuinfo
 		soc=BCM
 		case $C in
 			0 ) soc+=2835;; # 0, 1
@@ -286,11 +289,6 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
-fi
-if [[ $rpi3bplus ]]; then
-	data+='
-, "softlimit"         : '$( grep -q -m1 temp_soft_limit /boot/config.txt && echo true )'
-, "softlimitconf"     : { "SOFTLIMIT": '$softlimit' }'
 fi
 
 data2json "$data" $1

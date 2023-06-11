@@ -1237,7 +1237,22 @@ i.map.disabled, .map.disabled i {
 	text-align: center;
 	color: var( --cg60 );
 }
+.mode .i-album,
+.mode .i-albumartist {
+	width: 45px;
+}
+.mode .i-date,
+.mode .i-latest {
+	width: 40px;
+}
+.mode .i-artist,
+.mode .i-conductor,
+.mode .i-sd,
+.mode .i-playlists {
+	width: 36px;
+}
 #lib-mode-list gr {
+	margin-left: 8px;
 	font-size: 14px;
 }
 .divbklabel {
@@ -1393,14 +1408,16 @@ i.map.disabled, .map.disabled i {
 .button-coverart::after {
 	position: relative;
 	margin-left: 4px;
-	content: '\f528';
+	content: '\f596';
 	font-family: rern;
 	font-size: 26px;
+	z-index: 2;
 }
 .button-coverart::before {
 	position: absolute;
-	content: '\f52C';
+	content: '\f595';
 	color: var( --cg );
+	z-index: 1;
 }
 .button-coverart img {
 	position: absolute;

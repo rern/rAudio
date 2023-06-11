@@ -675,6 +675,7 @@ function infoLibraryOption() {
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
+			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.albumbyartist.on( 'click', function() {
 				var enable = $( this ).prop( 'checked' );
@@ -688,10 +689,11 @@ function infoLibraryOption() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 			} );
 			$el.hidecover.on( 'change', function() {
-				var enable = $( this ).prop( 'checked' ) ? false : true;
-				$el.fixedcover
-					.prop( 'disabled', ! enable )
-					.prop( 'checked', enable );
+				if ( $( this ).prop( 'checked' ) ) {
+					$el.fixedcover.prop( 'checked', false ).prop( 'disabled', true );
+				} else {
+					$el.fixedcover.prop( 'disabled', false );
+				}
 			} );
 		}
 		, ok           : displaySave
@@ -1157,12 +1159,18 @@ function renderLibrary() { // library home
 	pageScroll( V.modescrolltop );
 	$( '.bkedit' ).remove();
 	$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
-	renderLibraryCounts();
+	if ( D.count ) {
+		renderLibraryCounts();
+		$( '.mode gr' ).removeClass( 'hide' );
+	} else {
+		$( '.mode gr' ).addClass( 'hide' );
+	}
 }
 function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
-	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? '&ensp;'+ v.toLocaleString() : '' ) );
+	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' ) );
+	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {

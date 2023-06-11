@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1685865311' );
+	src         : url( '/assets/fonts/rern.woff2?v=1686297462' );
 }
 @font-face {
 	font-family : Lato;
@@ -47,14 +47,13 @@ i {
 .i-bars::before            { content: '\F51C' }
 .i-bio::before             { content: '\F51D' }
 .i-bookmark::before        { content: '\F550' }
-.i-bluetooth::before       { content: '\F595' }
-.i-btreceiver::before      { content: '\F595' }
-.i-btsender::before        { content: '\F596' }
+.i-bluetooth::before       { content: '\F51A' }
+.i-btreceiver::before      { content: '\F51A' }
+.i-btsender::before        { content: '\F51B' }
 .i-brush::before           { content: '\F536' }
 .i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
 .i-capslock::before        { content: '\F607' }
-.i-check::before           { content: '\F51B' }
 .i-chevron-down::before    { content: '\F605' }
 .i-chevron-up::before      { content: '\F604' }
 .i-chromium::before        { content: '\F584' }
@@ -105,7 +104,7 @@ i {
 .i-lastfm::before          { content: '\F585' }
 .i-latest::before          { content: '\F55E' }
 .i-lcdchar::before         { content: '\F578' }
-.i-led::before             { content: '\F52B' }
+.i-led::before             { content: '\F57C' }
 .i-librandom::before       { content: '\F569' }
 .i-library::before         { content: '\F506' }
 .i-libupdate::before       { content: '\F506'; animation: blinkopaque 1.5s linear infinite; }
@@ -126,7 +125,7 @@ i {
 .i-networks::before        { content: '\F551' }
 .i-next::before            { content: '\F505' }
 .i-nfsserver::before       { content: '\F53C' }
-.i-output::before          { content: '\F52A' }
+.i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
 .i-play::before            { content: '\F503' }
 .i-playback::before        { content: '\F507' }
@@ -195,7 +194,6 @@ i {
 .i-system::before          { content: '\F590' }
 .i-tag::before             { content: '\F55B' }
 .i-tft::before             { content: '\F577' }
-.i-times::before           { content: '\F51A' }
 .i-timezone::before        { content: '\F575' }
 .i-title::before           { content: '\F54A' }
 .i-track::before           { content: '\F54C' }
@@ -207,7 +205,7 @@ i {
 .i-usbautoupdate::before   { content: '\F536' }
 .i-usbdrive::before        { content: '\F553' }
 .i-volume::before          { content: '\F516' }
-.i-vuled::before           { content: '\F52B' }
+.i-vuled::before           { content: '\F57C' }
 .i-warning::before         { content: '\F562' }
 .i-webradio::before        { content: '\F55D' }
 .i-wifi::before            { content: '\F597' }

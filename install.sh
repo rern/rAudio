@@ -6,7 +6,15 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230610
+# 20230611
+for f in album albumbyartist; do
+	file=$dirmpd/$f
+	if [[ -e $file ]]; then
+		awk 'a[$0]++{exit 1}' $file || awk -i inplace '!seen[$0]++' $file
+	fi
+done
+
+# 20230609
 rm -f $dirshm/system
 
 file=$dirsystem/localbrowser.conf
@@ -243,8 +251,10 @@ if grep -q /srv/http/data /etc/exports; then
 fi
 
 # 20230528
-if [[ -e $dirshm/mixernone && $( volumeGet valdb | jq .db ) != 0 ]]; then
-	rm -f $dirshm/mixernone $dirsystem/mixertype-*
-	$dirsettings/player-conf.sh
-	echo "$info Re-enable again: Volume Control - None/0dB"
+if [[ -e $dirshm/mixernone ]] && grep -q . $dirshm/amixercontrol; then
+	if [[ $( volumeGet valdb | jq .db ) != 0 ]]; then
+		rm -f $dirshm/mixernone $dirsystem/mixertype-*
+		$dirsettings/player-conf.sh
+		echo "$info Re-enable again: Volume Control - None/0dB"
+	fi
 fi

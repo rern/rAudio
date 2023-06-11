@@ -7,14 +7,18 @@ args2var "$1"
 
 plAddPlay() {
 	pushstreamPlaylist add
-	if [[ ${1: -4} == play ]]; then
-		sleep $2
+	if [[ ${ACTION: -4} == play ]]; then
+		[[ $delay ]] && sleep 2
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	fi
 }
 plAddPosition() {
-	if [[ ${1:0:7} == replace ]]; then
+	if [[ ${ACTION:0:7} == replace ]]; then
+		if statePlay; then
+			header=$( mpc -f %file% playlist | head -c 4 )
+			[[ $header == http || $header == rtsp ]] && delay=2
+		fi
 		mpc -q clear
 		pos=1
 	else
@@ -436,9 +440,9 @@ lyrics )
 	fi
 	;;
 mpcadd )
-	plAddPosition $ACTION
+	plAddPosition
 	mpc -q add "$FILE"
-	plAddPlay $ACTION $DELAY
+	plAddPlay
 	pushstreamPlaylist add
 	;;
 mpcaddplaynext )
@@ -447,21 +451,21 @@ mpcaddplaynext )
 	;;
 mpcaddfind )
 	if [[ $TYPE2 ]]; then
-		plAddPosition $ACTION
+		plAddPosition
 		mpc -q findadd $TYPE "$STRING" $TYPE2 "$STRING2"
 	else
-		plAddPosition $ACTION
+		plAddPosition
 		mpc -q findadd $TYPE "$STRING"
 	fi
-	plAddPlay $ACTION $DELAY
+	plAddPlay
 	;;
 mpcaddload )
-	plAddPosition $ACTION
+	plAddPosition
 	mpc -q load "$FILE"
-	plAddPlay $ACTION $DELAY
+	plAddPlay
 	;;
 mpcaddls )
-	plAddPosition $ACTION
+	plAddPosition
 	readarray -t cuefiles <<< $( mpc ls "$DIR" | grep '\.cue$' | sort -u )
 	if [[ ! $cuefiles ]]; then
 		mpc ls "$DIR" | mpc -q add &> /dev/null
@@ -470,7 +474,7 @@ mpcaddls )
 			mpc -q load "$cuefile"
 		done
 	fi
-	plAddPlay $ACTION $DELAY
+	plAddPlay
 	;;
 mpccrop )
 	if statePlay; then
@@ -904,6 +908,8 @@ wrdirdelete )
 	[[ ! $CONFIRM && $( ls -A "$file" ) ]] && echo -1 && exit
 	
 	rm -rf "$file"
+	webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+	sed -E -i 's/(  "webradio": ).*/\1'$webradio'/' $dirmpd/counts
 	pushstreamRadioList
 	;;
 wrdirnew )

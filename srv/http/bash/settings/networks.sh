@@ -31,8 +31,7 @@ wlanDevice() {
 	local iplinkw wlandev
 	iplinkw=$( ip -br link | grep ^w )
 	if [[ ! $iplinkw ]]; then
-		. $dirshm/cpuinfo
-		if [[ $onboardwireless ]]; then
+		if grep -q onboardwireless $dirshm/cpuinfo; then
 			modprobe brcmfmac
 			sleep 1
 			iplinkw=$( ip -br link | grep ^w )

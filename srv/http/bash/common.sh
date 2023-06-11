@@ -39,10 +39,12 @@ fi
 appendSortUnique() {
 	data=$1
 	file=$2
-	lines=$( echo "\
+	[[ ! -e $file ]] && echo "$data" > $file && exit
+	
+	lines="\
 $( < $file )
-$data" | sort -u | awk NF )
-	[[ $lines ]] && echo "$lines" > $file || rm -f $file
+$data"
+	awk NF <<< $lines | sort -u > $file
 }
 args2var() {
 	local argslast CMD_CFG_OFF CFG i keys kL k v conf

@@ -105,6 +105,11 @@ var chkdisplay = {
 		, buttons          : 'Buttons'
 			, noswipe      : 'Disable swipe'
 	}
+	, playlist  : {
+		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
+		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
+		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -390,13 +395,8 @@ $( '#displayplayback' ).on( 'click', function() {
 	} );
 } );
 $( '#displayplaylist' ).on( 'click', function() {
-	var chkplaylist = {
-		  plclear        : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'replace' ) +'Replace'+ ico( 'play-replace sub' ) + '<a>'
-		, plsimilar      : 'Confirm <gr>on</gr> <a class="infomenu">'+ ico( 'lastfm' ) +'Add similar</a>'
-		, audiocdplclear : 'Clear on '+ ico( 'audiocd' ) +'Audio CD load'
-	}
 	if ( 'coverTL' in V ) $( '#coverTL' ).trigger( 'click' );
-	var keys   = Object.keys( chkplaylist );
+	var keys   = Object.keys( chkdisplay.playlist );
 	var values = {};
 	keys.forEach( k => values[ k ] = D[ k ] );
 	info( {
@@ -404,7 +404,7 @@ $( '#displayplaylist' ).on( 'click', function() {
 		, title        : 'Playlist'
 		, message      : 'Options:'
 		, messagealign : 'left'
-		, checkbox     : Object.values( chkplaylist )
+		, checkbox     : Object.values( chkdisplay.playlist )
 		, values       : values
 		, checkchanged : true
 		, ok           : () => displaySave( keys )
