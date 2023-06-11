@@ -689,10 +689,11 @@ function infoLibraryOption() {
 				if ( $( this ).prop( 'checked' ) ) $el.tapaddplay.prop( 'checked', false );
 			} );
 			$el.hidecover.on( 'change', function() {
-				var enable = $( this ).prop( 'checked' ) ? false : true;
-				$el.fixedcover
-					.prop( 'disabled', ! enable )
-					.prop( 'checked', enable );
+				if ( $( this ).prop( 'checked' ) ) {
+					$el.fixedcover.prop( 'checked', false ).prop( 'disabled', true );
+				} else {
+					$el.fixedcover.prop( 'disabled', false );
+				}
 			} );
 		}
 		, ok           : displaySave
