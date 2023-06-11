@@ -675,6 +675,7 @@ function infoLibraryOption() {
 			keys.forEach( ( k, i ) => $el[ k ] = $( '#infoContent input' ).eq( i ) );
 			$( '#infoContent tr' ).css( 'height', '36px' );
 			$( '#infoContent td' ).css( 'width', '294px' );
+			$el.albumyear.prop( 'disabled', ! D.albumbyartist );
 			$el.fixedcover.prop( 'disabled', D.hidecover );
 			$el.albumbyartist.on( 'click', function() {
 				var enable = $( this ).prop( 'checked' );
