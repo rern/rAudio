@@ -39,8 +39,10 @@ fi
 appendSortUnique() {
 	data=$1
 	file=$2
+	[[ ! -e $file ]] && echo "$data" > $file && exit
+	
 	lines="\
-$( cat $file 2> /dev/null )
+$( < $file )
 $data"
 	awk NF <<< $lines | sort -u > $file
 }
