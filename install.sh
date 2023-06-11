@@ -251,7 +251,7 @@ if grep -q /srv/http/data /etc/exports; then
 fi
 
 # 20230528
-if [[ -e $dirshm/mixernone && grep -q . $dirshm/amixercontrol ]]; then
+if [[ -e $dirshm/mixernone ]] && grep -q . $dirshm/amixercontrol; then
 	if [[ $( volumeGet valdb | jq .db ) != 0 ]]; then
 		rm -f $dirshm/mixernone $dirsystem/mixertype-*
 		$dirsettings/player-conf.sh
