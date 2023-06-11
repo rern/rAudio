@@ -1170,6 +1170,7 @@ function renderLibraryCounts() {
 	var songs = C.song ? C.song.toLocaleString() + ico( 'music' ) : '';
 	$( '#li-count' ).html( songs );
 	$.each( C, ( k, v ) => $( '#mode-'+ k ).find( 'gr' ).html( v ? v.toLocaleString() : '' ) );
+	if ( D.albumyear ) $( '#mode-album' ).find( 'gr' ).html( C.albumyear.toLocaleString() );
 }
 function renderLibraryList( data ) { // V.librarylist
 	if ( V.librarylist && data.html === V.librarylisthtml ) {

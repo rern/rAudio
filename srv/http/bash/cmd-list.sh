@@ -31,7 +31,7 @@ fi
 
 touch $dirmpd/listing
 
-##### normal list #############################################
+##### album #############################################
 listAll() {
 	mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null \
 							| awk -F'/[^/]*$' 'NF && !/^\^/ {print $1}' \
@@ -80,8 +80,7 @@ if [[ ! $album_artist_file ]]; then # very large database
 		fi
 	fi
 fi
-##### wav list #############################################
-# mpd not read *.wav albumartist
+##### album from wav (mpd not read *.wav albumartist)
 readarray -t dirwav <<< $( mpc listall \
 							| sed -n '/\.wav$/ {s|/[^/]*$||; p}' \
 							| sort -u )
@@ -109,23 +108,25 @@ else
 	> $dirmpd/latest
 	latest=0
 fi
+album=$( awk NF <<< $album_artist_file | sort -uf )
+if [[ -e $dirmpd/albumignore ]]; then
+	readarray -t albumignore < $dirmpd/albumignore
+	for line in "${albumignore[@]}"; do
+		album=$( sed "/^$line^/ d" <<< $album )
+	done
+fi
 
-for mode in album albumartist artist composer conductor genre date; do
+##### save and sort #############################################
+filealbumyear=$dirmpd/albumbyartist-year
+awk NF <<< $album > $filealbumyear
+php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and albumbyartist
+album=$( wc -l < $dirmpd/album )
+albumyear=$( wc -l < $filealbumyear )
+
+for mode in albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
-	if [[ $mode == album ]]; then
-		filemode+=byartist-year
-		album=$( awk NF <<< $album_artist_file | sort -uf )
-		if [[ -e $dirmpd/albumignore ]]; then
-			readarray -t albumignore < $dirmpd/albumignore
-			for line in "${albumignore[@]}"; do
-				album=$( sed "/^$line^/ d" <<< $album )
-			done
-		fi
-		album=$( awk NF <<< $album | tee $filemode | wc -l )
-	else
-		printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
-	fi
-	(( $mode > 0 )) && php $dirbash/cmd-listsort.php $filemode
+	printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
+	php $dirbash/cmd-listsort.php $filemode
 done
 
 ##### latest album #############################################
@@ -146,6 +147,7 @@ fi
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
 counts='{
   "album"       : '$album'
+, "albumyear"   : '$albumyear'
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
 , "composer"    : '$composer'
