@@ -136,6 +136,8 @@ if ( isset( $argv[ 1 ] ) ) {
 			$byartistline   = $data[ 0 ].'^^'.$data[ 2 ].'^^'.$data[ 3 ];
 			$byartistsort[] = stripSort( $byartistline ).'^x^'.$byartistline;
 		}
+		$byalbumsort = array_unique( $byalbumsort );
+		$byartistsort = array_unique( $byartistsort );
 		usort( $byalbumsort, function( $a, $b ) {
 			return strnatcasecmp( $a, $b );
 		} );
