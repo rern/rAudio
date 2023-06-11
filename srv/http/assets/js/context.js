@@ -23,19 +23,10 @@ function addToPlaylist() {
 function addToPlaylistCommand() {
 	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
 	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
-	var sleep = 0;
-	if ( S.stream ) sleep++;
-	if ( V.action.slice( -4 ) === 'play' ) sleep++;
 	var varaction = '';
-	if ( V.action === 'addplay' ) {
-		varaction = ' ACTION DELAY';
-		V.mpccmd.push( 'addplay', sleep );
-	} else if (  V.action === 'replace' ) {
+	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
-		V.mpccmd.push( 'replace' );
-	} else if (  V.action === 'replaceplay' ) {
-		varaction = ' ACTION DELAY';
-		V.mpccmd.push( 'replaceplay', sleep );
+		V.mpccmd.push( V.action );
 	}
 	var mpccmd0   = V.mpccmd[ 0 ];
 	if ( mpccmd0 === 'mpcaddls' ) {
