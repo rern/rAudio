@@ -150,14 +150,11 @@ function changeIP() { // for android app
 		, focus        : 0
 		, boxwidth     : 170
 		, values       : location.host
+		, checkchanged : true
+		, checkip      : [ 0 ]
 		, beforeshow   : () => $( '#infoContent input' ).prop( 'type', 'tel' )
 		, ok           : () => {
 			var ip = infoVal();
-			if ( ip === location.host ) {
-				location.reload();
-				return
-			}
-			
 			var changed = Android.changeIP( ip );
 			if ( changed ) {
 				location.href = 'http://'+ ip;
