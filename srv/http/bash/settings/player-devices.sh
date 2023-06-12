@@ -64,7 +64,7 @@ for line in "${aplay[@]}"; do
 , "card"         : '$card'
 }'
 	else
-		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=rpi-cirrus-wm5102
+		[[ $aplayname == wsp || $aplayname == RPi-Cirrus ]] && aplayname=cirrus-wm5102
 		if [[ $aplayname == $audioaplayname ]]; then
 			name=$( < $dirsystem/audio-output )
 		else
@@ -89,7 +89,7 @@ for line in "${aplay[@]}"; do
 		hwmixerfile="$dirsystem/hwmixer-$aplayname"
 		if [[ -e $hwmixerfile ]]; then # manual
 			hwmixer=$( < "$hwmixerfile" )
-		elif [[ $aplayname == rpi-cirrus-wm5102 ]]; then
+		elif [[ $aplayname == cirrus-wm5102 ]]; then
 			mixers=4
 			hwmixer='HPOUT2 Digital'
 			mixerdevices='["HPOUT1 Digital","HPOUT2 Digital","SPDIF Out","Speaker Digital"]'

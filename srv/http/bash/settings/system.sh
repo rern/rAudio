@@ -216,7 +216,7 @@ dtparam=i2s=on
 dtoverlay=$APLAYNAME"
 		[[ $OUTPUT == 'Pimoroni Audio DAC SHIM' ]] && config+="
 gpio=25=op,dh"
-		[[ $APLAYNAME == rpi-cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
+		[[ $APLAYNAME == cirrus-wm5102 ]] && echo softdep arizona-spi pre: arizona-ldo1 > /etc/modprobe.d/cirrus.conf
 		! grep -q gpio-shutdown /boot/config.txt && systemctl disable --now powerbutton
 		echo $APLAYNAME > $dirsystem/audio-aplayname
 		echo $OUTPUT > $dirsystem/audio-output

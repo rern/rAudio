@@ -7,6 +7,11 @@ alias=r1
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 # 20230611
+if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
+	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt
+	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt
+fi
+
 for f in album albumbyartist; do
 	file=$dirmpd/$f
 	if [[ -e $file ]]; then
