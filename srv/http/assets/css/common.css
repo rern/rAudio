@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1686300111' );
+	src         : url( '/assets/fonts/rern.woff2?v=1686300112' );
 }
 @font-face {
 	font-family : Lato;
@@ -46,6 +46,7 @@ i {
 .i-backup::before          { content: '\F543' }
 .i-bars::before            { content: '\F51C' }
 .i-bio::before             { content: '\F51D' }
+.i-booklet::before         { content: '\F53D' }
 .i-bookmark::before        { content: '\F550' }
 .i-bluetooth::before       { content: '\F51A' }
 .i-btreceiver::before      { content: '\F51A' }
