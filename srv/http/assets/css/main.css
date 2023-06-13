@@ -700,9 +700,13 @@ i.map.disabled, .map.disabled i {
 	left: 0;
 	margin-top: 20px;
 }
+#guide-booklet,
 #guide-album {
 	left: 70px;
 	margin-top: 50px;
+}
+#guide-album {
+	left: 160px;
 }
 .maptime,
 .mapvolume {
