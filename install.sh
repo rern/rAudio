@@ -8,8 +8,8 @@ alias=r1
 
 # 20230611
 if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
-	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt
-	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt
+	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt && reboot=1
+	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt && reboot=1
 fi
 
 for f in album albumbyartist; do
@@ -263,3 +263,6 @@ if [[ -e $dirshm/mixernone ]] && grep -q . $dirshm/amixercontrol; then
 		echo "$info Re-enable again: Volume Control - None/0dB"
 	fi
 fi
+
+# 20230611
+[[ $reboot ]] && echo "$info Reboot required for Audio - I2S"

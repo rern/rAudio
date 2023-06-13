@@ -7,8 +7,6 @@ if ( file_exists( $fileflag ) ) { // close on refresh
 	exit();
 }
 
-touch( $fileflag );
-
 $alias        = $_POST[ 'alias' ];
 $sudosettings = '/usr/bin/sudo /srv/http/bash/settings/';
 if ( $alias === 'albumthumbnail' ) {
@@ -33,6 +31,7 @@ if ( $alias === 'albumthumbnail' ) {
 	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 	$postmsg       = $label.' done.';
 	if ( $postinfo ) $postmsg.= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
+	touch( $fileflag );
 }
 ?>
 

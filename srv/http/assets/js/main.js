@@ -1068,7 +1068,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, ok           : () => thumbUpdate()
+		, ok           : thumbUpdate
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon

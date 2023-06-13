@@ -595,6 +595,12 @@ hr {
 .infobtn {
 	text-shadow: var( --shadow-text );
 }
+#infoOverlay .button-coverart {
+	text-shadow: none;
+}
+#infoOverlay .button-coverart::before {
+	top: 1px;
+}
 #infoContent .bklabel {
 	height: auto;
 	line-height: 30px;
