@@ -902,7 +902,9 @@ function orderLibrary() {
 	} );
 }
 function pageScroll( pos ) {
-	$( 'html, body' ).scrollTop( pos );
+	setTimeout( () => {
+		$( 'html, body' ).scrollTop( pos );
+	}, 0 );
 }
 function playbackStatusGet( withdisplay ) {
 	bash( [ 'status.sh', withdisplay ], list => {
