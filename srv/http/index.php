@@ -185,7 +185,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
 	<?=i( 'guide-bio',    'bio map guide hide' )
 	  .i( 'guide-lyrics', 'lyrics map guide hide' )
-	  .i( 'guide-booklet',  'booklet map guide hide' ).i( 'guide-album',  'lastfm map guide hide' )?>
+	  .i( 'guide-booklet',  'booklet map guide hide' )?>
 	<div id="info">
 		<div id="divartist"><span id="artist"></span></div>
 		<div id="divtitle"><span id="title"></i></span></div>
