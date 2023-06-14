@@ -7,6 +7,10 @@ alias=r1
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 # 20230615
+if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
+    pacman -Sy --noconfirm mediamtx
+fi
+
 if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
 	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt && rebooti2s=1
 	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt && rebooti2s=1
