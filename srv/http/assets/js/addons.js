@@ -93,7 +93,7 @@ function postData( opt ) {
 	keys = [ 'alias', 'branch', 'label' ].concat( keys );
 	keys.forEach( k => htmlform += postInput( k, V[ k ] ) );
 	if ( opt ) {
-		if ( typeof opt === 'string' ) opt = [ opt ];
+		if ( typeof opt !== 'object' ) opt = [ opt ];
 		opt.forEach( v => htmlform += postInput( 'opt[]', v ) );
 	}
 	$( 'body' ).append( '<form id="formtemp" action="settings.php?p=addonsprogress" method="post">'+ htmlform +'</form>' );
