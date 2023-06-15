@@ -55,10 +55,8 @@ if grep -q port $file; then
 fi
 
 if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
-	pkg='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
-	pacman -R --noconfirm $pkg
+	pacman -Sy --noconfirm python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2
 	rm -rf /lib/python3.10
-	pacman -Sy --noconfirm $pkg
 fi
 
 # 20230522
