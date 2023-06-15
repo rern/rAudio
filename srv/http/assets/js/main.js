@@ -1448,7 +1448,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var data = {
 			  html      : html
 			, modetitle : $this.find( '.liname' ).text()
-			, path      : 'ALBUM'
+			, path      : path
 		}
 		renderLibraryList( data );
 	} );
