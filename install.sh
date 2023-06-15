@@ -6,7 +6,7 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230615
+# 20230616
 if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
     pacman -Sy --noconfirm mediamtx
 fi
