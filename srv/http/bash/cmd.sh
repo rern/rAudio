@@ -110,7 +110,7 @@ stopRadio() {
 	fi
 }
 stopRadioCurrent() {
-	[[ $(( $( getVar song $dirshm/status ) + 1 )) == $1 ]] && stopRadio
+	[[ $( mpc status %songpos% ) == $1 ]] && stopRadio
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
