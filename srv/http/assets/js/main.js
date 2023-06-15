@@ -516,7 +516,22 @@ $( '#album, #guide-album' ).on( 'click', function() {
 		var urlbooklet = '/mnt/MPD/'+ dirName( S.file ) +'/booklet.pdf';
 		var newwindow  = window.open( '', '_blank' );  // fix: popup blocked on mobile
 		bash( [ 'booklet', urlbooklet, 'CMD FILE' ], url => {
-			newwindow.location.href = url || urllastfm;
+			if ( typeof Android !== 'object' ) {
+				newwindow.location.href = url || urllastfm;
+			} else {
+				if ( url ) {
+					info( {
+						  icon    : 'booklet'
+						, title   : 'Album Booklet'
+						, message : ico( 'warning' ) +' View on Android with <wh>rAudio</wh> on <wh>Firefox</wh>.'
+									+'<br><br>Or continue with album on <wh>Last.fm</wh> ?'
+						, oklabel : ico( 'lastfm' ) +'Album'
+						, ok      : () => window.open( urllastfm, '_blank' )
+					} );
+				} else {
+					window.open( urllastfm, '_blank' );
+				}
+			}
 		} );
 	} else {
 		window.open( urllastfm, '_blank' );
@@ -1068,7 +1083,7 @@ $( '#lib-breadcrumbs' ).on ( 'click', '.button-coverart', function() {
 		, title        : 'Album Thumbnails'
 		, message      : message
 		, messagealign : 'left'
-		, ok           : () => thumbUpdate()
+		, ok           : thumbUpdate
 	} );
 } );
 $( '#button-lib-search' ).on( 'click', function() { // icon

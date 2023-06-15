@@ -159,6 +159,8 @@ function psDisplay( data ) {
 						}
 						renderLibraryList( data );
 					} );
+				} else {
+					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
 				}
 			} else if ( V.mode === 'album' ) {
 				if ( albumlistchanged ) $( '#mode-album' ).trigger( 'click' );

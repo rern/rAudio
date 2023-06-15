@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1686297462' );
+	src         : url( '/assets/fonts/rern.woff2?v=1686300112' );
 }
 @font-face {
 	font-family : Lato;
@@ -46,6 +46,7 @@ i {
 .i-backup::before          { content: '\F543' }
 .i-bars::before            { content: '\F51C' }
 .i-bio::before             { content: '\F51D' }
+.i-booklet::before         { content: '\F53D' }
 .i-bookmark::before        { content: '\F550' }
 .i-bluetooth::before       { content: '\F51A' }
 .i-btreceiver::before      { content: '\F51A' }
@@ -595,6 +596,12 @@ hr {
 .infobtn {
 	text-shadow: var( --shadow-text );
 }
+#infoOverlay .button-coverart {
+	text-shadow: none;
+}
+#infoOverlay .button-coverart::before {
+	top: 1px;
+}
 #infoContent .bklabel {
 	height: auto;
 	line-height: 30px;
@@ -808,6 +815,7 @@ hr {
 }
 input[ type=text ],
 input[ type=number ],
+input[ type=tel ],
 input[ type=password ] {
 	display: inline-block;
 	margin: 0;
@@ -964,6 +972,7 @@ input:focus {
 	}
 	input[ type=text ]:focus-visible,
 	input[ type=number ]:focus-visible,
+	input[ type=tel ]:focus-visible,
 	input[ type=password ]:focus-visible,
 	#infoContent textarea:focus-visible {
 		outline: 1px solid var( --cgl ) !important;

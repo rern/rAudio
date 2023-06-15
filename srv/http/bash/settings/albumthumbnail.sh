@@ -67,9 +67,9 @@ for mpdpath in "${lines[@]}"; do
 	for name in cover folder front album; do # file
 		for ext in jpg png gif; do
 			coverfile="$dir/$name.$ext"
-			[[ -e "$coverfile" ]] && break 2
+			[[ -e $coverfile ]] && break 2
 			coverfile="$dir/${name^}.$ext" # capitalize
-			[[ -e "$coverfile" ]] && break 2
+			[[ -e $coverfile ]] && break 2
 		done
 		coverfile=
 	done

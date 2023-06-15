@@ -6,7 +6,16 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230611
+# 20230615
+if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
+    pacman -Sy --noconfirm mediamtx
+fi
+
+if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
+	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt && rebooti2s=1
+	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt && rebooti2s=1
+fi
+
 for f in album albumbyartist; do
 	file=$dirmpd/$f
 	if [[ -e $file ]]; then
@@ -257,4 +266,10 @@ if [[ -e $dirshm/mixernone ]] && grep -q . $dirshm/amixercontrol; then
 		$dirsettings/player-conf.sh
 		echo "$info Re-enable again: Volume Control - None/0dB"
 	fi
+fi
+
+# 20230611
+if [[ $rebooti2s ]]; then
+	echo "$info Reboot required for Audio - I²S"
+	echo 'Audio - I²S' > $dirshm/reboot
 fi

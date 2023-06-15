@@ -42,7 +42,7 @@
 	"Generic Burr-Brown PCM1794": "rpi-dac",
 	"Generic Burr-Brown PCM510x": "hifiberry-dac",
 	"Generic Burr-Brown PCM512x": "hifiberry-dacplus",
-	"Generic Cirrus Logic WM5102": "rpi-cirrus-wm5102",
+	"Generic Cirrus Logic WM5102": "cirrus-wm5102",
 	"Generic ESS ES90xx": "rpi-dac",
 	"Generic RPi-DAC compatible": "rpi-dac",
 	"HiFiBerry Amp": "hifiberry-amp",
@@ -113,6 +113,6 @@
 	"SupTronics X4000K": "rpi-dac",
 	"Terra-Berry DAC 2": "hifiberry-dac",
 	"Waveshare WM8960": "wm8960-soundcard",
-	"Wolfson Audio": "rpi-cirrus-wm5102",
+	"Wolfson Audio": "cirrus-wm5102",
 	"X10 DAC": "rpi-dac"
 }
