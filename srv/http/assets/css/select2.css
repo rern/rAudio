@@ -10,6 +10,9 @@
 	max-width     : none;
 	margin-bottom : 0;
 }
+.select2-selection:focus-visible {
+	outline       : none;
+}
 .select2-selection--single {
 	height        : 40px;
 	background    : none;
