@@ -1423,6 +1423,7 @@ i.map.disabled, .map.disabled i {
 	position: absolute;
 	top: 5px;
 	width: 30px;
+	height: 30px;
 	border: 1px solid hsl(0,0%,30%);
 }
 #mode-title,
