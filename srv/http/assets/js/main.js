@@ -694,6 +694,7 @@ $( '#volmute, #volM' ).on( 'click', function() {
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
+	guideHide();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup', function( e ) {
