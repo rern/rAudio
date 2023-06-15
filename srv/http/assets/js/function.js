@@ -1345,7 +1345,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
 		V.playlisthtml = '';
-		$( '#playback-controls' ).addClass( 'hide' );
+		$( '#playback-controls, #pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#pl-search-close' ).trigger( 'click' );
