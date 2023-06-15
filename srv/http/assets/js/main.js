@@ -1157,6 +1157,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
+	V.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 	var backmode     = 'gmode' in V && V.gmode !== V.mode;
 	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
@@ -1174,7 +1175,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 						var path = 'ALBUM';
 					} else {
 						var path = query.path;
-						V.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 					}
 					var data = {
 						  html      : html
