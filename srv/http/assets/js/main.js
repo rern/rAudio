@@ -508,7 +508,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	}
 	
 } );
-$( '#album, #guide-album' ).on( 'click', function() {
+$( '#album, #guide-booklet' ).on( 'click', function() {
 	if ( localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
@@ -795,8 +795,8 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
-		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
+		$( '#guide-booklet' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
+		$( '#guide-bio, #guide-lyrics, #guide-booklet' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
