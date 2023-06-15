@@ -109,9 +109,6 @@ stopRadio() {
 		sleep 1
 	fi
 }
-stopRadioCurrent() {
-	[[ $( mpc status %songpos% ) == $1 ]] && stopRadio
-}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -578,7 +575,7 @@ mpcprevnext )
 	;;
 mpcremove )
 	if [[ $POS ]]; then
-		stopRadioCurrent $POS
+		[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
 		mpc -q del $POS
 		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
 	else
@@ -600,7 +597,7 @@ mpcseek )
 	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
-	stopRadioCurrent $POS
+	[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
 	mpc -q play $POS
 	mpc -q stop
 	$dirbash/status-push.sh
