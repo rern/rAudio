@@ -241,6 +241,13 @@ lcdcharset )
 	systemctl stop lcdchar
 	$dirbash/lcdchar.py $ACTION
 	;;
+mirror )
+	file=/etc/pacman.d/mirrorlist
+	[[ $MIRROR ]] && MIRROR+=.
+	server='Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo'
+	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
+	pushRefresh
+	;;
 mirrorlist )
 	file=/etc/pacman.d/mirrorlist
 	mirror=$( sed -n '/^Server/ {s|\.*mirror.*||; s|.*//||; p}' $file )
@@ -315,7 +322,7 @@ mpdoled )
 	configTxt
 	[[ -e $dirsystem/mpdoled && ! -e $dirshm/reboot && ! -e $dirmpdconf/fifo.conf ]] && $dirsettings/player-conf.sh
 	;;
-ntpmirror )
+ntp )
 	file=/etc/systemd/timesyncd.conf
 	if [[ $NTP != $( getVar NTP $file ) ]]; then
 		echo "\
@@ -323,11 +330,6 @@ ntpmirror )
 NTP=$NTP" > $file
 		timedatectl set-ntp true
 	fi
-	[[ -e /boot/kernel.img ]] && pushRefresh && exit # armv6h
-	file=/etc/pacman.d/mirrorlist
-	[[ $MIRROR ]] && MIRROR+=.
-	server='Server = http://'$MIRROR'mirror.archlinuxarm.org/$arch/$repo'
-	[[ $server != $( grep -m1 ^Server $file ) ]] && echo $server > $file
 	pushRefresh
 	;;
 packagelist )

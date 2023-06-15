@@ -550,16 +550,7 @@ $( '#divtimezone .col-r' ).on( 'click', function( e ) {
 	} );
 } );
 $( '#setting-timezone' ).on( 'click', function() {
-	if ( 'htmlmirror' in V || S.rpi01 ) {
-		infoNtpMirror();
-	} else {
-		notifyCommon( 'Get mirror server list ...' );
-		bash( [ 'mirrorlist' ], list => {
-			V.htmlmirror = htmlOption( list );
-			infoNtpMirror();
-			bannerHide();
-		}, 'json' );
-	}
+	infoNtp();
 } );
 $( '#setting-soundprofile' ).on( 'click', function() {
 	info( {
@@ -927,24 +918,53 @@ function infoMountRserver() {
 		}
 	} );
 }
-function infoNtpMirror() {
-	SW.id     = 'ntpmirror';
+function infoNtp() {
+	SW.id    = 'ntp';
+	SW.title = 'Servers';
+	var json = {
+		  icon         : SW.icon
+		, title        : SW.title
+		, textlabel    : 'NTP'
+		, boxwidth     : 240
+		, values       : { NTP: S.ntp }
+		, checkchanged : true
+		, checkblank   : [ 0 ]
+		, ok           : switchEnable
+	}
+	if ( ! S.rpi01 ) {
+		json.tablabel = [ 'Time', 'Package Mirror' ];
+		json.tab      = [ '', infoMirrorList ];
+	}
+	info( json );
+}
+function infoMirror() {
+	SW.id    = 'mirror';
 	SW.title = 'Servers';
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
-		, textlabel    : 'NTP'
-		, selectlabel  : S.rpi01 ? '' : 'Mirror'
-		, select       : S.rpi01 ? '' : V.htmlmirror
+		, tablabel     : [ 'Time', 'Package Mirror' ]
+		, tab          : [ infoNtp, '' ]
+		, selectlabel  : 'Mirror'
+		, select       : V.htmlmirror
 		, boxwidth     : 240
-		, values       : S.rpi01 ? { NTP: S.ntp } : { NTP: S.ntp, MIRROR: S.mirror }
+		, values       : { MIRROR: S.mirror }
 		, checkchanged : true
-		, checkblank   : [ 0 ]
-		, beforeshow   : () => {
-			selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } );
-		}
+		, beforeshow   : () => selectText2Html( { Auto: 'Auto <gr>(by Geo-IP)</gr>' } )
 		, ok           : switchEnable
 	} );
+}
+function infoMirrorList() {
+	if ( 'htmlmirror' in V ) {
+		infoMirror();
+	} else {
+		notifyCommon( 'Get mirror server list ...' );
+		bash( [ 'mirrorlist' ], list => {
+			V.htmlmirror = htmlOption( list );
+			infoMirror();
+			bannerHide();
+		}, 'json' );
+	}
 }
 function infoPowerbutton() {
 	var optionpin = htmlOption( Object.keys( board2bcm ) );
