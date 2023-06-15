@@ -902,9 +902,7 @@ function orderLibrary() {
 	} );
 }
 function pageScroll( pos ) {
-	setTimeout( () => {
-		$( 'html, body' ).scrollTop( pos );
-	}, 0 );
+	setTimeout( () => $( 'html, body' ).scrollTop( pos ), 0 );
 }
 function playbackStatusGet( withdisplay ) {
 	bash( [ 'status.sh', withdisplay ], list => {
@@ -1347,7 +1345,7 @@ function renderPlaylist( data ) { // V.plhome - current playlist
 	$( '#button-pl-playlists' ).toggleClass( 'disabled', C.playlists === 0 );
 	if ( data == -1 ) {
 		V.playlisthtml = '';
-		$( '#playback-controls' ).addClass( 'hide' );
+		$( '#playback-controls, #pl-index, #pl-index1' ).addClass( 'hide' );
 		$( '#pl-path' ).html( '<span class="title">PLAYLIST</span>' );
 		$( '.pllength' ).addClass( 'disabled' );
 		$( '#pl-search-close' ).trigger( 'click' );
@@ -1864,9 +1862,7 @@ function setProgressElapsed() {
 function setTrackCoverart() {
 	if ( D.hidecover || ! $( '#liimg' ).length ) return
 	
-	$( '#liimg' ).off( 'load' ).on( 'load', function() { // not exist on initial page load
-		pageScroll( 0 );
-	} ).off( 'error' ).on( 'error', function() {
+	$( '#liimg' ).off( 'error' ).on( 'error', function() {
 		$( this ).attr( 'src', V.coverdefault );
 	} );
 	if ( V.mode === 'album' ) {

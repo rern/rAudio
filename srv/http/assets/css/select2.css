@@ -10,11 +10,14 @@
 	max-width     : none;
 	margin-bottom : 0;
 }
+.select2-selection:focus-visible {
+	outline: none;
+}
 .select2-selection--single {
 	height        : 40px;
 	background    : none;
 	background    : none !important;
-	border        :none !important;
+	border        : none !important;
 	border-radius : 4px !important;
 }
 .select2-selection__rendered {

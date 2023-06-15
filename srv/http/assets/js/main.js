@@ -508,7 +508,7 @@ $( '#title, #guide-lyrics' ).on( 'click', function() {
 	}
 	
 } );
-$( '#album, #guide-album' ).on( 'click', function() {
+$( '#album, #guide-booklet' ).on( 'click', function() {
 	if ( localhost ) return
 	
 	var urllastfm  = 'https://www.last.fm/music/'+ S.Artist +'/'+ S.Album;
@@ -694,6 +694,7 @@ $( '#volmute, #volM' ).on( 'click', function() {
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
+	guideHide();
 	volumeUpDown( $( e.currentTarget ).hasClass( 'up' ) );
 	if ( $( e.currentTarget ).hasClass( 'band' ) ) $( '#volume-text, #volume-bar' ).removeClass( 'hide' );
 } ).on( 'touchend mouseup', function( e ) {
@@ -795,8 +796,8 @@ $( '.map' ).on( 'click', function( e ) {
 		$( '.mapcover, .guide' ).addClass( 'mapshow' );
 		$( '.guide' ).toggleClass( 'hide', ! S.pllength && S.player === 'mpd' );
 		$( '#guide-bio, #guide-lyrics' ).toggleClass( 'hide', S.stream && S.state === 'stop' );
-		$( '#guide-album' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
-		$( '#guide-bio, #guide-lyrics, #guide-album' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
+		$( '#guide-booklet' ).toggleClass( 'hide', $( '#album' ).hasClass( 'disabled' ) );
+		$( '#guide-bio, #guide-lyrics, #guide-booklet' ).toggleClass( 'hide', ! S.pllength || ( S.stream && S.state !== 'play' ) );
 		$( '#coverL, #coverM, #coverR, #coverB' ).toggleClass( 'disabled', ! S.pllength );
 		$( '.maptime' ).toggleClass( 'mapshow', ! D.cover );
 		$( '.mapvolume' ).toggleClass( 'mapshow', volume );
@@ -1157,6 +1158,7 @@ $( '#button-lib-back' ).on( 'click', function() {
 		return
 	}
 	
+	V.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 	var backmode     = 'gmode' in V && V.gmode !== V.mode;
 	if ( bL && V.mode !== 'latest' && ! backmode ) {
 		bL > 1 ? $breadcrumbs.eq( -2 ).trigger( 'click' ) : $( '#library' ).trigger( 'click' );
@@ -1174,7 +1176,6 @@ $( '#button-lib-back' ).on( 'click', function() {
 						var path = 'ALBUM';
 					} else {
 						var path = query.path;
-						V.scrolltop[ $( '#lib-path .lipath' ).text() ] = $( window ).scrollTop();
 					}
 					var data = {
 						  html      : html
@@ -1448,7 +1449,7 @@ $( '#page-library' ).on( 'click', '#lib-list .coverart', function() {
 		var data = {
 			  html      : html
 			, modetitle : $this.find( '.liname' ).text()
-			, path      : 'ALBUM'
+			, path      : path
 		}
 		renderLibraryList( data );
 	} );

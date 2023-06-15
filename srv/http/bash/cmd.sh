@@ -575,9 +575,11 @@ mpcprevnext )
 	;;
 mpcremove )
 	if [[ $POS ]]; then
+		[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
 		mpc -q del $POS
 		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
 	else
+		stopRadio
 		mpc -q clear
 	fi
 	$dirbash/status-push.sh
@@ -595,6 +597,7 @@ mpcseek )
 	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
+	[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
 	mpc -q play $POS
 	mpc -q stop
 	$dirbash/status-push.sh
@@ -865,7 +868,7 @@ webradiodelete )
 	path=$dirdata/$MODE
 	[[ $DIR ]] && path+="/$DIR"
 	rm -f "$path/$urlname"
-	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
+	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
 	webradioCount $MODE
 	;;
 webradioedit )

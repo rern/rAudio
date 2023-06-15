@@ -14,9 +14,6 @@ $uptime<wide>&ensp;<gr>since $( uptime -s | cut -d: -f1-2 | sed 's/ / • /' )</
 if [[ $rpi3bplus ]]; then
 	degree=$( grep temp_soft_limit /boot/config.txt | cut -d= -f2 )
 	[[ $degree ]] && softlimit=true || degree=60
-	data+='
-, "softlimit"         : '$softlimit'
-, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 throttled=$( /opt/vc/bin/vcgencmd get_throttled | cut -d= -f2 )
 if [[ $throttled != 0x0 ]]; then
@@ -289,6 +286,11 @@ if [[ -e $dirshm/onboardwlan ]]; then
 , "bluetoothactive"   : '$bluetoothactive'
 , "bluetoothconf"     : '$bluetoothconf'
 , "btconnected"       : '$( [[ -e $dirshm/btconnected && $( awk NF $dirshm/btconnected ) ]] && echo true )
+fi
+if [[ $rpi3bplus ]]; then
+	data+='
+, "softlimit"         : '$softlimit'
+, "softlimitconf"     : { "SOFTLIMIT": '$degree' }'
 fi
 
 data2json "$data" $1

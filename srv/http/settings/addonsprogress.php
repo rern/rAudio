@@ -127,7 +127,7 @@ EOF;
 // ......................................................................................
 $getinstall = <<< EOF
 curl -sSfLO $installurl
-[[ $? != 0 ]] && echo '<a class="cwbr"> ! </a> '$label script download failed. && exit
+[[ $? != 0 ]] && echo '<a class="cbr"> ! </a> '$label script download failed. && exit
 
 chmod 755 $installfile
 EOF;
