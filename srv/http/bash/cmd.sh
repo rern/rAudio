@@ -865,7 +865,7 @@ webradiodelete )
 	path=$dirdata/$MODE
 	[[ $DIR ]] && path+="/$DIR"
 	rm -f "$path/$urlname"
-	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/{$urlname,$urlname-thumb}".*
+	[[ ! $( find "$path" -name "$urlname" ) ]] && rm -f "$path/img/$urlname".* "$path/img/$urlname-thumb".*
 	webradioCount $MODE
 	;;
 webradioedit )
