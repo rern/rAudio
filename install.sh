@@ -273,4 +273,6 @@ if [[ $rebooti2s ]]; then
 fi
 
 # 20230623
-systemctl restart mpd
+! grep -q dirshm/listing $dirbash/mpdidle.sh && systemctl restart mpd
+charlast=$( tail -c 1 $dirmpd/album )
+[[ $charlast ]] && echo >> $dirmpd/album
