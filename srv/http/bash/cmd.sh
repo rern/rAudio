@@ -6,12 +6,12 @@ dirimg=/srv/http/assets/img
 args2var "$1"
 
 plAddPlay() {
-	pushstreamPlaylist add
 	if [[ ${ACTION: -4} == play ]]; then
 		[[ $delay ]] && sleep 2
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	fi
+	pushstreamPlaylist add
 }
 plAddPosition() {
 	if [[ ${ACTION:0:7} == replace ]]; then
