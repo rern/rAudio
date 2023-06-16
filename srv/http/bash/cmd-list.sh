@@ -9,12 +9,20 @@
 
 . /srv/http/bash/common.sh
 
+touch $dirshm/listing # for debounce mpdidle.sh
+
+# for latest albums
+[[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev
+rm -f $dirmpd/updating
+touch $dirmpd/listing
+
 updateDone() {
-	rm -f $dirmpd/listing
 	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
+	rm -f $dirmpd/listing
 	pushstream mpdupdate '{ "done": 1 }'
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
+	( sleep 10 && rm -f $dirshm/listing ) &
 }
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
@@ -28,8 +36,6 @@ if [[ $song == 0 ]]; then
 	updateDone
 	exit
 fi
-
-touch $dirmpd/listing
 
 ##### album #############################################
 listAll() {
@@ -100,14 +106,6 @@ if [[ $dirwav ]]; then
 	done
 fi
 
-filealbum=$dirmpd/album
-filealbumprev=$dirmpd/albumprev
-if [[ -s $filealbum && $( getContent $dirmpd/updating ) != rescan ]]; then
-	cp -f $filealbum{,prev}
-else
-	> $dirmpd/latest
-	latest=0
-fi
 album=$( awk NF <<< $album_artist_file | sort -uf )
 if [[ -e $dirmpd/albumignore ]]; then
 	readarray -t albumignore < $dirmpd/albumignore
@@ -120,8 +118,6 @@ fi
 filealbumyear=$dirmpd/albumbyartist-year
 awk NF <<< $album > $filealbumyear
 php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and albumbyartist
-album=$( wc -l < $dirmpd/album )
-albumyear=$( wc -l < $filealbumyear )
 
 for mode in albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
@@ -129,25 +125,16 @@ for mode in albumartist artist composer conductor genre date; do
 	php $dirbash/cmd-listsort.php $filemode
 done
 
-##### latest album #############################################
-if [[ -e $filealbumprev ]]; then # latest
-	latestnew=$( diff $filealbum $filealbumprev | grep '^<' | cut -c 3- )
-	rm -f $filealbumprev
-	if [[ $latestnew ]]; then
-		echo "$latestnew" > $dirmpd/latestnew
-		if diff $dirmpd/latest $dirmpd/latestnew &> /dev/null; then # no diff - return 0
-			rm -f $dirmpd/latestnew
-		else
-			mv -f $dirmpd/latest{new,}
-		fi
-	fi
-	latest=$( wc -l < $dirmpd/latest )
-fi
+##### latest albums #############################################
+[[ -e $dirshm/albumprev ]] && new=$( diff $dirmpd/album $dirshm/albumprev | grep '^<' | cut -c 3- )
+echo "$new" > $dirmpd/latest
+rm -f $dirshm/albumprev
+
 ##### count #############################################
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
 counts='{
-  "album"       : '$album'
-, "albumyear"   : '$albumyear'
+  "album"       : '$( awk NF $dirmpd/album | wc -l )'
+, "albumyear"   : '$( awk NF $filealbumyear | wc -l )'
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
 , "composer"    : '$composer'
@@ -155,7 +142,7 @@ counts='{
 , "dabradio"    : '$dabradio'
 , "date"        : '$date'
 , "genre"       : '$genre'
-, "latest"      : '$latest'
+, "latest"      : '$( awk NF $dirmpd/latest | wc -l )'
 , "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
 , "playlists"   : '$( ls -1 $dirplaylists | wc -l )'
 , "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
