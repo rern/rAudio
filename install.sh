@@ -271,3 +271,6 @@ if [[ $rebooti2s ]]; then
 	echo "$info Reboot required for Audio - I²S"
 	echo 'Audio - I²S' > $dirshm/reboot
 fi
+
+# 20230623
+systemctl restart mpd

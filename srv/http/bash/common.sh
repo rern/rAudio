@@ -249,7 +249,7 @@ pushstream() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
-	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
+	[[ ! -e $filesharedip || $( awk NF $filesharedip | wc -l ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
 	
