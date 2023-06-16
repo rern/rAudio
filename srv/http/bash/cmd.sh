@@ -7,7 +7,7 @@ args2var "$1"
 
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
-		[[ $delay ]] && sleep 2
+		[[ $delay ]] && notify -blink playlist Playlist 'Ready ...' && sleep 2
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	fi
