@@ -146,7 +146,7 @@ if ( isset( $argv[ 1 ] ) ) {
 			$index     = mb_substr( $line, 0, 1, 'UTF-8' );
 			$byalbum[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 		}
-		file_put_contents( '/srv/http/data/mpd/album', implode( "\n", $byalbum ) );
+		file_put_contents( '/srv/http/data/mpd/album', implode( "\n", $byalbum )."\n" );
 		usort( $byartistsort, function( $a, $b ) {
 			return strnatcasecmp( $a, $b );
 		} );
@@ -155,7 +155,7 @@ if ( isset( $argv[ 1 ] ) ) {
 			$index      = mb_substr( $line, 0, 1, 'UTF-8' );
 			$byartist[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 		}
-		file_put_contents( '/srv/http/data/mpd/albumbyartist', implode( "\n", $byartist ) );
+		file_put_contents( '/srv/http/data/mpd/albumbyartist', implode( "\n", $byartist )."\n" );
 	} else {
 		foreach( $lines as $line ) $sort[] = stripSort( $line ).'^x^'.$line;
 	}
@@ -167,5 +167,5 @@ if ( isset( $argv[ 1 ] ) ) {
 		$index   = mb_substr( $line, 0, 1, 'UTF-8' );
 		$array[] = $index.'^^'.explode( '^x^', $line )[ 1 ];
 	}
-	file_put_contents( $file, implode( "\n", $array ) );
+	file_put_contents( $file, implode( "\n", $array )."\n" );
 }
