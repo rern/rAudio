@@ -74,7 +74,7 @@ $menulist = [
 	  [ 'play',       'play',          'Play' ]
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
-	, [ 'current',    'check',         'Current' ]
+	, [ 'current',    'current',         'Current' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
 	, [ 'remove',     'minus-circle',  'Remove' ]

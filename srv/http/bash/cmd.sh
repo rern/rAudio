@@ -443,7 +443,6 @@ mpcadd )
 	plAddPosition
 	mpc -q add "$FILE"
 	plAddPlay
-	pushstreamPlaylist add
 	;;
 mpcaddplaynext )
 	mpc -q insert "$FILE"
