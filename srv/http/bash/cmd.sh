@@ -20,6 +20,7 @@ plAddPosition() {
 			[[ $header == http || $header == rtsp ]] && delay=2
 		fi
 		mpc -q clear
+		stopRadio
 		pos=1
 	else
 		pos=$(( $( mpc status %length% ) + 1 ))
@@ -578,8 +579,8 @@ mpcremove )
 		mpc -q del $POS
 		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
 	else
-		stopRadio
 		mpc -q clear
+		stopRadio
 	fi
 	$dirbash/status-push.sh
 	pushstreamPlaylist
@@ -711,7 +712,7 @@ playerstop )
 	[[ $scrobble ]] && scrobbleOnStop
 	;;
 playlist )
-	[[ $REPLACE ]] && mpc -q clear
+	[[ $REPLACE ]] && mpc -q clear && stopRadio
 	mpc -q load "$NAME"
 	[[ $PLAY ]] && sleep 1 && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
