@@ -120,13 +120,22 @@ awk NF <<< $album > $filealbumyear
 php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and albumbyartist
 # latest
 [[ -e $dirshm/albumprev ]] && new=$( diff $dirmpd/album $dirshm/albumprev | grep '^<' | cut -c 3- )
-echo "$new" > $dirmpd/latest
+[[ $new ]] && echo "$new" > $dirmpd/latest
 rm -f $dirshm/albumprev
+album=$( lineCount $dirmpd/album )
+if (( $( jq .album $dirmpd/counts ) > $album )); then # album deleted
+	latest=$( < $dirmpd/latest )
+	readarray -t lines <<< $latest
+	for l in "${lines[@]}"; do
+		! grep -q "$l" $dirmpd/album && latest=$( grep -v "^$l$" <<< $latest )
+	done
+	echo "$latest" > $dirmpd/latest
+fi
+counts+='
+, "album"     : '$album'
+, "albumyear" : '$( lineCount $dirmpd/albumbyartist-year )'
+, "latest"    : '$( lineCount $dirmpd/latest )
 
-for mode in album albumbyartist-year latest; do
-	counts+='
-, "'${mode/byartist-}'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
-done
 # non-album
 for mode in albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
