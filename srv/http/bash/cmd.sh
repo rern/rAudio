@@ -594,9 +594,9 @@ mpcseek )
 	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
-	[[ $( mpc status %songpos% ) == $POS ]] && radioStop
 	mpc -q play $POS
 	mpc -q stop
+	pushstreamPlaylist
 	$dirbash/status-push.sh
 	;;
 mpcshuffle )
