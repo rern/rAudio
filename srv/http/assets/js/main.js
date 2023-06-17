@@ -265,7 +265,7 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 			V.screenoff = true;
 			break;
 		case 'update':
-			infoUpdate( '' );
+			if ( ! $( '#update' ).hasClass( 'on' ) ) infoUpdate( '' );
 			break;
 		case 'displaycolor':
 			V.color = true;

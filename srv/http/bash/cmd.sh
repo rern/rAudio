@@ -639,8 +639,12 @@ mpcupdate )
 	elif [[ -e $dirmpd/updating ]]; then
 		DIR=$( < $dirmpd/updating )
 	fi
-	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	pushstream mpdupdate '{ "type": "mpd" }'
+	for i in {0..10}; do
+		[[ -e $dirshm/listing ]] && sleep 1 || break
+		(( i++ ))
+	done
+	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
 multiraudiolist )
 	echo '{
