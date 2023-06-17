@@ -191,7 +191,7 @@ localbrowser )
 				else 
 					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
-				$dirbash/cmd.sh rotatesplash
+				$dirbash/cmd.sh splashrotate
 			fi
 		fi
 		if [[ $diffscreenoff ]]; then
