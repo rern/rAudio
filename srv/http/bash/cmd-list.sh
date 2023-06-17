@@ -125,17 +125,15 @@ if [[ $albumdiff ]]; then
 	if [[ $new ]]; then
 		echo "$new" > $dirmpd/latest
 	else
-		readarray -t deleted <<< $( grep '^>' <<< $albumdiff | cut -c 3- )
+		deleted=$( grep '^>' <<< $albumdiff | cut -c 3- )
 		if [[ $deleted ]]; then
-			latest=$( < $dirmpd/latest )
-			for line in "${deleted[@]}"; do
-				latest=$( grep -v "^$line$" <<< $latest )
-			done
+			echo "$deleted" > $dirshm/deleted
+			latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
 			echo "$latest" > $dirmpd/latest
 		fi
 	fi
 fi
-rm -f $dirshm/albumprev
+rm -f $dirshm/{albumprev,deleted}
 
 for mode in album albumbyartist-year latest; do
 	counts+='
