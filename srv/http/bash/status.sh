@@ -395,7 +395,7 @@ samplingSave() {
 	if [[ $player != upnp ]]; then
 		echo $sampling > $samplingfile
 		files=$( ls -1t $dirshm/sampling 2> /dev/null )
-		(( $( awk NF $files | wc -l ) > 20 )) && rm -f "$( tail -1 <<< $files )"
+		(( $( lineCount $files ) > 20 )) && rm -f "$( tail -1 <<< $files )"
 	fi
 }
 samplingLine() {

@@ -41,7 +41,7 @@ plAddRandom() {
 		
 		mpc add "$file"
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( awk NF $dirsystem/librandom | wc -l ) ))
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
 	if (( $diffcount > 1 )); then
 		echo $file >> $dirsystem/librandom
 	else
@@ -385,7 +385,7 @@ ignoredir )
 latestclear )
 	if [[ $DIR ]]; then
 		sed -i "\|\^$DIR$| d" $dirmpd/latest
-		count=$( awk NF $dirmpd/latest | wc -l )
+		count=$( lineCount $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
 		> $dirmpd/latest

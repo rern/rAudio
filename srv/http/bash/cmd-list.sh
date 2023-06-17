@@ -133,8 +133,8 @@ rm -f $dirshm/albumprev
 ##### count #############################################
 dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
 counts='{
-  "album"       : '$( awk NF $dirmpd/album | wc -l )'
-, "albumyear"   : '$( awk NF $filealbumyear | wc -l )'
+  "album"       : '$( lineCount $dirmpd/album )'
+, "albumyear"   : '$( lineCount $filealbumyear )'
 , "albumartist" : '$albumartist'
 , "artist"      : '$artist'
 , "composer"    : '$composer'
@@ -142,7 +142,7 @@ counts='{
 , "dabradio"    : '$dabradio'
 , "date"        : '$date'
 , "genre"       : '$genre'
-, "latest"      : '$( awk NF $dirmpd/latest | wc -l )'
+, "latest"      : '$( lineCount $dirmpd/latest )'
 , "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
 , "playlists"   : '$( ls -1 $dirplaylists | wc -l )'
 , "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
