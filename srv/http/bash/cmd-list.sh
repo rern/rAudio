@@ -17,7 +17,7 @@ rm -f $dirmpd/updating
 touch $dirmpd/listing
 
 updateDone() {
-	[[ $counts ]] && jq <<< $counts > $dirmpd/counts
+	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	rm -f $dirmpd/listing
 	pushstream mpdupdate '{ "done": 1 }'
 	status=$( $dirbash/status.sh )
@@ -26,18 +26,19 @@ updateDone() {
 }
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )
-webradio=$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+counts='
+  "song"      : '$song'
+, "playlists" : '$( ls -1 $dirplaylists | wc -l )'
+, "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
+, "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
+[[ $song == 0 ]] && updateDone && exit
 
-if [[ $song == 0 ]]; then
-	counts='{
-  "playlists" : 0
-, "webradio"  : '$webradio'
-}'
-	updateDone
-	exit
-fi
+for mode in NAS SD USB; do
+	counts+='
+, "'${mode,,}'" : '$( mpc ls $mode 2> /dev/null | wc -l )
+done
 
-##### album #############################################
+##### album
 listAll() {
 	mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null \
 							| awk -F'/[^/]*$' 'NF && !/^\^/ {print $1}' \
@@ -93,9 +94,9 @@ readarray -t dirwav <<< $( mpc listall \
 if [[ $dirwav ]]; then
 	for dir in "${dirwav[@]}"; do
 		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
-		kid=$( kid3-cli -c 'get album' -c 'get albumartist' -c 'get artist' "$file" )
+		kid=$( kid3-cli -c 'get albumartist' -c 'get artist' -c 'get date' -c 'get album' "$file" )
 		if [[ $kid ]]; then
-			albumwav=$( head -2 <<< $kid \
+			albumwav=$( head -3 <<< $kid \
 							| awk 1 ORS='^^' \
 							| sed "s|$|$dir|" )
 			if [[ $albumwav ]]; then
@@ -113,43 +114,31 @@ if [[ -e $dirmpd/albumignore ]]; then
 		album=$( sed "/^$line^/ d" <<< $album )
 	done
 fi
-
-##### save and sort #############################################
+# albums
 filealbumyear=$dirmpd/albumbyartist-year
 awk NF <<< $album > $filealbumyear
 php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and albumbyartist
-
-for mode in albumartist artist composer conductor genre date; do
-	filemode=$dirmpd/$mode
-	printf -v $mode '%s' $( mpc list $mode | awk NF | awk '{$1=$1};1' | tee $filemode | wc -l )
-	php $dirbash/cmd-listsort.php $filemode
-done
-
-##### latest albums #############################################
+# latest
 [[ -e $dirshm/albumprev ]] && new=$( diff $dirmpd/album $dirshm/albumprev | grep '^<' | cut -c 3- )
 echo "$new" > $dirmpd/latest
 rm -f $dirshm/albumprev
 
-##### count #############################################
-dabradio=$( find -L $dirdata/dabradio -type f ! -path '*/img/*' 2> /dev/null | wc -l ) # no $dirdabradio if dab not installed
-counts='{
-  "album"       : '$( lineCount $dirmpd/album )'
-, "albumyear"   : '$( lineCount $filealbumyear )'
-, "albumartist" : '$albumartist'
-, "artist"      : '$artist'
-, "composer"    : '$composer'
-, "conductor"   : '$conductor'
-, "dabradio"    : '$dabradio'
-, "date"        : '$date'
-, "genre"       : '$genre'
-, "latest"      : '$( lineCount $dirmpd/latest )'
-, "nas"         : '$( mpc ls NAS 2> /dev/null | wc -l )'
-, "playlists"   : '$( ls -1 $dirplaylists | wc -l )'
-, "sd"          : '$( mpc ls SD 2> /dev/null | wc -l )'
-, "song"        : '$song'
-, "usb"         : '$( mpc ls USB 2> /dev/null | wc -l )'
-, "webradio"    : '$webradio'
-}'
+for mode in album albumbyartist-year latest; do
+	counts+='
+, "'${mode/byartist-}'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
+done
+# non-album
+for mode in albumartist artist composer conductor genre date; do
+	filemode=$dirmpd/$mode
+	mpc list $mode \
+		| awk NF \
+		| awk '{$1=$1};1' \
+		> $filemode
+	php $dirbash/cmd-listsort.php $filemode
+	counts+='
+, "'$mode'" : '$( lineCount $filemode )
+done
+
 updateDone
 
 (
