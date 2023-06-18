@@ -21,8 +21,6 @@ function addToPlaylist() {
 	}
 }
 function addToPlaylistCommand() {
-	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
-	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 	var varaction = '';
 	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
@@ -52,11 +50,9 @@ function addToPlaylistCommand() {
 	V.title  = cmd_title[ V.action ];
 	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	if ( S.stream && [ 'addplay', 'replaceplay' ].includes( V.action ) ) { // radio to file needs transition
-		bash( [ 'mpcplayback' ], () => bash( V.mpccmd ) );
-	} else {
-		bash( V.mpccmd );
-	}
+	bash( V.mpccmd, () => {
+		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+	} );
 	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {

@@ -78,7 +78,6 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
-		[[ $ACTION == stop ]] && $dirbash/status-push.sh
 		sleep 1
 	fi
 }
