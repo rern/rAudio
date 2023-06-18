@@ -111,6 +111,7 @@ metadataGet() {
 timestamp='$( date +%s%3N )'
 webradio=true
 player="mpd"'
+	mv -f $dirshm/status{,prev}
 	echo "$status" > $dirshm/status
 	$dirbash/status-push.sh statusradio & # for snapcast ssh - for: mpdoled, lcdchar, vumeter, snapclient(need to run in background)
 	$dirbash/cmd.sh coverfileslimit

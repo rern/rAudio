@@ -29,12 +29,10 @@ else
 			
 		fi
 	fi
+	mv -f $dirshm/status{,prev}
 	mv -f $dirshm/status{new,}
 	pushstream mpdplayer "$status"
 fi
-
-[[ $trackchanged && $state == play \
-	&& -e $dirsystem/scrobble && ! -e $dirshm/scrobble ]] && scrobble=1
 
 if systemctl -q is-active localbrowser; then
 	if grep -q onwhileplay=true $dirsystem/localbrowser.conf; then
@@ -84,15 +82,17 @@ fi
 pushstream refresh '{ "page": "player", "state": "'$state'" }'
 pushstream refresh '{ "page": "features", "state": "'$state'" }'
 
-[[ ! $scrobble || ! $statusprev ]] && exit # >>>>>>>>>> must be last for $statusprev - webradio and state
+[[ ! -e $dirsystem/scrobble ]] && exit
 
-. <( echo "$statusprev" ) # status-radio.sh - no $statusprev
-[[ ! $Artist || ! $Title || $Time < 30 || $webradio != false || $player == snapcast ]] && exit
+. $dirshm/statusprev
+[[ ( $player != mpd ]] || ! grep -q $player=true $dirsystem/scrobble.conf ) && exit
 
-[[ $player != mpd ]] && ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
-$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-$Album
-CMD ARTIST TITLE ALBUM" &> /dev/null &
+[[ ! $Artist \
+	|| ! $Title \
+	|| $webradio == true \
+	|| $Time < 30 ]] \
+	|| ! ( $elapsed > 240 || $elapsed > $(( Time / 2 )) ) \
+	&& exit
+
+$dirbash/scrobble.sh &

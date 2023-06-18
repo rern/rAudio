@@ -92,20 +92,6 @@ splashRotate() {
 		-extent 1920x1080 \
 		$dirimg/splash.png
 }
-scrobbleOnStop() {
-	. $dirshm/scrobble
-	if [[ ! $Artist || ! $Title || $webradio == true || $Time < 30 ]] \
-		|| ! ( $elapsed > 240 || $elapsed > $(( Time / 2 )) ); then
-		return
-	fi
-	
-	$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-$Album
-CMD ARTIST TITLE ALBUM" &> /dev/null &
-	rm -f $dirshm/scrobble
-}
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
 	echo -e "${_//%/\\x}"
@@ -516,17 +502,15 @@ mpcplayback )
 		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
-		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $ACTION
 		killProcess cava
-		[[ -e $dirshm/scrobble ]] && scrobbleOnStop
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
 	# snapclient
 	if [[ $ACTION == play ]]; then
+		sleep 2 # fix stutter
 		action=start
 		active=true
-		sleep 2 # fix stutter
 		touch $dirshm/snapclient
 	else
 		action=stop
@@ -543,7 +527,6 @@ mpcprevnext )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
 	mpc -q stop
 	radioStop
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/{status,scrobble}
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -564,10 +547,6 @@ mpcprevnext )
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
-	if [[ -e $dirshm/scrobble ]]; then
-		sleep 2
-		scrobbleOnStop
-	fi
 	;;
 mpcremove )
 	if [[ $POS ]]; then
@@ -581,7 +560,6 @@ mpcremove )
 	pushstreamPlaylist
 	;;
 mpcseek )
-	touch $dirshm/scrobble
 	if [[ $STATE == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
@@ -589,7 +567,6 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $ELAPSED
-	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
 	mpc -q play $POS
@@ -673,10 +650,6 @@ playerstart )
 	;;
 playerstop )
 	player=$( < $dirshm/player )
-	if [[ -e $dirsystem/scrobble ]] && grep -q $player=true $dirsystem/scrobble.conf; then
-		scrobble=1
-		cp -f $dirshm/{status,scrobble}
-	fi
 	killProcess cava
 	echo mpd > $dirshm/player
 	[[ $player != upnp ]] && $dirbash/status-push.sh
@@ -708,12 +681,11 @@ playerstop )
 			;;
 	esac
 	pushstream player '{ "player": "'$player'", "active": false }'
-	[[ $scrobble ]] && scrobbleOnStop
 	;;
 playlist )
 	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
-	[[ $PLAY ]] && sleep 1 && mpc -q play
+	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushstreamPlaylist
 	;;

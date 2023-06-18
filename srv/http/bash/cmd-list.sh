@@ -122,23 +122,16 @@ php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and al
 [[ -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
 	new=$( grep '^<' <<< $albumdiff | cut -c 3- )
-	if [[ $new ]]; then
-		echo "$new" > $dirmpd/latest
-	else
-		deleted=$( grep '^>' <<< $albumdiff | cut -c 3- )
-		if [[ $deleted ]]; then
-			echo "$deleted" > $dirshm/deleted
-			latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
-			echo "$latest" > $dirmpd/latest
-		fi
+	deleted=$( grep '^>' <<< $albumdiff | cut -c 3- )
+	[[ $new ]] && echo "$new" > $dirmpd/latest
+	if [[ $deleted ]]; then
+		echo "$deleted" > $dirshm/deleted
+		latest=$( grep -Fvx -f $dirshm/deleted $dirmpd/latest )
+		echo "$latest" > $dirmpd/latest
 	fi
 fi
 rm -f $dirshm/{albumprev,deleted}
 
-for mode in album albumbyartist-year latest; do
-	counts+='
-, "'${mode/byartist-}'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
-done
 # non-album
 for mode in albumartist artist composer conductor genre date; do
 	filemode=$dirmpd/$mode
@@ -149,6 +142,11 @@ for mode in albumartist artist composer conductor genre date; do
 	php $dirbash/cmd-listsort.php $filemode
 	counts+='
 , "'$mode'" : '$( lineCount $filemode )
+done
+
+for mode in album albumbyartist-year latest; do
+	counts+='
+, "'${mode/byartist-}'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
 done
 
 updateDone
