@@ -135,7 +135,7 @@ httpd )
 	$dirsettings/player-data.sh pushrefresh
 	;;
 lastfmkey )
-	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2
+	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
 localbrowser )
 	if [[ $ON ]]; then
@@ -311,18 +311,17 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobblekeyget )
-	token=${TOKEN[1]:0:32}
+scrobblekey )
 	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-	apikey=${keys[0]:0:32}
-	sharedsecret=${keys[1]:0:32}
-	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \
+	apikey=${keys[0]}
+	sharedsecret=${keys[1]}
+	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${TOKEN}${sharedsecret}" \
 				| md5sum \
 				| cut -c1-32 )
 	response=$( curl -sX POST \
 		--data "method=auth.getSession" \
 		--data "api_key=$apikey" \
-		--data "token=$token" \
+		--data "token=$TOKEN" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )

@@ -398,8 +398,7 @@ $( '#setting-scrobble' ).on( 'click', function() {
 			, cancel  : switchCancel
 			, ok      : () => {
 				bash( [ 'lastfmkey' ], function( apikey ) {
-					var ip = location.host;
-					location.href = 'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler/?ip='+ ip
+					location.href =  'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler?ip='+ location.host;
 				} );
 			}
 		} );
@@ -496,7 +495,7 @@ function renderPage() {
 	var code  = url.searchParams.get( 'code' );
 	var error = url.searchParams.get( 'error' );
 	if ( token ) {
-		bash( [ 'scrobblekeyget', token, 'CMD TOKEN' ], function( error ) {
+		bash( [ 'scrobblekey', token, 'CMD TOKEN' ], function( error ) {
 			if ( error ) {
 				info( {
 					  icon    : 'scrobble'

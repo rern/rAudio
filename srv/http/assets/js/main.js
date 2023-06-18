@@ -5,8 +5,8 @@ O = []; // order
 S = {}; // status
 V = {   // var global
 	  apikeyfanart  : '06f56465de874e4c75a2e9f0cc284fa3'
-	, apikeylastfm  : 'd666cd06ec4fcf84c3b86279831a1c8e'
-	, sharedsecret  : '390372d3a1f60d4030e2a612260060e0'
+	, apikeylastfm  : '328f08885c2b5a4d1dbe1496cab60b15'
+	, sharedsecret  : '8be57656a311be3fd8f003a71b3e0c06'
 	, bioartist     : []
 	, blinkdot      : '<a class="dot dot1">·</a>&ensp;<a class="dot dot2">·</a>&ensp;<a class="dot dot3">·</a>'
 	, coverart      : '/assets/img/coverart.svg'
