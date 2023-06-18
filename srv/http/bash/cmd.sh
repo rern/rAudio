@@ -717,14 +717,6 @@ playlist )
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushstreamPlaylist
 	;;
-radiorestart )
-	[[ -e $disshm/radiorestart ]] && exit
-	
-	touch $disshm/radiorestart
-	systemctl -q is-active radio || systemctl start radio
-	sleep 1
-	rm $disshm/radiorestart
-	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{ "done": 1 }'
