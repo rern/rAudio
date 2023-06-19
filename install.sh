@@ -6,12 +6,13 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230616
+# 20230620
 file=/etc/pacman.conf
-grep -q community $file && sed -i '/community/ {N;N;d}' $file
+grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $file
 
 ! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
 
+# 20230616
 if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
     pacman -Sy --noconfirm mediamtx
 fi
