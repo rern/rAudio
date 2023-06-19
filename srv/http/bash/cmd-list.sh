@@ -22,7 +22,7 @@ updateDone() {
 	pushstream mpdupdate '{ "done": 1 }'
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
-	( sleep 10 && rm -f $dirshm/listing ) &
+	( sleep 5 && rm -f $dirshm/listing ) &
 }
 
 song=$( mpc stats | awk '/^Songs/ {print $NF}' )

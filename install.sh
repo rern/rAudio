@@ -7,6 +7,9 @@ alias=r1
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
 # 20230616
+file=/etc/pacman.conf
+grep -q community $file && sed -i '/community/ {N;N;d}' $file
+
 if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
     pacman -Sy --noconfirm mediamtx
 fi

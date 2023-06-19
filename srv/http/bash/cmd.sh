@@ -615,10 +615,6 @@ mpcupdate )
 		DIR=$( < $dirmpd/updating )
 	fi
 	pushstream mpdupdate '{ "type": "mpd" }'
-	for i in {0..10}; do
-		[[ -e $dirshm/listing ]] && sleep 1 || break
-		(( i++ ))
-	done
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
 multiraudiolist )
