@@ -277,5 +277,7 @@ fi
 
 # 20230623
 ! grep -q dirshm/listing $dirbash/mpdidle.sh && systemctl restart mpd
-charlast=$( tail -c 1 $dirmpd/album )
-[[ $charlast ]] && echo >> $dirmpd/album
+if [[ -e $dirmpd/album ]]; then
+	charlast=$( tail -c 1 $dirmpd/album )
+	[[ $charlast ]] && echo >> $dirmpd/album
+fi
