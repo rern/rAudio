@@ -14,22 +14,20 @@ else
 						s/^,* *"//; s/" *: */=/; p
 						}' )
 	echo "$statusnew" > $dirshm/statusnew
-	if [[ -e $dirshm/status ]]; then
-		statusprev=$( < $dirshm/status )
-		compare='^Artist|^Title|^Album'
-		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
-		. <( echo "$statusnew" )
-		if [[ $webradio == true ]]; then
-			[[ ! $trackchanged && $state == play ]] && exit # >>>>>>>>>>
-			
-		else
-			compare='^state|^elapsed'
-			[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
-			[[ ! $trackchanged && ! $statuschanged ]] && exit # >>>>>>>>>>
-			
-		fi
+	statusprev=$( < $dirshm/status )
+	compare='^Artist|^Title|^Album'
+	[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && trackchanged=1
+	. <( echo "$statusnew" )
+	if [[ $webradio == true ]]; then
+		[[ ! $trackchanged && $state == play ]] && exit # >>>>>>>>>>
+		
+	else
+		compare='^state|^elapsed'
+		[[ "$( grep -E "$compare" <<< $statusnew | sort )" != "$( grep -E "$compare" <<< $statusprev | sort )" ]] && statuschanged=1
+		[[ ! $trackchanged && ! $statuschanged ]] && exit # >>>>>>>>>>
+		
 	fi
-	mv -f $dirshm/status{,prev}
+	[[ -e $dirsystem/scrobble ]] && mv -f $dirshm/status{,prev}
 	mv -f $dirshm/status{new,}
 	pushstream mpdplayer "$status"
 fi
@@ -85,7 +83,7 @@ pushstream refresh '{ "page": "features", "state": "'$state'" }'
 [[ ! -e $dirsystem/scrobble ]] && exit
 
 . $dirshm/statusprev
-[[ ( $player != mpd ]] || ! grep -q $player=true $dirsystem/scrobble.conf ) && exit
+[[ $player != mpd ]] || ! grep -q $player=true $dirsystem/scrobble.conf && exit
 
 
 [[ ! $Artist \

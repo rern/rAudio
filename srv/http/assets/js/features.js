@@ -65,12 +65,12 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
 		info( {
-			  icon    : SW.icon
-			, title   : SW.title
-			, message : 'Reset client keys?'
-			, oklabel : ico( 'minus-circle help' ) +'Reset'
-			, okcolor : red
-			, ok      : () => bash( [ 'spotifytokenreset' ] )
+			  icon         : SW.icon
+			, title        : SW.title
+			, checkbox     : 'Remove client keys?'
+			, values       : false
+			, checkchanged : true
+			, ok           : () => bash( [ 'spotifykeyremove' ] )
 		} );
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
@@ -390,38 +390,21 @@ $( '#setting-login' ).on( 'click', function() {
 	} );
 } );
 $( '#setting-scrobble' ).on( 'click', function() {
-	if ( ! S.scrobblekey ) { // api account page: https://www.last.fm/api/accounts
+	if ( S.scrobblekey ) {
+		infoScrobble();
+	} else {
 		info( {
 			  icon    : SW.icon
 			, title   : SW.title
 			, message : 'Open <wh>Last.fm</wh> for authorization?'
 			, cancel  : switchCancel
-			, ok      : () => {
+			, ok      : () => { // api account page: https://www.last.fm/api/accounts
 				bash( [ 'lastfmkey' ], function( apikey ) {
 					location.href =  'http://www.last.fm/api/auth/?api_key='+ apikey +'&cb=https://rern.github.io/raudio/scrobbler?ip='+ location.host;
 				} );
 			}
 		} );
-		return
 	}
-	
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, checkbox     : [
-			  ico( 'airplay' ) +'AirPlay'
-			, ico( 'bluetooth' ) +'Bluetooth'
-			, ico( 'spotify' ) +'Spotify'
-			, ico( 'upnp' ) +'UPnP'
-		]
-		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
-		, boxwidth     : 170
-		, values       : S.scrobbleconf || default_v.scrobble
-		, checkchanged : S.scrobble
-		, cancel       : switchCancel
-		, ok           : switchEnable
-		, fileconf     : true
-	} );
 } );
 $( '#setting-stoptimer' ).on( 'click', function() {
 	info( {
@@ -446,6 +429,40 @@ function infoCheckEvenOdd( length ) {
 	I.checkblank = [];
 	I.checkip    = [];
 	for ( i = 0; i < length; i++ ) i % 2 ? I.checkip.push( i ) : I.checkblank.push( i );
+}
+function infoScrobble() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Players', 'Authorization' ]
+		, tab          : [ '', infoScrobbleAuth ]
+		, checkbox     : [
+			  ico( 'airplay' ) +'AirPlay'
+			, ico( 'bluetooth' ) +'Bluetooth'
+			, ico( 'spotify' ) +'Spotify'
+			, ico( 'upnp' ) +'UPnP'
+		]
+		, footer       : '<br><label><input type="checkbox">Notify on scrobbling</label>'
+		, boxwidth     : 170
+		, values       : S.scrobbleconf || default_v.scrobble
+		, checkchanged : S.scrobble
+		, cancel       : switchCancel
+		, ok           : switchEnable
+		, fileconf     : true
+	} );
+}
+function infoScrobbleAuth() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Players', 'Authorization' ]
+		, tab          : [ infoScrobble, '' ]
+		, checkbox     : 'Remove authorization'
+		, values       : false
+		, checkchanged : true
+		, cancel       : switchCancel
+		, ok           : () => bash( [ 'scrobblekeyremove' ] )
+	} );
 }
 function passwordWrong() {
 	bannerHide();

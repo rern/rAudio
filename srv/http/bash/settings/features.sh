@@ -36,12 +36,6 @@ localbrowserXset() {
 		xset +dpms
 	fi
 }
-spotifyReset() {
-	notify -blink spotify 'Spotify Client' "$1"
-	rm -f $dirsystem/spotifykey $dirshm/spotify/*
-	systemctl disable --now spotifyd
-	pushRefresh
-}
 
 case $CMD in
 
@@ -136,6 +130,9 @@ httpd )
 	;;
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
+	;;
+lastfmkeyremove )
+	
 	;;
 localbrowser )
 	if [[ $ON ]]; then
@@ -335,6 +332,10 @@ sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
 	fi
 	;;
+scrobblekeyremove )
+	rm -f $dirsystem/{scrobble,scrobblekey}
+	pushRefresh
+	;;
 shairport-sync | spotifyd )
 	if [[ $ON ]]; then
 		serviceRestartEnable
@@ -397,6 +398,12 @@ snapserver )
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
+spotifykeyremove )
+	notify -blink spotify 'Spotify' "Remove ..."
+	rm -f $dirsystem/spotifykey $dirshm/spotify/*
+	systemctl disable --now spotifyd
+	pushRefresh
+	;;
 spotifytoken )
 	. $dirsystem/spotifykey
 	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
@@ -407,7 +414,7 @@ spotifytoken )
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q -m1 error <<< $tokens; then
-		spotifyReset "Error: $( jq -r .error <<< $tokens )"
+		notify -blink spotify 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi
 	
@@ -418,9 +425,6 @@ spotifytoken )
 	CMD=spotifyd
 	serviceRestartEnable
 	pushRefresh
-	;;
-spotifytokenreset )
-	spotifyReset 'Reset ...'
 	;;
 stoptimer )
 	if [[ $ON ]]; then
