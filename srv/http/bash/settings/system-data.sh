@@ -54,7 +54,7 @@ else
 	(( $speed < 1000 )) && speed+=' MHz' || speed=$( calc 2 $speed/1000 )' GHz'
 	(( $core > 1 )) && soccpu="$core x $cpu" || soccpu=$cpu
 	soccpu+=" @ $speed"
-	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<wide><gr>\1</gr></wide>|' )
+	rpimodel=$( tr -d '\000' < /proc/device-tree/model | sed -E 's/ Model //; s/ Plus/+/; s|( Rev.*)|<gr>\1</gr>|' )
 	if [[ $rpimodel == *BeagleBone* ]]; then
 		soc=AM3358
 	else
