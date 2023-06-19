@@ -1016,9 +1016,8 @@ i.map.disabled, .map.disabled i {
 	top: 0;
 	width: 100%;
 	margin-bottom: 10px;
-	padding: 10px 0;
 	font-size: 30px;
-	line-height: 30px;
+	line-height: 50px;
 	background: #000000;
 	border-bottom: 1px solid var( --cg );
 }
@@ -1032,7 +1031,7 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	width: 40px;
 	line-height: 40px;
-	margin-top: -5px;
+	margin-top: 5px;
 	margin-right: -8px;
 	font-size: 24px;
 	text-align: center;
