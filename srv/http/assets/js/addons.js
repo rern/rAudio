@@ -4,11 +4,6 @@ var icon       = 'jigsaw';
 var keys       = [ 'installurl', 'postinfo', 'title', 'uninstall', 'version' ];
 
 if ( [ 'localhost', '127.0.0.1' ].includes( location.hostname ) ) $( 'a' ).removeAttr( 'href' );
-$( '.page-icon' ).press( function() {
-	V.addon = { title: 'Debug' }
-	V.label = 'Debug';
-	postData();
-} );
 $( '.helphead' ).off( 'click' ).on( 'click', function() {
 	var hidden = $( '.revisiontext' ).hasClass( 'hide' );
 	$( this ).toggleClass( 'bl', hidden );
