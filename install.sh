@@ -10,6 +10,8 @@ alias=r1
 file=/etc/pacman.conf
 grep -q community $file && sed -i '/community/ {N;N;d}' $file
 
+! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
+
 if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
     pacman -Sy --noconfirm mediamtx
 fi
