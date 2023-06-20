@@ -34,6 +34,9 @@
 	height : 40px !important;
 	width  : 30px !important;
 }
+.select2-search--dropdown {
+	box-shadow: var( --shadow-menu );
+}
 .select2-dropdown {
 	background    : var( --cga );
 	border        : none;

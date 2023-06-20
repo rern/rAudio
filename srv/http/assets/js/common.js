@@ -1078,6 +1078,13 @@ function selectSet( $select ) {
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
+		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
+			setTimeout( () => {
+				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
+				if ( searchbox ) scroll -= 12;
+				$( '.select2-results ul' ).scrollTop( scroll );
+			}, 0 );
+		} )
 		.on( 'select2:closing', () => select2 = true )
 		.on( 'select2:close',   () => select2 = false )
 		.each( ( i, el ) => {
