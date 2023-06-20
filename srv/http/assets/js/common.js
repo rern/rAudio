@@ -1081,7 +1081,7 @@ function selectSet( $select ) {
 		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-				if ( searchbox ) scroll -= 12;
+				if ( searchbox && ! navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )

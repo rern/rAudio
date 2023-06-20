@@ -98,3 +98,8 @@
 		outline: 1px solid var( --cgl );
 	}
 }
+@media ( max-height: 768px ) {
+	.select2-results__options {
+		max-height: calc( ( 100vh - 100px ) / 2 ) !important;
+	}
+}
