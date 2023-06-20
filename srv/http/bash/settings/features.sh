@@ -131,9 +131,6 @@ httpd )
 lastfmkey )
 	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
-lastfmkeyremove )
-	
-	;;
 localbrowser )
 	if [[ $ON ]]; then
 		if ! grep -q console=tty3 /boot/cmdline.txt; then
