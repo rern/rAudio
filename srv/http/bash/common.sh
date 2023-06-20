@@ -189,6 +189,9 @@ killProcess() {
 		rm $filepid
 	fi
 }
+lineCount() {
+	awk NF "$1" | wc -l
+}
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
@@ -249,7 +252,7 @@ pushstream() {
 	json=${@:2} # $2 ...
 	json=$( sed 's/: *,/: false,/g; s/: *}$/: false }/' <<< $json ) # empty value > false
 	curl -s -X POST http://127.0.0.1/pub?id=$channel -d "$json"
-	[[ ! -e $filesharedip || $( wc -l < $filesharedip ) == 1 ]] && return  # no other cilents
+	[[ ! -e $filesharedip || $( lineCount $filesharedip ) == 1 ]] && return  # no other cilents
 	# shared data
 	[[ 'bookmark coverart display order mpdupdate playlists radiolist' != *$channel* ]] && return
 	

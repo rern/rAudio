@@ -299,7 +299,7 @@ function contextmenuLibrary( $li, $target ) {
 		$li.addClass( 'active' );
 		return
 	}
-	var filemode = [ 'album', 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
+	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
 	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.replace' ).next().toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
@@ -759,7 +759,7 @@ function infoTitle() {
 				} else if ( $this.hasClass( 'similar' ) ) {
 					addSimilar();
 				} else if ( $this.hasClass( 'scrobble' ) ) {
-					bash( [ 'scrobble', ...values, 'CMD Artist Title Album' ] );
+					bash( [ 'scrobble', ...values, 'CMD ARTIST TITLE ALBUM' ] );
 					banner( 'lastfm blink', 'Scrobble', 'Send ...' );
 				}
 				$( '#infoX' ).trigger( 'click' );

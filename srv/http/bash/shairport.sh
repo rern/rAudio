@@ -45,10 +45,6 @@ cat /tmp/shairport-sync-metadata | while read line; do
 			elapsedms=$( awk 'BEGIN { printf "%.0f", '$(( current - start ))/44.1' }' )
 			elapsed=$(( ( elapsedms + 500 ) / 1000 ))
 			Time=$(( ( end - start + 22050 ) / 44100 ))
-			if (( $Time < 30 || ( $elapsed < 240 && $elapsed < $Time / 2 ) )); then
-				touch $dirshm/scrobble
-				( sleep 3 && rm -f $dirshm/scrobble ) &> /dev/null &
-			fi
 			pushstream airplay '{ "elapsed": '$elapsed', "Time": '$Time' }'
 			timestamp=$( date +%s%3N )
 			starttime=$(( timestamp - elapsedms ))

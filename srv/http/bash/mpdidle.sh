@@ -23,8 +23,9 @@ mpc idleloop | while read changed; do
 			fi
 			;;
 		update )
-			sleep 1
-			! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
+			if [[ ! -e $dirshm/listing ]]; then
+				! mpc | grep -q -m1 '^Updating' && $dirbash/cmd-list.sh
+			fi
 			;;
 	esac
 done

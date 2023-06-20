@@ -177,9 +177,6 @@ function psEqualizer( data ) {
 function psMpdPlayer( data ) {
 	clearTimeout( V.debouncempdplayer );
 	V.debouncempdplayer = setTimeout( () => {
-		if ( data.state === 'play' && ! data.Title && [ 'radiofrance', 'radioparadise' ].includes( data.icon ) ) {
-			bash( [ 'radiorestart' ] ); // fix slow wi-fi - on station changed
-		}
 		if ( ! data.control && data.volume == -1 ) { // fix - upmpdcli missing values on stop/pause
 			delete data.control;
 			delete data.volume;

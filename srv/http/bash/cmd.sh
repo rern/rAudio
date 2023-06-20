@@ -6,20 +6,15 @@ dirimg=/srv/http/assets/img
 args2var "$1"
 
 plAddPlay() {
-	pushstreamPlaylist add
 	if [[ ${ACTION: -4} == play ]]; then
-		[[ $delay ]] && sleep 2
 		mpc -q play $pos
 		$dirbash/status-push.sh
 	fi
+	pushstreamPlaylist add
 }
 plAddPosition() {
 	if [[ ${ACTION:0:7} == replace ]]; then
-		if statePlay; then
-			header=$( mpc -f %file% playlist | head -c 4 )
-			[[ $header == http || $header == rtsp ]] && delay=2
-		fi
-		mpc -q clear
+		plClear
 		pos=1
 	else
 		pos=$(( $( mpc status %length% ) + 1 ))
@@ -46,13 +41,17 @@ plAddRandom() {
 		
 		mpc add "$file"
 	fi
-	diffcount=$(( $( jq .song $dirmpd/counts ) - $( wc -l < $dirsystem/librandom ) ))
+	diffcount=$(( $( jq .song $dirmpd/counts ) - $( lineCount $dirsystem/librandom ) ))
 	if (( $diffcount > 1 )); then
 		echo $file >> $dirsystem/librandom
 	else
 		> $dirsystem/librandom
 	fi
 	(( $tail > 1 )) || plAddRandom
+}
+plClear() {
+	mpc -q clear
+	radioStop
 }
 plTail() {
 	local pos total
@@ -74,7 +73,14 @@ pushstreamRadioList() {
 pushstreamVolume() {
 	pushstream volume '{ "type": "'$1'", "val": '$2' }'
 }
-rotateSplash() {
+radioStop() {
+	if [[ -e $dirshm/radio ]]; then
+		mpc -q stop
+		systemctl stop radio dab &> /dev/null
+		rm -f $dirshm/radio
+	fi
+}
+splashRotate() {
 	local rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
 	convert \
@@ -85,29 +91,6 @@ rotateSplash() {
 		-background '#000' \
 		-extent 1920x1080 \
 		$dirimg/splash.png
-}
-scrobbleOnStop() {
-	. $dirshm/scrobble
-	if [[ ! $Artist || ! $Title || $webradio == true || $Time < 30 ]] \
-		|| ! ( $elapsed > 240 || $elapsed > $(( Time / 2 )) ); then
-		return
-	fi
-	
-	$dirbash/scrobble.sh "cmd
-$Artist
-$Title
-$Album
-CMD ARTIST TITLE ALBUM" &> /dev/null &
-	rm -f $dirshm/scrobble
-}
-stopRadio() {
-	if [[ -e $dirshm/radio ]]; then
-		mpc -q stop
-		systemctl stop radio dab &> /dev/null
-		rm -f $dirshm/radio
-		[[ $1 == stop ]] && $dirbash/status-push.sh
-		sleep 1
-	fi
 }
 urldecode() { # for webradio url to filename
 	: "${*//+/ }"
@@ -273,7 +256,7 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 " $dirimg/icon.svg
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
-	[[ -e $dirsystem/localbrowser.conf ]] && rotateSplash
+	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
 	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
@@ -386,7 +369,7 @@ ignoredir )
 latestclear )
 	if [[ $DIR ]]; then
 		sed -i "\|\^$DIR$| d" $dirmpd/latest
-		count=$( wc -l < $dirmpd/latest )
+		count=$( lineCount $dirmpd/latest )
 		notify latest Latest 'Album cleared.'
 	else
 		> $dirmpd/latest
@@ -443,7 +426,6 @@ mpcadd )
 	plAddPosition
 	mpc -q add "$FILE"
 	plAddPlay
-	pushstreamPlaylist add
 	;;
 mpcaddplaynext )
 	mpc -q insert "$FILE"
@@ -514,23 +496,21 @@ mpcplayback )
 			ACTION=play
 		fi
 	fi
-	stopRadio $ACTION
+	radioStop
 	if [[ $ACTION == play ]]; then
 		[[ $( mpc status %state% ) == paused ]] && pause=1
 		mpc -q $ACTION $POS
 		[[ $( mpc | head -c 4 ) == cdda && ! $pause ]] && notify -blink audiocd 'Audio CD' 'Start play ...'
 	else
-		[[ -e $dirsystem/scrobble && $ACTION == stop ]] && cp -f $dirshm/{status,scrobble}
 		mpc -q $ACTION
 		killProcess cava
-		[[ -e $dirshm/scrobble ]] && scrobbleOnStop
 	fi
 	[[ ! -e $dirsystem/snapclientserver ]] && exit
 	# snapclient
 	if [[ $ACTION == play ]]; then
+		sleep 2 # fix stutter
 		action=start
 		active=true
-		sleep 2 # fix stutter
 		touch $dirshm/snapclient
 	else
 		action=stop
@@ -546,8 +526,7 @@ mpcprevnext )
 	length=$( mpc status %length% )
 	[[ $( mpc status %state% ) == playing ]] && playing=1
 	mpc -q stop
-	stopRadio
-	[[ -e $dirsystem/scrobble ]] && cp -f $dirshm/{status,scrobble}
+	radioStop
 	[[ ! $playing ]] && touch $dirshm/prevnextseek
 	if [[ $( mpc status %random% ) == on ]]; then
 		pos=$( shuf -n 1 <( seq $length | grep -v $current ) )
@@ -568,25 +547,19 @@ mpcprevnext )
 		rm -f $dirshm/prevnextseek
 		mpc -q stop
 	fi
-	if [[ -e $dirshm/scrobble ]]; then
-		sleep 2
-		scrobbleOnStop
-	fi
 	;;
 mpcremove )
 	if [[ $POS ]]; then
-		[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
+		[[ $( mpc status %songpos% ) == $POS ]] && radioStop
 		mpc -q del $POS
 		[[ $CURRENT ]] && mpc -q play $CURRENT && mpc -q stop
 	else
-		stopRadio
-		mpc -q clear
+		plClear
 	fi
 	$dirbash/status-push.sh
 	pushstreamPlaylist
 	;;
 mpcseek )
-	touch $dirshm/scrobble
 	if [[ $STATE == stop ]]; then
 		touch $dirshm/prevnextseek
 		mpc -q play
@@ -594,12 +567,11 @@ mpcseek )
 		rm $dirshm/prevnextseek
 	fi
 	mpc -q seek $ELAPSED
-	rm -f $dirshm/scrobble
 	;;
 mpcsetcurrent )
-	[[ $( mpc status %songpos% ) == $POS ]] && stopRadio
 	mpc -q play $POS
 	mpc -q stop
+	pushstreamPlaylist
 	$dirbash/status-push.sh
 	;;
 mpcshuffle )
@@ -642,8 +614,8 @@ mpcupdate )
 	elif [[ -e $dirmpd/updating ]]; then
 		DIR=$( < $dirmpd/updating )
 	fi
-	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	pushstream mpdupdate '{ "type": "mpd" }'
+	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
 multiraudiolist )
 	echo '{
@@ -657,7 +629,7 @@ order )
 playerstart )
 	player=$( < $dirshm/player )
 	mpc -q stop
-	stopRadio
+	radioStop
 	case $player in
 		airplay )   service=shairport-sync;;
 		bluetooth ) service=bluetoothhd;;
@@ -674,10 +646,6 @@ playerstart )
 	;;
 playerstop )
 	player=$( < $dirshm/player )
-	if [[ -e $dirsystem/scrobble ]] && grep -q $player=true $dirsystem/scrobble.conf; then
-		scrobble=1
-		cp -f $dirshm/{status,scrobble}
-	fi
 	killProcess cava
 	echo mpd > $dirshm/player
 	[[ $player != upnp ]] && $dirbash/status-push.sh
@@ -709,29 +677,17 @@ playerstop )
 			;;
 	esac
 	pushstream player '{ "player": "'$player'", "active": false }'
-	[[ $scrobble ]] && scrobbleOnStop
 	;;
 playlist )
-	[[ $REPLACE ]] && mpc -q clear
+	[[ $REPLACE ]] && plClear
 	mpc -q load "$NAME"
-	[[ $PLAY ]] && sleep 1 && mpc -q play
+	[[ $PLAY ]] && mpc -q play
 	[[ $PLAY || $REPLACE ]] && $dirbash/push-status.sh
 	pushstreamPlaylist
-	;;
-radiorestart )
-	[[ -e $disshm/radiorestart ]] && exit
-	
-	touch $disshm/radiorestart
-	systemctl -q is-active radio || systemctl start radio
-	sleep 1
-	rm $disshm/radiorestart
 	;;
 relaystimerreset )
 	$dirbash/relays-timer.sh &> /dev/null &
 	pushstream relays '{ "done": 1 }'
-	;;
-rotatesplash )
-	rotateSplash
 	;;
 savedpldelete )
 	rm "$dirplaylists/$NAME.m3u"
@@ -801,6 +757,9 @@ shareddatampdupdate )
 	notify refresh-library 'Library Update' Done
 	status=$( $dirbash/status.sh )
 	pushstream mpdplayer "$status"
+	;;
+splashrotate )
+	splashRotate
 	;;
 titlewithparen )
 	! grep -q "$TITLE" /srv/http/assets/data/titles_with_paren && echo -1

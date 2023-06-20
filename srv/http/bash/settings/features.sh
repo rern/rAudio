@@ -36,12 +36,6 @@ localbrowserXset() {
 		xset +dpms
 	fi
 }
-spotifyReset() {
-	notify -blink spotify 'Spotify Client' "$1"
-	rm -f $dirsystem/spotifykey $dirshm/spotify/*
-	systemctl disable --now spotifyd
-	pushRefresh
-}
 
 case $CMD in
 
@@ -135,7 +129,7 @@ httpd )
 	$dirsettings/player-data.sh pushrefresh
 	;;
 lastfmkey )
-	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"\'" -f2
+	grep -m1 apikeylastfm /srv/http/assets/js/main.js | cut -d"'" -f2
 	;;
 localbrowser )
 	if [[ $ON ]]; then
@@ -191,7 +185,7 @@ localbrowser )
 				else 
 					sed "s/ROTATION_SETTING/$rotate/; s/MATRIX_SETTING/$matrix/" /etc/X11/xinit/rotateconf > $rotateconf
 				fi
-				$dirbash/cmd.sh rotatesplash
+				$dirbash/cmd.sh splashrotate
 			fi
 		fi
 		if [[ $diffscreenoff ]]; then
@@ -311,18 +305,17 @@ screenofftoggle )
 	export DISPLAY=:0
 	xset q | grep -q -m1 'Monitor is Off' && xset dpms force on || xset dpms force off
 	;;
-scrobblekeyget )
-	token=${TOKEN[1]:0:32}
+scrobblekey )
 	keys=( $( grep -E -m2 'apikeylastfm|sharedsecret' /srv/http/assets/js/main.js | cut -d"'" -f2 ) )
-	apikey=${keys[0]:0:32}
-	sharedsecret=${keys[1]:0:32}
-	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${token}${sharedsecret}" \
+	apikey=${keys[0]}
+	sharedsecret=${keys[1]}
+	apisig=$( echo -n "api_key${apikey}methodauth.getSessiontoken${TOKEN}${sharedsecret}" \
 				| md5sum \
 				| cut -c1-32 )
 	response=$( curl -sX POST \
 		--data "method=auth.getSession" \
 		--data "api_key=$apikey" \
-		--data "token=$token" \
+		--data "token=$TOKEN" \
 		--data "api_sig=$apisig" \
 		--data "format=json" \
 		http://ws.audioscrobbler.com/2.0 )
@@ -335,6 +328,10 @@ sharedsecret=$sharedsecret
 sk=$( jq -r .session.key <<< $response )
 " > $dirsystem/scrobblekey
 	fi
+	;;
+scrobblekeyremove )
+	rm -f $dirsystem/{scrobble,scrobblekey}
+	pushRefresh
 	;;
 shairport-sync | spotifyd )
 	if [[ $ON ]]; then
@@ -398,6 +395,12 @@ snapserver )
 spotifykey )
 	echo base64client=$BTOA > $dirsystem/spotifykey
 	;;
+spotifykeyremove )
+	notify -blink spotify 'Spotify' "Remove ..."
+	rm -f $dirsystem/spotifykey $dirshm/spotify/*
+	systemctl disable --now spotifyd
+	pushRefresh
+	;;
 spotifytoken )
 	. $dirsystem/spotifykey
 	spotifyredirect=$( grep ^spotifyredirect $dirsettings/features-data.sh | cut -d= -f2 )
@@ -408,7 +411,7 @@ spotifytoken )
 				-d grant_type=authorization_code \
 				--data-urlencode "redirect_uri=$spotifyredirect" )
 	if grep -q -m1 error <<< $tokens; then
-		spotifyReset "Error: $( jq -r .error <<< $tokens )"
+		notify -blink spotify 'Spotify' "Error: $( jq -r .error <<< $tokens )"
 		exit
 	fi
 	
@@ -419,9 +422,6 @@ spotifytoken )
 	CMD=spotifyd
 	serviceRestartEnable
 	pushRefresh
-	;;
-spotifytokenreset )
-	spotifyReset 'Reset ...'
 	;;
 stoptimer )
 	if [[ $ON ]]; then

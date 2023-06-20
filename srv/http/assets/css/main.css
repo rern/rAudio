@@ -199,6 +199,10 @@ i.map.disabled, .map.disabled i {
 	box-shadow: var( --shadow-text );
 /*	background-image: linear-gradient( to right, #ff0000, #ff8800, #ffff00, #00ff88, #0000ff, #8800ff, #ff00ff );*/
 }
+#infoIcon.i-color canvas {
+	width: 25px;
+	height: 25px;
+}
 #menu-file {
 	right: 50px;
 }

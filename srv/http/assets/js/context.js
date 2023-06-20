@@ -21,8 +21,6 @@ function addToPlaylist() {
 	}
 }
 function addToPlaylistCommand() {
-	if ( V.action !== 'add' && V.action !== 'playnext' ) $( '#stop' ).trigger( 'click' );
-	if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
 	var varaction = '';
 	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
@@ -52,7 +50,9 @@ function addToPlaylistCommand() {
 	V.title  = cmd_title[ V.action ];
 	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	bash( V.mpccmd );
+	bash( V.mpccmd, () => {
+		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+	} );
 	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {
@@ -112,8 +112,8 @@ function currentSet() {
 	bash( [ 'mpcsetcurrent', V.list.index + 1, 'CMD POS' ] );
 }
 function directoryList() {
-	if ( V.mode === 'latest' ) {
-		var path      = dirName( V.list.path );
+	if ( [ 'album', 'latest' ].includes( V.mode ) ) {
+		var path      = V.list.path;
 		var query     = {
 			  query  : 'ls'
 			, string : path
@@ -121,13 +121,15 @@ function directoryList() {
 		}
 		var modetitle = path;
 		query.gmode   = V.mode;
-		list( query, function( data ) {
-			V.mode         = path.split( '/' )[ 0 ].toLowerCase();
-			V.gmode        = 'latest';
-			data.path      = path;
-			data.modetitle = modetitle;
+		V.mode        = path.split( '/' )[ 0 ].toLowerCase();
+		list( query, function( html ) {
+			var data = {
+				  html      : html
+				, modetitle : modetitle
+				, path      : path
+			}
 			renderLibraryList( data );
-		}, 'json' );
+		} );
 		query.path      = path;
 		query.modetitle = modetitle;
 		V.query.push( query );

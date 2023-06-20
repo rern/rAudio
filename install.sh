@@ -6,7 +6,13 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
-# 20230615
+# 20230620
+file=/etc/pacman.conf
+grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $file
+
+! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
+
+# 20230616
 if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
     pacman -Sy --noconfirm mediamtx
 fi
@@ -270,4 +276,11 @@ fi
 if [[ $rebooti2s ]]; then
 	echo "$info Reboot required for Audio - I²S"
 	echo 'Audio - I²S' > $dirshm/reboot
+fi
+
+# 20230623
+! grep -q dirshm/listing $dirbash/mpdidle.sh && systemctl restart mpd
+if [[ -e $dirmpd/album ]]; then
+	charlast=$( tail -c 1 $dirmpd/album )
+	[[ $charlast ]] && echo >> $dirmpd/album
 fi

@@ -1,5 +1,5 @@
 <?php
-include '/srv/http/mpdfunction.php';
+include '/srv/http/function.php';
 
 $playlist = $_POST[ 'playlist' ] ?? $argv[ 1 ];
 $add      = $playlist === 'add' ? true : false;
@@ -92,7 +92,6 @@ function currentPlaylist() {
 	htmlTrack( $array );
 }
 function htmlSavedPlaylist() {
-	include '/srv/http/bash/cmd-listsort.php';
 	exec( 'mpc lsplaylists'
 		, $lists );
 	$count = count( $lists );

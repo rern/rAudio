@@ -8,10 +8,6 @@
 
 . /srv/http/bash/common.sh
 
-if [[ -e $dirmpd/updating ]]; then
-	mpc | grep -q ^Updating && updating_db=true || rm -f $dirmpd/updating
-fi
-
 if [[ -L $dirmpd && ! -e $dirmpd/counts ]]; then # shared data
 	for i in {1..10}; do
 		sleep 1
@@ -47,6 +43,7 @@ else
 		fi
 		volume=$( volumeGet value )
 	fi
+	[[ -e $dirmpd/updating || -e $dirmpd/listing ]] && updating_db=true
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
