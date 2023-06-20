@@ -117,7 +117,6 @@ stdout
 <a class="cbm">  </a> Done
 <hr class="hrlight">
 </pre>
-<script>setTimeout( () => clearInterval( scroll ), 1000 );</script>
 </body>
 </html>
 EOF;
@@ -205,4 +204,3 @@ E.info.classList.remove( 'hide' );
 
 </body>
 </html>
-<!-- ...................................................................................... -->
