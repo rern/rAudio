@@ -278,8 +278,12 @@ if [[ $rebooti2s ]]; then
 fi
 
 # 20230623
-! grep -q dirshm/listing $dirbash/mpdidle.sh && systemctl restart mpd
 if [[ -e $dirmpd/album ]]; then
-	charlast=$( tail -c 1 $dirmpd/album )
-	[[ $charlast ]] && echo >> $dirmpd/album
+	files=$( ls -1 $dirmpd | grep -Ev 'mpd.db|listing|updating' )
+	for f in $files; do
+		charlast=$( tail -c 1 $dirmpd/$f )
+		[[ $charlast ]] && echo >> $dirmpd/$f
+	done
 fi
+
+systemctl restart mpd
