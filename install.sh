@@ -13,10 +13,6 @@ grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $fil
 ! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
 
 # 20230616
-if [[ -e $diraddons/dab && ! -e /usr/bin/mediamtx ]]; then
-    pacman -Sy --noconfirm mediamtx
-fi
-
 if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
 	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt && rebooti2s=1
 	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt && rebooti2s=1
@@ -47,7 +43,7 @@ if [[ -e $file ]]; then
 fi
 rm -f /tmp/localbrowser.conf
 
-[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && pacman -Sy --noconfirm bluealsa
+[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && packages+=bluealsa
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf
@@ -61,7 +57,7 @@ if grep -q port $file; then
 fi
 
 if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
-	pacman -Sy --noconfirm python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2
+	packages+='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
 	rm -rf /lib/python3.10
 fi
 
@@ -199,7 +195,7 @@ orderoff="'$( sed -E 's/(["`])/\\\1/g; s/\\n$//' <<< $orderoff )'"'
 	echo "$data" > $file
 fi
 
-[[ -e /usr/bin/rtsp-simple-server ]] && pacman -Sy --noconfirm mediamtx
+[[ -e /usr/bin/rtsp-simple-server ]] && packages+=mediamtx
 
 if [[ -L $dirmpd && ! -s /etc/exports && -e /mnt/MPD/SD ]]; then
 	mv /mnt/MPD/{SD,USB} /mnt
@@ -226,6 +222,9 @@ elif ! grep -q ^p0 $file; then
 	done
 	echo "$data" > $file
 fi
+
+# 20230609
+[[ $packages ]] && pacman -Sy --noconfirm $packages
 
 #-------------------------------------------------------------------------------
 installstart "$1"
