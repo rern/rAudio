@@ -10,11 +10,7 @@
 . /srv/http/bash/common.sh
 
 touch $dirshm/listing # for debounce mpdidle.sh
-
-# for latest albums
-[[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev
 rm -f $dirmpd/updating
-touch $dirmpd/listing
 
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
@@ -46,6 +42,9 @@ for mode in NAS SD USB; do
 done
 
 ##### album
+# for latest albums
+[[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev
+
 listAll() {
 	listall=$( mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null | awk NF )
 	if [[ $listall ]] && cut -d^ -f5- <<< $listall | grep -qv '^\^'; then
