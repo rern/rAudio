@@ -599,10 +599,10 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
+	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	if [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]]; then
 		$dirbash/cmd.sh mpcupdate USB 'CMD DIR'
 	fi
-	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno

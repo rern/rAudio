@@ -31,7 +31,14 @@ counts='
 , "playlists" : '$( ls -1 $dirplaylists | wc -l )'
 , "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
-[[ $song == 0 ]] && updateDone && exit
+if [[ $song == 0 ]]; then
+	files=$( ls -1 $dirmpd | grep -Ev 'count|mpd.db' )
+	for f in $files; do
+		rm -f $dirmpd/$f
+	done
+	updateDone
+	exit
+fi
 
 for mode in NAS SD USB; do
 	counts+='
