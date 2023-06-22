@@ -190,7 +190,7 @@ killProcess() {
 	fi
 }
 lineCount() {
-	awk NF "$1" | wc -l
+	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
