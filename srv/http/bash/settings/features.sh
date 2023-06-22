@@ -248,10 +248,9 @@ multiraudioreset )
 	;;
 nfsserver )
 	mpc -q clear
-	if [[ -e $dirmpd/listing || -e $dirmpd/updating ]]; then
-		rm -f $dirmpd/{listing,updating}
-		systemctl restart mpd
-	fi
+	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
+	mpc | grep -q ^Updating && systemctl restart mpd
+	rm -f $dirmpd/{listing,updating}
 	if [[ $ON ]]; then
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf

@@ -43,7 +43,9 @@ else
 		fi
 		volume=$( volumeGet value )
 	fi
-	[[ -e $dirmpd/updating || -e $dirmpd/listing ]] && updating_db=true
+	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
+		updating_db=true
+	fi
 	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
