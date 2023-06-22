@@ -615,6 +615,7 @@ mpcupdate )
 		DIR=$( < $dirmpd/updating )
 	fi
 	pushstream mpdupdate '{ "type": "mpd" }'
+	mpc | grep -q ^Updating && systemctl restart mpd
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
 multiraudiolist )
