@@ -1149,22 +1149,7 @@ function renderPage() {
 		.addClass( 'hide' );
 	$( '#systemvalue' ).html( S.system );
 	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
-	var html  = '';
-	$.each( S.list, ( i, val ) => {
-		if ( val.mounted ) {
-			var dataunmounted = '';
-			var dot = '<grn>&ensp;•&ensp;</grn>';
-		} else {
-			var dataunmounted = ' data-unmounted="1"';
-			var dot = '<red>&ensp;•&ensp;</red>';
-		}
-		html += '<li '+ dataunmounted;
-		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
-		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
-		html +=  val.size ? val.size : '';
-		html += '</li>';
-	} );
-	$( '#list' ).html( html );
+	renderStorage();
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );
 	$( '#hddsleep' ).toggleClass( 'disabled', ! S.hddapm );
 	$( '#divusbautoupdate' ).toggleClass( 'hide', S.shareddata || S.nfsserver );
@@ -1213,6 +1198,24 @@ function renderPage() {
 	$( '#shareddata' ).toggleClass( 'disabled', S.nfsserver );
 	$( '#setting-shareddata' ).remove();
 	showContent();
+}
+function renderStorage() {
+	var html  = '';
+	$.each( S.list, ( i, val ) => {
+		if ( val.mounted ) {
+			var dataunmounted = '';
+			var dot = '<grn>&ensp;•&ensp;</grn>';
+		} else {
+			var dataunmounted = ' data-unmounted="1"';
+			var dot = '<red>&ensp;•&ensp;</red>';
+		}
+		html += '<li '+ dataunmounted;
+		html += '>'+ ico( val.icon ) +'<wh class="mountpoint">'+ val.mountpoint +'</wh>'+ dot
+		html += '<gr class="source">'+ val.source +'</gr>&ensp;';
+		html +=  val.size ? val.size : '';
+		html += '</li>';
+	} );
+	$( '#list' ).html( html );
 }
 function values2info( keys, v ) {
 	var values = {}

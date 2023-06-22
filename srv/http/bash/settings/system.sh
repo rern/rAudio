@@ -594,21 +594,19 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
-		[[ ! $name ]] && name='USB Drive'
 	else
 		action=Removed
-		name='USB Drive'
 	fi
+	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
-	pushRefresh
 	if [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]]; then
-		echo USB > $dirmpd/updating
-		$dirbash/cmd.sh mpcupdate
+		$dirbash/cmd.sh mpcupdate USB 'CMD DIR'
 	fi
+	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
-	pushRefresh
+	pushstream refresh '{ "page": "system", "usbautoupdate": '$TF' }'
 	;;
 vuled )
 	enableFlagSet
