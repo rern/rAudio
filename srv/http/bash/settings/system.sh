@@ -602,9 +602,9 @@ usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
 	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
 	[[ -e $dirsystem/usbautoupdateno || -e $filesharedip ]] && exit
 	
+	[[ -e $dirmpd/updating ]] && systemctl restart mpd
 	echo USB > $dirmpd/updating
-	mpc -q update USB
-	pushstream mpdupdate '{ "type": "mpd" }'
+	$dirbash/cmd.sh mpcupdate
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
