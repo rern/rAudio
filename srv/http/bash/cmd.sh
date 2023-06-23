@@ -78,6 +78,7 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
+		$dirbash/status-push.sh
 	fi
 }
 splashRotate() {

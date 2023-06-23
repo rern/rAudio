@@ -12,6 +12,9 @@ if ! grep -q sudo /etc/conf.d/devmon; then
 	systemctl restart devmon@http
 fi
 
+file=/etc/systemd/system/spotifyd.service
+grep -q CPUAffinity $file && sed -i '/CPUAffinity/ d' $file
+
 # 20230620
 file=/etc/pacman.conf
 grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $file
