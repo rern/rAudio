@@ -30,10 +30,10 @@ counts='
 , "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	modes+=' albumbyartist'
 	for mode in $modes; do
 		rm -f $dirmpd/$mode
 	done
+	rm -f $dirmpd/albumbyartist
 	updateDone
 	exit
 fi

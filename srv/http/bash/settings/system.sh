@@ -588,14 +588,14 @@ timezone )
 	pushRefresh
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	[[ -e $dirshm/audiocd ]] && exit
+	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 	
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
 	else
 		action=Removed
+		mpc | grep -q ^Updating && systemctl restart mpd
 	fi
 	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action

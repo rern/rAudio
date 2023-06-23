@@ -6,6 +6,12 @@ alias=r1
 #. /srv/http/bash/settings/addons.sh
 [[ -e /srv/http/bash/settings/addons.sh ]] && . /srv/http/bash/settings/addons.sh || . /srv/http/bash/addons.sh
 
+# 20230630
+if ! grep -q sudo /etc/conf.d/devmon; then
+	sed -i 's|/srv|/usr/bin/sudo /srv|g' /etc/conf.d/devmon
+	systemctl restart devmon@http
+fi
+
 # 20230620
 file=/etc/pacman.conf
 grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $file
