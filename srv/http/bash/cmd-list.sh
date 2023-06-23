@@ -12,6 +12,8 @@
 touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 rm -f $dirmpd/updating
 
+modes='album albumbyartist-year latest albumartist artist composer conductor genre date'
+
 updateDone() {
 	[[ $counts ]] && jq -S <<< "{ $counts }" > $dirmpd/counts
 	rm -f $dirmpd/listing
@@ -28,9 +30,9 @@ counts='
 , "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	files=$( ls -1 $dirmpd | grep -Ev 'count|mpd.db' )
-	for f in $files; do
-		rm -f $dirmpd/$f
+	modes+=' albumbyartist'
+	for mode in $modes; do
+		rm -f $dirmpd/$mode
 	done
 	updateDone
 	exit
@@ -140,8 +142,9 @@ if [[ $albumdiff ]]; then
 fi
 rm -f $dirshm/{albumprev,deleted}
 
-# non-album
-for mode in albumartist artist composer conductor genre date; do
+# non-album - albumartist artist composer conductor genre date
+modenonalbum=${modes/*latest }
+for mode in $modenonalbum; do
 	filemode=$dirmpd/$mode
 	data=$( mpc list $mode \
 				| awk NF \
@@ -152,13 +155,13 @@ for mode in albumartist artist composer conductor genre date; do
 	else
 		rm -f $filemode
 	fi
-	counts+='
-, "'$mode'" : '$( lineCount $filemode )
 done
 
-for mode in album albumbyartist-year latest; do
+for mode in $modes; do
+	filemode=$dirmpd/$mode
+	[[ $mode == albumbyartist-year ]] && mode=albumyear
 	counts+='
-, "'${mode/byartist-}'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
+, "'$mode'" : '$( lineCount $filemode ) # albumbyartist-year > albumyear
 done
 
 updateDone
