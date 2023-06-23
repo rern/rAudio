@@ -9,7 +9,7 @@
 
 . /srv/http/bash/common.sh
 
-touch $dirshm/listing # for debounce mpdidle.sh
+touch $dirmpd/listing $dirshm/listing # for debounce mpdidle.sh
 rm -f $dirmpd/updating
 
 updateDone() {
