@@ -97,14 +97,13 @@ if [[ $albumlist ]]; then
 			album=$( sed "/^$line^/ d" <<< $album )
 		done
 	fi
-	# albums
 	awk NF <<< $album > $dirmpd/album
 	php $dirbash/cmd-listsort.php album
 else
 	rm -f $dirmpd/{album,albumbyartist,albumbyartist-year}
 fi
 ##### latest
-[[ -e $dirshm/album && -e $dirmpd/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
+[[ -e $dirmpd/album && -e $dirshm/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
 	new=$( grep '^<' <<< $albumdiff | cut -c 3- )
 	deleted=$( grep '^>' <<< $albumdiff | cut -c 3- )
