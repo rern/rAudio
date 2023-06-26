@@ -48,13 +48,8 @@ done
 [[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev
 
 listAll() {
-	listall=$( mpc -f '[%albumartist%|%artist%]^^%date%^^%album%^^%file%' listall 2> /dev/null | awk NF )
-	if [[ $listall ]] && cut -d^ -f5- <<< $listall | grep -qv '^\^'; then
-		album_artist_file=$( awk -F'/[^/]*$' '{print $1}' <<< $listall | sort -u )
-		#	-F'/[^/]*$' - truncate %file% to path without filename
-		#	NF          - not empty lines
-		#	!/^\^/      - not lines with no album name
-	fi
+	listall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null | awk 'NF && !/^\^/' )
+	[[ $listall ]] && albumlist=$( awk -F'/[^/]*$' '{print $1}' <<< $listall | sort -u )
 }
 listAll
 if [[ ! $listall ]]; then # very large database
@@ -66,10 +61,10 @@ if [[ ! $listall ]]; then # very large database
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		listAll
-		[[ $album_artist_file ]] && break
+		[[ $albumlist ]] && break
 	done
 	
-	if [[ ! $album_artist_file ]]; then # too large - get by album list instead
+	if [[ ! $albumlist ]]; then # too large - get by album list instead
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		readarray -t albums <<< $( mpc list album 2> /dev/null )
@@ -85,36 +80,17 @@ if [[ ! $listall ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			for album in "${albums[@]}"; do
-				album_artist_file+=$( mpc -f '[%albumartist%|%artist%]^^%date^^%album%^^%file%' find album "$album" \
-										| awk -F'/[^/]*$' 'NF && !/^\^/ && !a[$0]++ {print $1}' \
-										| sort -u )$'\n'
+				list=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$album" | awk 'NF && !/^\^/' )
+				[[ $list ]] && albumlist+=$( awk -F'/[^/]*$' '{print $1}' <<< $list | sort -u )$'\n'
 			done
 		else
 			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
 	fi
 fi
-##### album from wav (mpd not read *.wav albumartist)
-readarray -t dirwav <<< $( mpc listall \
-							| sed -n '/\.wav$/ {s|/[^/]*$||; p}' \
-							| sort -u )
-if [[ $dirwav ]]; then
-	for dir in "${dirwav[@]}"; do
-		file="/mnt/MPD/$( mpc ls "$dir" | head -1 )"
-		kid=$( kid3-cli -c 'get albumartist' -c 'get artist' -c 'get date' -c 'get album' "$file" )
-		if [[ $kid ]]; then
-			albumwav=$( head -3 <<< $kid \
-							| awk 1 ORS='^^' \
-							| sed "s|$|$dir|" )
-			if [[ $albumwav ]]; then
-				[[ $album_artist_file ]] && album_artist_file=$( sed "\|$dir$| d" <<< $album_artist_file )
-				album_artist_file+=$'\n'$albumwav$'\n'
-			fi
-		fi
-	done
-fi
-if [[ $album_artist_file ]]; then
-	album=$( awk NF <<< $album_artist_file | sort -uf )
+
+if [[ $albumlist ]]; then
+	album=$( awk NF <<< $albumlist | sort -uf )
 	if [[ -e $dirmpd/albumignore ]]; then
 		readarray -t albumignore < $dirmpd/albumignore
 		for line in "${albumignore[@]}"; do
@@ -122,13 +98,12 @@ if [[ $album_artist_file ]]; then
 		done
 	fi
 	# albums
-	filealbumyear=$dirmpd/albumbyartist-year
-	awk NF <<< $album > $filealbumyear
-	php $dirbash/cmd-listsort.php $filealbumyear # albumbyartist-year > album and albumbyartist
+	awk NF <<< $album > $dirmpd/album
+	php $dirbash/cmd-listsort.php album
 else
 	rm -f $dirmpd/{album,albumbyartist,albumbyartist-year}
 fi
-# latest
+##### latest
 [[ -e $dirshm/album && -e $dirmpd/albumprev ]] && albumdiff=$( diff $dirmpd/album $dirshm/albumprev )
 if [[ $albumdiff ]]; then
 	new=$( grep '^<' <<< $albumdiff | cut -c 3- )
@@ -141,8 +116,7 @@ if [[ $albumdiff ]]; then
 	fi
 fi
 rm -f $dirshm/{albumprev,deleted}
-
-# non-album - albumartist artist composer conductor genre date
+##### non-album - albumartist artist composer conductor genre date
 modenonalbum=${modes/*latest }
 for mode in $modenonalbum; do
 	filemode=$dirmpd/$mode
@@ -151,7 +125,7 @@ for mode in $modenonalbum; do
 				| awk '{$1=$1};1' )
 	if [[ $data ]]; then
 		echo "$data" > $filemode
-		php $dirbash/cmd-listsort.php $filemode
+		php $dirbash/cmd-listsort.php $mode
 	else
 		rm -f $filemode
 	fi

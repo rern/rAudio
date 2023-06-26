@@ -1,50 +1,46 @@
 <?php
 include '/srv/http/function.php';
 
-$file  = $argv[ 1 ];
-$lines = file( $file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
+$mode  = $argv[ 1 ];
+$lines = file( '/srv/http/data/mpd/'.$mode, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES );
 $sort  = [];
-if ( $file === '/srv/http/data/mpd/albumbyartist-year' ) {
-	$byalbumsort  = [];
-	$byartistsort = [];
+if ( $mode === 'album' ) {
+	$dataalbum      = [];
+	$dataartist     = [];
+	$dataartistyear = [];
 	foreach( $lines as $line ) {
 		if ( substr( $line, -4 ) === '.cue' ) $line = dirname( $line );
-		$sort[]         = stripSort( $line ).'^x^'.$line;
-		$data           = explode( '^^', $line ); // artist date album file
-		$byalbumline    = $data[ 2 ].'^^'.$data[ 0 ].'^^'.$data[ 3 ];
-		$byalbumsort[]  = stripSort( $byalbumline ).'^x^'.$byalbumline;
-		$byartistline   = $data[ 0 ].'^^'.$data[ 2 ].'^^'.$data[ 3 ];
-		$byartistsort[] = stripSort( $byartistline ).'^x^'.$byartistline;
+		$data             = explode( '^^', $line ); // album artist date file
+		$album            = $data[ 0 ];
+		if ( ! $album ) continue;
+		
+		$artist           = $data[ 1 ];
+		$date             = $data[ 2 ];
+		$file             = $data[ 3 ];
+		$line             = $album.'^^'.$artist.'^^'.$file;
+		$dataalbum[]      = stripSort( $line ).'^x^'.$line;
+		$line             = $artist.'^^'.$album.'^^'.$file;
+		$dataartist[]     = stripSort( $line ).'^x^'.$line;
+		$line             = $artist.'^^'.$date.'^^'.$album.'^^'.$file;
+		$dataartistyear[] = stripSort( $line ).'^x^'.$line;
 	}
-	$byalbumsort = array_unique( $byalbumsort );
-	$byartistsort = array_unique( $byartistsort );
-	usort( $byalbumsort, function( $a, $b ) {
-		return strnatcasecmp( $a, $b );
-	} );
-	$byalbum      = '';
-	foreach( $byalbumsort as $line ) {
-		$index   = mb_substr( $line, 0, 1, 'UTF-8' );
-		$byalbum.= $index.'^^'.explode( '^x^', $line )[ 1 ]."\n";
-	}
-	file_put_contents( '/srv/http/data/mpd/album', $byalbum );
-	usort( $byartistsort, function( $a, $b ) {
-		return strnatcasecmp( $a, $b );
-	} );
-	$byartist     = '';
-	foreach( $byartistsort as $line ) {
-		$index    = mb_substr( $line, 0, 1, 'UTF-8' );
-		$byartist.= $index.'^^'.explode( '^x^', $line )[ 1 ]."\n";
-	}
-	file_put_contents( '/srv/http/data/mpd/albumbyartist', $byartist );
+	listSort( $dataalbum,      'album' );
+	listSort( $dataartist,     'albumdataartistt' );
+	listSort( $dataartistyear, 'albumdataartistt-year' );
 } else {
-	foreach( $lines as $line ) $sort[] = stripSort( $line ).'^x^'.$line;
+	foreach( $lines as $line ) $data[] = stripSort( $line ).'^x^'.$line;
+	listSort( $data, $mode );
 }
-usort( $sort, function( $a, $b ) {
-	return strnatcasecmp( $a, $b );
-} );
-$array = '';
-foreach( $sort as $line ) {
-	$index = mb_substr( $line, 0, 1, 'UTF-8' );
-	$array.= $index.'^^'.explode( '^x^', $line )[ 1 ]."\n";
+
+function listSort( $data, $mode ) {
+	$data = array_unique( $data );
+	usort( $data, function( $a, $b ) {
+		return strnatcasecmp( $a, $b );
+	} );
+	$list = '';
+	foreach( $data as $line ) {
+		$index = mb_substr( $line, 0, 1, 'UTF-8' );
+		$list .= $index.'^^'.explode( '^x^', $line )[ 1 ]."\n";
+	}
+	file_put_contents( '/srv/http/data/mpd/'.$mode, $list );
 }
-file_put_contents( $file, $array );
