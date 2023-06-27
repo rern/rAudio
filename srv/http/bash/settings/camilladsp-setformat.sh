@@ -16,7 +16,7 @@ sleep 1
 if pgrep -x camilladsp &> /dev/null; then
 	formatok=1
 else
-	notify -blink camilladsp CamillaDSP "Set Playback format ..." -1
+	notify -blink camilladsp CamillaDSP "Set Playback format ..."
 	lineformat=$( sed -n '/playback:/,/format:/ {/format:/ =}' $camilladspyml )
 	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 		sed -i -E "$lineformat s/(format: ).*/\1$format/" $camilladspyml
