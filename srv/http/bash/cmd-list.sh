@@ -30,10 +30,9 @@ counts='
 , "dabradio"  : '$( [[ -e $dirdabradio ]] && find -L $dirdabradio -type f ! -path '*/img/*' | wc -l || echo 0 )'
 , "webradio"  : '$( find -L $dirwebradio -type f ! -path '*/img/*' | wc -l )
 if [[ $song == 0 ]]; then
-	for mode in $modes; do
+	for mode in "$modes albumbyartist"; do
 		rm -f $dirmpd/$mode
 	done
-	rm -f $dirmpd/albumbyartist
 	updateDone
 	exit
 fi
@@ -47,12 +46,13 @@ done
 # for latest albums
 [[ -s $dirmpd/album && $( getContent $dirmpd/updating ) != rescan ]] && cp -f $dirmpd/album $dirshm/albumprev
 
-listAll() {
-	listall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null | awk 'NF && !/^\^/' )
-	[[ $listall ]] && albumlist=$( awk -F'/[^/]*$' '{print $1}' <<< $listall | sort -u )
+albumList() {
+	mpclistall=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date%^^%file%' listall 2> /dev/null )        # include no album tag
+	[[ $mpclistall ]] && albumlist=$( awk -F'/[^/]*$' 'NF && !/^\^/ {print $1|"sort -u"}'<<< $mpclistall ) # exclude no album tag, strip filename, sort unique
 }
-listAll
-if [[ ! $listall ]]; then # very large database
+
+albumList
+if [[ ! $mpclistall ]]; then # very large database
 	notify -blink refresh-library 'Library Database' 'Increase buffer for large Library ...' 3000
 	ln -sf $dirmpdconf/{conf/,}outputbuffer.conf
 	buffer=$( cut -d'"' -f2 $dirmpdconf/outputbuffer.conf )
@@ -60,11 +60,12 @@ if [[ ! $listall ]]; then # very large database
 		buffer=$(( buffer + 8192 ))
 		echo 'max_output_buffer_size "'$buffer'"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
-		listAll
-		[[ $albumlist ]] && break
+		albumList
+		[[ $mpclistall ]] && break
 	done
 	
-	if [[ ! $albumlist ]]; then # too large - get by album list instead
+	if [[ ! $mpclistall ]]; then # too large - get by album list instead
+		notify -blink refresh-library 'Library Database' 'Parse each album for large Library ...' 3000
 		echo 'max_output_buffer_size "8192"' > $dirmpdconf/outputbuffer.conf
 		systemctl restart mpd
 		readarray -t albums <<< $( mpc list album 2> /dev/null )
@@ -80,25 +81,34 @@ if [[ ! $listall ]]; then # very large database
 		fi
 		if [[ $albums ]]; then
 			for album in "${albums[@]}"; do
-				list=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$album" | awk 'NF && !/^\^/' )
-				[[ $list ]] && albumlist+=$( awk -F'/[^/]*$' '{print $1}' <<< $list | sort -u )$'\n'
+				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$album" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
 			done
 		else
 			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
 		fi
 	fi
 fi
-
-if [[ $albumlist ]]; then
-	album=$( awk NF <<< $albumlist | sort -uf )
-	if [[ -e $dirmpd/albumignore ]]; then
-		readarray -t albumignore < $dirmpd/albumignore
-		for line in "${albumignore[@]}"; do
-			album=$( sed "/^$line^/ d" <<< $album )
-		done
-	fi
-	awk NF <<< $album > $dirmpd/album
-	php $dirbash/cmd-listsort.php album
+if [[ $albumlist ]]; then # album^^artist^^date^^file
+	[[ -e $dirmpd/albumignore ]] && albumignore=$( < $dirmpd/albumignore )
+	readarray -t lines <<< $albumlist
+	for l in "${lines[@]}"; do
+		readarray -t tags <<< $( echo -e ${l//^^/\\n} )
+		tagalbum=${tags[0]}
+		tagartist=${tags[1]}
+		[[ $albumignore ]] && grep -q "$tagalbum^^$tagartist" <<< $albumignore && continue
+		
+		tagdate=${tags[2]}
+		tagdir=${tags[3]}
+		byalbum+="$tagalbum^^$tagartist^^$tagdir"$'\n'
+		byartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+		byartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+	done
+	sort -u <<< ${byalbum:0:-1} > $dirmpd/album
+	sort -u <<< ${byartist:0:-1} > $dirmpd/albumbyartist
+	sort -u <<< ${byartistyear:0:-1} > $dirmpd/albumbyartist-year
+	for mode in album albumbyartist albumbyartist-year; do
+		php $dirbash/cmd-listsort.php $mode
+	done
 else
 	rm -f $dirmpd/{album,albumbyartist,albumbyartist-year}
 fi
@@ -118,23 +128,19 @@ rm -f $dirshm/{albumprev,deleted}
 ##### non-album - albumartist artist composer conductor genre date
 modenonalbum=${modes/*latest }
 for mode in $modenonalbum; do
-	filemode=$dirmpd/$mode
-	data=$( mpc list $mode \
-				| awk NF \
-				| awk '{$1=$1};1' )
+	data=$( mpc list $mode | awk NF )
 	if [[ $data ]]; then
-		echo "$data" > $filemode
+		echo "$data" > $dirmpd/$mode
 		php $dirbash/cmd-listsort.php $mode
 	else
-		rm -f $filemode
+		rm -f $dirmpd/$mode
 	fi
 done
 
 for mode in $modes; do
-	filemode=$dirmpd/$mode
-	[[ $mode == albumbyartist-year ]] && mode=albumyear
+	[[ $mode == albumbyartist-year ]] && key=albumyear || key=$mode
 	counts+='
-, "'$mode'" : '$( lineCount $filemode ) # albumbyartist-year > albumyear
+, "'$key'" : '$( lineCount $dirmpd/$mode ) # albumbyartist-year > albumyear
 done
 
 updateDone
