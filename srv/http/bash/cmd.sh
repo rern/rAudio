@@ -178,6 +178,7 @@ case $CMD in
 albumignore )
 	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
+	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
 booklet )

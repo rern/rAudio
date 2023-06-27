@@ -80,8 +80,8 @@ if [[ ! $mpclistall ]]; then # very large database
 			done
 		fi
 		if [[ $albums ]]; then
-			for album in "${albums[@]}"; do
-				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$album" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
+			for a in "${albums[@]}"; do
+				albumlist+=$( mpc -f '%album%^^[%albumartist%|%artist%]^^%date^^%file%' find album "$a" | awk -F'/[^/]*$' 'NF {print $1|"sort -u"}' )$'\n'
 			done
 		else
 			notify -blink refresh-library 'Library Database' 'Library is too large.<br>Album list will not be available.' 3000
@@ -95,18 +95,17 @@ if [[ $albumlist ]]; then # album^^artist^^date^^file
 		readarray -t tags <<< $( echo -e ${l//^^/\\n} )
 		tagalbum=${tags[0]}
 		tagartist=${tags[1]}
-		[[ $albumignore ]] && grep -q "$tagalbum^^$tagartist" <<< $albumignore && continue
+		[[ $albumignore ]] && grep -q "^$tagalbum^^$tagartist\$" <<< $albumignore && continue
 		
 		tagdate=${tags[2]}
 		tagdir=${tags[3]}
-		byalbum+="$tagalbum^^$tagartist^^$tagdir"$'\n'
-		byartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
-		byartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
+		album+="$tagalbum^^$tagartist^^$tagdir"$'\n'
+		albumbyartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
+		albumbyartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done
-	sort -u <<< $byalbum > $dirmpd/album
-	sort -u <<< $byartist > $dirmpd/albumbyartist
-	sort -u <<< $byartistyear > $dirmpd/albumbyartist-year
 	for mode in album albumbyartist albumbyartist-year; do
+		varname=${mode/-}
+		sort -u <<< ${!varname} > $dirmpd/$mode
 		php $dirbash/cmd-listsort.php $mode
 	done
 else
