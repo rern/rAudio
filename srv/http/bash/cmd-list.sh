@@ -103,9 +103,9 @@ if [[ $albumlist ]]; then # album^^artist^^date^^file
 		byartist+="$tagartist^^$tagalbum^^$tagdir"$'\n'
 		byartistyear+="$tagartist^^$tagdate^^$tagalbum^^$tagdir"$'\n'
 	done
-	sort -u <<< ${byalbum:0:-1} > $dirmpd/album
-	sort -u <<< ${byartist:0:-1} > $dirmpd/albumbyartist
-	sort -u <<< ${byartistyear:0:-1} > $dirmpd/albumbyartist-year
+	sort -u <<< $byalbum > $dirmpd/album
+	sort -u <<< $byartist > $dirmpd/albumbyartist
+	sort -u <<< $byartistyear > $dirmpd/albumbyartist-year
 	for mode in album albumbyartist albumbyartist-year; do
 		php $dirbash/cmd-listsort.php $mode
 	done
