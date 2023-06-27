@@ -326,9 +326,7 @@ statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
 stringEscape() {
-	local data
-	data=${@//\"/\\\"}
-	echo ${data//\`/\\\`}
+	echo ${@//\"/\\\"}
 }
 volumeGet() {
 	local amixer card control data mixersoftware val_db
