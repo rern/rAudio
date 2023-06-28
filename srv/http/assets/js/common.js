@@ -124,7 +124,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
-	bash( [ 'cmd.sh', 'hashreset' ] );
+	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
 	V.consoleonly = true;

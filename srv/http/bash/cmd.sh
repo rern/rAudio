@@ -215,6 +215,9 @@ bookmarkrename )
 	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
 	pushstream bookmark 1
 	;;
+cachebust )
+	cacheBust
+	;;
 camillagui )
 	systemctl start camillagui
 	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
@@ -355,9 +358,6 @@ equalizerget )
 	;;
 equalizerset ) # slide
 	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
-	;;
-hashreset )
-	! grep -q ^.hash.*time /srv/http/common.php && sed -E -i "s/(^.hash.*v=).*/\1'.time();/" /srv/http/common.php
 	;;
 ignoredir )
 	touch $dirmpd/updating
