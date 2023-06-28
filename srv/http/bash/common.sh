@@ -76,6 +76,12 @@ args2var() {
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
+cacheBust() {
+	hash=?v=$( date +%s )
+	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	sed -i "s/?v=.*/$hash';/" /srv/http/common.php
+	sed -E -i  "s/\?v=.{10}/$hash/g" /srv/http/settings/camillagui/build/index.html
+}
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }

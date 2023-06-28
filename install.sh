@@ -80,10 +80,8 @@ getinstallzip
 
 . $dirbash/common.sh
 dirPermissions
+cacheBust
 [[ -e $dirsystem/color ]] && $dirbash/cmd.sh color
-hash=?v=$( date +%s )
-sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 
 installfinish
 #-------------------------------------------------------------------------------

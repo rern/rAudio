@@ -428,8 +428,7 @@ input[type=image] {
 .btn-primary,
 .switchlabel:after,
 input:checked + .switchlabel:after {
-							  /* w    h      x    y   inner(color)       w    outer(color)      w */
-	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: var( --glossy-btn );
 }
 .switchlabel:after {
 	content: '';

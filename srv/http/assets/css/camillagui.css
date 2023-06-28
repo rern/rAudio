@@ -236,13 +236,12 @@ input[type=checkbox] {
 	border: none;
 	border-radius: 3px;
 	background-color: var(--cg) !important;
-	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: var( --glossy-btn );
 }
 input:checked {
 	background-color: var( --cm ) !important;
 }
 input[type=range] {
-	--gloss: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 	--track: linear-gradient( 90deg, transparent 10px, var( --cg ) 10px, var( --cg ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
 	display: block;
@@ -262,7 +261,7 @@ input[type=range]::-webkit-slider-thumb {
 	margin-top: -18px;
 	border: none;
 	border-radius: 3px;
-	background: var( --gloss );
+	background: var( --glossy-btn );
 	background-color: var( --cm );
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
@@ -272,7 +271,7 @@ input[type=range]::-moz-range-thumb {
 	width: 36px;
 	border: none;
 	border-radius: 3px;
-	background: var( --gloss );
+	background: var( --glossy-btn );
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
@@ -311,7 +310,7 @@ input[data-tip='Mixer name, must be unique'] {
 .button {
 	border: none;
 	background-color: var( --cg ) !important;
-	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: var( --glossy-btn );
 	text-shadow: var( --shadow-text );
 	width:36px;
 	height: 36px;
@@ -344,28 +343,17 @@ input[data-tip='Mixer name, must be unique'] {
 	border-right: 1px solid var( --cga );
 	margin-right: 0 !important;
 	border-radius: 3px 0 0 3px;
-	background: radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: var( --glossy-btn-l );
 }
 #button-mute {
 	border-radius: 0;
 	border-right: 1px solid var( --cga );
-	background: -webkit-linear-gradient(
-		top,
-		hsla(0,0%,100%,.3) 0%,
-		hsla(0,0%,100%,.3) 45%,
-		rgba(0,0,0,0) 50%,
-		rgba(0,0,0,0) 100% );
-	background: linear-gradient(
-		to bottom,
-		hsla(0,0%,100%,.3) 0%,
-		hsla(0,0%,100%,.3) 45%,
-		rgba(0,0,0,0) 50%,
-		rgba(0,0,0,0) 100% );
+	background: var( --glossy-btn-m );
 }
 #button-volumeup,
 #button-redo {
 	border-radius: 0 3px 3px 0;
-	background: radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	background: var( --glossy-btn-r );
 }
 /* compact view */
 ::marker {
