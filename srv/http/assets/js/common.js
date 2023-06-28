@@ -1072,7 +1072,7 @@ function selectSet( $select ) {
 		var searchbox = page === 'system';
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = SW.icon === 'wlan';
+		var searchbox = page && SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
