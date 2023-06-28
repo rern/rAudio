@@ -65,7 +65,9 @@ camilladsp )
 	enableFlagSet
 	if [[ $ON ]]; then
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
-		$dirbash/cmd.sh playerstop
+		$dirbash/cmd.sh 'mpcplayback
+stop
+CMD ACTION'
 		systemctl restart camillagui
 	else
 		camilladsp-gain.py
