@@ -84,7 +84,7 @@ if [[ $1 == withdisplay ]]; then
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	display+='
 , "audiocd"          : '$( exists $dirshm/audiocd )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladsp"       : '$( systemctl -q is-active camilladsp && echo true )'
 , "color"            : "'$( getContent $dirsystem/color )'"
 , "dabradio"         : '$dabradio'
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
