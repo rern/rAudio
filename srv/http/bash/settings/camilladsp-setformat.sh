@@ -39,7 +39,6 @@ if [[ $formatok ]]; then
 	fi
 	sleep 1
 	systemctl start camilladsp
-	$dirsettings/camilladsp-gain.py set
 else
 	notify camilladsp CamillaDSP "Playback format: <wh>Setting required</wh>" 10000
 fi

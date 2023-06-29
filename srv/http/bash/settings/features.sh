@@ -70,7 +70,6 @@ stop
 CMD ACTION'
 		systemctl restart camillagui
 	else
-		camilladsp-gain.py
 		systemctl stop camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
