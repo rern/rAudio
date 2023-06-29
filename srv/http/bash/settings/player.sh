@@ -199,21 +199,24 @@ $bluealsa
 	devices+="\
 <bll># aplay -l | grep ^card</bll>
 $( aplay -l | grep ^card | grep -v 'Loopback.*device 1' )
-
-<bll># amixer scontrols</bll>"
-	card=$( < $dirsystem/asoundcard )
-	aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
-	if [[ $aplayname != snd_rpi_wsp ]]; then
+"
+	if [[ ! -e $dirsystem/camilladsp ]]; then
 		devices+="
+<bll># amixer scontrols</bll>"
+		card=$( < $dirsystem/asoundcard )
+		aplayname=$( aplay -l | awk -F'[][]' '/^card $card/ {print $2}' )
+		if [[ $aplayname != snd_rpi_wsp ]]; then
+			devices+="
 $( amixer scontrols )
 "
-	else
-		devices+="\
+		else
+			devices+="\
 Simple mixer control 'HPOUT1 Digital',0
 Simple mixer control 'HPOUT2 Digital',0
 Simple mixer control 'SPDIF Out',0
 Simple mixer control 'Speaker Digital',0
 "
+		fi
 	fi
 	devices+="
 <bll># cat /etc/asound.conf</bll>
