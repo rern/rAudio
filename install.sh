@@ -50,7 +50,7 @@ if [[ -e $file ]]; then
 fi
 rm -f /tmp/localbrowser.conf
 
-[[ $( pacman -Q bluealsa ) != 'bluealsa 4.1.0-1' ]] && packages+=bluealsa
+[[ $( pacman -Q bluealsa ) == 'bluealsa 4.0.0-1' ]] && packages+=bluealsa
 
 # 20230528
 file=$dirmpdconf/conf/snapserver.conf

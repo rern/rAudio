@@ -11,7 +11,7 @@ defaults.ctl.card $asoundcard
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	dsp=1
-	modprobe snd-aloop
+	modprobe snd_aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
 	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml )

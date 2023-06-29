@@ -63,17 +63,12 @@ camilladspasound )
 	;;
 camilladsp )
 	enableFlagSet
+	pushRestartMpd camilladsp $TF
 	if [[ $ON ]]; then
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
-		$dirbash/cmd.sh 'mpcplayback
-stop
-CMD ACTION'
-		systemctl restart camillagui
 	else
-		systemctl stop camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
 	if [[ $ON ]]; then

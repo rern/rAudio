@@ -187,7 +187,7 @@ function pushstreamDisconnect() {
 pushstream.onmessage = function( data, id, channel ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
-		case 'notify':    psNotify( data );    break;
+		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;

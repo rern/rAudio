@@ -3,15 +3,14 @@
 . /srv/http/bash/common.sh
 
 systemctl stop camilladsp
+killall camilladsp &> /dev/null
 
 dirconfigs=$dircamilladsp/configs
 camilladspyml=$dirconfigs/camilladsp.yml
 card=$( < $dirsystem/asoundcard )
 sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $camilladspyml
 
-killProcess camilladsp
 camilladsp $camilladspyml &> /dev/null &
-echo $! > $dirshm/pidcamilladsp
 sleep 1
 if pgrep -x camilladsp &> /dev/null; then
 	formatok=1
@@ -20,12 +19,11 @@ else
 	lineformat=$( sed -n '/playback:/,/format:/ {/format:/ =}' $camilladspyml )
 	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
 		sed -i -E "$lineformat s/(format: ).*/\1$format/" $camilladspyml
-		killProcess camilladsp
 		camilladsp $camilladspyml &> /dev/null &
-		echo $! > $dirshm/pidcamilladsp
 		sleep 1
 		if pgrep -x camilladsp &> /dev/null; then
 			formatok=1
+			killall camilladsp
 			break
 		fi
 	done
@@ -33,13 +31,14 @@ fi
 if [[ $formatok ]]; then
 	if [[ $format ]]; then
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
-		defaultyml=$dirconfigs/default_config.yml
-		lineformat=$( sed -n '/playback:/,/format:/ {/format:/ =}' $defaultyml )
-		sed -i -E "$lineformat s/(format: ).*/\1$format/" $defaultyml
+		sed -i -n '/playback:/,/format:/ {/format:/ {s/:.*/: '$format'/; p}}' $dircamilladsp/default_config.yml
 	fi
-	sleep 1
-	systemctl start camilladsp
 else
-	notify camilladsp CamillaDSP "Playback format: <wh>Setting required</wh>" 10000
+	dsp=
+	notify camilladsp CamillaDSP "Setting failed: <wh>Playback format</wh>" 10000
+	rm -f $dirsystem/camilladsp
+	sed -i '/pcm.!default/,$ d' /etc/asound.conf
+	rmmod snd_aloop
+	alsactl store &> /dev/null
+	alsactl nrestore &> /dev/null
 fi
-killProcess camilladsp
