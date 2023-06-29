@@ -62,12 +62,14 @@ camilladspasound )
 	alsactl nrestore &> /dev/null
 	;;
 camilladsp )
+	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
-	pushRestartMpd camilladsp $TF
 	if [[ $ON ]]; then
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
+		pushRestartMpd camilladsp $TF
 	else
 		systemctl stop camilladsp
+		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
 	fi
 	;;

@@ -31,7 +31,7 @@ if [[ $formatok ]]; then
 	killall camilladsp
 	if [[ $format ]]; then
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
-		sed -i -n '/playback:/,/format:/ {/format:/ {s/:.*/: '$format'/; p}}' $dircamilladsp/default_config.yml
+		sed -i -n '/playback:/,/format:/ {/format:/ {s/:.*/: '$format'/; p}}' $dirconfigs/default_config.yml
 	fi
 else
 	dsp=
