@@ -67,6 +67,7 @@ camilladsp )
 	if [[ $ON ]]; then
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
 	else
+		systemctl stop camilladsp
 		rmmod snd-aloop &> /dev/null
 	fi
 	;;
