@@ -110,4 +110,4 @@ if [[ -e $dirmpd/album ]]; then
 	done
 fi
 
-systemctl restart mpd
+$dirsettings/player-conf.sh
