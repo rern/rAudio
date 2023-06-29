@@ -23,12 +23,12 @@ else
 		sleep 1
 		if pgrep -x camilladsp &> /dev/null; then
 			formatok=1
-			killall camilladsp
 			break
 		fi
 	done
 fi
 if [[ $formatok ]]; then
+	killall camilladsp
 	if [[ $format ]]; then
 		notify camilladsp CamillaDSP "Playback format: <wh>$format</wh>"
 		sed -i -n '/playback:/,/format:/ {/format:/ {s/:.*/: '$format'/; p}}' $dircamilladsp/default_config.yml
