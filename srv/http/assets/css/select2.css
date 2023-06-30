@@ -34,6 +34,9 @@
 	height : 40px !important;
 	width  : 30px !important;
 }
+.select2-search--dropdown {
+	box-shadow: var( --shadow-menu );
+}
 .select2-dropdown {
 	background    : var( --cga );
 	border        : none;
@@ -93,5 +96,10 @@
 @media ( hover:hover ) {
 	.select2-container--focus .select2-selection__rendered {
 		outline: 1px solid var( --cgl );
+	}
+}
+@media ( max-height: 768px ) {
+	.select2-results__options {
+		max-height: calc( ( 100vh - 100px ) / 2 ) !important;
 	}
 }

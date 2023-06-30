@@ -62,17 +62,16 @@ camilladspasound )
 	alsactl nrestore &> /dev/null
 	;;
 camilladsp )
+	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
 	if [[ $ON ]]; then
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
-		$dirbash/cmd.sh playerstop
-		systemctl restart camillagui
+		pushRestartMpd camilladsp $TF
 	else
-		camilladsp-gain.py
 		systemctl stop camilladsp
+		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
 	fi
-	pushRestartMpd camilladsp $TF
 	;;
 dabradio )
 	if [[ $ON ]]; then
@@ -248,10 +247,9 @@ multiraudioreset )
 	;;
 nfsserver )
 	mpc -q clear
-	if [[ -e $dirmpd/listing || -e $dirmpd/updating ]]; then
-		rm -f $dirmpd/{listing,updating}
-		systemctl restart mpd
-	fi
+	[[ -e $dirmpd/listing ]] && killall cmd-list.sh
+	mpc | grep -q ^Updating && systemctl restart mpd
+	rm -f $dirmpd/{listing,updating}
 	if [[ $ON ]]; then
 		mv /mnt/MPD/{SD,USB} /mnt/MPD/NAS
 		sed -i 's|/mnt/MPD/USB|/mnt/MPD/NAS/USB|' /etc/udevil/udevil.conf

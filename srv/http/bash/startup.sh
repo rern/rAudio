@@ -139,9 +139,8 @@ if [[ ! -e $dirmpd/mpd.db ]]; then
 	mpc -q rescan
 	pushstream mpdupdate '{ "type": "mpd" }'
 elif [[ -e $dirmpd/updating ]]; then
-	path=$( < $dirmpd/updating )
-	[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
+	$dirbash/cmd.sh mpcupdate
+elif [[ -e $dirmpd/listing ]]; then
 	$dirbash/cmd-list.sh &> /dev/null &
 fi
 # if no wlan // usb wlan // no hostapd and no connected wlan, disable wlan

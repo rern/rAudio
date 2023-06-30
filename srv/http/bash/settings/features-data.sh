@@ -10,13 +10,13 @@
 
 spotifyredirect=https://rern.github.io/raudio/spotify
 
-packageActive hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
+packageActive camilladsp hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
   "page"             : "features"
 , "autoplay"         : '$( exists $dirsystem/autoplay )'
 , "autoplayconf"     : '$( conf2json $dirsystem/autoplay.conf )'
-, "camilladsp"       : '$( exists $dirsystem/camilladsp )'
+, "camilladsp"       : '$camilladsp'
 , "camilladspconf"   : { "REFRESH": '$( getVar status_update_interval /srv/http/settings/camillagui/config/gui-config.yml )' }
 , "equalizer"        : '$( exists $dirsystem/equalizer )'
 , "hostname"         : "'$( hostname )'"

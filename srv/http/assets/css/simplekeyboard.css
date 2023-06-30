@@ -43,10 +43,7 @@
 }
 .hg-button-enter {
 	font-size: 14px;
-	background: radial-gradient(
-		150% 90% at 50% 0%,
-		hsla(0,0%,100%,.3) 50%,
-		hsla(0,0%,100%,0) 55% ) !important;
+	background: var( --glossy-btn ) !important;
 	background-color: var( --cm ) !important;
 	border: none;
 }

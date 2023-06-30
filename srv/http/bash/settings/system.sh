@@ -102,11 +102,8 @@ dtparam=audio=on"
 	configTxt
 	;;
 bluetooth )
-	grep -q 'krnbt.*off' /boot/overlays/README && newkernel=1 # temp
-	config=$( grep -E -v 'disable-bt|krnbt=on' /boot/config.txt )
+	config=$( grep -E -v 'disable-bt' /boot/config.txt )
 	if [[ $ON ]]; then
-		[[ ! $newkernel ]] && config+="
-dtparam=krnbt=on"
 		if [[ $DISCOVERABLE ]]; then
 			yesno=yes
 			touch $dirsystem/btdiscoverable
@@ -124,7 +121,7 @@ dtparam=krnbt=on"
 		[[ $FORMAT ]] && touch $dirsystem/btformat || rm -f $dirsystem/btformat
 		[[ $FORMAT != $prevbtformat ]] && $dirsettings/player-conf.sh
 	else
-		[[ $newkernel ]] && config+='
+		config+='
 dtoverlay=disable-bt'
 		if ! rfkill | grep -q -m1 bluetooth; then
 			systemctl stop bluetooth
@@ -588,27 +585,26 @@ timezone )
 	pushRefresh
 	;;
 usbconnect | usbremove ) # for /etc/conf.d/devmon - devmon@http.service
-	[[ ! -e $dirshm/startup ]] && exit # suppress on startup
-	[[ -e $dirshm/audiocd ]] && exit
+	[[ ! -e $dirshm/startup || -e $dirshm/audiocd ]] && exit
 	
 	if [[ $CMD == usbconnect ]]; then
 		action=Ready
 		name=$( lsblk -p -S -n -o VENDOR,MODEL | tail -1 )
-		[[ ! $name ]] && name='USB Drive'
 	else
 		action=Removed
-		name='USB Drive'
+		mpc | grep -q ^Updating && systemctl restart mpd
 	fi
+	[[ ! $name ]] && name='USB Drive'
 	notify usbdrive "$name" $action
-	pushRefresh
-	if [[ ! -e $dirsystem/usbautoupdateno && ! -e $filesharedip ]]; then
-		echo USB > $dirmpd/updating
-		$dirbash/cmd.sh mpcupdate
-	fi
+	pushstream storage '{ "list": '$( $dirsettings/system-storage.sh )' }'
+	[[ -e $dirsystem/usbautoupdateno || -e $filesharedip ]] && exit
+	
+	echo USB > $dirmpd/updating
+	$dirbash/cmd.sh mpcupdate
 	;;
 usbautoupdate )
 	[[ $ON ]] && rm -f $dirsystem/usbautoupdateno || touch $dirsystem/usbautoupdateno
-	pushRefresh
+	pushstream refresh '{ "page": "system", "usbautoupdate": '$TF' }'
 	;;
 vuled )
 	enableFlagSet

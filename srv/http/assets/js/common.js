@@ -124,7 +124,7 @@ V.consolelog - press: $( '#infoOk' ) / $( '.switch' )
 $( '#debug' ).press( function() {
 	V.debug = true;
 	banner( 'gear', 'Debug', 'Console.log + Pushstream', 5000 );
-	bash( [ 'cmd.sh', 'hashreset' ] );
+	bash( [ 'cmd.sh', 'cachebust' ] );
 } );
 $( '#infoOverlay' ).press( '#infoOk', function() {
 	V.consoleonly = true;
@@ -1072,12 +1072,19 @@ function selectSet( $select ) {
 		var searchbox = page === 'system';
 	} else {
 		$select = $( '#infoContent select' );
-		var searchbox = SW.icon === 'wlan';
+		var searchbox = page && SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
 	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
+		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
+			setTimeout( () => {
+				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
+				if ( searchbox && ! navigator.maxTouchPoints ) scroll -= 12;
+				$( '.select2-results ul' ).scrollTop( scroll );
+			}, 0 );
+		} )
 		.on( 'select2:closing', () => select2 = true )
 		.on( 'select2:close',   () => select2 = false )
 		.each( ( i, el ) => {

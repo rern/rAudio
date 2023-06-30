@@ -607,8 +607,8 @@ i.map.disabled, .map.disabled i {
 	width: 230px;
 	height: 230px;
 	content: '';
-									  /* w    h      x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 55% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+							  /* w    h      x   y   inner(color)       w    outer(color)      w */
+	background: radial-gradient( 160% 55% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 }
 
 .controls {
@@ -622,8 +622,8 @@ i.map.disabled, .map.disabled i {
 	outline: none !important;
 	border-radius: 4px;
 	color: var( --cw );
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+							  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background: radial-gradient( 160% 100% at 50% -50%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 .btn-default {
 	background-color: var( --cg );
@@ -859,26 +859,21 @@ i.map.disabled, .map.disabled i {
 /* glossy highlight */
 #random, 
 #voldn,
-#volume-band-dn {									  /* w    h      x    y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+#volume-band-dn {
+	background: var( --glossy-btn-l );
 	background-color: var( --cg );
 }
 #single,
 #volmute {
-	background: linear-gradient(
-		to bottom,
-		hsla(0,0%,100%,.3) 0%,
-		hsla(0,0%,100%,.3) 45%,
-		rgba(0,0,0,0) 50%,
-		rgba(0,0,0,0) 100% );
+	background: var( --glossy-btn-m );
 	background-color: var( --cg );
 	border-left: 1px solid var( --cga );
 	border-right: 1px solid var( --cga );
 }
 #repeat,
 #volup,
-#volume-band-up {									  /* w    h      x  y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+#volume-band-up {
+	background: var( --glossy-btn-r );
 	background-color: var( --cg );
 }
 /* ------------------- roundSlider ------------------- */
@@ -894,8 +889,8 @@ i.map.disabled, .map.disabled i {
 	content: '';
 }
 .rs-container::after { /* glossy overlay */
-									  /* w    h       x   y   inner(color)       w    outer(color)      w */
-	background:         radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
+							  /* w    h       x   y   inner(color)       w    outer(color)      w */
+	background: radial-gradient( 160% 100% at 75% 0%, hsla(0,0%,100%,.15) 50%, hsla(0,0%,100%,0) 50% );
 	border-radius: 50%;
 }
 .rs-handle,

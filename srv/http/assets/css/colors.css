@@ -23,6 +23,11 @@
 	--shadow-menu-u : -4px -4px 10px     #000;
 	--shadow-select : -1px  1px 1px      #000;
 	--shadow-text   : -1px  0   2px      #000;
+								   /* w    h      x    y   inner(color)       w    outer(color)      w */
+	--glossy-btn   : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--glossy-btn-l : radial-gradient( 225% 90% at 100% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
+	--glossy-btn-m : linear-gradient( to bottom, hsla(0,0%,100%,.3) 0%, hsla(0,0%,100%,.3) 45%, rgba(0,0,0,0) 50%, rgba(0,0,0,0) 100% );
+	--glossy-btn-r : radial-gradient( 300% 90% at 0% 0%, hsla(0,0%,100%,.3) 50%, hsla(0,0%,100%,0) 55% );
 }
 
 bl,  .bl  { color : var( --cm ) !important }

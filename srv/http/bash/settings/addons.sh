@@ -61,12 +61,7 @@ installfinish() {
 $bar Done.
 <hr>
 "
-	if [[ -e $dirmpd/updating ]]; then
-		path=$( < $dirmpd/updating )
-		[[ $path == rescan ]] && mpc -q rescan || mpc -q update "$path"
-	elif [[ -e $dirmpd/listing || ! -e $dirmpd/counts ]]; then
-		$dirbash/cmd-list.sh &> /dev/null &
-	fi
+	[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 }
 uninstallstart() {
 	title="<a class='cc'>$( jq -r .$alias.title $addonsjson )</a>"

@@ -65,7 +65,6 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 		pushstream display '{ "volumenone": '$volumenone' }'
 		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
-		[[ $dsp ]] && systemctl start camilladsp # for noaudio > usb dac
 	fi
 	if [[ $dsp ]]; then # from player-asound.sh
 		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
@@ -142,10 +141,8 @@ for pid in $( pgrep mpd ); do # set priority
 	ionice -c 0 -n 0 -p $pid &> /dev/null 
 	renice -n -19 -p $pid &> /dev/null
 done
-if [[ -e $dirmpd/updating ]]; then
-	path=$( < $dirmpd/updating )
-	[[ $path == rescan ]] && mpc rescan || mpc update "$path"
-fi
+
+[[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
 [[ -e $dirshm/btreceiver ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
 
@@ -195,5 +192,7 @@ mixer = "'$hwmixer'"'
 	echo "$conf" > /etc/spotifyd.conf
 	systemctl try-restart spotifyd
 fi
+
+[[ $dsp ]] && systemctl restart camilladsp
 
 pushData

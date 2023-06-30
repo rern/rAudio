@@ -7,10 +7,9 @@ dirconfig=$dirdata/config
 [[ $1 == true ]] && libraryonly=1
 
 statePlay && $dirbash/cmd.sh playerstop
-if [[ -e $dirsystem/listing || -e $dirsystem/updating ]]; then
-	rm -f $dirsystem/{listing,updating}
-	[[ ! $libraryonly ]] && systemctl restart mpd
-fi
+[[ -e $dirmpd/listing ]] && killall cmd-list.sh
+mpc | grep -q ^Updating && systemctl restart mpd
+rm -f $dirmpd/{listing,updating}
 
 if [[ $libraryonly ]]; then
 	bsdtar -xpf $backupfile -C /srv/http data/{mpd,playlists,webradio}

@@ -42,7 +42,5 @@ $( sed -E '/^TITLE|^PERFORMER|^REM/ d; s/^(\s+PERFORMER ).*/\1'$ARTIST'/' "$path
 	dirupdate=$( dirname "$FILE" )
 fi
 
-touch $dirmpd/updating
-mpc update "$dirupdate"
-pushstream mpdupdate '{ "type": "mpd" }'
-notify 'library blink' 'Library Database' 'Update ...'
+echo $dirupdate > $dirmpd/updating
+$dirbash/cmd.sh mpcupdate

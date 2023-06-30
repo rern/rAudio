@@ -78,6 +78,7 @@ radioStop() {
 		mpc -q stop
 		systemctl stop radio dab &> /dev/null
 		rm -f $dirshm/radio
+		$dirbash/status-push.sh
 	fi
 }
 splashRotate() {
@@ -177,6 +178,7 @@ case $CMD in
 albumignore )
 	sed -i "/\^$ALBUM^^$ARTIST^/ d" $dirmpd/album
 	sed -i "/\^$ARTIST^^$ALBUM^/ d" $dirmpd/albumbyartist
+	sed -i "/\^$ARTIST^^.*^^$ALBUM^/ d" $dirmpd/albumbyartist-year
 	echo $ALBUM^^$ARTIST >> $dirmpd/albumignore
 	;;
 booklet )
@@ -212,6 +214,9 @@ bookmarkremove )
 bookmarkrename )
 	mv $dirbookmarks/{"${NAME//\//|}","${NEWNAME//\//|}"} 
 	pushstream bookmark 1
+	;;
+cachebust )
+	cacheBust
 	;;
 camillagui )
 	systemctl start camillagui
@@ -353,9 +358,6 @@ equalizerget )
 	;;
 equalizerset ) # slide
 	sudo -u $USER amixer -MqD equal sset "$BAND" $VAL
-	;;
-hashreset )
-	! grep -q ^.hash.*time /srv/http/common.php && sed -E -i "s/(^.hash.*v=).*/\1'.time();/" /srv/http/common.php
 	;;
 ignoredir )
 	touch $dirmpd/updating
@@ -615,6 +617,7 @@ mpcupdate )
 		DIR=$( < $dirmpd/updating )
 	fi
 	pushstream mpdupdate '{ "type": "mpd" }'
+	mpc | grep -q ^Updating && systemctl restart mpd
 	[[ $DIR == rescan ]] && mpc -q rescan || mpc -q update "$DIR"
 	;;
 multiraudiolist )

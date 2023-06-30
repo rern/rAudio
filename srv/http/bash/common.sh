@@ -76,6 +76,12 @@ args2var() {
 	done
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
+cacheBust() {
+	hash=?v=$( date +%s )
+	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
+	sed -i "s/?v=.*/$hash';/" /srv/http/common.php
+	sed -E -i  "s/\?v=.{10}/$hash/g" /srv/http/settings/camillagui/build/index.html
+}
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
 }
@@ -190,7 +196,7 @@ killProcess() {
 	fi
 }
 lineCount() {
-	awk NF "$1" | wc -l
+	[[ -e $1 ]] && awk NF "$1" | wc -l || echo 0
 }
 mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
@@ -326,9 +332,7 @@ statePlay() {
 	grep -q -m1 '^state.*play' $dirshm/status && return 0
 }
 stringEscape() {
-	local data
-	data=${@//\"/\\\"}
-	echo ${data//\`/\\\`}
+	echo ${@//\"/\\\"}
 }
 volumeGet() {
 	local amixer card control data mixersoftware val_db

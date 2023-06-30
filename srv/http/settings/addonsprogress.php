@@ -103,27 +103,6 @@ E.close.addEventListener( 'click', () => location.href = '<?=$hrefback?>' );
 scroll = setInterval( () => E.progress.scrollTop = E.progress.scrollHeight, 500 );
 </script>
 <?php
-if ( ! $alias ) { // debug
-	echo <<< EOF
-curl -sSfLO installurl
-chmod 755 installfile
-./installfile "options"
-
-<hr>
-<a class="cbm">  </a> Debug
-<hr>
-stdout
-
-<a class="cbm">  </a> Done
-<hr class="hrlight">
-</pre>
-<script>setTimeout( () => clearInterval( scroll ), 1000 );</script>
-</body>
-</html>
-EOF;
-	exit;
-}
-
 // ......................................................................................
 $getinstall = <<< EOF
 curl -sSfLO $installurl
@@ -205,4 +184,3 @@ E.info.classList.remove( 'hide' );
 
 </body>
 </html>
-<!-- ...................................................................................... -->

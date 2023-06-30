@@ -11,6 +11,7 @@ function list( args, callback, json ) {
 function bio( artist, getsimilar ) {
 	if ( artist === $( '#biocontent .artist' ).text() ) {
 		$( '#bio' ).removeClass( 'hide' );
+		V.observer.observe( $( '#bioimg' )[ 0 ] );
 		return
 	}
 	

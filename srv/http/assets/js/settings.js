@@ -172,7 +172,7 @@ function SWreset() {
 if ( page === 'addons' ) {
 	pushstreamChannel( [ 'notify' ] );
 } else {
-	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'volume', 'volumebt', 'wlan' ] );
+	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
 }
 function pushstreamDisconnect() {
 	if ( page === 'networks' ) {
@@ -187,10 +187,11 @@ function pushstreamDisconnect() {
 pushstream.onmessage = function( data, id, channel ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
-		case 'notify':    psNotify( data );    break;
+		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
 		case 'reload':    psReload();          break;
+		case 'storage':   psStorage( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'wlan':      psWlan( data );      break;
 	}
@@ -243,6 +244,12 @@ function psRefresh( data ) {
 }
 function psReload( data ) {
 	if ( localhost ) location.reload();
+}
+function psStorage( data ) {
+	if ( page === 'system' ) {
+		S.list = data.list;
+		renderStorage();
+	}
 }
 function psVolume( data ) {
 	if ( page !== 'player' || ! I.rangelabel ) return
