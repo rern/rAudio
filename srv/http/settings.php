@@ -42,10 +42,15 @@ if ( $addonsprogress || $guide ) {
 
 // bottom bar
 $htmlbar = '<div id="bar-bottom">';
-foreach ( [ 'Features', 'Player', 'Networks', 'System', 'Addons' ] as $name ) {
-	$id      = strtolower( $name );
+if ( $camilla ) {
+	$tabs = [ 'Devices', 'Filters', 'Mixers', 'Pipeline', 'File' ];
+} else {
+	$tabs = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
+}
+foreach ( $tabs as $tab ) {
+	$id      = strtolower( $tab );
 	$active  = $id === $pagetitle ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$name.'</a></div>';
+	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$tab.'</a></div>';
 }
 $htmlbar.= '</div>
 <div id="debug"></div>';
@@ -149,7 +154,7 @@ function htmlSetting( $data ) {
 	$html       .= '<div class="col-r">';
 	if ( ! $input ) {
 		$html   .= $disabled ? '<span class="hide">'.$disabled.'</span>' : '';
-		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel" for="'.$id.'"></div>';
+		$html   .= '<input type="checkbox" id="'.$id.'" class="switch '.$setting.'"><div class="switchlabel"></div>';
 	} else {
 		$html   .= $input;
 	}

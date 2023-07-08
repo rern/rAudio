@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1687770021' );
+	src         : url( '/assets/fonts/rern.woff2?v=1688694847' );
 }
 @font-face {
 	font-family : Lato;
@@ -70,12 +70,15 @@ i {
 .i-dabradio::before        { content: '\F589' }
 .i-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
 .i-date::before            { content: '\F55C' }
-.i-edit-circle::before     { content: '\F565' }
+.i-devices::before         { content: '\F571' }
+.i-edit-circle::before     { content: '\F571' }
 .i-equalizer::before       { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
 .i-features::before        { content: '\F50B' }
+.i-file::before            { content: '\F548' }
 .i-file-music::before      { content: '\F549' }
 .i-file-playlist::before   { content: '\F548' }
+.i-filters::before         { content: '\F52A' }
 .i-firefox::before         { content: '\F58C'; position: absolute; }
 .i-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-flash::before           { content: '\F566' }
@@ -118,6 +121,7 @@ i {
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
 .i-minus-circle::before    { content: '\F563' }
+.i-mixers::before          { content: '\F50C' }
 .i-mpd::before             { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
 .i-multiraudio::before     { content: '\F53B' }
@@ -129,6 +133,7 @@ i {
 .i-nfsserver::before       { content: '\F53C' }
 .i-output::before          { content: '\F528' }
 .i-pause::before           { content: '\F504' }
+.i-pipeline::before        { content: '\F52B' }
 .i-play::before            { content: '\F503' }
 .i-playback::before        { content: '\F507' }
 .i-playlist::before        { content: '\F508' }
@@ -398,11 +403,12 @@ codered  {
 	font-size: 13px;
 }
 
+.range,
 #infoRange {
 	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cgd );
 }
-#infoRange input {
+input[type=range] {
 	height: 40px;
 	width: 300px;
 	margin: 0;
@@ -411,7 +417,7 @@ codered  {
 	-webkit-appearance: none;
 	cursor: pointer;
 }
-#infoRange input::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
 	height: 40px;
 	width: 40px;
 	margin-top: -20px;
@@ -422,7 +428,7 @@ codered  {
 	-webkit-appearance: none;
 	box-shadow: var( --shadow-btn );
 }
-#infoRange input::-moz-range-thumb { /* cannot be combined */
+input[type=range]::-moz-range-thumb { /* cannot be combined */
 	height: 40px;
 	width: 40px;
 	border: none;
@@ -431,33 +437,35 @@ codered  {
 	background-color: var( --cm );
 	box-shadow: var( --shadow-btn );
 }
-#infoRange input:disabled::-webkit-slider-thumb {
+input[type=range]:disabled::-webkit-slider-thumb {
 	background-color: var( --cmd );
 }
-#infoRange input:disabled::-moz-range-thumb {
+input[type=range]:disabled::-moz-range-thumb {
 	background-color: var( --cmd );
 }
-#infoRange input::-webkit-slider-runnable-track {
+input[type=range]::-webkit-slider-runnable-track {
 	width: 100%;
 	height: 4px;
 	background: var( --track );
 	border: var( --trackborder );
 }
-#infoRange input:focus::-webkit-slider-runnable-track {
+input[type=range]:focus::-webkit-slider-runnable-track {
 	background: var( --track );
 }
-#infoRange input::-moz-range-track {
+input[type=range]::-moz-range-track {
 	width: 100%;
 	height: 2px;
 	background: var( --track );
 	border: var( --trackborder );
 }
+.range .value,
 #infoRange .value {
 	height: 30px;
 	font-size: 18px;
 	font-weight: 300;
-	text-align: center;
 }
+.range .min,
+.range .max,
 #infoRange .min,
 #infoRange .max {
 	position: relative;
@@ -469,9 +477,11 @@ codered  {
 	color: var( --cg60 );
 	cursor: pointer;
 }
+.range .max,
 #infoRange .max {
 	text-align: left;
 }
+.range,
 #infoRange {
 	text-align: center;
 }
@@ -548,6 +558,7 @@ input[ type=checkbox ].disabled {
 	color: var( --cw );
 	cursor: pointer;
 }
+
 
 hr {
 	border: none;
