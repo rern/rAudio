@@ -146,12 +146,10 @@ function infoFilters( type, subtype ) {
 	var select      = [ V.selecttype ];
 	var values      = { type: type }
 	var key_val     = '';
-	if ( type in V.selectsubtype ) {
+	if ( subtype ) {
 		selectlabel.push( 'subtype' )
-		var selectsubtype = V.selectsubtype[ type ];
-		select.push( selectsubtype );
+		select.push( V.selectsubtype[ type ] );
 		values.subtype    = subtype;
-		if ( ! subtype ) subtype = selectsubtype[ 0 ]
 		key_val           = V.input_value[ subtype ];
 	}
 	if ( ! key_val ) key_val = V.input_value[ type ];
@@ -160,7 +158,7 @@ function infoFilters( type, subtype ) {
 		var kv = key_val.select;
 		var k  = Object.keys( kv );
 		selectlabel = [ ...selectlabel, ...k ];
-		var selectsubtype = subtype === 'Raw' ? [ S.lscoef, V.selectformat ] : [ S.coeffs ];
+		var selectsubtype = subtype === 'Raw' ? [ S.lscoef, V.selectformat ] : [ S.lscoef ];
 		select = [ ...select, ...selectsubtype ];
 		values = { ...values, ...kv };
 	}
@@ -218,15 +216,16 @@ function infoFilters( type, subtype ) {
 				return $( this ).text() === 'Name'
 			} );
 			$( '#infoContent tr' ).eq( 0 ).before( $tdname.parent() );
-			var $select = $( '#infoContent select' );
-			$select.eq( 0 ).on( 'change', function() {
+			var $select     = $( '#infoContent select' );
+			var $selecttype = $select.eq( 0 );
+			$selecttype.on( 'change', function() {
 				var type    = $( this ).val();
 				var subtype = type in V.selectsubtype ? V.selectsubtype[ type ][ 0 ] : '';
 				infoFilters( type, subtype );
 			} );
 			if ( $select.length > 1 ) {
 				$select.eq( 1 ).on( 'change', function() {
-					var type    = $( '#infoContent select' ).eq( 0 ).val();
+					var type    = $selecttype.val();
 					var subtype = $( this ).val();
 					infoFilters( type, subtype );
 				} );
@@ -243,7 +242,6 @@ function infoFilters( type, subtype ) {
 				} );
 			}
 		}
-//		, oknoreset    : true
 		, ok           : () => {
 			var val   = infoVal();
 			var param = { type: val.subtype }
@@ -267,20 +265,6 @@ function infoSaveFailed( title, name ) {
 		, title   : title
 		, message : iconwarning +'Save <wh>'+ name +'</wh> failed.'
 	} );
-}
-function json2ymlFilter( json ) {
-	var yml =
-'  '+ json.name +':\n'+
-'    type: '+ json.type +'\n'+
-'    parameters:\n';
-	if ( 'subtype' in json ) yml +=
-'      type: '+ json.subtype +'\n';
-	[ 'name', 'type', 'subtype' ].forEach( k => delete json[ k ] );
-	$.each( json, ( k, v ) => {
-		yml +=
-'      '+ k +': '+ v +'\n';
-	} );
-	return yml
 }
 function labelArraySet( array ) {
 	var capitalized = array.map( function( el ) {
