@@ -164,6 +164,7 @@ function infoFilters( type, subtype ) {
 		select = [ ...select, ...selectsubtype ];
 		values = { ...values, ...kv };
 	}
+	selectlabel = labelArraySet( selectlabel );
 	// text
 	var textlabel   = [ 'name' ];
 	values.name = name;
@@ -173,18 +174,20 @@ function infoFilters( type, subtype ) {
 		textlabel = [ ...textlabel, ...k ];
 		values    = { ...values, ...kv };
 	}
+	textlabel    = labelArraySet( textlabel );
 	// number
 	var numberlabel = false;
 	if ( 'number' in key_val ) {
 		var kv      = key_val.number;
 		numberlabel = Object.keys( kv );
 		values      = { ...values, ...kv };
+		numberlabel = labelArraySet( numberlabel );
 	}
 	// radio
 	var radio       = false;
 	if ( 'number' in key_val ) {
 		radio  = key_val.radio;
-		values = { ...values, radio: '' };
+		values = { ...values, radio: numberlabel.slice( -1 )[ 0 ] };
 	}
 	// checkbox
 	var checkbox    = false;
@@ -193,9 +196,6 @@ function infoFilters( type, subtype ) {
 		checkbox = Object.keys( kv );
 		values   = { ...values, ...kv };
 	}
-	selectlabel = labelArraySet( selectlabel );
-	textlabel    = labelArraySet( textlabel );
-	if ( numberlabel ) numberlabel = labelArraySet( numberlabel );
 	info( {
 		  icon         : 'camilladsp'
 		, title        : 'Filters'
@@ -233,14 +233,13 @@ function infoFilters( type, subtype ) {
 			}
 			if ( radio ) {
 				var $tr      = $( '#infoContent .trradio' ).prev();
+				var itr      = $tr.index()
 				var $label   = $tr.find( 'td' ).eq( 0 );
-				var label    = $label.text();
 				var $radio   = $( '#infoContent input:radio' );
-				$radio.val( [ label ] );
 				$radio.on( 'change', function() {
-					var val = $( this ).filter( ':checked' ).val();
+					var val       = $( this ).filter( ':checked' ).val();
+					I.keys[ itr ] = val.toLowerCase();
 					$label.text( val );
-					I.keys[ $tr.index() ] = val.toLowerCase();
 				} );
 			}
 		}
