@@ -221,8 +221,9 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'i-camilladsp' ) ) {
-				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
-				loader();
+				location.href = 'settings.php?p=camilla';
+				/*bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
+				loader();*/
 			} else {
 				equalizer();
 			}

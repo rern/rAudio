@@ -457,6 +457,8 @@ $( '.switch' ).on( 'click', function() {
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
+	if ( page === 'camilla' ) return
+	
 	loader();
 	location.href = 'settings.php?p='+ this.id;
 } );

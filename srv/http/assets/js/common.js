@@ -430,23 +430,28 @@ function info( json ) {
 		if ( I.textlabel ) {
 			infoKey2array( 'textlabel' );
 			htmls.text      = '';
-			I.textlabel.forEach( lbl => htmls.text += '<tr><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
+			I.textlabel.forEach( lbl => htmls.text += '<tr class="trtext"><td>'+ lbl +'</td><td><input type="text"></td></tr>' );
 		}
 		if ( I.numberlabel ) {
 			infoKey2array( 'numberlabel' );
 			htmls.number    = '';
-			I.numberlabel.forEach( lbl => htmls.number += '<tr><td>'+ lbl +'</td><td><input type="number"></td></tr>' );
+			I.numberlabel.forEach( lbl => htmls.number += '<tr class="trnumber"><td>'+ lbl +'</td><td><input type="number"></td></tr>' );
 		}
 		if ( I.passwordlabel ) {
 			infoKey2array( 'passwordlabel' );
 			htmls.password      = '';
-			I.passwordlabel.forEach( lbl => htmls.password += '<tr><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
+			I.passwordlabel.forEach( lbl => htmls.password += '<tr class="trpassword"><td>'+ lbl +'</td><td><input type="password"></td></tr>' );
 		}
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
 		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
 		if ( I.radio ) {
+			if ( Array.isArray( I.radio ) ) {
+				var kv = {}
+				I.radio.forEach( v => kv[ v ] = v );
+				I.radio = kv;
+			}
 			infoKey2array( 'radio' );
 			I.radio.forEach( radio => {
 				if ( Array.isArray( radio ) ) {
@@ -458,19 +463,25 @@ function info( json ) {
 				var i       = 0;
 				htmls.radio = '';
 				$.each( radio, ( k, v ) => {
-					line = '<td>'+ ( k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '' ) +'</td>';
-					if ( ! I.radiocolumn ) {
-						htmls.radio += '<tr>'+ td0 + line +'</tr>';
+					var html = k ? '<label><input type="radio" name="inforadio" value="'+ v +'">'+ k +'</label>' : '';
+					if ( I.radiosingle ) {
+						htmls.radio += html +'&emsp;';
 					} else {
-						i++
-						if ( i % 2 ) {
-							htmls.radio += '<tr>'+ td0 + line;
-							return
+						line = '<td>'+ html +'</td>';
+						if ( ! I.radiocolumn ) {
+							htmls.radio += '<tr class="trradio">'+ td0 + line +'</tr>';
 						} else {
-							htmls.radio += line +'</tr>';
+							i++
+							if ( i % 2 ) {
+								htmls.radio += '<tr class="trradio">'+ td0 + line;
+								return
+							} else {
+								htmls.radio += line +'</tr>';
+							}
 						}
 					}
 				} );
+				if ( I.radiosingle ) htmls.radio = '<tr class="trradio"><td></td><td>'+ htmls.radio +'</td></tr>';
 			} );
 		}
 		if ( I.checkbox ) {
@@ -488,11 +499,11 @@ function info( json ) {
 				}
 				line = '<td>'+ ( lbl ? '<label><input type="checkbox" '+ val +'>'+ lbl +'</label>' : '' ) +'</td>';
 				if ( ! I.checkcolumn ) {
-					htmls.checkbox += '<tr>'+ td0 + line +'</tr>';
+					htmls.checkbox += '<tr class="trcheckbox">'+ td0 + line +'</tr>';
 				} else {
 					i++
 					if ( i % 2 ) {
-						htmls.checkbox += '<tr>'+ td0 + line;
+						htmls.checkbox += '<tr class="trcheckbox">'+ td0 + line;
 						return
 					} else {
 						htmls.checkbox += line +'</tr>';
@@ -505,7 +516,7 @@ function info( json ) {
 			infoKey2array( 'selectlabel' );
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
-				htmls.select += '<tr><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
+				htmls.select += '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
 				if ( typeof el !== 'object' ) {     // html
 					htmls.select += el;
 				} else if ( Array.isArray( el ) ) { // name = value

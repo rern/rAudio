@@ -600,6 +600,48 @@ input.disabled + .switchlabel:after {
 	font-size: 16px;
 	vertical-align: 0;
 }
+
+/* camilladsp */
+.panel {
+	float: left;
+}
+.panel.tab {
+	width: 320px;
+}
+#divcontrols-status {
+	position: relative;
+	width: 330px;
+	height: 100%;
+	min-height: 100vh;
+	padding: 0 15px;
+	background: var( --cga );
+}
+#controls {
+	width: 300px;
+}
+#controls input {
+	max-width: 100%;
+}
+#controls .name {
+	position: absolute;
+	left: 15px;
+	font-size: 16px;
+}
+#controls .value {
+	font-family: Inconsolata;
+}
+.tab input[type=number],
+.tab input[type=text] {
+	margin-bottom: 5px;
+	border: 1px solid var( --cgl ) !important;
+}
+.tab heading.subhead {
+	margin-top: 0;
+}
+.tab .select2-container {
+	margin-bottom: 5px;
+}
+
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.helphead::before {
