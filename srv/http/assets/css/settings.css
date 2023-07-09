@@ -614,8 +614,7 @@ input.disabled + .switchlabel:after {
 	top: 30px;
 	width: 330px;
 	height: 100%;
-	padding: 0 15px;
-	background: var( --cga );
+padding: 0 15px 30px 15px;	background: var( --cga );
 }
 .tab .col-l {
 	width: 170px;

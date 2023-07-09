@@ -47,11 +47,11 @@ function htmlSectionSub( $title, $data ) {
 	</div>
 	<div id="bass" class="range">
 		<code class="name">Bass</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" value="0">
+		<input type="range" min="-6" max="6" step="0.1" value="0">
 	</div>
 	<div id="treble" class="range">
 		<code class="name">Treble</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" value="0">
+		<input type="range" min="-6" max="6" step="0.1" value="0">
 	</div>
 </div>
 <div style="clear:both"></div>
@@ -83,19 +83,11 @@ function htmlSectionSub( $title, $data ) {
 <?php
 $samplerate     = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ];
 $resampler_type = [ 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'Synchronous' ];
-$type           = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
-$sampleformat   = [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE' ];
-$datadevice     = [
-	  'Type'          => [ 'type', htmlSelect( 'type', $type ) ]
-	, 'Channels'      => [ 'channels', 'number' ]
-	, 'Sample format' => [ 'sampleformat', htmlSelect( 'sampleformat', $sampleformat ) ]
-	, 'Device'        => [ 'device', 'text' ]
-];
 
 $title_data = [
 	  'Sampling' => [
 		  'Rate'  => [ 'samplerate', htmlSelect( 'samplerate', $samplerate ) ]
-		, 'html'  => '<div class="divother">'
+		, 'html0' => '<div class="divother">'
 		, 'Other' => [ 'other', 'number' ]
 		, 'html1' => '</div>'
 	]
@@ -109,27 +101,27 @@ $title_data = [
 	]
 	, 'Rate adjust' => [
 		  'Rate adjust'   => [ 'enable_rate_adjust', 'checkbox' ]
-		, 'html'          => '<div class="divtoggle">'
+		, 'html0'         => '<div class="divtoggle">'
 		, 'Adjust period' => [ 'adjust_period', 'number' ]
 		, 'Target level'  => [ 'target_level', 'number' ]
 		, 'html1'         => '</div>'
 	]
 	, 'Resampling' => [
 		  'Resampling'  => [ 'enable_resampling', 'checkbox' ]
-		, 'html'        => '<div class="divtoggle">'
+		, 'html01'      => '<div class="divtoggle">'
 		, 'Type'        => [ 'resampler_type', htmlSelect( 'resampler_type',     $resampler_type ) ]
 		, 'Sample rate' => [ 'capture_samplerate', htmlSelect( 'capture_samplerate', $samplerate ) ]
-		, 'html1'       => '<div class="divother">'
+		, 'html00'      => '<div class="divother">'
 		, 'Other'       => [ 'other', 'number' ]
-		, 'html2'       => '</div>'
-		, 'html3'       => '</div>'
+		, 'html11'      => '</div>'
+		, 'html12'      => '</div>'
 	]
 	, 'Capture rate monitoring' => [
 		  'Measure interval'    => [ 'rate_measure_interval', 'number' ]
 		, 'Stop on rate change' => [ 'stop_on_rate_change', 'checkbox' ]
 	]
-	, 'Capture device'  => $datadevice
-	, 'Playback device' => $datadevice
+	, 'Capture device'  => [ 'html' => '<div class="capture"></div>' ]
+	, 'Playback device' => [ 'html' => '<div class="playback"></div>' ]
 ];
 foreach( $title_data as $title => $data ) htmlSectionSub( $title, $data );
 ?>

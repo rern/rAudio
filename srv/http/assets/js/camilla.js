@@ -47,8 +47,13 @@ $( '.enable_rate_adjust, .enable_resampling' ).on( 'change', function() {
 	var $this = $( this );
 	$( this ).closest( '.section' ).find( '.divtoggle' ).toggleClass( 'hide', ! $this.prop( 'checked' ) )
 } );
-
+$( '.capture, .playback' ).on( 'change', '.type', function() {
+	var $this = $( this );
+	var cls   = $this.closest( '.section' ).prop( 'id' ).slice( 3, -6 );
+	htmlDevice( cls, $this.val() );
 } );
+
+} ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var kv = {
 	  pass    : {
@@ -141,8 +146,57 @@ V = {
 		}
 	}
 }
-var samplerate = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
+var samplerate  = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
+var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
+var opt_type    = '';
+devicetype.forEach( k => opt_type += '<option value="'+ k +'">'+ k +'</option>' );
+var opt_format  = '';
+V.selectformat.forEach( k => opt_format += '<option value="'+ k +'">'+ k +'</option>' );
+var TC          = { Type: opt_type, Channels: 'number' }
+var TCS         = { ... TC, 'Sample format': opt_format }
+var TCSD        = { ...TCS, Device: 'text' }
+var TWasapi     = { ...TCSD, Exclusive: 'checkbox', Loopback: 'checkbox' }
+var ESR         = { 'Extra samples': 'number', 'Skip bytes': 'number', 'Read bytes': 'number' }
+var type_input  = {
+	  capture : {
+		  Alsa      : TCSD
+		, CoreAudio : { ...TCSD, 'Change format': 'checkbox' }
+		, Pulse     : TCSD
+		, Wasapi    : TWasapi
+		, Jack      : TC
+		, Stdin     : { ...TCS, ...ESR }
+		, File      : { ...TCS, Filename: 'text', ...ESR }
+	}
+	, playback : {
+		  Alsa      : TCSD
+		, CoreAudio : { ...TCSD, Exclusive: 'checkbox', 'Change format': 'checkbox' }
+		, Pulse     : TCSD
+		, Wasapi    : TWasapi
+		, Jack      : TC
+		, Stdout    : TCS
+		, File      : { ...TCS, Filename: 'text' }
+	}
+}
 
+function htmlDevice( cls, val ) {
+	if ( ! val ) val = 'Alsa';
+	var list = type_input.capture[ val ];
+	var html = '<heading class="subhead"><span class="headtitle">'+ cls[ 0 ].toUpperCase() + cls.slice( 1 ) +' device</span></heading>';
+	$.each( list, ( label, type ) => {
+		var cls = label.replace( ' ', '_' ).toLowerCase();
+		html += '<div class="col-l single">'+ label +'</div><div class="col-r">';
+		if ( type[ 0 ] === '<' ) {
+			html += '<select class="'+ cls +'">'+ type +'</select>';
+		} else {
+			html += '<input class="'+ cls +'" type="'+ type +'">';
+			if ( type === 'checkbox' ) html += '<div class="switchlabel"></div>';
+		}
+		html += '</div><div style="clear:both"></div>';
+	} );
+	$( '.'+ cls )
+		.html( html )
+		.find( 'select' ).select2();
+}
 function infoFilters( type, subtype ) {
 	if ( typeof type === 'object' ) { // saved filters: type = values
 		var type    = type.type;
@@ -314,6 +368,8 @@ function renderPage() {
 				 S.status.clipped_samples +'<br>'+
 				 S.status.buffer_level +'<br>'
 	$( '#statusvalue' ).html( status );
+	htmlDevice( 'capture' );
+	htmlDevice( 'playback' );
 	var D = S.config.devices;
 	$.each( D, ( k, v ) => {
 		if ( [ 'capture', 'playback' ].includes( k ) ) {
@@ -340,6 +396,11 @@ function renderPage() {
 	} );
 	$( '#divrateadjust .divtoggle' ).toggleClass( 'hide', ! D.enable_rate_adjust );
 	$( '#divresampling .divtoggle' ).toggleClass( 'hide', ! D.enable_resampling );
+//	$( '#divcapturedevice, #divplaybackdevice' ).find( '.col-l:eq( 0 ), .col-r:eq( 0 )' ).addClass( 'hide' );
+	$( '#divcapturedevice .device' ).addClass( 'disabled' );
+	$( '#divplaybackdevice .type option[value=Stdin]' )
+		.text( 'Stdout' )
+		.prop( 'value', 'Stdout' )
 	$( '#div'+ V.currenttab ).removeClass( 'hide' );
 	$( '#'+ V.currenttab ).addClass( 'active' );
 	showContent();
