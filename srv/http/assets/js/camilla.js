@@ -36,6 +36,16 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	V.currenttab = id;
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ id ).addClass( 'active' );
+	$( '.tab > .section' ).addClass( 'hide' );
+	$( '#div'+ id ).removeClass( 'hide' );
+} );
+$( '.samplerate, .capture_samplerate' ).on( 'change', function() {
+	var $this  = $( this );
+	$this.parent().next().next().toggleClass( 'hide', $this.val() !== 'Other' )
+} );
+$( '.enable_rate_adjust, .enable_resampling' ).on( 'change', function() {
+	var $this = $( this );
+	$( this ).closest( '.section' ).find( '.divtoggle' ).toggleClass( 'hide', ! $this.prop( 'checked' ) )
 } );
 
 } );
@@ -131,6 +141,7 @@ V = {
 		}
 	}
 }
+var samplerate = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
 
 function infoFilters( type, subtype ) {
 	if ( typeof type === 'object' ) { // saved filters: type = values
@@ -271,12 +282,20 @@ function labelArraySet( array ) {
 		if ( el === 'ms' ) return 'ms'
 		
 		var str = el[ 0 ].toUpperCase();
-		return el.length === 1 ? str : str + el.slice( 1 ).replace( /_/g, ' ' )
+		if ( el.length === 1 ) return str
+		
+		el = el
+				.replace( 'freq_act', 'freq_actual' )
+				.replace( 'freq', 'frequency' )
+				.replace( 'bytes_lines', 'bytes/lines' )
+				.replace( /_/g, ' ' )
+				.slice( 1 )
+		return str + el
 	} );
 	return capitalized
 }
 function renderPage() {
-	console.log(S)
+	console.log(S.config.devices)
 	var v = {
 		  mute   : S.mute
 		, volume : S.volume
@@ -288,15 +307,40 @@ function renderPage() {
 		$( '#'+ el +' input' ).val( val );
 		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
 	} );
-	var status = S.name +'<br>'+
+	var status = '<c>'+ S.name +'</c><br>'+
 				 S.status.state +'<br>'+
 				 S.status.capture_rate +'<br>'+
 				 S.status.rate_adjust +'<br>'+
 				 S.status.clipped_samples +'<br>'+
 				 S.status.buffer_level +'<br>'
 	$( '#statusvalue' ).html( status );
-	var d = S.config.devices;
-	
+	var D = S.config.devices;
+	$.each( D, ( k, v ) => {
+		if ( [ 'capture', 'playback' ].includes( k ) ) {
+			var $div = k === 'capture' ? $( '#divcapturedevice' ) : $( '#divplaybackdevice' );
+			$.each( v, ( key, val ) => $div.find( '.'+ key ).val( val ) );
+			return
+		}
+		
+		if ( [ 'samplerate', 'capture_samplerate' ].includes( k ) ) {
+			var $div = k === 'samplerate' ? $( '#divsampling' ) : $( '#divresampling' );
+			var $divinput = $div.find( 'input' );
+			var $divother = $div.find( '.divother' );
+			if ( samplerate.includes( v ) ) {
+				$divother.addClass( 'hide' );
+				$divinput.val( 0 );
+			} else {
+				$divother.removeClass( 'hide' );
+				$divinput.val( v );
+				v = 'Other';
+			}
+		}
+		var $el = $( '.'+ k );
+		$el.is( ':checkbox' ) ? $el.prop( 'checked', v ) : $el.val( v );
+	} );
+	$( '#divrateadjust .divtoggle' ).toggleClass( 'hide', ! D.enable_rate_adjust );
+	$( '#divresampling .divtoggle' ).toggleClass( 'hide', ! D.enable_resampling );
+	$( '#div'+ V.currenttab ).removeClass( 'hide' );
 	$( '#'+ V.currenttab ).addClass( 'active' );
 	showContent();
 }

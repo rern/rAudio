@@ -5,22 +5,28 @@ function htmlSelect( $class, $options ) {
 	$html.= '</select>';
 	return $html;
 }
-function htmlInput( $label, $type ) {
+function htmlInput( $label, $data ) {
+	$class = $data[ 0 ];
+	$type  = $data[ 1 ];
 	if ( $type[ 0 ] !== '<' ) {
-		$html = '<input class="'.$label.'" type="'.$type.'">';
+		$html = '<input class="'.$class.'" type="'.$type.'">';
 		if ( $type === 'checkbox' ) $html.= '<div class="switchlabel"></div>';
 	} else {
 		$html = $type; // select / html
 	}
-	return '
+	return'
 <div class="col-l single">'.$label.'</div><div class="col-r">'.$html.'</div>
 <div style="clear:both"></div>
 ';
 }
-function htmlSectionSub( $title, $list, $icon = '' ) {
+function htmlSectionSub( $title, $data ) {
 	$html = '';
-	foreach( $list as $label => $type ) {
-		$html.= htmlInput( $label, $type );
+	foreach( $data as $label => $type ) {
+		if ( substr( $label, 0, 4 ) === 'html' ) {
+			$html.= $type;
+		} else {
+			$html.= htmlInput( $label, $type );
+		}
 	}
 	echo '
 <div id="div'.lcfirst( str_replace( ' ', '', $title ) ).'" class="section">
@@ -56,7 +62,7 @@ function htmlSectionSub( $title, $list, $icon = '' ) {
 <div class="col-l text gr">
 		Configuration
 	<br>State
-	<br>Capture samplerate
+	<br>Sample rate
 	<br>Rate adjust
 	<br>Clipped samples
 	<br>Buffer level
@@ -80,37 +86,47 @@ $resampler_type = [ 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'Synchronous'
 $type           = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
 $sampleformat   = [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE' ];
 $datadevice     = [
-	  'type'         => htmlSelect( 'type', $type )
-	, 'channels'     => 'number'
-	, 'sampleformat' => htmlSelect( 'sampleformat', $sampleformat )
-	, 'device'       => 'text'
+	  'Type'          => [ 'type', htmlSelect( 'type', $type ) ]
+	, 'Channels'      => [ 'channels', 'number' ]
+	, 'Sample format' => [ 'sampleformat', htmlSelect( 'sampleformat', $sampleformat ) ]
+	, 'Device'        => [ 'device', 'text' ]
 ];
 
 $title_data = [
 	  'Sampling' => [
-		  'samplerate' => htmlSelect( 'samplerate', $samplerate )
+		  'Rate'  => [ 'samplerate', htmlSelect( 'samplerate', $samplerate ) ]
+		, 'html'  => '<div class="divother">'
+		, 'Other' => [ 'other', 'number' ]
+		, 'html1' => '</div>'
 	]
 	, 'Buffers' => [
-		  'chunksize'  => 'number'
-		, 'queuelimit' => 'number'
+		  'Chunk size'  => [ 'chunksize', 'number' ]
+		, 'Queue limit' => [ 'queuelimit', 'number' ]
 	]
 	, 'Silence' => [
-		  'silence_threshold' => 'number'
-		, 'silence_timeout'   => 'number'
+		  'Threshold' => [ 'silence_threshold', 'number' ]
+		, 'Timeout'   => [ 'silence_timeout', 'number' ]
 	]
 	, 'Rate adjust' => [
-		  'enable_rate_adjust' => 'checkbox'
-		, 'adjust_period'      => 'number'
-		, 'target_level'       => 'number'
+		  'Rate adjust'   => [ 'enable_rate_adjust', 'checkbox' ]
+		, 'html'          => '<div class="divtoggle">'
+		, 'Adjust period' => [ 'adjust_period', 'number' ]
+		, 'Target level'  => [ 'target_level', 'number' ]
+		, 'html1'         => '</div>'
 	]
 	, 'Resampling' => [
-		  'enable_resampling'  => 'checkbox'
-		, 'resampler_type'     => htmlSelect( 'resampler_type',     $resampler_type )
-		, 'capture_samplerate' => htmlSelect( 'capture_samplerate', $samplerate )
+		  'Resampling'  => [ 'enable_resampling', 'checkbox' ]
+		, 'html'        => '<div class="divtoggle">'
+		, 'Type'        => [ 'resampler_type', htmlSelect( 'resampler_type',     $resampler_type ) ]
+		, 'Sample rate' => [ 'capture_samplerate', htmlSelect( 'capture_samplerate', $samplerate ) ]
+		, 'html1'       => '<div class="divother">'
+		, 'Other'       => [ 'other', 'number' ]
+		, 'html2'       => '</div>'
+		, 'html3'       => '</div>'
 	]
 	, 'Capture rate monitoring' => [
-		  'rate_measure_interval' => 'number'
-		, 'stop_on_rate_change'   => 'checkbox'
+		  'Measure interval'    => [ 'rate_measure_interval', 'number' ]
+		, 'Stop on rate change' => [ 'stop_on_rate_change', 'checkbox' ]
 	]
 	, 'Capture device'  => $datadevice
 	, 'Playback device' => $datadevice
@@ -120,7 +136,7 @@ foreach( $title_data as $title => $data ) htmlSectionSub( $title, $data );
 
 </div>
 
-<div id="divfilters" class="section">
+<div id="divfilters" class="section hide">
 <heading><span class="headtitle"><?=i( 'filters' )?>Filters<?=i( 'plus-circle add' )?></span></heading>
 
 

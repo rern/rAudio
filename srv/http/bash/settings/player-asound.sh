@@ -94,7 +94,7 @@ if [[ $wm5102card ]]; then
 fi
 
 if [[ $dsp ]]; then
-	$dirsettings/camilla-setformat.sh
+	$dirsettings/camilla.sh setformat
 else
 	if [[ $btmixer ]]; then
 		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then

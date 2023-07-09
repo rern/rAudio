@@ -33,7 +33,7 @@ $equalizer = file_exists( '/srv/http/data/system/equalizer' );
 $localhost = in_array( $_SERVER[ 'REMOTE_ADDR' ], ['127.0.0.1', '::1'] );
 
 // css / js filename with version
-$cssfiles   = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
+$cssfiles  = array_slice( scandir( '/srv/http/assets/css/plugin' ), 2 );
 foreach( $cssfiles as $file ) {
 	$name            = explode( '-', $file )[ 0 ];
 	$cfiles[ $name ] = $file;
@@ -75,12 +75,15 @@ if ( ! $page ) { // main
 	}
 	if ( $addons ) $css[]  = 'addons';
 	
-	$icon = $pagetitle = $page;
+	$icon  = $pagetitle = $page;
 	if ( $addonsprogress ) {
-		$icon = 'addons';
+		$icon      = 'addons';
 		$pagetitle = 'addons-progress';
+	} else if ( $camilla ) {
+		$icon      = 'camilladsp';
+		$pagetitle = 'CAMILLA DSP';
 	} else if ( $guide ) {
-		$icon = 'help';
+		$icon      = 'help';
 		$pagetitle = 'user guide';
 	}
 	$title = strtoupper( $pagetitle );

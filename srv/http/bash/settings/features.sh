@@ -4,13 +4,11 @@
 
 args2var "$1"
 
-pushRestartMpd() {
-	$dirsettings/player-conf.sh
-	pushSubmenu $1 $2
-	$dirsettings/features-data.sh pushrefresh
-}
-pushSubmenu() {
-	pushstream display '{ "submenu": "'$1'", "value": '$2' }'
+aplaynameFile() {
+	local aplayname card
+	card=$( head -1 /etc/asound.conf | cut -d' ' -f2 )
+	aplayname=$( aplay -l | sed -E -n '/^card '$card':/ {s/^.*\[|].*//g; p}' )
+	echo $dirsystem/spotify-$aplayname
 }
 localbrowserDisable() {
 	ply-image /srv/http/assets/img/splash.png
@@ -35,6 +33,14 @@ localbrowserXset() {
 	else
 		xset +dpms
 	fi
+}
+pushRestartMpd() {
+	$dirsettings/player-conf.sh
+	pushSubmenu $1 $2
+	$dirsettings/features-data.sh pushrefresh
+}
+pushSubmenu() {
+	pushstream display '{ "submenu": "'$1'", "value": '$2' }'
 }
 
 case $CMD in
@@ -71,6 +77,7 @@ camilladsp )
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
+		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1FLOAT64LE/}}' $dircamilladsp/configs/camilladsp.yml
 	fi
 	;;
 dabradio )
@@ -341,11 +348,13 @@ shairport-sync | spotifyd )
 	pushRefresh
 	;;
 smb )
+	chmod 755 /mnt/MPD /mnt/MPD/{SD,USB}
 	if [[ $ON ]]; then
 		smbconf=/etc/samba/smb.conf
 		sed -i '/read only = no/ d' $smbconf
-		[[ $SD ]] &&  sed -i '/path = .*SD/ a\  read only = no' $smbconf
-		[[ $USB ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf
+		[[ $SD ]] &&  sed -i '/path = .*SD/ a\	read only = no' $smbconf && chmod 777 /mnt/MPD/SD
+		[[ $USB ]] && sed -i '/path = .*USB/ a\	read only = no' $smbconf && chmod 777 /mnt/MPD/USB
+		[[ $SD || $USB ]] && chmod 777 /mnt/MPD
 		serviceRestartEnable
 	else
 		systemctl disable --now smb
@@ -398,6 +407,24 @@ spotifykeyremove )
 	rm -f $dirsystem/spotifykey $dirshm/spotify/*
 	systemctl disable --now spotifyd
 	pushRefresh
+	;;
+spotifyoutput )
+	file=$( aplaynameFile )
+	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
+	devices='"hw:'$( head -1 /etc/asound.conf | cut -d' ' -f2 )'"'
+	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
+	for l in ${lines[@]}; do
+		devices+=', "'$l'"'
+	done
+	echo '{
+  "current" : "'$( sed -E -n '/^device/ {s/.*"(.*)"/\1/; p}' /etc/spotifyd.conf )'"
+, "devices" : [ '$devices' ]
+}'
+	;;
+spotifyoutputset )
+	file=$( aplaynameFile )
+	[[ ${OUTPUT:0:3} == hw: ]] && rm -f "$file" || echo $OUTPUT > "$file"
+	$dirsettings/player-conf.sh
 	;;
 spotifytoken )
 	. $dirsystem/spotifykey

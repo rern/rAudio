@@ -301,13 +301,11 @@ function contextmenuLibrary( $li, $target ) {
 		return
 	}
 	var filemode = [ 'nas', 'sd', 'usb', 'dabradio', 'webradio' ].includes( V.mode );
-	$menu.find( '.playnext, .replace' ).toggleClass( 'hide', ! S.pllength );
-	$menu.find( '.replace' ).next().toggleClass( 'hide', ! S.pllength );
+	$menu.find( '.playnext, .replace, .i-play-replace' ).toggleClass( 'hide', ! S.pllength );
 	$menu.find( '.refresh-library' ).toggleClass( 'hide', ! ( 'updating_db' in S ) );
-	$( '#menu-folder a:not(.sub)' ).toggleClass( 'hide', V.list.licover && ! filemode );
 	$menu.find( '.bookmark, .exclude, .update, .thumb' ).toggleClass( 'hide', ! filemode );
 	$menu.find( '.directory' ).toggleClass( 'hide', filemode );
-	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ( ! filemode ) );
+	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
 	$li.addClass( 'active' );
@@ -493,6 +491,17 @@ function displayBars() {
 		$( '.emptyadd' ).css( 'top', '' );
 	}
 	displayBottom();
+	if ( ! S.state || $bartop.is( ':hidden' ) ) return // suppress on reboot
+	
+	var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
+	var noprevnext = S.pllength < 2 || ! mpd_upnp;
+	$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 && mpd_upnp );
+	$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
+	$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
+	$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
+	$( '#pause' ).toggleClass( 'hide', S.stream && S.player !== 'upnp' );
+	$( '#playback-controls i' ).removeClass( 'active' );
+	$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
 }
 function displayBottom() {
 	$( '#playback' )
@@ -1333,7 +1342,6 @@ function renderPlaybackAll() {
 	displayBars();
 	displayPlayback();
 	renderPlayback();
-	setButtonControl();
 	setButtonUpdating();
 }
 function renderPlaylist( data ) { // V.plhome - current playlist
@@ -1485,22 +1493,6 @@ function setBookmarkEdit() {
 		.css( 'background', 'hsl(0,0%,15%)' )
 		.find( '.i-bookmark, .label, img' )
 		.css( 'opacity', 0.33 );
-}
-function setButtonControl() {
-	if ( ! S.state ) return // suppress on reboot
-	
-	if ( $bartop.is( ':visible' ) ) {
-		var mpd_upnp = [ 'mpd', 'upnp' ].includes( S.player );
-		var noprevnext = S.pllength < 2 || ! mpd_upnp;
-		$( '#playback-controls' ).toggleClass( 'hide', S.pllength === 0 && mpd_upnp );
-		$( '#previous, #next' ).toggleClass( 'hide', noprevnext );
-		$( '#coverL, #coverR' ).toggleClass( 'disabled', noprevnext );
-		$( '#play, #pause, #coverM' ).toggleClass( 'disabled', ! mpd_upnp );
-		$( '#pause' ).toggleClass( 'hide', S.stream && S.player !== 'upnp' );
-		$( '#playback-controls i' ).removeClass( 'active' );
-		$( '#'+ S.state ).addClass( 'active' ); // suppress on reboot
-	}
-	setTimeout( setButtonOptions, 0 );
 }
 function setButtonOptions() {
 	$( '#dsp' ).toggleClass( 'disabled', S.player === 'spotify' );

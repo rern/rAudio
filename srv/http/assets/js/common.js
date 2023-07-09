@@ -268,6 +268,7 @@ var $infocontent;
 function info( json ) {
 	local(); // flag for consecutive info
 	I          = json;
+	V.iwidth   = I.width;
 	
 	if ( 'values' in I ) {
 		if ( ! Array.isArray( I.values ) ) {
@@ -282,7 +283,7 @@ function info( json ) {
 		I.values = false;
 	}
 	// fix: narrow screen scroll
-	if ( window.innerWidth < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
+	if ( V.wW < 768 ) $( 'body' ).css( 'overflow-y', 'auto' );
 	
 	$( '#infoOverlay' ).html( `
 <div id="infoBox">
@@ -512,8 +513,10 @@ function info( json ) {
 			} );
 		}
 		if ( I.select ) {
-			infoKey2array( 'select' );
-			infoKey2array( 'selectlabel' );
+			if ( ! Array.isArray( I.selectlabel ) ) {
+				I.selectlabel = [ I.selectlabel ];
+				I.select      = [ I.select ];
+			}
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
 				htmls.select += '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
@@ -593,32 +596,7 @@ function info( json ) {
 		if ( $( '#infoBox' ).height() > window.innerHeight - 10 ) $( '#infoBox' ).css( { top: '5px', transform: 'translateY( 0 )' } );
 		infoButtonWidth();
 		// set width: text / password / textarea
-		if ( I.boxwidth ) {
-			var widthmax = I.boxwidth === 'max';
-			if ( widthmax ) $( '#infoBox' ).css( {
-				  width       : '600px'
-				, 'max-width' : I.width +'px' || ''
-			} );
-			var allW = $( '#infoContent' ).width();
-			var labelW = $( '#infoContent td:first-child' ).width() || 0;
-			I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
-		} else if ( ! I.contentcssno ) {
-			I.boxW = 230;
-		}
-		if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
-		if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
-		if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
-			var $td1st = $( '#infoContent td:first-child' );
-			var input  = $td1st.find( 'input' ).length;
-			$td1st.css( {
-				  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
-				, 'text-align'   : input ? '' : 'right'   // text label
-			} ); 
-		}
-		if ( htmlinputs && ( I.messagealign || I.footeralign ) ) {
-			var tblW = $( '#infoContent table' ).width();
-			$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', tblW );
-		}
+		infoWidth();
 		if ( I.rangelabel ) {
 			$( '#infoRange input' ).on( 'click input keyup', function() {
 				$( '#infoRange .value' ).text( $( this ).val() );
@@ -977,6 +955,38 @@ function infoWarning( icon, title, message ) {
 		, title   : title
 		, message : iconwarning + message
 	} );
+}
+function infoWidth() {
+	if ( I.boxwidth ) {
+		var widthmax = I.boxwidth === 'max';
+		if ( widthmax ) {
+			if ( I.width ) {
+				var maxw = ( I.width > V.wW ? I.width : V.wW ) +'px';
+			} else {
+				var maxw = '';
+			}
+			$( '#infoBox' ).css( {
+				  width       : V.wW > 600 ? '600px' : V.wW  +'px'
+				, 'max-width' : maxw
+			} );
+		}
+		var allW = $( '#infoContent' ).width();
+		var labelW = $( '#infoContent td:first-child' ).width() || 0;
+		I.boxW = ( widthmax ? allW - labelW - 20 : I.boxwidth );
+	} else if ( ! I.contentcssno ) {
+		I.boxW = 230;
+	}
+	if ( I.boxW ) $( '#infoContent' ).find( 'input:text, input[type=number], input:password, textarea, select' ).parent().css( 'width', I.boxW );
+	if ( $( '#infoContent select' ).length ) selectSet(); // render select to set width
+	if ( ! I.contentcssno && $( '#infoContent tr:eq( 0 ) td' ).length > 1 ) { // column gutter
+		var $td1st = $( '#infoContent td:first-child' );
+		var input  = $td1st.find( 'input' ).length;
+		$td1st.css( {
+			  'padding-right': input ? '10px' : '5px' // checkbox/radio gutter : text label
+			, 'text-align'   : input ? '' : 'right'   // text label
+		} ); 
+	}
+	if ( I.messagealign || I.footeralign ) $( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
 }
 
 function jsonClone( json ) {

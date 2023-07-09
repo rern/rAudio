@@ -64,14 +64,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 		bash( [ 'spotifyd' ] );
 		notifyCommon( 'Enable ...' );
 	} else if ( S.spotifytoken ) {
-		info( {
-			  icon         : SW.icon
-			, title        : SW.title
-			, checkbox     : 'Remove client keys?'
-			, values       : false
-			, checkchanged : true
-			, ok           : () => bash( [ 'spotifykeyremove' ] )
-		} );
+		infoSpotifyOutput();
 	} else {
 		if ( navigator.userAgent.includes( 'Firefox' ) ) {
 			infoWarning( SW.icon, SW.title, 'Authorization cannot run on <wh>Firefox</wh>.' );
@@ -463,6 +456,34 @@ function infoScrobbleAuth() {
 		, cancel       : switchCancel
 		, ok           : () => bash( [ 'scrobblekeyremove' ] )
 	} );
+}
+function infoSpotifyKeys() {
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, tablabel     : [ 'Output', 'Keys' ]
+		, tab          : [ infoSpotifyOutput, '' ]
+		, checkbox     : 'Remove client keys?'
+		, values       : false
+		, checkchanged : true
+		, ok           : () => bash( [ 'spotifykeyremove' ] )
+	} );
+}
+function infoSpotifyOutput() {
+	bash( [ 'spotifyoutput' ], ( list ) => {
+		info( {
+			  icon         : SW.icon
+			, title        : SW.title
+			, tablabel     : [ 'Output', 'Keys' ]
+			, tab          : [ '', infoSpotifyKeys ]
+			, boxwidth     : 300
+			, selectlabel  : 'Device'
+			, select       : list.devices
+			, values       : list.current
+			, checkchanged : true
+			, ok           : () => bash( [ 'spotifyoutputset', infoVal(), 'CMD OUTPUT' ] )
+		} );
+	}, 'json' );
 }
 function passwordWrong() {
 	bannerHide();

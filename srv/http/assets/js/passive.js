@@ -16,7 +16,7 @@ function radioRefresh() {
 function statusUpdate( data ) {
 	$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
 	if ( ! $( '#playback' ).hasClass( 'i-'+ S.player ) ) displayBottom();
-	setButtonControl();
+	displayBars();
 	if ( D.snapclient ) bash( [ 'lcdcharrefresh', JSON.stringify( S ) ] );
 }
 function webradioIcon( srcnoext ) {
@@ -38,7 +38,6 @@ window.addEventListener( 'resize', () => { // resize / rotate
 		var barvisible = $bartop.is( ':visible' );
 		if ( V.playback ) {
 			displayPlayback();
-			setButtonControl();
 			setTimeout( renderPlayback, 50 );
 			setInfoScroll();
 			if ( $( '#bioimg' ).length ) bioTitleSet();
@@ -57,6 +56,7 @@ window.addEventListener( 'resize', () => { // resize / rotate
 			}
 		}
 		displayBars();
+		if ( I.active ) infoWidth();
 	}, 0 );
 } );
 // pushstreamChannel() in common.js
@@ -140,7 +140,6 @@ function psDisplay( data ) {
 	}
 	displayBars();
 	if ( V.playback ) {
-		setButtonControl();
 		displayPlayback();
 		renderPlayback();
 	} else if ( V.library ) {

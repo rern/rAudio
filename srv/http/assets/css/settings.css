@@ -606,15 +606,22 @@ input.disabled + .switchlabel:after {
 	float: left;
 }
 .panel.tab {
-	width: 320px;
+	width: 328px;
+	padding: 0 0 0 15px;
 }
 #divcontrols-status {
-	position: relative;
+	position: sticky;
+	top: 30px;
 	width: 330px;
 	height: 100%;
-	min-height: 100vh;
 	padding: 0 15px;
 	background: var( --cga );
+}
+.tab .col-l {
+	width: 170px;
+}
+.tab .col-r {
+	width: calc( 100% - 170px );
 }
 #controls {
 	width: 300px;
@@ -623,8 +630,6 @@ input.disabled + .switchlabel:after {
 	max-width: 100%;
 }
 #controls .name {
-	position: absolute;
-	left: 15px;
 	font-size: 16px;
 }
 #controls .value {
@@ -635,11 +640,11 @@ input.disabled + .switchlabel:after {
 	margin-bottom: 5px;
 	border: 1px solid var( --cgl ) !important;
 }
-.tab heading.subhead {
-	margin-top: 0;
-}
 .tab .select2-container {
 	margin-bottom: 5px;
+}
+.panel.tab .switchlabel {
+	margin-bottom: 0;
 }
 
 @media (max-height: 570px) {

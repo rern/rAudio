@@ -46,7 +46,7 @@ i2c-dev"
 	if [[ $rebooti2c ]] \
 		|| ! cmp -s /tmp/config.txt /boot/config.txt \
 		|| ! cmp -s /tmp/cmdline.txt /boot/cmdline.txt; then
-		name=$( sed -n "/^\t, '$CMD'/ {s/.*'name' => '//; s/'.*//; p}" /srv/http/settings/system.php )
+		name=$( sed -n "/.*'$CMD' *=>/ {s/.*'name' => '//; s/'.*//; p}" /srv/http/settings/system.php )
 		notify $CMD "$name" 'Reboot required.' 5000
 		list+="
 $CMD"

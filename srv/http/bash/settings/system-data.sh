@@ -80,7 +80,7 @@ $soccpu"
 	echo "$system" > $dirshm/system
 fi
 
-ifconfiglan=$( ifconfig | grep -A2 ^e )
+ifconfiglan=$( ifconfig | grep -A2 ^e | head -3 )
 if [[ $ifconfiglan ]]; then
 	if [[ -e $dirsystem/soundprofile.conf ]]; then
 		soundprofileconf=$( conf2json $dirsystem/soundprofile.conf )

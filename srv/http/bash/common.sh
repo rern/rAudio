@@ -77,9 +77,9 @@ args2var() {
 	[[ $CFG ]] && echo -n "$conf" > $dirsystem/$CMD.conf
 }
 cacheBust() {
+	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )
 	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-	sed -i "s/?v=.*/$hash';/" /srv/http/common.php
 	sed -E -i  "s/\?v=.{10}/$hash/g" /srv/http/settings/camillagui/build/index.html
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
@@ -238,10 +238,12 @@ package() {
 Package:
 " 8 0 0 \
 1 Build \
-2 'Update repo' )
+2 'Update repo' \
+3 'AUR setup' )
 	case $file in
 		1 ) file=pkgbuild;;
 		2 ) file=repoupdate;;
+		3 ) file=aursetup;;
 	esac
 	bash <( curl -L https://github.com/rern/rern.github.io/raw/main/$file.sh )
 }

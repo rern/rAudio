@@ -175,7 +175,13 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
-	[[ $btmixer ]] && hw=$( bluealsa-aplay -L | head -1 ) || hw=hw:$asoundcard
+	if [[ $btmixer ]]; then
+		hw=$( bluealsa-aplay -L | head -1 )
+	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
+		hw=$( < "$dirsystem/spotify-$aplayname" )
+	else
+		hw=hw:$asoundcard
+	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
 

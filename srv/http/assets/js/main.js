@@ -221,9 +221,9 @@ $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
 			if ( $( this ).hasClass( 'i-camilladsp' ) ) {
-				location.href = 'settings.php?p=camilla';
-				/*bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
-				loader();*/
+				//location.href = 'settings.php?p=camilla';
+				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
+				loader();
 			} else {
 				equalizer();
 			}
@@ -866,7 +866,6 @@ $( '.map' ).on( 'click', function( e ) {
 			$( '.band' ).addClass( 'transparent' );
 			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 			displayBars();
-			setButtonControl();
 			displayPlayback();
 			if ( S.state === 'play' && ! S.stream && ! localhost ) {
 				setProgress();

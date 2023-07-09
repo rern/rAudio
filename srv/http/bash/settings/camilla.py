@@ -24,6 +24,9 @@ if len( sys.argv ) > 2: # set: cmd val
             if val[-4:] == '.yml': val = val[0:-4]
             set_config_name( pathconfigs + val +'.yml' )
             cdsp.reload()
+        case 'read':
+            if val[-4:] == '.yml': val = val[0:-4]
+            value = cdsp.read_config_file( pathconfigs + val +'.yml' )
         case 'save':
             import yaml
             try:
@@ -43,50 +46,32 @@ if len( sys.argv ) > 2: # set: cmd val
                 print( -1 )
 else: # get: cmd
     match cmd:
-        case 'config':
-            value = cdsp.get_config() # { "key": value, ... }
         case 'configname':
-            value = { 'name': os.path.basename( cdsp.get_config_name()[0:-4] ) }
+            value = { 'name': os.path.basename( cdsp.get_config_name() ) }
         case 'connected':
             value = { 'connected': cdsp.is_connected() }
         case 'data':
-            value             = {}
-            value[ 'config' ] = cdsp.get_config()
-            value[ 'volume' ] = cdsp.get_volume()
-            value[ 'mute' ]   = cdsp.get_mute()
-            value[ 'name' ]   = os.path.basename( cdsp.get_config_name() )
-            value[ 'status' ] = {
-                  'state'           : cdsp.get_state().name
-                , 'capture_rate'    : cdsp.get_capture_rate()
-                , 'rate_adjust'     : cdsp.get_rate_adjust()
-                , 'clipped_samples' : cdsp.get_clipped_samples()
-                , 'buffer_level'    : cdsp.get_buffer_level()
+            value = {
+                  'config' : cdsp.get_config()
+                , 'volume' : cdsp.get_volume()
+                , 'mute' : cdsp.get_mute()
+                , 'name' : os.path.basename( cdsp.get_config_name() )
+                , 'status' : {
+                      'state'           : cdsp.get_state().name
+                    , 'capture_rate'    : cdsp.get_capture_rate()
+                    , 'rate_adjust'     : cdsp.get_rate_adjust()
+                    , 'clipped_samples' : cdsp.get_clipped_samples()
+                    , 'buffer_level'    : cdsp.get_buffer_level()
+                }
+                , 'lscoef' : os.listdir( '/srv/http/data/camilladsp/coeffs' )
+                , 'lsconf' : os.listdir( '/srv/http/data/camilladsp/configs' )
             }
-            value[ 'lscoef' ] = os.listdir( '/srv/http/data/camilladsp/coeffs' )
-            value[ 'lsconf' ] = os.listdir( '/srv/http/data/camilladsp/configs' )
         case 'previous':
             value = cdsp.get_previous_config()
-        case 'read':
-            name = sys.argv[ 2 ]
-            if name[-4:] == '.yml': name = name[0:-4]
-            value = cdsp.read_config_file( pathconfigs + name +'.yml' )
-        case 'status':
-            value = {
-                  'state'           : cdsp.get_state().name
-                , 'capture_rate'    : cdsp.get_capture_rate()
-                , 'rate_adjust'     : cdsp.get_rate_adjust()
-                , 'clipped_samples' : cdsp.get_clipped_samples()
-                , 'buffer_level'    : cdsp.get_buffer_level()
-            }
         case 'version': # camilladsp
             value = {
                   'camilladsp' : '.'.join( cdsp.get_version() )
                 , 'library'    : '.'.join( map( str, cdsp.get_library_version() ) )
-            }
-        case 'volume':
-            value = {
-                  'mute'   : cdsp.get_mute()
-                , 'volume' : cdsp.get_volume()
             }
     
     value = json.dumps( value )
