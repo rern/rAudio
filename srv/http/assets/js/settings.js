@@ -307,7 +307,7 @@ var pagenext   = {
 	, system   : [ 'networks', 'features' ]
 }
 
-document.title = page;
+document.title = page === 'camilla' ? 'camilla dsp' : page;
 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
