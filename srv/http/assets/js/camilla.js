@@ -33,7 +33,7 @@ $( '#divfilters .add' ).on( 'click', function() {
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
-	V.currenttab = id;
+	F.currenttab = id;
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ id ).addClass( 'active' );
 	$( '.tab > .section' ).addClass( 'hide' );
@@ -74,7 +74,7 @@ var kv = {
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
-V = {
+var F  = {
 	  currenttab    : 'devices'
 	, selecttype    : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 	, selectsubtype : {
@@ -151,13 +151,13 @@ var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'Fi
 var opt_type    = '';
 devicetype.forEach( k => opt_type += '<option value="'+ k +'">'+ k +'</option>' );
 var opt_format  = '';
-V.selectformat.forEach( k => opt_format += '<option value="'+ k +'">'+ k +'</option>' );
+F.selectformat.forEach( k => opt_format += '<option value="'+ k +'">'+ k +'</option>' );
 var TC          = { Type: opt_type, Channels: 'number' }
 var TCS         = { ... TC, 'Sample format': opt_format }
 var TCSD        = { ...TCS, Device: 'text' }
 var TWasapi     = { ...TCSD, Exclusive: 'checkbox', Loopback: 'checkbox' }
 var ESR         = { 'Extra samples': 'number', 'Skip bytes': 'number', 'Read bytes': 'number' }
-var type_input  = {
+var input_device  = {
 	  capture : {
 		  Alsa      : TCSD
 		, CoreAudio : { ...TCSD, 'Change format': 'checkbox' }
@@ -180,8 +180,8 @@ var type_input  = {
 
 function htmlDevice( cls, val ) {
 	if ( ! val ) val = 'Alsa';
-	var list = type_input.capture[ val ];
-	var html = '<heading class="subhead"><span class="headtitle">'+ cls[ 0 ].toUpperCase() + cls.slice( 1 ) +' device</span></heading>';
+	var list = input_device.capture[ val ];
+	var html = '';
 	$.each( list, ( label, type ) => {
 		var cls = label.replace( ' ', '_' ).toLowerCase();
 		html += '<div class="col-l single">'+ label +'</div><div class="col-r">';
@@ -208,22 +208,22 @@ function infoFilters( type, subtype ) {
 	}
 	// select
 	var selectlabel = [ 'type' ];
-	var select      = [ V.selecttype ];
+	var select      = [ F.selecttype ];
 	var values      = { type: type }
 	var key_val     = '';
 	if ( subtype ) {
 		selectlabel.push( 'subtype' )
-		select.push( V.selectsubtype[ type ] );
+		select.push( F.selectsubtype[ type ] );
 		values.subtype    = subtype;
-		key_val           = V.input_value[ subtype ];
+		key_val           = F.input_value[ subtype ];
 	}
-	if ( ! key_val ) key_val = V.input_value[ type ];
+	if ( ! key_val ) key_val = F.input_value[ type ];
 	if ( subtype === 'Uniform' ) key_val.amplitude = 1;
 	if ( 'select' in key_val ) {
 		var kv = key_val.select;
 		var k  = Object.keys( kv );
 		selectlabel = [ ...selectlabel, ...k ];
-		var selectsubtype = subtype === 'Raw' ? [ S.lscoef, V.selectformat ] : [ S.lscoef ];
+		var selectsubtype = subtype === 'Raw' ? [ S.lscoef, F.selectformat ] : [ S.lscoef ];
 		select = [ ...select, ...selectsubtype ];
 		values = { ...values, ...kv };
 	}
@@ -285,7 +285,7 @@ function infoFilters( type, subtype ) {
 			var $selecttype = $select.eq( 0 );
 			$selecttype.on( 'change', function() {
 				var type    = $( this ).val();
-				var subtype = type in V.selectsubtype ? V.selectsubtype[ type ][ 0 ] : '';
+				var subtype = type in F.selectsubtype ? F.selectsubtype[ type ][ 0 ] : '';
 				infoFilters( type, subtype );
 			} );
 			if ( $select.length > 1 ) {
@@ -401,7 +401,7 @@ function renderPage() {
 	$( '#divplaybackdevice .type option[value=Stdin]' )
 		.text( 'Stdout' )
 		.prop( 'value', 'Stdout' )
-	$( '#div'+ V.currenttab ).removeClass( 'hide' );
-	$( '#'+ V.currenttab ).addClass( 'active' );
+	$( '#div'+ F.currenttab ).removeClass( 'hide' );
+	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
 }

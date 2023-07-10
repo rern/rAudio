@@ -22,8 +22,11 @@ function htmlInput( $label, $data ) {
 function htmlSectionSub( $title, $data ) {
 	$html = '';
 	foreach( $data as $label => $type ) {
+		$icon = '';
 		if ( substr( $label, 0, 4 ) === 'html' ) {
 			$html.= $type;
+		} else if ( $label === 'icon' ) {
+			$icon = i( $type );
 		} else {
 			$html.= htmlInput( $label, $type );
 		}
@@ -120,8 +123,14 @@ $title_data = [
 		  'Measure interval'    => [ 'rate_measure_interval', 'number' ]
 		, 'Stop on rate change' => [ 'stop_on_rate_change', 'checkbox' ]
 	]
-	, 'Capture device'  => [ 'html' => '<div class="capture"></div>' ]
-	, 'Playback device' => [ 'html' => '<div class="playback"></div>' ]
+	, 'Capture device'  => [
+		  'html' => '<div class="capture"></div>'
+		, 'icon' => 'gear'
+	]
+	, 'Playback device' => [
+		  'html' => '<div class="playback"></div>'
+		, 'icon' => 'gear'
+	]
 ];
 foreach( $title_data as $title => $data ) htmlSectionSub( $title, $data );
 ?>
