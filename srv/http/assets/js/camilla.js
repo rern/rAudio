@@ -49,7 +49,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		, values       : { adjust_period: d.adjust_period, target_level: d.target_level }
 		, checkchanged : d.enable_rate_adjust
 		, cancel       : switchCancel
-		, ok           : switchEnable
+		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust' )
 	} );
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
@@ -78,7 +78,7 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, ok           : switchEnable
+		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust' )
 	} );
 } );
 
@@ -386,9 +386,6 @@ function labelArraySet( array ) {
 	return capitalized
 }
 function renderPage() {
-	var d = S.config.devices;
-	[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( el => S[ el ] = d[ el ] );
-	console.log(S.config.devices)
 	var v = {
 		  mute   : S.mute
 		, volume : S.volume
@@ -412,4 +409,11 @@ function renderPage() {
 	$( '#div'+ F.currenttab ).removeClass( 'hide' );
 	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
+}
+function saveConfig( section, key, title ) {
+	notifyCommon();
+	S.config[ section ][ key ] = true;
+	var values                 = infoVal();
+	$.each( values, ( k, v ) => S.config[ section ][ k ] = v );
+	bash( { cmd: [ 'save' ], json: S.config } );
 }

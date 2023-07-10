@@ -11,10 +11,16 @@ cdsp.connect()
 
 pathconfigs = '/srv/http/data/camilladsp/configs/'
 
+# with open( '/srv/http/data/system/save.json', 'r' ) as f:
+#    config = json.load( f )
+# cdsp.validate_config( config )
+
 cmd = sys.argv[ 1 ]
 
 if len( sys.argv ) > 2: # set: cmd val
     val = sys.argv[ 2 ]
+    with open( '/srv/http/data/shm/xpython', 'w' ) as f:
+        json.dump( sys.argv[ 2 ], f )
     match cmd:
         case 'mute':
             cdsp.set_mute( val == 'true' )
@@ -27,21 +33,24 @@ if len( sys.argv ) > 2: # set: cmd val
         case 'read':
             if val[-4:] == '.yml': val = val[0:-4]
             value = cdsp.read_config_file( pathconfigs + val +'.yml' )
-        case 'save':
+        case 'save': # json file to yml
             import yaml
             try:
-                config = cdsp.validate_config( json.loads( val ) )
-                yml    = yaml.dump( config ).encode( 'utf-8' )
-                file   = cdsp.get_config_name()
+                with open( val, 'r' ) as f:
+                    config = json.load( f )
+                yml  = yaml.dump( config ).encode( 'utf-8' )
+                file = cdsp.get_config_name()
                 with open( file, 'wb' ) as f:
                     f.write( yml )
                 cdsp.reload()
             except Exception as e:
                 print( -1 )
-        case 'validate':
+        case 'validate': # json file
             import yaml
             try:
-                cdsp.validate_config( json.loads( val ) )
+                with open( val, 'r' ) as f:
+                    config = json.load( f )
+                cdsp.validate_config( config )
             except Exception as e:
                 print( -1 )
 else: # get: cmd
@@ -52,7 +61,8 @@ else: # get: cmd
             value = { 'connected': cdsp.is_connected() }
         case 'data':
             value = {
-                  'config' : cdsp.get_config()
+                  'page'   : 'camilla'
+                , 'config' : cdsp.get_config()
                 , 'volume' : cdsp.get_volume()
                 , 'mute' : cdsp.get_mute()
                 , 'name' : os.path.basename( cdsp.get_config_name() )
