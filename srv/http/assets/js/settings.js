@@ -232,9 +232,7 @@ function psRefresh( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( page === 'relays' ) {
-			Rs = JSON.stringify( R );
-		} else if ( page === 'networks' ) {
+		if ( page === 'networks' ) {
 			$( '.back' ).trigger( 'click' );
 		} else {
 			switchSet();
