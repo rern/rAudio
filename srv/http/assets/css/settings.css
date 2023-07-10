@@ -642,9 +642,6 @@ padding: 0 15px 30px 15px;	background: var( --cga );
 .tab .select2-container {
 	margin-bottom: 5px;
 }
-.panel.tab .switchlabel {
-	margin-bottom: 0;
-}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }

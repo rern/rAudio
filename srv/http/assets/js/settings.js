@@ -145,9 +145,15 @@ function switchEnable() {
 }
 function switchIdIconTitle( id ) {
 	SW.id    = id;
-	SW.icon  = id;
-	if ( page === 'player' ) SW.icon =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume'
 	SW.title = $( '#div'+ id +' .name' ).text();
+	if ( page === 'player' ) {
+		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
+	} else if ( page === 'camilla' ) {
+		SW.icon  = 'camilladsp';
+	} else {
+		SW.icon  = id;
+	}
+	console.log(SW.icon)
 }
 function switchSet() {
 	if ( page === 'networks' ) return

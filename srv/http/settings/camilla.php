@@ -1,44 +1,14 @@
 <?php
-function htmlSelect( $class, $options ) {
-	$html = '<select class="'.$class.'">';
-	foreach( $options as $o ) $html.= '<option value="'.$o.'">'.$o.'</option>';
-	$html.= '</select>';
-	return $html;
-}
-function htmlInput( $label, $data ) {
-	$class = $data[ 0 ];
-	$type  = $data[ 1 ];
-	if ( $type[ 0 ] !== '<' ) {
-		$html = '<input class="'.$class.'" type="'.$type.'">';
-		if ( $type === 'checkbox' ) $html.= '<div class="switchlabel"></div>';
-	} else {
-		$html = $type; // select / html
-	}
-	return'
-<div class="col-l single">'.$label.'</div><div class="col-r">'.$html.'</div>
-<div style="clear:both"></div>
-';
-}
-function htmlSectionSub( $title, $data ) {
-	$html = '';
-	foreach( $data as $label => $type ) {
-		$icon = '';
-		if ( substr( $label, 0, 4 ) === 'html' ) {
-			$html.= $type;
-		} else if ( $label === 'icon' ) {
-			$icon = i( $type );
-		} else {
-			$html.= htmlInput( $label, $type );
-		}
-	}
-	echo '
-<div id="div'.lcfirst( str_replace( ' ', '', $title ) ).'" class="section">
-<heading class="subhead"><span class="headtitle">'.$title.$icon.'</span></heading>
-'.$html.'
+function htmlPanel( $title, $content = '' ) {
+	return '
+<div id="div'.$title.'" class="section hide">
+	<heading><span class="headtitle">'.i( 'filters' ).ucFirst( $title ).i( 'plus-circle add' ).'</span></heading>
+	'.$content.'
 </div>
 ';
 }
 ?>
+
 <div id="divcontrols-status" class="panel">
 
 <div id="divcontrols" class="section">
@@ -80,65 +50,50 @@ function htmlSectionSub( $title, $data ) {
 
 <div id="divtabs" class="panel tab">
 
-<div id="divdevices" class="section hide">
-<heading><span class="headtitle"><?=i( 'devices' )?>Devices</span></heading>
-
 <?php
-$samplerate     = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ];
-$resampler_type = [ 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'Synchronous' ];
-
 $title_data = [
-	  'Sampling' => [
-		  'Rate'  => [ 'samplerate', htmlSelect( 'samplerate', $samplerate ) ]
-		, 'html0' => '<div class="divother">'
-		, 'Other' => [ 'other', 'number' ]
-		, 'html1' => '</div>'
-	]
-	, 'Buffers' => [
-		  'Chunk size'  => [ 'chunksize', 'number' ]
-		, 'Queue limit' => [ 'queuelimit', 'number' ]
-	]
-	, 'Silence' => [
-		  'Threshold' => [ 'silence_threshold', 'number' ]
-		, 'Timeout'   => [ 'silence_timeout', 'number' ]
-	]
-	, 'Rate adjust' => [
-		  'Rate adjust'   => [ 'enable_rate_adjust', 'checkbox' ]
-		, 'html0'         => '<div class="divtoggle">'
-		, 'Adjust period' => [ 'adjust_period', 'number' ]
-		, 'Target level'  => [ 'target_level', 'number' ]
-		, 'html1'         => '</div>'
-	]
-	, 'Resampling' => [
-		  'Resampling'  => [ 'enable_resampling', 'checkbox' ]
-		, 'html01'      => '<div class="divtoggle">'
-		, 'Type'        => [ 'resampler_type', htmlSelect( 'resampler_type',     $resampler_type ) ]
-		, 'Sample rate' => [ 'capture_samplerate', htmlSelect( 'capture_samplerate', $samplerate ) ]
-		, 'html00'      => '<div class="divother">'
-		, 'Other'       => [ 'other', 'number' ]
-		, 'html11'      => '</div>'
-		, 'html12'      => '</div>'
-	]
-	, 'Capture rate monitoring' => [
-		  'Measure interval'    => [ 'rate_measure_interval', 'number' ]
-		, 'Stop on rate change' => [ 'stop_on_rate_change', 'checkbox' ]
-	]
-	, 'Capture device'  => [
-		  'html' => '<div class="capture"></div>'
-		, 'icon' => 'gear'
-	]
-	, 'Playback device' => [
-		  'html' => '<div class="playback"></div>'
-		, 'icon' => 'gear'
+	  'Capture'  => ''
+	, 'Playback' => ''
+	, 'Sampling' => ''
+	, 'Options'  => [
+		  'Rate Adjust'         => 'enable_rate_adjust'
+		, 'Resampling'          => 'enable_resampling'
+		, 'Stop on Rate Change' => 'stop_on_rate_change'
 	]
 ];
-foreach( $title_data as $title => $data ) htmlSectionSub( $title, $data );
-?>
-
+$htmldevices = '';
+foreach( $title_data as $title => $data ) {
+	$html = '';
+	if ( $title === 'Options' ) {
+		$settingtitle = '';
+		foreach( $data as $label => $id ) {
+			if ( $id === 'stop_on_rate_change' ) {
+				$common = '';
+				$setting = '';
+			} else {
+				$common = ' common';
+				$setting = '<i id="setting-'.$id.'" class="i-gear setting"></i>';
+			}
+			$input = '<input id="'.$id.'" type="checkbox" class="switch'.$common.'">'
+					.'<div class="switchlabel"></div>'.$setting;
+			$html.=  '<div id="div'.$id.'">'
+					.'<div class="col-l single name">'.$label.'</div><div class="col-r">'.$input
+					.'</div><div style="clear:both"></div>'
+					.'</div>';
+		}
+	} else {
+		$settingtitle = i( 'gear' );
+	}
+	$htmldevices.= '
+<div id="div'.lcFirst( str_replace( ' ', '', $title ) ).'" class="section">
+<heading class="subhead"><span class="headtitle">'.$title.$settingtitle.'</span></heading>
+<div class="content">'.$html.'</div>
 </div>
-
-<div id="divfilters" class="section hide">
-<heading><span class="headtitle"><?=i( 'filters' )?>Filters<?=i( 'plus-circle add' )?></span></heading>
-
+';
+}
+$html = htmlPanel( 'devices', $htmldevices );
+foreach( [ 'filters', 'mixers', 'pipeline' ] as $tab ) $html.= htmlPanel( $tab );
+echo $html;
+?>
 
 </div>

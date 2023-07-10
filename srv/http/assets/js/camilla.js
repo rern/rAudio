@@ -39,23 +39,53 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	$( '.tab > .section' ).addClass( 'hide' );
 	$( '#div'+ id ).removeClass( 'hide' );
 } );
-$( '.samplerate, .capture_samplerate' ).on( 'change', function() {
-	var $this  = $( this );
-	$this.parent().next().next().toggleClass( 'hide', $this.val() !== 'Other' )
+$( '#setting-enable_rate_adjust' ).on( 'click', function() {
+	var d = S.config.devices;
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, numberlabel  : [ 'Adjust period', 'Target level' ]
+		, boxwidth     : 100
+		, values       : { adjust_period: d.adjust_period, target_level: d.target_level }
+		, checkchanged : d.enable_rate_adjust
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
 } );
-$( '.enable_rate_adjust, .enable_resampling' ).on( 'change', function() {
-	var $this = $( this );
-	$( this ).closest( '.section' ).find( '.divtoggle' ).toggleClass( 'hide', ! $this.prop( 'checked' ) )
-} );
-$( '.capture, .playback' ).on( 'change', '.type', function() {
-	var $this = $( this );
-	var cls   = $this.closest( '.section' ).prop( 'id' ).slice( 3, -6 );
-	htmlDevice( cls, $this.val() );
+$( '#setting-enable_resampling' ).on( 'click', function() {
+	var d                  = S.config.devices;
+	var capture_samplerate = d.capture_samplerate;
+	if ( ! samplerate.includes( capture_samplerate ) ) capture_samplerate = 'Other';
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, selectlabel  : [ 'Resampler type', 'Capture samplerate' ]
+		, select       : [ sampletype, [ ...samplerate, 'Other' ] ]
+		, numberlabel  : 'Other'
+		, boxwidth     : 160
+		, order        : [ 'select', 'number' ]
+		, values       : { resampler_type: d.resampler_type, capture_samplerate: capture_samplerate, other: capture_samplerate }
+		, checkchanged : d.enable_resampling
+		, beforeshow   : () => {
+			var $trother = $( '#infoContent tr' ).last();
+			$trother.toggleClass( 'hide', capture_samplerate !== 'Other' );
+			$( '#infoContent select' ).last().on( 'change', function() {
+				var v = $( this ).val();
+				var other = v === 'Other';
+				$trother.toggleClass( 'hide', ! other );
+				if ( ! other ) $trother.find( 'input' ).val( v );
+
+			} );
+		}
+		, cancel       : switchCancel
+		, ok           : switchEnable
+	} );
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var kv = {
+var SW  = { icon: 'camilladsp' }
+var kv  = {
 	  pass    : {
 		number: { freq: 1000, q: 0.5 }
 	  }
@@ -74,7 +104,7 @@ var kv = {
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
-var F  = {
+var F   = {
 	  currenttab    : 'devices'
 	, selecttype    : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 	, selectsubtype : {
@@ -148,6 +178,7 @@ var F  = {
 }
 var samplerate  = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
 var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
+var sampletype  = [ 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'Synchronous' ];
 var opt_type    = '';
 devicetype.forEach( k => opt_type += '<option value="'+ k +'">'+ k +'</option>' );
 var opt_format  = '';
@@ -177,26 +208,45 @@ var input_device  = {
 		, File      : { ...TCS, Filename: 'text' }
 	}
 }
-
-function htmlDevice( cls, val ) {
-	if ( ! val ) val = 'Alsa';
-	var list = input_device.capture[ val ];
-	var html = '';
-	$.each( list, ( label, type ) => {
-		var cls = label.replace( ' ', '_' ).toLowerCase();
-		html += '<div class="col-l single">'+ label +'</div><div class="col-r">';
-		if ( type[ 0 ] === '<' ) {
-			html += '<select class="'+ cls +'">'+ type +'</select>';
-		} else {
-			html += '<input class="'+ cls +'" type="'+ type +'">';
-			if ( type === 'checkbox' ) html += '<div class="switchlabel"></div>';
-		}
-		html += '</div><div style="clear:both"></div>';
-	} );
-	$( '.'+ cls )
-		.html( html )
-		.find( 'select' ).select2();
+function key2label( key ) {
+	if ( key === 'ms' ) return 'ms'
+	
+	var str = key[ 0 ].toUpperCase();
+	if ( key.length === 1 ) return str
+	
+	key = key
+			.replace( 'bytes_lines', 'bytes/lines' )
+			.replace( 'chunksize', 'chunk size' )
+			.replace( 'freq_act', 'freq actual' )
+			.replace( 'queuelimit', 'queue limit' )
+			.replace( 'samplerate', 'sample rate' )
+			.replace( /_/g, ' ' )
+			.replace( 'freq', 'frequency' )
+			.slice( 1 )
+	return str + key
 }
+function htmlList( section ) {
+	if ( section === 'sampling' ) {
+		var devices = S.config.devices;
+		var kv = {}
+		var keys = [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ];
+		if ( devices.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( devices.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
+		keys.forEach( el => kv[ el ] = devices[ el ] );
+	} else {
+		var kv =  S.config.devices[ section ];
+	}
+	var labels = '';
+	var values = '';
+	$.each( kv, ( k, v ) => {
+		labels += key2label( k ) +'<br>'
+		values += v +'<br>'
+	} );
+	$( '#div'+ section +' .content' ).html(
+		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
+	);
+}
+
 function infoFilters( type, subtype ) {
 	if ( typeof type === 'object' ) { // saved filters: type = values
 		var type    = type.type;
@@ -260,7 +310,7 @@ function infoFilters( type, subtype ) {
 		values   = { ...values, ...kv };
 	}
 	info( {
-		  icon         : 'camilladsp'
+		  icon         : 'SW.icon'
 		, title        : 'Filters'
 		, selectlabel  : selectlabel
 		, select       : select
@@ -316,39 +366,28 @@ function infoFilters( type, subtype ) {
 			var config = jsonClone( S.config );
 			var name   = val.name;
 			config.filters[ name ] = { type: val.type, parameters : param }
-			notify( 'camilladsp', 'Filter: '+ name , 'Save ...' );
+			notify( 'SW.icon', 'Filter: '+ name , 'Save ...' );
 			bash( [ 'validate', JSON.stringify( config ) ], std => {
 				std != -1 ? S.config = config : infoSaveFailed( 'Filters', name );
-				banner( 'camilladsp', 'Filter: '+ name, 'Saved' );
+				banner( 'SW.icon', 'Filter: '+ name, 'Saved' );
 			} );
 		}
 	} );
 }
 function infoSaveFailed( title, name ) {
 	info( {
-		  icon    : 'camilladsp'
+		  icon    : 'SW.icon'
 		, title   : title
 		, message : iconwarning +'Save <wh>'+ name +'</wh> failed.'
 	} );
 }
 function labelArraySet( array ) {
-	var capitalized = array.map( function( el ) {
-		if ( el === 'ms' ) return 'ms'
-		
-		var str = el[ 0 ].toUpperCase();
-		if ( el.length === 1 ) return str
-		
-		el = el
-				.replace( 'freq_act', 'freq_actual' )
-				.replace( 'freq', 'frequency' )
-				.replace( 'bytes_lines', 'bytes/lines' )
-				.replace( /_/g, ' ' )
-				.slice( 1 )
-		return str + el
-	} );
+	var capitalized = array.map( el => key2label( el ) );
 	return capitalized
 }
 function renderPage() {
+	var d = S.config.devices;
+	[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( el => S[ el ] = d[ el ] );
 	console.log(S.config.devices)
 	var v = {
 		  mute   : S.mute
@@ -368,39 +407,8 @@ function renderPage() {
 				 S.status.clipped_samples +'<br>'+
 				 S.status.buffer_level +'<br>'
 	$( '#statusvalue' ).html( status );
-	htmlDevice( 'capture' );
-	htmlDevice( 'playback' );
+	[ 'sampling', 'capture', 'playback' ].forEach( el => htmlList( el ) );
 	var D = S.config.devices;
-	$.each( D, ( k, v ) => {
-		if ( [ 'capture', 'playback' ].includes( k ) ) {
-			var $div = k === 'capture' ? $( '#divcapturedevice' ) : $( '#divplaybackdevice' );
-			$.each( v, ( key, val ) => $div.find( '.'+ key ).val( val ) );
-			return
-		}
-		
-		if ( [ 'samplerate', 'capture_samplerate' ].includes( k ) ) {
-			var $div = k === 'samplerate' ? $( '#divsampling' ) : $( '#divresampling' );
-			var $divinput = $div.find( 'input' );
-			var $divother = $div.find( '.divother' );
-			if ( samplerate.includes( v ) ) {
-				$divother.addClass( 'hide' );
-				$divinput.val( 0 );
-			} else {
-				$divother.removeClass( 'hide' );
-				$divinput.val( v );
-				v = 'Other';
-			}
-		}
-		var $el = $( '.'+ k );
-		$el.is( ':checkbox' ) ? $el.prop( 'checked', v ) : $el.val( v );
-	} );
-	$( '#divrateadjust .divtoggle' ).toggleClass( 'hide', ! D.enable_rate_adjust );
-	$( '#divresampling .divtoggle' ).toggleClass( 'hide', ! D.enable_resampling );
-//	$( '#divcapturedevice, #divplaybackdevice' ).find( '.col-l:eq( 0 ), .col-r:eq( 0 )' ).addClass( 'hide' );
-	$( '#divcapturedevice .device' ).addClass( 'disabled' );
-	$( '#divplaybackdevice .type option[value=Stdin]' )
-		.text( 'Stdout' )
-		.prop( 'value', 'Stdout' )
 	$( '#div'+ F.currenttab ).removeClass( 'hide' );
 	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
