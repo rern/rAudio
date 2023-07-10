@@ -150,7 +150,7 @@ function switchIdIconTitle( id ) {
 	SW.title = $( '#div'+ id +' .name' ).text();
 }
 function switchSet() {
-	if ( page === 'networks' || page === 'relays' ) return
+	if ( page === 'networks' ) return
 	
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
