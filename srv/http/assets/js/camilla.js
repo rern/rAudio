@@ -49,7 +49,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		, values       : { adjust_period: d.adjust_period, target_level: d.target_level }
 		, checkchanged : d.enable_rate_adjust
 		, cancel       : switchCancel
-		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust' )
+		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust', infoVal() )
 	} );
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
@@ -78,7 +78,12 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 			} );
 		}
 		, cancel       : switchCancel
-		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust' )
+		, ok           : () => {
+			var v = infoVal();
+			if ( v.capture_samplerate === 'Other' ) v.capture_samplerate = v.other;
+			delete v.other;
+			saveConfig( 'devices', 'enable_resampling', v );
+		}
 	} );
 } );
 
@@ -133,7 +138,7 @@ var F   = {
 		, Allpass           : kv.notch
 		, AllpassFO         : kv.passFO
 		, LinkwitzTransform : {
-			number: { q_actual: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+			number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
 		}
 		, Free              : {
 			number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
@@ -178,7 +183,23 @@ var F   = {
 }
 var samplerate  = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
 var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
-var sampletype  = [ 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'Synchronous' ];
+var sampletype  = [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ];
+
+var FreeAsync   = {
+	  input         : { sinc_len: 'number', oversampling_ratio: 'number', interpolation: 'text', window: 'text', f_cutoff: 'number' }
+	, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
+	, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
+}
+/*
+  resample_type:
+    FreeAsync:
+	sinc_len: 128
+	  oversampling_ratio: 1024
+	  interpolation: Linear
+	  window: Blackman2
+	  f_cutoff0.925
+*/
+
 var opt_type    = '';
 devicetype.forEach( k => opt_type += '<option value="'+ k +'">'+ k +'</option>' );
 var opt_format  = '';
@@ -217,7 +238,7 @@ function key2label( key ) {
 	key = key
 			.replace( 'bytes_lines', 'bytes/lines' )
 			.replace( 'chunksize', 'chunk size' )
-			.replace( 'freq_act', 'freq actual' )
+			.replace( '_act', ' actual' )
 			.replace( 'queuelimit', 'queue limit' )
 			.replace( 'samplerate', 'sample rate' )
 			.replace( /_/g, ' ' )
@@ -410,10 +431,9 @@ function renderPage() {
 	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
 }
-function saveConfig( section, key, title ) {
+function saveConfig( section, key, values ) {
 	notifyCommon();
 	S.config[ section ][ key ] = true;
-	var values                 = infoVal();
 	$.each( values, ( k, v ) => S.config[ section ][ k ] = v );
 	bash( { cmd: [ 'save' ], json: S.config } );
 }
