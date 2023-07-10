@@ -893,6 +893,9 @@ function infoVal( array ) {
 			case 'text':
 				val = $this.val().trim();
 				break;
+			case 'number':
+				val = +$this.val();
+				break;
 			default:
 				val = $this.val();
 		}
