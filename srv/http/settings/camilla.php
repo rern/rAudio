@@ -1,8 +1,8 @@
 <?php
-function htmlPanel( $title, $content = '' ) {
+function htmlPanel( $title, $content = '', $noadd = '' ) {
 	return '
 <div id="div'.$title.'" class="section hide">
-	<heading><span class="headtitle">'.i( 'filters' ).ucFirst( $title ).i( 'plus-circle add' ).'</span></heading>
+	<heading class="head"><span class="headtitle">'.i( 'filters' ).ucFirst( $title ).( $noadd ? '' : i( 'plus-circle add' ) ).'</span></heading>
 	'.$content.'
 </div>
 ';
@@ -63,7 +63,7 @@ $title_data = [
 ];
 $htmldevices = '';
 foreach( $title_data as $title => $data ) {
-	$html = '';
+	$html = '<div class="statuslist"></div>';
 	if ( $title === 'Options' ) {
 		$settingtitle = '';
 		foreach( $data as $label => $id ) {
@@ -91,7 +91,7 @@ foreach( $title_data as $title => $data ) {
 </div>
 ';
 }
-$html = htmlPanel( 'devices', $htmldevices );
+$html = htmlPanel( 'devices', $htmldevices, 'noadd' );
 foreach( [ 'filters', 'mixers', 'pipeline' ] as $tab ) $html.= htmlPanel( $tab );
 echo $html;
 ?>

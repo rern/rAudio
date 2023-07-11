@@ -6,22 +6,21 @@ args2var "$1"
 
 pushData() {
 	killall -s SIGHUP camilladsp
-	sleep 4
-	data=$( $dirsettings/camilla.py data ) 
-	pushstream refresh "$data"
+	data=$( $dirsettings/camilla.py data )
+	pushstream refresh $( $dirsettings/camilla.py data )
+	sleep 5
+	pushstream refresh $( $dirsettings/camilla.py data )
 }
 
 case $CMD in
 
-save )
-	filejson=$dirsystem/$CMD.json
-	$dirsettings/camilla.py save $filejson
-	rm $filejson
+save | validate )
+	$dirsettings/camilla.py $CMD "$JSON"
 	pushData
 	;;
-stop_on_rate_change )
+enable_rate_adjust | enable_resampling | stop_on_rate_change )
 	file=$( $dirsettings/camilla.py configname | cut -d'"' -f4 )
-	sed -E -i "s/(stop_on_rate_change: ).*/\1$TF/" "$dircamilladsp/configs/$file"
+	sed -E -i "s/($CMD: ).*/\1$TF/" "$dircamilladsp/configs/$file"
 	pushData
 	;;
 setformat )

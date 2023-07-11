@@ -193,11 +193,11 @@ var FreeAsync   = {
 /*
   resample_type:
     FreeAsync:
-	sinc_len: 128
+	  sinc_len: 128
 	  oversampling_ratio: 1024
 	  interpolation: Linear
 	  window: Blackman2
-	  f_cutoff0.925
+	  f_cutoff: 0.925
 */
 
 var opt_type    = '';
@@ -236,9 +236,11 @@ function key2label( key ) {
 	if ( key.length === 1 ) return str
 	
 	key = key
+			.replace( '_act', ' actual' )
+			.replace( '_len', ' length' )
 			.replace( 'bytes_lines', 'bytes/lines' )
 			.replace( 'chunksize', 'chunk size' )
-			.replace( '_act', ' actual' )
+			.replace( 'f_', 'freq ' )
 			.replace( 'queuelimit', 'queue limit' )
 			.replace( 'samplerate', 'sample rate' )
 			.replace( /_/g, ' ' )
@@ -246,28 +248,6 @@ function key2label( key ) {
 			.slice( 1 )
 	return str + key
 }
-function htmlList( section ) {
-	if ( section === 'sampling' ) {
-		var devices = S.config.devices;
-		var kv = {}
-		var keys = [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ];
-		if ( devices.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-		if ( devices.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-		keys.forEach( el => kv[ el ] = devices[ el ] );
-	} else {
-		var kv =  S.config.devices[ section ];
-	}
-	var labels = '';
-	var values = '';
-	$.each( kv, ( k, v ) => {
-		labels += key2label( k ) +'<br>'
-		values += v +'<br>'
-	} );
-	$( '#div'+ section +' .content' ).html(
-		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
-	);
-}
-
 function infoFilters( type, subtype ) {
 	if ( typeof type === 'object' ) { // saved filters: type = values
 		var type    = type.type;
@@ -425,15 +405,52 @@ function renderPage() {
 				 S.status.clipped_samples +'<br>'+
 				 S.status.buffer_level +'<br>'
 	$( '#statusvalue' ).html( status );
-	[ 'sampling', 'capture', 'playback' ].forEach( el => htmlList( el ) );
-	var D = S.config.devices;
+	D = S.config.devices;
+	statusList( 'capture' );
+	statusList( 'playback' );
+	statusList( 'sampling', [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ] );
+	var keys = [];
+	if ( D.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+	if ( D.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
+	keys.length ? statusList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
 	$( '#div'+ F.currenttab ).removeClass( 'hide' );
 	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
+}
+function statusList( section, keys ) {
+	if ( [ 'capture', 'playback' ].includes( section ) ) {
+		var kv = D[ section ]
+		keys   = Object.keys( kv );
+	} else {
+		var kv =  D;
+	}
+	var labels = '';
+	var values = '';
+	keys.forEach( k => {
+		labels += key2label( k ) +'<br>';
+		values += kv[ k ] +'<br>';
+	} );
+	if ( D.resampler_type === 'FreeAsync' ) {
+		[ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ].forEach( k => {
+			labels += key2label( k ) +'<br>';
+			values += D.resampler_type.FreeAsync[ k ] +'<br>';
+		} );
+	}
+	$( '#div'+ section +' .statuslist' ).html(
+		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
+	);
 }
 function saveConfig( section, key, values ) {
 	notifyCommon();
 	S.config[ section ][ key ] = true;
 	$.each( values, ( k, v ) => S.config[ section ][ k ] = v );
-	bash( { cmd: [ 'save' ], json: S.config } );
+	bash( [ 'save', JSON.stringify( S.config ), 'CMD JSON' ], error => {
+		if ( error ) {
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : 'Error: '+ error
+			} );
+		}
+	} );
 }

@@ -33,26 +33,25 @@ if len( sys.argv ) > 2: # set: cmd val
         case 'read':
             if val[-4:] == '.yml': val = val[0:-4]
             value = cdsp.read_config_file( pathconfigs + val +'.yml' )
-        case 'save': # json file to yml
+        case 'save':
             import yaml
             try:
-                with open( val, 'r' ) as f:
-                    config = json.load( f )
+                config = json.loads( val )
                 yml  = yaml.dump( config ).encode( 'utf-8' )
                 file = cdsp.get_config_name()
                 with open( file, 'wb' ) as f:
                     f.write( yml )
                 cdsp.reload()
             except Exception as e:
-                print( -1 )
-        case 'validate': # json file
+                print( e )
+        case 'validate':
             import yaml
             try:
-                with open( val, 'r' ) as f:
-                    config = json.load( f )
+                config = json.loads( val )
                 cdsp.validate_config( config )
+                print( 'Valid' )
             except Exception as e:
-                print( -1 )
+                print( e )
 else: # get: cmd
     match cmd:
         case 'configname':
