@@ -33,12 +33,12 @@ function htmlPanel( $title, $content = '', $noadd = '' ) {
 <div id="divstatus" class="section">
 <heading><span class="headtitle">Status</span><?=i( 'file log' ).i( 'undo' ).i( 'redo' )?></heading>
 <div class="col-l text gr">
-		Configuration
-	<br>State
+		State
 	<br>Sample rate
 	<br>Rate adjust
 	<br>Clipped samples
 	<br>Buffer level
+	<br>Configuration
 </div>
 <div class="col-r text">
 	<div id="statusvalue"></div>

@@ -8,8 +8,8 @@ pushData() {
 	killall -s SIGHUP camilladsp
 	data=$( $dirsettings/camilla.py data )
 	pushstream refresh $( $dirsettings/camilla.py data )
-	sleep 5
-	pushstream refresh $( $dirsettings/camilla.py data )
+	sleep 5 # wait for starting ready
+	pushstream refresh $( $dirsettings/camilla.py status )
 }
 
 case $CMD in

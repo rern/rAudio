@@ -11,10 +11,14 @@ cdsp.connect()
 
 pathconfigs = '/srv/http/data/camilladsp/configs/'
 
-# with open( '/srv/http/data/system/save.json', 'r' ) as f:
-#    config = json.load( f )
-# cdsp.validate_config( config )
-
+def status():
+    data = cdsp.get_state().name +'<br>'\
+         + str( cdsp.get_capture_rate() ) +'<br>'\
+         + str( cdsp.get_rate_adjust() ) +'<br>'\
+         + str( cdsp.get_clipped_samples() ) +'<br>'\
+         + str( cdsp.get_buffer_level() ) +'<br>'
+    return data
+    
 cmd = sys.argv[ 1 ]
 
 if len( sys.argv ) > 2: # set: cmd val
@@ -63,20 +67,16 @@ else: # get: cmd
                   'page'   : 'camilla'
                 , 'config' : cdsp.get_config()
                 , 'volume' : cdsp.get_volume()
-                , 'mute' : cdsp.get_mute()
-                , 'name' : os.path.basename( cdsp.get_config_name() )
-                , 'status' : {
-                      'state'           : cdsp.get_state().name
-                    , 'capture_rate'    : cdsp.get_capture_rate()
-                    , 'rate_adjust'     : cdsp.get_rate_adjust()
-                    , 'clipped_samples' : cdsp.get_clipped_samples()
-                    , 'buffer_level'    : cdsp.get_buffer_level()
-                }
+                , 'mute'   : cdsp.get_mute()
+                , 'name'   : os.path.basename( cdsp.get_config_name() )
+                , 'status' : status()
                 , 'lscoef' : os.listdir( '/srv/http/data/camilladsp/coeffs' )
                 , 'lsconf' : os.listdir( '/srv/http/data/camilladsp/configs' )
             }
         case 'previous':
             value = cdsp.get_previous_config()
+        case 'status':
+            value = { 'page': 'camilla', 'status': status() }
         case 'version': # camilladsp
             value = {
                   'camilladsp' : '.'.join( cdsp.get_version() )

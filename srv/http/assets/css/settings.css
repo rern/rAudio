@@ -192,6 +192,9 @@ heading.subhead {
 	color: var( --cw );
 	border-bottom-color: var( --cga );
 }
+heading.subhead i {
+	vertical-align: -1px;
+}
 heading.status .headtitle::after,
 .col-l.status gr::after {
 	display: inline-block;
@@ -605,16 +608,16 @@ input.disabled + .switchlabel:after {
 .panel {
 	float: left;
 }
-.panel.tab {
-	width: 328px;
-	padding: 0 0 0 15px;
-}
 #divcontrols-status {
 	position: sticky;
 	top: 30px;
 	width: 330px;
 	height: 100%;
-padding: 0 15px 30px 15px;	background: var( --cga );
+	padding: 0 15px 30px 15px;
+	background: var( --cga );
+}
+.tab {
+	width: 328px;
 }
 .tab .col-l {
 	width: 170px;
@@ -634,6 +637,38 @@ padding: 0 15px 30px 15px;	background: var( --cga );
 #controls .value {
 	font-family: Inconsolata;
 }
+#divstatus .col-l {
+	width: 155px;
+}
+#divstatus c {
+	display: block;
+	width: fit-content;
+	max-width: 145px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.tab .section {
+	position: relative;
+	padding: 0 10px;
+	z-index: 0;
+}
+.container .head {
+	position: sticky;
+	top: 55px;
+	margin-bottom: 0;
+	padding-right: 0;
+	background: #000;
+	box-shadow: var( --shadow-bar );
+	z-index: 10;
+}
+.container .head .headtitle {
+	display: block;
+	margin-top: -20px;
+	padding-top: 20px;
+	background: var( --cgd );
+	border-bottom: 1px solid var( --cg );
+}
 .tab input[type=number],
 .tab input[type=text] {
 	margin-bottom: 5px;
@@ -641,6 +676,9 @@ padding: 0 15px 30px 15px;	background: var( --cga );
 }
 .tab .select2-container {
 	margin-bottom: 5px;
+}
+#divoptions .statuslist {
+	margin-bottom: 10px;
 }
 
 @media (max-height: 570px) {

@@ -40,51 +40,24 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	$( '#div'+ id ).removeClass( 'hide' );
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
-	var d = S.config.devices;
 	info( {
 		  icon         : SW.icon
 		, title        : SW.title
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
 		, boxwidth     : 100
-		, values       : { adjust_period: d.adjust_period, target_level: d.target_level }
-		, checkchanged : d.enable_rate_adjust
+		, values       : { adjust_period: D.adjust_period, target_level: D.target_level }
+		, checkchanged : D.enable_rate_adjust
 		, cancel       : switchCancel
-		, ok           : () => saveConfig( 'devices', 'enable_rate_adjust', infoVal() )
+		, ok           : () => {
+			var val =  infoVal();
+			[ 'adjust_period', 'target_level' ].forEach( k => D[ k ] = val[ k ] );
+			D.enable_rate_adjust = true;
+			saveConfig();
+		}
 	} );
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
-	var d                  = S.config.devices;
-	var capture_samplerate = d.capture_samplerate;
-	if ( ! samplerate.includes( capture_samplerate ) ) capture_samplerate = 'Other';
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, selectlabel  : [ 'Resampler type', 'Capture samplerate' ]
-		, select       : [ sampletype, [ ...samplerate, 'Other' ] ]
-		, numberlabel  : 'Other'
-		, boxwidth     : 160
-		, order        : [ 'select', 'number' ]
-		, values       : { resampler_type: d.resampler_type, capture_samplerate: capture_samplerate, other: capture_samplerate }
-		, checkchanged : d.enable_resampling
-		, beforeshow   : () => {
-			var $trother = $( '#infoContent tr' ).last();
-			$trother.toggleClass( 'hide', capture_samplerate !== 'Other' );
-			$( '#infoContent select' ).last().on( 'change', function() {
-				var v = $( this ).val();
-				var other = v === 'Other';
-				$trother.toggleClass( 'hide', ! other );
-				if ( ! other ) $trother.find( 'input' ).val( v );
-
-			} );
-		}
-		, cancel       : switchCancel
-		, ok           : () => {
-			var v = infoVal();
-			if ( v.capture_samplerate === 'Other' ) v.capture_samplerate = v.other;
-			delete v.other;
-			saveConfig( 'devices', 'enable_resampling', v );
-		}
-	} );
+	infoResampling( D.resampler_type === 'FreeAsync' );
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -186,7 +159,7 @@ var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'Fi
 var sampletype  = [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ];
 
 var FreeAsync   = {
-	  input         : { sinc_len: 'number', oversampling_ratio: 'number', interpolation: 'text', window: 'text', f_cutoff: 'number' }
+	  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 	, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
 	, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 }
@@ -364,14 +337,80 @@ function infoFilters( type, subtype ) {
 			$.each( val, ( k, v ) => {
 				if ( ! [ 'radio', 'name', 'type', 'subtype' ].includes( k ) ) param[ k ] = v;
 			} );
-			var config = jsonClone( S.config );
-			var name   = val.name;
-			config.filters[ name ] = { type: val.type, parameters : param }
-			notify( 'SW.icon', 'Filter: '+ name , 'Save ...' );
-			bash( [ 'validate', JSON.stringify( config ) ], std => {
-				std != -1 ? S.config = config : infoSaveFailed( 'Filters', name );
-				banner( 'SW.icon', 'Filter: '+ name, 'Saved' );
+			S.config.filters[ val.name ] = { type: val.type, parameters : param }
+			saveConfig();
+		}
+	} );
+}
+function infoResampling( freeasync ) {
+	var capture_samplerate = D.capture_samplerate;
+	if ( ! samplerate.includes( capture_samplerate ) ) capture_samplerate = 'Other';
+	var selectlabel        = [ 'Resampler type', 'Capture samplerate' ];
+	var select             = [ sampletype, [ ...samplerate, 'Other' ] ];
+	var numberlabel        = [ 'Other' ];
+	var values             = {
+		  resampler_type     : D.resampler_type
+		, capture_samplerate : capture_samplerate
+		, other              : capture_samplerate
+	}
+	if ( freeasync ) {
+		selectlabel.push( 'interpolation', 'window' );
+		select.push( FreeAsync.interpolation, FreeAsync.window );
+		numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
+		var F  = D.resampler_type.FreeAsync || {};
+		values = {
+			  resampler_type     : 'FreeAsync'
+			, capture_samplerate : capture_samplerate
+			, interpolation      : F.interpolation      || 'Linear'
+			, window             : F.window             || 'Blackman2'
+			, other              : capture_samplerate
+			, sinc_len           : F.sinc_len           || 128
+			, oversampling_ratio : F.oversampling_ratio || 1024
+			, f_cutoff           : F.f_cutoff           || 0.925
+		}
+	}
+	info( {
+		  icon         : SW.icon
+		, title        : SW.title
+		, selectlabel  : selectlabel
+		, select       : select
+		, numberlabel  : numberlabel
+		, boxwidth     : 160
+		, order        : [ 'select', 'number' ]
+		, values       : values
+		, checkchanged : D.enable_resampling
+		, beforeshow   : () => {
+			var $trnumber = $( '.trnumber' );
+			var $trother = $trnumber.eq( 0 );
+			var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
+			indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
+			$trother.toggleClass( 'hide', capture_samplerate !== 'Other' );
+			$( '#infoContent select' ).eq( 0 ).on( 'change', function() {
+				if ( $( this ).val() === 'FreeAsync' ) {
+					infoResampling( 'freeasync' );
+				} else if ( $trnumber.length > 1 ) {
+					infoResampling();
+				}
 			} );
+			$( '#infoContent select' ).eq( 1 ).on( 'change', function() {
+				var rate  = $( this ).val();
+				var other = rate === 'Other';
+				$trother.toggleClass( 'hide', ! other );
+				if ( ! other ) $trother.find( 'input' ).val( rate );
+			} );
+		}
+		, cancel       : switchCancel
+		, ok           : () => {
+			var val = infoVal();
+			if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+			[ 'resampler_type', 'capture_samplerate' ].forEach( k => D[ k ] = val[ k ] );
+			if ( freeasync ) {
+				var v = {}
+				FreeAsync.keys.forEach( k => v[ k ] = val[ k ] );
+				D.resampler_type = { FreeAsync: v }
+			}
+			D.enable_resampling = true;
+			saveConfig();
 		}
 	} );
 }
@@ -387,25 +426,17 @@ function labelArraySet( array ) {
 	return capitalized
 }
 function renderPage() {
-	var v = {
-		  mute   : S.mute
-		, volume : S.volume
-		, bass   : S.config.filters.Bass.parameters.gain
-		, treble : S.config.filters.Treble.parameters.gain
-	};
+	D        = S.config.devices;
+	S.bass   = S.config.filters.Bass.parameters.gain;
+	S.treble = S.config.filters.Treble.parameters.gain;
 	[ 'volume', 'bass', 'treble' ].forEach( el => {
-		var val = v[ el ];
+		var val = S[ el ];
 		$( '#'+ el +' input' ).val( val );
 		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
 	} );
-	var status = '<c>'+ S.name +'</c><br>'+
-				 S.status.state +'<br>'+
-				 S.status.capture_rate +'<br>'+
-				 S.status.rate_adjust +'<br>'+
-				 S.status.clipped_samples +'<br>'+
-				 S.status.buffer_level +'<br>'
+	var status =  S.status +'<c>'+ S.name +'</c>'
+				
 	$( '#statusvalue' ).html( status );
-	D = S.config.devices;
 	statusList( 'capture' );
 	statusList( 'playback' );
 	statusList( 'sampling', [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ] );
@@ -416,6 +447,18 @@ function renderPage() {
 	$( '#div'+ F.currenttab ).removeClass( 'hide' );
 	$( '#'+ F.currenttab ).addClass( 'active' );
 	showContent();
+}
+function saveConfig() {
+	notifyCommon();
+	bash( [ 'save', JSON.stringify( S.config ), 'CMD JSON' ], error => {
+		if ( error ) {
+			info( {
+				  icon    : SW.icon
+				, title   : SW.title
+				, message : 'Error: '+ error
+			} );
+		}
+	} );
 }
 function statusList( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
@@ -439,18 +482,4 @@ function statusList( section, keys ) {
 	$( '#div'+ section +' .statuslist' ).html(
 		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
 	);
-}
-function saveConfig( section, key, values ) {
-	notifyCommon();
-	S.config[ section ][ key ] = true;
-	$.each( values, ( k, v ) => S.config[ section ][ k ] = v );
-	bash( [ 'save', JSON.stringify( S.config ), 'CMD JSON' ], error => {
-		if ( error ) {
-			info( {
-				  icon    : SW.icon
-				, title   : SW.title
-				, message : 'Error: '+ error
-			} );
-		}
-	} );
 }
