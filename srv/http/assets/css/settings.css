@@ -194,6 +194,7 @@ heading.subhead {
 }
 heading.subhead i {
 	vertical-align: -1px;
+	color: var( --cw );
 }
 heading.status .headtitle::after,
 .col-l.status gr::after {
@@ -316,7 +317,9 @@ code {
 	list-style: none;
 }
 .entries li,
-.entries li span {
+.entries li span,
+.entries .li1,
+.entries .li2 {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -619,11 +622,29 @@ input.disabled + .switchlabel:after {
 .tab {
 	width: 328px;
 }
+.tab .headtitle {
+	height: 61px;
+}
 .tab .col-l {
 	width: 170px;
 }
 .tab .col-r {
 	width: calc( 100% - 170px );
+}
+.tab .entries {
+	margin-top: 0;
+}
+.tab .entries i {
+	float: left;
+}
+.tab .entries .li1 {
+	padding: 5px 10px 0 0;
+	line-height: 20px;
+}
+.tab .entries .li2 {
+	font-size: 14px;
+	line-height: 14px;
+	color: var( --cg60 );
 }
 #controls {
 	width: 300px;
@@ -677,7 +698,7 @@ input.disabled + .switchlabel:after {
 	font-size: 24px;
 	text-shadow: var( --shadow-text );
 }
-#divstatus i {
+.panel heading i {
 	color: var( --cw );
 }
 .tab input[type=number],
@@ -773,6 +794,7 @@ input.disabled + .switchlabel:after {
 	.close,
 	.code,
 	.col-l.icon,
+	.edit,
 	.entries li,
 	.filetype,
 	.helphead,
@@ -791,7 +813,9 @@ input.disabled + .switchlabel:after {
 	#backend,
 	#button-data,
 	#gpioimgtxt,
-	#menu { cursor: pointer }
+	#menu {
+		cursor: pointer
+	}
 	.switchlabel.focus {
 		outline: 2px solid var(--cgl );
 		outline-offset: 1px;

@@ -30,41 +30,91 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#divprofile .add' ).on( 'click', function() {
 	info( {
-		  icon      : SW.icon
-		, title     : 'New Profile'
-		, message   : 'Copy <wh>'+ S.fileconf +'</wh> as:'
-		, textlabel : 'Name'
-		, ok        : () => {
-			console.log( [ 'copy', infoVal(), 'CMD NAME' ] );
+		  icon       : SW.icon
+		, title      : 'New Profile'
+		, message    : 'Copy <wh>'+ S.fileconf +'</wh> as:'
+		, textlabel  : 'Name'
+		, checkblank : true
+		, ok         : () => {
+			var name = infoVal();
+			bash( [ 'confcopy', S.fileconf, name, 'CMD NAME NEWNAME' ] );
+			notify( SW.icon, 'Profile', 'New: <wh>'+ name +'</wh> ...' );
 		}
 	} );
 } );
+$( '#fileconf' ).on( 'change', function() {
+	var name = $( this ).val();
+	bash( [ 'confswitch', name, 'CMD NAME' ] );
+	notify( SW.icon, 'Profile', 'Switch to&ensp;<wh>'+ name +'</wh> ...' );
+} );
 $( '#divprofile .edit' ).on( 'click', function() {
 	info( {
-		  icon        : SW.icon
-		, title       : 'Edit Profile'
-		, textlabel   : 'Name'
-		, buttonlabel : 'Delete'
-		, buttoncolor : red
-		, button      : () => console.log( [ 'delete', infoVal(), 'CMD NAME' ] )
-		, ok          : () => console.log( [ 'rename', infoVal(), 'CMD NAME' ] )
+		  icon         : SW.icon
+		, title        : 'Edit Profile'
+		, textlabel    : 'Name'
+		, values       : S.fileconf
+		, checkblank   : true
+		, checkchanged : true
+		, buttonlabel  : 'Delete'
+		, buttoncolor  : red
+		, button       : () => {
+			var name = infoVal();
+			bash( [ 'confdelete', name, 'CMD NAME' ] );
+			notify( SW.icon, 'Profile', 'Delete: <wh>'+ name +'</wh> ...' );
+		}
+		, oklabel      : 'Rename'
+		, ok           : () => {
+			var name = infoVal();
+			bash( [ 'confrename', S.fileconf, name, 'CMD NAME NEWNAME' ] );
+			notify( SW.icon, 'Profile', 'Rename to&ensp;<wh>'+ name +'</wh> ...' );
+		}
 	} );
 } );
-$( '#divfilters .add' ).on( 'click', function() {
-	infoFilters( 'Biquad', 'Lowpass' );
+$( '#setting-capture' ).on( 'click', function() {
+	
 } );
-$( '#bar-bottom div' ).on( 'click', function() {
-	var id       = this.id;
-	F.currenttab = id;
-	$( '#bar-bottom div' ).removeClass( 'active' );
-	$( '#'+ id ).addClass( 'active' );
-	$( '.tab > .section' ).addClass( 'hide' );
-	$( '#div'+ id ).removeClass( 'hide' );
+$( '#setting-playback' ).on( 'click', function() {
+	
+} );
+$( '#setting-sampling' ).on( 'click', function() {
+	var textlabel  = L.sampling.slice( 1 );
+	textlabel.push( 'Other' );
+	var values     = {};
+	L.sampling.forEach( k => values[ k ] = D[ k ] );
+	if ( ! L.samplerate.includes( D.samplerate ) ) values.samplerate = 'Other';
+	values.other = values.samplerate;
+	info( {
+		  icon         : SW.icon
+		, title        : 'Edit Sampling'
+		, selectlabel  : 'Sample Rate'
+		, select       : L.samplerate
+		, textlabel    : labelArraySet( textlabel )
+		, boxwidth     : 120
+		, order        : [ 'select', 'text' ]
+		, values       : values
+		, checkblank   : true
+		, checkchanged : true
+		, beforeshow   : () => {
+			$( '.trselect' ).after( $( 'tr' ).last() );
+			var $trother = $( '.trtext' ).eq( 0 );
+			$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
+			$( '.trselect select' ).on( 'change', function() {
+				otherToggle( $trother, $( this ).val() );
+			} );
+		}
+		, ok           : () => {
+			var val = infoVal();
+			if ( val.samplerate === 'Other' ) val.samplerate = val.other;
+			delete val.other;
+			$.each( val, ( k, v ) => D[ k ] = v );
+			saveConfig( 'Sample Rate' );
+		}
+	} );
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
-		, title        : SW.title
+		, title        : 'Rate Adjust'
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
 		, boxwidth     : 100
 		, values       : { adjust_period: D.adjust_period, target_level: D.target_level }
@@ -74,154 +124,189 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			var val =  infoVal();
 			[ 'adjust_period', 'target_level' ].forEach( k => D[ k ] = val[ k ] );
 			D.enable_rate_adjust = true;
-			saveConfig();
+			saveConfig( 'Rate Adjust' );
 		}
 	} );
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( D.resampler_type === 'FreeAsync' );
 } );
+$( '#divfilters .add' ).on( 'click', function() {
+	infoFilters( 'Biquad', 'Lowpass' );
+} );
+$( '#bar-bottom div' ).on( 'click', function() {
+	var id       = this.id;
+	L.currenttab = id;
+	$( '#bar-bottom div' ).removeClass( 'active' );
+	$( '#'+ id ).addClass( 'active' );
+	$( '.tab > .section' ).addClass( 'hide' );
+	$( '#div'+ id ).removeClass( 'hide' );
+	renderTab( id );
+} );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-var SW  = { icon: 'camilladsp' }
-var kv  = {
-	  pass    : {
-		number: { freq: 1000, q: 0.5 }
-	  }
-	, shelf   : {
-		  number : { gain: 6, freq: 1000, q: 6 }
-		, radio  : [ 'Q', 'Samples' ]
+var SW = { icon: 'camilladsp' }
+var L  = {
+	  currenttab : 'devices'
+	, devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
+	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
+	, freeasync  : {
+		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
+		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
+		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 	}
-	, passFO  : {
-		number: { freq: 1000 }
-	}
-	, shelfFO : {
-		number: { gain: 6, freq: 1000 }
-	}
-	, notch   : {
-		  number : { freq: 1000, q: 0.5 }
-		, radio  : [ 'Q', 'Bandwidth' ]
-	}
-}
-var F   = {
-	  currenttab    : 'devices'
-	, selecttype    : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
-	, selectsubtype : {
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, sampletype : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
+	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
+	, subtype    : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
 		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
 		, Conv        : [ 'Raw', 'Wave', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
-	, selectformat  : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
-	, input_value   : {
-		  Lowpass           : kv.pass
-		, Highpass          : kv.pass
-		, Lowshelf          : kv.shelf
-		, Highshelf         : kv.shelf
-		, LowpassFO         : kv.passFO
-		, HighpassFO        : kv.passFO
-		, LowshelfFO        : kv.shelfFO
-		, HighshelfFO       : kv.shelfFO
-		, Peaking           : {
-			  number : { gain: 6, freq: 1000, q: 1.5 }
-			, radio  : [ 'Q', 'Bandwidth' ]
-		}
-		, Notch             : kv.notch
-		, Bandpass          : kv.notch
-		, Allpass           : kv.notch
-		, AllpassFO         : kv.passFO
-		, LinkwitzTransform : {
-			number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
-		}
-		, Free              : {
-			number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-		}
-		, BiquadCombo       : {
-			number: { order: 2, freq: 1000 }
-		}
-		, Raw               : { 
-			  select : { filename: '', format: '' }
-			, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
-		}
-		, Wave              : {
-			  select : { filename: '' }
-			, number : { channel: 0 }
-		}
-		, Values            : {
-			  text   : { values: '1, 0, 0, 0' }
-			, number : { length: 0 }
-		}
-		, Delay             : {
-			  number   : { ms: 0 }
-			, radio    : [ 'ms', 'Samples' ]
-			, checkbox : { subsample: false }
-		}
-		, Gain              : {
-			  number   : { gain: 0 }
-			, checkbox : { inverted: false, mute: false }
-		}
-		, Volume            : {
-			number: { ramp_time: 200 }
-		}
-		, Loudness          : {
-			number: { reference_level: 5, high_boost: 5, low_boost: 5, ramp_time: 200 }
-		}
-		, DiffEq            : {
-			text: { a: '1, 0', b: '1, 0' }
-		}
-		, Dither            : {
-			number: { bits: 16 }
-		}
+	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
+}
+var Fkv = {
+	  pass    : {
+		  number : { freq: 1000, q: 0.5 }
+	  }
+	, shelf   : {
+		  number : { gain: 6, freq: 1000, q: 6 }
+		, radio  : [ 'Q', 'Samples' ]
+	}
+	, passFO  : {
+		  number : { freq: 1000 }
+	}
+	, shelfFO : {
+		  number : { gain: 6, freq: 1000 }
+	}
+	, notch   : {
+		  number : { freq: 1000, q: 0.5 }
+		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
-var samplerate  = [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000 ];
-var devicetype  = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
-var sampletype  = [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ];
-
-var FreeAsync   = {
-	  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
-	, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
-	, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
+var F  = {
+	  Lowpass           : Fkv.pass
+	, Highpass          : Fkv.pass
+	, Lowshelf          : Fkv.shelf
+	, Highshelf         : Fkv.shelf
+	, LowpassFO         : Fkv.passFO
+	, HighpassFO        : Fkv.passFO
+	, LowshelfFO        : Fkv.shelfFO
+	, HighshelfFO       : Fkv.shelfFO
+	, Peaking           : {
+		  number : { gain: 6, freq: 1000, q: 1.5 }
+		, radio  : [ 'Q', 'Bandwidth' ]
+	}
+	, Notch             : Fkv.notch
+	, Bandpass          : Fkv.notch
+	, Allpass           : Fkv.notch
+	, AllpassFO         : Fkv.passFO
+	, LinkwitzTransform : {
+		number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+	}
+	, Free              : {
+		number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+	}
+	, BiquadCombo       : {
+		number: { order: 2, freq: 1000 }
+	}
+	, Raw               : { 
+		  select : { filename: '', format: '' }
+		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
+	}
+	, Wave              : {
+		  select : { filename: '' }
+		, number : { channel: 0 }
+	}
+	, Values            : {
+		  text   : { values: '1, 0, 0, 0' }
+		, number : { length: 0 }
+	}
+	, Delay             : {
+		  number   : { ms: 0 }
+		, radio    : [ 'ms', 'Samples' ]
+		, checkbox : { subsample: false }
+	}
+	, Gain              : {
+		  number   : { gain: 0 }
+		, checkbox : { inverted: false, mute: false }
+	}
+	, Volume            : {
+		number: { ramp_time: 200 }
+	}
+	, Loudness          : {
+		number: { reference_level: 5, high_boost: 5, low_boost: 5, ramp_time: 200 }
+	}
+	, DiffEq            : {
+		text: { a: '1, 0', b: '1, 0' }
+	}
+	, Dither            : {
+		number: { bits: 16 }
+	}
 }
-/*
-  resample_type:
-    FreeAsync:
-	  sinc_len: 128
-	  oversampling_ratio: 1024
-	  interpolation: Linear
-	  window: Blackman2
-	  f_cutoff: 0.925
-*/
-
-var opt_type    = '';
-devicetype.forEach( k => opt_type += '<option value="'+ k +'">'+ k +'</option>' );
-var opt_format  = '';
-F.selectformat.forEach( k => opt_format += '<option value="'+ k +'">'+ k +'</option>' );
-var TC          = { Type: opt_type, Channels: 'number' }
-var TCS         = { ... TC, 'Sample format': opt_format }
-var TCSD        = { ...TCS, Device: 'text' }
-var TWasapi     = { ...TCSD, Exclusive: 'checkbox', Loopback: 'checkbox' }
-var ESR         = { 'Extra samples': 'number', 'Skip bytes': 'number', 'Read bytes': 'number' }
-var input_device  = {
+// capture / playback
+var CPkv = {
+	  tc     : {
+		  select : { type: 'Alsa' }
+		, number : { channels: 2 }
+	}
+	, tcsd   : {
+		  select : { type: 'Alsa', sampleformat: 'S16LE' }
+		, number : { channels: 2 }
+		, text   : { device: '' }
+	}
+	, wasapi : {
+		  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+		, number   : { channels: 2 }
+		, text     : { device: '' }
+		, checkbox : { exclusive: false, loopback: false }
+	}
+}
+var CP = { // capture / playback
 	  capture : {
-		  Alsa      : TCSD
-		, CoreAudio : { ...TCSD, 'Change format': 'checkbox' }
-		, Pulse     : TCSD
-		, Wasapi    : TWasapi
-		, Jack      : TC
-		, Stdin     : { ...TCS, ...ESR }
-		, File      : { ...TCS, Filename: 'text', ...ESR }
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number   : { channels: 2 }
+			, text     : { device: '' }
+			, checkbox : { change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdin     : {
+			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+		, File      : {
+			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+			, text   : { filename: '' }
+		}
 	}
 	, playback : {
-		  Alsa      : TCSD
-		, CoreAudio : { ...TCSD, Exclusive: 'checkbox', 'Change format': 'checkbox' }
-		, Pulse     : TCSD
-		, Wasapi    : TWasapi
-		, Jack      : TC
-		, Stdout    : TCS
-		, File      : { ...TCS, Filename: 'text' }
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number   : { channels: 2 }
+			, text     : { device: '' }
+			, checkbox : { exclusive: false, change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdout    : {
+			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number : { channels: 2 }
+		}
+		, File      : {
+			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			, number : { channels: 2 }
+			, text   : { filename: '' }
+		}
 	}
 }
 function key2label( key ) {
@@ -243,6 +328,12 @@ function key2label( key ) {
 			.slice( 1 )
 	return str + key
 }
+function infoDevices( cp ) {
+	// select
+	var selectlabel = [ 'type' ];
+	var select      = [ L.devicetype ];
+	var values      = { type: type }
+}
 function infoFilters( type, subtype ) {
 	if ( typeof type === 'object' ) { // saved filters: type = values
 		var type    = type.type;
@@ -254,23 +345,23 @@ function infoFilters( type, subtype ) {
 	}
 	// select
 	var selectlabel = [ 'type' ];
-	var select      = [ F.selecttype ];
+	var select      = [ L.type ];
 	var values      = { type: type }
 	var key_val     = '';
 	if ( subtype ) {
 		selectlabel.push( 'subtype' )
-		select.push( F.selectsubtype[ type ] );
+		select.push( L.subtype[ type ] );
 		values.subtype    = subtype;
-		key_val           = F.input_value[ subtype ];
+		key_val           = F[ subtype ];
 	}
-	if ( ! key_val ) key_val = F.input_value[ type ];
+	if ( ! key_val ) key_val = F[ type ];
 	if ( subtype === 'Uniform' ) key_val.amplitude = 1;
 	if ( 'select' in key_val ) {
 		var kv = key_val.select;
 		var k  = Object.keys( kv );
 		selectlabel = [ ...selectlabel, ...k ];
-		var selectsubtype = subtype === 'Raw' ? [ S.lscoef, F.selectformat ] : [ S.lscoef ];
-		select = [ ...select, ...selectsubtype ];
+		var subtype = subtype === 'Raw' ? [ S.lscoef, L.format ] : [ S.lscoef ];
+		select = [ ...select, ...subtype ];
 		values = { ...values, ...kv };
 	}
 	selectlabel = labelArraySet( selectlabel );
@@ -294,7 +385,7 @@ function infoFilters( type, subtype ) {
 	}
 	// radio
 	var radio       = false;
-	if ( 'number' in key_val ) {
+	if ( 'radio' in key_val ) {
 		radio  = key_val.radio;
 		values = { ...values, radio: numberlabel.slice( -1 )[ 0 ] };
 	}
@@ -306,8 +397,8 @@ function infoFilters( type, subtype ) {
 		values   = { ...values, ...kv };
 	}
 	info( {
-		  icon         : 'SW.icon'
-		, title        : 'Filters'
+		  icon         : 'filters'
+		, title        : name ? 'Edit Filter' : 'Add Filter'
 		, selectlabel  : selectlabel
 		, select       : select
 		, textlabel    : textlabel
@@ -331,7 +422,7 @@ function infoFilters( type, subtype ) {
 			var $selecttype = $select.eq( 0 );
 			$selecttype.on( 'change', function() {
 				var type    = $( this ).val();
-				var subtype = type in F.selectsubtype ? F.selectsubtype[ type ][ 0 ] : '';
+				var subtype = type in L.subtype ? L.subtype[ type ][ 0 ] : '';
 				infoFilters( type, subtype );
 			} );
 			if ( $select.length > 1 ) {
@@ -360,32 +451,29 @@ function infoFilters( type, subtype ) {
 				if ( ! [ 'radio', 'name', 'type', 'subtype' ].includes( k ) ) param[ k ] = v;
 			} );
 			S.config.filters[ val.name ] = { type: val.type, parameters : param }
-			saveConfig();
+			saveConfig( 'Filter' );
 		}
 	} );
 }
 function infoResampling( freeasync ) {
-	var capture_samplerate = D.capture_samplerate;
-	if ( ! samplerate.includes( capture_samplerate ) ) capture_samplerate = 'Other';
 	var selectlabel        = [ 'Resampler type', 'Capture samplerate' ];
-	var select             = [ sampletype, [ ...samplerate, 'Other' ] ];
+	var select             = [ L.sampletype, L.samplerate ];
 	var numberlabel        = [ 'Other' ];
-	var values             = {
-		  resampler_type     : D.resampler_type
-		, capture_samplerate : capture_samplerate
-		, other              : capture_samplerate
-	}
+	var values             = {};
+	[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = D[ k ] );
+	if ( ! L.samplerate.includes( D.capture_samplerate ) ) values.capture_samplerate = 'Other';
+	values.other = values.capture_samplerate;
 	if ( freeasync ) {
 		selectlabel.push( 'interpolation', 'window' );
-		select.push( FreeAsync.interpolation, FreeAsync.window );
+		select.push( L.freeasync.interpolation, L.freeasync.window );
 		numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
 		var F  = D.resampler_type.FreeAsync || {};
 		values = {
 			  resampler_type     : 'FreeAsync'
-			, capture_samplerate : capture_samplerate
+			, capture_samplerate : values.capture_samplerate
 			, interpolation      : F.interpolation      || 'Linear'
 			, window             : F.window             || 'Blackman2'
-			, other              : capture_samplerate
+			, other              : values.capture_samplerate
 			, sinc_len           : F.sinc_len           || 128
 			, oversampling_ratio : F.oversampling_ratio || 1024
 			, f_cutoff           : F.f_cutoff           || 0.925
@@ -393,7 +481,7 @@ function infoResampling( freeasync ) {
 	}
 	info( {
 		  icon         : SW.icon
-		, title        : SW.title
+		, title        : 'Resampling'
 		, selectlabel  : selectlabel
 		, select       : select
 		, numberlabel  : numberlabel
@@ -406,19 +494,16 @@ function infoResampling( freeasync ) {
 			var $trother = $trnumber.eq( 0 );
 			var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
 			indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
-			$trother.toggleClass( 'hide', capture_samplerate !== 'Other' );
-			$( '#infoContent select' ).eq( 0 ).on( 'change', function() {
+			$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
+			$( '.trselect select' ).eq( 0 ).on( 'change', function() {
 				if ( $( this ).val() === 'FreeAsync' ) {
 					infoResampling( 'freeasync' );
 				} else if ( $trnumber.length > 1 ) {
 					infoResampling();
 				}
 			} );
-			$( '#infoContent select' ).eq( 1 ).on( 'change', function() {
-				var rate  = $( this ).val();
-				var other = rate === 'Other';
-				$trother.toggleClass( 'hide', ! other );
-				if ( ! other ) $trother.find( 'input' ).val( rate );
+			$( '.trselect select' ).eq( 1 ).on( 'change', function() {
+				otherToggle( $trother, $( this ).val() );
 			} );
 		}
 		, cancel       : switchCancel
@@ -428,11 +513,11 @@ function infoResampling( freeasync ) {
 			[ 'resampler_type', 'capture_samplerate' ].forEach( k => D[ k ] = val[ k ] );
 			if ( freeasync ) {
 				var v = {}
-				FreeAsync.keys.forEach( k => v[ k ] = val[ k ] );
+				L.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
 				D.resampler_type = { FreeAsync: v }
 			}
 			D.enable_resampling = true;
-			saveConfig();
+			saveConfig( 'Resampling' );
 		}
 	} );
 }
@@ -446,6 +531,47 @@ function infoSaveFailed( title, name ) {
 function labelArraySet( array ) {
 	var capitalized = array.map( el => key2label( el ) );
 	return capitalized
+}
+function otherToggle( $trother, rate ) {
+	var other = rate === 'Other';
+	$trother.toggleClass( 'hide', ! other );
+	if ( ! other ) $trother.find( 'input' ).val( rate );
+}
+function renderDevices() {
+	statusList( 'capture' );
+	statusList( 'playback' );
+	statusList( 'sampling', L.sampling );
+	var keys = [];
+	if ( D.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+	if ( D.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
+	keys.length ? statusList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+}
+function renderTab( id ) {
+	if ( id === 'devices' ) renderDevices();
+	
+	var kv = S.config[ id ];
+	if ( $.isEmptyObject( kv ) ) return
+	
+	if ( id === 'filters' ) {
+		var li = '';
+		$.each( kv, ( k, v ) => {
+			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2">'+ v.type +': '+ Object.values( v.parameters ).join( ', ' ) +'</div></li>';
+		} );
+	} else if ( id === 'mixers' ) {
+		var li = '';
+		$.each( kv, ( k, v ) => {
+			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2"></div></li>';
+		} );
+	} else if ( id === 'pipeline' ) {
+		var li = '';
+		kv.forEach( el => {
+			li += '<li>'+ ico( id ) +'<div class="li1">'+ el.type +'<gr> · channel: '+ el.channel +'<gr></div>'
+				 +'<div class="li2">'+ el.names.join( ', ' ) +'</div></li>';
+		} );
+	}
+	$( '#div'+ id +' .entries' ).html( li );
 }
 function renderPage() {
 	D        = S.config.devices;
@@ -462,20 +588,14 @@ function renderPage() {
 	$( '#fileconf' )
 		.html( options )
 		.val( S.fileconf );
-	statusList( 'capture' );
-	statusList( 'playback' );
-	statusList( 'sampling', [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ] );
-	var keys = [];
-	if ( D.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-	if ( D.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-	keys.length ? statusList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
-	$( '#div'+ F.currenttab ).removeClass( 'hide' );
-	$( '#'+ F.currenttab ).addClass( 'active' );
+	$( '#div'+ L.currenttab ).removeClass( 'hide' );
+	$( '#'+ L.currenttab ).addClass( 'active' );
+	renderTab( L.currenttab );
 	showContent();
 }
-function saveConfig() {
-	notifyCommon();
-	bash( [ 'save', JSON.stringify( S.config ), 'CMD JSON' ], error => {
+function saveConfig( title ) {
+	notify( SW.icon, title, 'Change ...' );
+	bash( [ 'confsave', JSON.stringify( S.config ), 'CMD JSON' ], error => {
 		if ( error ) {
 			info( {
 				  icon    : SW.icon
@@ -490,7 +610,7 @@ function statusList( section, keys ) {
 		var kv = D[ section ]
 		keys   = Object.keys( kv );
 	} else {
-		var kv =  D;
+		var kv = D;
 	}
 	var labels = '';
 	var values = '';

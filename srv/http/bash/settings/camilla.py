@@ -12,56 +12,42 @@ cdsp.connect()
 pathconfigs = '/srv/http/data/camilladsp/configs/'
 
 def status():
-    data = cdsp.get_state().name +'<br>'\
-         + str( cdsp.get_capture_rate() ) +'<br>'\
-         + str( cdsp.get_rate_adjust() ) +'<br>'\
-         + str( cdsp.get_clipped_samples() ) +'<br>'\
-         + str( cdsp.get_buffer_level() ) +'<br>'
+    br = '<br>'
+    data = cdsp.get_state().name + br \
+         + str( cdsp.get_capture_rate() ) + br \
+         + str( cdsp.get_rate_adjust() ) + br \
+         + str( cdsp.get_clipped_samples() ) +br \
+         + str( cdsp.get_buffer_level() )
     return data
     
 cmd = sys.argv[ 1 ]
 
 if len( sys.argv ) > 2: # set: cmd val
     val = sys.argv[ 2 ]
-    with open( '/srv/http/data/shm/xpython', 'w' ) as f:
-        json.dump( sys.argv[ 2 ], f )
     match cmd:
         case 'mute':
             cdsp.set_mute( val == 'true' )
         case 'volume':
             cdsp.set_volume( float( val ) )
-        case 'load':
-            if val[-4:] == '.yml': val = val[0:-4]
-            set_config_name( pathconfigs + val +'.yml' )
-            cdsp.reload()
-        case 'read':
-            if val[-4:] == '.yml': val = val[0:-4]
-            value = cdsp.read_config_file( pathconfigs + val +'.yml' )
         case 'save':
             import yaml
             try:
                 config = json.loads( val )
-                yml  = yaml.dump( config ).encode( 'utf-8' )
-                file = cdsp.get_config_name()
+                cdsp.validate_config( config )
+                yml    = yaml.dump( config ).encode( 'utf-8' )
+                file   = cdsp.get_config_name()
                 with open( file, 'wb' ) as f:
                     f.write( yml )
                 cdsp.reload()
             except Exception as e:
                 print( e )
-        case 'validate':
-            import yaml
-            try:
-                config = json.loads( val )
-                cdsp.validate_config( config )
-                print( 'Valid' )
-            except Exception as e:
-                print( e )
+        case 'switch':
+            print( pathconfigs + val +'.yml' )
+            cdsp.set_config_name( pathconfigs + val +'.yml' )
 else: # get: cmd
     match cmd:
-        case 'configname':
-            value = { 'name': os.path.basename( cdsp.get_config_name() ) }
-        case 'connected':
-            value = { 'connected': cdsp.is_connected() }
+        case 'configfile':
+            value = { 'name' : os.path.basename( cdsp.get_config_name() ) }
         case 'data':
             value = {
                   'page'     : 'camilla'
@@ -73,15 +59,8 @@ else: # get: cmd
                 , 'lsconf'   : os.listdir( '/srv/http/data/camilladsp/configs' )
                 , 'fileconf' : os.path.basename( cdsp.get_config_name().rsplit( '.' )[ 0 ] )
             }
-        case 'previous':
-            value = cdsp.get_previous_config()
         case 'status':
             value = { 'page': 'camilla', 'status': status() }
-        case 'version': # camilladsp
-            value = {
-                  'camilladsp' : '.'.join( cdsp.get_version() )
-                , 'library'    : '.'.join( map( str, cdsp.get_library_version() ) )
-            }
     
     value = json.dumps( value )
     print( value )

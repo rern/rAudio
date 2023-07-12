@@ -1,49 +1,42 @@
-<?php
-function htmlPanel( $title, $content = '', $noadd = '' ) {
-	return '
-<div id="div'.$title.'" class="section hide">
-	<heading class="head"><span class="headtitle">'.i( 'filters' ).ucFirst( $title ).( $noadd ? '' : i( 'plus-circle add' ) ).'</span></heading>
-	'.$content.'
-</div>
-';
-}
-?>
-
 <div id="divcontrols-status" class="panel">
 
 <div id="divcontrols" class="section">
-<heading><span class="headtitle"><?=i( 'volume' )?>Controls</span></heading>
-<div id="controls">
-	<div id="volume" class="range">
-		<code class="name">Gain</code><div class="value">0</div>
-		<input type="range" min="-54" max="5" value="0">
+	<heading><span class="headtitle">Controls</span><?=i( 'volume mute' )?></heading>
+	<div id="controls">
+		<div id="volume" class="range">
+			<code class="name">Gain</code><div class="value">0</div>
+			<input type="range" min="-54" max="5" value="0">
+		</div>
+		<div id="bass" class="range">
+			<code class="name">Bass</code><div class="value">0</div>
+			<input type="range" min="-6" max="6" step="0.1" value="0">
+		</div>
+		<div id="treble" class="range">
+			<code class="name">Treble</code><div class="value">0</div>
+			<input type="range" min="-6" max="6" step="0.1" value="0">
+		</div>
 	</div>
-	<div id="bass" class="range">
-		<code class="name">Bass</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" step="0.1" value="0">
-	</div>
-	<div id="treble" class="range">
-		<code class="name">Treble</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" step="0.1" value="0">
-	</div>
-</div>
-<div style="clear:both"></div>
+	<div style="clear:both"></div>
 </div>
 
 <div id="divstatus" class="section">
-<heading><span class="headtitle">Status</span><?=i( 'file log' ).i( 'undo' ).i( 'redo' )?></heading>
-<div class="col-l text gr">
-		State
-	<br>Sample rate
-	<br>Rate adjust
-	<br>Clipped samples
-	<br>Buffer level
-	<br>Configuration
+	<heading><span class="headtitle">Status</span><?=i( 'file log' )?></heading>
+	<div class="col-l text gr">
+			State
+		<br>Sample rate
+		<br>Rate adjust
+		<br>Clipped samples
+		<br>Buffer level
+	</div>
+	<div class="col-r text">
+		<div id="statusvalue"></div>
+	</div>
+	<div style="clear:both"></div>
 </div>
-<div class="col-r text">
-	<div id="statusvalue"></div>
-</div>
-<div style="clear:both"></div>
+
+<div id="divprofile" class="section">
+	<heading><span class="headtitle">Profile</span><?=i( 'plus-circle add' )?></heading>
+	<select id="fileconf"></select> <?=i( 'edit-circle edit' )?>
 </div>
 
 </div>
@@ -63,6 +56,7 @@ $title_data = [
 ];
 $htmldevices = '';
 foreach( $title_data as $title => $data ) {
+	$idsection   = lcFirst( str_replace( ' ', '', $title ) );
 	$html = '<div class="statuslist"></div>';
 	if ( $title === 'Options' ) {
 		$settingtitle = '';
@@ -82,10 +76,10 @@ foreach( $title_data as $title => $data ) {
 					.'</div>';
 		}
 	} else {
-		$settingtitle = i( 'gear' );
+		$settingtitle = i( 'gear', $id );
 	}
 	$htmldevices.= '
-<div id="div'.lcFirst( str_replace( ' ', '', $title ) ).'" class="section">
+<div id="div'.$idsection.'" class="section">
 <heading class="subhead"><span class="headtitle">'.$title.$settingtitle.'</span></heading>
 <div class="content">'.$html.'</div>
 </div>
@@ -94,6 +88,16 @@ foreach( $title_data as $title => $data ) {
 $html = htmlPanel( 'devices', $htmldevices, 'noadd' );
 foreach( [ 'filters', 'mixers', 'pipeline' ] as $tab ) $html.= htmlPanel( $tab );
 echo $html;
+
+function htmlPanel( $title, $content = '', $noadd = '' ) {
+	return '
+<div id="div'.$title.'" class="section hide">
+	<heading class="head"><span class="headtitle">'.ucFirst( $title ).( $noadd ? '' : i( 'plus-circle add' ) ).'</span></heading>
+	'.$content.'
+	<ul class="entries"></ul>
+</div>
+';
+}
 ?>
 
 </div>

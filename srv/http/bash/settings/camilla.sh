@@ -2,10 +2,18 @@
 
 . /srv/http/bash/common.sh
 
+dirconfigs=$dircamilladsp/configs
+camilladspyml=$dirconfigs/camilladsp.yml
+
+switchConfig() {
+	$dirsettings/camilla.py switch "$1"
+	pushData
+}
+
 args2var "$1"
 
 pushData() {
-	killall -s SIGHUP camilladsp
+	killall -s SIGHUP camilladsp # instead of systemctl restart camilladsp
 	data=$( $dirsettings/camilla.py data )
 	pushstream refresh $( $dirsettings/camilla.py data )
 	sleep 5 # wait for starting ready
@@ -14,21 +22,35 @@ pushData() {
 
 case $CMD in
 
-save | validate )
-	$dirsettings/camilla.py $CMD "$JSON"
+confcopy )
+	cp -f $dirconfigs/{"$NAME","$NEWNAME"}.yml
+	switchConfig "$NEWNAME"
+	;;
+confdelete )
+	rm -f $dirconfigs/"$NAME".yml
+	[[ ! -e $dirconfigs ]] && cp $dirconfigs/{default_config,camilladsp}.yml
+	switchConfig camilladsp
+	;;
+confrename )
+	mv -f $dirconfigs/{"$NAME","$NEWNAME"}.yml
+	switchConfig "$NEWNAME"
+	;;
+confsave )
+	$dirsettings/camilla.py save "$JSON"
 	pushData
 	;;
+confswitch )
+	switchConfig "$NAME"
+	;;
 enable_rate_adjust | enable_resampling | stop_on_rate_change )
-	file=$( $dirsettings/camilla.py configname | cut -d'"' -f4 )
-	sed -E -i "s/($CMD: ).*/\1$TF/" "$dircamilladsp/configs/$file"
+	file=$( $dirsettings/camilla.py configfile | cut -d'"' -f4 )
+	sed -E -i "s/($CMD: ).*/\1$TF/" "$dirconfigs/$file"
 	pushData
 	;;
 setformat )
 	systemctl stop camilladsp
 	killall camilladsp &> /dev/null
 
-	dirconfigs=$dircamilladsp/configs
-	camilladspyml=$dirconfigs/camilladsp.yml
 	card=$( < $dirsystem/asoundcard )
 	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $camilladspyml
 	camilladsp $camilladspyml &> /dev/null &
@@ -52,9 +74,6 @@ setformat )
 		alsactl store &> /dev/null
 		alsactl nrestore &> /dev/null
 	fi
-	;;
-* )
-	settings/camilla.py $CMD "${args[2]}"
 	;;
 	
 esac
