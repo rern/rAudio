@@ -28,6 +28,28 @@ DiffEq   : [a] [b]
 */
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '#divprofile .add' ).on( 'click', function() {
+	info( {
+		  icon      : SW.icon
+		, title     : 'New Profile'
+		, message   : 'Copy <wh>'+ S.fileconf +'</wh> as:'
+		, textlabel : 'Name'
+		, ok        : () => {
+			console.log( [ 'copy', infoVal(), 'CMD NAME' ] );
+		}
+	} );
+} );
+$( '#divprofile .edit' ).on( 'click', function() {
+	info( {
+		  icon        : SW.icon
+		, title       : 'Edit Profile'
+		, textlabel   : 'Name'
+		, buttonlabel : 'Delete'
+		, buttoncolor : red
+		, button      : () => console.log( [ 'delete', infoVal(), 'CMD NAME' ] )
+		, ok          : () => console.log( [ 'rename', infoVal(), 'CMD NAME' ] )
+	} );
+} );
 $( '#divfilters .add' ).on( 'click', function() {
 	infoFilters( 'Biquad', 'Lowpass' );
 } );
@@ -434,9 +456,12 @@ function renderPage() {
 		$( '#'+ el +' input' ).val( val );
 		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
 	} );
-	var status =  S.status +'<c>'+ S.name +'</c>'
-				
-	$( '#statusvalue' ).html( status );
+	$( '#statusvalue' ).html( S.status );
+	var options = '';
+	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
+	$( '#fileconf' )
+		.html( options )
+		.val( S.fileconf );
 	statusList( 'capture' );
 	statusList( 'playback' );
 	statusList( 'sampling', [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ] );

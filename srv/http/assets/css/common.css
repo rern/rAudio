@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1688694847' );
+	src         : url( '/assets/fonts/rern.woff2?v=1689084935' );
 }
 @font-face {
 	font-family : Lato;
@@ -71,7 +71,7 @@ i {
 .i-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
 .i-date::before            { content: '\F55C' }
 .i-devices::before         { content: '\F571' }
-.i-edit-circle::before     { content: '\F571' }
+.i-edit-circle::before     { content: '\F565' }
 .i-equalizer::before       { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
 .i-features::before        { content: '\F50B' }

@@ -64,14 +64,14 @@ else: # get: cmd
             value = { 'connected': cdsp.is_connected() }
         case 'data':
             value = {
-                  'page'   : 'camilla'
-                , 'config' : cdsp.get_config()
-                , 'volume' : cdsp.get_volume()
-                , 'mute'   : cdsp.get_mute()
-                , 'name'   : os.path.basename( cdsp.get_config_name() )
-                , 'status' : status()
-                , 'lscoef' : os.listdir( '/srv/http/data/camilladsp/coeffs' )
-                , 'lsconf' : os.listdir( '/srv/http/data/camilladsp/configs' )
+                  'page'     : 'camilla'
+                , 'config'   : cdsp.get_config()
+                , 'volume'   : cdsp.get_volume()
+                , 'mute'     : cdsp.get_mute()
+                , 'status'   : status()
+                , 'lscoef'   : os.listdir( '/srv/http/data/camilladsp/coeffs' )
+                , 'lsconf'   : os.listdir( '/srv/http/data/camilladsp/configs' )
+                , 'fileconf' : os.path.basename( cdsp.get_config_name().rsplit( '.' )[ 0 ] )
             }
         case 'previous':
             value = cdsp.get_previous_config()

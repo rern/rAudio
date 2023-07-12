@@ -669,6 +669,17 @@ input.disabled + .switchlabel:after {
 	background: var( --cgd );
 	border-bottom: 1px solid var( --cg );
 }
+#divprofile i {
+	width: 40px;
+	height: 40px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 24px;
+	text-shadow: var( --shadow-text );
+}
+#divstatus i {
+	color: var( --cw );
+}
 .tab input[type=number],
 .tab input[type=text] {
 	margin-bottom: 5px;
