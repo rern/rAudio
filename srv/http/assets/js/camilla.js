@@ -614,11 +614,18 @@ function renderPage() {
 		.val( S.fileconf );
 	$( '#setting-profile' ).removeClass( 'hide' );
 	$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.camillaconf.capture_playback );
+	var controlshide = $( '#controls' ).hasClass( 'hide' );
 	if ( S.camillaconf.controls ) {
-		$( '#controls' ).removeClass( 'hide' );
+		if ( controlshide ) {
+			$( '#controls' )
+				.removeClass( 'hide' )
+				.trigger( 'click' );
+		}
 	} else {
-		$( '#controls' ).addClass( 'hide' );
-		if ( L.currenttab === 'controls' ) L.currenttab = 'devices';
+		if ( ! controlshide ) {
+			$( '#controls' ).addClass( 'hide' );
+			if ( L.currenttab === 'controls' ) $( '#devices' ).trigger( 'click' );
+		}
 	}
 	renderTab( L.currenttab );
 	showContent();
