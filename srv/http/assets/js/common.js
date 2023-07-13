@@ -644,12 +644,7 @@ function info( json ) {
 function infoButtonCommand( fn, cancel ) {
 	if ( typeof fn === 'function' ) fn();
 	if ( cancel ) delete I.oknoreset;
-	if ( V.press || ( ! V.local && I.oknoreset ) ) return // consecutive info / no reset
-	
-	if ( I.oknoreset ) {
-		$( '#infoContent' ).toggleClass( 'hide' );
-		return
-	}
+	if ( V.local || V.press || I.oknoreset ) return // consecutive info / no reset
 	
 	I = { active: false }
 	$( '#infoOverlay' )

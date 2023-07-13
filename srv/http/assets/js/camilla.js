@@ -30,15 +30,26 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#divprofile .add' ).on( 'click', function() {
 	info( {
-		  icon       : SW.icon
-		, title      : 'New Profile'
-		, message    : 'Copy <wh>'+ S.fileconf +'</wh> as:'
-		, textlabel  : 'Name'
-		, checkblank : true
-		, ok         : () => {
+		  icon         : SW.icon
+		, title        : 'New Profile'
+		, message      : 'Copy <wh>'+ S.fileconf +'</wh> as:'
+		, textlabel    : 'Name'
+		, values       : S.fileconf
+		, checkblank   : true
+		, checkchanged : true
+		, ok           : () => {
 			var name = infoVal();
-			bash( [ 'confcopy', S.fileconf, name, 'CMD NAME NEWNAME' ] );
-			notify( SW.icon, 'Profile', 'New: <wh>'+ name +'</wh> ...' );
+			if ( S.lsconf.includes( name +'.yml' ) ) {
+				info( {
+					  icon    : SW.icon
+					, title   : 'New Profile'
+					, message : 'Name exists: '+ name
+					, ok      : () => $( '#divprofile .add' ).trigger( 'click' )
+				} );
+			} else {
+				bash( [ 'confcopy', S.fileconf, name, 'CMD NAME NEWNAME' ] );
+				notify( SW.icon, 'Profile', 'New: <wh>'+ name +'</wh> ...' );
+			}
 		}
 	} );
 } );
@@ -131,7 +142,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( D.resampler_type === 'FreeAsync' );
 } );
-$( '#divfilters .add' ).on( 'click', function() {
+$( '#divsettings' ).on( 'click', '.add.filters', function() {
 	infoFilters( 'Biquad', 'Lowpass' );
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
@@ -139,7 +150,9 @@ $( '#bar-bottom div' ).on( 'click', function() {
 	L.currenttab = id;
 	$( '#divsettings .headtitle' ).eq( 0 )
 		.text( key2label( id ) )
-		.next().toggleClass( 'hide', id === 'devices' );
+		.next()
+			.addClass( id )
+			.toggleClass( 'hide', id === 'devices' );
 	renderTab( id );
 } );
 
