@@ -137,10 +137,9 @@ $( '#divfilters .add' ).on( 'click', function() {
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
-	$( '#bar-bottom div' ).removeClass( 'active' );
-	$( '#'+ id ).addClass( 'active' );
-	$( '.tab > .section' ).addClass( 'hide' );
-	$( '#div'+ id ).removeClass( 'hide' );
+	$( '#divsettings .headtitle' ).eq( 0 )
+		.text( key2label( id ) )
+		.next().toggleClass( 'hide', id === 'devices' );
 	renderTab( id );
 } );
 
@@ -148,7 +147,7 @@ $( '#bar-bottom div' ).on( 'click', function() {
 
 var SW = { icon: 'camilladsp' }
 var L  = {
-	  currenttab : 'devices'
+	  currenttab : 'controls'
 	, devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
 	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
 	, freeasync  : {
@@ -538,15 +537,61 @@ function otherToggle( $trother, rate ) {
 	if ( ! other ) $trother.find( 'input' ).val( rate );
 }
 function renderDevices() {
-	statusList( 'capture' );
-	statusList( 'playback' );
-	statusList( 'sampling', L.sampling );
+	renderDevicesList( 'capture' );
+	renderDevicesList( 'playback' );
+	renderDevicesList( 'sampling', L.sampling );
 	var keys = [];
 	if ( D.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 	if ( D.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-	keys.length ? statusList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+	keys.length ? renderDevicesList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+}
+function renderDevicesList( section, keys ) {
+	if ( [ 'capture', 'playback' ].includes( section ) ) {
+		var kv = D[ section ]
+		keys   = Object.keys( kv );
+	} else {
+		var kv = D;
+	}
+	var labels = '';
+	var values = '';
+	keys.forEach( k => {
+		labels += key2label( k ) +'<br>';
+		values += kv[ k ] +'<br>';
+	} );
+	if ( D.resampler_type === 'FreeAsync' ) {
+		[ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ].forEach( k => {
+			labels += key2label( k ) +'<br>';
+			values += D.resampler_type.FreeAsync[ k ] +'<br>';
+		} );
+	}
+	$( '#div'+ section +' .statuslist' ).html(
+		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
+	);
+}
+function renderPage() {
+	D        = S.config.devices;
+	S.bass   = S.config.filters.Bass.parameters.gain;
+	S.treble = S.config.filters.Treble.parameters.gain;
+	[ 'volume', 'bass', 'treble' ].forEach( el => {
+		var val = S[ el ];
+		$( '#'+ el +' input' ).val( val );
+		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
+	} );
+	$( '#statusvalue' ).html( S.status );
+	var options = '';
+	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
+	$( '#profile, #fileconf' )
+		.html( options )
+		.val( S.fileconf );
+	$( '#setting-profile' ).removeClass( 'hide' );
+	renderTab( L.currenttab );
+	showContent();
 }
 function renderTab( id ) {
+	$( '.tab' ).addClass( 'hide' );
+	$( '#div'+ L.currenttab ).removeClass( 'hide' );
+	$( '#bar-bottom div' ).removeClass( 'active' );
+	$( '#'+ L.currenttab ).addClass( 'active' );
 	if ( id === 'devices' ) renderDevices();
 	
 	var kv = S.config[ id ];
@@ -573,26 +618,6 @@ function renderTab( id ) {
 	}
 	$( '#div'+ id +' .entries' ).html( li );
 }
-function renderPage() {
-	D        = S.config.devices;
-	S.bass   = S.config.filters.Bass.parameters.gain;
-	S.treble = S.config.filters.Treble.parameters.gain;
-	[ 'volume', 'bass', 'treble' ].forEach( el => {
-		var val = S[ el ];
-		$( '#'+ el +' input' ).val( val );
-		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
-	} );
-	$( '#statusvalue' ).html( S.status );
-	var options = '';
-	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
-	$( '#fileconf' )
-		.html( options )
-		.val( S.fileconf );
-	$( '#div'+ L.currenttab ).removeClass( 'hide' );
-	$( '#'+ L.currenttab ).addClass( 'active' );
-	renderTab( L.currenttab );
-	showContent();
-}
 function saveConfig( title ) {
 	notify( SW.icon, title, 'Change ...' );
 	bash( [ 'confsave', JSON.stringify( S.config ), 'CMD JSON' ], error => {
@@ -604,27 +629,4 @@ function saveConfig( title ) {
 			} );
 		}
 	} );
-}
-function statusList( section, keys ) {
-	if ( [ 'capture', 'playback' ].includes( section ) ) {
-		var kv = D[ section ]
-		keys   = Object.keys( kv );
-	} else {
-		var kv = D;
-	}
-	var labels = '';
-	var values = '';
-	keys.forEach( k => {
-		labels += key2label( k ) +'<br>';
-		values += kv[ k ] +'<br>';
-	} );
-	if ( D.resampler_type === 'FreeAsync' ) {
-		[ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ].forEach( k => {
-			labels += key2label( k ) +'<br>';
-			values += D.resampler_type.FreeAsync[ k ] +'<br>';
-		} );
-	}
-	$( '#div'+ section +' .statuslist' ).html(
-		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
-	);
 }

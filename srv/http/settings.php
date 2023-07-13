@@ -43,7 +43,7 @@ if ( $addonsprogress || $guide ) {
 // bottom bar
 $htmlbar = '<div id="bar-bottom">';
 if ( $camilla ) {
-	$tabs = [ 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
+	$tabs = [ 'Controls', 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
 } else {
 	$tabs = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
 }
@@ -78,7 +78,8 @@ $head = [
 	, 'help'    => 'HELP'
 ];
 $body = [
-	[
+	 'HTML'                             // for status section
+	, [
 		  'label'       => 'LABEL'      // REQUIRED
 		, 'sublabel'    => 'SUB LABEL'
 		, 'id'          => 'ID'         // REQUIRED
@@ -120,6 +121,30 @@ function htmlHead( $data ) {
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';
 	echo str_replace( '|', '<g>|</g>', $html );
+}
+function htmlSection( $head, $body, $id = '' ) {
+	$html = '<div';
+	$html.= $id ? ' id="div'.$id.'"' : '';
+	$html.= ' class="section">';
+	echo $html;
+	htmlHead( $head );
+	foreach( $body as $data ) {
+		if ( is_array( $data ) ) {
+			htmlSetting( $data );
+		} else {
+			echo $data;
+		}
+	}
+	echo '</div>';
+}
+function htmlSectionStatus( $id, $labels = '', $help = '' ) {
+	return '
+<div class="col-l text gr">'.$labels.'</div>
+<div class="col-r text">
+	<div id="'.$id.'value"></div>
+</div>
+<div style="clear:both"></div>
+<div class="helpblock hide">'.$help.'</div>';
 }
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
@@ -167,13 +192,4 @@ function htmlSetting( $data ) {
 	// status
 	$html       .= $status ? '<pre id="code'.$id.'" class="status hide"></pre>' : '';
 	echo $html;
-}
-function htmlSection( $head, $body, $id = '' ) {
-	$html = '<div';
-	$html.= $id ? ' id="div'.$id.'"' : '';
-	$html.= ' class="section">';
-	echo $html;
-	htmlHead( $head );
-	foreach( $body as $data ) htmlSetting( $data );
-	echo '</div>';
 }

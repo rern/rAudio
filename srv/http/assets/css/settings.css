@@ -520,6 +520,7 @@ input.disabled + .switchlabel:after {
 }
 .col-l.text {
 	padding-top: 0;
+	height: 100%;
 	line-height: 26px;
 }
 .col-l i {
@@ -608,28 +609,8 @@ input.disabled + .switchlabel:after {
 }
 
 /* camilladsp */
-.panel {
-	float: left;
-}
-#divcontrols-status {
-	position: sticky;
-	top: 30px;
-	width: 330px;
-	height: 100%;
-	padding: 0 15px 30px 15px;
-	background: var( --cga );
-}
 .tab {
-	width: 328px;
-}
-.tab .headtitle {
-	height: 61px;
-}
-.tab .col-l {
-	width: 170px;
-}
-.tab .col-r {
-	width: calc( 100% - 170px );
+	margin-top: -16px;
 }
 .tab .entries {
 	margin-top: 0;
@@ -646,68 +627,15 @@ input.disabled + .switchlabel:after {
 	line-height: 14px;
 	color: var( --cg60 );
 }
-#controls {
-	width: 300px;
-}
-#controls input {
-	max-width: 100%;
-}
-#controls .name {
-	font-size: 16px;
-}
-#controls .value {
-	font-family: Inconsolata;
-}
-#divstatus .col-l {
-	width: 155px;
-}
-#divstatus c {
-	display: block;
-	width: fit-content;
-	max-width: 145px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.tab .section {
-	position: relative;
-	padding: 0 10px;
-	z-index: 0;
-}
-.container .head {
-	position: sticky;
-	top: 55px;
-	margin-bottom: 0;
-	padding-right: 0;
-	background: #000;
-	box-shadow: var( --shadow-bar );
-	z-index: 10;
-}
-.container .head .headtitle {
-	display: block;
-	margin-top: -20px;
-	padding-top: 20px;
-	background: var( --cgd );
-	border-bottom: 1px solid var( --cg );
-}
-#divprofile i {
-	width: 40px;
-	height: 40px;
-	line-height: 38px;
-	text-align: center;
-	font-size: 24px;
-	text-shadow: var( --shadow-text );
-}
-.panel heading i {
-	color: var( --cw );
-}
-.tab input[type=number],
-.tab input[type=text] {
-	margin-bottom: 5px;
-	border: 1px solid var( --cgl ) !important;
-}
 .tab .select2-container {
 	margin-bottom: 5px;
+}
+#divcontrols {
+	padding: 30px;
+	background: var( --cga );
+}
+#divcontrols input[type=range] {
+	max-width: 100%;
 }
 #divoptions .statuslist {
 	margin-bottom: 10px;

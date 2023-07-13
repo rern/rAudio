@@ -1,4 +1,3 @@
-<div id="divmpd" class="section">
 <?php
 $id_data = [
 	  'audiooutput'   => [ 'name' => 'Device',                                                 'setting' => 'none' ]
@@ -17,30 +16,22 @@ $id_data = [
 	, 'replaygain'    => [ 'name' => 'ReplayGain',            'sub' => 'replaygain' ]
 	, 'soxr'          => [ 'name' => 'SoX Resampler',         'sub' => 'resampler' ]
 ];
-htmlHead( [ //////////////////////////////////
+
+$head = [ //////////////////////////////////
 	  'title'  => '<a class="hideN">Music Player Daemon</a><a class="hideW">MPD</a>'
 	, 'status' => 'mpd'
 	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 EOF
-] );
-?>
-	<div class="col-l text gr">
-		Version
-		<br>Database
-		<br>Since
-	</div>
-	<div class="col-r text">
-		<div id="statusvalue"></div>
-	</div>
-	<div style="clear:both"></div>
-	<div class="helpblock hide">
-<a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
-Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
-</div>
-</div>
-<?php
+];
+$labels = 'Version
+	<br>Database
+	<br>Since';
+$help = '<a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
+Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.';
+$body = [ htmlSectionStatus( 'status', $labels, $help ) ];
+htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
 	  'title'  => 'Output'
@@ -52,7 +43,7 @@ $head = [ //////////////////////////////////
 EOF
 ];
 $body = [
-[
+	[
 		  'id'          => 'btreceiver'
 		, 'input'       => '<select id="btaplayname"></select>'
 		, 'settingicon' => 'volume'

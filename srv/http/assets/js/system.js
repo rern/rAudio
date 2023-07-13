@@ -1142,12 +1142,12 @@ function infoRestore( reset ) {
 	$( '#restore' ).prop( 'checked', 0 );
 }
 function renderPage() {
-	$( '#statustext' ).html( S.status + S.warning );
+	$( '#systemvalue' ).html( S.system );
+	$( '#statusvalue' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()
 		.addClass( 'hide' );
-	$( '#systemvalue' ).html( S.system );
 	$( 'softlimit' in S ? '.softlimitno' : '#divsoftlimit, .softlimit' ).remove();
 	renderStorage();
 	$( '#divhddsleep' ).toggleClass( 'hide', $( '#list .i-usbdrive' ).length === 0 );

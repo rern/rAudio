@@ -75,18 +75,18 @@ if ( ! $page ) { // main
 	}
 	if ( $addons ) $css[]  = 'addons';
 	
-	$icon  = $pagetitle = $page;
+	$icon  = $pagetitle = strtoupper( $page );
 	if ( $addonsprogress ) {
 		$icon      = 'addons';
-		$pagetitle = 'addons-progress';
+		$pagetitle = 'Addons-Progress';
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
-		$pagetitle = 'CAMILLA DSP';
+		$pagetitle = 'Camilla DSP';
 	} else if ( $guide ) {
 		$icon      = 'help';
-		$pagetitle = 'user guide';
+		$pagetitle = 'User Guide';
 	}
-	$title = strtoupper( $pagetitle );
+	$title = $pagetitle;
 }
 // <style> -----------------------------------------------------
 $links = '';

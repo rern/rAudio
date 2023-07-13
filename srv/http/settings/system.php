@@ -1,7 +1,4 @@
-<div id="gpiosvg" class="hide">
-<?php include 'assets/img/gpio.svg';?>
-</div>
-<div id="divsystem" class="section">
+<div id="gpiosvg" class="hide"><?php include 'assets/img/gpio.svg';?></div>
 <?php
 $id_data = [
 	  'audio'         => [ 'name' => 'Audio',             'sub' => 'aplay',       'setting' => false,    'status' => true ]
@@ -26,44 +23,32 @@ $id_data = [
 	, 'wlan'          => [ 'name' => 'Wi-Fi',             'sub' => 'iw',                                 'status' => true ]
 ];
 
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'System'
 	, 'status' => 'system'
 	, 'button' => [ 'power' => 'power' ]
 	, 'help'   => i( 'power btn' ).' Power'
-] );
-?>
-	<div id="systemlabel" class="col-l text gr">
-			Version
-		<br>Kernel
-		<br>Hardware
-		<br>SoC
-		<br>CPU
-	</div>
-	<div id="systemvalue" class="col-r text"></div> 
-	<div style="clear:both"></div>
-	<pre id="codesystem" class="hide"></pre>
-</div>
-<div id="divstatus" class="section">
-<?php
-htmlHead( [ //////////////////////////////////
+];
+$labels = 'Version
+	<br>Kernel
+	<br>Hardware
+	<br>SoC
+	<br>CPU';
+$body = [ htmlSectionStatus( 'system', $labels ) ];
+htmlSection( $head, $body, 'system' );
+
+$head = [ //////////////////////////////////
 	  'title'  => 'Status'
 	, 'status' => 'status'
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
-] );
-?>
-	<div id="statuslabel" class="col-l text gr">
-			CPU Load
-		<br>CPU Temp<wide>erature</wide></span>
-		<br>Time
-		<br>Up Time
-		<div id="warning"><i class="i-warning yl"></i>&ensp;<wh>Warning</wh></div>
-	</div>
-	<div id="statustext" class="col-r text"></div>
-	<div style="clear:both"></div>
-	<div class="helpblock hide">
-<wh>• CPU Load:</wh>
+];
+$labels = 'CPU Load
+	<br>CPU Temp<wide>erature</wide></span>
+	<br>Time
+	<br>Up Time
+	<div id="warning">'.i( 'warning yl' ).'>&ensp;<wh>Warning</wh></div>';
+$help = '<wh>• CPU Load:</wh>
  · Average number of processes which are being executed and in waiting.
  · calculated over 1, 5 and 15 minutes.
  · Each one should not be constantly over 0.75 x CPU cores.
@@ -75,20 +60,19 @@ htmlHead( [ //////////////////////////////////
 	· 85°C: CPU cores and GPU throttled.</a><!--
 --><a class="softlimit">
 	· 60°C: Optimized throttling CPU cores and GPU (Soft limit - 3B+ only)</a>
-· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)
-</div>
-<?php
-htmlSetting( [
-	  'id'   => 'softlimit'
-	, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
-] );
-?>
-</div>
-<div id="divstorage" class="section">
-<?php
+· RPi 4: Utilize <a href="https://github.com/raspberrypi/documentation/blob/develop/documentation/asciidoc/computers/raspberry-pi/frequency-management.adoc#using-dvfs">Dynamic Voltage and Frequency Scaling</a> (DVFS)';
+$body = [
+	  htmlSectionStatus( 'status', $labels, $help )
+	, [
+		  'id'   => 'softlimit'
+		, 'help' => 'Temperature level for CPU optimized throttling (default: 60°C)'
+	]
+];
+htmlSection( $head, $body, 'status' );
+
 $uid = exec( 'id -u mpd' );
 $gid = exec( 'id -g mpd' );
-htmlHead( [ //////////////////////////////////
+$head = [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
 	, 'button' => [ 'addnas' => 'plus-circle' ]
@@ -109,22 +93,23 @@ mount -t nfs "<wh>SERVER_IP</wh>:<wh>/SHARE/PATH</wh>" "/mnt/MPD/NAS/<wh>NAME</w
       -o defaults,noauto,bg,soft,timeo=5
 </pre> · Windows shares without password: <c>net user guest /active:yes</c>
 EOF
-] );
-?>
-	<ul id="list" class="entries"></ul>
-	<div class="helpblock hide"><?=( i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu' )?></div>
-	<pre id="codehddinfo" class="hide"></pre>
-<?php
-htmlSetting( [
-	  'id'       => 'hddsleep'
-	, 'disabled' => 'HDD not support sleep'
-	, 'help'     => 'Sleep timer for USB hard drives.'
-] );
-htmlSetting( [
-	  'id'   => 'usbautoupdate'
-	, 'help' => 'Auto update Library database on insert/remove USB drives.'
-] );
-echo '</div>';
+];
+$body = [
+	'<ul id="list" class="entries"></ul>
+		<div class="helpblock hide">'.i( 'usbdrive btn' ).' '.i( 'networks btn' ).' Context menu'.'</div>
+		<pre id="codehddinfo" class="hide"></pre>'
+	, [
+		  'id'       => 'hddsleep'
+		, 'disabled' => 'HDD not support sleep'
+		, 'help'     => 'Sleep timer for USB hard drives.'
+	]
+	, [
+		  'id'   => 'usbautoupdate'
+		, 'help' => 'Auto update Library database on insert/remove USB drives.'
+	]
+];
+htmlSection( $head, $body, 'storage' );
+
 if ( file_exists( '/srv/http/data/shm/onboardwlan' ) ) {
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////
