@@ -511,7 +511,7 @@ input.disabled + .switchlabel:after {
 }
 .col-l {
 	display: inline-block;
-	width: 165px;
+	width: 170px;
 	height: 40px;
 	font-size: 16px;
 	text-align: right;
@@ -564,7 +564,7 @@ input.disabled + .switchlabel:after {
 	text-align: center;
 }
 .col-r {
-	width: calc( 100% - 165px );
+	width: calc( 100% - 170px );
 	padding-right: 0;
 	padding-left: 0 !important;
 	font-weight: normal;

@@ -75,7 +75,8 @@ if ( ! $page ) { // main
 	}
 	if ( $addons ) $css[]  = 'addons';
 	
-	$icon  = $pagetitle = strtoupper( $page );
+	$icon      = $page;
+	$pagetitle = strtoupper( $page );
 	if ( $addonsprogress ) {
 		$icon      = 'addons';
 		$pagetitle = 'Addons-Progress';

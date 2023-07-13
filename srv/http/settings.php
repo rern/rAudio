@@ -25,7 +25,7 @@ $FlabelIcon = 'labelIcon';
 $Fmenu      = 'menu';
 $Ftab       = 'tab';
 
-echo '<div class="container hide">';
+echo '<div class="container '.$page.' hide">';
 
 if ( $page !== 'addons' ) include 'settings/'.$page.'.php';
 
