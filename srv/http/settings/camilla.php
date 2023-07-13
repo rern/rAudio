@@ -20,17 +20,19 @@ foreach( $options as $label => $id ) {
 				  .'</div>';
 }
 $htmldevices = '';
-foreach( [ 'Capture', 'Playback', 'Sampling', 'Options' ] as $title ) {
-	$id   = lcFirst( str_replace( ' ', '', $title ) );
-	$html = '<div class="statuslist"></div>';
+foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
+	$id      = lcFirst( str_replace( ' ', '', $title ) );
+	$html    = '<div class="statuslist"></div>';
+	$setting = $title === 'Capture' || $title === 'Playback';
+	$head    = '';
 	if ( $title === 'Options' ) {
 		$html .= $htmloptions;
-	} else {
-		$title.= i( 'gear', $id );
+	} else if ( $setting ) {
+		$head  = '<heading class="subhead"><span class="headtitle">'.$title.i( 'gear', $id ).'</span></heading>';
 	}
 	$htmldevices.= '
 <div id="div'.$id.'" class="section">
-<heading class="subhead"><span class="headtitle">'.$title.'</span></heading>
+'.$head.'
 <div class="content">'.$html.'</div>
 </div>
 ';
@@ -55,10 +57,9 @@ $htmlcontrols = '
 
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
-	$icon = $id === 'devices' ? '' : i( 'plus-circle add' );
 	$htmltabs.= '
 <div id="div'.$id.'" class="tab">
-	'.( $icon ? '' : $htmldevices ).'
+	'.( $id === 'devices' ? $htmldevices : '' ).'
 	<ul class="entries"></ul>
 </div>
 ';
@@ -81,7 +82,10 @@ htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $head = [
 	  'title'  => 'Profile'
-	, 'button' => [ 'add' => 'plus-circle' ]
+	, 'button' => [
+		  'add'    => 'plus-circle'
+		, 'settings' => 'gear'
+	]
 ];
 $body = [
 	[
@@ -94,7 +98,10 @@ htmlSection( $head, $body, 'profile' );
 //////////////////////////////////
 $head = [
 	  'title'  => 'Controls'
-	, 'button' => [ 'add hide' => 'plus-circle' ]
+	, 'button' => [
+		  'add hide'      => 'plus-circle'
+		, 'settings hide' => 'gear'
+	]
 ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );

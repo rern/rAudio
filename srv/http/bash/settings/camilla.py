@@ -56,7 +56,7 @@ else: # get: cmd
                 , 'mute'     : cdsp.get_mute()
                 , 'status'   : status()
                 , 'lscoef'   : os.listdir( '/srv/http/data/camilladsp/coeffs' )
-                , 'lsconf'   : os.listdir( '/srv/http/data/camilladsp/configs' )
+                , 'lsconf'   : os.listdir( pathconfigs )
                 , 'fileconf' : os.path.basename( cdsp.get_config_name().rsplit( '.' )[ 0 ] )
             }
         case 'status':

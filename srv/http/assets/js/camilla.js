@@ -53,12 +53,28 @@ $( '#divprofile .add' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#fileconf' ).on( 'change', function() {
+$( '#divprofile .settings' ).on( 'click', function() {
+	info( {
+		  icon         : SW.icon
+		, title        : 'Interface Setting'
+		, message      : 'Show:'
+		, messagealign : 'left'
+		, checkbox     : [ 'Volume, Bass, Treble', 'Capture/Playback in Devices' ]
+		, values       : S.camillaconf
+		, checkchanged : true
+		, ok           : () => {
+			var val = infoVal();
+			bash( [ 'camilla', val.controls, val.capture_playback, 'CFG CONTROLS CAPTURE_PLAYBACK' ] );
+			notify( SW.icon, 'Setting', 'Change...' );
+		}
+	} );
+} );
+$( '#profile' ).on( 'change', function() {
 	var name = $( this ).val();
 	bash( [ 'confswitch', name, 'CMD NAME' ] );
 	notify( SW.icon, 'Profile', 'Switch to&ensp;<wh>'+ name +'</wh> ...' );
 } );
-$( '#divprofile .edit' ).on( 'click', function() {
+$( '#setting-profile' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon
 		, title        : 'Edit Profile'
@@ -87,7 +103,7 @@ $( '#setting-capture' ).on( 'click', function() {
 $( '#setting-playback' ).on( 'click', function() {
 	
 } );
-$( '#setting-sampling' ).on( 'click', function() {
+$( '#divsettings .settings' ).on( 'click', function() {
 	var textlabel  = L.sampling.slice( 1 );
 	textlabel.push( 'Other' );
 	var values     = {};
@@ -96,7 +112,7 @@ $( '#setting-sampling' ).on( 'click', function() {
 	values.other = values.samplerate;
 	info( {
 		  icon         : SW.icon
-		, title        : 'Edit Sampling'
+		, title        : 'Devices'
 		, selectlabel  : 'Sample Rate'
 		, select       : L.samplerate
 		, textlabel    : labelArraySet( textlabel )
@@ -148,11 +164,11 @@ $( '#divsettings' ).on( 'click', '.add.filters', function() {
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
-	$( '#divsettings .headtitle' ).eq( 0 )
-		.text( key2label( id ) )
-		.next()
-			.addClass( id )
-			.toggleClass( 'hide', id === 'devices' );
+	$( '.section' )
+	$( '#divsettings .add' )
+		.prop( 'class', 'i-plus-circle add '+ id )
+		.toggleClass( 'hide', [ 'controls', 'devices' ].includes( id ) );
+	$( '#divsettings .settings' ).toggleClass( 'hide', id !== 'devices' );
 	renderTab( id );
 } );
 
@@ -597,10 +613,18 @@ function renderPage() {
 		.html( options )
 		.val( S.fileconf );
 	$( '#setting-profile' ).removeClass( 'hide' );
+	$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.camillaconf.capture_playback );
+	if ( S.camillaconf.controls ) {
+		$( '#controls' ).removeClass( 'hide' );
+	} else {
+		$( '#controls' ).addClass( 'hide' );
+		if ( L.currenttab === 'controls' ) L.currenttab = 'devices';
+	}
 	renderTab( L.currenttab );
 	showContent();
 }
 function renderTab( id ) {
+	$( '#divsettings .headtitle' ).eq( 0 ).text( key2label( id ) )
 	$( '.tab' ).addClass( 'hide' );
 	$( '#div'+ L.currenttab ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
