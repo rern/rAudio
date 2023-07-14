@@ -374,7 +374,7 @@ function coverartChange() {
 		, filelabel   : ico( 'folder-open' ) +'File'
 		, fileoklabel : ico( 'flash' ) +'Replace'
 		, filetype    : 'image/*'
-		, buttonlabel : ! coverartlocal ? '' : ico( 'minus-circle' ) +'Remove'
+		, buttonlabel : ! coverartlocal ? '' : ico( 'remove' ) +'Remove'
 		, buttoncolor : ! coverartlocal ? '' : red
 		, button      : ! coverartlocal ? '' : () => {
 			var ext = $( '.infomessage .imgold' ).attr( 'src' ).slice( -3 );
@@ -1484,7 +1484,7 @@ function setBookmarkEdit() {
 	$( '.mode-bookmark' ).each( ( i, el ) => {
 		var $this      = $( el );
 		var path       = $this.find( '.lipath' ).text();
-		var buttonhtml = ico( 'minus-circle bkedit bk-remove' );
+		var buttonhtml = ico( 'remove bkedit bk-remove' );
 		if ( ! $this.find( 'img' ).length ) buttonhtml += ico( 'edit-circle bkedit bk-rename' );
 		if ( ! [ 'http', 'rtsp' ].includes( path.slice( 0, 4 ) ) ) buttonhtml += '<div class="bkedit bk-cover">'+ ico( 'coverart' ) +'</div>';
 		$this.append( buttonhtml );

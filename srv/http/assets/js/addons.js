@@ -127,7 +127,7 @@ function renderPage() {
 				var buttonlabel = buttonLabel( 'add', 'Install' );
 			}
 			var button   = '<a class="install infobtn'+ disabled +'">'+ buttonlabel +'</a>';
-			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';
+			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-remove"></i> Uninstall</a>';
 		}
 		addons         += `\
 <div id="${ alias }" class="divaddon">

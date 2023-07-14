@@ -163,7 +163,7 @@ function playlistDelete() {
 		, title   : 'Delete Playlist'
 		, message : 'Delete?'
 				   +'<br><wh>'+ V.list.name +'</wh>'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => bash( [ 'savedpldelete', V.list.name, 'CMD NAME' ] )
 	} );
@@ -457,7 +457,7 @@ function webRadioDelete() {
 		, message : '<br><img src="'+ img +'">'
 				   +'<br><wh>'+ name +'</wh>'
 				   +'<br>'+ url
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			V.list.li.remove();
@@ -476,7 +476,7 @@ function wrDirectoryDelete() {
 		, title   : 'Delete Folder'
 		, message : 'Folder:'
 					+'<br><wh>'+ path +'</wh>'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			bash( [ 'wrdirdelete', path, V.mode, 'CMD NAME MODE' ], std => {
@@ -487,7 +487,7 @@ function wrDirectoryDelete() {
 						, message : 'Folder not empty:'
 									+'<br><wh>'+ path +'</wh>'
 									+'<br>Confirm delete?'
-						, oklabel : ico( 'minus-circle' ) +'Delete'
+						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => bash( [ 'wrdirdelete', path, V.mode, true, 'CMD NAME MODE CONFIRM' ] )
 					} );

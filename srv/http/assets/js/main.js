@@ -542,7 +542,7 @@ $( '#infoicon' ).on( 'click', '.i-audiocd', function() {
 	info( {
 		  icon    : 'audiocd'
 		, title   : 'Audio CD'
-		, oklabel : ico( 'minus-circle' ) +'Eject'
+		, oklabel : ico( 'remove' ) +'Eject'
 		, okcolor : red
 		, ok      : () => bash( [ 'audiocd.sh', 'ejecticonclick' ] )
 	} );
@@ -1371,7 +1371,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 		  icon    : 'bookmark'
 		, title   : 'Remove Bookmark'
 		, message : icon
-		, oklabel : ico( 'minus-circle' ) +'Remove'
+		, oklabel : ico( 'remove' ) +'Remove'
 		, okcolor : red
 		, ok      : () => bash( [ 'bookmarkremove', name, 'CMD NAME' ] )
 	} );
@@ -1471,7 +1471,7 @@ ${ ico( 'artist wh' ) } ${ artist }
 
 Exclude this thumbnail?`
 		, okcolor : orange
-		, oklabel : ico( 'minus-circle' ) +'Exclude'
+		, oklabel : ico( 'remove' ) +'Exclude'
 		, ok      : () => {
 			bash( [ 'albumignore', album, artist, 'CMD ALBUM ARTIST' ] );
 			$this.remove();
@@ -1722,7 +1722,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 		info( {
 			  icon        : 'playlist'
 			, title       : 'Clear Playlist'
-			, oklabel     : ico( 'minus-circle' ) +'Clear'
+			, oklabel     : ico( 'remove' ) +'Clear'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1740,7 +1740,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, button      : [
 				  () => {
 					local();
-					$( '#pl-list .li1' ).before( ico( 'minus-circle pl-remove' ) );
+					$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
 				}
 				, () => {
@@ -1749,7 +1749,7 @@ $( '#button-pl-clear' ).on( 'click', function() {
 					$( '#pl-list li:not( .active )' ).remove();
 				}
 			]
-			, oklabel     : ico( 'minus-circle' ) +'All'
+			, oklabel     : ico( 'remove' ) +'All'
 			, okcolor     : red
 			, ok          : () => {
 				bash( [ 'mpcremove' ] );
@@ -1914,7 +1914,7 @@ $( '#pl-savedlist' ).on( 'click', 'li', function( e ) {
 				V.list.path   = $this.find( '.lipath' ).text().trim() || V.list.name;
 				V.list.track  = $this.data( 'track' );
 				$( '.plus-refresh, .play-plus-refresh' ).toggleClass( 'hide', ! S.pllength );
-				$( '.minus-circle' ).removeClass( 'hide' );
+				$( '.remove' ).removeClass( 'hide' );
 				$( '.tag' ).addClass( 'hide' );
 				if ( ( D.tapaddplay || D.tapreplaceplay )
 					&& V.savedpltrack 
@@ -2012,7 +2012,7 @@ $( '#lyricsdelete' ).on( 'click', function() {
 		  icon    : 'lyrics'
 		, title   : 'Lyrics'
 		, message : 'Delete this lyrics?'
-		, oklabel : ico( 'minus-circle' ) +'Delete'
+		, oklabel : ico( 'remove' ) +'Delete'
 		, okcolor : red
 		, ok      : () => {
 			var artist = $( '#lyricsartist' ).text();

@@ -170,7 +170,7 @@ $( '#setting-localbrowser' ).on( 'click', function() {
 	</td><td></td></tr>
 <tr><td>Zoom</td>
 	<td><input id="zoom" type="text" disabled></td>
-	<td>&nbsp;<gr>%</gr>${ ico( 'minus-circle btnicon dn' ) + ico( 'add btnicon up' ) }</td></tr>
+	<td>&nbsp;<gr>%</gr>${ ico( 'remove btnicon dn' ) + ico( 'add btnicon up' ) }</td></tr>
 <tr><td>Screen off</td>
 	<td><select id="screenoff">
 		<option value="0">Disable</option>
@@ -268,7 +268,7 @@ $( '#setting-lyrics' ).on( 'click', function() {
 $( '#setting-multiraudio' ).on( 'click', function() {
 	var trhtml  = '<tr><td style="width: 180px"><input type="text" spellcheck="false"></td>'
 					 +'<td style="width: 130px"><input type="text" class="ip" value="'+ S.ipsub +'" spellcheck="false"></td>'
-					 +'<td>&nbsp;'+ ico( 'minus-circle i-lg pointer ipremove' ) +'</td></tr>';
+					 +'<td>&nbsp;'+ ico( 'remove i-lg pointer ipremove' ) +'</td></tr>';
 	var content = '<tr class="gr"><td>&ensp;Name</td><td>&ensp;IP / URL</td><td>&nbsp;'+ ico( 'add i-lg wh pointer ipadd' ) +'</td></tr>'+ trhtml;
 	
 	if ( S.multiraudioconf ) {

@@ -172,7 +172,7 @@ $( '.forget' ).on( 'click', function() {
 		  icon    : icon
 		, title   : ssid
 		, message : S.ipeth || S.ipwl ? '' : iconwarning +'Current Web interface will be dropped.'
-		, oklabel : ico( 'minus-circle' ) +'Forget'
+		, oklabel : ico( 'remove' ) +'Forget'
 		, okcolor : red
 		, ok      : () => {
 			notify( icon, ssid, 'Forget ...' );

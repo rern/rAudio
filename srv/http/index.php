@@ -53,7 +53,7 @@ $menulist = [
 	  [ 'similar',       'lastfm',        'Add similar' ]
 	, [ 'wrsave',        'save',          'Save to Library' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
-	, [ 'savedplremove', 'minus-circle',  'Remove' ]
+	, [ 'savedplremove', 'remove',  'Remove' ]
 	, [ 'tag',           'tag',           'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'filesavedpl' );
@@ -77,7 +77,7 @@ $menulist = [
 	, [ 'current',    'current',         'Current' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'minus-circle',  'Remove' ]
+	, [ 'remove',     'remove',  'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
 	, [ 'tag',        'info-circle',   'Track Info' ]
 ];
@@ -86,7 +86,7 @@ htmlmenu( $menulist, 'plaction' );
 $html = menucommon( 'pladd', 'plreplace' );
 $menulist = [
 	  [ 'plrename', 'edit-circle',  'Rename' ]
-	, [ 'pldelete', 'minus-circle', 'Delete' ]
+	, [ 'pldelete', 'remove', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
 // radio bookmark
@@ -98,14 +98,14 @@ $menulist = [
 	  [ 'bookmark',   'star',         'Bookmark' ]
 	, [ 'wredit',     'edit-circle',  'Edit' ]
 	, [ 'wrcoverart', 'coverart',     'Change cover art' ]
-	, [ 'wrdelete',   'minus-circle', 'Delete' ]
+	, [ 'wrdelete',   'remove', 'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir
 $html = '';
 $menulist = [
 	  [ 'bookmark',      'star',         'Bookmark' ]
-	, [ 'wrdirdelete',   'minus-circle', 'Delete' ]
+	, [ 'wrdirdelete',   'remove', 'Delete' ]
 	, [ 'wrdirrename',   'edit-circle',  'Rename' ]
 ];
 htmlmenu( $menulist, 'wrdir' );
@@ -275,7 +275,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			  .i( 'button-pl-consume',   'flash' )
 			  .i( 'button-pl-librandom', 'librandom' )
 			  .i( 'button-pl-shuffle',   'shuffle pllength' )
-			  .i( 'button-pl-clear',     'minus-circle pllength' )
+			  .i( 'button-pl-clear',     'remove pllength' )
 			  .i( 'button-pl-search',    'search pllength' )?>
 		</div>
 		<form id="pl-search" class="hide" method="post" onSubmit="return false;">
@@ -303,7 +303,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<div id="lyricseditbtngroup" class="hide">
 			<?=i( 'lyricsundo',   'undo hide' )
 			  .i( 'lyricssave',   'save hide' )
-			  .i( 'lyricsdelete', 'minus-circle' )
+			  .i( 'lyricsdelete', 'remove' )
 			  .i( 'lyricsback',   'arrow-left bl' )?>
 		</div>
 	</div>

@@ -122,7 +122,6 @@ i {
 .i-lyrics::before          { content: '\F54B' }
 .i-microsd::before         { content: '\F543' }
 .i-minus::before           { content: '\F518' }
-.i-minus-circle::before    { content: '\F563' }
 .i-mixers::before          { content: '\F50C' }
 .i-mpd::before             { content: '\F582' }
 .i-mpdoled::before         { content: '\F57A' }
