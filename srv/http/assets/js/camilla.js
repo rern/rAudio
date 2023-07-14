@@ -486,6 +486,37 @@ function infoFilters( type, subtype ) {
 		}
 	} );
 }
+var trdest = `
+<tr style="height: 10px;"></tr>
+<tr class="trdest">
+	<td><gr>Map</gr> Dest.</td><td><input type="number" value="0"></td>
+	<td colspan="3" style="padding-left: 20px"><label><input type="checkbox">Mute</label></td>
+	<td><i class="i-remove removemap"></i></td>
+</tr>
+<tr class="trhead">
+	<td>Channel</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
+	<td><i class="i-add addchannel"></i></td>
+</tr>
+`;
+var trchannel = `
+<tr class="trinput trchannel">
+	<td><input type="number" value="0"></td><td><input type="number" value="0"></td>
+	<td>&nbsp;<input type="checkbox"</td><td>&nbsp;<input type="checkbox"</td><td class="w20"></td>
+	<td><i class="i-remove removechannel"></i></td>
+</tr>
+`;
+var contentmixers = `
+<table class="tmixers">
+<tr class="trinput">
+	<td>Name</td><td colspan="4"><input type="text"></td><td></td>
+</tr>
+<tr class="trinput">
+	<td>Channel In</td><td><input type="number"></td>
+	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>Map</gr>&nbsp;</td>
+	<td><i class="i-add addmap"></i></td>
+</tr>
+`;
+contentmixers += '<tbody>'+ trdest + trchannel +'</tbody></table>';
 function infoMixers( name ) {
 	if ( name ) {
 		var kv = S.config.mixers[ name ];
@@ -508,43 +539,25 @@ function infoMixers( name ) {
 	} else {
 		var values = { name: '', in: 2, out: 2, dest0: 0, mute0: false, c0: 0, g0: 0, m0: false, i0: false };
 	}
-	var content = `
-<table class="tmixers">
-<tr class="trinput">
-	<td>Name</td><td colspan="4"><input type="text"></td><td></td>
-</tr>
-<tr class="trinput">
-	<td>Channel In</td><td><input type="number"></td>
-	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>Map</gr>&nbsp;</td>
-	<td><i class="i-add"></i></td>
-</tr>
-<tr style="height: 10px;"></tr>
-<tr class="trdest">
-	<td><gr>Map</gr> Dest.</td><td><input type="number"></td>
-	<td colspan="3" style="padding-left: 20px"><label><input type="checkbox">Mute</label></td>
-	<td><i class="i-remove"></i></td>
-</tr>
-<tr class="trhead">
-	<td>Channel</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
-	<td><i class="i-add"></i></td>
-</tr>
-<tr class="trinput trchannel">
-	<td><input type="number"></td><td><input type="number"></td>
-	<td>&nbsp;<input type="checkbox"</td><td>&nbsp;<input type="checkbox"</td><td class="w20"></td>
-	<td><i class="i-remove"></i></td>
-</tr>
-<tr style="height: 10px;"></tr>
-</table>`;
 	info( {
 		  icon         : SW.icon
 		, title        : 'New Mixer'
-		, content      : content
+		, content      : contentmixers
 		, contentcssno : true
 		, checkbox     : [ 'Mute' ]
 		, values       : values
 		, checkblank   : true
+		, checkchanged : name
 		, beforeshow   : () => {
-			
+			$( '#infoContent' ).on( 'click', '.addmap', function() {
+				$( '#infoContent tbody' ).last().after( '<tbody>'+ trdest + trchannel +'</tbody>' );
+			} ).on( 'click', '.removemap', function() {
+				$( this ).parents( 'tbody' ).remove()
+			} ).on( 'click', '.addchannel', function() {
+				$( this ).parents( 'tbody' ).find( 'tr' ).last().after( trchannel );
+			} ).on( 'click', '.removechannel', function() {
+				$( this ).parents( '.trchannel' ).remove()
+			} );
 		}
 		, ok           : () => {
 			var name = infoVal();
