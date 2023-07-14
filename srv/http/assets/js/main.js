@@ -484,7 +484,7 @@ $( '#info' ).on( 'click', function() {
 	if ( localhost ) setInfoScroll();
 } );
 $( '.emptyadd' ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'i-plus-circle' ) ) {
+	if ( $( e.target ).hasClass( 'i-add' ) ) {
 		$( '#library' ).trigger( 'click' );
 	} else if ( $( e.target ).hasClass( 'i-gear' ) ) {
 		$( '#button-settings' ).trigger( 'click' );
@@ -1301,7 +1301,7 @@ $( '#lib-mode-list' ).on( 'click', function( e ) {
 <div class="menu">
 <a data-cmd="add" class="sub cmd"><i class="i-plus-o"></i>Add</a><i class="i-play-plus submenu cmd" data-cmd="addplay"></i>
 <div class="pllength">
-<a data-cmd="playnext" class="cmd"><i class="i-plus-circle"></i>Play next</a>
+<a data-cmd="playnext" class="cmd"><i class="i-add"></i>Play next</a>
 <a data-cmd="replace" class="sub cmd"><i class="i-replace"></i>Replace</a><i class="i-play-replace submenu cmd" data-cmd="replaceplay"></i>
 </div>
 </div>`;

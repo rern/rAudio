@@ -37,11 +37,11 @@ echo $html;
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'Wi-Fi'
 	, 'status' => 'wl'
-	, 'button' => [ 'wladd' => 'plus-circle', 'wlscan' => 'search' ]
+	, 'button' => [ 'wladd' => 'add', 'wlscan' => 'search' ]
 ] );
 ?>
 	<ul id="listwl" class="entries"></ul>
-	<div class="helpblock hide"><?=i( 'plus-circle btn' )?> Manual connect
+	<div class="helpblock hide"><?=i( 'add btn' )?> Manual connect
 <?=i( 'search btn' )?> Available networks
 <?=i( 'wifi btn' )?> Context menu
 
@@ -54,7 +54,7 @@ Note:
 htmlHead( [ //////////////////////////////////
 	  'title'  => 'LAN'
 	, 'status' => 'lan'
-	, 'button' => [ 'lanadd' => 'plus-circle wh' ]
+	, 'button' => [ 'lanadd' => 'add wh' ]
 ] );
 ?>
 	<ul id="listlan" class="entries"></ul>

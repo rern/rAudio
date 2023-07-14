@@ -229,7 +229,7 @@ heading i.help {
 	float: right;
 	text-align: right;
 }
-heading .i-plus-circle,
+heading .i-add,
 heading .i-search {
 	color: var( --cw );
 }
@@ -641,6 +641,13 @@ input.disabled + .switchlabel:after {
 }
 #divenable_rate_adjust {
 	margin-top: 10px;
+}
+.section hr {
+	border-bottom-color: var( --cga );
+}
+.col-r hr {
+	margin-left: 0;
+	max-width: 230px;
 }
 
 @media (max-height: 570px) {

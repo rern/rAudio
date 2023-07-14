@@ -75,12 +75,12 @@ $gid = exec( 'id -g mpd' );
 $head = [ //////////////////////////////////
 	  'title'  => 'Storage'
 	, 'status' => 'storage'
-	, 'button' => [ 'addnas' => 'plus-circle' ]
+	, 'button' => [ 'addnas' => 'add' ]
 	, 'help'   => <<< EOF
-{$Fi( 'plus-circle btn' )} Add network storage
+{$Fi( 'add btn' )} Add network storage
 
  · USB drives  Will be found and mounted automatically.
- · Commands used by {$Fi( 'plus-circle btn' )} Add network storage:
+ · Commands used by {$Fi( 'add btn' )} Add network storage:
 <pre class="gr">
 mkdir -p "/mnt/MPD/NAS/<wh>NAME</wh>"
 

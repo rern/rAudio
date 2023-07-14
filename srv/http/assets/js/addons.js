@@ -124,7 +124,7 @@ function renderPage() {
 			} else if ( addon.buttonlabel ) {
 				var buttonlabel = buttonLabel( addon.buttonlabel[ 0 ], addon.buttonlabel[ 1 ] );
 			} else {
-				var buttonlabel = buttonLabel( 'plus-circle', 'Install' );
+				var buttonlabel = buttonLabel( 'add', 'Install' );
 			}
 			var button   = '<a class="install infobtn'+ disabled +'">'+ buttonlabel +'</a>';
 			if ( installed && 'uninstall' in addon ) button += ' <a class="uninstall infobtn"><i class="i-minus-circle"></i> Uninstall</a>';

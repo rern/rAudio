@@ -161,12 +161,51 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 $( '#divsettings' ).on( 'click', '.add.filters', function() {
 	infoFilters( 'Biquad', 'Lowpass' );
 } );
+$( '#divsettings' ).on( 'click', '.add.mixers', function() {
+	var content = `
+<table>
+<tr class="trtext">
+	<td>Name</td><td colspan="3"><input type="text"></td>
+</tr>
+<tr class="trchannel">
+	<td>Channel in</td><td><input type="number"></td>
+	<td>Channel out</td><td><input type="number"></td>
+</tr>
+<tr class="trdest">
+	<td>Destination</td><td><input type="number"></td>
+	<td class="tdmute"><label><input type="checkbox">Mute</label></td><td><i class="i-add"></i></td>
+</tr>
+<tr class="trdestch">
+	<td>Channel</td><td><input type="number"></td>
+	<td>Gain</td><td><input type="number"></td>
+</tr>
+</table>`;
+	info( {
+		  icon         : SW.icon
+		, title        : 'New Mixer'
+		, content      : content
+		, contentcssno : true
+//		, textlabel    : [ 'Name' ]
+//		, numberlabel  : [ 'Channel in', 'Channel out', 'Destination' ]
+		, checkbox     : [ 'Mute' ]
+		, values       : { name: '', in: 2, out: 2, dest: 0 }
+		, checkblank   : true
+		, beforeshow   : () => {
+			$( '#infoContent tr > td:even' ).css( { width: '110px', 'padding-right': '5px', 'text-align': 'right' } );
+			$( '#infoContent tr > td:odd' ).css( 'width', '50px' );
+			$( '#infoContent .tdmute' ).css( { 'padding-left': '5px', 'text-align': 'left' } );
+		}
+		, ok           : () => {
+			var name = infoVal();
+		}
+	} );
+} );
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
 	$( '.section' )
 	$( '#divsettings .add' )
-		.prop( 'class', 'i-plus-circle add '+ id )
+		.prop( 'class', 'i-add add '+ id )
 		.toggleClass( 'hide', [ 'controls', 'devices' ].includes( id ) );
 	$( '#divsettings .settings' ).toggleClass( 'hide', id !== 'devices' );
 	renderTab( id );
@@ -566,9 +605,9 @@ function otherToggle( $trother, rate ) {
 	if ( ! other ) $trother.find( 'input' ).val( rate );
 }
 function renderDevices() {
+	renderDevicesList( 'sampling', L.sampling );
 	renderDevicesList( 'capture' );
 	renderDevicesList( 'playback' );
-	renderDevicesList( 'sampling', L.sampling );
 	var keys = [];
 	if ( D.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 	if ( D.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
@@ -581,8 +620,13 @@ function renderDevicesList( section, keys ) {
 	} else {
 		var kv = D;
 	}
-	var labels = '';
-	var values = '';
+	if ( section === 'options' ) {
+		var labels = '<hr>';
+		var values = '<hr>';
+	} else {
+		var labels = '';
+		var values = '';
+	}
 	keys.forEach( k => {
 		labels += key2label( k ) +'<br>';
 		values += kv[ k ] +'<br>';
@@ -636,28 +680,52 @@ function renderTab( id ) {
 	$( '#div'+ L.currenttab ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ L.currenttab ).addClass( 'active' );
-	if ( id === 'devices' ) renderDevices();
+	if ( id === 'devices' ) {
+		renderDevices();
+		return
+	}
 	
 	var kv = S.config[ id ];
 	if ( $.isEmptyObject( kv ) ) return
 	
-	if ( id === 'filters' ) {
-		var li = '';
-		$.each( kv, ( k, v ) => {
-			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2">'+ v.type +': '+ Object.values( v.parameters ).join( ', ' ) +'</div></li>';
-		} );
-	} else if ( id === 'mixers' ) {
-		var li = '';
-		$.each( kv, ( k, v ) => {
-			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2"></div></li>';
-		} );
-	} else if ( id === 'pipeline' ) {
+	if ( id === 'pipeline' ) {
 		var li = '';
 		kv.forEach( el => {
 			li += '<li>'+ ico( id ) +'<div class="li1">'+ el.type +'<gr> · channel: '+ el.channel +'<gr></div>'
-				 +'<div class="li2">'+ el.names.join( ', ' ) +'</div></li>';
+				 +'<div class="li2">'+ el.names.join( ' | ' ) +'</div></li>';
+		} );
+		$( '#div'+ id +' .entries' ).html( li );
+		return
+	}
+	
+	var data = {};
+	Object.keys( kv ).sort().forEach( k => data[ k ] = kv[ k ] );
+	if ( id === 'filters' ) {
+		var li = '';
+		$.each( data, ( k, v ) => {
+			var val = JSON.stringify( v.parameters )
+						.replace( /[{"}]/g, '' )
+						.replace( 'type:', '' )
+						.replace( /,/g, ', ' )
+			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2">'+ v.type +': '+ val +'</div></li>';
+		} );
+	} else if ( id === 'mixers' ) {
+		var li = '';
+		$.each( data, ( k, v ) => {
+			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
+				 +'<div class="li2">In '+ v.channels.in +' - Out '+ v.channels.out
+				v.mapping.forEach( em => {
+					li += ' • Dest '+ em.dest +' |';
+					if ( em.mute ) li += ', Mute';
+					em.sources.forEach( es => {
+						li += ' ch:'+ es.channel + ', gain:'+ es.gain;
+						if ( es.inverted ) li += ', Inverted';
+						if ( es.mute ) li += ', Mute';
+						li += ' |';
+					} );
+				} );
+			li +'</div></li>';
 		} );
 	}
 	$( '#div'+ id +' .entries' ).html( li );

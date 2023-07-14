@@ -32,6 +32,7 @@ i {
 }
 .i-lg { font-size: 22px !important }
 .i-accesspoint::before     { content: '\F554' }
+.i-add::before             { content: '\F564' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }
@@ -145,7 +146,6 @@ i {
 .i-play-power::before      { content: '\F53A' }
 .i-play-replace::before    { content: '\F533' }
 .i-plus::before            { content: '\F519' }
-.i-plus-circle::before     { content: '\F564' }
 .i-plus-o::before          { content: '\F530' }
 .i-power::before           { content: '\F520' }
 .i-powerbutton::before     { content: '\F520' }
@@ -163,6 +163,7 @@ i {
 .i-refresh-library::before { content: '\F536' }
 .i-relays::before          { content: '\F522' }
 .i-reload::before          { content: '\F525' }
+.i-remove::before          { content: '\F563' }
 .i-repeat::before          { content: '\F511' }
 .i-repeat1::before         { content: '\F510' }
 .i-replace::before         { content: '\F531' }

@@ -9,7 +9,7 @@ function i( $id = '', $class ) {
 // context menus
 function menucommon( $add, $replace ) {
 	$htmlcommon = '<a data-cmd="'.$add.'" class="add sub">'.i( '', 'plus-o' ).'Add</a><i class="i-play-plus submenu" data-cmd="'.$add.'play"></i>';
-	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'plus-circle' ).'Play next</a>';
+	$htmlcommon.= '<a data-cmd="playnext" class="playnext">'.i( '', 'add' ).'Play next</a>';
 	$htmlcommon.= '<a data-cmd="'.$replace.'" class="replace sub">'.i( '', 'replace' ).'Replace</a><i class="i-play-replace submenu" data-cmd="'.$replace.'play"></i>';
 	return $htmlcommon;
 }
@@ -182,7 +182,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playback" class="page">
-	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
+	<div class="emptyadd hide"><?=i( '', 'add' )?></div>
 	<?=i( 'guide-bio',    'bio map guide hide' )
 	  .i( 'guide-lyrics', 'lyrics map guide hide' )
 	  .i( 'guide-booklet',  'booklet map guide hide' )?>
@@ -263,7 +263,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playlist" class="page hide">
-	<div class="emptyadd hide"><?=i( '', 'plus-circle' )?></div>
+	<div class="emptyadd hide"><?=i( '', 'add' )?></div>
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>

@@ -1220,7 +1220,7 @@ function renderLibraryList( data ) { // V.librarylist
 		}
 	}
 	if ( V.mode === 'webradio' ) {
-		htmlpath += ico( 'plus-circle btntitle button-webradio-new' );
+		htmlpath += ico( 'add btntitle button-webradio-new' );
 	} else if ( V.mode === 'latest' ) {
 		htmlpath += ico( 'flash btntitle button-latest-clear' );
 	} else if ( V.mode === 'dabradio' ) {

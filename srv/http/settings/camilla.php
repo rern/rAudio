@@ -83,7 +83,7 @@ htmlSection( $head, $body, 'status' );
 $head = [
 	  'title'  => 'Profile'
 	, 'button' => [
-		  'add'    => 'plus-circle'
+		  'add'    => 'add'
 		, 'settings' => 'gear'
 	]
 ];
@@ -99,7 +99,7 @@ htmlSection( $head, $body, 'profile' );
 $head = [
 	  'title'  => 'Controls'
 	, 'button' => [
-		  'add hide'      => 'plus-circle'
+		  'add hide'      => 'add'
 		, 'settings hide' => 'gear'
 	]
 ];
