@@ -161,45 +161,9 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 $( '#divsettings' ).on( 'click', '.add.filters', function() {
 	infoFilters( 'Biquad', 'Lowpass' );
 } );
-$( '#divsettings' ).on( 'click', '.add.mixers', function() {
-	var content = `
-<table>
-<tr class="trtext">
-	<td>Name</td><td colspan="3"><input type="text"></td>
-</tr>
-<tr class="trchannel">
-	<td>Channel in</td><td><input type="number"></td>
-	<td>Channel out</td><td><input type="number"></td>
-</tr>
-<tr class="trdest">
-	<td>Destination</td><td><input type="number"></td>
-	<td class="tdmute"><label><input type="checkbox">Mute</label></td><td><i class="i-add"></i></td>
-</tr>
-<tr class="trdestch">
-	<td>Channel</td><td><input type="number"></td>
-	<td>Gain</td><td><input type="number"></td>
-</tr>
-</table>`;
-	info( {
-		  icon         : SW.icon
-		, title        : 'New Mixer'
-		, content      : content
-		, contentcssno : true
-//		, textlabel    : [ 'Name' ]
-//		, numberlabel  : [ 'Channel in', 'Channel out', 'Destination' ]
-		, checkbox     : [ 'Mute' ]
-		, values       : { name: '', in: 2, out: 2, dest: 0 }
-		, checkblank   : true
-		, beforeshow   : () => {
-			$( '#infoContent tr > td:even' ).css( { width: '110px', 'padding-right': '5px', 'text-align': 'right' } );
-			$( '#infoContent tr > td:odd' ).css( 'width', '50px' );
-			$( '#infoContent .tdmute' ).css( { 'padding-left': '5px', 'text-align': 'left' } );
-		}
-		, ok           : () => {
-			var name = infoVal();
-		}
-	} );
-} );
+//$( '#divsettings' ).on( 'click', '.add.mixers', function() {
+setTimeout( infoMixers, 300 );
+//} );
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
@@ -519,6 +483,50 @@ function infoFilters( type, subtype ) {
 			} );
 			S.config.filters[ val.name ] = { type: val.type, parameters : param }
 			saveConfig( 'Filter' );
+		}
+	} );
+}
+function infoMixers( data ) {
+	var content = `
+<table class="tmixers">
+<tr class="trinput">
+	<td>Name</td><td colspan="4"><input type="text"></td><td></td>
+</tr>
+<tr class="trinput">
+	<td>Channel In</td><td><input type="number"></td>
+	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>Map</gr>&nbsp;</td>
+	<td><i class="i-add"></i></td>
+</tr>
+<tr style="height: 10px;"></tr>
+<tr class="trdest">
+	<td><gr>Map</gr> Dest.</td><td><input type="number"></td>
+	<td colspan="3" style="padding-left: 20px"><label><input type="checkbox">Mute</label></td>
+	<td><i class="i-remove"></i></td>
+</tr>
+<tr class="trhead">
+	<td>Channel</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
+	<td><i class="i-add"></i></td>
+</tr>
+<tr class="trinput trchannel">
+	<td><input type="number"></td><td><input type="number"></td>
+	<td>&nbsp;<input type="checkbox"</td><td>&nbsp;<input type="checkbox"</td><td class="w20"></td>
+	<td><i class="i-remove"></i></td>
+</tr>
+<tr style="height: 10px;"></tr>
+</table>`;
+	info( {
+		  icon         : SW.icon
+		, title        : 'New Mixer'
+		, content      : content
+		, contentcssno : true
+		, checkbox     : [ 'Mute' ]
+		, values       : { name: '', in: 2, out: 2, dest: 0, mute: false, ch0: 0, g0: 0, m0: false, i0: false }
+		, checkblank   : true
+		, beforeshow   : () => {
+			
+		}
+		, ok           : () => {
+			var name = infoVal();
 		}
 	} );
 }
