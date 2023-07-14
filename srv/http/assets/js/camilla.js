@@ -486,7 +486,28 @@ function infoFilters( type, subtype ) {
 		}
 	} );
 }
-function infoMixers( data ) {
+function infoMixers( name ) {
+	if ( name ) {
+		var kv = S.config.mixers[ name ];
+		var values = {
+			  name : name
+			, in   : kv.channels.in
+			, out  : kv.channels.out
+		}
+		kv.mapping.forEach( m => {
+			var i = m.dest;
+			values[ 'dest'+ i ] = i;
+			values[ 'mute'+ i ] = m.mute;
+			m.sources.forEach( s => {
+				values[ 'c'+ i ] = s.channel;
+				values[ 'g'+ i ] = s.gain;
+				values[ 'm'+ i ] = s.mute;
+				values[ 'i'+ i ] = s.inverted;
+			} )
+		} );
+	} else {
+		var values = { name: '', in: 2, out: 2, dest0: 0, mute0: false, c0: 0, g0: 0, m0: false, i0: false };
+	}
 	var content = `
 <table class="tmixers">
 <tr class="trinput">
@@ -520,7 +541,7 @@ function infoMixers( data ) {
 		, content      : content
 		, contentcssno : true
 		, checkbox     : [ 'Mute' ]
-		, values       : { name: '', in: 2, out: 2, dest: 0, mute: false, ch0: 0, g0: 0, m0: false, i0: false }
+		, values       : values
 		, checkblank   : true
 		, beforeshow   : () => {
 			
