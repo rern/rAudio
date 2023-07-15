@@ -659,26 +659,32 @@ input.disabled + .switchlabel:after {
 .tmixers td {
 	width: 70px;
 }
-.tmixers input[type=number] {
-	width: 70px;
-}
 .tmixers td:first-child {
 	width: 90px;
-	padding-right: 5px !important;
+	padding-right: 7px !important;
+}
+.tmixers .out,
+.tmixers tr:not(.trhead, .trlist) td:first-child {
 	text-align: right !important;
+}
+.tmixers .out {
+	min-width: 160px;
 }
 .tmixers td:last-child {
 	width: 25px;
 	text-align: center;
 }
-.tmixers .trdest {
+.tmixers .trout {
 	height: 50px !important;
 	border-top: 1px solid var( --cw );
 	border-bottom: 1px solid var( --cgl );
 }
 .tmixers .trhead td,
-.tmixers .trchannel td {
+.tmixers .trlist td {
 	text-align: center !important;
+}
+.tmixers .trpad {
+	height: 15px !important;
 }
 .tmixers .w20 {
 	width: 20px;
@@ -686,9 +692,20 @@ input.disabled + .switchlabel:after {
 .tmixers i {
 	cursor: pointer;
 }
+.tmixers .trout .mute {
+	padding-left: 22px !important;
+}
 .tmixers .trhead td:first-child {
 	padding-right: 38px !important;
 }
+.tmixers input[type=number],
+.tmixers .select2-container {
+	width: 70px !important
+}
+.tmixers .select2-selection__rendered {
+	text-align: left;
+}
+
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.helphead::before {

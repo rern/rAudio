@@ -486,37 +486,38 @@ function infoFilters( type, subtype ) {
 		}
 	} );
 }
-var trdest = `
-<tr style="height: 10px;"></tr>
-<tr class="trdest">
-	<td><gr>map</gr> Out</td><td><input type="number" value="0"></td>
-	<td colspan="3" style="padding-left: 20px"><label><input type="checkbox">Mute</label></td>
+var content = {
+	mixers : `
+<table class="tmixers">
+<tr class="trinput">
+	<td>Name</td><td colspan="5"><input type="text" class="name" data-k="name"></td>
+</tr>
+<tr class="trinput trchannel">
+	<td><gr>channel</gr> In</td><td><input type="number" class="in" data-k="in"></td>
+	<td class="out" colspan="3">Out&ensp;<input type="number" disabled>&ensp;<gr>map</gr>&nbsp;</td>
+	<td><i class="i-add addmap"></i></td>
+</tr>
+`
+	, out : `
+<tr class="trpad"></tr>
+<tr class="trout">
+	<td><gr>map</gr> Out</td><td><select class="out" data-k="dest"></select></td>
+	<td colspan="3" class="mute"><label><input type="checkbox" data-k="m">Mute</label></td>
 	<td><i class="i-remove removemap"></i></td>
 </tr>
 <tr class="trhead">
-	<td style="padding-right: 20px"><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
+	<td><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
 	<td><i class="i-add addchannel"></i></td>
 </tr>
-`;
-var trchannel = `
-<tr class="trinput trchannel">
-	<td><input type="number" value="0"></td><td><input type="number" value="0"></td>
-	<td>&nbsp;<input type="checkbox"</td><td>&nbsp;<input type="checkbox"</td><td class="w20"></td>
+`
+	, list : `
+<tr class="trinput trlist">
+	<td><select class="in" data-k="channel"></select></td><td><input type="number" data-k="gain" value="0"></td>
+	<td>&nbsp;<input type="checkbox" data-k="mute"></td><td>&nbsp;<input type="checkbox" data-k="inverted"></td><td class="w20"></td>
 	<td><i class="i-remove removechannel"></i></td>
 </tr>
-`;
-var contentmixers = `
-<table class="tmixers">
-<tr class="trinput">
-	<td>Name</td><td colspan="4"><input type="text"></td><td></td>
-</tr>
-<tr class="trinput">
-	<td><gr>channel</gr> In</td><td><input type="number"></td>
-	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>map</gr>&nbsp;</td>
-	<td><i class="i-add addmap"></i></td>
-</tr>
-`;
-contentmixers += '<tbody>'+ trdest + trchannel +'</tbody></table>';
+`
+}
 function infoMixers( name ) {
 	if ( name ) {
 		var kv = S.config.mixers[ name ];
@@ -537,32 +538,88 @@ function infoMixers( name ) {
 			} )
 		} );
 	} else {
-		var values = { name: '', in: 2, out: 2, dest0: 0, mute0: false, c0: 0, g0: 0, m0: false, i0: false };
+		var values = { name: 'xxx', in: 2, out: 1, dest0: 0, mute0: false, c0: 0, g0: 0, m0: false, i0: false }
 	}
+	V.in  = values.in;
+	V.out = values.out;
 	info( {
 		  icon         : SW.icon
 		, title        : 'New Mixer'
-		, content      : contentmixers
+		, content      : '<table>'+ content.mixers +'<tbody>'+ content.out + content.list +'</tbody></table>'
 		, contentcssno : true
 		, checkbox     : [ 'Mute' ]
 		, values       : values
 		, checkblank   : true
 		, checkchanged : name
 		, beforeshow   : () => {
+			infoMixersOptions( values.in, values.out );
+			$( '#in' ).on( 'touchend keyup', function() {
+				var val = +$( this ).val();
+				if ( val !== $( '.selectin option' ).length ) infoMixersOptions( val, +$( '#out' ).val() );
+			} );
 			$( '#infoContent' ).on( 'click', '.addmap', function() {
-				$( '#infoContent tbody' ).last().after( '<tbody>'+ trdest + trchannel +'</tbody>' );
+				$( '#infoContent tbody' ).last().after( '<tbody>'+ content.out + content.list +'</tbody>' );
+				V.out++
+				infoMixersOptions( 'add' );
 			} ).on( 'click', '.removemap', function() {
 				$( this ).parents( 'tbody' ).remove()
+				V.out--
 			} ).on( 'click', '.addchannel', function() {
-				$( this ).parents( 'tbody' ).find( 'tr' ).last().after( trchannel );
+				var $trlast = $( this ).parents( 'tbody' ).find( 'tr' ).last();
+				$trlast.after( $trlast.clone() );
 			} ).on( 'click', '.removechannel', function() {
-				$( this ).parents( '.trchannel' ).remove()
+				$( this ).parents( '.trlist' ).remove()
 			} );
 		}
 		, ok           : () => {
-			var name = infoVal();
+			var mapping = []
+			var $tbody  = $( 'tbody' ).slice( 1 );
+			$tbody.each( ( i, el ) => {
+				// .trout
+				var $this = $( el ).find( '.trout' );
+				var m     = {}
+				m.dest    = +$this.find( 'select' ).val();
+				m.mute    = $this.find( 'input' ).prop( 'checked' );
+				// .trlist
+				m.sources = [];
+				$( el ).find( '.trlist' ).each( ( j, elj ) => {
+					// select input
+					var s = {}
+					$( elj ).find( 'select, input' ).each( ( k, elk ) => {
+						$this   = $( elk );
+						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
+					} );
+					m.sources.push( s );
+				} );
+				mapping.push( m )
+			} );
+			var name = $( '.tmixers .name' ).val();
+			var mixers = {}
+			mixers[ name ] = {
+				 channels : {
+					  in  : +$( '.tmixers .in' ).val()
+					, out : mapping.length
+				}
+				, mapping : mapping
+			}
+			console.log( mixers )
 		}
 	} );
+}
+function infoMixersKeys( i ) {
+	var kmap = [ 'dest', 'mute', 'c', 'g', 'm', 'i' ];
+	i ? kmap.forEach( k => I.keys.push( k + i ) ) : kmap.forEach( k => I.keys.pop( 6 ) );
+}
+function infoMixersOptions( add ) {
+	var options = {};
+	[ 'in', 'out' ].forEach( k => {
+		options[ k ] = '';
+		for ( i = 0; i < V[ k ]; i++ ) options[ k ] += '<option value="'+ i +'">'+ i +'</option>';
+		$( 'select.'+ k ).html( options[ k ] );
+		if ( add ) $( 'select.out' ).last().val( V.out - 1 );
+	} );
+	$( '.tmixers select' ).prop( 'disabled', false );
+	selectSet();
 }
 function infoResampling( freeasync ) {
 	var selectlabel        = [ 'Resampler type', 'Capture samplerate' ];
