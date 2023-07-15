@@ -489,12 +489,12 @@ function infoFilters( type, subtype ) {
 var trdest = `
 <tr style="height: 10px;"></tr>
 <tr class="trdest">
-	<td><gr>Map</gr> Dest.</td><td><input type="number" value="0"></td>
+	<td><gr>map</gr> Out</td><td><input type="number" value="0"></td>
 	<td colspan="3" style="padding-left: 20px"><label><input type="checkbox">Mute</label></td>
 	<td><i class="i-remove removemap"></i></td>
 </tr>
 <tr class="trhead">
-	<td>Channel</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
+	<td><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
 	<td><i class="i-add addchannel"></i></td>
 </tr>
 `;
@@ -511,8 +511,8 @@ var contentmixers = `
 	<td>Name</td><td colspan="4"><input type="text"></td><td></td>
 </tr>
 <tr class="trinput">
-	<td>Channel In</td><td><input type="number"></td>
-	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>Map</gr>&nbsp;</td>
+	<td><gr>channel</gr> In</td><td><input type="number"></td>
+	<td style="text-align: right" colspan="3">Out&ensp;<input type="number">&ensp;<gr>map</gr>&nbsp;</td>
 	<td><i class="i-add addmap"></i></td>
 </tr>
 `;
