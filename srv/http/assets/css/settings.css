@@ -673,9 +673,8 @@ input.disabled + .switchlabel:after {
 }
 .tmixers .trdest {
 	height: 50px !important;
-	border: 1px solid var( --cgl );
-	border-left: none;
-	border-right: none;
+	border-top: 1px solid var( --cw );
+	border-bottom: 1px solid var( --cgl );
 }
 .tmixers .trhead td,
 .tmixers .trchannel td {
@@ -684,7 +683,12 @@ input.disabled + .switchlabel:after {
 .tmixers .w20 {
 	width: 20px;
 }
-
+.tmixers i {
+	cursor: pointer;
+}
+.tmixers .trhead td:first-child {
+	padding-right: 38px !important;
+}
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
 	.helphead::before {

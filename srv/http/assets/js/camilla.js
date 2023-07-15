@@ -494,7 +494,7 @@ var trdest = `
 	<td><i class="i-remove removemap"></i></td>
 </tr>
 <tr class="trhead">
-	<td><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
+	<td style="padding-right: 20px"><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
 	<td><i class="i-add addchannel"></i></td>
 </tr>
 `;
