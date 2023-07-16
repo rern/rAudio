@@ -520,7 +520,7 @@ function infoFilters( type, subtype ) {
 			$.each( val, ( k, v ) => {
 				if ( ! [ 'radio', 'name', 'type', 'subtype' ].includes( k ) ) param[ k ] = v;
 			} );
-			S.config.filters[ val.name ] = { type: val.type, parameters : param }
+			F[ val.name ] = { type: val.type, parameters : param }
 			saveConfig( 'Filter' );
 		}
 	} );
@@ -545,7 +545,7 @@ function infoMapping( name, dest ) {
 		var chin  = mixer.channels.in;
 	} else {
 		var dest  = 0;
-		var chin  = S.config.devices.capture.channels;
+		var chin  = D.capture.channels;
 	}
 	var option = '';
 	for( i = 0; i < chin; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
@@ -818,9 +818,11 @@ function renderDevicesList( section, keys ) {
 }
 function renderPage() {
 	D        = S.config.devices;
+	F        = S.config.filters;
 	M        = S.config.mixers;
-	S.bass   = S.config.filters.Bass.parameters.gain;
-	S.treble = S.config.filters.Treble.parameters.gain;
+	P        = S.config.pipeline;
+	S.bass   = F.Bass.parameters.gain;
+	S.treble = F.Treble.parameters.gain;
 	[ 'volume', 'bass', 'treble' ].forEach( el => {
 		var val = S[ el ];
 		$( '#'+ el +' input' ).val( val );
