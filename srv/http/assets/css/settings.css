@@ -687,6 +687,11 @@ input.disabled + .switchlabel:after {
 	margin-right: 0;
 	color: var( --cm ) !important;
 }
+.i-add,
+.i-remove {
+	font-size: 22px !important;
+	cursor: pointer;
+}
 
 @media (max-height: 570px) {
 	.helphead { margin-right: 0 }
