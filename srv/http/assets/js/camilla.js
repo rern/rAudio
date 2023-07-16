@@ -190,7 +190,9 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	$( '#divmixers .entries' ).html( li );
 } ).on( 'click', 'li i', function( e ) {
 	var $this = $( this );
-	if ( $this.hasClass( 'addmapping' ) ) {
+	if ( $this.hasClass( 'i-mixers' ) ) {
+		infoMixer( $this.next().text() );
+	} else if ( $this.hasClass( 'addmapping' ) ) {
 		var name = $this.parent().next().data( 'name' );
 		var dest = M[ name ].mapping.length;
 		infoMapping( name, dest );
@@ -646,7 +648,7 @@ ${ buttons }</tr>
 					v--;
 					$this.toggleClass( 'disabled', v === 0 );
 				}
-				$input.val( v );
+				$input.val( v ).trigger( 'keyup' );
 			} );
 		}
 		, ok           : () => {
