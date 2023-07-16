@@ -160,10 +160,47 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 } );
 $( '#divsettings' ).on( 'click', '.add.filters', function() {
 	infoFilters( 'Biquad', 'Lowpass' );
+} ).on( 'click', '.add.mixers', function() {
+	infoMixer();
+} ).on( 'click', '.mixer-icon', function() {
+	infoMapping();
 } );
-//$( '#divsettings' ).on( 'click', '.add.mixers', function() {
-setTimeout( infoMixers, 300 );
-//} );
+$( '#divmixers' ).on( 'click', 'li', function( e ) {
+	var $this = $( this );
+	if ( $this.hasClass( 'lihead' )
+		|| $( e.target ).is( 'i' ) ) return
+	
+	if ( ! $this.find( '.i-mixers' ).length ) {
+		infoMapping( $this.data( 'name' ), $this.data( 'dest' ) );
+		return
+	}
+	
+	var name = $this.find( '.li1' ).text();
+	var data   = M[ name ].mapping;
+	var li   = '<li class="lihead">Mapping:'+ ico( 'add wh addmapping' ) + ico( 'arrow-left back' ) +'</li>';
+	data.forEach( kv => {
+		var channel = '';
+		kv.sources.forEach( s => {
+			channel += ', '+ s.channel;
+		} );
+		li += '<li data-name="'+ name +'" data-dest="'+ kv.dest +'">'+ ico( kv.mute ? 'mute bl unmute' : 'devices mute' )
+			 +'<div class="li1">Destination: '+ kv.dest +'</div>'
+			 +'<div class="li2">Sources: '+ channel.slice( 2 ) +'</div></li>';
+	} );
+	$( '#divmixers .entries' ).html( li );
+} ).on( 'click', 'li i', function( e ) {
+	var $this = $( this );
+	if ( $this.hasClass( 'addmapping' ) ) {
+		var name = $this.parent().next().data( 'name' );
+		var dest = M[ name ].mapping.length;
+		infoMapping( name, dest );
+	} else if ( $this.hasClass( 'back' ) ) {
+		$( '.lihead' ).remove();
+		$( '#mixers' ).trigger( 'click' );
+	} else {
+		muteDestination( $this );
+	}
+} );
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
@@ -486,140 +523,164 @@ function infoFilters( type, subtype ) {
 		}
 	} );
 }
-var content = {
-	mixers : `
-<table class="tmixers">
-<tr class="trinput">
-	<td>Name</td><td colspan="5"><input type="text" class="name" data-k="name"></td>
-</tr>
-<tr class="trinput trchannel">
-	<td><gr>channel</gr> In</td><td><input type="number" class="in" data-k="in"></td>
-	<td class="out" colspan="3">Out&ensp;<input type="number" disabled>&ensp;<gr>map</gr>&nbsp;</td>
-	<td><i class="i-add addmap"></i></td>
-</tr>
-`
-	, out : `
-<tr class="trpad"></tr>
-<tr class="trout">
-	<td><gr>map</gr> Out</td><td><select class="out" data-k="dest"></select></td>
-	<td colspan="3" class="mute"><label><input type="checkbox" data-k="m">Mute</label></td>
-	<td><i class="i-remove removemap"></i></td>
+function infoMapping( name, dest ) {
+	var values       = [ 0, 0, false, false ];
+	var sL           = 1;
+	var checkchanged = false;
+	if ( name ) {
+		var mixer = M[ name ];
+		if ( dest < mixer.mapping.length ) {
+			var kv       = mixer.mapping[ dest ];
+			values       = [];
+			kv.sources.forEach( s => {
+				[ 'channel', 'gain', 'mute', 'inverted' ].forEach( k => {
+					values.push( s[ k ] );
+				} );
+			} );
+			sL           = kv.sources.length;
+			checkchanged = true;
+		}
+		var chin  = mixer.channels.in;
+	} else {
+		var dest  = 0;
+		var chin  = S.config.devices.capture.channels;
+	}
+	var option = '';
+	for( i = 0; i < chin; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
+	var content = `
+<table class="tablemapping">
+<tr>
+	<td colspan="5">Destination : ${ dest }</td>
 </tr>
 <tr class="trhead">
-	<td><gr>from</gr> In</td><td>Gain</td><td>Mute</td><td>Invert</td><td class="w20"></td>
-	<td><i class="i-add addchannel"></i></td>
+	<td>Source</td><td>Gain</td><td>Mute</td><td>Invert</td>
+	<td><i class="i-add addsource"></i></td>
 </tr>
-`
-	, list : `
-<tr class="trinput trlist">
-	<td><select class="in" data-k="channel"></select></td><td><input type="number" data-k="gain" value="0"></td>
-	<td>&nbsp;<input type="checkbox" data-k="mute"></td><td>&nbsp;<input type="checkbox" data-k="inverted"></td><td class="w20"></td>
-	<td><i class="i-remove removechannel"></i></td>
+<tr style="height: 10px"></tr>
+`;
+	var trsource = `
+<tr class="trsource">
+	<td><select data-k="channel">${ option }</select></td><td><input type="number" data-k="gain" value="0"></td>
+	<td>&nbsp;<input type="checkbox" data-k="mute"></td><td>&nbsp;<input type="checkbox" data-k="inverted">
+	<td><i class="i-remove removesource"></i></td>
 </tr>
-`
-}
-function infoMixers( name ) {
-	if ( name ) {
-		var kv = S.config.mixers[ name ];
-		var values = {
-			  name : name
-			, in   : kv.channels.in
-			, out  : kv.channels.out
-		}
-		kv.mapping.forEach( m => {
-			var i = m.dest;
-			values[ 'dest'+ i ] = i;
-			values[ 'mute'+ i ] = m.mute;
-			m.sources.forEach( s => {
-				values[ 'c'+ i ] = s.channel;
-				values[ 'g'+ i ] = s.gain;
-				values[ 'm'+ i ] = s.mute;
-				values[ 'i'+ i ] = s.inverted;
-			} )
-		} );
-	} else {
-		var values = { name: 'xxx', in: 2, out: 1, dest0: 0, mute0: false, c0: 0, g0: 0, m0: false, i0: false }
-	}
-	V.in  = values.in;
-	V.out = values.out;
+`;
+	for ( i = 0; i < sL; i++ ) content += trsource;
+	content += '</table>';
 	info( {
-		  icon         : SW.icon
-		, title        : 'New Mixer'
-		, content      : '<table>'+ content.mixers +'<tbody>'+ content.out + content.list +'</tbody></table>'
-		, contentcssno : true
-		, checkbox     : [ 'Mute' ]
+		  icon         : 'mixers'
+		, title        : 'New Mapping'
+		, content      : content
 		, values       : values
+		, contentcssno : true
 		, checkblank   : true
-		, checkchanged : name
+		, checkchanged : checkchanged
 		, beforeshow   : () => {
-			infoMixersOptions( values.in, values.out );
-			$( '#in' ).on( 'touchend keyup', function() {
-				var val = +$( this ).val();
-				if ( val !== $( '.selectin option' ).length ) infoMixersOptions( val, +$( '#out' ).val() );
-			} );
-			$( '#infoContent' ).on( 'click', '.addmap', function() {
-				$( '#infoContent tbody' ).last().after( '<tbody>'+ content.out + content.list +'</tbody>' );
-				V.out++
-				infoMixersOptions( 'add' );
-			} ).on( 'click', '.removemap', function() {
-				$( this ).parents( 'tbody' ).remove()
-				V.out--
-			} ).on( 'click', '.addchannel', function() {
-				var $trlast = $( this ).parents( 'tbody' ).find( 'tr' ).last();
+			$( '.removesource' ).toggleClass( 'hide', $( '.trsource' ).length < 2 );
+			
+			$( '#infoContent' ).on( 'click', '.addsource', function() {
+				var $trlast = $( '#infoContent tr' ).last();
 				$trlast.after( $trlast.clone() );
-			} ).on( 'click', '.removechannel', function() {
-				$( this ).parents( '.trlist' ).remove()
+				$( '.removesource' ).removeClass( 'hide' );
+			} ).on( 'click', '.removesource', function() {
+				$( this ).parents( 'tr' ).remove();
+				$( '.removesource' ).toggleClass( 'hide', $( '.trsource' ).length < 2 );
 			} );
 		}
 		, ok           : () => {
-			var mapping = []
-			var $tbody  = $( 'tbody' ).slice( 1 );
-			$tbody.each( ( i, el ) => {
-				// .trout
-				var $this = $( el ).find( '.trout' );
-				var m     = {}
-				m.dest    = +$this.find( 'select' ).val();
-				m.mute    = $this.find( 'input' ).prop( 'checked' );
-				// .trlist
-				m.sources = [];
-				$( el ).find( '.trlist' ).each( ( j, elj ) => {
-					// select input
-					var s = {}
-					$( elj ).find( 'select, input' ).each( ( k, elk ) => {
-						$this   = $( elk );
-						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
-					} );
-					m.sources.push( s );
+			var sources = [];
+			$( '.trsource' ).each( ( i, tr ) => {
+				var s = {}
+				$( tr ).find( 'select, input' ).each( ( i, el ) => {
+					var $this = $( el )
+					s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 				} );
-				mapping.push( m )
+				sources.push( s );
 			} );
-			var name = $( '.tmixers .name' ).val();
-			var mixers = {}
-			mixers[ name ] = {
-				 channels : {
-					  in  : +$( '.tmixers .in' ).val()
-					, out : mapping.length
-				}
-				, mapping : mapping
+			var mapping = {
+				  dest    : dest
+				, mute    : false
+				, sources : sources
 			}
-			console.log( mixers )
+			M[ name ].mapping = mapping;
+			console.log(M[ name ].mapping)
 		}
 	} );
 }
-function infoMixersKeys( i ) {
-	var kmap = [ 'dest', 'mute', 'c', 'g', 'm', 'i' ];
-	i ? kmap.forEach( k => I.keys.push( k + i ) ) : kmap.forEach( k => I.keys.pop( 6 ) );
-}
-function infoMixersOptions( add ) {
-	var options = {};
-	[ 'in', 'out' ].forEach( k => {
-		options[ k ] = '';
-		for ( i = 0; i < V[ k ]; i++ ) options[ k ] += '<option value="'+ i +'">'+ i +'</option>';
-		$( 'select.'+ k ).html( options[ k ] );
-		if ( add ) $( 'select.out' ).last().val( V.out - 1 );
+function infoMixer( name ) {
+	if ( name ) {
+		var mixer = M[ name ];
+		var values = { name: name, in: mixer.channels.in, out: mixer.channels.out }
+	} else {
+		var values = { name: '', in: 2, out: 2 }
+	}
+	var buttons = '<td>'+ ico( 'remove btnicon dn' ) + ico( 'add btnicon up' ) +'</td><td></td>';
+	var content = `
+<table>
+<tr><td>Name</td>
+<td colspan="3"><input id="in" type="text"></td>
+<tr><td>In</td><td style="width: 50px"><input id="in" type="number" disabled></td>
+${ buttons }</tr>
+<tr><td>Out</td><td><input id="out" type="number" disabled></td>
+${ buttons }</tr>
+</table>`
+	info( {
+		  icon         : 'mixers'
+		, title        : 'New Mixer'
+		, content      : content
+		, values       : values
+		, checkblank   : true
+		, checkchanged : name
+		, beforeshow : () => {
+			$( '#infoContent td' ).css( 'width', '50px' );
+			$( '#infoContent i' )
+				.css( { width: '40px', 'line-height': '40px' } );
+			$( '#infoContent' ).on( 'click', 'i', function() {
+				var $this = $( this );
+				var $input = $this.parents( 'tr' ).find( 'input' );
+				var v = +$input.val();
+				if ( $( this ).hasClass( 'up' ) ) {
+					v++;
+					$this.prev().removeClass( 'disabled' );
+				} else {
+					v--;
+					$this.toggleClass( 'disabled', v === 0 );
+				}
+				$input.val( v );
+			} );
+		}
+		, ok           : () => {
+			var val = infoVal();
+			if ( val.name in M ) {
+				info( {
+					  icon    : 'mixers'
+					, title   : 'New Mixer'
+					, message : 'Mixer: <wh>'+ val.name +'</wh> already exists.'
+					, ok      : () => infoMixer( name )
+				} );
+				return
+			}
+			
+			var mixer = {
+				  channels : {
+					  in  : val.in
+					, out : val.out
+				}
+				, mapping : [ {
+					  dest    : 0
+					, mute    : false
+					, sources : [ {
+						  channel  : 0
+						, gain     : 0
+						, inverted : false
+						, mute     : false
+					} ]
+				} ]
+			}
+			M[ val.name ] = mixer;
+			console.log(M)
+		}
 	} );
-	$( '.tmixers select' ).prop( 'disabled', false );
-	selectSet();
 }
 function infoResampling( freeasync ) {
 	var selectlabel        = [ 'Resampler type', 'Capture samplerate' ];
@@ -646,7 +707,7 @@ function infoResampling( freeasync ) {
 		}
 	}
 	info( {
-		  icon         : SW.icon
+		  icon         : 'devices'
 		, title        : 'Resampling'
 		, selectlabel  : selectlabel
 		, select       : select
@@ -698,6 +759,19 @@ function labelArraySet( array ) {
 	var capitalized = array.map( el => key2label( el ) );
 	return capitalized
 }
+function muteDestination( $el ) {
+	var mute = $el.hasClass( 'mute' );
+	var a    = mute ? 'i-devices mute'   : 'i-mute bl unmute';
+	var b    = mute ? 'i-mute bl unmute' : 'i-devices mute';
+	$el
+		.removeClass( a )
+		.addClass( b );
+	var $li  = $el.parent();
+	var name = $li.data( 'name' );
+	var dest = $li.data( 'dest' );
+	M[ name ].mapping[ dest ].mute = mute;
+	console.log( M )
+}
 function otherToggle( $trother, rate ) {
 	var other = rate === 'Other';
 	$trother.toggleClass( 'hide', ! other );
@@ -742,6 +816,7 @@ function renderDevicesList( section, keys ) {
 }
 function renderPage() {
 	D        = S.config.devices;
+	M        = S.config.mixers;
 	S.bass   = S.config.filters.Bass.parameters.gain;
 	S.treble = S.config.filters.Treble.parameters.gain;
 	[ 'volume', 'bass', 'treble' ].forEach( el => {
@@ -810,21 +885,12 @@ function renderTab( id ) {
 				 +'<div class="li2">'+ v.type +': '+ val +'</div></li>';
 		} );
 	} else if ( id === 'mixers' ) {
+		if ( $( '.lihead' ).length ) return
+		
 		var li = '';
 		$.each( data, ( k, v ) => {
 			li += '<li>'+ ico( id ) +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2">In '+ v.channels.in +' - Out '+ v.channels.out
-				v.mapping.forEach( em => {
-					li += ' • Dest '+ em.dest +' |';
-					if ( em.mute ) li += ', Mute';
-					em.sources.forEach( es => {
-						li += ' ch:'+ es.channel + ', gain:'+ es.gain;
-						if ( es.inverted ) li += ', Inverted';
-						if ( es.mute ) li += ', Mute';
-						li += ' |';
-					} );
-				} );
-			li +'</div></li>';
+				 +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div></li>';
 		} );
 	}
 	$( '#div'+ id +' .entries' ).html( li );
