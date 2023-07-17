@@ -1421,7 +1421,6 @@ new Sortable( document.getElementById( 'lib-mode-list' ), {
 	// onChoose > onClone > onStart > onMove > onChange > onUnchoose > onUpdate > onSort > onEnd
 	  ghostClass    : 'lib-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onMove       : function() {
 		$( '.bkedit' ).remove();
 		$( '.mode-bookmark' ).children().addBack().removeAttr( 'style' );
@@ -1777,7 +1776,6 @@ $( '#button-pl-search' ).on( 'click', function() {
 new Sortable( document.getElementById( 'pl-list' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onStart       : function() {
 		$( '#pl-list li.active' ).addClass( 'sortactive' );
 	}
@@ -1790,7 +1788,6 @@ new Sortable( document.getElementById( 'pl-list' ), {
 new Sortable( document.getElementById( 'pl-savedlist' ), {
 	  ghostClass    : 'pl-sortable-ghost'
 	, delay         : 400
-	, forceFallback : true // fix: iphone safari
 	, onUpdate      : function ( e ) {
 		sortPlaylist( 'pl-savedlist', e.oldIndex, e.newIndex );
 	}

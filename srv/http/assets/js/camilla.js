@@ -206,16 +206,17 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	if ( $this.hasClass( 'i-mixers' ) ) { // rename
 		infoMixer( $this.next().next().text() );
 	} else if ( $this.hasClass( 'i-back' ) ) {
-		$( '.lihead' ).remove();
+		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( $this.hasClass( 'i-add' ) ) {
 		var name = $this.parent().data( 'name' );
 		infoMapping( name );
 	} else if ( $this.hasClass( 'i-remove' ) ) {
-		if ( $( '.lihead' ).length ) {
+		var $lihead = $( '#divmixers .lihead' );
+		if ( $lihead.length ) {
 			var $li  = $this.parent();
 			var mi   = $li.data( 'index' );
-			var name = $( '.lihead' ).data( 'name' );
+			var name = $lihead.data( 'name' );
 			$li.remove();
 			MIX[ name ].mapping.splice( mi, 1 );
 		} else {
@@ -230,7 +231,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
-	if ( $( '.lihead' ).length || $( e.target ).is( 'i' ) ) return
+	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) ) return
 	
 	var index = $this.index();
 	var data  = PIP[ index ];
@@ -263,7 +264,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', 'li i', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'i-back' ) ) {
-		$( '.lihead' ).remove();
+		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
 	} else if ( $this.hasClass( 'i-add' ) ) {
 		var icon  = 'pipeline';
@@ -281,8 +282,9 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	} else if ( $this.hasClass( 'i-remove' ) ) {
-		if ( $( '.lihead' ).length ) {
-			var pi = $( '.lihead' ).data( 'index' );
+		var $lihead = $( '#divpipeline .lihead' );
+		if ( $lihead.length ) {
+			var pi = $lihead.data( 'index' );
 			var ni = $this.parent().data( 'index' );
 			$this.parent().remove();
 			if ( $( '#divpipeline li' ).length < 3 ) $( '#divpipeline .i-remove' ).addClass( 'hide' );
@@ -738,10 +740,12 @@ function infoMixer( name ) {
 	} );
 }
 function infoPipeline() {
+	var icon  = 'pipeline';
+	var title = 'New Pipeline';
 	var filters = Object.keys( FIL );
 	info( {
-		  icon        : 'pipeline'
-		, title       : 'New Pipeline'
+		  icon        : icon
+		, title       : title
 		, tablabel    : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 		, tab         : [ '', infoPipelineMixer ]
 		, selectlabel : [ 'Channel', 'Filters' ]
@@ -769,24 +773,26 @@ function infoPipeline() {
 				, channel : +$( '#infoContent select' ).eq( 0 ).val()
 				, names   : names
 			} );
-			console.log(PIP)
+			saveConfig( icon, titlle, 'Save ...' )
 		}
 	} );
 }
 function infoPipelineMixer() {
+	var icon  = 'pipeline';
+	var title = 'New Pipeline';
 	info( {
-		  icon         : 'pipeline'
-		, title        : 'New Pipeline'
+		  icon         : icon
+		, title        : title
 		, tablabel     : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 		, tab          : [ infoPipeline, '' ]
-		, selectlabel  : 'Mixer'
+		, selectlabel  : 'Mixers'
 		, select       : Object.keys( MIX )
 		, ok          : () => {
 			PIP.push( {
 				  type : 'Mixer'
 				, name : infoVal()
 			} );
-			console.log(PIP)
+			saveConfig( icon, titlle, 'Save ...' )
 		}
 	} );
 }
@@ -888,11 +894,10 @@ function muteDestination( $el ) {
 	$el
 		.removeClass( a )
 		.addClass( b );
-	var $li  = $el.parent();
-	var name = $li.data( 'name' );
-	var dest = $li.data( 'dest' );
+	var name = $( '#divmixers .lihead' ).data( 'name' );
+	var dest = $el.parent().data( 'dest' );
 	MIX[ name ].mapping[ dest ].mute = mute;
-	console.log( MIX )
+	saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );
 }
 function otherToggle( $trother, rate ) {
 	var other = rate === 'Other';
@@ -987,7 +992,7 @@ function renderTab( id ) {
 	if ( $.isEmptyObject( kv ) ) return
 	
 	if ( id === 'pipeline' ) {
-		if ( $( '.lihead' ).length ) return
+		if ( $( '#divpipeline .lihead' ).length ) return
 		
 		var li = '';
 		kv.forEach( ( el, i ) => {
@@ -1019,7 +1024,7 @@ function renderTab( id ) {
 				 +'</li>';
 		} );
 	} else if ( id === 'mixers' ) {
-		if ( $( '.lihead' ).length ) return
+		if ( $( '#divmixers .lihead' ).length ) return
 		
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -1050,9 +1055,22 @@ function pipelineSort() {
 	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
 		  ghostClass    : 'sortable-ghost'
 		, delay         : 400
-		, forceFallback : true // fix: iphone safari
 		, onUpdate      : function ( e ) {
-			console.log( 'sort', e.oldIndex, e.newIndex )
+			var $lihead = $( '#divpipeline .lihead' );
+			if ( $lihead.length ) {
+				e.newIndex--;
+				e.oldIndex--;
+				var pi            = $lihead.data( 'index' );
+				var names         = PIP[ pi ].names;
+				var newel         = names[ e.newIndex ];
+				names[ e.newIndex ] = names[ e.oldIndex ];
+				names[ e.oldIndex ] = newel;
+			} else {
+				var newel         = PIP[ e.newIndex ];
+				PIP[ e.newIndex ] = PIP[ e.oldIndex ];
+				PIP[ e.oldIndex ] = newel;
+			}
+			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' )
 		}
 	} );
 }
