@@ -22,9 +22,6 @@ pushData() {
 
 case $CMD in
 
-camilla )
-	pushstream refresh $( $dirsettings/camilla-data.sh display )
-	;;
 confcopy )
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}.yml
 	switchConfig "$NEWNAME"

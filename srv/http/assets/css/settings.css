@@ -664,20 +664,19 @@ input.disabled + .switchlabel:after {
 	border-right: none;
 }
 .trhead td,
-.trsource td:nth-child( 3 ),
-.trsource td:nth-child( 4 ),
-.trsource td:nth-child( 5 ) {
+.trsource td:nth-child( n + 3 ) {
 	text-align: center !important;
 }
 .trsource {
 	height: 46px !important;
 }
-.trsource td {
+.trhead td {
 	width: 50px;
 }
-.trsource td:first-child,
-.trsource td:nth-child( 2 ) {
+.trhead td:nth-child( -n + 2 ) {
 	width: 75px;
+}
+.trsource td:nth-child( -n + 2 ) {
 	padding: 0 5px !important;
 }
 .trsource input[ type=checkbox ] {

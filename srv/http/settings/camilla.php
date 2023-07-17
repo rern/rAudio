@@ -82,10 +82,7 @@ htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $head = [
 	  'title'  => 'Profile'
-	, 'button' => [
-		  'add'    => 'add'
-		, 'settings' => 'gear'
-	]
+	, 'button' => [ 'add' => 'add' ]
 ];
 $body = [
 	[

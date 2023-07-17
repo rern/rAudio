@@ -55,24 +55,6 @@ $( '#divprofile .add' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#divprofile .settings' ).on( 'click', function() {
-	var icon  = 'camilladsp';
-	var title = 'Interface Setting';
-	info( {
-		  icon         : icon
-		, title        : title
-		, message      : 'Show:'
-		, messagealign : 'left'
-		, checkbox     : [ 'Volume, Bass, Treble' ]
-		, values       : S.camillaconf
-		, checkchanged : true
-		, ok           : () => {
-			var val = infoVal();
-			bash( [ 'camilla', val.controls, val.capture_playback, 'CFG CONTROLS CAPTURE_PLAYBACK' ] );
-			notify( icon, title, 'Change...' );
-		}
-	} );
-} );
 $( '#profile' ).on( 'change', function() {
 	var name = $( this ).val();
 	bash( [ 'confswitch', name, 'CMD NAME' ] );
@@ -168,14 +150,17 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( DEV.resampler_type === 'FreeAsync' );
 } );
-$( '#divsettings' ).on( 'click', '.add.filters', function() {
-	infoFilters( 'Biquad', 'Lowpass' );
-} ).on( 'click', '.add.mixers', function() {
-	infoMixer();
+$( '#divsettings' ).on( 'click', '.i-add', function() {
+	var id = $( this ).prev().text().toLowerCase();
+	if ( id === 'filters' ) {
+		infoFilters( 'Biquad', 'Lowpass' );
+	} else if ( id === 'mixers' ) {
+		infoMixer();
+	} else if ( id === 'pipeline' ) {
+		infoPipeline();
+	}
 } ).on( 'click', '.mixer-icon', function() {
 	infoMapping();
-} ).on( 'click', '.add.pipeline', function() {
-	infoPipeline();
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
@@ -200,7 +185,6 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			 +'<div class="li2">Sources: '+ channel.slice( 2 ) +'</div></li>';
 	} );
 	$( '#divmixers .entries' ).html( li );
-	if ( data.length < 2 ) $( '#divmixers .i-remove' ).addClass( 'hide' );
 } ).on( 'click', 'li i', function() {
 	var $this = $( this );
 	if ( $this.hasClass( 'i-mixers' ) ) { // rename
@@ -213,20 +197,29 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		infoMapping( name );
 	} else if ( $this.hasClass( 'i-remove' ) ) {
 		var $lihead = $( '#divmixers .lihead' );
+		var $li     = $this.parent();
 		if ( $lihead.length ) {
-			var $li  = $this.parent();
 			var mi   = $li.data( 'index' );
 			var name = $lihead.data( 'name' );
 			$li.remove();
 			MIX[ name ].mapping.splice( mi, 1 );
-			$( '#divmixers .i-remove' ).addClass( 'hide', MIX[ name ].mapping.length < 2 );
 		} else {
 			var name = $this.next().text();
 			delete MIX[ name ];
+			$li.remove();
 		}
 		saveConfig( 'mixers', 'Mixer', 'Remove ...' );
 	} else {
-		muteDestination( $this );
+		var mute = $this.hasClass( 'i-devices' );
+		var a    = mute ? 'i-devices' : 'i-mute bl';
+		var b    = mute ? 'i-mute bl' : 'i-devices';
+		$this
+			.removeClass( a )
+			.addClass( b );
+		var name = $( '#divmixers .lihead' ).data( 'name' );
+		var dest = $this.parent().data( 'dest' );
+		MIX[ name ].mapping[ dest ].mute = mute;
+		saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );
 	}
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
@@ -276,7 +269,6 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, selectlabel : 'Filter'
 			, select      : Object.keys( FIL )
 			, ok          : () => {
-				$( '#divpipeline .i-remove' ).removeClass( 'hide' );
 				PIP[ $this.parent().data( 'index' ) ].names.push( infoVal() );
 				saveConfig( icon, title, 'Save ...' );
 			}
@@ -287,12 +279,12 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			var pi = $lihead.data( 'index' );
 			var ni = $this.parent().data( 'index' );
 			$this.parent().remove();
-			if ( $( '#divpipeline li' ).length < 3 ) $( '#divpipeline .i-remove' ).addClass( 'hide' );
 			PIP[ pi ].names.splice( ni, 1 );
 		} else {
-			var pi = $this.parent().data( 'index' );
-			$this.remove();
-			PIP[ pi ].splice( pi, 1 );
+			var $li = $this.parent();
+			var pi  = $li.data( 'index' );
+			PIP.splice( pi, 1 );
+			$li.remove();
 		}
 		saveConfig( 'pipeline', 'Filter', 'Remove ...' );
 	}
@@ -300,18 +292,13 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 $( '#bar-bottom div' ).on( 'click', function() {
 	var id       = this.id;
 	L.currenttab = id;
-	$( '.section' )
-	$( '#divsettings .add' )
-		.prop( 'class', 'i-add add '+ id )
-		.toggleClass( 'hide', [ 'controls', 'devices' ].includes( id ) );
-	$( '#divsettings .settings' ).toggleClass( 'hide', id !== 'devices' );
 	renderTab( id );
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 var L  = {
-	  currenttab : 'controls'
+	  currenttab : 'devices'
 	, devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
 	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
 	, freeasync  : {
@@ -637,7 +624,7 @@ function infoMapping( name, dest ) {
 <tr style="height: 10px"></tr>
 <tr class="trhead">
 	<td>Source</td><td>Gain</td><td>Mute</td><td>Invert</td>
-	<td><i class="i-add addsource"></i></td>
+	<td><i class="i-add"></i></td>
 </tr>
 <tr style="height: 10px"></tr>
 `;
@@ -645,30 +632,33 @@ function infoMapping( name, dest ) {
 <tr class="trsource">
 	<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
 	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted">
-	<td><i class="i-remove removesource"></i></td>
+	<td><i class="i-remove"></i></td>
 </tr>
 `;
 	for ( i = 0; i < sL; i++ ) content += trsource;
 	content += '</table>';
+	var icon  = 'mixers';
+	var title = checkchanged ? 'Mapping' : 'New Mapping';
 	info( {
-		  icon         : 'mixers'
-		, title        : checkchanged ? 'Mapping' : 'New Mapping'
+		  icon         : icon
+		, title        : title
 		, content      : content
 		, values       : values
 		, contentcssno : true
 		, checkblank   : true
 		, checkchanged : checkchanged
 		, beforeshow   : () => {
-			$( '.removesource' ).toggleClass( 'hide', $( '.trsource' ).length < 2 );
-			
-			$( '#infoContent' ).on( 'click', '.addsource', function() {
-				var $trlast = $( '#infoContent tr' ).last();
-				$trlast.after( trsource );
-				$( '#infoContent select' ).last().select2( { minimumResultsForSearch: 'Infinity' } );
-				$( '.removesource' ).removeClass( 'hide' );
-			} ).on( 'click', '.removesource', function() {
+			$( '#infoContent' ).on( 'click', '.i-add', function() {
+				var snew = +$( '#infoContent select' ).last().val() + 1;
+				if ( snew === DEV.capture.channels ) snew = 0;
+				$( '#infoContent tr' ).last().after( trsource );
+				$( '#infoContent select' ).last()
+					.val( snew )
+					.select2( { minimumResultsForSearch: 'Infinity' } );
+				$( '#infoOk' ).removeClass( 'disabled' );
+			} ).on( 'click', '.i-remove', function() {
 				$( this ).parents( 'tr' ).remove();
-				$( '.removesource' ).toggleClass( 'hide', $( '.trsource' ).length < 2 );
+				$( '#infoOk' ).toggleClass( 'disabled', ! $( '#infoContent input' ).length );
 			} );
 		}
 		, ok           : () => {
@@ -687,7 +677,7 @@ function infoMapping( name, dest ) {
 				, sources : sources
 			}
 			MIX[ name ].mapping = mapping;
-			$( '#divmixers .i-remove' ).addClass( 'hide', MIX[ name ].mapping.length < 2 );
+			saveConfig( icon, title, checkchanged ? 'Change ...' : 'Save ...' );
 		}
 	} );
 }
@@ -887,22 +877,34 @@ function labelArraySet( array ) {
 	var capitalized = array.map( el => key2label( el ) );
 	return capitalized
 }
-function muteDestination( $el ) {
-	var mute = $el.hasClass( 'i-devices' );
-	var a    = mute ? 'i-devices' : 'i-mute bl';
-	var b    = mute ? 'i-mute bl' : 'i-devices';
-	$el
-		.removeClass( a )
-		.addClass( b );
-	var name = $( '#divmixers .lihead' ).data( 'name' );
-	var dest = $el.parent().data( 'dest' );
-	MIX[ name ].mapping[ dest ].mute = mute;
-	saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );
-}
 function otherToggle( $trother, rate ) {
 	var other = rate === 'Other';
 	$trother.toggleClass( 'hide', ! other );
 	if ( ! other ) $trother.find( 'input' ).val( rate );
+}
+function pipelineOrder( array, ai, bi ) {
+	var a = array[ ai ];
+	array.splice( ai, 1 );
+	array.splice( bi, 0, a );
+}
+function pipelineSort() {
+	if ( 'sortable' in V ) V.sortable.destroy();
+	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
+		  ghostClass    : 'sortable-ghost'
+		, delay         : 400
+		, onUpdate      : function ( e ) {
+			var ai = e.oldIndex;
+			var bi = e.newIndex;
+			var $lihead = $( '#divpipeline .lihead' );
+			if ( $lihead.length ) {
+				var pi = $lihead.data( 'index' );
+				pipelineOrder( PIP[ pi ].names, ai - 1, bi - 1 );
+			} else {
+				pipelineOrder( PIP, ai, bi );
+			}
+			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
+		}
+	} );
 }
 function renderDevices() {
 	renderDevicesList( 'sampling', L.sampling );
@@ -948,36 +950,28 @@ function renderPage() {
 	PIP      = S.config.pipeline;
 	S.bass   = FIL.Bass.parameters.gain;
 	S.treble = FIL.Treble.parameters.gain;
-	[ 'volume', 'bass', 'treble' ].forEach( el => {
-		var val = S[ el ];
-		$( '#'+ el +' input' ).val( val );
-		$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
-	} );
+	if ( ! $( '#controls' ).hasClass( 'hide' ) ) {
+		[ 'volume', 'bass', 'treble' ].forEach( el => {
+			var val = S[ el ];
+			$( '#'+ el +' input' ).val( val );
+			$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
+		} );
+	}
 	$( '#statusvalue' ).html( S.status );
 	var options = '';
 	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
 	$( '#profile, #fileconf' )
 		.html( options )
 		.val( S.fileconf );
-	$( '#setting-profile' ).removeClass( 'hide' );
-	$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.camillaconf.capture_playback );
-	var controlshide = $( '#controls' ).hasClass( 'hide' );
-	if ( S.camillaconf.controls ) {
-		if ( controlshide ) {
-			$( '#controls' )
-				.removeClass( 'hide' )
-				.trigger( 'click' );
-		}
-	} else {
-		if ( ! controlshide ) {
-			$( '#controls' ).addClass( 'hide' );
-			if ( L.currenttab === 'controls' ) $( '#devices' ).trigger( 'click' );
-		}
-	}
+	$( '#setting-profile, #divsettings .settings' ).removeClass( 'hide' );
+	$( '#controls' ).addClass( 'hide' );
 	renderTab( L.currenttab );
 	showContent();
 }
 function renderTab( id ) {
+	var isetting = [ 'controls', 'devices' ].includes( L.currenttab );
+	$( '#divsettings .i-add' ).toggleClass( 'hide', isetting );
+	$( '#divsettings .settings' ).toggleClass( 'hide', ! isetting );
 	$( '#divsettings .headtitle' ).eq( 0 ).text( key2label( id ) )
 	$( '.tab' ).addClass( 'hide' );
 	$( '#div'+ L.currenttab ).removeClass( 'hide' );
@@ -1049,28 +1043,4 @@ function saveConfig( icon, titlle, msg ) {
 			} );
 		}
 	} );
-}
-function pipelineSort() {
-	if ( 'sortable' in V ) V.sortable.destroy();
-	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
-		  ghostClass    : 'sortable-ghost'
-		, delay         : 400
-		, onUpdate      : function ( e ) {
-			var ai = e.oldIndex;
-			var bi = e.newIndex;
-			var $lihead = $( '#divpipeline .lihead' );
-			if ( $lihead.length ) {
-				var pi = $lihead.data( 'index' );
-				arraySwap( PIP[ pi ].names, ai - 1, bi - 1 );
-			} else {
-				arraySwap( PIP, ai, bi );
-			}
-			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
-		}
-	} );
-}
-function arraySwap( array, ai, bi ) {
-	var a = array[ ai ];
-	array.splice( ai, 1 );
-	array.splice( bi, 0, a );
 }
