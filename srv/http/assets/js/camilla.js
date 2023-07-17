@@ -219,11 +219,11 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			var name = $lihead.data( 'name' );
 			$li.remove();
 			MIX[ name ].mapping.splice( mi, 1 );
+			$( '#divmixers .i-remove' ).addClass( 'hide', MIX[ name ].mapping.length < 2 );
 		} else {
-			var name = $this.find( 'li1' ).text();
+			var name = $this.next().text();
 			delete MIX[ name ];
 		}
-		$( '#divmixers .i-remove' ).addClass( 'hide', MIX[ name ].mapping.length < 2 );
 		saveConfig( 'mixers', 'Mixer', 'Remove ...' );
 	} else {
 		muteDestination( $this );
@@ -1010,7 +1010,7 @@ function renderTab( id ) {
 	
 	var data = {};
 	var keys = Object.keys( kv );
-	keys.sort().forEach( k => data[ k ] = kv[ k ] );
+	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -1056,21 +1056,21 @@ function pipelineSort() {
 		  ghostClass    : 'sortable-ghost'
 		, delay         : 400
 		, onUpdate      : function ( e ) {
+			var ai = e.oldIndex;
+			var bi = e.newIndex;
 			var $lihead = $( '#divpipeline .lihead' );
 			if ( $lihead.length ) {
-				e.newIndex--;
-				e.oldIndex--;
-				var pi            = $lihead.data( 'index' );
-				var names         = PIP[ pi ].names;
-				var newel         = names[ e.newIndex ];
-				names[ e.newIndex ] = names[ e.oldIndex ];
-				names[ e.oldIndex ] = newel;
+				var pi = $lihead.data( 'index' );
+				arraySwap( PIP[ pi ].names, ai - 1, bi - 1 );
 			} else {
-				var newel         = PIP[ e.newIndex ];
-				PIP[ e.newIndex ] = PIP[ e.oldIndex ];
-				PIP[ e.oldIndex ] = newel;
+				arraySwap( PIP, ai, bi );
 			}
-			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' )
+			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
 		}
 	} );
+}
+function arraySwap( array, ai, bi ) {
+	var a = array[ ai ];
+	array.splice( ai, 1 );
+	array.splice( bi, 0, a );
 }
