@@ -38,7 +38,7 @@ function bio( artist, getsimilar ) {
 		var name     = data.name;
 		var content  = data.bio.content.replace( /\n/g, '<br>' ).replace( /Read more on Last.fm.*/, '</a>' );
 		var genre    = data.tags.tag[ 0 ].name;
-		var backhtml = getsimilar ? ico( 'arrow-left bioback' ) : '';
+		var backhtml = getsimilar ? ico( 'back bioback' ) : '';
 		var similar  =  data.similar.artist;
 		if ( similar ) {
 			var similarhtml  = '<p>'+ ico( 'artist i-lg' ) +'&ensp;Similar Artists:<p><span>';

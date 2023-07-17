@@ -89,7 +89,7 @@ var chkdisplay = {
 		, tapaddplay     : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-plus infomenusub' ) +'<gr>Add + Play</gr>'
 		, tapreplaceplay : 'Select track&ensp;<gr>=</gr>&ensp;'+ ico( 'play-replace infomenusub' ) +'<gr>Replace + Play</gr>'
 		, playbackswitch : 'Switch to Playback <gr>on '+ ico( 'play-plus infomenusub' ) +'or '+ ico( 'play-replace infomenusub' )
-		, backonleft     : ico( 'arrow-left bl' ) +'Back button on left side'
+		, backonleft     : ico( 'back bl' ) +'Back button on left side'
 		, hidecover      : 'Hide coverart band <gr>in tracks view</gr>'
 		, fixedcover     : 'Fix coverart band <gr>on large screen</gr>'
 	}

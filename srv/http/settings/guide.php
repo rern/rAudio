@@ -54,7 +54,7 @@ $html     = '<div class="bottom-bar">';
 foreach( [ 'library', 'playback', 'playlist', 'settings' ] as $id ) {
 	$html.= '<a id="'.$id.'" class="btn">'.i( $id ).'<span>'.ucfirst( $id ).'</span></a>';
 }
-$html    .= '<a id="prevnext">'.i( 'arrow-left prev' ).i( 'arrow-right next' ).'</a></div>';
+$html    .= '<a id="prevnext">'.i( 'back prev' ).i( 'arrow-right next' ).'</a></div>';
 echo $html;
 ?>
 </div>

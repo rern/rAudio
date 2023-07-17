@@ -116,7 +116,7 @@ function htmlHead( $data ) {
 	$html   .= '<span class="headtitle">'.$title.'</span>';
 	if ( $button ) foreach( $button as $btnid => $icon ) $html.= i( $icon.' '.$btnid );
 	$html   .= isset( $data[ 'nohelp' ] ) || $subhead ? '' : i( 'help help' );
-	$html   .= isset( $data[ 'back' ] ) ? i( 'arrow-left back' ) : '';
+	$html   .= isset( $data[ 'back' ] ) ? i( 'back back' ) : '';
 	$html   .= '</heading>';
 	$html   .= $help ? '<span class="helpblock hide">'.$help.'</span>' : '';
 	$html   .= $status ? '<pre id="code'.$status.'" class="status hide"></pre>' : '';

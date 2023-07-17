@@ -16,7 +16,7 @@ var content   = `
 	${ ico( 'edit-circle', 'eqrename' ) }
 	${ ico( 'save disabled hide', 'eqsave' ) }
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
-	${ ico( 'add', 'eqnew' ) + ico( 'arrow-left bl hide', 'eqback' ) }
+	${ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' ) }
 </div>
 <div id="infoRange" class="vertical">${ '<input type="range" min="40" max="80">'.repeat( 10 ) }</div>
 </div>`;

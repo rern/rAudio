@@ -172,7 +172,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		</div>
 		<div id="lib-search-close"></div>
 		<div id="lib-path">
-			<?=i( 'button-lib-back', 'arrow-left' )?>
+			<?=i( 'button-lib-back', 'back' )?>
 			<div id="lib-title"><span class="title">LIBRARY</span><span id="li-count"></span></div>
 			<div id="lib-breadcrumbs"></div>
 			<span class="lipath"></span>
@@ -268,7 +268,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>
 		<?=i( 'button-playlist', 'playlist active' )
-		  .i( 'button-pl-back',  'arrow-left hide' )?>
+		  .i( 'button-pl-back',  'back hide' )?>
 		<div id="pl-manage" class="playlist">
 			<?=i( 'button-pl-playlists', 'playlists' )
 			  .i( 'button-pl-save',      'save-plus pllength' )
@@ -304,7 +304,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 			<?=i( 'lyricsundo',   'undo hide' )
 			  .i( 'lyricssave',   'save hide' )
 			  .i( 'lyricsdelete', 'remove' )
-			  .i( 'lyricsback',   'arrow-left bl' )?>
+			  .i( 'lyricsback',   'back bl' )?>
 		</div>
 	</div>
 	<div id="lyricstext" class="lyricstext"></div>
