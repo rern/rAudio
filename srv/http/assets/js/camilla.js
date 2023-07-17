@@ -242,6 +242,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			li += '<li data-index="'+ i +'">'+ ico( 'filters' ) + ico( 'remove'+ removehide ) + name +'</li>';
 		} );
 		$( '#divpipeline .entries' ).html( li );
+		pipelineSort();
 	} else {
 		var names  = Object.keys( MIX );
 		if ( names.length === 1 ) return
@@ -609,9 +610,7 @@ function infoMapping( name, dest ) {
 			var values = [ dest ];
 			var kv     = MIX[ name ].mapping[ dest ];
 			kv.sources.forEach( s => {
-				[ 'channel', 'gain', 'mute', 'inverted' ].forEach( k => {
-					values.push( s[ k ] );
-				} );
+				[ 'channel', 'gain', 'mute', 'inverted' ].forEach( k => values.push( s[ k ] ) );
 			} );
 			var sL           = kv.sources.length;
 			var checkchanged = true;
@@ -1000,6 +999,7 @@ function renderTab( id ) {
 				 +'</li>';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
+		pipelineSort();
 		return
 	}
 	
@@ -1042,6 +1042,17 @@ function saveConfig( icon, titlle, msg ) {
 				, title   : title
 				, message : 'Error: '+ error
 			} );
+		}
+	} );
+}
+function pipelineSort() {
+	if ( 'sortable' in V ) V.sortable.destroy();
+	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
+		  ghostClass    : 'sortable-ghost'
+		, delay         : 400
+		, forceFallback : true // fix: iphone safari
+		, onUpdate      : function ( e ) {
+			console.log( 'sort', e.oldIndex, e.newIndex )
 		}
 	} );
 }

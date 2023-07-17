@@ -83,6 +83,7 @@ if ( ! $page ) { // main
 	} else if ( $camilla ) {
 		$icon      = 'camilladsp';
 		$pagetitle = 'Camilla DSP';
+		$jsp[]     = 'Sortable';
 	} else if ( $guide ) {
 		$icon      = 'help';
 		$pagetitle = 'User Guide';

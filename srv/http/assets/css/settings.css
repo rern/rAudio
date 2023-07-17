@@ -611,8 +611,11 @@ input.disabled + .switchlabel:after {
 .tab .entries {
 	margin-top: 0;
 }
-.tab .entries i:not(.i-add) {
+.tab .entries i:not( .i-add ) {
 	float: left;
+}
+.tab .entries .i-remove {
+	float: right !important;
 }
 .tab .entries .li1 {
 	padding: 5px 10px 0 0;
@@ -629,7 +632,7 @@ input.disabled + .switchlabel:after {
 #divcontrols {
 	padding: 30px;
 }
-#divcontrols input[type=range] {
+#divcontrols input[ type=range ] {
 	max-width: 100%;
 }
 #divcontrols .range {
@@ -677,20 +680,51 @@ input.disabled + .switchlabel:after {
 	width: 75px;
 	padding: 0 5px !important;
 }
+.trsource input[ type=checkbox ] {
+	margin: 3px 0;
+}
 .lihead {
 	letter-spacing: 5px;
 	font-weight: 300;
 	color: var( --cw ) !important;
 }
-.lihead .back {
+.lihead .i-back {
 	float: right !important;
 	margin-right: 0;
-	color: var( --cm ) !important;
 }
 .i-add,
 .i-remove {
 	font-size: 22px !important;
 	cursor: pointer;
+}
+tr .i-add,
+tr .i-remove {
+	width: 40px !important;
+	line-height: 46px;
+}
+.select2-container.channel {
+	width: 65px !important;
+}
+/* sortable */
+.sortable-ghost {
+	background: var( --cg60 );
+}
+.sortable-ghost .li-icon {
+	visibility: hidden;
+}
+.sortable-ghost a,
+.sortable-ghost .li2 {
+	color: var( --cg ) !important;
+}
+.sortable-ghost::before {
+	position: absolute;
+	content: "\f601";
+	font-family: rern;
+	width: 40px;
+	font-size: 22px;
+	line-height: 30px;
+	text-align: center;
+	color: var( --cw );
 }
 
 @media (max-height: 570px) {
