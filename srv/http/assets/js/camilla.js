@@ -29,31 +29,7 @@ DiffEq   : [a] [b]
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '#divprofile .add' ).on( 'click', function() {
-	var icon  = 'camilladsp';
-	var title = 'New Profile';
-	info( {
-		  icon         : icon
-		, title        : title
-		, message      : 'Copy <wh>'+ S.fileconf +'</wh> as:'
-		, textlabel    : 'Name'
-		, values       : S.fileconf
-		, checkblank   : true
-		, checkchanged : true
-		, ok           : () => {
-			var name = infoVal();
-			if ( S.lsconf.includes( name +'.yml' ) ) {
-				info( {
-					  icon    : SW.icon
-					, title   : 'New Profile'
-					, message : 'Name exists: '+ name
-					, ok      : () => $( '#divprofile .add' ).trigger( 'click' )
-				} );
-			} else {
-				bash( [ 'confcopy', S.fileconf, name, 'CMD NAME NEWNAME' ] );
-				notify( icon, title, 'Save ...' );
-			}
-		}
-	} );
+	infoFileUpload( 'camilladsp' );
 } );
 $( '#profile' ).on( 'change', function() {
 	var name = $( this ).val();
@@ -64,24 +40,49 @@ $( '#setting-profile' ).on( 'click', function() {
 	var icon  = 'camilladsp';
 	var title = 'Profile';
 	info( {
-		  icon         : icon
-		, title        : title
-		, textlabel    : 'Name'
-		, values       : S.fileconf
-		, checkblank   : true
-		, checkchanged : true
-		, buttonlabel  : 'Delete'
-		, buttoncolor  : red
-		, button       : () => {
-			var name = infoVal();
-			bash( [ 'confdelete', name, 'CMD NAME' ] );
-			notify( icon, title, 'Delete ...' );
+		  icon        : icon
+		, title       : title
+		, message     : 'Configuration files:'
+		, select      : S.lsconf
+		, values      : S.fileconf
+		, buttonlabel : 'Delete'
+		, buttoncolor : red
+		, button      : () => {
+			var file = infoVal();
+			info( {
+				  icon    : icon
+				, title   : title
+				, message : 'Delete <wh>'+ file +'</wh> ?'
+				, oklabel : 'Delete'
+				, okcolor : red
+				, ok      : () => {
+					bash( [ 'confdelete', file, 'CMD NAME' ] );
+					notify( icon, title, 'Delete ...' );
+				}
+			} );
 		}
-		, oklabel      : 'Rename'
-		, ok           : () => {
-			var name = infoVal();
-			bash( [ 'confrename', S.fileconf, name, 'CMD NAME NEWNAME' ] );
-			notify( icon, title, 'Rename ...' );
+		, oklabel    : 'Save as'
+		, ok         : () => {
+			var file = infoVal();
+			info( {
+				  icon         : icon
+				, title        : title
+				, textlabel    : 'Name'
+				, values       : file.slice( 0, -4 )
+				, checkblank   : true
+				, checkchanged : true
+				, beforeshow   : () => { // exclude from checkchanged
+					$( '#infoContent tbody' ).append( '<tr><td></td><td><label><input type="checkbox">Rename</label></td></tr>' );
+				}
+				, oklabel      : 'Copy'
+				, ok           : () => {
+					var newfile = infoVal().replace( /\.[^/.]+$/, '' ) + '.yml'
+					var rename  = $( '#infoContent input:checkbox' ).prop( 'checked' );
+					var cmd     = rename ? 'confrename' : 'confcopy';
+					bash( [ cmd, file, newfile, 'CMD NAME NEWNAME' ] );
+					notify( icon, title, rename ? 'Rename ...' : 'Copy ...' );
+				}
+			} );
 		}
 	} );
 } );
@@ -187,7 +188,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 	} else if ( action === 'file' ) { // rename
 		info( {
 			  icon         : 'filters'
-			, title        : 'Rename Filter File'
+			, title        : 'Rename File'
 			, textlabel    : 'Name'
 			, values       : name
 			, checkblank   : true
@@ -212,30 +213,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 			} );
 		}
 	} else if ( action === 'add' ) {
-		var icon  = 'filters';
-		var title = 'Add Filter File';
-		info( {
-			  icon        : icon
-			, title       : title
-			, message     : 'Upload filter file:'
-			, fileoklabel : ico( 'file' ) +'Upload'
-			, ok          : () => {
-				notify( icon, title, 'Upload ...' );
-				return
-				
-				var formdata = new FormData();
-				formdata.append( 'cmd', 'camillacoeffs' );
-				formdata.append( 'file', I.infofile );
-				fetch( 'cmd.php', { method: 'POST', body: formdata } )
-					.then( response => response.text() )
-					.then( message => {
-						if ( message ) {
-							bannerHide();
-							infoWarning(  icon,  title, message );
-						}
-					} );
-			}
-		} );
+		infoFileUpload( 'filters' );
 	}
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
@@ -619,6 +597,37 @@ function infoDevices( dev, type ) {
 		}
 		, ok           : () => {
 			
+		}
+	} );
+}
+function infoFileUpload( icon ) {
+	if ( icon === 'filters' ) {
+		var title   = 'Add Filter File';
+		var cmd     = 'camillacoeffs';
+		var message = 'Upload filter file:';
+	} else {
+		var title   = 'Add Profile File';
+		var cmd     = 'camillaconfigs';
+		var message = 'Upload configuration file:'
+	}
+	info( {
+		  icon        : icon
+		, title       : title
+		, message     : message
+		, fileoklabel : ico( 'file' ) +'Upload'
+		, ok          : () => {
+			notify( icon, title, 'Upload ...' );
+			var formdata = new FormData();
+			formdata.append( 'cmd', cmd );
+			formdata.append( 'file', I.infofile );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.text() )
+				.then( message => {
+					if ( message ) {
+						bannerHide();
+						infoWarning(  icon,  title, message );
+					}
+				} );
 		}
 	} );
 }
@@ -1120,7 +1129,7 @@ function renderPage() {
 	PIP      = S.config.pipeline;
 	$( '#statusvalue' ).html( S.status );
 	var options = '';
-	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
+	S.lsconf.forEach( f => options += '<option>'+ f +'</option>' );
 	$( '#profile, #fileconf' )
 		.html( options )
 		.val( S.fileconf );

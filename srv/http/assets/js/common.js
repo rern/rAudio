@@ -351,7 +351,7 @@ function info( json ) {
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
 					  +'<a id="infoFileLabel" class="infobtn file infobtn-primary">'
-					  + ( I.filelabel || ico( 'folder-open' ) +'File' ) +'</a>';
+					  + ( I.filelabel || ico( 'folder-open' ) +' File' ) +'</a>';
 		$( '#infoButton' ).prepend( htmlfile )
 		$( '#infoOk' )
 			.html( I.fileoklabel )

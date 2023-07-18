@@ -25,8 +25,10 @@ case 'bash':
 	}
 	echo rtrim( $result );
 	break;
+case 'camillaconfigs':
 case 'camillacoeffs':
-	fileUploadSave( $dircamilladsp.'/coeffs/'.$_FILES[ 'file' ][ 'name' ] );
+	$dir = str_replace( 'camilla', '', $_POST[ 'cmd' ] );
+	fileUploadSave( '/srv/http/data/camilladsp/'.$dir.'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $sudosettings.'camilla.sh pushdata', $output, $result );
 	break;
 case 'datarestore':
@@ -110,5 +112,5 @@ function escape( $string ) {
 function fileUploadSave( $filepath ) {
 	if ( $_FILES[ 'file' ][ 'error' ] != UPLOAD_ERR_OK ) exit( '-1' );
 	
-	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $dircamilladsp.'/coeffs/'.$_FILES[ 'file' ][ 'name' ] );
+	move_uploaded_file( $_FILES[ 'file' ][ 'tmp_name' ], $filepath );
 }

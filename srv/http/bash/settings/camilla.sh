@@ -23,16 +23,16 @@ pushData() {
 case $CMD in
 
 confcopy )
-	cp -f $dirconfigs/{"$NAME","$NEWNAME"}.yml
+	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
 	switchConfig "$NEWNAME"
 	;;
 confdelete )
-	rm -f $dirconfigs/"$NAME".yml
+	rm -f $dirconfigs/"$NAME"
 	[[ ! -e $dirconfigs ]] && cp $dirconfigs/{default_config,camilladsp}.yml
 	switchConfig camilladsp
 	;;
 confrename )
-	mv -f $dirconfigs/{"$NAME","$NEWNAME"}.yml
+	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	switchConfig "$NEWNAME"
 	;;
 confsave )

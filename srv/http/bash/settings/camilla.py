@@ -42,8 +42,8 @@ if len( sys.argv ) > 2: # set: cmd val
             except Exception as e:
                 print( e )
         case 'switch':
-            print( pathconfigs + val +'.yml' )
-            cdsp.set_config_name( pathconfigs + val +'.yml' )
+            print( pathconfigs + val )
+            cdsp.set_config_name( pathconfigs + val )
 else: # get: cmd
     match cmd:
         case 'configfile':
@@ -55,9 +55,9 @@ else: # get: cmd
                 , 'volume'   : cdsp.get_volume()
                 , 'mute'     : cdsp.get_mute()
                 , 'status'   : status()
-                , 'lscoef'   : os.listdir( '/srv/http/data/camilladsp/coeffs' )
-                , 'lsconf'   : os.listdir( pathconfigs )
-                , 'fileconf' : os.path.basename( cdsp.get_config_name().rsplit( '.' )[ 0 ] )
+                , 'lscoef'   : sorted( os.listdir( '/srv/http/data/camilladsp/coeffs' ) )
+                , 'lsconf'   : sorted( os.listdir( pathconfigs ) )
+                , 'fileconf' : os.path.basename( cdsp.get_config_name() )
             }
         case 'status':
             value = { 'page': 'camilla', 'status': status() }
