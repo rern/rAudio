@@ -67,9 +67,6 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 
 $htmltabs.= $htmlcontrols.'</div>';
 
-$id_data = [
-	  'profile' => [ 'name' => 'Configuration', 'setting' => 'custom' ]
-];
 //////////////////////////////////
 $head = [ 'title'  => 'Status', 'status' => 'camilladsp' ];
 $labels = 'State
@@ -93,12 +90,6 @@ $body = [
 ];
 htmlSection( $head, $body, 'profile' );
 //////////////////////////////////
-$head = [
-	  'title'  => 'Controls'
-	, 'button' => [
-		  'add hide'      => 'add'
-		, 'settings hide' => 'gear'
-	]
-];
+$head = [ 'title'  => 'Devices' ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );

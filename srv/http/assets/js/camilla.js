@@ -91,7 +91,7 @@ $( '#setting-capture' ).on( 'click', function() {
 $( '#setting-playback' ).on( 'click', function() {
 	
 } );
-$( '#divsettings .settings' ).on( 'click', function() {
+$( '#divsettings' ).on( 'click', '.i-gear', function() {
 	var textlabel  = L.sampling.slice( 1 );
 	textlabel.push( 'Other' );
 	var values     = {};
@@ -150,8 +150,8 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( DEV.resampler_type === 'FreeAsync' );
 } );
-$( '#divsettings' ).on( 'click', '.i-add', function() {
-	var id = $( this ).prev().text().toLowerCase();
+$( '.headtitle' ).on( 'click', '.i-add', function() {
+	var id = $( this ).parent().text().toLowerCase();
 	if ( id === 'filters' ) {
 		infoFilters( 'Biquad', 'Lowpass' );
 	} else if ( id === 'mixers' ) {
@@ -161,6 +161,82 @@ $( '#divsettings' ).on( 'click', '.i-add', function() {
 	}
 } ).on( 'click', '.mixer-icon', function() {
 	infoMapping();
+} ).on( 'click', '.i-folder-plus', function() {
+	var icon  = 'filters';
+	var title = 'Add Filter File';
+	info( {
+		  icon        : icon
+		, title       : title
+		, message     : 'Upload filter file:'
+		, fileoklabel : ico( 'file' ) +'Upload'
+		, ok          : () => {
+			notify( icon, title, 'Upload ...' );
+			return
+			
+			var formdata = new FormData();
+			formdata.append( 'cmd', 'camillacoeffs' );
+			formdata.append( 'file', I.infofile );
+			fetch( 'cmd.php', { method: 'POST', body: formdata } )
+				.then( response => response.text() )
+				.then( message => {
+					if ( message ) {
+						bannerHide();
+						infoWarning(  icon,  title, message );
+					}
+				} );
+		}
+	} );
+} );
+$( '#divfilters' ).on( 'click', 'li', function( e ) {
+	var $this = $( this );
+	if ( $this.hasClass( 'lihead' ) || $( e.target ).is( 'i' ) ) return
+	
+	var name = $this.find( '.li1' ).text();
+	infoFilters( '', name );
+} ).on( 'click', 'li i', function() {
+	var $this  = $( this );
+	var action = $this.prop( 'class' ).slice( 2 );
+	var name   = $this.parent().data( 'name' );
+	if ( action === 'filters' ) { // rename
+		info( {
+			  icon         : 'filters'
+			, title        : 'Rename Filter'
+			, textlabel    : 'Name'
+			, values       : name
+			, checkblank   : true
+			, checkchanged : true
+			, ok           : () => {
+				
+			}
+		} );
+	} else if ( action === 'file' ) { // rename
+		info( {
+			  icon         : 'filters'
+			, title        : 'Rename Filter File'
+			, textlabel    : 'Name'
+			, values       : name
+			, checkblank   : true
+			, checkchanged : true
+			, ok           : () => {
+				
+			}
+		} );
+	} else if ( action === 'remove' ) {
+		if ( $this.prev().hasClass( 'i-filters' ) ) {
+			delete FIL[ name ];
+			saveConfig( 'filters', 'Filter', 'Delete ...' );
+		} else {
+			info( {
+				  icon    : 'filters'
+				, title   : 'Filter File'
+				, message : 'Delete <wh>'+ name +'</wh> ?'
+				, ok      : () => {
+					bash( [ 'delete' ] );
+					notify( 'filters', 'Filter File', 'Delete ...' );
+				}
+			} );
+		}
+	}
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
@@ -173,7 +249,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	
 	var name = $this.find( '.li1' ).text();
 	var data = MIX[ name ].mapping;
-	var li   = '<li class="lihead" data-name="'+ name +'">Mapping'+ ico( 'add wh' ) + ico( 'back bl' ) +'</li>';
+	var li   = '<li class="lihead" data-name="'+ name +'">Mapping'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 	data.forEach( ( kv, i ) => {
 		var channel = '';
 		kv.sources.forEach( s => {
@@ -186,16 +262,17 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	} );
 	$( '#divmixers .entries' ).html( li );
 } ).on( 'click', 'li i', function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'i-mixers' ) ) { // rename
+	var $this  = $( this );
+	var action = $this.prop( 'class' ).slice( 2 );
+	var name   = $this.parent().data( 'name' );
+	if ( action === 'mixers' ) { // rename
 		infoMixer( $this.next().next().text() );
-	} else if ( $this.hasClass( 'i-back' ) ) {
+	} else if ( action === 'back' ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
-	} else if ( $this.hasClass( 'i-add' ) ) {
-		var name = $this.parent().data( 'name' );
+	} else if ( action === 'add' ) {
 		infoMapping( name );
-	} else if ( $this.hasClass( 'i-remove' ) ) {
+	} else if ( action === 'remove' ) {
 		var $lihead = $( '#divmixers .lihead' );
 		var $li     = $this.parent();
 		if ( $lihead.length ) {
@@ -204,7 +281,6 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			$li.remove();
 			MIX[ name ].mapping.splice( mi, 1 );
 		} else {
-			var name = $this.next().text();
 			delete MIX[ name ];
 			$li.remove();
 		}
@@ -229,7 +305,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var index = $this.index();
 	var data  = PIP[ index ];
 	var type  = data.type;
-	var li    = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add wh' ) + ico( 'back bl' ) +'</li>';
+	var li    = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 	if ( type === 'Filter' ) {
 		var removehide = data.names.length === 1 ? ' hide' : '';
 		data.names.forEach( ( name, i ) => {
@@ -255,11 +331,12 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } ).on( 'click', 'li i', function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'i-back' ) ) {
+	var $this  = $( this );
+	var action = $this.prop( 'class' ).slice( 2 );
+	if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
-	} else if ( $this.hasClass( 'i-add' ) ) {
+	} else if ( action === 'add' ) {
 		var icon  = 'pipeline';
 		var title = 'Add Filter';
 		info( {
@@ -273,7 +350,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 				saveConfig( icon, title, 'Save ...' );
 			}
 		} );
-	} else if ( $this.hasClass( 'i-remove' ) ) {
+	} else if ( action === 'remove' ) {
 		var $lihead = $( '#divpipeline .lihead' );
 		if ( $lihead.length ) {
 			var pi = $lihead.data( 'index' );
@@ -290,16 +367,15 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
-	var id       = this.id;
-	L.currenttab = id;
-	renderTab( id );
+	V.currenttab = this.id;
+	renderTab();
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+V.currenttab = 'devices';
 var L  = {
-	  currenttab : 'devices'
-	, devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
+	  devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
 	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
@@ -459,6 +535,7 @@ var CP = { // capture / playback
 		}
 	}
 }
+
 function htmlOptionRange( L ) {
 	var option = '';
 	for( i = 0; i < L; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
@@ -471,69 +548,86 @@ function infoDevices( cp ) {
 	var values      = { type: type }
 }
 function infoFilters( type, subtype ) {
-	if ( typeof type === 'object' ) { // saved filters: type = values
-		var type    = type.type;
-		var subtype = type.subtype;
-		var name    = type.name;
-		var key_val = type;
-	} else {
-		var name    = '';
+	var key_val, key, kv, k, name, v;
+	if ( ! type ) { // subtype = existing name
+		name     = subtype;
+		var data = FIL[ name ];
+		v        = { type : data.type }
+		$.each( data.parameters, ( key, val ) => v[ key === 'type' ? 'subtype' : key ] = val );
+		type     = v.type;
+		subtype  = v.subtype;
 	}
 	// select
 	var selectlabel = [ 'type' ];
 	var select      = [ L.type ];
 	var values      = { type: type }
-	var key_val     = '';
 	if ( subtype ) {
 		selectlabel.push( 'subtype' )
 		select.push( L.subtype[ type ] );
-		values.subtype    = subtype;
-		key_val           = F[ subtype ];
+		values.subtype = subtype;
+		key_val        = F[ subtype ];
 	}
 	if ( ! key_val ) key_val = F[ type ];
 	if ( subtype === 'Uniform' ) key_val.amplitude = 1;
 	if ( 'select' in key_val ) {
-		var kv = key_val.select;
-		var k  = Object.keys( kv );
+		kv          = jsonClone( key_val.select );
+		k           = Object.keys( kv );
 		selectlabel = [ ...selectlabel, ...k ];
-		var subtype = subtype === 'Raw' ? [ S.lscoef, L.format ] : [ S.lscoef ];
-		select = [ ...select, ...subtype ];
-		values = { ...values, ...kv };
+		subtype     = subtype === 'Raw' ? [ S.lscoef, L.format ] : [ S.lscoef ];
+		select      = [ ...select, ...subtype ];
+		if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
+		values      = { ...values, ...kv };
 	}
-	selectlabel = labelArraySet( selectlabel );
+	selectlabel     = labelArraySet( selectlabel );
 	// text
 	var textlabel   = [ 'name' ];
-	values.name = name;
+	values.name     = name;
 	if ( 'text' in key_val ) {
-		var kv    = key_val.text;
-		var k     = Object.keys( kv );
+		kv        = jsonClone( key_val.text );
+		k         = Object.keys( kv );
 		textlabel = [ ...textlabel, ...k ];
+		if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 		values    = { ...values, ...kv };
 	}
-	textlabel    = labelArraySet( textlabel );
+	textlabel       = labelArraySet( textlabel );
 	// number
 	var numberlabel = false;
 	if ( 'number' in key_val ) {
-		var kv      = key_val.number;
-		numberlabel = Object.keys( kv );
+		kv          = jsonClone( key_val.number );
+		k           = Object.keys( kv );
+		numberlabel = k;
+		if ( v ) {
+			k.forEach( key => {
+				if ( [ 'q', 'samples' ].includes( key ) ) {
+					if ( ! ( 'q' in v ) ) {
+						delete kv.q;
+						key = 'samples';
+					}
+					numberlabel[ numberlabel.length - 1 ] = key;
+				}
+				kv[ key ] = v[ key ];
+			} );
+		}
 		values      = { ...values, ...kv };
 		numberlabel = labelArraySet( numberlabel );
 	}
-	// radio
+	// radio - q / samples
 	var radio       = false;
 	if ( 'radio' in key_val ) {
 		radio  = key_val.radio;
-		values = { ...values, radio: numberlabel.slice( -1 )[ 0 ] };
+		values = { ...values, radio: numberlabel[ numberlabel.length - 1 ] };
 	}
 	// checkbox
 	var checkbox    = false;
 	if ( 'checkbox' in key_val ) {
-		var kv   = key_val.checkbox;
-		checkbox = Object.keys( kv );
+		kv       = jsonClone( key_val.checkbox );
+		k        = Object.keys( kv );
+		checkbox = k;
+		if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 		values   = { ...values, ...kv };
 	}
-	var icon  = 'filters';
-	var title = name ? 'Filter' : 'New Filter';
+	var icon        = 'filters';
+	var title       = name ? 'Filter' : 'New Filter';
 	info( {
 		  icon         : icon
 		, title        : title
@@ -583,12 +677,13 @@ function infoFilters( type, subtype ) {
 			}
 		}
 		, ok           : () => {
-			var val   = infoVal();
-			var param = { type: val.subtype }
-			$.each( val, ( k, v ) => {
-				if ( ! [ 'radio', 'name', 'type', 'subtype' ].includes( k ) ) param[ k ] = v;
-			} );
-			FIL[ val.name ] = { type: val.type, parameters : param }
+			var val     = infoVal();
+			name        = val.name;
+			type        = val.type;
+			var param   = { type: val.subtype };
+			[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
+			$.each( val, ( k, v ) => param[ k ] = v );
+			FIL[ name ] = { type: type, parameters : param }
 			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
 		}
 	} );
@@ -948,40 +1043,36 @@ function renderPage() {
 	FIL      = S.config.filters;
 	MIX      = S.config.mixers;
 	PIP      = S.config.pipeline;
-	S.bass   = FIL.Bass.parameters.gain;
-	S.treble = FIL.Treble.parameters.gain;
-	if ( ! $( '#controls' ).hasClass( 'hide' ) ) {
-		[ 'volume', 'bass', 'treble' ].forEach( el => {
-			var val = S[ el ];
-			$( '#'+ el +' input' ).val( val );
-			$( '#'+ el +' .value' ).text( val +( val ? 'dB' : '' ) );
-		} );
-	}
 	$( '#statusvalue' ).html( S.status );
 	var options = '';
 	S.lsconf.forEach( f => options += '<option>'+ f.replace( '.yml', '' ) +'</option>' );
 	$( '#profile, #fileconf' )
 		.html( options )
 		.val( S.fileconf );
-	$( '#setting-profile, #divsettings .settings' ).removeClass( 'hide' );
 	$( '#controls' ).addClass( 'hide' );
-	renderTab( L.currenttab );
+	renderTab();
 	showContent();
 }
-function renderTab( id ) {
-	var isetting = [ 'controls', 'devices' ].includes( L.currenttab );
+function renderTab() {
+	var id       = V.currenttab
+	var $title   = $( '#divsettings .headtitle' ).eq( 0 );
+	var isetting = [ 'controls', 'devices' ].includes( id );
 	$( '#divsettings .i-add' ).toggleClass( 'hide', isetting );
 	$( '#divsettings .settings' ).toggleClass( 'hide', ! isetting );
-	$( '#divsettings .headtitle' ).eq( 0 ).text( key2label( id ) )
+	
+	$title.text( key2label( id ) )
+	
 	$( '.tab' ).addClass( 'hide' );
-	$( '#div'+ L.currenttab ).removeClass( 'hide' );
+	$( '#div'+ id ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
-	$( '#'+ L.currenttab ).addClass( 'active' );
+	$( '#'+ id ).addClass( 'active' );
 	if ( id === 'devices' ) {
+		$title.append( ico( 'gear' ) );
 		renderDevices();
 		return
 	}
 	
+	$title.append( ico( 'add' ) );
 	var kv = S.config[ id ];
 	if ( $.isEmptyObject( kv ) ) return
 	
@@ -1006,23 +1097,25 @@ function renderTab( id ) {
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
+		$title.append( ico( 'folder-plus' ) );
 		var li = '';
 		$.each( data, ( k, v ) => {
 			var val = JSON.stringify( v.parameters )
 						.replace( /[{"}]/g, '' )
 						.replace( 'type:', '' )
 						.replace( /,/g, ', ' )
-			li += '<li>'+ ico( id ) + ico( 'remove' )
+			li += '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
 				 +'<div class="li1">'+ k +'</div>'
 				 +'<div class="li2">'+ v.type +': '+ val +'</div>'
 				 +'</li>';
 		} );
+		S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 	} else if ( id === 'mixers' ) {
 		if ( $( '#divmixers .lihead' ).length ) return
 		
 		var li = '';
 		$.each( data, ( k, v ) => {
-			li += '<li>'+ ico( id ) + ico( 'remove' )
+			li += '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
 				 +'<div class="li1">'+ k +'</div>'
 				 +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 				 +'</li>';
@@ -1032,6 +1125,8 @@ function renderTab( id ) {
 }
 function saveConfig( icon, titlle, msg ) {
 	notify( icon, titlle, msg );
+	
+	renderPage();
 	console.log(S.config); return
 	
 	bash( [ 'confsave', JSON.stringify( S.config ), 'CMD JSON' ], error => {

@@ -47,6 +47,9 @@ enable_rate_adjust | enable_resampling | stop_on_rate_change )
 	sed -E -i "s/($CMD: ).*/\1$TF/" "$dirconfigs/$file"
 	pushData
 	;;
+pushdata )
+	pushData
+	;;
 setformat )
 	systemctl stop camilladsp
 	killall camilladsp &> /dev/null
