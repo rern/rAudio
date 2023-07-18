@@ -85,13 +85,7 @@ $( '#setting-profile' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#setting-capture' ).on( 'click', function() {
-	
-} );
-$( '#setting-playback' ).on( 'click', function() {
-	
-} );
-$( '#divsettings' ).on( 'click', '.i-gear', function() {
+$( '#divsettings' ).on( 'click', '.setting', function() {
 	var textlabel  = L.sampling.slice( 1 );
 	textlabel.push( 'Other' );
 	var values     = {};
@@ -128,6 +122,12 @@ $( '#divsettings' ).on( 'click', '.i-gear', function() {
 		}
 	} );
 } );
+$( '#setting-capture' ).on( 'click', function() {
+	infoDevices( 'capture' );
+} )
+$( '#setting-playback' ).on( 'click', function() {
+	infoDevices( 'playback' );
+} );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var icon  = 'devices';
 	var title = 'Rate Adjust';
@@ -161,31 +161,6 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 	}
 } ).on( 'click', '.mixer-icon', function() {
 	infoMapping();
-} ).on( 'click', '.i-folder-plus', function() {
-	var icon  = 'filters';
-	var title = 'Add Filter File';
-	info( {
-		  icon        : icon
-		, title       : title
-		, message     : 'Upload filter file:'
-		, fileoklabel : ico( 'file' ) +'Upload'
-		, ok          : () => {
-			notify( icon, title, 'Upload ...' );
-			return
-			
-			var formdata = new FormData();
-			formdata.append( 'cmd', 'camillacoeffs' );
-			formdata.append( 'file', I.infofile );
-			fetch( 'cmd.php', { method: 'POST', body: formdata } )
-				.then( response => response.text() )
-				.then( message => {
-					if ( message ) {
-						bannerHide();
-						infoWarning(  icon,  title, message );
-					}
-				} );
-		}
-	} );
 } );
 $( '#divfilters' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
@@ -236,6 +211,31 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 				}
 			} );
 		}
+	} else if ( action === 'folder-plus' ) {
+		var icon  = 'filters';
+		var title = 'Add Filter File';
+		info( {
+			  icon        : icon
+			, title       : title
+			, message     : 'Upload filter file:'
+			, fileoklabel : ico( 'file' ) +'Upload'
+			, ok          : () => {
+				notify( icon, title, 'Upload ...' );
+				return
+				
+				var formdata = new FormData();
+				formdata.append( 'cmd', 'camillacoeffs' );
+				formdata.append( 'file', I.infofile );
+				fetch( 'cmd.php', { method: 'POST', body: formdata } )
+					.then( response => response.text() )
+					.then( message => {
+						if ( message ) {
+							bannerHide();
+							infoWarning(  icon,  title, message );
+						}
+					} );
+			}
+		} );
 	}
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
@@ -248,7 +248,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	}
 	
 	var name = $this.find( '.li1' ).text();
-	var data = MIX[ name ].mapping;
+	var data = jsonClone( MIX[ name ].mapping );
 	var li   = '<li class="lihead" data-name="'+ name +'">Mapping'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 	data.forEach( ( kv, i ) => {
 		var channel = '';
@@ -303,7 +303,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) ) return
 	
 	var index = $this.index();
-	var data  = PIP[ index ];
+	var data  = jsonClone( PIP[ index ] );
 	var type  = data.type;
 	var li    = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 	if ( type === 'Filter' ) {
@@ -373,10 +373,15 @@ $( '#bar-bottom div' ).on( 'click', function() {
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-V.currenttab = 'devices';
+V.currenttab   = 'devices';
+var devicetype = {};
+[ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ].forEach( k => devicetype[ stringReplace( k ) ] = k );
+devicetype.stdin = 'Stdin';
+var format     = {};
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => format[ stringReplace( k ) ] = k );
 var L  = {
-	  devicetype : [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ]
-	, format     : [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ]
+	  devicetype : devicetype
+	, format     : format
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
@@ -476,16 +481,15 @@ var F  = {
 // capture / playback
 var CPkv = {
 	  tc     : {
-		  select : { type: 'Alsa' }
-		, number : { channels: 2 }
+		  number : { channels: 2 }
 	}
 	, tcsd   : {
-		  select : { type: 'Alsa', sampleformat: 'S16LE' }
+		  select : { format: 'S16LE' }
 		, number : { channels: 2 }
 		, text   : { device: '' }
 	}
 	, wasapi : {
-		  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+		  select   : { format: 'S16LE' }
 		, number   : { channels: 2 }
 		, text     : { device: '' }
 		, checkbox : { exclusive: false, loopback: false }
@@ -495,7 +499,7 @@ var CP = { // capture / playback
 	  capture : {
 		  Alsa      : CPkv.tcsd
 		, CoreAudio : {
-			  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select   : { format: 'S16LE' }
 			, number   : { channels: 2 }
 			, text     : { device: '' }
 			, checkbox : { change_format: false }
@@ -504,11 +508,11 @@ var CP = { // capture / playback
 		, Wasapi    : CPkv.wasapi
 		, Jack      : CPkv.tc
 		, Stdin     : {
-			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select : { format: 'S16LE' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		}
 		, File      : {
-			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select : { format: 'S16LE' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 			, text   : { filename: '' }
 		}
@@ -516,7 +520,7 @@ var CP = { // capture / playback
 	, playback : {
 		  Alsa      : CPkv.tcsd
 		, CoreAudio : {
-			  select   : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select   : { format: 'S16LE' }
 			, number   : { channels: 2 }
 			, text     : { device: '' }
 			, checkbox : { exclusive: false, change_format: false }
@@ -525,11 +529,11 @@ var CP = { // capture / playback
 		, Wasapi    : CPkv.wasapi
 		, Jack      : CPkv.tc
 		, Stdout    : {
-			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select : { format: 'S16LE' }
 			, number : { channels: 2 }
 		}
 		, File      : {
-			  select : { type: 'Alsa', sampleformat: 'S16LE' }
+			  select : { format: 'S16LE' }
 			, number : { channels: 2 }
 			, text   : { filename: '' }
 		}
@@ -541,17 +545,88 @@ function htmlOptionRange( L ) {
 	for( i = 0; i < L; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
 	return option
 }
-function infoDevices( cp ) {
+function infoDevices( dev, type ) {
+	var key_val, kv, k, v;
+	var data        = jsonClone( DEV[ dev ] );
+	var type        = type || data.type;
 	// select
 	var selectlabel = [ 'type' ];
 	var select      = [ L.devicetype ];
 	var values      = { type: type }
+	key_val         = CP[ dev ][ type ];
+	if ( 'select' in key_val ) {
+		kv          = jsonClone( key_val.select );
+		k           = Object.keys( kv );
+		selectlabel = [ ...selectlabel, ...k ];
+		select      = [ ...select, L.format ];
+		values      = { ...values, format: data.format || 'S16LE' };
+	}
+	selectlabel     = labelArraySet( selectlabel );
+	// text
+	var textlabel = false;
+	if ( 'text' in key_val ) {
+		kv        = jsonClone( key_val.text );
+		k         = Object.keys( kv );
+		textlabel = labelArraySet( k );
+		k.forEach( key => {
+			if ( key in data ) kv[ key ] = data[ key ];
+		} );
+		values    = { ...values, ...kv };
+	}
+	// number
+	var numberlabel = false;
+	if ( 'number' in key_val ) {
+		kv          = jsonClone( key_val.number );
+		k           = Object.keys( kv );
+		numberlabel = labelArraySet( k );
+		k.forEach( key => {
+			if ( key in data ) kv[ key ] = data[ key ];
+		} );
+		values      = { ...values, ...kv };
+	}
+	// checkbox
+	var checkbox    = false;
+	if ( 'checkbox' in key_val ) {
+		kv       = jsonClone( key_val.checkbox );
+		k        = Object.keys( kv );
+		checkbox = labelArraySet( k );
+		k.forEach( key => {
+			if ( key in data ) kv[ key ] = data[ key ];
+		} );
+		values   = { ...values, ...kv };
+	}
+	$.each( v, ( k, v ) => values[ k ] = v );
+	var icon  = 'devices';
+	var title = key2label( dev ) +' Device';
+	info( {
+		  icon         : icon
+		, title        : title
+		, selectlabel  : selectlabel
+		, select       : select
+		, textlabel    : textlabel
+		, numberlabel  : numberlabel
+		, checkbox     : checkbox
+		, boxwidth     : 198
+		, order        : [ 'select', 'text', 'number', 'checkbox' ]
+		, values       : values
+		, checkblank   : true
+		, checkchanged : true
+		, beforeshow   : () => {
+			var $select = $( '#infoContent select' );
+			$select.eq( 0 ).on( 'change', function() {
+				infoDevices( dev, $( this ).val() );
+			} );
+		}
+		, ok           : () => {
+			
+		}
+	} );
 }
 function infoFilters( type, subtype ) {
 	var key_val, key, kv, k, name, v;
 	if ( ! type ) { // subtype = existing name
 		name     = subtype;
-		var data = FIL[ name ];
+		var data = jsonClone( FIL[ name ] );
 		v        = { type : data.type }
 		$.each( data.parameters, ( key, val ) => v[ key === 'type' ? 'subtype' : key ] = val );
 		type     = v.type;
@@ -622,7 +697,7 @@ function infoFilters( type, subtype ) {
 	if ( 'checkbox' in key_val ) {
 		kv       = jsonClone( key_val.checkbox );
 		k        = Object.keys( kv );
-		checkbox = k;
+		checkbox = labelArraySet( k );
 		if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 		values   = { ...values, ...kv };
 	}
@@ -645,7 +720,6 @@ function infoFilters( type, subtype ) {
 		, checkchanged : name
 		, beforeshow   : () => {
 			$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
-			$( '.trcheckbox label' ).css( 'text-transform', 'capitalize' );
 			var $tdname = $( '#infoContent td' ).filter( function() {
 				return $( this ).text() === 'Name'
 			} );
@@ -692,7 +766,7 @@ function infoMapping( name, dest ) {
 	if ( name ) {
 		if ( dest ) {
 			var values = [ dest ];
-			var kv     = MIX[ name ].mapping[ dest ];
+			var kv     = jsonClone( MIX[ name ].mapping[ dest ] );
 			kv.sources.forEach( s => {
 				[ 'channel', 'gain', 'mute', 'inverted' ].forEach( k => values.push( s[ k ] ) );
 			} );
@@ -799,7 +873,7 @@ function infoMixer( name ) {
 			}
 			
 			if ( name ) {
-				var mixer = MIX[ name ];
+				var mixer = jsonClone( MIX[ name ] );
 				delete MIX[ name ];
 			} else {
 				var mixer = {
@@ -1012,7 +1086,7 @@ function renderDevices() {
 }
 function renderDevicesList( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
-		var kv = DEV[ section ]
+		var kv = jsonClone( DEV[ section ] );
 		keys   = Object.keys( kv );
 	} else {
 		var kv = DEV;
@@ -1035,7 +1109,8 @@ function renderDevicesList( section, keys ) {
 		} );
 	}
 	$( '#div'+ section +' .statuslist' ).html(
-		'<div class="col-l text gr">'+ labels +'</div><div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
+		 '<div class="col-l text gr">'+ labels +'</div>'
+		+'<div class="col-r text">'+ stringReplace( values ) +'</div><div style="clear:both"></div>'
 	);
 }
 function renderPage() {
@@ -1049,31 +1124,24 @@ function renderPage() {
 	$( '#profile, #fileconf' )
 		.html( options )
 		.val( S.fileconf );
-	$( '#controls' ).addClass( 'hide' );
 	renderTab();
 	showContent();
 }
 function renderTab() {
-	var id       = V.currenttab
-	var $title   = $( '#divsettings .headtitle' ).eq( 0 );
-	var isetting = [ 'controls', 'devices' ].includes( id );
-	$( '#divsettings .i-add' ).toggleClass( 'hide', isetting );
-	$( '#divsettings .settings' ).toggleClass( 'hide', ! isetting );
-	
-	$title.text( key2label( id ) )
-	
+	var id    = V.currenttab
+	var title = key2label( id );
+	title    += ico( id === 'devices' ? 'gear setting' : 'add' );
+	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
 	$( '#div'+ id ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ id ).addClass( 'active' );
 	if ( id === 'devices' ) {
-		$title.append( ico( 'gear' ) );
 		renderDevices();
 		return
 	}
 	
-	$title.append( ico( 'add' ) );
-	var kv = S.config[ id ];
+	var kv    = jsonClone( S.config[ id ] );
 	if ( $.isEmptyObject( kv ) ) return
 	
 	if ( id === 'pipeline' ) {
@@ -1097,7 +1165,6 @@ function renderTab() {
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
-		$title.append( ico( 'folder-plus' ) );
 		var li = '';
 		$.each( data, ( k, v ) => {
 			var val = JSON.stringify( v.parameters )
@@ -1109,7 +1176,10 @@ function renderTab() {
 				 +'<div class="li2">'+ v.type +': '+ val +'</div>'
 				 +'</li>';
 		} );
-		S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
+		if ( S.lscoef.length ) {
+			li += '<li class="lihead files">Files '+ ico( 'folder-plus', 'filterfile' ) +'</li>';
+			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
+		}
 	} else if ( id === 'mixers' ) {
 		if ( $( '#divmixers .lihead' ).length ) return
 		
@@ -1138,4 +1208,11 @@ function saveConfig( icon, titlle, msg ) {
 			} );
 		}
 	} );
+}
+function stringReplace( k ) {
+	return k
+			.replace( 'Alsa', 'ALSA' )
+			.replace( 'Stdin', 'stdin' )
+			.replace( 'FLOAT', 'Float' )
+			.replace( 'TEXT', 'Text' )
 }

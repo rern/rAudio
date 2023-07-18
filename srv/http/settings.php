@@ -43,7 +43,7 @@ if ( $addonsprogress || $guide ) {
 // bottom bar
 $htmlbar = '<div id="bar-bottom">';
 if ( $camilla ) {
-	$tabs = [ 'Controls', 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
+	$tabs = [ 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
 } else {
 	$tabs = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
 }

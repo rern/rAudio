@@ -37,24 +37,6 @@ foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
 </div>
 ';
 }
-$htmlcontrols = '
-<div id="divcontrols" class="tab">
-	<div id="volume" class="range">
-		<code class="name">Gain</code><div class="value">0</div>
-		<input type="range" min="-54" max="5" value="0">
-	</div>
-	<div id="bass" class="range">
-		<code class="name">Bass</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" step="0.1" value="0">
-	</div>
-	<div id="treble" class="range">
-		<code class="name">Treble</code><div class="value">0</div>
-		<input type="range" min="-6" max="6" step="0.1" value="0">
-	</div>
-	<div style="clear:both"></div>
-</div>
-';
-
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 	$htmltabs.= '
@@ -65,7 +47,7 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 ';
 }
 
-$htmltabs.= $htmlcontrols.'</div>';
+$htmltabs.= '</div>';
 
 //////////////////////////////////
 $head = [ 'title'  => 'Status', 'status' => 'camilladsp' ];
