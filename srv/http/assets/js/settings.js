@@ -62,9 +62,10 @@ function json2array( keys, json ) {
 	return values
 }
 function list2JSON( list ) {
-	if ( list.trim() === 'mpdnotrunning' ) {
-		bash( [ 'settings/pkgstatus.sh', 'mpd' ], status => {
-			var error =  iconwarning +'MPD is not running '
+	if ( list.trim() === 'notrunning' ) {
+		var pkg = page === 'player' ? 'mpd' : 'camilladsp';
+		bash( [ 'settings/pkgstatus.sh', pkg ], status => {
+			var error =  iconwarning +'<c>'+ pkg +'</c> is not running '
 						+'<a class="infobtn infobtn-primary restart">'+ ico( 'refresh' ) +'Start</a>'
 						+'<hr>'
 						+ status;
@@ -72,8 +73,9 @@ function list2JSON( list ) {
 				.html( error )
 				.removeClass( 'hide' )
 				.on( 'click', '.restart', function() {
-					bash( [ 'settings/player-conf.sh' ], refreshData );
-					notify( 'mpd', 'MPD', 'Start ...' );
+					var cmdsh = page === 'player' ? [ 'settings/player-conf.sh' ] : [ 'settings/camilla.sh', 'restart' ];
+					bash( cmdsh, refreshData );
+					notify( pkg, pkg, 'Start ...' );
 				} );
 		loaderHide();
 		} );

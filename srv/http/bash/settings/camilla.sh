@@ -50,6 +50,9 @@ enable_rate_adjust | enable_resampling | stop_on_rate_change )
 pushdata )
 	pushData
 	;;
+restart )
+	systemctl restart camilladsp
+	;;
 setformat )
 	systemctl stop camilladsp
 	killall camilladsp &> /dev/null
