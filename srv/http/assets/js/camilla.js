@@ -211,7 +211,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 				}
 			} );
 		}
-	} else if ( action === 'folder-plus' ) {
+	} else if ( action === 'add' ) {
 		var icon  = 'filters';
 		var title = 'Add Filter File';
 		info( {
@@ -1177,7 +1177,7 @@ function renderTab() {
 				 +'</li>';
 		} );
 		if ( S.lscoef.length ) {
-			li += '<li class="lihead files">Files '+ ico( 'folder-plus', 'filterfile' ) +'</li>';
+			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 		}
 	} else if ( id === 'mixers' ) {

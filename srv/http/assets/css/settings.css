@@ -691,9 +691,6 @@ input.disabled + .switchlabel:after {
 	float: right !important;
 	margin-right: 0;
 }
-.lihead .i-folder-plus {
-	float: none !important;
-}
 .lihead.files {
 	border-top: 1px solid var( --cg );
 }
