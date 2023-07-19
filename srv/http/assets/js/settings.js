@@ -322,7 +322,7 @@ document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
 
 $( document ).on( 'keyup', function( e ) {
-	if ( I.active ) return
+	if ( I.active || page === 'camilla' ) return
 	
 	var $focus;
 	var key = e.key;

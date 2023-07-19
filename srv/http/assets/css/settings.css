@@ -410,7 +410,7 @@ input[type=image] {
 	display: none;
 }
 /* switch: https://codepen.io/mburnette/pen/LxNxNg */
-.container input[type=checkbox] {
+.container input[type=checkbox]:has( + .switchlabel ) {
 	position: absolute;
 	height: 40px;
 	width: 80px;
@@ -627,17 +627,13 @@ input.disabled + .switchlabel:after {
 	color: var( --cg60 );
 }
 .tab .select2-container {
-	margin-bottom: 5px;
+	margin-bottom: 1px;
 }
-#divcontrols {
-	padding: 30px;
-}
-#divcontrols input[ type=range ] {
-	max-width: 100%;
-}
-#divcontrols .range {
+.tab input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cga );
+	max-width: 100%;
+	margin-top: 2px;
 }
 #divsampling .statuslist {
 	margin-top: 15px;
@@ -687,6 +683,11 @@ input.disabled + .switchlabel:after {
 	font-weight: 300;
 	color: var( --cw ) !important;
 }
+.lihead .select2 {
+	float: none;
+	display: inline-block;
+	width: 65px !important;
+}
 .lihead .i-back {
 	float: right !important;
 	margin-right: 0;
@@ -712,6 +713,49 @@ tr .i-remove {
 }
 .select2-container.channel {
 	width: 65px !important;
+}
+.lihead.dest {
+	font-weight: normal;
+	letter-spacing: 0;
+}
+.lidiv:hover {
+	background: var( --cgd ) !important;
+}
+.lidiv.head,
+.lihead:hover {
+	background: none;
+}
+.lidiv div {
+	display: inline-block;
+	width: 65px;
+}
+.lidiv div:not(:first-child) {
+	text-align: center;
+}
+.lidiv:not(.column) div:nth-child( 2 ) {
+	vertical-align: 15px;
+	padding-left: 5px;
+}
+.lidiv.column {
+	vertical-align: 0;
+}
+.lidiv div:nth-child( 3 ) {
+	width: 230px !important;
+	padding: 0 10px;
+}
+.lidiv input[type=number] {
+	vertical-align: 2px;
+	text-align: center;
+	border: 1px solid var( --cg );
+}
+.tab .selection,
+.tab .select2-selection,
+.tab .select2-selection__rendered {
+	width: 100% !important;
+	height: 40px !important;
+}
+.tab input[type=checkbox] {
+	vertical-align: 6px;
 }
 /* sortable */
 .sortable-ghost {

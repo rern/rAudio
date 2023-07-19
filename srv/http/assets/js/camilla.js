@@ -86,7 +86,7 @@ $( '#setting-profile' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#divsettings' ).on( 'click', '.setting', function() {
+$( '#divsettings' ).on( 'click', '.settings', function() {
 	var textlabel  = L.sampling.slice( 1 );
 	textlabel.push( 'Other' );
 	var values     = {};
@@ -218,27 +218,43 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
-	if ( $this.hasClass( 'lihead' ) || $( e.target ).is( 'i' ) ) return
+	if ( $this.hasClass( 'lihead' ) || $( '.lidiv' ).length || $( e.target ).is( 'i' ) ) return
 	
 	if ( ! $this.find( '.i-mixers' ).length ) {
-		infoMapping( $this.data( 'name' ), $this.data( 'dest' ) );
+		//infoMapping( $this.data( 'name' ), $this.data( 'dest' ) );
+		var name  = $this.data( 'name' );
+		var index = $this.data( 'index' );
+		var kv    = jsonClone( MIX[ name ].mapping[ index ] );
+		var li    = '<li class="lihead">Destination '+ ico( 'add' ) + ico( 'back' ) +'</li>'
+					+'<li class="lidiv head"><div>Channel</div><div>Gain</div><div>Mute</div><div>Invert</div></li>';
+		kv.sources.forEach( s => {
+			li += '<li class="lidiv"><div>'+ s.channel +'</div><div>'+ s.gain +'</div><div>'+ s.mute +'</div><div>'+ s.inverted +'</div></li>';
+		} );
+		$( '#divmixers .entries' ).html( li );
 		return
 	}
 	
-	var name = $this.find( '.li1' ).text();
-	var data = jsonClone( MIX[ name ].mapping );
-	var li   = '<li class="lihead" data-name="'+ name +'">Mapping'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+	var name       = $this.find( '.li1' ).text();
+	var data       = jsonClone( MIX[ name ].mapping );
+	var li         = '<li class="lihead">'+ ico( 'back' ) +'</li>';
+	var optdest    = '';
+	for ( i = 0; i < DEV.playback.channels; i++ ) optdest += '<option>'+ i +'</option>';
+	var optsources = '';
+	for ( i = 0; i < DEV.capture.channels; i++ ) optsources += '<option>'+ i +'</option>';
 	data.forEach( ( kv, i ) => {
-		var channel = '';
+		li += '<li class="lihead dest" data-dest="'+ kv.dest +'" data-index="'+ i +'" data-name="'+ name +'">'
+			 +'Destination <select>'+ optdest +'</select> '+ ico( 'add' ) + ico( 'remove' ) +'</li>'
+			 +'<li class="lidiv column"><div>Channel</div><div>dB</div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( s => {
-			channel += ', '+ s.channel;
+			li += '<li class="lidiv"><div><select>'+ optsources +'</select></div>'
+				 +'<div><input type="number" step="0.1" value="0.0"></div>'
+				 +'<div><input type="range"></div>'
+				 +'<div><input type="checkbox"></div>'
+				 +'<div><input type="checkbox"></div>'+ ico( 'remove' ) +'</li>';
 		} );
-		li += '<li data-dest="'+ kv.dest +'" data-index="'+ i +'">'
-			 + ico( kv.mute ? 'mute bl' : 'devices' ) + ico( 'remove' )
-			 +'<div class="li1">Destination: '+ kv.dest +'</div>'
-			 +'<div class="li2">Sources: '+ channel.slice( 2 ) +'</div></li>';
 	} );
 	$( '#divmixers .entries' ).html( li );
+	$( '#divmixers .entries select' ).select2( select2opt );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
@@ -352,6 +368,7 @@ $( '#bar-bottom div' ).on( 'click', function() {
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 V.currenttab   = 'devices';
+var select2opt = { minimumResultsForSearch: 'Infinity' }
 var devicetype = {};
 [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ].forEach( k => devicetype[ stringReplace( k ) ] = k );
 devicetype.stdin = 'Stdin';
@@ -772,6 +789,7 @@ function infoFilters( type, subtype ) {
 	} );
 }
 function infoMapping( name, dest ) {
+	console.log( name, dest )
 	if ( name ) {
 		if ( dest ) {
 			var values = [ dest ];
@@ -832,7 +850,7 @@ function infoMapping( name, dest ) {
 				$( '#infoContent tr' ).last().after( trsource );
 				$( '#infoContent select' ).last()
 					.val( snew )
-					.select2( { minimumResultsForSearch: 'Infinity' } );
+					.select2( select2opt );
 				$( '#infoOk' ).removeClass( 'disabled' );
 			} ).on( 'click', '.i-remove', function() {
 				$( this ).parents( 'tr' ).remove();
@@ -1139,7 +1157,7 @@ function renderPage() {
 function renderTab() {
 	var id    = V.currenttab
 	var title = key2label( id );
-	title    += ico( id === 'devices' ? 'gear setting' : 'add' );
+	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
 	$( '#div'+ id ).removeClass( 'hide' );
