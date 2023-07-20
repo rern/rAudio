@@ -22,6 +22,10 @@ pushData() {
 
 case $CMD in
 
+coeffdelete )
+	rm -f $dircamilladsp/coeffs/"$NAME"
+	pushData
+	;;
 confcopy )
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
 	switchConfig "$NEWNAME"

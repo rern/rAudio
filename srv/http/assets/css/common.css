@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1689084935' );
+	src         : url( '/assets/fonts/rern.woff2?v=1689690189' );
 }
 @font-face {
 	font-family : Lato;
@@ -406,8 +406,8 @@ codered  {
 
 .range,
 #infoRange {
-	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px );
-	--trackborder : 1px solid var( --cgd );
+	--track: linear-gradient( 90deg, transparent 10px, #000 10px, #000 calc( 100% - 10px ), transparent 10px ) !important;
+	--trackborder : 1px solid var( --cgd ) !important;
 }
 input[type=range] {
 	height: 40px;

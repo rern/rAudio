@@ -85,6 +85,13 @@ $sharedip"
 		fileconf=/etc/$PKG.conf
 		;;
 esac
+status=$( systemctl status $SERVICE \
+				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
+						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
+											 s|( inactive \(.*\))|<red>\1</red>|
+											 s|(failed)|<red>\1</red>|ig}' )
+[[ $skip ]] && status=$( grep -E -v "$skip" <<< $status )
+
 config="<code>$( pacman -Q $PKG )</code>"
 if [[ $conf ]]; then
 	config+="
@@ -94,12 +101,7 @@ elif [[ -e $fileconf ]]; then
 <bll># cat $fileconf</bll>
 $( grep -v ^# $fileconf )"
 fi
-status=$( systemctl status $SERVICE \
-				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
-						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
-											 s|( inactive \(.*\))|<red>\1</red>|
-											 s|(failed)|<red>\1</red>|ig}' )
-[[ $skip ]] && status=$( grep -E -v "$skip" <<< $status )
+
 echo "\
 $config
 

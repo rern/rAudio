@@ -163,28 +163,12 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } ).on( 'click', '.mixer-icon', function() {
 	infoMapping();
 } );
-$( '#divfilters' ).on( 'click', 'li', function( e ) {
-	var $this = $( this );
-	if ( $this.hasClass( 'lihead' ) || $( e.target ).is( 'i' ) ) return
-	
-	var name = $this.find( '.li1' ).text();
-	infoFilters( '', name );
-} ).on( 'click', 'li i', function() {
+$( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
-	var name   = $this.parent().data( 'name' );
-	if ( action === 'filters' ) { // rename
-		info( {
-			  icon         : 'filters'
-			, title        : 'Rename Filter'
-			, textlabel    : 'Name'
-			, values       : name
-			, checkblank   : true
-			, checkchanged : true
-			, ok           : () => {
-				
-			}
-		} );
+	var name   = $this.parents( 'li' ).data( 'name' );
+	if ( action === 'filters' ) {
+		infoFilters( '', name );
 	} else if ( action === 'file' ) { // rename
 		info( {
 			  icon         : 'filters'
@@ -198,37 +182,40 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	} else if ( action === 'remove' ) {
-		if ( $this.prev().hasClass( 'i-filters' ) ) {
-			delete FIL[ name ];
-			saveConfig( 'filters', 'Filter', 'Delete ...' );
-		} else {
-			info( {
-				  icon    : 'filters'
-				, title   : 'Filter File'
-				, message : 'Delete <wh>'+ name +'</wh> ?'
-				, ok      : () => {
-					bash( [ 'delete' ] );
+		info( {
+			  icon    : 'filters'
+			, title   : 'Filter'
+			, message : 'Delete <wh>'+ name +'</wh> ?'
+			, ok      : () => {
+				if ( $this.parents( 'li' ).find( '.i-filters' ).length ) {
+					delete FIL[ name ];
+					saveConfig( 'filters', 'Filter', 'Delete ...' );
+				} else {
+					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 					notify( 'filters', 'Filter File', 'Delete ...' );
 				}
-			} );
-		}
+			}
+		} );
 	} else if ( action === 'add' ) {
 		infoFileUpload( 'filters' );
 	}
+} ).on( 'click input keyup', 'input[type=range]', function() {
+	var $this = $( this );
+	$this.prev().val( dbFormat( $this.val() ) );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
-	if ( $this.hasClass( 'lihead' ) || $( '.lidiv' ).length || $( e.target ).is( 'i' ) ) return
+	if ( $this.hasClass( 'lihead' ) || $( '#divmixers .liinput' ).length || $( e.target ).is( 'i' ) ) return
 	
 	if ( ! $this.find( '.i-mixers' ).length ) {
 		//infoMapping( $this.data( 'name' ), $this.data( 'dest' ) );
 		var name  = $this.data( 'name' );
 		var index = $this.data( 'index' );
 		var kv    = jsonClone( MIX[ name ].mapping[ index ] );
-		var li    = '<li class="lihead">Destination '+ ico( 'add' ) + ico( 'back' ) +'</li>'
-					+'<li class="lidiv head"><div>Channel</div><div>Gain</div><div>Mute</div><div>Invert</div></li>';
+		var li    =  '<li class="lihead">Destination '+ ico( 'add' ) + ico( 'back' ) +'</li>'
+					+'<li class="liinput head"><div>Channel</div><div>Gain</div><div>Mute</div><div>Invert</div></li>';
 		kv.sources.forEach( s => {
-			li += '<li class="lidiv"><div>'+ s.channel +'</div><div>'+ s.gain +'</div><div>'+ s.mute +'</div><div>'+ s.inverted +'</div></li>';
+			li += '<li class="liinput"><div>'+ s.channel +'</div><div>'+ s.gain +'</div><div>'+ s.mute +'</div><div>'+ s.inverted +'</div></li>';
 		} );
 		$( '#divmixers .entries' ).html( li );
 		return
@@ -236,49 +223,73 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	
 	var name       = $this.find( '.li1' ).text();
 	var data       = jsonClone( MIX[ name ].mapping );
-	var li         = '<li class="lihead">'+ ico( 'back' ) +'</li>';
+	var li         = '<li class="lihead">'+ ico( 'back' ) +'</li><div>';
 	var optdest    = '';
 	for ( i = 0; i < DEV.playback.channels; i++ ) optdest += '<option>'+ i +'</option>';
 	var optsources = '';
 	for ( i = 0; i < DEV.capture.channels; i++ ) optsources += '<option>'+ i +'</option>';
 	data.forEach( ( kv, i ) => {
-		li += '<li class="lihead dest" data-dest="'+ kv.dest +'" data-index="'+ i +'" data-name="'+ name +'">'
-			 +'Destination <select>'+ optdest +'</select> '+ ico( 'add' ) + ico( 'remove' ) +'</li>'
-			 +'<li class="lidiv column"><div>Channel</div><div>dB</div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
-		kv.sources.forEach( s => {
-			li += '<li class="lidiv"><div><select>'+ optsources +'</select></div>'
-				 +'<div><input type="number" step="0.1" value="0.0"></div>'
-				 +'<div><input type="range"></div>'
-				 +'<div><input type="checkbox"></div>'
-				 +'<div><input type="checkbox"></div>'+ ico( 'remove' ) +'</li>';
+		var dest = kv.dest;
+		li += '<li class="liinput main" data-index="'+ i +'" data-name="'+ name +'" data-dest="'+ dest +'">'
+			 + ico( 'mixers' ) +'Destination&ensp;<select>'+ optdest +'</select>&nbsp;'+ ico( 'add' )
+			 +'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +'>Mute'+ ico( 'remove' )
+			 +'</li>'
+			 +'<li class="liinput column"><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+		kv.sources.forEach( ( s, si ) => {
+			var source   = data[ i ].sources[ si ];
+			var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
+			li += '<li class="liinput" data-index="'+ si +'" data-name="'+ name +'" data-dest="'+ dest +'"><select>'+ optsources +'</select>'
+				 +'<input type="number"'+ step_val +'>'
+				 +'<input type="range"'+ step_val +' min="-6" max="6">'
+				 +'<input type="checkbox"'+ ( source.mute ? ' checked' : '' ) +'>'
+				 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 		} );
 	} );
-	$( '#divmixers .entries' ).html( li );
+	$( '#divmixers .entries' ).html( li +'</div>' );
 	$( '#divmixers .entries select' ).select2( select2opt );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
+	var $li    = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	var name   = $this.parent().data( 'name' );
 	if ( action === 'mixers' ) { // rename
 		infoMixer( $this.next().next().text() );
 	} else if ( action === 'back' ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
-		infoMapping( name );
+		infoMapping( $li.data( 'name' ) );
 	} else if ( action === 'remove' ) {
-		var $lihead = $( '#divmixers .lihead' );
-		var $li     = $this.parent();
-		if ( $lihead.length ) {
-			var mi   = $li.data( 'index' );
-			var name = $lihead.data( 'name' );
-			$li.remove();
-			MIX[ name ].mapping.splice( mi, 1 );
+		var main = ! $( '#divmixers .lihead' ).length;
+		var dest = $li.hasClass( 'liinput main' );
+		if ( main ) {
+			var message = 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?';
+		} else if ( dest ) {
+			var message = 'Delete this destination?';
 		} else {
-			delete MIX[ name ];
-			$li.remove();
+			var message = 'Delete this source?';
 		}
-		saveConfig( 'mixers', 'Mixer', 'Remove ...' );
+		info( {
+			  icon    : 'mixers'
+			, title   : 'Mixer'
+			, message : message
+			, ok      : () => {
+				var name = $li.data( 'name' );
+				if ( main ) {
+					delete MIX[ name ];
+					$li.remove();
+				} else {
+					var di = $li.data( 'dest' );
+					if ( dest ) {
+						delete MIX[ name ].mapping.splice( di, 1 );
+						$li.parent().remove();
+					} else {
+						MIX[ name ].mapping[ di ].sources.splice( $li.data( 'index' ), 1 );
+						$li.remove();
+					}
+				}
+				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
+			}
+		} );
 	} else {
 		var mute = $this.hasClass( 'i-devices' );
 		var a    = mute ? 'i-devices' : 'i-mute bl';
@@ -291,6 +302,9 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		MIX[ name ].mapping[ dest ].mute = mute;
 		saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );
 	}
+} ).on( 'click input keyup', 'input[type=range]', function() {
+	var $this = $( this );
+	$this.prev().val( dbFormat( $this.val() ) );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
@@ -303,7 +317,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	if ( type === 'Filter' ) {
 		var removehide = data.names.length === 1 ? ' hide' : '';
 		data.names.forEach( ( name, i ) => {
-			li += '<li data-index="'+ i +'">'+ ico( 'filters' ) + ico( 'remove'+ removehide ) + name +'</li>';
+			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove'+ removehide ) + name +'</li>';
 		} );
 		$( '#divpipeline .entries' ).html( li );
 		pipelineSort();
@@ -328,7 +342,6 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'back' ) {
-		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
 		var icon  = 'pipeline';
@@ -336,7 +349,6 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 		info( {
 			  icon        : icon
 			, title       : title
-			, message     : 'To <wh>'+ $this.parent().text() +'</wh>'
 			, selectlabel : 'Filter'
 			, select      : Object.keys( FIL )
 			, ok          : () => {
@@ -345,19 +357,25 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	} else if ( action === 'remove' ) {
-		var $lihead = $( '#divpipeline .lihead' );
-		if ( $lihead.length ) {
-			var pi = $lihead.data( 'index' );
-			var ni = $this.parent().data( 'index' );
-			$this.parent().remove();
-			PIP[ pi ].names.splice( ni, 1 );
-		} else {
-			var $li = $this.parent();
-			var pi  = $li.data( 'index' );
-			PIP.splice( pi, 1 );
-			$li.remove();
-		}
-		saveConfig( 'pipeline', 'Filter', 'Remove ...' );
+		var $li  = $this.parents( 'li' );
+		var main = ! $( '#divpipeline .lihead' ).length;
+		info( {
+			  icon    : 'pipeline'
+			, title   : 'Pipeline'
+			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?'
+			, ok      : () => {
+				if ( main ) {
+					var pi  = $li.data( 'index' );
+					PIP.splice( pi, 1 );
+				} else {
+					var pi = $( '#divpipeline .lihead' ).data( 'index' );
+					var ni = $this.parent().data( 'index' );
+					PIP[ pi ].names.splice( ni, 1 );
+				}
+				$li.remove();
+				saveConfig( 'pipeline', 'Pipeline', 'Remove filter ...' );
+			}
+		} );
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
@@ -535,6 +553,9 @@ var CP = { // capture / playback
 	}
 }
 
+function dbFormat( num ) {
+	return num % 1 === 0 ? num + '.0' : num
+}
 function htmlOptionRange( L ) {
 	var option = '';
 	for( i = 0; i < L; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
@@ -1172,16 +1193,14 @@ function renderTab() {
 	if ( $.isEmptyObject( kv ) ) return
 	
 	if ( id === 'pipeline' ) {
-		if ( $( '#divpipeline .lihead' ).length ) return
-		
 		var li = '';
 		kv.forEach( ( el, i ) => {
 			var filter = el.type === 'Filter';
-			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( id ) + ico( 'remove' )
-				 +'<div class="li1">'+ el.type +'</div>'
-				 +'<div class="li2">'
-				 + ( filter ? 'channel '+ el.channel +': '+ el.names.join( ', ' ) : el.name ) +'</div>'
-				 +'</li>';
+			li +=    '<li data-type="'+ el.type +'" data-name="'+ name +'">'+ ico( id ) + ico( 'remove' )
+					+'<div class="li1">'+ el.type +'</div>'
+					+'<div class="li2">'
+					+ ( filter ? 'channel '+ el.channel +': '+ el.names.join( ', ' ) : el.name ) +'</div>'
+					+'</li>';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
 		pipelineSort();
@@ -1192,30 +1211,44 @@ function renderTab() {
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
-		var li = '';
+		var step_val  =  ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
+		var li = '<li class="liinput main">'+ ico( 'volume' ) +'<span class="name">Main Gain</span>'
+				+'<input type="number"'+ step_val +'>'
+				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
+				+'<input type="checkbox"'+ ( S.mute ? ' checked' : '' ) +'>Mute'
+				+'</li>';
 		$.each( data, ( k, v ) => {
-			var val = JSON.stringify( v.parameters )
-						.replace( /[{"}]/g, '' )
-						.replace( 'type:', '' )
-						.replace( /,/g, ', ' )
-			li += '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
-				 +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2">'+ v.type +': '+ val +'</div>'
-				 +'</li>';
+			var param = v.parameters;
+			var val   = JSON.stringify( param )
+							.replace( /[{"}]/g, '' )
+							.replace( 'type:', '' )
+							.replace( /,/g, ', ' );
+			if ( 'gain' in param ) {
+				var liinput   =  ' class="liinput"';
+				step_val      =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
+				var licontent =  '<span class="name">'+ k +'</span>'
+								+'<input type="number"'+ step_val +'>'
+								+'<input type="range"'+ step_val +' min="-6" max="6">'
+								+ ico( 'remove' );
+			} else {
+				var liinput     =  '';
+				var licontent =  ico( 'remove' )
+								+'<div class="li1">'+ k +'</div>'
+								+'<div class="li2">'+ v.type +': '+ val +'</div>';
+			}
+			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( id ) + licontent +'</li>';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 		}
 	} else if ( id === 'mixers' ) {
-		if ( $( '#divmixers .lihead' ).length ) return
-		
 		var li = '';
 		$.each( data, ( k, v ) => {
-			li += '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
-				 +'<div class="li1">'+ k +'</div>'
-				 +'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
-				 +'</li>';
+			li +=    '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
+					+'<div class="li1">'+ k +'</div>'
+					+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
+					+'</li>';
 		} );
 	}
 	$( '#div'+ id +' .entries' ).html( li );
