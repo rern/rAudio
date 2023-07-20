@@ -761,12 +761,20 @@ tr .i-remove {
 	max-width: 230px;
 	margin: 0 10px;
 }
-.liinput.main input[ type=range ] {
-	max-width: 230px;
-}
 .liinput input[ type=checkbox ] {
 	margin: 0 20px;
 }
+.mutedest,
+.mutemain {
+	margin-right: 10px !important;
+}
+.mutedest {
+	margin-left: 150px !important;
+}
+.mutedestlabel {
+	display: none;
+}
+
 .liinput .i-remove {
 	margin-left: auto;
 }
@@ -821,6 +829,14 @@ tr .i-remove {
 	}
 	#bar-bottom { padding: 0 }
 }
+@media ( max-width: 600px ) {
+	.liinput div:nth-child( 3 ),
+	.tab input[ type=range ] { max-width: calc( 100% - 300px ) }
+	.mutemain { margin: 0 10px !important }
+	.mutelabel { display: none !important }
+	.mutedest { margin-left: 20px !important }
+	.mutedestlabel { display: unset }
+}
 @media ( max-width: 580px ) {
 	.head { padding-right: 0 !important }
 	wide { display: none }
@@ -840,8 +856,11 @@ tr .i-remove {
 @media ( min-width: 466px ) {
 	.hideW { display: none }
 }
-@media (max-width: 440px) {
+@media ( max-width: 440px ) {
 	.head .title { letter-spacing: calc( ( 100vw - 280px ) / 8 ) }
+	.liinput div:nth-child( 3 ),
+	.tab input[ type=range ] { display: none }
+	.mutelabel { display: unset !important }
 }
 @media (max-width: 450px) {
 	input[type="text"] { padding: 0 7px }

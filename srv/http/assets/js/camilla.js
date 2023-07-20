@@ -199,9 +199,23 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	} else if ( action === 'add' ) {
 		infoFileUpload( 'filters' );
 	}
+} ).on( 'keyup', 'input[type=number]', function() {
+	var $this = $( this );
+	$this.next().val( +$this.val() );
 } ).on( 'click input keyup', 'input[type=range]', function() {
 	var $this = $( this );
-	$this.prev().val( dbFormat( $this.val() ) );
+	var val   = +$this.val();
+	$this.prev().val( dbFormat( val ) );
+	if ( $this.hasClass( 'range' ) ) {
+		console.log( [ 'volume', val, 'CMD VOLUME' ] );
+		bash( [ 'volume', val, 'CMD VOLUME' ] );
+		notify( 'filters', 'Main Gain', 'Change ...' );
+	} else {
+		FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = val;
+		saveConfig( 'filters', 'Filter Gain', 'Change ...' );
+	}
+} ).on( 'click', 'li.main input:checkbox', function() {
+	bash( [ 'mute', $( this ).prop( 'checked' ), 'CMD MUTE' ] );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this     = $( this );
@@ -229,22 +243,23 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var optsource = '';
 	for ( i = 0; i < DEV.capture.channels; i++ ) optsource += '<option>'+ i +'</option>';
 	data.forEach( ( kv, i ) => {
-		var dest = kv.dest;
-		var optd = optdest.replace( '>'+ dest, ' selected>'+ dest );
-		li      +=   '<div class="divdest"><li class="liinput main" data-index="'+ i +'" data-name="'+ name +'" data-dest="'+ dest +'">'
+		var dest   = kv.dest;
+		var optd   = optdest.replace( '>'+ dest, ' selected>'+ dest );
+		var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
+		li        += '<div class="divdest"><li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
 					+ ico( 'devices' ) +'Destination&ensp;<select>'+ optd +'</select>&nbsp;'+ ico( 'add' )
-					+'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +'>Mute'+ ico( 'remove' )
+					+'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +' class="mutedest"><a class="mutedestlabel">Mute</a>'+ ico( 'remove' )
 					+'</li>'
-					+'<li class="liinput column"><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+					+'<li class="liinput column"'+ i_name +'><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( ( s, si ) => {
 			var source   = data[ i ].sources[ si ];
 			var channel = source.channel;
 			var opts    = optsource.replace( '>'+ channel, ' selected>'+ channel );
 			var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
-			li += '<li class="liinput" data-index="'+ si +'" data-name="'+ name +'" data-dest="'+ dest +'"><select>'+ opts +'</select>'
+			li += '<li class="liinput"'+ i_name +'" data-si="'+ si +'"><select>'+ opts +'</select>'
 				 +'<input type="number"'+ step_val +'>'
 				 +'<input type="range"'+ step_val +' min="-6" max="6">'
-				 +'<input type="checkbox"'+ ( source.mute ? ' checked' : '' ) +'>'
+				 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
 				 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 		} );
 		li      += '</div>';
@@ -255,18 +270,20 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
 	var $li    = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	var main = ! $( '#divmixers .lihead' ).length;
+	var main   = ! $( '#divmixers .lihead' ).length;
+	var name   = $li.data( 'name' );
 	if ( action === 'mixers' ) { // rename
-		infoMixer( $li.data( 'name' ) );
+		infoMixer( name );
 	} else if ( action === 'back' ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
-		infoMapping( $li.data( 'name' ) );
+		var index = $li.hasClass( 'main' ) ? '' : $li.data( 'index' );
+		infoMapping( name, index );
 	} else if ( action === 'remove' ) {
 		var dest = $li.hasClass( 'liinput main' );
 		if ( main ) {
-			var message = 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?';
+			var message = 'Delete <wh>'+ name +'</wh> ?';
 		} else if ( dest ) {
 			var message = 'Delete this destination?';
 		} else {
@@ -277,7 +294,6 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, title   : 'Mixer'
 			, message : message
 			, ok      : () => {
-				var name = $li.data( 'name' );
 				if ( main ) {
 					delete MIX[ name ];
 					$li.remove();
@@ -294,21 +310,29 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
 			}
 		} );
-/*	} else {
-		var mute = $this.hasClass( 'i-devices' );
-		var a    = mute ? 'i-devices' : 'i-mute bl';
-		var b    = mute ? 'i-mute bl' : 'i-devices';
-		$this
-			.removeClass( a )
-			.addClass( b );
-		var name = $( '#divmixers .lihead' ).data( 'name' );
-		var dest = $this.parent().data( 'dest' );
-		MIX[ name ].mapping[ dest ].mute = mute;
-		saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );*/
 	}
+} ).on( 'keyup', 'input[type=number]', function() {
+	var $this = $( this );
+	$this.next().val( +$this.val() );
 } ).on( 'click input keyup', 'input[type=range]', function() {
 	var $this = $( this );
-	$this.prev().val( dbFormat( $this.val() ) );
+	$this.prev().val( dbFormat( +$this.val() ) );
+} ).on( 'click', 'li input:checkbox', function() {
+	var $this   = $( this );
+	var $li     = $this.parents( 'li' );
+	var mapping = MIX[ $li.data( 'name' ) ].mapping[ $li.data( 'index' ) ];
+	var tf      = $this.prop( 'checked' );;
+	if ( $this.hasClass( 'mutedest' ) ) {
+		mapping.mute = tf;
+	} else {
+		var source = mapping.sources[ $li.data( 'si' ) ];
+		if ( $this.hasClass( 'mute' ) ) {
+			source.mute = tf;
+		} else {
+			source.inverted = tf;
+		}
+	}
+	saveConfig( 'mixers', 'Mute', 'change ...' );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
@@ -815,94 +839,73 @@ function infoFilters( type, subtype ) {
 		}
 	} );
 }
-function infoMapping( name, dest ) {
-	console.log( name, dest )
-	if ( name ) {
-		if ( dest ) {
-			var values = [ dest ];
-			var kv     = jsonClone( MIX[ name ].mapping[ dest ] );
-			kv.sources.forEach( s => {
-				[ 'channel', 'gain', 'mute', 'inverted' ].forEach( k => values.push( s[ k ] ) );
-			} );
-			var sL           = kv.sources.length;
-			var checkchanged = true;
-		} else {
-			var values       = [ 0, 0, 0, false, false ];
-			var sL           = 1;
-		}
-	} else {
-		var dest         = 0;
-		var sL           = 1;
-		var checkchanged = false;
-	}
+function infoMapping( name, index ) {
 	var option = {
 		  dest   : htmlOptionRange( DEV.playback.channels )
 		, source : htmlOptionRange( DEV.capture.channels )
 	}
-	var content = `
-<table class="tablemapping">
+	var trdest   = `
 <tr class="trsource">
-	<td style="text-align: right">Dest.</td><td><select data-k="dest">${ option.dest }</select></td>
-</tr>
-<tr style="height: 10px"></tr>
-<tr class="trhead">
-	<td>Source</td><td>Gain</td><td>Mute</td><td>Invert</td>
-	<td><i class="i-add"></i></td>
+	<td><select data-k="dest">${ option.dest }</select></td>
 </tr>
 <tr style="height: 10px"></tr>
 `;
 	var trsource = `
+<tr class="trhead">
+	<td>Source</td><td>Gain</td><td>Mute</td><td>Invert</td>
+</tr>
+<tr style="height: 10px"></tr>
 <tr class="trsource">
 	<td><select data-k="channel">${ option.source }</select></td><td><input type="number" data-k="gain" value="0"></td>
 	<td><input type="checkbox" data-k="mute"></td><td><input type="checkbox" data-k="inverted">
-	<td><i class="i-remove"></i></td>
 </tr>
 `;
-	for ( i = 0; i < sL; i++ ) content += trsource;
-	content += '</table>';
+	
 	var icon  = 'mixers';
-	var title = checkchanged ? 'Mapping' : 'New Mapping';
-	info( {
-		  icon         : icon
-		, title        : title
-		, content      : content
-		, values       : values
-		, contentcssno : true
-		, checkblank   : true
-		, checkchanged : checkchanged
-		, beforeshow   : () => {
-			$( '#infoContent' ).on( 'click', '.i-add', function() {
-				var snew = +$( '#infoContent select' ).last().val() + 1;
-				if ( snew === DEV.capture.channels ) snew = 0;
-				$( '#infoContent tr' ).last().after( trsource );
-				$( '#infoContent select' ).last()
-					.val( snew )
-					.select2( select2opt );
-				$( '#infoOk' ).removeClass( 'disabled' );
-			} ).on( 'click', '.i-remove', function() {
-				$( this ).parents( 'tr' ).remove();
-				$( '#infoOk' ).toggleClass( 'disabled', ! $( '#infoContent input' ).length );
-			} );
-		}
-		, ok           : () => {
-			var sources = [];
-			$( '.trsource' ).slice( 1 ).each( ( i, tr ) => {
+	if ( index === '' ) {
+		var title = 'New Destination';
+		info( {
+			  icon         : icon
+			, title        : title
+			, content      : '<table class="tablemapping">'+ trdest + trsource +'</table>'
+			, contentcssno : true
+			, values       : [ 0, 0, 0, false, false ]
+			, checkblank   : true
+			, ok           : () => {
 				var s = {}
-				$( tr ).find( 'select, input' ).each( ( i, el ) => {
+				$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
 					var $this = $( el )
 					s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 				} );
-				sources.push( s );
-			} );
-			var mapping = {
-				  dest    : +$( '.trsource select' ).val()
-				, mute    : false
-				, sources : sources
+				var mapping = {
+					  dest    : +$( '.trsource select' ).val()
+					, mute    : false
+					, sources : [ s ]
+				}
+				MIX[ name ].mapping.push( mapping );
+				saveConfig( icon, title, 'Save ...' );
 			}
-			MIX[ name ].mapping = mapping;
-			saveConfig( icon, title, checkchanged ? 'Change ...' : 'Save ...' );
-		}
-	} );
+		} );
+	} else {
+		var title = 'New Source';
+		info( {
+			  icon         : icon
+			, title        : title
+			, content      : '<table class="tablemapping">'+ trsource +'</table>'
+			, contentcssno : true
+			, values       : [ 0, 0, false, false ]
+			, checkblank   : true
+			, ok           : () => {
+				var s = {}
+				$( '.trsource' ).find( 'select, input' ).each( ( i, el ) => {
+					var $this = $( el )
+					s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
+				} );
+				MIX[ name ].mapping[ index ].sources.push( s );
+				saveConfig( icon, title, 'Save ...' );
+			}
+		} );
+	}
 }
 function infoMixer( name ) {
 	var icon  = 'mixers';
@@ -1195,7 +1198,7 @@ function renderTab() {
 		return
 	}
 	
-	if ( $( '#div'+ id ).find( '.lihead' ).length ) {
+	if ( id !== 'filters' && $( '#div'+ id ).find( '.lihead' ).length ) {
 		$( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
 		return
 	}
@@ -1226,7 +1229,7 @@ function renderTab() {
 		var li = '<li class="liinput main">'+ ico( 'volume' ) +'<span class="name">Main Gain</span>'
 				+'<input type="number"'+ step_val +'>'
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
-				+'<input type="checkbox"'+ ( S.mute ? ' checked' : '' ) +'>Mute'
+				+'<input type="checkbox"'+ ( S.mute ? ' checked' : '' ) +' class="mutemain"><a class="mutelabel">Mute</a>'
 				+'</li>';
 		$.each( data, ( k, v ) => {
 			var param = v.parameters;
