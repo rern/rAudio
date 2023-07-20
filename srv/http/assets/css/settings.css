@@ -712,6 +712,9 @@ tr .i-remove {
 .tab li:hover {
 	background: none !important;
 }
+.tab .divdest {
+	padding-bottom: 20px;
+}
 .liinput {
 	display: flex !important;
 	align-items: center;

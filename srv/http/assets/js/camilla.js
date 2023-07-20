@@ -204,11 +204,10 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	$this.prev().val( dbFormat( $this.val() ) );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
-	var $this = $( this );
+	var $this     = $( this );
 	if ( $this.hasClass( 'lihead' ) || $( '#divmixers .liinput' ).length || $( e.target ).is( 'i' ) ) return
 	
 	if ( ! $this.find( '.i-mixers' ).length ) {
-		//infoMapping( $this.data( 'name' ), $this.data( 'dest' ) );
 		var name  = $this.data( 'name' );
 		var index = $this.data( 'index' );
 		var kv    = jsonClone( MIX[ name ].mapping[ index ] );
@@ -221,45 +220,50 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		return
 	}
 	
-	var name       = $this.find( '.li1' ).text();
-	var data       = jsonClone( MIX[ name ].mapping );
-	var li         = '<li class="lihead">'+ ico( 'back' ) +'</li><div>';
-	var optdest    = '';
+	V.mixers      = $this.index();
+	var name      = $this.find( '.li1' ).text();
+	var data      = jsonClone( MIX[ name ].mapping );
+	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + ico( 'back' ) +'</li>';
+	var optdest   = '';
 	for ( i = 0; i < DEV.playback.channels; i++ ) optdest += '<option>'+ i +'</option>';
-	var optsources = '';
-	for ( i = 0; i < DEV.capture.channels; i++ ) optsources += '<option>'+ i +'</option>';
+	var optsource = '';
+	for ( i = 0; i < DEV.capture.channels; i++ ) optsource += '<option>'+ i +'</option>';
 	data.forEach( ( kv, i ) => {
 		var dest = kv.dest;
-		li += '<li class="liinput main" data-index="'+ i +'" data-name="'+ name +'" data-dest="'+ dest +'">'
-			 + ico( 'mixers' ) +'Destination&ensp;<select>'+ optdest +'</select>&nbsp;'+ ico( 'add' )
-			 +'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +'>Mute'+ ico( 'remove' )
-			 +'</li>'
-			 +'<li class="liinput column"><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+		var optd = optdest.replace( '>'+ dest, ' selected>'+ dest );
+		li      +=   '<div class="divdest"><li class="liinput main" data-index="'+ i +'" data-name="'+ name +'" data-dest="'+ dest +'">'
+					+ ico( 'devices' ) +'Destination&ensp;<select>'+ optd +'</select>&nbsp;'+ ico( 'add' )
+					+'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +'>Mute'+ ico( 'remove' )
+					+'</li>'
+					+'<li class="liinput column"><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( ( s, si ) => {
 			var source   = data[ i ].sources[ si ];
+			var channel = source.channel;
+			var opts    = optsource.replace( '>'+ channel, ' selected>'+ channel );
 			var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
-			li += '<li class="liinput" data-index="'+ si +'" data-name="'+ name +'" data-dest="'+ dest +'"><select>'+ optsources +'</select>'
+			li += '<li class="liinput" data-index="'+ si +'" data-name="'+ name +'" data-dest="'+ dest +'"><select>'+ opts +'</select>'
 				 +'<input type="number"'+ step_val +'>'
 				 +'<input type="range"'+ step_val +' min="-6" max="6">'
 				 +'<input type="checkbox"'+ ( source.mute ? ' checked' : '' ) +'>'
 				 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 		} );
+		li      += '</div>';
 	} );
-	$( '#divmixers .entries' ).html( li +'</div>' );
+	$( '#divmixers .entries' ).html( li );
 	$( '#divmixers .entries select' ).select2( select2opt );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	var $li    = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
+	var main = ! $( '#divmixers .lihead' ).length;
 	if ( action === 'mixers' ) { // rename
-		infoMixer( $this.next().next().text() );
+		infoMixer( $li.data( 'name' ) );
 	} else if ( action === 'back' ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
 		infoMapping( $li.data( 'name' ) );
 	} else if ( action === 'remove' ) {
-		var main = ! $( '#divmixers .lihead' ).length;
 		var dest = $li.hasClass( 'liinput main' );
 		if ( main ) {
 			var message = 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?';
@@ -290,7 +294,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
 			}
 		} );
-	} else {
+/*	} else {
 		var mute = $this.hasClass( 'i-devices' );
 		var a    = mute ? 'i-devices' : 'i-mute bl';
 		var b    = mute ? 'i-mute bl' : 'i-devices';
@@ -300,20 +304,21 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		var name = $( '#divmixers .lihead' ).data( 'name' );
 		var dest = $this.parent().data( 'dest' );
 		MIX[ name ].mapping[ dest ].mute = mute;
-		saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );
+		saveConfig( 'pipeline', mute ? 'Mute' : 'Unmute', 'Save ...' );*/
 	}
 } ).on( 'click input keyup', 'input[type=range]', function() {
 	var $this = $( this );
 	$this.prev().val( dbFormat( $this.val() ) );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
-	var $this = $( this );
+	var $this  = $( this );
 	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) ) return
 	
-	var index = $this.index();
-	var data  = jsonClone( PIP[ index ] );
-	var type  = data.type;
-	var li    = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
+	var index  = $this.index();
+	V.pipeline = index;
+	var data   = jsonClone( PIP[ index ] );
+	var type   = data.type;
+	var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 	if ( type === 'Filter' ) {
 		var removehide = data.names.length === 1 ? ' hide' : '';
 		data.names.forEach( ( name, i ) => {
@@ -342,6 +347,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'back' ) {
+		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
 		var icon  = 'pipeline';
@@ -1186,6 +1192,11 @@ function renderTab() {
 	$( '#'+ id ).addClass( 'active' );
 	if ( id === 'devices' ) {
 		renderDevices();
+		return
+	}
+	
+	if ( $( '#div'+ id ).find( '.lihead' ).length ) {
+		$( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
 		return
 	}
 	
