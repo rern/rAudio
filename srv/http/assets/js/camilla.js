@@ -914,7 +914,7 @@ function infoMapping( name, index ) {
 			, title        : title
 			, content      : '<table class="tablemapping">'+ trdest + trsource +'</table>'
 			, contentcssno : true
-			, values       : [ 0, 0, 0, false, false ]
+			, values       : [ MIX[ name ].mapping.length, 0, 0, false, false ]
 			, checkblank   : true
 			, ok           : () => {
 				var s = {}
@@ -1216,10 +1216,10 @@ function renderDevicesList( section, keys ) {
 	);
 }
 function renderPage() {
-	DEV      = S.config.devices;
-	FIL      = S.config.filters;
-	MIX      = S.config.mixers;
-	PIP      = S.config.pipeline;
+	DEV         = S.config.devices;
+	FIL         = S.config.filters;
+	MIX         = S.config.mixers;
+	PIP         = S.config.pipeline;
 	$( '#statusvalue' ).html( S.status );
 	var options = '';
 	S.lsconf.forEach( f => options += '<option>'+ f +'</option>' );
@@ -1243,11 +1243,7 @@ function renderTab() {
 		return
 	}
 	
-	if ( id !== 'filters' && $( '#div'+ id ).find( '.lihead' ).length ) {
-		$( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
-		return
-	}
-	
+	var nextpage = id !== 'filters' && $( '#div'+ id ).find( '.lihead' ).length;
 	var kv    = jsonClone( S.config[ id ] );
 	if ( $.isEmptyObject( kv ) ) return
 	
@@ -1262,7 +1258,7 @@ function renderTab() {
 					+'</li>';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
-		pipelineSort();
+		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
 		return
 	}
 	
@@ -1312,6 +1308,7 @@ function renderTab() {
 		} );
 	}
 	$( '#div'+ id +' .entries' ).html( li );
+	if ( nextpage ) $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
 }
 function saveConfig( icon, titlle, msg ) {
 	notify( icon, titlle, msg );
