@@ -255,18 +255,19 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	V.mixers      = $this.index();
 	var name      = $this.find( '.li1' ).text();
 	var data      = jsonClone( MIX[ name ].mapping );
-	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + ico( 'add' ) + ico( 'back' ) +'</li>';
-	var optdest   = '';
-	for ( i = 0; i < DEV.playback.channels; i++ ) optdest += '<option>'+ i +'</option>';
+	var chmapping = data.length;
+	var chin      = DEV.capture.channels;
+	var chout     = DEV.playback.channels;
+	var iconadd   = chout === chmapping ? '' : ico( 'add' );
+	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
 	var optsource = '';
-	for ( i = 0; i < DEV.capture.channels; i++ ) optsource += '<option>'+ i +'</option>';
+	for ( i = 0; i < chin; i++ ) optsource += '<option>'+ i +'</option>';
 	data.forEach( ( kv, i ) => {
 		var dest   = kv.dest;
-		var optd   = optdest.replace( '>'+ dest, ' selected>'+ dest );
 		var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
 		li        += '<div class="divdest">'
 					+'<li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
-					+'<div>Dest.</div><div><select>'+ optd +'</select></div>'
+					+'<div>Dest.</div><div>'+ dest +'</div>'
 					+'<input type="range" class="hidden">'
 					+'<input type="checkbox" class="mutedest"'+ ( kv.mute ? ' checked' : '' ) +'>'
 					+'<input type="checkbox" class="hidden">'+ ico( 'remove' )
