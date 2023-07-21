@@ -446,7 +446,7 @@ function info( json ) {
 		if ( I.textarea ) {
 			htmls.textarea = '<textarea></textarea>';
 		}
-		var td0 = htmls.text || htmls.password ? '<td></td>' : '';
+		var td0 = htmls.text || htmls.number || htmls.password ? '<td></td>' : '';
 		if ( I.radio ) {
 			if ( Array.isArray( I.radio ) ) {
 				var kv = {}

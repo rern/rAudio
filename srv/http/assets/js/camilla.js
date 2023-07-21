@@ -214,8 +214,15 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 		FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = val;
 		saveConfig( 'filters', 'Filter Gain', 'Change ...' );
 	}
-} ).on( 'click', 'li.main input:checkbox', function() {
-	bash( [ 'mute', $( this ).prop( 'checked' ), 'CMD MUTE' ] );
+} ).on( 'click', '.mutemain', function() {
+	var $this = $( this );
+	S.mute    = ! S.mute;
+	$this
+		.toggleClass( 'infobtn-primary', S.mute )
+		.find( 'i' )
+			.toggleClass( 'i-mute', S.mute )
+			.toggleClass( 'i-volume', ! S.mute );
+	bash( [ 'mute', S.mute, 'CMD MUTE' ] );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this     = $( this );
@@ -237,7 +244,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	V.mixers      = $this.index();
 	var name      = $this.find( '.li1' ).text();
 	var data      = jsonClone( MIX[ name ].mapping );
-	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + ico( 'back' ) +'</li>';
+	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + ico( 'add' ) + ico( 'back' ) +'</li>';
 	var optdest   = '';
 	for ( i = 0; i < DEV.playback.channels; i++ ) optdest += '<option>'+ i +'</option>';
 	var optsource = '';
@@ -246,9 +253,12 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		var dest   = kv.dest;
 		var optd   = optdest.replace( '>'+ dest, ' selected>'+ dest );
 		var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
-		li        += '<div class="divdest"><li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
-					+ ico( 'devices' ) +'Destination&ensp;<select>'+ optd +'</select>&nbsp;'+ ico( 'add' )
-					+'<input type="checkbox"'+ ( kv.mute ? ' checked' : '' ) +' class="mutedest"><a class="mutedestlabel">Mute</a>'+ ico( 'remove' )
+		li        += '<div class="divdest">'
+					+'<li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
+					+'<div>Dest.</div><div><select>'+ optd +'</select></div>'
+					+'<input type="range" class="hidden">'
+					+'<input type="checkbox" class="mutedest"'+ ( kv.mute ? ' checked' : '' ) +'>'
+					+'<input type="checkbox" class="hidden">'+ ico( 'remove' )
 					+'</li>'
 					+'<li class="liinput column"'+ i_name +'><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( ( s, si ) => {
@@ -278,7 +288,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
-		var index = $li.hasClass( 'main' ) ? '' : $li.data( 'index' );
+		var index = $li.hasClass( 'lihead' ) ? '' : $li.data( 'index' );
 		infoMapping( name, index );
 	} else if ( action === 'remove' ) {
 		var dest = $li.hasClass( 'liinput main' );
@@ -417,13 +427,20 @@ $( '#bar-bottom div' ).on( 'click', function() {
 
 V.currenttab   = 'devices';
 var select2opt = { minimumResultsForSearch: 'Infinity' }
-var devicetype = {};
-[ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ].forEach( k => devicetype[ stringReplace( k ) ] = k );
-devicetype.stdin = 'Stdin';
+var capture    = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
+var playback   = capture.slice();
+playback[ 5 ]  = 'Stdout';
+var dcapture   = {};
+capture.forEach( k => dcapture[ stringReplace( k ) ] = k );
+var dplayback  = {};
+playback.forEach( k => dplayback[ stringReplace( k ) ] = k );
 var format     = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => format[ stringReplace( k ) ] = k );
 var L  = {
-	  devicetype : devicetype
+	  devicetype : {
+		  capture  : dcapture
+		, playback : dplayback
+	}
 	, format     : format
 	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
@@ -527,14 +544,12 @@ var CPkv = {
 		  number : { channels: 2 }
 	}
 	, tcsd   : {
-		  select : { format: 'S16LE' }
+		  select : { device: '', format: '' }
 		, number : { channels: 2 }
-		, text   : { device: '' }
 	}
 	, wasapi : {
-		  select   : { format: 'S16LE' }
+		  select : { device: '', format: '' }
 		, number   : { channels: 2 }
-		, text     : { device: '' }
 		, checkbox : { exclusive: false, loopback: false }
 	}
 }
@@ -542,49 +557,51 @@ var CP = { // capture / playback
 	  capture : {
 		  Alsa      : CPkv.tcsd
 		, CoreAudio : {
-			  select   : { format: 'S16LE' }
+			  select : { device: '', format: '' }
 			, number   : { channels: 2 }
-			, text     : { device: '' }
 			, checkbox : { change_format: false }
 		}
 		, Pulse     : CPkv.tcsd
 		, Wasapi    : CPkv.wasapi
 		, Jack      : CPkv.tc
 		, Stdin     : {
-			  select : { format: 'S16LE' }
+			  select : { format: '' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		}
 		, File      : {
-			  select : { format: 'S16LE' }
+			  select : { filename: '', format: '' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-			, text   : { filename: '' }
 		}
 	}
 	, playback : {
 		  Alsa      : CPkv.tcsd
 		, CoreAudio : {
-			  select   : { format: 'S16LE' }
+			  select   : { device: '', format: '' }
 			, number   : { channels: 2 }
-			, text     : { device: '' }
 			, checkbox : { exclusive: false, change_format: false }
 		}
 		, Pulse     : CPkv.tcsd
 		, Wasapi    : CPkv.wasapi
 		, Jack      : CPkv.tc
 		, Stdout    : {
-			  select : { format: 'S16LE' }
+			  select : { format: '' }
 			, number : { channels: 2 }
 		}
 		, File      : {
-			  select : { format: 'S16LE' }
+			  select : { filename: '', format: '' }
 			, number : { channels: 2 }
-			, text   : { filename: '' }
 		}
 	}
 }
 
 function dbFormat( num ) {
 	return num % 1 === 0 ? num + '.0' : num
+}
+function deviceKeys( dev, type ) {
+	var key_val = CP[ dev ][ type ];
+	var keys    = [ 'type' ];
+	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
+	return keys
 }
 function htmlOptionRange( L ) {
 	var option = '';
@@ -597,15 +614,27 @@ function infoDevices( dev, type ) {
 	var type        = type || data.type;
 	// select
 	var selectlabel = [ 'type' ];
-	var select      = [ L.devicetype ];
+	var select      = [ L.devicetype[ dev ] ];
 	var values      = { type: type }
 	key_val         = CP[ dev ][ type ];
 	if ( 'select' in key_val ) {
 		kv          = jsonClone( key_val.select );
 		k           = Object.keys( kv );
-		selectlabel = [ ...selectlabel, ...k ];
-		select      = [ ...select, L.format ];
-		values      = { ...values, format: data.format || 'S16LE' };
+		k.forEach( key => {
+			if ( key === 'format' ) {
+				var s = L.format;
+				var v = { format: data.format };
+			} else if ( key === 'device' ) {
+				var s = S.device;
+				var v = { device: data.device };
+			} else if ( key === 'filename' ) {
+				var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
+				var v   = { filename: data.filename };
+			}
+			selectlabel = [ ...selectlabel, key ];
+			select      = [ ...select, s ];
+			values      = { ...values, ...v };
+		} );
 	}
 	selectlabel     = labelArraySet( selectlabel );
 	// text
@@ -658,6 +687,7 @@ function infoDevices( dev, type ) {
 		, checkblank   : true
 		, checkchanged : true
 		, beforeshow   : () => {
+			$( '#infoContent td:first-child' ).css( 'width', '127px' );
 			var $select = $( '#infoContent select' );
 			$select.eq( 0 ).on( 'change', function() {
 				infoDevices( dev, $( this ).val() );
@@ -1087,15 +1117,15 @@ function key2label( key ) {
 	if ( key.length === 1 ) return str
 	
 	key = key
-			.replace( '_act', ' actual' )
-			.replace( '_len', ' length' )
+			.replace( '_act',        ' actual' )
+			.replace( '_len',        ' length' )
 			.replace( 'bytes_lines', 'bytes/lines' )
-			.replace( 'chunksize', 'chunk size' )
-			.replace( 'f_', 'freq ' )
-			.replace( 'queuelimit', 'queue limit' )
-			.replace( 'samplerate', 'sample rate' )
-			.replace( /_/g, ' ' )
-			.replace( 'freq', 'frequency' )
+			.replace( 'chunksize',   'chunk size' )
+			.replace( 'f_',          'freq ' )
+			.replace( 'queuelimit',  'queue limit' )
+			.replace( 'samplerate',  'sample rate' )
+			.replace( /_/g,          ' ' )
+			.replace( 'freq',        'frequency' )
 			.slice( 1 )
 	return str + key
 }
@@ -1144,7 +1174,7 @@ function renderDevices() {
 function renderDevicesList( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
 		var kv = jsonClone( DEV[ section ] );
-		keys   = Object.keys( kv );
+		keys   = deviceKeys( section, kv.type );
 	} else {
 		var kv = DEV;
 	}
@@ -1225,11 +1255,12 @@ function renderTab() {
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
-		var step_val  =  ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
-		var li = '<li class="liinput main">'+ ico( 'volume' ) +'<span class="name">Main Gain</span>'
+		var classvol  = S.mute ? ' infobtn-primary' : '';
+		var iconvol   = S.mute ? 'mute' : 'volume';
+		var step_val  = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
+		var li = '<li class="liinput main"><a class="mutemain infobtn'+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">Main Gain</span>'
 				+'<input type="number"'+ step_val +'>'
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
-				+'<input type="checkbox"'+ ( S.mute ? ' checked' : '' ) +' class="mutemain"><a class="mutelabel">Mute</a>'
 				+'</li>';
 		$.each( data, ( k, v ) => {
 			var param = v.parameters;
@@ -1285,8 +1316,8 @@ function saveConfig( icon, titlle, msg ) {
 }
 function stringReplace( k ) {
 	return k
-			.replace( 'Alsa', 'ALSA' )
-			.replace( 'Stdin', 'stdin' )
+			.replace( 'Alsa',  'ALSA' )
+			.replace( 'Std',   'std' )
 			.replace( 'FLOAT', 'Float' )
-			.replace( 'TEXT', 'Text' )
+			.replace( 'TEXT',  'Text' )
 }
