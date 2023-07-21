@@ -28,6 +28,17 @@ DiffEq   : [a] [b]
 */
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.refresh' ).on( 'click', function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'blink' ) ) {
+		clearInterval( V.intstatus );
+		$this.removeClass( 'blink wh' )
+		return
+	}
+	
+	$this.addClass( 'blink wh' )
+	V.intstatus = setInterval( () => bash( [ 'settings/camillapy', 'status' ] ), 10000 );
+} );
 $( '#divprofile .add' ).on( 'click', function() {
 	infoFileUpload( 'camilladsp' );
 } );
@@ -685,16 +696,19 @@ function infoDevices( dev, type ) {
 		, order        : [ 'select', 'text', 'number', 'checkbox' ]
 		, values       : values
 		, checkblank   : true
-		, checkchanged : true
+		, checkchanged : type === data.type
 		, beforeshow   : () => {
-			$( '#infoContent td:first-child' ).css( 'width', '127px' );
+			$( '#infoContent input[type=number]' ).css( 'width', '70px' );
+			$( '#infoContent td:first-child' ).css( 'width', '128px' );
 			var $select = $( '#infoContent select' );
 			$select.eq( 0 ).on( 'change', function() {
 				infoDevices( dev, $( this ).val() );
 			} );
 		}
 		, ok           : () => {
-			
+			var val = infoVal();
+			$.each( val, ( k, v ) => DEV[ dev ][ k ] = v );
+			saveConfig( icon, title, 'Change ...' );
 		}
 	} );
 }

@@ -50,7 +50,12 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 $htmltabs.= '</div>';
 
 //////////////////////////////////
-$head = [ 'title'  => 'Status', 'status' => 'camilladsp' ];
+$head = [ 
+	  'title'  => 'Status'
+	, 'status' => 'camilladsp'
+	, 'button' => [ 'refresh' => 'refresh' ]
+	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
+];
 $labels = 'State
 	<br>Sample rate
 	<br>Rate adjust
@@ -62,16 +67,22 @@ htmlSection( $head, $body, 'status' );
 $head = [
 	  'title'  => 'Profile'
 	, 'button' => [ 'add' => 'add' ]
+	, 'help'   => i( 'add btn' ).' Upload configuration file'
 ];
 $body = [
 	[
 		  'id'    => 'profile'
 		, 'input' => '<select id="profile"></select>'
-		, 'help'  => 'Select configuration file'
+		, 'help'  => <<< EOF
+{$Fi( 'gear btn' )} Manage configuration files
+EOF
 	]
 ];
 htmlSection( $head, $body, 'profile' );
 //////////////////////////////////
-$head = [ 'title'  => 'Devices' ];
+$head = [ 
+	  'title'  => 'Devices'
+	, 'nohelp' => true
+];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );
