@@ -1,32 +1,218 @@
-/*
-Biquad
-	- Lowpass, Highpass       : freq Q
-	- Lowshelf, Highshelf     : gain freq slope/Q
-	- LowpassFO, HighpassFO   : freq
-	- LowshelfFO, HighshelfFO : gain freq
-	- Peaking                 : gain freq Q/bandwidth
-	- Notch, Bandpass, Allpass: freq Q/bandwidth
-	- AllpassFO               : freq
-	- LinkwitzTransform       : Q_actual Q_target freq_act freq_target
-	- Free                    : a1 a2 b0 b1 b2
-BiquadCombo
-	- (all): order freq
-Conv
-	- Raw    : [filename] [format] skip_bytes_lines read_bytes_lines
-	- Wave   : [filename] channel
-	- Values : [values] length
-Dither
-	- (all except Uniform): bits
-	- Uniform             : bits amplitude
-	
-(no subtype)
-Delay    : ms samples XsSubsample
-Gain     : gain X*Inverted X*Mute
-Volume   : ramp_time
-Loudness : reference_level high_boost low_boost ramp_time
-DiffEq   : [a] [b]
-*/
+V            = {
+	  currenttab : 'devices'
+	, signal     : {}
+	, status     : {}
+}
+var ws       = new WebSocket( 'ws://'+ window.location.host +':1234' );
+var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
+var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
+ws.onopen = response => {
+	wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
+	ws.send( '"GetSupportedDeviceTypes"' );
+}
+ws.onmessage = response => {
+	console.log(response)
+	var data  = JSON.parse( response.data );
+	var cmd   = Object.keys( data )[ 0 ];
+	var value = data[ cmd ].value;
+	if ( wssignal.includes( cmd ) ) {
+		var el = cmd.replace( 'Get', '#' )
+		$( el ).css( 'width', value );
+	} else if ( wsstatus.includes( cmd ) ) {
+		V.status[ cmd ] = value;
+		if ( cmd === 'GetBufferLevel' ) {
+			S.status = '';
+			wsstatus.forEach( k => S.status += V.status[ k ] +'<br>' );
+			$( '#statusvalue' ).html( S.status );
+		}
+	} else if ( cmd === 'GetVolume' ) {
+		S.volume = value;
+	} else if ( cmd === 'GetMute' ) {
+		S.mute = value;
+	} else if ( cmd === 'GetConfigjson' ) {
+		S.config = value;
+		DEV      = S.config.devices;
+		FIL      = S.config.filters;
+		MIX      = S.config.mixers;
+		PIP      = S.config.pipeline;
+	} else if ( cmd === 'GetConfigName' ) {
+		S.fileconf = value;
+	} else if ( cmd === 'GetSupportedDeviceTypes' ) { // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+		[ 'playback', 'capture' ].forEach( ( k, i ) => {
+			value[ i ].sort().forEach( t => {
+				var v = t.replace( 'Alsa', 'ALSA' )
+						 .replace( 'Std',  'std' );
+				L.devicetype[ k ][ v ] = t;
+			} );
+		} );
+	} else if ( cmd === 'Invalid' ) {
+		info( {
+			  icon    : 'warning'
+			, title   : 'Error'
+			, message : data.Invalid.error
+		} );
+	}
+}
+var select2opt = { minimumResultsForSearch: 'Infinity' }
+var format     = {};
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => format[ stringReplace( k ) ] = k );
+var L  = {
+	  devicetype : { capture: {}, playback: {} }
+	, format     : format
+	, freeasync  : {
+		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
+		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
+		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
+	}
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, sampletype : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
+	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
+	, subtype    : {
+		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
+						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
+		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
+		, Conv        : [ 'Raw', 'Wave', 'Values' ]
+		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
+	}
+	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
+}
+var Fkv = {
+	  pass    : {
+		  number : { freq: 1000, q: 0.5 }
+	  }
+	, shelf   : {
+		  number : { gain: 6, freq: 1000, q: 6 }
+		, radio  : [ 'Q', 'Samples' ]
+	}
+	, passFO  : {
+		  number : { freq: 1000 }
+	}
+	, shelfFO : {
+		  number : { gain: 6, freq: 1000 }
+	}
+	, notch   : {
+		  number : { freq: 1000, q: 0.5 }
+		, radio  : [ 'Q', 'Bandwidth' ]
+	}
+}
+var F  = {
+	  Lowpass           : Fkv.pass
+	, Highpass          : Fkv.pass
+	, Lowshelf          : Fkv.shelf
+	, Highshelf         : Fkv.shelf
+	, LowpassFO         : Fkv.passFO
+	, HighpassFO        : Fkv.passFO
+	, LowshelfFO        : Fkv.shelfFO
+	, HighshelfFO       : Fkv.shelfFO
+	, Peaking           : {
+		  number : { gain: 6, freq: 1000, q: 1.5 }
+		, radio  : [ 'Q', 'Bandwidth' ]
+	}
+	, Notch             : Fkv.notch
+	, Bandpass          : Fkv.notch
+	, Allpass           : Fkv.notch
+	, AllpassFO         : Fkv.passFO
+	, LinkwitzTransform : {
+		number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
+	}
+	, Free              : {
+		number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
+	}
+	, BiquadCombo       : {
+		number: { order: 2, freq: 1000 }
+	}
+	, Raw               : { 
+		  select : { filename: '', format: '' }
+		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
+	}
+	, Wave              : {
+		  select : { filename: '' }
+		, number : { channel: 0 }
+	}
+	, Values            : {
+		  text   : { values: '1, 0, 0, 0' }
+		, number : { length: 0 }
+	}
+	, Delay             : {
+		  number   : { ms: 0 }
+		, radio    : [ 'ms', 'Samples' ]
+		, checkbox : { subsample: false }
+	}
+	, Gain              : {
+		  number   : { gain: 0 }
+		, checkbox : { inverted: false, mute: false }
+	}
+	, Volume            : {
+		number: { ramp_time: 200 }
+	}
+	, Loudness          : {
+		number: { reference_level: 5, high_boost: 5, low_boost: 5, ramp_time: 200 }
+	}
+	, DiffEq            : {
+		text: { a: '1, 0', b: '1, 0' }
+	}
+	, Dither            : {
+		number: { bits: 16 }
+	}
+}
+// capture / playback
+var CPkv = {
+	  tc     : {
+		  number : { channels: 2 }
+	}
+	, tcsd   : {
+		  select : { device: '', format: '' }
+		, number : { channels: 2 }
+	}
+	, wasapi : {
+		  select : { device: '', format: '' }
+		, number   : { channels: 2 }
+		, checkbox : { exclusive: false, loopback: false }
+	}
+}
+var CP = { // capture / playback
+	  capture : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdin     : {
+			  select : { format: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+		, File      : {
+			  select : { filename: '', format: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+	}
+	, playback : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select   : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { exclusive: false, change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdout    : {
+			  select : { format: '' }
+			, number : { channels: 2 }
+		}
+		, File      : {
+			  select : { filename: '', format: '' }
+			, number : { channels: 2 }
+		}
+	}
+}
+
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 
 $( '.refresh' ).on( 'click', function() {
 	var $this = $( this );
@@ -36,15 +222,20 @@ $( '.refresh' ).on( 'click', function() {
 		return
 	}
 	
+	
 	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => bash( [ 'settings/camillapy', 'status' ] ), 10000 );
+	V.intstatus = setInterval( () => {
+		wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
+	}, 10000 );
 } );
 $( '#divprofile .add' ).on( 'click', function() {
 	infoFileUpload( 'camilladsp' );
 } );
 $( '#profile' ).on( 'change', function() {
 	var name = $( this ).val();
-	bash( [ 'confswitch', name, 'CMD NAME' ] );
+	ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
+	ws.send( '"Reload"' );
+	ws.send( '"GetConfigjson"' );
 	notify( 'camilladsp', 'Profile', 'Switch ...' );
 } );
 $( '#setting-profile' ).on( 'click', function() {
@@ -218,8 +409,7 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
 	if ( $this.hasClass( 'range' ) ) {
-		console.log( [ 'volume', val, 'CMD VOLUME' ] );
-		bash( [ 'volume', val, 'CMD VOLUME' ] );
+		ws.send( '{ "SetVolume": '+ val +' }' );
 		notify( 'filters', 'Main Gain', 'Change ...' );
 	} else {
 		FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = val;
@@ -233,7 +423,7 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 		.find( 'i' )
 			.toggleClass( 'i-mute', S.mute )
 			.toggleClass( 'i-volume', ! S.mute );
-	bash( [ 'mute', S.mute, 'CMD MUTE' ] );
+	ws.send( '{ "SetMute": '+ S.mute +'} ' );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this     = $( this );
@@ -436,175 +626,6 @@ $( '#bar-bottom div' ).on( 'click', function() {
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-V.currenttab   = 'devices';
-var select2opt = { minimumResultsForSearch: 'Infinity' }
-var capture    = [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin', 'File' ];
-var playback   = capture.slice();
-playback[ 5 ]  = 'Stdout';
-var dcapture   = {};
-capture.forEach( k => dcapture[ stringReplace( k ) ] = k );
-var dplayback  = {};
-playback.forEach( k => dplayback[ stringReplace( k ) ] = k );
-var format     = {};
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => format[ stringReplace( k ) ] = k );
-var L  = {
-	  devicetype : {
-		  capture  : dcapture
-		, playback : dplayback
-	}
-	, format     : format
-	, freeasync  : {
-		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
-		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
-		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
-	}
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
-	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
-	, subtype    : {
-		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
-						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
-		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
-		, Conv        : [ 'Raw', 'Wave', 'Values' ]
-		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
-	}
-	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
-}
-var Fkv = {
-	  pass    : {
-		  number : { freq: 1000, q: 0.5 }
-	  }
-	, shelf   : {
-		  number : { gain: 6, freq: 1000, q: 6 }
-		, radio  : [ 'Q', 'Samples' ]
-	}
-	, passFO  : {
-		  number : { freq: 1000 }
-	}
-	, shelfFO : {
-		  number : { gain: 6, freq: 1000 }
-	}
-	, notch   : {
-		  number : { freq: 1000, q: 0.5 }
-		, radio  : [ 'Q', 'Bandwidth' ]
-	}
-}
-var F  = {
-	  Lowpass           : Fkv.pass
-	, Highpass          : Fkv.pass
-	, Lowshelf          : Fkv.shelf
-	, Highshelf         : Fkv.shelf
-	, LowpassFO         : Fkv.passFO
-	, HighpassFO        : Fkv.passFO
-	, LowshelfFO        : Fkv.shelfFO
-	, HighshelfFO       : Fkv.shelfFO
-	, Peaking           : {
-		  number : { gain: 6, freq: 1000, q: 1.5 }
-		, radio  : [ 'Q', 'Bandwidth' ]
-	}
-	, Notch             : Fkv.notch
-	, Bandpass          : Fkv.notch
-	, Allpass           : Fkv.notch
-	, AllpassFO         : Fkv.passFO
-	, LinkwitzTransform : {
-		number: { q_act: 1.5, q_target: 0.5, freq_act: 50, freq_target: 25 }
-	}
-	, Free              : {
-		number: { a1: 0, a2: 0, b0: -1, b1: 1, b2: 0 }
-	}
-	, BiquadCombo       : {
-		number: { order: 2, freq: 1000 }
-	}
-	, Raw               : { 
-		  select : { filename: '', format: '' }
-		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
-	}
-	, Wave              : {
-		  select : { filename: '' }
-		, number : { channel: 0 }
-	}
-	, Values            : {
-		  text   : { values: '1, 0, 0, 0' }
-		, number : { length: 0 }
-	}
-	, Delay             : {
-		  number   : { ms: 0 }
-		, radio    : [ 'ms', 'Samples' ]
-		, checkbox : { subsample: false }
-	}
-	, Gain              : {
-		  number   : { gain: 0 }
-		, checkbox : { inverted: false, mute: false }
-	}
-	, Volume            : {
-		number: { ramp_time: 200 }
-	}
-	, Loudness          : {
-		number: { reference_level: 5, high_boost: 5, low_boost: 5, ramp_time: 200 }
-	}
-	, DiffEq            : {
-		text: { a: '1, 0', b: '1, 0' }
-	}
-	, Dither            : {
-		number: { bits: 16 }
-	}
-}
-// capture / playback
-var CPkv = {
-	  tc     : {
-		  number : { channels: 2 }
-	}
-	, tcsd   : {
-		  select : { device: '', format: '' }
-		, number : { channels: 2 }
-	}
-	, wasapi : {
-		  select : { device: '', format: '' }
-		, number   : { channels: 2 }
-		, checkbox : { exclusive: false, loopback: false }
-	}
-}
-var CP = { // capture / playback
-	  capture : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdin     : {
-			  select : { format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-	}
-	, playback : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select   : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { exclusive: false, change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdout    : {
-			  select : { format: '' }
-			, number : { channels: 2 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2 }
-		}
-	}
-}
 
 function dbFormat( num ) {
 	return num % 1 === 0 ? num + '.0' : num
@@ -1185,6 +1206,7 @@ function renderDevices() {
 	if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 	if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
 	keys.length ? renderDevicesList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+	[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( el => S[ el ] = DEV[ el ] );
 }
 function renderDevicesList( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
@@ -1316,15 +1338,7 @@ function saveConfig( icon, titlle, msg ) {
 	renderPage();
 	console.log(S.config); return
 	
-	bash( [ 'confsave', JSON.stringify( S.config ), 'CMD JSON' ], error => {
-		if ( error ) {
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : 'Error: '+ error
-			} );
-		}
-	} );
+	ws.send( '{ "SetConfigJson": '+ JSON.stringify( S.config ) +' }' );
 }
 function stringReplace( k ) {
 	return k

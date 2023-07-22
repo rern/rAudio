@@ -159,9 +159,6 @@ function switchIdIconTitle( id ) {
 function switchSet() {
 	if ( page === 'networks' ) return
 	
-	if ( page === 'camilla' ) {
-		[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( el => S[ el ] = S.config.devices[ el ] );
-	}
 	$( '.switch' ).each( ( i, el ) => $( el ).prop( 'checked', S[ el.id ] ) );
 	$( '.setting' ).each( ( i, el ) => {
 		var $this = $( el );

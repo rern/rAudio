@@ -51,11 +51,6 @@ enable_rate_adjust | enable_resampling | stop_on_rate_change )
 	sed -E -i "s/($CMD: ).*/\1$TF/" "$dirconfigs/$file"
 	pushData
 	;;
-mute )
-	[[ $MUTE ]] && cmd=true || cmd=false
-	$dirsettings/camilla.py mute $cmd
-	pushData
-	;;
 pushdata )
 	pushData
 	;;
