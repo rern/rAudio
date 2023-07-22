@@ -127,7 +127,7 @@ function htmlSection( $head, $body, $id = '' ) {
 	$html.= $id ? ' id="div'.$id.'"' : '';
 	$html.= ' class="section">';
 	echo $html;
-	htmlHead( $head );
+	if ( $head ) htmlHead( $head );
 	foreach( $body as $data ) {
 		if ( is_array( $data ) ) {
 			htmlSetting( $data );

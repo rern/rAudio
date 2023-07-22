@@ -1,4 +1,7 @@
 <?php
+$id_data = [
+	'configuration' => [ 'name' => 'Configuration', 'setting' => 'custom' ]
+];
 $options = [
 	  'Rate Adjust'         => 'enable_rate_adjust'
 	, 'Resampling'          => 'enable_resampling'
@@ -56,29 +59,21 @@ $head = [
 	, 'button' => [ 'refresh' => 'refresh' ]
 	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
 ];
+$body = [
+	[
+		  'id'    => 'configuration'
+		, 'input' => '<select id="configuration"></select>'
+	]
+];
+htmlSection( $head, $body, 'profile' );
+//////////////////////////////////
 $labels = 'State
 	<br>Sample rate
 	<br>Rate adjust
 	<br>Clipped samples
 	<br>Buffer level';
 $body = [ htmlSectionStatus( 'status', $labels ) ];
-htmlSection( $head, $body, 'status' );
-//////////////////////////////////
-$head = [
-	  'title'  => 'Profile'
-	, 'button' => [ 'add' => 'add' ]
-	, 'help'   => i( 'add btn' ).' Upload configuration file'
-];
-$body = [
-	[
-		  'id'    => 'profile'
-		, 'input' => '<select id="profile"></select>'
-		, 'help'  => <<< EOF
-{$Fi( 'gear btn' )} Manage configuration files
-EOF
-	]
-];
-htmlSection( $head, $body, 'profile' );
+htmlSection( '', $body, 'status' );
 //////////////////////////////////
 $head = [ 
 	  'title'  => 'Devices'

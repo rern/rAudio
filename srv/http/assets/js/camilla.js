@@ -215,25 +215,29 @@ $( '.refresh' ).on( 'click', function() {
 		wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
 	}, 10000 );
 } );
-$( '#divprofile .add' ).on( 'click', function() {
-	infoFileUpload( 'camilladsp' );
-} );
-$( '#profile' ).on( 'change', function() {
+$( '#configuration' ).on( 'change', function() {
 	var name = $( this ).val();
 	ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 	ws.send( '"Reload"' );
 	ws.send( '"GetConfigjson"' );
-	notify( 'camilladsp', 'Profile', 'Switch ...' );
+	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
-$( '#setting-profile' ).on( 'click', function() {
+$( '#setting-configuration' ).on( 'click', function() {
 	var icon  = 'camilladsp';
-	var title = 'Profile';
+	var title = '&nbsp;Configuration';
 	info( {
 		  icon        : icon
 		, title       : title
-		, message     : 'Configuration files:'
 		, select      : S.lsconf
 		, values      : S.fileconf
+		, beforeshow  : () => {
+			$( '.trselect' )
+				.prepend( ico( 'add hidden' ) )
+				.append( ico( 'add' ) );
+			$( '#infoContent' ).on( 'click', '.i-add', function() {
+				infoFileUpload( 'camilladsp' );
+			} );
+		}
 		, buttonlabel : 'Delete'
 		, buttoncolor : red
 		, button      : () => {
@@ -1230,7 +1234,7 @@ function renderPage() {
 	MIX = S.config.mixers;
 	PIP = S.config.pipeline;
 	$( '#statusvalue' ).html( S.status );
-	$( '#profile' )
+	$( '#configuration' )
 		.html( htmlOption( S.lsconf ) )
 		.val( S.fileconf );
 	[ 'playback', 'capture' ].forEach( ( k, i ) => {
