@@ -1,6 +1,6 @@
 #!/bin/bash
 
-data=$( /srv/http/bash/settings/camilla.py data )
+data=$( /srv/http/bash/settings/camilla.py )
 
 [[ $? == 1 ]] && echo notrunning
 

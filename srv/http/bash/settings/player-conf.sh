@@ -199,6 +199,9 @@ mixer = "'$hwmixer'"'
 	systemctl try-restart spotifyd
 fi
 
-[[ $dsp ]] && systemctl restart camilladsp
+if [[ $dsp ]] && ! systemctl -q is-active camilladsp; then
+	systemctl start camilladsp
+	[[ -e $dirsystem/camilla-volume ]] && $dirsettings/camilla.py volumestart
+fi
 
 pushData

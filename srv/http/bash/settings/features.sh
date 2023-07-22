@@ -74,6 +74,7 @@ camilladsp )
 		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
 		pushRestartMpd camilladsp $TF
 	else
+		$dirsettings/camilla.py volumesave
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null

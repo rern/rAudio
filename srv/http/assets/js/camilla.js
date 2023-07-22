@@ -6,12 +6,7 @@ V            = {
 var ws       = new WebSocket( 'ws://'+ window.location.host +':1234' );
 var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
 var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
-ws.onopen = response => {
-	wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
-	ws.send( '"GetSupportedDeviceTypes"' );
-}
 ws.onmessage = response => {
-	console.log(response)
 	var data  = JSON.parse( response.data );
 	var cmd   = Object.keys( data )[ 0 ];
 	var value = data[ cmd ].value;
@@ -37,14 +32,6 @@ ws.onmessage = response => {
 		PIP      = S.config.pipeline;
 	} else if ( cmd === 'GetConfigName' ) {
 		S.fileconf = value;
-	} else if ( cmd === 'GetSupportedDeviceTypes' ) { // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-		[ 'playback', 'capture' ].forEach( ( k, i ) => {
-			value[ i ].sort().forEach( t => {
-				var v = t.replace( 'Alsa', 'ALSA' )
-						 .replace( 'Std',  'std' );
-				L.devicetype[ k ][ v ] = t;
-			} );
-		} );
 	} else if ( cmd === 'Invalid' ) {
 		info( {
 			  icon    : 'warning'
@@ -450,8 +437,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var chout     = DEV.playback.channels;
 	var iconadd   = chout === chmapping ? '' : ico( 'add' );
 	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
-	var optsource = '';
-	for ( i = 0; i < chin; i++ ) optsource += '<option>'+ i +'</option>';
+	var optsource = htmlOption( chin );
 	data.forEach( ( kv, i ) => {
 		var dest   = kv.dest;
 		var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
@@ -636,10 +622,11 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function htmlOptionRange( L ) {
-	var option = '';
-	for( i = 0; i < L; i++ ) option += '<option value="'+ i +'">'+ i +'</option>';
-	return option
+function htmlOption( list ) {
+	if ( typeof( list ) === 'number' ) list = [ ...Array( list ).keys() ];
+	var options = '';
+	list.forEach( k => options += '<option>'+ k +'</option>' );
+	return options
 }
 function infoDevices( dev, type ) {
 	var key_val, kv, k, v;
@@ -907,8 +894,8 @@ function infoFilters( type, subtype ) {
 }
 function infoMapping( name, index ) {
 	var option = {
-		  dest   : htmlOptionRange( DEV.playback.channels )
-		, source : htmlOptionRange( DEV.capture.channels )
+		  dest   : htmlOption( DEV.playback.channels )
+		, source : htmlOption( DEV.capture.channels )
 	}
 	var trdest   = `
 <tr class="trsource">
@@ -1238,16 +1225,21 @@ function renderDevicesList( section, keys ) {
 	);
 }
 function renderPage() {
-	DEV         = S.config.devices;
-	FIL         = S.config.filters;
-	MIX         = S.config.mixers;
-	PIP         = S.config.pipeline;
+	DEV = S.config.devices;
+	FIL = S.config.filters;
+	MIX = S.config.mixers;
+	PIP = S.config.pipeline;
 	$( '#statusvalue' ).html( S.status );
-	var options = '';
-	S.lsconf.forEach( f => options += '<option>'+ f +'</option>' );
-	$( '#profile, #fileconf' )
-		.html( options )
+	$( '#profile' )
+		.html( htmlOption( S.lsconf ) )
 		.val( S.fileconf );
+	[ 'playback', 'capture' ].forEach( ( k, i ) => {
+		S.devicetype[ i ].sort().forEach( t => {
+			var v = t.replace( 'Alsa', 'ALSA' )
+					 .replace( 'Std',  'std' );
+			L.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+		} );
+	} );
 	renderTab();
 	showContent();
 }
