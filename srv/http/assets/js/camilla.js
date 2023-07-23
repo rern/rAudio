@@ -227,7 +227,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 	S.lsconf.forEach( f => {
 		if ( f === 'default_config.yml' ) return
 		
-		content +=   '<tr style="border: 1px solid var( --cgl ); border-left: none; border-right: none;">'
+		content +=   '<tr style="border: 1px solid var( --cgl ); border-style: solid none;">'
 					+'<td>'+ ico( 'file gr' ) +'</td><td>'+ f +'</td><td>'+ ico( 'remove gr' ) + ico( 'copy gr' ) +'</td>'
 					+'</tr>';
 	} );
@@ -364,7 +364,8 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	} else if ( action === 'file' ) { // rename
 		info( {
 			  icon         : 'filters'
-			, title        : 'Rename File'
+			, title        : 'Filter File'
+			, message      : 'Rename <wh>'+ name +'</wh> to:'
 			, textlabel    : 'Name'
 			, values       : name
 			, checkblank   : true
@@ -374,17 +375,20 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 			}
 		} );
 	} else if ( action === 'remove' ) {
+		var file = $this.parents( 'li' ).find( '.i-file' ).length;
 		info( {
 			  icon    : 'filters'
-			, title   : 'Filter'
+			, title   : file ? 'Filter File' : 'Filter'
 			, message : 'Delete <wh>'+ name +'</wh> ?'
+			, oklabel : ico( 'remove' ) +'Delete'
+			, okcolor : red
 			, ok      : () => {
-				if ( $this.parents( 'li' ).find( '.i-filters' ).length ) {
-					delete FIL[ name ];
-					saveConfig( 'filters', 'Filter', 'Delete ...' );
-				} else {
+				if ( file ) {
 					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 					notify( 'filters', 'Filter File', 'Delete ...' );
+				} else {
+					delete FIL[ name ];
+					saveConfig( 'filters', 'Filter', 'Delete ...' );
 				}
 			}
 		} );
@@ -970,6 +974,7 @@ function infoMixer( name ) {
 	info( {
 		  icon         : icon
 		, title        : title
+		, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
 		, textlabel    : 'Name'
 		, values       : name
 		, checkblank   : true
