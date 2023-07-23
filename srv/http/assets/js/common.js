@@ -346,7 +346,7 @@ function info( json ) {
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
-					  +'<code id="infoFilename" class="hide"></code>'
+					  +'<code id="infoFilename" class="">(select file)</code>'
 					  +'<input type="file" class="hide" id="infoFileBox"'
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'

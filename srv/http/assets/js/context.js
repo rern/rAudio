@@ -583,6 +583,7 @@ function webRadioNew( name, url, charset ) {
 						, title      : 'Add New Folder'
 						, textlabel  : 'Name'
 						, checkblank : true
+						, cancel     : () => $( '.button-webradio-new' ).trigger( 'click' )
 						, ok         : () => bash( [ 'wrdirnew', $( '#lib-path .lipath' ).text(), infoVal(), 'CMD DIR SUB' ] )
 					} );
 				} );

@@ -88,8 +88,8 @@
 .tab li .i-back {
 	color: var( --cm );
 }
-.i-add,
-.i-remove {
+.tab .i-add,
+.tab .i-remove {
 	font-size: 22px !important;
 	cursor: pointer;
 }

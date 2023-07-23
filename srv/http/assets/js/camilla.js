@@ -223,60 +223,59 @@ $( '#configuration' ).on( 'change', function() {
 	notify( 'camilladsp', 'Configuration', 'Switch ...' );
 } );
 $( '#setting-configuration' ).on( 'click', function() {
+	var content = '<table style="border-collapse: collapse; width: 300px;">'
+	S.lsconf.forEach( f => {
+		if ( f === 'default_config.yml' ) return
+		
+		content +=   '<tr style="border: 1px solid var( --cgl ); border-left: none; border-right: none;">'
+					+'<td>'+ ico( 'file gr' ) +'</td><td>'+ f +'</td><td>'+ ico( 'remove gr' ) + ico( 'copy gr' ) +'</td>'
+					+'</tr>';
+	} );
+	content += '<tr><td></td><td colspan="2" style="text-align: right"><a class="add">'+ ico( 'add' )+'New file</a></td></tr></table>';
 	var icon  = 'camilladsp';
 	var title = '&nbsp;Configuration';
 	info( {
 		  icon        : icon
 		, title       : title
-		, select      : S.lsconf
-		, values      : S.fileconf
+		, content     : content
 		, beforeshow  : () => {
-			$( '.trselect' )
-				.prepend( ico( 'add hidden' ) )
-				.append( ico( 'add' ) );
-			$( '#infoContent' ).on( 'click', '.i-add', function() {
+			$( '#infoContent' ).on( 'click', '.add', function() {
 				infoFileUpload( 'camilladsp' );
+			} ).on( 'click', '.i-file, .i-copy', function() {
+				var $this  = $( this );
+				var rename = $this.hasClass( 'i-file' );
+				var name   = rename ? $this.parent().next().text() : $this.parent().prev().text();
+				info( {
+					  icon         : icon
+					, title        : title
+					, message      : rename ? 'Rename <wh>'+ name +'</wh> to:' : 'Copy <wh>'+ name +'</wh> as:'
+					, textlabel    : 'Name'
+					, values       : name
+					, checkblank   : true
+					, checkchanged : true
+					, cancel       : () => $( '#setting-configuration' ).trigger( 'click' )
+					, ok           : () => {
+						bash( [ rename ? 'confrename' : 'confcopy', name, infoVal(), 'CMD NAME NEWNAME' ] );
+						notify( icon, title, rename ? 'Rename ...' : 'Copy ...' );
+					}
+				} );
+			} ).on( 'click', '.i-remove', function() {
+				var file = $( this ).parent().prev().text();
+				info( {
+					  icon    : icon
+					, title   : title
+					, message : 'Delete <wh>'+ file +'</wh> ?'
+					, cancel  : () => $( '#setting-configuration' ).trigger( 'click' )
+					, oklabel : ico( 'remove' ) +'Delete'
+					, okcolor : red
+					, ok      : () => {
+						bash( [ 'confdelete', file, 'CMD NAME' ] );
+						notify( icon, title, 'Delete ...' );
+					}
+				} );
 			} );
 		}
-		, buttonlabel : 'Delete'
-		, buttoncolor : red
-		, button      : () => {
-			var file = infoVal();
-			info( {
-				  icon    : icon
-				, title   : title
-				, message : 'Delete <wh>'+ file +'</wh> ?'
-				, oklabel : 'Delete'
-				, okcolor : red
-				, ok      : () => {
-					bash( [ 'confdelete', file, 'CMD NAME' ] );
-					notify( icon, title, 'Delete ...' );
-				}
-			} );
-		}
-		, oklabel    : 'Save as'
-		, ok         : () => {
-			var file = infoVal();
-			info( {
-				  icon         : icon
-				, title        : title
-				, textlabel    : 'Name'
-				, values       : file.slice( 0, -4 )
-				, checkblank   : true
-				, checkchanged : true
-				, beforeshow   : () => { // exclude from checkchanged
-					$( '#infoContent tbody' ).append( '<tr><td></td><td><label><input type="checkbox">Rename</label></td></tr>' );
-				}
-				, oklabel      : 'Copy'
-				, ok           : () => {
-					var newfile = infoVal().replace( /\.[^/.]+$/, '' ) + '.yml'
-					var rename  = $( '#infoContent input:checkbox' ).prop( 'checked' );
-					var cmd     = rename ? 'confrename' : 'confcopy';
-					bash( [ cmd, file, newfile, 'CMD NAME NEWNAME' ] );
-					notify( icon, title, rename ? 'Rename ...' : 'Copy ...' );
-				}
-			} );
-		}
+		, okno       : true
 	} );
 } );
 $( '#divsettings' ).on( 'click', '.settings', function() {
@@ -731,7 +730,7 @@ function infoFileUpload( icon ) {
 		var cmd     = 'camillacoeffs';
 		var message = 'Upload filter file:';
 	} else {
-		var title   = 'Add Profile File';
+		var title   = 'Add Configuration';
 		var cmd     = 'camillaconfigs';
 		var message = 'Upload configuration file:'
 	}
@@ -740,6 +739,7 @@ function infoFileUpload( icon ) {
 		, title       : title
 		, message     : message
 		, fileoklabel : ico( 'file' ) +'Upload'
+		, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 		, ok          : () => {
 			notify( icon, title, 'Upload ...' );
 			var formdata = new FormData();
