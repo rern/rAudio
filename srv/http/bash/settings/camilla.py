@@ -19,15 +19,24 @@ def setValue( cmd, val ):
     ws.send( json.dumps( { cmd: val } ) )
 
 if len( sys.argv ) > 1: # set / save volume on start / stop
+    cmd = sys.argv[ 1 ]
+    if cmd == 'filter' or cmd == 'pipeline':
+        target = sys.argv[ 2 ]
+        from camilladsp_plot import eval_filter, eval_filterstep
+        config = json.loads( getValue( 'GetConfigJson' ) )
+        if cmd == 'filter':
+            data = eval_filter( config[ 'filters' ][ target ] ) # config.filters.name, name=None, samplerate=44100, npoints=1000
+        else: # pipeline
+            data  = eval_filterstep( config, int( target ) )    # config, index,       name="filterstep",           npoints=1000, toimage=False
+        print( data ) # ['name', 'samplerate', 'f', 'magnitude', 'phase', 'f_groupdelay', 'groupdelay']
     filevolume = '/srv/http/data/system/camilla-volume'
-    if sys.argv[ 1 ] == 'volumestart':
-        with open( filevolume, 'r' ) as f:
-            volume = f.read()
+    if cmd == 'volumestart':
+        with open( filevolume, 'r' ) as f: volume = f.read()
         setValue( 'SetVolume', float( volume ) )
-    else:
+    else: # volumesave
         volume = getValue( 'GetVolume' )
-        with open( filevolume, 'w' ) as f:
-            f.write( str( volume ) )
+        with open( filevolume, 'w' ) as f: f.write( str( volume ) )
+    ws.close()
     sys.exit()
 
 status = ''
