@@ -2,6 +2,7 @@
 
 . /srv/http/bash/common.sh
 
+dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 camilladspyml=$dirconfigs/camilladsp.yml
 
@@ -22,8 +23,12 @@ pushData() {
 
 case $CMD in
 
-coeffdelete )
-	rm -f $dircamilladsp/coeffs/"$NAME"
+coefdelete )
+	rm -f $dircoeffs/"$NAME"
+	pushData
+	;;
+coefrename )
+	mv -f $dircoeffs/{"$NAME","$NEWNAME"}
 	pushData
 	;;
 confcopy )

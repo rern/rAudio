@@ -343,6 +343,10 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( DEV.resampler_type === 'FreeAsync' );
 } );
+$( '#stop_on_rate_change' ).on( 'click', function() {
+	DEV.stop_on_rate_change = $( this ).prop( 'checked' );
+	saveConfig( 'devices', 'Stop on Rate Change', 'Change ...' );
+} );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	var id = $( this ).parent().text().toLowerCase();
 	if ( id === 'filters' ) {
@@ -359,37 +363,54 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
 	var name   = $this.parents( 'li' ).data( 'name' );
+	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
+	var icon   = 'filters';
+	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'filters' ) {
 		infoFilters( '', name );
-	} else if ( action === 'file' ) { // rename
+	} else if ( action === 'file' ) {
 		info( {
-			  icon         : 'filters'
-			, title        : 'Filter File'
+			  icon         : icon
+			, title        : title
 			, message      : 'Rename <wh>'+ name +'</wh> to:'
 			, textlabel    : 'Name'
 			, values       : name
 			, checkblank   : true
 			, checkchanged : true
-			, ok           : () => {
-				
+			, ok           : () => { // in filters Conv
+				var newname    = infoVal();
+				bash( [ 'coeffrename', name, newname, 'CMD NAME NEWNAME' ] );
+				$.each( FIL, ( k, v ) => {
+					if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
+				} );
+				saveConfig( icon, title, 'Rename ...' );
 			}
 		} );
 	} else if ( action === 'remove' ) {
-		var file = $this.parents( 'li' ).find( '.i-file' ).length;
 		info( {
-			  icon    : 'filters'
-			, title   : file ? 'Filter File' : 'Filter'
+			  icon    : icon
+			, title   : title
 			, message : 'Delete <wh>'+ name +'</wh> ?'
 			, oklabel : ico( 'remove' ) +'Delete'
 			, okcolor : red
 			, ok      : () => {
-				if ( file ) {
+				if ( file ) { // in filters Conv
 					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
-					notify( 'filters', 'Filter File', 'Delete ...' );
+					notify( icon, title, 'Delete ...' );
+					$.each( FIL, ( k, v ) => {
+						if ( v.type === 'Conv' && v.parameters.filename === name ) delete FIL[ name ];
+					} );
 				} else {
 					delete FIL[ name ];
-					saveConfig( 'filters', 'Filter', 'Delete ...' );
+					PIP.forEach( ( k, i ) => {
+						if ( k.type === 'Filter' ) {
+							k.names.forEach( ( n, ni ) => {
+								if ( n === name ) PIP[ i ].names[ ni ] = newname;
+							} );
+						}
+					} );
 				}
+				saveConfig( icon, title, 'Delete ...' );
 			}
 		} );
 	} else if ( action === 'add' ) {
@@ -500,16 +521,19 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, message : message
 			, ok      : () => {
 				if ( main ) {
-					delete MIX[ name ];
 					$li.remove();
+					delete MIX[ name ];
 				} else {
 					var di = $li.data( 'dest' );
 					if ( dest ) {
-						delete MIX[ name ].mapping.splice( di, 1 );
 						$li.parent().remove();
+						delete MIX[ name ].mapping.splice( di, 1 );
+						PIP.forEach( ( k, i ) => {
+							if ( k.type === 'Mixer' && k.name === name ) delete PIP[ i ];
+						} );
 					} else {
-						MIX[ name ].mapping[ di ].sources.splice( $li.data( 'index' ), 1 );
 						$li.remove();
+						MIX[ name ].mapping[ di ].sources.splice( $li.data( 'index' ), 1 );
 					}
 				}
 				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
@@ -1138,7 +1162,7 @@ function infoResampling( freeasync ) {
 				DEV.resampler_type = { FreeAsync: v }
 			}
 			DEV.enable_resampling = true;
-			saveConfig( icon, titlle, 'Change ...' );
+			saveConfig( icon, title, 'Change ...' );
 		}
 	} );
 }
@@ -1202,7 +1226,9 @@ function renderDevices() {
 	if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 	if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
 	keys.length ? renderDevicesList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
-	[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( el => S[ el ] = DEV[ el ] );
+	[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => {
+		$( '#'+ k ).prop( 'checked', DEV[ k ] );
+	} );
 }
 function renderDevicesList( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
@@ -1336,10 +1362,9 @@ function renderTab() {
 function saveConfig( icon, titlle, msg ) {
 	notify( icon, titlle, msg );
 	
+	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
+	ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 	renderPage();
-	console.log(S.config); return
-	
-	ws.send( '{ "SetConfigJson": '+ JSON.stringify( S.config ) +' }' );
 }
 function stringReplace( k ) {
 	return k
