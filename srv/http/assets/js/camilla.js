@@ -363,15 +363,17 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } ).on( 'click', '.mixer-icon', function() {
 	infoMapping();
 } );
-$( '#divfilters' ).on( 'click', 'li i', function( e ) {
+$( '#divfilters' ).on( 'click', 'li .name', function() {
+	infoFilters( '', $( this ).text() );
+} ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	var action = $this.prop( 'class' ).slice( 2 );
 	var name   = $this.parents( 'li' ).data( 'name' );
 	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
-	if ( action === 'filters' ) {
-		infoFilters( '', name );
+	if ( action === 'graph' ) {
+		console.log('plot filter: '+ name );
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -607,8 +609,11 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
+	var $li    = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	if ( action === 'back' ) {
+	if ( action === 'graph' ) {
+		if ( $li.find( '.li1' ).text() === 'Filter' ) console.log('plot pipeline: '+ $li.index() );
+	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
@@ -620,12 +625,11 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, selectlabel : 'Filter'
 			, select      : Object.keys( FIL )
 			, ok          : () => {
-				PIP[ $this.parent().data( 'index' ) ].names.push( infoVal() );
+				PIP[ $li.data( 'index' ) ].names.push( infoVal() );
 				saveConfig( icon, title, 'Save ...' );
 			}
 		} );
 	} else if ( action === 'remove' ) {
-		var $li  = $this.parents( 'li' );
 		var main = ! $( '#divpipeline .lihead' ).length;
 		info( {
 			  icon    : 'pipeline'
@@ -637,7 +641,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 					PIP.splice( pi, 1 );
 				} else {
 					var pi = $( '#divpipeline .lihead' ).data( 'index' );
-					var ni = $this.parent().data( 'index' );
+					var ni = $li.data( 'index' );
 					PIP[ pi ].names.splice( ni, 1 );
 				}
 				$li.remove();
@@ -1308,12 +1312,15 @@ function renderTab() {
 	if ( id === 'pipeline' ) {
 		var li = '';
 		kv.forEach( ( el, i ) => {
-			var filter = el.type === 'Filter';
-			li +=    '<li data-type="'+ el.type +'" data-name="'+ name +'">'+ ico( id ) + ico( 'remove' )
-					+'<div class="li1">'+ el.type +'</div>'
-					+'<div class="li2">'
-					+ ( filter ? 'channel '+ el.channel +': '+ el.names.join( ', ' ) : el.name ) +'</div>'
-					+'</li>';
+			if ( el.type === 'Filter' ) {
+				var icon = 'graph'
+				var each = '<div class="li1">'+ el.type +'</div>'
+						  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+			} else {
+				var icon = 'mixers'
+				var each = el.name;
+			}
+			li += '<li data-type="'+ el.type +'" data-name="'+ name +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
 		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
@@ -1350,7 +1357,7 @@ function renderTab() {
 								+'<div class="li1">'+ k +'</div>'
 								+'<div class="li2">'+ v.type +': '+ val +'</div>';
 			}
-			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( id ) + licontent +'</li>';
+			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';

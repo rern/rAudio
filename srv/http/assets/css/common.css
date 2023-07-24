@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1689690189' );
+	src         : url( '/assets/fonts/rern.woff2?v=1689690190' );
 }
 @font-face {
 	font-family : Lato;
@@ -95,6 +95,7 @@ i {
 .i-github::before          { content: '\F583' }
 .i-globe::before           { content: '\F575' }
 .i-gpiopins::before        { content: '\F572' }
+.i-graph::before           { content: '\F52C' }
 .i-guide::before           { content: '\F579' }
 .i-hddsleep::before        { content: '\F553' }
 .i-hdmi::before            { content: '\F57B' }
