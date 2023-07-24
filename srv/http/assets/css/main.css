@@ -1366,6 +1366,7 @@ i.map.disabled, .map.disabled i {
 	float: right;
 	font-size: 28px;
 	color: var( --cm );
+	z-index: 115;
 }
 .back-left {
 	float: left !important;
