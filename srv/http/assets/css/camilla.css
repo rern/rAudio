@@ -172,7 +172,7 @@ tr .i-remove {
 }
 .mutemain {
 	width: 35px;
-	min-width: 35px;
+	min-width: 35px !important;
 	padding: 0;
 }
 .mutemain i {

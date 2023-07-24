@@ -387,21 +387,25 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 			}
 		} );
 	} else if ( action === 'remove' ) {
+		if ( file ) {
+			var deletefilter = false;
+			$.each( FIL, ( k, v ) => {
+				if ( v.parameters.filename === name ) deletefilter = k;
+			} );
+		}
 		info( {
 			  icon    : icon
 			, title   : title
 			, message : 'Delete <wh>'+ name +'</wh> ?'
+					+ ( deletefilter ? '<br><br>(Filter <wh>'+ deletefilter +'</wh> will be deleted as well.)' : '' )
 			, oklabel : ico( 'remove' ) +'Delete'
 			, okcolor : red
 			, ok      : () => {
 				if ( file ) { // in filters Conv
+					if ( deletefilter ) delete FIL[ deletefilter ];
 					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 					notify( icon, title, 'Delete ...' );
-					$.each( FIL, ( k, v ) => {
-						if ( v.type === 'Conv' && v.parameters.filename === name ) delete FIL[ name ];
-					} );
 				} else {
-					delete FIL[ name ];
 					PIP.forEach( ( k, i ) => {
 						if ( k.type === 'Filter' ) {
 							k.names.forEach( ( n, ni ) => {
@@ -409,6 +413,7 @@ $( '#divfilters' ).on( 'click', 'li i', function( e ) {
 							} );
 						}
 					} );
+					delete FIL[ name ];
 				}
 				saveConfig( icon, title, 'Delete ...' );
 			}
@@ -784,8 +789,8 @@ function infoFileUpload( icon ) {
 		}
 	} );
 }
-function infoFilters( type, subtype ) {
-	var key_val, key, kv, k, name, v;
+function infoFilters( type, subtype, name ) {
+	var key_val, key, kv, k, v;
 	if ( ! type ) { // subtype = existing name
 		name     = subtype;
 		var data = jsonClone( FIL[ name ] );
@@ -891,7 +896,7 @@ function infoFilters( type, subtype ) {
 			$selecttype.on( 'change', function() {
 				var type    = $( this ).val();
 				var subtype = type in L.subtype ? L.subtype[ type ][ 0 ] : '';
-				infoFilters( type, subtype );
+				infoFilters( type, subtype, infoVal().name );
 			} );
 			if ( $select.length > 1 ) {
 				$select.eq( 1 ).on( 'change', function() {
