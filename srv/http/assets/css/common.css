@@ -640,6 +640,9 @@ hr {
 	font-size: 28px;
 	line-height: 40px;
 }
+#infoTop .i-camilladsp {
+	margin-right: 6px;
+}
 #infoTop .albumrefresh {
 	color: var( --cw );
 }

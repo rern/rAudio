@@ -200,20 +200,24 @@ var CP = { // capture / playback
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-
 $( '.refresh' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.hasClass( 'blink' ) ) {
-		clearInterval( V.intstatus );
-		$this.removeClass( 'blink wh' )
-		return
-	}
-	
-	
-	$this.addClass( 'blink wh' )
-	V.intstatus = setInterval( () => {
-		wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
-	}, 10000 );
+	info( {
+		  icon         : 'camilladsp'
+		, title        : 'Interface Settings'
+		, checkbox     : [ 'Reset clipped samples', 'Refresh status every second' ]
+		, checkchanged : true
+		, ok           : () => {
+			var val = infoVal();
+			if ( val[ 0 ] ) ws.send( '"Reload"' );
+			if ( val[ 1 ] ) {
+				V.intstatus = setInterval( () => {
+					wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
+				}, 1000 );
+			} else {
+				clearInterval( V.intstatus );
+			}
+		}
+	} );
 } );
 $( '#configuration' ).on( 'change', function() {
 	var name = $( this ).val();
@@ -233,7 +237,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 	} );
 	content += '<tr><td></td><td colspan="2" style="text-align: right"><a class="add">'+ ico( 'add' )+'New file</a></td></tr></table>';
 	var icon  = 'camilladsp';
-	var title = '&nbsp;Configuration';
+	var title = 'Configuration';
 	info( {
 		  icon        : icon
 		, title       : title

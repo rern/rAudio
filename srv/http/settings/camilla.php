@@ -56,8 +56,8 @@ $htmltabs.= '</div>';
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'refresh' => 'refresh' ]
-	, 'help'   => i( 'refresh btn' ).' Refresh every 10 seconds'
+	, 'button' => [ 'refresh' => 'gear' ]
+	, 'nohelp' => true
 ];
 $body = [
 	[
