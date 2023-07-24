@@ -2,7 +2,7 @@
 
 data=$( /srv/http/bash/settings/camilla.py )
 
-[[ $? == 1 ]] && echo notrunning
+[[ $? != 0 ]] && echo notrunning && exit
 
 aplay=$( aplay -l | grep ^card )
 cards=$( grep -v Loopback <<< $aplay | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
