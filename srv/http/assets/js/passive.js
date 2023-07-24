@@ -149,15 +149,24 @@ function psDisplay( data ) {
 			$( '#button-lib-back' ).toggleClass( 'back-left', D.backonleft );
 			if ( V.librarytrack ) {
 				if ( hidecoverchanged ) {
-					var query = V.query.slice( -1 )[ 0 ];
-					list( query, function( html ) {
-						var data = {
-							  html      : html
-							, modetitle : query.modetitle
-							, path      : query.path
+					if ( $( '#lib-list .licover' ).length ) {
+						$( '.licover' ).remove();
+					} else {
+						var path = $( '#lib-path .lipath' ).text()
+						var query   = {
+							  query  : 'ls'
+							, string : path
+							, format : [ 'file' ]
 						}
-						renderLibraryList( data );
-					} );
+						list( query, function( html ) {
+							var data = {
+								  html      : html
+								, modetitle : path
+								, path      : path
+							}
+							renderLibraryList( data );
+						} );
+					}
 				} else {
 					$( '.licover' ).toggleClass( 'nofixed', ! D.fixedcover );
 				}
