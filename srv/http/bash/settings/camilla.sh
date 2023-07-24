@@ -56,6 +56,9 @@ enable_rate_adjust | enable_resampling | stop_on_rate_change )
 	sed -E -i "s/($CMD: ).*/\1$TF/" "$dirconfigs/$file"
 	pushData
 	;;
+plot )
+	$dirsettings/camilla.py $TYPE $TARGET
+	;;
 pushdata )
 	pushData
 	;;

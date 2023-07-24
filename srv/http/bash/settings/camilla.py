@@ -7,6 +7,7 @@ import sys
 from websocket import create_connection
 
 dircamilladsp = '/srv/http/data/camilladsp/'
+dirshm        = '/srv/http/data/shm/'
 
 ws = create_connection( 'ws://127.0.0.1:1234' )
 
@@ -21,14 +22,22 @@ def setValue( cmd, val ):
 if len( sys.argv ) > 1: # set / save volume on start / stop
     cmd = sys.argv[ 1 ]
     if cmd == 'filter' or cmd == 'pipeline':
-        target = sys.argv[ 2 ]
-        from camilladsp_plot import eval_filter, eval_filterstep
         config = json.loads( getValue( 'GetConfigJson' ) )
-        if cmd == 'filter':
-            data = eval_filter( config[ 'filters' ][ target ] ) # config.filters.name, name=None, samplerate=44100, npoints=1000
-        else: # pipeline
-            data  = eval_filterstep( config, int( target ) )    # config, index,       name="filterstep",           npoints=1000, toimage=False
-        print( data ) # ['name', 'samplerate', 'f', 'magnitude', 'phase', 'f_groupdelay', 'groupdelay']
+        target = sys.argv[ 2 ]
+        if target == 'all': # flow chart
+            from camilladsp_plot.plot_pipeline import plot_pipeline
+            buffer = plot_pipeline( config, toimage=True )
+            file = dirshm +'pipeline.svg'
+            with open( file, 'wb' ) as f: f.write( buffer.getbuffer() )
+            with open( file, 'r' ) as f: print( f.read() )
+        else:
+            from camilladsp_plot import eval_filter, eval_filterstep
+            if cmd == 'filter':
+                data = eval_filter( config[ 'filters' ][ target ] ) # config.filters.name, name=None, samplerate=44100, npoints=1000
+            else: # pipeline
+                data  = eval_filterstep( config, int( target ) )    # config, index,       name="filterstep",           npoints=1000, toimage=False
+            print( data[ 'f' ] ) # ['name', 'samplerate', 'f', 'magnitude', 'phase', 'f_groupdelay', 'groupdelay']
+            
     filevolume = '/srv/http/data/system/camilla-volume'
     if cmd == 'volumestart':
         with open( filevolume, 'r' ) as f: volume = f.read()
@@ -51,7 +60,7 @@ value = {
     , 'mute'       : getValue( 'GetMute' )
     , 'status'     : status
     , 'lscoef'     : sorted( os.listdir( dircamilladsp +'coeffs' ) )
-    , 'lsconf'     : sorted( os.listdir( dircamilladsp +'/configs' ) )
+    , 'lsconf'     : sorted( os.listdir( dircamilladsp +'configs' ) )
     , 'fileconf'   : os.path.basename( getValue( 'GetConfigName' ) )
 }
 

@@ -170,6 +170,10 @@ tr .i-remove {
 .liinput .i-remove {
 	margin-left: auto;
 }
+.ligraph {
+	height: fit-content !important;
+	border-color: var( --cg ) !important;
+}
 .mutemain {
 	width: 35px;
 	min-width: 35px !important;
