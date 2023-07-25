@@ -171,8 +171,9 @@ tr .i-remove {
 	margin-left: auto;
 }
 .ligraph {
-	height: fit-content !important;
-	border-color: var( --cg ) !important;
+	height: 300px !important;
+	padding-top: 20px !important;
+	border-color: var( --cgl ) !important;
 }
 .mutemain {
 	width: 35px;

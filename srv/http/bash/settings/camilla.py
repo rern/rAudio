@@ -36,7 +36,7 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
                 data = eval_filter( config[ 'filters' ][ target ] ) # config.filters.name, name=None, samplerate=44100, npoints=1000
             else: # pipeline
                 data  = eval_filterstep( config, int( target ) )    # config, index,       name="filterstep",           npoints=1000, toimage=False
-            print( data[ 'f' ] ) # ['name', 'samplerate', 'f', 'magnitude', 'phase', 'f_groupdelay', 'groupdelay']
+            print( json.dumps( data ) )
             
     filevolume = '/srv/http/data/system/camilla-volume'
     if cmd == 'volumestart':
@@ -45,6 +45,7 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
     else: # volumesave
         volume = getValue( 'GetVolume' )
         with open( filevolume, 'w' ) as f: f.write( str( volume ) )
+        
     ws.close()
     sys.exit()
 

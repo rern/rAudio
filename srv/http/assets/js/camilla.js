@@ -388,7 +388,82 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		$this.parent().next().toggleClass( 'hide' );
+		var $li = $this.parent().next();
+		if ( $li.hasClass( 'hide' ) ) {
+			var cg  = '#969a9c';
+			var cgd = '#4a4d4f';
+			var cml = '#33bbff';
+			var cmd = '#004466';
+			var or  = '#de810e';
+			var ord = '#864c05';
+			bash( [ 'settings/camilla.py', 'filter '+ name ], data => {
+				var gain  = {
+					  y    : data.magnitude
+					, type : 'scatter'
+					, line : {
+						  width : 4
+						, color: cml
+					}
+				}
+				var phase = {
+					  y     : data.phase
+					, yaxis : 'y2'
+					, type  : 'scatter'
+					, line : {
+						  width : 4
+						, color: or
+					}
+				}
+				var layout = {
+					  xaxis      : {
+						  title         : {
+							  text     : 'Frequency (Hz)'
+							, standoff : 10
+						}
+						, ticksuffix : '0'
+						, gridcolor     : cgd
+					}
+					, yaxis      : {
+						  title        : {
+							  text     : 'Gain (dB)'
+							, standoff : 5
+						}
+						, tickfont      : { color: cml }
+						, autorange     : true
+						, zerolinecolor : cg
+						, linecolor     : cmd
+						, gridcolor     : cmd
+					}
+					, yaxis2     : {
+						  title      : {
+							  text     : 'Phase (deg)'
+							, standoff : 10
+						}
+						, tickfont      : { color: or }
+						, overlaying    : 'y'
+						, side          : 'right'
+						, range         : [ -180, 180 ]
+						, linecolor     : ord
+						, gridcolor     : ord
+					}
+					, width      : 658
+					, height     : 300
+					, margin     : { t: 0, r: 60, b: 90, l: 60 }
+					, font       : {
+						  family : 'Inconsolata'
+						, size   : 14
+						, color  : cg
+					}
+					, paper_bgcolor : '#000'
+					, plot_bgcolor  : '#000'
+					, showlegend : false
+				}
+				Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+				$li.toggleClass( 'hide' );
+			}, 'json' );
+		} else {
+			$li.addClass( 'hide' );
+		}
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -1246,6 +1321,19 @@ function pipelineSort() {
 		}
 	} );
 }
+function plotPipeline() {
+	var list = [];
+	list.push( [ 'device', DEV.capture.device, ...Array( DEV.capture.channels ).keys() ] );
+	PIP.forEach( ( p, i ) => {
+		if ( p.type === 'Filter' ) {
+			list.push( [ p.type, p.channel, p.names ] );
+		} else {
+			list.push( [ p.type, p.name, ...Array( MIX[ p.name ].channels.in ).keys() ] );
+		}
+	} );
+	list.push( [ 'device', DEV.playback.device, ...Array( DEV.playback.channels ).keys() ] );
+	return list
+}
 function renderDevices() {
 	renderDevicesList( 'sampling', L.sampling );
 	renderDevicesList( 'capture' );
@@ -1325,6 +1413,8 @@ function renderTab() {
 	var kv    = jsonClone( S.config[ id ] );
 	if ( $.isEmptyObject( kv ) ) return
 	
+	if ( $( '#div'+ id ).find( 'svg' ).length ) return //****************************************************
+	
 	if ( id === 'pipeline' ) {
 		var $svg = $( '#divpipeline .ligraph svg' );
 		if ( $svg.length ) {
@@ -1346,7 +1436,7 @@ function renderTab() {
 				var each = el.name;
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
-			li += el.type === 'Filter' ? '<li class="ligraph hide">graph</li>' : '';
+			li += el.type === 'Filter' ? '<li class="ligraph hide"></li>' : '';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
 		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
@@ -1384,7 +1474,7 @@ function renderTab() {
 								+'<div class="li2">'+ v.type +': '+ val +'</div>';
 			}
 			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
-			li += 'gain' in param ? '<li class="ligraph hide">graph</li>' : '';
+			li += 'gain' in param ? '<li class="ligraph hide"></li>' : '';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
