@@ -460,17 +460,18 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 } ).on( 'keyup', 'input[type=number]', function() {
 	var $this = $( this );
 	$this.next().val( +$this.val() );
-} ).on( 'click input keyup', 'input[type=range]', function() {
+} ).on( 'click input keyup', '.range', function() { // main volume
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
-	if ( $this.hasClass( 'range' ) ) {
-		ws.send( '{ "SetVolume": '+ val +' }' );
-		notify( 'filters', 'Main Gain', 'Change ...' );
-	} else {
-		FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = val;
-		saveConfig( 'filters', 'Filter Gain', 'Change ...' );
-	}
+	ws.send( '{ "SetVolume": '+ val +' }' );
+} ).on( 'input', 'input[type=range]:not( .range )', function() {
+	var $this = $( this );
+	$this.prev().val( dbFormat( +$this.val() ) );
+} ).on( 'click keyup', 'input[type=range]:not( .range )', function() {
+	var $this = $( this );
+	FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = +$this.val();
+	saveConfig();
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
 	S.mute    = ! S.mute;
@@ -584,9 +585,16 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'keyup', 'input[type=number]', function() {
 	var $this = $( this );
 	$this.next().val( +$this.val() );
-} ).on( 'click input keyup', 'input[type=range]', function() {
+} ).on( 'click keyup', 'input[type=range]', function() {
 	var $this = $( this );
-	$this.prev().val( dbFormat( +$this.val() ) );
+	var val   = +$this.val();
+	$this.prev().val( dbFormat( val ) );
+	var $li   = $( this ).parents( 'li' );
+	var name  = $li.data( 'name' );
+	var index = $li.data( 'index' );
+	var si    = $li.data( 'si' );
+	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
+	saveConfig();
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
 	var $li     = $this.parents( 'li' );
@@ -1506,10 +1514,10 @@ function renderTab() {
 	if ( nextpage ) $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
 }
 function saveConfig( icon, titlle, msg ) {
-	notify( icon, titlle, msg );
-	
+	if ( icon ) notify( icon, titlle, msg );
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 	ws.send( '{ "SetConfigJson": "'+ config +'" }' );
+	ws.send( '"Reload"' );
 	renderPage();
 }
 function stringReplace( k ) {
