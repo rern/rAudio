@@ -199,8 +199,8 @@ var CP = { // capture / playback
 }
 var C = {
 	  cg  : '#969a9c'
-	, cgd : '#4a4d4f'
-	, cml : '#33bbff'
+	, cgd : '#313435'
+	, cm  : '#33bbff'
 	, cmd : '#004466'
 	, or  : '#de810e'
 	, ord : '#864c05'
@@ -390,13 +390,14 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	infoFilters( '', $( this ).text() );
 } ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
+	var $li    = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	var name   = $this.parents( 'li' ).data( 'name' );
 	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		var $ligraph = $this.parents( 'li' ).next();
+		var $ligraph = $li.next();
 		if ( $ligraph.hasClass( 'hide' ) ) {
 			bash( [ 'settings/camilla.py', 'filter '+ name ], data => {
 				graph( data, $ligraph );
@@ -450,7 +451,9 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 						}
 					} );
 					delete FIL[ name ];
+					if ( $li.next().hasClass( 'ligraph' ) ) $li.next().remove();
 				}
+				$li.remove();
 				saveConfig( icon, title, 'Delete ...' );
 			}
 		} );
@@ -561,8 +564,9 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, message : message
 			, ok      : () => {
 				if ( main ) {
-					$li.remove();
 					delete MIX[ name ];
+					if ( $li.next().hasClass( 'ligraph' ) ) $li.next().remove();
+					$li.remove();
 				} else {
 					var di = $li.data( 'dest' );
 					if ( dest ) {
@@ -714,8 +718,8 @@ function graph( data, $li ) {
 		  y    : data.magnitude
 		, type : 'scatter'
 		, line : {
-			  width : 1
-			, color: C.cml
+			  width : 2
+			, color: C.cm
 		}
 	}
 	var phase = {
@@ -723,7 +727,7 @@ function graph( data, $li ) {
 		, yaxis : 'y2'
 		, type  : 'scatter'
 		, line : {
-			  width : 1
+			  width : 2
 			, color: C.or
 		}
 	}
@@ -733,8 +737,8 @@ function graph( data, $li ) {
 				  text     : 'Frequency (Hz)'
 				, standoff : 10
 			}
-			, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 285, 585, 902 ]
-			, ticktext      : [ 0, 10, 100, 1000, 10000 ]
+			, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 300, 600, 916 ]
+			, ticktext      : [ 0, 10, 100, '1k', '10k' ]
 			, gridcolor     : C.cgd
 		}
 		, yaxis      : {
@@ -742,7 +746,7 @@ function graph( data, $li ) {
 				  text     : 'Gain (dB)'
 				, standoff : 5
 			}
-			, tickfont      : { color: C.cml }
+			, tickfont      : { color: C.cm }
 			, autorange     : true
 			, zerolinecolor : C.cg
 			, linecolor     : C.cmd
@@ -770,7 +774,7 @@ function graph( data, $li ) {
 		}
 		, paper_bgcolor : '#000'
 		, plot_bgcolor  : '#000'
-		, showlegend : false
+		, showlegend    : false
 	}
 	Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
 	$li.removeClass( 'hide' );
@@ -1512,9 +1516,9 @@ function renderTab() {
 	if ( nextpage ) $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
 }
 function saveConfig( icon, titlle, msg ) {
-	if ( icon ) notify( icon, titlle, msg );
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 	ws.send( '{ "SetConfigJson": "'+ config +'" }' );
+	if ( icon ) notify( icon, titlle, msg, 3000 );
 }
 function stringReplace( k ) {
 	return k
