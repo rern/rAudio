@@ -208,6 +208,11 @@ var C = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.close' ).off( 'click' ).on( 'click', funnction() {
+	bash( [ 'settings/camilla.py', 'save' ], function() {
+		location.href = '/';
+	} );
+} );
 $( '.refresh' ).on( 'click', function() {
 	info( {
 		  icon         : 'camilladsp'

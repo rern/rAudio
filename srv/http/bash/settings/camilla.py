@@ -39,7 +39,11 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
             print( json.dumps( data ) )
             
     filevolume = '/srv/http/data/system/camilla-volume'
-    if cmd == 'volumestart':
+    if cmd == 'save':
+        config = getValue( 'GetConfig' )
+        file   = getValue( 'GetConfigName' )
+        with open( file, 'w' ) as f: f.write( config )
+    elif cmd == 'volumestart':
         with open( filevolume, 'r' ) as f: volume = f.read()
         setValue( 'SetVolume', float( volume ) )
     else: # volumesave

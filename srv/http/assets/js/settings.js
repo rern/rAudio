@@ -375,7 +375,7 @@ $( '.container' ).on( 'click', '.status', function( e ) {
 	}
 } );
 $( '.close' ).on( 'click', function() {
-	location.href = '/'; 
+	location.href = '/';
 } );
 $( '.page-icon' ).on( 'click', function() {
 	if ( $.isEmptyObject( S ) ) return
