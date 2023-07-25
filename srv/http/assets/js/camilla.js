@@ -197,6 +197,14 @@ var CP = { // capture / playback
 		}
 	}
 }
+var C = {
+	  cg  : '#969a9c'
+	, cgd : '#4a4d4f'
+	, cml : '#33bbff'
+	, cmd : '#004466'
+	, or  : '#de810e'
+	, ord : '#864c05'
+}
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -388,78 +396,10 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		var $li = $this.parent().next();
-		if ( $li.hasClass( 'hide' ) ) {
-			var cg  = '#969a9c';
-			var cgd = '#4a4d4f';
-			var cml = '#33bbff';
-			var cmd = '#004466';
-			var or  = '#de810e';
-			var ord = '#864c05';
+		var $ligraph = $this.parents( 'li' ).next();
+		if ( $ligraph.hasClass( 'hide' ) ) {
 			bash( [ 'settings/camilla.py', 'filter '+ name ], data => {
-				var gain  = {
-					  y    : data.magnitude
-					, type : 'scatter'
-					, line : {
-						  width : 4
-						, color: cml
-					}
-				}
-				var phase = {
-					  y     : data.phase
-					, yaxis : 'y2'
-					, type  : 'scatter'
-					, line : {
-						  width : 4
-						, color: or
-					}
-				}
-				var layout = {
-					  xaxis      : {
-						  title         : {
-							  text     : 'Frequency (Hz)'
-							, standoff : 10
-						}
-						, ticksuffix : '0'
-						, gridcolor     : cgd
-					}
-					, yaxis      : {
-						  title        : {
-							  text     : 'Gain (dB)'
-							, standoff : 5
-						}
-						, tickfont      : { color: cml }
-						, autorange     : true
-						, zerolinecolor : cg
-						, linecolor     : cmd
-						, gridcolor     : cmd
-					}
-					, yaxis2     : {
-						  title      : {
-							  text     : 'Phase (deg)'
-							, standoff : 10
-						}
-						, tickfont      : { color: or }
-						, overlaying    : 'y'
-						, side          : 'right'
-						, range         : [ -180, 180 ]
-						, linecolor     : ord
-						, gridcolor     : ord
-					}
-					, width      : 658
-					, height     : 300
-					, margin     : { t: 0, r: 60, b: 90, l: 60 }
-					, font       : {
-						  family : 'Inconsolata'
-						, size   : 14
-						, color  : cg
-					}
-					, paper_bgcolor : '#000'
-					, plot_bgcolor  : '#000'
-					, showlegend : false
-				}
-				Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
-				$li.toggleClass( 'hide' );
+				graph( data, $ligraph );
 			}, 'json' );
 		} else {
 			$li.addClass( 'hide' );
@@ -700,9 +640,18 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	var $li    = $this.parents( 'li' );
+	var index  = $li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
-		$li.next().toggleClass( 'hide' );
+		var $ligraph = $li.next();
+		if ( $ligraph.hasClass( 'hide' ) ) {
+			console.log( [ 'settings/camilla.py', 'pipeline '+ index ])
+			bash( [ 'settings/camilla.py', 'pipeline '+ index ], data => {
+				graph( data, $ligraph );
+			}, 'json' );
+		} else {
+			$li.addClass( 'hide' );
+		}
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
@@ -715,7 +664,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, selectlabel : 'Filter'
 			, select      : Object.keys( FIL )
 			, ok          : () => {
-				PIP[ $li.data( 'index' ) ].names.push( infoVal() );
+				PIP[ index ].names.push( infoVal() );
 				saveConfig( icon, title, 'Save ...' );
 			}
 		} );
@@ -727,8 +676,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?'
 			, ok      : () => {
 				if ( main ) {
-					var pi  = $li.data( 'index' );
-					PIP.splice( pi, 1 );
+					PIP.splice( index, 1 );
 				} else {
 					var pi = $( '#divpipeline .lihead' ).data( 'index' );
 					var ni = $li.data( 'index' );
@@ -1321,7 +1269,72 @@ function pipelineSort() {
 		}
 	} );
 }
-function plotPipeline() {
+function graph( data, $li ) {
+	var gain  = {
+		  y    : data.magnitude
+		, type : 'scatter'
+		, line : {
+			  width : 4
+			, color: C.cml
+		}
+	}
+	var phase = {
+		  y     : data.phase
+		, yaxis : 'y2'
+		, type  : 'scatter'
+		, line : {
+			  width : 4
+			, color: C.or
+		}
+	}
+	var layout = {
+		  xaxis      : {
+			  title         : {
+				  text     : 'Frequency (Hz)'
+				, standoff : 10
+			}
+			, ticksuffix : '0'
+			, gridcolor     : C.cgd
+		}
+		, yaxis      : {
+			  title        : {
+				  text     : 'Gain (dB)'
+				, standoff : 5
+			}
+			, tickfont      : { color: C.cml }
+			, autorange     : true
+			, zerolinecolor : C.cg
+			, linecolor     : C.cmd
+			, gridcolor     : C.cmd
+		}
+		, yaxis2     : {
+			  title      : {
+				  text     : 'Phase (deg)'
+				, standoff : 10
+			}
+			, tickfont      : { color: C.or }
+			, overlaying    : 'y'
+			, side          : 'right'
+			, range         : [ -180, 180 ]
+			, linecolor     : C.ord
+			, gridcolor     : C.ord
+		}
+		, width      : 658
+		, height     : 300
+		, margin     : { t: 0, r: 60, b: 90, l: 60 }
+		, font       : {
+			  family : 'Inconsolata'
+			, size   : 14
+			, color  : C.cg
+		}
+		, paper_bgcolor : '#000'
+		, plot_bgcolor  : '#000'
+		, showlegend : false
+	}
+	Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+	$li.removeClass( 'hide' );
+}
+function plotPipeline() { //***************************************
 	var list = [];
 	list.push( [ 'device', DEV.capture.device, ...Array( DEV.capture.channels ).keys() ] );
 	PIP.forEach( ( p, i ) => {

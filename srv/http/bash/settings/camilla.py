@@ -33,9 +33,9 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
         else:
             from camilladsp_plot import eval_filter, eval_filterstep
             if cmd == 'filter':
-                data = eval_filter( config[ 'filters' ][ target ] ) # config.filters.name, name=None, samplerate=44100, npoints=1000
+                data = eval_filter( config[ 'filters' ][ target ] )
             else: # pipeline
-                data  = eval_filterstep( config, int( target ) )    # config, index,       name="filterstep",           npoints=1000, toimage=False
+                data  = eval_filterstep( config, int( target ) )
             print( json.dumps( data ) )
             
     filevolume = '/srv/http/data/system/camilla-volume'
