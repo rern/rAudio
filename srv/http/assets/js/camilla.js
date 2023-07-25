@@ -399,9 +399,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	if ( action === 'graph' ) {
 		var $ligraph = $li.next();
 		if ( $ligraph.hasClass( 'hide' ) ) {
-			bash( [ 'settings/camilla.py', 'filter '+ name ], data => {
-				graph( data, $ligraph );
-			}, 'json' );
+			graphResponse( name, $ligraph );
 		} else {
 			$ligraph.addClass( 'hide' );
 		}
@@ -470,8 +468,11 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	if ( $this.hasClass( 'range' ) ) {
 		ws.send( '{ "SetVolume": '+ val +' }' );
 	} else {
-		FIL[ $this.parent( 'li' ).data( 'name' ) ].parameters.gain = val;
+		var $li  = $this.parents( 'li' );
+		var name = $li.data( 'name' );
+		FIL[ name ].parameters.gain = val;
 		saveConfig();
+		if ( ! $ligraph.hasClass( 'hide' ) ) graphResponse( name, $li );
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
@@ -655,9 +656,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	if ( action === 'graph' ) {
 		var $ligraph = $li.next();
 		if ( $ligraph.hasClass( 'hide' ) ) {
-			bash( [ 'settings/camilla.py', 'pipeline '+ index ], data => {
-				graph( data, $ligraph );
-			}, 'json' );
+			graphResponse( index, $ligraph );
 		} else {
 			$ligraph.addClass( 'hide' );
 		}
@@ -713,71 +712,82 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function graph( data, $li ) {
-	var gain  = {
-		  y    : data.magnitude
-		, type : 'scatter'
-		, line : {
-			  width : 2
-			, color: C.cm
-		}
-	}
-	var phase = {
-		  y     : data.phase
-		, yaxis : 'y2'
-		, type  : 'scatter'
-		, line : {
-			  width : 2
-			, color: C.or
-		}
-	}
-	var layout = {
-		  xaxis      : {
-			  title         : {
-				  text     : 'Frequency (Hz)'
-				, standoff : 10
+function graphResponse( val, $li ) {
+	var type  = V.currenttab;
+	notify( type, key2label( type ), 'Plot ...' );
+	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
+		var gain  = {
+			  y    : data.magnitude
+			, type : 'scatter'
+			, line : {
+				  width : 2
+				, color: C.cm
 			}
-			, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 300, 600, 916 ]
-			, ticktext      : [ 0, 10, 100, '1k', '10k' ]
-			, gridcolor     : C.cgd
 		}
-		, yaxis      : {
-			  title        : {
-				  text     : 'Gain (dB)'
-				, standoff : 5
+		var phase = {
+			  y     : data.phase
+			, yaxis : 'y2'
+			, type  : 'scatter'
+			, line : {
+				  width : 2
+				, color: C.or
 			}
-			, tickfont      : { color: C.cm }
-			, autorange     : true
-			, zerolinecolor : C.cg
-			, linecolor     : C.cmd
-			, gridcolor     : C.cmd
 		}
-		, yaxis2     : {
-			  title      : {
-				  text     : 'Phase (°)'
-				, standoff : 10
+		var layout = {
+			  xaxis      : {
+				  title         : {
+					  text     : 'Frequency (Hz)'
+					, standoff : 10
+				}
+				, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 300, 600, 916 ]
+				, ticktext      : [ 0, 10, 100, '1k', '10k' ]
+				, gridcolor     : C.cgd
 			}
-			, tickfont      : { color: C.or }
-			, overlaying    : 'y'
-			, side          : 'right'
-			, range         : [ -180, 180 ]
-			, linecolor     : C.ord
-			, gridcolor     : C.ord
+			, yaxis      : {
+				  title        : {
+					  text     : 'Gain (dB)'
+					, standoff : 5
+				}
+				, tickfont      : { color: C.cm }
+				, autorange     : true
+				, zerolinecolor : C.cg
+				, linecolor     : C.cmd
+				, gridcolor     : C.cmd
+			}
+			, yaxis2     : {
+				  title      : {
+					  text     : 'Phase (°)'
+					, standoff : 10
+				}
+				, tickfont      : { color: C.or }
+				, overlaying    : 'y'
+				, side          : 'right'
+				, range         : [ -180, 180 ]
+				, linecolor     : C.ord
+				, gridcolor     : C.ord
+			}
+			, width      : 658
+			, height     : 300
+			, margin     : { t: 0, r: 60, b: 90, l: 60 }
+			, font       : {
+				  family : 'Inconsolata'
+				, size   : 14
+				, color  : C.cg
+			}
+			, paper_bgcolor : '#000'
+			, plot_bgcolor  : '#000'
+			, showlegend    : false
 		}
-		, width      : 658
-		, height     : 300
-		, margin     : { t: 0, r: 60, b: 90, l: 60 }
-		, font       : {
-			  family : 'Inconsolata'
-			, size   : 14
-			, color  : C.cg
+		if ( typeof( Plotly ) !== 'object' ) {
+			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, function() {
+				graphResponse( val, $li );
+			} );
+			return
 		}
-		, paper_bgcolor : '#000'
-		, plot_bgcolor  : '#000'
-		, showlegend    : false
-	}
-	Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
-	$li.removeClass( 'hide' );
+		Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+		$li.removeClass( 'hide' );
+		bannerHide();
+	}, 'json' );
 }
 function htmlOption( list ) {
 	if ( typeof( list ) === 'number' ) list = [ ...Array( list ).keys() ];

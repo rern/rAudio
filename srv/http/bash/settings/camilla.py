@@ -21,7 +21,7 @@ def setValue( cmd, val ):
 
 if len( sys.argv ) > 1: # set / save volume on start / stop
     cmd = sys.argv[ 1 ]
-    if cmd == 'filter' or cmd == 'pipeline':
+    if cmd == 'filters' or cmd == 'pipeline':
         config = json.loads( getValue( 'GetConfigJson' ) )
         target = sys.argv[ 2 ]
         if target == 'all': # flow chart
@@ -32,7 +32,7 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
             with open( file, 'r' ) as f: print( f.read() )
         else:
             from camilladsp_plot import eval_filter, eval_filterstep
-            if cmd == 'filter':
+            if cmd == 'filters':
                 data = eval_filter( config[ 'filters' ][ target ] )
             else: # pipeline
                 data  = eval_filterstep( config, int( target ) )

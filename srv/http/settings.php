@@ -60,6 +60,13 @@ if ( $localhost ) echo '<div id="keyboard" class="hide"><div class="simple-keybo
 // <script> -----------------------------------------------------
 foreach( $jsp as $j ) echo '<script src="/assets/js/plugin/'.$jfiles[ $j ].'"></script>';
 foreach( $js as $j )  echo '<script src="/assets/js/'.$j.'.js'.$hash.'"></script>';
+if ( $camilla ) {
+	echo '
+<script>
+var jfiles = '.json_encode( $jfiles ).';
+</script>
+';
+}
 echo '
 </body>
 </html>

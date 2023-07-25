@@ -46,7 +46,7 @@ foreach( $jsfiles as $file ) {
 if ( ! $page ) { // main
 	$cssp[] = 'roundslider';
 	$css[]  = 'main';
-	$jsp    = [ 'jquery', 'lazysizes', 'pushstream', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode
+	$jsp    = [ 'jquery', 'lazysizes', 'pushstream', 'roundslider', 'Sortable' ]; // dynamically loaded with $.getScript: html5colorpicker, pica, qrcode, plotly
 	$js     = [ 'common', 'context', 'function', 'main', 'passive' ];
 	if ( $equalizer ) {
 		$cssp[] = 'select2';
