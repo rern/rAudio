@@ -402,7 +402,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 				graph( data, $ligraph );
 			}, 'json' );
 		} else {
-			$li.addClass( 'hide' );
+			$ligraph.addClass( 'hide' );
 		}
 	} else if ( action === 'file' ) {
 		info( {
@@ -645,12 +645,11 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	if ( action === 'graph' ) {
 		var $ligraph = $li.next();
 		if ( $ligraph.hasClass( 'hide' ) ) {
-			console.log( [ 'settings/camilla.py', 'pipeline '+ index ])
 			bash( [ 'settings/camilla.py', 'pipeline '+ index ], data => {
 				graph( data, $ligraph );
 			}, 'json' );
 		} else {
-			$li.addClass( 'hide' );
+			$ligraph.addClass( 'hide' );
 		}
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
@@ -703,6 +702,72 @@ function deviceKeys( dev, type ) {
 	var keys    = [ 'type' ];
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
+}
+function graph( data, $li ) {
+	var gain  = {
+		  y    : data.magnitude
+		, type : 'scatter'
+		, line : {
+			  width : 1
+			, color: C.cml
+		}
+	}
+	var phase = {
+		  y     : data.phase
+		, yaxis : 'y2'
+		, type  : 'scatter'
+		, line : {
+			  width : 1
+			, color: C.or
+		}
+	}
+	var layout = {
+		  xaxis      : {
+			  title         : {
+				  text     : 'Frequency (Hz)'
+				, standoff : 10
+			}
+			, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 285, 585, 902 ]
+			, ticktext      : [ 0, 10, 100, 1000, 10000 ]
+			, gridcolor     : C.cgd
+		}
+		, yaxis      : {
+			  title        : {
+				  text     : 'Gain (dB)'
+				, standoff : 5
+			}
+			, tickfont      : { color: C.cml }
+			, autorange     : true
+			, zerolinecolor : C.cg
+			, linecolor     : C.cmd
+			, gridcolor     : C.cmd
+		}
+		, yaxis2     : {
+			  title      : {
+				  text     : 'Phase (°)'
+				, standoff : 10
+			}
+			, tickfont      : { color: C.or }
+			, overlaying    : 'y'
+			, side          : 'right'
+			, range         : [ -180, 180 ]
+			, linecolor     : C.ord
+			, gridcolor     : C.ord
+		}
+		, width      : 658
+		, height     : 300
+		, margin     : { t: 0, r: 60, b: 90, l: 60 }
+		, font       : {
+			  family : 'Inconsolata'
+			, size   : 14
+			, color  : C.cg
+		}
+		, paper_bgcolor : '#000'
+		, plot_bgcolor  : '#000'
+		, showlegend : false
+	}
+	Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+	$li.removeClass( 'hide' );
 }
 function htmlOption( list ) {
 	if ( typeof( list ) === 'number' ) list = [ ...Array( list ).keys() ];
@@ -1268,71 +1333,6 @@ function pipelineSort() {
 			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
 		}
 	} );
-}
-function graph( data, $li ) {
-	var gain  = {
-		  y    : data.magnitude
-		, type : 'scatter'
-		, line : {
-			  width : 4
-			, color: C.cml
-		}
-	}
-	var phase = {
-		  y     : data.phase
-		, yaxis : 'y2'
-		, type  : 'scatter'
-		, line : {
-			  width : 4
-			, color: C.or
-		}
-	}
-	var layout = {
-		  xaxis      : {
-			  title         : {
-				  text     : 'Frequency (Hz)'
-				, standoff : 10
-			}
-			, ticksuffix : '0'
-			, gridcolor     : C.cgd
-		}
-		, yaxis      : {
-			  title        : {
-				  text     : 'Gain (dB)'
-				, standoff : 5
-			}
-			, tickfont      : { color: C.cml }
-			, autorange     : true
-			, zerolinecolor : C.cg
-			, linecolor     : C.cmd
-			, gridcolor     : C.cmd
-		}
-		, yaxis2     : {
-			  title      : {
-				  text     : 'Phase (deg)'
-				, standoff : 10
-			}
-			, tickfont      : { color: C.or }
-			, overlaying    : 'y'
-			, side          : 'right'
-			, range         : [ -180, 180 ]
-			, linecolor     : C.ord
-			, gridcolor     : C.ord
-		}
-		, width      : 658
-		, height     : 300
-		, margin     : { t: 0, r: 60, b: 90, l: 60 }
-		, font       : {
-			  family : 'Inconsolata'
-			, size   : 14
-			, color  : C.cg
-		}
-		, paper_bgcolor : '#000'
-		, plot_bgcolor  : '#000'
-		, showlegend : false
-	}
-	Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
-	$li.removeClass( 'hide' );
 }
 function plotPipeline() { //***************************************
 	var list = [];
