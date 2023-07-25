@@ -44,21 +44,6 @@ confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	switchConfig "$NEWNAME"
 	;;
-confsave )
-	$dirsettings/camilla.py save "$JSON"
-	pushData
-	;;
-confswitch )
-	switchConfig "$NAME"
-	;;
-enable_rate_adjust | enable_resampling | stop_on_rate_change )
-	file=$( $dirsettings/camilla.py configfile | cut -d'"' -f4 )
-	sed -E -i "s/($CMD: ).*/\1$TF/" "$dirconfigs/$file"
-	pushData
-	;;
-plot )
-	$dirsettings/camilla.py $TYPE $TARGET
-	;;
 pushdata )
 	pushData
 	;;
@@ -92,10 +77,6 @@ setformat )
 		alsactl store &> /dev/null
 		alsactl nrestore &> /dev/null
 	fi
-	;;
-volume )
-	$dirsettings/camilla.py volume $VOLUME
-	pushData
 	;;
 	
 esac

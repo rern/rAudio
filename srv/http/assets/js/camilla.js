@@ -472,7 +472,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		var name = $li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( ! $ligraph.hasClass( 'hide' ) ) graphResponse( name, $li );
+		if ( ! $li.next().hasClass( 'hide' ) ) graphResponse( name, $li );
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
