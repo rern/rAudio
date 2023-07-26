@@ -1,12 +1,12 @@
-V            = {
+V              = {
 	  currenttab : 'devices'
 	, signal     : {}
 	, status     : {}
 }
-var ws       = new WebSocket( 'ws://'+ window.location.host +':1234' );
-var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
-var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
-ws.onmessage = response => {
+var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
+var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
+var wsstatus   = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
+ws.onmessage   = response => {
 	var data  = JSON.parse( response.data );
 	var cmd   = Object.keys( data )[ 0 ];
 	var value = data[ cmd ].value;
@@ -63,7 +63,7 @@ var L  = {
 	}
 	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 }
-var Fkv = {
+var Fkv        = {
 	  pass    : {
 		  number : { freq: 1000, q: 0.5 }
 	  }
@@ -82,7 +82,7 @@ var Fkv = {
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
-var F  = {
+var F          = {
 	  Lowpass           : Fkv.pass
 	, Highpass          : Fkv.pass
 	, Lowshelf          : Fkv.shelf
@@ -143,7 +143,7 @@ var F  = {
 	}
 }
 // capture / playback
-var CPkv = {
+var CPkv       = {
 	  tc     : {
 		  number : { channels: 2 }
 	}
@@ -157,7 +157,7 @@ var CPkv = {
 		, checkbox : { exclusive: false, loopback: false }
 	}
 }
-var CP = { // capture / playback
+var CP         = { // capture / playback
 	  capture : {
 		  Alsa      : CPkv.tcsd
 		, CoreAudio : {
@@ -197,7 +197,7 @@ var CP = { // capture / playback
 		}
 	}
 }
-var C = {
+var C          = {
 	  g  : 'hsl(200,3%,60%)'
 	, gd : 'hsl(200,3%,20%)'
 	, gl : 'hsl(200,3%,80%)'
@@ -207,6 +207,106 @@ var C = {
 	, od : 'hsl(30,80%,20%)'
 	, r  : 'hsl(0,70%,50%)'
 	, rd : 'hsl(0,70%,20%)'
+}
+var plots      = {
+	  gain    : {
+		  yaxis : 'y'
+		, type : 'scatter'
+		, name : 'Gain'
+		, line : { width : 4, color: C.m }
+	}
+	, phase   : {
+		  yaxis : 'y2'
+		, type  : 'scatter'
+		, name  : 'Phase'
+		, line : { width : 4, color : C.r }
+	}
+	, delay   : {
+		  yaxis : 'y3'
+		, type  : 'scatter'
+		, name  : 'Delay'
+		, line : { width : 2, color: C.o }
+	}
+	, impulse : {
+		  yaxis : 'y3'
+		, type  : 'scatter'
+		, name  : 'Impulse'
+		, line : { width : 1, color: C.o }
+	}
+	, time    : {
+		  yaxis : 'y4'
+		, type  : 'scatter'
+		, name  : 'Time'
+		, line : { width : 1, color: C.o }
+	}
+}
+var axes       = {
+	  delay : {
+		  title      : {
+			  text     : 'Delay · ms'
+			, font     : { color: C.o }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.o }
+		, overlaying : 'y'
+		, side       : 'right'
+		, autoshift  : true
+		, anchor     : 'free'
+		, linecolor  : C.od
+		, gridcolor  : C.od
+	}
+	, freq  : {
+		  title     : {
+			  text     : 'Frequency · Hz'
+			, font     : { color: C.gl }
+			, standoff : 10
+		}
+		, tickfont  : { color: C.gl }
+		, tickvals  : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
+		, ticktext  : [ 0, 10, 100, '1k', '10k' ]
+		, gridcolor : C.gd
+	}
+	, gain  : {
+		  title        : {
+			  text     : 'Gain · dB'
+			, font     : { color: C.m }
+			, standoff : 5
+		}
+		, tickfont      : { color: C.m }
+		, zerolinecolor : C.g
+		, linecolor     : C.md
+		, gridcolor     : C.md
+	}
+	, impulse : {
+		  title      : {
+			  text     : 'Impulse · ms'
+			, font     : { color: C.o }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.o }
+		, overlaying : 'y'
+		, side       : 'right'
+		, autoshift  : true
+		, anchor     : 'free'
+		, linecolor  : C.od
+		, gridcolor  : C.od
+	}
+	, phase : {
+		  title      : {
+			  text     : 'Phase · °'
+			, font     : { color: C.r }
+			, standoff : 0
+		}
+		, tickfont      : { color: C.r }
+		, overlaying    : 'y'
+		, side          : 'right'
+		, range         : [ -190, 193 ]
+		, tickvals      : [ -180, -90, 0, 90, 180 ]
+		, ticktext      : [ -180, -90, 0, 90, 180 ]
+		, zerolinecolor : C.g
+		, linecolor     : C.rd
+		, gridcolor     : C.rd
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -717,115 +817,50 @@ function graphPlot( $li ) {
 		return
 	}
 	
-	var type  = V.currenttab;
-	var val   = $li.data( type === 'filters' ? 'name' : 'index' );
+	var type      = V.currenttab;
+	var val       = $li.data( type === 'filters' ? 'name' : 'index' );
+	var plotdelay = false;
+	var plotconv  = false;
 	if ( type === 'filters' ) {
-		var plotdelay = 'delay' in FIL[ val ].parameters;
+		plotdelay = 'delay' in FIL[ val ].parameters;
+		plotconv  = FIL[ val ].type === 'Conv';
 	} else {
-		var plotdelay = false;
 		PIP[ val ].names.forEach( f => {
 			if ( 'delay' in FIL[ f ].parameters ) plotdelay = true;
 		} );
 	}
+	plots.phase.line.width = plotdelay ? 1 : 4;
+	
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
-		var gain  = {
-			  y    : plotdelay && type === 'filters' ? 0 : data.magnitude
-			, yaxis : 'y'
-			, type : 'scatter'
-			, name : 'Gain'
-			, line : {
-				  width : 4
-				, color: C.m
-			}
-		}
-		var phase = {
-			  y     : data.phase
-			, yaxis : 'y2'
-			, type  : 'scatter'
-			, name  : 'Phase'
-			, line : {
-				  width : plotdelay ? 1 : 4
-				, color: C.r
-			}
-		}
-		var layout = {
-			  xaxis      : {
-				  title         : {
-					  text     : 'Frequency · Hz'
-					, font     : { color: C.gl }
-					, standoff : 10
-				}
-				, tickfont      : { color: C.gl }
-				, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
-				, ticktext      : [ 0, 10, 100, '1k', '10k' ]
-				, gridcolor     : C.gd
-			}
-			, yaxis      : {
-				  title        : {
-					  text     : 'Gain · dB'
-					, font     : { color: C.m }
-					, standoff : 5
-				}
-				, tickfont      : { color: C.m }
-				, zerolinecolor : C.g
-				, linecolor     : C.md
-				, gridcolor     : C.md
-			}
-			, yaxis2     : {
-				  title      : {
-					  text     : 'Phase · °'
-					, font     : { color: C.r }
-					, standoff : 0
-				}
-				, tickfont      : { color: C.r }
-				, overlaying    : 'y'
-				, side          : 'right'
-				, range         : [ -190, 193 ]
-				, tickvals      : [ -180, -90, 0, 90, 180 ]
-				, ticktext      : [ -180, -90, 0, 90, 180 ]
-				, zerolinecolor : C.g
-				, linecolor     : C.rd
-				, gridcolor     : C.rd
-			}
-			, width      : 658
-			, height     : 300
-			, margin     : { t: 0, r: 60, b: 90, l: 60 }
-			, font       : {
-				  family : 'Inconsolata'
-				, size   : 14
-			}
+		plots.gain.y  = plotdelay && type === 'filters' ? 0 : data.magnitude
+		plots.phase.y = data.phase;
+		var plot      = [ plots.gain, plots.phase ];
+		var layout    = {
+			  xaxis         : axes.freq
+			, yaxis         : axes.gain
+			, yaxis2        : axes.phase
+			, width         : 658
+			, height        : 300
+			, margin        : { t: 0, r: 60, b: 90, l: 60 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
+			, font          : {
+				  family : 'Inconsolata'
+				, size   : 14
+			}
 		}
-		var plot = [ gain, phase ];
 		if ( plotdelay ) {
-			var delay = {
-				  y     : data.groupdelay
-				, yaxis : 'y3'
-				, type  : 'scatter'
-				, name  : 'Delay'
-				, line : {
-					  width : 2
-					, color: C.o
-				}
-			}
-			layout.yaxis3 = {
-				  title      : {
-					  text     : 'Delay · ms'
-					, font     : { color: C.o }
-					, standoff : 5
-				}
-				, tickfont      : { color: C.o }
-				, overlaying    : 'y'
-				, side          : 'right'
-				, autoshift     : true
-				, anchor        : 'free'
-				, linecolor     : C.od
-				, gridcolor     : C.od
-			}
-			plot.push( delay );
+			plots.delay.y   = data.groupdelay;
+			layout.yaxis3   = axes.delay;
+			plot.push( plots.delay );
+		} else if ( plotconv ) {
+			plots.impulse.y = data.impulse;
+			plots.time.y    = data.time;
+			layout.yaxis3   = axes.impulse;
+			layout.yaxis4   = axes.time;
+			plot.push( plots.impluse, plots.time );
 		}
 		$li.after( '<li class="ligraph"></li>' );
 		Plotly.newPlot( $li.next()[ 0 ], plot, layout, { displayModeBar: false } );
