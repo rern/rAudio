@@ -466,7 +466,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		var name = $li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( $li.next().hasClass( 'ligraph' ) ) graphResponse( $li );
+		if ( $li.next().hasClass( 'ligraph' ) ) graphPlot( $li );
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
@@ -705,10 +705,10 @@ function graph( $li ) {
 	if ( $li.next().hasClass( 'ligraph' ) ) {
 		$li.next().remove();
 	} else {
-		graphResponse( $li );
+		graphPlot( $li );
 	}
 }
-function graphResponse( $li ) {
+function graphPlot( $li ) {
 	var type = V.currenttab;
 	var val  = $li.data( type === 'filters' ? 'name' : 'index' );
 	notify( type, key2label( type ), 'Plot ...' );
@@ -777,13 +777,12 @@ function graphResponse( $li ) {
 		}
 		if ( typeof( Plotly ) !== 'object' ) {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, function() {
-				graphResponse( $li );
+				graphPlot( $li );
 			} );
 			return
 		}
 		$li.after( '<li class="ligraph"></li>' );
 		Plotly.newPlot( $li.next()[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
-		$li.removeClass( 'hide' );
 		bannerHide();
 	}, 'json' );
 }
