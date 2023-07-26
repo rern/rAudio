@@ -198,15 +198,17 @@ var CP         = { // capture / playback
 	}
 }
 var C          = {
-	  g  : 'hsl(200,3%,60%)'
-	, gd : 'hsl(200,3%,20%)'
-	, gl : 'hsl(200,3%,80%)'
+	  g  : 'hsl(100,100%,50%)'
+	, gd : 'hsl(100,100%,20%)'
 	, m  : 'hsl(200,100%,60%)'
 	, md : 'hsl(200,100%,20%)'
 	, o  : 'hsl(30,80%,50%)'
 	, od : 'hsl(30,80%,20%)'
 	, r  : 'hsl(0,70%,50%)'
 	, rd : 'hsl(0,70%,20%)'
+	, w  : 'hsl(200,3%,60%)'
+	, wd : 'hsl(200,3%,20%)'
+	, wl : 'hsl(200,3%,80%)'
 }
 var plots      = {
 	  gain    : {
@@ -237,34 +239,20 @@ var plots      = {
 		  yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Time'
-		, line : { width : 1, color: C.o }
+		, line : { width : 1, color: C.g }
 	}
 }
 var axes       = {
-	  delay : {
-		  title      : {
-			  text     : 'Delay · ms'
-			, font     : { color: C.o }
-			, standoff : 5
-		}
-		, tickfont   : { color: C.o }
-		, overlaying : 'y'
-		, side       : 'right'
-		, autoshift  : true
-		, anchor     : 'free'
-		, linecolor  : C.od
-		, gridcolor  : C.od
-	}
-	, freq  : {
+	  freq  : {
 		  title     : {
 			  text     : 'Frequency · Hz'
-			, font     : { color: C.gl }
+			, font     : { color: C.wl }
 			, standoff : 10
 		}
-		, tickfont  : { color: C.gl }
+		, tickfont  : { color: C.wl }
 		, tickvals  : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
 		, ticktext  : [ 0, 10, 100, '1k', '10k' ]
-		, gridcolor : C.gd
+		, gridcolor : C.wd
 	}
 	, gain  : {
 		  title        : {
@@ -273,23 +261,9 @@ var axes       = {
 			, standoff : 5
 		}
 		, tickfont      : { color: C.m }
-		, zerolinecolor : C.g
+		, zerolinecolor : C.w
 		, linecolor     : C.md
 		, gridcolor     : C.md
-	}
-	, impulse : {
-		  title      : {
-			  text     : 'Impulse · ms'
-			, font     : { color: C.o }
-			, standoff : 5
-		}
-		, tickfont   : { color: C.o }
-		, overlaying : 'y'
-		, side       : 'right'
-		, autoshift  : true
-		, anchor     : 'free'
-		, linecolor  : C.od
-		, gridcolor  : C.od
 	}
 	, phase : {
 		  title      : {
@@ -303,9 +277,51 @@ var axes       = {
 		, range         : [ -190, 193 ]
 		, tickvals      : [ -180, -90, 0, 90, 180 ]
 		, ticktext      : [ -180, -90, 0, 90, 180 ]
-		, zerolinecolor : C.g
+		, zerolinecolor : C.w
 		, linecolor     : C.rd
 		, gridcolor     : C.rd
+	}
+	, delay : {
+		  title      : {
+			  text     : 'Delay · ms'
+			, font     : { color: C.o }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.o }
+		, overlaying : 'y'
+		, side       : 'right'
+		, autoshift  : true
+		, anchor     : 'free'
+		, linecolor  : C.od
+		, gridcolor  : C.od
+	}
+	, impulse : {
+		  title      : {
+			  text     : 'Impulse'
+			, font     : { color: C.o }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.o }
+		, overlaying : 'y'
+		, side       : 'right'
+		, autoshift  : true
+		, anchor     : 'free'
+		, linecolor  : C.od
+		, gridcolor  : C.od
+	}
+	, time    : {
+		  title      : {
+			  text     : 'Time'
+			, font     : { color: C.g }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.g }
+		, overlaying : 'y'
+		, side       : 'right'
+		, autoshift  : true
+		, anchor     : 'free'
+		, linecolor  : C.gd
+		, gridcolor  : C.gd
 	}
 }
 
