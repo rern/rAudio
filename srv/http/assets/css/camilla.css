@@ -185,6 +185,9 @@ tr .i-remove {
 	line-height: 35px;
 	color: var( --cw );
 }
+.overplot .lines path {
+	stroke-opacity: 0.75 !important;
+}
 
 /* sortable */
 .sortable-ghost {

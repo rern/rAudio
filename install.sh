@@ -55,26 +55,7 @@ if [[ -e $file ]]; then
 fi
 rm -f /tmp/localbrowser.conf
 
-[[ $( pacman -Q bluealsa ) == 'bluealsa 4.0.0-1' ]] && packages+=bluealsa
-
-# 20230528
-file=$dirmpdconf/conf/snapserver.conf
-if grep -q port $file; then
-	echo 'audio_output {
-	name    "SnapServer"
-	type    "fifo"
-	path    "/tmp/snapfifo"
-	format  "48000:16:2"
-}' > $file
-fi
-
-if [[ ! -e /boot/kernel.img && -e /lib/python3.11 && ! -e /lib/python3.11/site-packages/RPi ]]; then
-	packages+='python-pycamilladsp python-pycamilladsp-plot python-rpi-gpio python-rplcd python-smbus2'
-	rm -rf /lib/python3.10
-fi
-
-# 20230609
-[[ $packages ]] && pacman -Sy --noconfirm $packages
+[[ $( pacman -Q bluealsa ) == 'bluealsa 4.0.0-1' ]] && pacman -Sy --noconfirm $packages
 
 #-------------------------------------------------------------------------------
 installstart "$1"
@@ -90,15 +71,6 @@ cacheBust
 
 installfinish
 #-------------------------------------------------------------------------------
-
-# 20230528
-if [[ -e $dirshm/mixernone ]] && grep -q . $dirshm/amixercontrol; then
-	if [[ $( volumeGet valdb | jq .db ) != 0 ]]; then
-		rm -f $dirshm/mixernone $dirsystem/mixertype-*
-		$dirsettings/player-conf.sh
-		echo "$info Re-enable again: Volume Control - None/0dB"
-	fi
-fi
 
 # 20230611
 if [[ $rebooti2s ]]; then

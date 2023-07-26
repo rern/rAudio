@@ -198,12 +198,15 @@ var CP = { // capture / playback
 	}
 }
 var C = {
-	  cg  : '#969a9c'
-	, cgd : '#313435'
-	, cm  : '#33bbff'
-	, cmd : '#004466'
-	, or  : '#de810e'
-	, ord : '#864c05'
+	  g  : 'hsl(200,3%,60%)'
+	, gd : 'hsl(200,3%,20%)'
+	, gl : 'hsl(200,3%,80%)'
+	, m  : 'hsl(200,100%,60%)'
+	, md : 'hsl(200,100%,20%)'
+	, o  : 'hsl(30,80%,50%)'
+	, od : 'hsl(30,80%,20%)'
+	, r  : 'hsl(0,70%,50%)'
+	, rd : 'hsl(0,70%,20%)'
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -611,7 +614,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
-	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) ) return
+	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) || $this.hasClass( 'ligraph' ) ) return
 	
 	var index  = $this.data( 'index' );
 	V.pipeline = index;
@@ -709,59 +712,81 @@ function graph( $li ) {
 	}
 }
 function graphPlot( $li ) {
-	var type = V.currenttab;
-	var val  = $li.data( type === 'filters' ? 'name' : 'index' );
+	if ( typeof( Plotly ) !== 'object' ) {
+		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot( $li ) );
+		return
+	}
+	
+	var type  = V.currenttab;
+	var val   = $li.data( type === 'filters' ? 'name' : 'index' );
+	if ( type === 'filters' ) {
+		var plotdelay = 'delay' in FIL[ val ].parameters;
+	} else {
+		var plotdelay = false;
+		PIP[ val ].names.forEach( f => {
+			if ( 'delay' in FIL[ f ].parameters ) plotdelay = true;
+		} );
+	}
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
 		var gain  = {
-			  y    : data.magnitude
+			  y    : plotdelay && type === 'filters' ? 0 : data.magnitude
+			, yaxis : 'y'
 			, type : 'scatter'
+			, name : 'Gain'
 			, line : {
-				  width : 2
-				, color: C.cm
+				  width : 4
+				, color: C.m
 			}
 		}
 		var phase = {
 			  y     : data.phase
 			, yaxis : 'y2'
 			, type  : 'scatter'
+			, name  : 'Phase'
 			, line : {
-				  width : 2
-				, color: C.or
+				  width : plotdelay ? 1 : 4
+				, color: C.r
 			}
 		}
 		var layout = {
 			  xaxis      : {
 				  title         : {
-					  text     : 'Frequency (Hz)'
+					  text     : 'Frequency · Hz'
+					, font     : { color: C.gl }
 					, standoff : 10
 				}
-				, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 300, 600, 916 ]
+				, tickfont      : { color: C.gl }
+				, tickvals      : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
 				, ticktext      : [ 0, 10, 100, '1k', '10k' ]
-				, gridcolor     : C.cgd
+				, gridcolor     : C.gd
 			}
 			, yaxis      : {
 				  title        : {
-					  text     : 'Gain (dB)'
+					  text     : 'Gain · dB'
+					, font     : { color: C.m }
 					, standoff : 5
 				}
-				, tickfont      : { color: C.cm }
-				, autorange     : true
-				, zerolinecolor : C.cg
-				, linecolor     : C.cmd
-				, gridcolor     : C.cmd
+				, tickfont      : { color: C.m }
+				, zerolinecolor : C.g
+				, linecolor     : C.md
+				, gridcolor     : C.md
 			}
 			, yaxis2     : {
 				  title      : {
-					  text     : 'Phase (°)'
-					, standoff : 10
+					  text     : 'Phase · °'
+					, font     : { color: C.r }
+					, standoff : 0
 				}
-				, tickfont      : { color: C.or }
+				, tickfont      : { color: C.r }
 				, overlaying    : 'y'
 				, side          : 'right'
-				, range         : [ -180, 180 ]
-				, linecolor     : C.ord
-				, gridcolor     : C.ord
+				, range         : [ -190, 193 ]
+				, tickvals      : [ -180, -90, 0, 90, 180 ]
+				, ticktext      : [ -180, -90, 0, 90, 180 ]
+				, zerolinecolor : C.g
+				, linecolor     : C.rd
+				, gridcolor     : C.rd
 			}
 			, width      : 658
 			, height     : 300
@@ -769,20 +794,45 @@ function graphPlot( $li ) {
 			, font       : {
 				  family : 'Inconsolata'
 				, size   : 14
-				, color  : C.cg
 			}
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
 		}
-		if ( typeof( Plotly ) !== 'object' ) {
-			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, function() {
-				graphPlot( $li );
-			} );
-			return
+		var plot = [ gain, phase ];
+		if ( plotdelay ) {
+			var delay = {
+				  y     : data.groupdelay
+				, yaxis : 'y3'
+				, type  : 'scatter'
+				, name  : 'Delay'
+				, line : {
+					  width : 2
+					, color: C.o
+				}
+			}
+			layout.yaxis3 = {
+				  title      : {
+					  text     : 'Delay · ms'
+					, font     : { color: C.o }
+					, standoff : 5
+				}
+				, tickfont      : { color: C.o }
+				, overlaying    : 'y'
+				, side          : 'right'
+				, autoshift     : true
+				, anchor        : 'free'
+				, linecolor     : C.od
+				, gridcolor     : C.od
+			}
+			plot.push( delay );
 		}
 		$li.after( '<li class="ligraph"></li>' );
-		Plotly.newPlot( $li.next()[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+		Plotly.newPlot( $li.next()[ 0 ], plot, layout, { displayModeBar: false } );
+		if ( V.currenttab === 'pipeline' ) { // arrange gain to top layer
+			$svg = $li.next().find( 'svg' );
+			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
+		}
 		bannerHide();
 	}, 'json' );
 }
@@ -1425,7 +1475,7 @@ function renderPage() {
 	showContent();
 }
 function renderTab() {
-	var id    = V.currenttab
+	var id    = V.currenttab;
 	var title = key2label( id );
 	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
 	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
@@ -1483,17 +1533,17 @@ function renderTab() {
 			if ( 'gain' in param ) {
 				var liinput   =  ' class="liinput"';
 				step_val      =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
-				var licontent =  ico( 'graph' ) +'<span class="name">'+ k +'</span>'
+				var licontent =  '<span class="name">'+ k +'</span>'
 								+'<input type="number"'+ step_val +'>'
 								+'<input type="range"'+ step_val +' min="-6" max="6">'
 								+ ico( 'remove' );
 			} else {
 				var liinput     =  '';
-				var licontent =  ico( 'remove' ) + ico( 'filters' )
+				var licontent =  ico( 'remove' )
 								+'<div class="li1">'+ k +'</div>'
 								+'<div class="li2">'+ v.type +': '+ val +'</div>';
 			}
-			li += '<li'+ liinput +' data-name="'+ k +'">'+ licontent  +'</li>';
+			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
