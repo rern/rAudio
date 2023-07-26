@@ -198,17 +198,17 @@ var CP         = { // capture / playback
 	}
 }
 var C          = {
-	  g  : 'hsl(100,100%,50%)'
-	, gd : 'hsl(100,100%,20%)'
-	, m  : 'hsl(200,100%,60%)'
-	, md : 'hsl(200,100%,20%)'
-	, o  : 'hsl(30,80%,50%)'
-	, od : 'hsl(30,80%,20%)'
-	, r  : 'hsl(0,70%,50%)'
-	, rd : 'hsl(0,70%,20%)'
-	, w  : 'hsl(200,3%,60%)'
-	, wd : 'hsl(200,3%,20%)'
-	, wl : 'hsl(200,3%,80%)'
+	  g  : 'hsl( 100, 90%,  40% )'
+	, gd : 'hsl( 100, 90%,  20% )'
+	, m  : 'hsl( 200, 100%, 60% )'
+	, md : 'hsl( 200, 100%, 20% )'
+	, o  : 'hsl( 30,  80%,  50% )'
+	, od : 'hsl( 30,  80%,  20% )'
+	, r  : 'hsl( 0,   70%,  50% )'
+	, rd : 'hsl( 0,   70%,  20% )'
+	, w  : 'hsl( 200, 3%,   60% )'
+	, wd : 'hsl( 200, 3%,   20% )'
+	, wl : 'hsl( 200, 3%,   80% )'
 }
 var plots      = {
 	  gain    : {
@@ -245,13 +245,13 @@ var plots      = {
 var axes       = {
 	  freq  : {
 		  title     : {
-			  text     : 'Frequency · Hz'
+			  text     : 'Frequency'
 			, font     : { color: C.wl }
 			, standoff : 10
 		}
 		, tickfont  : { color: C.wl }
 		, tickvals  : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
-		, ticktext  : [ 0, 10, 100, '1k', '10k' ]
+		, ticktext  : [ 0, '10Hz', '100Hz', '1kHz', '10kHz' ]
 		, gridcolor : C.wd
 	}
 	, gain  : {
@@ -267,16 +267,16 @@ var axes       = {
 	}
 	, phase : {
 		  title      : {
-			  text     : 'Phase · °'
+			  text     : 'Phase'
 			, font     : { color: C.r }
-			, standoff : 0
+			, standoff : 5
 		}
 		, tickfont      : { color: C.r }
 		, overlaying    : 'y'
 		, side          : 'right'
 		, range         : [ -190, 193 ]
 		, tickvals      : [ -180, -90, 0, 90, 180 ]
-		, ticktext      : [ -180, -90, 0, 90, 180 ]
+		, ticktext      : [ '-180°', '-90°', 0, '90°', '180°' ]
 		, zerolinecolor : C.w
 		, linecolor     : C.rd
 		, gridcolor     : C.rd
@@ -856,9 +856,7 @@ function graphPlot( $li ) {
 			  xaxis         : axes.freq
 			, yaxis         : axes.gain
 			, yaxis2        : axes.phase
-			, width         : 658
-			, height        : 300
-			, margin        : { t: 0, r: 60, b: 90, l: 60 }
+			, margin        : { t: 0, r: 40, b: 90, l: 40 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
