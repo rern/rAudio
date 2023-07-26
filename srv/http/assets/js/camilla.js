@@ -828,6 +828,7 @@ function graph( $li ) {
 	}
 }
 function graphPlot( $li ) {
+	$li.addClass( 'disabled' );
 	if ( typeof( Plotly ) !== 'object' ) {
 		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot( $li ) );
 		return
@@ -883,6 +884,7 @@ function graphPlot( $li ) {
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 		}
 		bannerHide();
+		$li.removeClass( 'disabled' );
 	}, 'json' );
 }
 function htmlOption( list ) {
@@ -1526,7 +1528,7 @@ function renderPage() {
 function renderTab() {
 	var id    = V.currenttab;
 	var title = key2label( id );
-	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
+//	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
 	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
