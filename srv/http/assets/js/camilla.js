@@ -208,7 +208,7 @@ var C = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.close' ).off( 'click' ).on( 'click', funnction() {
+$( '.close' ).off( 'click' ).on( 'click', function() {
 	bash( [ 'settings/camilla.py', 'save' ], function() {
 		location.href = '/';
 	} );
@@ -331,20 +331,14 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 			saveConfig( icon, title, 'Change ...' );
 		}
 	} );
-} ).on( 'click', '.i-info-circle', function() { // pipeline
+} ).on( 'click', '.pipeline', function() {
 	var $li = $( '#divpipeline li' ).eq( 0 );
-	if ( $li.hasClass( 'hide' ) ) {
-		if ( $li.is( ':empty' ) ) {
-			bash( [ 'plot', 'pipeline', 'all', 'CMD TYPE TARGET' ], svg => {
-				$li
-					.html( svg )
-					.removeClass( 'hide' );
-			} );
-		} else {
-			$li.removeClass( 'hide' );
-		}
+	if ( $li.hasClass( 'ligraph' ) ) {
+		$li.remove();
 	} else {
-		$li.addClass( 'hide' );
+		bash( [ 'settings/camilla.py', 'pipeline all', 'CMD TYPE TARGET' ], svg => {
+			$li.before( '<li class="ligraph">'+ svg +'</li>' );
+		} );
 	}
 } );
 $( '#setting-capture' ).on( 'click', function() {
@@ -402,12 +396,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		var $ligraph = $li.next();
-		if ( $ligraph.hasClass( 'hide' ) ) {
-			graphResponse( name, $ligraph );
-		} else {
-			$ligraph.addClass( 'hide' );
-		}
+		graph( $li );
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -477,7 +466,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		var name = $li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( ! $li.next().hasClass( 'hide' ) ) graphResponse( name, $li );
+		if ( $li.next().hasClass( 'ligraph' ) ) graphResponse( $li );
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
@@ -659,12 +648,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var index  = $li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
-		var $ligraph = $li.next();
-		if ( $ligraph.hasClass( 'hide' ) ) {
-			graphResponse( index, $ligraph );
-		} else {
-			$ligraph.addClass( 'hide' );
-		}
+		graph( $li );
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
@@ -717,8 +701,16 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function graphResponse( val, $li ) {
-	var type  = V.currenttab;
+function graph( $li ) {
+	if ( $li.next().hasClass( 'ligraph' ) ) {
+		$li.next().remove();
+	} else {
+		graphResponse( $li );
+	}
+}
+function graphResponse( $li ) {
+	var type = V.currenttab;
+	var val  = $li.data( type === 'filters' ? 'name' : 'index' );
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
 		var gain  = {
@@ -785,11 +777,12 @@ function graphResponse( val, $li ) {
 		}
 		if ( typeof( Plotly ) !== 'object' ) {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, function() {
-				graphResponse( val, $li );
+				graphResponse( $li );
 			} );
 			return
 		}
-		Plotly.newPlot( $li[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
+		$li.after( '<li class="ligraph"></li>' );
+		Plotly.newPlot( $li.next()[ 0 ], [ gain, phase ], layout, { displayModeBar: false } );
 		$li.removeClass( 'hide' );
 		bannerHide();
 	}, 'json' );
@@ -1435,7 +1428,7 @@ function renderPage() {
 function renderTab() {
 	var id    = V.currenttab
 	var title = key2label( id );
-	if ( id === 'pipeline' ) title += ico( 'info-circle' );
+	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
 	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
@@ -1454,16 +1447,7 @@ function renderTab() {
 	if ( $( '#div'+ id ).find( 'svg' ).length ) return //****************************************************
 	
 	if ( id === 'pipeline' ) {
-		var $svg = $( '#divpipeline .ligraph svg' );
-		if ( $svg.length ) {
-			var svg  = $svg[ 0 ].outerHTML;
-			var hide = $svg.parent().hasClass( 'hide' ) ? 'hide' : '';
-		} else {
-			var svg  = '';
-			var hide = 'hide';
-		}
-		
-		var li   = '<li class="ligraph '+ hide +'">'+ svg +'</li>';
+		var li   = '';
 		kv.forEach( ( el, i ) => {
 			if ( el.type === 'Filter' ) {
 				var icon = 'graph'
@@ -1474,7 +1458,6 @@ function renderTab() {
 				var each = el.name;
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
-			li += el.type === 'Filter' ? '<li class="ligraph hide"></li>' : '';
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
 		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
@@ -1501,18 +1484,17 @@ function renderTab() {
 			if ( 'gain' in param ) {
 				var liinput   =  ' class="liinput"';
 				step_val      =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
-				var licontent =  '<span class="name">'+ k +'</span>'
+				var licontent =  ico( 'graph' ) +'<span class="name">'+ k +'</span>'
 								+'<input type="number"'+ step_val +'>'
 								+'<input type="range"'+ step_val +' min="-6" max="6">'
 								+ ico( 'remove' );
 			} else {
 				var liinput     =  '';
-				var licontent =  ico( 'remove' )
+				var licontent =  ico( 'remove' ) + ico( 'filters' )
 								+'<div class="li1">'+ k +'</div>'
 								+'<div class="li2">'+ v.type +': '+ val +'</div>';
 			}
-			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
-			li += 'gain' in param ? '<li class="ligraph hide"></li>' : '';
+			li += '<li'+ liinput +' data-name="'+ k +'">'+ licontent  +'</li>';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
