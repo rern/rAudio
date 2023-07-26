@@ -151,7 +151,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 }
 ?>
 
-<div id="refresh"></div><div id="status"></div>
+<div id="refresh"></div>
 
 <div id="bar-top" class="hide">
 	<?=i( 'logo', 'raudio-nobg' )?><div id="playback-controls"><?=$htmlcontrols?></div><?=i( 'button-settings', 'gear' )?>

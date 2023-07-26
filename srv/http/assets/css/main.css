@@ -2,7 +2,6 @@
 #colorpicker,
 #lyrics,
 #lyricsfade,
-#status { z-index: 110 }
 #bar-top,
 #bar-bottom { z-index: 106 }
 #settings { z-index: 105 }
@@ -242,14 +241,10 @@ i.map.disabled, .map.disabled i {
 	user-select: none;
 }
 /* ---------------------- bars ----------------------*/
-#refresh,
-#status {
+#refresh {
 	position: fixed;
 	width: 40px;
 	height: 40px;
-}
-#status {
-	left: 40px;
 }
 #bar-top,
 #bar-bottom {
