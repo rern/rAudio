@@ -200,7 +200,7 @@ var CP         = { // capture / playback
 var C          = {
 	  g  : 'hsl( 100, 90%,  40% )'
 	, gd : 'hsl( 100, 90%,  20% )'
-	, m  : 'hsl( 200, 100%, 60% )'
+	, m  : 'hsl( 200, 100%, 40% )'
 	, md : 'hsl( 200, 100%, 20% )'
 	, o  : 'hsl( 30,  80%,  50% )'
 	, od : 'hsl( 30,  80%,  20% )'
@@ -242,6 +242,12 @@ var plots      = {
 		, line : { width : 1, color: C.g }
 	}
 }
+var ycommon    = {
+	  overlaying : 'y'
+	, side       : 'right'
+	, anchor     : 'free'
+	, autoshift  : true
+}
 var axes       = {
 	  freq  : {
 		  title     : {
@@ -250,15 +256,15 @@ var axes       = {
 			, standoff : 10
 		}
 		, tickfont  : { color: C.wl }
-		, tickvals  : V.currenttab === 'filters' ? [ '', 232, 463, 695, 925 ] : [ '', '', 296, 597, 901 ]
-		, ticktext  : [ 0, '10Hz', '100Hz', '1kHz', '10kHz' ]
+		, tickvals  : [] // varied
+		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
 		, gridcolor : C.wd
 	}
 	, gain  : {
 		  title        : {
-			  text     : 'Gain · dB'
+			  text     : 'Gain'
 			, font     : { color: C.m }
-			, standoff : 5
+			, standoff : 0
 		}
 		, tickfont      : { color: C.m }
 		, zerolinecolor : C.w
@@ -269,59 +275,53 @@ var axes       = {
 		  title      : {
 			  text     : 'Phase'
 			, font     : { color: C.r }
-			, standoff : 5
+			, standoff : 0
 		}
 		, tickfont      : { color: C.r }
 		, overlaying    : 'y'
 		, side          : 'right'
 		, range         : [ -190, 193 ]
 		, tickvals      : [ -180, -90, 0, 90, 180 ]
-		, ticktext      : [ '-180°', '-90°', 0, '90°', '180°' ]
+		, ticktext      : [ 180, 90, 0, 90, 180 ]
 		, zerolinecolor : C.w
 		, linecolor     : C.rd
 		, gridcolor     : C.rd
 	}
 	, delay : {
 		  title      : {
-			  text     : 'Delay · ms'
+			  text     : 'Delay'
 			, font     : { color: C.o }
 			, standoff : 5
 		}
 		, tickfont   : { color: C.o }
-		, overlaying : 'y'
-		, side       : 'right'
-		, autoshift  : true
-		, anchor     : 'free'
+		, shift      : 10
+		, zerolinecolor : C.w
 		, linecolor  : C.od
 		, gridcolor  : C.od
+		, ...ycommon
 	}
 	, impulse : {
 		  title      : {
 			  text     : 'Impulse'
-			, font     : { color: C.o }
-			, standoff : 5
-		}
-		, tickfont   : { color: C.o }
-		, overlaying : 'y'
-		, side       : 'right'
-		, autoshift  : true
-		, anchor     : 'free'
-		, linecolor  : C.od
-		, gridcolor  : C.od
-	}
-	, time    : {
-		  title      : {
-			  text     : 'Time'
 			, font     : { color: C.g }
 			, standoff : 5
 		}
 		, tickfont   : { color: C.g }
-		, overlaying : 'y'
-		, side       : 'right'
-		, autoshift  : true
-		, anchor     : 'free'
 		, linecolor  : C.gd
 		, gridcolor  : C.gd
+		, ...ycommon
+	}
+	, time    : {
+		  title      : {
+			  text     : 'Time'
+			, font     : { color: C.o }
+			, standoff : 5
+		}
+		, tickfont   : { color: C.o }
+		, shift      : 10
+		, linecolor  : C.od
+		, gridcolor  : C.od
+		, ...ycommon
 	}
 }
 
@@ -515,7 +515,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		graph( $li );
+		$li.next().hasClass( 'ligraph' ) ? $li.next().remove() : graphPlot( $li, name );
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -574,7 +574,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 } ).on( 'keyup', 'input[type=number]', function() {
 	var $this = $( this );
 	$this.next().val( +$this.val() );
-} ).on( 'click input keyup', 'input[type=range]', function() {
+} ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
@@ -585,7 +585,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		var name = $li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( $li.next().hasClass( 'ligraph' ) ) graphPlot( $li );
+		if ( e.type === 'click' && $li.next().hasClass( 'ligraph' ) ) graphPlot( $li, name );
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
@@ -767,7 +767,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var index  = $li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
-		graph( $li );
+		$li.next().hasClass( 'ligraph' ) ? $li.next().remove() : graphPlot( $li, index );
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
@@ -820,44 +820,38 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function graph( $li ) {
-	if ( $li.next().hasClass( 'ligraph' ) ) {
-		$li.next().remove();
-	} else {
-		graphPlot( $li );
-	}
-}
-function graphPlot( $li ) {
+function graphPlot( $li, val ) {
 	$li.addClass( 'disabled' );
 	if ( typeof( Plotly ) !== 'object' ) {
-		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot( $li ) );
+		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot( $li, val ) );
 		return
 	}
 	
-	var type      = V.currenttab;
-	var val       = $li.data( type === 'filters' ? 'name' : 'index' );
+	var filters   = V.currenttab === 'filters';
 	var plotdelay = false;
 	var plotconv  = false;
-	if ( type === 'filters' ) {
+	if ( filters ) {
 		plotdelay = 'delay' in FIL[ val ].parameters;
 		plotconv  = FIL[ val ].type === 'Conv';
+		axes.freq.tickvals = [ '', 232, 463, 695, 925 ];
 	} else {
 		PIP[ val ].names.forEach( f => {
 			if ( 'delay' in FIL[ f ].parameters ) plotdelay = true;
 		} );
+		axes.freq.tickvals = [ '', '', 296, 597, 901 ];
 	}
 	plots.phase.line.width = plotdelay ? 1 : 4;
-	
+	var type      = V.currenttab;
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
-		plots.gain.y  = plotdelay && type === 'filters' ? 0 : data.magnitude
+		plots.gain.y  = plotdelay && filters ? 0 : data.magnitude
 		plots.phase.y = data.phase;
 		var plot      = [ plots.gain, plots.phase ];
 		var layout    = {
 			  xaxis         : axes.freq
 			, yaxis         : axes.gain
 			, yaxis2        : axes.phase
-			, margin        : { t: 0, r: 40, b: 90, l: 40 }
+			, margin        : { t: 0, r: 40, b: 90, l: 35 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
@@ -877,7 +871,7 @@ function graphPlot( $li ) {
 			layout.yaxis4   = axes.time;
 			plot.push( plots.impluse, plots.time );
 		}
-		$li.after( '<li class="ligraph"></li>' );
+		if ( ! $li.next().hasClass( 'ligraph' ) ) $li.after( '<li class="ligraph"></li>' );
 		Plotly.newPlot( $li.next()[ 0 ], plot, layout, { displayModeBar: false } );
 		if ( V.currenttab === 'pipeline' ) { // arrange gain to top layer
 			$svg = $li.next().find( 'svg' );
