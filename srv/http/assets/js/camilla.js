@@ -602,13 +602,8 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		if ( e.type === 'click' && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
 	}
 } ).on( 'click', '.mutemain', function() {
-	var $this = $( this );
 	S.mute    = ! S.mute;
-	$this
-		.toggleClass( 'infobtn-primary', S.mute )
-		.find( 'i' )
-			.toggleClass( 'i-mute', S.mute )
-			.toggleClass( 'i-volume', ! S.mute );
+	muteToggle( $( this ), S.mute );
 	ws.send( '{ "SetMute": '+ S.mute +'} ' );
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
@@ -635,27 +630,26 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var chin      = DEV.capture.channels;
 	var chout     = DEV.playback.channels;
 	var iconadd   = chout === chmapping ? '' : ico( 'add' );
-	var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
+	var li        = '<li class="lihead" data-name="'+ name +'">'+ name + iconadd + ico( 'back' ) +'</li>';
 	var optsource = htmlOption( chin );
 	data.forEach( ( kv, i ) => {
-		var dest   = kv.dest;
-		var i_name = ' data-index="'+ i +'" data-name="'+ name +'"';
+		var dest     = kv.dest;
+		var classvol = kv.mute ? 'infobtn-primary' : '';
+		var iconvol  = kv.mute ? 'mute' : 'volume';
+		var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 		li        += '<div class="divdest">'
 					+'<li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
-					+'<div>Dest.</div><div>'+ dest +'</div>'
-					+'<input type="range" class="hidden">'
-					+'<input type="checkbox" class="mutedest"'+ ( kv.mute ? ' checked' : '' ) +'>'
-					+'<input type="checkbox" class="hidden">'+ ico( 'remove' )
+					+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>&ensp;Out '+ dest
 					+'</li>'
-					+'<li class="liinput column"'+ i_name +'><div>Source</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+					+'<li class="liinput column"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( ( s, si ) => {
 			var source   = data[ i ].sources[ si ];
-			var channel = source.channel;
-			var opts    = optsource.replace( '>'+ channel, ' selected>'+ channel );
+			var channel  = source.channel;
+			var opts     = optsource.replace( '>'+ channel, ' selected>'+ channel );
 			var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
 			li += '<li class="liinput"'+ i_name +'" data-si="'+ si +'"><select>'+ opts +'</select>'
 				 +'<input type="number"'+ step_val +'>'
-				 +'<input type="range"'+ step_val +' min="-6" max="6">'
+				 +'<input type="range"'+ step_val +' min="-6" max="6"'+ ( source.mute ? ' disabled' : '' ) +'>'
 				 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
 				 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 		} );
@@ -730,16 +724,20 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	V.li        = $this.parents( 'li' );
 	var mapping = MIX[ V.li.data( 'name' ) ].mapping[ V.li.data( 'index' ) ];
 	var tf      = $this.prop( 'checked' );;
-	if ( $this.hasClass( 'mutedest' ) ) {
-		mapping.mute = tf;
+	var source = mapping.sources[ V.li.data( 'si' ) ];
+	if ( $this.hasClass( 'mute' ) ) {
+		source.mute = tf;
+		$this.prev().prop( 'disabled', tf );
 	} else {
-		var source = mapping.sources[ V.li.data( 'si' ) ];
-		if ( $this.hasClass( 'mute' ) ) {
-			source.mute = tf;
-		} else {
-			source.inverted = tf;
-		}
+		source.inverted = tf;
 	}
+	saveConfig( 'mixers', 'Mute', 'change ...' );
+} ).on( 'click', '.mutedest', function() {
+	var $this    = $( this );
+	var index    = $this.parent().data( 'index' );
+	var mapping  = MIX[ V.li.data( 'name' ) ].mapping[ index ];
+	mapping.mute = ! mapping.mute;
+	muteToggle( $this, mapping.mute );
 	saveConfig( 'mixers', 'Mute', 'change ...' );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
@@ -896,7 +894,6 @@ function graphPlot() {
 		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, options );
 		$svg = V.li.next().find( 'svg' );
 		$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
-//		if ( plots.gain.y === 0 ) V.li.next().find( 'svg' ).find( '.ytitle, .yaxislayer-above, .ylines-above, .y, .yzl' ).addClass( 'hide' );
 		bannerHide();
 		V.li.removeClass( 'disabled' );
 	}, 'json' );
@@ -1438,6 +1435,13 @@ function labelArraySet( array ) {
 	var capitalized = array.map( el => key2label( el ) );
 	return capitalized
 }
+function muteToggle( $this, mute ) {
+	$this
+		.toggleClass( 'infobtn-primary', mute )
+		.find( 'i' )
+			.toggleClass( 'i-mute', mute )
+			.toggleClass( 'i-volume', ! mute );
+}
 function otherToggle( $trother, rate ) {
 	var other = rate === 'Other';
 	$trother.toggleClass( 'hide', ! other );
@@ -1583,10 +1587,10 @@ function renderTab() {
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
 	if ( id === 'filters' ) {
-		var classvol  = S.mute ? ' infobtn-primary' : '';
+		var classvol  = S.mute ? 'infobtn-primary' : '';
 		var iconvol   = S.mute ? 'mute' : 'volume';
 		var step_val  = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
-		var li = '<li class="liinput main"><a class="mutemain infobtn'+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">Main Gain</span>'
+		var li = '<li class="liinput main"><a class="mutemain infobtn '+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">&ensp;Main Gain</span>'
 				+'<input type="number"'+ step_val +'>'
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
 				+'</li>';

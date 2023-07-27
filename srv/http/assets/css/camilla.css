@@ -175,12 +175,14 @@ tr .i-remove {
 	padding-top: 20px !important;
 	border-color: var( --cgl ) !important;
 }
-.mutemain {
+.mutemain,
+.mutedest {
 	width: 35px;
 	min-width: 35px !important;
 	padding: 0;
 }
-.mutemain i {
+.mutemain i,
+.mutedest i {
 	width: 35px;
 	line-height: 35px;
 	color: var( --cw );
