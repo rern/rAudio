@@ -271,6 +271,17 @@ var axes       = {
 		, linecolor     : C.md
 		, gridcolor     : C.md
 	}
+	, gainx : {
+		  title        : {
+			  text     : ''
+			, font     : { color: '#000' }
+			, standoff : 0
+		}
+		, tickfont      : { color: '#000' }
+		, zerolinecolor : '#000'
+		, linecolor     : '#000'
+		, gridcolor     : '#000'
+	}
 	, phase : {
 		  title      : {
 			  text     : 'Phase'
@@ -848,17 +859,23 @@ function graphPlot() {
 	var type      = V.currenttab;
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
-		plots.gain.y  = plotdelay && filters ? 0 : data.magnitude
+		var options   = {
+			  displayModeBar : false
+			, scrollZoom     : true
+		}
+		plots.gain.y  = plotdelay && filters ? 0 : data.magnitude;
 		plots.phase.y = data.phase;
 		var plot      = [ plots.gain, plots.phase ];
 		var layout    = {
 			  xaxis         : axes.freq
-			, yaxis         : axes.gain
+			, yaxis         : plotdelay && filters ? axes.gainx : axes.gain
 			, yaxis2        : axes.phase
 			, margin        : { t: 0, r: 40, b: 90, l: 45 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
+			, hovermode     : false
+			, dragmode      : 'pan'
 			, font          : {
 				  family : 'Inconsolata'
 				, size   : 14
@@ -876,10 +893,10 @@ function graphPlot() {
 			plot.push( plots.impluse, plots.time );
 		}
 		if ( ! V.li.next().hasClass( 'ligraph' ) ) V.li.after( '<li class="ligraph"></li>' );
-		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, { displayModeBar: false } );
+		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, options );
 		$svg = V.li.next().find( 'svg' );
 		$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
-		if ( plots.gain.y === 0 ) V.li.next().find( 'svg' ).find( '.ytitle, .yaxislayer-above, .ylines-above, .y, .yzl' ).addClass( 'hide' );
+//		if ( plots.gain.y === 0 ) V.li.next().find( 'svg' ).find( '.ytitle, .yaxislayer-above, .ylines-above, .y, .yzl' ).addClass( 'hide' );
 		bannerHide();
 		V.li.removeClass( 'disabled' );
 	}, 'json' );
