@@ -293,11 +293,11 @@ var axes       = {
 			, font     : { color: C.o }
 			, standoff : 5
 		}
-		, tickfont   : { color: C.o }
-		, shift      : 10
+		, tickfont      : { color: C.o }
+		, shift         : 10
 		, zerolinecolor : C.w
-		, linecolor  : C.od
-		, gridcolor  : C.od
+		, linecolor     : C.od
+		, gridcolor     : C.od
 		, ...ycommon
 	}
 	, impulse : {
@@ -877,10 +877,9 @@ function graphPlot() {
 		}
 		if ( ! V.li.next().hasClass( 'ligraph' ) ) V.li.after( '<li class="ligraph"></li>' );
 		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, { displayModeBar: false } );
-//		if ( V.currenttab === 'pipeline' ) { // arrange gain to top layer
-			$svg = V.li.next().find( 'svg' );
-			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
-//		}
+		$svg = V.li.next().find( 'svg' );
+		$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
+		if ( plots.gain.y === 0 ) V.li.next().find( 'svg' ).find( '.ytitle, .yaxislayer-above, .ylines-above, .y, .yzl' ).addClass( 'hide' );
 		bannerHide();
 		V.li.removeClass( 'disabled' );
 	}, 'json' );
