@@ -451,12 +451,12 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 		}
 	} );
 } ).on( 'click', '.pipeline', function() {
-	var $li = $( '#divpipeline li' ).eq( 0 );
-	if ( $li.hasClass( 'ligraph' ) ) {
-		$li.remove();
+	V.li = $( '#divpipeline li' ).eq( 0 );
+	if ( V.li.hasClass( 'ligraph' ) ) {
+		V.li.remove();
 	} else {
 		bash( [ 'settings/camilla.py', 'pipeline all', 'CMD TYPE TARGET' ], svg => {
-			$li.before( '<li class="ligraph">'+ svg +'</li>' );
+			V.li.before( '<li class="ligraph">'+ svg +'</li>' );
 		} );
 	}
 } );
@@ -505,17 +505,18 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 	infoMapping();
 } );
 $( '#divfilters' ).on( 'click', 'li .name', function() {
+	V.li = $( this ).parent();
 	infoFilters( '', $( this ).text() );
 } ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
-	var $li    = $this.parents( 'li' );
+	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	var name   = $this.parents( 'li' ).data( 'name' );
 	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		$li.next().hasClass( 'ligraph' ) ? $li.next().remove() : graphPlot( $li, name );
+		V.li.next().hasClass( 'ligraph' ) ? V.li.next().remove() : graphPlot();
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -562,9 +563,9 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 						}
 					} );
 					delete FIL[ name ];
-					if ( $li.next().hasClass( 'ligraph' ) ) $li.next().remove();
+					if ( V.li.next().hasClass( 'ligraph' ) ) V.li.next().remove();
 				}
-				$li.remove();
+				V.li.remove();
 				saveConfig( icon, title, 'Delete ...' );
 			}
 		} );
@@ -573,7 +574,9 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	}
 } ).on( 'keyup', 'input[type=number]', function() {
 	var $this = $( this );
-	$this.next().val( +$this.val() );
+	$this.next()
+		.val( +$this.val() )
+		.trigger( 'click' );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -581,11 +584,11 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	if ( $this.hasClass( 'range' ) ) {
 		ws.send( '{ "SetVolume": '+ val +' }' );
 	} else {
-		var $li  = $this.parents( 'li' );
-		var name = $li.data( 'name' );
+		V.li     = $this.parents( 'li' );
+		var name = V.li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( e.type === 'click' && $li.next().hasClass( 'ligraph' ) ) graphPlot( $li, name );
+		if ( e.type === 'click' && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
 	}
 } ).on( 'click', '.mutemain', function() {
 	var $this = $( this );
@@ -651,20 +654,20 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	$( '#divmixers .entries select' ).select2( select2opt );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	var $li    = $this.parents( 'li' );
+	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	var main   = ! $( '#divmixers .lihead' ).length;
-	var name   = $li.data( 'name' );
+	var name   = V.li.data( 'name' );
 	if ( action === 'mixers' ) { // rename
 		infoMixer( name );
 	} else if ( action === 'back' ) {
 		$( '#divmixers .lihead' ).remove();
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
-		var index = $li.hasClass( 'lihead' ) ? '' : $li.data( 'index' );
+		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		infoMapping( name, index );
 	} else if ( action === 'remove' ) {
-		var dest = $li.hasClass( 'liinput main' );
+		var dest = V.li.hasClass( 'liinput main' );
 		if ( main ) {
 			var message = 'Delete <wh>'+ name +'</wh> ?';
 		} else if ( dest ) {
@@ -679,19 +682,19 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, ok      : () => {
 				if ( main ) {
 					delete MIX[ name ];
-					if ( $li.next().hasClass( 'ligraph' ) ) $li.next().remove();
-					$li.remove();
+					if ( V.li.next().hasClass( 'ligraph' ) ) V.li.next().remove();
+					V.li.remove();
 				} else {
-					var di = $li.data( 'dest' );
+					var di = V.li.data( 'dest' );
 					if ( dest ) {
-						$li.parent().remove();
+						V.li.parent().remove();
 						delete MIX[ name ].mapping.splice( di, 1 );
 						PIP.forEach( ( k, i ) => {
 							if ( k.type === 'Mixer' && k.name === name ) delete PIP[ i ];
 						} );
 					} else {
-						$li.remove();
-						MIX[ name ].mapping[ di ].sources.splice( $li.data( 'index' ), 1 );
+						V.li.remove();
+						MIX[ name ].mapping[ di ].sources.splice( V.li.data( 'index' ), 1 );
 					}
 				}
 				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
@@ -705,21 +708,21 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
-	var $li   = $( this ).parents( 'li' );
-	var name  = $li.data( 'name' );
-	var index = $li.data( 'index' );
-	var si    = $li.data( 'si' );
+	V.   li   = $( this ).parents( 'li' );
+	var name  = V.li.data( 'name' );
+	var index = V.li.data( 'index' );
+	var si    = V.li.data( 'si' );
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	saveConfig();
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
-	var $li     = $this.parents( 'li' );
-	var mapping = MIX[ $li.data( 'name' ) ].mapping[ $li.data( 'index' ) ];
+	V.li        = $this.parents( 'li' );
+	var mapping = MIX[ V.li.data( 'name' ) ].mapping[ V.li.data( 'index' ) ];
 	var tf      = $this.prop( 'checked' );;
 	if ( $this.hasClass( 'mutedest' ) ) {
 		mapping.mute = tf;
 	} else {
-		var source = mapping.sources[ $li.data( 'si' ) ];
+		var source = mapping.sources[ V.li.data( 'si' ) ];
 		if ( $this.hasClass( 'mute' ) ) {
 			source.mute = tf;
 		} else {
@@ -763,11 +766,11 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	var $li    = $this.parents( 'li' );
-	var index  = $li.data( 'index' );
+	V.li       = $this.parents( 'li' );
+	var index  = V.li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
-		$li.next().hasClass( 'ligraph' ) ? $li.next().remove() : graphPlot( $li, index );
+		V.li.next().hasClass( 'ligraph' ) ? V.li.next().remove() : graphPlot();
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
@@ -789,16 +792,16 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 		info( {
 			  icon    : 'pipeline'
 			, title   : 'Pipeline'
-			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ $li.data( 'name' ) +'</wh> ?'
+			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
 			, ok      : () => {
 				if ( main ) {
 					PIP.splice( index, 1 );
 				} else {
 					var pi = $( '#divpipeline .lihead' ).data( 'index' );
-					var ni = $li.data( 'index' );
+					var ni = V.li.data( 'index' );
 					PIP[ pi ].names.splice( ni, 1 );
 				}
-				$li.remove();
+				V.li.remove();
 				saveConfig( 'pipeline', 'Pipeline', 'Remove filter ...' );
 			}
 		} );
@@ -820,14 +823,15 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function graphPlot( $li, val ) {
-	$li.addClass( 'disabled' );
+function graphPlot() {
+	V.li.addClass( 'disabled' );
 	if ( typeof( Plotly ) !== 'object' ) {
-		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot( $li, val ) );
+		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot() );
 		return
 	}
 	
 	var filters   = V.currenttab === 'filters';
+	var val       = V.li.data( filters ? 'name' : 'index' );
 	var plotdelay = false;
 	var plotconv  = false;
 	if ( filters ) {
@@ -851,7 +855,7 @@ function graphPlot( $li, val ) {
 			  xaxis         : axes.freq
 			, yaxis         : axes.gain
 			, yaxis2        : axes.phase
-			, margin        : { t: 0, r: 40, b: 90, l: 35 }
+			, margin        : { t: 0, r: 40, b: 90, l: 45 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
 			, showlegend    : false
@@ -871,14 +875,14 @@ function graphPlot( $li, val ) {
 			layout.yaxis4   = axes.time;
 			plot.push( plots.impluse, plots.time );
 		}
-		if ( ! $li.next().hasClass( 'ligraph' ) ) $li.after( '<li class="ligraph"></li>' );
-		Plotly.newPlot( $li.next()[ 0 ], plot, layout, { displayModeBar: false } );
-		if ( V.currenttab === 'pipeline' ) { // arrange gain to top layer
-			$svg = $li.next().find( 'svg' );
+		if ( ! V.li.next().hasClass( 'ligraph' ) ) V.li.after( '<li class="ligraph"></li>' );
+		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, { displayModeBar: false } );
+//		if ( V.currenttab === 'pipeline' ) { // arrange gain to top layer
+			$svg = V.li.next().find( 'svg' );
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
-		}
+//		}
 		bannerHide();
-		$li.removeClass( 'disabled' );
+		V.li.removeClass( 'disabled' );
 	}, 'json' );
 }
 function htmlOption( list ) {
@@ -1149,6 +1153,7 @@ function infoFilters( type, subtype, name ) {
 			$.each( val, ( k, v ) => param[ k ] = v );
 			FIL[ name ] = { type: type, parameters : param }
 			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
+			if ( V.li.next().hasClass( 'ligraph' ) ) graphPlot();
 		}
 	} );
 }
