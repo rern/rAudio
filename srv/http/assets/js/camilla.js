@@ -1634,7 +1634,11 @@ function renderTab() {
 function saveConfig( icon, titlle, msg ) {
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 	ws.send( '{ "SetConfigJson": "'+ config +'" }' );
-	if ( icon ) notify( icon, titlle, msg, 3000 );
+	ws.send( '"Reload"' );
+	if ( icon ) { // all except gain
+		notify( icon, titlle, msg, 3000 );
+		bash( [ 'settings/camilla.py', 'save' ] );
+	}
 }
 function stringReplace( k ) {
 	return k
