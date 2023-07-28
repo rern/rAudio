@@ -78,6 +78,10 @@ setformat )
 		alsactl nrestore &> /dev/null
 	fi
 	;;
+save )
+	$dirsettings/camilla.py save
+	pushData
+	;;
 	
 esac
 

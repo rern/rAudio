@@ -215,13 +215,13 @@ var plots      = {
 		  yaxis : 'y'
 		, type : 'scatter'
 		, name : 'Gain'
-		, line : { width : 4, color: C.m }
+		, line : { width : 4, color: C.m, shape: 'spline' }
 	}
 	, phase   : {
 		  yaxis : 'y2'
 		, type  : 'scatter'
 		, name  : 'Phase'
-		, line : { width : 4, color : C.r }
+		, line : { width : 2, color : C.r }
 	}
 	, delay   : {
 		  yaxis : 'y3'
@@ -256,8 +256,9 @@ var axes       = {
 			, standoff : 10
 		}
 		, tickfont  : { color: C.wl }
-		, tickvals  : [] // varied
+		, tickvals  : [ 0, 232, 464, 696, 928 ]
 		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
+		, range     : [ 10, 1000 ]
 		, gridcolor : C.wd
 	}
 	, gain  : {
@@ -513,11 +514,11 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 		infoPipeline();
 	}
 } ).on( 'click', '.mixer-icon', function() {
-	infoMapping();
+	infoMixersMapping();
 } );
 $( '#divfilters' ).on( 'click', 'li .name', function() {
 	V.li = $( this ).parent();
-	infoFilters( '', $( this ).text() );
+	infoFilters( '', $( this ).text(), 'existing' );
 } ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
@@ -547,33 +548,20 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 			}
 		} );
 	} else if ( action === 'remove' ) {
-		if ( file ) {
-			var deletefilter = false;
-			$.each( FIL, ( k, v ) => {
-				if ( v.parameters.filename === name ) deletefilter = k;
-			} );
-		}
+		if ( inUse( name ) ) return
+		
 		info( {
-			  icon    : icon
-			, title   : title
-			, message : 'Delete <wh>'+ name +'</wh> ?'
-					+ ( deletefilter ? '<br><br>(Filter <wh>'+ deletefilter +'</wh> will be deleted as well.)' : '' )
-			, oklabel : ico( 'remove' ) +'Delete'
-			, okcolor : red
-			, ok      : () => {
+			  icon         : icon
+			, title        : title
+			, message      : 'Delete: <wh>'+ name +'</wh> ?'
+			, oklabel      : ico( 'remove' ) +'Delete'
+			, okcolor      : red
+			, ok           : () => {
 				if ( file ) { // in filters Conv
 					if ( deletefilter ) delete FIL[ deletefilter ];
 					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 					notify( icon, title, 'Delete ...' );
 				} else {
-					PIP.forEach( ( k, i ) => {
-						if ( k.type === 'Filter' ) {
-							k.names.forEach( ( n, ni ) => {
-								if ( n === name ) PIP[ i ].names[ ni ] = newname;
-							} );
-						}
-					} );
-					delete FIL[ name ];
 					if ( V.li.next().hasClass( 'ligraph' ) ) V.li.next().remove();
 				}
 				V.li.remove();
@@ -608,6 +596,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this     = $( this );
+	V.mixers      = $this.index();
 	if ( $this.hasClass( 'lihead' ) || $( '#divmixers .liinput' ).length || $( e.target ).is( 'i' ) ) return
 	
 	if ( ! $this.find( '.i-mixers' ).length ) {
@@ -639,7 +628,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 		li        += '<div class="divdest">'
 					+'<li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
-					+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>&ensp;Out '+ dest
+					+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>Out '+ dest
 					+'</li>'
 					+'<li class="liinput column"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 		kv.sources.forEach( ( s, si ) => {
@@ -670,10 +659,12 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		$( '#mixers' ).trigger( 'click' );
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
-		infoMapping( name, index );
+		infoMixersMapping( name, index );
 	} else if ( action === 'remove' ) {
 		var dest = V.li.hasClass( 'liinput main' );
 		if ( main ) {
+			if ( inUse( name ) ) return
+			
 			var message = 'Delete <wh>'+ name +'</wh> ?';
 		} else if ( dest ) {
 			var message = 'Delete this destination?';
@@ -744,8 +735,8 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
 	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) || $this.hasClass( 'ligraph' ) ) return
 	
+	V.pipeline = $this.index();
 	var index  = $this.data( 'index' );
-	V.pipeline = index;
 	var data   = jsonClone( PIP[ index ] );
 	var type   = data.type;
 	var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -839,35 +830,24 @@ function graphPlot() {
 		return
 	}
 	
-	var filters   = V.currenttab === 'filters';
-	var val       = V.li.data( filters ? 'name' : 'index' );
-	var plotdelay = false;
-	var plotconv  = false;
-	if ( filters ) {
-		plotdelay = 'delay' in FIL[ val ].parameters;
-		plotconv  = FIL[ val ].type === 'Conv';
-		axes.freq.tickvals = [ '', 232, 463, 695, 925 ];
-	} else {
-		PIP[ val ].names.forEach( f => {
-			if ( 'delay' in FIL[ f ].parameters ) plotdelay = true;
-		} );
-		axes.freq.tickvals = [ '', '', 296, 597, 901 ];
-	}
-	plots.phase.line.width = plotdelay ? 1 : 4;
-	var type      = V.currenttab;
+	var filters = V.currenttab === 'filters';
+	var type    = V.currenttab;
+	var val     = V.li.data( filters ? 'name' : 'index' );
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
 		var options   = {
 			  displayModeBar : false
 			, scrollZoom     : true
 		}
-		plots.gain.y  = plotdelay && filters ? 0 : data.magnitude;
+		plots.gain.y  = filters && FIL[ val ].type === 'Delay' ? 0 : data.magnitude;
 		plots.phase.y = data.phase;
-		var plot      = [ plots.gain, plots.phase ];
+		plots.delay.y = data.groupdelay;
+		var plot      = [ plots.gain, plots.phase, plots.delay ];
 		var layout    = {
 			  xaxis         : axes.freq
-			, yaxis         : plotdelay && filters ? axes.gainx : axes.gain
+			, yaxis         : axes.gain
 			, yaxis2        : axes.phase
+			, yaxis3        : axes.delay
 			, margin        : { t: 0, r: 40, b: 90, l: 45 }
 			, paper_bgcolor : '#000'
 			, plot_bgcolor  : '#000'
@@ -879,11 +859,7 @@ function graphPlot() {
 				, size   : 14
 			}
 		}
-		if ( plotdelay ) {
-			plots.delay.y   = data.groupdelay;
-			layout.yaxis3   = axes.delay;
-			plot.push( plots.delay );
-		} else if ( plotconv ) {
+		if ( 'impulse' in data ) { // Conv
 			plots.impulse.y = data.impulse;
 			plots.time.y    = data.time;
 			layout.yaxis3   = axes.impulse;
@@ -891,8 +867,9 @@ function graphPlot() {
 			plot.push( plots.impluse, plots.time );
 		}
 		if ( ! V.li.next().hasClass( 'ligraph' ) ) V.li.after( '<li class="ligraph"></li>' );
-		Plotly.newPlot( V.li.next()[ 0 ], plot, layout, options );
-		$svg = V.li.next().find( 'svg' );
+		var $ligraph = V.li.next();
+		Plotly.newPlot( $ligraph[ 0 ], plot, layout, options );
+		$svg = $ligraph.find( 'svg' );
 		$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 		bannerHide();
 		V.li.removeClass( 'disabled' );
@@ -1029,9 +1006,11 @@ function infoFileUpload( icon ) {
 		}
 	} );
 }
-function infoFilters( type, subtype, name ) {
+function infoFilters( type, subtype, name, existing ) {
 	var key_val, key, kv, k, v;
+	var existing = false;
 	if ( ! type ) { // subtype = existing name
+		existing = true;
 		name     = subtype;
 		var data = jsonClone( FIL[ name ] );
 		v        = { type : data.type }
@@ -1124,7 +1103,7 @@ function infoFilters( type, subtype, name ) {
 		, order        : [ 'select', 'text', 'number', 'radio', 'checkbox' ]
 		, values       : values
 		, checkblank   : true
-		, checkchanged : name
+		, checkchanged : existing
 		, beforeshow   : () => {
 			$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
 			var $tdname = $( '#infoContent td' ).filter( function() {
@@ -1136,13 +1115,13 @@ function infoFilters( type, subtype, name ) {
 			$selecttype.on( 'change', function() {
 				var type    = $( this ).val();
 				var subtype = type in L.subtype ? L.subtype[ type ][ 0 ] : '';
-				infoFilters( type, subtype, infoVal().name );
+				infoFilters( type, subtype, infoVal().name, existing );
 			} );
 			if ( $select.length > 1 ) {
 				$select.eq( 1 ).on( 'change', function() {
 					var type    = $selecttype.val();
 					var subtype = $( this ).val();
-					infoFilters( type, subtype );
+					infoFilters( type, subtype, name, existing );
 				} );
 			}
 			if ( radio ) {
@@ -1159,18 +1138,78 @@ function infoFilters( type, subtype, name ) {
 		}
 		, ok           : () => {
 			var val     = infoVal();
-			name        = val.name;
+			newname     = val.name;
 			type        = val.type;
 			var param   = { type: val.subtype };
 			[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 			$.each( val, ( k, v ) => param[ k ] = v );
-			FIL[ name ] = { type: type, parameters : param }
-			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
+			FIL[ newname ] = { type: type, parameters : param }
+			PIP.forEach( p => {
+				if ( p.type === 'Filter' ) {
+					p.names.forEach( ( f, i ) => {
+						if ( f === name ) p.names[ i ] = newname;
+					} );
+				}
+			} );
+			saveConfig( icon, title, newname ? 'Change ...' : 'Save ...' );
 			if ( V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+			$( '#divpipeline .ligraph' ).remove();
 		}
 	} );
 }
-function infoMapping( name, index ) {
+function infoMixer( name ) {
+	var icon  = 'mixers';
+	var title = name ? 'Mixer' : 'New Mixer'
+	info( {
+		  icon         : icon
+		, title        : title
+		, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
+		, textlabel    : 'Name'
+		, values       : name
+		, checkblank   : true
+		, checkchanged : name
+		, ok           : () => {
+			var val = infoVal();
+			if ( val in MIX ) {
+				info( {
+					  icon    : 'mixers'
+					, title   : 'New Mixer'
+					, message : 'Mixer: <wh>'+ val +'</wh> already exists.'
+					, ok      : () => infoMixer( val )
+				} );
+				return
+			}
+			
+			if ( name ) {
+				MIX[ val ] = MIX[ name ];
+				delete MIX[ name ];
+				PIP.forEach( p => {
+					if ( p.type === 'Mixer' && p.name === name ) p.name = val;
+				} );
+			} else {
+				MIX[ val ] = {
+					  channels : {
+						  in  : DEV.capture.channels
+						, out : DEV.playback.channels
+					}
+					, mapping  : [ {
+						  dest    : 0
+						, sources : [ {
+							  channel  : 0
+							, gain     : 0
+							, inverted : false
+							, mute     : false
+						} ]
+						, mute    : false
+					} ]
+				}
+			}
+			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
+			$( '#divpipeline .ligraph' ).remove();
+		}
+	} );
+}
+function infoMixersMapping( name, index ) {
 	var option = {
 		  dest   : htmlOption( DEV.playback.channels )
 		, source : htmlOption( DEV.capture.channels )
@@ -1237,55 +1276,6 @@ function infoMapping( name, index ) {
 			}
 		} );
 	}
-}
-function infoMixer( name ) {
-	var icon  = 'mixers';
-	var title = name ? 'Mixer' : 'New Mixer'
-	info( {
-		  icon         : icon
-		, title        : title
-		, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
-		, textlabel    : 'Name'
-		, values       : name
-		, checkblank   : true
-		, checkchanged : name
-		, ok           : () => {
-			var val = infoVal();
-			if ( val in MIX ) {
-				info( {
-					  icon    : 'mixers'
-					, title   : 'New Mixer'
-					, message : 'Mixer: <wh>'+ val +'</wh> already exists.'
-					, ok      : () => infoMixer( val )
-				} );
-				return
-			}
-			
-			if ( name ) {
-				var mixer = jsonClone( MIX[ name ] );
-				delete MIX[ name ];
-			} else {
-				var mixer = {
-					  channels : {
-						  in  : DEV.capture.channels
-						, out : DEV.playback.channels
-					}
-					, mapping  : [ {
-						  dest    : 0
-						, sources : [ {
-							  channel  : 0
-							, gain     : 0
-							, inverted : false
-							, mute     : false
-						} ]
-						, mute    : false
-					} ]
-				}
-			}
-			MIX[ val ] = mixer;
-			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
-		}
-	} );
 }
 function infoPipeline() {
 	var icon  = 'pipeline';
@@ -1411,6 +1401,40 @@ function infoResampling( freeasync ) {
 			saveConfig( icon, title, 'Change ...' );
 		}
 	} );
+}
+function inUse( name ) {
+	var filters = V.currenttab === 'filters';
+	var inuse   = [];
+	if ( filters && ! ( name in FIL ) ) { // file
+		$.each( FIL, ( k, v ) => {
+			if ( 'filename' in v.parameters && v.parameters.filename === name ) {
+				inuse.push( 'Filter: '+ k );
+			}
+		} );
+	}
+	PIP.forEach( ( k, i ) => {
+		if ( filters ) {
+			if ( k.type === 'Filter' ) {
+				k.names.forEach( ( n, ni ) => {
+					if ( n === name ) inuse.push( 'Pipeline: #'+ ( i + 1 ) );
+				} );
+			}
+		} else {
+			if ( k.type === 'Mixer' && k.name === name ) inuse.push( 'Pipeline: #'+ ( i + 1 ) );
+		}
+	} );
+	if ( inuse.length ) {
+		var message = '<wh>Currently used by:</wh>';
+		inuse.forEach( d => message += '<br> - '+ d );
+		info( {
+			  icon    : V.currenttab
+			, title   : ( filters ? 'Filter' : 'Mixer' ) +' In Use'
+			, message : message
+		} );
+		return true
+	}
+	
+	return false
 }
 function key2label( key ) {
 	if ( key === 'ms' ) return 'ms'
@@ -1570,7 +1594,7 @@ function renderTab() {
 		kv.forEach( ( el, i ) => {
 			if ( el.type === 'Filter' ) {
 				var icon = 'graph'
-				var each = '<div class="li1">'+ el.type +'</div>'
+				var each = '<div class="li1">' + el.type +'</div>'
 						  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
 			} else {
 				var icon = 'mixers'
@@ -1590,7 +1614,7 @@ function renderTab() {
 		var classvol  = S.mute ? 'infobtn-primary' : '';
 		var iconvol   = S.mute ? 'mute' : 'volume';
 		var step_val  = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
-		var li = '<li class="liinput main"><a class="mutemain infobtn '+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">&ensp;Main Gain</span>'
+		var li = '<li class="liinput main"><a class="mutemain infobtn '+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">Main Gain</span>'
 				+'<input type="number"'+ step_val +'>'
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
 				+'</li>';
@@ -1637,7 +1661,7 @@ function saveConfig( icon, titlle, msg ) {
 	ws.send( '"Reload"' );
 	if ( icon ) { // all except gain
 		notify( icon, titlle, msg, 3000 );
-		bash( [ 'settings/camilla.py', 'save' ] );
+		bash( [ 'save' ] );
 	}
 }
 function stringReplace( k ) {

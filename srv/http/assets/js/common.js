@@ -416,17 +416,14 @@ function info( json ) {
 	if ( I.content ) { // custom html content
 		var htmlcontent = I.content;
 	} else {
-		var htmls = {}
-		if ( I.message ) {
-			htmls.message  = '<div class="infomessage"';
-			if ( I.messagealign ) htmls.message += ' style="text-align:'+ I.messagealign +'"';
-			htmls.message += '>'+ I.message +'</div>';
-		}
-		if ( I.footer ) {
-			htmls.footer  = '<div class="infofooter"';
-			if ( I.footeralign ) htmls.footer += ' style="text-align:'+ I.footeralign +'"';
-			htmls.footer += '>'+ I.footer +'</div>';
-		}
+		var htmls = {};
+		[ 'header', 'message', 'footer' ].forEach( k => {
+			if ( I[ k ] ) {
+				var kalign = k +'align'
+				var align = I[ kalign ] ? ' style="text-align:'+ I[ kalign ] +'"' : '';
+				htmls[ k ] = '<div class="info'+ k +'" '+ align +'>'+ I[ k ] +'</div>';
+			}
+		} );
 		// inputs html ///////////////////////////////////////////////////////////
 		if ( I.textlabel ) {
 			infoKey2array( 'textlabel' );
@@ -541,7 +538,7 @@ function info( json ) {
 			} );
 			htmls.range += '</div>';
 		}
-		var htmlcontent = '';
+		var htmlcontent = htmls.header || '';
 		htmlcontent    += htmls.tab || '';
 		htmlcontent    += htmls.message || '';
 		if ( ! I.order ) I.order = [ 'text', 'number', 'password', 'textarea', 'radio', 'checkbox', 'select', 'range' ];
@@ -984,7 +981,9 @@ function infoWidth() {
 			, 'text-align'   : input ? '' : 'right'   // text label
 		} ); 
 	}
-	if ( I.messagealign || I.footeralign ) $( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
+	if ( I.headeralign || I.messagealign || I.footeralign ) {
+		$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
+	}
 }
 
 function jsonClone( json ) {
