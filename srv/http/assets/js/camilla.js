@@ -352,9 +352,7 @@ var flowchart = {
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 $( '.close' ).off( 'click' ).on( 'click', function() {
-	bash( [ 'settings/camilla.py', 'save' ], function() {
-		location.href = '/';
-	} );
+	location.href = '/';
 } );
 $( '.refresh' ).on( 'click', function() {
 	info( {
@@ -592,10 +590,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		infoFileUpload( 'filters' );
 	}
 } ).on( 'keyup', 'input[type=number]', function() {
-	var $this = $( this );
-	$this.next()
-		.val( +$this.val() )
-		.trigger( 'click' );
+	gainKeyPress( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -607,8 +602,8 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 		var name = V.li.data( 'name' );
 		FIL[ name ].parameters.gain = val;
 		saveConfig();
-		if ( e.type === 'click' && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
 	}
+	if ( e.type === 'click' ) gainSave( name ); // name - not main
 } ).on( 'click', '.mutemain', function() {
 	S.mute    = ! S.mute;
 	muteToggle( $( this ), S.mute );
@@ -718,9 +713,8 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } ).on( 'keyup', 'input[type=number]', function() {
-	var $this = $( this );
-	$this.next().val( +$this.val() );
-} ).on( 'click input keyup', 'input[type=range]', function() {
+	gainKeyPress( $( this ) );
+} ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
@@ -730,6 +724,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var si    = V.li.data( 'si' );
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	saveConfig();
+	if ( e.type === 'click' ) gainSave();
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
 	V.li        = $this.parents( 'li' );
@@ -842,6 +837,26 @@ function deviceKeys( dev, type ) {
 	var keys    = [ 'type' ];
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
+}
+function gainKeyPress( $this ) {
+	clearTimeout( V.gaintimeout );
+	V.gainkeypress = true;
+	$this.next()
+		.val( +$this.val() )
+		.trigger( 'click' );
+}
+function gainSave( name ) {
+	var filters = V.currenttab === 'filters';
+	if ( filters && ! V.gainkeypress && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+	V.gaintimeout = setTimeout( () => {
+		if ( ! filters || name ) { // mixer or filter with name
+			bash( [ 'save' ] );
+		} else {                   // filter - main gain
+			bash( 'settings/camilla.py', 'volumesave' ] );
+		}
+		if ( filters && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+		V.gainkeypress = false;
+	}, 1000 );
 }
 function graphPlotRefresh() {
 	var $ligraph = $( '#div'+ V.currenttab +' .ligraph' );
