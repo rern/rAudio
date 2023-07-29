@@ -42,10 +42,13 @@ foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
 }
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
-	$htmltabs.= '
-<div id="div'.$id.'" class="tab">
-	'.( $id === 'devices' ? $htmldevices : '' ).'
-	<ul class="entries"></ul>
+	$htmltabs.= '<div id="div'.$id.'" class="tab">';
+	if ( $id === 'devices' ) {
+		$htmltabs.= $htmldevices;
+	} else if ( $id === 'pipeline' ) {
+		$htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg" viewBox="20 0 500 300"></svg>';
+	}
+	$htmltabs.= '<ul class="entries"></ul>
 </div>
 ';
 }

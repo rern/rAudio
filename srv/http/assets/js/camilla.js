@@ -198,8 +198,10 @@ var CP         = { // capture / playback
 	}
 }
 var C          = {
-	  g  : 'hsl( 100, 90%,  40% )'
+	  g  : 'hsl( 100, 90%,  30% )'
 	, gd : 'hsl( 100, 90%,  20% )'
+	, gr : 'hsl( 200, 3%,   30% )'
+	, grd: 'hsl( 200, 3%,   20% )'
 	, m  : 'hsl( 200, 100%, 40% )'
 	, md : 'hsl( 200, 100%, 20% )'
 	, o  : 'hsl( 30,  80%,  50% )'
@@ -207,7 +209,6 @@ var C          = {
 	, r  : 'hsl( 0,   70%,  50% )'
 	, rd : 'hsl( 0,   70%,  20% )'
 	, w  : 'hsl( 200, 3%,   60% )'
-	, wd : 'hsl( 200, 3%,   20% )'
 	, wl : 'hsl( 200, 3%,   80% )'
 }
 var plots      = {
@@ -259,7 +260,7 @@ var axes       = {
 		, tickvals  : [ 0, 232, 464, 696, 928 ]
 		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
 		, range     : [ 10, 1000 ]
-		, gridcolor : C.wd
+		, gridcolor : C.grd
 	}
 	, gain  : {
 		  title        : {
@@ -334,6 +335,17 @@ var axes       = {
 		, linecolor  : C.od
 		, gridcolor  : C.od
 		, ...ycommon
+	}
+}
+var flowchart = {
+	  node   : $( '#divpipeline .flowchart' )[ 0 ]
+	, width  : 565
+	, height : 300
+	, color  : {
+		  filter : C.md
+		, in     : '#000'
+		, mixer  : C.rd
+		, out    : C.gd
 	}
 }
 
@@ -463,13 +475,21 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 		}
 	} );
 } ).on( 'click', '.pipeline', function() {
-	V.li = $( '#divpipeline li' ).eq( 0 );
-	if ( V.li.hasClass( 'ligraph' ) ) {
-		V.li.remove();
+	var $flowchart = $( '.flowchart' );
+	if ( $flowchart.hasClass( 'hide' ) ) {
+		if ( typeof( d3 ) !== 'object' ) {
+			$.when(
+				$.getScript( '/assets/js/pipelineplotter.js' ),
+				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
+				$.Deferred( deferred => $( deferred.resolve ) )
+			).done( () => {
+				createPipelinePlot();
+			} );
+		} else {
+			createPipelinePlot();
+		}
 	} else {
-		bash( [ 'settings/camilla.py', 'pipeline all', 'CMD TYPE TARGET' ], svg => {
-			V.li.before( '<li class="ligraph">'+ svg +'</li>' );
-		} );
+		$flowchart.addClass( 'hide' );
 	}
 } );
 $( '#setting-capture' ).on( 'click', function() {
@@ -1333,7 +1353,7 @@ function infoPipelineMixer() {
 				  type : 'Mixer'
 				, name : infoVal()
 			} );
-			saveConfig( icon, titlle, 'Save ...' )
+			saveConfig( icon, title, 'Save ...' )
 		}
 	} );
 }
@@ -1570,11 +1590,12 @@ function renderPage() {
 	} );
 	renderTab();
 	showContent();
+//	alert(typeof(x))
 }
 function renderTab() {
 	var id    = V.currenttab;
 	var title = key2label( id );
-//	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
+	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
 	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
@@ -1586,19 +1607,13 @@ function renderTab() {
 		return
 	}
 	
+	if ( $( '#div'+ id +' .ligraph' ).length ) return
+	
 	var nextpage = id !== 'filters' && $( '#div'+ id ).find( '.lihead' ).length;
 	var kv    = jsonClone( S.config[ id ] );
 	if ( $.isEmptyObject( kv ) ) return
 	
 	if ( id === 'pipeline' ) {
-		var $ligraph = $( '#divpipeline .ligraph' );
-		var li2graph = {}
-		if ( $ligraph.length ) {
-			$ligraph.each( ( i, el ) => {
-				var index = $( el ).prev().data( 'index' );
-				li2graph[ '"'+ index +'"' ] = $ligraph[ 0 ].outerHTML;
-			} );
-		}
 		var li   = '';
 		kv.forEach( ( el, i ) => {
 			if ( el.type === 'Filter' ) {
@@ -1610,7 +1625,6 @@ function renderTab() {
 				var each = el.name;
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
-			if ( '"'+ i +'"' in li2graph ) li += li2graph[ '"'+ i +'"' ];
 		} );
 		$( '#div'+ id +' .entries' ).html( li );
 		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
