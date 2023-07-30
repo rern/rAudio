@@ -1,6 +1,7 @@
 function appendBlock( labels, boxes, label, x, y, width, type ) { // box
-	const wx   = 1.4;           // common scale
-	const offset = wx/2 + 0.05; // offset arrow line
+/**/const wx     = 1.4;         // common scale
+/**/const offset = wx/2 + 0.05; // offset arrow line
+/**/const fill   = flowchart.color[ type ];
 	labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -14,7 +15,7 @@ function appendBlock( labels, boxes, label, x, y, width, type ) { // box
 		, y      : y - wx/4
 		, width  : width * wx
 		, height : wx/2
-		, fill   : flowchart.color[ type ]
+		, fill   : fill
 	} );
 	return {
 		  output : { x: x + offset * width, y: y } // line out
@@ -41,11 +42,11 @@ function appendFrame( labels, boxes, label, x, y, width, height ) { // in, mixer
 function appendLink( links, labels, source, dest, label ) { // line
 	if ( label ) { // less value = move left/up
 		if ( dest.y <= source.y ) { // flat line
-			var x = ( 2 * source.x ) / 3 + dest.x / 3;
+			var x = (2 * source.x) / 3 + dest.x / 3;
 			var y = ( 2 * source.y ) / 3 + dest.y / 3 - 0.1;
 		} else { // slope line
-			var x = source.x / 3 + ( 1.35 * dest.x ) / 3;
-			var y = source.y / 3 + ( 2 * dest.y ) / 3 - 0.77;
+			var x = source.x / 3 + (2 * dest.x) / 3 - 0.2;
+			var y = source.y / 3 + (2 * dest.y) / 3 - 0.2;
 		}
 		labels.push( {
 			  x     : x
@@ -188,10 +189,10 @@ function makeShapes( conf ) {
 	return { labels, boxes, links, max_h, max_v }
 }
 function createPipelinePlot() {
-	const config = S.config;
-	const node   = flowchart.node;
-	const width  = flowchart.width;
-	const height = flowchart.height;
+/**/const config = S.config;
+/**/const node   = flowchart.node;
+/**/const width  = flowchart.width;
+/**/const height = flowchart.height;
 	let { labels, boxes, links, max_h, max_v } = makeShapes( config );
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
 	const yScale = d3
@@ -215,6 +216,7 @@ function createPipelinePlot() {
 		, [ 0, markerBoxHeight ]
 		, [ markerBoxWidth, markerBoxHeight / 2 ]
 	];
+/**/$( node ).empty();
 	d3
 		.select( node )
 		.append( 'defs' )
@@ -271,5 +273,8 @@ function createPipelinePlot() {
 		.attr( 'marker-end', 'url(#arrow)' )
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', C.w );
-	$( node ).removeClass( 'hide' );
+		
+/**/$( '.flowchart path' ).last().after( $( '.flowchart text' ) )
+/**/$( node ).removeClass( 'hide' );
+/**/V.query.flowchart = jsonClone( PIP );
 }

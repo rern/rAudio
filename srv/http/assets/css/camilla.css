@@ -4,6 +4,10 @@
 .tab .entries {
 	margin-top: 0;
 }
+.tab .entries li {
+	height: auto;
+	min-height: 49px;
+}
 .tab .entries i:not( .i-add ) {
 	float: left;
 }
@@ -173,7 +177,6 @@ tr .i-remove {
 .ligraph {
 	height: 300px !important;
 	padding-top: 20px !important;
-	border-color: var( --cgl ) !important;
 }
 .mutemain,
 .mutedest {

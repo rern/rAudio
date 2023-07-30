@@ -1,7 +1,7 @@
 V              = {
-	  currenttab : 'devices'
-	, signal     : {}
-	, status     : {}
+	  tab    : 'devices'
+	, signal : {}
+	, status : {}
 }
 var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
 var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
@@ -337,6 +337,7 @@ var axes       = {
 		, ...ycommon
 	}
 }
+V.query       = { filters: {}, pipeline: {}, flowchart: {} }
 var flowchart = {
 	  node   : $( '#divpipeline .flowchart' )[ 0 ]
 	, width  : 565
@@ -472,19 +473,21 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 			saveConfig( icon, title, 'Change ...' );
 		}
 	} );
-} ).on( 'click', '.pipeline', function() {
+} ).on( 'click', '.i-info-circle', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
 		if ( typeof( d3 ) !== 'object' ) {
 			$.when(
 				$.getScript( '/assets/js/pipelineplotter.js' ),
 				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
-				$.Deferred( deferred => $( deferred.resolve ) )
-			).done( () => {
-				createPipelinePlot();
-			} );
+				$.Deferred( deferred => deferred.resolve() )
+			).done( () => createPipelinePlot() );
 		} else {
-			createPipelinePlot();
+			if ( JSON.stringify( PIP ) === JSON.stringify( V.query.flowchart ) ) {
+				$flowchart.removeClass( 'hide' );
+			} else {
+				createPipelinePlot();
+			}
 		}
 	} else {
 		$flowchart.addClass( 'hide' );
@@ -523,12 +526,11 @@ $( '#stop_on_rate_change' ).on( 'click', function() {
 	saveConfig( 'devices', 'Stop on Rate Change', 'Change ...' );
 } );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
-	var id = $( this ).parent().text().toLowerCase();
-	if ( id === 'filters' ) {
+	if ( V.tab === 'filters' ) {
 		infoFilters( 'Biquad', 'Lowpass' );
-	} else if ( id === 'mixers' ) {
+	} else if ( V.tab === 'mixers' ) {
 		infoMixer();
-	} else if ( id === 'pipeline' ) {
+	} else if ( V.tab === 'pipeline' ) {
 		infoPipeline();
 	}
 } ).on( 'click', '.mixer-icon', function() {
@@ -546,7 +548,7 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
-		V.li.next().hasClass( 'ligraph' ) ? V.li.next().remove() : graphPlot();
+		graphToggle();
 	} else if ( action === 'file' ) {
 		info( {
 			  icon         : icon
@@ -575,14 +577,8 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 			, oklabel      : ico( 'remove' ) +'Delete'
 			, okcolor      : red
 			, ok           : () => {
-				if ( file ) { // in filters Conv
-					if ( deletefilter ) delete FIL[ deletefilter ];
-					bash( [ 'coeffdelete', name, 'CMD NAME' ] );
-					notify( icon, title, 'Delete ...' );
-				} else {
-					if ( V.li.next().hasClass( 'ligraph' ) ) V.li.next().remove();
-				}
 				V.li.remove();
+				if ( file ) bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 				saveConfig( icon, title, 'Delete ...' );
 			}
 		} );
@@ -612,7 +608,9 @@ $( '#divfilters' ).on( 'click', 'li .name', function() {
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this     = $( this );
 	V.mixers      = $this.index();
-	if ( $this.hasClass( 'lihead' ) || $( '#divmixers .liinput' ).length || $( e.target ).is( 'i' ) ) return
+	if ( $( '#divmixers .liinput' ).length // each list
+		|| $( e.target ).is( 'i' )
+	) return
 	
 	if ( ! $this.find( '.i-mixers' ).length ) {
 		var name  = $this.data( 'name' );
@@ -693,7 +691,6 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, ok      : () => {
 				if ( main ) {
 					delete MIX[ name ];
-					if ( V.li.next().hasClass( 'ligraph' ) ) V.li.next().remove();
 					V.li.remove();
 				} else {
 					var di = V.li.data( 'dest' );
@@ -748,7 +745,10 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
-	if ( $( '#divpipeline .lihead' ).length || $( e.target ).is( 'i' ) || $this.hasClass( 'ligraph' ) ) return
+	if ( $( '#divpipeline .lihead' ).length // each list
+		|| $( e.target ).is( 'i' )
+		|| $( e.target ).parents( '.ligraph' ).length
+	) return
 	
 	V.pipeline = $this.index();
 	var index  = $this.data( 'index' );
@@ -785,7 +785,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 	var index  = V.li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
-		V.li.next().hasClass( 'ligraph' ) ? V.li.next().remove() : graphPlot();
+		graphToggle();
 	} else if ( action === 'back' ) {
 		$( '#divpipeline .lihead' ).remove();
 		$( '#pipeline' ).trigger( 'click' );
@@ -800,6 +800,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, ok          : () => {
 				PIP[ index ].names.push( infoVal() );
 				saveConfig( icon, title, 'Save ...' );
+				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 			}
 		} );
 	} else if ( action === 'remove' ) {
@@ -818,12 +819,13 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 				}
 				V.li.remove();
 				saveConfig( 'pipeline', 'Pipeline', 'Remove filter ...' );
+				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 			}
 		} );
 	}
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
-	V.currenttab = this.id;
+	V.tab = this.id;
 	renderTab();
 } );
 
@@ -846,21 +848,18 @@ function gainKeyPress( $this ) {
 		.trigger( 'click' );
 }
 function gainSave( name ) {
-	var filters = V.currenttab === 'filters';
-	if ( filters && ! V.gainkeypress && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+	var filters = V.tab === 'filters';
+	var graph   = filters && V.li.find( '.ligraph:not(.hide)' ).length;
+	if ( graph && ! V.gainkeypress ) graphPlot();
 	V.gaintimeout = setTimeout( () => {
 		if ( ! filters || name ) { // mixer or filter with name
 			bash( [ 'save' ] );
 		} else {                   // filter - main gain
 			bash( [ 'settings/camilla.py', 'volumesave' ] );
 		}
-		if ( filters && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+		if ( graph ) graphPlot();
 		V.gainkeypress = false;
 	}, 1000 );
-}
-function graphPlotRefresh() {
-	var $ligraph = $( '#div'+ V.currenttab +' .ligraph' );
-	if ( $ligraph.length ) $ligraph.each( ( i, el ) => graphPlot( $( el ).prev() ) );
 }
 function graphPlot( $li ) {
 	if ( ! $li ) $li = V.li;
@@ -873,13 +872,20 @@ function graphPlot( $li ) {
 	var type    = $li.parents( '.tab' ).prop( 'id' ).slice( 3 );
 	var filters = type === 'filters';
 	var val     = $li.data( filters ? 'name' : 'index' );
+	V.query[ type ][ val ] = jsonClone( S.config[ type ][ val ] );
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
 		var options   = {
 			  displayModeBar : false
 			, scrollZoom     : true
 		}
-		plots.gain.y  = filters && FIL[ val ].type === 'Delay' ? 0 : data.magnitude;
+		if ( ! filters || FIL[ val ].type === 'Delay' ) {
+			plots.gain.y = 0;
+			plots.phase.line.width = 2;
+		} else {
+			plots.gain.y = data.magnitude;
+			plots.phase.line.width = 4;
+		}
 		plots.phase.y = data.phase;
 		plots.delay.y = data.groupdelay;
 		var plot      = [ plots.gain, plots.phase, plots.delay ];
@@ -906,14 +912,34 @@ function graphPlot( $li ) {
 			layout.yaxis4   = axes.time;
 			plot.push( plots.impluse, plots.time );
 		}
-		if ( ! $li.next().hasClass( 'ligraph' ) ) $li.after( '<li class="ligraph"></li>' );
-		var $ligraph = $li.next();
+		if ( ! $li.find( '.ligraph' ).length ) $li.append( '<div class="ligraph" data-val="'+ val +'"></div>' );
+		var $ligraph = $li.find( '.ligraph' );
 		Plotly.newPlot( $ligraph[ 0 ], plot, layout, options );
 		$svg = $ligraph.find( 'svg' );
 		$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 		bannerHide();
 		$li.removeClass( 'disabled' );
 	}, 'json' );
+}
+function graphToggle() {
+	var $ligraph = V.li.find( '.ligraph' );
+	if ( ! $ligraph.length ) {
+		graphPlot();
+		return
+	}
+	
+	if ( ! $ligraph.hasClass( 'hide' ) ) {
+		$ligraph.addClass( 'hide' );
+	} else {
+		var val   = $ligraph.data( 'val' );
+		var query = V.query[ V.tab ][ val ];
+		if ( JSON.stringify( S.config[ V.tab ][ val ] ) === JSON.stringify( query ) ) {
+			$ligraph.removeClass( 'hide' );
+		} else {
+			delete query;
+			graphPlot();
+		}
+	}
 }
 function htmlOption( list ) {
 	if ( typeof( list ) === 'number' ) list = [ ...Array( list ).keys() ];
@@ -1192,7 +1218,7 @@ function infoFilters( type, subtype, name, existing ) {
 				}
 			} );
 			saveConfig( icon, title, newname ? 'Change ...' : 'Save ...' );
-			if ( V.li.next().hasClass( 'ligraph' ) ) graphPlot();
+			if ( V.li.find( '.ligraph:not(.hide)' ).length ) graphPlot();
 		}
 	} );
 }
@@ -1441,7 +1467,7 @@ function infoResampling( freeasync ) {
 	} );
 }
 function inUse( name ) {
-	var filters = V.currenttab === 'filters';
+	var filters = V.tab === 'filters';
 	var inuse   = [];
 	if ( filters && ! ( name in FIL ) ) { // file
 		$.each( FIL, ( k, v ) => {
@@ -1465,7 +1491,7 @@ function inUse( name ) {
 		var message = '<wh>Currently used by:</wh>';
 		inuse.forEach( d => message += '<br> - '+ d );
 		info( {
-			  icon    : V.currenttab
+			  icon    : V.tab
 			, title   : ( filters ? 'Filter' : 'Mixer' ) +' In Use'
 			, message : message
 		} );
@@ -1517,9 +1543,9 @@ function pipelineOrder( array, ai, bi ) {
 function pipelineSort() {
 	if ( 'sortable' in V ) V.sortable.destroy();
 	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
-		  ghostClass    : 'sortable-ghost'
-		, delay         : 400
-		, onUpdate      : function ( e ) {
+		  ghostClass : 'sortable-ghost'
+		, delay      : 400
+		, onUpdate   : function ( e ) {
 			var ai = e.oldIndex;
 			var bi = e.newIndex;
 			var $lihead = $( '#divpipeline .lihead' );
@@ -1530,21 +1556,9 @@ function pipelineSort() {
 				pipelineOrder( PIP, ai, bi );
 			}
 			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
+			if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 		}
 	} );
-}
-function plotPipeline() { //***************************************
-	var list = [];
-	list.push( [ 'device', DEV.capture.device, ...Array( DEV.capture.channels ).keys() ] );
-	PIP.forEach( ( p, i ) => {
-		if ( p.type === 'Filter' ) {
-			list.push( [ p.type, p.channel, p.names ] );
-		} else {
-			list.push( [ p.type, p.name, ...Array( MIX[ p.name ].channels.in ).keys() ] );
-		}
-	} );
-	list.push( [ 'device', DEV.playback.device, ...Array( DEV.playback.channels ).keys() ] );
-	return list
 }
 function renderDevices() {
 	renderDevicesList( 'sampling', L.sampling );
@@ -1605,30 +1619,48 @@ function renderPage() {
 	} );
 	renderTab();
 	showContent();
-//	alert(typeof(x))
 }
 function renderTab() {
-	var id    = V.currenttab;
-	var title = key2label( id );
-	if ( id === 'pipeline' && PIP.length ) title += ico( 'info-circle pipeline' );
-	title    += ico( id === 'devices' ? 'gear settings' : 'add' );
+	var title = key2label( V.tab );
+	if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'info-circle' );
+	title    += ico( V.tab === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );
-	$( '#div'+ id ).removeClass( 'hide' );
+	$( '#div'+ V.tab ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
-	$( '#'+ id ).addClass( 'active' );
-	if ( id === 'devices' ) {
+	$( '#'+ V.tab ).addClass( 'active' );
+	if ( V.tab === 'devices' ) {
 		renderDevices();
 		return
 	}
 	
-	if ( $( '#div'+ id +' .ligraph' ).length ) return
+	var $ligraph = $( '#div'+ V.tab +' .ligraph:not(.hide)' );
+	if ( $ligraph.length ) {
+		var filters  = V.tab === 'filters';
+		$ligraph.each( ( i, el ) => {
+			var $this = $( el );
+			var val   = $this.data( 'val' );
+			var query = V.query[ V.tab ][ val ];
+			if ( filters ) {
+				var changed = ! ( val in FIL ) || JSON.stringify( FIL[ val ] ) !== JSON.stringify( query )
+			} else {
+				var changed = ! PIP.length || JSON.stringify( PIP[ val ] ) !== JSON.stringify( query );
+			}
+			if ( changed ) {
+				$ligraph.remove();
+				delete query;
+			} else if ( JSON.stringify( S.config[ V.tab ][ val ] ) !== JSON.stringify( query ) ) {
+				graphPlot( $this.parent() );
+			}
+		} );
+		return
+	}
 	
-	var nextpage = id !== 'filters' && $( '#div'+ id ).find( '.lihead' ).length;
-	var kv    = jsonClone( S.config[ id ] );
+	var nextpage = V.tab !== 'filters' && $( '#div'+ V.tab ).find( '.lihead' ).length;
+	var kv    = jsonClone( S.config[ V.tab ] );
 	if ( $.isEmptyObject( kv ) ) return
 	
-	if ( id === 'pipeline' ) {
+	if ( V.tab === 'pipeline' ) {
 		var li   = '';
 		kv.forEach( ( el, i ) => {
 			if ( el.type === 'Filter' ) {
@@ -1641,15 +1673,15 @@ function renderTab() {
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
-		$( '#div'+ id +' .entries' ).html( li );
-		nextpage ? $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' ) : pipelineSort();
+		$( '#div'+ V.tab +' .entries' ).html( li );
+		nextpage ? $( '#div'+ V.tab +' li' ).eq( V[ tab ] ).trigger( 'click' ) : pipelineSort();
 		return
 	}
 	
 	var data = {};
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] ); // not sort pipeline
-	if ( id === 'filters' ) {
+	if ( V.tab === 'filters' ) {
 		var classvol  = S.mute ? 'infobtn-primary' : '';
 		var iconvol   = S.mute ? 'mute' : 'volume';
 		var step_val  = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
@@ -1682,17 +1714,17 @@ function renderTab() {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 		}
-	} else if ( id === 'mixers' ) {
+	} else if ( V.tab === 'mixers' ) {
 		var li = '';
 		$.each( data, ( k, v ) => {
-			li +=    '<li data-name="'+ k +'">'+ ico( id ) + ico( 'remove' )
+			li +=    '<li data-name="'+ k +'">'+ ico( V.tab ) + ico( 'remove' )
 					+'<div class="li1">'+ k +'</div>'
 					+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 					+'</li>';
 		} );
 	}
-	$( '#div'+ id +' .entries' ).html( li );
-	if ( nextpage ) $( '#div'+ id +' li' ).eq( V[ id ] ).trigger( 'click' );
+	$( '#div'+ V.tab +' .entries' ).html( li );
+	if ( nextpage ) $( '#div'+ V.tab +' li' ).eq( V[ V.tab ] ).trigger( 'click' );
 }
 function saveConfig( icon, titlle, msg ) {
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
