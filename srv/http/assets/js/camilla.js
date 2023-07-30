@@ -536,9 +536,11 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } ).on( 'click', '.mixer-icon', function() {
 	infoMixersMapping();
 } );
-$( '#divfilters' ).on( 'click', 'li .name', function() {
-	V.li = $( this ).parent();
-	infoFilters( '', $( this ).text(), 'existing' );
+$( '#divfilters' ).on( 'click', 'li', function( e ) {
+	if ( $( e.target ).is( 'input' ) || $( e.target ).is( 'i' ) ) return
+	
+	V.li = $( this );
+	infoFilters( '', V.li.find( '.name' ).text(), 'existing' );
 } ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
@@ -873,18 +875,27 @@ function graphPlot( $li ) {
 	var filters = type === 'filters';
 	var val     = $li.data( filters ? 'name' : 'index' );
 	V.query[ type ][ val ] = jsonClone( S.config[ type ][ val ] );
+	var filterdelay = false;
+	if ( filters ) {
+		filterdelay = FIL[ val ].type === 'Delay';
+	} else {
+		var pipelinedelay = false;
+		PIP[ val ].names.some( n => {
+			if ( FIL[ n ].type === 'Delay' ) pipelinedelay = true;
+		} );
+	}
 	notify( type, key2label( type ), 'Plot ...' );
 	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
 		var options   = {
 			  displayModeBar : false
 			, scrollZoom     : true
 		}
-		if ( ! filters || FIL[ val ].type === 'Delay' ) {
+		if ( filterdelay ) {
 			plots.gain.y = 0;
-			plots.phase.line.width = 2;
+			plots.phase.line.width = 1;
 		} else {
 			plots.gain.y = data.magnitude;
-			plots.phase.line.width = 4;
+			plots.phase.line.width = filters ? 4 : ( pipelinedelay ? 1 : 2 );
 		}
 		plots.phase.y = data.phase;
 		plots.delay.y = data.groupdelay;
@@ -1696,19 +1707,17 @@ function renderTab() {
 							.replace( 'type:', '' )
 							.replace( /,/g, ', ' );
 			if ( 'gain' in param ) {
-				var liinput   =  ' class="liinput"';
-				step_val      =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
-				var licontent =  '<span class="name">'+ k +'</span>'
+				var step_val  =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
+				var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 								+'<input type="number"'+ step_val +'>'
 								+'<input type="range"'+ step_val +' min="-6" max="6">'
-								+ ico( 'remove' );
+								+ ico( 'remove' ) +'</div>';
 			} else {
-				var liinput     =  '';
 				var licontent =  ico( 'remove' )
-								+'<div class="li1">'+ k +'</div>'
+								+'<div class="li1 name">'+ k +'</div>'
 								+'<div class="li2">'+ v.type +': '+ val +'</div>';
 			}
-			li += '<li'+ liinput +' data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
+			li += '<li data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
 		} );
 		if ( S.lscoef.length ) {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';

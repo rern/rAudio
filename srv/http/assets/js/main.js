@@ -220,13 +220,7 @@ $( '.settings' ).on( 'click', function() {
 $( '#settings' ).on( 'click', '.submenu', function() {
 	switch ( this.id ) {
 		case 'dsp':
-			if ( $( this ).hasClass( 'i-camilladsp' ) ) {
-				//location.href = 'settings.php?p=camilla';
-				bash( [ 'camillagui' ], () => urlReachable( 'http://'+ location.host +':5005' ) );
-				loader();
-			} else {
-				equalizer();
-			}
+			$( this ).hasClass( 'i-camilladsp' ) ? location.href = 'settings.php?p=camilla' :equalizer();
 			break;
 		case 'logout':
 			$.post( 'cmd.php', { cmd: 'logout' }, () => location.reload() );
