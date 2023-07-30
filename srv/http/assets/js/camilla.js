@@ -852,7 +852,7 @@ function gainSave( name ) {
 		if ( ! filters || name ) { // mixer or filter with name
 			bash( [ 'save' ] );
 		} else {                   // filter - main gain
-			bash( 'settings/camilla.py', 'volumesave' ] );
+			bash( [ 'settings/camilla.py', 'volumesave' ] );
 		}
 		if ( filters && V.li.next().hasClass( 'ligraph' ) ) graphPlot();
 		V.gainkeypress = false;
