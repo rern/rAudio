@@ -6,46 +6,25 @@ dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
 camilladspyml=$dirconfigs/camilladsp.yml
 
-switchConfig() {
-	$dirsettings/camilla.py switch "$1"
-	pushData
-}
-
 args2var "$1"
-
-pushData() {
-	killall -s SIGHUP camilladsp # instead of systemctl restart camilladsp
-	data=$( $dirsettings/camilla.py data )
-	pushstream refresh $( $dirsettings/camilla.py data )
-	sleep 5 # wait for starting ready
-	pushstream refresh $( $dirsettings/camilla.py status )
-}
 
 case $CMD in
 
 coefdelete )
 	rm -f $dircoeffs/"$NAME"
-	pushData
 	;;
 coefrename )
 	mv -f $dircoeffs/{"$NAME","$NEWNAME"}
-	pushData
 	;;
 confcopy )
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
-	switchConfig "$NEWNAME"
 	;;
 confdelete )
 	rm -f $dirconfigs/"$NAME"
 	[[ ! -e $dirconfigs ]] && cp $dirconfigs/{default_config,camilladsp}.yml
-	switchConfig camilladsp
 	;;
 confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
-	switchConfig "$NEWNAME"
-	;;
-pushdata )
-	pushData
 	;;
 restart )
 	systemctl restart camilladsp
@@ -80,7 +59,9 @@ setformat )
 	;;
 save )
 	$dirsettings/camilla.py save
-	pushData
+	;;
+volumesave )
+	echo $VAL > $dirsystem/camilla-volume
 	;;
 	
 esac
