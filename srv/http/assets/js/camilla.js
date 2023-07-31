@@ -644,22 +644,6 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			saveConfig( V.tab, title, 'Remove ...' );
 		}
 		render.mixers();
-	} else if ( action === 'flowchart' ) {
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, selectlabel  : 'Out'
-			, select       : htmlOption( DEV.playback.channels )
-			, boxwidth     : 70
-			, values       : V.li.data( 'dest' )
-			, checkchanged : true
-			, ok           : () => {
-				var mi   = V.li.data( 'index' );
-				MIX[ name ].mapping[ mi ].dest = +infoVal();
-				saveConfig( V.tab, title, 'Change ...' );
-				
-			}
-		} );
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		infoMixersMapping( name, index );
