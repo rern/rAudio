@@ -44,7 +44,7 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 		$htmltabs.=  '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>'
 					.'<ul class="entries sub"></ul>';
 	}
-	$htmltabs.= '<ul class="entries"></ul>';
+	$htmltabs.= '<ul class="entries main"></ul>';
 	$htmltabs.= '</div>';
 }
 

@@ -1,7 +1,8 @@
 V              = {
-	  tab    : 'devices'
-	, signal : {}
-	, status : {}
+	  tab      : 'devices'
+	, signal   : {}
+	, status   : {}
+	, sortable : {}
 }
 var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
 var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
@@ -950,7 +951,6 @@ function graphToggle() {
 		var graph  = V.graph[ V.tab ][ val ];
 		var dgraph = JSON.stringify( graph );
 		var data   = JSON.stringify( S.config[ V.tab ][ val ] );
-		console.log( data, dgraph )
 		if ( data === dgraph ) {
 			$ligraph.removeClass( 'hide' );
 		} else {
@@ -1559,11 +1559,10 @@ function pipelineOrder( array, ai, bi ) {
 	array.splice( ai, 1 );
 	array.splice( bi, 0, a );
 }
-function pipelineSorttable() {
-	if ( 'sortable' in V ) V.sortable.destroy();
-	var $entries = $( '#divpipeline .entries' );
-	var $ul      = $entries.eq( 0 ).hasClass( 'hide' ) ? $entries.eq( 1 ) : $entries.eq( 0 );
-	V.sortable   = new Sortable( $ul[ 0 ], {
+function pipelineSortable( el ) {
+	if ( el in V.sortable ) return
+	
+	V.sortable[ el ] = new Sortable( $( '#divpipeline .entries.'+ el )[ 0 ], {
 		  ghostClass : 'sortable-ghost'
 		, delay      : 400
 		, onUpdate   : function ( e ) {
@@ -1657,11 +1656,11 @@ var render   = {
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
-		$( '#divpipeline .entries' ).addClass( 'hide' );
-		$( '#div'+ V.tab +' .entries:not(.sub)' )
+		$( '#divpipeline .entries.sub' ).addClass( 'hide' );
+		$( '#divpipeline .entries.main' )
 			.html( li )
 			.removeClass( 'hide' );
-		pipelineSorttable();
+		pipelineSortable( 'main' );
 	}
 }
 var renderSub = {
@@ -1703,9 +1702,11 @@ var renderSub = {
 		data.names.forEach( ( name, i ) => {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
-		$( '#divpipeline .entries' ).toggleClass( 'hide' );
-		$( '#divpipeline .entries.sub' ).html( li );
-		pipelineSorttable();
+		$( '#divpipeline .entries.main' ).addClass( 'hide' );
+		$( '#divpipeline .entries.sub' )
+			.html( li )
+			.removeClass( 'hide' );
+		pipelineSortable( 'sub' );
 	}
 }
 function renderDataSort( tab ) {
