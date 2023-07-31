@@ -19,7 +19,7 @@ function appendBlock( labels, boxes, label, x, y, width, type ) { // box
 	} );
 	return {
 		  output : { x: x + offset * width, y: y } // line out
-		, input  : { x: x - offset * width, y: y } // line in (arrow head)
+		, input  : { x: x - ( offset + 0.05 ) * width, y: y } // line in (arrow head)
 	}
 }
 function appendFrame( labels, boxes, label, x, y, width, height ) { // in, mixer, out container
@@ -207,9 +207,9 @@ function createPipelinePlot() {
 					.linkHorizontal()
 					.source( d => [ xScale( d.source[ 0 ] ), yScale( d.source[ 1 ] ) ] )
 					.target( d => [ xScale( d.target[ 0 ] ), yScale( d.target[ 1 ] ) ] );
-	const markerBoxWidth  = 6;
-	const markerBoxHeight = 4;
-	const refX            = markerBoxWidth;
+	const markerBoxWidth  = 9;
+	const markerBoxHeight = 6;
+	const refX            = markerBoxWidth - 2;
 	const refY            = markerBoxHeight / 2;
 	const arrowPoints     = [
 		  [ 0, 0 ]
@@ -223,7 +223,7 @@ function createPipelinePlot() {
 		.append( 'marker' )
 		.attr( 'id', 'arrow' )
 		// @ts-ignore
-		.attr( 'viewBox', [ 0, 0, markerBoxWidth, markerBoxHeight ] )
+		.attr( 'viewBox', [ 0, 0, markerBoxWidth, markerBoxHeight + 1 ] )
 		.attr( 'refX', refX )
 		.attr( 'refY', refY )
 		.attr( 'markerWidth', markerBoxWidth )
@@ -274,6 +274,6 @@ function createPipelinePlot() {
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', C.w );
 		
-/**/$( '.flowchart path' ).last().after( $( '.flowchart text' ) )
+//$( '.flowchart path' ).last().after( $( '.flowchart text' ) )
 /**/$( node ).removeClass( 'hide' );
 }

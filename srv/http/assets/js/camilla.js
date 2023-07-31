@@ -594,9 +594,9 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 			, oklabel      : ico( 'remove' ) +'Delete'
 			, okcolor      : red
 			, ok           : () => {
-				V.li.remove();
 				if ( file ) bash( [ 'coeffdelete', name, 'CMD NAME' ] );
 				saveConfig( V.tab, title, 'Delete ...' );
+				V.li.remove();
 			}
 		} );
 	} else if ( action === 'add' ) {
@@ -665,21 +665,13 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, ok      : () => {
 				if ( main ) {
 					delete MIX[ name ];
-					V.li.remove();
 				} else {
-					var di = V.li.data( 'dest' );
-					if ( dest ) {
-						V.li.parent().remove();
-						delete MIX[ name ].mapping.splice( di, 1 );
-						PIP.forEach( ( k, i ) => {
-							if ( k.type === 'Mixer' && k.name === name ) delete PIP[ i ];
-						} );
-					} else {
-						V.li.remove();
-						MIX[ name ].mapping[ di ].sources.splice( V.li.data( 'index' ), 1 );
-					}
+					var mi = V.li.siblings( '.main' ).data( 'index' );
+					var si = V.li.data( 'index' );
+					MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
 				}
 				saveConfig( V.tab, title, 'Remove ...' );
+				V.li.remove();
 			}
 		} );
 	}
@@ -787,8 +779,8 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 					var ni = V.li.data( 'index' );
 					PIP[ pi ].names.splice( ni, 1 );
 				}
-				V.li.remove();
 				saveConfig( V.tab, title, 'Remove filter ...' );
+				V.li.remove();
 				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 			}
 		} );
@@ -1311,6 +1303,7 @@ function infoMixersMapping( name, index ) {
 				} );
 				MIX[ name ].mapping[ index ].sources.push( s );
 				saveConfig( V.tab, title, 'Save ...' );
+				renderSub.mixers();
 			}
 		} );
 	}
@@ -1542,13 +1535,13 @@ var render   = {
 				L.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
-		var html = '';
-		[ 'sampling', 'capture', 'playback' ].forEach( k => html += renderDevice( k ) );
+		[ 'sampling', 'capture', 'playback' ].forEach( k => renderDevice( k ) );
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-//		keys.length ? renderDevice( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
-		if ( keys.length ) html += renderDevice( 'options', keys );
+		keys.length ? renderDevice( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.caprtue.channels : DEV.playback.channels;
+		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, filters  : () => {
 		var data      = jsonClone( FIL );
