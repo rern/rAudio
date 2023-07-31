@@ -1564,11 +1564,11 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, filters  : () => {
-		var data      = jsonClone( FIL );
-		var li        = '';
-		var classvol  = S.mute ? 'infobtn-primary' : '';
-		var iconvol   = S.mute ? 'mute' : 'volume';
-		var step_val  = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
+		var data     = renderDataSort( 'filters' );
+		var li       = '';
+		var classvol = S.mute ? 'infobtn-primary' : '';
+		var iconvol  = S.mute ? 'mute' : 'volume';
+		var step_val = ' step="0.1" value="'+ dbFormat( S.volume ) +'"';
 		var li = '<li class="liinput main"><a class="mutemain infobtn '+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">Main Gain</span>'
 				+'<input type="number"'+ step_val +'>'
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
@@ -1610,9 +1610,8 @@ var render   = {
 		$( '#div'+ V.tab +' .entries' ).html( li );
 	}
 	, pipeline : () => {
-		var data = jsonClone( PIP );
-		var li = '';
-		data.forEach( ( el, i ) => {
+		var li   = '';
+		PIP.forEach( ( el, i ) => {
 			if ( el.type === 'Filter' ) {
 				var icon = 'graph'
 				var each = '<div class="li1">' + el.type +'</div>'
