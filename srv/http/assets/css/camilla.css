@@ -5,6 +5,9 @@
 .tab .subentries {
 	margin-top: 0;
 }
+#divsampling .entries {
+	margin: 10px 0 0 0;
+}
 .tab li {
 	height: auto;
 	min-height: 49px;

@@ -446,10 +446,9 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 	L.sampling.forEach( k => values[ k ] = DEV[ k ] );
 	if ( ! L.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 	values.other = values.samplerate;
-	var icon  = 'devices';
-	var title = 'Devices';
+	var title = key2label( V.tab );
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, selectlabel  : 'Sample Rate'
 		, select       : L.samplerate
@@ -472,7 +471,7 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 			if ( val.samplerate === 'Other' ) val.samplerate = val.other;
 			delete val.other;
 			$.each( val, ( k, v ) => DEV[ k ] = v );
-			saveConfig( icon, title, 'Change ...' );
+			saveConfig( V.tab, title, 'Change ...' );
 		}
 	} );
 } ).on( 'click', '.i-info-circle', function() {
@@ -515,10 +514,9 @@ $( '#enable_rate_adjust, #enable_resampling' ).on( 'click', function() {
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
-	var icon  = 'devices';
 	var title = 'Rate Adjust';
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
 		, boxwidth     : 100
@@ -529,7 +527,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			var val =  infoVal();
 			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 			DEV.enable_rate_adjust = true;
-			saveConfig( icon, title, DEV.enable_rate_adjust ? 'Change ...' : 'Enable ...' );
+			saveConfig( V.tab, title, DEV.enable_rate_adjust ? 'Change ...' : 'Enable ...' );
 			$this.removeClass( 'hide' );
 			render.devices();
 		}
@@ -565,13 +563,12 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 	var action = $this.prop( 'class' ).slice( 2 );
 	var name   = $this.parents( 'li' ).data( 'name' );
 	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
-	var icon   = 'filters';
 	var title  = file ? 'Filter File' : 'Filter';
 	if ( action === 'graph' ) {
 		graphToggle();
 	} else if ( action === 'file' ) {
 		info( {
-			  icon         : icon
+			  icon         : V.tab
 			, title        : title
 			, message      : 'Rename <wh>'+ name +'</wh> to:'
 			, textlabel    : 'Name'
@@ -584,14 +581,14 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 				$.each( FIL, ( k, v ) => {
 					if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
 				} );
-				saveConfig( icon, title, 'Rename ...' );
+				saveConfig( V.tab, title, 'Rename ...' );
 			}
 		} );
 	} else if ( action === 'remove' ) {
 		if ( inUse( name ) ) return
 		
 		info( {
-			  icon         : icon
+			  icon         : V.tab
 			, title        : title
 			, message      : 'Delete: <wh>'+ name +'</wh> ?'
 			, oklabel      : ico( 'remove' ) +'Delete'
@@ -599,7 +596,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 			, ok           : () => {
 				V.li.remove();
 				if ( file ) bash( [ 'coeffdelete', name, 'CMD NAME' ] );
-				saveConfig( icon, title, 'Delete ...' );
+				saveConfig( V.tab, title, 'Delete ...' );
 			}
 		} );
 	} else if ( action === 'add' ) {
@@ -638,10 +635,15 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var action = $this.prop( 'class' ).slice( 2 );
 	var main   = ! $( '#divmixers .lihead' ).length;
 	var name   = V.li.data( 'name' );
+	var title  = key2label( V.tab );
 	if ( action === 'mixers' ) { // rename
 		infoMixer( name );
 	} else if ( action === 'back' ) {
-		render.mixers();;
+		if ( ! $( '#divmixers input' ).length ) {
+			delete MIX[ $( '#divmixers .lihead' ).text() ];
+			saveConfig( V.tab, title, 'Remove ...' );
+		}
+		render.mixers();
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		infoMixersMapping( name, index );
@@ -657,8 +659,8 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			var message = 'Delete this source?';
 		}
 		info( {
-			  icon    : 'mixers'
-			, title   : 'Mixer'
+			  icon    : V.tab
+			, title   : title
 			, message : message
 			, ok      : () => {
 				if ( main ) {
@@ -677,7 +679,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 						MIX[ name ].mapping[ di ].sources.splice( V.li.data( 'index' ), 1 );
 					}
 				}
-				saveConfig( 'mixers', 'Mixer', 'Remove ...' );
+				saveConfig( V.tab, title, 'Remove ...' );
 			}
 		} );
 	}
@@ -706,14 +708,14 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	} else {
 		source.inverted = tf;
 	}
-	saveConfig( 'mixers', 'Mute', 'change ...' );
+	saveConfig( V.tab, 'Mute', 'change ...' );
 } ).on( 'click', '.mutedest', function() {
 	var $this    = $( this );
 	var index    = $this.parent().data( 'index' );
 	var mapping  = MIX[ V.li.data( 'name' ) ].mapping[ index ];
 	mapping.mute = ! mapping.mute;
 	muteToggle( $this, mapping.mute );
-	saveConfig( 'mixers', 'Mute', 'change ...' );
+	saveConfig( V.tab, 'Mute', 'change ...' );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) { 
 	if ( $( e.target ).is( 'i' )
@@ -732,45 +734,50 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 		
 		var values = $this.find( '.li2' ).text();
 		info( {
-			  icon    : 'pipeline'
+			  icon    : V.tab
 			, title   : 'Pipeline'
 			, message : values
 			, select  : names
 			, values  : values
 			, ok      : () => {
 				PIP[ index ].name = infoVal();
-				saveConfig( 'pipeline', 'Add Mixer' );
+				saveConfig( V.tab, 'Add Mixer' );
 			}
 		} );
 	}
 } ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
+	var title  = key2label( V.tab );
 	var index  = V.li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
 	if ( action === 'graph' ) {
 		graphToggle();
 	} else if ( action === 'back' ) {
+		if ( ! $( '#divpipeline .i-filters' ).length ) {
+			var pi = $( '#divpipeline .lihead' ).data( 'index' );
+			PIP.splice( pi, 1 );
+			saveConfig( V.tab, title, 'Remove filter ...' );
+		}
 		render.pipeline();
 	} else if ( action === 'add' ) {
-		var icon  = 'pipeline';
 		var title = 'Add Filter';
 		info( {
-			  icon        : icon
+			  icon        : V.tab
 			, title       : title
 			, selectlabel : 'Filter'
 			, select      : Object.keys( FIL )
 			, ok          : () => {
 				PIP[ index ].names.push( infoVal() );
-				saveConfig( icon, title, 'Save ...' );
+				saveConfig( V.tab, title, 'Save ...' );
 				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 			}
 		} );
 	} else if ( action === 'remove' ) {
 		var main = ! $( '#divpipeline .lihead' ).length;
 		info( {
-			  icon    : 'pipeline'
-			, title   : 'Pipeline'
+			  icon    : V.tab
+			, title   : title
 			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
 			, ok      : () => {
 				if ( main ) {
@@ -781,7 +788,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 					PIP[ pi ].names.splice( ni, 1 );
 				}
 				V.li.remove();
-				saveConfig( 'pipeline', 'Pipeline', 'Remove filter ...' );
+				saveConfig( V.tab, title, 'Remove filter ...' );
 				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 			}
 		} );
@@ -981,10 +988,9 @@ function infoDevices( dev, type ) {
 		values   = { ...values, ...kv };
 	}
 	$.each( v, ( k, v ) => values[ k ] = v );
-	var icon  = 'devices';
 	var title = key2label( dev ) +' Device';
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, selectlabel  : selectlabel
 		, select       : select
@@ -1007,7 +1013,7 @@ function infoDevices( dev, type ) {
 		, ok           : () => {
 			var val = infoVal();
 			$.each( val, ( k, v ) => DEV[ dev ][ k ] = v );
-			saveConfig( icon, title, 'Change ...' );
+			saveConfig( V.tab, title, 'Change ...' );
 		}
 	} );
 }
@@ -1124,10 +1130,9 @@ function infoFilters( type, subtype, name, existing ) {
 		if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 		values   = { ...values, ...kv };
 	}
-	var icon        = 'filters';
 	var title       = name ? 'Filter' : 'New Filter';
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, selectlabel  : selectlabel
 		, select       : select
@@ -1188,16 +1193,15 @@ function infoFilters( type, subtype, name, existing ) {
 					} );
 				}
 			} );
-			saveConfig( icon, title, newname ? 'Change ...' : 'Save ...' );
+			saveConfig( V.tab, title, newname ? 'Change ...' : 'Save ...' );
 			if ( V.li.find( '.ligraph:not(.hide)' ).length ) graphPlot();
 		}
 	} );
 }
 function infoMixer( name ) {
-	var icon  = 'mixers';
 	var title = name ? 'Mixer' : 'New Mixer'
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, message      : name ? 'Rename <wh>'+ name +'</wh> to:' : ''
 		, textlabel    : 'Name'
@@ -1208,7 +1212,7 @@ function infoMixer( name ) {
 			var val = infoVal();
 			if ( val in MIX ) {
 				info( {
-					  icon    : 'mixers'
+					  icon    : V.tab
 					, title   : 'New Mixer'
 					, message : 'Mixer: <wh>'+ val +'</wh> already exists.'
 					, ok      : () => infoMixer( val )
@@ -1240,7 +1244,7 @@ function infoMixer( name ) {
 					} ]
 				}
 			}
-			saveConfig( icon, title, name ? 'Change ...' : 'Save ...' );
+			saveConfig( V.tab, title, name ? 'Change ...' : 'Save ...' );
 		}
 	} );
 }
@@ -1266,11 +1270,10 @@ function infoMixersMapping( name, index ) {
 </tr>
 `;
 	
-	var icon  = 'mixers';
 	if ( index === '' ) {
 		var title = 'New Destination';
 		info( {
-			  icon         : icon
+			  icon         : V.tab
 			, title        : title
 			, content      : '<table class="tablemapping">'+ trdest + trsource +'</table>'
 			, contentcssno : true
@@ -1288,13 +1291,13 @@ function infoMixersMapping( name, index ) {
 					, sources : [ s ]
 				}
 				MIX[ name ].mapping.push( mapping );
-				saveConfig( icon, title, 'Save ...' );
+				saveConfig( V.tab, title, 'Save ...' );
 			}
 		} );
 	} else {
 		var title = 'New Source';
 		info( {
-			  icon         : icon
+			  icon         : V.tab
 			, title        : title
 			, content      : '<table class="tablemapping">'+ trsource +'</table>'
 			, contentcssno : true
@@ -1307,17 +1310,16 @@ function infoMixersMapping( name, index ) {
 					s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 				} );
 				MIX[ name ].mapping[ index ].sources.push( s );
-				saveConfig( icon, title, 'Save ...' );
+				saveConfig( V.tab, title, 'Save ...' );
 			}
 		} );
 	}
 }
 function infoPipeline() {
-	var icon  = 'pipeline';
 	var title = 'New Pipeline';
 	var filters = Object.keys( FIL );
 	info( {
-		  icon        : icon
+		  icon        : V.tab
 		, title       : title
 		, tablabel    : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 		, tab         : [ '', infoPipelineMixer ]
@@ -1346,15 +1348,14 @@ function infoPipeline() {
 				, channel : +$( '#infoContent select' ).eq( 0 ).val()
 				, names   : names
 			} );
-			saveConfig( icon, titlle, 'Save ...' )
+			saveConfig( V.tab, titlle, 'Save ...' )
 		}
 	} );
 }
 function infoPipelineMixer() {
-	var icon  = 'pipeline';
 	var title = 'New Pipeline';
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, tablabel     : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 		, tab          : [ infoPipeline, '' ]
@@ -1365,7 +1366,7 @@ function infoPipelineMixer() {
 				  type : 'Mixer'
 				, name : infoVal()
 			} );
-			saveConfig( icon, title, 'Save ...' )
+			saveConfig( V.tab, title, 'Save ...' )
 		}
 	} );
 }
@@ -1393,10 +1394,9 @@ function infoResampling( freeasync ) {
 			, f_cutoff           : f.f_cutoff           || 0.925
 		}
 	}
-	var icon  = 'devices'
 	var title = 'Resampling'
 	info( {
-		  icon         : icon
+		  icon         : V.tab
 		, title        : title
 		, selectlabel  : selectlabel
 		, select       : select
@@ -1433,7 +1433,7 @@ function infoResampling( freeasync ) {
 				DEV.resampler_type = { FreeAsync: v }
 			}
 			DEV.enable_resampling = true;
-			saveConfig( icon, title, 'Change ...' );
+			saveConfig( V.tab, title, 'Change ...' );
 			$( '#setting-enable_resampling' ).removeClass( 'hide' );
 			render.devices();
 		}
@@ -1542,13 +1542,13 @@ var render   = {
 				L.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
-		renderDevicesList( 'sampling', L.sampling );
-		renderDevicesList( 'capture' );
-		renderDevicesList( 'playback' );
+		var html = '';
+		[ 'sampling', 'capture', 'playback' ].forEach( k => html += renderDevice( k ) );
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-		keys.length ? renderDevicesList( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+//		keys.length ? renderDevice( 'options', keys ) : $( '#divoptions .statuslist' ).empty();
+		if ( keys.length ) html += renderDevice( 'options', keys );
 	}
 	, filters  : () => {
 		var data      = jsonClone( FIL );
@@ -1655,7 +1655,6 @@ var renderSub = {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
 		$( '#divpipeline .entries' ).html( li );
-//		if ( data.names.length === 1 ) $( '#divpipeline .i-remove' ).remove();
 		pipelineSort();
 	}
 }
@@ -1666,12 +1665,13 @@ function renderDataSort( tab ) {
 	keys.sort().forEach( k => data[ k ] = kv[ k ] );
 	return data
 }
-function renderDevicesList( section, keys ) {
+function renderDevice( section, keys ) {
 	if ( [ 'capture', 'playback' ].includes( section ) ) {
 		var kv = jsonClone( DEV[ section ] );
 		keys   = deviceKeys( section, kv.type );
 	} else {
 		var kv = DEV;
+		if ( section === 'sampling' ) keys = L.sampling;
 	}
 	if ( section === 'options' ) {
 		var labels = '<hr>';
@@ -1690,7 +1690,7 @@ function renderDevicesList( section, keys ) {
 			values += DEV.resampler_type.FreeAsync[ k ] +'<br>';
 		} );
 	}
-	$( '#div'+ section +' .statuslist' ).html(
+	$( '#div'+ section +' .entries' ).html(
 		 '<div class="col-l text gr">'+ labels +'</div>'
 		+'<div class="col-r text">'+ stringReplace( values ) +'</div><div style="clear:both"></div>'
 	);

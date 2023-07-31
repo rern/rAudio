@@ -20,7 +20,7 @@ foreach( $options as $label => $id ) {
 $htmldevices = '';
 foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
 	$id      = lcFirst( str_replace( ' ', '', $title ) );
-	$html    = '<div class="statuslist"></div>';
+	$html    = '<div class="entries"></div>';
 	$setting = $title === 'Capture' || $title === 'Playback';
 	$head    = '';
 	if ( $title === 'Options' ) {
@@ -31,7 +31,7 @@ foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
 	$htmldevices.= '
 <div id="div'.$id.'" class="section">
 '.$head.'
-<div class="content">'.$html.'</div>
+'.$html.'
 </div>
 ';
 }
@@ -43,10 +43,8 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 	} else if ( $id === 'pipeline' ) {
 		$htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg" viewBox="20 0 500 300"></svg>';
 	}
-	$htmltabs.= '
-<ul class="entries main"></ul>
-</div>
-';
+	$htmltabs.= '<ul class="entries"></ul>';
+	$htmltabs.= '</div>';
 }
 
 $htmltabs.= '</div>';
