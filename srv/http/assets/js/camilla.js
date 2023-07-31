@@ -338,7 +338,7 @@ var axes       = {
 		, ...ycommon
 	}
 }
-V.graph       = { filters: {}, pipeline: {}, flowchart: {} }
+V.graph       = { filters: {}, pipeline: {} }
 var flowchart = {
 	  node   : $( '#divpipeline .flowchart' )[ 0 ]
 	, width  : 565
@@ -639,7 +639,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	if ( action === 'mixers' ) { // rename
 		infoMixer( name );
 	} else if ( action === 'back' ) {
-		if ( ! $( '#divmixers input' ).length ) { // no mapping left
+		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ $( '#divmixers .lihead' ).text() ];
 			saveConfig( V.tab, title, 'Remove ...' );
 		}
@@ -787,7 +787,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			, ok          : () => {
 				PIP[ index ].names.push( infoVal() );
 				saveConfig( V.tab, title, 'Save ...' );
-				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
+				pipelineFlowchart();
 			}
 		} );
 	} else if ( action === 'remove' ) {
@@ -806,7 +806,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 				}
 				saveConfig( V.tab, title, 'Remove filter ...' );
 				V.li.remove();
-				if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
+				pipelineFlowchart();
 			}
 		} );
 	}
@@ -854,11 +854,9 @@ function graphPlot( $li ) {
 		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot() );
 		return
 	}
-	
-	var type    = $li.parents( '.tab' ).prop( 'id' ).slice( 3 );
-	var filters = type === 'filters';
+	var filters = V.tab === 'filters';
 	var val     = $li.data( filters ? 'name' : 'index' );
-	V.graph[ type ][ val ] = jsonClone( S.config[ type ][ val ] );
+	V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
 	var filterdelay = false;
 	if ( filters ) {
 		filterdelay = FIL[ val ].type === 'Delay';
@@ -868,8 +866,8 @@ function graphPlot( $li ) {
 			if ( FIL[ n ].type === 'Delay' ) pipelinedelay = true;
 		} );
 	}
-	notify( type, key2label( type ), 'Plot ...' );
-	bash( [ 'settings/camilla.py', type +' '+ val ], data => {
+	notify( V.tab, key2label( V.tab ), 'Plot ...' );
+	bash( [ 'settings/camilla.py', V.tab +' '+ val ], data => {
 		var options   = {
 			  displayModeBar : false
 			, scrollZoom     : true
@@ -916,6 +914,25 @@ function graphPlot( $li ) {
 		$li.removeClass( 'disabled' );
 	}, 'json' );
 }
+/*function graphRefresh() {
+	var graphs = V.graph[ V.tab ];
+	if ( ! Object.keys( graphs ).length ) return
+	
+	var d = V.tab === 'filters' ? 'name' : 'index';
+	$( '#div'+ V.tab +' li' ).each( ( i, el ) => {
+		var val = $( el ).data( d );
+		if ( val in graphs ) {
+			var graph  = V.graph[ V.tab ][ val ];
+			var dgraph = JSON.stringify( graph );
+			var data   = JSON.stringify( S.config[ V.tab ][ val ] );
+			if ( data === dgraph ) {
+			
+			} else {
+				delete graph;
+			}
+		}
+	} );
+}*/
 function graphToggle() {
 	var $ligraph = V.li.find( '.ligraph' );
 	if ( ! $ligraph.length ) {
@@ -926,12 +943,15 @@ function graphToggle() {
 	if ( ! $ligraph.hasClass( 'hide' ) ) {
 		$ligraph.addClass( 'hide' );
 	} else {
-		var val   = $ligraph.data( 'val' );
-		var query = V.graph[ V.tab ][ val ];
-		if ( JSON.stringify( S.config[ V.tab ][ val ] ) === JSON.stringify( query ) ) {
+		var val    = $ligraph.data( 'val' );
+		var graph  = V.graph[ V.tab ][ val ];
+		var dgraph = JSON.stringify( graph );
+		var data   = JSON.stringify( S.config[ V.tab ][ val ] );
+		console.log( data, dgraph )
+		if ( data === dgraph ) {
 			$ligraph.removeClass( 'hide' );
 		} else {
-			delete query;
+			delete graph;
 			graphPlot();
 		}
 	}
@@ -1211,7 +1231,7 @@ function infoFilters( type, subtype, name, existing ) {
 				}
 			} );
 			saveConfig( V.tab, title, newname ? 'Change ...' : 'Save ...' );
-			if ( V.li.find( '.ligraph:not(.hide)' ).length ) graphPlot();
+			if ( name ) graphPlot();
 		}
 	} );
 }
@@ -1262,6 +1282,7 @@ function infoMixer( name ) {
 				}
 			}
 			saveConfig( V.tab, title, name ? 'Change ...' : 'Save ...' );
+			render.mixers();
 		}
 	} );
 }
@@ -1527,12 +1548,15 @@ function otherToggle( $trother, rate ) {
 	$trother.toggleClass( 'hide', ! other );
 	if ( ! other ) $trother.find( 'input' ).val( rate );
 }
+function pipelineFlowchart() {
+	if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
+}
 function pipelineOrder( array, ai, bi ) {
 	var a = array[ ai ];
 	array.splice( ai, 1 );
 	array.splice( bi, 0, a );
 }
-function pipelineSort() {
+function pipelineSorttable() {
 	if ( 'sortable' in V ) V.sortable.destroy();
 	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
 		  ghostClass : 'sortable-ghost'
@@ -1548,7 +1572,7 @@ function pipelineSort() {
 				pipelineOrder( PIP, ai, bi );
 			}
 			saveConfig( 'pipeline', 'Pipeline', 'Change order ...' );
-			if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
+			pipelineFlowchart();
 		}
 	} );
 }
@@ -1629,7 +1653,7 @@ var render   = {
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
 		$( '#div'+ V.tab +' .entries' ).html( li );
-		pipelineSort();
+		pipelineSorttable();
 	}
 }
 var renderSub = {
@@ -1672,7 +1696,7 @@ var renderSub = {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
 		$( '#divpipeline .entries' ).html( li );
-		pipelineSort();
+		pipelineSorttable();
 	}
 }
 function renderDataSort( tab ) {
