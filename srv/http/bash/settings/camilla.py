@@ -41,23 +41,21 @@ for k in [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', '
     status += str( getValue( k ) ) +'<br>'
     
 config     = json.loads( getValue( 'GetConfigJson' ) )
-devices    = config[ 'devices' ]
 dircamilla = '/srv/http/data/camilladsp/'
-
 value  = {
-      'page'               : 'camilla'
-    , 'config'             : config
-    , 'devicetype'         : getValue( 'GetSupportedDeviceTypes' )
-    , 'volume'             : getValue( 'GetVolume' )
-    , 'mute'               : getValue( 'GetMute' )
-    , 'status'             : status
-    , 'lscoef'             : sorted( os.listdir( dircamilla +'coeffs' ) )
-    , 'lsconf'             : sorted( os.listdir( dircamilla +'configs' ) )
-    , 'fileconf'           : os.path.basename( getValue( 'GetConfigName' ) )
-    , 'enable_rate_adjust' : devices[ 'enable_rate_adjust' ]
-    , 'enable_resampling'  : devices[ 'enable_resampling' ]
-    , 'capture_samplerate' : devices[ 'capture_samplerate' ]
+      'page'       : 'camilla'
+    , 'config'     : config
+    , 'devicetype' : getValue( 'GetSupportedDeviceTypes' )
+    , 'volume'     : getValue( 'GetVolume' )
+    , 'mute'       : getValue( 'GetMute' )
+    , 'status'     : status
+    , 'lscoef'     : sorted( os.listdir( dircamilla +'coeffs' ) )
+    , 'lsconf'     : sorted( os.listdir( dircamilla +'configs' ) )
+    , 'fileconf'   : os.path.basename( getValue( 'GetConfigName' ) )
 }
+devices    = config[ 'devices' ]
+for k in [ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ]:
+    value[ k ] = devices[ k ]
 
 print( json.dumps( value ) )
 

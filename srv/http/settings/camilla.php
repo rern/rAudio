@@ -9,14 +9,9 @@ $options = [
 ];
 $htmloptions = '';
 foreach( $options as $label => $id ) {
-	$common  = 'none';
-	$setting = '';
-	if ( $id !== 'stop_on_rate_change' ) {
-		$common  = 'common';
-		$setting = '<i id="setting-'.$id.'" class="i-gear setting"></i>';
-	}
-	$input       = '<input id="'.$id.'" type="checkbox" class="switch '.$common.'">'
-				  .'<div class="switchlabel"></div>'.$setting;
+	$input       = '<input id="'.$id.'" type="checkbox" class="switch custom">'
+				  .'<div class="switchlabel"></div>';
+	if ( $id !== 'stop_on_rate_change' ) $input.= '<i id="setting-'.$id.'" class="i-gear setting"></i>';
 	$htmloptions.= '<div id="div'.$id.'">'
 				  .'<div class="col-l single name">'.$label.'</div><div class="col-r">'.$input
 				  .'</div><div style="clear:both"></div>'

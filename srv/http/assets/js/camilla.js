@@ -502,7 +502,20 @@ $( '#setting-capture' ).on( 'click', function() {
 $( '#setting-playback' ).on( 'click', function() {
 	infoDevices( 'playback' );
 } );
+$( '#enable_rate_adjust, #enable_resampling' ).on( 'click', function() {
+	var id = this.id;
+	var $setting = $( '#setting-'+ id );
+	if ( DEV[ id ] ) {
+		DEV[ id ] = false;
+		saveConfig( 'devices', id === 'enable_rate_adjust' ? 'Rate Adjust' : 'Resampling', 'Disable ...' );
+		$setting.addClass( 'hide' );
+		render.devices();
+	} else {
+		$setting.trigger( 'click' );
+	}
+} );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
+	var $this = $( this );
 	var icon  = 'devices';
 	var title = 'Rate Adjust';
 	info( {
@@ -518,6 +531,8 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
 			DEV.enable_rate_adjust = true;
 			saveConfig( icon, title, DEV.enable_rate_adjust ? 'Change ...' : 'Enable ...' );
+			$this.removeClass( 'hide' );
+			render.devices();
 		}
 	} );
 } );
@@ -525,8 +540,9 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 	infoResampling( DEV.resampler_type === 'FreeAsync' );
 } );
 $( '#stop_on_rate_change' ).on( 'click', function() {
-	DEV.stop_on_rate_change = $( this ).prop( 'checked' );
-	saveConfig( 'devices', 'Stop on Rate Change', 'Change ...' );
+	var checked = $( this ).prop( 'checked' );
+	DEV.stop_on_rate_change = checked;
+	saveConfig( 'devices', 'Stop on Rate Change', checked ? 'Enable ...' : 'Disable ...' );
 } );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
@@ -1424,6 +1440,8 @@ function infoResampling( freeasync ) {
 			}
 			DEV.enable_resampling = true;
 			saveConfig( icon, title, 'Change ...' );
+			$( '#setting-enable_resampling' ).removeClass( 'hide' );
+			render.devices();
 		}
 	} );
 }
@@ -1659,7 +1677,7 @@ var renderSub = {
 	}
 }
 function renderDataSort( tab ) {
-	var kv   = jsonClone( S.config[ tab ] );
+	var kv   = S.config[ tab ];
 	var data = {};
 	var keys = Object.keys( kv );
 	keys.sort().forEach( k => data[ k ] = kv[ k ] );
@@ -1760,7 +1778,7 @@ function saveConfig( icon, titlle, msg ) {
 	ws.send( '"Reload"' );
 	if ( icon ) { // all except gain
 		notify( icon, titlle, msg, 3000 );
-		bash( [ 'save' ] );
+		bash( [ 'settings/camilla.py', 'save' ] );
 	}
 }
 function setConfig( name ) {
