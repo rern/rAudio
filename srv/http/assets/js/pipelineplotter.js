@@ -276,5 +276,4 @@ function createPipelinePlot() {
 		
 /**/$( '.flowchart path' ).last().after( $( '.flowchart text' ) )
 /**/$( node ).removeClass( 'hide' );
-/**/V.query.flowchart = jsonClone( PIP );
 }

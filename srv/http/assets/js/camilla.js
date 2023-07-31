@@ -2,7 +2,6 @@ V              = {
 	  tab    : 'devices'
 	, signal : {}
 	, status : {}
-	, query  : {}
 }
 var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
 var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
@@ -607,7 +606,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 		infoFileUpload( 'filters' );
 	}
 } ).on( 'keyup', 'input[type=number]', function() {
-	gainKeyPress( $( this ) );
+	gainUpDown( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -626,15 +625,13 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 	muteToggle( $( this ), S.mute );
 	ws.send( '{ "SetMute": '+ S.mute +'} ' );
 } );
-$( '#divmixers' ).on( 'click', '.entries.main li', function( e ) {
-	var $this     = $( this );
-	if ( $( e.target ).is( 'i' ) || ! $( '#divmixers .sub' ).hasClass( 'hide' ) ) return
+$( '#divmixers' ).on( 'click', 'li', function( e ) {
+	var $this  = $( this );
+	if ( $( e.target ).is( 'i' ) || $( '#divmixers .liinput' ).length ) return
 	
-	var name      = $this.find( '.li1' ).text();
-	var data      = jsonClone( MIX[ name ].mapping );
+	var name   = $this.find( '.li1' ).text();
+	var data   = jsonClone( MIX[ name ].mapping );
 	renderSub.mixers( name, data );
-} ).on( 'click', '.sub li', function( e ) {
-	console.log(e)
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
@@ -644,7 +641,7 @@ $( '#divmixers' ).on( 'click', '.entries.main li', function( e ) {
 	if ( action === 'mixers' ) { // rename
 		infoMixer( name );
 	} else if ( action === 'back' ) {
-		$( '#divmixers .entries' ).toggleClass( 'hide' );
+		render.mixers();;
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		infoMixersMapping( name, index );
@@ -685,7 +682,7 @@ $( '#divmixers' ).on( 'click', '.entries.main li', function( e ) {
 		} );
 	}
 } ).on( 'keyup', 'input[type=number]', function() {
-	gainKeyPress( $( this ) );
+	gainUpDown( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -718,15 +715,15 @@ $( '#divmixers' ).on( 'click', '.entries.main li', function( e ) {
 	muteToggle( $this, mapping.mute );
 	saveConfig( 'mixers', 'Mute', 'change ...' );
 } );
-$( '#divpipeline' ).on( 'click', '.entries.main li', function( e ) {
-	var $this  = $( this );
+$( '#divpipeline' ).on( 'click', 'li', function( e ) { 
 	if ( $( e.target ).is( 'i' )
+		|| $( '#divpipeline .lihead' ).length
 		|| $( e.target ).parents( '.ligraph' ).length
-		|| ! $( '#divpipeline .sub' ).hasClass( 'hide' )
 	) return
 	
-	var index  = $this.data( 'index' );
-	var data   = jsonClone( PIP[ index ] );
+	var $this = $( this );
+	var index = $this.data( 'index' );
+	var data  = jsonClone( PIP[ index ] );
 	if ( data.type === 'Filter' ) {
 		renderSub.pipeline( index, data );
 	} else {
@@ -746,9 +743,7 @@ $( '#divpipeline' ).on( 'click', '.entries.main li', function( e ) {
 			}
 		} );
 	}
-} ).on( 'click', '.sub li', function( e ) {
-	console.log( e )
-} ).on( 'click', 'li i', function() {
+} ).on( 'click', 'li i', function( e ) {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
 	var index  = V.li.data( 'index' );
@@ -756,7 +751,7 @@ $( '#divpipeline' ).on( 'click', '.entries.main li', function( e ) {
 	if ( action === 'graph' ) {
 		graphToggle();
 	} else if ( action === 'back' ) {
-		$( '#divpipeline .entries' ).toggleClass( 'hide' );
+		render.pipeline();
 	} else if ( action === 'add' ) {
 		var icon  = 'pipeline';
 		var title = 'Add Filter';
@@ -794,7 +789,7 @@ $( '#divpipeline' ).on( 'click', '.entries.main li', function( e ) {
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
 	V.tab = this.id;
-	renderTitle();
+	renderTab();
 } );
 
 } ); // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -808,9 +803,9 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function gainKeyPress( $this ) {
+function gainUpDown( $this ) {
 	clearTimeout( V.gaintimeout );
-	V.gainkeypress = true;
+	V.gainupdn = true;
 	$this.next()
 		.val( +$this.val() )
 		.trigger( 'click' );
@@ -818,15 +813,14 @@ function gainKeyPress( $this ) {
 function gainSave( name ) {
 	var filters = V.tab === 'filters';
 	var graph   = filters && V.li.find( '.ligraph:not(.hide)' ).length;
-	if ( graph && ! V.gainkeypress ) graphPlot();
+	if ( graph && ! V.gainupdn ) {
+		graphPlot();
+		graph = false;
+	}
 	V.gaintimeout = setTimeout( () => {
-		if ( ! filters || name ) { // mixer or filter with name
-			bash( [ 'save' ] );
-		} else {                   // filter - main gain
-			bash( [ 'volumesave', S.volume, 'CMD VAL' ] );
-		}
+		! filters || name ? bash( [ 'settings/camilla.py', 'save' ] ) : bash( [ 'volumesave', S.volume, 'CMD VAL' ] );
 		if ( graph ) graphPlot();
-		V.gainkeypress = false;
+		delete V.gainupdn;
 	}, 1000 );
 }
 function graphPlot( $li ) {
@@ -1589,14 +1583,9 @@ var render   = {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 		}
-		$( '#div'+ V.tab +' .entries.main' ).html( li );
+		$( '#div'+ V.tab +' .entries' ).html( li );
 	}
 	, mixers   : () => {
-		if ( $( '#divmixers .entries.main' ).hasClass( 'hide' ) ) {
-			V.query.mixers
-			return
-		}
-		
 		var data = renderDataSort( 'mixers' );
 		var li = '';
 		$.each( data, ( k, v ) => {
@@ -1605,7 +1594,7 @@ var render   = {
 					+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 					+'</li>';
 		} );
-		$( '#div'+ V.tab +' .entries.main' ).html( li );
+		$( '#div'+ V.tab +' .entries' ).html( li );
 	}
 	, pipeline : () => {
 		var data = jsonClone( PIP );
@@ -1621,7 +1610,7 @@ var render   = {
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
-		$( '#div'+ V.tab +' .entries.main' ).html( li );
+		$( '#div'+ V.tab +' .entries' ).html( li );
 	}
 }
 var renderSub = {
@@ -1656,10 +1645,7 @@ var renderSub = {
 			} );
 			li      += '</div>';
 		} );
-		$( '#divmixers .entries.main' ).addClass( 'hide' );
-		$( '#divmixers .sub' )
-			.html( li )
-			.removeClass( 'hide' );
+		$( '#divmixers .entries' ).html( li );
 		$( '#divmixers .entries select' ).select2( select2opt );
 	}
 	, pipeline : ( index, data ) => {
@@ -1668,11 +1654,8 @@ var renderSub = {
 		data.names.forEach( ( name, i ) => {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
-		$( '#divpipeline .entries.main' ).addClass( 'hide' );
-		$( '#divpipeline .sub' )
-			.html( li )
-			.removeClass( 'hide' );
-		if ( data.names.length === 1 ) $( '#divpipeline .sub .i-remove' ).remove();
+		$( '#divpipeline .entries' ).html( li );
+//		if ( data.names.length === 1 ) $( '#divpipeline .i-remove' ).remove();
 		pipelineSort();
 	}
 }
@@ -1717,52 +1700,14 @@ function renderPage() {
 	$( '#configuration' )
 		.html( htmlOption( S.lsconf ) )
 		.val( S.fileconf );
-/*	var tabs = [ 'devices', 'filters', 'mixers', 'pipeline' ];
-	V.changed = {}
-	if ( 'config' in V ) {
-		tabs.forEach( k => {
-			V.changed[ k ] = JSON.stringify( V.config[ k ] ) !== JSON.stringify( S.config[ k ] );
-		} );
-	} else {
-		tabs.forEach( k => V.changed[ k ] = true );
-	}
-	V.config = jsonClone( S.config );*/
 	DEV = S.config.devices;
 	FIL = S.config.filters;
 	MIX = S.config.mixers;
 	PIP = S.config.pipeline;
-	renderTitle();
+	renderTab();
 	showContent();
 }
-function renderTitle() {
-/*	if ( V.changed[ V.tab ] ) {
-		V.changed[ V.tab ] = false;
-		render[ V.tab ]();
-		var $entries = $( '#div'+ V.tab +' .entries' ); 
-		$entries.find( '.sub' ).addClass( 'hide' );
-		$entries.find( '.main' ).removeClass( 'hide' );
-	} else {*/
-		render[ V.tab ]();
-		var $ligraph = $( '#div'+ V.tab +' .ligraph:not(.hide)' );
-		if ( $ligraph.length ) {
-			$ligraph.each( ( i, el ) => {
-				var $this = $( el );
-				var val   = $this.data( 'val' );
-				var query = V.graph[ V.tab ][ val ];
-				if ( V.tab === 'filters' ) {
-					var changed = ! ( val in FIL ) || JSON.stringify( FIL[ val ] ) !== JSON.stringify( query )
-				} else {
-					var changed = ! PIP.length || JSON.stringify( PIP[ val ] ) !== JSON.stringify( query );
-				}
-				if ( changed ) {
-					$ligraph.remove();
-					delete query;
-				} else if ( JSON.stringify( S.config[ V.tab ][ val ] ) !== JSON.stringify( query ) ) {
-					graphPlot( $this.parent() );
-				}
-			} );
-		}
-//	}
+function renderTab() {
 	var title = key2label( V.tab );
 	if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'info-circle' );
 	title    += ico( V.tab === 'devices' ? 'gear settings' : 'add' );
@@ -1771,6 +1716,7 @@ function renderTitle() {
 	$( '#div'+ V.tab ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ V.tab ).addClass( 'active' );
+	if ( $( '#div'+ V.tab +' .entries' ).is( ':empty' ) ) render[ V.tab ]();
 }
 function saveConfig( icon, titlle, msg ) {
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );

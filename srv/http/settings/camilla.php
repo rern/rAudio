@@ -45,7 +45,6 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 	}
 	$htmltabs.= '
 <ul class="entries main"></ul>
-<ul class="entries sub hide"></ul>
 </div>
 ';
 }
