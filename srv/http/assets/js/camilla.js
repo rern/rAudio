@@ -474,7 +474,7 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 			saveConfig( V.tab, title, 'Change ...' );
 		}
 	} );
-} ).on( 'click', '.i-info-circle', function() {
+} ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
 		if ( typeof( d3 ) !== 'object' ) {
@@ -1714,7 +1714,7 @@ function renderPage() {
 }
 function renderTab() {
 	var title = key2label( V.tab );
-	if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'info-circle' );
+	if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'flowchart' );
 	title    += ico( V.tab === 'devices' ? 'gear settings' : 'add' );
 	$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 	$( '.tab' ).addClass( 'hide' );

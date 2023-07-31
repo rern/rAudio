@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1689690190' );
+	src         : url( '/assets/fonts/rern.woff2?v=1689690192' );
 }
 @font-face {
 	font-family : Lato;
@@ -84,6 +84,7 @@ i {
 .i-firefox::before         { content: '\F58C'; position: absolute; }
 .i-firefox::after          { content: '\F58D'; position: relative; color: var( --cg60 ); }
 .i-flash::before           { content: '\F566' }
+.i-flowchart::before       { content: '\F52D' }
 .i-folder::before          { content: '\F540' }
 .i-folder-cascade::before  { content: '\F54A' }
 .i-folder-forbid::before   { content: '\F537' }
@@ -764,6 +765,7 @@ hr {
 	margin-top: 0;
 	text-align: left;
 }
+.infoheader,
 .infomessage,
 .infofooter {
 	width: fit-content;
@@ -775,6 +777,7 @@ hr {
 	overflow: hidden;
 	color: var( --cg60 );
 }
+.infoheader,
 .infofooter {
 	padding: 0 5px;
 }
@@ -951,7 +954,7 @@ input[ type=radio ]:disabled {
 }
 @media ( max-width: 420px ) {
 	#infoContent { padding: 20px 5px 10px 5px }
-	.infofooter { padding: 0 5px }
+	.infoheader, .infofooter { padding: 0 5px }
 }
 @media ( max-width: 330px ) {
 	#infoOverlay {
