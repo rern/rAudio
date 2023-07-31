@@ -831,11 +831,11 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
-function filterParam2string( param ) {
-	return JSON.stringify( param )
-				.replace( /[{"}]/g, '' )
-				.replace( 'type:', '' )
-				.replace( /,/g, ', ' )
+function filter2string( val ) {
+	return val.type +': '+ JSON.stringify( val.parameters )
+							.replace( /[{"}]/g, '' )
+							.replace( 'type:', '' )
+							.replace( /,/g, ', ' )
 }
 function gainUpDown( $this ) {
 	clearTimeout( V.gaintimeout );
@@ -1607,10 +1607,8 @@ var render   = {
 				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
 				+'</li>';
 		$.each( data, ( k, v ) => {
-			var param = v.parameters;
-			var val   = filterParam2string( param );
-			if ( 'gain' in param ) {
-				var step_val  =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
+			if ( 'gain' in v.parameters ) {
+				var step_val  =  ' step="0.1" value="'+ dbFormat( v.parameters.gain ) +'"';
 				var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 								+'<input type="number"'+ step_val +'>'
 								+'<input type="range"'+ step_val +' min="-6" max="6">'
@@ -1618,7 +1616,7 @@ var render   = {
 			} else {
 				var licontent =  ico( 'remove' )
 								+'<div class="li1 name">'+ k +'</div>'
-								+'<div class="li2">'+ v.type +': '+ val +'</div>';
+								+'<div class="li2">'+ filter2string( v ) +'</div>';
 			}
 			li += '<li data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
 		} );
