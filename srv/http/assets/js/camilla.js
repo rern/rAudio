@@ -666,8 +666,14 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 				if ( main ) {
 					delete MIX[ name ];
 				} else if ( dest ) {
-					var mi = V.li.siblings( '.main' ).data( 'index' );
+					var mi = V.li.data( 'index' );
 					MIX[ name ].mapping.splice( mi, 1 );
+					if ( ! MIX[ name ].mapping.length ) {
+						$( '#divmixers .i-back' ).trigger( 'click' );
+						return
+					}
+					
+					V.li.siblings( '.dest'+ mi ).remove();
 				} else {
 					var mi = V.li.siblings( '.main' ).data( 'index' );
 					var si = V.li.data( 'index' );
