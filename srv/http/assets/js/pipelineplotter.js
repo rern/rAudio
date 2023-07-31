@@ -53,7 +53,7 @@ function appendLink( links, labels, source, dest, label ) { // line
 			, y     : y
 			, text  : label
 			, fill  : C.r
-			, size  : 0.3
+			, size  : 0.25
 			, angle : 0
 		} );
 	}

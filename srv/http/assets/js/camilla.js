@@ -1611,6 +1611,7 @@ var render   = {
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
 		$( '#div'+ V.tab +' .entries' ).html( li );
+		pipelineSort();
 	}
 }
 var renderSub = {
