@@ -639,7 +639,7 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	if ( action === 'mixers' ) { // rename
 		infoMixer( name );
 	} else if ( action === 'back' ) {
-		if ( ! $( '#divmixers input' ).length ) {
+		if ( ! $( '#divmixers input' ).length ) { // no mapping left
 			delete MIX[ $( '#divmixers .lihead' ).text() ];
 			saveConfig( V.tab, title, 'Remove ...' );
 		}
@@ -1632,23 +1632,21 @@ var renderSub = {
 			var classvol = kv.mute ? 'infobtn-primary' : '';
 			var iconvol  = kv.mute ? 'mute' : 'volume';
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li        += '<div class="divdest">'
-						+'<li class="liinput main"'+ i_name +' data-dest="'+ dest +'">'
-						+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>Out '+ dest
+			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'
+						+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>Out '+ dest + ico( 'remove' )
 						+'</li>'
-						+'<li class="liinput column"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+						+'<li class="liinput column dest'+ i +'"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optsource.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
-				li += '<li class="liinput"'+ i_name +'" data-si="'+ si +'"><select>'+ opts +'</select>'
+				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'"><select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-6" max="6"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
 					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 			} );
-			li      += '</div>';
 		} );
 		$( '#divmixers .entries' ).html( li );
 		$( '#divmixers .entries select' ).select2( select2opt );
