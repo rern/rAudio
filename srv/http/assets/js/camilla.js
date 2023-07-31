@@ -831,6 +831,12 @@ function deviceKeys( dev, type ) {
 	$.each( key_val, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 	return keys
 }
+function filterParam2string( param ) {
+	return JSON.stringify( param )
+				.replace( /[{"}]/g, '' )
+				.replace( 'type:', '' )
+				.replace( /,/g, ', ' )
+}
 function gainUpDown( $this ) {
 	clearTimeout( V.gaintimeout );
 	V.gainupdn = true;
@@ -1218,6 +1224,7 @@ function infoFilters( type, subtype, name, existing ) {
 			[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 			$.each( val, ( k, v ) => param[ k ] = v );
 			FIL[ newname ] = { type: type, parameters : param }
+			if ( name !== newname ) delete FIL[ name ];
 			PIP.forEach( p => {
 				if ( p.type === 'Filter' ) {
 					p.names.forEach( ( f, i ) => {
@@ -1601,10 +1608,7 @@ var render   = {
 				+'</li>';
 		$.each( data, ( k, v ) => {
 			var param = v.parameters;
-			var val   = JSON.stringify( param )
-							.replace( /[{"}]/g, '' )
-							.replace( 'type:', '' )
-							.replace( /,/g, ', ' );
+			var val   = filterParam2string( param );
 			if ( 'gain' in param ) {
 				var step_val  =  ' step="0.1" value="'+ dbFormat( param.gain ) +'"';
 				var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
