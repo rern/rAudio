@@ -625,7 +625,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 } );
 $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
-	if ( $( e.target ).is( 'i' ) || $( '#divmixers .liinput' ).length ) return
+	if ( $( e.target ).is( 'i' ) || $this.parent().hasClass( 'sub' ) ) return
 	
 	var name   = $this.find( '.li1' ).text();
 	var data   = jsonClone( MIX[ name ].mapping );
@@ -839,17 +839,27 @@ function gainUpDown( $this ) {
 		.trigger( 'click' );
 }
 function gainSave( name ) {
-	var filters = V.tab === 'filters';
-	var graph   = filters && V.li.find( '.ligraph:not(.hide)' ).length;
-	if ( graph && ! V.gainupdn ) {
-		graphPlot();
-		graph = false;
+	var filters  = V.tab === 'filters';
+	var fgraph   = filters && V.li.find( '.ligraph:not(.hide)' ).length;
+	var pgraphs  = [];
+	var $ligraph = $( '#divpipeline li .ligraph:not(.hide)' );
+	if ( $ligraph.length && $( '#divpipeline .entries.sub.hide' ).length ) {
+		$ligraph.each( ( i, el ) => {
+			var index = $( el ).data( 'val' );
+			if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
+		} );
 	}
+	if ( ! V.gainupdn ) gainSaveGraph( fgraph, pgraphs );
 	V.gaintimeout = setTimeout( () => {
 		! filters || name ? bash( [ 'settings/camilla.py', 'save' ] ) : bash( [ 'volumesave', S.volume, 'CMD VAL' ] );
-		if ( graph ) graphPlot();
+		gainSaveGraph( fgraph, pgraphs );
 		delete V.gainupdn;
 	}, 1000 );
+}
+function gainSaveGraph( fgraph, pgraphs ) {
+	if ( fgraph ) graphPlot();
+	if ( pgraphs.length ) pgraphs.forEach( i => graphPlot( $( '#divpipeline li' ).eq( i ) ) );
+	fgraph = pgraph = '';
 }
 function graphPlot( $li ) {
 	if ( ! $li ) $li = V.li;
@@ -858,9 +868,10 @@ function graphPlot( $li ) {
 		$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graphPlot() );
 		return
 	}
-	var filters = V.tab === 'filters';
+	var tab     = $li.data( 'name' ) ? 'filters' : 'pipeline';
+	var filters = tab === 'filters';
 	var val     = $li.data( filters ? 'name' : 'index' );
-	V.graph[ V.tab ][ val ] = jsonClone( S.config[ V.tab ][ val ] );
+	V.graph[ tab ][ val ] = jsonClone( S.config[ tab ][ val ] );
 	var filterdelay = false;
 	if ( filters ) {
 		filterdelay = FIL[ val ].type === 'Delay';
@@ -870,8 +881,8 @@ function graphPlot( $li ) {
 			if ( FIL[ n ].type === 'Delay' ) pipelinedelay = true;
 		} );
 	}
-	notify( V.tab, key2label( V.tab ), 'Plot ...' );
-	bash( [ 'settings/camilla.py', V.tab +' '+ val ], data => {
+	notify( tab, key2label( tab ), 'Plot ...' );
+	bash( [ 'settings/camilla.py', tab +' '+ val ], data => {
 		var options   = {
 			  displayModeBar : false
 			, scrollZoom     : true
@@ -1611,7 +1622,7 @@ var render   = {
 			li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 			S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>' );
 		}
-		$( '#div'+ V.tab +' .entries' ).html( li );
+		renderToggle( li );
 	}
 	, mixers   : () => {
 		var data = renderDataSort( 'mixers' );
@@ -1622,7 +1633,7 @@ var render   = {
 					+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 					+'</li>';
 		} );
-		$( '#div'+ V.tab +' .entries' ).html( li );
+		renderToggle( li );
 	}
 	, pipeline : () => {
 		var li   = '';
@@ -1637,10 +1648,7 @@ var render   = {
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
-		$( '#divpipeline .entries.sub' ).addClass( 'hide' );
-		$( '#divpipeline .entries.main' )
-			.html( li )
-			.removeClass( 'hide' );
+		renderToggle( li );
 		pipelineSortable( 'main' );
 	}
 }
@@ -1675,7 +1683,7 @@ var renderSub = {
 					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
 			} );
 		} );
-		$( '#divmixers .entries' ).html( li );
+		renderToggle( li, 'sub' );
 		$( '#divmixers .entries select' ).select2( select2opt );
 	}
 	, pipeline : ( index, data ) => {
@@ -1683,12 +1691,16 @@ var renderSub = {
 		data.names.forEach( ( name, i ) => {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
-		$( '#divpipeline .entries.main' ).addClass( 'hide' );
-		$( '#divpipeline .entries.sub' )
-			.html( li )
-			.removeClass( 'hide' );
+		renderToggle( li, 'sub' );
 		pipelineSortable( 'sub' );
 	}
+}
+function renderToggle( li, sub ) {
+	var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
+	$( '#div'+ V.tab +' .entries.'+ ms[ 0 ] ).addClass( 'hide' );
+	$( '#div'+ V.tab +' .entries.'+ ms[ 1 ] )
+		.html( li )
+		.removeClass( 'hide' );
 }
 function renderDataSort( tab ) {
 	var kv   = S.config[ tab ];
@@ -1748,7 +1760,7 @@ function renderTab() {
 	$( '#div'+ V.tab ).removeClass( 'hide' );
 	$( '#bar-bottom div' ).removeClass( 'active' );
 	$( '#'+ V.tab ).addClass( 'active' );
-	if ( $( '#div'+ V.tab +' .entries' ).is( ':empty' ) ) render[ V.tab ]();
+	if ( $( '#div'+ V.tab +' .entries.main' ).is( ':empty' ) ) render[ V.tab ]();
 }
 function saveConfig( icon, titlle, msg ) {
 	var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
