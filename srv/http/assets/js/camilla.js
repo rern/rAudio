@@ -557,7 +557,7 @@ $( '#divfilters' ).on( 'click', 'li', function( e ) {
 	
 	V.li = $( this );
 	infoFilters( '', V.li.find( '.name' ).text(), 'existing' );
-} ).on( 'click', 'li i', function( e ) {
+} ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
@@ -735,12 +735,12 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 	saveConfig( V.tab, 'Mute', 'change ...' );
 } );
 $( '#divpipeline' ).on( 'click', 'li', function( e ) { 
+	var $this = $( this );
 	if ( $( e.target ).is( 'i' )
-		|| $( '#divpipeline .lihead' ).length
+		|| $this.parent().hasClass( 'sub' )
 		|| $( e.target ).parents( '.ligraph' ).length
 	) return
 	
-	var $this = $( this );
 	var index = $this.data( 'index' );
 	var data  = jsonClone( PIP[ index ] );
 	if ( data.type === 'Filter' ) {
@@ -762,7 +762,7 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	}
-} ).on( 'click', 'li i', function( e ) {
+} ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
 	var title  = key2label( V.tab );
@@ -775,8 +775,11 @@ $( '#divpipeline' ).on( 'click', 'li', function( e ) {
 			var pi = $( '#divpipeline .lihead' ).data( 'index' );
 			PIP.splice( pi, 1 );
 			saveConfig( V.tab, title, 'Remove filter ...' );
+			render.pipeline();
+		} else {
+			$( '#divpipeline .entries' ).toggleClass( 'hide' );
 		}
-		render.pipeline();
+		
 	} else if ( action === 'add' ) {
 		var title = 'Add Filter';
 		info( {
@@ -1231,7 +1234,7 @@ function infoFilters( type, subtype, name, existing ) {
 				}
 			} );
 			saveConfig( V.tab, title, newname ? 'Change ...' : 'Save ...' );
-			if ( name ) graphPlot();
+			name ? graphPlot() : render.filters();
 		}
 	} );
 }
@@ -1558,7 +1561,9 @@ function pipelineOrder( array, ai, bi ) {
 }
 function pipelineSorttable() {
 	if ( 'sortable' in V ) V.sortable.destroy();
-	V.sortable = new Sortable( $( '#divpipeline .entries' )[ 0 ], {
+	var $entries = $( '#divpipeline .entries' );
+	var $ul      = $entries.eq( 0 ).hasClass( 'hide' ) ? $entries.eq( 1 ) : $entries.eq( 0 );
+	V.sortable   = new Sortable( $ul[ 0 ], {
 		  ghostClass : 'sortable-ghost'
 		, delay      : 400
 		, onUpdate   : function ( e ) {
@@ -1652,7 +1657,10 @@ var render   = {
 			}
 			li += '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>';
 		} );
-		$( '#div'+ V.tab +' .entries' ).html( li );
+		$( '#divpipeline .entries' ).addClass( 'hide' );
+		$( '#div'+ V.tab +' .entries:not(.sub)' )
+			.html( li )
+			.removeClass( 'hide' );
 		pipelineSorttable();
 	}
 }
@@ -1695,7 +1703,8 @@ var renderSub = {
 		data.names.forEach( ( name, i ) => {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
 		} );
-		$( '#divpipeline .entries' ).html( li );
+		$( '#divpipeline .entries' ).toggleClass( 'hide' );
+		$( '#divpipeline .entries.sub' ).html( li );
 		pipelineSorttable();
 	}
 }
