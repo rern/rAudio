@@ -918,25 +918,6 @@ function graphPlot( $li ) {
 		$li.removeClass( 'disabled' );
 	}, 'json' );
 }
-/*function graphRefresh() {
-	var graphs = V.graph[ V.tab ];
-	if ( ! Object.keys( graphs ).length ) return
-	
-	var d = V.tab === 'filters' ? 'name' : 'index';
-	$( '#div'+ V.tab +' li' ).each( ( i, el ) => {
-		var val = $( el ).data( d );
-		if ( val in graphs ) {
-			var graph  = V.graph[ V.tab ][ val ];
-			var dgraph = JSON.stringify( graph );
-			var data   = JSON.stringify( S.config[ V.tab ][ val ] );
-			if ( data === dgraph ) {
-			
-			} else {
-				delete graph;
-			}
-		}
-	} );
-}*/
 function graphToggle() {
 	var $ligraph = V.li.find( '.ligraph' );
 	if ( ! $ligraph.length ) {
