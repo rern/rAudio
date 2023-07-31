@@ -675,13 +675,21 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	}
+} ).on( 'change', 'select', function() {
+	var $this      = $( this );
+	V.li           = $this.parents( 'li' );
+	var name  = V.li.data( 'name' );
+	var index = V.li.data( 'index' );
+	var si    = V.li.data( 'si' );
+	MIX[ name ].mapping[ index ].sources[ si ].channel = +$this.val();
+	saveConfig( V.tab, 'Mixer', 'Change ...');
 } ).on( 'keyup', 'input[type=number]', function() {
 	gainUpDown( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( dbFormat( val ) );
-	V.   li   = $( this ).parents( 'li' );
+	V.li      = $( this ).parents( 'li' );
 	var name  = V.li.data( 'name' );
 	var index = V.li.data( 'index' );
 	var si    = V.li.data( 'si' );
@@ -691,20 +699,23 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
 	V.li        = $this.parents( 'li' );
-	var mapping = MIX[ V.li.data( 'name' ) ].mapping[ V.li.data( 'index' ) ];
-	var tf      = $this.prop( 'checked' );;
-	var source = mapping.sources[ V.li.data( 'si' ) ];
+	var name    = V.li.data( 'name' );
+	var index   = V.li.data( 'index' );
+	var si      = V.li.data( 'si' );
+	var source  = MIX[ name ].mapping[ index ].sources[ si ];
+	var checked = $this.prop( 'checked' );;
 	if ( $this.hasClass( 'mute' ) ) {
-		source.mute = tf;
+		source.mute = checked;
 		$this.prev().prop( 'disabled', tf );
 	} else {
-		source.inverted = tf;
+		source.inverted = checked;
 	}
 	saveConfig( V.tab, 'Mute', 'change ...' );
 } ).on( 'click', '.mutedest', function() {
 	var $this    = $( this );
+	var name     = V.li.data( 'name' );
 	var index    = $this.parent().data( 'index' );
-	var mapping  = MIX[ V.li.data( 'name' ) ].mapping[ index ];
+	var mapping  = MIX[ name ].mapping[ index ];
 	mapping.mute = ! mapping.mute;
 	muteToggle( $this, mapping.mute );
 	saveConfig( V.tab, 'Mute', 'change ...' );
