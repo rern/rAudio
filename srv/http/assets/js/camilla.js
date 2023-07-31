@@ -644,6 +644,22 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			saveConfig( V.tab, title, 'Remove ...' );
 		}
 		render.mixers();
+	} else if ( action === 'flowchart' ) {
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, selectlabel  : 'Out'
+			, select       : htmlOption( DEV.playback.channels )
+			, boxwidth     : 70
+			, values       : V.li.data( 'dest' )
+			, checkchanged : true
+			, ok           : () => {
+				var mi   = V.li.data( 'index' );
+				MIX[ name ].mapping[ mi ].dest = +infoVal();
+				saveConfig( V.tab, title, 'Change ...' );
+				
+			}
+		} );
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		infoMixersMapping( name, index );
@@ -665,6 +681,9 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 			, ok      : () => {
 				if ( main ) {
 					delete MIX[ name ];
+				} else if ( dest ) {
+					var mi = V.li.siblings( '.main' ).data( 'index' );
+					MIX[ name ].mapping.splice( mi, 1 );
 				} else {
 					var mi = V.li.siblings( '.main' ).data( 'index' );
 					var si = V.li.data( 'index' );
@@ -676,12 +695,17 @@ $( '#divmixers' ).on( 'click', 'li', function( e ) {
 		} );
 	}
 } ).on( 'change', 'select', function() {
-	var $this      = $( this );
-	V.li           = $this.parents( 'li' );
+	var $this = $( this );
+	V.li      = $this.parents( 'li' );
 	var name  = V.li.data( 'name' );
-	var index = V.li.data( 'index' );
-	var si    = V.li.data( 'si' );
-	MIX[ name ].mapping[ index ].sources[ si ].channel = +$this.val();
+	var mi    = V.li.data( 'index' );
+	var val   = +$this.val();
+	if ( V.li.hasClass( 'main' ) ) {
+		MIX[ name ].mapping[ mi ].dest = val;
+	} else {
+		var si    = V.li.data( 'si' );
+		MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
+	}
 	saveConfig( V.tab, 'Mixer', 'Change ...');
 } ).on( 'keyup', 'input[type=number]', function() {
 	gainUpDown( $( this ) );
@@ -1295,6 +1319,7 @@ function infoMixersMapping( name, index ) {
 				}
 				MIX[ name ].mapping.push( mapping );
 				saveConfig( V.tab, title, 'Save ...' );
+				renderSub.mixers( name, MIX[ name ].mapping );
 			}
 		} );
 	} else {
@@ -1620,26 +1645,27 @@ var render   = {
 }
 var renderSub = {
 	  mixers   : ( name, data ) => {
-		V.mixers      = { name: name, data: data }
 		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
 		var chout     = DEV.playback.channels;
 		var iconadd   = chout === chmapping ? '' : ico( 'add' );
 		var li        = '<li class="lihead" data-name="'+ name +'">'+ name + iconadd + ico( 'back' ) +'</li>';
-		var optsource = htmlOption( chin );
+		var optin     = htmlOption( chin );
+		var optout    = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
 			var dest     = kv.dest;
+			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var classvol = kv.mute ? 'infobtn-primary' : '';
 			var iconvol  = kv.mute ? 'mute' : 'volume';
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'
-						+'<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>Out '+ dest + ico( 'remove' )
+						+'<div>Out</div><div><select>'+ opts +'</select></div>&ensp;<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>'+ ico( 'remove' )
 						+'</li>'
 						+'<li class="liinput column dest'+ i +'"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
-				var opts     = optsource.replace( '>'+ channel, ' selected>'+ channel );
+				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ dbFormat( source.gain ) +'"';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'"><select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
@@ -1652,7 +1678,6 @@ var renderSub = {
 		$( '#divmixers .entries select' ).select2( select2opt );
 	}
 	, pipeline : ( index, data ) => {
-		V.pipeline = { index: index, data: data }
 		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => {
 			li += '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>';
