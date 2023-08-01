@@ -6,15 +6,13 @@ V              = {
 	, tab      : 'devices'
 }
 var select2opt = { minimumResultsForSearch: 'Infinity' }
-var strReplace = ( k ) => {
-	return k
-			.replace( 'Alsa',  'ALSA' )
-			.replace( 'Std',   'std' )
-			.replace( 'FLOAT', 'Float' )
-			.replace( 'TEXT',  'Text' )
-}
 var format     = {};
-[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => format[ strReplace( k ) ] = k );
+[ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
+	var key = k
+				.replace( 'FLOAT', 'Float' )
+				.replace( 'TEXT',  'Text' );
+	format[ key ] = k;
+} );
 var L  = {
 	  devicetype : { capture: {}, playback: {} }
 	, format     : format
@@ -543,9 +541,14 @@ var render   = {
 				values += DEV.resampler_type.FreeAsync[ k ] +'<br>';
 			} );
 		}
+		values = values
+					.replace( 'Alsa',  'ALSA' )
+					.replace( 'Std',   'std' )
+					.replace( 'FLOAT', 'Float' )
+					.replace( 'TEXT',  'Text' );
 		$( '#div'+ section +' .entries' ).html(
 			 '<div class="col-l text gr">'+ labels +'</div>'
-			+'<div class="col-r text">'+ strReplace( values ) +'</div><div style="clear:both"></div>'
+			+'<div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
 		);
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, filters     : () => {
