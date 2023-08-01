@@ -516,15 +516,9 @@ function info( json ) {
 			}
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
-				htmls.select += '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>';
-				if ( typeof el !== 'object' ) {     // html
-					htmls.select += el;
-				} else if ( Array.isArray( el ) ) { // name = value
-					el.forEach( v => htmls.select += '<option value="'+ v +'">'+ v +'</option>' );
-				} else {                            // json
-					$.each( el, ( k, v ) => htmls.select += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
-				}
-				htmls.select += '</select></td></tr>';
+				htmls.select +=  '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>'
+								+ htmlOption( el );
+								+'</select></td></tr>';
 			} );
 		}
 		if ( I.rangelabel ) {
@@ -986,10 +980,27 @@ function infoWidth() {
 	}
 }
 
+function htmlOption( el ) {
+	if ( typeof( el ) === 'number' ) el = [ ...Array( el ).keys() ];
+	var options = '';
+	if ( Array.isArray( el ) ) { // name = value
+		el = el.sort();
+		el.forEach( v => options += '<option value="'+ v +'">'+ v +'</option>' );
+	} else {                     // json
+		el = jsonSort( json );
+		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
+	}
+	return options
+}
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
 }
-
+function jsonSort( json ) {
+	return Object.keys( json ).sort().reduce( function ( result, key ) {
+		result[ key ] = json[ key ];
+		return result;
+	}, {} );
+}
 // ----------------------------------------------------------------------
 function loader() {
 	$( '#loader' ).removeClass( 'hide' );

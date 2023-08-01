@@ -21,7 +21,6 @@ confcopy )
 	;;
 confdelete )
 	rm -f $dirconfigs/"$NAME"
-	[[ ! -e $dirconfigs ]] && cp $dirconfigs/{default_config,camilladsp}.yml
 	;;
 confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
