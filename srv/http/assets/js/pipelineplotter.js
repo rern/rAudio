@@ -1,7 +1,19 @@
+var pipeline = {
+	  node   : $( '#pipeline .flowchart' )[ 0 ]
+	, width  : 565
+	, height : 300
+	, color  : {
+		  filter : C.md
+		, in     : '#000'
+		, mixer  : C.rd
+		, out    : C.gd
+	}
+}
+
 function appendBlock( labels, boxes, label, x, y, width, type ) { // box
 /**/const wx     = 1.4;         // common scale
 /**/const offset = wx/2 + 0.05; // offset arrow line
-/**/const fill   = flowchart.color[ type ];
+/**/const fill   = pipeline.color[ type ];
 	labels.push( {
 		  x     : x
 		, y     : y + 0.1
@@ -190,9 +202,9 @@ function makeShapes( conf ) {
 }
 function createPipelinePlot() {
 /**/const config = S.config;
-/**/const node   = flowchart.node;
-/**/const width  = flowchart.width;
-/**/const height = flowchart.height;
+/**/const node   = pipeline.node;
+/**/const width  = pipeline.width;
+/**/const height = pipeline.height;
 	let { labels, boxes, links, max_h, max_v } = makeShapes( config );
 	max_v = max_h > 4 * max_v ? max_h / 4 : max_h = 4 * max_v
 	const yScale = d3
@@ -262,7 +274,6 @@ function createPipelinePlot() {
 		.attr( 'fill', d => d.fill )
 		.style( 'text-anchor', 'middle' )
 		.attr( 'transform', d => 'translate('+ xScale( d.x ) +', '+ yScale( d.y ) +'), rotate('+ d.angle +')' )
-//		.attr( 'font-family', 'Inconsolata' )
 	d3
 		.select( node )
 		.selectAll( null )
@@ -274,6 +285,6 @@ function createPipelinePlot() {
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', C.w );
 		
-//$( '.flowchart path' ).last().after( $( '.flowchart text' ) )
+$( '.pipeline path' ).last().after( $( '.pipeline text' ) )
 /**/$( node ).removeClass( 'hide' );
 }
