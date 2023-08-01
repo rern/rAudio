@@ -36,9 +36,9 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
     ws.close()
     sys.exit()
 
-status     = ''
-for k in [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ]:
-    status += str( getValue( k ) ) +'<br>'
+status     = []
+for k in [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetBufferLevel', 'GetRateAdjust' ]:
+    status.append( str( getValue( k ) ) )
     
 config     = json.loads( getValue( 'GetConfigJson' ) )
 dircamilla = '/srv/http/data/camilladsp/'

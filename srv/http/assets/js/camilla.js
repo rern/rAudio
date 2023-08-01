@@ -1,3 +1,44 @@
+// webrocket ////////////////////////////////////////////////////////////////////////////////////////
+var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
+var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
+var wsstatus   = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
+var dirconfig  = '/srv/http/data/camilladsp/configs/';
+ws.onmessage   = response => {
+	var data  = JSON.parse( response.data );
+	var cmd   = Object.keys( data )[ 0 ];
+	var value = data[ cmd ].value;
+	if ( wssignal.includes( cmd ) ) {
+		console.log(value)
+		var el = cmd.replace( 'Get', '#' )
+		$( el ).css( 'width', value );
+	} else if ( wsstatus.includes( cmd ) ) {
+		V.status[ cmd ] = value;
+		if ( cmd === 'GetBufferLevel' ) {
+			S.status = '';
+			wsstatus.forEach( k => S.status += V.status[ k ] +'<br>' );
+			$( '#statusvalue' ).html( S.status );
+		}
+	} else if ( cmd === 'GetVolume' ) {
+		S.volume = value;
+	} else if ( cmd === 'GetMute' ) {
+		S.mute = value;
+	} else if ( cmd === 'GetConfigjson' ) {
+		S.config = value;
+		DEV      = S.config.devices;
+		FIL      = S.config.filters;
+		MIX      = S.config.mixers;
+		PIP      = S.config.pipeline;
+	} else if ( cmd === 'GetConfigName' ) {
+		S.fileconf = value;
+	} else if ( cmd === 'Invalid' ) {
+		info( {
+			  icon    : 'warning'
+			, title   : 'Error'
+			, message : data.Invalid.error
+		} );
+	}
+}
+
 V              = {
 	  graph    : { filters: {}, pipeline: {} }
 	, signal   : {}
@@ -14,24 +55,25 @@ var format     = {};
 	format[ key ] = k;
 } );
 var L  = {
-	  devicetype : { capture: {}, playback: {} }
-	, format     : format
-	, freeasync  : {
+	  devicetype  : { capture: {}, playback: {} }
+	, format      : format
+	, freeasync   : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
 		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 	}
-	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
-	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
-	, subtype    : {
+	, samplerate  : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, sampletype  : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
+	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
+	, statuslabel : [ 'State', 'Sample rate', 'Clipped samples', 'Buffer level', 'Rate adjust' ]
+	, subtype     : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
 		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
 		, Conv        : [ 'Raw', 'Wave', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
-	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
+	, type        : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 }
 var Fkv        = {
 	  pass    : {
@@ -307,45 +349,6 @@ var axes       = {
 		, ...ycommon
 	}
 }
-// webrocket ////////////////////////////////////////////////////////////////////////////////////////
-var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
-var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
-var wsstatus   = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
-var dirconfig  = '/srv/http/data/camilladsp/configs/';
-ws.onmessage   = response => {
-	var data  = JSON.parse( response.data );
-	var cmd   = Object.keys( data )[ 0 ];
-	var value = data[ cmd ].value;
-	if ( wssignal.includes( cmd ) ) {
-		var el = cmd.replace( 'Get', '#' )
-		$( el ).css( 'width', value );
-	} else if ( wsstatus.includes( cmd ) ) {
-		V.status[ cmd ] = value;
-		if ( cmd === 'GetBufferLevel' ) {
-			S.status = '';
-			wsstatus.forEach( k => S.status += V.status[ k ] +'<br>' );
-			$( '#statusvalue' ).html( S.status );
-		}
-	} else if ( cmd === 'GetVolume' ) {
-		S.volume = value;
-	} else if ( cmd === 'GetMute' ) {
-		S.mute = value;
-	} else if ( cmd === 'GetConfigjson' ) {
-		S.config = value;
-		DEV      = S.config.devices;
-		FIL      = S.config.filters;
-		MIX      = S.config.mixers;
-		PIP      = S.config.pipeline;
-	} else if ( cmd === 'GetConfigName' ) {
-		S.fileconf = value;
-	} else if ( cmd === 'Invalid' ) {
-		info( {
-			  icon    : 'warning'
-			, title   : 'Error'
-			, message : data.Invalid.error
-		} );
-	}
-}
 
 // functions /////////////////////////////////////////////////////////////////////////////////////////////
 var gain = {
@@ -496,7 +499,14 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		$( '#statusvalue' ).html( S.status );
+		var label = L.statuslabel;
+		if ( ! DEV.enable_rate_adjust ) {
+			label.pop();
+			S.status.pop();
+		}
+		$( '#statuslabel' ).html( label.join( '<br>' ) );
+		$( '#statusvalue' ).html( S.status.join( '<br>' ) );
+		
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
@@ -511,7 +521,7 @@ var render   = {
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
 		keys.length ? render.device( 'options', keys ) : $( '#options .statuslist' ).empty();
-		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.caprtue.channels : DEV.playback.channels;
+		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, device      : ( section, keys ) => {
@@ -1360,6 +1370,11 @@ $( '.close' ).off( 'click' ).on( 'click', function() {
 	location.href = '/';
 } );
 $( '.refresh' ).on( 'click', function() {
+	V.intSignal = setInterval( () => {
+		wssignal.forEach( k => ws.send( '"'+ k +'"' ) );
+	}, 100 );
+
+	
 	info( {
 		  icon         : 'camilladsp'
 		, title        : 'Interface Settings'

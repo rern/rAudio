@@ -64,12 +64,7 @@ $body = [
 ];
 htmlSection( $head, $body, 'profile' );
 //////////////////////////////////
-$labels = 'State
-	<br>Sample rate
-	<br>Rate adjust
-	<br>Clipped samples
-	<br>Buffer level';
-$body = [ htmlSectionStatus( 'status', $labels ) ];
+$body = [ htmlSectionStatus( 'status', '<div id="statuslabel"></div>' ) ];
 htmlSection( '', $body, 'status' );
 //////////////////////////////////
 $head = [ 
