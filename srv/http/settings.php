@@ -42,15 +42,17 @@ if ( $addonsprogress || $guide ) {
 
 // bottom bar
 $htmlbar = '<div id="bar-bottom">';
+$prefix  = '';
 if ( $camilla ) {
-	$tabs = [ 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
+	$tabs   = [ 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
+	$prefix = 'tab';
 } else {
-	$tabs = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
+	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];
 }
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
 	$active  = $id === $pagetitle ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$id.'"'.$active.'>'.i( $id ).'<a> '.$tab.'</a></div>';
+	$htmlbar.= '<div id="'.$prefix.$id.'"'.$active.'>'.i( $id ).'<a> '.$tab.'</a></div>';
 }
 $htmlbar.= '</div>
 <div id="debug"></div>';

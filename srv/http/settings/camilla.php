@@ -37,7 +37,7 @@ foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
 }
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
-	$htmltabs.= '<div id="div'.$id.'" class="tab">';
+	$htmltabs.= '<div id="'.$id.'" class="tab">';
 	if ( $id === 'devices' ) {
 		$htmltabs.= $htmldevices;
 	} else {
