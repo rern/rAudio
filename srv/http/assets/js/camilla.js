@@ -1289,10 +1289,10 @@ var setting  = {
 	}
 }
 var util          = {
-	  dbFormat    : ( num ) => {
+	  dbFormat     : ( num ) => {
 		return num % 1 === 0 ? num + '.0' : num
 	}
-	, inUse       : ( name ) => {
+	, inUse        : ( name ) => {
 		var filters = V.tab === 'filters';
 		var inuse   = [];
 		if ( filters && ! ( name in FIL ) ) { // file
@@ -1326,7 +1326,7 @@ var util          = {
 		
 		return false
 	}
-	, key2label   : ( key ) => {
+	, key2label    : ( key ) => {
 		if ( key === 'ms' ) return 'ms'
 		
 		var str = key[ 0 ].toUpperCase();
@@ -1345,7 +1345,7 @@ var util          = {
 				.slice( 1 )
 		return str + key
 	}
-	, abels2array : ( array ) => {
+	, labels2array : ( array ) => {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
