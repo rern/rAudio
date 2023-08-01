@@ -57,12 +57,13 @@ $head = [
 	, 'nohelp' => true
 ];
 $body = [
-	[
+	  htmlSectionStatus( 'vu', '<div id="vu"></div>' )
+	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 	]
 ];
-htmlSection( $head, $body, 'profile' );
+htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $body = [ htmlSectionStatus( 'status', '<div id="statuslabel"></div>' ) ];
 htmlSection( '', $body, 'status' );

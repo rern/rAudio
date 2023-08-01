@@ -8,7 +8,6 @@ ws.onmessage   = response => {
 	var cmd   = Object.keys( data )[ 0 ];
 	var value = data[ cmd ].value;
 	if ( wssignal.includes( cmd ) ) {
-		console.log(value)
 		var el = cmd.replace( 'Get', '#' )
 		$( el ).css( 'width', value );
 	} else if ( wsstatus.includes( cmd ) ) {
@@ -499,14 +498,26 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		var label = L.statuslabel;
+		var label = L.statuslabel.slice();
 		if ( ! DEV.enable_rate_adjust ) {
 			label.pop();
 			S.status.pop();
 		}
 		$( '#statuslabel' ).html( label.join( '<br>' ) );
 		$( '#statusvalue' ).html( S.status.join( '<br>' ) );
-		
+		var vu    = 'In';
+		var vubar = '';
+		for ( i = 0; i < DEV.capture.channels; i++ ) {
+			vu    += '<br>';
+			vubar += '<div class="in'+ i +' vubar"></div>';
+		}
+		vu += 'Out';
+		for ( i = 0; i < DEV.playback.channels; i++ ) {
+			vu    += '<br>';
+			vubar += '<div class="out'+ i +' vubar"></div>';
+		}
+		$( '#vu' ).html( vu );
+		$( '#vuvalue' ).html( vubar );
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {

@@ -197,6 +197,15 @@ tr .i-remove {
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
 }
+#vu {
+	line-height: 14px;
+}
+.vubar {
+	width: 230px;
+	height: 3px;
+	background: var( --cg );
+	margin-bottom: 10px;
+}
 
 /* sortable */
 .sortable-ghost {
