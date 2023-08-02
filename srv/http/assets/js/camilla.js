@@ -1,4 +1,4 @@
-// webrocket ////////////////////////////////////////////////////////////////////////////////////////
+// websocket //////////////////////////////////////////////////////////////////////////////
 var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
 ws.onmessage   = response => {
 	var data  = JSON.parse( response.data );
@@ -18,8 +18,7 @@ ws.onmessage   = response => {
 				css = 'width';
 			}
 			value.forEach( ( v, i ) => {
-				v = ( v < -51 ? -51 : ( v > 10 ? 10 : v ) ) * 100 / ( 10 - 51 );
-				if ( v < 0 ) v = 0;
+				v = util.db2percent( v );
 				$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
 			} );
 			break;
@@ -47,12 +46,13 @@ ws.onmessage   = response => {
 		case 'GetRateAdjust':
 			S.status[ cmd ] = value;
 			if ( cmd === V.statuslast ) {
-				render.statusValue();
+				if ( S.status.GetState === 'Running' ) render.statusValue();
 			} else if ( cmd === 'GetState' ) {
 				if ( value !== 'Running' ) {
 					clearInterval( V.intervalvu );
 					delete V.intervalvu;
-					$( '.peak' ).css( 'background', 'var( --cg )' );
+					$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+					$( '.rms' ).css( 'width', 0 );
 				} else {
 					if ( ! ( 'intervalvu' in V ) ) {
 						$( '.peak' ).css( 'background', '' );
@@ -548,17 +548,28 @@ var render   = {
 		render.statusValue();
 		if ( $( '#divvu' ).length ) return
 		
-		var vubar = '<div id="divvu">';
+		var vugrid  = '<div id="vugrid">';
+		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
+		var vulabel = '<div id="vulabel">';
+		[ -96, -72, -48, -24, -12, -6, 0, 6 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		var vubar   = '<div id="divvu">'
+					 + vugrid +'</div>'
+					 +'<div id="in">';
 		[ 'capture', 'playback' ].forEach( k => {
+			var lb = false;
 			var cp = k[ 0 ].toUpperCase();
+			if ( ! lb && k === 'playback' ) {
+				lb = true;
+				vubar += '</div>'+ vulabel +'</div><div id="out">';
+			}
 			for ( i = 0; i < DEV[ k ].channels; i++ ) {
 				vubar += '<div class="vubar"></div>'
 						+'<div class="vubar peak '+ cp + i +' "></div>'
 						+'<div class="vubar rms '+ cp + i +' "></div>';
 			}
 		} );
-		$( '#vu' ).html( 'In<br>Out' );
-		$( '#vuvalue' ).html( vubar +'</div>' );
+		$( '#vu' ).html( '&nbsp;' );
+		$( '#vuvalue' ).html( vubar +'</div></div>' );
 		render.statusGet();
 		setInterval( render.statusGet, 1000 );
 	}
@@ -569,6 +580,7 @@ var render   = {
 		var status = '';
 		V.statusread.forEach( k => {
 			var val = S.status[ k ];
+			if ( k !== 'GetState' ) val = val.toLocaleString();
 			if ( k === 'GetClippedSamples' ) val = '<red>'+ val +'</red.';
 			status += val +'<br>';
 		} );
@@ -1368,7 +1380,18 @@ var setting  = {
 	}
 }
 var util          = {
-	  dbFormat     : ( num ) => {
+	  db2percent( v ) {
+		var value = 0;
+		if ( v >= -12 ) {
+			value = 81.25 + 12.5 * v / 6
+		} else if ( v >= -24 ) {
+			value = 68.75 + 12.5 * v / 12
+		} else {
+			value = 56.25 + 12.5 * v / 24
+		}
+		return value < 0 ? 0 : ( value > 100 ? 100 : value )
+	}
+	, dbFormat     : ( num ) => {
 		return num % 1 === 0 ? num + '.0' : num
 	}
 	, inUse        : ( name ) => {
