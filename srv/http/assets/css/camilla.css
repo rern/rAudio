@@ -278,17 +278,22 @@ tr .i-remove {
 }
 #vulabel a {
 	display: inline-block;
-	width: calc( 100% * 0.115 );
-	text-align: center;
+	width: calc( 100% * 0.117 );
 }
 #vulabel a:nth-child(even) {
 	color: var( --cga );
 }
+#vulabel .l4 {
+	padding-left: 1px;
+}
+#vulabel .l5 {
+	padding-left: 4px;
+}
 #vulabel .l6 {
-	padding-left: 10px;
+	padding-left: 12px;
 }
 #vulabel .l7 {
-	padding-left: 8px;
+	padding-left: 11px;
 }
 /* sortable */
 .sortable-ghost {
