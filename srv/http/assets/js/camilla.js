@@ -4,18 +4,28 @@ ws.onmessage   = response => {
 	var data  = JSON.parse( response.data );
 	var cmd   = Object.keys( data )[ 0 ];
 	var value = data[ cmd ].value;
-	var cp, css, type;
+	var cl, css;
 	switch ( cmd ) {
-		case 'GetSignalRange':
-			$( '.peak, .rms' ).css( 'background', value > 1 ? '#f00' : '' );
-			break;
 		case 'GetCaptureSignalPeak':
-		case 'GetPlaybackSignalPeak':
-			value.forEach( ( v, i ) => $( '.'+ cmd[ 3 ] + i +'.peak' ).css( 'left', ( ( v + 100 ) / 1.1 ) +'%' ) );
-			break;
 		case 'GetCaptureSignalRms':
+		case 'GetPlaybackSignalPeak':
 		case 'GetPlaybackSignalRms':
-			value.forEach( ( v, i ) => $( '.'+ cmd[ 3 ] + i +'.rms' ).css( 'width', ( ( v + 100 ) / 1.1 ) +'%' ) );
+			if ( cmd.slice( -1 ) === 'k' ) {
+				cl  = '.peak';
+				css = 'left';
+			} else {
+				cl  = '.rms'
+				css = 'width';
+			}
+			value.forEach( ( v, i ) => {
+				v = ( v < -51 ? -51 : ( v > 10 ? 10 : v ) ) * 100 / ( 10 - 51 );
+				if ( v < 0 ) v = 0;
+				$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
+			} );
+			break;
+		case 'GetClippedSamples':
+			$( '.peak, .rms' ).css( 'background', value > S.status.GetClippedSamples ? '#f00' : '' );
+			S.status.GetClippedSamples = value;
 			break;
 		case 'GetConfigjson':
 			S.config = value;
@@ -33,22 +43,21 @@ ws.onmessage   = response => {
 			break;
 		case 'GetState':
 		case 'GetCaptureRate':
-		case 'GetClippedSamples':
 		case 'GetBufferLevel':
 		case 'GetRateAdjust':
-			V.status[ cmd ] = value;
+			S.status[ cmd ] = value;
 			if ( cmd === V.statuslast ) {
-				var status = '';
-				V.statuslist.forEach( k => status += V.status[ k ] +'<br>' );
-				$( '#statusvalue' ).html( status );
-			}
-			if ( cmd === 'GetState' ) {
+				render.statusValue();
+			} else if ( cmd === 'GetState' ) {
 				if ( value !== 'Running' ) {
 					clearInterval( V.intervalvu );
 					delete V.intervalvu;
-					return
+					$( '.peak' ).css( 'background', 'var( --cg )' );
 				} else {
-					if ( ! ( 'intervalvu' in V ) ) render.vu();
+					if ( ! ( 'intervalvu' in V ) ) {
+						$( '.peak' ).css( 'background', '' );
+						render.vu();
+					}
 				}
 			}
 			break;
@@ -56,9 +65,9 @@ ws.onmessage   = response => {
 }
 
 V              = {
-	  graph    : { filters: {}, pipeline: {} }
+	  clipped  : 0
+	, graph    : { filters: {}, pipeline: {} }
 	, sortable : {}
-	, status   : {}
 	, tab      : 'devices'
 }
 var select2opt = { minimumResultsForSearch: 'Infinity' }
@@ -80,7 +89,8 @@ var L  = {
 	, samplerate  : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
 	, sampletype  : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
 	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
-	, statuslabel : [ 'State', 'Sample rate', 'Clipped samples', 'Buffer level', 'Rate adjust' ]
+	, signal      : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
+	, statuslabel : [ 'State', 'Sample rate', 'Buffer level', 'Clipped samples' ]
 	, subtype     : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
@@ -509,18 +519,33 @@ var graph = {
 	}
 }
 var render   = {
-	  status      : ( refresh ) => {
+	  page        : () => {
+		DEV = S.config.devices;
+		FIL = S.config.filters;
+		MIX = S.config.mixers;
+		PIP = S.config.pipeline;
+		render.status();
+		render.tab();
+		showContent();
+	}
+	, status      : ( refresh ) => {
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		var label = L.statuslabel.slice();
-		if ( ! DEV.enable_rate_adjust ) {
-			label.pop();
-			S.status.pop();
+		V.statuslabel = L.statuslabel.slice();
+		var status = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ];
+		V.statusread  = status.slice();
+		V.statuslist  = status.slice();
+		if ( DEV.enable_rate_adjust ) {
+			V.statuslabel.push( 'Rate adjust' );
+			V.statusread.push( 'GetRateAdjust' );
+			V.statuslist.push( 'GetRateAdjust' );
 		}
-		$( '#statuslabel' ).html( label.join( '<br>' ) );
-		$( '#statusvalue' ).html( S.status.join( '<br>' ) );
+		V.statusread.push( 'GetClippedSamples' );
+		V.statuslast = V.statuslist[ V.statuslist.length - 1 ];
+		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
+		render.statusValue();
 		if ( $( '#divvu' ).length ) return
 		
 		var vubar = '<div id="divvu">';
@@ -534,15 +559,23 @@ var render   = {
 		} );
 		$( '#vu' ).html( 'In<br>Out' );
 		$( '#vuvalue' ).html( vubar +'</div>' );
-		var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetBufferLevel', 'GetRateAdjust' ];
-		V.statuslist = wsstatus.slice();
-		if ( ! DEV.enable_rate_adjust ) V.statuslist.pop();
-		V.statuslast = V.statuslist[ V.statuslist.length - 1 ];
-		setInterval( () => V.statuslist.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
+		render.statusGet();
+		setInterval( render.statusGet, 1000 );
+	}
+	, statusGet   : () => {
+		V.statuslist.forEach( k => ws.send( '"'+ k +'"' ) );
+	}
+	, statusValue : () => {
+		var status = '';
+		V.statusread.forEach( k => {
+			var val = S.status[ k ];
+			if ( k === 'GetClippedSamples' ) val = '<red>'+ val +'</red.';
+			status += val +'<br>';
+		} );
+		$( '#statusvalue' ).html( status );
 	}
 	, vu          : () => {
-		var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
-		V.intervalvu = setInterval( () => wssignal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
+		V.intervalvu = setInterval( () => L.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
@@ -738,15 +771,6 @@ var render   = {
 								.replace( /[{"}]/g, '' )
 								.replace( 'type:', '' )
 								.replace( /,/g, ', ' )
-	}
-	, page        : () => {
-		DEV = S.config.devices;
-		FIL = S.config.filters;
-		MIX = S.config.mixers;
-		PIP = S.config.pipeline;
-		render.status();
-		render.tab();
-		showContent();
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );

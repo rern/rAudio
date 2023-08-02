@@ -201,6 +201,26 @@ tr .i-remove {
 	position: relative;
 	width: 230px;
 }
+#divvu::before {
+	content: '';
+	position: absolute;
+	display: block;
+	left: calc( 100% * 100 / 110 );
+	width: 1px;
+	height: 100%;
+	background: var( --cg60 );
+}
+#divvu::after {
+	content: '';
+	position: absolute;
+	display: block;
+	top: 0;
+	left: calc( 100% * 50 / 110 );
+	width: calc( 100% * 25 / 110 );
+	height: 100%;
+	border: 1px solid var( --cg );
+	border-width: 0 1px;
+}
 .vubar {
 	position: absolute;
 	width: 100%;
