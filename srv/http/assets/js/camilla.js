@@ -39,8 +39,17 @@ ws.onmessage   = response => {
 			V.status[ cmd ] = value;
 			if ( cmd === V.statuslast ) {
 				var status = '';
-				V.status.forEach( k => status += V.status[ k ] +'<br>' );
-					$( '#statusvalue' ).html( status );
+				V.statuslist.forEach( k => status += V.status[ k ] +'<br>' );
+				$( '#statusvalue' ).html( status );
+			}
+			if ( cmd === 'GetState' ) {
+				if ( value !== 'Running' ) {
+					clearInterval( V.intervalvu );
+					delete V.intervalvu;
+					return
+				} else {
+					if ( ! ( 'intervalvu' in V ) ) render.vu();
+				}
 			}
 			break;
 	}
@@ -49,6 +58,7 @@ ws.onmessage   = response => {
 V              = {
 	  graph    : { filters: {}, pipeline: {} }
 	, sortable : {}
+	, status   : {}
 	, tab      : 'devices'
 }
 var select2opt = { minimumResultsForSearch: 'Infinity' }
@@ -511,6 +521,8 @@ var render   = {
 		}
 		$( '#statuslabel' ).html( label.join( '<br>' ) );
 		$( '#statusvalue' ).html( S.status.join( '<br>' ) );
+		if ( $( '#divvu' ).length ) return
+		
 		var vubar = '<div id="divvu">';
 		[ 'capture', 'playback' ].forEach( k => {
 			var cp = k[ 0 ].toUpperCase();
@@ -522,13 +534,15 @@ var render   = {
 		} );
 		$( '#vu' ).html( 'In<br>Out' );
 		$( '#vuvalue' ).html( vubar +'</div>' );
-		var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
 		var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetBufferLevel', 'GetRateAdjust' ];
-		V.status     = wsstatus.slice();
-		if ( ! DEV.enable_rate_adjust ) V.status.pop();
-		V.statuslast = V.status[ V.status.length - 1 ];
-		setInterval( () => V.status.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
-		setInterval( () => wssignal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
+		V.statuslist = wsstatus.slice();
+		if ( ! DEV.enable_rate_adjust ) V.statuslist.pop();
+		V.statuslast = V.statuslist[ V.statuslist.length - 1 ];
+		setInterval( () => V.statuslist.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
+	}
+	, vu          : () => {
+		var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
+		V.intervalvu = setInterval( () => wssignal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
