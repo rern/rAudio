@@ -53,7 +53,7 @@ $htmltabs.= '</div>';
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'refresh' => 'gear' ]
+	, 'button' => [ 'setting-status' => 'gear' ]
 	, 'nohelp' => true
 ];
 $body = [

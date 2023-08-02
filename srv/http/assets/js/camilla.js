@@ -1,47 +1,53 @@
 // webrocket ////////////////////////////////////////////////////////////////////////////////////////
 var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
-var wssignal   = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
-var wsstatus   = [ 'GetState', 'GetCaptureRate', 'GetRateAdjust', 'GetClippedSamples', 'GetBufferLevel' ];
-var dirconfig  = '/srv/http/data/camilladsp/configs/';
 ws.onmessage   = response => {
 	var data  = JSON.parse( response.data );
 	var cmd   = Object.keys( data )[ 0 ];
 	var value = data[ cmd ].value;
-	if ( wssignal.includes( cmd ) ) {
-		var el = cmd.replace( 'Get', '#' )
-		$( el ).css( 'width', value );
-	} else if ( wsstatus.includes( cmd ) ) {
-		V.status[ cmd ] = value;
-		if ( cmd === 'GetBufferLevel' ) {
-			S.status = '';
-			wsstatus.forEach( k => S.status += V.status[ k ] +'<br>' );
-			$( '#statusvalue' ).html( S.status );
-		}
-	} else if ( cmd === 'GetVolume' ) {
-		S.volume = value;
-	} else if ( cmd === 'GetMute' ) {
-		S.mute = value;
-	} else if ( cmd === 'GetConfigjson' ) {
-		S.config = value;
-		DEV      = S.config.devices;
-		FIL      = S.config.filters;
-		MIX      = S.config.mixers;
-		PIP      = S.config.pipeline;
-	} else if ( cmd === 'GetConfigName' ) {
-		S.fileconf = value;
-	} else if ( cmd === 'Invalid' ) {
-		info( {
-			  icon    : 'warning'
-			, title   : 'Error'
-			, message : data.Invalid.error
-		} );
+	var cp, css, type;
+	switch ( cmd ) {
+		case 'GetSignalRange':
+			$( '.peak, .rms' ).css( 'background', value > 1 ? '#f00' : '' );
+			break;
+		case 'GetCaptureSignalPeak':
+		case 'GetPlaybackSignalPeak':
+			value.forEach( ( v, i ) => $( '.'+ cmd[ 3 ] + i +'.peak' ).css( 'left', ( ( v + 100 ) / 1.1 ) +'%' ) );
+			break;
+		case 'GetCaptureSignalRms':
+		case 'GetPlaybackSignalRms':
+			value.forEach( ( v, i ) => $( '.'+ cmd[ 3 ] + i +'.rms' ).css( 'width', ( ( v + 100 ) / 1.1 ) +'%' ) );
+			break;
+		case 'GetConfigjson':
+			S.config = value;
+			DEV      = S.config.devices;
+			FIL      = S.config.filters;
+			MIX      = S.config.mixers;
+			PIP      = S.config.pipeline;
+			break;
+		case 'Invalid':
+			info( {
+				  icon    : 'warning'
+				, title   : 'Error'
+				, message : data.Invalid.error
+			} );
+			break;
+		case 'GetState':
+		case 'GetCaptureRate':
+		case 'GetClippedSamples':
+		case 'GetBufferLevel':
+		case 'GetRateAdjust':
+			V.status[ cmd ] = value;
+			if ( cmd === V.statuslast ) {
+				var status = '';
+				V.status.forEach( k => status += V.status[ k ] +'<br>' );
+					$( '#statusvalue' ).html( status );
+			}
+			break;
 	}
 }
 
 V              = {
 	  graph    : { filters: {}, pipeline: {} }
-	, signal   : {}
-	, status   : {}
 	, sortable : {}
 	, tab      : 'devices'
 }
@@ -493,7 +499,7 @@ var graph = {
 	}
 }
 var render   = {
-	  status      : () => {
+	  status      : ( refresh ) => {
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
@@ -505,19 +511,24 @@ var render   = {
 		}
 		$( '#statuslabel' ).html( label.join( '<br>' ) );
 		$( '#statusvalue' ).html( S.status.join( '<br>' ) );
-		var vu    = 'In';
-		var vubar = '';
-		for ( i = 0; i < DEV.capture.channels; i++ ) {
-			vu    += '<br>';
-			vubar += '<div class="in'+ i +' vubar"></div>';
-		}
-		vu += 'Out';
-		for ( i = 0; i < DEV.playback.channels; i++ ) {
-			vu    += '<br>';
-			vubar += '<div class="out'+ i +' vubar"></div>';
-		}
-		$( '#vu' ).html( vu );
-		$( '#vuvalue' ).html( vubar );
+		var vubar = '<div id="divvu">';
+		[ 'capture', 'playback' ].forEach( k => {
+			var cp = k[ 0 ].toUpperCase();
+			for ( i = 0; i < DEV[ k ].channels; i++ ) {
+				vubar += '<div class="vubar"></div>'
+						+'<div class="vubar peak '+ cp + i +' "></div>'
+						+'<div class="vubar rms '+ cp + i +' "></div>';
+			}
+		} );
+		$( '#vu' ).html( 'In<br>Out' );
+		$( '#vuvalue' ).html( vubar +'</div>' );
+		var wssignal = [ 'GetSignalRange', 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms' ];
+		var wsstatus = [ 'GetState', 'GetCaptureRate', 'GetClippedSamples', 'GetBufferLevel', 'GetRateAdjust' ];
+		V.status     = wsstatus.slice();
+		if ( ! DEV.enable_rate_adjust ) V.status.pop();
+		V.statuslast = V.status[ V.status.length - 1 ];
+		setInterval( () => V.status.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
+		setInterval( () => wssignal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
 	} //////////////////////////////////////////////////////////////////////////////////////
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
@@ -1192,6 +1203,7 @@ var setting  = {
 		var index = PIP.length - 1;
 		var li = render.pipe( PIP[ index ], index );
 		$( '#pipeline .entriess.main' ).append( li );
+		setting.sortRefresh( 'main' );
 		V.graph.pipeline = {}
 		var $ligraph = $( '#pipeline .ligraph:not( .hide )' );
 		if ( $ligraph.length ) $ligraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
@@ -1265,7 +1277,12 @@ var setting  = {
 			}
 		} );
 	}
-	, save : ( icon, titlle, msg ) => {
+	, sortRefresh   : ( k ) => {
+		V.sortable[ k ].destroy();
+		delete V.sortable[ k ];
+		render.sortable( k );
+	}
+	, save          : ( icon, titlle, msg ) => {
 		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
@@ -1274,7 +1291,7 @@ var setting  = {
 			banner( icon, titlle, msg );
 		}
 	}
-	, set  : () => {
+	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		ws.send( '"Reload"' );
 		ws.send( '"GetConfigjson"' );
@@ -1380,28 +1397,12 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 $( '.close' ).off( 'click' ).on( 'click', function() {
 	location.href = '/';
 } );
-$( '.refresh' ).on( 'click', function() {
-	V.intSignal = setInterval( () => {
-		wssignal.forEach( k => ws.send( '"'+ k +'"' ) );
-	}, 100 );
-
-	
+$( '.setting-status' ).on( 'click', function() {
 	info( {
-		  icon         : 'camilladsp'
-		, title        : 'Interface Settings'
-		, checkbox     : [ 'Reset clipped samples', 'Refresh status every second' ]
-		, checkchanged : true
-		, ok           : () => {
-			var val = infoVal();
-			if ( val[ 0 ] ) ws.send( '"Reload"' );
-			if ( val[ 1 ] ) {
-				V.intstatus = setInterval( () => {
-					wsstatus.forEach( k => ws.send( '"'+ k +'"' ) );
-				}, 1000 );
-			} else {
-				clearInterval( V.intstatus );
-			}
-		}
+		  icon    : 'camilladsp'
+		, title   : 'Status'
+		, message : 'Reset clipped samples?'
+		, ok      : () => ws.send( '"Reload"' )
 	} );
 } );
 $( '#configuration' ).on( 'change', function() {
@@ -1830,6 +1831,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			, ok          : () => {
 				PIP[ index ].names.push( infoVal() );
 				setting.save( V.tab, title, 'Save ...' );
+				setting.sortRefresh( 'sub' );
 				graph.pipeline();
 			}
 		} );
@@ -1849,6 +1851,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 				}
 				setting.save( V.tab, title, 'Remove filter ...' );
 				V.li.remove();
+				setting.sortRefresh( main ? 'main' : 'sub' );
 				graph.pipeline();
 			}
 		} );
