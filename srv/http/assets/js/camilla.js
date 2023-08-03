@@ -339,6 +339,7 @@ var gain     = {
 			.toggleClass( 'i-mute bl', mute )
 			.toggleClass( 'i-volume', ! mute );
 		$( '#volume' ).prop( 'disabled', mute );
+		$( '#up, #dn' ).toggleClass( 'disabled', mute );
 	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
@@ -508,7 +509,7 @@ var render   = {
 		var vugrid  = '<div id="vugrid">';
 		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
-		[ -96, -72, -48, -24, -12, -6, 0, 6 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
+		[ '', -96, -48, -24, -12, -6, 0, 6 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
 		var vubar   = '<div id="divvu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
