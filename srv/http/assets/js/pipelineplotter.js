@@ -285,6 +285,12 @@ function createPipelinePlot() {
 		.attr( 'fill', 'none' )
 		.attr( 'stroke', color.w );
 		
-$( '.pipeline path' ).last().after( $( '.pipeline text' ) )
-/**/$( node ).removeClass( 'hide' );
+/**/$( '.pipeline path' ).last().after( $( '.pipeline text' ) );
+	$( node ).removeClass( 'hide' );
+	var wmax = elw = 0;
+	$( '.flowchart rect' ).each( ( i, el ) => {
+		elw = el.getBoundingClientRect().width;
+		if ( elw > wmax ) wmax = elw;
+	} );
+	if ( wmax > 85 ) $( '.flowchart' ).width( 85 / wmax * 658 );
 }

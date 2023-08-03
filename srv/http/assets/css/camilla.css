@@ -298,6 +298,10 @@ tr .i-remove {
 #vulabel .l7 {
 	padding-left: 11px;
 }
+.flowchart {
+	display: block;
+	margin: 0 auto;
+}
 /* sortable */
 .sortable-ghost {
 	background: var( --cg60 );
