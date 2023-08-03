@@ -1499,6 +1499,14 @@ $( '#volume' ).on( 'click input keyup', function( e ) {
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
 	if ( e.type === 'click' ) gain.save();
 } );
+$( '#up, #dn' ).on( 'click', function() {
+	S.volume += this.id === 'up' ? 0.1 : -0.1;
+	$( '#gain' ).text( util.dbFormat( S.volume ) );
+	$( '#volume' )
+		.val( S.volume )
+		.trigger( 'click' );
+	if ( S.mute ) $( '#mute' ).trigger( 'click' );
+} );
 $( '#mute' ).on( 'click', function() {
 	gain.mutemain( ! S.mute );
 } );

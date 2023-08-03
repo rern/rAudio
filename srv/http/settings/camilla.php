@@ -48,6 +48,12 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 }
 
 $htmltabs.= '</div>';
+$htmlvolume = '
+<input id="volume" type="range" min="-100" max="21" step="0.1">
+<i id="dn" class="i-minus gr setting"></i>
+<i id="mute" class="i-volume setting"></i>
+<i id="up" class="i-plus gr setting"></i>
+';
 
 //////////////////////////////////
 $head = [ 
@@ -58,7 +64,7 @@ $head = [
 ];
 $body = [
 	  htmlSectionStatus( 'vu' )
-	, htmlSectionStatus( 'volume', '<code id="gain">0</code>', '<input id="volume" type="range" min="-100" max="21" step="0.1"><i id="mute" class="i-volume setting"></i>' )
+	, htmlSectionStatus( 'volume', '<code id="gain">0</code>', $htmlvolume )
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
