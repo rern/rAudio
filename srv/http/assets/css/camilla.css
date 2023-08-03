@@ -165,11 +165,14 @@ tr .i-remove {
 	text-align: center;
 	border: 1px solid var( --cg );
 }
-.liinput input[ type=range ] {
+input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cga );
 	max-width: 230px;
 	margin: 0 10px;
+}
+#volume {
+	margin: 0 0 20px 0;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 20px;
@@ -182,13 +185,11 @@ tr .i-remove {
 	height: 300px !important;
 	padding-top: 20px !important;
 }
-.mutemain,
 .mutedest {
 	width: 35px;
 	min-width: 35px !important;
 	padding: 0;
 }
-.mutemain i,
 .mutedest i {
 	width: 35px;
 	line-height: 35px;
@@ -224,6 +225,12 @@ tr .i-remove {
 	background: var(--cg );
 	border-radius: 3px;
 }
+#gain {
+	height: 18px !important;
+	vertical-align: -6px;
+	line-height: 16px;
+	color: var( --cw );
+}
 #in::before {
 	content: 'In';
 }
@@ -240,10 +247,9 @@ tr .i-remove {
 }
 .vubar.peak {
 	width: 3px;
-	background: var( --cm );
 }
 .vubar.peak.red {
-	background: #f00;
+	background: #f00 !important;
 }
 .vubar.rms {
 	position: relative;

@@ -146,11 +146,12 @@ function htmlSection( $head, $body, $id = '' ) {
 	}
 	echo '</div>';
 }
-function htmlSectionStatus( $id, $labels = '', $help = '' ) {
+function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
+	if ( ! $labels ) $labels = '&nbsp;';
 	return '
 <div class="col-l text gr">'.$labels.'</div>
 <div class="col-r text">
-	<div id="'.$id.'value"></div>
+	<div id="'.$id.'value">'.$values.'</div>
 </div>
 <div style="clear:both"></div>
 <div class="helpblock hide">'.$help.'</div>';

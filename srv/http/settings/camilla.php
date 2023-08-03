@@ -57,7 +57,8 @@ $head = [
 	, 'nohelp' => true
 ];
 $body = [
-	  htmlSectionStatus( 'vu', '<div id="vu"></div>' )
+	  htmlSectionStatus( 'vu' )
+	, htmlSectionStatus( 'volume', '<code id="gain">0</code>', '<input id="volume" type="range" min="-100" max="21" step="0.1"><i id="mute" class="i-volume setting"></i>' )
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'

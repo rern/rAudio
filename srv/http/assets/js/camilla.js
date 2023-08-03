@@ -328,6 +328,18 @@ var gain     = {
 				.toggleClass( 'i-mute', mute )
 				.toggleClass( 'i-volume', ! mute );
 	}
+	, mutemain  : ( mute ) => {
+		if ( typeof( mute ) === 'boolean' ) { // set
+			S.mute = mute;
+			ws.send( '{ "SetMute": '+ S.mute +'} ' );
+		} else { // status
+			mute = S.mute;
+		}
+		$( '#mute' )
+			.toggleClass( 'i-mute bl', mute )
+			.toggleClass( 'i-volume', ! mute );
+		$( '#volume' ).prop( 'disabled', mute );
+	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
 		$trother.toggleClass( 'hide', ! other );
@@ -474,6 +486,9 @@ var render   = {
 	}
 	, status      : ( refresh ) => {
 		if ( ! ws ) util.websocket();
+		$( '#gain' ).text( util.dbFormat( S.volume ) );
+		$( '#volume' ).val( S.volume );
+		gain.mutemain();
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
@@ -510,7 +525,6 @@ var render   = {
 						+'<div class="vubar rms '+ cp + i +' "></div>';
 			}
 		} );
-		$( '#vu' ).html( '&nbsp;' );
 		$( '#vuvalue' ).html( vubar +'</div></div>' );
 	}
 	, statusGet   : () => {
@@ -527,9 +541,12 @@ var render   = {
 		$( '#statusvalue' ).html( status );
 	}
 	, vu          : () => {
+		$( '.peak' ).css( 'background', 'var( --cm )' );
 		V.intervalvu = setInterval( () => C.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
 	}
 	, vuClear() {
+		if ( ! ( 'intervalvu' in V ) ) return
+			
 		clearInterval( V.intervalvu );
 		delete V.intervalvu;
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
@@ -594,10 +611,7 @@ var render   = {
 		var classvol = S.mute ? 'infobtn-primary' : '';
 		var iconvol  = S.mute ? 'mute' : 'volume';
 		var step_val = ' step="0.1" value="'+ util.dbFormat( S.volume ) +'"';
-		var li = '<li class="liinput main"><a class="mutemain infobtn '+ classvol +'">'+ ico( iconvol ) +'</a><span class="name">Main Gain</span>'
-				+'<input type="number"'+ step_val +'>'
-				+'<input type="range" class="range"'+ step_val +' min="-55" max="5">'
-				+'</li>';
+		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
 		if ( S.lscoef.length ) {
@@ -1471,13 +1485,22 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 util.websocket();
 
-$( '.setting-status' ).on( 'click', function() {
+$( '.setting-status' ).on( 'click', function( e ) {
 	info( {
 		  icon    : 'camilladsp'
 		, title   : 'Status'
 		, message : 'Reset clipped samples?'
 		, ok      : () => ws.send( '"Reload"' )
 	} );
+} );
+$( '#volume' ).on( 'click input keyup', function( e ) {
+	S.volume = +$( this ).val();
+	$( '#gain' ).text( util.dbFormat( S.volume ) );
+	ws.send( '{ "SetVolume": '+ S.volume +' }' );
+	if ( e.type === 'click' ) gain.save();
+} );
+$( '#mute' ).on( 'click', function() {
+	gain.mutemain( ! S.mute );
 } );
 $( '#configuration' ).on( 'change', function() {
 	if ( V.local ) return
@@ -1724,19 +1747,11 @@ $( '#filters' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( util.dbFormat( val ) );
-	if ( $this.hasClass( 'range' ) ) {
-		ws.send( '{ "SetVolume": '+ val +' }' );
-	} else {
-		V.li     = $this.parents( 'li' );
-		var name = V.li.data( 'name' );
-		FIL[ name ].parameters.gain = val;
-		setting.save();
-	}
-	if ( e.type === 'click' ) gain.save( name ); // name - not main
-} ).on( 'click', '.mutemain', function() {
-	S.mute    = ! S.mute;
-	gain.mute( $( this ), S.mute );
-	ws.send( '{ "SetMute": '+ S.mute +'} ' );
+	V.li     = $this.parents( 'li' );
+	var name = V.li.data( 'name' );
+	FIL[ name ].parameters.gain = val;
+	setting.save();
+	if ( e.type === 'click' ) gain.save( name );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
