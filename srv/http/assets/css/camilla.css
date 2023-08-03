@@ -242,6 +242,9 @@ tr .i-remove {
 	width: 3px;
 	background: var( --cm );
 }
+.vubar.peak.red {
+	background: #f00;
+}
 .vubar.rms {
 	position: relative;
 	width: 0;
@@ -272,7 +275,7 @@ tr .i-remove {
 	height: 20px;
 	line-height: 20px;
 	font-size: 14px;
-	color: var( --cgl );
+	color: var( --cg60 );
 	background: #000;
 	z-index: 0;
 }
@@ -281,7 +284,7 @@ tr .i-remove {
 	width: calc( 100% * 0.117 );
 }
 #vulabel a:nth-child(even) {
-	color: var( --cga );
+	color: var( --cg );
 }
 #vulabel .l4 {
 	padding-left: 1px;

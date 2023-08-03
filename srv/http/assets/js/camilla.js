@@ -1,84 +1,20 @@
-// websocket //////////////////////////////////////////////////////////////////////////////
-var ws         = new WebSocket( 'ws://'+ window.location.host +':1234' );
-ws.onmessage   = response => {
-	var data  = JSON.parse( response.data );
-	var cmd   = Object.keys( data )[ 0 ];
-	var value = data[ cmd ].value;
-	var cl, css;
-	switch ( cmd ) {
-		case 'GetCaptureSignalPeak':
-		case 'GetCaptureSignalRms':
-		case 'GetPlaybackSignalPeak':
-		case 'GetPlaybackSignalRms':
-			if ( cmd.slice( -1 ) === 'k' ) {
-				cl  = '.peak';
-				css = 'left';
-			} else {
-				cl  = '.rms'
-				css = 'width';
-			}
-			value.forEach( ( v, i ) => {
-				v = util.db2percent( v );
-				$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
-			} );
-			break;
-		case 'GetClippedSamples':
-			$( '.peak, .rms' ).css( 'background', value > S.status.GetClippedSamples ? '#f00' : '' );
-			S.status.GetClippedSamples = value;
-			break;
-		case 'GetConfigjson':
-			S.config = value;
-			DEV      = S.config.devices;
-			FIL      = S.config.filters;
-			MIX      = S.config.mixers;
-			PIP      = S.config.pipeline;
-			break;
-		case 'Invalid':
-			info( {
-				  icon    : 'warning'
-				, title   : 'Error'
-				, message : data.Invalid.error
-			} );
-			break;
-		case 'GetState':
-		case 'GetCaptureRate':
-		case 'GetBufferLevel':
-		case 'GetRateAdjust':
-			S.status[ cmd ] = value;
-			if ( cmd === V.statuslast ) {
-				if ( S.status.GetState === 'Running' ) render.statusValue();
-			} else if ( cmd === 'GetState' ) {
-				if ( value !== 'Running' ) {
-					clearInterval( V.intervalvu );
-					delete V.intervalvu;
-					$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
-					$( '.rms' ).css( 'width', 0 );
-				} else {
-					if ( ! ( 'intervalvu' in V ) ) {
-						$( '.peak' ).css( 'background', '' );
-						render.vu();
-					}
-				}
-			}
-			break;
-	}
-}
-
-V              = {
+// var //////////////////////////////////////////////////////////////////////////////
+V            = {
 	  clipped  : 0
 	, graph    : { filters: {}, pipeline: {} }
 	, sortable : {}
 	, tab      : 'devices'
 }
-var select2opt = { minimumResultsForSearch: 'Infinity' }
-var format     = {};
+var ws;
+var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
 	var key = k
 				.replace( 'FLOAT', 'Float' )
 				.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
-var L  = {
+// const //////////////////////////////////////////////////////////////////////////////
+var C        = {
 	  devicetype  : { capture: {}, playback: {} }
 	, format      : format
 	, freeasync   : {
@@ -90,7 +26,6 @@ var L  = {
 	, sampletype  : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
 	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
 	, signal      : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
-	, statuslabel : [ 'State', 'Sample rate', 'Buffer level', 'Clipped samples' ]
 	, subtype     : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
@@ -100,7 +35,63 @@ var L  = {
 	}
 	, type        : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 }
-var Fkv        = {
+// capture / playback //////////////////////////////////////////////////////////////////////////////
+var CPkv     = {
+	  tc     : {
+		  number : { channels: 2 }
+	}
+	, tcsd   : {
+		  select : { device: '', format: '' }
+		, number : { channels: 2 }
+	}
+	, wasapi : {
+		  select : { device: '', format: '' }
+		, number   : { channels: 2 }
+		, checkbox : { exclusive: false, loopback: false }
+	}
+}
+var CP       = {
+	  capture  : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdin     : {
+			  select : { format: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+		, File      : {
+			  select : { filename: '', format: '' }
+			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
+		}
+	}
+	, playback : {
+		  Alsa      : CPkv.tcsd
+		, CoreAudio : {
+			  select   : { device: '', format: '' }
+			, number   : { channels: 2 }
+			, checkbox : { exclusive: false, change_format: false }
+		}
+		, Pulse     : CPkv.tcsd
+		, Wasapi    : CPkv.wasapi
+		, Jack      : CPkv.tc
+		, Stdout    : {
+			  select : { format: '' }
+			, number : { channels: 2 }
+		}
+		, File      : {
+			  select : { filename: '', format: '' }
+			, number : { channels: 2 }
+		}
+	}
+}
+// filters //////////////////////////////////////////////////////////////////////////////
+var Fkv      = {
 	  pass    : {
 		  number : { freq: 1000, q: 0.5 }
 	  }
@@ -119,7 +110,7 @@ var Fkv        = {
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
-var F          = {
+var F        = {
 	  Lowpass           : Fkv.pass
 	, Highpass          : Fkv.pass
 	, Lowshelf          : Fkv.shelf
@@ -179,62 +170,8 @@ var F          = {
 		number: { bits: 16 }
 	}
 }
-// capture / playback
-var CPkv       = {
-	  tc     : {
-		  number : { channels: 2 }
-	}
-	, tcsd   : {
-		  select : { device: '', format: '' }
-		, number : { channels: 2 }
-	}
-	, wasapi : {
-		  select : { device: '', format: '' }
-		, number   : { channels: 2 }
-		, checkbox : { exclusive: false, loopback: false }
-	}
-}
-var CP         = { // capture / playback
-	  capture : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdin     : {
-			  select : { format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
-		}
-	}
-	, playback : {
-		  Alsa      : CPkv.tcsd
-		, CoreAudio : {
-			  select   : { device: '', format: '' }
-			, number   : { channels: 2 }
-			, checkbox : { exclusive: false, change_format: false }
-		}
-		, Pulse     : CPkv.tcsd
-		, Wasapi    : CPkv.wasapi
-		, Jack      : CPkv.tc
-		, Stdout    : {
-			  select : { format: '' }
-			, number : { channels: 2 }
-		}
-		, File      : {
-			  select : { filename: '', format: '' }
-			, number : { channels: 2 }
-		}
-	}
-}
-var C          = {
+// graph //////////////////////////////////////////////////////////////////////////////
+var color    = {
 	  g  : 'hsl( 100, 90%,  30% )'
 	, gd : 'hsl( 100, 90%,  20% )'
 	, gr : 'hsl( 200, 3%,   30% )'
@@ -248,69 +185,69 @@ var C          = {
 	, w  : 'hsl( 200, 3%,   60% )'
 	, wl : 'hsl( 200, 3%,   80% )'
 }
-var plots      = {
+var plots    = {
 	  gain    : {
 		  yaxis : 'y'
 		, type : 'scatter'
 		, name : 'Gain'
-		, line : { width : 4, color: C.m, shape: 'spline' }
+		, line : { width : 4, color: color.m, shape: 'spline' }
 	}
 	, phase   : {
 		  yaxis : 'y2'
 		, type  : 'scatter'
 		, name  : 'Phase'
-		, line : { width : 2, color : C.r }
+		, line : { width : 2, color : color.r }
 	}
 	, delay   : {
 		  yaxis : 'y3'
 		, type  : 'scatter'
 		, name  : 'Delay'
-		, line : { width : 2, color: C.o }
+		, line : { width : 2, color: color.o }
 	}
 	, impulse : {
 		  yaxis : 'y3'
 		, type  : 'scatter'
 		, name  : 'Impulse'
-		, line : { width : 1, color: C.o }
+		, line : { width : 1, color: color.o }
 	}
 	, time    : {
 		  yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Time'
-		, line : { width : 1, color: C.g }
+		, line : { width : 1, color: color.g }
 	}
 }
-var ycommon    = {
+var ycommon  = {
 	  overlaying : 'y'
 	, side       : 'right'
 	, anchor     : 'free'
 	, autoshift  : true
 }
-var axes       = {
-	  freq  : {
+var axes     = {
+	  freq    : {
 		  title     : {
 			  text     : 'Frequency'
-			, font     : { color: C.wl }
+			, font     : { color: color.wl }
 			, standoff : 10
 		}
-		, tickfont  : { color: C.wl }
+		, tickfont  : { color: color.wl }
 		, tickvals  : [ 0, 232, 464, 696, 928 ]
 		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
 		, range     : [ 10, 1000 ]
-		, gridcolor : C.grd
+		, gridcolor : color.grd
 	}
-	, gain  : {
+	, gain    : {
 		  title        : {
 			  text     : 'Gain'
-			, font     : { color: C.m }
+			, font     : { color: color.m }
 			, standoff : 0
 		}
-		, tickfont      : { color: C.m }
-		, zerolinecolor : C.w
-		, linecolor     : C.md
-		, gridcolor     : C.md
+		, tickfont      : { color: color.m }
+		, zerolinecolor : color.w
+		, linecolor     : color.md
+		, gridcolor     : color.md
 	}
-	, gainx : {
+	, gainx   : {
 		  title        : {
 			  text     : ''
 			, font     : { color: '#000' }
@@ -321,63 +258,70 @@ var axes       = {
 		, linecolor     : '#000'
 		, gridcolor     : '#000'
 	}
-	, phase : {
+	, phase   : {
 		  title      : {
 			  text     : 'Phase'
-			, font     : { color: C.r }
+			, font     : { color: color.r }
 			, standoff : 0
 		}
-		, tickfont      : { color: C.r }
+		, tickfont      : { color: color.r }
 		, overlaying    : 'y'
 		, side          : 'right'
 		, range         : [ -190, 193 ]
 		, tickvals      : [ -180, -90, 0, 90, 180 ]
 		, ticktext      : [ 180, 90, 0, 90, 180 ]
-		, zerolinecolor : C.w
-		, linecolor     : C.rd
-		, gridcolor     : C.rd
+		, zerolinecolor : color.w
+		, linecolor     : color.rd
+		, gridcolor     : color.rd
 	}
-	, delay : {
+	, delay   : {
 		  title      : {
 			  text     : 'Delay'
-			, font     : { color: C.o }
+			, font     : { color: color.o }
 			, standoff : 5
 		}
-		, tickfont      : { color: C.o }
+		, tickfont      : { color: color.o }
 		, shift         : 10
-		, zerolinecolor : C.w
-		, linecolor     : C.od
-		, gridcolor     : C.od
+		, zerolinecolor : color.w
+		, linecolor     : color.od
+		, gridcolor     : color.od
 		, ...ycommon
 	}
 	, impulse : {
 		  title      : {
 			  text     : 'Impulse'
-			, font     : { color: C.g }
+			, font     : { color: color.g }
 			, standoff : 5
 		}
-		, tickfont   : { color: C.g }
-		, linecolor  : C.gd
-		, gridcolor  : C.gd
+		, tickfont   : { color: color.g }
+		, linecolor  : color.gd
+		, gridcolor  : color.gd
 		, ...ycommon
 	}
 	, time    : {
 		  title      : {
 			  text     : 'Time'
-			, font     : { color: C.o }
+			, font     : { color: color.o }
 			, standoff : 5
 		}
-		, tickfont   : { color: C.o }
+		, tickfont   : { color: color.o }
 		, shift      : 10
-		, linecolor  : C.od
-		, gridcolor  : C.od
+		, linecolor  : color.od
+		, gridcolor  : color.od
 		, ...ycommon
 	}
 }
 
-// functions /////////////////////////////////////////////////////////////////////////////////////////////
-var gain = {
-	  mute  : ( $this, mute ) => {
+// functions //////////////////////////////////////////////////////////////////////////////
+function renderPage() { // common from settings.js
+	render.page();
+}
+function pushstreamDisconnect() { // from settings.js
+	if ( ws ) ws.close();
+}
+
+var gain     = {
+	  mute      : ( $this, mute ) => {
 		$this
 			.toggleClass( 'infobtn-primary', mute )
 			.find( 'i' )
@@ -389,7 +333,7 @@ var gain = {
 		$trother.toggleClass( 'hide', ! other );
 		if ( ! other ) $trother.find( 'input' ).val( rate );
 	}
-	, save   : ( name ) => {
+	, save      : ( name ) => {
 		var filters  = V.tab === 'filters';
 		var fgraph   = filters && V.li.find( '.ligraph:not( .hide )' ).length;
 		var pgraphs  = [];
@@ -410,7 +354,7 @@ var gain = {
 			delete V.gainupdn;
 		}, 1000 );
 	}
-	, updown : ( $this ) => {
+	, updown    : ( $this ) => {
 		clearTimeout( V.gaintimeout );
 		V.gainupdn = true;
 		$this.next()
@@ -418,7 +362,7 @@ var gain = {
 			.trigger( 'click' );
 	}
 }
-var graph = {
+var graph    = {
 	  pipeline : () => {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
@@ -490,12 +434,12 @@ var graph = {
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
-	, refresh : ( fgraph, pgraphs ) => {
+	, refresh  : ( fgraph, pgraphs ) => {
 		if ( fgraph ) graph.plot();
 		if ( pgraphs.length ) pgraphs.forEach( i => graph.plot( $( '#pipeline li' ).eq( i ) ) );
 		fgraph = pgraph = '';
 	}
-	, toggle  : () => {
+	, toggle   : () => {
 		var $ligraph = V.li.find( '.ligraph' );
 		if ( ! $ligraph.length ) {
 			graph.plot();
@@ -529,21 +473,19 @@ var render   = {
 		showContent();
 	}
 	, status      : ( refresh ) => {
+		if ( ! ws ) util.websocket();
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		V.statuslabel = L.statuslabel.slice();
-		var status = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ];
-		V.statusread  = status.slice();
-		V.statuslist  = status.slice();
+		V.statuslabel = [ 'State',    'Capture rate',   'Buffer level', 'Clipped samples' ];
+		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) {
 			V.statuslabel.push( 'Rate adjust' );
-			V.statusread.push( 'GetRateAdjust' );
-			V.statuslist.push( 'GetRateAdjust' );
+			V.statusget.push( 'GetRateAdjust' );
 		}
-		V.statusread.push( 'GetClippedSamples' );
-		V.statuslast = V.statuslist[ V.statuslist.length - 1 ];
+		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
+		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
 		if ( $( '#divvu' ).length ) return
@@ -570,31 +512,35 @@ var render   = {
 		} );
 		$( '#vu' ).html( '&nbsp;' );
 		$( '#vuvalue' ).html( vubar +'</div></div>' );
-		render.statusGet();
-		setInterval( render.statusGet, 1000 );
 	}
 	, statusGet   : () => {
-		V.statuslist.forEach( k => ws.send( '"'+ k +'"' ) );
+		V.statusget.forEach( k => ws.send( '"'+ k +'"' ) );
 	}
 	, statusValue : () => {
 		var status = '';
 		V.statusread.forEach( k => {
 			var val = S.status[ k ];
 			if ( k !== 'GetState' ) val = val.toLocaleString();
-			if ( k === 'GetClippedSamples' ) val = '<red>'+ val +'</red.';
+			if ( k === 'GetClippedSamples' ) val = '<a class="clipped'+ ( val !== '0' ? ' ora' : '' ) +'">'+ val +'</a>';
 			status += val +'<br>';
 		} );
 		$( '#statusvalue' ).html( status );
 	}
 	, vu          : () => {
-		V.intervalvu = setInterval( () => L.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
-	} //////////////////////////////////////////////////////////////////////////////////////
+		V.intervalvu = setInterval( () => C.signal.forEach( k => ws.send( '"'+ k +'"' ) ), 100 );
+	}
+	, vuClear() {
+		clearInterval( V.intervalvu );
+		delete V.intervalvu;
+		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
+		$( '.rms' ).css( 'width', 0 );
+	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
 			S.devicetype[ i ].sort().forEach( t => {
 				var v = t.replace( 'Alsa', 'ALSA' )
 						 .replace( 'Std',  'std' );
-				L.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
 		[ 'sampling', 'capture', 'playback' ].forEach( k => render.device( k ) );
@@ -607,13 +553,13 @@ var render   = {
 	}
 	, device      : ( section, keys ) => {
 		if ( [ 'capture', 'playback' ].includes( section ) ) {
-			var kv    = jsonClone( DEV[ section ] );
+			var kv    = DEV[ section ];
 			var k_v   = CP[ section ][ kv.type ];
 			var keys  = [ 'type' ];
 			$.each( k_v, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
 		} else {
 			var kv    = DEV;
-			if ( section === 'sampling' ) keys = L.sampling;
+			if ( section === 'sampling' ) keys = C.sampling;
 		}
 		if ( section === 'options' ) {
 			var labels = '<hr>';
@@ -641,7 +587,7 @@ var render   = {
 			 '<div class="col-l text gr">'+ labels +'</div>'
 			+'<div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
 		);
-	} //////////////////////////////////////////////////////////////////////////////////////
+	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
@@ -675,7 +621,7 @@ var render   = {
 	}
 	, filterfile  : ( k ) => {
 		return '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>'
-	} //////////////////////////////////////////////////////////////////////////////////////
+	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
 		var li = '';
@@ -719,8 +665,8 @@ var render   = {
 			} );
 		} );
 		render.toggle( li, 'sub' );
-		$( '#mixers .entries select' ).select2( select2opt );
-	} //////////////////////////////////////////////////////////////////////////////////////
+		$( '#mixers .entries select' ).select2( { minimumResultsForSearch: 'Infinity' } );
+	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
 		var li   = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
@@ -770,7 +716,7 @@ var render   = {
 				graph.pipeline();
 			}
 		} );
-	} //////////////////////////////////////////////////////////////////////////////////////
+	} //---------------------------------------------------------------------------------------------
 	, dataSort    : ( tab ) => {
 		var kv   = S.config[ tab ];
 		var data = {};
@@ -803,23 +749,91 @@ var render   = {
 			.removeClass( 'hide' );
 	}
 }
-var renderPage = render.page;
 var setting  = {
-	device        : ( dev, type ) => {
+	  resampling    : ( freeasync ) => {
+		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
+		var select      = [ C.sampletype, C.samplerate ];
+		var numberlabel = [ 'Other' ];
+		var values      = {};
+		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
+		if ( ! C.samplerate.includes( DEV.capture_samplerate ) ) values.capture_samplerate = 'Other';
+		values.other = values.capture_samplerate;
+		if ( freeasync ) {
+			selectlabel.push( 'interpolation', 'window' );
+			select.push( C.freeasync.interpolation, C.freeasync.window );
+			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
+			var f  = DEV.resampler_type.FreeAsync || {};
+			values = {
+				  resampler_type     : 'FreeAsync'
+				, capture_samplerate : values.capture_samplerate
+				, interpolation      : f.interpolation      || 'Linear'
+				, window             : f.window             || 'Blackman2'
+				, other              : values.capture_samplerate
+				, sinc_len           : f.sinc_len           || 128
+				, oversampling_ratio : f.oversampling_ratio || 1024
+				, f_cutoff           : f.f_cutoff           || 0.925
+			}
+		}
+		var title = 'Resampling'
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, selectlabel  : selectlabel
+			, select       : select
+			, numberlabel  : numberlabel
+			, boxwidth     : 160
+			, order        : [ 'select', 'number' ]
+			, values       : values
+			, checkchanged : DEV.enable_resampling
+			, beforeshow   : () => {
+				var $trnumber = $( '.trnumber' );
+				var $trother = $trnumber.eq( 0 );
+				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
+				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
+				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
+				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
+					if ( $( this ).val() === 'FreeAsync' ) {
+						setting.resampling( 'freeasync' );
+					} else if ( $trnumber.length > 1 ) {
+						setting.resampling();
+					}
+				} );
+				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
+				gain.hideother( $trother, $( this ).val() );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : () => {
+				var val = infoVal();
+				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
+				if ( freeasync ) {
+					var v = {}
+					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
+					DEV.resampler_type = { FreeAsync: v }
+				}
+				DEV.enable_resampling = true;
+				setting.save( V.tab, title, 'Change ...' );
+				$( '#setting-enable_resampling' ).removeClass( 'hide' );
+				render.devices();
+			}
+		} );
+	}
+	, device        : ( dev, type ) => {
 		var key_val, kv, k, v;
 		var data        = jsonClone( DEV[ dev ] );
 		var type        = type || data.type;
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ L.devicetype[ dev ] ];
+		var select      = [ C.devicetype[ dev ] ];
 		var values      = { type: type }
-		key_val         = CP[ dev ][ type ];
+		key_val         = jsonClone( CP[ dev ][ type ] );
 		if ( 'select' in key_val ) {
-			kv          = jsonClone( key_val.select );
+			kv          = key_val.select;
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var s = L.format;
+					var s = C.format;
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
 					var s = S.device;
@@ -837,7 +851,7 @@ var setting  = {
 		// text
 		var textlabel = false;
 		if ( 'text' in key_val ) {
-			kv        = jsonClone( key_val.text );
+			kv        = key_val.text;
 			k         = Object.keys( kv );
 			textlabel = util.labels2array( k );
 			k.forEach( key => {
@@ -848,7 +862,7 @@ var setting  = {
 		// number
 		var numberlabel = false;
 		if ( 'number' in key_val ) {
-			kv          = jsonClone( key_val.number );
+			kv          = key_val.number;
 			k           = Object.keys( kv );
 			numberlabel = util.labels2array( k );
 			k.forEach( key => {
@@ -859,7 +873,7 @@ var setting  = {
 		// checkbox
 		var checkbox    = false;
 		if ( 'checkbox' in key_val ) {
-			kv       = jsonClone( key_val.checkbox );
+			kv       = key_val.checkbox;
 			k        = Object.keys( kv );
 			checkbox = util.labels2array( k );
 			k.forEach( key => {
@@ -896,14 +910,14 @@ var setting  = {
 				setting.save( V.tab, title, 'Change ...' );
 			}
 		} );
-	}
+	} //---------------------------------------------------------------------------------------------
 	, filter        : ( type, subtype, name, existing ) => {
-		var key_val, key, kv, k, v;
+		var data, key_val, key, kv, k, v;
 		var existing = false;
 		if ( ! type ) { // subtype = existing name
 			existing = true;
 			name     = subtype;
-			var data = jsonClone( FIL[ name ] );
+			data     = jsonClone( FIL[ name ] );
 			v        = { type : data.type }
 			$.each( data.parameters, ( key, val ) => v[ key === 'type' ? 'subtype' : key ] = val );
 			type     = v.type;
@@ -911,21 +925,21 @@ var setting  = {
 		}
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ L.type ];
+		var select      = [ C.type ];
 		var values      = { type: type }
 		if ( subtype ) {
 			selectlabel.push( 'subtype' )
-			select.push( L.subtype[ type ] );
+			select.push( C.subtype[ type ] );
 			values.subtype = subtype;
-			key_val        = F[ subtype ];
+			key_val        = jsonClone( F[ subtype ] );
 		}
 		if ( ! key_val ) key_val = F[ type ];
 		if ( subtype === 'Uniform' ) key_val.amplitude = 1;
 		if ( 'select' in key_val ) {
-			kv          = jsonClone( key_val.select );
+			kv          = key_val.select;
 			k           = Object.keys( kv );
 			selectlabel = [ ...selectlabel, ...k ];
-			subtype     = subtype === 'Raw' ? [ S.lscoef, L.format ] : [ S.lscoef ];
+			subtype     = subtype === 'Raw' ? [ S.lscoef, C.format ] : [ S.lscoef ];
 			select      = [ ...select, ...subtype ];
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 			values      = { ...values, ...kv };
@@ -935,7 +949,7 @@ var setting  = {
 		var textlabel   = [ 'name' ];
 		values.name     = name;
 		if ( 'text' in key_val ) {
-			kv        = jsonClone( key_val.text );
+			kv        = key_val.text;
 			k         = Object.keys( kv );
 			textlabel = [ ...textlabel, ...k ];
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
@@ -945,7 +959,7 @@ var setting  = {
 		// number
 		var numberlabel = false;
 		if ( 'number' in key_val ) {
-			kv          = jsonClone( key_val.number );
+			kv          = key_val.number;
 			k           = Object.keys( kv );
 			numberlabel = k;
 			if ( v ) {
@@ -972,7 +986,7 @@ var setting  = {
 		// checkbox
 		var checkbox    = false;
 		if ( 'checkbox' in key_val ) {
-			kv       = jsonClone( key_val.checkbox );
+			kv       = key_val.checkbox;
 			k        = Object.keys( kv );
 			checkbox = util.labels2array( k );
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
@@ -1004,7 +1018,7 @@ var setting  = {
 				var $selecttype = $select.eq( 0 );
 				$selecttype.on( 'change', function() {
 					var type    = $( this ).val();
-					var subtype = type in L.subtype ? L.subtype[ type ][ 0 ] : '';
+					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
 					setting.filter( type, subtype, infoVal().name, existing );
 				} );
 				if ( $select.length > 1 ) {
@@ -1068,7 +1082,7 @@ var setting  = {
 				}
 			}
 		} );
-	}
+	} //---------------------------------------------------------------------------------------------
 	, mixer         : ( name ) => {
 		var title = name ? 'Mixer' : 'New Mixer'
 		info( {
@@ -1194,7 +1208,7 @@ var setting  = {
 				}
 			} );
 		}
-	}
+	} //---------------------------------------------------------------------------------------------
 	, pipeline      : () => {
 		var filters = Object.keys( FIL );
 		info( {
@@ -1257,76 +1271,7 @@ var setting  = {
 		V.graph.pipeline = {}
 		var $ligraph = $( '#pipeline .ligraph:not( .hide )' );
 		if ( $ligraph.length ) $ligraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
-	}
-	, resampling    : ( freeasync ) => {
-		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ L.sampletype, L.samplerate ];
-		var numberlabel = [ 'Other' ];
-		var values      = {};
-		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! L.samplerate.includes( DEV.capture_samplerate ) ) values.capture_samplerate = 'Other';
-		values.other = values.capture_samplerate;
-		if ( freeasync ) {
-			selectlabel.push( 'interpolation', 'window' );
-			select.push( L.freeasync.interpolation, L.freeasync.window );
-			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
-			var f  = DEV.resampler_type.FreeAsync || {};
-			values = {
-				  resampler_type     : 'FreeAsync'
-				, capture_samplerate : values.capture_samplerate
-				, interpolation      : f.interpolation      || 'Linear'
-				, window             : f.window             || 'Blackman2'
-				, other              : values.capture_samplerate
-				, sinc_len           : f.sinc_len           || 128
-				, oversampling_ratio : f.oversampling_ratio || 1024
-				, f_cutoff           : f.f_cutoff           || 0.925
-			}
-		}
-		var title = 'Resampling'
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, selectlabel  : selectlabel
-			, select       : select
-			, numberlabel  : numberlabel
-			, boxwidth     : 160
-			, order        : [ 'select', 'number' ]
-			, values       : values
-			, checkchanged : DEV.enable_resampling
-			, beforeshow   : () => {
-				var $trnumber = $( '.trnumber' );
-				var $trother = $trnumber.eq( 0 );
-				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
-				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
-				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
-				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
-					if ( $( this ).val() === 'FreeAsync' ) {
-						setting.resampling( 'freeasync' );
-					} else if ( $trnumber.length > 1 ) {
-						setting.resampling();
-					}
-				} );
-				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
-				gain.hideother( $trother, $( this ).val() );
-				} );
-			}
-			, cancel       : switchCancel
-			, ok           : () => {
-				var val = infoVal();
-				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
-				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
-				if ( freeasync ) {
-					var v = {}
-					L.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
-					DEV.resampler_type = { FreeAsync: v }
-				}
-				DEV.enable_resampling = true;
-				setting.save( V.tab, title, 'Change ...' );
-				$( '#setting-enable_resampling' ).removeClass( 'hide' );
-				render.devices();
-			}
-		} );
-	}
+	} //---------------------------------------------------------------------------------------------
 	, sortRefresh   : ( k ) => {
 		V.sortable[ k ].destroy();
 		delete V.sortable[ k ];
@@ -1379,7 +1324,7 @@ var setting  = {
 		} );
 	}
 }
-var util          = {
+var util     = {
 	  db2percent( v ) {
 		var value = 0;
 		if ( v >= -12 ) {
@@ -1451,13 +1396,81 @@ var util          = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
+	, websocket     : () => {
+		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
+		ws.onopen    = () => V.intervalstatus = setInterval( render.statusGet, 1000 );
+		ws.onclose   = () => {
+			ws = null;
+			render.vuClear();
+			clearInterval( V.intervalstatus );
+		}
+		ws.onmessage = response => {
+			var data  = JSON.parse( response.data );
+			var cmd   = Object.keys( data )[ 0 ];
+			var value = data[ cmd ].value;
+			var cl, clipped, css;
+			switch ( cmd ) {
+				case 'GetCaptureSignalPeak':
+				case 'GetCaptureSignalRms':
+				case 'GetPlaybackSignalPeak':
+				case 'GetPlaybackSignalRms':
+					if ( cmd.slice( -1 ) === 'k' ) {
+						cl  = '.peak';
+						css = 'left';
+					} else {
+						cl  = '.rms'
+						css = 'width';
+					}
+					value.forEach( ( v, i ) => {
+						v = util.db2percent( v );
+						$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
+					} );
+					break;
+				case 'GetClippedSamples':
+					$( '.peak, .clipped' ).toggleClass( 'red', value > S.status.GetClippedSamples );
+					S.status.GetClippedSamples = value;
+					break;
+				case 'GetConfigjson':
+					S.config = value;
+					DEV      = S.config.devices;
+					FIL      = S.config.filters;
+					MIX      = S.config.mixers;
+					PIP      = S.config.pipeline;
+					break;
+				case 'Invalid':
+					info( {
+						  icon    : 'warning'
+						, title   : 'Error'
+						, message : data.Invalid.error
+					} );
+					break;
+				case 'GetState':
+				case 'GetCaptureRate':
+				case 'GetBufferLevel':
+				case 'GetRateAdjust':
+					S.status[ cmd ] = value;
+					if ( cmd === V.statuslast ) {
+						if ( S.status.GetState === 'Running' ) render.statusValue();
+					} else if ( cmd === 'GetState' ) {
+						if ( value !== 'Running' ) {
+							render.vuClear();
+						} else {
+							if ( ! ( 'intervalvu' in V ) ) {
+								$( '.peak' ).css( 'background', '' );
+								render.vu();
+							}
+						}
+					}
+					break;
+			}
+		}
+	}
 }
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( '.close' ).off( 'click' ).on( 'click', function() {
-	location.href = '/';
-} );
+util.websocket();
+
 $( '.setting-status' ).on( 'click', function() {
 	info( {
 		  icon    : 'camilladsp'
@@ -1542,18 +1555,19 @@ $( '#setting-configuration' ).on( 'click', function() {
 	} );
 } );
 $( '#divsettings' ).on( 'click', '.settings', function() {
-	var textlabel  = L.sampling.slice( 1 );
+	var textlabel  = [ ...C.sampling ].slice( 1 );
 	textlabel.push( 'Other' );
 	var values     = {};
-	L.sampling.forEach( k => values[ k ] = DEV[ k ] );
-	if ( ! L.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+	C.sampling.forEach( k => values[ k ] = DEV[ k ] );
+	if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
 	values.other = values.samplerate;
 	var title = util.key2label( V.tab );
+	console.log( textlabel)
 	info( {
 		  icon         : V.tab
 		, title        : title
 		, selectlabel  : 'Sample Rate'
-		, select       : L.samplerate
+		, select       : C.samplerate
 		, textlabel    : util.labels2array( textlabel )
 		, boxwidth     : 120
 		, order        : [ 'select', 'text' ]
@@ -1729,7 +1743,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $( e.target ).is( 'i' ) || $this.parent().hasClass( 'sub' ) ) return
 	
 	var name   = $this.find( '.li1' ).text();
-	var data   = jsonClone( MIX[ name ].mapping );
+	var data   = MIX[ name ].mapping;
 	render.mixersSub( name, data );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
@@ -1844,7 +1858,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	) return
 	
 	var index = $this.data( 'index' );
-	var data  = jsonClone( PIP[ index ] );
+	var data  = PIP[ index ];
 	if ( data.type === 'Filter' ) {
 		render.pipelineSub( index, data );
 	} else {
