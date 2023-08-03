@@ -1423,26 +1423,51 @@ var util     = {
 			var data  = JSON.parse( response.data );
 			var cmd   = Object.keys( data )[ 0 ];
 			var value = data[ cmd ].value;
-			var cl, clipped, css;
+			var cl, cp, css;
 			switch ( cmd ) {
 				case 'GetCaptureSignalPeak':
 				case 'GetCaptureSignalRms':
 				case 'GetPlaybackSignalPeak':
 				case 'GetPlaybackSignalRms':
+					cp = cmd[ 3 ];
 					if ( cmd.slice( -1 ) === 'k' ) {
+						if ( V.clipped ) break;
+						
 						cl  = '.peak';
 						css = 'left';
+						V[ cmd ] = value;
+						V[ cp ] = [];
 					} else {
 						cl  = '.rms'
 						css = 'width';
 					}
 					value.forEach( ( v, i ) => {
 						v = util.db2percent( v );
+						V[ cp ].push( v );
 						$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
 					} );
 					break;
 				case 'GetClippedSamples':
-					$( '.peak, .clipped' ).toggleClass( 'red', value > S.status.GetClippedSamples );
+					if ( V.clipped ) {
+						S.status.GetClippedSamples = value;
+						break;
+					}
+					
+					if ( value > S.status.GetClippedSamples ) {
+						V.clipped = true;
+						clearTimeout( V.timeoutclipped );
+						$( '.peak, .clipped' )
+							.css( 'transition-duration', 0 )
+							.addClass( 'red' );
+						V.timeoutclipped = setTimeout( () => {
+							V.clipped = false;
+							$( '.peak, .clipped' )
+								.removeClass( 'red' )
+								.css( 'transition-duration', '' );
+							// set clipped value to previous peak
+							[ 'C', 'P' ].forEach( ( k, i ) => $( '.peak.'+ k + i ).css( 'left', util.db2percent( V[ k ][ i ] ) +'%' ) );
+						}, 1000 );
+					}
 					S.status.GetClippedSamples = value;
 					break;
 				case 'GetConfigjson':

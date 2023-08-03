@@ -249,10 +249,10 @@ input[ type=range ] {
 	height: 3px;
 	background: var( --cga );
 	margin-bottom: 10px;
-	transition-duration: 0.1s;
 }
 .vubar.peak {
 	width: 3px;
+	transition-duration: 1s;
 }
 .vubar.peak.red {
 	background: #f00 !important;
@@ -261,6 +261,7 @@ input[ type=range ] {
 	position: relative;
 	width: 0;
 	background: var( --cm );
+	transition-duration: 0.1s;
 }
 #vugrid {
 	position: absolute;
