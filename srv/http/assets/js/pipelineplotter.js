@@ -3,10 +3,10 @@ var pipeline = {
 	, width  : 565
 	, height : 300
 	, color  : {
-		  filter : C.md
+		  filter : color.md
 		, in     : '#000'
-		, mixer  : C.rd
-		, out    : C.gd
+		, mixer  : color.rd
+		, out    : color.gd
 	}
 }
 
@@ -18,7 +18,7 @@ function appendBlock( labels, boxes, label, x, y, width, type ) { // box
 		  x     : x
 		, y     : y + 0.1
 		, text  : label
-		, fill  : C.wl
+		, fill  : color.wl
 		, size  : 0.3
 		, angle : 0
 	} );
@@ -39,7 +39,7 @@ function appendFrame( labels, boxes, label, x, y, width, height ) { // in, mixer
 		  x     : x
 		, y     : -height / 2 - 0.2 + y
 		, text  : label
-		, fill  : C.wl
+		, fill  : color.wl
 		, size  : 0.3
 		, angle : 0
 	} );
@@ -48,7 +48,7 @@ function appendFrame( labels, boxes, label, x, y, width, height ) { // in, mixer
 		, y      : -height / 2 + y
 		, width  : width * 1.4
 		, height : height
-		, fill   : C.gr
+		, fill   : color.gr
 	} );
 }
 function appendLink( links, labels, source, dest, label ) { // line
@@ -64,7 +64,7 @@ function appendLink( links, labels, source, dest, label ) { // line
 			  x     : x
 			, y     : y
 			, text  : label
-			, fill  : C.r
+			, fill  : color.r
 			, size  : 0.25
 			, angle : 0
 		} );
@@ -241,8 +241,8 @@ function createPipelinePlot() {
 		.attr( 'markerWidth', markerBoxWidth )
 		.attr( 'markerHeight', markerBoxHeight )
 		.attr( 'orient', 'auto-start-reverse' )
-		.attr( 'fill', C.w )
-		.attr( 'stroke', C.w )
+		.attr( 'fill', color.w )
+		.attr( 'stroke', color.w )
 		.append( 'path' )
 		// @ts-ignore
 		.attr( 'd', d3.line()( arrowPoints ) );
@@ -283,7 +283,7 @@ function createPipelinePlot() {
 		.attr( 'd', linkGen )
 		.attr( 'marker-end', 'url(#arrow)' )
 		.attr( 'fill', 'none' )
-		.attr( 'stroke', C.w );
+		.attr( 'stroke', color.w );
 		
 $( '.pipeline path' ).last().after( $( '.pipeline text' ) )
 /**/$( node ).removeClass( 'hide' );
