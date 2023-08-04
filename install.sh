@@ -8,9 +8,10 @@ alias=r1
 file=/etc/default/camilladsp
 if [[ ! -e $file ]]; then
 	echo CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml > $file
-	sed -i -e 's|/srv.*camilladsp.yml|$CONFIG|
-' -e '/ExecStart/ i\
+	sed -i -e '/^ExecStart/ d
+' -e '/^Type/ i\
 EnvironmentFile=-/etc/default/camilladsp
+ExecStart=/usr/bin/camilladsp $CONFIG --port 1234 --address 0.0.0.0 --logfile /var/log/camilladsp.log
 ' /usr/lib/systemd/system/camilladsp.service
 	systemctl daemon-reload
 	systemctl try-restart camilladsp
