@@ -976,7 +976,7 @@ function infoWidth() {
 		} ); 
 	}
 	if ( I.headeralign || I.messagealign || I.footeralign ) {
-		$( '#infoContent' ).find( '.infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
+		$( '#infoContent' ).find( '.infoheader, .infomessage, .infofooter' ).css( 'width', $( '#infoContent table' ).width() );
 	}
 }
 

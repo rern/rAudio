@@ -59,7 +59,10 @@ $htmlvolume = '
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'log' => 'file' ]
+	, 'button' => [
+		  'log'     => 'file'
+		, 'display' => 'gear hide'
+	]
 	, 'nohelp' => true
 ];
 $body = [

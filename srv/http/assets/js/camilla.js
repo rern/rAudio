@@ -506,6 +506,7 @@ var render   = {
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
+		$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.display.device );
 		if ( $( '#divvu' ).length ) return
 		
 		var vugrid  = '<div id="vugrid">';
@@ -1514,12 +1515,18 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 util.websocket();
 
-$( '.setting-status' ).on( 'click', function() {
+$( '.display' ).on( 'click', function() {
 	info( {
-		  icon    : 'camilladsp'
-		, title   : 'Status'
-		, message : 'Reset clipped samples?'
-		, ok      : () => ws.send( '"Reload"' )
+		  icon     : 'camilladsp'
+		, title    : 'Settings'
+		, header   : 'Show:'
+		, headeralign : 'left'
+		, checkbox : [ 'Capture and Playback devices' ]
+		, ok       : () => {
+			S.display.device = infoVal();
+			bash( [ 'display', S.display.device, 'CMD DISPLAY' ] );
+			$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.display.device );
+		}
 	} );
 } );
 $( '.log' ).on( 'click', function() {
