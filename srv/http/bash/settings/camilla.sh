@@ -26,7 +26,7 @@ confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	;;
 confswitch )
-	echo CONFIG=$dirconfigs/$NAME.yml > /etc/default/camilladsp
+	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
 	;;
 restart )
 	systemctl restart camilladsp
@@ -62,11 +62,15 @@ setformat )
 save )
 	$dirsettings/camilla.py save
 	;;
+savemute )
+	[[ $MUTE == true ]] && m=-m
+	sed -i "s/^MUTE.*/MUTE=$m/" /etc/default/camilladsp
+	;;
+savevolume )
+	sed -i "s/^GAIN.*/GAIN=-g$VAL/" /etc/default/camilladsp
+	;;
 statuslog )
 	cat /var/log/camilladsp.log
-	;;
-volumesave )
-	echo $VAL > $dirsystem/camilla-volume
 	;;
 	
 esac

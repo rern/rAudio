@@ -115,20 +115,6 @@ $( '#setting-upmpdcli' ).on( 'click', function() {
 		, ok           : switchEnable
 	} );
 } );
-$( '#setting-camilladsp' ).on( 'click', function() {
-	info( {
-		  icon         : SW.icon
-		, title        : SW.title
-		, textlabel    : 'VU refresh rate <gr>(ms)</gr>'
-		, focus        : 0
-		, checkblank   : true
-		, boxwidth     : 100
-		, values       : S.camilladspconf
-		, checkchanged : S.camilladsp
-		, cancel       : switchCancel
-		, ok           : switchEnable
-	} );
-} );
 $( '#setting-hostapd' ).on( 'click', function() {
 	info( {
 		  icon         : SW.icon

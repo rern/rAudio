@@ -4,7 +4,7 @@ $ip           = getHostByName( $hostname );
 $fileexplorer = 'File Explorer &raquo; Address bar: <c>\\\\'.$ip.'</c> or <c>\\\\'.$hostname.'</c>';
 $id_data = [
 	  'autoplay'       => [ 'name' => 'AutoPlay' ]
-	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',                            'status' => true ]
+	, 'camilladsp'     => [ 'name' => 'DSP',              'sub' => 'camilladsp',     'setting' => false,    'status' => true ]
 	, 'dabradio'       => [ 'name' => 'DAB Radio',        'sub' => 'mediamtx',       'setting' => false,    'status' => true ]
 	, 'equalizer'      => [ 'name' => 'Equalizer',        'sub' => 'alsaequal',      'setting' => false ]
 	, 'hostapd'        => [ 'name' => 'Access Point',     'sub' => 'hostapd',                               'status' => true ]

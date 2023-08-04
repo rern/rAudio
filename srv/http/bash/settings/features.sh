@@ -53,25 +53,10 @@ autoplay | lyrics | scrobble )
 brightness )
 	echo $VAL > /sys/class/backlight/rpi_backlight/brightness
 	;;
-camilladspasound )
-	camilladspyml=$dircamilladsp/configs/camilladsp.yml
-	new+=( $( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml ) )
-	new+=( $( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml ) )
-	new+=( $( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml ) )
-	old=( $( awk '/channels|format|rate/ {print $NF}' /etc/asound.conf ) )
-	[[ "${new[@]}" == "${old[@]}" ]] && exit
-	
-	list=( channels format rate )
-	for (( i=0; i < 3; i++ )); do
-		[[ ${new[i]} != ${old[i]} ]] && sed -i -E 's/^(\s*'${list[i]}'\s*).*/\1'${new[i]}'/' /etc/asound.conf
-	done
-	alsactl nrestore &> /dev/null
-	;;
 camilladsp )
 	[[ $( < $dirshm/player ) == mpd ]] && mpc -q stop || $dirbash/cmd.sh playerstop
 	enableFlagSet
 	if [[ $ON ]]; then
-		sed -i -E 's/(interval: ).*/\1'$REFRESH'/' /srv/http/settings/camillagui/config/gui-config.yml
 		pushRestartMpd camilladsp $TF
 	else
 		systemctl stop camilladsp

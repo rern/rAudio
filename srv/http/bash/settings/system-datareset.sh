@@ -7,8 +7,6 @@ if [[ -e $diraddons ]]; then
 	reset=1
 	statePlay && $dirbash/cmd.sh playerstop
 	mpc -q clear
-# camilla 
-	sed -i -E "s/(status_update_interval: ).*/\1100/" /srv/http/settings/camillagui/config/gui-config.yml &> /dev/null
 # hostapd
 	sed -i -E -e 's/^(dhcp-range=).*/\1192.168.5.2,192.168.5.254,24h/
 ' -e 's/^(.*option:router,).*/\1192.168.5.1/
@@ -113,7 +111,7 @@ fi
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'
-false='albumbyartist audiocdplclear backonleft barsalways camilladsp covervu hidecover
+false='albumbyartist audiocdplclear backonleft barsalways covervu hidecover
 	multiraudio noswipe radioelapsed tapaddplay tapreplaceplay vumeter'
 for i in $true; do
 	lines+='

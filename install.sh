@@ -7,11 +7,18 @@ alias=r1
 # 20230808
 file=/etc/default/camilladsp
 if [[ ! -e $file ]]; then
-	echo CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml > $file
+	cat << EOF > $file
+ADDRESS=0.0.0.0
+CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
+LOGFILE=/var/log/camilladsp.log
+MUTE=
+PORT=1234
+GAIN=-g0
+EOF
 	sed -i -e '/^ExecStart/ d
-' -e '/^Type/ i\
-EnvironmentFile=-/etc/default/camilladsp
-ExecStart=/usr/bin/camilladsp $CONFIG --port 1234 --address 0.0.0.0 --logfile /var/log/camilladsp.log
+' -e '/^Type/ a\
+EnvironmentFile=-/etc/default/camilladsp\
+ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 ' /usr/lib/systemd/system/camilladsp.service
 	systemctl daemon-reload
 	systemctl try-restart camilladsp

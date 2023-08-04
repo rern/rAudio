@@ -340,6 +340,7 @@ var gain     = {
 			.toggleClass( 'i-volume', ! mute );
 		$( '#volume' ).prop( 'disabled', mute );
 		$( '#up, #dn' ).toggleClass( 'disabled', mute );
+		bash( [ 'savemute', S.mute, 'CMD MUTE' ] );
 	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
@@ -362,11 +363,12 @@ var gain     = {
 			fgraph = pgraphs = false;
 		}
 		V.gaintimeout = setTimeout( () => {
-			! filters || name ? bash( [ 'settings/camilla.py', 'save' ] ) : bash( [ 'volumesave', S.volume, 'CMD VAL' ] );
+			bash( [ 'settings/camilla.py', 'save' ] );
 			graph.refresh( fgraph, pgraphs );
 			delete V.gainupdn;
 		}, 1000 );
 	}
+	, savemain  : ( v ) => bash( [ 'savevolume', S.volume, 'CMD VAL' ] )
 	, updown    : ( $this ) => {
 		clearTimeout( V.gaintimeout );
 		V.gainupdn = true;
@@ -1528,14 +1530,13 @@ $( '#volume' ).on( 'click input keyup', function( e ) {
 	S.volume = +$( this ).val();
 	$( '#gain' ).text( util.dbFormat( S.volume ) );
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
-	if ( e.type === 'click' ) gain.save();
+	if ( e.type === 'click' ) gain.savemain( S.volume );
 } );
 $( '#up, #dn' ).on( 'click', function() {
 	S.volume += this.id === 'up' ? 0.1 : -0.1;
 	$( '#gain' ).text( util.dbFormat( S.volume ) );
-	$( '#volume' )
-		.val( S.volume )
-		.trigger( 'click' );
+	$( '#volume' ).val( S.volume )
+	gain.savemain( S.volume );
 	if ( S.mute ) $( '#mute' ).trigger( 'click' );
 } );
 $( '#mute' ).on( 'click', function() {
