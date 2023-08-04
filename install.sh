@@ -4,6 +4,18 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
+# 20230808
+file=/etc/default/camilladsp
+if [[ ! -e $file ]]; then
+	echo CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml > $file
+	sed -i -e 's|/srv.*camilladsp.yml|$CONFIG|
+' -e '/ExecStart/ i\
+EnvironmentFile=-/etc/default/camilladsp
+' /usr/lib/systemd/system/camilladsp.service
+	systemctl daemon-reload
+	systemctl try-restart camilladsp
+fi
+
 # 20230630
 if [[ -e $dircamilladsp/default_config.yml ]]; then
 	mv $dircamilladsp/*.yml $dircamilladsp/configs
