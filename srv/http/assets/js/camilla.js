@@ -1305,6 +1305,7 @@ var setting  = {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		ws.send( '"Reload"' );
 		ws.send( '"GetConfigjson"' );
+		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
 	, upload        : ( icon ) => {
 		if ( icon === 'filters' ) {
@@ -1511,7 +1512,7 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 util.websocket();
 
-$( '.setting-status' ).on( 'click', function( e ) {
+$( '.setting-status' ).on( 'click', function() {
 	info( {
 		  icon    : 'camilladsp'
 		, title   : 'Status'
@@ -1519,6 +1520,10 @@ $( '.setting-status' ).on( 'click', function( e ) {
 		, ok      : () => ws.send( '"Reload"' )
 	} );
 } );
+$( '.log' ).on( 'click', function() {
+	var $code = $( '#codelog' );
+	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
+} )
 $( '#volume' ).on( 'click input keyup', function( e ) {
 	S.volume = +$( this ).val();
 	$( '#gain' ).text( util.dbFormat( S.volume ) );

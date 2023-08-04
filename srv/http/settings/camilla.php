@@ -59,11 +59,12 @@ $htmlvolume = '
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-//	, 'button' => [ 'setting-status' => 'gear' ]
+	, 'button' => [ 'log' => 'file' ]
 	, 'nohelp' => true
 ];
 $body = [
-	  htmlSectionStatus( 'vu' )
+	  '<pre id="codelog" class="hide"></pre>'
+	, htmlSectionStatus( 'vu' )
 	, htmlSectionStatus( 'volume', '<code id="gain">0</code>', $htmlvolume )
 	, [
 		  'id'    => 'configuration'

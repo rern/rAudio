@@ -25,6 +25,9 @@ confdelete )
 confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	;;
+confswitch )
+	echo CONFIG=$dirconfigs/$NAME.yml > /etc/default/camilladsp
+	;;
 restart )
 	systemctl restart camilladsp
 	;;
@@ -58,6 +61,9 @@ setformat )
 	;;
 save )
 	$dirsettings/camilla.py save
+	;;
+statuslog )
+	cat /var/log/camilladsp.log
 	;;
 volumesave )
 	echo $VAL > $dirsystem/camilla-volume
