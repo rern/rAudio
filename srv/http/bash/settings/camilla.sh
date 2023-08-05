@@ -10,6 +10,9 @@ args2var "$1"
 
 case $CMD in
 
+clippedreset )
+	echo $CLIPPED > $dirshm/clipped
+	;;
 coefdelete )
 	rm -f $dircoeffs/"$NAME"
 	;;

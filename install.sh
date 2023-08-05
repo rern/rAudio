@@ -18,6 +18,7 @@ EOF
 	sed -i -e '/^ExecStart/ d
 ' -e '/^Type/ a\
 EnvironmentFile=-/etc/default/camilladsp\
+ExecStartPre=/bin/bash -c "echo 0 > /dev/shm/clipped"\
 ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 ' /usr/lib/systemd/system/camilladsp.service
 	systemctl daemon-reload

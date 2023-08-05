@@ -18,16 +18,11 @@ foreach( $options as $label => $id ) {
 				  .'</div>';
 }
 $htmldevices = '';
-foreach( [ 'Sampling', 'Options', 'Capture', 'Playback' ] as $title ) {
+foreach( [ 'Sampling', 'Options' ] as $title ) {
 	$id      = lcFirst( str_replace( ' ', '', $title ) );
 	$html    = '<div class="entries main"></div>';
-	$setting = $title === 'Capture' || $title === 'Playback';
 	$head    = '';
-	if ( $title === 'Options' ) {
-		$html .= $htmloptions;
-	} else if ( $setting ) {
-		$head  = '<heading class="subhead"><span class="headtitle">'.$title.i( 'gear', $id ).'</span></heading>';
-	}
+	if ( $title === 'Options' ) $html .= $htmloptions;
 	$htmldevices.= '
 <div id="div'.$id.'" class="section">
 '.$head.'

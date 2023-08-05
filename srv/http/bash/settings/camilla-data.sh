@@ -11,8 +11,8 @@ $( grep Loopback <<< $aplay | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopb
 
 data=${data:0:-1}
 data+='
+, "clipped" : '$( < /dev/shm/clipped )'
 , "device"  : [ '$( echo $cards | tr ' ' , )' ]
-, "display" : { "device" : true }
 }'
 
 echo $data

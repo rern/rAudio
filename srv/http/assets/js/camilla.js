@@ -506,7 +506,6 @@ var render   = {
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
-		$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.display.device );
 		if ( $( '#divvu' ).length ) return
 		
 		var vugrid  = '<div id="vugrid">';
@@ -539,7 +538,12 @@ var render   = {
 		V.statusread.forEach( k => {
 			var val = S.status[ k ];
 			if ( k !== 'GetState' ) val = val.toLocaleString();
-			if ( k === 'GetClippedSamples' ) val = '<a class="clipped'+ ( val !== '0' ? ' ora' : '' ) +'">'+ val +'</a>';
+			if ( k === 'GetClippedSamples' ) {
+				val = +val - S.clipped;
+				var ora = val ? ' ora' : '';
+				val = '<a class="clipped'+ ora +'">'+ val +'</a>';
+				if ( ora ) val += '&emsp;'+ ico( 'flash gr' ); 
+			}
 			status += val +'<br>';
 		} );
 		$( '#statusvalue' ).html( status );
@@ -574,10 +578,13 @@ var render   = {
 	}
 	, device      : ( section, keys ) => {
 		if ( [ 'capture', 'playback' ].includes( section ) ) {
-			var kv    = DEV[ section ];
-			var k_v   = CP[ section ][ kv.type ];
-			var keys  = [ 'type' ];
-			$.each( k_v, ( k, v ) => keys = [ ...keys, ...Object.keys( v ) ] );
+			var option = htmlOption( S.device );
+			[ 'capture', 'playback' ].forEach( k => {
+				$( '#'+ k )
+					.html( option )
+					.val( DEV[ k ].device );
+			} );
+			return
 		} else {
 			var kv    = DEV;
 			if ( section === 'sampling' ) keys = C.sampling;
@@ -901,9 +908,13 @@ var setting  = {
 		}
 		$.each( v, ( k, v ) => values[ k ] = v );
 		var title = util.key2label( dev ) +' Device';
+		var tab   = [ setting.devicesampling, () => setting.device( 'capture' ), () => setting.device( 'playback' ) ];
+		tab[ dev === 'capture' ? 1 : 2 ] = '';
 		info( {
 			  icon         : V.tab
 			, title        : title
+			, tablabel     : [ 'Sampling', 'Capture', 'Playback' ]
+			, tab          : tab
 			, selectlabel  : selectlabel
 			, select       : select
 			, textlabel    : textlabel
@@ -925,6 +936,44 @@ var setting  = {
 			, ok           : () => {
 				var val = infoVal();
 				$.each( val, ( k, v ) => DEV[ dev ][ k ] = v );
+				setting.save( V.tab, title, 'Change ...' );
+			}
+		} );
+	}
+	, devicesampling : () => {
+		var textlabel  = [ ...C.sampling ].slice( 1 );
+		textlabel.push( 'Other' );
+		var values     = {};
+		C.sampling.forEach( k => values[ k ] = DEV[ k ] );
+		if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+		values.other = values.samplerate;
+		var title = util.key2label( V.tab );
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, tablabel     : [ 'Sampling', 'Capture', 'Playback' ]
+			, tab          : [ '', () => setting.device( 'capture' ), () => setting.device( 'playback' ) ]
+			, selectlabel  : 'Sample Rate'
+			, select       : C.samplerate
+			, textlabel    : util.labels2array( textlabel )
+			, boxwidth     : 120
+			, order        : [ 'select', 'text' ]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : true
+			, beforeshow   : () => {
+				$( '.trselect' ).after( $( 'tr' ).last() );
+				var $trother = $( '.trtext' ).eq( 0 );
+				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
+				$( '.trselect select' ).on( 'change', function() {
+					gain.hideother( $trother, $( this ).val() );
+				} );
+			}
+			, ok           : () => {
+				var val = infoVal();
+				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
+				delete val.other;
+				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( V.tab, title, 'Change ...' );
 			}
 		} );
@@ -1453,7 +1502,7 @@ var util     = {
 					break;
 				case 'GetClippedSamples':
 					if ( V.clipped ) {
-						S.status.GetClippedSamples = value;
+						S.status.GetClippedSamples = value - S.clipped;
 						break;
 					}
 					
@@ -1472,7 +1521,7 @@ var util     = {
 							[ 'C', 'P' ].forEach( ( k, i ) => $( '.peak.'+ k + i ).css( 'left', util.db2percent( V[ k ][ i ] ) +'%' ) );
 						}, 1000 );
 					}
-					S.status.GetClippedSamples = value;
+					S.status.GetClippedSamples = value - S.clipped;
 					break;
 				case 'GetConfigjson':
 					S.config = value;
@@ -1515,20 +1564,6 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 util.websocket();
 
-$( '.display' ).on( 'click', function() {
-	info( {
-		  icon     : 'camilladsp'
-		, title    : 'Settings'
-		, header   : 'Show:'
-		, headeralign : 'left'
-		, checkbox : [ 'Capture and Playback devices' ]
-		, ok       : () => {
-			S.display.device = infoVal();
-			bash( [ 'display', S.display.device, 'CMD DISPLAY' ] );
-			$( '#divcapture, #divplayback' ).toggleClass( 'hide', ! S.display.device );
-		}
-	} );
-} );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
@@ -1599,7 +1634,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 							if ( rename && name === S.fileconf ) setting.set( newname );
 						} );
 						notify( icon, title, rename ? 'Rename ...' : 'Copy ...' );
-						rename ? S.lsconf[ Slsconf.indexOf( name ) ] = newname : S.lsconf.push( newname );
+						rename ? S.lsconf[ S.lsconf.indexOf( name ) ] = newname : S.lsconf.push( newname );
 						render.status();
 					}
 				} );
@@ -1613,7 +1648,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					, oklabel : ico( 'remove' ) +'Delete'
 					, okcolor : red
 					, ok      : () => {
-						S.lsconf.slice( Slsconf.indexOf( name ), 1 );
+						S.lsconf.slice( S.lsconf.indexOf( name ), 1 );
 						bash( [ 'confdelete', file, 'CMD NAME' ] );
 						banner( icon, title, 'Delete ...' );
 						render.status();
@@ -1624,42 +1659,11 @@ $( '#setting-configuration' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
+$( '#statusvalue' ).on( 'click', '.i-flash', function() {
+	bash( [ 'clippedreset', S.status.GetClippedSamples, 'CMD CLIPPED' ] );
+} );
 $( '#divsettings' ).on( 'click', '.settings', function() {
-	var textlabel  = [ ...C.sampling ].slice( 1 );
-	textlabel.push( 'Other' );
-	var values     = {};
-	C.sampling.forEach( k => values[ k ] = DEV[ k ] );
-	if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-	values.other = values.samplerate;
-	var title = util.key2label( V.tab );
-	console.log( textlabel)
-	info( {
-		  icon         : V.tab
-		, title        : title
-		, selectlabel  : 'Sample Rate'
-		, select       : C.samplerate
-		, textlabel    : util.labels2array( textlabel )
-		, boxwidth     : 120
-		, order        : [ 'select', 'text' ]
-		, values       : values
-		, checkblank   : true
-		, checkchanged : true
-		, beforeshow   : () => {
-			$( '.trselect' ).after( $( 'tr' ).last() );
-			var $trother = $( '.trtext' ).eq( 0 );
-			$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-			$( '.trselect select' ).on( 'change', function() {
-				gain.hideother( $trother, $( this ).val() );
-			} );
-		}
-		, ok           : () => {
-			var val = infoVal();
-			if ( val.samplerate === 'Other' ) val.samplerate = val.other;
-			delete val.other;
-			$.each( val, ( k, v ) => DEV[ k ] = v );
-			setting.save( V.tab, title, 'Change ...' );
-		}
-	} );
+	setting.devicesampling();
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
