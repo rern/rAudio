@@ -819,12 +819,12 @@ var setting  = {
 		}
 		$.each( v, ( k, v ) => values[ k ] = v );
 		var title = util.key2label( dev ) +' Device';
-		var tab   = [ setting.devicesampling, () => setting.device( 'capture' ), () => setting.device( 'playback' ) ];
-		tab[ dev === 'capture' ? 1 : 2 ] = '';
+		var tab   = [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), setting.devicesampling ];
+		tab[ dev === 'capture' ? 0 : 1 ] = '';
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, tablabel     : [ 'Sampling', 'Capture', 'Playback' ]
+			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
 			, tab          : tab
 			, selectlabel  : selectlabel
 			, select       : select
@@ -862,8 +862,8 @@ var setting  = {
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, tablabel     : [ 'Sampling', 'Capture', 'Playback' ]
-			, tab          : [ '', () => setting.device( 'capture' ), () => setting.device( 'playback' ) ]
+			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
+			, tab          : [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), '' ]
 			, selectlabel  : 'Sample Rate'
 			, select       : C.samplerate
 			, textlabel    : util.labels2array( textlabel )
@@ -1648,7 +1648,7 @@ $( '#statusvalue' ).on( 'click', '.i-flash', function() {
 	bash( [ 'clippedreset', S.status.GetClippedSamples, 'CMD CLIPPED' ] );
 } );
 $( '#divsettings' ).on( 'click', '.settings', function() {
-	setting.devicesampling();
+	setting.device( 'capture' );
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
@@ -1668,12 +1668,6 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 	} else {
 		$flowchart.addClass( 'hide' );
 	}
-} );
-$( '#setting-capture' ).on( 'click', function() {
-	setting.device( 'capture' );
-} )
-$( '#setting-playback' ).on( 'click', function() {
-	setting.device( 'playback' );
 } );
 $( '#enable_rate_adjust, #enable_resampling' ).on( 'click', function() {
 	var id = this.id;
