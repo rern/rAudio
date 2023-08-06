@@ -395,6 +395,7 @@ var graph    = {
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
+			delay0      = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
 		} else {
 			var pipelinedelay = false;
 			PIP[ val ].names.some( n => {
@@ -415,7 +416,7 @@ var graph    = {
 				plots.phase.line.width = filters ? 4 : ( pipelinedelay ? 1 : 2 );
 			}
 			plots.phase.y = data.phase;
-			plots.delay.y = data.groupdelay;
+			plots.delay.y = delay0 ? 0 : data.groupdelay;
 			var plot      = [ plots.gain, plots.phase, plots.delay ];
 			var layout    = {
 				  xaxis         : axes.freq
@@ -506,7 +507,7 @@ var render   = {
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
-		if ( $( '#divvu' ).length ) return
+		if ( $( '.vubar' ).length ) return
 		
 		var vugrid  = '<div id="vugrid">';
 		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
@@ -528,7 +529,7 @@ var render   = {
 						+'<div class="vubar rms '+ cp + i +' "></div>';
 			}
 		} );
-		$( '#vuvalue' ).html( vubar +'</div></div>' );
+		$( '#divvu .col-r' ).html( vubar +'</div></div>' );
 	}
 	, statusGet   : () => {
 		V.statusget.forEach( k => ws.send( '"'+ k +'"' ) );
@@ -561,60 +562,38 @@ var render   = {
 		$( '.rms' ).css( 'width', 0 );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
+		var labels = '';
+		var values = '';
 		[ 'playback', 'capture' ].forEach( ( k, i ) => {
 			S.devicetype[ i ].sort().forEach( t => {
 				var v = t.replace( 'Alsa', 'ALSA' )
 						 .replace( 'Std',  'std' );
 				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
+			labels += util.key2label( k ) +'<br>';
+			values += DEV[ k ].device +'<br>';
 		} );
-		[ 'sampling', 'capture', 'playback' ].forEach( k => render.device( k ) );
+		C.sampling.forEach( k => {
+			labels += util.key2label( k ) +'<br>';
+			values += DEV[ k ] +'<br>';
+		} );
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-		keys.length ? render.device( 'options', keys ) : $( '#options .statuslist' ).empty();
-		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
-		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
-	}
-	, device      : ( section, keys ) => {
-		if ( [ 'capture', 'playback' ].includes( section ) ) {
-			var option = htmlOption( S.device );
-			[ 'capture', 'playback' ].forEach( k => {
-				$( '#'+ k )
-					.html( option )
-					.val( DEV[ k ].device );
-			} );
-			return
-		} else {
-			var kv    = DEV;
-			if ( section === 'sampling' ) keys = C.sampling;
-		}
-		if ( section === 'options' ) {
-			var labels = '<hr>';
-			var values = '<hr>';
-		} else {
-			var labels = '';
-			var values = '';
-		}
-		keys.forEach( k => {
-			labels += util.key2label( k ) +'<br>';
-			values += kv[ k ] +'<br>';
-		} );
-		if ( DEV.resampler_type === 'FreeAsync' ) {
-			[ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ].forEach( k => {
+		if ( keys.length ) {
+			labels += '<hr>';
+			values += '<hr>';
+			keys.forEach( k => {
 				labels += util.key2label( k ) +'<br>';
-				values += DEV.resampler_type.FreeAsync[ k ] +'<br>';
+				values += DEV[ k ] +'<br>';
 			} );
 		}
-		values = values
-					.replace( 'Alsa',  'ALSA' )
-					.replace( 'Std',   'std' )
-					.replace( 'FLOAT', 'Float' )
-					.replace( 'TEXT',  'Text' );
-		$( '#div'+ section +' .entries' ).html(
+		$( '#divdevices .entries.main' ).html(
 			 '<div class="col-l text gr">'+ labels +'</div>'
 			+'<div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
 		);
+		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		var data     = render.dataSort( 'filters' );
@@ -775,76 +754,7 @@ var render   = {
 	}
 }
 var setting  = {
-	  resampling    : ( freeasync ) => {
-		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ C.sampletype, C.samplerate ];
-		var numberlabel = [ 'Other' ];
-		var values      = {};
-		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! C.samplerate.includes( DEV.capture_samplerate ) ) values.capture_samplerate = 'Other';
-		values.other = values.capture_samplerate;
-		if ( freeasync ) {
-			selectlabel.push( 'interpolation', 'window' );
-			select.push( C.freeasync.interpolation, C.freeasync.window );
-			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
-			var f  = DEV.resampler_type.FreeAsync || {};
-			values = {
-				  resampler_type     : 'FreeAsync'
-				, capture_samplerate : values.capture_samplerate
-				, interpolation      : f.interpolation      || 'Linear'
-				, window             : f.window             || 'Blackman2'
-				, other              : values.capture_samplerate
-				, sinc_len           : f.sinc_len           || 128
-				, oversampling_ratio : f.oversampling_ratio || 1024
-				, f_cutoff           : f.f_cutoff           || 0.925
-			}
-		}
-		var title = 'Resampling'
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, selectlabel  : selectlabel
-			, select       : select
-			, numberlabel  : numberlabel
-			, boxwidth     : 160
-			, order        : [ 'select', 'number' ]
-			, values       : values
-			, checkchanged : DEV.enable_resampling
-			, beforeshow   : () => {
-				var $trnumber = $( '.trnumber' );
-				var $trother = $trnumber.eq( 0 );
-				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
-				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
-				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
-				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
-					if ( $( this ).val() === 'FreeAsync' ) {
-						setting.resampling( 'freeasync' );
-					} else if ( $trnumber.length > 1 ) {
-						setting.resampling();
-					}
-				} );
-				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
-				gain.hideother( $trother, $( this ).val() );
-				} );
-			}
-			, cancel       : switchCancel
-			, ok           : () => {
-				var val = infoVal();
-				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
-				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
-				if ( freeasync ) {
-					var v = {}
-					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
-					DEV.resampler_type = { FreeAsync: v }
-				}
-				DEV.enable_resampling = true;
-				setting.save( V.tab, title, 'Change ...' );
-				$( '#setting-enable_resampling' ).removeClass( 'hide' );
-				render.devices();
-			}
-		} );
-	}
-	, device        : ( dev, type ) => {
+	  device        : ( dev, type ) => {
 		var key_val, kv, k, v;
 		var data        = jsonClone( DEV[ dev ] );
 		var type        = type || data.type;
@@ -975,6 +885,80 @@ var setting  = {
 				delete val.other;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( V.tab, title, 'Change ...' );
+			}
+		} );
+	} //---------------------------------------------------------------------------------------------
+	, resampling    : ( freeasync ) => {
+		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
+		var select      = [ C.sampletype, C.samplerate ];
+		var numberlabel = [ 'Other' ];
+		var values      = {};
+		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
+		var samplerate  = DEV.capture_samplerate;
+		if ( samplerate ) {
+			values.capture_samplerate =  C.samplerate.includes( samplerate ) ? samplerate : 'Other';
+		} else {
+			values.capture_samplerate = '44100';
+		}
+		values.other = values.capture_samplerate;
+		if ( freeasync ) {
+			selectlabel.push( 'interpolation', 'window' );
+			select.push( C.freeasync.interpolation, C.freeasync.window );
+			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
+			var f  = DEV.resampler_type.FreeAsync || {};
+			values = {
+				  resampler_type     : 'FreeAsync'
+				, capture_samplerate : values.capture_samplerate
+				, interpolation      : f.interpolation      || 'Linear'
+				, window             : f.window             || 'Blackman2'
+				, other              : values.capture_samplerate
+				, sinc_len           : f.sinc_len           || 128
+				, oversampling_ratio : f.oversampling_ratio || 1024
+				, f_cutoff           : f.f_cutoff           || 0.925
+			}
+		}
+		var title = 'Resampling'
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, selectlabel  : selectlabel
+			, select       : select
+			, numberlabel  : numberlabel
+			, boxwidth     : 160
+			, order        : [ 'select', 'number' ]
+			, values       : values
+			, checkchanged : DEV.enable_resampling
+			, beforeshow   : () => {
+				var $trnumber = $( '.trnumber' );
+				var $trother = $trnumber.eq( 0 );
+				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
+				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
+				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
+				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
+					if ( $( this ).val() === 'FreeAsync' ) {
+						setting.resampling( 'freeasync' );
+					} else if ( $trnumber.length > 1 ) {
+						setting.resampling();
+					}
+				} );
+				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
+				gain.hideother( $trother, $( this ).val() );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : () => {
+				var val = infoVal();
+				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
+				if ( freeasync ) {
+					var v = {}
+					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
+					DEV.resampler_type = { FreeAsync: v }
+				}
+				DEV.enable_resampling = true;
+				setting.save( V.tab, title, 'Change ...' );
+				$( '#setting-enable_resampling' ).removeClass( 'hide' );
+				render.devices();
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
@@ -1709,13 +1693,18 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		  icon         : V.tab
 		, title        : title
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
+		, checkbox     : [ 'Stop on rate change' ]
 		, boxwidth     : 100
-		, values       : { adjust_period: DEV.adjust_period, target_level: DEV.target_level }
+		, values       : {
+			  adjust_period       : DEV.adjust_period
+			, target_level        : DEV.target_level
+			, stop_on_rate_change : DEV.stop_on_rate_change
+		}
 		, checkchanged : DEV.enable_rate_adjust
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
-			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+			[ 'adjust_period', 'target_level', 'stop_on_rate_change' ].forEach( k => DEV[ k ] = val[ k ] );
 			DEV.enable_rate_adjust = true;
 			setting.save( V.tab, title, DEV.enable_rate_adjust ? 'Change ...' : 'Enable ...' );
 			$this.removeClass( 'hide' );
@@ -1725,11 +1714,6 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	setting.resampling( DEV.resampler_type === 'FreeAsync' );
-} );
-$( '#stop_on_rate_change' ).on( 'click', function() {
-	var checked = $( this ).prop( 'checked' );
-	DEV.stop_on_rate_change = checked;
-	setting.save( 'devices', 'Stop on Rate Change', checked ? 'Enable ...' : 'Disable ...' );
 } );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {

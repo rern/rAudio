@@ -311,6 +311,9 @@ input[ type=range ] {
 #vulabel .l7 {
 	padding-left: 11px;
 }
+#divdevices {
+	margin-top: 10px;
+}
 .flowchart {
 	display: block;
 	margin: 0 auto;

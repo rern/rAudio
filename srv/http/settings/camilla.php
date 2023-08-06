@@ -1,40 +1,21 @@
 <?php
 $id_data = [
-	'configuration' => [ 'name' => 'Configuration', 'setting' => 'custom' ]
+	  'configuration' => [ 'name' => 'Configuration', 'setting' => 'custom' ]
+	, 'enable_rate_adjust' => [ 'name' => 'Rate Adjust' ]
+	, 'enable_resampling'  => [ 'name' => 'Resampling' ]
 ];
-$options = [
-	  'Rate Adjust'         => 'enable_rate_adjust'
-	, 'Resampling'          => 'enable_resampling'
-	, 'Stop on Rate Change' => 'stop_on_rate_change'
-];
-$htmloptions = '';
-foreach( $options as $label => $id ) {
-	$input       = '<input id="'.$id.'" type="checkbox" class="switch custom">'
-				  .'<div class="switchlabel"></div>';
-	if ( $id !== 'stop_on_rate_change' ) $input.= '<i id="setting-'.$id.'" class="i-gear setting"></i>';
-	$htmloptions.= '<div id="div'.$id.'">'
-				  .'<div class="col-l single name">'.$label.'</div><div class="col-r">'.$input
-				  .'</div><div style="clear:both"></div>'
-				  .'</div>';
-}
-$htmldevices = '';
-foreach( [ 'Sampling', 'Options' ] as $title ) {
-	$id      = lcFirst( str_replace( ' ', '', $title ) );
-	$html    = '<div class="entries main"></div>';
-	$head    = '';
-	if ( $title === 'Options' ) $html .= $htmloptions;
-	$htmldevices.= '
-<div id="div'.$id.'" class="section">
-'.$head.'
-'.$html.'
-</div>
-';
-}
+
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab">';
 	if ( $id === 'devices' ) {
-		$htmltabs.= $htmldevices;
+		$htmltabs.= '
+<div id="divdevices" class="section"><div class="entries main"></div></div>
+<div id="divoptions" class="section">
+'.htmlSetting( [ 'id' => 'enable_rate_adjust', 'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'enable_resampling', 'returnhtml' => true ] ).'
+</div>
+';
 	} else {
 		if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 		$htmltabs.= '<ul class="entries main"></ul><ul class="entries sub"></ul>';
@@ -63,16 +44,14 @@ $head = [
 $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
-	, htmlSectionStatus( 'volume', '<code id="gain">0</code>', $htmlvolume )
+	, htmlSectionStatus( 'volume', '<code id="gain"></code>', $htmlvolume )
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 	]
+	, htmlSectionStatus( 'status', '<div id="statuslabel"></div>' )
 ];
 htmlSection( $head, $body, 'status' );
-//////////////////////////////////
-$body = [ htmlSectionStatus( 'status', '<div id="statuslabel"></div>' ) ];
-htmlSection( '', $body, 'status' );
 //////////////////////////////////
 $head = [ 
 	  'title'  => 'Devices'
