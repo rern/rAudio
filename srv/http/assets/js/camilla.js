@@ -513,7 +513,7 @@ var render   = {
 		for ( i = 0; i < 4; i++ ) vugrid  += '<a class="g'+ i +'"></>';
 		var vulabel = '<div id="vulabel">';
 		[ '', -96, -48, -24, -12, -6, 0, 6 ].forEach( ( l, i ) => vulabel += '<a class="l'+ i +'">'+ l +'</a>' );
-		var vubar   = '<div id="divvu">'
+		var vubar   = '<div id="vu">'
 					 + vugrid +'</div>'
 					 +'<div id="in">';
 		[ 'capture', 'playback' ].forEach( k => {

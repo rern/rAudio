@@ -204,7 +204,7 @@ input[ type=range ] {
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
 }
-#divvu {
+#vu {
 	position: relative;
 	width: 230px;
 	margin-bottom: 15px;
