@@ -197,11 +197,12 @@ function htmlSetting( $data ) {
 }
 function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 	if ( ! $labels ) $labels = '&nbsp;';
+	$help = $help ?? '<div class="helpblock hide">'.$help.'</div>';
 	return '
 <div id="div'.$id.'">
 <div class="col-l text label gr">'.$labels.'</div>
 <div class="col-r text value">'.$values.'</div>
 <div style="clear:both"></div>
-<div class="helpblock hide">'.$help.'</div>
+'.$help.'
 </div>';
 }

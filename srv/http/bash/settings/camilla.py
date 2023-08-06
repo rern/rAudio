@@ -41,11 +41,12 @@ for k in [ 'GetState', 'GetCaptureRate', 'GetBufferLevel', 'GetClippedSamples', 
     status[ k ] = getValue( k )
     
 config     = json.loads( getValue( 'GetConfigJson' ) )
+devicetype = getValue( 'GetSupportedDeviceTypes' )
 dircamilla = '/srv/http/data/camilladsp/'
 value  = {
       'page'       : 'camilla'
     , 'config'     : config
-    , 'devicetype' : getValue( 'GetSupportedDeviceTypes' )
+    , 'devicetype' : { 'capture': sorted( devicetype[ 1 ] ), 'playback': sorted( devicetype[ 0 ] ) }
     , 'volume'     : getValue( 'GetVolume' )
     , 'mute'       : getValue( 'GetMute' )
     , 'status'     : status

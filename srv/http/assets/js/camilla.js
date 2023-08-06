@@ -15,8 +15,7 @@ var format   = {};
 } );
 // const //////////////////////////////////////////////////////////////////////////////
 var C        = {
-	  devicetype  : { capture: {}, playback: {} }
-	, format      : format
+	  format      : format
 	, freeasync   : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
@@ -484,6 +483,14 @@ var render   = {
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
 		PIP = S.config.pipeline;
+		C.devicetype = { capture: {}, playback: {} };
+		[ 'capture', 'playback' ].forEach( ( k, i ) => {
+			S.devicetype[ k ].forEach( t => {
+				var v = t.replace( 'Alsa', 'ALSA' )
+						 .replace( 'Std',  'std' );
+				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+			} );
+		} );
 		render.status();
 		render.tab();
 		showContent();
@@ -564,12 +571,7 @@ var render   = {
 	, devices     : () => {
 		var labels = '';
 		var values = '';
-		[ 'playback', 'capture' ].forEach( ( k, i ) => {
-			S.devicetype[ i ].sort().forEach( t => {
-				var v = t.replace( 'Alsa', 'ALSA' )
-						 .replace( 'Std',  'std' );
-				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
-			} );
+		[ 'capture', 'playback' ].forEach( ( k, i ) => {
 			labels += util.key2label( k ) +'<br>';
 			values += DEV[ k ].device +'<br>';
 		} );
