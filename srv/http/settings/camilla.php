@@ -10,7 +10,9 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab">';
 	if ( $id === 'devices' ) {
 		$htmltabs.= '
-<div id="divdevices" class="section"><div class="entries main"></div></div>
+<div id="divdevices" class="section">
+'.htmlSectionStatus( 'sampling' ).'
+</div>
 <div id="divoptions" class="section">
 '.htmlSetting( [ 'id' => 'enable_rate_adjust', 'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'enable_resampling', 'returnhtml' => true ] ).'
@@ -18,7 +20,8 @@ foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
 ';
 	} else {
 		if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
-		$htmltabs.= '<ul class="entries main"></ul><ul class="entries sub"></ul>';
+		$htmltabs.= '<ul class="entries main"></ul>';
+		if ( $id === 'mixers' || $id === 'pipeline' ) $htmltabs.= '<ul class="entries sub"></ul>';
 	}
 	$htmltabs.= '</div>';
 }
@@ -49,7 +52,7 @@ $body = [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 	]
-	, htmlSectionStatus( 'status', '<div id="statuslabel"></div>' )
+	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////

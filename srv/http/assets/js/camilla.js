@@ -505,7 +505,7 @@ var render   = {
 		}
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
-		$( '#statuslabel' ).html( V.statuslabel.join( '<br>' ) );
+		$( '#divstate .label' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
 		if ( $( '.vubar' ).length ) return
 		
@@ -529,7 +529,7 @@ var render   = {
 						+'<div class="vubar rms '+ cp + i +' "></div>';
 			}
 		} );
-		$( '#divvu .col-r' ).html( vubar +'</div></div>' );
+		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusGet   : () => {
 		V.statusget.forEach( k => ws.send( '"'+ k +'"' ) );
@@ -547,7 +547,7 @@ var render   = {
 			}
 			status += val +'<br>';
 		} );
-		$( '#statusvalue' ).html( status );
+		$( '#divstate .value' ).html( status );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -588,10 +588,8 @@ var render   = {
 				values += DEV[ k ] +'<br>';
 			} );
 		}
-		$( '#divdevices .entries.main' ).html(
-			 '<div class="col-l text gr">'+ labels +'</div>'
-			+'<div class="col-r text">'+ values +'</div><div style="clear:both"></div>'
-		);
+		$( '#divsampling .label' ).html( labels );
+		$( '#divsampling .value' ).html( values );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	} //---------------------------------------------------------------------------------------------
@@ -743,7 +741,8 @@ var render   = {
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) render[ V.tab ]();
+		var $div = V.tab === 'devices' ? $( '#divsampling .value' ) : $( '#'+ V.tab +' .entries.main' );
+		if ( $div.is( ':empty' ) ) render[ V.tab ]();
 	}
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];

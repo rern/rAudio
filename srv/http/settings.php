@@ -199,8 +199,8 @@ function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
 	if ( ! $labels ) $labels = '&nbsp;';
 	return '
 <div id="div'.$id.'">
-<div class="col-l text gr">'.$labels.'</div>
-<div class="col-r text">'.$values.'</div>
+<div class="col-l text label gr">'.$labels.'</div>
+<div class="col-r text value">'.$values.'</div>
 <div style="clear:both"></div>
 <div class="helpblock hide">'.$help.'</div>
 </div>';
