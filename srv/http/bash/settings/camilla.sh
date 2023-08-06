@@ -62,9 +62,6 @@ setformat )
 		alsactl nrestore &> /dev/null
 	fi
 	;;
-save )
-	$dirsettings/camilla.py save
-	;;
 savemute )
 	[[ $MUTE == true ]] && m=-m
 	sed -i "s/^MUTE.*/MUTE=$m/" /etc/default/camilladsp

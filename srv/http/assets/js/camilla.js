@@ -886,6 +886,7 @@ var setting  = {
 				delete val.other;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
 				setting.save( V.tab, title, 'Change ...' );
+				render.devices();
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
