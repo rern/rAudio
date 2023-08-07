@@ -320,26 +320,20 @@ function pushstreamDisconnect() { // from settings.js
 }
 
 var gain     = {
-	  mute      : ( $this, mute ) => {
-		$this
-			.toggleClass( 'infobtn-primary', mute )
-			.find( 'i' )
-				.toggleClass( 'i-mute', mute )
-				.toggleClass( 'i-volume', ! mute );
-	}
-	, mutemain  : ( mute ) => {
-		if ( typeof( mute ) === 'boolean' ) { // set
-			S.mute = mute;
+	  mute      : ( mute ) => {
+		var set = false;
+		if ( typeof( mute ) === 'boolean' ) { //set
+			S.mute  = mute;
 			ws.send( '{ "SetMute": '+ S.mute +'} ' );
+			bash( [ 'savemute', S.mute, 'CMD MUTE' ] );
 		} else { // status
-			mute = S.mute;
+			mute    = S.mute;
 		}
 		$( '#mute' )
 			.toggleClass( 'i-mute bl', mute )
 			.toggleClass( 'i-volume', ! mute );
 		$( '#volume' ).prop( 'disabled', mute );
 		$( '#up, #dn' ).toggleClass( 'disabled', mute );
-		bash( [ 'savemute', S.mute, 'CMD MUTE' ] );
 	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
@@ -502,7 +496,7 @@ var render   = {
 		if ( ! ws ) util.websocket();
 		$( '#gain' ).text( util.dbFormat( S.volume ) );
 		$( '#volume' ).val( S.volume );
-		gain.mutemain();
+		gain.mute();
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
@@ -1578,7 +1572,7 @@ $( '#up, #dn' ).on( 'click', function() {
 	if ( S.mute ) $( '#mute' ).trigger( 'click' );
 } );
 $( '#mute' ).on( 'click', function() {
-	gain.mutemain( ! S.mute );
+	gain.mute( ! S.mute );
 } );
 $( '#configuration' ).on( 'change', function() {
 	if ( V.local ) return

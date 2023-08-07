@@ -146,6 +146,17 @@ function htmlSection( $head, $body, $id = '' ) {
 	}
 	echo '</div>';
 }
+function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
+	if ( ! $labels ) $labels = '&nbsp;';
+	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
+	return '
+<div id="div'.$id.'">
+<div class="col-l text label gr">'.$labels.'</div>
+<div class="col-r text value">'.$values.'</div>
+<div style="clear:both"></div>
+'.$help.'
+</div>';
+}
 function htmlSetting( $data ) {
 	if ( isset( $data[ 'exist' ] ) && ! $data[ 'exist' ] ) return;
 	
@@ -194,15 +205,4 @@ function htmlSetting( $data ) {
 	if ( $data[ 'returnhtml' ] ) return $html;
 	
 	echo $html;
-}
-function htmlSectionStatus( $id, $labels = '', $values = '', $help = '' ) {
-	if ( ! $labels ) $labels = '&nbsp;';
-	if ( $help ) $help = '<div class="helpblock hide">'.$help.'</div>';
-	return '
-<div id="div'.$id.'">
-<div class="col-l text label gr">'.$labels.'</div>
-<div class="col-r text value">'.$values.'</div>
-<div style="clear:both"></div>
-'.$help.'
-</div>';
 }

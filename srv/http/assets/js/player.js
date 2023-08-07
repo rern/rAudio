@@ -354,7 +354,7 @@ function renderPage() {
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;
-	$( '#statusvalue' ).html( htmlstatus );
+	$( '#divstatus .value' ).html( htmlstatus );
 	if ( S.btaplayname ) {
 		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
 		$( '#divbtreceiver' ).removeClass( 'hide' );

@@ -1060,7 +1060,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 			refreshData();
 			bannerHide();
 		} else if ( status === 0 ) { // disconnected
-			pushstreamDisconnect();
+			if ( typeof( pushstreamDisconnect ) === 'function' ) pushstreamDisconnect();
 			if ( V.off ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );

@@ -1142,8 +1142,8 @@ function infoRestore( reset ) {
 	$( '#restore' ).prop( 'checked', 0 );
 }
 function renderPage() {
-	$( '#systemvalue' ).html( S.system );
-	$( '#statusvalue' ).html( S.status + S.warning );
+	$( '#divsystem .value' ).html( S.system );
+	$( '#divstatus .value' ).html( S.status + S.warning );
 	$( '#warning' ).toggleClass( 'hide', S.warning === '' );
 	$( '#codehddinfo' )
 		.empty()

@@ -181,16 +181,6 @@ if ( page === 'addons' ) {
 } else {
 	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
 }
-function pushstreamDisconnect() {
-	if ( page === 'networks' ) {
-		if ( ! $( '#divbluetooth' ).hasClass( 'hide' ) || ! $( '#divwifi' ).hasClass( 'hide' ) ) {
-			bash( [ 'scankill' ] );
-			clearTimeout( V.timeoutscan );
-			$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
-			$( '.back' ).trigger( 'click' );
-		}
-	}
-}
 pushstream.onmessage = function( data, id, channel ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;

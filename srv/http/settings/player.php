@@ -23,14 +23,15 @@ $head = [ //////////////////////////////////
 	, 'button' => [ 'playback' => 'play' ]
 	, 'help'   => <<< EOF
 {$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
+
+<a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
+Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.
 EOF
 ];
 $labels = 'Version
 	<br>Database
 	<br>Since';
-$help = '<a href="https://www.musicpd.org/">MPD</a> - Music Player Daemon is a flexible, powerful, server-side application for playing music.
-Through plugins and libraries it can play a variety of sound files while being controlled by its network protocol.';
-$body = [ htmlSectionStatus( 'status', $labels, $help ) ];
+$body = [ htmlSectionStatus( 'status', $labels ) ];
 htmlSection( $head, $body, 'mpd' );
 // ----------------------------------------------------------------------------------
 $head = [ //////////////////////////////////

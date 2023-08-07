@@ -342,6 +342,14 @@ function infoWiFiTab( values ) {
 	keys.forEach( k => v[ k ] = values[ k ] );
 	target === 'dhcp' ? infoWiFi( v ) : infoWiFiStatic( v );
 }
+function pushstreamDisconnect() {
+	if ( $( '#divbluetooth' ).hasClass( 'hide' ) && $( '#divwifi' ).hasClass( 'hide' ) ) return
+	
+	bash( [ 'scankill' ] );
+	clearTimeout( V.timeoutscan );
+	$( '#scanning-bt, #scanning-wifi' ).removeClass( 'blink' );
+	$( '.back' ).trigger( 'click' );
+}
 function qr( msg ) {
 	return new QRCode( {
 		  msg : msg
