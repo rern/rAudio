@@ -1537,20 +1537,25 @@ var util     = {
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
 				case 'GetRateAdjust':
-					S.status[ cmd ] = value;
-					if ( cmd === V.statuslast ) {
-						if ( S.status.GetState === 'Running' ) render.statusValue();
-					} else if ( cmd === 'GetState' ) {
+					if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
-							render.statusValue();
+							if ( S.status.GetState !== value ) {
+								S.status.GetState = value;
+								render.statusValue();
+								return
+							}
+							
 						} else {
 							if ( ! ( 'intervalvu' in V ) ) {
 								$( '.peak' ).css( 'background', '' );
 								render.vu();
 							}
 						}
+					} else if ( cmd === V.statuslast ) {
+						if ( S.status.GetState === 'Running' ) render.statusValue();
 					}
+					S.status[ cmd ] = value;
 					break;
 			}
 		}
