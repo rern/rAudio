@@ -51,8 +51,7 @@ if ( $camilla ) {
 }
 foreach ( $tabs as $tab ) {
 	$id      = strtolower( $tab );
-	$active  = $id === $pagetitle ? ' class="active"' : '';
-	$htmlbar.= '<div id="'.$prefix.$id.'"'.$active.'>'.i( $id ).'<a> '.$tab.'</a></div>';
+	$htmlbar.= '<div id="'.$prefix.$id.'">'.i( $id ).'<a> '.$tab.'</a></div>';
 }
 $htmlbar.= '</div>
 <div id="debug"></div>';

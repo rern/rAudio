@@ -304,6 +304,8 @@ var pagenext   = {
 	, system   : [ 'networks', 'features' ]
 }
 
+$( '#'+ page ).addClass( 'active' );
+
 document.title = page === 'camilla' ? 'Camilla DSP' : page[ 0 ].toUpperCase() + page.slice( 1 );
 
 localhost ? $( 'a' ).removeAttr( 'href' ) : $( 'a[href]' ).attr( 'target', '_blank' );
