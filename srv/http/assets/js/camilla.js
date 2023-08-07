@@ -394,11 +394,14 @@ var graph    = {
 		var filterdelay = false;
 		if ( filters ) {
 			filterdelay = FIL[ val ].type === 'Delay';
-			delay0      = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
+			var delay0  = ! filterdelay && 'gain' in FIL[ val ].parameters && FIL[ val ].parameters.gain === 0;
 		} else {
 			var pipelinedelay = false;
-			PIP[ val ].names.some( n => {
-				if ( FIL[ n ].type === 'Delay' ) pipelinedelay = true;
+			var delay0        = true;
+			PIP[ val ].names.forEach( n => {
+				var filter = FIL[ n ];
+				if ( ! pipelinedelay && filter.type === 'Delay' ) pipelinedelay = true;
+				if ( delay0 && 'gain' in filter.parameters && filter.parameters.gain !== 0 ) delay0 = false;
 			} );
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
@@ -615,16 +618,15 @@ var render   = {
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<input type="number"'+ step_val +'>'
 							+'<input type="range"'+ step_val +' min="-6" max="6">'
-							+ ico( 'remove' ) +'</div>';
+							+'</div>';
 		} else {
-			var licontent =  ico( 'remove' )
-							+'<div class="li1 name">'+ k +'</div>'
+			var licontent =  '<div class="li1 name">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
 		}
-		return '<li data-name="'+ k +'">'+ ico( 'graph' ) + licontent  +'</li>';
+		return '<li data-name="'+ k +'">'+ ico( 'filters graph edit' ) + licontent  +'</li>';
 	}
 	, filterfile  : ( k ) => {
-		return '<li data-name="'+ k +'">'+ ico( 'file' ) + ico( 'remove' ) + k +'</li>'
+		return '<li data-name="'+ k +'">'+ ico( 'file' ) + k +'</li>'
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
@@ -633,7 +635,7 @@ var render   = {
 		render.toggle( li );
 	}
 	, mixer       : ( k, v ) => {
-		return   '<li data-name="'+ k +'">'+ ico( V.tab ) + ico( 'remove' )
+		return   '<li data-name="'+ k +'">'+ ico( 'mixers edit' )
 				+'<div class="li1">'+ k +'</div>'
 				+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 				+'</li>'
@@ -649,23 +651,25 @@ var render   = {
 		data.forEach( ( kv, i ) => {
 			var dest     = kv.dest;
 			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
-			var classvol = kv.mute ? 'infobtn-primary' : '';
-			var iconvol  = kv.mute ? 'mute' : 'volume';
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'
-						+'<div>Out</div><div><select>'+ opts +'</select></div>&ensp;<a class="mutedest infobtn '+ classvol +'">'+ ico( iconvol ) +'</a>'+ ico( 'remove' )
+			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output' )
+						+'<div><select>'+ opts +'</select></div>'
+						+'<div></div>'
+						+'<div></div>'
+						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
 						+'</li>'
-						+'<li class="liinput column dest'+ i +'"'+ i_name +'><div>In</div><div></div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+						+'<li class="liinput column dest'+ i +'"'+ i_name +'>'+ ico( 'blank' )
+						+'<div>Channel</div><div>dB</div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ util.dbFormat( source.gain ) +'"';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'"><select>'+ opts +'</select>'
+				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-6" max="6"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
-					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'+ ico( 'remove' ) +'</li>';
+					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'></li>';
 			} );
 		} );
 		render.toggle( li, 'sub' );
@@ -679,14 +683,14 @@ var render   = {
 	}
 	, pipe        : ( el, i ) => {
 		if ( el.type === 'Filter' ) {
-			var icon = 'graph'
+			var graph = ' graph';
 			var each = '<div class="li1">' + el.type +'</div>'
 					  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
 		} else {
-			var icon = 'mixers'
+			var graph = '';
 			var each = el.name;
 		}
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( icon ) + ico( 'remove' ) + each +'</li>'
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline'+ graph ) + each +'</li>'
 	}
 	, pipelineSub : ( index, data ) => {
 		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -695,7 +699,7 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + ico( 'remove' ) + name +'</li>'
+		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + name +'</li>'
 	}
 	, sortable    : ( el ) => {
 		if ( el in V.sortable ) return
@@ -1550,6 +1554,12 @@ $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 util.websocket();
 
+$( 'body' ).on( 'click', function( e ) {
+	if ( $( e.target ).is( 'li i ' ) ) return
+	
+	$( '#menu' ).addClass( 'hide' );
+	$( '#'+ V.tab +' .entries li' ).removeClass( 'active' );
+} );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
@@ -1722,56 +1732,159 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } ).on( 'click', '.mixer-icon', function() {
 	setting.mixerMap();
 } );
-$( '#filters' ).on( 'click', 'li', function( e ) {
-	if ( $( e.target ).is( 'input' ) || $( e.target ).is( 'i' ) ) return
-	
-	V.li = $( this );
-	setting.filter( '', V.li.find( '.name' ).text(), 'existing' );
-} ).on( 'click', 'li i', function() {
+$( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
-	V.li       = $this.parents( 'li' );
-	var action = $this.prop( 'class' ).slice( 2 );
-	var name   = $this.parents( 'li' ).data( 'name' );
-	var file   = $this.parents( 'li' ).find( '.i-file' ).length;
-	var title  = file ? 'Filter File' : 'Filter';
-	if ( action === 'graph' ) {
-		graph.toggle();
-	} else if ( action === 'file' ) {
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, message      : 'Rename <wh>'+ name +'</wh> to:'
-			, textlabel    : 'Name'
-			, values       : name
-			, checkblank   : true
-			, checkchanged : true
-			, ok           : () => { // in filters Conv
-				var newname    = infoVal();
-				bash( [ 'coeffrename', name, newname, 'CMD NAME NEWNAME' ] );
-				$.each( FIL, ( k, v ) => {
-					if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
-				} );
-				setting.save( V.tab, title, 'Rename ...' );
-			}
-		} );
-	} else if ( action === 'remove' ) {
-		if ( util.inUse( name ) ) return
-		
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, message      : 'Delete: <wh>'+ name +'</wh> ?'
-			, oklabel      : ico( 'remove' ) +'Delete'
-			, okcolor      : red
-			, ok           : () => {
-				file ? bash( [ 'coeffdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
-				setting.save( V.tab, title, 'Delete ...' );
-				V.li.remove();
-			}
-		} );
-	} else if ( action === 'add' ) {
-		setting.upload( 'filters' );
+	if ( $this.hasClass( 'i-back' ) ) return
+	
+	V.li       = $this.parent();
+	var active = V.li.hasClass( 'active' );
+	var $menu  = $( '#menu' );
+	$menu.addClass( 'hide' );
+	$( '#'+ V.tab +' li' ).removeClass( 'active' );
+	if ( active ) return
+	
+	V.li.addClass( 'active' );
+	if ( $menu.hasClass( 'hide' ) ) {
+		var menutop = V.li.offset().top + 49;
+		$menu
+			.css( 'top',  menutop )
+			.removeClass( 'hide' );
+		var targetB = $menu.offset().top + $menu.height();
+		var wH      = window.innerHeight;
+		var wT      = $( window ).scrollTop();
+		if ( targetB > ( wH - 40 + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+		$menu.find( '.edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
+		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	}
+} );
+$( '#menu a' ).on( 'click', function( e ) {
+	var $this = $( this );
+	var cmd   = $this.prop( 'class' );
+	if ( cmd === 'graph' ) {
+		graph.toggle();
+		return
+	}
+	
+	switch ( V.tab ) {
+		case 'filters':
+			var title = file ? 'Filter File' : 'Filter';
+			var name  = V.li.data( 'name' );
+			var file  = V.li.find( '.i-file' ).length;
+			switch ( cmd ) {
+				case 'delete':
+					if ( util.inUse( name ) ) return
+					
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : 'Delete: <wh>'+ name +'</wh> ?'
+						, oklabel : ico( 'remove' ) +'Delete'
+						, okcolor : red
+						, ok      : () => {
+							file ? bash( [ 'coeffdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
+							setting.save( V.tab, title, 'Delete ...' );
+							V.li.remove();
+						}
+					} );
+					break;
+				case 'edit':
+					if ( file ) {
+						info( {
+							  icon         : V.tab
+							, title        : title
+							, message      : 'Rename <wh>'+ name +'</wh> to:'
+							, textlabel    : 'Name'
+							, values       : name
+							, checkblank   : true
+							, checkchanged : true
+							, ok           : () => { // in filters Conv
+								var newname    = infoVal();
+								bash( [ 'coeffrename', name, newname, 'CMD NAME NEWNAME' ] );
+								$.each( FIL, ( k, v ) => {
+									if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
+								} );
+								setting.save( V.tab, title, 'Rename ...' );
+							}
+						} );
+					} else {
+						setting.filter( '', V.li.find( '.name' ).text(), 'existing' );
+					}
+					break;
+			}
+			break;
+		case 'mixers':
+			var title = 'Mixer';
+			var name  = V.li.data( 'name' );
+			var main  = $( '#mixers .entries.sub' ).hasClass( 'hide' );
+			switch ( cmd ) {
+				case 'delete':
+					var dest = V.li.hasClass( 'liinput main' );
+					if ( main ) {
+						if ( util.inUse( name ) ) return
+						
+						var msg = name;
+					} else if ( dest ) {
+						var mi  = V.li.data( 'index' );
+						var msg = 'output #'+ mi;
+					} else {
+						var mi  = V.li.siblings( '.main' ).data( 'index' );
+						var si  = V.li.data( 'index' );
+						var msg = 'input #'+ si;
+					}
+					var message = 'Delete <wh>'+ msg +'</wh> ?';
+					info( {
+						  icon    : V.tab
+						, title   : title
+						, message : message
+						, ok      : () => {
+							if ( main ) {
+								delete MIX[ name ];
+							} else if ( dest ) {
+								MIX[ name ].mapping.splice( mi, 1 );
+								if ( ! MIX[ name ].mapping.length ) {
+									$( '#mixers .i-back' ).trigger( 'click' );
+									return
+								}
+								
+								V.li.siblings( '.dest'+ mi ).remove();
+							} else {
+								MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
+							}
+							setting.save( V.tab, title, 'Remove ...' );
+							V.li.remove();
+						}
+					} );
+					break;
+				case 'edit':
+					setting.mixer( name );
+					break;
+			}
+			break;
+		case 'pipeline':
+			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
+			info( {
+				  icon    : V.tab
+				, title   : 'Pipeline'
+				, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
+				, ok      : () => {
+					if ( main ) {
+						PIP.splice( index, 1 );
+					} else {
+						var pi = $( '#pipeline .lihead' ).data( 'index' );
+						var ni = V.li.data( 'index' );
+						PIP[ pi ].names.splice( ni, 1 );
+					}
+					setting.save( V.tab, title, 'Remove filter ...' );
+					V.li.remove();
+					setting.sortRefresh( main ? 'main' : 'sub' );
+					graph.pipeline();
+				}
+			} );
+			break;
+	}
+} );
+$( '#filters' ).on( 'click', 'li .i-add', function() {
+	setting.upload( 'filters' );
 } ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
@@ -1795,12 +1908,9 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	var main   = ! $( '#mixers .lihead' ).length;
 	var name   = V.li.data( 'name' );
 	var title  = util.key2label( V.tab );
-	if ( action === 'mixers' ) { // rename
-		setting.mixer( name );
-	} else if ( action === 'back' ) {
+	if ( action === 'back' ) {
 		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ $( '#mixers .lihead' ).text() ];
 			setting.save( V.tab, title, 'Remove ...' );
@@ -1809,42 +1919,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
-	} else if ( action === 'remove' ) {
-		var dest = V.li.hasClass( 'liinput main' );
-		if ( main ) {
-			if ( util.inUse( name ) ) return
-			
-			var message = 'Delete <wh>'+ name +'</wh> ?';
-		} else if ( dest ) {
-			var message = 'Delete this destination?';
-		} else {
-			var message = 'Delete this source?';
-		}
-		info( {
-			  icon    : V.tab
-			, title   : title
-			, message : message
-			, ok      : () => {
-				if ( main ) {
-					delete MIX[ name ];
-				} else if ( dest ) {
-					var mi = V.li.data( 'index' );
-					MIX[ name ].mapping.splice( mi, 1 );
-					if ( ! MIX[ name ].mapping.length ) {
-						$( '#mixers .i-back' ).trigger( 'click' );
-						return
-					}
-					
-					V.li.siblings( '.dest'+ mi ).remove();
-				} else {
-					var mi = V.li.siblings( '.main' ).data( 'index' );
-					var si = V.li.data( 'index' );
-					MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
-				}
-				setting.save( V.tab, title, 'Remove ...' );
-				V.li.remove();
-			}
-		} );
 	}
 } ).on( 'change', 'select', function() {
 	var $this = $( this );
@@ -1878,23 +1952,20 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var name    = V.li.data( 'name' );
 	var index   = V.li.data( 'index' );
 	var si      = V.li.data( 'si' );
-	var source  = MIX[ name ].mapping[ index ].sources[ si ];
+	var mapping = MIX[ name ].mapping[ index ];
+	var source  = mapping.sources[ si ];
 	var checked = $this.prop( 'checked' );;
 	if ( $this.hasClass( 'mute' ) ) {
-		source.mute = checked;
-		$this.prev().prop( 'disabled', checked );
+		if ( V.li.hasClass( 'main' ) ) {
+			mapping.mute = checked;
+		} else {
+			source.mute = checked;
+			$this.prev().prop( 'disabled', checked );
+		}
 	} else {
 		source.inverted = checked;
 	}
 	setting.save( V.tab, 'Mixer', 'change ...' );
-} ).on( 'click', '.mutedest', function() {
-	var $this    = $( this );
-	var name     = V.li.data( 'name' );
-	var index    = $this.parent().data( 'index' );
-	var mapping  = MIX[ name ].mapping[ index ];
-	mapping.mute = ! mapping.mute;
-	gain.mute( $this, mapping.mute );
-	setting.save( V.tab, 'Mute', 'change ...' );
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );
@@ -1930,9 +2001,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var title  = util.key2label( V.tab );
 	var index  = V.li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	if ( action === 'graph' ) {
-		graph.toggle();
-	} else if ( action === 'back' ) {
+	if ( action === 'back' ) {
 		if ( ! $( '#pipeline .i-filters' ).length ) {
 			var pi = $( '#pipeline .lihead' ).data( 'index' );
 			PIP.splice( pi, 1 );
@@ -1953,26 +2022,6 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 				PIP[ index ].names.push( infoVal() );
 				setting.save( V.tab, title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
-				graph.pipeline();
-			}
-		} );
-	} else if ( action === 'remove' ) {
-		var main = ! $( '#pipeline .lihead' ).length;
-		info( {
-			  icon    : V.tab
-			, title   : title
-			, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
-			, ok      : () => {
-				if ( main ) {
-					PIP.splice( index, 1 );
-				} else {
-					var pi = $( '#pipeline .lihead' ).data( 'index' );
-					var ni = V.li.data( 'index' );
-					PIP[ pi ].names.splice( ni, 1 );
-				}
-				setting.save( V.tab, title, 'Remove filter ...' );
-				V.li.remove();
-				setting.sortRefresh( main ? 'main' : 'sub' );
 				graph.pipeline();
 			}
 		} );

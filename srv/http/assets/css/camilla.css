@@ -30,6 +30,10 @@
 .tab .select2-container {
 	margin-bottom: 1px;
 }
+.tab .select2-container.channel {
+	width: 65px !important;
+}
+
 #divsampling .statuslist {
 	margin-top: 15px;
 }
@@ -106,12 +110,14 @@ tr .i-remove {
 	width: 40px !important;
 	line-height: 46px;
 }
-.select2-container.channel {
-	width: 65px !important;
+#filters li {
+	cursor: default !important;
 }
-
-.tab li:hover {
-	background: none !important;
+#filters li i {
+	cursor: pointer;
+}
+.tab li:not(.active, .main):hover {
+	background: unset !important;
 }
 .tab .divdest {
 	padding-bottom: 20px;
@@ -132,17 +138,17 @@ tr .i-remove {
 	min-width: 65px;
 	text-align: center;
 }
-.liinput div:nth-child( 2 ) {
-	margin-left: 10px;
+.liinput.column div:nth-child( 2 ) {
+	width: 40px;
 }
 .liinput div:nth-child( 3 ) {
+	margin-left: 10px;
+}
+.liinput div:nth-child( 4 ) {
 	width: 230px !important;
 	margin: 0 10px;
 }
-.liinput.main div:first-child {
-	text-align: right;
-}
-.liinput.main div:nth-child( 2 ) {
+.liinput.main div {
 	text-align: unset;
 }
 .liinput .name {

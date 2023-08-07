@@ -62,3 +62,9 @@ $head = [
 ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );
+?>
+<div id="menu" class="menu hide">
+<a class="graph"><i class="i-graph"></i>Graph</a>
+<a class="edit"><i class="i-edit-circle"></i>Edit</a>
+<a class="delete"><i class="i-remove"></i>Delete</a>
+</div>

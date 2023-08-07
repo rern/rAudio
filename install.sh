@@ -58,26 +58,6 @@ for f in album albumbyartist; do
 	fi
 done
 
-# 20230609
-rm -f $dirshm/system
-
-file=$dirsystem/localbrowser.conf
-if [[ -e $file ]]; then
-	rotate=$( getVar rotate $file | tr -dc [A-Z] )
-	if [[ $rotate ]]; then
-		case $rotate in
-			NORMAL ) degree=0;;
-			CCW )    degree=270;;
-			CW )     degree=90;;
-			UD )     degree=180;;
-		esac
-		sed -i "s/^rotate.*/rotate=$degree/" $file
-	fi
-fi
-rm -f /tmp/localbrowser.conf
-
-[[ $( pacman -Q bluealsa ) == 'bluealsa 4.0.0-1' ]] && pacman -Sy --noconfirm $packages
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
