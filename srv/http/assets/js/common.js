@@ -980,6 +980,9 @@ function infoWidth() {
 	}
 }
 
+function capitalize( str ) {
+	return str.replace( /\b\w/g, l => l.toUpperCase() );
+}
 function htmlOption( el ) {
 	if ( typeof( el ) === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';

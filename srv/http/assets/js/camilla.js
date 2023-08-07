@@ -22,8 +22,8 @@ var C        = {
 		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 	}
 	, samplerate  : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype  : [ 'Synchronous', 'FastAsync', 'BalancedAsync', 'AccurateAsync', 'FreeAsync' ]
-	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout', 'rate_measure_interval' ]
+	, sampletype  : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
+	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
 	, signal      : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
 	, subtype     : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
@@ -315,7 +315,7 @@ var axes     = {
 function renderPage() { // common from settings.js
 	render.page();
 }
-function pushstreamDisconnect() { // from settings.js
+function pushstreamDisconnect() { // from common.js
 	if ( ws ) ws.close();
 }
 
@@ -566,6 +566,7 @@ var render   = {
 		$( '.rms' ).css( 'width', 0 );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
+		[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
 		var labels = '';
 		var values = '';
 		[ 'capture', 'playback' ].forEach( ( k, i ) => {
@@ -579,6 +580,7 @@ var render   = {
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
 		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
+		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
 		if ( keys.length ) {
 			labels += '<hr>';
 			values += '<hr>';
@@ -589,6 +591,8 @@ var render   = {
 		}
 		$( '#divsampling .label' ).html( labels );
 		$( '#divsampling .value' ).html( values );
+		switchSet();
+		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	} //---------------------------------------------------------------------------------------------
@@ -890,7 +894,7 @@ var setting  = {
 	} //---------------------------------------------------------------------------------------------
 	, resampling    : ( freeasync ) => {
 		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ C.sampletype, C.samplerate ];
+		var select      = [ DEV.enable_rate_adjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
 		var numberlabel = [ 'Other' ];
 		var values      = {};
 		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
@@ -917,10 +921,9 @@ var setting  = {
 				, f_cutoff           : f.f_cutoff           || 0.925
 			}
 		}
-		var title = 'Resampling'
 		info( {
 			  icon         : V.tab
-			, title        : title
+			, title        : 'Resampling'
 			, selectlabel  : selectlabel
 			, select       : select
 			, numberlabel  : numberlabel
@@ -955,13 +958,23 @@ var setting  = {
 					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
 					DEV.resampler_type = { FreeAsync: v }
 				}
-				DEV.enable_resampling = true;
-				setting.save( V.tab, title, 'Change ...' );
-				$( '#setting-enable_resampling' ).removeClass( 'hide' );
-				render.devices();
+				setting.switchSave( 'enable_resampling' );
 			}
 		} );
-	} //---------------------------------------------------------------------------------------------
+	}
+	, switchSave    : ( id, disable ) => {
+		if ( disable === 'disable' ) {
+			var msg   = 'Disable ...';
+			DEV[ id ] = false;
+		} else {
+			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
+			DEV[ id ] = true;
+		}
+		setting.save( V.tab, setting.switchTitle( id ), msg );
+		render.devices();
+	}
+	, switchTitle   : ( id ) => $( '#'+ id ).parent().prev().find( '.name' ).text()
+	//---------------------------------------------------------------------------------------------
 	, filter        : ( type, subtype, name, existing ) => {
 		var data, key_val, key, kv, k, v;
 		var existing = false;
@@ -1674,46 +1687,59 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 		$flowchart.addClass( 'hide' );
 	}
 } );
-$( '#enable_rate_adjust, #enable_resampling' ).on( 'click', function() {
+$( '.switch' ).on( 'click', function() {
 	var id = this.id;
 	var $setting = $( '#setting-'+ id );
-	if ( DEV[ id ] ) {
-		DEV[ id ] = false;
-		setting.save( 'devices', id === 'enable_rate_adjust' ? 'Rate Adjust' : 'Resampling', 'Disable ...' );
-		$setting.addClass( 'hide' );
-		render.devices();
-	} else {
-		$setting.trigger( 'click' );
-	}
+	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
-	var title = 'Rate Adjust';
+	var title = setting.switchTitle( this.id );
+	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
+		switchCancel();
+		info( {
+			  icon    : V.tab
+			, title   : title
+			, message : 'Resampling type is <wh>Synchronous</wh>'
+		} );
+		return
+	}
+	
 	info( {
 		  icon         : V.tab
 		, title        : title
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
-		, checkbox     : [ 'Stop on rate change' ]
 		, boxwidth     : 100
 		, values       : {
 			  adjust_period       : DEV.adjust_period
 			, target_level        : DEV.target_level
-			, stop_on_rate_change : DEV.stop_on_rate_change
 		}
 		, checkchanged : DEV.enable_rate_adjust
 		, cancel       : switchCancel
 		, ok           : () => {
 			var val =  infoVal();
-			[ 'adjust_period', 'target_level', 'stop_on_rate_change' ].forEach( k => DEV[ k ] = val[ k ] );
-			DEV.enable_rate_adjust = true;
-			setting.save( V.tab, title, DEV.enable_rate_adjust ? 'Change ...' : 'Enable ...' );
-			$this.removeClass( 'hide' );
-			render.devices();
+			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+			setting.switchSave( 'enable_rate_adjust' );
 		}
 	} );
 } );
 $( '#setting-enable_resampling' ).on( 'click', function() {
 	setting.resampling( DEV.resampler_type === 'FreeAsync' );
+} );
+$( '#setting-stop_on_rate_change' ).on( 'click', function() {
+	info( {
+		  icon         : V.tab
+		, title        : setting.switchTitle( this.id )
+		, numberlabel  : 'Rate mearsure interval'
+		, boxwidth     : 65
+		, values       : DEV.rate_measure_interval
+		, checkchanged : DEV.stop_on_rate_change
+		, cancel       : switchCancel
+		, ok           : () => {
+			DEV.rate_measure_interval = infoVal();
+			setting.switchSave( 'stop_on_rate_change' );
+		}
+	} );
 } );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
