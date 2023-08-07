@@ -146,12 +146,11 @@ function switchEnable() {
 	SWreset();
 }
 function switchIdIconTitle( id ) {
+	id       = id.replace( 'setting-', '' );
 	SW.id    = id;
 	SW.title = $( '#div'+ id +' .name' ).text();
 	if ( page === 'player' ) {
 		SW.icon  =  $( '#divoptions #'+ id ).length ? 'mpd' : 'volume';
-	} else if ( page === 'camilla' ) {
-		SW.icon  = 'camilladsp';
 	} else {
 		SW.icon  = id;
 	}
@@ -412,7 +411,7 @@ $( '.setting, .switch' ).on( 'click', function() {
 	if ( V.local ) return
 	
 	local();
-	switchIdIconTitle( this.id.replace( 'setting-', '' ) );
+	switchIdIconTitle( this.id );
 } );
 $( '.switch' ).on( 'click', function() {
 	if ( V.press ) return
