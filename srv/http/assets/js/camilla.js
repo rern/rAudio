@@ -718,7 +718,7 @@ var render   = {
 				var a = pip[ ai ];
 				pip.splice( ai, 1 );
 				pip.splice( bi, 0, a );
-				setting.save( 'pipeline', 'Pipeline', 'Change order ...' );
+				setting.save( 'Pipeline', 'Change order ...' );
 				graph.pipeline();
 			}
 		} );
@@ -849,7 +849,7 @@ var setting  = {
 			, ok           : () => {
 				var val = infoVal();
 				$.each( val, ( k, v ) => DEV[ dev ][ k ] = v );
-				setting.save( V.tab, title, 'Change ...' );
+				setting.save( title, 'Change ...' );
 			}
 		} );
 	}
@@ -887,7 +887,7 @@ var setting  = {
 				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
 				delete val.other;
 				$.each( val, ( k, v ) => DEV[ k ] = v );
-				setting.save( V.tab, title, 'Change ...' );
+				setting.save( title, 'Change ...' );
 				render.devices();
 			}
 		} );
@@ -970,7 +970,7 @@ var setting  = {
 			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
 			DEV[ id ] = true;
 		}
-		setting.save( V.tab, SW.title, msg );
+		setting.save( SW.title, msg );
 		render.devices();
 	}
 	//---------------------------------------------------------------------------------------------
@@ -1055,7 +1055,7 @@ var setting  = {
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 			values   = { ...values, ...kv };
 		}
-		var title       = name ? 'Filter' : 'New Filter';
+		var title       = name ? 'Filter' : 'Add Filter';
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1136,7 +1136,7 @@ var setting  = {
 						} );
 					}
 				} );
-				setting.save( V.tab, title, newname ? 'Change ...' : 'Save ...' );
+				setting.save( title, newname ? 'Change ...' : 'Save ...' );
 				var $ligraph = $( '#filters .ligraph:not( .hide )' );
 				if ( $ligraph.length && newname in V.graph.filters ) {
 					$ligraph.each( ( i, el ) => {
@@ -1147,7 +1147,7 @@ var setting  = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, mixer         : ( name ) => {
-		var title = name ? 'Mixer' : 'New Mixer'
+		var title = name ? 'Mixer' : 'Add Mixer'
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -1161,7 +1161,7 @@ var setting  = {
 				if ( newname in MIX ) {
 					info( {
 						  icon    : V.tab
-						, title   : 'New Mixer'
+						, title   : title
 						, message : 'Mixer: <wh>'+ newname +'</wh> already exists.'
 						, ok      : () => setting.mixer( newname )
 					} );
@@ -1198,7 +1198,7 @@ var setting  = {
 						} ]
 					}
 				}
-				setting.save( V.tab, title, name ? 'Change ...' : 'Save ...' );
+				setting.save( title, name ? 'Change ...' : 'Save ...' );
 				render.mixers();
 			}
 		} );
@@ -1226,7 +1226,7 @@ var setting  = {
 	`;
 		
 		if ( index === '' ) {
-			var title = 'New Destination';
+			var title = 'Add Destination';
 			info( {
 				  icon         : V.tab
 				, title        : title
@@ -1246,12 +1246,12 @@ var setting  = {
 						, sources : [ s ]
 					}
 					MIX[ name ].mapping.push( mapping );
-					setting.save( V.tab, title, 'Save ...' );
+					setting.save( title, 'Save ...' );
 					render.mixersSub( name, MIX[ name ].mapping );
 				}
 			} );
 		} else {
-			var title = 'New Source';
+			var title = 'Add Source';
 			info( {
 				  icon         : V.tab
 				, title        : title
@@ -1266,7 +1266,7 @@ var setting  = {
 						s[ $this.data( 'k' ) ] = $this.is( ':checkbox' ) ? $this.prop( 'checked' ) : +$this.val();
 					} );
 					MIX[ name ].mapping[ index ].sources.push( s );
-					setting.save( V.tab, title, 'Save ...' );
+					setting.save( title, 'Save ...' );
 					render.mixersSub( name, MIX[ name ].mapping );
 				}
 			} );
@@ -1276,7 +1276,7 @@ var setting  = {
 		var filters = Object.keys( FIL );
 		info( {
 			  icon        : V.tab
-			, title       : 'New Pipeline'
+			, title       : 'Add Pipeline'
 			, tablabel    : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 			, tab         : [ '', setting.pipelineMixer ]
 			, selectlabel : [ 'Channel', 'Filters' ]
@@ -1311,7 +1311,7 @@ var setting  = {
 	, pipelineMixer : () => {
 		info( {
 			  icon         : V.tab
-			, title        : 'New Pipeline'
+			, title        : 'Add Pipeline'
 			, tablabel     : [ ico( 'filters' ) +' Filter', ico( 'mixers' ) +' Mixer' ]
 			, tab          : [ setting.pipeline, '' ]
 			, selectlabel  : 'Mixers'
@@ -1326,7 +1326,7 @@ var setting  = {
 		} );
 	}
 	, pipelineSave  : () => {
-		setting.save( V.tab, 'New Pipeline', 'Save ...' );
+		setting.save( 'Add Pipeline', 'Save ...' );
 		var index = PIP.length - 1;
 		var li = render.pipe( PIP[ index ], index );
 		$( '#pipeline .entriess.main' ).append( li );
@@ -1340,13 +1340,13 @@ var setting  = {
 		delete V.sortable[ k ];
 		render.sortable( k );
 	}
-	, save          : ( icon, titlle, msg ) => {
+	, save          : ( titlle, msg ) => {
 		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
-		if ( icon ) { // all except gain
+		if ( msg ) { // all except gain
 			bash( [ 'settings/camilla.py', 'save' ] );
-			banner( icon, titlle, msg );
+			banner( V.tab, titlle, msg );
 		}
 	}
 	, set           : () => {
@@ -1607,7 +1607,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
-	content += '<tr><td></td><td colspan="3" style="text-align: right"><a class="add">'+ ico( 'add' )+'New file</a></td></tr></table>';
+	content += '<tr><td></td><td colspan="3" style="text-align: right"><a class="add">'+ ico( 'add' )+'Add file</a></td></tr></table>';
 	var icon  = 'camilladsp';
 	info( {
 		  icon        : icon
@@ -1799,7 +1799,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, okcolor : red
 						, ok      : () => {
 							file ? bash( [ 'coeffdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
-							setting.save( V.tab, title, 'Delete ...' );
+							setting.save( title, 'Delete ...' );
 							V.li.remove();
 						}
 					} );
@@ -1820,7 +1820,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 								$.each( FIL, ( k, v ) => {
 									if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
 								} );
-								setting.save( V.tab, title, 'Rename ...' );
+								setting.save( title, 'Rename ...' );
 							}
 						} );
 					} else {
@@ -1867,7 +1867,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							} else {
 								MIX[ name ].mapping[ mi ].sources.splice( si, 1 );
 							}
-							setting.save( V.tab, title, 'Remove ...' );
+							setting.save( title, 'Remove ...' );
 							V.li.remove();
 						}
 					} );
@@ -1891,7 +1891,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var ni = V.li.data( 'index' );
 						PIP[ pi ].names.splice( ni, 1 );
 					}
-					setting.save( V.tab, title, 'Remove filter ...' );
+					setting.save( title, 'Remove filter ...' );
 					V.li.remove();
 					setting.sortRefresh( main ? 'main' : 'sub' );
 					graph.pipeline();
@@ -1930,7 +1930,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( action === 'back' ) {
 		if ( ! MIX[ name ].mapping.length ) { // no mapping left
 			delete MIX[ $( '#mixers .lihead' ).text() ];
-			setting.save( V.tab, title, 'Remove ...' );
+			setting.save( title, 'Remove ...' );
 		}
 		render.mixers();
 	} else if ( action === 'add' ) {
@@ -1949,7 +1949,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		var si    = V.li.data( 'si' );
 		MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
 	}
-	setting.save( V.tab, 'Mixer', 'Change ...');
+	setting.save( 'Mixer', 'Change ...');
 } ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
 } ).on( 'click input keyup', 'input[type=range]', function( e ) {
@@ -1982,7 +1982,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else {
 		source.inverted = checked;
 	}
-	setting.save( V.tab, 'Mixer', 'change ...' );
+	setting.save( 'Mixer', 'Change ...' );
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );
@@ -2008,7 +2008,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			, values  : values
 			, ok      : () => {
 				PIP[ index ].name = infoVal();
-				setting.save( V.tab, 'Add Mixer' );
+				setting.save( 'Add Mixer', 'Save ...' );
 			}
 		} );
 	}
@@ -2022,7 +2022,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 		if ( ! $( '#pipeline .i-filters' ).length ) {
 			var pi = $( '#pipeline .lihead' ).data( 'index' );
 			PIP.splice( pi, 1 );
-			setting.save( V.tab, title, 'Remove filter ...' );
+			setting.save( title, 'Remove filter ...' );
 			render.pipeline();
 		} else {
 			$( '#pipeline .entries' ).toggleClass( 'hide' );
@@ -2037,7 +2037,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			, select      : Object.keys( FIL )
 			, ok          : () => {
 				PIP[ index ].names.push( infoVal() );
-				setting.save( V.tab, title, 'Save ...' );
+				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
 				graph.pipeline();
 			}
