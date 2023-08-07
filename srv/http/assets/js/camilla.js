@@ -923,7 +923,7 @@ var setting  = {
 		}
 		info( {
 			  icon         : V.tab
-			, title        : 'Resampling'
+			, title        : SW.title
 			, selectlabel  : selectlabel
 			, select       : select
 			, numberlabel  : numberlabel
@@ -970,10 +970,9 @@ var setting  = {
 			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
 			DEV[ id ] = true;
 		}
-		setting.save( V.tab, setting.switchTitle( id ), msg );
+		setting.save( V.tab, SW.title, msg );
 		render.devices();
 	}
-	, switchTitle   : ( id ) => $( '#'+ id ).parent().prev().find( '.name' ).text()
 	//---------------------------------------------------------------------------------------------
 	, filter        : ( type, subtype, name, existing ) => {
 		var data, key_val, key, kv, k, v;
@@ -1610,10 +1609,9 @@ $( '#setting-configuration' ).on( 'click', function() {
 	} );
 	content += '<tr><td></td><td colspan="3" style="text-align: right"><a class="add">'+ ico( 'add' )+'New file</a></td></tr></table>';
 	var icon  = 'camilladsp';
-	var title = 'Configuration';
 	info( {
 		  icon        : icon
-		, title       : title
+		, title       : SW.title
 		, content     : content
 		, beforeshow  : () => {
 			$( '#infoContent' ).on( 'click', '.add', function() {
@@ -1624,7 +1622,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 				var name   = $this.parents( 'tr' ).find( '.name' ).text();
 				info( {
 					  icon         : icon
-					, title        : title
+					, title        : SW.title
 					, message      : rename ? 'Rename <wh>'+ name +'</wh> to:' : 'Copy <wh>'+ name +'</wh> as:'
 					, textlabel    : 'Name'
 					, values       : name
@@ -1636,7 +1634,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 						bash( [ rename ? 'confrename' : 'confcopy', name, newname, 'CMD NAME NEWNAME' ], () => {
 							if ( rename && name === S.fileconf ) setting.set( newname );
 						} );
-						notify( icon, title, rename ? 'Rename ...' : 'Copy ...' );
+						notify( icon, SW.title, rename ? 'Rename ...' : 'Copy ...' );
 						rename ? S.lsconf[ S.lsconf.indexOf( name ) ] = newname : S.lsconf.push( newname );
 						render.status();
 					}
@@ -1645,7 +1643,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 				var file = $( this ).parent().prev().text();
 				info( {
 					  icon    : icon
-					, title   : title
+					, title   : SW.title
 					, message : 'Delete <wh>'+ file +'</wh> ?'
 					, cancel  : () => $( '#setting-configuration' ).trigger( 'click' )
 					, oklabel : ico( 'remove' ) +'Delete'
@@ -1653,7 +1651,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					, ok      : () => {
 						S.lsconf.slice( S.lsconf.indexOf( name ), 1 );
 						bash( [ 'confdelete', file, 'CMD NAME' ] );
-						banner( icon, title, 'Delete ...' );
+						banner( icon, SW.title, 'Delete ...' );
 						render.status();
 					}
 				} );
@@ -1694,12 +1692,11 @@ $( '.switch' ).on( 'click', function() {
 } );
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
-	var title = setting.switchTitle( this.id );
 	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
 		switchCancel();
 		info( {
 			  icon    : V.tab
-			, title   : title
+			, title   : SW.title
 			, message : 'Resampling type is <wh>Synchronous</wh>'
 		} );
 		return
@@ -1707,7 +1704,7 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	
 	info( {
 		  icon         : V.tab
-		, title        : title
+		, title        : SW.title
 		, numberlabel  : [ 'Adjust period', 'Target level' ]
 		, boxwidth     : 100
 		, values       : {
@@ -1729,7 +1726,7 @@ $( '#setting-enable_resampling' ).on( 'click', function() {
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 	info( {
 		  icon         : V.tab
-		, title        : setting.switchTitle( this.id )
+		, title        : SW.title
 		, numberlabel  : 'Rate mearsure interval'
 		, boxwidth     : 65
 		, values       : DEV.rate_measure_interval
