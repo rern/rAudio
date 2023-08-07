@@ -575,7 +575,7 @@ var render   = {
 		} );
 		C.sampling.forEach( k => {
 			labels += util.key2label( k ) +'<br>';
-			values += DEV[ k ] +'<br>';
+			values += DEV[ k ].toLocaleString() +'<br>';
 		} );
 		var keys = [];
 		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
