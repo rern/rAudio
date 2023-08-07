@@ -1543,6 +1543,7 @@ var util     = {
 					} else if ( cmd === 'GetState' ) {
 						if ( value !== 'Running' ) {
 							render.vuClear();
+							render.statusValue();
 						} else {
 							if ( ! ( 'intervalvu' in V ) ) {
 								$( '.peak' ).css( 'background', '' );
