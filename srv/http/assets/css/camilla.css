@@ -178,13 +178,16 @@ input[ type=range ] {
 	margin: 0 10px;
 }
 #volume {
-	margin: 0 0 20px 0;
+	margin: 0;
 }
 #mute {
 	margin-left: 40px;
 }
 #up {
 	margin-left: 80px;
+}
+#divconfiguration {
+	margin-top: 20px;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 20px;

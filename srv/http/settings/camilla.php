@@ -50,11 +50,11 @@ $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
 	, htmlSectionStatus( 'volume', '<code id="gain"></code>', $htmlvolume )
+	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 	]
-	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
