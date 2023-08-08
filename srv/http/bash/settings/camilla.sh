@@ -12,24 +12,31 @@ case $CMD in
 
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped
+	pushRefresh
 	;;
 coefdelete )
 	rm -f $dircoeffs/"$NAME"
+	pushRefresh
 	;;
 coefrename )
 	mv -f $dircoeffs/{"$NAME","$NEWNAME"}
+	pushRefresh
 	;;
 confcopy )
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
+	pushRefresh
 	;;
 confdelete )
 	rm -f $dirconfigs/"$NAME"
+	pushRefresh
 	;;
 confrename )
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
+	pushRefresh
 	;;
 confswitch )
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
+	pushRefresh
 	;;
 restart )
 	systemctl restart camilladsp
@@ -65,9 +72,11 @@ setformat )
 savemute )
 	[[ $MUTE == true ]] && m=-m
 	sed -i "s/^MUTE.*/MUTE=$m/" /etc/default/camilladsp
+	pushRefresh
 	;;
 savevolume )
 	sed -i "s/^GAIN.*/GAIN=-g$VAL/" /etc/default/camilladsp
+	pushRefresh
 	;;
 statuslog )
 	cat /var/log/camilladsp.log

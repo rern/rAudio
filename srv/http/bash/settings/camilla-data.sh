@@ -1,6 +1,8 @@
 #!/bin/bash
 
-data=$( /srv/http/bash/settings/camilla.py )
+. /srv/http/bash/common.sh
+
+data=$( $dirsettings/camilla.py )
 
 [[ $? != 0 ]] && echo notrunning && exit
 
@@ -13,14 +15,12 @@ capture=$( grep -v Loopback <<< $arecord | sed -E -n '/^card/ { s/^card (.): .*d
 capture+="
 $( grep Loopback <<< $arecord | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopback,\1"/; p}' )"
 
-data=${data:0:-1}
+data=${data:1:-1}
 data+='
-, "clipped" : '$( cat /dev/shm/clipped 2> /dev/null || echo 0 )'
+, "clipped" : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
 , "devices" : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
-}
-
 }'
 
-echo $data
+data2json "$data" $1

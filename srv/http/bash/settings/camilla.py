@@ -22,6 +22,8 @@ if len( sys.argv ) > 1: # set / save volume on start / stop
         config = getValue( 'GetConfig' )
         file   = getValue( 'GetConfigName' )
         with open( file, 'w' ) as f: f.write( config )
+        import subprocess
+        subprocess.run( [ '/srv/http/bash/settings/camilla-data.sh', 'push' ] )
     elif cmd == 'filters' or cmd == 'pipeline':
         config = json.loads( getValue( 'GetConfigJson' ) )
         target = sys.argv[ 2 ]
