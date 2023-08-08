@@ -1581,11 +1581,12 @@ $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
-$( '#volume' ).on( 'click input keyup', function( e ) {
+$( '#volume' ).on( 'input', function() {
 	S.volume = +$( this ).val();
 	$( '#gain' ).text( util.dbFormat( S.volume ) );
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
-	if ( e.type === 'click' ) gain.savemain( S.volume );
+} ).on( 'touchend mouseup keyup', function() {
+	gain.savemain( S.volume );
 } );
 $( '#up, #dn' ).on( 'click', function() {
 	S.volume += this.id === 'up' ? 0.1 : -0.1;
@@ -1917,7 +1918,7 @@ $( '#filters' ).on( 'click', 'li .i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
-} ).on( 'click input keyup', 'input[type=range]', function( e ) {
+} ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( util.dbFormat( val ) );
@@ -1925,7 +1926,8 @@ $( '#filters' ).on( 'click', 'li .i-add', function() {
 	var name = V.li.data( 'name' );
 	FIL[ name ].parameters.gain = val;
 	setting.save();
-	if ( e.type === 'click' ) gain.save( name );
+} ).on( 'touchend mouseup keyup', function() {
+	gain.save( name );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
@@ -1965,7 +1967,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
-} ).on( 'click input keyup', 'input[type=range]', function( e ) {
+} ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().val( util.dbFormat( val ) );
@@ -1975,7 +1977,8 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var si    = V.li.data( 'si' );
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	setting.save();
-	if ( e.type === 'click' ) gain.save();
+} ).on( 'touchend mouseup keyup', function() {
+	gain.save();
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
 	V.li        = $this.parents( 'li' );
