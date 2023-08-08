@@ -15,7 +15,7 @@ $( grep Loopback <<< $arecord | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loo
 
 data=${data:0:-1}
 data+='
-, "clipped" : '$( < /dev/shm/clipped )'
+, "clipped" : '$( cat /dev/shm/clipped 2> /dev/null || echo 0 )'
 , "devices" : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
