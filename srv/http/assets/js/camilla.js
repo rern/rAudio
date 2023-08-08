@@ -507,7 +507,6 @@ var render   = {
 			V.statuslabel.push( 'Rate adjust' );
 			V.statusget.push( 'GetRateAdjust' );
 		}
-		V.statuslabel.push( 'Clipped samples' );
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -537,17 +536,17 @@ var render   = {
 	}
 	, statusValue : () => {
 		var status = [];
+		var clipped = 0;
 		V.statusread.forEach( k => {
-			var val = S.status[ k ];
+			var val     = S.status[ k ];
 			if ( k === 'GetState' ) {
 				if ( val !== 'Running' ) [ 'GetCaptureRate', 'GetBufferLevel' ].forEach( k => S.status[ k ] = 0 );
 				status.push( val );
 			} else if ( k === 'GetClippedSamples' ) {
-				val = val - S.clipped;
-				if ( val ) {
-					status.push( '<a class="clipped ora">'+ val.toLocaleString() +'</a>&emsp;'+ ico( 'flash gr' ) );
-				} else {
-					if ( V.statuslabel[ V.statuslabel.length - 1 ] === 'Clipped samples' ) V.statuslabel.pop();
+				clipped = val - S.clipped;
+				if ( clipped ) {
+					V.statuslabel.push( 'Clipped samples' );
+					status.push( '<a class="clipped ora">'+ clipped.toLocaleString() +'</a>' );
 				}
 			} else {
 				status.push( S.status[ k ].toLocaleString() );
@@ -896,32 +895,32 @@ var setting  = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, resampling    : ( freeasync ) => {
-		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ DEV.enable_rate_adjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
-		var numberlabel = [ 'Other' ];
-		var values      = {};
-		[ 'resampler_type', 'capture_samplerate' ].forEach( k => values[ k ] = DEV[ k ] );
+		var rateadjust  = DEV.enable_rate_adjust;
 		var samplerate  = DEV.capture_samplerate;
-		if ( samplerate ) {
-			values.capture_samplerate =  C.samplerate.includes( samplerate ) ? samplerate : 'Other';
-		} else {
-			values.capture_samplerate = '44100';
-		}
-		values.other = values.capture_samplerate;
+		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
+		var select      = [ rateadjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
+		var numberlabel = [ 'Other' ];
+		var capturerate = C.samplerate.includes( samplerate ) ? samplerate : 'Other';
 		if ( freeasync ) {
 			selectlabel.push( 'interpolation', 'window' );
 			select.push( C.freeasync.interpolation, C.freeasync.window );
 			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
 			var f  = DEV.resampler_type.FreeAsync || {};
-			values = {
+			var values = {
 				  resampler_type     : 'FreeAsync'
-				, capture_samplerate : values.capture_samplerate
+				, capture_samplerate : capturerate
 				, interpolation      : f.interpolation      || 'Linear'
 				, window             : f.window             || 'Blackman2'
-				, other              : values.capture_samplerate
+				, other              : capturerate
 				, sinc_len           : f.sinc_len           || 128
 				, oversampling_ratio : f.oversampling_ratio || 1024
 				, f_cutoff           : f.f_cutoff           || 0.925
+			}
+		} else {
+			var values      = {
+				  resampler_type     : rateadjust && DEV.resampler_type === 'Synchronous' ? 'BalancedAsync' : DEV.resampler_type
+				, capture_samplerate : capturerate
+				, other              : capturerate
 			}
 		}
 		info( {
@@ -1501,7 +1500,7 @@ var util     = {
 					break;
 				case 'GetClippedSamples':
 					if ( V.clipped ) {
-						S.status.GetClippedSamples = value - S.clipped;
+						S.status.GetClippedSamples = value;
 						break;
 					}
 					
@@ -1520,7 +1519,7 @@ var util     = {
 							[ 'C', 'P' ].forEach( ( k, i ) => $( '.peak.'+ k + i ).css( 'left', util.db2percent( V[ k ][ i ] ) +'%' ) );
 						}, 1000 );
 					}
-					S.status.GetClippedSamples = value - S.clipped;
+					S.status.GetClippedSamples = value;
 					break;
 				case 'GetConfigjson':
 					S.config = value;
@@ -1593,6 +1592,11 @@ $( '#up, #dn' ).on( 'click', function() {
 } );
 $( '#mute' ).on( 'click', function() {
 	gain.mute( ! S.mute );
+} );
+$( '#divstate' ).on( 'click', '.clipped', function() {
+	S.clipped = S.status.GetClippedSamples;
+	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
+	render.status();
 } );
 $( '#configuration' ).on( 'change', function() {
 	if ( V.local ) return
@@ -1668,9 +1672,6 @@ $( '#setting-configuration' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#statusvalue' ).on( 'click', '.i-flash', function() {
-	bash( [ 'clippedreset', S.status.GetClippedSamples, 'CMD CLIPPED' ] );
-} );
 $( '#divsettings' ).on( 'click', '.settings', function() {
 	setting.device( 'capture' );
 } ).on( 'click', '.i-flowchart', function() {
@@ -1701,12 +1702,12 @@ $( '.switch' ).on( 'click', function() {
 $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 	var $this = $( this );
 	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
-		switchCancel();
 		info( {
 			  icon    : V.tab
 			, title   : SW.title
 			, message : 'Resampling type is <wh>Synchronous</wh>'
 		} );
+		switchCancel();
 		return
 	}
 	

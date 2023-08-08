@@ -338,6 +338,7 @@ input[ type=range ] {
 .sortable-ghost .li2 {
 	color: var( --cg ) !important;
 }
+.clipped::after,
 .sortable-ghost::before {
 	position: absolute;
 	content: "\f601";
@@ -348,7 +349,12 @@ input[ type=range ] {
 	text-align: center;
 	color: var( --cw );
 }
-
+.clipped::after {
+	content: "\f515";
+	bottom: 0;
+	color: var(--cg60 );
+	cursor: pointer;
+}
 @media (max-width: 600px) {
 	.liinput.column .i-add {
 		float: right;
