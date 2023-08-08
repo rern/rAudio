@@ -501,12 +501,8 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		V.statuslabel = [ 'State',    'Capture rate',   'Buffer level' ];
-		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
-		if ( DEV.enable_rate_adjust ) {
-			V.statuslabel.push( 'Rate adjust' );
-			V.statusget.push( 'GetRateAdjust' );
-		}
+		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel', 'GetRateAdjust' ]; // Clipped samples already got by signals
+		if ( ! DEV.enable_rate_adjust ) V.statusget.pop();
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -535,7 +531,9 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
-		var status = [];
+		var label   = [ 'State', 'Capture rate', 'Buffer level', 'Rate adjust' ];
+		if ( ! DEV.enable_rate_adjust ) label.pop();
+		var status  = [];
 		var clipped = 0;
 		V.statusread.forEach( k => {
 			var val     = S.status[ k ];
@@ -545,14 +543,14 @@ var render   = {
 			} else if ( k === 'GetClippedSamples' ) {
 				clipped = val - S.clipped;
 				if ( clipped ) {
-					V.statuslabel.push( 'Clipped samples' );
+					label.push( 'Clipped samples' );
 					status.push( '<a class="clipped ora">'+ clipped.toLocaleString() +'</a>' );
 				}
 			} else {
 				status.push( S.status[ k ].toLocaleString() );
 			}
 		} );
-		$( '#divstate .label' ).html( V.statuslabel.join( '<br>' ) );
+		$( '#divstate .label' ).html( label.join( '<br>' ) );
 		$( '#divstate .value' ).html( status.join( '<br>' ) );
 	}
 	, vu          : () => {
