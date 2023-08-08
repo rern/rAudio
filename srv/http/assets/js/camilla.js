@@ -501,8 +501,8 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel', 'GetRateAdjust' ]; // Clipped samples already got by signals
-		if ( ! DEV.enable_rate_adjust ) V.statusget.pop();
+		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -531,8 +531,8 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
-		var label   = [ 'State', 'Capture rate', 'Buffer level', 'Rate adjust' ];
-		if ( ! DEV.enable_rate_adjust ) label.pop();
+		var label   = [ 'State', 'Capture rate', 'Buffer level' ];
+		if ( DEV.enable_rate_adjust ) label.push( 'Rate adjust' );
 		var status  = [];
 		var clipped = 0;
 		V.statusread.forEach( k => {
