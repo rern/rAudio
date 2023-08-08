@@ -531,7 +531,7 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
-		if ( S.status.GetState !== 'Running' ) {
+		if ( ! [ 'Running', 'Starting' ].includes( S.status.GetState ) ) {
 			$( '#divstate .label' ).html( 'State' );
 			$( '#divstate .value' ).html( S.status.GetState );
 			return
@@ -1926,7 +1926,7 @@ $( '#filters' ).on( 'click', 'li .i-add', function() {
 	var name = V.li.data( 'name' );
 	FIL[ name ].parameters.gain = val;
 	setting.save();
-} ).on( 'touchend mouseup keyup', function() {
+} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	gain.save( name );
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
@@ -1977,7 +1977,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var si    = V.li.data( 'si' );
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	setting.save();
-} ).on( 'touchend mouseup keyup', function() {
+} ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	gain.save();
 } ).on( 'click', 'li input:checkbox', function() {
 	var $this   = $( this );
