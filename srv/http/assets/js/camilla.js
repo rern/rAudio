@@ -541,6 +541,7 @@ var render   = {
 				if ( val !== 'Running' ) [ 'GetCaptureRate', 'GetBufferLevel' ].forEach( k => S.status[ k ] = 0 );
 				status.push( val );
 			} else if ( k === 'GetClippedSamples' ) {
+				if ( S.clipped > val ) S.clipped = 0;
 				clipped = val - S.clipped;
 				if ( clipped ) {
 					label.push( 'Clipped samples' );
