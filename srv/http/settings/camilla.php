@@ -45,6 +45,8 @@ $head = [
 		, 'display' => 'gear hide'
 	]
 	, 'help'   => <<< EOF
+{$Fi( 'file btn' )} Log
+
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
 ];
@@ -56,6 +58,9 @@ $body = [
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
+		, 'help'  => <<< EOF
+{$Fi( 'gear btn' )} Manage configuration files
+EOF
 	]
 ];
 htmlSection( $head, $body, 'status' );

@@ -8,31 +8,31 @@ V            = {
 var ws;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
-	var key = k
-				.replace( 'FLOAT', 'Float' )
-				.replace( 'TEXT',  'Text' );
+	var key       = k
+					.replace( 'FLOAT', 'Float' )
+					.replace( 'TEXT',  'Text' );
 	format[ key ] = k;
 } );
 // const //////////////////////////////////////////////////////////////////////////////
 var C        = {
-	  format      : format
-	, freeasync   : {
+	  format     : format
+	, freeasync  : {
 		  keys          : [ 'sinc_len', 'oversampling_ratio', 'interpolation', 'window', 'f_cutoff' ]
 		, interpolation : [ 'Cubic', 'Linear', 'Nearest' ]
 		, window        : [ 'Blackman', 'Blackman2', 'BlackmanHarris', 'BlackmanHarris2', 'Hann', 'Hann2' ]
 	}
-	, samplerate  : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
-	, sampletype  : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
-	, sampling    : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
-	, signal      : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
-	, subtype     : {
+	, samplerate : [ 44100, 48000, 88200, 96000, 176400, 192000, 352800, 384000, 705600, 768000, 'Other' ]
+	, sampletype : [ 'AccurateAsync', 'BalancedAsync', 'FastAsync', 'FreeAsync', 'Synchronous' ]
+	, sampling   : [ 'samplerate', 'chunksize', 'queuelimit', 'silence_threshold', 'silence_timeout' ]
+	, signal     : [ 'GetCaptureSignalPeak', 'GetCaptureSignalRms', 'GetPlaybackSignalPeak', 'GetPlaybackSignalRms', 'GetClippedSamples' ]
+	, subtype    : {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
 		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
 		, Conv        : [ 'Raw', 'Wave', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
-	, type        : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
+	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
 }
 // capture / playback //////////////////////////////////////////////////////////////////////////////
 var CPkv     = {
@@ -501,15 +501,15 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
 		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
-		V.statuslabel = [ 'State',    'Capture rate',   'Buffer level', 'Clipped samples' ];
+		V.statuslabel = [ 'State',    'Capture rate',   'Buffer level' ];
 		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) {
 			V.statuslabel.push( 'Rate adjust' );
 			V.statusget.push( 'GetRateAdjust' );
 		}
+		V.statuslabel.push( 'Clipped samples' );
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
-		$( '#divstate .label' ).html( V.statuslabel.join( '<br>' ) );
 		render.statusValue();
 		if ( $( '.vubar' ).length ) return
 		
@@ -535,23 +535,26 @@ var render   = {
 		} );
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
-	, statusGet   : () => {
-		V.statusget.forEach( k => ws.send( '"'+ k +'"' ) );
-	}
 	, statusValue : () => {
-		var status = '';
+		var status = [];
 		V.statusread.forEach( k => {
 			var val = S.status[ k ];
-			if ( k !== 'GetState' ) val = val.toLocaleString();
-			if ( k === 'GetClippedSamples' ) {
-				val = +val - S.clipped;
-				var ora = val ? ' ora' : '';
-				val = '<a class="clipped'+ ora +'">'+ val +'</a>';
-				if ( ora ) val += '&emsp;'+ ico( 'flash gr' ); 
+			if ( k === 'GetState' ) {
+				if ( val !== 'Running' ) [ 'GetCaptureRate', 'GetBufferLevel' ].forEach( k => S.status[ k ] = 0 );
+				status.push( val );
+			} else if ( k === 'GetClippedSamples' ) {
+				val = val - S.clipped;
+				if ( val ) {
+					status.push( '<a class="clipped ora">'+ val.toLocaleString() +'</a>&emsp;'+ ico( 'flash gr' ) );
+				} else {
+					if ( V.statuslabel[ V.statuslabel.length - 1 ] === 'Clipped samples' ) V.statuslabel.pop();
+				}
+			} else {
+				status.push( S.status[ k ].toLocaleString() );
 			}
-			status += val +'<br>';
 		} );
-		$( '#divstate .value' ).html( status );
+		$( '#divstate .label' ).html( V.statuslabel.join( '<br>' ) );
+		$( '#divstate .value' ).html( status.join( '<br>' ) );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -1462,7 +1465,7 @@ var util     = {
 	}
 	, websocket     : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		ws.onopen    = () => V.intervalstatus = setInterval( render.statusGet, 1000 );
+		ws.onopen    = () => V.intervalstatus = setInterval( () => V.statusget.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
 		ws.onclose   = () => {
 			ws = null;
 			render.vuClear();
@@ -1541,21 +1544,20 @@ var util     = {
 						if ( value !== 'Running' ) {
 							render.vuClear();
 							if ( S.status.GetState !== value ) {
-								S.status.GetState = value;
+								S.status.GetState       = value;
 								render.statusValue();
-								return
 							}
-							
 						} else {
+							S.status.GetState = value;
 							if ( ! ( 'intervalvu' in V ) ) {
 								$( '.peak' ).css( 'background', '' );
 								render.vu();
 							}
 						}
-					} else if ( cmd === V.statuslast ) {
-						if ( S.status.GetState === 'Running' ) render.statusValue();
+					} else {
+						S.status[ cmd ] = value;
+						if ( S.status.GetState === 'Running' && cmd === V.statuslast ) render.statusValue();
 					}
-					S.status[ cmd ] = value;
 					break;
 			}
 		}
