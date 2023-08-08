@@ -531,6 +531,12 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
+		if ( S.status.GetState !== 'Running' ) {
+			$( '#divstate .label' ).html( 'State' );
+			$( '#divstate .value' ).html( S.status.GetState );
+			return
+		}
+		
 		var label   = [ 'State', 'Capture rate', 'Buffer level' ];
 		if ( DEV.enable_rate_adjust ) label.push( 'Rate adjust' );
 		var status  = [];
@@ -538,7 +544,6 @@ var render   = {
 		V.statusread.forEach( k => {
 			var val     = S.status[ k ];
 			if ( k === 'GetState' ) {
-				if ( val !== 'Running' ) [ 'GetCaptureRate', 'GetBufferLevel' ].forEach( k => S.status[ k ] = 0 );
 				status.push( val );
 			} else if ( k === 'GetClippedSamples' ) {
 				if ( S.clipped > val ) S.clipped = 0;
