@@ -1544,7 +1544,7 @@ var util     = {
 						if ( value !== 'Running' ) {
 							render.vuClear();
 							if ( S.status.GetState !== value ) {
-								S.status.GetState       = value;
+								S.status.GetState = value;
 								render.statusValue();
 							}
 						} else {
