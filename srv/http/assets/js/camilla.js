@@ -774,7 +774,7 @@ var setting  = {
 					var s = C.format;
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
-					var s = S.device;
+					var s = S.devices[ dev ];
 					var v = { device: data.device };
 				} else if ( key === 'filename' ) {
 					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
