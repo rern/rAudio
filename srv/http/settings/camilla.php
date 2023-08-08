@@ -44,7 +44,9 @@ $head = [
 		  'log'     => 'file'
 		, 'display' => 'gear hide'
 	]
-	, 'nohelp' => true
+	, 'help'   => <<< EOF
+<a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+EOF
 ];
 $body = [
 	  '<pre id="codelog" class="hide"></pre>'
