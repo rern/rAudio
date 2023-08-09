@@ -23,6 +23,8 @@ ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 ' /usr/lib/systemd/system/camilladsp.service
 	systemctl daemon-reload
 	systemctl try-restart camilladsp
+	rm -rf /srv/http/settings/camillagui
+	rm -f $dircamilladsp/configs/{active,default}_config.yml
 fi
 
 # 20230630
