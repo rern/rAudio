@@ -492,7 +492,7 @@ var render   = {
 		render.tab();
 		showContent();
 	}
-	, status      : ( refresh ) => {
+	, status      : () => {
 		if ( ! ws ) util.websocket();
 		$( '#gain' ).text( util.dbFormat( S.volume ) );
 		$( '#volume' ).val( S.volume );
@@ -531,33 +531,26 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
+		var label  = 'Sampling · Buffer';
 		if ( ! [ 'Running', 'Starting' ].includes( S.status.GetState ) ) {
-			$( '#divstate .label' ).html( 'State' );
-			$( '#divstate .value' ).html( S.status.GetState );
-			return
-		}
-		
-		var label   = [ 'State', 'Capture rate', 'Buffer level' ];
-		if ( DEV.enable_rate_adjust ) label.push( 'Rate adjust' );
-		var status  = [];
-		var clipped = 0;
-		V.statusread.forEach( k => {
-			var val     = S.status[ k ];
-			if ( k === 'GetState' ) {
-				status.push( val );
-			} else if ( k === 'GetClippedSamples' ) {
-				if ( S.clipped > val ) S.clipped = 0;
-				clipped = val - S.clipped;
-				if ( clipped ) {
-					label.push( 'Clipped samples' );
-					status.push( '<a class="clipped ora">'+ clipped.toLocaleString() +'</a>' );
-				}
-			} else {
-				status.push( S.status[ k ].toLocaleString() );
+			var status = S.status.GetState;
+		} else {
+			var status = S.status.GetCaptureRate.toLocaleString()
+						+' <gr>·</gr> '+ S.status.GetBufferLevel.toLocaleString();
+			if ( DEV.enable_rate_adjust ) {
+				label  += ' · Adj';
+				status += ' <gr>·</gr> '+ S.status.GetRateAdjust;
 			}
-		} );
-		$( '#divstate .label' ).html( label.join( '<br>' ) );
-		$( '#divstate .value' ).html( status.join( '<br>' ) );
+			var clipped = S.status.GetClippedSamples;
+			if ( S.clipped > clipped ) S.clipped = 0;
+			clipped = clipped - S.clipped;
+			if ( clipped ) {
+				label  += '<br>Clipped samples';
+				status += '<a class="clipped ora">'+ clipped.toLocaleString() +'</a>';
+			}
+		}
+		$( '#divstate .label' ).html( label );
+		$( '#divstate .value' ).html( status );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
