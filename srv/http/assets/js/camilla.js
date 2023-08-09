@@ -531,22 +531,21 @@ var render   = {
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
 	}
 	, statusValue : () => {
-		var label  = 'Sampling · Buffer';
-		if ( ! [ 'Running', 'Starting' ].includes( S.status.GetState ) ) {
-			var status = S.status.GetState;
-		} else {
-			var status = S.status.GetCaptureRate.toLocaleString()
-						+' <gr>·</gr> '+ S.status.GetBufferLevel.toLocaleString();
+		var label  = 'Buffer · Sampling';
+		var status = S.status.GetState;
+		if ( [ 'Running', 'Starting' ].includes( status ) ) {
+			status = [];
+			[ 'GetBufferLevel', 'GetCaptureRate' ].forEach( k => status.push( S.status[ k ].toLocaleString() ) );
 			if ( DEV.enable_rate_adjust ) {
 				label  += ' · Adj';
-				status += ' <gr>·</gr> '+ S.status.GetRateAdjust;
+				status.push( S.status.GetRateAdjust.toLocaleString() );
 			}
+			status = status.join( ' <gr>·</gr> ' );
 			var clipped = S.status.GetClippedSamples;
-			if ( S.clipped > clipped ) S.clipped = 0;
-			clipped = clipped - S.clipped;
+			S.clipped > clipped ? S.clipped = 0 : clipped = clipped - S.clipped;
 			if ( clipped ) {
 				label  += '<br>Clipped samples';
-				status += '<a class="clipped ora">'+ clipped.toLocaleString() +'</a>';
+				status += '<br><a class="clipped ora">'+ clipped.toLocaleString() +'</a>';
 			}
 		}
 		$( '#divstate .label' ).html( label );

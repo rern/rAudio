@@ -116,6 +116,9 @@ tr .i-remove {
 #filters li i {
 	cursor: pointer;
 }
+.tab li.active {
+	background: var( --cgd );
+}
 .tab li:not(.active, .main):hover {
 	background: unset !important;
 }
@@ -351,7 +354,7 @@ input[ type=range ] {
 }
 .clipped::after {
 	content: "\f515";
-	bottom: 0;
+	bottom: -2px;
 	color: var(--cg60 );
 	cursor: pointer;
 }

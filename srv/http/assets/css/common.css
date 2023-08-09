@@ -53,7 +53,7 @@ i {
 .i-btreceiver::before      { content: '\F51A' }
 .i-btsender::before        { content: '\F51B' }
 .i-brush::before           { content: '\F536' }
-.i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg75 ); }
+.i-camilladsp::before      { content: '\F59D'; position: absolute; color: var( --cg60 ); }
 .i-camilladsp::after       { content: '\F59C'; position: relative; } /* position: relative - fix order */
 .i-capslock::before        { content: '\F607' }
 .i-chevron-down::before    { content: '\F605' }
