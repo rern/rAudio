@@ -24,7 +24,7 @@ $( '.back' ).on( 'click', function() {
 	refreshData();
 } );
 $( '.btscan' ).on( 'click', function() {
-	if ( $( this ).hasClass( 'disabled' ) ) {
+	if ( S.camilladsp ) {
 		info( {
 			  icon    : 'bluetooth'
 			, title   : 'Bluetooth'
@@ -385,7 +385,6 @@ function renderBluetooth() {
 	$( '#divbt' ).removeClass( 'hide' );
 }
 function renderPage() {
-	$( '.btscan' ).toggleClass( 'disabled', S.camilladsp );
 	if ( ! S.activebt ) {
 		$( '#divbt' ).addClass( 'hide' );
 	} else {
