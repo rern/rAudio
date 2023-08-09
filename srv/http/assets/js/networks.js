@@ -28,9 +28,9 @@ $( '.btscan' ).on( 'click', function() {
 		info( {
 			  icon    : 'bluetooth'
 			, title   : 'Bluetooth'
-			, message : '<wh>DSP</wh> is currently enabled.'
+			, message : '<wh>DSP</wh> is currently enabled'
+						'<br>which cannot output via Bluetooth'
 		} );
-		return
 	}
 	
 	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );

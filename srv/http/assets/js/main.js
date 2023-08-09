@@ -861,6 +861,7 @@ $( '.map' ).on( 'click', function( e ) {
 			$( '#volume-bar, #volume-text' ).addClass( 'hide' );
 			displayBars();
 			displayPlayback();
+			setButtonOptions();
 			if ( S.state === 'play' && ! S.stream && ! localhost ) {
 				setProgress();
 				setTimeout( setProgressAnimate, 0 );

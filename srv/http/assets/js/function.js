@@ -1294,6 +1294,7 @@ function renderPlayback() {
 	$( '#coverTR' ).removeClass( 'empty' );
 	setInfo();
 	setCoverart();
+	setButtonOptions();
 	var istate = ico( S.state );
 	if ( S.elapsed === false || S.webradio ) {
 		setBlinkDot();
