@@ -44,7 +44,7 @@ if ( $addonsprogress || $guide ) {
 $htmlbar = '<div id="bar-bottom">';
 $prefix  = '';
 if ( $camilla ) {
-	$tabs   = [ 'Devices', 'Filters', 'Mixers', 'Pipeline' ];
+	$tabs   = [ 'Filters', 'Mixers', 'Pipeline', 'Devices' ];
 	$prefix = 'tab';
 } else {
 	$tabs   = [ 'Features', 'Player', 'Networks', 'System', 'Addons' ];

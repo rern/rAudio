@@ -7,7 +7,7 @@ $id_data = [
 ];
 
 $htmltabs = '<div id="divtabs">';
-foreach( [ 'devices', 'filters', 'mixers', 'pipeline' ] as $id ) {
+foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab">';
 	if ( $id === 'devices' ) {
 		$htmltabs.= '
@@ -59,6 +59,7 @@ $body = [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
+{$Fi( 'set0 btn' )} Reset clipped sample count
 {$Fi( 'gear btn' )} Manage configuration files
 EOF
 	]
@@ -66,7 +67,7 @@ EOF
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $head = [ 
-	  'title'  => 'Devices'
+	  'title'  => 'Filters'
 	, 'nohelp' => true
 ];
 $body = [ $htmltabs ];

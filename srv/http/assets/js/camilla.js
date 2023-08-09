@@ -3,7 +3,7 @@ V            = {
 	  clipped  : 0
 	, graph    : { filters: {}, pipeline: {} }
 	, sortable : {}
-	, tab      : 'devices'
+	, tab      : 'filters'
 }
 var ws;
 var format   = {};
@@ -424,7 +424,7 @@ var graph    = {
 				, plot_bgcolor  : '#000'
 				, showlegend    : false
 				, hovermode     : false
-				, dragmode      : 'pan'
+				, dragmode      : navigator.maxTouchPoints ? false : 'pan'
 				, font          : {
 					  family : 'Inconsolata'
 					, size   : 14
@@ -443,6 +443,7 @@ var graph    = {
 			$svg = $ligraph.find( 'svg' );
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 			bannerHide();
+			$ligraph.append( '<i class="i-close graphclose"></i>' );
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
@@ -1689,6 +1690,9 @@ $( '#divsettings' ).on( 'click', '.settings', function() {
 		$flowchart.addClass( 'hide' );
 	}
 } );
+$( '#divtabs' ).on( 'click', '.graphclose', function() {
+	$( this ).parent().addClass( 'hide' );
+} );
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
 	var $setting = $( '#setting-'+ id );
@@ -1755,7 +1759,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'i-back' ) ) return
+	if ( $this.hasClass( 'i-back, i-close' ) ) return
 	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );

@@ -200,8 +200,17 @@ input[ type=range ] {
 	margin-left: auto;
 }
 .ligraph {
+	position: relative;
 	height: 300px !important;
 	padding-top: 20px !important;
+	background: #000;
+}
+.graphclose {
+	position: absolute;
+	color: var( --cm ) !important;
+	text-align: right !important;
+	top: -10px;
+	right: 0;
 }
 .mutedest {
 	width: 35px;
