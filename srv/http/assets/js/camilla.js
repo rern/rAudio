@@ -1561,8 +1561,6 @@ var util     = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-util.websocket();
-
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).is( 'li i ' ) ) return
 	
