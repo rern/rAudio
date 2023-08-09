@@ -1112,21 +1112,8 @@ var setting  = {
 				var li         = render.filter( newname, FIL[ newname ] );
 				var index      = Object.keys( FIL )
 									.sort().indexOf( newname );
-				if ( name ) {
-					if ( name !== newname ) {
-						delete FIL[ name ];
-						if ( name in V.graph.filters ) {
-							V.graph.filters[ newname ] = V.graph.filters[ name ];
-							delete V.graph.filters[ name ];
-						}
-						V.li.remove();
-						$( '#filters .entries.main li' ).eq( index ).before( li );
-					} else {
-						V.li.replaceWith( li );
-					}
-				} else {
-					$( '#filters .entries.main li' ).eq( index ).before( li );
-				}
+				var $li        = $( '#filters .entries.main li' );
+				name ? V.li.replaceWith( li ) : $li.eq( index ).before( li );
 				PIP.forEach( p => {
 					if ( p.type === 'Filter' ) {
 						p.names.forEach( ( f, i ) => {
@@ -1135,7 +1122,6 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
-				
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
