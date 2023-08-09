@@ -202,6 +202,7 @@ input[ type=range ] {
 .ligraph {
 	position: relative;
 	height: 300px !important;
+	margin-top: 3px;
 	padding-top: 20px !important;
 	background: #000;
 }

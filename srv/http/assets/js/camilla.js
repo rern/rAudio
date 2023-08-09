@@ -424,7 +424,7 @@ var graph    = {
 				, plot_bgcolor  : '#000'
 				, showlegend    : false
 				, hovermode     : false
-				, dragmode      : 'pan'
+				, dragmode      : 'zoom'
 				, font          : {
 					  family : 'Inconsolata'
 					, size   : 14
@@ -501,7 +501,6 @@ var render   = {
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
-		$( '#setting-configuration' ).toggleClass( 'hide', S.lsconf.length < 2 );
 		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
