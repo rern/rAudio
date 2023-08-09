@@ -28,11 +28,6 @@ ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 fi
 
 # 20230630
-if [[ -e $dircamilladsp/default_config.yml ]]; then
-	mv $dircamilladsp/*.yml $dircamilladsp/configs
-	sed -E -i 's#default_config.yml|active_config.yml#configs/&#' /srv/http/settings/camillagui/config/camillagui.yml
-fi
-
 if ! grep -q sudo /etc/conf.d/devmon; then
 	sed -i 's|/srv|/usr/bin/sudo /srv|g' /etc/conf.d/devmon
 	systemctl restart devmon@http
