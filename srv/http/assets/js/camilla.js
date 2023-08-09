@@ -424,7 +424,7 @@ var graph    = {
 				, plot_bgcolor  : '#000'
 				, showlegend    : false
 				, hovermode     : false
-				, dragmode      : navigator.maxTouchPoints ? false : 'pan'
+				, dragmode      : 'pan'
 				, font          : {
 					  family : 'Inconsolata'
 					, size   : 14
