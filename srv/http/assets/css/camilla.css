@@ -199,7 +199,7 @@ input[ type=range ] {
 .liinput .i-remove {
 	margin-left: auto;
 }
-.ligraph {
+.divgraph {
 	position: relative;
 	height: 300px !important;
 	margin-top: 3px;

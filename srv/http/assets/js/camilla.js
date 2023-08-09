@@ -342,11 +342,11 @@ var gain     = {
 	}
 	, save      : ( name ) => {
 		var filters  = V.tab === 'filters';
-		var fgraph   = filters && V.li.find( '.ligraph:not( .hide )' ).length;
+		var fgraph   = filters && V.li.find( '.divgraph:not( .hide )' ).length;
 		var pgraphs  = [];
-		var $ligraph = $( '#pipeline li .ligraph:not( .hide )' );
-		if ( $ligraph.length && $( '#pipeline .entries.sub.hide' ).length ) {
-			$ligraph.each( ( i, el ) => {
+		var $divgraph = $( '#pipeline li .divgraph:not( .hide )' );
+		if ( $divgraph.length && $( '#pipeline .entries.sub.hide' ).length ) {
+			$divgraph.each( ( i, el ) => {
 				var index = $( el ).data( 'val' );
 				if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
 			} );
@@ -437,13 +437,13 @@ var graph    = {
 				layout.yaxis4   = axes.time;
 				plot.push( plots.impluse, plots.time );
 			}
-			if ( ! $li.find( '.ligraph' ).length ) $li.append( '<div class="ligraph" data-val="'+ val +'"></div>' );
-			var $ligraph = $li.find( '.ligraph' );
-			Plotly.newPlot( $ligraph[ 0 ], plot, layout, options );
-			$svg = $ligraph.find( 'svg' );
+			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
+			var $divgraph = $li.find( '.divgraph' );
+			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
+			$svg = $divgraph.find( 'svg' );
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
 			bannerHide();
-			$ligraph.append( '<i class="i-close graphclose"></i>' );
+			$divgraph.append( '<i class="i-close graphclose"></i>' );
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
@@ -453,21 +453,21 @@ var graph    = {
 		fgraph = pgraph = '';
 	}
 	, toggle   : () => {
-		var $ligraph = V.li.find( '.ligraph' );
-		if ( ! $ligraph.length ) {
+		var $divgraph = V.li.find( '.divgraph' );
+		if ( ! $divgraph.length ) {
 			graph.plot();
 			return
 		}
 		
-		if ( ! $ligraph.hasClass( 'hide' ) ) {
-			$ligraph.addClass( 'hide' );
+		if ( ! $divgraph.hasClass( 'hide' ) ) {
+			$divgraph.addClass( 'hide' );
 		} else {
-			var val    = $ligraph.data( 'val' );
+			var val    = $divgraph.data( 'val' );
 			var vgraph  = V.graph[ V.tab ][ val ];
 			var dgraph = JSON.stringify( vgraph );
 			var data   = JSON.stringify( S.config[ V.tab ][ val ] );
 			if ( data === dgraph ) {
-				$ligraph.removeClass( 'hide' );
+				$divgraph.removeClass( 'hide' );
 			} else {
 				delete vgraph;
 				graph.plot();
@@ -1122,7 +1122,7 @@ var setting  = {
 						V.li.remove();
 						$( '#filters .entries.main li' ).eq( index ).before( li );
 					} else {
-						V.li.html( li );
+						V.li.replaceWith( li );
 					}
 				} else {
 					$( '#filters .entries.main li' ).eq( index ).before( li );
@@ -1135,12 +1135,7 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
-				var $ligraph = $( '#filters .ligraph:not( .hide )' );
-				if ( $ligraph.length && newname in V.graph.filters ) {
-					$ligraph.each( ( i, el ) => {
-						if ( $( el ).data( 'val' ) === name ) graph.plot( $( el ).parent() );
-					} );
-				}
+				
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
@@ -1172,9 +1167,9 @@ var setting  = {
 					PIP.forEach( p => {
 						if ( p.type === 'Mixer' && p.name === name ) p.name = newname;
 					} );
-					var $ligraph = $( '#pipeline .ligraph:not( .hide )' );
-					if ( $ligraph.length && newname in V.graph.pipeline ) {
-						$ligraph.each( ( i, el ) => {
+					var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
+					if ( $divgraph.length && newname in V.graph.pipeline ) {
+						$divgraph.each( ( i, el ) => {
 							if ( $( el ).data( 'val' ) === name ) graph.plot( $( el ).parent() );
 						} );
 					}
@@ -1330,8 +1325,8 @@ var setting  = {
 		$( '#pipeline .entriess.main' ).append( li );
 		setting.sortRefresh( 'main' );
 		V.graph.pipeline = {}
-		var $ligraph = $( '#pipeline .ligraph:not( .hide )' );
-		if ( $ligraph.length ) $ligraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
+		var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
+		if ( $divgraph.length ) $divgraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
 	} //---------------------------------------------------------------------------------------------
 	, sortRefresh   : ( k ) => {
 		V.sortable[ k ].destroy();
@@ -1997,7 +1992,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	var $this = $( this );
 	if ( $( e.target ).is( 'i' )
 		|| $this.parent().hasClass( 'sub' )
-		|| $( e.target ).parents( '.ligraph' ).length
+		|| $( e.target ).parents( '.divgraph' ).length
 	) return
 	
 	var index = $this.data( 'index' );
