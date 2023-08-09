@@ -29,7 +29,7 @@ $( '.btscan' ).on( 'click', function() {
 			  icon    : 'bluetooth'
 			, title   : 'Bluetooth'
 			, message : '<wh>DSP</wh> is currently enabled'
-						'<br>which cannot output via Bluetooth'
+						+'<br>which cannot output via Bluetooth'
 		} );
 	}
 	

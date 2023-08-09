@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1691498911' );
+	src         : url( '/assets/fonts/rern.woff2?v=1691584107' );
 }
 @font-face {
 	font-family : Lato;
@@ -62,6 +62,7 @@ i {
 .i-close::before           { content: '\F56C' }
 .i-composer::before        { content: '\F558' }
 .i-conductor::before       { content: '\F559' }
+.i-connect::before         { content: '\F56D' }
 .i-consume::before         { content: '\F566' }
 .i-controls::before        { content: '\F50B' }
 .i-copy::before            { content: '\F54E' }

@@ -144,7 +144,7 @@ done
 
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
-[[ -e $dirshm/btreceiver ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+[[ -e $dirshm/btreceiver && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 

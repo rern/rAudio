@@ -202,7 +202,7 @@ mpcElapsed() {
 	mpc status %currenttime% | awk -F: '{print ($1 * 60) + $2}'
 }
 notify() { # icon title message delayms
-	local blink delay
+	local blink delay icon json message title
 	blink=
 	delay=3000
 	if [[ $1 == '-blink' ]]; then
@@ -234,6 +234,7 @@ packageActive() {
 	done
 }
 package() {
+	local file
 	file=$( dialog --colors --no-shadow --no-collapse --output-fd 1 --nocancel --menu "
 Package:
 " 8 0 0 \

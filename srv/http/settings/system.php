@@ -442,6 +442,6 @@ for( $i = 'A'; $i !== 'AA'; $i++ ) {
 <div id="menu" class="menu hide">
 <a class="info"<?=$hdparmhide?>><?=i( 'info-circle' )?>Info</a>
 <a class="forget"><?=i( 'remove' )?>Forget</a>
-<a class="remount"><?=i( 'check' )?>Re-mount</a>
+<a class="remount"><?=i( 'connect' )?>Re-mount</a>
 <a class="unmount"><?=i( 'close' )?>Unmount</a>
 </div>
