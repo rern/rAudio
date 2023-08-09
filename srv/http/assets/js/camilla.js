@@ -541,12 +541,12 @@ var render   = {
 				status.push( S.status.GetRateAdjust.toLocaleString() );
 			}
 			status = status.join( ' <gr>·</gr> ' );
-			var clipped = S.status.GetClippedSamples;
-			S.clipped > clipped ? S.clipped = 0 : clipped = clipped - S.clipped;
-			if ( clipped ) {
-				label  += '<br>Clipped samples';
-				status += '<br><a class="clipped ora">'+ clipped.toLocaleString() +'</a>';
-			}
+		}
+		var clipped = S.status.GetClippedSamples;
+		S.clipped > clipped ? S.clipped = 0 : clipped = clipped - S.clipped;
+		if ( clipped ) {
+			label  += '<br>Clipped';
+			status += '<br><a class="clipped">'+ clipped.toLocaleString() +'</a>';
 		}
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );

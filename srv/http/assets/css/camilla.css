@@ -352,10 +352,13 @@ input[ type=range ] {
 	text-align: center;
 	color: var( --cw );
 }
+.clipped {
+	color: #f80;
+}
 .clipped::after {
 	content: "\f515";
 	bottom: -2px;
-	color: var(--cg60 );
+	color: var( --cg60 );
 	cursor: pointer;
 }
 @media (max-width: 600px) {
