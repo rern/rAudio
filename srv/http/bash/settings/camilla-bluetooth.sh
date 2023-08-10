@@ -15,12 +15,18 @@ else                                         # create yml file if not exist
 	if [[ $type == receiver ]]; then
 		sed -E '/playback:$/,/filters:$/ s/(device: ).*/\1bluealsa/' "$configfile" > "$configbt"
 	else
-		sed -E -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
+		sed -E -e 's/(chunksize: ).*/\14096/
+s/(enable_rate_adjust: )/\1true/
+s/(target_level: )/\18000/
+s/(adjust_period: )/\13/
+s/(enable_resampling: )/\1true/
+' -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
 ' -e '/playback:$/ i\
 dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
 ' "$configfile" > "$configbt"
 	fi
 fi
+
 cp $etcdefault{,.backup}
 sed -i -E 's|^(CONFIG=).*|\1"'$configbt'"|' $etcdefault
 
