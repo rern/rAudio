@@ -27,10 +27,11 @@ disconnectRemove() {
 		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
-	refreshFeaturesNetworks
+	refreshPages
 }
-refreshFeaturesNetworks() {
+refreshPages() {
 	$dirsettings/features-data.sh pushrefresh
+	$dirsettings/camilla-data.sh pushrefresh
 	sleep 1
 	$dirsettings/networks-data.sh pushbt
 }
@@ -120,7 +121,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### non-audio
 		[[ $mac && $name ]] && echo $mac Device $name >> $dirshm/btconnected
 #-----X
-		refreshFeaturesNetworks
+		refreshPages
 		exit
 		
 	fi
@@ -153,7 +154,7 @@ if [[ $action == connect || $action == pair ]]; then
 	fi
 #-----
 	msg=Ready
-	refreshFeaturesNetworks
+	refreshPages
 #-------------------------------------------------------------------------------------------
 # from rAudio networks.js
 elif [[ $action == disconnect || $action == remove ]]; then
