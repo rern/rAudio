@@ -13,10 +13,7 @@ def getValue( cmd ):
     data  = json.loads( ws.recv() )
     return data[ cmd ][ 'value' ]
     
-def setValue( cmd, val ):
-    ws.send( json.dumps( { cmd: val } ) )
-
-if len( sys.argv ) > 1: # set / save volume on start / stop
+if len( sys.argv ) > 1:
     cmd = sys.argv[ 1 ]
     if cmd == 'save':
         config = getValue( 'GetConfig' )
