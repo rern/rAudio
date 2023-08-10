@@ -107,6 +107,7 @@ if [[ $dsp ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 		btButtonToggle
 	else
+		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		$dirsettings/camilla.sh setformat
 		btButtonToggle stop
 	fi
