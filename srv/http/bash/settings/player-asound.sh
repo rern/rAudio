@@ -10,7 +10,7 @@ defaults.ctl.card $asoundcard
 "
 fi
 if [[ -e $dirsystem/camilladsp ]]; then
-	dsp=1
+	#dsp=1
 	modprobe snd_aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
@@ -94,7 +94,11 @@ if [[ $wm5102card ]]; then
 fi
 
 if [[ $dsp ]]; then
-	$dirsettings/camilla.sh setformat
+	if [[ -e $dirshm/btreceiver ]]; then
+		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
+	else
+		$dirsettings/camilla.sh setformat
+	fi
 else
 	if [[ $btmixer ]]; then
 		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then
