@@ -27,6 +27,7 @@ disconnectRemove() {
 		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
+	grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh off
 	refreshFeaturesNetworks
 }
 refreshFeaturesNetworks() {
@@ -73,15 +74,7 @@ if [[ $udev && $action == connect ]]; then
 	msg='Connect ...'
 	# fix: rAudio triggered to connect by unpaired sender on boot
 	controller=$( bluetoothctl show | head -1 | cut -d' ' -f2 )
-	if [[ -e /var/lib/bluetooth/$controller/$mac ]]; then
-		if [[ -e $dirsystem/camilladsp ]] && bluetoothctl info $mac | grep -q -m1 'UUID: Audio Sink'; then
-			bluetoothctl disconnect $mac
-#-----X
-			notify $icon "$name" 'Not connected.<br><wh>DSP is currently enabled.</wh>' 6000
-			exit
-			
-		fi
-	else
+	if [[ ! -e /var/lib/bluetooth/$controller/$mac ]]; then
 		for i in {1..5}; do
 			! bluetoothctl info $mac | grep -q -m1 'UUID:' && sleep 1 || break
 		done
@@ -150,24 +143,7 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		icon=btsender
 		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
-		if [[ -e $dircamilladsp/configs/bluealsa.yml && -e $dirsystem/camilladsp ]]; then
-			fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
-			format=${fch[0]}
-			channels=${fch[1]}
-			samplerate=${fch[2]}
-			dbuspath=$( gdbus call \
-								-y --dest org.bluealsa \
-								-o /org/bluealsa \
-								-m org.freedesktop.DBus.ObjectManager.GetManagedObjects \
-									| sed "s/^({objectpath '\|': .*//g" )
-			sed -i -E -e 's/(samplerate: ).*/\1'$samplerate'/
-' -e '/capture:/,/channels/ {s/(format: ).*/\1'$format'/; s/(channels: ).*/\1'$channels'/}
-' -e 's|(dbus_path: ).*|\1'$dbuspath'|
-' $dircamilladsp/configs/bluealsa.yml
-			cp -f /etc/default/camilladsp{,.backup}
-			sed -i -E 's|^(CONFIG.*/)|\1bluealsa.yml|' /etc/default/camilladsp
-			systemctl restart camilladsp
-		fi
+		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh sender
 	else
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
@@ -176,6 +152,7 @@ if [[ $action == connect || $action == pair ]]; then
 		[[ $mac && $name ]] && echo $mac Sink $name >> $dirshm/btconnected
 		notify -blink $icon "$name" 'Connect ...'
 		$dirbash/cmd.sh playerstop
+		[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
 		$dirsettings/player-conf.sh
 	fi
 #-----

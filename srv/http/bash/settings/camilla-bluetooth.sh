@@ -2,9 +2,11 @@
 
 . /srv/http/bash/common.sh
 
+type=$1
+
 etcdefault=/etc/default/camilladsp
 
-if [[ $1 == off ]]; then
+if [[ $type == off ]]; then
 	mv -f $etcdefault{.backup,}
 	systemctl restart camilladsp
 	exit
@@ -12,42 +14,35 @@ fi
 
 configfile=$( getVar CONFIG $etcdefault )
 
-btConfig() {
-	type=$1
-	if [[ -e $dirsystem/camilla-bt$type ]]; then
-		configbt=$( < $dirsystem/camilla-bt$type )
+if [[ -e $dirsystem/camilla-bt$type ]]; then
+	configbt=$( < $dirsystem/camilla-bt$type )
+else                                         # create yml file if not exist
+	configbt=$dircamilladsp/configs-bt/$type.yml
+	echo $configbt > $dirsystem/camilla-bt$type
+	if [[ $type == receiver ]]; then
+		sed -E '/playback:$/,/filters:$/ s/(device: ).*/\1bluealsa/' "$configfile" > "$configbt"
 	else
-		configbt=$dircamilladsp/configs-bt/$type.yml
-		echo $configbt > $dirsystem/camilla-bt$type
-		if [[ $type == receiver ]]; then
-			sed -E '/playback:$/,/filters:$/ s/(device: ).*/\1bluealsa/' $configfile > $configbt
-		else
-			sed -E -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
+		sed -E -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
 ' -e '/playback:$/ i\
-    dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
-' $configfile > $configbt
-		fi
+dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
+' "$configfile" > "$configbt"
 	fi
-	cp $etcdefault{,.backup}
-	sed -i 's/^CONFIG/CONFIG="'$configbt'"/' $etcdefault
-}
+fi
+cp $etcdefault{,.backup}
+sed -i -E 's|^(CONFIG=).*|\1"'$configbt'"|' $etcdefault
 
-if [[ $1 == receiver ]]; then
-	btConfig receiver
-	fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4}' ) )
-	format=${fch[0]}
-	channels=${fch[1]}
+fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
+format=${fch[0]/_} # remove underscore
+channels=${fch[1]}
+samplerate=${fch[2]}
+
+if [[ $type == receiver ]]; then
 	sed -i -E -e '/playback:$/,/filters:$/ {
 s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
 }
 ' $configbt
 else
-	btConfig sender
-	fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
-	format=${fch[0]}
-	channels=${fch[1]}
-	samplerate=${fch[2]}
 	dbuspath=$( gdbus introspect \
 					--recurse \
 					--system \

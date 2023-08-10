@@ -481,12 +481,18 @@ var render   = {
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
 		PIP = S.config.pipeline;
-		C.devicetype = { capture: {}, playback: {} };
-		[ 'capture', 'playback' ].forEach( ( k, i ) => {
+		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
+		[ 'capture', 'playback' ].forEach( k => {
+			S.devices[ k ].forEach( d => {
+				var v = d
+							.replace( 'bluealsa', 'BlueALSA' )
+							.replace( 'Bluez',    'BlueALSA' );
+				C.devices[ k ][ v ] = d;
+			} );
 			S.devicetype[ k ].forEach( t => {
-				var v = t.replace( 'Alsa',  'ALSA' )
-						 .replace( 'Bluez', 'BlueALSA' )
-						 .replace( 'Std',   'std' );
+				var v = t
+							.replace( 'Alsa',     'ALSA' )
+							.replace( 'Std',      'std' );
 				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
@@ -591,7 +597,7 @@ var render   = {
 			} );
 		}
 		$( '#divsampling .label' ).html( labels );
-		$( '#divsampling .value' ).html( values );
+		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
 		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
 		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
@@ -775,7 +781,7 @@ var setting  = {
 					var s = C.format;
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
-					var s = S.devices[ dev ];
+					var s = C.devices[ dev ];
 					var v = { device: data.device };
 				} else if ( key === 'filename' ) {
 					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];

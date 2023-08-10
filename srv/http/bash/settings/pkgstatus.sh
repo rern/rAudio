@@ -11,7 +11,7 @@ case $CMD in
 		PKG=bluez
 		;;
 	camilladsp )
-		fileconf=$dircamilladsp/configs/camilladsp.yml
+		fileconf=$( getVar CONFIG /etc/default/camilladsp )
 		;;
 	dabradio )
 		PKG=mediamtx

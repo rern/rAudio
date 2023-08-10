@@ -14,6 +14,16 @@ arecord=$( arecord -l | grep ^card )
 capture=$( grep -v Loopback <<< $arecord | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
 capture+="
 $( grep Loopback <<< $arecord | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopback,\1"/; p}' )"
+if grep -q configs-bt /etc/default/camilladsp; then
+	configfile=$( getVar CONFIG /etc/default/camilladsp )
+	if grep -q dbus_path "$configfile"; then
+		capture+='
+"Bluez"'
+	else
+		playback+='
+"bluealsa"'
+	fi
+fi
 
 data=${data:1:-1}
 data+='
