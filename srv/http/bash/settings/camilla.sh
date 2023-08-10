@@ -4,7 +4,7 @@
 
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
-camilladspyml=$dirconfigs/camilladsp.yml
+configfile=$( getVar CONFIG $etcdefault )
 
 args2var "$1"
 
@@ -23,14 +23,17 @@ coefrename )
 	pushRefresh
 	;;
 confcopy )
+	[[ $BT == true ]] && dirconfig+=-bt
 	cp -f $dirconfigs/{"$NAME","$NEWNAME"}
 	pushRefresh
 	;;
 confdelete )
+	[[ $BT == true ]] && dirconfig+=-bt
 	rm -f $dirconfigs/"$NAME"
 	pushRefresh
 	;;
 confrename )
+	[[ $BT == true ]] && dirconfig+=-bt
 	mv -f $dirconfigs/{"$NAME","$NEWNAME"}
 	pushRefresh
 	;;
@@ -46,14 +49,14 @@ setformat )
 	killall camilladsp &> /dev/null
 
 	card=$( < $dirsystem/asoundcard )
-	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $camilladspyml
-	camilladsp $camilladspyml &> /dev/null &
+	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
+	camilladsp $configfile &> /dev/null &
 	pgrep -x camilladsp &> /dev/null && killall camilladsp && exit
 
 	notify -blink camilladsp CamillaDSP "Set Playback format ..."
 	for format in FLOAT64LE FLOAT32LE S32LE S24LE3 S24LE S16LE; do
-		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $camilladspyml
-		camilladsp $camilladspyml &> /dev/null &
+		sed -i -E '/playback:/,/format:/ {/format:/ {s/(.*: ).*/\1'$format'/}}' $configfile
+		camilladsp $configfile &> /dev/null &
 		pgrep -x camilladsp &> /dev/null && break || format=
 	done
 	if [[ $format ]]; then

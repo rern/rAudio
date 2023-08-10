@@ -484,11 +484,14 @@ var render   = {
 		C.devicetype = { capture: {}, playback: {} };
 		[ 'capture', 'playback' ].forEach( ( k, i ) => {
 			S.devicetype[ k ].forEach( t => {
-				var v = t.replace( 'Alsa', 'ALSA' )
-						 .replace( 'Std',  'std' );
-				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
+				var v = t.replace( 'Alsa',  'ALSA' )
+						 .replace( 'Bluez', 'BlueALSA' )
+						 .replace( 'Std',   'std' );
+				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
+		S.bluetooth = DEV.playback.type === 'bluealsa' || DEV.capture.type === 'Bluez';
+		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
 		render.status();
 		render.tab();
 		showContent();
@@ -1619,7 +1622,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					, cancel       : () => $( '#setting-configuration' ).trigger( 'click' )
 					, ok           : () => {
 						var newname = infoVal();
-						bash( [ rename ? 'confrename' : 'confcopy', name, newname, 'CMD NAME NEWNAME' ], () => {
+						bash( [ rename ? 'confrename' : 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
 							if ( rename && name === S.fileconf ) setting.set( newname );
 						} );
 						notify( icon, SW.title, rename ? 'Rename ...' : 'Copy ...' );
@@ -1638,7 +1641,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					, okcolor : red
 					, ok      : () => {
 						S.lsconf.slice( S.lsconf.indexOf( name ), 1 );
-						bash( [ 'confdelete', file, 'CMD NAME' ] );
+						bash( [ 'confdelete', file, S.bluetooth, 'CMD NAME BT' ] );
 						banner( icon, SW.title, 'Delete ...' );
 						render.status();
 					}

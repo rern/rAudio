@@ -6,47 +6,44 @@ etcdefault=/etc/default/camilladsp
 
 if [[ $1 == off ]]; then
 	mv -f $etcdefault{.backup,}
+	systemctl restart camilladsp
 	exit
 fi
 
 configfile=$( getVar CONFIG $etcdefault )
 
-case $1 in
-
-receiver )
-	receiverfile=$dirsystem/camilla-btreceiver
-	if [[ -e $receiverfile ]]; then
-		btconfigfile=$( < $receiverfile )
+btConfig() {
+	type=$1
+	if [[ -e $dirsystem/camilla-bt$type ]]; then
+		configbt=$( < $dirsystem/camilla-bt$type )
 	else
-		btconfigfile=$dircamilladsp/configs/btreceiver.yml
-		cp $configfile $btconfigfile
-		echo $btconfigfile > $receiverfile
+		configbt=$dircamilladsp/configs-bt/$type.yml
+		echo $configbt > $dirsystem/camilla-bt$type
+		if [[ $type == receiver ]]; then
+			sed -E '/playback:$/,/filters:$/ s/(device: ).*/\1bluealsa/' $configfile > $configbt
+		else
+			sed -E -e '/capture:$/,/playback:$/ s/(type: ).*/\1Bluez/; /device: .*/ d
+' -e '/playback:$/ i\
+    dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
+' $configfile > $configbt
+		fi
 	fi
+	cp $etcdefault{,.backup}
+	sed -i 's/^CONFIG/CONFIG="'$configbt'"/' $etcdefault
+}
+
+if [[ $1 == receiver ]]; then
+	btConfig receiver
 	fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4}' ) )
 	format=${fch[0]}
 	channels=${fch[1]}
-	sed -i -E -e 's/(samplerate: ).*/\1'$samplerate'/
-' -e '/playback:/,/filters:/ {
+	sed -i -E -e '/playback:$/,/filters:$/ {
 s/(channels: ).*/\1'$channels'/
-s/(device: ).*/\1"bluealsa"/
 s/(format: ).*/\1'$format'/
 }
-' $btconfigfile
-	cp $etcdefault{,.backup}
-	sed -i 's/^CONFIG/CONFIG="'$btconfigfile'"/' $etcdefault
-	;;
-sender )
-	senderfile=$dirsystem/camilla-btsender
-	if [[ -e $senderfile ]]; then
-		btconfigfile=$( < $senderfile )
-	else
-		btconfigfile=$dircamilladsp/configs/btsender.yml
-		sed -e '/capture:$/,/playback:$/ s/type: .*/type: Bluez/
-' -e '/playback:$/ i\
-    dbus_path: /org/bluealsa/hci0/dev_A0_B1_C2_D3_E4_F5/a2dpsnk/source
-'$configfile > $btconfigfile
-		echo $btconfigfile > $senderfile
-	fi
+' $configbt
+else
+	btConfig sender
 	fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
 	format=${fch[0]}
 	channels=${fch[1]}
@@ -63,11 +60,7 @@ s/(channels: ).*/\1'$channels'/
 s/(format: ).*/\1'$format'/
 s|(dbus_path: ).*|\1'$dbuspath'|
 }
-' $btconfigfile
-	cp -f $etcdefault{,.backup}
-	sed -i 's/^CONFIG/CONFIG="'$btconfigfile'"/' $etcdefault
-	;;
-	
-esac
+' $configbt
+fi
 
 systemctl restart camilladsp

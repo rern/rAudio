@@ -5,6 +5,7 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230808
+mkdir -p $dircamilladsp/configs-bt
 file=/etc/default/camilladsp
 if [[ ! -e $file ]]; then
 	cat << EOF > $file

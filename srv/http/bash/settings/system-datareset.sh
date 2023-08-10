@@ -94,6 +94,7 @@ fi
 
 # data directories
 mkdir -p $dirdata/{addons,audiocd,bookmarks,camilladsp,lyrics,mpd,mpdconf,playlists,system,webradio,webradio/img} /mnt/MPD/{NAS,SD,USB}
+mkdir $dircamilladsp/{coeffs,configs,configs-bt}
 ln -sf /dev/shm $dirdata
 ln -sf /mnt /srv/http/
 chown -h http:http $dirshm /srv/http/mnt
@@ -107,6 +108,9 @@ else # from create-ros.sh
 	done
 	curl -sL https://github.com/rern/rAudio-addons/raw/main/addonslist.json | sed -E -n '/"rAudio"/ {n;s/.*: *"(.*)"/\1/; p}' > $diraddons/r1
 fi
+
+# camilladsp
+cp /{etc,srv/http/data}/camilladsp/configs/camilladsp.yml
 
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre

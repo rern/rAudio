@@ -201,7 +201,6 @@ fi
 
 if [[ $dsp ]] && ! systemctl -q is-active camilladsp; then
 	systemctl start camilladsp
-	[[ -e $dirsystem/camilla-volume ]] && $dirsettings/camilla.py volumestart
 fi
 
 pushData

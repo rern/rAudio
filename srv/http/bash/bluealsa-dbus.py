@@ -2,7 +2,7 @@
 
 # RPi as renderer - bluealsa-dbus.service > this:
 #   - start: set Player dest file
-#   - connect/disconnect: networks-data.sh bt
+#   - connect/disconnect: bluetoothcommand.sh
 #   - status: dbus emits events and data
 #       start play - cmd.sh playerstart
 #       changed - status-push.sh

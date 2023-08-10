@@ -54,6 +54,7 @@ value  = {
     , 'status'     : status
     , 'lscoef'     : sorted( os.listdir( dircamilla +'coeffs' ) )
     , 'lsconf'     : sorted( os.listdir( dircamilla +'configs' ) )
+    , 'lsconfbt'   : sorted( os.listdir( dircamilla +'configs-bt' ) )
     , 'fileconf'   : os.path.basename( getValue( 'GetConfigName' ) )
 }
 devices    = config[ 'devices' ]

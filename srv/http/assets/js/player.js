@@ -356,6 +356,7 @@ function renderPage() {
 	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#divstatus .value' ).html( htmlstatus );
 	if ( S.btaplayname ) {
+		$( '#divbtreceiver .col-l i' ).prop( 'class', S.camilladsp ? 'i-camilladsp' : 'i-btreceiver' );
 		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
