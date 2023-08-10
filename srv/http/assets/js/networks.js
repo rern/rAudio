@@ -24,15 +24,6 @@ $( '.back' ).on( 'click', function() {
 	refreshData();
 } );
 $( '.btscan' ).on( 'click', function() {
-	if ( S.camilladsp ) {
-		info( {
-			  icon    : 'bluetooth'
-			, title   : 'Bluetooth'
-			, message : '<wh>DSP</wh> is currently enabled'
-						+'<br>which cannot output via Bluetooth'
-		} );
-	}
-	
 	$( '#help, #divinterface, #divwebui, #divaccesspoint' ).addClass( 'hide' );
 	$( '#divbluetooth' ).removeClass( 'hide' );
 	scanBluetooth();

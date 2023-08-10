@@ -46,6 +46,7 @@ EOF
 $body = [
 	[
 		  'id'          => 'btreceiver'
+		, 'icon'        => true
 		, 'input'       => '<select id="btaplayname"></select>'
 		, 'settingicon' => 'volume'
 		, 'help'        => <<< EOF

@@ -356,7 +356,6 @@ function renderPage() {
 	htmlstatus += '<br>'+ S.lastupdate;
 	$( '#divstatus .value' ).html( htmlstatus );
 	if ( S.btaplayname ) {
-		if ( ! $( '#divbtreceiver .col-l i' ).length ) $( '#divbtreceiver .col-l' ).append( ico( 'bluetooth' ) );
 		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
