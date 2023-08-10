@@ -751,8 +751,7 @@ var render   = {
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		var $div = V.tab === 'devices' ? $( '#divsampling .value' ) : $( '#'+ V.tab +' .entries.main' );
-		if ( $div.is( ':empty' ) ) render[ V.tab ]();
+		if ( V.tab === 'devices' || $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) render[ V.tab ]();
 	}
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
