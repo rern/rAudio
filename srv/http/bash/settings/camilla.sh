@@ -4,7 +4,6 @@
 
 dircoeffs=$dircamilladsp/coeffs
 dirconfigs=$dircamilladsp/configs
-configfile=$( getVar CONFIG $etcdefault )
 
 args2var "$1"
 
@@ -49,6 +48,7 @@ setformat )
 	killall camilladsp &> /dev/null
 
 	card=$( < $dirsystem/asoundcard )
+	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	sed -i -E "/playback:/,/device:/ s/(device: hw:).*/\1$card,0/" $configfile
 	camilladsp $configfile &> /dev/null &
 	pgrep -x camilladsp &> /dev/null && killall camilladsp && exit
