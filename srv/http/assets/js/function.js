@@ -531,7 +531,7 @@ function displayPlayback() {
 	if ( ! hidetime ) $( '#time' ).roundSlider( S.stream || S.player !== 'mpd' || ! S.pllength ? 'disable' : 'enable' );
 	$( '#progress, #time-bar, #time-band' ).toggleClass( 'hide', ! hidetime );
 	$( '#time-band' ).toggleClass( 'disabled', ! S.pllength || S.player !== 'mpd' || S.stream );
-	$( '#time-knob, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
+	$( '#time, #coverBL, #coverBR' ).toggleClass( 'disabled', S.stream || ! [ 'mpd', 'upnp' ].includes( S.player ) );
 	$( '.volumeband' ).toggleClass( 'disabled', D.volumenone || $volume.is( ':visible' ) );
 	$( '#map-time' ).toggleClass( 'hide', D.cover );
 	$( '#button-time, #button-volume' ).toggleClass( 'hide', ! D.buttons );
@@ -1505,7 +1505,7 @@ function setButtonOptions() {
 	$( '#'+ prefix +'-btsender' ).toggleClass( 'hide', ! S.btreceiver );
 	$( '#'+ prefix +'-relays' ).toggleClass( 'hide', ! S.relayson );
 	$( '#'+ prefix +'-stoptimer' ).toggleClass( 'hide', ! S.stoptimer );
-	if ( ! S.stream && S.player === 'mpd' ) {
+	if ( S.player === 'mpd' ) {
 		if ( $( '#button-time' ).is( ':visible' ) ) {
 			$( '#random' ).toggleClass( 'active', S.random );
 			$( '#repeat' ).toggleClass( 'active', S.repeat );

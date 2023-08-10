@@ -49,6 +49,10 @@ if [[ $udev && $action == disconnect ]]; then
 #-----
 		disconnectRemove
 	fi
+	if grep -q bluealsa /etc/default/camilladsp; then
+		mv -f /etc/default/camilladsp{.backup,}
+		systemctl restart camilladsp
+	fi
 	exit
 fi
 
@@ -146,6 +150,24 @@ if [[ $action == connect || $action == pair ]]; then
 ##### sender
 		icon=btsender
 		[[ $mac && $name ]] && echo $mac Source $name >> $dirshm/btconnected
+		if [[ -e $dircamilladsp/configs/bluealsa.yml && -e $dirsystem/camilladsp ]]; then
+			fch=( $( bluealsa-aplay -L | awk '/channel.*Hz/ {print $3" "$4" "$6}' ) )
+			format=${fch[0]}
+			channels=${fch[1]}
+			samplerate=${fch[2]}
+			dbuspath=$( gdbus call \
+								-y --dest org.bluealsa \
+								-o /org/bluealsa \
+								-m org.freedesktop.DBus.ObjectManager.GetManagedObjects \
+									| sed "s/^({objectpath '\|': .*//g" )
+			sed -i -E -e 's/(samplerate: ).*/\1'$samplerate'/
+' -e '/capture:/,/channels/ {s/(format: ).*/\1'$format'/; s/(channels: ).*/\1'$channels'/}
+' -e 's|(dbus_path: ).*|\1'$dbuspath'|
+' $dircamilladsp/configs/bluealsa.yml
+			cp -f /etc/default/camilladsp{,.backup}
+			sed -i -E 's|^(CONFIG.*/)|\1bluealsa.yml|' /etc/default/camilladsp
+			systemctl restart camilladsp
+		fi
 	else
 		(( $( grep -c . <<< $btmixer ) > 1 )) && btmixer=$( grep A2DP <<< $btmixer )
 		btmixer=$( cut -d"'" -f2 <<< $btmixer )
