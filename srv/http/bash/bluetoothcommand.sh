@@ -27,7 +27,6 @@ disconnectRemove() {
 		notify -blink $icon "$name" "${action^} ..."
 		$dirsettings/player-conf.sh
 	fi
-	grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh off
 	refreshFeaturesNetworks
 }
 refreshFeaturesNetworks() {
@@ -44,15 +43,12 @@ if [[ $udev && $action == disconnect ]]; then
 		mac=${line/ *}
 		bluetoothctl info $mac | grep -q -m1 'Connected: yes' && mac= || break
 	done
+	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 	if [[ $mac ]]; then
 		type=$( cut -d' ' -f2 <<< $line )
 		name=$( cut -d' ' -f3- <<< $line )
 #-----
 		disconnectRemove
-	fi
-	if grep -q bluealsa /etc/default/camilladsp; then
-		mv -f /etc/default/camilladsp{.backup,}
-		systemctl restart camilladsp
 	fi
 	exit
 fi

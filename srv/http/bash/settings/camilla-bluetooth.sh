@@ -5,13 +5,6 @@
 type=$1
 
 etcdefault=/etc/default/camilladsp
-
-if [[ $type == off ]]; then
-	mv -f $etcdefault{.backup,}
-	systemctl restart camilladsp
-	exit
-fi
-
 configfile=$( getVar CONFIG $etcdefault )
 
 if [[ -e $dirsystem/camilla-bt$type ]]; then
