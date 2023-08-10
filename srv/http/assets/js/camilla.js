@@ -496,7 +496,6 @@ var render   = {
 				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
-		S.bluetooth = DEV.playback.type === 'bluealsa' || DEV.capture.type === 'Bluez';
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
 		render.status();
 		render.tab();
@@ -1595,7 +1594,6 @@ $( '#configuration' ).on( 'change', function() {
 $( '#setting-configuration' ).on( 'click', function() {
 	var content = '<table style="border-collapse: collapse; width: 300px;">'
 	S.lsconf.forEach( f => {
-		if ( f === 'default_config.yml' ) return
 		var tdicon  = '<td style="width: 30px; text-align: center;">';
 		var current = f === S.fileconf ? '<grn> • </grn>' : '';
 		var iremove = current ? '' : ico( 'remove gr' );

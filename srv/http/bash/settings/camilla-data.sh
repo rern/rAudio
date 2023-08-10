@@ -15,6 +15,7 @@ capture=$( grep -v Loopback <<< $arecord | sed -E -n '/^card/ { s/^card (.): .*d
 capture+="
 $( grep Loopback <<< $arecord | sed -E -n '/^card/ { s/^.*device (.): .*/"hw:Loopback,\1"/; p}' )"
 if grep -q configs-bt /etc/default/camilladsp; then
+	bluetooth=true
 	configfile=$( getVar CONFIG /etc/default/camilladsp )
 	if grep -q dbus_path "$configfile"; then
 		capture+='
@@ -27,8 +28,9 @@ fi
 
 data=${data:1:-1}
 data+='
-, "clipped" : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
-, "devices" : {
+, "bluetooth" : '$bluetooth'
+, "clipped"   : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
+, "devices"   : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }'
