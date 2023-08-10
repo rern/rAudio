@@ -244,20 +244,24 @@ input[ type=range ] {
 #out::before {
 	position: absolute;
 	display: block;
-	left: -50px;
+	left: -60px;
 	top: calc(50% - 7px);
-	width: 35px;
+	width: 45px;
 	height: 100%;
 	line-height: 15px;
 	text-align: center;
 	background: var(--cg );
 	border-radius: 3px;
 }
+#divvolume .col-l {
+	padding-top: 6px;
+}
 #gain {
-	height: 18px !important;
-	vertical-align: -6px;
+	display: inline-block;
+	width: 45px;
 	line-height: 16px;
 	color: var( --cw );
+	text-align: center;
 }
 #in::before {
 	content: 'In';
