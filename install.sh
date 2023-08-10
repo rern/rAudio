@@ -5,7 +5,6 @@ alias=r1
 . /srv/http/bash/settings/addons.sh
 
 # 20230808
-mkdir -p $dircamilladsp/configs-bt
 file=/etc/default/camilladsp
 if [[ ! -e $file ]]; then
 	cat << EOF > $file
@@ -26,6 +25,7 @@ ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 	systemctl try-restart camilladsp
 	rm -rf /srv/http/settings/camillagui
 	rm -f $dircamilladsp/configs/{active,default}_config.yml
+	mkdir -p $dircamilladsp/configs-bt
 fi
 
 # 20230630
