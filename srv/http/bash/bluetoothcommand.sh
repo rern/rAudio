@@ -31,7 +31,7 @@ disconnectRemove() {
 }
 refreshPages() {
 	$dirsettings/features-data.sh pushrefresh
-	$dirsettings/camilla-data.sh pushrefresh
+	[[ $dirsystem/camilladsp ]] && $dirsettings/camilla-data.sh pushrefresh
 	sleep 1
 	$dirsettings/networks-data.sh pushbt
 }

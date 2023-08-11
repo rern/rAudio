@@ -621,7 +621,7 @@ var render   = {
 			var step_val  =  ' step="0.1" value="'+ util.dbFormat( v.parameters.gain ) +'"';
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<input type="number"'+ step_val +'>'
-							+'<input type="range"'+ step_val +' min="-6" max="6">'
+							+'<input type="range"'+ step_val +' min="-10" max="10">'
 							+'</div>';
 		} else {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
@@ -671,7 +671,7 @@ var render   = {
 				var step_val =  ' step="0.1" value="'+ util.dbFormat( source.gain ) +'"';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
-					 +'<input type="range"'+ step_val +' min="-6" max="6"'+ ( source.mute ? ' disabled' : '' ) +'>'
+					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
 					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'></li>';
 			} );

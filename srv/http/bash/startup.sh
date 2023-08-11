@@ -116,7 +116,19 @@ else
 	[[ -e $filebootwifi ]] && rm -f "$filebootwifi"
 fi
 
-$dirsettings/player-conf.sh # mpd.service started by this script
+if [[ -e $dirsystem/btreceiver ]]; then
+	btreceiver=$( < $dirsystem/btreceiver )
+	rm $dirsystem/btreceiver
+	mac=$( bluetoothctl devices | grep "${btreceiver/ A2DP}" | cut -d' ' -f2 )
+	$dirbash/bluetoothcommand.sh connect $mac
+	bluetoothctl info $mac | grep 'Connected: no' && btreceiver=
+fi
+
+if [[ $btreceiver ]]; then
+	[[ -e $dirsystem/camilladsp ]] && $dirsettings/camilla-bluetooth.sh receiver
+else
+	$dirsettings/player-conf.sh # mpd.service started by this script
+fi
 
 # after all sources connected ........................................................
 if [[ $connected ]]; then

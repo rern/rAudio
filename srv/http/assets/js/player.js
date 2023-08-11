@@ -396,12 +396,11 @@ function renderPage() {
 		$( '#novolume' ).prop( 'checked', S.novolume );
 		$( '#dop' ).prop( 'checked', S.dop );
 		$( '#ffmpeg' ).toggleClass( 'disabled', S.dabradio );
+		var label = 'Device';
 		if ( S.camilladsp ) {
-			var label = ico( 'camilladsp' );
+			label += ico( 'camilladsp' );
 		} else if ( S.equalizer ) {
-			var label = 'Equalizer'+ ico( 'equalizer' );
-		} else {
-			var label = 'Device';
+			label += ico( 'equalizer' );
 		}
 		$( '#divaudiooutput .col-l' ).html( label );
 	}

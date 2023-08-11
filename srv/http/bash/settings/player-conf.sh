@@ -23,12 +23,12 @@ pushData() {
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
-if [[ $btmixer ]]; then # not require audio devices (from player-asound.sh)
+if [[ $btreceiver ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
 #---------------< bluetooth
 	audiooutputbt='
-	name        "'$btmixer'"
+	name        "'$btreceiver'"
 	device      "bluealsa"
 	type        "alsa"
 	mixer_type  "hardware"'
@@ -150,12 +150,12 @@ done
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $btmixer ]] && pushData && exit # >>>>>>>>>>
+[[ ! $Acard && ! $btreceiver ]] && pushData && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
 
 if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N";
-	[[ $btmixer ]] && hw=bluealsa         #                 "bluealsa";
+	[[ $btreceiver ]] && hw=bluealsa         #                 "bluealsa";
 ########
 	conf="\
 $( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
@@ -175,7 +175,7 @@ fi
 
 if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
-	if [[ $btmixer ]]; then
+	if [[ $btreceiver ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
 		hw=$( < "$dirsystem/spotify-$aplayname" )
@@ -190,7 +190,7 @@ if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
 device = "'$hw'"
 control = "'$hw'"'
 		
-		[[ $hwmixer && ! $btmixer ]] && \
+		[[ $hwmixer && ! $btreceiver ]] && \
 			conf+='
 mixer = "'$hwmixer'"'
 	fi

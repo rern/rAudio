@@ -54,7 +54,10 @@ ctl.camilladsp {
 }'
 else
 	if [[ -e $dirshm/btreceiver ]]; then
-		btmixer=$( < $dirshm/btreceiver )
+		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
+		[[ $btmixer ]] && btreceiver=$( < $dirshm/btreceiver )
+	fi
+	if [[ $btreceiver ]]; then
 ########
 		asound+='
 pcm.bluealsa {
@@ -67,7 +70,7 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $btmixer ]]; then
+		if [[ $btreceiver ]]; then
 			slavepcm=bluealsa
 		elif [[ $asoundcard != -1 ]]; then
 			slavepcm='"plughw:'$asoundcard',0"'
@@ -103,7 +106,7 @@ if [[ $wm5102card ]]; then
 fi
 
 if [[ $dsp ]]; then
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ $btreceiver ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 		btButtonToggle
 	else
@@ -112,10 +115,10 @@ if [[ $dsp ]]; then
 		btButtonToggle stop
 	fi
 else
-	if [[ $btmixer ]]; then
-		if [[ -e "$dirsystem/btvolume-$btmixer" ]]; then
-			btvolume=$( < "$dirsystem/btvolume-$btmixer" )
-			amixer -MqD bluealsa sset "$btmixer" $btvolume% 2> /dev/null
+	if [[ $btreceiver ]]; then
+		if [[ -e "$dirsystem/btvolume-$btreceiver" ]]; then
+			btvolume=$( < "$dirsystem/btvolume-$btreceiver" )
+			amixer -MqD bluealsa sset "$btreceiver" $btvolume% 2> /dev/null
 		fi
 		btButtonToggle
 	else
