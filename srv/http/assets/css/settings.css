@@ -646,8 +646,6 @@ input.disabled + .switchlabel:after {
 	.settingedit { display: none }
 	heading i.help { width: 30px }
 	.hideN { display: none }
-	.liinput div:nth-child( 3 ),
-	.tab input[ type=range ] { display: none }
 	.head .title { letter-spacing: calc( ( 100vw - 295px ) / 8 ) }
 }
 @media ( min-width: 466px ) {

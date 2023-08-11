@@ -381,6 +381,11 @@ input[ type=range ] {
 	color: var( --cg60 );
 	cursor: pointer;
 }
+@media (max-width: 700px) {
+	#mixers input[ type=range ] {
+		max-width: calc( 100% - 420px );
+	}
+}
 @media (max-width: 600px) {
 	.liinput.column .i-add {
 		float: right;
@@ -394,8 +399,20 @@ input[ type=range ] {
 		max-width: calc( 100% - 325px );
 	}
 }
+@media (max-width: 550px) {
+	#mixers .liinput div:nth-child( 4 ),
+	input[ type=range ] {
+		display: none;
+	}
+}
 @media (max-width: 500px) {
 	.i-help.helphead { display: none }
+}
+@media (max-width: 425px) {
+	#mixers li > i:first-child { display: none }
+}
+@media (max-width: 385px) {
+	#mixers .divgain { display: none }
 }
 @media (max-width: 365px) {
 	i.edit { display: none }
