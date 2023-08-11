@@ -1896,27 +1896,25 @@ $( '#menu a' ).on( 'click', function( e ) {
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
-	if ( $this.hasClass( 'i-add' ) ) {
-		setting.upload( 'filters' );
-	} else {
-		var $gain = $this.parent().prev();
-		var $db   = $gain.prev();
-		var val   = +$db.val();
-		if ( $this.hasClass( 'i-set0' ) ) {
-			if ( val === 0 ) return
-			
-			val = 0;
-		} else if ( $this.hasClass( 'i-minus' ) ) {
-			val -= 0.1;
-		} else if ( $this.hasClass( 'i-plus' ) ) {
-			val += 0.1;
-		}
-		$gain
-			.val( val )
-			.trigger( 'input' );
+	var $gain = $this.parent().prev();
+	var $db   = $gain.prev();
+	var val   = +$db.val();
+	if ( $this.hasClass( 'i-set0' ) ) {
+		if ( val === 0 ) return
+		
+		val = 0;
+	} else if ( $this.hasClass( 'i-minus' ) ) {
+		val -= 0.1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
+		val += 0.1;
 	}
+	$gain
+		.val( val )
+		.trigger( 'input' );
 } );
-$( '#filters' ).on( 'keyup', 'input[type=number]', function() {
+$( '#filters' ).on( 'click', '.i-add', function() {
+	setting.upload( 'filters' );
+} ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
