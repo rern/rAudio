@@ -89,7 +89,6 @@
 }
 .lihead .i-back {
 	float: right !important;
-	margin-right: 0;
 }
 .lihead.files {
 	margin-top: 20px;
@@ -109,6 +108,9 @@ tr .i-add,
 tr .i-remove {
 	width: 40px !important;
 	line-height: 46px;
+}
+.tab li i {
+	margin: 0 !important;
 }
 #filters li {
 	cursor: default !important;
@@ -137,8 +139,8 @@ tr .i-remove {
 }
 .liinput div {
 	display: inline-block;
-	width: 65px;
-	min-width: 65px;
+	width: 60px;
+	min-width: 60px;
 	text-align: center;
 }
 .liinput.column div:nth-child( 2 ) {
@@ -159,8 +161,8 @@ tr .i-remove {
 }
 .liinput.main div:first-child,
 .liinput .select2-container {
-	width: 65px !important;
-	min-width: 65px;
+	width: 60px !important;
+	min-width: 60px;
 }
 .liinput .selection,
 .liinput .select2-selection,
@@ -169,7 +171,7 @@ tr .i-remove {
 	height: 40px !important;
 }
 .liinput input[ type=number ] {
-	width: 65px;
+	width: 60px;
 	margin-left: 10px;
 	text-align: center;
 	border: 1px solid var( --cg );
@@ -192,8 +194,11 @@ input[ type=range ] {
 #divconfiguration {
 	margin-top: 10px;
 }
+.tab li .divgain {
+	width: 120px;
+}
 .liinput input[ type=checkbox ] {
-	margin: 0 20px;
+	margin: 0 16px;
 	min-width: 24px;
 }
 .liinput .i-remove {

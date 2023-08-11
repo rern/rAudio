@@ -622,6 +622,7 @@ var render   = {
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<input type="number"'+ step_val +'>'
 							+'<input type="range"'+ step_val +' min="-10" max="10">'
+							+'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 		} else {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
@@ -658,12 +659,11 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div></div>'
-						+'<div></div>'
+						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
 						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
 						+'</li>'
 						+'<li class="liinput column dest'+ i +'"'+ i_name +'>'+ ico( 'blank' )
-						+'<div>Channel</div><div>dB</div><div>Gain</div><div>Mute</div><div>Invert</div>'+ ico( 'add' ) +'</li>';
+						+'<div>Ch</div><div>dB</div><div>Gain</div><div class="divgain"></div><div>Mute</div><div>Invert</div></li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
@@ -672,8 +672,10 @@ var render   = {
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
+					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
-					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'></li>';
+					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'
+					 +'</li>';
 			} );
 		} );
 		render.toggle( li, 'sub' );
@@ -1745,7 +1747,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'i-back, i-close' ) ) return
+	if ( $this.index() || ! $this.parent().is( 'li' ) ) return
 	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -1894,9 +1896,26 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 	}
 } );
-$( '#filters' ).on( 'click', 'li .i-add', function() {
-	setting.upload( 'filters' );
-} ).on( 'keyup', 'input[type=number]', function() {
+$( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
+	var $this = $( this );
+	if ( $this.hasClass( 'i-add' ) ) {
+		setting.upload( 'filters' );
+	} else {
+		var $gain = $this.parent().prev();
+		var $db   = $gain.prev();
+		if ( $this.hasClass( 'i-set0' ) ) {
+			var val = 0;
+		} else if ( $this.hasClass( 'i-minus' ) ) {
+			var val = +$db.val() - 0.1;
+		} else if ( $this.hasClass( 'i-plus' ) ) {
+			var val = +$db.val() + 0.1;
+		}
+		$gain
+			.val( val )
+			.trigger( 'input' );
+	}
+} );
+$( '#filters' ).on( 'keyup', 'input[type=number]', function() {
 	gain.updown( $( this ) );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
