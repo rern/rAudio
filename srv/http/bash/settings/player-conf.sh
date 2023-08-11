@@ -173,14 +173,16 @@ alsa = {
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then # device = "hw:N" or "default:CARD=xxxx"
-									#          "bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp"
+if [[ -e /usr/bin/spotifyd ]]; then
+	#if [[ -e $dirsystem/camilladsp ]]; then
+	#	hw=$( aplay -l | sed -n -E '/Loopback.*0/ {s/: .*//; s/card /hw:/; p}' )
+	#elif [[ $btreceiver ]]; then
 	if [[ $btreceiver ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
-		hw=$( < "$dirsystem/spotify-$aplayname" )
+		hw=$( < "$dirsystem/spotify-$aplayname" ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	else
-		hw=hw:$asoundcard
+		hw=hw:$asoundcard                         # hw:N (or default:CARD=xxxx)
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
