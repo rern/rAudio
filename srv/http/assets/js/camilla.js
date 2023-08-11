@@ -1903,12 +1903,15 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	} else {
 		var $gain = $this.parent().prev();
 		var $db   = $gain.prev();
+		var val   = +$db.val();
 		if ( $this.hasClass( 'i-set0' ) ) {
-			var val = 0;
+			if ( val === 0 ) return
+			
+			val = 0;
 		} else if ( $this.hasClass( 'i-minus' ) ) {
-			var val = +$db.val() - 0.1;
+			val -= 0.1;
 		} else if ( $this.hasClass( 'i-plus' ) ) {
-			var val = +$db.val() + 0.1;
+			val += 0.1;
 		}
 		$gain
 			.val( val )
