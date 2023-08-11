@@ -691,7 +691,7 @@ var render   = {
 					  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
 		} else {
 			var graph = '';
-			var each = el.name;
+			var each = '<gr>Mixer:</gr> '+ el.name;
 		}
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline edit'+ graph ) + each +'</li>'
 	}
@@ -1314,7 +1314,7 @@ var setting  = {
 		setting.save( 'Add Pipeline', 'Save ...' );
 		var index = PIP.length - 1;
 		var li = render.pipe( PIP[ index ], index );
-		$( '#pipeline .entriess.main' ).append( li );
+		$( '#pipeline .entries.main' ).append( li );
 		setting.sortRefresh( 'main' );
 		V.graph.pipeline = {}
 		var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
@@ -1865,11 +1865,12 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 			break;
 		case 'pipeline':
-			var main  = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
+			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
+			var type = main ? V.li.data( 'type' ).toLowerCase() : 'filter';
 			info( {
 				  icon    : V.tab
 				, title   : 'Pipeline'
-				, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
+				, message : main ? 'Delete this '+ type +'?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
 				, ok      : () => {
 					if ( main ) {
 						var index = V.li.data( 'index' );
@@ -1879,7 +1880,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						var ni = V.li.data( 'index' );
 						PIP[ pi ].names.splice( ni, 1 );
 					}
-					setting.save( title, 'Remove filter ...' );
+					setting.save( 'Pipeline', 'Remove '+ type +' ...' );
 					V.li.remove();
 					setting.sortRefresh( main ? 'main' : 'sub' );
 					graph.pipeline();
