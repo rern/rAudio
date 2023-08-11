@@ -503,6 +503,7 @@ var render   = {
 		$( '#gain' ).text( util.dbRound( S.volume ) );
 		$( '#volume' ).val( S.volume );
 		gain.mute();
+		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.fileconf );
