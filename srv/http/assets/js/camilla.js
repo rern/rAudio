@@ -1986,7 +1986,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 			mapping.mute = checked;
 		} else {
 			source.mute = checked;
-			$this.prev().prev().prop( 'disabled', checked );
+			$this.siblings( 'input[type=range]' ).prop( 'disabled', checked );
 		}
 	} else {
 		source.inverted = checked;
