@@ -32,7 +32,7 @@ $htmltabs.= '</div>';
 $htmlvolume = '
 <input id="volume" type="range" min="-51" max="0" step="0.1">
 <i id="dn" class="i-minus gr setting"></i>
-<i id="mute" class="i-mute gr setting"></i>
+<i id="mute" class="i-mute bl gr setting"></i>
 <i id="up" class="i-plus gr setting"></i>
 ';
 
