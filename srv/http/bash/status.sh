@@ -83,16 +83,16 @@ if [[ $1 == withdisplay ]]; then
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	display+='
-, "audiocd"          : '$( exists $dirshm/audiocd )'
-, "camilladsp"       : '$( systemctl -q is-active camilladsp && echo true )'
-, "color"            : "'$( getContent $dirsystem/color )'"
-, "dabradio"         : '$dabradio'
-, "equalizer"        : '$( exists $dirsystem/equalizer )'
-, "multiraudio"      : '$( exists $dirsystem/multiraudio )'
-, "relays"           : '$( exists $dirsystem/relays )'
-, "screenoff"        : '$screenoff'
-, "snapclient"       : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
-, "volumenone"       : '$volumenone'
+, "audiocd"     : '$( exists $dirshm/audiocd )'
+, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
+, "color"       : "'$( getContent $dirsystem/color )'"
+, "dabradio"    : '$dabradio'
+, "equalizer"   : '$( exists $dirsystem/equalizer )'
+, "multiraudio" : '$( exists $dirsystem/multiraudio )'
+, "relays"      : '$( exists $dirsystem/relays )'
+, "screenoff"   : '$screenoff'
+, "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
+, "volumenone"  : '$volumenone'
 }'
 	status+='
 , "display"          : '$display
