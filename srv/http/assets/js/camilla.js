@@ -534,6 +534,8 @@ var render   = {
 			}
 		} );
 		$( '#divvu .value' ).html( vubar +'</div></div>' );
+		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
+		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
 		var label  = 'Buffer · Sampling';
@@ -596,8 +598,6 @@ var render   = {
 		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
 		switchSet();
 		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
-		var ch   = DEV.capture.channels > DEV.playback.channels ? DEV.capture.channels : DEV.playback.channels;
-		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		var data     = render.dataSort( 'filters' );
@@ -744,7 +744,7 @@ var render   = {
 	, tab         : () => {
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'flowchart' );
-		title    += ico( V.tab === 'devices' ? 'gear settings' : 'add' );
+		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
 		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 		$( '.tab' ).addClass( 'hide' );
 		$( '#'+ V.tab ).removeClass( 'hide' );
@@ -1650,28 +1650,6 @@ $( '#setting-configuration' ).on( 'click', function() {
 		, okno       : true
 	} );
 } );
-$( '#divsettings' ).on( 'click', '.settings', function() {
-	setting.device( 'capture' );
-} ).on( 'click', '.i-flowchart', function() {
-	var $flowchart = $( '.flowchart' );
-	if ( $flowchart.hasClass( 'hide' ) ) {
-		if ( typeof( d3 ) !== 'object' ) {
-			$.when(
-				$.getScript( '/assets/js/pipelineplotter.js' ),
-				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
-				$.Deferred( deferred => deferred.resolve() )
-			).done( () => createPipelinePlot() );
-		} else {
-			if ( JSON.stringify( PIP ) === JSON.stringify( V.graph.flowchart ) ) {
-				$flowchart.removeClass( 'hide' );
-			} else {
-				createPipelinePlot();
-			}
-		}
-	} else {
-		$flowchart.addClass( 'hide' );
-	}
-} );
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
@@ -1736,8 +1714,27 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 	} else if ( V.tab === 'pipeline' ) {
 		setting.pipeline();
 	}
-} ).on( 'click', '.mixer-icon', function() {
-	setting.mixerMap();
+} ).on( 'click', '.i-flowchart', function() {
+	var $flowchart = $( '.flowchart' );
+	if ( $flowchart.hasClass( 'hide' ) ) {
+		if ( typeof( d3 ) !== 'object' ) {
+			$.when(
+				$.getScript( '/assets/js/pipelineplotter.js' ),
+				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
+				$.Deferred( deferred => deferred.resolve() )
+			).done( () => createPipelinePlot() );
+		} else {
+			if ( JSON.stringify( PIP ) === JSON.stringify( V.graph.flowchart ) ) {
+				$flowchart.removeClass( 'hide' );
+			} else {
+				createPipelinePlot();
+			}
+		}
+	} else {
+		$flowchart.addClass( 'hide' );
+	}
+} ).on( 'click', '.i-gear', function() {
+	setting.device( 'capture' );
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
@@ -1868,13 +1865,14 @@ $( '#menu a' ).on( 'click', function( e ) {
 			}
 			break;
 		case 'pipeline':
-			var main = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
+			var main  = $( '#pipeline .entries.sub' ).hasClass( 'hide' );
 			info( {
 				  icon    : V.tab
 				, title   : 'Pipeline'
 				, message : main ? 'Delete this filter?' : 'Delete <wh>'+ V.li.data( 'name' ) +'</wh> ?'
 				, ok      : () => {
 					if ( main ) {
+						var index = V.li.data( 'index' );
 						PIP.splice( index, 1 );
 					} else {
 						var pi = $( '#pipeline .lihead' ).data( 'index' );
