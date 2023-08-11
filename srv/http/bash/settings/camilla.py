@@ -31,6 +31,10 @@ if len( sys.argv ) > 1:
             from camilladsp_plot import eval_filterstep
             data  = eval_filterstep( config, int( target ) )
         print( json.dumps( data ) )
+    elif cmd == 'volume':
+        volume  = getValue( 'GetMute' ) and 'true' or 'false'
+        volume += ' '+ str( getValue( 'GetVolume' ) )
+        print( volume)
         
     ws.close()
     sys.exit()

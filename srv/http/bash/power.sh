@@ -4,7 +4,10 @@
 
 [[ $1 == reboot ]] && reboot=1
 
-grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+if [[ -e $dirsystem/camilladsp ]]; then
+	$dirbash/camilla.sh savevolume
+	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
+fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem
 if systemctl -q is-active nfs-server; then # server rAudio
 	ipserver=$( ipAddress )

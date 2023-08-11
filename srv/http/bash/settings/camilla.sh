@@ -72,14 +72,11 @@ setformat )
 		alsactl nrestore &> /dev/null
 	fi
 	;;
-savemute )
-	[[ $MUTE == true ]] && m=-m
-	sed -i "s/^MUTE.*/MUTE=$m/" /etc/default/camilladsp
-	pushRefresh
-	;;
 savevolume )
-	sed -i "s/^GAIN.*/GAIN=-g$VAL/" /etc/default/camilladsp
-	pushRefresh
+	volume=( $( $dirsettings/camilla.py volume ) )
+	sed -i -E -e "s/^(MUTE=).*/\1${volume[0]}/
+"  -e "s/^(GAIN=).*/\1g${volume[1]}/
+" /etc/default/camilladsp
 	;;
 statuslog )
 	cat /var/log/camilladsp.log

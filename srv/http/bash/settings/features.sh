@@ -59,6 +59,7 @@ camilladsp )
 	if [[ $ON ]]; then
 		pushRestartMpd camilladsp $TF
 	else
+		$dirbash/camilla.sh savevolume
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null

@@ -325,7 +325,6 @@ var gain     = {
 		if ( typeof( mute ) === 'boolean' ) { //set
 			S.mute  = mute;
 			ws.send( '{ "SetMute": '+ S.mute +'} ' );
-			bash( [ 'savemute', S.mute, 'CMD MUTE' ] );
 		} else { // status
 			mute    = S.mute;
 		}
@@ -359,7 +358,6 @@ var gain     = {
 			delete V.gainupdn;
 		}, 1000 );
 	}
-	, savemain  : ( v ) => bash( [ 'savevolume', S.volume, 'CMD VAL' ] )
 	, updown    : ( $this ) => {
 		clearTimeout( V.gaintimeout );
 		V.gainupdn = true;
@@ -501,7 +499,7 @@ var render   = {
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
-		$( '#gain' ).text( util.dbFormat( S.volume ) );
+		$( '#gain' ).text( util.dbRound( S.volume ) );
 		$( '#volume' ).val( S.volume );
 		gain.mute();
 		$( '#configuration' )
@@ -605,7 +603,7 @@ var render   = {
 		var li       = '';
 		var classvol = S.mute ? 'infobtn-primary' : '';
 		var iconvol  = S.mute ? 'mute' : 'volume';
-		var step_val = ' step="0.1" value="'+ util.dbFormat( S.volume ) +'"';
+		var step_val = ' step="0.1" value="'+ util.dbRound( S.volume ) +'"';
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
@@ -616,7 +614,7 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		if ( 'gain' in v.parameters ) {
-			var step_val  =  ' step="0.1" value="'+ util.dbFormat( v.parameters.gain ) +'"';
+			var step_val  =  ' step="0.1" value="'+ util.dbRound( v.parameters.gain ) +'"';
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<input type="number"'+ step_val +'>'
 							+'<input type="range"'+ step_val +' min="-10" max="10">'
@@ -666,7 +664,7 @@ var render   = {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var step_val =  ' step="0.1" value="'+ util.dbFormat( source.gain ) +'"';
+				var step_val =  ' step="0.1" value="'+ util.dbRound( source.gain ) +'"';
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input edit' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
@@ -1386,8 +1384,8 @@ var util     = {
 		}
 		return value < 0 ? 0 : ( value > 100 ? 100 : value )
 	}
-	, dbFormat     : ( num ) => {
-		return num % 1 === 0 ? num + '.0' : num
+	, dbRound     : ( num ) => {
+		return Math.round( num * 10 ) / 10
 	}
 	, inUse        : ( name ) => {
 		var filters = V.tab === 'filters';
@@ -1561,17 +1559,14 @@ $( '.log' ).on( 'click', function() {
 } )
 $( '#volume' ).on( 'input', function() {
 	S.volume = +$( this ).val();
-	$( '#gain' ).text( util.dbFormat( S.volume ) );
+	$( '#gain' ).text( util.dbRound( S.volume ) );
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
-} ).on( 'touchend mouseup keyup', function() {
-	gain.savemain( S.volume );
 } );
 $( '#up, #dn' ).on( 'click', function() {
 	S.volume += this.id === 'up' ? 0.1 : -0.1;
-	$( '#gain' ).text( util.dbFormat( S.volume ) );
+	$( '#gain' ).text( util.dbRound( S.volume ) );
 	$( '#volume' ).val( S.volume )
-	gain.savemain( S.volume );
-	if ( S.mute ) $( '#mute' ).trigger( 'click' );
+	ws.send( '{ "SetVolume": '+ S.volume +' }' );
 } );
 $( '#mute' ).on( 'click', function() {
 	gain.mute( ! S.mute );
@@ -1919,7 +1914,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().val( util.dbFormat( val ) );
+	$this.prev().val( util.dbRound( val ) );
 	V.li     = $this.parents( 'li' );
 	var name = V.li.data( 'name' );
 	FIL[ name ].parameters.gain = val;
@@ -1968,7 +1963,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().val( util.dbFormat( val ) );
+	$this.prev().val( util.dbRound( val ) );
 	V.li      = $( this ).parents( 'li' );
 	var name  = V.li.data( 'name' );
 	var index = V.li.data( 'index' );
