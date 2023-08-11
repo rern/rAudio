@@ -74,8 +74,10 @@ setformat )
 	;;
 savevolume )
 	volume=( $( $dirsettings/camilla.py volume ) )
-	sed -i -E -e "s/^(MUTE=).*/\1${volume[0]}/
-"  -e "s/^(GAIN=).*/\1g${volume[1]}/
+	[[ ${volume[0]} == true ]] && mute=-m
+	volume=-g${volume[1]}
+	sed -i -E -e "s/^(MUTE=).*/\1$mute/
+"  -e "s/^(GAIN=).*/\1$volume/
 " /etc/default/camilladsp
 	;;
 statuslog )
