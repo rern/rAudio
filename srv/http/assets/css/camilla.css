@@ -195,7 +195,8 @@ input[ type=range ] {
 	margin-top: 10px;
 }
 .tab li .divgain {
-	width: 120px;
+	width: 120px !important;
+	margin: 0;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 16px;

@@ -330,8 +330,8 @@ var gain     = {
 			mute    = S.mute;
 		}
 		$( '#mute' )
-			.toggleClass( 'i-mute bl', mute )
-			.toggleClass( 'i-volume', ! mute );
+			.toggleClass( 'bl', mute )
+			.toggleClass( 'gr', ! mute );
 		$( '#volume' ).prop( 'disabled', mute );
 		$( '#up, #dn' ).toggleClass( 'disabled', mute );
 	}
@@ -631,7 +631,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters graph edit' ) + licontent  +'</li>';
 	}
 	, filterfile  : ( k ) => {
-		return '<li data-name="'+ k +'">'+ ico( 'file' ) + k +'</li>'
+		return '<li data-name="'+ k +'">'+ ico( 'file edit' ) + k +'</li>'
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
@@ -657,7 +657,7 @@ var render   = {
 			var dest     = kv.dest;
 			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output' )
+			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output edit' )
 						+'<div><select>'+ opts +'</select></div>'
 						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
 						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
@@ -669,7 +669,7 @@ var render   = {
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ util.dbFormat( source.gain ) +'"';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input' ) +'<select>'+ opts +'</select>'
+				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input edit' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
@@ -696,7 +696,7 @@ var render   = {
 			var graph = '';
 			var each = el.name;
 		}
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline'+ graph ) + each +'</li>'
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline edit'+ graph ) + each +'</li>'
 	}
 	, pipelineSub : ( index, data ) => {
 		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -705,7 +705,7 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters' ) + name +'</li>'
+		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters edit' ) + name +'</li>'
 	}
 	, sortable    : ( el ) => {
 		if ( el in V.sortable ) return
@@ -1747,7 +1747,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
-	if ( $this.index() || ! $this.parent().is( 'li' ) ) return
+	if ( ! $this.hasClass( 'edit' ) ) return
 	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
