@@ -2,15 +2,6 @@
 
 ### included by < player-conf.sh
 
-btButtonToggle() {
-	if [[ $1 == stop ]]; then
-		systemctl stop bluetoothbutton
-	else
-		systemctl -q is-active localbrowser && action=stop || action=start
-		systemctl $action bluetoothbutton
-	fi
-}
-
 if [[ $asoundcard != -1 ]]; then # from player-devices.sh
 ########
 	asound="\
@@ -54,10 +45,7 @@ ctl.camilladsp {
 }'
 else
 	if [[ -e $dirshm/btreceiver ]]; then
-		btmixer=$( amixer -D bluealsa scontrols 2> /dev/null )
-		[[ $btmixer ]] && btreceiver=$( < $dirshm/btreceiver )
-	fi
-	if [[ $btreceiver ]]; then
+		btreceiver=$( < $dirshm/btreceiver )
 ########
 		asound+='
 pcm.bluealsa {
@@ -106,13 +94,11 @@ if [[ $wm5102card ]]; then
 fi
 
 if [[ $dsp ]]; then
-	if [[ $btreceiver ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
-		btButtonToggle
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		$dirsettings/camilla.sh setformat
-		btButtonToggle stop
 	fi
 else
 	if [[ $btreceiver ]]; then
@@ -120,9 +106,6 @@ else
 			btvolume=$( < "$dirsystem/btvolume-$btreceiver" )
 			amixer -MqD bluealsa sset "$btreceiver" $btvolume% 2> /dev/null
 		fi
-		btButtonToggle
-	else
-		btButtonToggle stop
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
 		value=$( sed -E -n '/"current":/ {s/.*: "(.*)",/\1/; p}' $dirsystem/equalizer.json )
@@ -133,4 +116,11 @@ $value
 $user
 CMD VALUE USER"
 	fi
+fi
+
+if [[ -e $dirshm/btreceiver ]]; then
+	systemctl -q is-active localbrowser && action=stop || action=start
+	systemctl $action bluetoothbutton
+else
+	systemctl stop bluetoothbutton
 fi
