@@ -40,10 +40,7 @@ $htmlvolume = '
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [
-		  'log'     => 'file'
-		, 'display' => 'gear hide'
-	]
+	, 'button' => [ 'log' => 'file' ]
 	, 'help'   => <<< EOF
 {$Fi( 'file btn' )} Log
 

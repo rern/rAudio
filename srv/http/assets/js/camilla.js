@@ -337,12 +337,13 @@ var gain     = {
 		$trother.toggleClass( 'hide', ! other );
 		if ( ! other ) $trother.find( 'input' ).val( rate );
 	}
-	, save      : ( name ) => {
-		var filters  = V.tab === 'filters';
-		var fgraph   = filters && V.li.find( '.divgraph:not( .hide )' ).length;
-		var pgraphs  = [];
+	, save      : () => {
+		var filters   = V.tab === 'filters';
+		var fgraph    = filters && V.li.find( '.divgraph:not( .hide )' ).length;
+		var pgraphs   = [];
 		var $divgraph = $( '#pipeline li .divgraph:not( .hide )' );
 		if ( $divgraph.length && $( '#pipeline .entries.sub.hide' ).length ) {
+			var name = V.li.data( 'name' );
 			$divgraph.each( ( i, el ) => {
 				var index = $( el ).data( 'val' );
 				if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
@@ -1890,6 +1891,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 	}
 } );
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
+	clearTimeout( V.timeout );
 	var $this = $( this );
 	var $gain = $this.parent().prev();
 	var $db   = $gain.prev();
@@ -1906,6 +1908,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
+	if ( V.tab === 'filters' ) V.timeout = setTimeout( gain.save, 1000 );
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
@@ -1920,7 +1923,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	FIL[ name ].parameters.gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	gain.save( name );
+	gain.save();
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
