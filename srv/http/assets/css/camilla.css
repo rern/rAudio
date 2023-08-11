@@ -151,7 +151,7 @@ tr .i-remove {
 }
 .liinput div:nth-child( 4 ) {
 	width: 230px !important;
-	margin: 0 10px;
+	margin: 0 5px 0 10px;
 }
 .liinput.main div {
 	text-align: unset;
@@ -180,7 +180,7 @@ input[ type=range ] {
 	--track: linear-gradient( 90deg, transparent 10px, var( --cga ) 10px, var( --cga ) calc( 100% - 10px ), transparent 10px );
 	--trackborder : 1px solid var( --cga );
 	max-width: 230px;
-	margin: 0 10px;
+	margin: 0 5px 0 10px;
 }
 #volume {
 	margin: 0;
@@ -388,12 +388,18 @@ input[ type=range ] {
 		margin-left: auto;
 	}
 }
+@media (max-width: 615px) {
+	.liinput div:nth-child( 3 ),
+	.tab input[ type=range ] {
+		max-width: calc( 100% - 325px );
+	}
+}
 @media (max-width: 500px) {
 	.i-help.helphead { display: none }
 }
-@media (max-width: 515px) {
-	.liinput div:nth-child( 3 ),
-	.tab input[ type=range ] {
-		max-width: calc( 100% - 300px );
+@media (max-width: 365px) {
+	i.edit { display: none }
+	.liinput .name {
+		max-width: 110px;
 	}
 }
