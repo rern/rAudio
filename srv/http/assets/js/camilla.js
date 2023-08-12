@@ -609,9 +609,7 @@ var render   = {
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
-		if ( S.lscoef.length ) {
-			S.lscoef.forEach( k => li += render.filterfile( k ) );
-		}
+		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
 		render.toggle( li );
 	}
 	, filter      : ( k, v ) => {
@@ -626,10 +624,10 @@ var render   = {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
 		}
-		return '<li data-name="'+ k +'">'+ ico( 'filters graph edit' ) + licontent  +'</li>';
+		return '<li data-name="'+ k +'">'+ ico( 'filters liicon graph' ) + licontent  +'</li>';
 	}
 	, filterfile  : ( k ) => {
-		return '<li data-name="'+ k +'">'+ ico( 'file edit' ) + k +'</li>'
+		return '<li data-name="'+ k +'">'+ ico( 'file liicon delete' ) + k +'</li>'
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
@@ -638,7 +636,7 @@ var render   = {
 		render.toggle( li );
 	}
 	, mixer       : ( k, v ) => {
-		return   '<li data-name="'+ k +'">'+ ico( 'mixers edit' )
+		return   '<li data-name="'+ k +'">'+ ico( 'mixers liicon' )
 				+'<div class="li1">'+ k +'</div>'
 				+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 				+'</li>'
@@ -655,7 +653,7 @@ var render   = {
 			var dest     = kv.dest;
 			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output edit' )
+			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon delete' )
 						+'<div><select>'+ opts +'</select></div>'
 						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
 						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
@@ -667,7 +665,7 @@ var render   = {
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ util.dbRound( source.gain ) +'"';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input edit' ) +'<select>'+ opts +'</select>'
+				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon delete' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
@@ -687,14 +685,14 @@ var render   = {
 	}
 	, pipe        : ( el, i ) => {
 		if ( el.type === 'Filter' ) {
-			var graph = ' graph';
+			var graph = 'graph';
 			var each = '<div class="li1">' + el.type +'</div>'
 					  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
 		} else {
 			var graph = '';
 			var each = '<gr>Mixer:</gr> '+ el.name;
 		}
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline edit'+ graph ) + each +'</li>'
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon delete '+ graph ) + each +'</li>'
 	}
 	, pipelineSub : ( index, data ) => {
 		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -703,7 +701,7 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters edit' ) + name +'</li>'
+		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon delete' ) + name +'</li>'
 	}
 	, sortable    : ( el ) => {
 		if ( el in V.sortable ) return
@@ -1117,11 +1115,23 @@ var setting  = {
 				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 				$.each( val, ( k, v ) => param[ k ] = v );
 				FIL[ newname ] = { type: type, parameters : param }
+				var $divgraph  = V.li.find( '.divgraph:not( .hide )' );
 				var li         = render.filter( newname, FIL[ newname ] );
 				var index      = Object.keys( FIL )
 									.sort().indexOf( newname );
 				var $li        = $( '#filters .entries.main li' );
-				name ? V.li.replaceWith( li ) : $li.eq( index ).before( li );
+				if ( name ) {
+					if ( $divgraph.length ) {
+						li = li.replace( '</li>', '' ) + $divgraph[ 0 ].outerHTML +'</li>';
+						V.li.replaceWith( li );
+						V.li = $( '#filters li' ).eq( index );
+						graph.plot();
+					} else {
+						V.li.replaceWith( li );
+					}
+				} else {
+					$li.eq( index ).before( li );
+				}
 				PIP.forEach( p => {
 					if ( p.type === 'Filter' ) {
 						p.names.forEach( ( f, i ) => {
@@ -1550,12 +1560,6 @@ var util     = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-$( 'body' ).on( 'click', function( e ) {
-	if ( $( e.target ).is( 'li i ' ) ) return
-	
-	$( '#menu' ).addClass( 'hide' );
-	$( '#'+ V.tab +' .entries li' ).removeClass( 'active' );
-} );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
@@ -1740,7 +1744,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
-	if ( ! $this.hasClass( 'edit' ) ) return
+	if ( ! $this.hasClass( 'liicon' ) ) return
 	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
@@ -1759,9 +1763,15 @@ $( '.entries' ).on( 'click', 'i', function() {
 		var wH      = window.innerHeight;
 		var wT      = $( window ).scrollTop();
 		if ( targetB > ( wH - 40 + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-		$menu.find( '.edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
+		$menu.find( '.edit' ).toggleClass( 'hide', $this.hasClass( 'delete' ) );
 		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	}
+} );
+$( 'body' ).on( 'click', function( e ) {
+	if ( $( e.target ).hasClass( 'liicon' ) ) return
+	
+	$( '#menu' ).addClass( 'hide' );
+	$( '#'+ V.tab +' .entries li' ).removeClass( 'active' );
 } );
 $( '#menu a' ).on( 'click', function( e ) {
 	var $this = $( this );
