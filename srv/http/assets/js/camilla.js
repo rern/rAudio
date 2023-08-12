@@ -649,7 +649,7 @@ var render   = {
 					 +'<code class="db">'+ val +'</code>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
-					 + ico( source.mute ? 'mute bl' : 'mute' ) + ico( source.invert ? 'invert bl' : 'invert' )
+					 + ico( source.mute ? 'mute bl' : 'mute' ) + ico( source.inverted ? 'invert bl' : 'invert' )
 					 +'</li>';
 			} );
 		} );
