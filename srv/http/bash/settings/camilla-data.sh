@@ -4,7 +4,7 @@
 
 data=$( $dirsettings/camilla.py )
 
-[[ $? != 0 ]] && echo notrunning && exit
+[[ ! $data ]] && echo notrunning && exit
 
 aplay=$( aplay -l | grep ^card )
 playback=$( grep -v Loopback <<< $aplay | sed -E -n '/^card/ { s/^card (.): .*device (.): .*/"hw:\1,\2"/; p}' )
