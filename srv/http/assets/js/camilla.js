@@ -1907,7 +1907,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.tab === 'filters' ) V.timeout = setTimeout( gain.save, 1000 );
+	if ( V.tab === 'filters' ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
