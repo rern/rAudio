@@ -73,10 +73,13 @@ setformat )
 	fi
 	;;
 save )
-	readarray -t data <<< $( $dirsettings/camilla.py save )
-	[[ ${data[0]} == true ]] && mute=-m
-	volume=-g${data[1]}
-	file=${data[2]}
+	data=$( $dirsettings/camilla.py save )
+	[[ ! $data ]] && exit
+	
+	readarray -t data <<< $data
+	file=${data[0]}
+	volume=${data[1]} # -g-n
+	mute=${data[2]}   # -m or blank
 	[[ ! $file ]] && exit
 	
 	sed -i -E -e 's/^(MUTE=).*/\1'$mute'/

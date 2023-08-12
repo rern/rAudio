@@ -6,7 +6,10 @@ import os.path
 import sys
 from websocket import create_connection
 
-ws = create_connection( 'ws://127.0.0.1:1234' )
+try:
+    ws = create_connection( 'ws://127.0.0.1:1234' )
+except:
+    sys.exit()
 
 def getValue( cmd ):
     ws.send( json.dumps( cmd ) )
@@ -19,10 +22,9 @@ if len( sys.argv ) > 1:
         config = getValue( 'GetConfig' )
         file   = getValue( 'GetConfigName' )
         with open( file, 'w' ) as f: f.write( config )
-        data   = getValue( 'GetMute' ) and 'true' or 'false'
-        data  += '\n'+ str( getValue( 'GetVolume' ) )
-        data  += '\n'+ file
-        print( data )
+        file  += '\n-g'+ str( getValue( 'GetVolume' ) )
+        file  += getValue( 'GetMute' ) and '\n-m' or '\n'
+        print( file )
     elif cmd == 'filters' or cmd == 'pipeline':
         config = json.loads( getValue( 'GetConfigJson' ) )
         target = sys.argv[ 2 ]
