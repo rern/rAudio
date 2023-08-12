@@ -759,6 +759,7 @@ var render   = {
 		$( '#'+ V.tab +' .entries.'+ ms[ 1 ] )
 			.html( li )
 			.removeClass( 'hide' );
+		$( '#menu' ).addClass( 'hide' );
 	}
 }
 var setting  = {
@@ -2037,7 +2038,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			setting.save( title, 'Remove filter ...' );
 			render.pipeline();
 		} else {
-			$( '#pipeline .entries' ).toggleClass( 'hide' );
+			render.toggle();
 		}
 		
 	} else if ( action === 'add' ) {
