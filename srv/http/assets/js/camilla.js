@@ -1722,11 +1722,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 				$.Deferred( deferred => deferred.resolve() )
 			).done( () => createPipelinePlot() );
 		} else {
-			if ( JSON.stringify( PIP ) === JSON.stringify( V.graph.flowchart ) ) {
-				$flowchart.removeClass( 'hide' );
-			} else {
-				createPipelinePlot();
-			}
+			createPipelinePlot();
 		}
 	} else {
 		$flowchart.addClass( 'hide' );
