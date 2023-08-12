@@ -5,7 +5,7 @@
 [[ $1 == reboot ]] && reboot=1
 
 if [[ -e $dirsystem/camilladsp ]]; then
-	$dirsettings/camilla.sh savevolume
+	$dirsettings/camilla.sh save
 	grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 fi
 [[ -e $dirshm/btconnected ]] && cp $dirshm/btconnected $dirsystem

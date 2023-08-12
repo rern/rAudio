@@ -19,8 +19,10 @@ if len( sys.argv ) > 1:
         config = getValue( 'GetConfig' )
         file   = getValue( 'GetConfigName' )
         with open( file, 'w' ) as f: f.write( config )
-        import subprocess
-        subprocess.run( [ '/srv/http/bash/settings/camilla-data.sh', 'push' ] )
+        data   = getValue( 'GetMute' ) and 'true' or 'false'
+        data  += '\n'+ str( getValue( 'GetVolume' ) )
+        data  += '\n'+ file
+        print( data )
     elif cmd == 'filters' or cmd == 'pipeline':
         config = json.loads( getValue( 'GetConfigJson' ) )
         target = sys.argv[ 2 ]
@@ -31,10 +33,6 @@ if len( sys.argv ) > 1:
             from camilladsp_plot import eval_filterstep
             data  = eval_filterstep( config, int( target ) )
         print( json.dumps( data ) )
-    elif cmd == 'volume':
-        volume  = getValue( 'GetMute' ) and 'true' or 'false'
-        volume += ' '+ str( getValue( 'GetVolume' ) )
-        print( volume)
         
     ws.close()
     sys.exit()

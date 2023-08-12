@@ -354,7 +354,6 @@ var gain     = {
 			fgraph = pgraphs = false;
 		}
 		V.gaintimeout = setTimeout( () => {
-			bash( [ 'settings/camilla.py', 'save' ] );
 			graph.refresh( fgraph, pgraphs );
 			delete V.gainupdn;
 		}, 1000 );
@@ -1332,10 +1331,7 @@ var setting  = {
 		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
-		if ( msg ) { // all except gain
-			bash( [ 'settings/camilla.py', 'save' ] );
-			banner( V.tab, titlle, msg );
-		}
+		if ( msg ) banner( V.tab, titlle, msg ); // all except gain
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
@@ -1455,6 +1451,7 @@ var util     = {
 			ws = null;
 			render.vuClear();
 			clearInterval( V.intervalstatus );
+			bash( [ 'save' ] );
 		}
 		ws.onmessage = response => {
 			var data  = JSON.parse( response.data );
@@ -1508,6 +1505,8 @@ var util     = {
 					S.status.GetClippedSamples = value;
 					break;
 				case 'GetConfigName':
+					S.configname = value.split( '/' ).pop();
+					break;
 				case 'GetVolume':
 				case 'GetMute':
 					S[ cmd.slice( 3 ).toLowerCase() ] = value;
@@ -1556,6 +1555,9 @@ var util     = {
 
 $( function() { // document ready start >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+$( '.close' ).on( 'click', function() {
+	bash( [ 'save' ] );
+} );
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );

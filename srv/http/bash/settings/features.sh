@@ -60,7 +60,7 @@ camilladsp )
 		pushRestartMpd camilladsp $TF
 		! systemctl -q is-active camilladsp && rm $dirsystem/camilladsp
 	else
-		$dirsettings/camilla.sh savevolume
+		$dirsettings/camilla.sh save
 		systemctl stop camilladsp
 		pushRestartMpd camilladsp $TF
 		rmmod snd-aloop &> /dev/null
