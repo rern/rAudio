@@ -624,10 +624,10 @@ var render   = {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
 		}
-		return '<li data-name="'+ k +'">'+ ico( 'filters liicon graph' ) + licontent  +'</li>';
+		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filterfile  : ( k ) => {
-		return '<li data-name="'+ k +'">'+ ico( 'file liicon delete' ) + k +'</li>'
+		return '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>'
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
@@ -636,7 +636,7 @@ var render   = {
 		render.toggle( li );
 	}
 	, mixer       : ( k, v ) => {
-		return   '<li data-name="'+ k +'">'+ ico( 'mixers liicon' )
+		return   '<li data-name="'+ k +'">'+ ico( 'mixers liicon edit' )
 				+'<div class="li1">'+ k +'</div>'
 				+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 				+'</li>'
@@ -653,7 +653,7 @@ var render   = {
 			var dest     = kv.dest;
 			var opts     = optout.replace( '>'+ dest, ' selected>'+ dest );
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
-			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon delete' )
+			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
 						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
 						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
@@ -665,7 +665,7 @@ var render   = {
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var step_val =  ' step="0.1" value="'+ util.dbRound( source.gain ) +'"';
-				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon delete' ) +'<select>'+ opts +'</select>'
+				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 +'<input type="number"'+ step_val +'>'
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
@@ -692,7 +692,7 @@ var render   = {
 			var graph = '';
 			var each = '<gr>Mixer:</gr> '+ el.name;
 		}
-		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon delete '+ graph ) + each +'</li>'
+		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon '+ graph ) + each +'</li>'
 	}
 	, pipelineSub : ( index, data ) => {
 		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
@@ -701,7 +701,7 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon delete' ) + name +'</li>'
+		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' ) + name +'</li>'
 	}
 	, sortable    : ( el ) => {
 		if ( el in V.sortable ) return
@@ -1763,7 +1763,7 @@ $( '.entries' ).on( 'click', 'i', function() {
 		var wH      = window.innerHeight;
 		var wT      = $( window ).scrollTop();
 		if ( targetB > ( wH - 40 + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-		$menu.find( '.edit' ).toggleClass( 'hide', $this.hasClass( 'delete' ) );
+		$menu.find( '.edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
 		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	}
 } );
