@@ -77,6 +77,8 @@ save )
 	[[ ${data[0]} == true ]] && mute=-m
 	volume=-g${data[1]}
 	file=${data[2]}
+	[[ ! $file ]] && exit
+	
 	sed -i -E -e 's/^(MUTE=).*/\1'$mute'/
 ' -e 's/^(GAIN=).*/\1'$volume'/
 ' -e 's|^(CONFIG=).*|\1'$file'|

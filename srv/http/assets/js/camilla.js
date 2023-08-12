@@ -358,13 +358,6 @@ var gain     = {
 			delete V.gainupdn;
 		}, 1000 );
 	}
-	, updown    : ( $this ) => {
-		clearTimeout( V.gaintimeout );
-		V.gainupdn = true;
-		$this.next()
-			.val( +$this.val() )
-			.trigger( 'click' );
-	}
 }
 var graph    = {
 	  pipeline : () => {
@@ -604,10 +597,10 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		if ( 'gain' in v.parameters ) {
-			var step_val  =  ' step="0.1" value="'+ util.dbRound( v.parameters.gain ) +'"';
+			var val       = util.dbRound( v.parameters.gain );
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
-							+'<input type="number"'+ step_val +'>'
-							+'<input type="range"'+ step_val +' min="-10" max="10">'
+							+'<code class="db">'+ val +'</code>'
+							+'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10">'
 							+'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 		} else {
@@ -645,23 +638,18 @@ var render   = {
 			var i_name   = ' data-index="'+ i +'" data-name="'+ name +'"';
 			li       +=  '<li class="liinput main dest'+ i +'"'+ i_name +' data-dest="'+ dest +'">'+ ico( 'output liicon' )
 						+'<div><select>'+ opts +'</select></div>'
-						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
-						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
-						+'</li>'
-						+'<li class="liinput column dest'+ i +'"'+ i_name +'>'+ ico( 'blank liicon' )
-						+'<div>Ch</div><div>dB</div><div>Gain</div><div class="divgain"></div>'
-						+'<div class="mute">Mute</div><div class="invert">Invert</div></li>';
+						+'<div>'+ ico( kv.mute ? 'mute bl' : 'mute' ) + ico( 'add' )
+						+'</li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
-				var step_val =  ' step="0.1" value="'+ util.dbRound( source.gain ) +'"';
+				var val      = util.dbRound( source.gain );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 +'<input type="number"'+ step_val +'>'
-					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
+					 +'<code class="db">'+ val +'</code>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
-					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
-					 +'<input type="checkbox" class="invert" '+ ( source.inverted ? ' checked' : '' ) +'>'
+					 + ico( source.mute ? 'mute bl' : 'mute' ) + ico( source.invert ? 'invert bl' : 'invert' )
 					 +'</li>';
 			} );
 		} );
@@ -1901,7 +1889,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
 	var $gain = $this.parent().prev();
 	var $db   = $gain.prev();
-	var val   = +$db.val();
+	var val   = +$gain.val();
 	if ( $this.hasClass( 'i-set0' ) ) {
 		if ( val === 0 ) return
 		
@@ -1918,12 +1906,10 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
-} ).on( 'keyup', 'input[type=number]', function() {
-	gain.updown( $( this ) );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().val( util.dbRound( val ) );
+	$this.prev().text( util.dbRound( val ) );
 	V.li     = $this.parents( 'li' );
 	var name = V.li.data( 'name' );
 	FIL[ name ].parameters.gain = val;
@@ -1941,7 +1927,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	V.li       = $this.parents( 'li' );
-	var action = $this.prop( 'class' ).slice( 2 );
+	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
 	var name   = V.li.data( 'name' );
 	var title  = util.key2label( V.tab );
 	if ( action === 'back' ) {
@@ -1953,6 +1939,24 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	} else if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
+	} else {
+		var index   = V.li.data( 'index' );
+		var si      = V.li.data( 'si' );
+		var mapping = MIX[ name ].mapping[ index ];
+		var source  = mapping.sources[ si ];
+		var checked = ! $this.hasClass( 'bl' );
+		$this.toggleClass( 'bl', checked );
+		if ( action === 'mute' ) {
+			if ( V.li.hasClass( 'main' ) ) {
+				mapping.mute = checked;
+			} else {
+				source.mute = checked;
+				$this.siblings( 'input[type=range]' ).prop( 'disabled', checked );
+			}
+		} else if ( action === 'invert' ) {
+			source.inverted = checked;
+		}
+		setting.save( 'Mixer', 'Change ...' );
 	}
 } ).on( 'change', 'select', function() {
 	var $this = $( this );
@@ -1967,8 +1971,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 		MIX[ name ].mapping[ mi ].sources[ si ].channel = val;
 	}
 	setting.save( 'Mixer', 'Change ...');
-} ).on( 'keyup', 'input[type=number]', function() {
-	gain.updown( $( this ) );
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
@@ -1981,26 +1983,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
 	gain.save();
-} ).on( 'click', 'li input:checkbox', function() {
-	var $this   = $( this );
-	V.li        = $this.parents( 'li' );
-	var name    = V.li.data( 'name' );
-	var index   = V.li.data( 'index' );
-	var si      = V.li.data( 'si' );
-	var mapping = MIX[ name ].mapping[ index ];
-	var source  = mapping.sources[ si ];
-	var checked = $this.prop( 'checked' );;
-	if ( $this.hasClass( 'mute' ) ) {
-		if ( V.li.hasClass( 'main' ) ) {
-			mapping.mute = checked;
-		} else {
-			source.mute = checked;
-			$this.siblings( 'input[type=range]' ).prop( 'disabled', checked );
-		}
-	} else {
-		source.inverted = checked;
-	}
-	setting.save( 'Mixer', 'Change ...' );
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );
