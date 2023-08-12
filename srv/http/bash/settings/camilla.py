@@ -53,10 +53,10 @@ value  = {
     , 'volume'     : getValue( 'GetVolume' )
     , 'mute'       : getValue( 'GetMute' )
     , 'status'     : status
+    , 'configname' : os.path.basename( getValue( 'GetConfigName' ) )
     , 'lscoef'     : sorted( os.listdir( dircamilla +'coeffs' ) )
     , 'lsconf'     : sorted( os.listdir( dircamilla +'configs' ) )
     , 'lsconfbt'   : sorted( os.listdir( dircamilla +'configs-bt' ) )
-    , 'fileconf'   : os.path.basename( getValue( 'GetConfigName' ) )
 }
 devices    = config[ 'devices' ]
 for k in [ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ]:

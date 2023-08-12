@@ -492,16 +492,8 @@ var render   = {
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
-		$( '#gain' ).text( util.dbRound( S.volume ) );
-		$( '#volume' ).val( S.volume );
-		gain.mute();
-		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
-		$( '#configuration' )
-			.html( htmlOption( S.lsconf ) )
-			.val( S.fileconf );
-		V.statusget   = [ 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetConfigName', 'GetVolume', 'GetMute', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
-		V.statusread = [ ...V.statusget, 'GetClippedSamples' ];
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
 		if ( $( '.vubar' ).length ) return
@@ -550,6 +542,13 @@ var render   = {
 		}
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
+		$( '#gain' ).text( util.dbRound( S.volume ) );
+		$( '#volume' ).val( S.volume );
+		gain.mute();
+		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
+		$( '#configuration' )
+			.html( htmlOption( S.lsconf ) )
+			.val( S.configname );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -1508,19 +1507,10 @@ var util     = {
 					}
 					S.status.GetClippedSamples = value;
 					break;
-				case 'GetConfigjson':
-					S.config = value;
-					DEV      = S.config.devices;
-					FIL      = S.config.filters;
-					MIX      = S.config.mixers;
-					PIP      = S.config.pipeline;
-					break;
-				case 'Invalid':
-					info( {
-						  icon    : 'warning'
-						, title   : 'Error'
-						, message : data.Invalid.error
-					} );
+				case 'GetConfigName':
+				case 'GetVolume':
+				case 'GetMute':
+					S[ cmd.slice( 3 ).toLowerCase() ] = value;
 					break;
 				case 'GetState':
 				case 'GetCaptureRate':
@@ -1542,8 +1532,22 @@ var util     = {
 						}
 					} else {
 						S.status[ cmd ] = value;
-						if ( S.status.GetState === 'Running' && cmd === V.statuslast ) render.statusValue();
+						if ( cmd === V.statuslast ) render.statusValue();
 					}
+					break;
+				case 'GetConfigjson':
+					S.config = value;
+					DEV      = S.config.devices;
+					FIL      = S.config.filters;
+					MIX      = S.config.mixers;
+					PIP      = S.config.pipeline;
+					break;
+				case 'Invalid':
+					info( {
+						  icon    : 'warning'
+						, title   : 'Error'
+						, message : data.Invalid.error
+					} );
 					break;
 			}
 		}
@@ -1588,7 +1592,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 	var content = '<table style="border-collapse: collapse; width: 300px;">'
 	S.lsconf.forEach( f => {
 		var tdicon  = '<td style="width: 30px; text-align: center;">';
-		var current = f === S.fileconf ? '<grn> • </grn>' : '';
+		var current = f === S.configname ? '<grn> • </grn>' : '';
 		var iremove = current ? '' : ico( 'remove gr' );
 		content    += '<tr style="border: 1px solid var( --cgl ); border-style: solid none;">'
 					 + tdicon + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
@@ -1620,7 +1624,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					, ok           : () => {
 						var newname = infoVal();
 						bash( [ rename ? 'confrename' : 'confcopy', name, newname, S.bluetooth, 'CMD NAME NEWNAME BT',  ], () => {
-							if ( rename && name === S.fileconf ) setting.set( newname );
+							if ( rename && name === S.configname ) setting.set( newname );
 						} );
 						notify( icon, SW.title, rename ? 'Rename ...' : 'Copy ...' );
 						rename ? S.lsconf[ S.lsconf.indexOf( name ) ] = newname : S.lsconf.push( newname );
