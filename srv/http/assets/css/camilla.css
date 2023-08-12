@@ -12,11 +12,12 @@
 	height: auto;
 	min-height: 49px;
 }
+.tab li i {
+	min-width: 40px;
+	cursor: pointer;
+}
 .tab li i:not( .i-add ) {
 	float: left;
-}
-.tab li .i-remove {
-	float: right !important;
 }
 .tab .li1 {
 	padding: 5px 10px 0 0;
@@ -111,9 +112,6 @@ tr .i-remove {
 #filters li {
 	cursor: default !important;
 }
-#filters li i {
-	cursor: pointer;
-}
 .tab li.active {
 	background: var( --cgd );
 }
@@ -198,16 +196,6 @@ input[ type=range ] {
 	text-align: right !important;
 	top: -10px;
 	right: 0;
-}
-.mutedest {
-	width: 35px;
-	min-width: 35px !important;
-	padding: 0;
-}
-.mutedest i {
-	width: 35px;
-	line-height: 35px;
-	color: var( --cw );
 }
 .overplot .lines path {
 	stroke-opacity: 0.75 !important;
@@ -366,8 +354,7 @@ input[ type=range ] {
 	cursor: pointer;
 }
 @media (max-width: 700px) {
-	#mixers .mute,
-	#mixers .inverted { display: none }
+	#mixers .i-inverted { display: none }
 }
 @media (max-width: 610px) {
 	.liicon { display: none }
@@ -381,21 +368,8 @@ input[ type=range ] {
 }
 @media (max-width: 570px) {
 	input[ type=range ] { width: 100% }
-	.divgain,
-	.mute,
-	.inverted { display: none !important }
+	.divgain { display: none !important }
 }
 @media (max-width: 500px) {
 	.i-help.helphead { display: none }
-}
-@media (max-width: 425px) {
-}
-@media (max-width: 385px) {
-	#mixers .divgain { display: none }
-}
-@media (max-width: 365px) {
-	i.edit { display: none }
-	.liinput .name {
-		max-width: 110px;
-	}
 }
