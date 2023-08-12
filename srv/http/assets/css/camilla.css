@@ -139,18 +139,6 @@ tr .i-remove {
 	min-width: 60px;
 	text-align: center;
 }
-.liinput.column div:nth-child( 2 ) {
-	width: 40px;
-}
-.liinput div:nth-child( 3 ) {
-	width: 45px;
-	min-width: 45px;
-	margin-left: 10px;
-}
-.liinput div:nth-child( 4 ) {
-	width: 230px !important;
-	margin: 0 5px 0 10px;
-}
 .liinput.main div {
 	text-align: unset;
 }
@@ -379,7 +367,7 @@ input[ type=range ] {
 }
 @media (max-width: 700px) {
 	#mixers .mute,
-	#mixers .invert { display: none }
+	#mixers .inverted { display: none }
 }
 @media (max-width: 610px) {
 	.liicon { display: none }
@@ -395,7 +383,7 @@ input[ type=range ] {
 	input[ type=range ] { width: 100% }
 	.divgain,
 	.mute,
-	.invert { display: none !important }
+	.inverted { display: none !important }
 }
 @media (max-width: 500px) {
 	.i-help.helphead { display: none }

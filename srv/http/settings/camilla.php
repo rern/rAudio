@@ -42,9 +42,11 @@ $head = [
 	, 'status' => 'camilladsp'
 	, 'button' => [ 'log' => 'file' ]
 	, 'help'   => <<< EOF
-{$Fi( 'file btn' )} Log
-
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
+
+{$Fi( 'file btn' )} Log
+{$Fi( 'plus btn' )}{$Fi( 'mute btn' )}{$Fi( 'minus btn' )} Volume: -0.1dB · Mute · +0.1dB
+{$Fi( 'set0 btn' )} Reset clipped sample
 EOF
 ];
 $body = [
@@ -56,17 +58,18 @@ $body = [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
-{$Fi( 'set0 btn' )} Reset clipped sample count
-{$Fi( 'gear btn' )} Manage configuration files
+{$Fi( 'gear btn' )} Settings
+{$Fi( 'add btn' )} Add entry
+{$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu
+{$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: -0.1 · 0 · +0.1
+{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers - Mute · Inverse
+{$Fi( 'flowchart btn' )} Pipeline - Flowchart
 EOF
 	]
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
-$head = [ 
-	  'title'  => 'Filters'
-	, 'nohelp' => true
-];
+$head = [ 'title'  => 'Filters', 'nohelp' => true ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );
 ?>

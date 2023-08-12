@@ -109,7 +109,7 @@ i {
 .i-i2smodule::before       { content: '\F571' }
 .i-info-circle::before     { content: '\F561' }
 .i-input::before           { content: '\F529' }
-.i-invert::before          { content: '\F52E' }
+.i-inverted::before        { content: '\F52E' }
 .i-jigsaw::before          { content: '\F50D' }
 .i-lan::before             { content: '\F552' }
 .i-lastfm::before          { content: '\F585' }
