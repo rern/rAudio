@@ -984,7 +984,7 @@ function capitalize( str ) {
 	return str.replace( /\b\w/g, l => l.toUpperCase() );
 }
 function htmlOption( el ) {
-	if ( typeof( el ) === 'number' ) el = [ ...Array( el ).keys() ];
+	if ( typeof el === 'number' ) el = [ ...Array( el ).keys() ];
 	var options = '';
 	if ( Array.isArray( el ) ) { // name = value
 		el = el.sort();
@@ -994,6 +994,15 @@ function htmlOption( el ) {
 		$.each( el, ( k, v ) => options += '<option value="'+ v.toString().replace( /"/g, '&quot;' ) +'">'+ k +'</option>' );
 	}
 	return options
+}
+function jsonChanged( a, b ) {
+	var changed = false;
+	$.each( a, ( k, v ) => {
+		changed = typeof v === 'object' ? jsonChanged( v, b[ k ] ) : v !== b[ k ];
+		if ( changed ) return false
+		
+	} );
+	return changed
 }
 function jsonClone( json ) {
 	return JSON.parse( JSON.stringify( json ) )
@@ -1063,7 +1072,7 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 			refreshData();
 			bannerHide();
 		} else if ( status === 0 ) { // disconnected
-			if ( typeof( pushstreamDisconnect ) === 'function' ) pushstreamDisconnect();
+			if ( typeof pushstreamDisconnect === 'function' ) pushstreamDisconnect();
 			if ( V.off ) {
 				pushstream.disconnect();
 				$( '#loader' ).css( 'background', '#000000' );

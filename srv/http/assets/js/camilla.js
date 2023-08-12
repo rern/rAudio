@@ -322,7 +322,7 @@ function pushstreamDisconnect() { // from common.js
 var gain     = {
 	  mute      : ( mute ) => {
 		var set = false;
-		if ( typeof( mute ) === 'boolean' ) { //set
+		if ( typeof mute === 'boolean' ) { //set
 			S.mute  = mute;
 			ws.send( '{ "SetMute": '+ S.mute +'} ' );
 		} else { // status
@@ -374,7 +374,7 @@ var graph    = {
 	, plot     : ( $li ) => {
 		if ( ! $li ) $li = V.li;
 		$li.addClass( 'disabled' );
-		if ( typeof( Plotly ) !== 'object' ) {
+		if ( typeof Plotly !== 'object' ) {
 			$.getScript( '/assets/js/plugin/'+ jfiles.plotly, () => graph.plot() );
 			return
 		}
@@ -459,16 +459,8 @@ var graph    = {
 		if ( ! $divgraph.hasClass( 'hide' ) ) {
 			$divgraph.addClass( 'hide' );
 		} else {
-			var val    = $divgraph.data( 'val' );
-			var vgraph  = V.graph[ V.tab ][ val ];
-			var dgraph = JSON.stringify( vgraph );
-			var data   = JSON.stringify( S.config[ V.tab ][ val ] );
-			if ( data === dgraph ) {
-				$divgraph.removeClass( 'hide' );
-			} else {
-				delete vgraph;
-				graph.plot();
-			}
+			var val     = $divgraph.data( 'val' );
+			jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ? graph.plot() : $divgraph.removeClass( 'hide' );
 		}
 	}
 }
@@ -1125,7 +1117,7 @@ var setting  = {
 						li = li.replace( '</li>', '' ) + $divgraph[ 0 ].outerHTML +'</li>';
 						V.li.replaceWith( li );
 						V.li = $( '#filters li' ).eq( index );
-						graph.plot();
+						if ( jsonChanged( FIL[ newname ], V.graph.filters[ newname ] ) ) graph.plot();
 					} else {
 						V.li.replaceWith( li );
 					}
@@ -1723,7 +1715,7 @@ $( '.headtitle' ).on( 'click', '.i-add', function() {
 } ).on( 'click', '.i-flowchart', function() {
 	var $flowchart = $( '.flowchart' );
 	if ( $flowchart.hasClass( 'hide' ) ) {
-		if ( typeof( d3 ) !== 'object' ) {
+		if ( typeof d3 !== 'object' ) {
 			$.when(
 				$.getScript( '/assets/js/pipelineplotter.js' ),
 				$.getScript( '/assets/js/plugin/'+ jfiles.d3 ),
