@@ -648,8 +648,9 @@ var render   = {
 						+'<div>'+ ico( 'add' ) +'</div><div></div><div class="divgain"></div>'
 						+'<input type="checkbox" class="mute"'+ ( kv.mute ? ' checked' : '' ) +'>'
 						+'</li>'
-						+'<li class="liinput column dest'+ i +'"'+ i_name +'>'+ ico( 'blank' )
-						+'<div>Ch</div><div>dB</div><div>Gain</div><div class="divgain"></div><div>Mute</div><div>Invert</div></li>';
+						+'<li class="liinput column dest'+ i +'"'+ i_name +'>'+ ico( 'blank liicon' )
+						+'<div>Ch</div><div>dB</div><div>Gain</div><div class="divgain"></div>'
+						+'<div class="mute">Mute</div><div class="invert">Invert</div></li>';
 			kv.sources.forEach( ( s, si ) => {
 				var source   = data[ i ].sources[ si ];
 				var channel  = source.channel;
@@ -660,7 +661,7 @@ var render   = {
 					 +'<input type="range"'+ step_val +' min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
 					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 +'<input type="checkbox" class="mute"'+ ( source.mute ? ' checked' : '' ) +'>'
-					 +'<input type="checkbox"'+ ( source.inverted ? ' checked' : '' ) +'>'
+					 +'<input type="checkbox" class="invert" '+ ( source.inverted ? ' checked' : '' ) +'>'
 					 +'</li>';
 			} );
 		} );

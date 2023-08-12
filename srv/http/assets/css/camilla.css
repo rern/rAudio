@@ -382,9 +382,11 @@ input[ type=range ] {
 	cursor: pointer;
 }
 @media (max-width: 700px) {
-	#mixers input[ type=range ] {
-		max-width: calc( 100% - 420px );
-	}
+	#mixers .mute,
+	#mixers .invert { display: none }
+}
+@media (max-width: 610px) {
+	.liicon { display: none }
 }
 @media (max-width: 600px) {
 	.liinput.column .i-add {
@@ -393,23 +395,16 @@ input[ type=range ] {
 		margin-left: auto;
 	}
 }
-@media (max-width: 615px) {
-	.liinput div:nth-child( 3 ),
-	.tab input[ type=range ] {
-		max-width: calc( 100% - 325px );
-	}
-}
-@media (max-width: 550px) {
-	#mixers .liinput div:nth-child( 4 ),
-	input[ type=range ] {
-		display: none;
-	}
+@media (max-width: 570px) {
+	input[ type=range ] { width: 100% }
+	.divgain,
+	.mute,
+	.invert { display: none !important }
 }
 @media (max-width: 500px) {
 	.i-help.helphead { display: none }
 }
 @media (max-width: 425px) {
-	#mixers li > i:first-child { display: none }
 }
 @media (max-width: 385px) {
 	#mixers .divgain { display: none }
