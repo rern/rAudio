@@ -599,7 +599,7 @@ var render   = {
 		if ( 'gain' in v.parameters ) {
 			var val       = util.dbRound( v.parameters.gain );
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
-							+'<code class="db">'+ val +'</code>'
+							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10">'
 							+'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
@@ -647,7 +647,7 @@ var render   = {
 				var val      = util.dbRound( source.gain );
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<code class="db">'+ val +'</code>'
+					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
 					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )

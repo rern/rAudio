@@ -52,7 +52,7 @@ EOF
 $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
-	, htmlSectionStatus( 'volume', '<code id="gain"></code>', $htmlvolume )
+	, htmlSectionStatus( 'volume', '<c id="gain"></c>', $htmlvolume )
 	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
@@ -61,9 +61,9 @@ $body = [
 {$Fi( 'gear btn' )} Settings
 {$Fi( 'add btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu
-{$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: -0.1 · 0 · +0.1
-{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: Mute · Invert
-{$Fi( 'flowchart btn' )} Pipeline: Flowchart
+{$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
+{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: <c>Mute</c> <c>Invert</c>
+{$Fi( 'flowchart btn' )} Pipeline: <c>Flowchart</c>
 EOF
 	]
 ];
