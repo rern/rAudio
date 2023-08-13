@@ -46,13 +46,13 @@ $head = [
 
 {$Fi( 'file btn' )} Log
 {$Fi( 'plus btn' )}{$Fi( 'mute btn' )}{$Fi( 'minus btn' )} Volume: -0.1dB · Mute · +0.1dB
-{$Fi( 'set0 btn' )} Reset clipped sample
+{$Fi( 'set0 btn' )} Clipped sample: Reset
 EOF
 ];
 $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
-	, htmlSectionStatus( 'volume', 'Volume&ensp;<code id="gain"></code>', $htmlvolume )
+	, htmlSectionStatus( 'volume', '<code id="gain"></code>', $htmlvolume )
 	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
@@ -62,8 +62,8 @@ $body = [
 {$Fi( 'add btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu
 {$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: -0.1 · 0 · +0.1
-{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers - Mute · Inverse
-{$Fi( 'flowchart btn' )} Pipeline - Flowchart
+{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: Mute · Inverse
+{$Fi( 'flowchart btn' )} Pipeline: Flowchart
 EOF
 	]
 ];

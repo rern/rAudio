@@ -111,7 +111,7 @@ heading + .helpblock {
 	line-height: 20px;
 	margin-left: 0;
 	margin-right: 0;
-	border: 1px solid var( --cg );
+	border: 1px solid var( --cgd );
 	text-align: center;
 	border-radius: 2px;
 }

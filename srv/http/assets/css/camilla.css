@@ -1,3 +1,6 @@
+.i-help.helphead {
+	display: none;
+}
 .tab {
 	margin-top: -16px;
 }
@@ -172,9 +175,13 @@ input[ type=range ] {
 #divconfiguration {
 	margin-top: 10px;
 }
-.tab li .divgain {
+.divgain {
 	width: 120px !important;
 	margin: 0;
+}
+.divgain.disabled i {
+	pointer-events: none;
+	color: var( --cga ) !important;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 16px;
@@ -369,7 +376,4 @@ input[ type=range ] {
 @media (max-width: 570px) {
 	input[ type=range ] { width: 100% }
 	.divgain { display: none !important }
-}
-@media (max-width: 500px) {
-	.i-help.helphead { display: none }
 }

@@ -645,11 +645,12 @@ var render   = {
 				var channel  = source.channel;
 				var opts     = optin.replace( '>'+ channel, ' selected>'+ channel );
 				var val      = util.dbRound( source.gain );
+				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
-					 +'<code class="db">'+ val +'</code>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ ( source.mute ? ' disabled' : '' ) +'>'
-					 +'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
-					 + ico( source.mute ? 'mute bl' : 'mute' ) + ico( source.inverted ? 'inverted bl' : 'inverted' )
+					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<code class="db">'+ val +'</code>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ disabled +'>'
+					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
+					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
 			} );
 		} );
@@ -1887,6 +1888,8 @@ $( '#menu a' ).on( 'click', function( e ) {
 $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeout );
 	var $this = $( this );
+	if ( $this.hasClass( 'disabled' ) ) return
+	
 	var $gain = $this.parent().prev();
 	var $db   = $gain.prev();
 	var val   = +$gain.val();
@@ -1926,6 +1929,8 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name, data );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
+	if ( $this.parent().hasClass( 'divgain' ) ) return
+	
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
 	var name   = V.li.data( 'name' );
@@ -1951,7 +1956,8 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 				mapping.mute = checked;
 			} else {
 				source.mute = checked;
-				$this.siblings( 'input[type=range]' ).prop( 'disabled', checked );
+				V.li.find( 'input[type=range]' ).prop( 'disabled', checked );
+				V.li.find( '.divgain' ).toggleClass( 'disabled', checked );
 			}
 		} else if ( action === 'inverted' ) {
 			source.inverted = checked;
@@ -1974,7 +1980,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } ).on( 'input', 'input[type=range]', function() {
 	var $this = $( this );
 	var val   = +$this.val();
-	$this.prev().val( util.dbRound( val ) );
+	$this.prev().text( util.dbRound( val ) );
 	V.li      = $( this ).parents( 'li' );
 	var name  = V.li.data( 'name' );
 	var index = V.li.data( 'index' );
