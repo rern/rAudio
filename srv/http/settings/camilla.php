@@ -62,7 +62,7 @@ $body = [
 {$Fi( 'add btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu
 {$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: -0.1 · 0 · +0.1
-{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: Mute · Inverse
+{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: Mute · Invert
 {$Fi( 'flowchart btn' )} Pipeline: Flowchart
 EOF
 	]
