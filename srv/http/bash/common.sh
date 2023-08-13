@@ -338,6 +338,9 @@ stringEscape() {
 	echo ${@//\"/\\\"}
 }
 volumeGet() {
+	# camilla: 
+	#   set: awk 'BEGIN { printf "%.2f", ( '$percent' - 100 ) / 2 }' )
+	#   get: awk 'BEGIN { printf "%.0f", '$db' * 2 + 100 }'
 	local amixer card control data mixersoftware val_db
 	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready

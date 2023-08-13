@@ -2027,7 +2027,9 @@ function volumeColorMute() {
 	$volumetooltip
 		.text( S.volumemute )
 		.addClass( 'bl' );
-	$volumehandle.addClass( 'bgr60' );
+	$volumehandle
+		.addClass( 'bgr60' )
+		.rsRotate( 0 ? -this._handle1.angle : -310 );
 	$( '#volmute' )
 		.removeClass( 'i-volume' )
 		.addClass( 'i-mute active' );
