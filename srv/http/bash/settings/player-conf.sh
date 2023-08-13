@@ -12,7 +12,7 @@
 usbdac=$1
 
 . $dirsettings/player-devices.sh # $asoundcard, $A...
-. $dirsettings/player-asound.sh
+. $dirsettings/player-asound.sh  # $bluetooth, $camilladsp, $equalizer
 
 pushData() {
 	$dirbash/status-push.sh
@@ -23,12 +23,12 @@ pushData() {
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
-if [[ $btreceiver ]]; then # not require audio devices (from player-asound.sh)
+if [[ $bluetooth ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
 #---------------< bluetooth
 	audiooutputbt='
-	name        "'$btreceiver'"
+	name        "'$bluetooth'"
 	device      "bluealsa"
 	type        "alsa"
 	mixer_type  "hardware"'
@@ -66,7 +66,7 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 		pushstream refresh '{ "page": "features", "nosound": '$volumenone' }'
 		outputswitch=$name
 	fi
-	if [[ $dsp ]]; then # from player-asound.sh
+	if [[ $camilladsp ]]; then
 		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
 		hw=hw:$card,1
 #---------------< camilladsp
@@ -77,8 +77,8 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 	auto_resample  "no"
 	mixer_type     "none"'
 #--------------->
-	elif [[ $equalizer ]]; then # from player-asound.sh
-		[[ -e $dirshm/btreceiver ]] && mixertype=software
+	elif [[ $equalizer ]]; then
+		[[ $bluetooth ]] && mixertype=software
 		hw=plug:plugequal
 #---------------< equalizer
 		audiooutput='
@@ -144,21 +144,21 @@ done
 
 [[ -e $dirmpd/updating ]] && $dirbash/cmd.sh mpcupdate
 
-[[ -e $dirshm/btreceiver && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
+[[ $bluetooth && -e $dirsystem/autoplay ]] && grep -q bluetooth=true $dirsystem/autoplay.conf && mpc -q play
 
 [[ $outputswitch ]] && notify output 'Audio Output' "$outputswitch"
 
 ( sleep 2 && systemctl try-restart rotaryencoder ) &> /dev/null &
 
-[[ ! $Acard && ! $btreceiver ]] && pushData && exit # >>>>>>>>>>
+[[ ! $Acard && ! $bluetooth ]] && pushData && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
-[[ $hwmixer && ! $btreceiver && ! $dsp && ! $equalizer ]] && mixer=1
+[[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	if [[ $dsp ]]; then
+	if [[ $camilladsp ]]; then
 		hw=hw:Loopback,1 # shairport > playback - Loopback,1 | Loopback,0 - capture > camilla
-	elif [[ -e $dirshm/btreceiver ]]; then
+	elif [[ $bluetooth ]]; then
 		hw=bluealsa
 	else
 		hw=hw:$card
@@ -177,9 +177,9 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $dsp ]]; then
+	if [[ $camilladsp ]]; then
 		hw=hw:Loopback,1
-	elif [[ -e $dirshm/btreceiver ]]; then
+	elif [[ $bluetooth ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
 		hw=$( < "$dirsystem/spotify-$aplayname" )
@@ -200,6 +200,6 @@ mixer = "'$hwmixer'"'
 	systemctl try-restart spotifyd
 fi
 
-[[ $dsp ]] && systemctl start camilladsp
+[[ $camilladsp ]] && systemctl start camilladsp
 
 pushData

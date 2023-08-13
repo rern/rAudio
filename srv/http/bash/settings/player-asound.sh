@@ -9,8 +9,9 @@ defaults.pcm.card $asoundcard
 defaults.ctl.card $asoundcard
 "
 fi
+[[ -e $dirshm/btreceiver ]] && bluetooth=$( < $dirshm/btreceiver )
 if [[ -e $dirsystem/camilladsp ]]; then
-	dsp=1
+	camilladsp=1
 	modprobe snd_aloop
 	camilladspyml=$dircamilladsp/configs/camilladsp.yml
 	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
@@ -44,8 +45,7 @@ ctl.camilladsp {
 	card Loopback
 }'
 else
-	if [[ -e $dirshm/btreceiver ]]; then
-		btreceiver=$( < $dirshm/btreceiver )
+	if [[ $bluetooth ]]; then
 ########
 		asound+='
 pcm.bluealsa {
@@ -58,7 +58,7 @@ pcm.bluealsa {
 }'
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
-		if [[ $btreceiver ]]; then
+		if [[ $bluetooth ]]; then
 			slavepcm=bluealsa
 		elif [[ $asoundcard != -1 ]]; then
 			slavepcm='"plughw:'$asoundcard',0"'
@@ -93,18 +93,18 @@ if [[ $wm5102card ]]; then
 	$dirsettings/player-wm5102.sh $wm5102card $output
 fi
 
-if [[ $dsp ]]; then
-	if [[ -e $dirshm/btreceiver ]]; then
+if [[ $camilladsp ]]; then
+	if [[ $bluetooth ]]; then
 		! grep -q configs-bt /etc/default/camilladsp && $dirsettings/camilla-bluetooth.sh receiver
 	else
 		grep -q configs-bt /etc/default/camilladsp && mv -f /etc/default/camilladsp{.backup,}
 		$dirsettings/camilla.sh setformat
 	fi
 else
-	if [[ $btreceiver ]]; then
-		if [[ -e "$dirsystem/btvolume-$btreceiver" ]]; then
-			btvolume=$( < "$dirsystem/btvolume-$btreceiver" )
-			amixer -MqD bluealsa sset "$btreceiver" $btvolume% 2> /dev/null
+	if [[ $bluetooth ]]; then
+		if [[ -e "$dirsystem/btvolume-$bluetooth" ]]; then
+			btvolume=$( < "$dirsystem/btvolume-$bluetooth" )
+			amixer -MqD bluealsa sset "$bluetooth" $btvolume% 2> /dev/null
 		fi
 	fi
 	if [[ -e $dirsystem/equalizer ]]; then
@@ -118,7 +118,7 @@ CMD VALUE USER"
 	fi
 fi
 
-if [[ -e $dirshm/btreceiver ]]; then
+if [[ $bluetooth ]]; then
 	systemctl -q is-active localbrowser && action=stop || action=start
 	systemctl $action bluetoothbutton
 else
