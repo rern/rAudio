@@ -25,9 +25,6 @@ if len( sys.argv ) > 1:
         file  += '\n-g'+ str( getValue( 'GetVolume' ) )
         file  += getValue( 'GetMute' ) and '\n-m' or '\n'
         print( file )
-    elif cmd == 'volume':
-        volume = getValue( 'GetVolume' )
-        print( volume )
     else:
         target = sys.argv[ 2 ]
         if cmd == 'filters' or cmd == 'pipeline':
@@ -39,10 +36,6 @@ if len( sys.argv ) > 1:
                 from camilladsp_plot import eval_filterstep
                 data  = eval_filterstep( config, int( target ) )
             print( json.dumps( data ) )
-        elif cmd == 'mute':
-            ws.send( json.dumps( { 'SetMute': target == 'true' } ) )
-        elif cmd == 'volume':
-            ws.send( json.dumps( { 'SetVolume': float( target ) } ) )
         
     ws.close()
     sys.exit()
