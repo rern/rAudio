@@ -685,7 +685,7 @@ $( '#volume-band' ).on( 'touchstart mousedown', function() {
 } );
 $( '#volmute, #volM' ).on( 'click', function() {
 	$( '#volume-knob, #button-volume i' ).addClass( 'disabled' );
-	bash( [ 'volume' ] );
+	bash( [ 'volume', S.volume, 0, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
 } );
 $( '#voldn, #volup, #volT, #volB, #volL, #volR, #volume-band-dn, #volume-band-up' ).on( 'click', function( e ) {
 	local();
