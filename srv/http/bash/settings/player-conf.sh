@@ -153,11 +153,16 @@ done
 [[ ! $Acard && ! $btreceiver ]] && pushData && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
-#[[ $dsp ]] && hwdsp=$( aplay -l | sed -n -E '/Loopback.*0/ {s/: .*//; s/card /hw:/; p}' ) # hw:N
-[[ $hwmixer && ! $dsp && ! $equalizer && ! $btreceiver ]] && mixer=1
+[[ $hwmixer && ! $btreceiver && ! $dsp && ! $equalizer ]] && mixer=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	[[ -e $dirshm/btreceiver ]] && hw=bluealsa || hw=hw:$card
+	if [[ $dsp ]]; then
+		hw=hw:Loopback,1 # shairport > playback - Loopback,1 | Loopback,0 - capture > camilla
+	elif [[ -e $dirshm/btreceiver ]]; then
+		hw=bluealsa
+	else
+		hw=hw:$card
+	fi
 ########
 	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 	conf+='
@@ -172,7 +177,9 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ $dsp ]]; then
+		hw=hw:Loopback,1
+	elif [[ -e $dirshm/btreceiver ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
 		hw=$( < "$dirsystem/spotify-$aplayname" )
