@@ -162,11 +162,10 @@ if [[ -e /usr/bin/shairport-sync ]]; then
 	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 	conf+='
 alsa = {
-	output_device = "'$hw'";'
-	[[ $mixer ]] && conf+='
-	mixer_control_name = "'$hwmixer'";'
-	conf+='
+	output_device = "'$hw'";
+	mixer_control_name = "'$hwmixer'";
 }'
+	[[ ! $mixer ]] && conf=$( grep -v mixer_control_name <<< $conf )
 #-------
 	echo "$conf" > /etc/shairport-sync.conf
 	systemctl try-restart shairport-sync
@@ -182,13 +181,12 @@ if [[ -e /usr/bin/spotifyd ]]; then
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
-
 	if [[ ! $equalizer ]]; then
 		conf+='
 device = "'$hw'"
-control = "'$hw'"'
-		[[ $mixer ]] && conf+='
+control = "'$hw'"
 mixer = "'$hwmixer'"'
+	[[ ! $mixer ]] && conf=$( grep -v ^mixer <<< $conf )
 	fi
 #-------
 	echo "$conf" > /etc/spotifyd.conf
