@@ -153,19 +153,18 @@ done
 [[ ! $Acard && ! $btreceiver ]] && pushData && exit # >>>>>>>>>>
 
 # renderers ----------------------------------------------------------------------------
+#[[ $dsp ]] && hwdsp=$( aplay -l | sed -n -E '/Loopback.*0/ {s/: .*//; s/card /hw:/; p}' ) # hw:N
+[[ $hwmixer && ! $dsp && ! $equalizer && ! $btreceiver ]] && mixer=1
 
-if [[ -e /usr/bin/shairport-sync ]]; then # output_device = "hw:N";
-	[[ $btreceiver ]] && hw=bluealsa         #                 "bluealsa";
+if [[ -e /usr/bin/shairport-sync ]]; then
+	[[ -e $dirshm/btreceiver ]] && hw=bluealsa || hw=hw:$card
 ########
-	conf="\
-$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
+	conf+='
 alsa = {
-	output_device = \"hw:$card\";"
-	
-	[[ $hwmixer && ! $dsp && ! $equalizer ]] && \
-		conf+='
+	output_device = "'$hw'";'
+	[[ $mixer ]] && conf+='
 	mixer_control_name = "'$hwmixer'";'
-	
 	conf+='
 }'
 #-------
@@ -174,15 +173,12 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then
-	#if [[ -e $dirsystem/camilladsp ]]; then
-	#	hw=$( aplay -l | sed -n -E '/Loopback.*0/ {s/: .*//; s/card /hw:/; p}' )
-	#elif [[ $btreceiver ]]; then
-	if [[ $btreceiver ]]; then
-		hw=$( bluealsa-aplay -L | head -1 )
+	if [[ -e $dirshm/btreceiver ]]; then
+		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
-		hw=$( < "$dirsystem/spotify-$aplayname" ) # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+		hw=$( < "$dirsystem/spotify-$aplayname" )
 	else
-		hw=hw:$asoundcard                         # hw:N (or default:CARD=xxxx)
+		hw=hw:$asoundcard                    # hw:N (or default:CARD=xxxx)
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
@@ -191,9 +187,7 @@ if [[ -e /usr/bin/spotifyd ]]; then
 		conf+='
 device = "'$hw'"
 control = "'$hw'"'
-		
-		[[ $hwmixer && ! $btreceiver ]] && \
-			conf+='
+		[[ $mixer ]] && conf+='
 mixer = "'$hwmixer'"'
 	fi
 #-------
@@ -201,8 +195,6 @@ mixer = "'$hwmixer'"'
 	systemctl try-restart spotifyd
 fi
 
-if [[ $dsp ]] && ! systemctl -q is-active camilladsp; then
-	systemctl start camilladsp
-fi
+[[ $dsp ]] && systemctl start camilladsp
 
 pushData
