@@ -179,9 +179,10 @@ input[ type=range ] {
 	width: 120px !important;
 	margin: 0;
 }
+i.disabled,
 .divgain.disabled i {
 	pointer-events: none;
-	color: var( --cga ) !important;
+	color: var( --cg ) !important;
 }
 .liinput input[ type=checkbox ] {
 	margin: 0 16px;
