@@ -81,6 +81,16 @@ radioStop() {
 		$dirbash/status-push.sh
 	fi
 }
+shairportStop() {
+	systemctl stop shairport
+	systemctl restart shairport-sync
+	rm -f $dirshm/airplay/start
+	echo pause > $dirshm/airplay/state
+	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
+	timestamp=$( date +%s%3N )
+	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
+	$dirbash/status-push.sh
+}
 splashRotate() {
 	local rotate
 	rotate=$( getVar rotate $dirsystem/localbrowser.conf )
@@ -654,9 +664,7 @@ playerstop )
 	[[ $player != upnp ]] && $dirbash/status-push.sh
 	case $player in
 		airplay )
-			systemctl stop shairport
-			rm -f $dirshm/airplay/start
-			systemctl restart shairport-sync
+			shairportStop
 			;;
 		bluetooth )
 			rm -f $dirshm/bluetoothdest
@@ -748,12 +756,7 @@ shairport )
 	$dirbash/status-push.sh
 	;;
 shairportstop )
-	systemctl stop shairport
-	echo pause > $dirshm/airplay/state
-	[[ -e $dirshm/airplay/start ]] && start=$( < $dirshm/airplay/start ) || start=0
-	timestamp=$( date +%s%3N )
-	echo $(( timestamp - start - 7500 )) > $dirshm/airplay/elapsed # delayed 7s
-	$dirbash/status-push.sh
+	shairportStop
 	;;
 shareddatampdupdate )
 	systemctl restart mpd
