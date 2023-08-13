@@ -65,7 +65,8 @@ var CP       = {
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		}
 		, File      : {
-			  select : { filename: '', format: '' }
+			  select : { format: '' }
+			, text   : { filename: '' }
 			, number : { channels: 2, extra_samples: 0, skip_bytes: 0, read_bytes: 0 }
 		}
 	}
@@ -831,8 +832,7 @@ var setting  = {
 				} );
 			}
 			, ok           : () => {
-				var val = infoVal();
-				$.each( val, ( k, v ) => DEV[ dev ][ k ] = v );
+				DEV[ dev ] = infoVal();
 				setting.save( title, 'Change ...' );
 			}
 		} );
