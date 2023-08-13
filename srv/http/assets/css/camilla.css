@@ -18,6 +18,9 @@
 	height: auto;
 	min-height: 49px;
 }
+.entries.sub li {
+	cursor: default;
+}
 .tab li i {
 	min-width: 40px;
 	cursor: pointer;
