@@ -60,7 +60,7 @@ $body = [
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Settings
 {$Fi( 'add btn' )} Add entry
-{$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu
+{$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu: {$Fi( 'graph btn' )}{$Fi( 'edit btn' )}{$Fi( 'remove btn' )}
 {$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: <c>Mute</c> <c>Invert</c>
 {$Fi( 'flowchart btn' )} Pipeline: <c>Flowchart</c>
@@ -75,6 +75,6 @@ htmlSection( $head, $body, 'settings' );
 ?>
 <div id="menu" class="menu hide">
 <a class="graph"><i class="i-graph"></i>Graph</a>
-<a class="edit"><i class="i-edit-circle"></i>Edit</a>
+<a class="edit"><i class="i-edit"></i>Edit</a>
 <a class="delete"><i class="i-remove"></i>Delete</a>
 </div>

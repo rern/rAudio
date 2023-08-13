@@ -30,7 +30,7 @@ if ( $alias === 'albumthumbnail' ) {
 	$options       = $alias."\n".$label."\n".$branch;
 	if ( $opt ) $options.= "\n".preg_replace( '/(["`])/', '\\\\\1', implode( "\n", $opt ) );
 	$postmsg       = $label.' done.';
-	if ( $postinfo ) $postmsg.= '<br><br><i class="i-info-circle wh"></i>'.$postinfo;
+	if ( $postinfo ) $postmsg.= '<br><br><i class="i-addons wh"></i>'.$postinfo;
 	touch( $fileflag );
 }
 ?>

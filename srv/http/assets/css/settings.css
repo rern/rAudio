@@ -348,7 +348,7 @@ code {
 	display: block;
 	width: calc( 100% - 40px );
 }
-.entries li .i-info-circle {
+.entries li .i-info {
     font-size: 22px !important;
 }
 .entries li.active {

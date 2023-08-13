@@ -53,7 +53,7 @@ $menulist = [
 	  [ 'similar',       'lastfm',        'Add similar' ]
 	, [ 'wrsave',        'save',          'Save to Library' ]
 	, [ 'savedpladd',    'file-playlist', 'Add to a playlist' ]
-	, [ 'savedplremove', 'remove',  'Remove' ]
+	, [ 'savedplremove', 'remove',        'Remove' ]
 	, [ 'tag',           'tag',           'Tag Editor' ]
 ];
 htmlmenu( $menulist, 'filesavedpl' );
@@ -74,18 +74,18 @@ $menulist = [
 	  [ 'play',       'play',          'Play' ]
 	, [ 'pause',      'pause',         'Pause' ]
 	, [ 'stop',       'stop',          'Stop' ]
-	, [ 'current',    'current',         'Current' ]
+	, [ 'current',    'current',       'Current' ]
 	, [ 'wrsave',     'save',          'Save to Library' ]
 	, [ 'savedpladd', 'file-playlist', 'Add to a playlist' ]
-	, [ 'remove',     'remove',  'Remove' ]
+	, [ 'remove',     'remove',        'Remove' ]
 	, [ 'similar',    'lastfm',        'Add similar' ]
-	, [ 'tag',        'info-circle',   'Track Info' ]
+	, [ 'tag',        'info',          'Track Info' ]
 ];
 htmlmenu( $menulist, 'plaction' );
 // playlist
 $html = menucommon( 'pladd', 'plreplace' );
 $menulist = [
-	  [ 'plrename', 'edit-circle',  'Rename' ]
+	  [ 'plrename', 'edit',   'Rename' ]
 	, [ 'pldelete', 'remove', 'Delete' ]
 ];
 htmlmenu( $menulist, 'playlist' );
@@ -95,18 +95,18 @@ $menu.= menudiv( 'bkradio', $html );
 // webradio
 $html = menucommon( 'wradd', 'wrreplace' );
 $menulist = [
-	  [ 'bookmark',   'star',         'Bookmark' ]
-	, [ 'wredit',     'edit-circle',  'Edit' ]
-	, [ 'wrcoverart', 'coverart',     'Change cover art' ]
-	, [ 'wrdelete',   'remove', 'Delete' ]
+	  [ 'bookmark',   'star',     'Bookmark' ]
+	, [ 'wredit',     'edit',     'Edit' ]
+	, [ 'wrcoverart', 'coverart', 'Change cover art' ]
+	, [ 'wrdelete',   'remove',   'Delete' ]
 ];
 htmlmenu( $menulist, 'webradio' );
 // wrdir
 $html = '';
 $menulist = [
-	  [ 'bookmark',      'star',         'Bookmark' ]
-	, [ 'wrdirdelete',   'remove', 'Delete' ]
-	, [ 'wrdirrename',   'edit-circle',  'Rename' ]
+	  [ 'bookmark',    'star',   'Bookmark' ]
+	, [ 'wrdirdelete', 'remove', 'Delete' ]
+	, [ 'wrdirrename', 'edit',   'Rename' ]
 ];
 htmlmenu( $menulist, 'wrdir' );
 
@@ -299,7 +299,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 		<img src=""><span id="lyricstitle"></span><?=i( 'lyricsclose', 'close' )?>
 	</div>
 	<div id="divlyricsartist">
-		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit-circle' )?>
+		<span id="lyricsartist"></span><?=i( 'lyricsrefresh', 'refresh' ),i( 'lyricsedit', 'edit' )?>
 		<div id="lyricseditbtngroup" class="hide">
 			<?=i( 'lyricsundo',   'undo hide' )
 			  .i( 'lyricssave',   'save hide' )

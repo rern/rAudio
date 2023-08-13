@@ -124,7 +124,7 @@ htmlHead( [ //////////////////////////////////
 <div id="menu" class="menu hide">
 <a class="connect"><?=i( 'connect' )?>Connect</a>
 <a class="disconnect"><?=i( 'close' )?>Disconnect</a>
-<a class="edit"><?=i( 'edit-circle' )?>Edit</a>
+<a class="edit"><?=i( 'edit' )?>Edit</a>
 <a class="forget"><?=i( 'remove' )?>Forget</a>
-<a class="info"><?=i( 'info-circle' )?>Info</a>
+<a class="info"><?=i( 'info' )?>Info</a>
 </div>

@@ -13,7 +13,7 @@ var content   = `
 <div class="bottom">
 	<div class="label dn">${ labelhz }</div>
 	${ ico( 'remove hide', 'eqdelete' ) }
-	${ ico( 'edit-circle', 'eqrename' ) }
+	${ ico( 'edit', 'eqrename' ) }
 	${ ico( 'save disabled hide', 'eqsave' ) }
 	<input id="eqname" type="text" class="hide"><select id="eqpreset">PRESETS</select>
 	${ ico( 'add', 'eqnew' ) + ico( 'back bl hide', 'eqback' ) }

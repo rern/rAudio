@@ -10,7 +10,7 @@
 
 @font-face {
 	font-family : rern;
-	src         : url( '/assets/fonts/rern.woff2?v=1691584111' );
+	src         : url( '/assets/fonts/rern.woff2?v=1691584112' );
 }
 @font-face {
 	font-family : Lato;
@@ -74,7 +74,7 @@ i {
 .i-dabupdate::before       { content: '\F589'; animation: blinkopaque 1.5s linear infinite; }
 .i-date::before            { content: '\F55C' }
 .i-devices::before         { content: '\F571' }
-.i-edit-circle::before     { content: '\F565' }
+.i-edit::before            { content: '\F565' }
 .i-equalizer::before       { content: '\F50C' }
 .i-eye::before             { content: '\F567' }
 .i-features::before        { content: '\F50B' }
@@ -107,7 +107,7 @@ i {
 .i-hostname::before        { content: '\F590' }
 .i-httpd::before           { content: '\F55D' }
 .i-i2smodule::before       { content: '\F571' }
-.i-info-circle::before     { content: '\F561' }
+.i-info::before            { content: '\F561' }
 .i-input::before           { content: '\F529' }
 .i-inverted::before        { content: '\F52E' }
 .i-jigsaw::before          { content: '\F50D' }
@@ -174,7 +174,6 @@ i {
 .i-restore::before         { content: '\F544' }
 .i-rotaryencoder::before   { content: '\F516' }
 .i-save::before            { content: '\F542' }
-.i-save-circle::before     { content: '\F546' }
 .i-save-plus::before       { content: '\F545' }
 .i-screenoff::before       { content: '\F547' }
 .i-scale-dn::before        { content: '\F591' }

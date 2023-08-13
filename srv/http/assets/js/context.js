@@ -297,7 +297,7 @@ function tagEditor() {
 		var footer   = '<div id="taglabel">'+ ico( 'help i-lg gr' ) +'&emsp;Label</div>';
 		if ( V.list.licover ) footer += '<div><code> * </code>&ensp;Various values in tracks</div>';
 		info( {
-			  icon         : V.playlist ? 'info-circle' : 'tag'
+			  icon         : V.playlist ? 'info' : 'tag'
 			, title        : V.playlist ? 'Track Info' : 'Tag Editor'
 			, width        : 500
 			, message      : message
