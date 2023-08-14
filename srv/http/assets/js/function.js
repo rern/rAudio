@@ -308,6 +308,7 @@ function contextmenuLibrary( $li, $target ) {
 	$menu.find( '.tag' ).toggleClass( 'hide', ! V.librarytrack || ! filemode );
 	$menu.find( '.wredit' ).toggleClass( 'hide', V.mode !== 'webradio' );
 	$menu.find( '.wrdirrename' ).toggleClass( 'hide', V.mode.slice( -5 ) !== 'radio' );
+	$menu.find( '.submenu' ).toggleClass( 'hide', S.player !== 'mpd' );
 	$li.addClass( 'active' );
 	if ( V.list.licover ) {
 		var menutop = $bartop.is( ':visible' ) ? 310 : 270;
