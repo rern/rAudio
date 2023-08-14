@@ -182,7 +182,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playback" class="page">
-	<div class="emptyadd hide"><?=i( '', 'add' )?></div>
+	<?=i( '', 'plus-o emptyadd hide' )?>
 	<?=i( 'guide-bio',    'bio map guide hide' )
 	  .i( 'guide-lyrics', 'lyrics map guide hide' )
 	  .i( 'guide-booklet',  'booklet map guide hide' )?>
@@ -263,7 +263,7 @@ if ( file_exists( '/srv/http/data/system/vumeter' ) ) {
 </div>
 
 <div id="page-playlist" class="page hide">
-	<div class="emptyadd hide"><?=i( '', 'add' )?></div>
+	<?=i( '', 'plus-o emptyadd hide' )?>
 	<div class="content-top">
 		<span id="pl-path"></span>
 		<span id="savedpl-path"></span>

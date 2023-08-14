@@ -32,7 +32,7 @@ i {
 }
 .i-lg { font-size: 22px !important }
 .i-accesspoint::before     { content: '\F554' }
-.i-add::before             { content: '\F564' }
+.i-add::before             { content: '\F519' }
 .i-addons::before          { content: '\F50D' }
 .i-airplay::before         { content: '\F580' }
 .i-album::before           { content: '\F555' }

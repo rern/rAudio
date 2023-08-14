@@ -172,6 +172,11 @@ input[ type=range ] {
 #volume {
 	margin: 0;
 }
+#dn,
+#mute,
+#up {
+	font-size: 24px;
+}
 #mute {
 	margin-left: 40px;
 }

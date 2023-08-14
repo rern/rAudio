@@ -477,12 +477,8 @@ $( '#settings' ).on( 'click', function() {
 $( '#info' ).on( 'click', function() {
 	if ( localhost ) setInfoScroll();
 } );
-$( '.emptyadd' ).on( 'click', function( e ) {
-	if ( $( e.target ).hasClass( 'i-add' ) ) {
-		$( '#library' ).trigger( 'click' );
-	} else if ( $( e.target ).hasClass( 'i-gear' ) ) {
-		$( '#button-settings' ).trigger( 'click' );
-	}
+$( '.emptyadd' ).on( 'click', function() {
+	$( '#library' ).trigger( 'click' );
 } );
 $( '#artist, #guide-bio' ).on( 'click', function() {
 	bio( S.Artist );

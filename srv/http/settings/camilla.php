@@ -45,7 +45,7 @@ $head = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 
 {$Fi( 'file btn' )} Log
-{$Fi( 'plus btn' )}{$Fi( 'mute btn' )}{$Fi( 'minus btn' )} Volume: -0.1dB · Mute · +0.1dB
+{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} Volume: -0.1 · Mute · +0.1
 {$Fi( 'set0 btn' )} Clipped sample: Reset
 EOF
 ];
@@ -59,9 +59,9 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Settings
-{$Fi( 'add btn' )} Add entry
+{$Fi( 'plus-o btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu: {$Fi( 'graph btn' )}{$Fi( 'edit btn' )}{$Fi( 'remove btn' )}
-{$Fi( 'plus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'minus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
+{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: <c>Mute</c> <c>Invert</c>
 {$Fi( 'flowchart btn' )} Pipeline: <c>Flowchart</c>
 EOF
