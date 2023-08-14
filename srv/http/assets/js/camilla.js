@@ -1583,7 +1583,7 @@ $( '#configuration' ).on( 'change', function() {
 	render[ V.tab ];
 } );
 $( '#setting-configuration' ).on( 'click', function() {
-	var content = '<table style="border-collapse: collapse; width: 300px; margin-top: -20px;">'
+	var content = '<table style="border-collapse: collapse; width: 300px; margin: -20px auto 10px;">'
 				 +'<tr><td colspan="3"><label class="add">File list: '+ ico( 'add' ) +'</label></td></tr>'
 	S.lsconf.forEach( f => {
 		var current = f === S.configname ? '<grn> • </grn>' : '';
