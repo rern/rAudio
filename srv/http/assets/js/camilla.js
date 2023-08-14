@@ -573,7 +573,7 @@ var render   = {
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10">'
-							+'<div class="divgain">'+ ico( 'minus filter' ) + ico( 'set0' ) + ico( 'plus filter' ) +'</div>'
+							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 		} else {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
@@ -1586,7 +1586,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( $this.hasClass( 'filter' ) ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
+	if ( $this.parents( '#filters' ).length ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
