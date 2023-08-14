@@ -59,7 +59,7 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'help'  => <<< EOF
 {$Fi( 'gear btn' )} Settings
-{$Fi( 'plus-o btn' )} Add entry
+{$Fi( 'plus btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu: {$Fi( 'graph btn' )}{$Fi( 'edit btn' )}{$Fi( 'remove btn' )}
 {$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: <c>Mute</c> <c>Invert</c>
