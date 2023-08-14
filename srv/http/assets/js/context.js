@@ -25,7 +25,7 @@ function addToPlaylistCommand() {
 	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
 		V.mpccmd.push( V.action );
-		if ( V.action !== 'replace' && V.player !== 'mpd' ) $( '#stop' ).trigger( 'click' );
+		$( '#stop' ).trigger( 'click' );
 	}
 	var mpccmd0   = V.mpccmd[ 0 ];
 	if ( mpccmd0 === 'mpcaddls' ) {
@@ -51,9 +51,11 @@ function addToPlaylistCommand() {
 	V.title  = cmd_title[ V.action ];
 	V.msg =  '<a class="li1">'+ V.list.name +'</a>';
 	if ( V.list.li.find( '.li2' ).length ) V.msg += '<a class="li2">'+ V.list.li.find( '.li2' ).text() +'</a>';
-	bash( V.mpccmd, () => {
-		if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
-	} );
+	setTimeout( () => {
+		bash( V.mpccmd, () => {
+			if ( D.playbackswitch && V.action.slice( -4 ) === 'play' ) $( '#playback' ).trigger( 'click' );
+		} );
+	}, S.stream ? 1000 : 0 );
 	banner( 'playlist', V.title, V.msg );
 }
 function bookmarkNew() {
@@ -637,17 +639,10 @@ $( '.contextmenu a, .contextmenu .submenu' ).on( 'click', function() {
 		cmd_function[ cmd ]();
 		return
 	}
-	
+	var stream = S.stream;
 	if ( [ 'play', 'pause', 'stop' ].includes( cmd ) ) {
-		if ( cmd === 'play' ) {
-			if ( S.player !== 'mpd' ) {
-				$( '#stop' ).trigger( 'click' );
-				S.player = 'mpd';
-			}
-			$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
-		} else {
-			$( '#'+ cmd ).trigger( 'click' );
-		}
+		$( '#pl-list li' ).eq( V.list.li.index() ).trigger( 'click' );
+		$( '#'+ cmd ).trigger( 'click' );
 		return
 	}
 	

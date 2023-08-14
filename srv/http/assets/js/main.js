@@ -1729,9 +1729,10 @@ $( '#button-pl-clear' ).on( 'click', function() {
 			, buttoncolor : [ orange ]
 			, button      : [
 				  () => {
-					local();
 					$( '#pl-list .li1' ).before( ico( 'remove pl-remove' ) );
 					$( '#pl-list .name' ).css( 'max-width', 'calc( 100% - 135px )' );
+					infoButtonCommand();
+					local();
 				}
 				, () => {
 					if ( ! S.librandom ) local();
@@ -1853,7 +1854,7 @@ $( '#pl-list' ).on( 'click', 'li', function( e ) {
 			$menu.find( '.pause, .stop' ).addClass( 'hide' );
 		}
 	} else {
-		$menu.find( '.play, .pause, .stop, .current' ).addClass( 'hide' );
+		$menu.find( '.pause, .stop, .current' ).addClass( 'hide' );
 	}
 	$menu.find( '.savedpladd' ).toggleClass( 'hide', audiocd || notsaved || upnp || C.playlists === 0 );
 	$menu.find( '.similar, .submenu' ).toggleClass( 'hide', radio );
