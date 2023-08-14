@@ -5,6 +5,25 @@ dirimg=/srv/http/assets/img
 
 args2var "$1"
 
+playerStart() {
+	local player service
+	player=$( < $dirshm/player )
+	mpc -q stop
+	radioStop
+	case $player in
+		airplay )   service=shairport-sync;;
+		bluetooth ) service=bluetoothhd;;
+		spotify )   service=spotifyd;;
+		upnp )      service=upmpdcli;;
+	esac
+	if [[ $service ]]; then
+		for pid in $( pgrep $service ); do
+			ionice -c 0 -n 0 -p $pid &> /dev/null 
+			renice -n -19 -p $pid &> /dev/null
+		done
+	fi
+	pushstream player '{ "player": "'$player'", "active": true }'
+}
 plAddPlay() {
 	if [[ ${ACTION: -4} == play ]]; then
 		mpc -q play $pos
@@ -640,22 +659,7 @@ order )
 	pushstream order $( < $dirsystem/order.json )
 	;;
 playerstart )
-	player=$( < $dirshm/player )
-	mpc -q stop
-	radioStop
-	case $player in
-		airplay )   service=shairport-sync;;
-		bluetooth ) service=bluetoothhd;;
-		spotify )   service=spotifyd;;
-		upnp )      service=upmpdcli;;
-	esac
-	if [[ $service ]]; then
-		for pid in $( pgrep $service ); do
-			ionice -c 0 -n 0 -p $pid &> /dev/null 
-			renice -n -19 -p $pid &> /dev/null
-		done
-	fi
-	pushstream player '{ "player": "'$player'", "active": true }'
+	playerStart
 	;;
 playerstop )
 	player=$( < $dirshm/player )
@@ -750,7 +754,7 @@ screenoff )
 	DISPLAY=:0 xset dpms force off
 	;;
 shairport )
-	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && $dirbash/cmd.sh playerstart
+	[[ $( < $dirshm/player ) != airplay ]] && echo airplay > $dirshm/player && playerStart
 	systemctl start shairport
 	echo play > $dirshm/airplay/state
 	$dirbash/status-push.sh
