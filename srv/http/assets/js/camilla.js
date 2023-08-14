@@ -329,9 +329,9 @@ var gain     = {
 		} else { // status
 			mute    = S.mute;
 		}
-		$( '#mute' ).toggleClass( 'bl', mute );
+		$( '#divvolume .i-mute' ).toggleClass( 'bl', mute );
 		$( '#volume' ).prop( 'disabled', mute );
-		$( '#up, #dn' ).toggleClass( 'disabled', mute );
+		$( '#divvolume .divgain i' ).toggleClass( 'disabled', mute );
 	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
@@ -1554,19 +1554,13 @@ $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
+$( '#divvolume' ).on( 'click', '.i-mute', function() {
+	gain.mute( ! S.mute );
+} );
 $( '#volume' ).on( 'input', function() {
 	S.volume = +$( this ).val();
 	$( '#gain' ).text( util.dbRound( S.volume ) );
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
-} );
-$( '#up, #dn' ).on( 'click', function() {
-	S.volume += this.id === 'up' ? 0.1 : -0.1;
-	$( '#gain' ).text( util.dbRound( S.volume ) );
-	$( '#volume' ).val( S.volume )
-	ws.send( '{ "SetVolume": '+ S.volume +' }' );
-} );
-$( '#mute' ).on( 'click', function() {
-	gain.mute( ! S.mute );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
@@ -1888,7 +1882,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 	}
 } );
-$( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
+$( '.container' ).on( 'click', '.divgain i', function( e ) {
 	clearTimeout( V.timeout );
 	var $this = $( this );
 	if ( $this.hasClass( 'disabled' ) ) return
@@ -1908,7 +1902,7 @@ $( '#filters, #mixers' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.tab === 'filters' ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
+	if ( $( e.target ).parents( 'filters' ).length ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );

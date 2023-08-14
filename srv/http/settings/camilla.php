@@ -30,9 +30,13 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 
 $htmltabs.= '</div>';
 $htmlvolume = '
-<input id="volume" type="range" min="-51" max="0" step="0.1">
-<div class="divgain">
-	<i id="dn" class="i-minus"></i><i id="mute" class="i-mute bl"></i><i id="up" class="i-plus"></i>
+<div id="divvolume">
+<div class="col-l text single">'.i( 'mute' ).'<c id="gain">0</c></div>
+<div class="col-r text">
+	<input id="volume" type="range" min="-51" max="0" step="0.1">
+	<div class="divgain">'.i( 'minus' ).i( 'set0' ).i( 'plus' ).'</div>
+</div>
+<div style="clear:both"></div>
 </div>
 ';
 
@@ -45,14 +49,14 @@ $head = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 
 {$Fi( 'file btn' )} Log
-{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} Volume: -0.1 · Mute · +0.1
+{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} dB: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'set0 btn' )} Clipped sample: Reset
 EOF
 ];
 $body = [
 	  '<pre id="codelog" class="hide"></pre>'
 	, htmlSectionStatus( 'vu' )
-	, htmlSectionStatus( 'volume', '<c id="gain"></c>', $htmlvolume )
+	, $htmlvolume
 	, htmlSectionStatus( 'state', '<div id="statuslabel"></div>' )
 	, [
 		  'id'    => 'configuration'
@@ -61,8 +65,7 @@ $body = [
 {$Fi( 'gear btn' )} Settings
 {$Fi( 'plus btn' )} Add entry
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu: {$Fi( 'graph btn' )}{$Fi( 'edit btn' )}{$Fi( 'remove btn' )}
-{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: <c>-0.1</c> <c>0</c> <c>+0.1</c>
-{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mixers: <c>Mute</c> <c>Invert</c>
+{$Fi( 'inverted btn' )} Mixers: <c>Invert</c>
 {$Fi( 'flowchart btn' )} Pipeline: <c>Flowchart</c>
 EOF
 	]

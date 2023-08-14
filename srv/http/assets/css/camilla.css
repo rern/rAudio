@@ -180,6 +180,16 @@ input[ type=range ] {
 	text-align: center;
 	color: var( --cg60 );
 }
+#divvolume .col-l {
+	padding-top: 0;
+}
+#divvolume .i-mute {
+	width: 40px;
+	margin-right: 8px;
+	line-height: 40px;
+	text-align: center;
+	color: var( --cg60 )
+}
 #divvolume .divgain {
 	position: absolute;
 	top: 6px;
@@ -240,9 +250,6 @@ i.disabled,
 	text-align: center;
 	background: var(--cg );
 	border-radius: 3px;
-}
-#divvolume .col-l {
-	padding-top: 6px;
 }
 .db,
 #gain {
