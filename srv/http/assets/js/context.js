@@ -25,6 +25,7 @@ function addToPlaylistCommand() {
 	if ( [ 'addplay', 'replace', 'replaceplay' ].includes( V.action ) ) {
 		varaction = ' ACTION';
 		V.mpccmd.push( V.action );
+		if ( V.action !== 'replace' && V.player !== 'mpd' ) $( '#stop' ).trigger( 'click' );
 	}
 	var mpccmd0   = V.mpccmd[ 0 ];
 	if ( mpccmd0 === 'mpcaddls' ) {
