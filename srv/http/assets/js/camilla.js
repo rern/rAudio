@@ -680,7 +680,7 @@ var render   = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
-		[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+		[ 'enable_rate_adjust', 'stop_on_rate_change', 'enable_resampling' ].forEach( k => S[ k ] = DEV[ k ] );
 		var labels = '';
 		var values = '';
 		[ 'capture', 'playback' ].forEach( ( k, i ) => {
@@ -1682,9 +1682,6 @@ $( '#setting-enable_rate_adjust' ).on( 'click', function() {
 		}
 	} );
 } );
-$( '#setting-enable_resampling' ).on( 'click', function() {
-	setting.resampling( DEV.resampler_type === 'FreeAsync' );
-} );
 $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 	info( {
 		  icon         : V.tab
@@ -1699,6 +1696,9 @@ $( '#setting-stop_on_rate_change' ).on( 'click', function() {
 			setting.switchSave( 'stop_on_rate_change' );
 		}
 	} );
+} );
+$( '#setting-enable_resampling' ).on( 'click', function() {
+	setting.resampling( DEV.resampler_type === 'FreeAsync' );
 } );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {

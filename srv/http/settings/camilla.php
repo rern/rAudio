@@ -2,8 +2,8 @@
 $id_data = [
 	  'configuration'       => [ 'name' => 'Configuration',       'setting' => 'custom' ]
 	, 'enable_rate_adjust'  => [ 'name' => 'Rate Adjust',         'setting' => 'custom' ]
-	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
+	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
 ];
 
 $htmltabs = '<div id="divtabs">';
@@ -15,9 +15,9 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 '.htmlSectionStatus( 'sampling' ).'
 </div>
 <div id="divoptions" class="section">
-'.htmlSetting( [ 'id' => 'enable_rate_adjust', 'returnhtml' => true ] ).'
-'.htmlSetting( [ 'id' => 'enable_resampling', 'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'enable_rate_adjust',  'returnhtml' => true ] ).'
 '.htmlSetting( [ 'id' => 'stop_on_rate_change', 'returnhtml' => true ] ).'
+'.htmlSetting( [ 'id' => 'enable_resampling',   'returnhtml' => true ] ).'
 </div>
 ';
 	} else {
@@ -69,7 +69,10 @@ EOF
 ];
 htmlSection( $head, $body, 'status' );
 //////////////////////////////////
-$head = [ 'title'  => 'Filters', 'nohelp' => true ];
+$head = [
+	  'title'  => 'Filters'
+	, 'nohelp' => true
+];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );
 ?>
