@@ -1344,7 +1344,7 @@ var setting  = {
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
-			, filetype    : '.yml'
+			, filetype    : dir === 'coeffs' ? '' : '.yml'
 			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
