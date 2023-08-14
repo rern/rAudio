@@ -32,7 +32,9 @@ $body = [
 		, 'help'  => <<< EOF
 <a href="https://github.com/mikebrady/shairport-sync">Shairport-sync</a> - AirPlay rendering device
 
-Note: Playing files directly on rAudio yields better quality.
+Note:
+ · If Camilla DSP is enabled, stop current track before start playing.
+ · Playing files directly on rAudio yields better quality.
 EOF
 	]
 	, [
