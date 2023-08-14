@@ -5,6 +5,14 @@ V            = {
 	, sortable : {}
 	, tab      : 'filters'
 }
+var default_v = {
+	range : {
+		  VOLUMEMIN : -51
+		, VOLUMEMAX : 0
+		, GAINMIN   : -10
+		, GAINMAX   : 10
+	}
+}
 var ws;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
@@ -479,6 +487,7 @@ var render   = {
 			} );
 		} );
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
+		if ( ! S.range ) S.range = default_v.range;
 		render.status();
 		render.tab();
 		showContent();
@@ -536,7 +545,9 @@ var render   = {
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
 		$( '#gain' ).text( util.dbRound( S.volume ) );
-		$( '#volume' ).val( S.volume );
+		$( '#volume' )
+			.prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+			.val( S.volume );
 		gain.mute();
 		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
 		$( '#configuration' )
@@ -572,7 +583,7 @@ var render   = {
 			var val       = util.dbRound( v.parameters.gain );
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10">'
+							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 		} else {
@@ -620,7 +631,7 @@ var render   = {
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10"'+ disabled +'>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'"'+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
@@ -731,6 +742,7 @@ var render   = {
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
 		if ( V.tab === 'devices' || $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) render[ V.tab ]();
+		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
@@ -1553,6 +1565,23 @@ $( '.close' ).on( 'click', function() {
 $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
+} )
+$( '.i-gear.range' ).on( 'click', function() {
+	info( {
+		  icon        : 'camilladsp'
+		, title       : 'Range'
+		, numberlabel : [ 'Volume min', 'Volume max', 'Gain min', 'Gain max' ]
+		, boxwidth    : 70
+		, values      : S.range
+		, ok          : () => {
+			var val = infoVal();
+			if ( val.VOLUMEMIN > -51 ) val.VOLUMEMIN = -51;
+			if ( val.VOLUMEMAX < 0 )   val.VOLUMEMAX = 0;
+			if ( val.GAINMIN > -10 )   val.GAINMIN = -10;
+			if ( val.GAINMAX < 10 )    val.GAINMAX = 10;
+			bash( [ 'camilla', ...Object.values( val ), 'CFG '+ Object.keys( val ).join( ' ' ) ] );
+		}
+	} );
 } )
 $( '#divvolume' ).on( 'click', '.i-mute', function() {
 	gain.mute( ! S.mute );

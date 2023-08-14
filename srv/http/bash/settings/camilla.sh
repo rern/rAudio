@@ -9,6 +9,9 @@ args2var "$1"
 
 case $CMD in
 
+camilla )
+	pushRefresh
+	;;
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped
 	pushRefresh

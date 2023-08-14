@@ -33,6 +33,7 @@ data+='
 , "devices"   : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
-}'
+}
+, "range"     : '$( conf2json camilla.conf )
 
 data2json "$data" $1

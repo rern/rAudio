@@ -44,7 +44,10 @@ $htmlvolume = '
 $head = [ 
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
-	, 'button' => [ 'log' => 'file' ]
+	, 'button' => [
+		  'log'   => 'file'
+		, 'range' => 'gear'
+	]
 	, 'help'   => <<< EOF
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 
