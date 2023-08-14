@@ -1583,7 +1583,8 @@ $( '#configuration' ).on( 'change', function() {
 	render[ V.tab ];
 } );
 $( '#setting-configuration' ).on( 'click', function() {
-	var content = '<table style="border-collapse: collapse; width: 300px;">'
+	var content = '<table style="border-collapse: collapse; width: 300px; margin-top: -20px;">'
+				 +'<tr><td colspan="3"><label class="add">File list: '+ ico( 'add' ) +'</label></td></tr>'
 	S.lsconf.forEach( f => {
 		var current = f === S.configname ? '<grn> • </grn>' : '';
 		var tdicon  = '<td style="width: 30px; text-align: center;">';
@@ -1594,7 +1595,6 @@ $( '#setting-configuration' ).on( 'click', function() {
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
-	content += '<tr><td></td><td colspan="3" style="text-align: right"><label class="add">'+ ico( 'add' )+'Add file</label></td></tr></table>';
 	var icon  = 'camilladsp';
 	info( {
 		  icon        : icon
