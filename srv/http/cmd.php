@@ -25,10 +25,8 @@ case 'bash':
 	}
 	echo rtrim( $result );
 	break;
-case 'camillaconfigs':
-case 'camillacoeffs':
-	$dir = str_replace( 'camilla', '', $_POST[ 'cmd' ] );
-	fileUploadSave( '/srv/http/data/camilladsp/'.$dir.'/'.$_FILES[ 'file' ][ 'name' ] );
+case 'camilla':
+	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
 	exec( $sudosettings.'camilla.sh pushdata', $output, $result );
 	break;
 case 'datarestore':

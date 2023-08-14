@@ -1332,11 +1332,11 @@ var setting  = {
 	, upload        : ( icon ) => {
 		if ( icon === 'filters' ) {
 			var title   = 'Add Filter File';
-			var cmd     = 'camillacoeffs';
+			var dir     = 'coeffs';
 			var message = 'Upload filter file:';
 		} else {
 			var title   = 'Add Configuration';
-			var cmd     = 'camillaconfigs';
+			var dir     = S.bluetooth ? 'configs-bt' : 'configs';
 			var message = 'Upload configuration file:'
 		}
 		info( {
@@ -1348,7 +1348,8 @@ var setting  = {
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
 				var formdata = new FormData();
-				formdata.append( 'cmd', cmd );
+				formdata.append( 'cmd', 'camilla' );
+				formdata.append( 'dir', dir );
 				formdata.append( 'file', I.infofile );
 				fetch( 'cmd.php', { method: 'POST', body: formdata } )
 					.then( response => response.text() )
