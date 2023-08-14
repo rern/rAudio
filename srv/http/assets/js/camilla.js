@@ -1587,7 +1587,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 		var current = f === S.configname ? '<grn> • </grn>' : '';
 		var iremove = current ? '' : ico( 'remove gr' );
 		content    += '<tr style="border: 1px solid var( --cgl ); border-style: solid none;">'
-					 + tdicon + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
+					 + tdicon + ( S.bluetooth ? ico( 'btreceiver' ) : '' ) + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
