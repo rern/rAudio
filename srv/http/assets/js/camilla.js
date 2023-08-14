@@ -1583,11 +1583,12 @@ $( '#configuration' ).on( 'change', function() {
 $( '#setting-configuration' ).on( 'click', function() {
 	var content = '<table style="border-collapse: collapse; width: 300px;">'
 	S.lsconf.forEach( f => {
-		var tdicon  = '<td style="width: 30px; text-align: center;">';
 		var current = f === S.configname ? '<grn> • </grn>' : '';
+		var tdicon  = '<td style="width: 30px; text-align: center;">';
+		var ibt     = S.bluetooth ? ico( 'btreceiver' ) : '';
 		var iremove = current ? '' : ico( 'remove gr' );
 		content    += '<tr style="border: 1px solid var( --cgl ); border-style: solid none;">'
-					 + tdicon + ( S.bluetooth ? ico( 'btreceiver' ) : '' ) + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
+					 + tdicon + ibt + ico( 'file gr' ) +'</td><td><a class="name">'+ f +'</a>'+ current +'</td>'
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
