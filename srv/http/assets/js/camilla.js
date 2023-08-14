@@ -329,7 +329,9 @@ var gain     = {
 		} else { // status
 			mute    = S.mute;
 		}
-		$( '#mute' ).toggleClass( 'gr', ! mute );
+		$( '#mute' )
+			.toggleClass( 'bl', mute )
+			.toggleClass( 'gr', ! mute );
 		$( '#volume' ).prop( 'disabled', mute );
 		$( '#up, #dn' ).toggleClass( 'disabled', mute );
 	}

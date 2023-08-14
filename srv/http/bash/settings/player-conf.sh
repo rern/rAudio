@@ -23,7 +23,7 @@ pushData() {
 rm -f $dirmpdconf/{bluetooth,output}.conf
 
 # outputs -----------------------------------------------------------------------------
-if [[ $bluetooth ]]; then # not require audio devices (from player-asound.sh)
+if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
 #---------------< bluetooth

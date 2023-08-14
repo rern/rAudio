@@ -172,23 +172,24 @@ input[ type=range ] {
 #volume {
 	margin: 0;
 }
-#dn,
-#mute,
-#up {
-	font-size: 24px;
-}
-#mute {
-	margin-left: 40px;
-}
-#up {
-	margin-left: 80px;
-}
 #divconfiguration {
 	margin-top: 10px;
 }
 .divgain {
+	display: inline-block;
 	width: 120px !important;
-	margin: 0;
+}
+.divgain i {
+	width: 40px;
+	font-size: 24px;
+	text-align: center;
+	color: var( --cg60 );
+	cursor: pointer;
+}
+#divvolume .divgain {
+	position: absolute;
+	top: 6px;
+	padding-left: 5px;
 }
 i.disabled,
 .divgain.disabled i {
