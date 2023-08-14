@@ -1344,6 +1344,7 @@ var setting  = {
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
+			, filetype    : '.yml'
 			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
@@ -1593,7 +1594,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
-	content += '<tr><td></td><td colspan="3" style="text-align: right"><a class="add">'+ ico( 'add' )+'Add file</a></td></tr></table>';
+	content += '<tr><td></td><td colspan="3" style="text-align: right"><label class="add">'+ ico( 'add' )+'Add file</label></td></tr></table>';
 	var icon  = 'camilladsp';
 	info( {
 		  icon        : icon
