@@ -331,7 +331,7 @@ var gain     = {
 		}
 		$( '#divvolume .i-mute' ).toggleClass( 'bl', mute );
 		$( '#volume' ).prop( 'disabled', mute );
-		$( '#divvolume .divgain i' ).toggleClass( 'disabled', mute );
+		$( '#divvolume .divgain' ).toggleClass( 'disabled', mute );
 	}
 	, hideother : ( $trother, rate ) => {
 		var other = rate === 'Other';
@@ -573,7 +573,7 @@ var render   = {
 			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
 							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="-10" max="10">'
-							+'<div class="divgain">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
+							+'<div class="divgain">'+ ico( 'minus filter' ) + ico( 'set0' ) + ico( 'plus filter' ) +'</div>'
 							+'</div>';
 		} else {
 			var licontent =  '<div class="li1 name">'+ k +'</div>'
@@ -1562,6 +1562,32 @@ $( '#volume' ).on( 'input', function() {
 	$( '#gain' ).text( util.dbRound( S.volume ) );
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
 } );
+$( '.container' ).on( 'click', '.divgain i', function() {
+	clearTimeout( V.timeout );
+	var $this = $( this );
+	if ( $this.parent().hasClass( 'disabled' ) ) return
+	
+	var $gain = $this.parent().prev();
+	var $db   = $gain.prev();
+	var val   = +$gain.val();
+	if ( $this.hasClass( 'i-set0' ) ) {
+		if ( val === 0 ) return
+		
+		val = 0;
+	} else if ( $this.hasClass( 'i-minus' ) ) {
+		if ( val === $gain.prop( 'min' ) ) return
+		
+		val -= 0.1;
+	} else if ( $this.hasClass( 'i-plus' ) ) {
+		if ( val === $gain.prop( 'max' ) ) return
+		
+		val += 0.1;
+	}
+	$gain
+		.val( val )
+		.trigger( 'input' );
+	if ( $this.hasClass( 'filter' ) ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
+} );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
 	bash( [ 'clippedreset', S.clipped, 'CMD CLIPPED' ] );
@@ -1881,28 +1907,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			} );
 			break;
 	}
-} );
-$( '.container' ).on( 'click', '.divgain i', function( e ) {
-	clearTimeout( V.timeout );
-	var $this = $( this );
-	if ( $this.hasClass( 'disabled' ) ) return
-	
-	var $gain = $this.parent().prev();
-	var $db   = $gain.prev();
-	var val   = +$gain.val();
-	if ( $this.hasClass( 'i-set0' ) ) {
-		if ( val === 0 ) return
-		
-		val = 0;
-	} else if ( $this.hasClass( 'i-minus' ) ) {
-		val -= 0.1;
-	} else if ( $this.hasClass( 'i-plus' ) ) {
-		val += 0.1;
-	}
-	$gain
-		.val( val )
-		.trigger( 'input' );
-	if ( $( e.target ).parents( 'filters' ).length ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
 } );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
