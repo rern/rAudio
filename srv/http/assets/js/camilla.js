@@ -555,35 +555,6 @@ var render   = {
 		$( '.peak' ).css( { left: 0, background: 'var( --cga )' } );
 		$( '.rms' ).css( 'width', 0 );
 	} //---------------------------------------------------------------------------------------------
-	, devices     : () => {
-		[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
-		var labels = '';
-		var values = '';
-		[ 'capture', 'playback' ].forEach( ( k, i ) => {
-			labels += util.key2label( k ) +'<br>';
-			values += DEV[ k ].device +'<br>';
-		} );
-		C.sampling.forEach( k => {
-			labels += util.key2label( k ) +'<br>';
-			values += DEV[ k ].toLocaleString() +'<br>';
-		} );
-		var keys = [];
-		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
-		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
-		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
-		if ( keys.length ) {
-			labels += '<hr>';
-			values += '<hr>';
-			keys.forEach( k => {
-				labels += util.key2label( k ) +'<br>';
-				values += DEV[ k ] +'<br>';
-			} );
-		}
-		$( '#divsampling .label' ).html( labels );
-		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
-		switchSet();
-		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
-	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
@@ -592,7 +563,7 @@ var render   = {
 		var step_val = ' step="0.1" value="'+ util.dbRound( S.volume ) +'"';
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
-		li += '<li class="lihead files">Files '+ ico( 'add' ) +'</li>';
+		li += '<li class="lihead files">Files'+ ico( 'add' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
 		render.toggle( li );
 	}
@@ -707,6 +678,35 @@ var render   = {
 				graph.pipeline();
 			}
 		} );
+	} //---------------------------------------------------------------------------------------------
+	, devices     : () => {
+		[ 'enable_rate_adjust', 'enable_resampling', 'stop_on_rate_change' ].forEach( k => S[ k ] = DEV[ k ] );
+		var labels = '';
+		var values = '';
+		[ 'capture', 'playback' ].forEach( ( k, i ) => {
+			labels += util.key2label( k ) +'<br>';
+			values += DEV[ k ].device +'<br>';
+		} );
+		C.sampling.forEach( k => {
+			labels += util.key2label( k ) +'<br>';
+			values += DEV[ k ].toLocaleString() +'<br>';
+		} );
+		var keys = [];
+		if ( DEV.enable_rate_adjust ) keys.push( 'adjust_period', 'target_level' );
+		if ( DEV.enable_resampling ) keys.push( 'resampler_type', 'capture_samplerate' );
+		if ( DEV.stop_on_rate_change ) keys.push( 'rate_measure_interval' );
+		if ( keys.length ) {
+			labels += '<hr>';
+			values += '<hr>';
+			keys.forEach( k => {
+				labels += util.key2label( k ) +'<br>';
+				values += DEV[ k ] +'<br>';
+			} );
+		}
+		$( '#divsampling .label' ).html( labels );
+		$( '#divsampling .value' ).html( values.replace( /bluealsa|Bluez/, 'BlueALSA' ) );
+		switchSet();
+		$( '#divenable_rate_adjust input' ).toggleClass( 'disabled', DEV.enable_resampling && DEV.resampler_type === 'Synchronous' );
 	} //---------------------------------------------------------------------------------------------
 	, dataSort    : ( tab ) => {
 		var kv   = S.config[ tab ];
