@@ -83,8 +83,7 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		V.previousdata = jsonClone( S );
-		S              = JSON.parse( list );
+		S = JSON.parse( list );
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -107,13 +106,7 @@ function refreshData() {
 	if ( page === 'guide' || ( I.active && ! I.rangelabel ) ) return
 	
 	bash( [ 'settings/'+ page +'-data.sh' ], data => {
-		if ( typeof data === 'string' ) { // on load, try catching any errors
-			var list2G = list2JSON( data );
-			if ( ! jsonChanged( S, V.previousdata ) ) return
-		} else {
-			S = data;
-		}
-		if ( ! list2G ) return
+		if ( ! list2JSON( data ) ) return // on load, try catching any errors
 		
 		if ( $( '#data' ).hasClass( 'hide' ) || $( '#data .infobtn' ).length ) {
 			$( '#data' ).empty();
