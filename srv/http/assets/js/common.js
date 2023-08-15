@@ -996,9 +996,11 @@ function htmlOption( el ) {
 	return options
 }
 function jsonChanged( a, b ) {
+	if ( ! Object.keys( a ).length || ! Object.keys( b ).length ) return true
+	
 	var changed = false;
 	$.each( a, ( k, v ) => {
-		changed = typeof v === 'object' ? jsonChanged( v, b[ k ] ) : v !== b[ k ];
+		typeof v === 'object' ? jsonChanged( v, b[ k ] ) : changed = v !== b[ k ];
 		if ( changed ) return false
 		
 	} );

@@ -501,7 +501,8 @@ var render   = {
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( jsonChanged( S, V.previousdata ) ) render[ V.tab ]();
+		
+		if ( $( '.entries.main' ).is( ':empty' ) || jsonChanged( S.config[ V.tab ], V.previousdata.config[ V.tab ] ) ) render[ V.tab ]();
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
