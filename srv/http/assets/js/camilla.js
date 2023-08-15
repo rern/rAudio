@@ -1,6 +1,7 @@
 // var //////////////////////////////////////////////////////////////////////////////
 V            = {
 	  clipped  : 0
+	, divgraph : {}
 	, graph    : { filters: {}, pipeline: {} }
 	, sortable : {}
 	, tab      : 'filters'
@@ -501,11 +502,33 @@ var render   = {
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
-		
-		if ( $( '.entries.main' ).is( ':empty' )
-			|| ! ( 'config' in V.previousdata )
-			|| jsonChanged( S.config[ V.tab ], V.previousdata.config[ V.tab ] )
-		) render[ V.tab ]();
+		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
+			render[ V.tab ]();
+		} else {
+			if ( V.tab === 'filters' || V.tab === 'pipeline' ) { // maintain graph
+				var $graph = $( '#'+ V.tab +' .divgraph' );
+				if ( $graph.length ) {
+					V.divgraph = {};
+					$graph.each( ( i, el ) => {
+						var val = $( el ).data( 'val' );
+						if ( ! jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
+							V.divgraph[ val ] = $( el )[ 0 ].outerHTML;
+						}
+					} );
+				}
+			}
+			if ( V.tab === 'mixers' || V.tab === 'pipeline' ) {
+				if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
+					render[ V.tab ]();
+				} else {
+					var data = V.tab === 'mixers' ? 'name' : 'index';
+					var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
+					render[ V.tab +'Sub' ]( val );
+				}
+			} else {
+				render[ V.tab ]();
+			}
+		}
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
@@ -592,6 +615,7 @@ var render   = {
 		li += '<li class="lihead files">Files'+ ico( 'add' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
 		render.toggle( li );
+		V.divgraph = {}
 	}
 	, filter      : ( k, v ) => {
 		if ( 'gain' in v.parameters ) {
@@ -604,6 +628,7 @@ var render   = {
 							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
+			if ( k in V.divgraph ) licontent += V.divgraph[ k ];
 		} else {
 			var licontent =  '<div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
@@ -625,7 +650,8 @@ var render   = {
 				+'<div class="li2">In: '+ v.channels.in +' - Out: '+ v.channels.out +'</div>'
 				+'</li>'
 	}
-	, mixersSub   : ( name, data ) => {
+	, mixersSub   : ( name ) => {
+		var data      = MIX[ name ].mapping;
 		var chmapping = data.length;
 		var chin      = DEV.capture.channels;
 		var chout     = DEV.playback.channels;
@@ -659,24 +685,27 @@ var render   = {
 		$( '#mixers .entries select' ).select2( { minimumResultsForSearch: 'Infinity' } );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
-		var li   = '';
+		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		render.toggle( li );
 		render.sortable( 'main' );
+		V.divgraph = {}
 	}
 	, pipe        : ( el, i ) => {
 		if ( el.type === 'Filter' ) {
 			var graph = 'graph';
-			var each = '<div class="li1">' + el.type +'</div>'
-					  +'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+			var each  =  '<div class="li1">' + el.type +'</div>'
+						+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
+			if ( i in V.divgraph ) each += V.divgraph[ i ];
 		} else {
 			var graph = '';
-			var each = '<gr>Mixer:</gr> '+ el.name;
+			var each  = '<gr>Mixer:</gr> '+ el.name;
 		}
 		return '<li data-type="'+ el.type +'" data-index="'+ i +'">'+ ico( 'pipeline liicon '+ graph ) + each +'</li>'
 	}
-	, pipelineSub : ( index, data ) => {
-		var li     = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
+	, pipelineSub : ( index ) => {
+		var data = PIP[ index ];
+		var li   = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
 		render.toggle( li, 'sub' );
 		render.sortable( 'sub' );
@@ -1029,7 +1058,7 @@ var setting  = {
 					}
 					MIX[ name ].mapping.push( mapping );
 					setting.save( title, 'Save ...' );
-					render.mixersSub( name, MIX[ name ].mapping );
+					render.mixersSub( name );
 				}
 			} );
 		} else {
@@ -1049,7 +1078,7 @@ var setting  = {
 					} );
 					MIX[ name ].mapping[ index ].sources.push( s );
 					setting.save( title, 'Save ...' );
-					render.mixersSub( name, MIX[ name ].mapping );
+					render.mixersSub( name );
 				}
 			} );
 		}
@@ -1922,8 +1951,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	if ( $( e.target ).is( 'i' ) || $this.parent().hasClass( 'sub' ) ) return
 	
 	var name   = $this.find( '.li1' ).text();
-	var data   = MIX[ name ].mapping;
-	render.mixersSub( name, data );
+	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
 	if ( $this.parent().hasClass( 'divgain' ) ) return
@@ -1995,9 +2023,8 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	) return
 	
 	var index = $this.data( 'index' );
-	var data  = PIP[ index ];
-	if ( data.type === 'Filter' ) {
-		render.pipelineSub( index, data );
+	if ( $this.data( 'type' ) === 'Filter' ) {
+		render.pipelineSub( index );
 	} else {
 		var names  = Object.keys( MIX );
 		if ( names.length === 1 ) return
