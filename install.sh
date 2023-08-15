@@ -43,19 +43,6 @@ grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $fil
 
 ! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
 
-# 20230616
-if [[ -e /boot/overlays/i2s-dac.dtbo ]]; then
-	grep -q rpi-dac /boot/config.txt && sed -i 's/rpi-dac/i2s-dac/' /boot/config.txt && rebooti2s=1
-	grep -q rpi-cirrus /boot/config.txt && sed -i 's/rpi-cirrus/cirrus/' /boot/config.txt && rebooti2s=1
-fi
-
-for f in album albumbyartist; do
-	file=$dirmpd/$f
-	if [[ -e $file ]]; then
-		awk 'a[$0]++{exit 1}' $file || awk -i inplace '!seen[$0]++' $file
-	fi
-done
-
 #-------------------------------------------------------------------------------
 installstart "$1"
 
@@ -70,12 +57,6 @@ cacheBust
 
 installfinish
 #-------------------------------------------------------------------------------
-
-# 20230616
-if [[ $rebooti2s ]]; then
-	echo "$info Reboot required for Audio - I²S"
-	echo 'Audio - I²S' > $dirshm/reboot
-fi
 
 # 20230623
 if [[ -e $dirmpd/album ]]; then
