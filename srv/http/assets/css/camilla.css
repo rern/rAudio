@@ -135,17 +135,11 @@ tr .i-remove {
 	background: var( --cga ) !important;
 	border: none !important;
 }
-.liinput div {
-	display: inline-block;
-	width: 60px;
-	min-width: 60px;
-	text-align: center;
-}
-.liinput.main div {
-	text-align: unset;
-}
 .liinput .name {
-	width: 115px;
+	width: 130px;
+}
+.liinput .name div {
+	display: block;
 }
 .liinput.main div:first-child,
 .liinput .select2-container {
@@ -189,6 +183,9 @@ input[ type=range ] {
 	line-height: 40px;
 	text-align: center;
 	color: var( --cg60 )
+}
+#mixers .i-mute {
+	margin-left: 20px !important;
 }
 #divvolume .divgain {
 	position: absolute;

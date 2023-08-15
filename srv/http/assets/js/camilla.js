@@ -580,8 +580,10 @@ var render   = {
 	}
 	, filter      : ( k, v ) => {
 		if ( 'gain' in v.parameters ) {
-			var val       = util.dbRound( v.parameters.gain );
-			var licontent =  '<div class="liinput"><span class="name">'+ k +'</span>'
+			var param     = v.parameters;
+			var val       = util.dbRound( param.gain );
+			var li2       = '<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>';
+			var licontent =  '<div class="liinput"><div class="name"><div class="li1">'+ k +'</div>'+ li2 +'</div>'
 							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
