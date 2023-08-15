@@ -33,7 +33,7 @@ $htmlvolume = '
 <div id="divvolume">
 <div class="col-l text single">'.i( 'mute' ).'<c id="gain">0</c></div>
 <div class="col-r text">
-	<input id="volume" type="range" min="-51" max="0" step="0.1">
+	<input id="volume" type="range"step="0.1">
 	<div class="divgain">'.i( 'minus' ).i( 'set0' ).i( 'plus' ).'</div>
 </div>
 <div style="clear:both"></div>
@@ -52,6 +52,7 @@ $head = [
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 
 {$Fi( 'file btn' )} Log
+{$Fi( 'gear btn' )} Slider range
 {$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} dB: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'set0 btn' )} Clipped sample: Reset
 EOF

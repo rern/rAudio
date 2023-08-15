@@ -7,7 +7,7 @@ V            = {
 }
 var default_v = {
 	range : {
-		  VOLUMEMIN : -51
+		  VOLUMEMIN : -50
 		, VOLUMEMAX : 0
 		, GAINMIN   : -10
 		, GAINMAX   : 10
@@ -1573,18 +1573,30 @@ $( '.log' ).on( 'click', function() {
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
 $( '.i-gear.range' ).on( 'click', function() {
+	var head = '<td style="text-align: center">min</td>';
+	var td   = '<td><input type="number"></td>';
+	var tr   = '<tr><td style="padding-right: 5px; text-align: right;">Volume</gr></td>'+ td + td +'</tr>'
 	info( {
-		  icon        : 'camilladsp'
-		, title       : 'Range'
-		, numberlabel : [ 'Volume min', 'Volume max', 'Gain min', 'Gain max' ]
-		, boxwidth    : 70
-		, values      : S.range
-		, ok          : () => {
+		  icon       : 'camilladsp'
+		, title      : 'Slider Range'
+		, content    : '<table><tr><td></td>'+ head + head.replace( 'min', 'max' ) +'</tr>'+ tr + tr.replace( 'Volume', 'Gain' ) +'</table>'
+		, boxwidth   : 60
+		, values     : S.range
+		, beforeshow : () => {
+			var minmax = [ -50, 10, -10, 10 ];
+			var limit  = [ -50, 50, -50, 50 ];
+			$( '#infoContent' ).on( 'blur', 'input', function() {
+				var $this = $( this );
+				var i     = $this.index( 'input' );
+				var mm    = minmax[ i ];
+				var lm    = limit[ i ];
+				var val   = $this.val();
+				if ( i % 2 ? val < mm : val > mm ) $this.val( mm );
+				if ( i % 2 ? val > lm : val < lm ) $this.val( lm );
+			} );
+		}
+		, ok         : () => {
 			var val = infoVal();
-			if ( val.VOLUMEMIN > -51 ) val.VOLUMEMIN = -51;
-			if ( val.VOLUMEMAX < 0 )   val.VOLUMEMAX = 0;
-			if ( val.GAINMIN > -10 )   val.GAINMIN = -10;
-			if ( val.GAINMAX < 10 )    val.GAINMAX = 10;
 			bash( [ 'camilla', ...Object.values( val ), 'CFG '+ Object.keys( val ).join( ' ' ) ] );
 		}
 	} );
