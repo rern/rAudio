@@ -135,10 +135,10 @@ tr .i-remove {
 	background: var( --cga ) !important;
 	border: none !important;
 }
-.liinput .name {
+.liinput .filter {
 	width: 130px;
 }
-.liinput .name div {
+.liinput .filter div {
 	display: block;
 }
 .liinput.main div:first-child,

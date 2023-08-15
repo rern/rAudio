@@ -582,14 +582,15 @@ var render   = {
 		if ( 'gain' in v.parameters ) {
 			var param     = v.parameters;
 			var val       = util.dbRound( param.gain );
-			var li2       = '<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>';
-			var licontent =  '<div class="liinput"><div class="name"><div class="li1">'+ k +'</div>'+ li2 +'</div>'
+			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
+							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
+							+'</div>'
 							+'<c class="db">'+ val +'</c>'
 							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 		} else {
-			var licontent =  '<div class="li1 name">'+ k +'</div>'
+			var licontent =  '<div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
 		}
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
@@ -666,7 +667,11 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' ) + name +'</li>'
+		var param = FIL[ name ].parameters;
+		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
+			  +'<div class="li1">'+ name +'</div>'
+			  +'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
+			  +'</li>'
 	}
 	, sortable    : ( el ) => {
 		if ( el in V.sortable ) return
@@ -776,7 +781,7 @@ var setting  = {
 			selectlabel.push( 'subtype' )
 			select.push( C.subtype[ type ] );
 			values.subtype = subtype;
-			key_val        = jsonClone( F[ subtype ] );
+			key_val        = subtype in F ? jsonClone( F[ subtype ] ) : jsonClone( F[ type ] );
 		}
 		if ( ! key_val ) key_val = F[ type ];
 		if ( subtype === 'Uniform' ) key_val.amplitude = 1;
@@ -1700,59 +1705,6 @@ $( '#setting-configuration' ).on( 'click', function() {
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
-$( '.switch' ).on( 'click', function() {
-	var id = this.id;
-	var $setting = $( '#setting-'+ id );
-	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
-} );
-$( '#setting-enable_rate_adjust' ).on( 'click', function() {
-	var $this = $( this );
-	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
-		info( {
-			  icon    : V.tab
-			, title   : SW.title
-			, message : 'Resampling type is <wh>Synchronous</wh>'
-		} );
-		switchCancel();
-		return
-	}
-	
-	info( {
-		  icon         : V.tab
-		, title        : SW.title
-		, numberlabel  : [ 'Adjust period', 'Target level' ]
-		, boxwidth     : 100
-		, values       : {
-			  adjust_period       : DEV.adjust_period
-			, target_level        : DEV.target_level
-		}
-		, checkchanged : DEV.enable_rate_adjust
-		, cancel       : switchCancel
-		, ok           : () => {
-			var val =  infoVal();
-			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
-			setting.switchSave( 'enable_rate_adjust' );
-		}
-	} );
-} );
-$( '#setting-stop_on_rate_change' ).on( 'click', function() {
-	info( {
-		  icon         : V.tab
-		, title        : SW.title
-		, numberlabel  : 'Rate mearsure interval'
-		, boxwidth     : 65
-		, values       : DEV.rate_measure_interval
-		, checkchanged : DEV.stop_on_rate_change
-		, cancel       : switchCancel
-		, ok           : () => {
-			DEV.rate_measure_interval = infoVal();
-			setting.switchSave( 'stop_on_rate_change' );
-		}
-	} );
-} );
-$( '#setting-enable_resampling' ).on( 'click', function() {
-	setting.resampling( DEV.resampler_type === 'FreeAsync' );
-} );
 $( '.headtitle' ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
 		setting.filter( 'Biquad', 'Lowpass' );
@@ -1860,7 +1812,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							}
 						} );
 					} else {
-						setting.filter( '', V.li.find( '.name' ).text(), 'existing' );
+						setting.filter( '', name, 'existing' );
 					}
 					break;
 			}
@@ -2080,6 +2032,59 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	}
+} );
+$( '.switch' ).on( 'click', function() {
+	var id = this.id;
+	var $setting = $( '#setting-'+ id );
+	DEV[ id ] ? setting.switchSave( id, 'disable' ) : $setting.trigger( 'click' );
+} );
+$( '#setting-enable_rate_adjust' ).on( 'click', function() {
+	var $this = $( this );
+	if ( $this.siblings( 'input' ).hasClass( 'disabled' ) ) {
+		info( {
+			  icon    : V.tab
+			, title   : SW.title
+			, message : 'Resampling type is <wh>Synchronous</wh>'
+		} );
+		switchCancel();
+		return
+	}
+	
+	info( {
+		  icon         : V.tab
+		, title        : SW.title
+		, numberlabel  : [ 'Adjust period', 'Target level' ]
+		, boxwidth     : 100
+		, values       : {
+			  adjust_period       : DEV.adjust_period
+			, target_level        : DEV.target_level
+		}
+		, checkchanged : DEV.enable_rate_adjust
+		, cancel       : switchCancel
+		, ok           : () => {
+			var val =  infoVal();
+			[ 'adjust_period', 'target_level' ].forEach( k => DEV[ k ] = val[ k ] );
+			setting.switchSave( 'enable_rate_adjust' );
+		}
+	} );
+} );
+$( '#setting-stop_on_rate_change' ).on( 'click', function() {
+	info( {
+		  icon         : V.tab
+		, title        : SW.title
+		, numberlabel  : 'Rate mearsure interval'
+		, boxwidth     : 65
+		, values       : DEV.rate_measure_interval
+		, checkchanged : DEV.stop_on_rate_change
+		, cancel       : switchCancel
+		, ok           : () => {
+			DEV.rate_measure_interval = infoVal();
+			setting.switchSave( 'stop_on_rate_change' );
+		}
+	} );
+} );
+$( '#setting-enable_resampling' ).on( 'click', function() {
+	setting.resampling( DEV.resampler_type === 'FreeAsync' );
 } );
 $( '#bar-bottom div' ).on( 'click', function() {
 	V.tab = this.id.slice( 3 );
