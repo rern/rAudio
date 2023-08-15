@@ -359,14 +359,7 @@ var gain     = {
 				if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
 			} );
 		}
-		if ( ! V.gainupdn ) {
-			graph.refresh( fgraph, pgraphs );
-			fgraph = pgraphs = false;
-		}
-		V.gaintimeout = setTimeout( () => {
-			graph.refresh( fgraph, pgraphs );
-			delete V.gainupdn;
-		}, 1000 );
+		graph.refresh( fgraph, pgraphs );
 	}
 }
 var graph    = {
@@ -1617,7 +1610,7 @@ $( '#volume' ).on( 'input', function() {
 	ws.send( '{ "SetVolume": '+ S.volume +' }' );
 } );
 $( '.container' ).on( 'click', '.divgain i', function() {
-	clearTimeout( V.timeout );
+	clearTimeout( V.timeoutgain );
 	var $this = $( this );
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
@@ -1640,7 +1633,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( $this.parents( '#filters' ).length ) V.timeout = setTimeout( gain.save, val ? 1000 : 0 );
+	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( gain.save, val ? 1000 : 0 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
