@@ -370,7 +370,18 @@ var gain     = {
 	}
 }
 var graph    = {
-	  pipeline : () => {
+	  active   : () => {
+		var $graph = $( '#'+ V.tab +' .divgraph' );
+		if ( $graph.length ) {
+			$graph.each( ( i, el ) => {
+				var val = $( el ).data( 'val' );
+				if ( ! jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
+					V.divgraph[ val ] = $( el )[ 0 ].outerHTML;
+				}
+			} );
+		}
+	}
+	, pipeline : () => {
 		if ( ! $( '.flowchart' ).hasClass( 'hide' ) ) createPipelinePlot();
 	}
 	, plot     : ( $li ) => {
@@ -505,18 +516,6 @@ var render   = {
 		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
 			render[ V.tab ]();
 		} else {
-			if ( V.tab === 'filters' || V.tab === 'pipeline' ) { // maintain graph
-				var $graph = $( '#'+ V.tab +' .divgraph' );
-				if ( $graph.length ) {
-					V.divgraph = {};
-					$graph.each( ( i, el ) => {
-						var val = $( el ).data( 'val' );
-						if ( ! jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
-							V.divgraph[ val ] = $( el )[ 0 ].outerHTML;
-						}
-					} );
-				}
-			}
 			if ( V.tab === 'mixers' || V.tab === 'pipeline' ) {
 				if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
 					render[ V.tab ]();
@@ -605,6 +604,7 @@ var render   = {
 		$( '.rms' ).css( 'width', 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
+		graph.active();
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
 		var classvol = S.mute ? 'infobtn-primary' : '';
@@ -685,6 +685,7 @@ var render   = {
 		$( '#mixers .entries select' ).select2( { minimumResultsForSearch: 'Infinity' } );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
+		graph.active();
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		render.toggle( li );
@@ -929,23 +930,6 @@ var setting  = {
 				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 				$.each( val, ( k, v ) => param[ k ] = v );
 				FIL[ newname ] = { type: type, parameters : param }
-				var $divgraph  = V.li.find( '.divgraph:not( .hide )' );
-				var li         = render.filter( newname, FIL[ newname ] );
-				var index      = Object.keys( FIL )
-									.sort().indexOf( newname );
-				var $li        = $( '#filters .entries.main li' );
-				if ( name ) {
-					if ( $divgraph.length ) {
-						li = li.replace( '</li>', '' ) + $divgraph[ 0 ].outerHTML +'</li>';
-						V.li.replaceWith( li );
-						V.li = $( '#filters li' ).eq( index );
-						if ( jsonChanged( FIL[ newname ], V.graph.filters[ newname ] ) ) graph.plot();
-					} else {
-						V.li.replaceWith( li );
-					}
-				} else {
-					$li.eq( index ).before( li );
-				}
 				PIP.forEach( p => {
 					if ( p.type === 'Filter' ) {
 						p.names.forEach( ( f, i ) => {
@@ -954,6 +938,7 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
+				render.filters();
 			}
 		} );
 	} //---------------------------------------------------------------------------------------------
@@ -985,12 +970,6 @@ var setting  = {
 					PIP.forEach( p => {
 						if ( p.type === 'Mixer' && p.name === name ) p.name = newname;
 					} );
-					var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
-					if ( $divgraph.length && newname in V.graph.pipeline ) {
-						$divgraph.each( ( i, el ) => {
-							if ( $( el ).data( 'val' ) === name ) graph.plot( $( el ).parent() );
-						} );
-					}
 				} else {
 					MIX[ newname ] = {
 						  channels : {
@@ -1138,13 +1117,7 @@ var setting  = {
 	}
 	, pipelineSave  : () => {
 		setting.save( 'Add Pipeline', 'Save ...' );
-		var index = PIP.length - 1;
-		var li = render.pipe( PIP[ index ], index );
-		$( '#pipeline .entries.main' ).append( li );
-		setting.sortRefresh( 'main' );
-		V.graph.pipeline = {}
-		var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
-		if ( $divgraph.length ) $divgraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
+		render.pipeline();
 	}
 	, sortRefresh   : ( k ) => {
 		V.sortable[ k ].destroy();
@@ -1609,8 +1582,11 @@ $( '.i-gear.range' ).on( 'click', function() {
 	var tr   = '<tr><td style="padding-right: 5px; text-align: right;">Volume</gr></td>'+ td + td +'</tr>'
 	info( {
 		  icon       : 'camilladsp'
-		, title      : 'Slider Range'
-		, content    : '<table><tr><td></td>'+ head + head.replace( 'min', 'max' ) +'</tr>'+ tr + tr.replace( 'Volume', 'Gain' ) +'</table>'
+		, title      : 'Slider dB Range'
+		, content    : '<table><tr><td></td>'+ head + head.replace( 'min', 'max' ) +'</tr>'
+						+ tr + tr.replace( 'Volume', 'Gain' ) 
+						+'<tr><td></td><td colspan="2"><gr>(Limit: -50 ... 50)</gr></td></tr>'
+						+'</table>'
 		, boxwidth   : 60
 		, values     : S.range
 		, beforeshow : () => {
