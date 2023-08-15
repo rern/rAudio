@@ -10,7 +10,7 @@ args2var "$1"
 case $CMD in
 
 camilla )
-	pushRefresh
+	pushstream reload $( conf2json camilla.conf )
 	;;
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped

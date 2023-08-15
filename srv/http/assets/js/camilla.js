@@ -492,6 +492,17 @@ var render   = {
 		render.tab();
 		showContent();
 	}
+	, tab         : () => {
+		var title = util.key2label( V.tab );
+		if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'flowchart' );
+		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
+		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
+		$( '.tab' ).addClass( 'hide' );
+		$( '#'+ V.tab ).removeClass( 'hide' );
+		$( '#bar-bottom div' ).removeClass( 'active' );
+		$( '#tab'+ V.tab ).addClass( 'active' );
+		if ( jsonChanged( S, V.previousdata ) ) render[ V.tab ]();
+	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
 		V.statusget   = [ 'GetConfigName', 'GetVolume', 'GetMute', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
@@ -738,18 +749,6 @@ var render   = {
 								.replace( /[{"}]/g, '' )
 								.replace( 'type:', '' )
 								.replace( /,/g, ', ' )
-	}
-	, tab         : () => {
-		var title = util.key2label( V.tab );
-		if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'flowchart' );
-		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
-		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
-		$( '.tab' ).addClass( 'hide' );
-		$( '#'+ V.tab ).removeClass( 'hide' );
-		$( '#bar-bottom div' ).removeClass( 'active' );
-		$( '#tab'+ V.tab ).addClass( 'active' );
-		if ( V.tab === 'devices' || $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) render[ V.tab ]();
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	}
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];

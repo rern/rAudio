@@ -83,7 +83,8 @@ function list2JSON( list ) {
 	}
 	
 	try {
-		S = JSON.parse( list );
+		V.previousdata = jsonClone( S );
+		S              = JSON.parse( list );
 	} catch( e ) {
 		errorDisplay( e.message, list );
 		return false
@@ -108,6 +109,7 @@ function refreshData() {
 	bash( [ 'settings/'+ page +'-data.sh' ], data => {
 		if ( typeof data === 'string' ) { // on load, try catching any errors
 			var list2G = list2JSON( data );
+			if ( ! jsonChanged( S, V.previousdata ) ) return
 		} else {
 			S = data;
 		}
@@ -186,7 +188,7 @@ pushstream.onmessage = function( data, id, channel ) {
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
-		case 'reload':    psReload();          break;
+		case 'reload':    psReload( data );    break;
 		case 'storage':   psStorage( data );   break;
 		case 'volume':    psVolume( data );    break;
 		case 'wlan':      psWlan( data );      break;
@@ -237,6 +239,13 @@ function psRefresh( data ) {
 	}, 300 );
 }
 function psReload( data ) {
+	if ( page === 'camilla' ) {
+		S.range = data;
+		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+		return
+	}
+	
 	if ( localhost ) location.reload();
 }
 function psStorage( data ) {
