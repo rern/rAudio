@@ -931,6 +931,7 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
+				V.li.find( '.divgraph' ).remove();
 				render.filters();
 			}
 		} );
@@ -1617,7 +1618,8 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	var $gain = $this.parent().prev();
 	var $db   = $gain.prev();
 	var val   = +$gain.val();
-	if ( $this.hasClass( 'i-set0' ) ) {
+	var set0  = $this.hasClass( 'i-set0' );
+	if ( set0 ) {
 		if ( val === 0 ) return
 		
 		val = 0;
@@ -1633,7 +1635,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( gain.save, val ? 1000 : 0 );
+	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( gain.save, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
