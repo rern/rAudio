@@ -756,223 +756,7 @@ var render   = {
 	}
 }
 var setting  = {
-	  device        : ( dev, type ) => {
-		var key_val, kv, k, v;
-		var data        = jsonClone( DEV[ dev ] );
-		var type        = type || data.type;
-		// select
-		var selectlabel = [ 'type' ];
-		var select      = [ C.devicetype[ dev ] ];
-		var values      = { type: type }
-		key_val         = jsonClone( CP[ dev ][ type ] );
-		if ( 'select' in key_val ) {
-			kv          = key_val.select;
-			k           = Object.keys( kv );
-			k.forEach( key => {
-				if ( key === 'format' ) {
-					var s = C.format;
-					var v = { format: data.format };
-				} else if ( key === 'device' ) {
-					var s = C.devices[ dev ];
-					var v = { device: data.device };
-				} else if ( key === 'filename' ) {
-					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
-					var v   = { filename: data.filename };
-				}
-				selectlabel = [ ...selectlabel, key ];
-				select      = [ ...select, s ];
-				values      = { ...values, ...v };
-			} );
-		}
-		selectlabel     = util.labels2array( selectlabel );
-		// text
-		var textlabel = false;
-		if ( 'text' in key_val ) {
-			kv        = key_val.text;
-			k         = Object.keys( kv );
-			textlabel = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values    = { ...values, ...kv };
-		}
-		// number
-		var numberlabel = false;
-		if ( 'number' in key_val ) {
-			kv          = key_val.number;
-			k           = Object.keys( kv );
-			numberlabel = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values      = { ...values, ...kv };
-		}
-		// checkbox
-		var checkbox    = false;
-		if ( 'checkbox' in key_val ) {
-			kv       = key_val.checkbox;
-			k        = Object.keys( kv );
-			checkbox = util.labels2array( k );
-			k.forEach( key => {
-				if ( key in data ) kv[ key ] = data[ key ];
-			} );
-			values   = { ...values, ...kv };
-		}
-		$.each( v, ( k, v ) => values[ k ] = v );
-		var title = util.key2label( dev ) +' Device';
-		var tab   = [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), setting.devicesampling ];
-		tab[ dev === 'capture' ? 0 : 1 ] = '';
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
-			, tab          : tab
-			, selectlabel  : selectlabel
-			, select       : select
-			, textlabel    : textlabel
-			, numberlabel  : numberlabel
-			, checkbox     : checkbox
-			, boxwidth     : 198
-			, order        : [ 'select', 'text', 'number', 'checkbox' ]
-			, values       : values
-			, checkblank   : true
-			, checkchanged : type === data.type
-			, beforeshow   : () => {
-				$( '#infoContent input[type=number]' ).css( 'width', '70px' );
-				$( '#infoContent td:first-child' ).css( 'width', '128px' );
-				var $select = $( '#infoContent select' );
-				$select.eq( 0 ).on( 'change', function() {
-					setting.device( dev, $( this ).val() );
-				} );
-			}
-			, ok           : () => {
-				DEV[ dev ] = infoVal();
-				setting.save( title, 'Change ...' );
-			}
-		} );
-	}
-	, devicesampling : () => {
-		var textlabel  = [ ...C.sampling ].slice( 1 );
-		textlabel.push( 'Other' );
-		var values     = {};
-		C.sampling.forEach( k => values[ k ] = DEV[ k ] );
-		if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
-		values.other = values.samplerate;
-		var title = util.key2label( V.tab );
-		info( {
-			  icon         : V.tab
-			, title        : title
-			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
-			, tab          : [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), '' ]
-			, selectlabel  : 'Sample Rate'
-			, select       : C.samplerate
-			, textlabel    : util.labels2array( textlabel )
-			, boxwidth     : 120
-			, order        : [ 'select', 'text' ]
-			, values       : values
-			, checkblank   : true
-			, checkchanged : true
-			, beforeshow   : () => {
-				$( '.trselect' ).after( $( 'tr' ).last() );
-				var $trother = $( '.trtext' ).eq( 0 );
-				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
-				$( '.trselect select' ).on( 'change', function() {
-					gain.hideother( $trother, $( this ).val() );
-				} );
-			}
-			, ok           : () => {
-				var val = infoVal();
-				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
-				delete val.other;
-				$.each( val, ( k, v ) => DEV[ k ] = v );
-				setting.save( title, 'Change ...' );
-				render.devices();
-			}
-		} );
-	} //---------------------------------------------------------------------------------------------
-	, resampling    : ( freeasync ) => {
-		var rateadjust  = DEV.enable_rate_adjust;
-		var samplerate  = DEV.capture_samplerate;
-		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
-		var select      = [ rateadjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
-		var numberlabel = [ 'Other' ];
-		var capturerate = C.samplerate.includes( samplerate ) ? samplerate : 'Other';
-		if ( freeasync ) {
-			selectlabel.push( 'interpolation', 'window' );
-			select.push( C.freeasync.interpolation, C.freeasync.window );
-			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
-			var f  = DEV.resampler_type.FreeAsync || {};
-			var values = {
-				  resampler_type     : 'FreeAsync'
-				, capture_samplerate : capturerate
-				, interpolation      : f.interpolation      || 'Linear'
-				, window             : f.window             || 'Blackman2'
-				, other              : capturerate
-				, sinc_len           : f.sinc_len           || 128
-				, oversampling_ratio : f.oversampling_ratio || 1024
-				, f_cutoff           : f.f_cutoff           || 0.925
-			}
-		} else {
-			var values      = {
-				  resampler_type     : rateadjust && DEV.resampler_type === 'Synchronous' ? 'BalancedAsync' : DEV.resampler_type
-				, capture_samplerate : capturerate
-				, other              : capturerate
-			}
-		}
-		info( {
-			  icon         : V.tab
-			, title        : SW.title
-			, selectlabel  : selectlabel
-			, select       : select
-			, numberlabel  : numberlabel
-			, boxwidth     : 160
-			, order        : [ 'select', 'number' ]
-			, values       : values
-			, checkchanged : DEV.enable_resampling
-			, beforeshow   : () => {
-				var $trnumber = $( '.trnumber' );
-				var $trother = $trnumber.eq( 0 );
-				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
-				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
-				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
-				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
-					if ( $( this ).val() === 'FreeAsync' ) {
-						setting.resampling( 'freeasync' );
-					} else if ( $trnumber.length > 1 ) {
-						setting.resampling();
-					}
-				} );
-				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
-				gain.hideother( $trother, $( this ).val() );
-				} );
-			}
-			, cancel       : switchCancel
-			, ok           : () => {
-				var val = infoVal();
-				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
-				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
-				if ( freeasync ) {
-					var v = {}
-					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
-					DEV.resampler_type = { FreeAsync: v }
-				}
-				setting.switchSave( 'enable_resampling' );
-			}
-		} );
-	}
-	, switchSave    : ( id, disable ) => {
-		if ( disable === 'disable' ) {
-			var msg   = 'Disable ...';
-			DEV[ id ] = false;
-		} else {
-			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
-			DEV[ id ] = true;
-		}
-		setting.save( SW.title, msg );
-		render.devices();
-	}
-	//---------------------------------------------------------------------------------------------
-	, filter        : ( type, subtype, name, existing ) => {
+	  filter        : ( type, subtype, name, existing ) => {
 		var data, key_val, key, kv, k, v;
 		var existing = false;
 		if ( ! type ) { // subtype = existing name
@@ -1325,12 +1109,227 @@ var setting  = {
 		V.graph.pipeline = {}
 		var $divgraph = $( '#pipeline .divgraph:not( .hide )' );
 		if ( $divgraph.length ) $divgraph.each( ( i, el ) => graph.plot( $( el ).parent() ) );
-	} //---------------------------------------------------------------------------------------------
+	}
 	, sortRefresh   : ( k ) => {
 		V.sortable[ k ].destroy();
 		delete V.sortable[ k ];
 		render.sortable( k );
+	} //---------------------------------------------------------------------------------------------
+	, device        : ( dev, type ) => {
+		var key_val, kv, k, v;
+		var data        = jsonClone( DEV[ dev ] );
+		var type        = type || data.type;
+		// select
+		var selectlabel = [ 'type' ];
+		var select      = [ C.devicetype[ dev ] ];
+		var values      = { type: type }
+		key_val         = jsonClone( CP[ dev ][ type ] );
+		if ( 'select' in key_val ) {
+			kv          = key_val.select;
+			k           = Object.keys( kv );
+			k.forEach( key => {
+				if ( key === 'format' ) {
+					var s = C.format;
+					var v = { format: data.format };
+				} else if ( key === 'device' ) {
+					var s = C.devices[ dev ];
+					var v = { device: data.device };
+				} else if ( key === 'filename' ) {
+					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
+					var v   = { filename: data.filename };
+				}
+				selectlabel = [ ...selectlabel, key ];
+				select      = [ ...select, s ];
+				values      = { ...values, ...v };
+			} );
+		}
+		selectlabel     = util.labels2array( selectlabel );
+		// text
+		var textlabel = false;
+		if ( 'text' in key_val ) {
+			kv        = key_val.text;
+			k         = Object.keys( kv );
+			textlabel = util.labels2array( k );
+			k.forEach( key => {
+				if ( key in data ) kv[ key ] = data[ key ];
+			} );
+			values    = { ...values, ...kv };
+		}
+		// number
+		var numberlabel = false;
+		if ( 'number' in key_val ) {
+			kv          = key_val.number;
+			k           = Object.keys( kv );
+			numberlabel = util.labels2array( k );
+			k.forEach( key => {
+				if ( key in data ) kv[ key ] = data[ key ];
+			} );
+			values      = { ...values, ...kv };
+		}
+		// checkbox
+		var checkbox    = false;
+		if ( 'checkbox' in key_val ) {
+			kv       = key_val.checkbox;
+			k        = Object.keys( kv );
+			checkbox = util.labels2array( k );
+			k.forEach( key => {
+				if ( key in data ) kv[ key ] = data[ key ];
+			} );
+			values   = { ...values, ...kv };
+		}
+		$.each( v, ( k, v ) => values[ k ] = v );
+		var title = util.key2label( dev ) +' Device';
+		var tab   = [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), setting.devicesampling ];
+		tab[ dev === 'capture' ? 0 : 1 ] = '';
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
+			, tab          : tab
+			, selectlabel  : selectlabel
+			, select       : select
+			, textlabel    : textlabel
+			, numberlabel  : numberlabel
+			, checkbox     : checkbox
+			, boxwidth     : 198
+			, order        : [ 'select', 'text', 'number', 'checkbox' ]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : type === data.type
+			, beforeshow   : () => {
+				$( '#infoContent input[type=number]' ).css( 'width', '70px' );
+				$( '#infoContent td:first-child' ).css( 'width', '128px' );
+				var $select = $( '#infoContent select' );
+				$select.eq( 0 ).on( 'change', function() {
+					setting.device( dev, $( this ).val() );
+				} );
+			}
+			, ok           : () => {
+				DEV[ dev ] = infoVal();
+				setting.save( title, 'Change ...' );
+			}
+		} );
 	}
+	, devicesampling : () => {
+		var textlabel  = [ ...C.sampling ].slice( 1 );
+		textlabel.push( 'Other' );
+		var values     = {};
+		C.sampling.forEach( k => values[ k ] = DEV[ k ] );
+		if ( ! C.samplerate.includes( DEV.samplerate ) ) values.samplerate = 'Other';
+		values.other = values.samplerate;
+		var title = util.key2label( V.tab );
+		info( {
+			  icon         : V.tab
+			, title        : title
+			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
+			, tab          : [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), '' ]
+			, selectlabel  : 'Sample Rate'
+			, select       : C.samplerate
+			, textlabel    : util.labels2array( textlabel )
+			, boxwidth     : 120
+			, order        : [ 'select', 'text' ]
+			, values       : values
+			, checkblank   : true
+			, checkchanged : true
+			, beforeshow   : () => {
+				$( '.trselect' ).after( $( 'tr' ).last() );
+				var $trother = $( '.trtext' ).eq( 0 );
+				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
+				$( '.trselect select' ).on( 'change', function() {
+					gain.hideother( $trother, $( this ).val() );
+				} );
+			}
+			, ok           : () => {
+				var val = infoVal();
+				if ( val.samplerate === 'Other' ) val.samplerate = val.other;
+				delete val.other;
+				$.each( val, ( k, v ) => DEV[ k ] = v );
+				setting.save( title, 'Change ...' );
+				render.devices();
+			}
+		} );
+	} //---------------------------------------------------------------------------------------------
+	, resampling    : ( freeasync ) => {
+		var rateadjust  = DEV.enable_rate_adjust;
+		var samplerate  = DEV.capture_samplerate;
+		var selectlabel = [ 'Resampler type', 'Capture samplerate' ];
+		var select      = [ rateadjust ? C.sampletype.slice( 0, -1 ) : C.sampletype, C.samplerate ];
+		var numberlabel = [ 'Other' ];
+		var capturerate = C.samplerate.includes( samplerate ) ? samplerate : 'Other';
+		if ( freeasync ) {
+			selectlabel.push( 'interpolation', 'window' );
+			select.push( C.freeasync.interpolation, C.freeasync.window );
+			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
+			var f  = DEV.resampler_type.FreeAsync || {};
+			var values = {
+				  resampler_type     : 'FreeAsync'
+				, capture_samplerate : capturerate
+				, interpolation      : f.interpolation      || 'Linear'
+				, window             : f.window             || 'Blackman2'
+				, other              : capturerate
+				, sinc_len           : f.sinc_len           || 128
+				, oversampling_ratio : f.oversampling_ratio || 1024
+				, f_cutoff           : f.f_cutoff           || 0.925
+			}
+		} else {
+			var values      = {
+				  resampler_type     : rateadjust && DEV.resampler_type === 'Synchronous' ? 'BalancedAsync' : DEV.resampler_type
+				, capture_samplerate : capturerate
+				, other              : capturerate
+			}
+		}
+		info( {
+			  icon         : V.tab
+			, title        : SW.title
+			, selectlabel  : selectlabel
+			, select       : select
+			, numberlabel  : numberlabel
+			, boxwidth     : 160
+			, order        : [ 'select', 'number' ]
+			, values       : values
+			, checkchanged : DEV.enable_resampling
+			, beforeshow   : () => {
+				var $trnumber = $( '.trnumber' );
+				var $trother = $trnumber.eq( 0 );
+				var indextr  = freeasync ? [ 2, 1, 0 ] : [ 0 ]
+				indextr.forEach( i => $( '.trselect' ).eq( 1 ).after( $trnumber.eq( i ) ) );
+				$trother.toggleClass( 'hide', values.capture_samplerate !== 'Other' );
+				$( '.trselect select' ).eq( 0 ).on( 'change', function() {
+					if ( $( this ).val() === 'FreeAsync' ) {
+						setting.resampling( 'freeasync' );
+					} else if ( $trnumber.length > 1 ) {
+						setting.resampling();
+					}
+				} );
+				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
+				gain.hideother( $trother, $( this ).val() );
+				} );
+			}
+			, cancel       : switchCancel
+			, ok           : () => {
+				var val = infoVal();
+				if ( val.capture_samplerate === 'Other' ) val.capture_samplerate = val.other;
+				[ 'resampler_type', 'capture_samplerate' ].forEach( k => DEV[ k ] = val[ k ] );
+				if ( freeasync ) {
+					var v = {}
+					C.freeasync.keys.forEach( k => v[ k ] = val[ k ] );
+					DEV.resampler_type = { FreeAsync: v }
+				}
+				setting.switchSave( 'enable_resampling' );
+			}
+		} );
+	}
+	, switchSave    : ( id, disable ) => {
+		if ( disable === 'disable' ) {
+			var msg   = 'Disable ...';
+			DEV[ id ] = false;
+		} else {
+			var msg   = DEV[ id ] ? 'Change ...' : 'Enable ...';
+			DEV[ id ] = true;
+		}
+		setting.save( SW.title, msg );
+		render.devices();
+	} //---------------------------------------------------------------------------------------------
 	, save          : ( titlle, msg ) => {
 		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
