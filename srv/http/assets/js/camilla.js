@@ -1603,7 +1603,7 @@ $( '.i-gear.range' ).on( 'click', function() {
 		}
 	} );
 } )
-$( '#divvolume' ).on( 'click', '.i-mute', function() {
+$( '#divvolume .i-mute' ).on( 'click', function() {
 	gain.mute( ! S.mute );
 } );
 $( '#volume' ).on( 'input', function() {
