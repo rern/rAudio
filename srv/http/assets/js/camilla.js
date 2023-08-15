@@ -502,7 +502,10 @@ var render   = {
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
 		
-		if ( $( '.entries.main' ).is( ':empty' ) || jsonChanged( S.config[ V.tab ], V.previousdata.config[ V.tab ] ) ) render[ V.tab ]();
+		if ( $( '.entries.main' ).is( ':empty' )
+			|| ! ( 'config' in V.previousdata )
+			|| jsonChanged( S.config[ V.tab ], V.previousdata.config[ V.tab ] )
+		) render[ V.tab ]();
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
@@ -679,10 +682,9 @@ var render   = {
 		render.sortable( 'sub' );
 	}
 	, pipeFilter  : ( name, i ) => {
-		var param = FIL[ name ].parameters;
 		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
 			  +'<div class="li1">'+ name +'</div>'
-			  +'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
+			  +'<div class="li2">'+ render.val2string( FIL[ name ] ) +'</div>'
 			  +'</li>'
 	}
 	, sortable    : ( el ) => {
