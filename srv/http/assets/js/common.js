@@ -1000,9 +1000,17 @@ function jsonChanged( a, b ) {
 	
 	var changed = false;
 	$.each( a, ( k, v ) => {
-		typeof v === 'object' ? jsonChanged( v, b[ k ] ) : changed = v !== b[ k ];
-		if ( changed ) return false
-		
+		if ( typeof v === 'object' ) {
+			if ( jsonChanged( v, b[ k ] ) ) {
+				changed = true;
+				return false
+			}
+		} else {
+			if ( v !== b[ k ] ) {
+				changed = true;
+				return false
+			}
+		}
 	} );
 	return changed
 }

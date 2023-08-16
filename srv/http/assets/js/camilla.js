@@ -359,7 +359,9 @@ var gain     = {
 				if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
 			} );
 		}
-		graph.refresh( fgraph, pgraphs );
+		if ( fgraph ) graph.plot();
+		if ( pgraphs.length ) pgraphs.forEach( i => graph.plot( $( '#pipeline li' ).eq( i ) ) );
+		fgraph = pgraph = '';
 	}
 }
 var graph    = {
@@ -450,7 +452,10 @@ var graph    = {
 			$li.removeClass( 'disabled' );
 		}, 'json' );
 	}
-	, refresh  : ( fgraph, pgraphs ) => {
+	, refresh  : () => {
+		V.graph[ V.tab ].each( ( k, v ) => {
+			
+		} );
 		if ( fgraph ) graph.plot();
 		if ( pgraphs.length ) pgraphs.forEach( i => graph.plot( $( '#pipeline li' ).eq( i ) ) );
 		fgraph = pgraph = '';
@@ -931,7 +936,7 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
-				V.li.find( '.divgraph' ).remove();
+				if ( newname !== name ) V.li.find( '.divgraph' ).data( 'name', newname );
 				render.filters();
 			}
 		} );
