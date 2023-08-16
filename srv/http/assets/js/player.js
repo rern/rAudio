@@ -368,7 +368,7 @@ function renderPage() {
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
 		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( ico( icondsp ) );
-		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
+		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + ico( icondsp ) );
 		$( '#divbtreceiver' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}

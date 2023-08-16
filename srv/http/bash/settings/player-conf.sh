@@ -26,10 +26,11 @@ rm -f $dirmpdconf/{bluetooth,output}.conf
 if [[ $bluetooth && ! $camilladsp ]]; then # not require audio devices (from player-asound.sh)
 	# no mac address needed - bluealsa already includes mac of latest connected device
 	[[ ! -e $dirsystem/btoutputall ]] && btoutputonly=1
+	hw=bluealsa
 #---------------< bluetooth
 	audiooutputbt='
 	name        "'$bluetooth'"
-	device      "bluealsa"
+	device      "'$hw'"
 	type        "alsa"
 	mixer_type  "hardware"'
 	[[ -e $dirsystem/btformat ]] && audiooutputbt+='
@@ -67,11 +68,10 @@ elif [[ ! $btoutputonly ]]; then # with devices (from player-devices.sh)
 		outputswitch=$name
 	fi
 	if [[ $camilladsp ]]; then
-		card=$( aplay -l | grep '^card.*Loopback.*device 0' | cut -c 6 )
-		hw=hw:$card,1
+		hw=hw:Loopback,1
 #---------------< camilladsp
 		audiooutput='
-	name           "CamillaDSP (Loopback)"
+	name           "CamillaDSP"
 	device         "'$hw'"
 	type           "alsa"
 	auto_resample  "no"
@@ -156,13 +156,6 @@ done
 [[ $hwmixer && ! $bluetooth && ! $camilladsp && ! $equalizer ]] && mixer=1
 
 if [[ -e /usr/bin/shairport-sync ]]; then
-	if [[ $camilladsp ]]; then
-		hw=hw:Loopback,1 # shairport > playback - Loopback,1 | Loopback,0 - capture > camilla
-	elif [[ $bluetooth ]]; then
-		hw=bluealsa
-	else
-		hw=hw:$card
-	fi
 ########
 	conf=$( sed '/^alsa/,/}/ d' /etc/shairport-sync.conf )
 	conf+='
@@ -176,15 +169,11 @@ alsa = {
 	systemctl try-restart shairport-sync
 fi
 
-if [[ -e /usr/bin/spotifyd ]]; then
-	if [[ $camilladsp ]]; then
-		hw=hw:Loopback,1
-	elif [[ $bluetooth ]]; then
+if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
+	if [[ $bluetooth ]]; then
 		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
 	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
 		hw=$( < "$dirsystem/spotify-$aplayname" )
-	else
-		hw=hw:$asoundcard                    # hw:N (or default:CARD=xxxx)
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )
