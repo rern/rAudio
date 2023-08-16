@@ -446,6 +446,10 @@ var graph    = {
 		V.graphplot = [];
 		V.graphlist = {}
 	}
+	, gain     : () => {
+		var $divgraph = V.li.find( '.divgraph' );
+		$divgraph.hasClass( 'hide' ) ? $divgraph.remove() : graph.plot();
+	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
 		if ( ! $divgraph.length ) {
@@ -1636,7 +1640,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( graph.plot, set0 ? 0 : 1000 );
+	if ( V.tab === 'filters' ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
@@ -1916,7 +1920,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	FIL[ name ].parameters.gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.plot();
+	graph.gain();
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
@@ -1985,7 +1989,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	graph.plot();
+	graph.gain();
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );

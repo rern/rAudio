@@ -367,7 +367,7 @@ i.disabled,
 }
 .clipped::after {
 	content: "\f515";
-	bottom: -2px;
+	bottom: 0;
 	color: var( --cg60 );
 }
 @media (max-width: 700px) {
