@@ -346,14 +346,22 @@ var gain     = {
 	}
 }
 var graph    = {
-	  active   : () => { // list: graph svg and changed name/index
-		var $graph = $( '#'+ V.tab +' .divgraph' );
-		if ( $graph.length ) {
+	  active   : () => {
+		var $divgraph = $( '#'+ V.tab +' .divgraph' );
+		if ( $divgraph.length ) {
 			V.graphplot = [];
-			$graph.each( ( i, el ) => {
-				var val = $( el ).data( 'val' );
-				V.graphlist[ val ] = $( el )[ 0 ].outerHTML;
-				if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) V.graphplot.push( val );
+			$divgraph.each( ( i, el ) => {
+				var $this = $( el );
+				var val   = $this.data( 'val' );
+				if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
+					if ( $this.hasClass( 'hide' ) ) {       // remove - changed + hide
+						$this.remove();
+						return
+					}
+					
+					V.graphplot.push( val );               // refresh after re-render tab
+				}
+				V.graphlist[ val ] = $this[ 0 ].outerHTML; // include in re-render
 			} );
 		}
 	}
