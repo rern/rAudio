@@ -1,10 +1,12 @@
 // var //////////////////////////////////////////////////////////////////////////////
 V            = {
-	  clipped  : 0
-	, divgraph : {}
-	, graph    : { filters: {}, pipeline: {} }
-	, sortable : {}
-	, tab      : 'filters'
+	  clipped    : 0
+	, graph      : { filters: {}, pipeline: {} }
+	, graphlist  : {}
+	, graphplot  : []
+	, prevconfig : {}
+	, sortable   : {}
+	, tab        : 'filters'
 }
 var default_v = {
 	range : {
@@ -342,37 +344,16 @@ var gain     = {
 		$( '#volume' ).prop( 'disabled', mute );
 		$( '#divvolume .divgain' ).toggleClass( 'disabled', mute );
 	}
-	, hideother : ( $trother, rate ) => {
-		var other = rate === 'Other';
-		$trother.toggleClass( 'hide', ! other );
-		if ( ! other ) $trother.find( 'input' ).val( rate );
-	}
-	, save      : () => {
-		var filters   = V.tab === 'filters';
-		var fgraph    = filters && V.li.find( '.divgraph:not( .hide )' ).length;
-		var pgraphs   = [];
-		var $divgraph = $( '#pipeline li .divgraph:not( .hide )' );
-		if ( $divgraph.length && $( '#pipeline .entries.sub.hide' ).length ) {
-			var name = V.li.data( 'name' );
-			$divgraph.each( ( i, el ) => {
-				var index = $( el ).data( 'val' );
-				if ( PIP[ index ].names.includes( name ) ) pgraphs.push( index );
-			} );
-		}
-		if ( fgraph ) graph.plot();
-		if ( pgraphs.length ) pgraphs.forEach( i => graph.plot( $( '#pipeline li' ).eq( i ) ) );
-		fgraph = pgraph = '';
-	}
 }
 var graph    = {
-	  active   : () => {
+	  active   : () => { // list: graph svg and changed name/index
 		var $graph = $( '#'+ V.tab +' .divgraph' );
 		if ( $graph.length ) {
+			V.graphplot = [];
 			$graph.each( ( i, el ) => {
 				var val = $( el ).data( 'val' );
-				if ( ! jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
-					V.divgraph[ val ] = $( el )[ 0 ].outerHTML;
-				}
+				V.graphlist[ val ] = $( el )[ 0 ].outerHTML;
+				if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) V.graphplot.push( val );
 			} );
 		}
 	}
@@ -453,12 +434,9 @@ var graph    = {
 		}, 'json' );
 	}
 	, refresh  : () => {
-		V.graph[ V.tab ].each( ( k, v ) => {
-			
-		} );
-		if ( fgraph ) graph.plot();
-		if ( pgraphs.length ) pgraphs.forEach( i => graph.plot( $( '#pipeline li' ).eq( i ) ) );
-		fgraph = pgraph = '';
+		if ( V.graphplot.length ) V.graphplot.forEach( n => graph.plot( $( '#filters li[data-name='+ n +']' ) ) );
+		V.graphplot = [];
+		V.graphlist = {}
 	}
 	, toggle   : () => {
 		var $divgraph = V.li.find( '.divgraph' );
@@ -512,8 +490,12 @@ var render   = {
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
 		if ( $( '#'+ V.tab +' .entries.main' ).is( ':empty' ) ) {
+			render.prevconfig();
 			render[ V.tab ]();
 		} else {
+			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
+			
+			render.prevconfig();
 			if ( V.tab === 'mixers' || V.tab === 'pipeline' ) {
 				if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
 					render[ V.tab ]();
@@ -613,7 +595,7 @@ var render   = {
 		li += '<li class="lihead files">Files'+ ico( 'add' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
 		render.toggle( li );
-		V.divgraph = {}
+		graph.refresh();
 	}
 	, filter      : ( k, v ) => {
 		if ( 'gain' in v.parameters ) {
@@ -626,7 +608,7 @@ var render   = {
 							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
-			if ( k in V.divgraph ) licontent += V.divgraph[ k ];
+			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
 		} else {
 			var licontent =  '<div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ render.val2string( v ) +'</div>';
@@ -688,14 +670,14 @@ var render   = {
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		render.toggle( li );
 		render.sortable( 'main' );
-		V.divgraph = {}
+		graph.refresh();
 	}
 	, pipe        : ( el, i ) => {
 		if ( el.type === 'Filter' ) {
 			var graph = 'graph';
 			var each  =  '<div class="li1">' + el.type +'</div>'
 						+'<div class="li2">channel '+ el.channel +': '+ el.names.join( ', ' ) +'</div>';
-			if ( i in V.divgraph ) each += V.divgraph[ i ];
+			if ( i in V.graphlist ) each += V.graphlist[ i ];
 		} else {
 			var graph = '';
 			var each  = '<gr>Mixer:</gr> '+ el.name;
@@ -775,12 +757,7 @@ var render   = {
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
 		return data
 	}
-	, val2string  : ( val ) => {
-		return val.type +': '+ JSON.stringify( val.parameters )
-								.replace( /[{"}]/g, '' )
-								.replace( 'type:', '' )
-								.replace( /,/g, ', ' )
-	}
+	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
 		$( '#'+ V.tab +' .entries.'+ ms[ 0 ] ).addClass( 'hide' );
@@ -788,6 +765,12 @@ var render   = {
 			.html( li )
 			.removeClass( 'hide' );
 		$( '#menu' ).addClass( 'hide' );
+	}
+	, val2string  : ( val ) => {
+		return val.type +': '+ JSON.stringify( val.parameters )
+								.replace( /[{"}]/g, '' )
+								.replace( 'type:', '' )
+								.replace( /,/g, ', ' )
 	}
 }
 var setting  = {
@@ -936,8 +919,6 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
-				V.li.find( '.divgraph' ).remove();
-				delete V.graph.filters[ name ];
 				render.filters();
 			}
 		} );
@@ -1245,7 +1226,7 @@ var setting  = {
 				var $trother = $( '.trtext' ).eq( 0 );
 				$trother.toggleClass( 'hide', values.samplerate !== 'Other' );
 				$( '.trselect select' ).on( 'change', function() {
-					gain.hideother( $trother, $( this ).val() );
+					setting.hidetrinfo( $trother, $( this ).val() );
 				} );
 			}
 			, ok           : () => {
@@ -1311,7 +1292,7 @@ var setting  = {
 					}
 				} );
 				$( '.trselect select' ).eq( 1 ).on( 'change', function() {
-				gain.hideother( $trother, $( this ).val() );
+				setting.hidetrinfo( $trother, $( this ).val() );
 				} );
 			}
 			, cancel       : switchCancel
@@ -1327,6 +1308,11 @@ var setting  = {
 				setting.switchSave( 'enable_resampling' );
 			}
 		} );
+	} //---------------------------------------------------------------------------------------------
+	, hidetrinfo    : ( $trother, rate ) => {
+		var other = rate === 'Other';
+		$trother.toggleClass( 'hide', ! other );
+		if ( ! other ) $trother.find( 'input' ).val( rate );
 	}
 	, switchSave    : ( id, disable ) => {
 		if ( disable === 'disable' ) {
@@ -1338,17 +1324,17 @@ var setting  = {
 		}
 		setting.save( SW.title, msg );
 		render.devices();
-	} //---------------------------------------------------------------------------------------------
+	}
 	, save          : ( titlle, msg ) => {
 		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
-		if ( msg ) banner( V.tab, titlle, msg ); // all except gain
+		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		ws.send( '"Reload"' );
-		ws.send( '"GetConfigjson"' );
+		ws.send( '"GetConfigJson"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
 	, upload        : ( icon ) => {
@@ -1548,7 +1534,8 @@ var util     = {
 						if ( cmd === V.statuslast ) render.statusValue();
 					}
 					break;
-				case 'GetConfigjson':
+				case 'GetConfigJson':
+					console.log(value)
 					S.config = value;
 					DEV      = S.config.devices;
 					FIL      = S.config.filters;
@@ -1641,7 +1628,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( gain.save, set0 ? 0 : 1000 );
+	if ( $this.parents( '#filters' ).length ) V.timeoutgain = setTimeout( graph.plot, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
@@ -1921,7 +1908,7 @@ $( '#filters' ).on( 'click', '.i-add', function() {
 	FIL[ name ].parameters.gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	gain.save();
+	graph.plot();
 } );
 $( '#mixers' ).on( 'click', 'li', function( e ) {
 	var $this  = $( this );
@@ -1990,7 +1977,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	MIX[ name ].mapping[ index ].sources[ si ].gain = val;
 	setting.save();
 } ).on( 'touchend mouseup keyup', 'input[type=range]', function() {
-	gain.save();
+	graph.plot();
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );
