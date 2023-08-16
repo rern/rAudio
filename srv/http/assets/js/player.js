@@ -357,18 +357,18 @@ function renderPage() {
 	$( '#divstatus .value' ).html( htmlstatus );
 	var icondsp = '';
 	[ 'camilladsp', 'equalizer' ].forEach( k => {
-		if ( S[ k ] ) icondsp = k;
+		if ( S[ k ] ) icondsp = ico( k );
 	} );
-	if ( icondsp ) $( '.i-'+ icondsp ).remove();
+	if ( icondsp ) $( '.i-camilladsp, .i-equalizer' ).remove();
 	if ( S.btaplayname ) {
-		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( ico( icondsp ) );
+		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
 		$( '#divbtreceiver' ).removeClass( 'hide' );
 		$( '#btaplayname' ).html( '<option>'+ S.btaplayname.replace( / - A2DP$/, '' ) +'</option>' );
 		$( '#setting-btreceiver' ).removeClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).toggleClass( 'hide', ! S.btoutputall );
 	} else {
-		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( ico( icondsp ) );
-		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + ico( icondsp ) );
+		if ( icondsp ) $( '#divbtreceiver .col-l' ).append( icondsp );
+		$( '#divaudiooutput .col-l' ).html( $( '#divaudiooutput .col-l' ).html() + icondsp );
 		$( '#divbtreceiver' ).addClass( 'hide' );
 		$( '#divaudiooutput, #divhwmixer, #divmixertype' ).removeClass( 'hide' );
 	}
