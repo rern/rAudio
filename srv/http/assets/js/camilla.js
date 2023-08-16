@@ -936,7 +936,8 @@ var setting  = {
 					}
 				} );
 				setting.save( title, newname ? 'Change ...' : 'Save ...' );
-				if ( newname !== name ) V.li.find( '.divgraph' ).data( 'name', newname );
+				V.li.find( '.divgraph' ).remove();
+				delete V.graph.filters[ name ];
 				render.filters();
 			}
 		} );
