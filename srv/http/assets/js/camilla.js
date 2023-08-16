@@ -448,6 +448,8 @@ var graph    = {
 	}
 	, gain     : () => {
 		var $divgraph = V.li.find( '.divgraph' );
+		if ( ! $divgraph.length ) return
+		
 		$divgraph.hasClass( 'hide' ) ? $divgraph.remove() : graph.plot();
 	}
 	, toggle   : () => {
@@ -1640,7 +1642,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.tab === 'filters' ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
