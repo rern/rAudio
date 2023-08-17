@@ -79,10 +79,10 @@ EOF
 Volume control for each device.
 The later in the signal chain the better sound quality.
 <pre>
-<code>None / 0dB   </code> Best  Amplifier volume - GUI knob hidden
-<code>Mixer device </code> Good  DAC hardware via GUI knob
-<code>MPD software </code> Basic GUI knob
-</pre>Note: <code>None / 0dB</code> Not for devices which still need volume control, e.g., DACs with on-board amplifier
+<c>None / 0dB  </c> Best  Amplifier volume - GUI knob hidden
+<c>Mixer device</c> Good  DAC hardware via GUI knob
+<c>MPD software</c> Basic GUI knob
+</pre>Note: <c>None / 0dB</c> Not for devices which still need volume control, e.g., DACs with on-board amplifier
 EOF
 	]
 ];
@@ -94,8 +94,8 @@ $body = [
 		, 'help' => <<< EOF
 Disable all manipulations for bit-perfect stream from MPD to DAC output.
  · No changes in data stream until it reaches amplifier volume control.
- · Mixer device volume: <code>0dB</code>
- · Volume Control: <code>None / 0db</code>
+ · Mixer device volume: <c>0dB</c>
+ · Volume Control: <c>None / 0db</c>
  · Disable options: Cross-fading, Normalization, ReplayGain and SoX Resampler
  · Disable Signal Processors
 
@@ -139,7 +139,7 @@ Support: FLAC, Ogg Vorbis, Musepack and MP3
 
 {$Fi( 'gear btn' )}
 ■ Gain control - Mixer device:
- • <code>replay_gain_handler "mixer"</code>
+ • <c>replay_gain_handler "mixer"</c>
  • Available when Volume Control = MPD software
 EOF
 	]
@@ -154,7 +154,7 @@ $body = [
 		, 'help' => <<< EOF
 Increase to fix intermittent audio.
 
-(default: <code>4096</code> kB - 24s of CD-quality audio)
+(default: <c>4096</c> kB - 24s of CD-quality audio)
 EOF
 	]
 	, [
@@ -162,7 +162,7 @@ EOF
 		, 'help' => <<< EOF
 Increase to fix missing Album list with large Library.
 
-(default: <code>8192</code> kB)
+(default: <c>8192</c> kB)
 EOF
 	]
 	, [
@@ -184,7 +184,7 @@ EOF
 <a href="https://sourceforge.net/p/soxr/wiki/Home/">SoX Resampler library</a> - One-dimensional sample-rate conversion
 {$Fi( 'gear btn' )}
  • Presets:
-	(default: Quality <code>Very high</code>  Threads <code>Single</code>)
+	(default: Quality <c>Very high</c>  Threads <c>Single</c>)
 	
  • Custom quality:
 	· Precision - Conversion precision (20 = HQ)
@@ -194,12 +194,12 @@ EOF
 	· Attenuation - Lowers the source to prevent clipping
 	· Flags / Extra settings:
 <pre>
-<code> 0 - Rolloff - small </code> (<= 0.01 dB)
-<code> 1 - Rolloff - medium</code> (<= 0.35 dB)
-<code> 2 - Rolloff - none  </code> For Chebyshev bandwidth
-<code> 8 - High precision  </code> Increase irrational ratio accuracy
-<code>16 - Double precision</code> even if Precision <= 20
-<code>32 - Variable rate   </code>
+<c> 0 - Rolloff - small </c> (<= 0.01 dB)
+<c> 1 - Rolloff - medium</c> (<= 0.35 dB)
+<c> 2 - Rolloff - none  </c> For Chebyshev bandwidth
+<c> 8 - High precision  </c> Increase irrational ratio accuracy
+<c>16 - Double precision</c> even if Precision <= 20
+<c>32 - Variable rate   </c>
 </pre>
 EOF
 	]

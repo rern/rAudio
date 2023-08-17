@@ -96,7 +96,7 @@ $( '#setting-spotifyd' ).on( 'click', function() {
 					  response_type : 'code'
 					, client_id     : id
 					, scope         : 'user-read-currently-playing user-read-playback-position'
-					, redirect_uri  : S.spotifyredirect
+					, redirect_uri  : 'https://rern.github.io/raudio/spotify'
 					, state         : window.location.hostname
 				}
 				window.location = 'https://accounts.spotify.com/authorize?'+ $.param( data );
@@ -484,7 +484,6 @@ function renderPage() {
 	$( '#dabradio' ).toggleClass( 'disabled', ! S.dabdevice );
 	$( '#snapclient' ).parent().prev().toggleClass( 'single', ! S.snapclientactive );
 	$( '#snapserver' ).toggleClass( 'disabled', S.snapserveractive );
-	$( '#redirecturi' ).text( S.spotifyredirect );
 	$( '#hostapd' ).toggleClass( 'disabled', S.wlanconnected );
 	$( '#smb' ).toggleClass( 'disabled', S.nfsserver );
 	if ( S.nfsconnected || S.shareddata || S.smb ) {

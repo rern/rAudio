@@ -145,7 +145,7 @@ EOF
 		, 'help'     => <<< EOF
 {$Fi( 'gear btn' )}
 Country of Wi-Fi regulatory domain:
-	· <code>00</code> Least common denominator settings, channels and transmit power are permitted in all countries.
+	· <c>00</c> Least common denominator settings, channels and transmit power are permitted in all countries.
 	· The connected router may override it to a certain country.
 ■ Auto start Access Point - On failed connection or no router
 EOF
@@ -195,11 +195,11 @@ EOF
 		, 'help' => <<< EOF
 <a class="img" data-name="powerbutton">Power button and LED</a> - power on/off rAudio
 {$Fi( 'gear btn' )}
- · On - Fixed to pin <code>5</code>
- · Off - Default: pin <code>5</code> (single pin on+off)
- · If pin <code>5</code> is used by DAC or LCD, set 2 unused pins for:
-	 · Off - Default: pin <code>7</code>
-	 · Reserved - Default: pin <code>29</code>
+ · On - Fixed to pin <c>5</c>
+ · Off - Default: pin <c>5</c> (single pin on+off)
+ · If pin <c>5</c> is used by DAC or LCD, set 2 unused pins for:
+	 · Off - Default: pin <c>7</c>
+	 · Reserved - Default: pin <c>29</c>
 EOF
 	]
 	, [
@@ -262,14 +262,14 @@ EOF
 		, 'help' => <<< EOF
 Tweak kernel parameters to improve sound quality.
 {$Fi( 'gear btn' )}
-Swapiness (default: <code>60</code>)
+Swapiness (default: <c>60</c>)
 	· Balance between swap disk vs system memory cache
 	· Low - less swap
-Maximum Transmission Unit (default: <code>1500</code> bytes)
+Maximum Transmission Unit (default: <c>1500</c> bytes)
 	· Maximum size of one packet that can be transmitted in a network
 	· High - less overhead more efficiency
 	· Low - less delay
-Transmit Queue Length (default: <code>1000</code>)
+Transmit Queue Length (default: <c>1000</c>)
 	· Number of packets allowed per kernel transmit queue in a network
 	· High - improve performance under high load
 EOF

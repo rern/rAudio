@@ -63,21 +63,26 @@ EOF
 <a href="https://github.com/Spotifyd/spotifyd">Spotifyd</a> - Spotify Connect device
 Require:
  · Premium account
- · <code>Client ID</code> and <code>Client Secret</code> from your Spotify private app
+ · <c>Client ID</c> and <c>Client secret</c> from your Spotify private app
 
-To create Spotify private app: ( <bll class="screenshot pointer">Screenshots</bll> )
+To create Spotify private app:
  · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
 	· with normal Spotify account
- · <btn>CREATE AN APP</btn>
-	· App name: <code>rAudio</code>
-	· App description: <code>(any)</code>
-· <btn>EDIT SETTINGS</btn>
-	· Redirect URIs: <c id="redirecturi"></c>
-· <btn>USERS AND ACCESS</btn> &raquo; <btn>ADD NEW USER</btn>
-	· Name: <code>(any)</code>
-	· Spotify Account: <code>(email)</code>
-	
-Note: Select the app from Dashboard for <code>Client ID</code> and <code>Client Secret</code>
+	· Verify email if prompted
+ · <btn>Create app</btn>
+	· App name: <c>rAudio</c>
+	· App description: <c>(any)</c>
+	· Website: <c>(any)</c>
+	· Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
+	· <c>Save</c>
+ · Dashbpard · <btn>rAudio</btn> · <btn>Settings</btn>
+	· Basic Information · User Management
+		· Fullname: <c>(any)</c>
+		· Email: <c>(Spotify Account email)</c>
+		· <c>Add user</c>
+	· Basic Information
+		· <c>Client ID</c>
+		· <c>Client secret</c>
 EOF
 	]
 	, [
@@ -152,7 +157,7 @@ $body = [
 		, 'help'     => <<< EOF
 <a href="https://w1.fi/hostapd/">hostapd</a> - Connect with rAudio hotspot directly when no routers available.
  · This should be used only when necessary.
- · Avoid double quotes <code>"</code> in password.
+ · Avoid double quotes <c>"</c> in password.
 EOF
 	]
 	, [

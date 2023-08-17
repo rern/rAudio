@@ -398,7 +398,7 @@ spotifykeyremove )
 spotifyoutput )
 	file=$( aplaynameFile )
 	[[ -e $file ]] && current='"'$( < "$file" )'"' || current=false
-	devices='"hw:'$( head -1 /etc/asound.conf | cut -d' ' -f2 )'"'
+	devices='"hw:'$( head -1 /etc/asound.conf | cut -d' ' -f2 )',0"'
 	readarray -t lines <<< $( aplay -L | grep ^.*:CARD )
 	for l in ${lines[@]}; do
 		devices+=', "'$l'"'

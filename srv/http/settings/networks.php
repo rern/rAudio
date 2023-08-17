@@ -46,7 +46,7 @@ htmlHead( [ //////////////////////////////////
 <?=i( 'wifi btn' )?> Context menu
 
 Note:
- · Avoid double quotes <code>"</code> in Wi-Fi name and password.
+ · Avoid double quotes <c>"</c> in Wi-Fi name and password.
  · Access points with 1 bar icon <?=i( 'wifi1' )?> might be unstable.</div>
 </div>
 <div id="divlan" class="section">

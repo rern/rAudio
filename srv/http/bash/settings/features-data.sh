@@ -8,8 +8,6 @@
 
 . /srv/http/bash/common.sh
 
-spotifyredirect=https://rern.github.io/raudio/spotify
-
 packageActive camilladsp hostapd localbrowser mediamtx nfs-server shairport-sync smb snapclient spotifyd upmpdcli
 
 data+='
@@ -58,7 +56,6 @@ fi
 , "snapclientconf"   : { "LATENCY": '$( grep latency /etc/default/snapclient | tr -d -c 0-9 )' }'
 [[ -e /usr/bin/spotifyd ]] && data+='
 , "spotifyd"         : '$spotifyd'
-, "spotifyredirect"  : "'$spotifyredirect'"
 , "spotifytoken"     : '$( grep -q -m1 refreshtoken $dirsystem/spotifykey 2> /dev/null && echo true )
 [[ -e /usr/bin/upmpdcli ]] && data+='
 , "upmpdcli"         : '$upmpdcli'
