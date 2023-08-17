@@ -577,15 +577,35 @@ var render   = {
 		}
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
-		$( '#gain' ).text( util.dbRound( S.volume ) );
-		$( '#volume' )
-			.prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-			.val( S.volume );
-		gain.mute();
+		render.volume();
 		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
 		$( '#configuration' )
 			.html( htmlOption( S.lsconf ) )
 			.val( S.configname );
+	}
+	, volume      : () => {
+		V.volume = false;
+		PIP.forEach( p => {
+			if ( p.type !== 'Filter' ) return
+			
+			p.names.forEach( n => {
+				if ( FIL[ n ].type === 'Volume' ) {
+					V.volume = true;
+					return false
+				}
+			} );
+			if ( V.volume ) return false
+		} );
+		if ( V.volume ) {
+			$( '#gain' ).text( util.dbRound( S.volume ) );
+			$( '#volume' )
+				.prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+				.val( S.volume );
+			gain.mute();
+			$( '#divvolume' ).removeClass( 'hide' );
+		} else {
+			$( '#divvolume' ).addClass( 'hide' );
+		}
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -1905,6 +1925,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					V.li.remove();
 					setting.sortRefresh( main ? 'main' : 'sub' );
 					graph.pipeline();
+					render.volume();
 				}
 			} );
 			break;
@@ -2046,6 +2067,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
 				render.pipelineSub( index );
+				render.volume();
 				graph.pipeline();
 			}
 		} );
