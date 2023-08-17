@@ -33,7 +33,7 @@ $htmlvolume = '
 <div id="divvolume">
 <div class="col-l text single">'.i( 'mute' ).'<c id="gain">0</c></div>
 <div class="col-r text">
-	<input id="volume" type="range"step="0.1">
+	<input id="volume" type="range" step="0.1" min="-50" max="0">
 	<div class="divgain">'.i( 'minus' ).i( 'set0' ).i( 'plus' ).'</div>
 </div>
 <div style="clear:both"></div>

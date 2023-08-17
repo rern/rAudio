@@ -622,7 +622,7 @@ var render   = {
 							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'">'
+							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
@@ -672,7 +672,7 @@ var render   = {
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'"'+ disabled +'>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
@@ -1348,10 +1348,10 @@ var setting  = {
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
 		if ( msg ) banner( V.tab, titlle, msg );
-		V.timeoutpush = setTimeout( () => {
+/*		V.timeoutpush = setTimeout( () => {
 			bash( [ 'pushrefresh' ] );
 			local( 1000 );
-		}, 1000 );
+		}, 1000 );*/
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
@@ -1641,7 +1641,7 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( this.id !== 'volume' && V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
@@ -1913,7 +1913,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
-	clearTimeout( V.timeoutpush );
+//	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
@@ -1981,7 +1981,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
-	clearTimeout( V.timeoutpush );
+//	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
