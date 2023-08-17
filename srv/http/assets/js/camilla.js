@@ -509,7 +509,7 @@ var render   = {
 			render.prevconfig();
 			render[ V.tab ]();
 		} else {
-			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
+			if ( V.tab !== 'devices' && ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
 			if ( V.tab === 'mixers' || V.tab === 'pipeline' ) {
