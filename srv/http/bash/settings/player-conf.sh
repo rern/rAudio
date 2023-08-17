@@ -170,10 +170,12 @@ alsa = {
 fi
 
 if [[ -e /usr/bin/spotifyd ]]; then # hw:N (or default:CARD=xxxx)
-	if [[ $bluetooth ]]; then
-		hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
-	elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
-		hw=$( < "$dirsystem/spotify-$aplayname" )
+	if [[ ! $camilladsp ]]; then
+		if [[ $bluetooth ]]; then
+			hw=$( bluealsa-aplay -L | head -1 )  # bluealsa:SRV=org.bluealsa,DEV=xx:xx:xx:xx:xx:xx,PROFILE=a2dp
+		elif [[ -e "$dirsystem/spotify-$aplayname" ]]; then
+			hw=$( < "$dirsystem/spotify-$aplayname" )
+		fi
 	fi
 ########
 	conf=$( grep -Ev '^device|^control|^mixer' /etc/spotifyd.conf )

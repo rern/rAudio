@@ -5,6 +5,7 @@
 CMD=$1
 PKG=$1
 SERVICE=$1
+skip='register IPv6'
 
 case $CMD in
 	bluetooth )
@@ -34,7 +35,7 @@ $( < /etc/dnsmasq.conf )"
 			PKG=firefox
 		else
 			PKG=chromium
-			skip='Could not resolve keysym|Address family not supported by protocol|ERROR:chrome_browser_main_extra_parts_metrics'
+			skip+='|Could not resolve keysym|ERROR:chrome_browser_main_extra_parts_metrics'
 		fi
 		;;
 	mpd )
@@ -51,7 +52,7 @@ $( < /etc/dnsmasq.conf )"
 		conf="\
 <bll># $mpdconf</bll>
 $( awk NF <<< $conf )"
-		skip='configuration file does not exist'
+		skip='|configuration file does not exist'
 		;;
 	nfsserver )
 		PKG=nfs-utils
@@ -64,7 +65,7 @@ $( cat /etc/exports )
 
 <bll># Active clients:</bll>
 $sharedip"
-		skip='Protocol not supported'
+		skip='|Protocol not supported'
 		;;
 	smb )
 		PKG=samba
@@ -78,7 +79,7 @@ $sharedip"
 		PKG=snapcast
 		;;
 	upmpdcli )
-		skip='not creating entry for'
+		skip='|not creating entry for'
 		fileconf=/etc/upmpdcli.conf
 		;;
 	* )
@@ -86,12 +87,11 @@ $sharedip"
 		;;
 esac
 status=$( systemctl status $SERVICE \
-				| sed -E  -e '1 s|^.* (.*service) |<code>\1</code>|
+				| grep -v "$skip" \
+				| sed -E -e '1 s|^.* (.*service) |<code>\1</code>|
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|
 											 s|(failed)|<red>\1</red>|ig}' )
-[[ $skip ]] && status=$( grep -E -v "$skip" <<< $status )
-
 config="<code>$( pacman -Q $PKG )</code>"
 if [[ $conf ]]; then
 	config+="
