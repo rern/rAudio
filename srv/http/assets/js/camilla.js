@@ -346,7 +346,7 @@ var gain     = {
 	}
 }
 var graph    = {
-	  active   : () => {
+	  list     : () => {
 		var $divgraph = $( '#'+ V.tab +' .divgraph' );
 		if ( $divgraph.length ) {
 			V.graphplot = [];
@@ -469,6 +469,8 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
+		if ( V.local ) return
+		
 		DEV = S.config.devices;
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
@@ -598,7 +600,7 @@ var render   = {
 		$( '.rms' ).css( 'width', 0 );
 	} //---------------------------------------------------------------------------------------------
 	, filters     : () => {
-		graph.active();
+		graph.list();
 		var data     = render.dataSort( 'filters' );
 		var li       = '';
 		var classvol = S.mute ? 'infobtn-primary' : '';
@@ -609,6 +611,7 @@ var render   = {
 		li += '<li class="lihead files">Files'+ ico( 'add' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
 		render.toggle( li );
+		$( '#filters input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 		graph.refresh();
 	}
 	, filter      : ( k, v ) => {
@@ -619,7 +622,7 @@ var render   = {
 							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
+							+'<input type="range" step="0.1" value="'+ val +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
@@ -669,7 +672,7 @@ var render   = {
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'"'+ disabled +'>'
+					 +'<input type="range" step="0.1" value="'+ val +'"'+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
@@ -677,9 +680,10 @@ var render   = {
 		} );
 		render.toggle( li, 'sub' );
 		$( '#mixers .entries select' ).select2( { minimumResultsForSearch: 'Infinity' } );
+		$( '#mixers input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
-		graph.active();
+		graph.list();
 		var li = '';
 		PIP.forEach( ( el, i ) => li += render.pipe( el, i ) );
 		render.toggle( li );
@@ -1344,11 +1348,14 @@ var setting  = {
 		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 		ws.send( '"Reload"' );
 		if ( msg ) banner( V.tab, titlle, msg );
+		V.timeoutpush = setTimeout( () => {
+			bash( [ 'pushrefresh' ] );
+			local( 1000 );
+		}, 1000 );
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
 		ws.send( '"Reload"' );
-		ws.send( '"GetConfigJson"' );
 		bash( [ 'confswitch', name, 'CMD NAME' ] );
 	}
 	, upload        : ( icon ) => {
@@ -1548,14 +1555,6 @@ var util     = {
 						if ( cmd === V.statuslast ) render.statusValue();
 					}
 					break;
-				case 'GetConfigJson':
-					console.log(value)
-					S.config = value;
-					DEV      = S.config.devices;
-					FIL      = S.config.filters;
-					MIX      = S.config.mixers;
-					PIP      = S.config.pipeline;
-					break;
 				case 'Invalid':
 					info( {
 						  icon    : 'warning'
@@ -1591,7 +1590,7 @@ $( '.i-gear.range' ).on( 'click', function() {
 		, boxwidth   : 60
 		, values     : S.range
 		, beforeshow : () => {
-			var minmax = [ -50, 10, -10, 10 ];
+			var minmax = [ -50, 0,  -10, 10 ];
 			var limit  = [ -50, 50, -50, 50 ];
 			$( '#infoContent' ).on( 'blur', 'input', function() {
 				var $this = $( this );
@@ -1914,6 +1913,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
+	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
@@ -1981,6 +1981,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
+	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );

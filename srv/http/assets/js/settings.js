@@ -173,11 +173,12 @@ function SWreset() {
 if ( page === 'addons' ) {
 	pushstreamChannel( [ 'notify' ] );
 } else {
-	pushstreamChannel( [ 'bluetooth', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
+	pushstreamChannel( [ 'bluetooth', 'camilla', 'notify', 'player', 'refresh', 'reload', 'storage', 'volume', 'volumebt', 'wlan' ] );
 }
 pushstream.onmessage = function( data, id, channel ) {
 	switch ( channel ) {
 		case 'bluetooth': psBluetooth( data ); break;
+		case 'camilla':   psCamilla( data );   break;
 		case 'notify':    psNotify( data );    break; // in common.js
 		case 'player':    psPlayer( data );    break;
 		case 'refresh':   psRefresh( data );   break;
@@ -207,6 +208,11 @@ function psBluetooth( data ) { // from networks-data,sh
 	}
 	bannerHide();
 }
+function psCamilla( data ) {
+	S.range = data;
+	$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
+	$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+}
 function psPlayer( data ) {
 	var player_id = {
 		  airplay   : 'shairport-sync'
@@ -223,22 +229,11 @@ function psRefresh( data ) {
 	clearTimeout( V.debounce );
 	V.debounce = setTimeout( () => {
 		$.each( data, ( k, v ) => { S[ k ] = v } ); // need braces
-		if ( page === 'networks' ) {
-			$( '.back' ).trigger( 'click' );
-		} else {
-			switchSet();
-		}
+		page === 'networks' ? $( '.back' ).trigger( 'click' ) : switchSet();
 		renderPage();
 	}, 300 );
 }
 function psReload( data ) {
-	if ( page === 'camilla' ) {
-		S.range = data;
-		$( '#volume' ).prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-		$( '.tab input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
-		return
-	}
-	
 	if ( localhost ) location.reload();
 }
 function psStorage( data ) {

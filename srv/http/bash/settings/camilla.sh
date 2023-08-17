@@ -10,7 +10,7 @@ args2var "$1"
 case $CMD in
 
 camilla )
-	pushstream reload $( conf2json camilla.conf )
+	pushstream camilla $( conf2json camilla.conf )
 	;;
 clippedreset )
 	echo $CLIPPED > $dirshm/clipped
@@ -41,6 +41,9 @@ confrename )
 	;;
 confswitch )
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
+	pushRefresh
+	;;
+pushrefresh )
 	pushRefresh
 	;;
 restart )
