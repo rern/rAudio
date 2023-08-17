@@ -56,7 +56,7 @@ $head = [
 {$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} dB: <c>-0.1</c> <c>0</c> <c>+0.1</c>
 {$Fi( 'set0 btn' )} Clipped sample: Reset
 
-Note: Main volume and mute requires filter <c>Volume</c> in Pipeline
+Note: Main volume and mute require filter <c>Volume</c> in Pipeline
 EOF
 ];
 $body = [
