@@ -2032,11 +2032,8 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			var pi = $( '#pipeline .lihead' ).data( 'index' );
 			PIP.splice( pi, 1 );
 			setting.save( title, 'Remove filter ...' );
-			render.pipeline();
-		} else {
-			render.toggle();
-		}
-		
+		} 
+		render.pipeline();
 	} else if ( action === 'add' ) {
 		var title = 'Add Filter';
 		info( {
@@ -2048,6 +2045,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 				PIP[ index ].names.push( infoVal() );
 				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
+				render.pipelineSub( index );
 				graph.pipeline();
 			}
 		} );
