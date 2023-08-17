@@ -13,7 +13,37 @@ fi
 if [[ -e $dirsystem/camilladsp ]]; then
 	camilladsp=1
 	modprobe snd_aloop
+	camilladspyml=$dircamilladsp/configs/camilladsp.yml
+	channels=$( sed -n '/capture:/,/channels:/ {/channels:/ {s/^.* //; p}}' $camilladspyml )
+	format=$( sed -n '/capture:/,/format:/ {/format:/ {s/^.* //; p}}' $camilladspyml )
+	rate=$( awk '/^\s*samplerate:/ {print $NF}' $camilladspyml )
 ########
+	asound+='
+pcm.!default { 
+	type plug 
+	slave.pcm camilladsp
+}
+pcm.camilladsp {
+	type plug
+	slave {
+		pcm {
+			type     hw
+			card     Loopback
+			device   0
+			channels '$channels'
+			format   '$format'
+			rate     '$rate'
+		}
+	}
+}
+ctl.!default {
+	type hw
+	card Loopback
+}
+ctl.camilladsp {
+	type hw
+	card Loopback
+}'
 else
 	if [[ $bluetooth ]]; then
 ########
