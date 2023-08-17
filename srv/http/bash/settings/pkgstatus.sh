@@ -52,7 +52,7 @@ $( < /etc/dnsmasq.conf )"
 		conf="\
 <bll># $mpdconf</bll>
 $( awk NF <<< $conf )"
-		skip='|configuration file does not exist'
+		skip+='|configuration file does not exist|wildmidi'
 		;;
 	nfsserver )
 		PKG=nfs-utils
@@ -65,7 +65,7 @@ $( cat /etc/exports )
 
 <bll># Active clients:</bll>
 $sharedip"
-		skip='|Protocol not supported'
+		skip+='|Protocol not supported'
 		;;
 	smb )
 		PKG=samba
@@ -79,7 +79,7 @@ $sharedip"
 		PKG=snapcast
 		;;
 	upmpdcli )
-		skip='|not creating entry for'
+		skip+='|not creating entry for'
 		fileconf=/etc/upmpdcli.conf
 		;;
 	* )
@@ -87,7 +87,7 @@ $sharedip"
 		;;
 esac
 status=$( systemctl status $SERVICE \
-				| grep -v "$skip" \
+				| grep -E -v "$skip" \
 				| sed -E -e '1 s|^.* (.*service) |<code>\1</code>|
 						' -e '/^\s*Active:/ {s|( active \(.*\))|<grn>\1</grn>|
 											 s|( inactive \(.*\))|<red>\1</red>|
