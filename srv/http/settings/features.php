@@ -66,21 +66,21 @@ Require:
  · <c>Client ID</c> and <c>Client secret</c> from your Spotify private app
 
 To create Spotify private app:
- · <btn>LOG IN</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
+<btn>Log in</btn> <a href="https://developer.spotify.com/dashboard/applications">Spotify for Developers</a>
 	· with normal Spotify account
 	· Verify email if prompted
- · <btn>Create app</btn>
+<btn>Create app</btn>
 	· App name: <c>rAudio</c>
 	· App description: <c>(any)</c>
 	· Website: <c>(any)</c>
 	· Redirect URI: <c>https://rern.github.io/raudio/spotify</c>
 	· <c>Save</c>
- · Dashbpard · <btn>rAudio</btn> · <btn>Settings</btn>
-	· Basic Information · User Management
+<btn>Dashboard</btn> · <btn>rAudio</btn> · <btn>Settings</btn>
+	· <btn>Basic Information</btn> · <btn>User Management</btn>
 		· Fullname: <c>(any)</c>
 		· Email: <c>(Spotify Account email)</c>
 		· <c>Add user</c>
-	· Basic Information
+	· <btn>Basic Information</btn>
 		· <c>Client ID</c>
 		· <c>Client secret</c>
 EOF

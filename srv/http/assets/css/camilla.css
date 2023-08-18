@@ -28,6 +28,7 @@
 	float: left;
 }
 .tab .li1 {
+	min-width: 130px;
 	padding: 5px 10px 0 0;
 	line-height: 20px;
 }
