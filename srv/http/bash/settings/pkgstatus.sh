@@ -78,12 +78,11 @@ $sharedip"
 	snapserver )
 		PKG=snapcast
 		;;
+	spotifyd )
+		skip+='|No.*specified|no usable credentials'
+		;;
 	upmpdcli )
 		skip+='|not creating entry for'
-		fileconf=/etc/upmpdcli.conf
-		;;
-	* )
-		fileconf=/etc/$PKG.conf
 		;;
 esac
 status=$( systemctl status $SERVICE \
@@ -96,7 +95,8 @@ config="<code>$( pacman -Q $PKG )</code>"
 if [[ $conf ]]; then
 	config+="
 $conf"
-elif [[ -e $fileconf ]]; then
+else
+	[[ ! $fileconf ]] && fileconf=/etc/$PKG.conf
 	config+="
 <bll># cat $fileconf</bll>
 $( grep -v ^# $fileconf )"
