@@ -778,7 +778,7 @@ var render   = {
 				if ( k !== 'device' ) li2 += k +': '+ v +', ';
 			} );
 			li += '<li data-type="'+ d +'">'+ ico( 'devices liicon edit' )
-					+'<div class="li1">'+ util.key2label( d ) +': '+ DEV[ d ].device +'</div>'
+					+'<div class="li1">'+ util.key2label( d ) +' <gr>•</gr> '+ DEV[ d ].device +'</div>'
 					+'<div class="li2">'+ li2.slice( 0, -2 ) +'</div>'
 					+'</li>';
 		} );
@@ -1694,7 +1694,7 @@ $( '#configuration' ).on( 'change', function() {
 } );
 $( '#setting-configuration' ).on( 'click', function() {
 	var content = '<table style="border-collapse: collapse; width: 300px; margin: -20px auto 10px;">'
-				 +'<tr><td colspan="3"><label class="add">File list: '+ ico( 'add' ) +'</label></td></tr>'
+				 +'<tr><td colspan="3"><label class="add">File: '+ ico( 'add' ) +'</label></td></tr>'
 	S.lsconf.forEach( f => {
 		var current = f === S.configname ? '<grn> • </grn>' : '';
 		var tdicon  = '<td style="width: 30px; text-align: center;">';
