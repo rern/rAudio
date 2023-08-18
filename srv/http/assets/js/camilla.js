@@ -503,7 +503,11 @@ var render   = {
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
-		if ( V.tab === 'pipeline' && PIP.length ) title += ico( 'flowchart' );
+		if ( V.tab === 'filters' ) {
+			title += ico( 'file' );
+		} else if ( V.tab === 'pipeline' && PIP.length ) {
+			title += ico( 'flowchart' );
+		}
 		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
 		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 		$( '.tab' ).addClass( 'hide' );
@@ -514,19 +518,20 @@ var render   = {
 			render.prevconfig();
 			render[ V.tab ]();
 		} else {
+			if ( V.tab === 'filters' && ! $( '#filters .entries.sub' ).hasClass( 'hide' ) ) {
+				render.filtersSub();
+				return
+			}
+			
 			if ( V.tab !== 'devices' && ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
-			if ( V.tab === 'mixers' || V.tab === 'pipeline' ) {
-				if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
-					render[ V.tab ]();
-				} else {
-					var data = V.tab === 'mixers' ? 'name' : 'index';
-					var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
-					render[ V.tab +'Sub' ]( val );
-				}
-			} else {
+			if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
 				render[ V.tab ]();
+			} else {
+				var data = V.tab === 'mixers' ? 'name' : 'index';
+				var val  = $( '#'+ V.tab +' .entries.sub .lihead' ).data( data );
+				render[ V.tab +'Sub' ]( val );
 			}
 		}
 	}
@@ -633,10 +638,8 @@ var render   = {
 		var step_val = ' step="0.1" value="'+ util.dbRound( S.volume ) +'"';
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
-		li += '<li class="lihead files">Files'+ ico( 'add' ) +'</li>';
-		if ( S.lscoef.length ) S.lscoef.forEach( k => li += render.filterfile( k ) );
-		render.toggle( li );
 		$( '#filters input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+		render.toggle( li );
 		graph.refresh();
 	}
 	, filter      : ( k, v ) => {
@@ -657,8 +660,10 @@ var render   = {
 		}
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
-	, filterfile  : ( k ) => {
-		return '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>'
+	, filtersSub  : ( k ) => {
+		var li = '<li class="lihead files">Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
+		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
 	, mixers      : () => {
 		var data = render.dataSort( 'mixers' );
@@ -1753,7 +1758,9 @@ $( '#setting-configuration' ).on( 'click', function() {
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
-$( '.headtitle' ).on( 'click', '.i-add', function() {
+$( '.headtitle' ).on( 'click', '.i-file', function() {
+	render.filtersSub();
+} ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
 		setting.filter( 'Biquad', 'Lowpass' );
 	} else if ( V.tab === 'mixers' ) {
@@ -1834,7 +1841,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 						, oklabel : ico( 'remove' ) +'Delete'
 						, okcolor : red
 						, ok      : () => {
-							file ? bash( [ 'coeffdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
+							file ? bash( [ 'coefdelete', name, 'CMD NAME' ] ) : delete FIL[ name ];
 							setting.save( title, 'Delete ...' );
 							V.li.remove();
 						}
@@ -1852,7 +1859,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							, checkchanged : true
 							, ok           : () => { // in filters Conv
 								var newname    = infoVal();
-								bash( [ 'coeffrename', name, newname, 'CMD NAME NEWNAME' ] );
+								bash( [ 'coefrename', name, newname, 'CMD NAME NEWNAME' ] );
 								$.each( FIL, ( k, v ) => {
 									if ( v.type === 'Conv' && v.parameters.filename === name ) FIL[ name ].parameters.filename = newname;
 								} );
@@ -1939,6 +1946,22 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 	}
 } );
+$( '.entries' ).on( 'click', '.i-back', function() {
+	if ( V.tab === 'mixers' ) {
+		var name = $( '#mixers .lihead' ).text();
+		if ( ! MIX[ name ].mapping.length ) { // no mapping left
+			delete MIX[ name ];
+			setting.save( title, 'Remove ...' );
+		}
+	} else if ( V.tab === 'pipeline' ) {
+		if ( ! $( '#pipeline .i-filters' ).length ) {
+			var pi = $( '#pipeline .lihead' ).data( 'index' );
+			PIP.splice( pi, 1 );
+			setting.save( title, 'Remove filter ...' );
+		} 
+	}
+	render[ V.tab ]();
+} );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
@@ -1961,19 +1984,13 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.parent().hasClass( 'divgain' ) ) return
+	if ( $this.hasClass( 'i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
 	var name   = V.li.data( 'name' );
 	var title  = util.key2label( V.tab );
-	if ( action === 'back' ) {
-		if ( ! MIX[ name ].mapping.length ) { // no mapping left
-			delete MIX[ $( '#mixers .lihead' ).text() ];
-			setting.save( title, 'Remove ...' );
-		}
-		render.mixers();
-	} else if ( action === 'add' ) {
+	if ( action === 'add' ) {
 		var index = V.li.hasClass( 'lihead' ) ? '' : V.li.data( 'index' );
 		setting.mixerMap( name, index );
 	} else {
@@ -2052,18 +2069,13 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
+	if ( $this.hasClass( 'i-back' ) ) return
+	
 	V.li       = $this.parents( 'li' );
 	var title  = util.key2label( V.tab );
 	var index  = V.li.data( 'index' );
 	var action = $this.prop( 'class' ).slice( 2 );
-	if ( action === 'back' ) {
-		if ( ! $( '#pipeline .i-filters' ).length ) {
-			var pi = $( '#pipeline .lihead' ).data( 'index' );
-			PIP.splice( pi, 1 );
-			setting.save( title, 'Remove filter ...' );
-		} 
-		render.pipeline();
-	} else if ( action === 'add' ) {
+	if ( action === 'add' ) {
 		var title = 'Add Filter';
 		info( {
 			  icon        : V.tab

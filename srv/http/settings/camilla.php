@@ -23,7 +23,7 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 	} else {
 		if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 		$htmltabs.= '<ul class="entries main"></ul>';
-		if ( $id === 'mixers' || $id === 'pipeline' ) $htmltabs.= '<ul class="entries sub"></ul>';
+		if ( $id !== 'devices' ) $htmltabs.= '<ul class="entries sub"></ul>';
 	}
 	$htmltabs.= '</div>';
 }

@@ -92,9 +92,6 @@
 .lihead .i-back {
 	float: right !important;
 }
-.lihead.files {
-	margin-top: 20px;
-}
 .tab li .i-add {
 	color: var( --cw );
 }

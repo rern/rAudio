@@ -27,7 +27,7 @@ case 'bash':
 	break;
 case 'camilla':
 	fileUploadSave( '/srv/http/data/camilladsp/'.$_POST[ 'dir' ].'/'.$_FILES[ 'file' ][ 'name' ] );
-	exec( $sudosettings.'camilla.sh pushdata', $output, $result );
+	exec( $sudosettings.'camilla-data.sh push', $output, $result );
 	break;
 case 'datarestore':
 	fileUploadSave( $dirshm.'backup.gz' );
