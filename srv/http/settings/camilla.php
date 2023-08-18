@@ -9,7 +9,11 @@ $id_data = [
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 	$htmltabs.= '<div id="'.$id.'" class="tab">';
-	if ( $id === 'devices' ) {
+	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
+	$htmltabs.= '<ul class="entries main"></ul>';
+	if ( $id !== 'devices' ) {
+		$htmltabs.= '<ul class="entries sub"></ul>';
+	} else {
 		$htmltabs.= '
 <div id="divdevices" class="section">
 '.htmlSectionStatus( 'sampling' ).'
@@ -20,10 +24,6 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 '.htmlSetting( [ 'id' => 'enable_resampling',   'returnhtml' => true ] ).'
 </div>
 ';
-	} else {
-		if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
-		$htmltabs.= '<ul class="entries main"></ul>';
-		if ( $id !== 'devices' ) $htmltabs.= '<ul class="entries sub"></ul>';
 	}
 	$htmltabs.= '</div>';
 }

@@ -711,6 +711,7 @@ var render   = {
 		} );
 		render.toggle( li, 'sub' );
 		$( '#mixers input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
+		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
 		graph.list();
@@ -770,13 +771,21 @@ var render   = {
 		} );
 	} //---------------------------------------------------------------------------------------------
 	, devices     : () => {
+		var li  = '';
+		[ 'playback', 'capture' ].forEach( d => {
+			var li2 = '';
+			$.each( DEV[ d ], ( k, v ) => {
+				if ( k !== 'device' ) li2 += k +': '+ v +', ';
+			} );
+			li += '<li data-type="'+ d +'">'+ ico( 'devices liicon edit' )
+					+'<div class="li1">'+ util.key2label( d ) +': '+ DEV[ d ].device +'</div>'
+					+'<div class="li2">'+ li2.slice( 0, -2 ) +'</div>'
+					+'</li>';
+		} );
+		$( '#devices .entries.main' ).html( li );
 		[ 'enable_rate_adjust', 'stop_on_rate_change', 'enable_resampling' ].forEach( k => S[ k ] = DEV[ k ] );
 		var labels = '';
 		var values = '';
-		[ 'capture', 'playback' ].forEach( ( k, i ) => {
-			labels += util.key2label( k ) +'<br>';
-			values += DEV[ k ].device +'<br>';
-		} );
 		C.sampling.forEach( k => {
 			labels += util.key2label( k ) +'<br>';
 			values += DEV[ k ].toLocaleString() +'<br>';
@@ -1218,14 +1227,10 @@ var setting  = {
 			values   = { ...values, ...kv };
 		}
 		$.each( v, ( k, v ) => values[ k ] = v );
-		var title = util.key2label( dev ) +' Device';
-		var tab   = [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), setting.devicesampling ];
-		tab[ dev === 'capture' ? 0 : 1 ] = '';
+		var title = util.key2label( dev );
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
-			, tab          : tab
 			, selectlabel  : selectlabel
 			, select       : select
 			, textlabel    : textlabel
@@ -1261,8 +1266,6 @@ var setting  = {
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, tablabel     : [ 'Capture', 'Playback', 'Sampling' ]
-			, tab          : [ () => setting.device( 'capture' ), () => setting.device( 'playback' ), '' ]
 			, selectlabel  : 'Sample Rate'
 			, select       : C.samplerate
 			, textlabel    : util.labels2array( textlabel )
@@ -1783,7 +1786,7 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		$flowchart.addClass( 'hide' );
 	}
 } ).on( 'click', '.i-gear', function() {
-	setting.device( 'capture' );
+	setting.devicesampling();
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
@@ -1807,6 +1810,7 @@ $( '.entries' ).on( 'click', 'i', function() {
 		var wT      = $( window ).scrollTop();
 		if ( targetB > ( wH - 40 + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
 		$menu.find( '.edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
+		$menu.find( '.delete' ).toggleClass( 'hide', V.tab === 'devices' );
 		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	}
 } );
@@ -1942,6 +1946,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 					render.volume();
 				}
 			} );
+			break;
+		case 'devices':
+			setting.device( V.li.data( 'type' ) );
 			break;
 	}
 } );
