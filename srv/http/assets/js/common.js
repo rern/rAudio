@@ -346,7 +346,7 @@ function info( json ) {
 	} );
 	if ( I.fileoklabel ) { // file api
 		var htmlfile = '<div id="infoFile">'
-					  +'<code id="infoFilename" class="">(select file)</code>'
+					  +'<c id="infoFilename" class="">(select file)</c>'
 					  +'<input type="file" class="hide" id="infoFileBox"'
 					  + ( I.filetype ? ' accept="'+ I.filetype +'">' : '>' )
 					  +'</div>'
@@ -377,8 +377,8 @@ function info( json ) {
 			if ( ! I.filechecked ) {
 				var htmlprev = $( '#infoContent' ).html();
 				$( '#infoFilename, #infoFileLabel' ).addClass( 'hide' );
-				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><code>'+ filename +'</code></td></tr>'
-										 +'<tr><td>File not :</td><td><code>'+ I.filetype +'</code></td></tr></table>' );
+				$( '#infoContent' ).html( '<table><tr><td>Selected file :</td><td><c>'+ filename +'</c></td></tr>'
+										 +'<tr><td>File not :</td><td><c>'+ I.filetype +'</c></td></tr></table>' );
 				$( '#infoOk' ).addClass( 'hide' );
 				$( '.infobtn.file' ).addClass( 'infobtn-primary' )
 				$( '#infoButton' ).prepend( '<a class="btntemp infobtn infobtn-primary">OK</a>' );

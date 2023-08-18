@@ -197,7 +197,7 @@ $( '#setting-soxr' ).on( 'click', function() {
 } );
 var custominfo = `\
 <table width="100%">
-<tr><td><code>mpd.conf</code></td></tr>
+<tr><td><c>mpd.conf</c></td></tr>
 <tr><td><pre>
 ...
 user                   "mpd"</pre></td></tr>
