@@ -517,7 +517,7 @@ function info( json ) {
 			htmls.select = '';
 			I.select.forEach( ( el, i ) => {
 				htmls.select +=  '<tr class="trselect"><td>'+ ( I.selectlabel[ i ] || '' ) +'</td><td><select>'
-								+ htmlOption( el );
+								+ ( el[ 0 ] === '<' ? el : htmlOption( el ) )
 								+'</select></td></tr>';
 			} );
 		}
@@ -1118,21 +1118,17 @@ if ( ! [ 'addonsprogress', 'guide' ].includes( page )  ) {
 
 // select2 --------------------------------------------------------------------
 function selectSet( $select ) {
-	var options = {}
-	if ( $select ) {
-		var searchbox = page === 'system';
-	} else {
+	var options = { minimumResultsForSearch: 10 }
+	if ( ! $select ) {
 		$select = $( '#infoContent select' );
-		var searchbox = page && SW.icon === 'wlan';
 		if ( $( '#eq' ).length ) options.dropdownParent = $( '#eq' );
 	}
-	if ( ! searchbox ) options.minimumResultsForSearch = Infinity;
 	$select
 		.select2( options )
 		.on( 'select2:open',    () => { // fix: scroll on info - set current value 3rd from top
 			setTimeout( () => {
 				var scroll = $( '.select2-results__option--selected' ).index() * 36 - 72;
-				if ( searchbox && ! navigator.maxTouchPoints ) scroll -= 12;
+				if ( ! navigator.maxTouchPoints ) scroll -= 12;
 				$( '.select2-results ul' ).scrollTop( scroll );
 			}, 0 );
 		} )

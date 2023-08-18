@@ -709,7 +709,6 @@ var render   = {
 			} );
 		} );
 		render.toggle( li, 'sub' );
-		$( '#mixers .entries select' ).select2( { minimumResultsForSearch: 'Infinity' } );
 		$( '#mixers input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
@@ -909,7 +908,6 @@ var setting  = {
 		info( {
 			  icon         : V.tab
 			, title        : title
-			, width        : lscoef ? 500 : ''
 			, selectlabel  : selectlabel
 			, select       : select
 			, textlabel    : textlabel
@@ -917,7 +915,7 @@ var setting  = {
 			, radio        : radio
 			, radiosingle  : true
 			, checkbox     : checkbox
-			, boxwidth     : lscoef ? 500 : 198
+			, boxwidth     : 198
 			, order        : [ 'select', 'text', 'number', 'radio', 'checkbox' ]
 			, values       : values
 			, checkblank   : true

@@ -9,7 +9,6 @@
 	box-shadow    : var( --shadow-select );
 }
 #infoContent .select2-container {
-	max-width     : none;
 	margin-bottom : 0;
 }
 .select2-selection:focus-visible {
