@@ -504,7 +504,7 @@ var render   = {
 	, tab         : () => {
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
-			title += ico( 'file' );
+			title += ico( 'folder-open' );
 		} else if ( V.tab === 'pipeline' && PIP.length ) {
 			title += ico( 'flowchart' );
 		}
@@ -518,12 +518,13 @@ var render   = {
 			render.prevconfig();
 			render[ V.tab ]();
 		} else {
-			if ( V.tab === 'filters' && ! $( '#filters .entries.sub' ).hasClass( 'hide' ) ) {
+			if ( V.tab === 'devices' ) {
+				render.devices();
+				return
+			} else if ( V.tab === 'filters' && ! $( '#filters .entries.sub' ).hasClass( 'hide' ) ) {
 				render.filtersSub();
 				return
 			}
-			
-			if ( V.tab !== 'devices' && ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
 			if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
@@ -661,7 +662,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : ( k ) => {
-		var li = '<li class="lihead files">Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead files">Coefficient Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
@@ -1404,7 +1405,7 @@ var setting  = {
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
-			, filetype    : dir === 'coeffs' ? '.txt,.wav' : '.yml'
+			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.txt,.wav' : '.yml'
 			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
@@ -1756,7 +1757,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
-$( '.headtitle' ).on( 'click', '.i-file', function() {
+$( '.headtitle' ).on( 'click', '.i-folder-open', function() {
 	render.filtersSub();
 } ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
