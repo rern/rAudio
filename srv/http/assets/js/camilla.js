@@ -475,6 +475,9 @@ var render   = {
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
 		PIP = S.config.pipeline;
+		render.status();
+		render.tab();
+		showContent();
 		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
 		[ 'capture', 'playback' ].forEach( k => {
 			S.devices[ k ].forEach( d => {
@@ -490,11 +493,13 @@ var render   = {
 				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
+		S.lscoefraw = [];
+		S.lscoefwav = [];
+		S.lscoef.forEach( f => {
+			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
+		} );
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
 		if ( ! S.range ) S.range = default_v.range;
-		render.status();
-		render.tab();
-		showContent();
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
@@ -813,7 +818,7 @@ var render   = {
 }
 var setting  = {
 	  filter        : ( type, subtype, name, existing ) => {
-		var data, key_val, key, kv, k, v;
+		var data, lscoef, key_val, key, kv, k, v;
 		var existing = false;
 		if ( ! type ) { // subtype = existing name
 			existing = true;
@@ -840,8 +845,10 @@ var setting  = {
 			kv          = key_val.select;
 			k           = Object.keys( kv );
 			selectlabel = [ ...selectlabel, ...k ];
-			subtype     = subtype === 'Raw' ? [ S.lscoef, C.format ] : [ S.lscoef ];
-			select      = [ ...select, ...subtype ];
+			if ( [ 'Raw', 'Wave' ].includes( subtype ) ) {
+				lscoef = subtype === 'Raw' ? [ S.lscoefraw, C.format ] : [ S.lscoefwav ];
+				select = [ ...select, ...lscoef ];
+			}
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 			values      = { ...values, ...kv };
 		}
@@ -897,6 +904,7 @@ var setting  = {
 		info( {
 			  icon         : V.tab
 			, title        : title
+			, width        : lscoef ? 500 : ''
 			, selectlabel  : selectlabel
 			, select       : select
 			, textlabel    : textlabel
@@ -904,7 +912,7 @@ var setting  = {
 			, radio        : radio
 			, radiosingle  : true
 			, checkbox     : checkbox
-			, boxwidth     : 198
+			, boxwidth     : lscoef ? 500 : 198
 			, order        : [ 'select', 'text', 'number', 'radio', 'checkbox' ]
 			, values       : values
 			, checkblank   : true
@@ -1393,7 +1401,7 @@ var setting  = {
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
-			, filetype    : dir === 'coeffs' ? '' : '.yml'
+			, filetype    : dir === 'coeffs' ? '.txt,.wav' : '.yml'
 			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );

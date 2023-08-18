@@ -23,10 +23,10 @@
 	border-radius : 4px !important;
 }
 .select2-selection__rendered {
-	color         : var( --cw ) !important;
-	background    : var( --cg );
 	line-height   : 40px !important;
 	border-radius : 4px;
+	color         : var( --cw ) !important;
+	background    : var( --cg );
 }
 .select2-results__option {
 	padding-left: 8px;
