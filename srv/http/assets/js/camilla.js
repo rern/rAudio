@@ -1990,7 +1990,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
+	if ( $this.hasClass( 'liicon' ) || $this.hasClass( 'i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
@@ -2075,7 +2075,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'i-back' ) ) return
+	if ( $this.hasClass( 'liicon' ) || $this.hasClass( 'i-back' ) ) return
 	
 	V.li       = $this.parents( 'li' );
 	var title  = util.key2label( V.tab );
