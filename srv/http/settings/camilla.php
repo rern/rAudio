@@ -67,10 +67,11 @@ $body = [
 	, [
 		  'id'    => 'configuration'
 		, 'input' => '<select id="configuration"></select>'
+		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
-{$Fi( 'gear btn' )} Configuration files
+{$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
-{$Fi( 'folder-open btn' )} Coefficient files
+{$Fi( 'folder-filter btn' )} Coefficient files
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu: {$Fi( 'graph btn' )}{$Fi( 'edit btn' )}{$Fi( 'remove btn' )}
 {$Fi( 'inverted btn' )} Mixers: <c>Invert</c>
 {$Fi( 'flowchart btn' )} Pipeline: <c>Flowchart</c>

@@ -475,6 +475,8 @@ var render   = {
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
 		PIP = S.config.pipeline;
+		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
+		if ( ! S.range ) S.range = default_v.range;
 		render.status();
 		render.tab();
 		showContent();
@@ -498,13 +500,11 @@ var render   = {
 		S.lscoef.forEach( f => {
 			f.slice( -4 ) === '.wav' ? S.lscoefwav.push( f ) : S.lscoefraw.push( f );
 		} );
-		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
-		if ( ! S.range ) S.range = default_v.range;
 	}
 	, tab         : () => {
 		var title = util.key2label( V.tab );
 		if ( V.tab === 'filters' ) {
-			title += ico( 'folder-open' );
+			title += ico( 'folder-filter' );
 		} else if ( V.tab === 'pipeline' && PIP.length ) {
 			title += ico( 'flowchart' );
 		}
@@ -1702,7 +1702,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 					 + tdicon + iremove +'</td>'+ tdicon + ico( 'copy gr' ) +'</td>'
 					 +'</tr>';
 	} );
-	var icon  = 'camilladsp';
+	var icon  = 'folder-config';
 	info( {
 		  icon        : icon
 		, title       : SW.title
@@ -1757,7 +1757,7 @@ $( '#setting-configuration' ).on( 'click', function() {
 $( '#divtabs' ).on( 'click', '.graphclose', function() {
 	$( this ).parent().addClass( 'hide' );
 } );
-$( '.headtitle' ).on( 'click', '.i-folder-open', function() {
+$( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 	render.filtersSub();
 } ).on( 'click', '.i-add', function() {
 	if ( V.tab === 'filters' ) {
