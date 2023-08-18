@@ -8,14 +8,6 @@ V            = {
 	, sortable   : {}
 	, tab        : 'filters'
 }
-var default_v = {
-	range : {
-		  VOLUMEMIN : -50
-		, VOLUMEMAX : 0
-		, GAINMIN   : -10
-		, GAINMAX   : 10
-	}
-}
 var ws;
 var format   = {};
 [ 'S16LE', 'S24LE', 'S24LE3', 'S32LE', 'FLOAT32LE', 'FLOAT64LE', 'TEXT' ].forEach( k => {
@@ -476,7 +468,7 @@ var render   = {
 		MIX = S.config.mixers;
 		PIP = S.config.pipeline;
 		if ( S.bluetooth ) S.lsconf = S.lsconfbt;
-		if ( ! S.range ) S.range = default_v.range;
+		if ( ! S.range ) S.range = { MIN: -10, MAX: 10 };
 		render.status();
 		render.tab();
 		showContent();
@@ -609,9 +601,7 @@ var render   = {
 		} );
 		if ( V.volume ) {
 			$( '#gain' ).text( util.dbRound( S.volume ) );
-			$( '#volume' )
-				.prop( { min: S.range.VOLUMEMIN, max: S.range.VOLUMEMAX } )
-				.val( S.volume );
+			$( '#volume' ).val( S.volume );
 			gain.mute();
 			$( '#divvolume' ).removeClass( 'hide' );
 		} else {
@@ -639,7 +629,6 @@ var render   = {
 		var step_val = ' step="0.1" value="'+ util.dbRound( S.volume ) +'"';
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
-		$( '#filters input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 		render.toggle( li );
 		graph.refresh();
 	}
@@ -651,7 +640,7 @@ var render   = {
 							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'">'
+							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIN +'" max="'+ S.range.MAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
@@ -703,14 +692,13 @@ var render   = {
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.GAINMIN +'" max="'+ S.range.GAINMAX +'" '+ disabled +'>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIN +'" max="'+ S.range.MAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
 			} );
 		} );
 		render.toggle( li, 'sub' );
-		$( '#mixers input[type=range]' ).prop( { min: S.range.GAINMIN, max: S.range.GAINMAX } );
 		selectSet( $( '#mixers select' ) );
 	} //---------------------------------------------------------------------------------------------
 	, pipeline    : () => {
@@ -1612,34 +1600,34 @@ $( '.log' ).on( 'click', function() {
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
 $( '.i-gear.range' ).on( 'click', function() {
-	var head = '<td style="text-align: center">min</td>';
-	var td   = '<td><input type="number"></td>';
-	var tr   = '<tr><td style="padding-right: 5px; text-align: right;">Volume</gr></td>'+ td + td +'</tr>'
 	info( {
 		  icon       : 'camilladsp'
-		, title      : 'Slider dB Range'
-		, content    : '<table><tr><td></td>'+ head + head.replace( 'min', 'max' ) +'</tr>'
-						+ tr + tr.replace( 'Volume', 'Gain' ) 
-						+'<tr><td></td><td colspan="2"><gr>(Limit: -50 ... 50)</gr></td></tr>'
-						+'</table>'
+		, title      : 'Gain Slider Range'
+		, numberlabel : [ 'Max', 'Min' ]
+		, footer      : '(50 ... -50)'
 		, boxwidth   : 60
 		, values     : S.range
 		, beforeshow : () => {
-			var minmax = [ -50, 0,  -10, 10 ];
-			var limit  = [ -50, 50, -50, 50 ];
+			var $input = $( '#infoContent input' );
+			var $max   = $input.eq( 0 );
+			var $min   = $input.eq( 1 );
 			$( '#infoContent' ).on( 'blur', 'input', function() {
-				var $this = $( this );
-				var i     = $this.index( 'input' );
-				var mm    = minmax[ i ];
-				var lm    = limit[ i ];
-				var val   = $this.val();
-				if ( i % 2 ? val < mm : val > mm ) $this.val( mm );
-				if ( i % 2 ? val > lm : val < lm ) $this.val( lm );
+				if ( $max.val() > 50 ) {
+					$max.val( 50 );
+				} else if ( $max.val() < 0 ) {
+					$max.val( 0 );
+				}
+				if ( $min.val() < -50 ) {
+					$min.val( -50 );
+				} else if ( $min.val() > 0 ) {
+					$min.val( 0 );
+				}
 			} );
 		}
 		, ok         : () => {
-			var val = infoVal();
-			bash( [ 'camilla', ...Object.values( val ), 'CFG '+ Object.keys( val ).join( ' ' ) ] );
+			S.range = infoVal();
+			bash( [ 'camilla', ...Object.values( S.range ), 'CFG MAX MIN' ] );
+			$( '.tab input[type=range]' ).prop( { min: S.range.MIN, max: S.range.MAX } );
 		}
 	} );
 } )
