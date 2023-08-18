@@ -4,10 +4,9 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20230808
-file=/etc/default/camilladsp
-if [[ ! -e $file ]]; then
-	cat << EOF > $file
+# 20230818
+if [[ ! -e $dircamilladsp/configs-bt ]]; then
+	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
 CONFIG=/srv/http/data/camilladsp/configs/camilladsp.yml
 LOGFILE=/var/log/camilladsp.log
@@ -36,12 +35,6 @@ fi
 
 file=/etc/systemd/system/spotifyd.service
 grep -q CPUAffinity $file && sed -i '/CPUAffinity/ d' $file
-
-# 20230620
-file=/etc/pacman.conf
-grep -q community $file && sed -i -e '/community/,/^$/ d' -e '/aur/,/^$/ d' $file
-
-! grep -q scrobblekeyremove $dirsettings/features.sh && rm -f $dirsystem/scrobble
 
 #-------------------------------------------------------------------------------
 installstart "$1"
