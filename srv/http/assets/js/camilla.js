@@ -623,8 +623,8 @@ var render   = {
 		graph.refresh();
 	}
 	, filter      : ( k, v ) => {
+		var param     = v.parameters;
 		if ( 'gain' in v.parameters ) {
-			var param     = v.parameters;
 			var val       = util.dbRound( param.gain );
 			var licontent =  '<div class="liinput"><div class="filter"><div class="li1">'+ k +'</div>'
 							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
@@ -636,7 +636,7 @@ var render   = {
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
 		} else {
 			var licontent =  '<div class="li1">'+ k +'</div>'
-							+'<div class="li2">'+ render.val2string( v ) +'</div>';
+							+'<div class="li2">'+ v.type +' · '+ render.json2string( param ) +'</div>';
 		}
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
@@ -721,7 +721,7 @@ var render   = {
 	, pipeFilter  : ( name, i ) => {
 		return '<li data-index="'+ i +'" data-name="'+ name +'">'+ ico( 'filters liicon' )
 			  +'<div class="li1">'+ name +'</div>'
-			  +'<div class="li2">'+ render.val2string( FIL[ name ] ) +'</div>'
+			  +'<div class="li2">'+ FIL[ name ].type +' · '+ render.json2string( FIL[ name ].parameters ) +'</div>'
 			  +'</li>'
 	}
 	, sortable    : ( el ) => {
@@ -752,14 +752,12 @@ var render   = {
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
 			var dev = DEV[ d ];
-			var li2 = '';
-			$.each( dev, ( k, v ) => {
-				if ( ! [ 'device', 'type' ].includes( k ) ) li2 += k +': '+ v +', ';
-			} );
+			var data = jsonClone( dev );
+			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
 					+'<div class="li1">'+ util.key2label( d ) +' <gr>•</gr> '+ render.typeReplace( dev.type )
 					+ ( 'device' in dev ? ': '+ dev.device +'</div>' : '' )
-					+'<div class="li2">'+ li2.slice( 0, -2 ) +'</div>'
+					+'<div class="li2">'+ render.json2string( data ) +'</div>'
 					+'</li>';
 		} );
 		$( '#devices .entries.main' ).html( li );
@@ -808,11 +806,11 @@ var render   = {
 				.replace( 'Alsa', 'ALSA' )
 				.replace( 'Std',  'std' )
 	}
-	, val2string  : ( val ) => {
-		return val.type +': '+ JSON.stringify( val.parameters )
-								.replace( /[{"}]/g, '' )
-								.replace( 'type:', '' )
-								.replace( /,/g, ', ' )
+	, json2string : ( json ) => {
+		return JSON.stringify( json )
+					.replace( /[{"}]/g, '' )
+					.replace( /type:/, '' )
+					.replace( /,/g, ', ' )
 	}
 }
 var setting  = {
