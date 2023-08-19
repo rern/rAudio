@@ -814,8 +814,8 @@ var render   = {
 	}
 }
 var setting  = {
-	  filter        : ( type, subtype, name, existing ) => {
-		if ( existing ) {
+	  filter        : ( type, subtype, name ) => {
+		if ( name ) {
 			var ekv = { type : type }
 			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
 		}
@@ -839,7 +839,7 @@ var setting  = {
 				var lscoef = subtype === 'Raw' ? [ jsonClone( S.lscoefraw ), jsonClone( C.format ) ] : [ jsonClone( S.lscoefwav ) ];
 				select     = [ ...select, ...lscoef ];
 			}
-			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
+			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values      = { ...values, ...kv };
 		}
 		selectlabel     = util.labels2array( selectlabel );
@@ -850,7 +850,7 @@ var setting  = {
 			var kv    = key_val.text;
 			var k     = Object.keys( kv );
 			textlabel = [ ...textlabel, ...k ];
-			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
+			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values    = { ...values, ...kv };
 		}
 		textlabel       = util.labels2array( textlabel );
@@ -860,7 +860,7 @@ var setting  = {
 			var kv      = key_val.number;
 			var k       = Object.keys( kv );
 			numberlabel = k;
-			if ( existing ) {
+			if ( name ) {
 				k.forEach( key => {
 					if ( [ 'q', 'samples' ].includes( key ) ) {
 						if ( ! ( 'q' in ekv ) ) {
@@ -887,11 +887,11 @@ var setting  = {
 			var kv   = key_val.checkbox;
 			var k    = Object.keys( kv );
 			checkbox = util.labels2array( k );
-			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
+			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values   = { ...values, ...kv };
 		}
 		if ( 'filename' in values ) values.filename = values.filename.split( '/' ).pop();
-		var title       = existing ? 'Filter' : 'Add Filter';
+		var title       = name ? 'Filter' : 'Add Filter';
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -906,7 +906,7 @@ var setting  = {
 			, order        : [ 'select', 'text', 'number', 'radio', 'checkbox' ]
 			, values       : values
 			, checkblank   : true
-			, checkchanged : existing
+			, checkchanged : name
 			, beforeshow   : () => {
 				$( '#infoContent td:first-child' ).css( 'min-width', '125px' );
 				var $tdname = $( '#infoContent td' ).filter( function() {
@@ -918,13 +918,13 @@ var setting  = {
 				$selecttype.on( 'change', function() {
 					var type    = $( this ).val();
 					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
-					setting.filter( type, subtype, name );
+					setting.filter( type, subtype );
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'change', function() {
 						var type    = $selecttype.val();
 						var subtype = $( this ).val();
-						setting.filter( type, subtype, name );
+						setting.filter( type, subtype );
 					} );
 				}
 				if ( radio ) {
@@ -949,7 +949,7 @@ var setting  = {
 				$.each( val, ( k, v ) => param[ k ] = v );
 				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
-				if ( existing ) {
+				if ( name ) {
 					delete FIL[ name ];
 					PIP.forEach( p => {
 						if ( p.type === 'Filter' ) {
@@ -1869,7 +1869,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 					} else {
 						var type    = FIL[ name ].type;
 						var subtype = 'type' in FIL[ name ].parameters ? FIL[ name ].parameters.type : '';
-						setting.filter( type, subtype, name, 'existing' );
+						setting.filter( type, subtype, name );
 					}
 					break;
 			}
