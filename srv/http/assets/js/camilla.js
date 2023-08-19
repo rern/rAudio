@@ -795,7 +795,7 @@ var render   = {
 	, json2string : ( json ) => {
 		return JSON.stringify( json )
 					.replace( /[{"}]/g, '' )
-					.replace( /type:/, '' )
+					.replace( /type:|filename:.*\//g, '' )
 					.replace( /([:,])/g, '$1 ' )
 	}
 	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
@@ -897,6 +897,7 @@ var setting  = {
 			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
 			values   = { ...values, ...kv };
 		}
+		if ( 'filename' in values ) values.filename = values.filename.split( '/' ).pop();
 		var title       = name ? 'Filter' : 'Add Filter';
 		info( {
 			  icon         : V.tab
@@ -952,6 +953,8 @@ var setting  = {
 				var param      = { type: val.subtype };
 				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 				$.each( val, ( k, v ) => param[ k ] = v );
+				if ( existing ) delete FIL[ name ];
+				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
 				PIP.forEach( p => {
 					if ( p.type === 'Filter' ) {
