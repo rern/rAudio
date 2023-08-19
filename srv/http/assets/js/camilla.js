@@ -814,38 +814,32 @@ var render   = {
 	}
 }
 var setting  = {
-	  filter        : ( type, subtype, name ) => {
-		var data, lscoef, key_val, key, kv, k, v;
-		if ( ! type ) { // subtype = existing name
-			name     = subtype;
-			data     = jsonClone( FIL[ name ] );
-			v        = { type : data.type }
-			$.each( data.parameters, ( key, val ) => v[ key === 'type' ? 'subtype' : key ] = val );
-			type     = v.type;
-			subtype  = v.subtype;
+	  filter        : ( type, subtype, name, existing ) => {
+		if ( existing ) {
+			var ekv = { type : type }
+			$.each( FIL[ name ].parameters, ( k, v ) => ekv[ k === 'type' ? 'subtype' : k ] = v );
 		}
-		var existing = name in FIL;
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ C.type ];
+		var select      = [ jsonClone( C.type ) ];
 		var values      = { type: type }
 		if ( subtype ) {
 			selectlabel.push( 'subtype' )
-			select.push( C.subtype[ type ] );
+			select.push( jsonClone( C.subtype[ type ] ) );
 			values.subtype = subtype;
-			key_val        = subtype in F ? jsonClone( F[ subtype ] ) : jsonClone( F[ type ] );
+			var key_val    = subtype in F ? jsonClone( F[ subtype ] ) : jsonClone( F[ type ] );
+			if ( subtype === 'Uniform' ) key_val.amplitude = 1;
 		}
-		if ( ! key_val ) key_val = F[ type ];
-		if ( subtype === 'Uniform' ) key_val.amplitude = 1;
+		if ( ! key_val ) var key_val = jsonClone( F[ type ] );
 		if ( 'select' in key_val ) {
-			kv          = key_val.select;
-			k           = Object.keys( kv );
+			var kv      = key_val.select;
+			var k       = Object.keys( kv );
 			selectlabel = [ ...selectlabel, ...k ];
 			if ( [ 'Raw', 'Wave' ].includes( subtype ) ) {
-				lscoef = subtype === 'Raw' ? [ S.lscoefraw, C.format ] : [ S.lscoefwav ];
-				select = [ ...select, ...lscoef ];
+				var lscoef = subtype === 'Raw' ? [ jsonClone( S.lscoefraw ), jsonClone( C.format ) ] : [ jsonClone( S.lscoefwav ) ];
+				select     = [ ...select, ...lscoef ];
 			}
-			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
+			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values      = { ...values, ...kv };
 		}
 		selectlabel     = util.labels2array( selectlabel );
@@ -853,29 +847,29 @@ var setting  = {
 		var textlabel   = [ 'name' ];
 		values.name     = name;
 		if ( 'text' in key_val ) {
-			kv        = key_val.text;
-			k         = Object.keys( kv );
+			var kv    = key_val.text;
+			var k     = Object.keys( kv );
 			textlabel = [ ...textlabel, ...k ];
-			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
+			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values    = { ...values, ...kv };
 		}
 		textlabel       = util.labels2array( textlabel );
 		// number
 		var numberlabel = false;
 		if ( 'number' in key_val ) {
-			kv          = key_val.number;
-			k           = Object.keys( kv );
+			var kv      = key_val.number;
+			var k       = Object.keys( kv );
 			numberlabel = k;
-			if ( v ) {
+			if ( existing ) {
 				k.forEach( key => {
 					if ( [ 'q', 'samples' ].includes( key ) ) {
-						if ( ! ( 'q' in v ) ) {
+						if ( ! ( 'q' in ekv ) ) {
 							delete kv.q;
 							key = 'samples';
 						}
 						numberlabel[ numberlabel.length - 1 ] = key;
 					}
-					kv[ key ] = v[ key ];
+					kv[ key ] = ekv[ key ];
 				} );
 			}
 			values      = { ...values, ...kv };
@@ -890,14 +884,14 @@ var setting  = {
 		// checkbox
 		var checkbox    = false;
 		if ( 'checkbox' in key_val ) {
-			kv       = key_val.checkbox;
-			k        = Object.keys( kv );
+			var kv   = key_val.checkbox;
+			var k    = Object.keys( kv );
 			checkbox = util.labels2array( k );
-			if ( v ) k.forEach( key => kv[ key ] = v[ key ] );
+			if ( existing ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values   = { ...values, ...kv };
 		}
 		if ( 'filename' in values ) values.filename = values.filename.split( '/' ).pop();
-		var title       = name ? 'Filter' : 'Add Filter';
+		var title       = existing ? 'Filter' : 'Add Filter';
 		info( {
 			  icon         : V.tab
 			, title        : title
@@ -924,20 +918,20 @@ var setting  = {
 				$selecttype.on( 'change', function() {
 					var type    = $( this ).val();
 					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
-					setting.filter( type, subtype, infoVal().name );
+					setting.filter( type, subtype, name );
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'change', function() {
 						var type    = $selecttype.val();
 						var subtype = $( this ).val();
-						setting.filter( type, subtype, infoVal().name );
+						setting.filter( type, subtype, name );
 					} );
 				}
 				if ( radio ) {
-					var $tr      = $( '#infoContent .trradio' ).prev();
-					var itr      = $tr.index()
-					var $label   = $tr.find( 'td' ).eq( 0 );
-					var $radio   = $( '#infoContent input:radio' );
+					var $tr    = $( '#infoContent .trradio' ).prev();
+					var itr    = $tr.index()
+					var $label = $tr.find( 'td' ).eq( 0 );
+					var $radio = $( '#infoContent input:radio' );
 					$radio.on( 'change', function() {
 						var val       = $( this ).filter( ':checked' ).val();
 						I.keys[ itr ] = val.toLowerCase();
@@ -946,23 +940,26 @@ var setting  = {
 				}
 			}
 			, ok           : () => {
-				var val        = infoVal();
-				newname        = val.name;
-				type           = val.type;
-				var param      = { type: val.subtype };
+				var val = infoVal();
+				var newname = val.name;
+				type        = val.type;
+				subtype     = val.subtype;
+				var param   = { type: subtype };
 				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 				$.each( val, ( k, v ) => param[ k ] = v );
-				if ( existing ) delete FIL[ name ];
 				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
 				FIL[ newname ] = { type: type, parameters : param }
-				PIP.forEach( p => {
-					if ( p.type === 'Filter' ) {
-						p.names.forEach( ( f, i ) => {
-							if ( f === name ) p.names[ i ] = newname;
-						} );
-					}
-				} );
-				setting.save( title, newname ? 'Change ...' : 'Save ...' );
+				if ( existing ) {
+					delete FIL[ name ];
+					PIP.forEach( p => {
+						if ( p.type === 'Filter' ) {
+							p.names.forEach( ( f, i ) => {
+								if ( f === name ) p.names[ i ] = newname;
+							} );
+						}
+					} );
+				}
+				setting.save( title, name ? 'Change ...' : 'Save ...' );
 				render.filters();
 			}
 		} );
@@ -1870,7 +1867,9 @@ $( '#menu a' ).on( 'click', function( e ) {
 							}
 						} );
 					} else {
-						setting.filter( '', name );
+						var type    = FIL[ name ].type;
+						var subtype = 'type' in FIL[ name ].parameters ? FIL[ name ].parameters.type : '';
+						setting.filter( type, subtype, name, 'existing' );
 					}
 					break;
 			}
