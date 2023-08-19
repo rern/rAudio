@@ -99,14 +99,14 @@ var Fkv      = {
 		  number : { freq: 1000, q: 0.5 }
 	  }
 	, shelf   : {
-		  number : { gain: 6, freq: 1000, q: 6 }
+		  number : { gain: 0, freq: 1000, q: 6 }
 		, radio  : [ 'Q', 'Samples' ]
 	}
 	, passFO  : {
 		  number : { freq: 1000 }
 	}
 	, shelfFO : {
-		  number : { gain: 6, freq: 1000 }
+		  number : { gain: 0, freq: 1000 }
 	}
 	, notch   : {
 		  number : { freq: 1000, q: 0.5 }
@@ -123,7 +123,7 @@ var F        = {
 	, LowshelfFO        : Fkv.shelfFO
 	, HighshelfFO       : Fkv.shelfFO
 	, Peaking           : {
-		  number : { gain: 6, freq: 1000, q: 1.5 }
+		  number : { gain: 0, freq: 1000, q: 1.5 }
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 	, Notch             : Fkv.notch
@@ -814,11 +814,9 @@ var render   = {
 	}
 }
 var setting  = {
-	  filter        : ( type, subtype, name, existing ) => {
+	  filter        : ( type, subtype, name ) => {
 		var data, lscoef, key_val, key, kv, k, v;
-		var existing = false;
 		if ( ! type ) { // subtype = existing name
-			existing = true;
 			name     = subtype;
 			data     = jsonClone( FIL[ name ] );
 			v        = { type : data.type }
@@ -826,6 +824,7 @@ var setting  = {
 			type     = v.type;
 			subtype  = v.subtype;
 		}
+		var existing = name in FIL;
 		// select
 		var selectlabel = [ 'type' ];
 		var select      = [ C.type ];
@@ -925,13 +924,13 @@ var setting  = {
 				$selecttype.on( 'change', function() {
 					var type    = $( this ).val();
 					var subtype = type in C.subtype ? C.subtype[ type ][ 0 ] : '';
-					setting.filter( type, subtype, infoVal().name, existing );
+					setting.filter( type, subtype, infoVal().name );
 				} );
 				if ( $select.length > 1 ) {
 					$select.eq( 1 ).on( 'change', function() {
 						var type    = $selecttype.val();
 						var subtype = $( this ).val();
-						setting.filter( type, subtype, name, existing );
+						setting.filter( type, subtype, infoVal().name );
 					} );
 				}
 				if ( radio ) {
@@ -1871,7 +1870,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 							}
 						} );
 					} else {
-						setting.filter( '', name, 'existing' );
+						setting.filter( '', name );
 					}
 					break;
 			}
