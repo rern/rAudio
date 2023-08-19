@@ -475,9 +475,7 @@ var render   = {
 		[ 'devices', 'devicetype' ].forEach( k => C[ k ] = { capture: {}, playback: {} } );
 		[ 'capture', 'playback' ].forEach( k => {
 			S.devices[ k ].forEach( d => {
-				var v = d
-							.replace( 'bluealsa', 'BlueALSA' )
-							.replace( 'Bluez',    'BlueALSA' );
+				var v = d.replace( /bluealsa|Bluez/, 'BlueALSA' );
 				C.devices[ k ][ v ] = d;
 			} );
 			S.devicetype[ k ].forEach( t => {
