@@ -506,16 +506,10 @@ var render   = {
 			render.prevconfig();
 			render[ V.tab ]();
 		} else {
-			if ( V.tab === 'devices' ) {
-				render.devices();
-				return
-			} else if ( V.tab === 'filters' && ! $( '#filters .entries.sub' ).hasClass( 'hide' ) ) {
-				render.filtersSub();
-				return
-			}
+			if ( ! jsonChanged( S.config[ V.tab ], V.prevconfig[ V.tab ] ) ) return
 			
 			render.prevconfig();
-			if ( $( '#'+ V.tab +' .entries.sub.hide' ).length ) {
+			if ( ! $( '#'+ V.tab +' .entries.main' ).hasClass( 'hide' ) ) {
 				render[ V.tab ]();
 			} else {
 				var data = V.tab === 'mixers' ? 'name' : 'index';
