@@ -481,9 +481,7 @@ var render   = {
 				C.devices[ k ][ v ] = d;
 			} );
 			S.devicetype[ k ].forEach( t => {
-				var v = t
-							.replace( 'Alsa',     'ALSA' )
-							.replace( 'Std',      'std' );
+				var v = render.typeReplace( t );
 				C.devicetype[ k ][ v ] = t; // [ 'Alsa', 'Bluez' 'CoreAudio', 'Pulse', 'Wasapi', 'Jack', 'Stdin/Stdout', 'File' ]
 			} );
 		} );
@@ -761,12 +759,14 @@ var render   = {
 	, devices     : () => {
 		var li  = '';
 		[ 'playback', 'capture' ].forEach( d => {
+			var dev = DEV[ d ];
 			var li2 = '';
-			$.each( DEV[ d ], ( k, v ) => {
-				if ( k !== 'device' ) li2 += k +': '+ v +', ';
+			$.each( dev, ( k, v ) => {
+				if ( ! [ 'device', 'type' ].includes( k ) ) li2 += k +': '+ v +', ';
 			} );
-			li += '<li data-type="'+ d +'">'+ ico( 'devices liicon edit' )
-					+'<div class="li1">'+ util.key2label( d ) +' <gr>•</gr> '+ DEV[ d ].device +'</div>'
+			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
+					+'<div class="li1">'+ util.key2label( d ) +' <gr>•</gr> '+ render.typeReplace( dev.type )
+					+ ( 'device' in dev ? ': '+ dev.device +'</div>' : '' )
 					+'<div class="li2">'+ li2.slice( 0, -2 ) +'</div>'
 					+'</li>';
 		} );
@@ -810,6 +810,11 @@ var render   = {
 			.html( li )
 			.removeClass( 'hide' );
 		$( '#menu' ).addClass( 'hide' );
+	}
+	, typeReplace : ( str ) => {
+		return str
+				.replace( 'Alsa', 'ALSA' )
+				.replace( 'Std',  'std' )
 	}
 	, val2string  : ( val ) => {
 		return val.type +': '+ JSON.stringify( val.parameters )
@@ -1801,6 +1806,21 @@ $( '.entries' ).on( 'click', 'i', function() {
 		$menu.find( '.delete' ).toggleClass( 'hide', V.tab === 'devices' );
 		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
 	}
+} ).on( 'click', '.i-back', function() {
+	if ( V.tab === 'mixers' ) {
+		var name = $( '#mixers .lihead' ).text();
+		if ( ! MIX[ name ].mapping.length ) { // no mapping left
+			delete MIX[ name ];
+			setting.save( title, 'Remove ...' );
+		}
+	} else if ( V.tab === 'pipeline' ) {
+		if ( ! $( '#pipeline .i-filters' ).length ) {
+			var pi = $( '#pipeline .lihead' ).data( 'index' );
+			PIP.splice( pi, 1 );
+			setting.save( title, 'Remove filter ...' );
+		} 
+	}
+	render[ V.tab ]();
 } );
 $( 'body' ).on( 'click', function( e ) {
 	if ( $( e.target ).hasClass( 'liicon' ) ) return
@@ -1940,22 +1960,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 			break;
 	}
 } );
-$( '.entries' ).on( 'click', '.i-back', function() {
-	if ( V.tab === 'mixers' ) {
-		var name = $( '#mixers .lihead' ).text();
-		if ( ! MIX[ name ].mapping.length ) { // no mapping left
-			delete MIX[ name ];
-			setting.save( title, 'Remove ...' );
-		}
-	} else if ( V.tab === 'pipeline' ) {
-		if ( ! $( '#pipeline .i-filters' ).length ) {
-			var pi = $( '#pipeline .lihead' ).data( 'index' );
-			PIP.splice( pi, 1 );
-			setting.save( title, 'Remove filter ...' );
-		} 
-	}
-	render[ V.tab ]();
-} );
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
@@ -2086,6 +2090,9 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 			}
 		} );
 	}
+} );
+$( '#devices' ).on( 'click', 'li', function() {
+	setting.device( $( this ).data( 'type' ) );
 } );
 $( '.switch' ).on( 'click', function() {
 	var id = this.id;
