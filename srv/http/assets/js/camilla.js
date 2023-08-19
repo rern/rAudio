@@ -755,8 +755,8 @@ var render   = {
 			var data = jsonClone( dev );
 			[ 'device', 'type' ].forEach( k => delete data[ k ] );
 			li += '<li data-type="'+ d +'">'+ ico( d === 'capture' ? 'input' : 'output' )
-					+'<div class="li1">'+ util.key2label( d ) +' <gr>•</gr> '+ render.typeReplace( dev.type )
-					+ ( 'device' in dev ? ': '+ dev.device +'</div>' : '' )
+					+'<div class="li1">'+ util.key2label( d ) +' <gr>·</gr> '+ render.typeReplace( dev.type )
+					+ ( 'device' in dev ? ' <gr>·</gr> '+ dev.device +'</div>' : '' )
 					+'<div class="li2">'+ render.json2string( data ) +'</div>'
 					+'</li>';
 		} );
@@ -792,6 +792,12 @@ var render   = {
 		keys.sort().forEach( k => data[ k ] = kv[ k ] );
 		return data
 	}
+	, json2string : ( json ) => {
+		return JSON.stringify( json )
+					.replace( /[{"}]/g, '' )
+					.replace( /type:/, '' )
+					.replace( /([:,])/g, '$1 ' )
+	}
 	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
 	, toggle      : ( li, sub ) => {
 		var ms = sub ? [ 'main', 'sub' ] : [ 'sub', 'main' ];
@@ -805,12 +811,6 @@ var render   = {
 		return str
 				.replace( 'Alsa', 'ALSA' )
 				.replace( 'Std',  'std' )
-	}
-	, json2string : ( json ) => {
-		return JSON.stringify( json )
-					.replace( /[{"}]/g, '' )
-					.replace( /type:/, '' )
-					.replace( /,/g, ', ' )
 	}
 }
 var setting  = {
