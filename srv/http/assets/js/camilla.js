@@ -1156,7 +1156,7 @@ var setting  = {
 		var type        = type || data.type;
 		// select
 		var selectlabel = [ 'type' ];
-		var select      = [ C.devicetype[ dev ] ];
+		var select      = [ jsonClone( C.devicetype[ dev ] ) ];
 		var values      = { type: type }
 		key_val         = jsonClone( CP[ dev ][ type ] );
 		if ( 'select' in key_val ) {
@@ -1164,10 +1164,10 @@ var setting  = {
 			k           = Object.keys( kv );
 			k.forEach( key => {
 				if ( key === 'format' ) {
-					var s = C.format;
+					var s = jsonClone( C.format );
 					var v = { format: data.format };
 				} else if ( key === 'device' ) {
-					var s = C.devices[ dev ];
+					var s = jsonClone( C.devices[ dev ] );
 					var v = { device: data.device };
 				} else if ( key === 'filename' ) {
 					var s   = S.lscoef.length ? S.lscoef : [ '(n/a)' ];
