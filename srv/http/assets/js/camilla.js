@@ -387,7 +387,6 @@ var graph    = {
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
 		bash( [ 'settings/camilla.py', tab +' '+ val ], data => {
-			console.log(data)
 			var options   = {
 				  displayModeBar : false
 				, scrollZoom     : true
