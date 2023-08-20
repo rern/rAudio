@@ -1974,11 +1974,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'liicon' )
-		|| $this.hasClass( 'i-mixers' )
-		|| $this.hasClass( 'i-back' )
-		|| $this.parent().hasClass( 'divgain' )
-	) return
+	if ( $this.is( '.liicon, .i-mixers, .i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
 	
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );
@@ -2036,10 +2032,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 } );
 $( '#pipeline' ).on( 'click', 'li', function( e ) { 
 	var $this = $( this );
-	if ( $( e.target ).is( 'i' )
-		|| $this.parent().hasClass( 'sub' )
-		|| $( e.target ).parents( '.divgraph' ).length
-	) return
+	if ( $( e.target ).is( 'i' ) || $this.parent().is( '.sub, .divgain' ) ) return
 	
 	var index = $this.data( 'index' );
 	if ( $this.data( 'type' ) === 'Filter' ) {
@@ -2063,7 +2056,7 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 	}
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'liicon' ) || $this.hasClass( 'i-back' ) ) return
+	if ( $this.is( '.liicon, .i-back' ) ) return
 	
 	V.li       = $this.parents( 'li' );
 	var title  = util.key2label( V.tab );
