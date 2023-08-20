@@ -635,7 +635,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : ( k ) => {
-		var li = '<li class="lihead files">'+ ico( 'folder-filter' ) +'FIR coeffifients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead main files">'+ ico( 'folder-filter' ) +'FIR coeffifients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
@@ -657,7 +657,7 @@ var render   = {
 		var chin      = DEV.capture.channels;
 		var chout     = DEV.playback.channels;
 		var iconadd   = chout === chmapping ? '' : ico( 'add' );
-		var li        = '<li class="lihead" data-name="'+ name +'">'+ name + iconadd + ico( 'back' ) +'</li>';
+		var li        = '<li class="lihead" data-name="'+ name +'">'+ ico( 'mixers' ) + name + iconadd + ico( 'back' ) +'</li>';
 		var optin     = htmlOption( chin );
 		var optout    = htmlOption( chout );
 		data.forEach( ( kv, i ) => {
@@ -707,7 +707,7 @@ var render   = {
 	}
 	, pipelineSub : ( index ) => {
 		var data = PIP[ index ];
-		var li   = '<li class="lihead" data-index="'+ index +'">Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li   = '<li class="lihead main" data-index="'+ index +'">'+ ico( 'pipeline' ) +'Channel '+ data.channel + ico( 'add' ) + ico( 'back' ) +'</li>';
 		data.names.forEach( ( name, i ) => li += render.pipeFilter( name, i ) );
 		render.toggle( li, 'sub' );
 		render.sortable( 'sub' );
@@ -1974,7 +1974,11 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	render.mixersSub( name );
 } ).on( 'click', 'li i', function() {
 	var $this  = $( this );
-	if ( $this.hasClass( 'liicon' ) || $this.hasClass( 'i-back' ) || $this.parent().hasClass( 'divgain' ) ) return
+	if ( $this.hasClass( 'liicon' )
+		|| $this.hasClass( 'i-mixers' )
+		|| $this.hasClass( 'i-back' )
+		|| $this.parent().hasClass( 'divgain' )
+	) return
 	
 	V.li       = $this.parents( 'li' );
 	var action = $this.prop( 'class' ).replace( /i-| bl/g, '' );

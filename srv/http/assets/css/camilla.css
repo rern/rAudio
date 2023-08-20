@@ -85,6 +85,9 @@
 	font-weight: 300;
 	color: var( --cw ) !important;
 }
+.lihead.main {
+	background: var( --cga );
+}
 .lihead .select2 {
 	float: none;
 	display: inline-block;
