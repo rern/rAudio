@@ -193,7 +193,7 @@ var plots    = {
 		  yaxis : 'y'
 		, type  : 'scatter'
 		, name  : 'Gain'
-		, line  : { width : 4, color: color.m, shape: 'spline' }
+		, line  : { width : 3, color: color.m, shape: 'spline' }
 	}
 	, phase   : {
 		  yaxis : 'y2'
@@ -212,7 +212,7 @@ var plots    = {
 		, yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Impulse'
-		, line : { width : 2, color: color.g }
+		, line : { width : 1, color: color.g }
 	}
 }
 var ycommon  = {
@@ -276,7 +276,7 @@ var axes     = {
 		  title      : {
 			  text     : 'Delay'
 			, font     : { color: color.o }
-			, standoff : 5
+			, standoff : 0
 		}
 		, tickfont      : { color: color.o }
 		, zerolinecolor : color.w
@@ -289,7 +289,7 @@ var axes     = {
 		  title      : {
 			  text     : 'Impulse'
 			, font     : { color: color.g }
-			, standoff : 5
+			, standoff : 0
 		}
 		, tickfont   : { color: color.g }
 		, linecolor  : color.gd
@@ -378,13 +378,7 @@ var graph    = {
 				  displayModeBar : false
 				, scrollZoom     : true
 			}
-			if ( filterdelay ) {
-				plots.gain.y = 0;
-				plots.phase.line.width = 1;
-			} else {
-				plots.gain.y = data.magnitude;
-				plots.phase.line.width = filters ? 4 : ( pipelinedelay ? 1 : 2 );
-			}
+			plots.gain.y  = filterdelay ? 0 : data.magnitude;
 			plots.phase.y = data.phase;
 			plots.delay.y = delay0 ? 0 : data.groupdelay;
 			var plot      = [ plots.gain, plots.phase, plots.delay ];
@@ -405,9 +399,19 @@ var graph    = {
 				}
 			}
 			if ( impulse ) { // Conv
-				var raw = data.impulse.length < 4500;
-				axes.time.ntick = raw ? 8 : 10;
-				axes.time.range = raw ? [ 0, 80 ] : [ 0, 120 ];
+				var imL  = data.impulse.length;
+				var raw  = imL < 4500;
+				var each = raw ? imL / 80 : imL / 120;
+				var iL   = raw ? 9 : 13;
+				var ticktext = [];
+				var tickvals = [];
+				for ( i = 0; i < iL; i++ ) {
+					ticktext.push( i * 10 );
+					tickvals.push( i * 10 * each );
+				}
+				axes.time.range = [ 0, imL ];
+				axes.time.tickvals = tickvals;
+				axes.time.ticktext = ticktext;
 				layout.xaxis2   = axes.time;
 				layout.yaxis4   = axes.impulse;
 				plots.impulse.y = data.impulse;
