@@ -69,7 +69,7 @@ $body = [
 {$Fi( 'set0 btn' )} Clipped sample: Reset
 {$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
-{$Fi( 'folder-filter btn' )} Filters: Coefficient files
+{$Fi( 'folder-filter btn' )} Filters: FIR files
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
 	{$Fi( 'graph btn' )} Frequency response graph
 	{$Fi( 'edit btn' )} Setting

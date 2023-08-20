@@ -641,7 +641,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : ( k ) => {
-		var li = '<li class="lihead files">Coefficient Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead files">FIR Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
