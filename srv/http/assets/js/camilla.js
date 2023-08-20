@@ -96,10 +96,10 @@ var CP       = {
 // filters //////////////////////////////////////////////////////////////////////////////
 var Fkv      = {
 	  pass    : {
-		  number : { freq: 1000, q: 0.5 }
+		  number : { freq: 1000, q: 0 }
 	  }
 	, shelf   : {
-		  number : { gain: 0, freq: 1000, q: 6 }
+		  number : { gain: 0, freq: 1000, q: 0 }
 		, radio  : [ 'Q', 'Samples' ]
 	}
 	, passFO  : {
@@ -109,7 +109,7 @@ var Fkv      = {
 		  number : { gain: 0, freq: 1000 }
 	}
 	, notch   : {
-		  number : { freq: 1000, q: 0.5 }
+		  number : { freq: 1000, q: 0 }
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 }
@@ -123,7 +123,7 @@ var F        = {
 	, LowshelfFO        : Fkv.shelfFO
 	, HighshelfFO       : Fkv.shelfFO
 	, Peaking           : {
-		  number : { gain: 0, freq: 1000, q: 1.5 }
+		  number : { gain: 0, freq: 1000, q: 0 }
 		, radio  : [ 'Q', 'Bandwidth' ]
 	}
 	, Notch             : Fkv.notch
@@ -140,7 +140,7 @@ var F        = {
 		number: { order: 2, freq: 1000 }
 	}
 	, Raw               : { 
-		  select : { filename: '', format: '' }
+		  select : { filename: '' }
 		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
 	}
 	, Wave              : {
@@ -795,7 +795,8 @@ var render   = {
 	, json2string : ( json ) => {
 		return JSON.stringify( json )
 					.replace( /[{"}]/g, '' )
-					.replace( /type:|filename:.*\//g, '' )
+					.replace( /type:|filename:.*\/|format:TEXT,|skip_bytes_lines:.*|read_bytes_lines:.*/g, '' )
+					.replace( /,$/, '' )
 					.replace( /([:,])/g, '$1 ' )
 	}
 	, prevconfig  : () => V.prevconfig[ V.tab ] = jsonClone( S.config[ V.tab ] )
@@ -836,8 +837,8 @@ var setting  = {
 			var k       = Object.keys( kv );
 			selectlabel = [ ...selectlabel, ...k ];
 			if ( [ 'Raw', 'Wave' ].includes( subtype ) ) {
-				var lscoef = subtype === 'Raw' ? [ jsonClone( S.lscoefraw ), jsonClone( C.format ) ] : [ jsonClone( S.lscoefwav ) ];
-				select     = [ ...select, ...lscoef ];
+				var lscoef = jsonClone( S[ subtype === 'Raw' ? 'lscoefraw' : 'lscoefwav' ] );
+				select     = [ ...select, lscoef ];
 			}
 			if ( name ) k.forEach( key => kv[ key ] = ekv[ key ] );
 			values      = { ...values, ...kv };
@@ -940,14 +941,17 @@ var setting  = {
 				}
 			}
 			, ok           : () => {
-				var val = infoVal();
+				var val     = infoVal();
 				var newname = val.name;
 				type        = val.type;
 				subtype     = val.subtype;
 				var param   = { type: subtype };
 				[ 'name', 'type', 'subtype', 'radio' ].forEach( k => delete val[ k ] );
 				$.each( val, ( k, v ) => param[ k ] = v );
-				if ( 'filename' in param ) param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
+				if ( 'filename' in param ) {
+					param.filename = '/srv/http/data/camilladsp/coeffs/'+ param.filename;
+					if ( subtype === 'Raw' ) param.format = 'TEXT';
+				}
 				FIL[ newname ] = { type: type, parameters : param }
 				if ( name ) {
 					delete FIL[ name ];
@@ -1285,7 +1289,7 @@ var setting  = {
 			selectlabel.push( 'interpolation', 'window' );
 			select.push( C.freeasync.interpolation, C.freeasync.window );
 			numberlabel.push( 'Sinc length', 'Oversampling ratio', 'Frequency cutoff' );
-			var f  = DEV.resampler_type.FreeAsync || {};
+			var f  = jsonClone( DEV.resampler_type.FreeAsync ) || {};
 			var values = {
 				  resampler_type     : 'FreeAsync'
 				, capture_samplerate : capturerate
@@ -1361,9 +1365,12 @@ var setting  = {
 		render.devices();
 	}
 	, save          : ( titlle, msg ) => {
-		var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
-		ws.send( '{ "SetConfigJson": "'+ config +'" }' );
-		ws.send( '"Reload"' );
+		setTimeout( () => {
+			var config = JSON.stringify( S.config ).replace( /"/g, '\\"' );
+			ws.send( '{ "SetConfigJson": "'+ config +'" }' );
+			ws.send( '"Reload"' );
+		}, ws ? 0 : 300 );
+		if ( ! ws ) util.websocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 /*		V.timeoutpush = setTimeout( () => {
 			bash( [ 'pushrefresh' ] );
