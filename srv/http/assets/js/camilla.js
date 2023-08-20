@@ -191,9 +191,9 @@ var color    = {
 var plots    = {
 	  gain    : {
 		  yaxis : 'y'
-		, type : 'scatter'
-		, name : 'Gain'
-		, line : { width : 4, color: color.m, shape: 'spline' }
+		, type  : 'scatter'
+		, name  : 'Gain'
+		, line  : { width : 4, color: color.m, shape: 'spline' }
 	}
 	, phase   : {
 		  yaxis : 'y2'
@@ -208,16 +208,11 @@ var plots    = {
 		, line : { width : 2, color: color.o }
 	}
 	, impulse : {
-		  yaxis : 'y4'
+		  xaxis : 'x2'
+		, yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Impulse'
 		, line : { width : 2, color: color.g }
-	}
-	, time    : {
-		  yaxis : 'y5'
-		, type  : 'scatter'
-		, name  : 'Time'
-		, line : { width : 1, color: color.g }
 	}
 }
 var ycommon  = {
@@ -239,6 +234,17 @@ var axes     = {
 		, range     : [ 10, 1000 ]
 		, gridcolor : color.grd
 	}
+	, time    : { // main-svg - cartesianlayer - subplot xy - overaxes-above - x2y4-x
+		  title      : {
+			  text     : 'Time'
+			, font     : { color: color.wl }
+			, standoff : 0
+		}
+		, tickfont   : { color: color.wl }
+		, gridcolor  : color.grd
+		, overlaying : 'x'
+		, side       : 'top'
+	}
 	, gain    : {
 		  title        : {
 			  text     : 'Gain'
@@ -249,17 +255,6 @@ var axes     = {
 		, zerolinecolor : color.w
 		, linecolor     : color.md
 		, gridcolor     : color.md
-	}
-	, gainx   : {
-		  title        : {
-			  text     : ''
-			, font     : { color: '#000' }
-			, standoff : 0
-		}
-		, tickfont      : { color: '#000' }
-		, zerolinecolor : '#000'
-		, linecolor     : '#000'
-		, gridcolor     : '#000'
 	}
 	, phase   : {
 		  title      : {
@@ -284,11 +279,11 @@ var axes     = {
 			, standoff : 5
 		}
 		, tickfont      : { color: color.o }
-		, shift         : 10
 		, zerolinecolor : color.w
 		, linecolor     : color.od
 		, gridcolor     : color.od
 		, ...ycommon
+		, shift         : 10
 	}
 	, impulse : {
 		  title      : {
@@ -297,22 +292,13 @@ var axes     = {
 			, standoff : 5
 		}
 		, tickfont   : { color: color.g }
-		, shift         : 10
 		, linecolor  : color.gd
 		, gridcolor  : color.gd
-		, ...ycommon
-	}
-	, time    : {
-		  title      : {
-			  text     : 'Time'
-			, font     : { color: color.o }
-			, standoff : 5
-		}
-		, tickfont   : { color: color.o }
-		, shift      : 10
-		, linecolor  : color.od
-		, gridcolor  : color.od
-		, ...ycommon
+		, overlaying : 'y'
+		, side       : 'left'
+		, anchor     : 'free'
+		, autoshift  : true
+		, shift      : -10
 	}
 }
 
@@ -386,7 +372,8 @@ var graph    = {
 			} );
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
-		bash( [ 'settings/camilla.py', tab +' '+ val ], data => {
+		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => {
+			var impulse   = 'impulse' in data;
 			var options   = {
 				  displayModeBar : false
 				, scrollZoom     : true
@@ -406,7 +393,7 @@ var graph    = {
 				, yaxis         : axes.gain
 				, yaxis2        : axes.phase
 				, yaxis3        : axes.delay
-				, margin        : { t: 0, r: 40, b: 90, l: 45 }
+				, margin        : { t: impulse ? 40 : 0, r: 40, b: 90, l: 45 }
 				, paper_bgcolor : '#000'
 				, plot_bgcolor  : '#000'
 				, showlegend    : false
@@ -417,9 +404,13 @@ var graph    = {
 					, size   : 14
 				}
 			}
-			if ( 'impulse' in data ) { // Conv
-				plots.impulse.y = [ ...Array( 10 ).fill( 0 ), ...data.impulse ]; // pad to show leftmost data
+			if ( impulse ) { // Conv
+				var raw = data.impulse.length < 4500;
+				axes.time.ntick = raw ? 8 : 10;
+				axes.time.range = raw ? [ 0, 80 ] : [ 0, 120 ];
+				layout.xaxis2   = axes.time;
 				layout.yaxis4   = axes.impulse;
+				plots.impulse.y = data.impulse;
 				plot.push( plots.impulse );
 			}
 			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
