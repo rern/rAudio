@@ -175,7 +175,7 @@ var F        = {
 }
 // graph //////////////////////////////////////////////////////////////////////////////
 var color    = {
-	  g  : 'hsl( 100, 90%,  30% )'
+	  g  : 'hsl( 100, 90%,  50% )'
 	, gd : 'hsl( 100, 90%,  20% )'
 	, gr : 'hsl( 200, 3%,   30% )'
 	, grd: 'hsl( 200, 3%,   20% )'
@@ -208,13 +208,13 @@ var plots    = {
 		, line : { width : 2, color: color.o }
 	}
 	, impulse : {
-		  yaxis : 'y3'
+		  yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Impulse'
-		, line : { width : 1, color: color.o }
+		, line : { width : 2, color: color.g }
 	}
 	, time    : {
-		  yaxis : 'y4'
+		  yaxis : 'y5'
 		, type  : 'scatter'
 		, name  : 'Time'
 		, line : { width : 1, color: color.g }
@@ -297,6 +297,7 @@ var axes     = {
 			, standoff : 5
 		}
 		, tickfont   : { color: color.g }
+		, shift         : 10
 		, linecolor  : color.gd
 		, gridcolor  : color.gd
 		, ...ycommon
@@ -386,6 +387,7 @@ var graph    = {
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
 		bash( [ 'settings/camilla.py', tab +' '+ val ], data => {
+			console.log(data)
 			var options   = {
 				  displayModeBar : false
 				, scrollZoom     : true
@@ -417,11 +419,9 @@ var graph    = {
 				}
 			}
 			if ( 'impulse' in data ) { // Conv
-				plots.impulse.y = data.impulse;
-				plots.time.y    = data.time;
-				layout.yaxis3   = axes.impulse;
-				layout.yaxis4   = axes.time;
-				plot.push( plots.impluse, plots.time );
+				plots.impulse.y = [ ...Array( 10 ).fill( 0 ), ...data.impulse ]; // pad to show leftmost data
+				layout.yaxis4   = axes.impulse;
+				plot.push( plots.impulse );
 			}
 			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
