@@ -635,7 +635,7 @@ var render   = {
 		return '<li data-name="'+ k +'">'+ ico( 'filters liicon edit graph' ) + licontent  +'</li>';
 	}
 	, filtersSub  : ( k ) => {
-		var li = '<li class="lihead files">FIR Files'+ ico( 'add' ) + ico( 'back' ) +'</li>';
+		var li = '<li class="lihead files">'+ ico( 'folder-filter' ) +'FIR coeffifients'+ ico( 'add' ) + ico( 'back' ) +'</li>';
 		if ( S.lscoef.length ) S.lscoef.forEach( k => li += '<li data-name="'+ k +'">'+ ico( 'file liicon' ) + k +'</li>' );
 		render.toggle( li, 'sub' );
 	} //---------------------------------------------------------------------------------------------
@@ -1391,7 +1391,7 @@ var setting  = {
 			, title       : title
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
-			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.txt,.wav' : '.yml'
+			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
