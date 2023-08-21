@@ -61,7 +61,7 @@ else
 	[[ $( mpc status %consume% ) == on ]] && consume=true
 	if [[ $camillavol ]]; then
 		control=camilla
-		vol_mute=$( $dirsettings/camilla.py volume )
+		vol_mute=$( volumeGet )
 		volume=${vol_mute/ *}
 		mute=${vol_mute/* }
 		[[ $mute == true ]] && echo $volume > $dirsystem/volumemute && volume=0
