@@ -18,16 +18,39 @@ def getValue( cmd ):
     
 if len( sys.argv ) > 1:
     cmd = sys.argv[ 1 ]
-    if cmd == 'save':
+    if cmd == 'volume':
+        volume = getValue( 'GetVolume' )
+        volume = round( ( 50 + volume ) * 2 )
+        mute   = getValue( 'GetMute' ) == True and 'true' or 'false'
+        print( str( volume ) +' '+ mute )
+    elif cmd == 'save':
         config = getValue( 'GetConfig' )
         file   = getValue( 'GetConfigName' )
         with open( file, 'w' ) as f: f.write( config )
         file  += '\n-g'+ str( getValue( 'GetVolume' ) )
         file  += getValue( 'GetMute' ) and '\n-m' or '\n'
         print( file )
+        config = json.loads( getValue( 'GetConfigJson' ) )
+        for p in config[ 'pipeline' ]:
+            if p[ 'type' ] != 'Filter': continue
+            
+            for n in p[ 'names' ]:
+                if config[ 'filters' ][ n ][ 'type' ] == 'Volume':
+                    camillavolume = True
+                    break
+            else:
+                continue
+            break
+        filevolume = '/srv/http/data/system/camillavolume'
+        if camillavolume:
+            os.close( os.open( filevolume, os.O_CREAT ) )
+        else:
+            os.remove( filevolume )
     else:
         target = sys.argv[ 2 ]
-        if cmd == 'filters' or cmd == 'pipeline':
+        if cmd == 'volumeset':
+            ws.send( json.dumps( { 'SetVolume': float( target ) } ) )
+        elif cmd == 'filters' or cmd == 'pipeline':
             config = json.loads( getValue( 'GetConfigJson' ) )
             if cmd == 'filters':
                 from camilladsp_plot import eval_filter

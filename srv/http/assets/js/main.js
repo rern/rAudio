@@ -624,14 +624,13 @@ $( '#volume' ).roundSlider( {
 		} else {
 			var diff  = e.value - S.volume || S.volume - S.volumemute; // change || mute/unmute
 		}
-		S.volume  = e.value;
 		var speed = Math.abs( diff ) * 40; // 1% : 40ms
 		$volumehandlerotate.css( 'transition-duration', speed +'ms' );
 		setTimeout( () => {
 			$volumehandlerotate.css( 'transition-duration', '100ms' );
 			$( '#volume-knob, #volmute' ).removeClass( 'disabled' );
-			$( '#voldn' ).toggleClass( 'disabled', S.volume === 0 );
-			$( '#volup' ).toggleClass( 'disabled', S.volume === 100 );
+			$( '#voldn' ).toggleClass( 'disabled', e.value === 0 );
+			$( '#volup' ).toggleClass( 'disabled', e.value === 100 );
 		}, speed );
 	}
 	, drag              : function( e ) {

@@ -4,7 +4,7 @@ alias=r1
 
 . /srv/http/bash/settings/addons.sh
 
-# 20230818
+# 20230822
 if [[ ! -e $dircamilladsp/configs-bt ]]; then
 	cat << EOF > /etc/default/camilladsp
 ADDRESS=0.0.0.0
@@ -59,5 +59,8 @@ if [[ -e $dirmpd/album ]]; then
 		[[ $charlast ]] && echo >> $dirmpd/$f
 	done
 fi
+
+# 20230822
+[[ -e $dirsystem/camilladsp && ! -e $dirsystem/camillavolume ]] && $dirsettings/camilla.py save &> /dev/null
 
 $dirsettings/player-conf.sh

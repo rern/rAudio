@@ -15,7 +15,19 @@ done &
 /opt/vc/bin/dtoverlay rotary-encoder pin_a=$pina pin_b=$pinb relative_axis=1 steps-per-period=$step
 sleep 1
 devinputrotary=$( realpath /dev/input/by-path/*rotary* )
-if [[ -e $dirshm/btreceiver ]]; then
+if [[ -e $dirsystem/camillavolume ]]; then
+	vol_mute=$( volumeGet )
+	volume=${vol_mute/ *}
+	evtest $devinputrotary | while read line; do
+		if [[ $line =~ 'value 1'$ ]]; then
+			(( volume++ ))
+			volumeUpDnCamilla $db
+		elif [[ $line =~ 'value -1'$ ]]; then
+			(( volume-- ))
+			volumeUpDnCamilla $db
+		fi
+	done
+elif [[ -e $dirshm/btreceiver ]]; then
 	control=$( < $dirshm/btreceiver )
 	evtest $devinputrotary | while read line; do
 		if [[ $line =~ 'value 1'$ ]]; then

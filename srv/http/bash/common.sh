@@ -342,7 +342,11 @@ volumeGet() {
 	#   set: awk 'BEGIN { printf "%.2f", ( '$percent' - 100 ) / 2 }' )
 	#   get: awk 'BEGIN { printf "%.0f", '$db' * 2 + 100 }'
 	local amixer card control data mixersoftware val_db
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirsystem/camillavolume ]]; then
+		$dirsettings/camilla.py volume
+		return
+		
+	elif [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 			[[ $amixer ]] && break || sleep 1
@@ -385,6 +389,13 @@ volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 volumeUpDnBt() {
 	killProcess vol
 	amixer -MqD bluealsa sset "$2" $1
+	volumePushSet
+}
+volumeUpDnCamilla() {
+	killProcess vol
+	volume=$1
+	db=$( awk 'BEGIN { printf "%.1f", '$(( volume - 100 ))' / 2 }' )
+	$dirsettings/camilla.py volumeset $db
 	volumePushSet
 }
 volumeUpDnMpc() {

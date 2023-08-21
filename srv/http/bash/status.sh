@@ -21,6 +21,35 @@ outputStatus() {
 	[[ $1 != noexit ]] && exit # >>>>>>>>>>
 }
 
+if [[ $1 == withdisplay ]]; then
+	if [[ -e $dirshm/nosound ]]; then
+		volumenone=true
+	else
+		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
+	fi
+	if [[ -e $dirsystem/camilladsp ]]; then
+		camilladsp=true
+		[[ -e $dirsystem/camillavolume ]] && camillavol=true
+	fi
+	systemctl -q is-active mediamtx && dabradio=true
+	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
+	display=$( grep -v } $dirsystem/display.json )
+	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
+	display+='
+, "audiocd"     : '$( exists $dirshm/audiocd )'
+, "camilladsp"  : '$camilladsp'
+, "camillavol"  : '$camillavol'
+, "color"       : "'$( getContent $dirsystem/color )'"
+, "dabradio"    : '$dabradio'
+, "equalizer"   : '$( exists $dirsystem/equalizer )'
+, "multiraudio" : '$( exists $dirsystem/multiraudio )'
+, "relays"      : '$( exists $dirsystem/relays )'
+, "screenoff"   : '$screenoff'
+, "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
+, "volumenone"  : '$volumenone'
+}'
+fi
+
 if [[ $1 == snapclient ]]; then
 	snapclient=1
 	player=mpd
@@ -30,7 +59,13 @@ else
 	[[ $player != mpd ]] && icon=$player
 	
 	[[ $( mpc status %consume% ) == on ]] && consume=true
-	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
+	if [[ $camillavol ]]; then
+		control=camilla
+		vol_mute=$( $dirsettings/camilla.py volume )
+		volume=${vol_mute/ *}
+		mute=${vol_mute/* }
+		[[ $mute == true ]] && echo $volume > $dirsystem/volumemute && volume=0
+	elif [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
 		volume=false
 	else
 		if [[ -e $dirshm/btreceiver ]]; then
@@ -46,7 +81,7 @@ else
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi
-	[[ -e $dirsystem/volumemute ]] && volumemute=$( cat $dirsystem/volumemute ) || volumemute=0
+	[[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
 ########
 	status='
   "player"       : "'$player'"
@@ -72,31 +107,8 @@ else
 , "volumemute"   : '$volumemute'
 , "webradio"     : false'
 fi
-if [[ $1 == withdisplay ]]; then
-	if [[ -e $dirshm/nosound ]]; then
-		volumenone=true
-	else
-		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
-	fi
-	systemctl -q is-active mediamtx && dabradio=true
-	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
-	display=$( grep -v } $dirsystem/display.json )
-	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
-	display+='
-, "audiocd"     : '$( exists $dirshm/audiocd )'
-, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
-, "color"       : "'$( getContent $dirsystem/color )'"
-, "dabradio"    : '$dabradio'
-, "equalizer"   : '$( exists $dirsystem/equalizer )'
-, "multiraudio" : '$( exists $dirsystem/multiraudio )'
-, "relays"      : '$( exists $dirsystem/relays )'
-, "screenoff"   : '$screenoff'
-, "snapclient"  : '$( [[ -e $dirsystem/snapclient && ! -e $dirsystem/snapclientserver ]] && echo true )'
-, "volumenone"  : '$volumenone'
-}'
-	status+='
-, "display"          : '$display
-fi
+[[ $display ]] && status+='
+, "display"      : '$display
 
 if [[ $player != mpd && $player != upnp ]]; then
 	case $player in

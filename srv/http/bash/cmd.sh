@@ -151,7 +151,10 @@ volumeSetAt() {
 	target=$1
 	control=$2
 	card=$3
-	if [[ -e $dirshm/btreceiver ]]; then
+	if [[ $control == camilla ]]; then
+		db=$( awk 'BEGIN { printf "%.1f", '$(( target - 100 ))' / 2 }' )
+		$dirsettings/camilla.py volumeset $db
+	elif [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 		#echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
@@ -806,6 +809,9 @@ volumeupdn )
 	;;
 volumeupdnbt )
 	volumeUpDnBt 1%$UPDN "$CONTROL"
+	;;
+volumeupdncamilla )
+	volumeUpDnCamilla $VOLUME
 	;;
 volumeupdnmpc )
 	volumeUpDnMpc ${updn}1

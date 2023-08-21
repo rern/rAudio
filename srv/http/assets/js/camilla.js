@@ -312,20 +312,6 @@ function pushstreamDisconnect() { // from common.js
 	if ( ws ) ws.close();
 }
 
-var gain     = {
-	  mute      : ( mute ) => {
-		var set = false;
-		if ( typeof mute === 'boolean' ) { //set
-			S.mute  = mute;
-			ws.send( '{ "SetMute": '+ S.mute +'} ' );
-		} else { // status
-			mute    = S.mute;
-		}
-		$( '#divvolume .i-mute' ).toggleClass( 'bl', mute );
-		$( '#volume' ).prop( 'disabled', mute );
-		$( '#divvolume .divgain' ).toggleClass( 'disabled', mute );
-	}
-}
 var graph    = {
 	  list     : () => {
 		var $divgraph = $( '#'+ V.tab +' .divgraph' );
@@ -572,10 +558,22 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.configname );
 	}
+	, mute      : ( mute ) => {
+		var set = false;
+		if ( typeof mute === 'boolean' ) { //set
+			S.mute  = mute;
+			ws.send( '{ "SetMute": '+ S.mute +'} ' );
+		} else { // status
+			mute    = S.mute;
+		}
+		$( '#divvolume .i-mute' ).toggleClass( 'bl', mute );
+		$( '#volume' ).prop( 'disabled', mute );
+		$( '#divvolume .divgain' ).toggleClass( 'disabled', mute );
+	}
 	, volume      : () => {
 		V.volume = false;
 		PIP.forEach( p => {
-			if ( p.type !== 'Filter' ) return
+			if ( p.type !== 'Filter' ) return false
 			
 			p.names.forEach( n => {
 				if ( FIL[ n ].type === 'Volume' ) {
@@ -588,7 +586,7 @@ var render   = {
 		if ( V.volume ) {
 			$( '#gain' ).text( util.dbRound( S.volume ) );
 			$( '#volume' ).val( S.volume );
-			gain.mute();
+			render.mute();
 			$( '#divvolume' ).removeClass( 'hide' );
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -949,7 +947,7 @@ var setting  = {
 					if ( subtype === 'Raw' ) param.format = 'TEXT';
 				}
 				FIL[ newname ] = { type: type, parameters : param }
-				if ( name ) {
+				if ( name !== newname ) {
 					delete FIL[ name ];
 					PIP.forEach( p => {
 						if ( p.type === 'Filter' ) {
@@ -1629,7 +1627,7 @@ $( '.i-gear.range' ).on( 'click', function() {
 	} );
 } )
 $( '#divvolume .i-mute' ).on( 'click', function() {
-	gain.mute( ! S.mute );
+	render.mute( ! S.mute );
 } );
 $( '#volume' ).on( 'input', function() {
 	S.volume = +$( this ).val();

@@ -2055,6 +2055,11 @@ function volumeUpDown( up ) {
 		$( '#volume-text' ).text( S.volume );
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	}
+	if ( D.camillavol ) {
+		bash( [ 'volumeupdncamilla', S.volume, 'CMD VOLUME' ] );
+		return
+	}
+	
 	var cmd = 'volumeupdn';
 	if ( S.btreceiver ) {
 		cmd += 'bt';
