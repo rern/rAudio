@@ -175,18 +175,20 @@ var F        = {
 }
 // graph //////////////////////////////////////////////////////////////////////////////
 var color    = {
-	  g  : 'hsl( 100, 90%,  50% )'
-	, gd : 'hsl( 100, 90%,  20% )'
-	, gr : 'hsl( 200, 3%,   30% )'
-	, grd: 'hsl( 200, 3%,   20% )'
-	, m  : 'hsl( 200, 100%, 40% )'
-	, md : 'hsl( 200, 100%, 20% )'
-	, o  : 'hsl( 30,  80%,  50% )'
-	, od : 'hsl( 30,  80%,  20% )'
-	, r  : 'hsl( 0,   70%,  50% )'
-	, rd : 'hsl( 0,   70%,  20% )'
-	, w  : 'hsl( 200, 3%,   60% )'
-	, wl : 'hsl( 200, 3%,   80% )'
+	  g   : 'hsl( 100, 90%,  50% )'
+	, gd  : 'hsl( 100, 90%,  20% )'
+	, gr  : 'hsl( 200, 3%,   30% )'
+	, grl : 'hsl( 200, 3%,   50% )'
+	, grd : 'hsl( 200, 3%,   20% )'
+	, grk : 'hsl( 200, 3%,   10% )'
+	, m   : 'hsl( 200, 100%, 40% )'
+	, md  : 'hsl( 200, 100%, 20% )'
+	, o   : 'hsl( 30,  80%,  50% )'
+	, od  : 'hsl( 30,  80%,  20% )'
+	, r   : 'hsl( 0,   70%,  50% )'
+	, rd  : 'hsl( 0,   70%,  20% )'
+	, w   : 'hsl( 200, 3%,   60% )'
+	, wl  : 'hsl( 200, 3%,   80% )'
 }
 var plots    = {
 	  gain    : {
@@ -237,11 +239,11 @@ var axes     = {
 	, time    : { // main-svg - cartesianlayer - subplot xy - overaxes-above - x2y4-x
 		  title      : {
 			  text     : 'Time'
-			, font     : { color: color.wl }
+			, font     : { color: color.grl }
 			, standoff : 0
 		}
-		, tickfont   : { color: color.wl }
-		, gridcolor  : color.grd
+		, tickfont   : { color: color.grl }
+		, gridcolor  : color.grk
 		, overlaying : 'x'
 		, side       : 'top'
 	}
