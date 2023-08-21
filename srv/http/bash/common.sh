@@ -342,7 +342,7 @@ volumeGet() {
 	#   set: awk 'BEGIN { printf "%.2f", ( '$percent' - 100 ) / 2 }' )
 	#   get: awk 'BEGIN { printf "%.0f", '$db' * 2 + 100 }'
 	local amixer card control data mixersoftware val_db
-	if [[ -e $dirsystem/camillavolume ]]; then
+	if [[ -e $dirsystem/camilladsp && -e $dirsystem/camillavolume ]]; then
 		$dirsettings/camilla.py volume
 		return
 		
