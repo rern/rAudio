@@ -176,7 +176,7 @@ input[ type=range ] {
 	color: var( --cg60 );
 }
 #divvolume .col-l {
-	padding-top: 0;
+	padding-top: 6px;
 }
 #divvolume .i-mute {
 	width: 40px;
@@ -190,7 +190,6 @@ input[ type=range ] {
 }
 #divvolume .divgain {
 	position: absolute;
-	top: 6px;
 	padding-left: 5px;
 }
 i.disabled,

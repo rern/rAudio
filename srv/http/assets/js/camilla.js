@@ -552,13 +552,6 @@ var render   = {
 		}
 		$( '#divstate .label' ).html( label );
 		$( '#divstate .value' ).html( status );
-		render.volume();
-		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
-		$( '#configuration' )
-			.html( htmlOption( S.lsconf ) )
-			.val( S.configname );
-	}
-	, volume      : () => {
 		if ( S.volume !== false ) {
 			$( '#gain' ).text( S.volume );
 			$( '#volume' ).val( S.volume );
@@ -567,6 +560,10 @@ var render   = {
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
 		}
+		$( '#divconfiguration .name' ).html( 'Configuration'+ ( S.bluetooth ? ico( 'bluetooth' ) : '' ) );
+		$( '#configuration' )
+			.html( htmlOption( S.lsconf ) )
+			.val( S.configname );
 	}
 	, vu          : () => {
 		$( '.peak' ).css( 'background', 'var( --cm )' );
@@ -1575,7 +1572,7 @@ $( '.i-gear.range' ).on( 'click', function() {
 		, title      : 'Gain Slider Range'
 		, numberlabel : [ 'Max', 'Min' ]
 		, footer      : '(50 ... -50)'
-		, boxwidth   : 60
+		, boxwidth   : 110
 		, values     : S.range
 		, beforeshow : () => {
 			var $input = $( '#infoContent input' );
@@ -1610,25 +1607,25 @@ $( '#volume' ).on( 'input', function() {
 $( '.container' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );
 	var $this = $( this );
-	if ( $this.parent().hasClass( 'disabled' ) ) return
+	var action = $this.prop( 'class' ).slice( 2, 6 );
+	if ( action === 'mute' || $this.parent().hasClass( 'disabled' ) ) return
 	
 	var $gain  = $this.parent().prev();
 	var $db    = $gain.prev();
 	var val    = +$gain.val();
-	var set0   = $this.hasClass( 'i-set0' );
 	var volume = $this.parents( '#divvolume' ).length;
-	if ( set0 ) {
+	if ( action === 'set0' ) {
 		if ( val === 0 ) return
 		
 		val = 0;
-	} else if ( $this.hasClass( 'i-minus' ) ) {
-		if ( val === $gain.prop( 'min' ) ) return
-		
-		val -= volume ? 1 : 0.1;
-	} else if ( $this.hasClass( 'i-plus' ) ) {
+	} else if ( action === 'plus' ) {
 		if ( val === $gain.prop( 'max' ) ) return
 		
 		val += volume ? 1 : 0.1;
+	} else {
+		if ( val === $gain.prop( 'min' ) ) return
+		
+		val -= volume ? 1 : 0.1;
 	}
 	$gain
 		.val( val )
@@ -1917,7 +1914,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 					V.li.remove();
 					setting.sortRefresh( main ? 'main' : 'sub' );
 					graph.pipeline();
-					render.volume();
 				}
 			} );
 			break;
@@ -2048,7 +2044,6 @@ $( '#pipeline' ).on( 'click', 'li', function( e ) {
 				setting.save( title, 'Save ...' );
 				setting.sortRefresh( 'sub' );
 				render.pipelineSub( index );
-				render.volume();
 				graph.pipeline();
 			}
 		} );

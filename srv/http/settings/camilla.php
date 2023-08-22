@@ -31,10 +31,10 @@ foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
 $htmltabs.= '</div>';
 $htmlvolume = '
 <div id="divvolume">
-<div class="col-l text single">Volume'.i( 'mute' ).'<c id="gain">0</c></div>
+<div class="col-l text">Volume&emsp;<c id="gain">0</c></div>
 <div class="col-r text">
 	<input id="volume" type="range" min="0" max="100">
-	<div class="divgain">'.i( 'minus' ).i( 'set0' ).i( 'plus' ).'</div>
+	<div class="divgain">'.i( 'minus' ).i( 'mute' ).i( 'plus' ).'</div>
 </div>
 <div style="clear:both"></div>
 </div>
@@ -65,11 +65,10 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
-{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} <c>Mute</c> <c>-0.1</c> <c> 0 </c> <c>+0.1</c>
-{$Fi( 'set0 btn' )} Clipped sample: Reset
 {$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
 {$Fi( 'folder-filter btn' )} Filters: FIR files
+{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Mute, up, 0, down
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
 	{$Fi( 'graph btn' )} Frequency response graph
 	{$Fi( 'edit btn' )} Setting
