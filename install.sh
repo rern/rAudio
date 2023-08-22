@@ -25,6 +25,11 @@ ExecStart=/usr/bin/camilladsp $CONFIG -p $PORT -a $ADDRESS -o $LOGFILE $GAIN
 	rm -rf /srv/http/settings/camillagui
 	rm -f $dircamilladsp/configs/{active,default}_config.yml
 	mkdir -p $dircamilladsp/configs-bt
+	echo "\
+filtersmax=10
+filtersmin=-10
+mixersmax=10
+mixersmin=-10" > $dirsystem/camilla.conf
 fi
 
 # 20230630

@@ -124,6 +124,15 @@ for i in $false; do
 done
 jq -S <<< {${lines:2}} > $dirsystem/display.json
 
+# camilladsp
+if [[ -e /usr/bin/camilladsp ]]; then
+	echo "\
+filtersmax=10
+filtersmin=-10
+mixersmax=10
+mixersmin=-10" > $dirsystem/camilla.conf
+fi
+
 # localbrowser
 [[ -e /etc/systemd/system/localbrowser.service ]] && rm -rf /root/.config/chromium /root/.mozilla
 

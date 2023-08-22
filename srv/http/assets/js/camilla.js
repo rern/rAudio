@@ -638,7 +638,7 @@ var render   = {
 							+'<div class="li2">'+ param.freq +'Hz '+ ( 'q' in param ? 'Q:'+ param.q : 'S:'+ param.slope ) +'</div>'
 							+'</div>'
 							+'<c class="db">'+ val +'</c>'
-							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIN +'" max="'+ S.range.MAX +'">'
+							+'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.FILTERSMIN +'" max="'+ S.range.FILTERSMAX +'">'
 							+'<div class="divgain filter">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 							+'</div>';
 			if ( k in V.graphlist ) licontent += V.graphlist[ k ];
@@ -690,7 +690,7 @@ var render   = {
 				var disabled = ( source.mute ? ' disabled' : '' );
 				li += '<li class="liinput dest'+ i +'"'+ i_name +' dest'+ i +'" data-si="'+ si +'">'+ ico( 'input liicon' ) +'<select>'+ opts +'</select>'
 					 + ico( source.mute ? 'mute bl' : 'mute' ) +'<c class="db">'+ val +'</c>'
-					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIN +'" max="'+ S.range.MAX +'" '+ disabled +'>'
+					 +'<input type="range" step="0.1" value="'+ val +'" min="'+ S.range.MIXERSMIN +'" max="'+ S.range.MIXERSMAX +'" '+ disabled +'>'
 					 +'<div class="divgain '+ disabled +'">'+ ico( 'minus' ) + ico( 'set0' ) + ico( 'plus' ) +'</div>'
 					 + ico( source.inverted ? 'inverted bl' : 'inverted' )
 					 +'</li>';
@@ -1763,13 +1763,16 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		return
 	}
 	
+	var TAB    = V.tab.toUpperCase();
+	var values = {};
+	[ 'MAX', 'MIN' ].forEach( k => values[ TAB + k ] = S.range[ TAB + k ] );
 	info( {
-		  icon       : 'camilladsp'
+		  icon       : V.tab
 		, title      : 'Gain Slider Range'
 		, numberlabel : [ 'Max', 'Min' ]
 		, footer      : '(50 ... -50)'
 		, boxwidth   : 110
-		, values     : S.range
+		, values     : values
 		, beforeshow : () => {
 			var $input = $( '#infoContent input' );
 			var $max   = $input.eq( 0 );
@@ -1788,9 +1791,10 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 			} );
 		}
 		, ok         : () => {
-			S.range = infoVal();
-			bash( [ 'camilla', ...Object.values( S.range ), 'CFG MAX MIN' ] );
-			$( '.tab input[type=range]' ).prop( { min: S.range.MIN, max: S.range.MAX } );
+			var val = infoVal();
+			[ 'MAX', 'MIN' ].forEach( k => S.range[ TAB + k ] = val[ TAB + k ] );
+			$( '#'+ V.tab +' input[type=range]' ).prop( { min: S.range[ TAB +'MIN' ], max: S.range[ TAB +'MAX' ] } );
+			bash( [ 'camilla', ...Object.values( S.range ), 'CFG '+ Object.keys( S.range ).join( ' ' ) ] );
 		}
 	} );
 } );
