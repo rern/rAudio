@@ -1520,7 +1520,7 @@ var util     = {
 						css = 'width';
 					}
 					value.forEach( ( v, i ) => {
-						v = util.db2percent( v );
+						v = S.volumemute && cp === 'P' ? 0 : util.db2percent( v );
 						V[ cp ].push( v );
 						$( '.'+ cmd[ 3 ] + i + cl ).css( css, v +'%' );
 					} );
