@@ -1612,10 +1612,11 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	var $this = $( this );
 	if ( $this.parent().hasClass( 'disabled' ) ) return
 	
-	var $gain = $this.parent().prev();
-	var $db   = $gain.prev();
-	var val   = +$gain.val();
-	var set0  = $this.hasClass( 'i-set0' );
+	var $gain  = $this.parent().prev();
+	var $db    = $gain.prev();
+	var val    = +$gain.val();
+	var set0   = $this.hasClass( 'i-set0' );
+	var volume = $this.parents( '#divvolume' ).length;
 	if ( set0 ) {
 		if ( val === 0 ) return
 		
@@ -1623,16 +1624,16 @@ $( '.container' ).on( 'click', '.divgain i', function() {
 	} else if ( $this.hasClass( 'i-minus' ) ) {
 		if ( val === $gain.prop( 'min' ) ) return
 		
-		val -= 0.1;
+		val -= volume ? 1 : 0.1;
 	} else if ( $this.hasClass( 'i-plus' ) ) {
 		if ( val === $gain.prop( 'max' ) ) return
 		
-		val += 0.1;
+		val += volume ? 1 : 0.1;
 	}
 	$gain
 		.val( val )
 		.trigger( 'input' );
-	if ( this.id !== 'volume' && V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
+	if ( ! volume && V.li.find( '.divgraph' ).length ) V.timeoutgain = setTimeout( graph.gain, set0 ? 0 : 1000 );
 } );
 $( '#divstate' ).on( 'click', '.clipped', function() {
 	S.clipped = S.status.GetClippedSamples;
