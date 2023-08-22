@@ -151,10 +151,7 @@ volumeSetAt() {
 	target=$1
 	control=$2
 	card=$3
-	if [[ $control == camilla ]]; then
-		db=$( awk 'BEGIN { printf "%.1f", '$(( target - 100 ))' / 2 }' )
-		$dirsettings/camilla.py volumeset $db
-	elif [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then
 		amixer -MqD bluealsa sset "$control" $target% 2> /dev/null
 		#echo $target > "$dirsystem/btvolume-$control"
 	elif [[ $control ]]; then
@@ -250,10 +247,6 @@ bookmarkrename )
 cachebust )
 	cacheBust
 	;;
-camillagui )
-	systemctl start camillagui
-	sed -i '/Connection reset without closing handshake/ d' /var/log/camilladsp.log
-	;;
 color )
 	file=$dirsystem/color
 	[[ $HSL == reset ]] && rm -f $file && HSL=
@@ -294,7 +287,6 @@ s|(path.*hsl).*;|\1(${hsg}75%);|
 	sed -E "s|(path.*hsl).*;|\1(0,0%,90%);}|" $dirimg/icon.svg \
 		| convert -density 96 -background none - $dirimg/icon.png
 	[[ -e $dirsystem/localbrowser.conf ]] && splashRotate
-	sed -i -E 's/\?v=.{10}/?v='$( date +%s )'/g' /srv/http/settings/camillagui/build/index.html
 	pushstream reload 1
 	;;
 coverartreset )
@@ -809,9 +801,6 @@ volumeupdn )
 	;;
 volumeupdnbt )
 	volumeUpDnBt 1%$UPDN "$CONTROL"
-	;;
-volumeupdncamilla )
-	volumeUpDnCamilla $VOLUME
 	;;
 volumeupdnmpc )
 	volumeUpDnMpc ${updn}1

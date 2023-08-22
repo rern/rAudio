@@ -25,15 +25,24 @@ if grep -q configs-bt /etc/default/camilladsp; then
 "bluealsa"'
 	fi
 fi
-
+vcc=$( volumeCardControl )
+volume=${vcc/ *}
+card=$( cut -d' ' -f2 <<< $vcc )
+control=$( cut -d' ' -f3- <<< $vcc )
+[[ -e $dirsystem/volumemute ]] && volumemute=$( < $dirsystem/volumemute ) || volumemute=0
+	
 data=${data:1:-1}
 data+='
 , "bluetooth" : '$bluetooth'
+, "card"      : '$card'
 , "clipped"   : '$( cat $dirshm/clipped 2> /dev/null || echo 0 )'
+, "control"   : "'$control'"
 , "devices"   : {
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
-, "range"     : '$( conf2json camilla.conf )
+, "range"     : '$( conf2json camilla.conf )'
+, "volume"    : '$volume'
+, "volumemute"   : '$volumemute
 
 data2json "$data" $1

@@ -27,18 +27,13 @@ if [[ $1 == withdisplay ]]; then
 	else
 		[[ ! -e $dirshm/mixernone || -e $dirshm/btreceiver || -e $dirsystem/snapclientserver ]] && volumenone=false || volumenone=true
 	fi
-	if [[ -e $dirsystem/camilladsp ]]; then
-		camilladsp=true
-		[[ -e $dirsystem/camillavolume ]] && camillavol=true
-	fi
 	systemctl -q is-active mediamtx && dabradio=true
 	[[ -e $dirsystem/localbrowser.conf ]] && ! grep -q screenoff=0 $dirsystem/localbrowser.conf && screenoff=true
 	display=$( grep -v } $dirsystem/display.json )
 	[[ -e $filesharedip ]] && display=$( sed -E 's/"(sd|usb).*/"\1": false,/' <<< $display )
 	display+='
 , "audiocd"     : '$( exists $dirshm/audiocd )'
-, "camilladsp"  : '$camilladsp'
-, "camillavol"  : '$camillavol'
+, "camilladsp"  : '$( exists $dirsystem/camilladsp )'
 , "color"       : "'$( getContent $dirsystem/color )'"
 , "dabradio"    : '$dabradio'
 , "equalizer"   : '$( exists $dirsystem/equalizer )'
@@ -59,25 +54,10 @@ else
 	[[ $player != mpd ]] && icon=$player
 	
 	[[ $( mpc status %consume% ) == on ]] && consume=true
-	if [[ $camillavol ]]; then
-		control=camilla
-		vol_mute=$( volumeGet )
-		volume=${vol_mute/ *}
-		mute=${vol_mute/* }
-		[[ $mute == true ]] && echo $volume > $dirsystem/volumemute && volume=0
-	elif [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
-		volume=false
-	else
-		if [[ -e $dirshm/btreceiver ]]; then
-			control=$( < $dirshm/btreceiver )
-		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
-			control=
-		else
-			card=$( getContent $dirsystem/asoundcard )
-			control=$( getContent $dirshm/amixercontrol )
-		fi
-		volume=$( volumeGet value )
-	fi
+	vcc=$( volumeCardControl )
+	volume=${vcc/ *}
+	card=$( cut -d' ' -f2 <<< $vcc )
+	control=$( cut -d' ' -f3- <<< $vcc )
 	if [[ -e $dirmpd/listing ]] || mpc | grep -q ^Updating; then
 		updating_db=true
 	fi

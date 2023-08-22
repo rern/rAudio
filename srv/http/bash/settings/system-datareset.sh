@@ -109,9 +109,6 @@ else # from create-ros.sh
 	curl -sL https://github.com/rern/rAudio-addons/raw/main/addonslist.json | sed -E -n '/"rAudio"/ {n;s/.*: *"(.*)"/\1/; p}' > $diraddons/r1
 fi
 
-# camilladsp
-cp /{etc,srv/http/data}/camilladsp/configs/camilladsp.yml
-
 # display
 true='album albumartist artist bars buttons composer conductor count cover date fixedcover genre
 	label latest nas playbackswitch playlists plclear plsimilar sd time usb volume webradio'

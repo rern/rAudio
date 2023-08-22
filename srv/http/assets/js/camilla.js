@@ -35,7 +35,7 @@ var C        = {
 		, Conv        : [ 'Raw', 'Wave', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
-	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Volume', 'Loudness', 'DiffEq', 'Dither' ]
+	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Loudness', 'DiffEq', 'Dither' ] // omit Volume - use raAudio volume
 }
 // capture / playback //////////////////////////////////////////////////////////////////////////////
 var CPkv     = {
@@ -502,7 +502,7 @@ var render   = {
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
-		V.statusget   = [ 'GetConfigName', 'GetVolume', 'GetMute', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -558,35 +558,11 @@ var render   = {
 			.html( htmlOption( S.lsconf ) )
 			.val( S.configname );
 	}
-	, mute      : ( mute ) => {
-		var set = false;
-		if ( typeof mute === 'boolean' ) { //set
-			S.mute  = mute;
-			ws.send( '{ "SetMute": '+ S.mute +'} ' );
-		} else { // status
-			mute    = S.mute;
-		}
-		$( '#divvolume .i-mute' ).toggleClass( 'bl', mute );
-		$( '#volume' ).prop( 'disabled', mute );
-		$( '#divvolume .divgain' ).toggleClass( 'disabled', mute );
-	}
 	, volume      : () => {
-		V.volume = false;
-		PIP.forEach( p => {
-			if ( p.type !== 'Filter' ) return false
-			
-			p.names.forEach( n => {
-				if ( FIL[ n ].type === 'Volume' ) {
-					V.volume = true;
-					return false
-				}
-			} );
-			if ( V.volume ) return false
-		} );
-		if ( V.volume ) {
-			$( '#gain' ).text( util.dbRound( S.volume ) );
+		if ( S.volume !== false ) {
+			$( '#gain' ).text( S.volume );
 			$( '#volume' ).val( S.volume );
-			render.mute();
+			$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
 			$( '#divvolume' ).removeClass( 'hide' );
 		} else {
 			$( '#divvolume' ).addClass( 'hide' );
@@ -607,10 +583,6 @@ var render   = {
 	, filters     : () => {
 		graph.list();
 		var data     = render.dataSort( 'filters' );
-		var li       = '';
-		var classvol = S.mute ? 'infobtn-primary' : '';
-		var iconvol  = S.mute ? 'mute' : 'volume';
-		var step_val = ' step="0.1" value="'+ util.dbRound( S.volume ) +'"';
 		var li       = '';
 		$.each( data, ( k, v ) => li += render.filter( k, v ) );
 		render.toggle( li );
@@ -1410,6 +1382,13 @@ var setting  = {
 			}
 		} );
 	}
+	, volume        : ( val ) => {
+		$( '#gain' ).text( val );
+		bash( [ 'volume', S.volume, val, S.control, S.card, 'CMD CURRENT TARGET CONTROL CARD' ] );
+		S.volumemute = val === 0 ? S.volume : 0;
+		S.volume = val;
+		$( '#divvolume .i-mute' ).toggleClass( 'bl', S.volumemute !== 0 );
+	}
 }
 var util     = {
 	  db2percent( v ) {
@@ -1546,10 +1525,6 @@ var util     = {
 				case 'GetConfigName':
 					S.configname = value.split( '/' ).pop();
 					break;
-				case 'GetVolume':
-				case 'GetMute':
-					S[ cmd.slice( 3 ).toLowerCase() ] = value;
-					break;
 				case 'GetState':
 				case 'GetCaptureRate':
 				case 'GetBufferLevel':
@@ -1627,12 +1602,10 @@ $( '.i-gear.range' ).on( 'click', function() {
 	} );
 } )
 $( '#divvolume .i-mute' ).on( 'click', function() {
-	render.mute( ! S.mute );
+	setting.volume( S.volumemute );
 } );
 $( '#volume' ).on( 'input', function() {
-	S.volume = +$( this ).val();
-	$( '#gain' ).text( util.dbRound( S.volume ) );
-	ws.send( '{ "SetVolume": '+ S.volume +' }' );
+	setting.volume( +$( this ).val() );
 } );
 $( '.container' ).on( 'click', '.divgain i', function() {
 	clearTimeout( V.timeoutgain );

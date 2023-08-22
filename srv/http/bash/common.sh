@@ -80,7 +80,6 @@ cacheBust() {
 	! grep -q ^.hash.*time /srv/http/common.php && sed -i "s/?v=.*/?v='.time();/" /srv/http/common.php
 	hash=?v=$( date +%s )
 	sed -E -i "s/(rern.woff2).*'/\1$hash'/" /srv/http/assets/css/common.css
-	sed -E -i  "s/\?v=.{10}/$hash/g" /srv/http/settings/camillagui/build/index.html
 }
 calc() { # $1 - decimal precision, $2 - math without spaces
 	awk 'BEGIN { printf "%.'$1'f", '$2' }'
@@ -155,7 +154,7 @@ dirPermissions() {
 	chown -R http:http /srv
 	chown mpd:audio $dirmpd $dirplaylists $dirmpd/mpd.db
 	chmod -R u=rw,go=r,a+X /srv
-	chmod -R +x $dirbash /srv/http/settings/camillagui/{backend,main.py} &> /dev/null
+	chmod -R +x $dirbash
 }
 enableFlagSet() {
 	[[ $ON ]] && touch $dirsystem/$CMD || rm -f $dirsystem/$CMD
@@ -337,16 +336,26 @@ statePlay() {
 stringEscape() {
 	echo ${@//\"/\\\"}
 }
+volumeCardControl() {
+	local card control volume
+	if [[ -e $dirshm/nosound && ! -e $dirshm/btreceiver ]]; then
+		volume=false
+	else
+		if [[ -e $dirshm/btreceiver ]]; then
+			control=$( < $dirshm/btreceiver )
+		elif grep -q mixer_type.*software $dirmpdconf/output.conf; then
+			control=
+		else
+			card=$( getContent $dirsystem/asoundcard )
+			control=$( getContent $dirshm/amixercontrol )
+		fi
+		volume=$( volumeGet value )
+	fi
+	echo $volume $card $control
+}
 volumeGet() {
-	# camilla: 
-	#   set: awk 'BEGIN { printf "%.2f", ( '$percent' - 100 ) / 2 }' )
-	#   get: awk 'BEGIN { printf "%.0f", '$db' * 2 + 100 }'
 	local amixer card control data mixersoftware val_db
-	if [[ -e $dirsystem/camilladsp && -e $dirsystem/camillavolume ]]; then
-		$dirsettings/camilla.py volume
-		return
-		
-	elif [[ -e $dirshm/btreceiver ]]; then
+	if [[ -e $dirshm/btreceiver ]]; then
 		for i in {1..5}; do # takes some seconds to be ready
 			amixer=$( amixer -MD bluealsa 2> /dev/null | grep -m1 % )
 			[[ $amixer ]] && break || sleep 1
@@ -389,13 +398,6 @@ volumeUpDn() { # cmd.sh, bluetoothbutton.sh, rotaryencoder.sh
 volumeUpDnBt() {
 	killProcess vol
 	amixer -MqD bluealsa sset "$2" $1
-	volumePushSet
-}
-volumeUpDnCamilla() {
-	killProcess vol
-	volume=$1
-	db=$( awk 'BEGIN { printf "%.1f", '$(( volume - 100 ))' / 2 }' )
-	$dirsettings/camilla.py volumeset $db
 	volumePushSet
 }
 volumeUpDnMpc() {

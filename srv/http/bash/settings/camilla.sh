@@ -80,21 +80,12 @@ setformat )
 	;;
 save )
 	data=$( $dirsettings/camilla.py save )
-	[[ ! $data ]] && exit
-	
-	readarray -t data <<< $data
-	file=${data[0]}
-	volume=${data[1]} # -g-n
-	mute=${data[2]}   # -m or blank
-	[[ ! $file ]] && exit
-	
-	sed -i -E -e 's/^(MUTE=).*/\1'$mute'/
-' -e 's/^(GAIN=).*/\1'$volume'/
-' -e 's|^(CONFIG=).*|\1'$file'|
-' /etc/default/camilladsp
 	;;
 statuslog )
 	cat /var/log/camilladsp.log
+	;;
+volume )
+	$dirbash/cmd.sh "$1"
 	;;
 	
 esac

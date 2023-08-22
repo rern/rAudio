@@ -1951,17 +1951,7 @@ function thumbUpdate( path ) {
 	$( '#formtemp' ).submit();
 }
 function urlReachable( url, sec ) {
-	if ( ! sec ) {
-		var sec = 0;
-	} else if ( sec === 5 ) {
-		info( {
-			  icon    : 'camilladsp'
-			, title   : 'CamillaDSP'
-			, message : 'CamillaDSP settings not available.'
-		} );
-		loaderHide();
-		return
-	}
+	if ( ! sec ) var sec = 0;
 	
 	fetch( url, { mode: 'no-cors' } ).then( function() {
 		location.href = url;
@@ -2055,11 +2045,6 @@ function volumeUpDown( up ) {
 		$( '#volume-text' ).text( S.volume );
 		$( '#volume-bar' ).css( 'width', S.volume +'%' );
 	}
-	if ( D.camillavol ) {
-		bash( [ 'volumeupdncamilla', S.volume, 'CMD VOLUME' ] );
-		return
-	}
-	
 	var cmd = 'volumeupdn';
 	if ( S.btreceiver ) {
 		cmd += 'bt';
