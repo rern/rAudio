@@ -136,6 +136,7 @@ heading + .helpblock {
 	background: var( --cga );
 }
 .helpmenu.tab {
+	padding-left: 0;
 	text-align: center;
 }
 #infoContent .helpmenu.label {
