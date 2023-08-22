@@ -242,8 +242,7 @@ i.disabled,
 	left: -60px;
 	top: calc(50% - 7px);
 	width: 45px;
-	height: 100%;
-	line-height: 15px;
+	line-height: 16px;
 	text-align: center;
 	background: var(--cg );
 	border-radius: 3px;

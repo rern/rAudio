@@ -191,30 +191,30 @@ var color    = {
 	, wl  : 'hsl( 200, 3%,   80% )'
 }
 var plots    = {
-	  gain    : {
+	  magnitude  : {
 		  yaxis : 'y'
 		, type  : 'scatter'
 		, name  : 'Gain'
-		, line  : { width : 3, color: color.m, shape: 'spline' }
+		, line  : { width : 3, color: color.m }
 	}
-	, phase   : {
+	, phase      : {
 		  yaxis : 'y2'
 		, type  : 'scatter'
 		, name  : 'Phase'
-		, line : { width : 2, color : color.r }
+		, line  : { width : 2, color : color.r }
 	}
-	, delay   : {
+	, groupdelay : {
 		  yaxis : 'y3'
 		, type  : 'scatter'
 		, name  : 'Delay'
-		, line : { width : 2, color: color.o }
+		, line  : { width : 2, color: color.o }
 	}
-	, impulse : {
+	, impulse    : {
 		  xaxis : 'x2'
 		, yaxis : 'y4'
 		, type  : 'scatter'
 		, name  : 'Impulse'
-		, line : { width : 1, color: color.g }
+		, line  : { width : 1, color: color.g }
 	}
 }
 var ycommon  = {
@@ -224,7 +224,7 @@ var ycommon  = {
 	, autoshift  : true
 }
 var axes     = {
-	  freq    : {
+	  freq       : {
 		  title     : {
 			  text     : 'Frequency'
 			, font     : { color: color.wl }
@@ -236,7 +236,7 @@ var axes     = {
 		, range     : [ 10, 1000 ]
 		, gridcolor : color.grd
 	}
-	, time    : { // main-svg - cartesianlayer - subplot xy - overaxes-above - x2y4-x
+	, time       : { // main-svg - cartesianlayer - subplot xy - overaxes-above - x2y4-x
 		  title      : {
 			  text     : 'Time'
 			, font     : { color: color.grl }
@@ -247,7 +247,7 @@ var axes     = {
 		, overlaying : 'x'
 		, side       : 'top'
 	}
-	, gain    : {
+	, magnitude       : {
 		  title        : {
 			  text     : 'Gain'
 			, font     : { color: color.m }
@@ -258,7 +258,7 @@ var axes     = {
 		, linecolor     : color.md
 		, gridcolor     : color.md
 	}
-	, phase   : {
+	, phase      : {
 		  title      : {
 			  text     : 'Phase'
 			, font     : { color: color.r }
@@ -270,30 +270,31 @@ var axes     = {
 		, range         : [ -190, 193 ]
 		, tickvals      : [ -180, -90, 0, 90, 180 ]
 		, ticktext      : [ 180, 90, 0, 90, 180 ]
-		, zerolinecolor : color.w
+		, zeroline      : false
 		, linecolor     : color.rd
 		, gridcolor     : color.rd
 	}
-	, delay   : {
+	, groupdelay : {
 		  title      : {
 			  text     : 'Delay'
 			, font     : { color: color.o }
 			, standoff : 0
 		}
 		, tickfont      : { color: color.o }
-		, zerolinecolor : color.w
+		, zeroline      : false
 		, linecolor     : color.od
 		, gridcolor     : color.od
 		, ...ycommon
 		, shift         : 10
 	}
-	, impulse : {
+	, impulse    : {
 		  title      : {
 			  text     : 'Impulse'
 			, font     : { color: color.g }
 			, standoff : 0
 		}
 		, tickfont   : { color: color.g }
+		, zeroline   : false
 		, linecolor  : color.gd
 		, gridcolor  : color.gd
 		, overlaying : 'y'
@@ -360,34 +361,45 @@ var graph    = {
 			} );
 		}
 		notify( tab, util.key2label( tab ), 'Plot ...' );
-		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => {
+		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => { // groupdelay = delay, magnitude = gain
 			var impulse   = 'impulse' in data;
 			if ( filterdelay ) {
-				plots.gain.y  = 0;
+				plots.magnitude.y   = 0;
 			} else {
-				plots.gain.y    = data.magnitude;
-				var delay_gain  = {};
-				[ 'groupdelay', 'magnitude' ].forEach( d => {
+				plots.magnitude.y   = data.magnitude;
+				var scale  = {
+					  groupdelay : { min: -10, max: 10 }
+					, impulse    : { min: -1, max: 1 }
+					, magnitude  : { min: -6, max: 6 }
+				}
+				var minmax = {};
+				[ 'groupdelay', 'impulse', 'magnitude' ].forEach( d => {
+					if ( ! ( d in data ) ) return
+					
 					var v = data[ d ];
-					delay_gain[ d ] = { value  : v };
-					[ 'min', 'max' ].forEach( k => delay_gain[ d ][ k ] = Math[ k ]( ...v ) );
-					if ( delay_gain[ d ].max < 6 ) delay_gain[ d ].max = 6;
-					if ( delay_gain[ d ].min > -6 ) delay_gain[ d ].min = -6;
-					delay_gain[ d ].abs = Math.max( Math.abs( delay_gain[ d ].min ), Math.abs( delay_gain[ d ].max ) );
-					var axis = d === 'groupdelay' ? 'delay' : 'gain';
-					var val  = delay_gain[ d ];
-					axes[ axis ].range = [ val.min, val.max ];
-					axes[ axis ].dtick = val.abs < 10 ? 2 : ( val.abs < 20 ? 5 : 10 );
+					minmax[ d ] = { value  : v };
+					[ 'min', 'max' ].forEach( k => minmax[ d ][ k ] = Math[ k ]( ...v ) );
+					if ( minmax[ d ].max < scale[ d ].max ) minmax[ d ].max = scale[ d ].max;
+					if ( minmax[ d ].min > scale[ d ].min ) minmax[ d ].min = scale[ d ].min;
+					minmax[ d ].abs = Math.max( Math.abs( minmax[ d ].min ), Math.abs( minmax[ d ].max ) );
+					var range  = minmax[ d ];
+					if ( d !== 'magnitude' ) range.min = -range.abs;
+					axes[ d ].range = [ range.min, range.max ];
+					if ( d === 'impulse' ) {
+						axes[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
+					} else {
+						axes[ d ].dtick = range.abs < 10 ? 2 : ( range.abs < 20 ? 5 : 10 );
+					}
 				} );
 			}
-			plots.phase.y = data.phase;
-			plots.delay.y = delay0 ? 0 : data.groupdelay;
-			var plot      = [ plots.gain, plots.phase, plots.delay ];
-			var layout    = {
+			plots.phase.y      = data.phase;
+			plots.groupdelay.y = delay0 ? 0 : data.groupdelay;
+			var plot           = [ plots.magnitude, plots.phase, plots.groupdelay ];
+			var layout         = {
 				  xaxis         : axes.freq
-				, yaxis         : axes.gain
+				, yaxis         : axes.magnitude
 				, yaxis2        : axes.phase
-				, yaxis3        : axes.delay
+				, yaxis3        : axes.groupdelay
 				, margin        : { t: impulse ? 40 : 10, r: 40, b: 90, l: 45 }
 				, paper_bgcolor : '#000'
 				, plot_bgcolor  : '#000'
