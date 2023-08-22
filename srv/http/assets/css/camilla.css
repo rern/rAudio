@@ -249,6 +249,7 @@ i.disabled,
 }
 #in::before {
 	color: #000;
+	background: var( --cgl );
 }
 .db,
 #gain {
