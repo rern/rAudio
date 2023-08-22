@@ -45,12 +45,14 @@ $head = [
 	  'title'  => 'Status'
 	, 'status' => 'camilladsp'
 	, 'button' => [
-		  'log'   => 'file'
-		, 'range' => 'gear'
+		  'log'      => 'file'
+		, 'range'    => 'gear'
+		, 'playback' => 'play'
 	]
 	, 'help'   => <<< EOF
 {$Fi( 'file btn' )} Log
 {$Fi( 'gear btn' )} Gain slider range
+{$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
@@ -67,14 +69,14 @@ $body = [
 		, 'help'  => <<< EOF
 {$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
-{$Fi( 'folder-filter btn' )} Filters: FIR coefficient files
-{$Fi( 'flowchart btn' )} Pipeline: Flowchart
+{$Fi( 'folder-filter btn' )} FIR coefficient {$Ftab( 'filters' )}
+{$Fi( 'flowchart btn' )} Flowchart {$Ftab( 'pipeline' )}
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
 	{$Fmenu( 'graph', 'Graph' )}
 	{$Fmenu( 'edit', 'Edit' )}
 	{$Fmenu( 'remove', 'Delete' )}
 {$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
-{$Fi( 'inverted btn' )} Mixers: Invert
+{$Fi( 'inverted btn' )} Invert {$Ftab( 'mixers' )}
 EOF
 	]
 ];

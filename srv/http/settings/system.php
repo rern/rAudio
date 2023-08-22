@@ -174,7 +174,7 @@ $body = [
 		<span class="helpblock hide"><!--
 -->I²S DAC/audio HAT(Hardware Attached on Top) for audio output.
  · HAT with EEPROM could be automatically detected.
- · See  if it's already set: {$Ftab( 'player', 'Player' )}<a class="helpmenu label">Output · Device </a>
+ · See  if it's already set: {$Ftab( 'player' )}<a class="helpmenu label">Output · Device </a>
 {$Fi( 'gear btn' )}
 Option to disable I²S EEPROM read for HAT with obsolete EEPROM
 		</span>
@@ -311,7 +311,7 @@ Note:
 	 · Not availble in Library home
 
  • <wh>rAudio as server:</wh> (Alternative 1)
-	Server: {$Ftab( 'features', 'Features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
+	Server: {$Ftab( 'features' )}{$FlabelIcon( 'Server rAudio', 'rserver' )}
 	Clients: {$FlabelIcon( 'Shared Data', 'networks' )} Type ● rAudio
 	
  • <wh>Other servers:</wh> (Alternative 2)

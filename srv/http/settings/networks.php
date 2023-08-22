@@ -22,7 +22,7 @@ $html = <<< EOF
 
 <wh>rAudio as receiver:</wh>
  • Pair:
-	· On rAudio: {$Ftab( 'system', 'System' )}{$FlabelIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
+	· On rAudio: {$Ftab( 'system' )}{$FlabelIcon( 'Bluetooth', 'bluetooth' )} ■ Discoverable by senders
 	· On sender: Search &raquo; Select <wh>rAudio</wh> to pair
 	· Forget / remove should be done on both rAudio and sender
  • Connect:

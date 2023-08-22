@@ -509,7 +509,7 @@ var render   = {
 		}
 		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
 		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
-		$( '.tab' ).addClass( 'hide' );
+		$( '#divsettings .tab' ).addClass( 'hide' );
 		$( '#'+ V.tab ).removeClass( 'hide' );
 		$( '#bar-bottom div' ).removeClass( 'active' );
 		$( '#tab'+ V.tab ).addClass( 'active' );
@@ -562,6 +562,10 @@ var render   = {
 		$( '.flowchart' ).attr( 'viewBox', '20 '+ ch * 30 +' 500 '+ ch * 80 );
 	}
 	, statusValue : () => {
+		$( '.playback' )
+			.removeClass( 'i-pause i-play' )
+			.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
+			.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
 		var label  = 'Buffer · Sampling';
 		var status = S.status.GetState;
 		if ( [ 'Running', 'Starting' ].includes( status ) ) {
@@ -1627,6 +1631,11 @@ $( '.i-gear.range' ).on( 'click', function() {
 		}
 	} );
 } )
+$( '.playback' ).on( 'click', function() {
+	if ( $( this ).hasClass( 'disabled' ) ) return
+	
+	bash( [ 'cmd.sh', S.player === 'mpd' ? 'mpcplayback' : 'playerstop' ] );
+} );
 $( '#divvolume .i-mute' ).on( 'click', function() {
 	setting.volume( S.volumemute );
 } );

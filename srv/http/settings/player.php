@@ -60,7 +60,7 @@ EOF
 		, 'help'  => <<< EOF
 HDMI audio:
  · Available when connected before boot only
- · Enable plug and play: {$Ftab( 'mpd', 'Player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
+ · Enable plug and play: {$Ftab( 'player' )}{$FlabelIcon( 'HDMI Hotplug', 'hdmi' )}
 EOF
 	]
 	, [

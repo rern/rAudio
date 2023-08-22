@@ -343,14 +343,11 @@ function infoSoxrCustom() {
 		, ok           : switchEnable
 	} );
 }
-function playbackIcon() {
+function renderPage() {
 	$( '.playback' )
 		.removeClass( 'i-pause i-play' )
 		.addClass( S.state === 'play' ? 'i-pause' : 'i-play' )
 		.toggleClass( 'disabled', S.player !== 'mpd' && S.state !== 'play' );
-}
-function renderPage() {
-	playbackIcon();
 	var htmlstatus =  S.version +'<br>';
 	[ 'song', 'webradio' ].forEach( k => htmlstatus += ico( k +' gr' ) +'&nbsp;'+ ( S[ 'count'+ k ] || 0 ).toLocaleString() +'&emsp;' );
 	htmlstatus += '<br>'+ S.lastupdate;

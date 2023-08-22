@@ -41,7 +41,9 @@ data+='
 	  "capture"  : [ '$( echo $capture | tr ' ' , )' ]
 	, "playback" : [ '$( echo $playback | tr ' ' , )' ]
 }
+, "player"    : "'$( < $dirshm/player )'"
 , "range"     : '$( conf2json camilla.conf )'
+, "state"     : "'$( getVar state $dirshm/status )'"
 , "volume"    : '$volume'
 , "volumemute"   : '$volumemute
 
