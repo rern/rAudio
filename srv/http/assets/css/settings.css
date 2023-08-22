@@ -104,7 +104,7 @@ heading + .helpblock {
 	vertical-align: -1px;
 }
 .helpblock .tab i {
-	margin-left: 0;
+	margin-left: -5px;
 }
 .helpblock i.btn {
 	width: 22px;
