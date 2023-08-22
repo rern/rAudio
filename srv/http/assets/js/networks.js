@@ -100,13 +100,7 @@ $( '.entries:not( .scan )' ).on( 'click', 'li', function( e ) {
 		$( '#menu .disconnect' ).toggleClass( 'hide', notconnected );
 		$( '#menu .info' ).addClass( 'hide' );
 	}
-	var menuH = $( '#menu' ).height();
-	$( '#menu' )
-		.removeClass( 'hide' )
-		.css( 'top', V.li.position().top + 48 );
-	var targetB = $( '#menu' ).offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextMenu();
 } );
 $( '.connect' ).on( 'click', function() {
 	clearTimeout( V.timeoutscan );

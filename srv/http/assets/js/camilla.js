@@ -231,12 +231,12 @@ var axes     = {
 			, standoff : 10
 		}
 		, tickfont  : { color: color.wl }
-		, tickvals  : [ 0, 232, 464, 696, 928 ]
+		, tickvals  : [ 0,   232,    464,     696,    928 ]
 		, ticktext  : [ '', '10Hz', '100Hz', '1kHz', '10kHz' ]
 		, range     : [ 10, 1000 ]
 		, gridcolor : color.grd
 	}
-	, time       : { // main-svg - cartesianlayer - subplot xy - overaxes-above - x2y4-x
+	, time       : {
 		  title      : {
 			  text     : 'Time'
 			, font     : { color: color.grl }
@@ -247,7 +247,7 @@ var axes     = {
 		, overlaying : 'x'
 		, side       : 'top'
 	}
-	, magnitude       : {
+	, magnitude  : {
 		  title        : {
 			  text     : 'Gain'
 			, font     : { color: color.m }
@@ -264,15 +264,14 @@ var axes     = {
 			, font     : { color: color.r }
 			, standoff : 0
 		}
-		, tickfont      : { color: color.r }
-		, overlaying    : 'y'
-		, side          : 'right'
-		, range         : [ -190, 193 ]
-		, tickvals      : [ -180, -90, 0, 90, 180 ]
-		, ticktext      : [ 180, 90, 0, 90, 180 ]
-		, zeroline      : false
-		, linecolor     : color.rd
-		, gridcolor     : color.rd
+		, tickfont   : { color: color.r }
+		, overlaying : 'y'
+		, side       : 'right'
+		, range      : [ -180, 180 ]
+		, dtick      : 90
+		, zeroline   : false
+		, linecolor  : color.rd
+		, gridcolor  : color.rd
 	}
 	, groupdelay : {
 		  title      : {
@@ -280,12 +279,12 @@ var axes     = {
 			, font     : { color: color.o }
 			, standoff : 0
 		}
-		, tickfont      : { color: color.o }
-		, zeroline      : false
-		, linecolor     : color.od
-		, gridcolor     : color.od
+		, tickfont   : { color: color.o }
+		, zeroline   : false
+		, linecolor  : color.od
+		, gridcolor  : color.od
 		, ...ycommon
-		, shift         : 10
+		, shift      : 10
 	}
 	, impulse    : {
 		  title      : {
@@ -383,7 +382,12 @@ var graph    = {
 					if ( minmax[ d ].min > scale[ d ].min ) minmax[ d ].min = scale[ d ].min;
 					minmax[ d ].abs = Math.max( Math.abs( minmax[ d ].min ), Math.abs( minmax[ d ].max ) );
 					var range  = minmax[ d ];
-					if ( d !== 'magnitude' ) range.min = -range.abs;
+					if ( d !== 'magnitude' ) {
+						range.min = -range.abs;
+					} else {
+						if ( range.min <= scale[ d ].min ) range.min -= 1;
+						if ( range.max >= scale[ d ].max ) range.max += 1;
+					}
 					axes[ d ].range = [ range.min, range.max ];
 					if ( d === 'impulse' ) {
 						axes[ d ].dtick = range.abs < 1 ? 0.2 : ( range.abs < 2 ? 0.5 : 1 );
@@ -415,19 +419,20 @@ var graph    = {
 				var imL  = data.impulse.length;
 				var raw  = imL < 4500;
 				var each = raw ? imL / 80 : imL / 120;
-				var iL   = raw ? 9 : 13;
+				var iL   = raw ? 5 : 7;
 				var ticktext = [];
 				var tickvals = [];
 				for ( i = 0; i < iL; i++ ) {
-					ticktext.push( i * 10 );
-					tickvals.push( i * 10 * each );
+					ticktext.push( i * 20 );
+					tickvals.push( i * 20 * each );
 				}
-				axes.time.range = [ 0, imL ];
+				ticktext[ i - 1 ]  = '';
+				axes.time.range    = [ 0, imL ];
 				axes.time.tickvals = tickvals;
 				axes.time.ticktext = ticktext;
-				layout.xaxis2   = axes.time;
-				layout.yaxis4   = axes.impulse;
-				plots.impulse.y = data.impulse;
+				layout.xaxis2      = axes.time;
+				layout.yaxis4      = axes.impulse;
+				plots.impulse.y    = data.impulse;
 				plot.push( plots.impulse );
 			}
 			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
@@ -439,6 +444,7 @@ var graph    = {
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
 			$svg = $divgraph.find( 'svg' );
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
+			elementScroll( $divgraph.parent() );
 			bannerHide();
 			$divgraph.append( '<i class="i-close graphclose"></i>' );
 			$li.removeClass( 'disabled' );
@@ -466,7 +472,12 @@ var graph    = {
 			$divgraph.addClass( 'hide' );
 		} else {
 			var val     = $divgraph.data( 'val' );
-			jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ? graph.plot() : $divgraph.removeClass( 'hide' );
+			if ( jsonChanged( S.config[ V.tab ][ val ], V.graph[ V.tab ][ val ] ) ) {
+				graph.plot();
+			} else {
+				$divgraph.removeClass( 'hide' );
+				elementScroll( $divgraph.parent() );
+			}
 		}
 	}
 }
@@ -1369,10 +1380,10 @@ var setting  = {
 		}, ws ? 0 : 300 );
 		if ( ! ws ) util.websocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
-/*		V.timeoutpush = setTimeout( () => {
+		V.timeoutpush = setTimeout( () => {
 			bash( [ 'pushrefresh' ] );
 			local( 1000 );
-		}, 1000 );*/
+		}, 1000 );
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
@@ -1789,25 +1800,12 @@ $( '.entries' ).on( 'click', 'i', function() {
 	
 	V.li       = $this.parent();
 	var active = V.li.hasClass( 'active' );
-	var $menu  = $( '#menu' );
-	$menu.addClass( 'hide' );
+	$( '#menu' ).addClass( 'hide' );
 	$( '#'+ V.tab +' li' ).removeClass( 'active' );
 	if ( active ) return
 	
 	V.li.addClass( 'active' );
-	if ( $menu.hasClass( 'hide' ) ) {
-		var menutop = V.li.offset().top + 49;
-		$menu
-			.css( 'top',  menutop )
-			.removeClass( 'hide' );
-		var targetB = $menu.offset().top + $menu.height();
-		var wH      = window.innerHeight;
-		var wT      = $( window ).scrollTop();
-		if ( targetB > ( wH - 40 + wT ) ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
-		$menu.find( '.edit' ).toggleClass( 'hide', ! $this.hasClass( 'edit' ) );
-		$menu.find( '.delete' ).toggleClass( 'hide', V.tab === 'devices' );
-		$menu.find( '.graph' ).toggleClass( 'hide', ! $this.hasClass( 'graph' ) );
-	}
+	contextMenu();
 } ).on( 'click', '.i-back', function() {
 	if ( V.tab === 'mixers' ) {
 		var name = $( '#mixers .lihead' ).text();
@@ -1966,7 +1964,7 @@ $( '#menu a' ).on( 'click', function( e ) {
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
-//	clearTimeout( V.timeoutpush );
+	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
@@ -2028,7 +2026,7 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
-//	clearTimeout( V.timeoutpush );
+	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );

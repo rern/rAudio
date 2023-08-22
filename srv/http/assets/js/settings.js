@@ -90,6 +90,18 @@ function list2JSON( list ) {
 	}
 	return true
 }
+function contextMenu() {
+	$( '#menu' )
+		.removeClass( 'hide' )
+		.css( 'top', V.li.offset().top + 48 );
+	elementScroll( $( '#menu' ) );
+}
+function elementScroll( $el ) {
+	var menuH = $el.height();
+	var targetB = $el.offset().top + menuH;
+	var wH      = window.innerHeight;
+	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+}
 function notify( icon, title, message, delay ) {
 	if ( typeof message === 'boolean' ) var message = message ? 'Enable ...' : 'Disable ...';
 	banner( icon +' blink', title, message, delay || -1 );

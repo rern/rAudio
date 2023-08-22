@@ -222,13 +222,7 @@ $( '#list' ).on( 'click', 'li', function( e ) {
 	$( '#menu .forget' ).removeClass( 'hide', list.icon === 'usbdrive' );
 	$( '#menu .remount' ).toggleClass( 'hide', list.mounted );
 	$( '#menu .unmount' ).toggleClass( 'hide', ! list.mounted );
-	var menuH = $( '#menu' ).height();
-	$( '#menu' )
-		.removeClass( 'hide' )
-		.css( 'top', $this.position().top + 48 );
-	var targetB = $( '#menu' ).offset().top + menuH;
-	var wH      = window.innerHeight;
-	if ( targetB > wH - 40 + $( window ).scrollTop() ) $( 'html, body' ).animate( { scrollTop: targetB - wH + 42 } );
+	contextMenu();
 } );
 $( '#menu a' ).on( 'click', function() {
 	var $this      = $( this );

@@ -244,8 +244,11 @@ i.disabled,
 	width: 45px;
 	line-height: 16px;
 	text-align: center;
-	background: var(--cg );
+	background: var( --cg );
 	border-radius: 3px;
+}
+#in::before {
+	color: #000;
 }
 .db,
 #gain {
