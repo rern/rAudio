@@ -365,15 +365,20 @@ var graph    = {
 			if ( filterdelay ) {
 				plots.gain.y  = 0;
 			} else {
-				var gain        = data.magnitude;
-				var minmax      = { abs: [] };
-				[ 'min', 'max' ].forEach( k => minmax[ k ] = Math[ k ]( ...gain ) );
-				if ( minmax.max < 6 ) minmax.max = 6;
-				if ( minmax.min > -6 ) minmax.min = -6;
-				var max         = Math.max( Math.abs( minmax.min ), Math.abs( minmax.max ) );
-				axes.gain.range = [ minmax.min, minmax.max ];
-				axes.gain.dtick = max < 10 ? 2 : ( max < 20 ? 5 : 10 );
-				plots.gain.y    = gain;
+				plots.gain.y    = data.magnitude;
+				var delay_gain  = {};
+				[ 'groupdelay', 'magnitude' ].forEach( d => {
+					var v = data[ d ];
+					delay_gain[ d ] = { value  : v };
+					[ 'min', 'max' ].forEach( k => delay_gain[ d ][ k ] = Math[ k ]( ...v ) );
+					if ( delay_gain[ d ].max < 6 ) delay_gain[ d ].max = 6;
+					if ( delay_gain[ d ].min > -6 ) delay_gain[ d ].min = -6;
+					delay_gain[ d ].abs = Math.max( Math.abs( delay_gain[ d ].min ), Math.abs( delay_gain[ d ].max ) );
+					var axis = d === 'groupdelay' ? 'delay' : 'gain';
+					var val  = delay_gain[ d ];
+					axes[ axis ].range = [ val.min, val.max ];
+					axes[ axis ].dtick = val.abs < 10 ? 2 : ( val.abs < 20 ? 5 : 10 );
+				} );
 			}
 			plots.phase.y = data.phase;
 			plots.delay.y = delay0 ? 0 : data.groupdelay;
