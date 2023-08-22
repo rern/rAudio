@@ -362,11 +362,19 @@ var graph    = {
 		notify( tab, util.key2label( tab ), 'Plot ...' );
 		bash( [ 'settings/camilla.py', tab +' "'+ val +'"' ], data => {
 			var impulse   = 'impulse' in data;
-			var options   = {
-				  displayModeBar : false
-				, scrollZoom     : true
+			if ( filterdelay ) {
+				plots.gain.y  = 0;
+			} else {
+				var gain        = data.magnitude;
+				var minmax      = { abs: [] };
+				[ 'min', 'max' ].forEach( k => minmax[ k ] = Math[ k ]( ...gain ) );
+				if ( minmax.max < 6 ) minmax.max = 6;
+				if ( minmax.min > -6 ) minmax.min = -6;
+				var max         = Math.max( Math.abs( minmax.min ), Math.abs( minmax.max ) );
+				axes.gain.range = [ minmax.min, minmax.max ];
+				axes.gain.dtick = max < 10 ? 2 : ( max < 20 ? 5 : 10 );
+				plots.gain.y    = gain;
 			}
-			plots.gain.y  = filterdelay ? 0 : data.magnitude;
 			plots.phase.y = data.phase;
 			plots.delay.y = delay0 ? 0 : data.groupdelay;
 			var plot      = [ plots.gain, plots.phase, plots.delay ];
@@ -375,7 +383,7 @@ var graph    = {
 				, yaxis         : axes.gain
 				, yaxis2        : axes.phase
 				, yaxis3        : axes.delay
-				, margin        : { t: impulse ? 40 : 0, r: 40, b: 90, l: 45 }
+				, margin        : { t: impulse ? 40 : 10, r: 40, b: 90, l: 45 }
 				, paper_bgcolor : '#000'
 				, plot_bgcolor  : '#000'
 				, showlegend    : false
@@ -407,6 +415,10 @@ var graph    = {
 			}
 			if ( ! $li.find( '.divgraph' ).length ) $li.append( '<div class="divgraph" data-val="'+ val +'"></div>' );
 			var $divgraph = $li.find( '.divgraph' );
+			var options   = {
+				  displayModeBar : false
+				, scrollZoom     : true
+			}
 			Plotly.newPlot( $divgraph[ 0 ], plot, layout, options );
 			$svg = $divgraph.find( 'svg' );
 			$svg.find( '.plot' ).before( $svg.find( '.overplot' ) );
