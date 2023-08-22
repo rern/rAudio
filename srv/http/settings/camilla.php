@@ -68,7 +68,7 @@ $body = [
 {$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
 {$Fi( 'folder-filter btn' )} Filters: FIR files
-{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Mute, up, 0, down
+{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
 	{$Fi( 'graph btn' )} Frequency response graph
 	{$Fi( 'edit btn' )} Setting
