@@ -68,13 +68,13 @@ $body = [
 {$Fi( 'folder-config btn' )} Configuration files
 {$Fi( 'plus btn' )} Add entry
 {$Fi( 'folder-filter btn' )} Filters: FIR coefficient files
-{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
+{$Fi( 'flowchart btn' )} Pipeline: Flowchart
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
 	{$Fmenu( 'graph', 'Graph' )}
 	{$Fmenu( 'edit', 'Edit' )}
 	{$Fmenu( 'remove', 'Delete' )}
+{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
 {$Fi( 'inverted btn' )} Mixers: Invert
-{$Fi( 'flowchart btn' )} Pipeline: Flowchart
 EOF
 	]
 ];
