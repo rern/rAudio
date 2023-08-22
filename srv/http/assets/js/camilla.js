@@ -507,6 +507,7 @@ var render   = {
 		} else if ( V.tab === 'pipeline' && PIP.length ) {
 			title += ico( 'flowchart' );
 		}
+		if ( V.tab === 'filters' || V.tab === 'mixers' ) title += ico( 'gear' );
 		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
 		$( '#divsettings .headtitle' ).eq( 0 ).html( title );
 		$( '#divsettings .tab' ).addClass( 'hide' );
@@ -1599,38 +1600,6 @@ $( '.log' ).on( 'click', function() {
 	var $code = $( '#codelog' );
 	$code.hasClass( 'hide' ) ? currentStatus( 'log' ) : $code.addClass( 'hide' );
 } )
-$( '.i-gear.range' ).on( 'click', function() {
-	info( {
-		  icon       : 'camilladsp'
-		, title      : 'Gain Slider Range'
-		, numberlabel : [ 'Max', 'Min' ]
-		, footer      : '(50 ... -50)'
-		, boxwidth   : 110
-		, values     : S.range
-		, beforeshow : () => {
-			var $input = $( '#infoContent input' );
-			var $max   = $input.eq( 0 );
-			var $min   = $input.eq( 1 );
-			$( '#infoContent' ).on( 'blur', 'input', function() {
-				if ( $max.val() > 50 ) {
-					$max.val( 50 );
-				} else if ( $max.val() < 0 ) {
-					$max.val( 0 );
-				}
-				if ( $min.val() < -50 ) {
-					$min.val( -50 );
-				} else if ( $min.val() > 0 ) {
-					$min.val( 0 );
-				}
-			} );
-		}
-		, ok         : () => {
-			S.range = infoVal();
-			bash( [ 'camilla', ...Object.values( S.range ), 'CFG MAX MIN' ] );
-			$( '.tab input[type=range]' ).prop( { min: S.range.MIN, max: S.range.MAX } );
-		}
-	} );
-} )
 $( '.playback' ).on( 'click', function() {
 	if ( $( this ).hasClass( 'disabled' ) ) return
 	
@@ -1778,7 +1747,41 @@ $( '.headtitle' ).on( 'click', '.i-folder-filter', function() {
 		$flowchart.addClass( 'hide' );
 	}
 } ).on( 'click', '.i-gear', function() {
-	setting.devicesampling();
+	if ( V.tab === 'devices' )  {
+		setting.devicesampling();
+		return
+	}
+	
+	info( {
+		  icon       : 'camilladsp'
+		, title      : 'Gain Slider Range'
+		, numberlabel : [ 'Max', 'Min' ]
+		, footer      : '(50 ... -50)'
+		, boxwidth   : 110
+		, values     : S.range
+		, beforeshow : () => {
+			var $input = $( '#infoContent input' );
+			var $max   = $input.eq( 0 );
+			var $min   = $input.eq( 1 );
+			$( '#infoContent' ).on( 'blur', 'input', function() {
+				if ( $max.val() > 50 ) {
+					$max.val( 50 );
+				} else if ( $max.val() < 0 ) {
+					$max.val( 0 );
+				}
+				if ( $min.val() < -50 ) {
+					$min.val( -50 );
+				} else if ( $min.val() > 0 ) {
+					$min.val( 0 );
+				}
+			} );
+		}
+		, ok         : () => {
+			S.range = infoVal();
+			bash( [ 'camilla', ...Object.values( S.range ), 'CFG MAX MIN' ] );
+			$( '.tab input[type=range]' ).prop( { min: S.range.MIN, max: S.range.MAX } );
+		}
+	} );
 } );
 $( '.entries' ).on( 'click', 'i', function() {
 	var $this  = $( this );
