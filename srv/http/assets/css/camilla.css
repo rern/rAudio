@@ -370,6 +370,9 @@ i.disabled,
 	bottom: 0;
 	color: var( --cg60 );
 }
+.helpmenu {
+	border-bottom: 1px solid var( --cga );
+}
 @media (max-width: 700px) {
 	#mixers .i-inverted { display: none }
 }

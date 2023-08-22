@@ -70,9 +70,9 @@ $body = [
 {$Fi( 'folder-filter btn' )} Filters: FIR coefficient files
 {$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
 {$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
-	{$Fi( 'graph btn' )} Graph: Frequency response
-	{$Fi( 'edit btn' )} Edit
-	{$Fi( 'remove btn' )} Delete
+	{$Fmenu( 'graph', 'Graph' )}
+	{$Fmenu( 'edit', 'Edit' )}
+	{$Fmenu( 'remove', 'Delete' )}
 {$Fi( 'inverted btn' )} Mixers: Invert
 {$Fi( 'flowchart btn' )} Pipeline: Flowchart
 EOF
