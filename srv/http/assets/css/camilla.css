@@ -1,11 +1,11 @@
-.i-help.helphead {
-	display: none;
-}
 #divtabs {
 	position: relative;
 }
 .tab {
 	margin-top: -16px;
+}
+.tab .helpblock {
+	margin-top: 10px;
 }
 .tab .entries,
 .tab .subentries {
@@ -102,8 +102,7 @@
 .tab li .i-back {
 	color: var( --cm );
 }
-.tab .i-add,
-.tab .i-remove {
+.tab .i-add {
 	font-size: 22px !important;
 }
 tr .i-add,

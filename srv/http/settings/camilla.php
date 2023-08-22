@@ -5,10 +5,40 @@ $id_data = [
 	, 'stop_on_rate_change' => [ 'name' => 'Stop on Rate Change', 'setting' => 'custom' ]
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
 ];
-
+$sliderrange     = i( 'gear btn' ).' Gain slider range';
+$addentry        = i( 'plus btn' ).' Add entry';
+$contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
+$contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
+$contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
+$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: up, 0, down';
+$help = [
+	  'filters'   => <<< EOF
+{$Fi( 'folder-filter btn' )} FIR coefficient
+{$sliderrange}
+{$addentry}
+{$contextfilters}
+{$gaincontrols}
+EOF
+	, 'mixers'   => <<< EOF
+{$sliderrange}
+{$addentry}
+{$contextmixers}
+{$gaincontrols}
+{$Fi( 'inverted btn' )} Invert {$Ftab( 'mixers' )}
+EOF
+	, 'pipeline' => <<< EOF
+{$Fi( 'flowchart btn' )} Step flowchart
+{$Fi( 'plus btn' )} Add entry
+{$contextmixers}
+EOF
+	, 'devices'  => <<< EOF
+{$Fi( 'gear btn' )} Sampling
+{$Fi( 'devices btn' )} Settings
+EOF
+];
 $htmltabs = '<div id="divtabs">';
 foreach( [ 'filters', 'mixers', 'pipeline', 'devices' ] as $id ) {
-	$htmltabs.= '<div id="'.$id.'" class="tab">';
+	$htmltabs.= '<div id="'.$id.'" class="tab"><div class="helpblock hide">'.$help[ $id ].'</div>';
 	if ( $id === 'pipeline' ) $htmltabs.= '<svg class="flowchart hide" xmlns="http://www.w3.org/2000/svg"></svg>';
 	$htmltabs.= '<ul class="entries main"></ul>';
 	if ( $id !== 'devices' ) {
@@ -66,16 +96,6 @@ $body = [
 		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
 {$Fi( 'folder-config btn' )} Configuration files
-{$Fi( 'plus btn' )} Add entry
-{$Fi( 'folder-filter btn' )} FIR coefficient {$Ftab( 'filters' )}
-{$Fi( 'gear btn' )} Gain slider range
-{$Fi( 'flowchart btn' )} Flowchart {$Ftab( 'pipeline' )}
-{$Fi( 'filters btn' )}{$Fi( 'mixers btn' )}{$Fi( 'pipeline btn' )} Context menu:
-	{$Fmenu( 'graph', 'Graph' )}
-	{$Fmenu( 'edit', 'Edit' )}
-	{$Fmenu( 'remove', 'Delete' )}
-{$Fi( 'mute btn' )}{$Fi( 'minus btn' )}{$Fi( 'set0 btn' )}{$Fi( 'plus btn' )} Gain: mute, up, 0, down
-{$Fi( 'inverted btn' )} Invert {$Ftab( 'mixers' )}
 EOF
 	]
 ];
@@ -83,7 +103,6 @@ htmlSection( $head, $body, 'status' );
 //////////////////////////////////
 $head = [
 	  'title'  => 'Filters'
-	, 'nohelp' => true
 ];
 $body = [ $htmltabs ];
 htmlSection( $head, $body, 'settings' );
