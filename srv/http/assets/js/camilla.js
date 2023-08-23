@@ -1400,7 +1400,10 @@ var setting  = {
 			, message     : message
 			, fileoklabel : ico( 'file' ) +'Upload'
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
-			, cancel      : () => icon === 'filters' ? '' : $( '#setting-configuration' ).trigger( 'click' )
+			, cancel      : () => {
+				if ( icon !== 'filters' ) $( '#setting-configuration' ).trigger( 'click' );
+				if ( ! ws ) util.websocket();
+			}
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
 				var formdata = new FormData();
@@ -1415,6 +1418,7 @@ var setting  = {
 							infoWarning(  icon,  title, message );
 						}
 					} );
+				if ( ! ws ) util.websocket();
 			}
 		} );
 	}
