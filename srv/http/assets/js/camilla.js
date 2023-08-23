@@ -1500,7 +1500,7 @@ var util     = {
 	}
 	, websocket     : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		ws.onopen    = () => V.intervalstatus = setInterval( () => V.statusget.forEach( k => ws.send( '"'+ k +'"' ) ), 2000 );
+		ws.onopen    = () => V.intervalstatus = setInterval( () => V.statusget.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
 		ws.onclose   = () => {
 			ws = null;
 			render.vuClear();
