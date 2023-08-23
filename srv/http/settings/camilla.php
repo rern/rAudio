@@ -11,7 +11,7 @@ $back            = i( 'back btn' ).' Back to main';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
 $contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
-$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: down, 0, up';
+$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: -0.1dB · 0 · +0.1dB';
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
@@ -84,7 +84,7 @@ $head = [
 	]
 	, 'help'   => <<< EOF
 {$Fi( 'file btn' )} Log
-{$Fi( 'play btn' )} {$Fi( 'pause btn' )} {$Fi( 'stop btn' )} Playback control
+{$Fi( 'play btn' )}{$Fi( 'pause btn' )}{$Fi( 'stop btn' )} Playback control
 
 <a href="https://henquist.github.io/0.6.3" target="_blank">Camilla DSP</a> - Create audio processing pipelines for applications such as active crossovers or room correction.
 EOF
@@ -99,7 +99,7 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
-{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} down, mute, up
+{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} -1% · mute · +1%
 {$Fi( 'set0 btn' )} Reset clipped
 {$Fi( 'folder-config btn' )} Configuration files
 EOF

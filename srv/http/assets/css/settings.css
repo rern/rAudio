@@ -103,15 +103,12 @@ heading + .helpblock {
 	text-align: center;
 	vertical-align: -1px;
 }
-.helpblock .tab i {
-	margin-left: -5px;
-}
 .helpblock i.btn {
 	width: 22px;
 	line-height: 20px;
 	margin-left: 0;
 	margin-right: 0;
-	border: 1px solid var( --cgd );
+	border: 1px solid var( --cga );
 	text-align: center;
 	border-radius: 2px;
 }
