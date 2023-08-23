@@ -43,9 +43,6 @@ confswitch )
 	sed -i -E "s|^(CONFIG.*/).*|\1$NAME.yml|" /etc/default/camilladsp
 	pushRefresh
 	;;
-pushrefresh )
-	pushRefresh
-	;;
 restart )
 	systemctl restart camilladsp
 	;;

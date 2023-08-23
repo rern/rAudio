@@ -483,8 +483,6 @@ var graph    = {
 }
 var render   = {
 	  page        : () => {
-		if ( V.local ) return
-		
 		DEV = S.config.devices;
 		FIL = S.config.filters;
 		MIX = S.config.mixers;
@@ -543,7 +541,7 @@ var render   = {
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
-		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetConfigJson', 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -1380,10 +1378,6 @@ var setting  = {
 		}, ws ? 0 : 300 );
 		if ( ! ws ) util.websocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
-		V.timeoutpush = setTimeout( () => {
-			bash( [ 'pushrefresh' ] );
-			local( 1000 );
-		}, 1000 );
 	}
 	, set           : () => {
 		ws.send( '{ "SetConfigName": "/srv/http/data/camilladsp/configs/'+ name +'" }' );
@@ -1563,6 +1557,9 @@ var util     = {
 						}, 1000 );
 					}
 					S.status.GetClippedSamples = value;
+					break;
+				case 'GetConfigJson':
+					S.config = value;
 					break;
 				case 'GetConfigName':
 					S.configname = value.split( '/' ).pop();
@@ -1968,7 +1965,6 @@ $( '#menu a' ).on( 'click', function( e ) {
 $( '#filters' ).on( 'click', '.i-add', function() {
 	setting.upload( 'filters' );
 } ).on( 'input', 'input[type=range]', function() {
-	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
@@ -2030,7 +2026,6 @@ $( '#mixers' ).on( 'click', 'li', function( e ) {
 	}
 	setting.save( 'Mixer', 'Change ...');
 } ).on( 'input', 'input[type=range]', function() {
-	clearTimeout( V.timeoutpush );
 	var $this = $( this );
 	var val   = +$this.val();
 	$this.prev().text( util.dbRound( val ) );
