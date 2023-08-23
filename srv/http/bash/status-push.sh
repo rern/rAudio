@@ -77,9 +77,8 @@ fi
 
 [[ -e $dirsystem/librandom && $webradio == false ]] && $dirbash/cmd.sh mpclibrandom
 
-data='{ "page": "PAGE", "state": "'$state'" }'
 for p in player features camilla; do
-	pushstream refresh "${data/PAGE/$p}"
+	pushstream refresh '{ "page": "'$p'", "state": "'$state'" }'
 done
 
 [[ ! -e $dirsystem/scrobble ]] && exit
