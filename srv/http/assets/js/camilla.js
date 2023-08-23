@@ -540,7 +540,7 @@ var render   = {
 		}
 	}
 	, status      : () => {
-		if ( ! ws ) util.websocket();
+		if ( ! ws ) util.webSocket();
 		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
@@ -1376,7 +1376,7 @@ var setting  = {
 			ws.send( '{ "SetConfigJson": "'+ config +'" }' );
 			ws.send( '"Reload"' );
 		}, ws ? 0 : 300 );
-		if ( ! ws ) util.websocket(); // websocket migth be closed by setting.filter()
+		if ( ! ws ) util.webSocket(); // websocket migth be closed by setting.filter()
 		if ( msg ) banner( V.tab, titlle, msg );
 	}
 	, set           : () => {
@@ -1402,7 +1402,7 @@ var setting  = {
 			, filetype    : dir === 'coeffs' ? '.dbl,.pcm,.raw,.wav' : '.yml'
 			, cancel      : () => {
 				if ( icon !== 'filters' ) $( '#setting-configuration' ).trigger( 'click' );
-				if ( ! ws ) util.websocket();
+				if ( ! ws ) util.webSocket();
 			}
 			, ok          : () => {
 				notify( icon, title, 'Upload ...' );
@@ -1418,7 +1418,7 @@ var setting  = {
 							infoWarning(  icon,  title, message );
 						}
 					} );
-				if ( ! ws ) util.websocket();
+				if ( ! ws ) util.webSocket();
 			}
 		} );
 	}
@@ -1502,7 +1502,7 @@ var util     = {
 		var capitalized = array.map( el => util.key2label( el ) );
 		return capitalized
 	}
-	, websocket     : () => {
+	, webSocket     : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
 		ws.onopen    = () => {
 			V.intervalstatus = setInterval( () => {
