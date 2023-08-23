@@ -11,6 +11,7 @@ $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edi
 $contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
 $gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: up, 0, down';
+$volumecontrols  = str_replace( '0', 'Mute', str_replace( 'set0', 'mute', $gaincontrols ) );
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
@@ -95,6 +96,8 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
+{$volumecontrols}
+{$Fi( 'set0 btn' )} Reset clipped
 {$Fi( 'folder-config btn' )} Configuration files
 EOF
 	]
