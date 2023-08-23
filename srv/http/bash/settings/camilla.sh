@@ -75,9 +75,6 @@ setformat )
 		alsactl nrestore &> /dev/null
 	fi
 	;;
-save )
-	data=$( $dirsettings/camilla.py save )
-	;;
 statuslog )
 	cat /var/log/camilladsp.log
 	;;
