@@ -7,22 +7,24 @@ $id_data = [
 ];
 $sliderrange     = i( 'gear btn' ).' Gain slider range';
 $addentry        = i( 'plus btn' ).' Add entry';
+$back            = i( 'back btn' ).' Back to main';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
 $contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
-$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: up, 0, down';
-$volumecontrols  = str_replace( '0', 'Mute', str_replace( 'set0', 'mute', $gaincontrols ) );
+$gaincontrols    = i( 'minus btn' ).i( 'set0 btn' ).i( 'plus btn' ).' Gain: down, 0, up';
 $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
 {$sliderrange}
 {$addentry}
+{$back}
 {$contextfilters}
 {$gaincontrols}
 EOF
 	, 'mixers'   => <<< EOF
 {$sliderrange}
 {$addentry}
+{$back}
 {$contextmixers}
 {$gaincontrols}
 {$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mute, Invert
@@ -30,11 +32,12 @@ EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart
 {$Fi( 'plus btn' )} Add entry
+{$back}
 {$contextmixers}
 EOF
 	, 'devices'  => <<< EOF
-{$Fi( 'gear btn' )} Sampling
-{$Fi( 'devices btn' )} Settings
+{$Fi( 'gear btn' )} Capture sampling
+{$Fi( 'input btn' )}{$Fi( 'output btn' )} Device settings
 EOF
 ];
 $htmltabs = '<div id="divtabs">';
@@ -96,7 +99,7 @@ $body = [
 		, 'input' => '<select id="configuration"></select>'
 		, 'settingicon' => 'folder-config'
 		, 'help'  => <<< EOF
-{$volumecontrols}
+{$Fi( 'minus btn' )}{$Fi( 'mute btn' )}{$Fi( 'plus btn' )} down, mute, up
 {$Fi( 'set0 btn' )} Reset clipped
 {$Fi( 'folder-config btn' )} Configuration files
 EOF
