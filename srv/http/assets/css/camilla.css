@@ -184,7 +184,7 @@ input[ type=range ] {
 	text-align: center;
 	color: var( --cg60 )
 }
-#mixers .i-mute {
+li .i-mute {
 	margin-left: 20px !important;
 }
 #divvolume .divgain {

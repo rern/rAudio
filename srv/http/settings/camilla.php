@@ -24,7 +24,7 @@ EOF
 {$addentry}
 {$contextmixers}
 {$gaincontrols}
-{$Fi( 'inverted btn' )} Invert {$Ftab( 'mixers' )}
+{$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mute, Invert
 EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart
