@@ -6,8 +6,6 @@ $id_data = [
 	, 'enable_resampling'   => [ 'name' => 'Resampling',          'setting' => 'custom' ]
 ];
 $sliderrange     = i( 'gear btn' ).' Gain slider range';
-$addentry        = i( 'plus btn' ).' Add entry';
-$back            = i( 'back btn' ).' Back to main';
 $contextfilters  = i( 'filters btn' ).' Context menu: '.i( 'graph btn' ).i( 'edit btn' ).i( 'remove btn' );
 $contextmixers   = str_replace( 'filters' , 'mixers', $contextfilters );
 $contextpipeline = str_replace( 'filters' , 'pipeline', $contextfilters );
@@ -16,15 +14,11 @@ $help = [
 	  'filters'   => <<< EOF
 {$Fi( 'folder-filter btn' )} FIR coefficient
 {$sliderrange}
-{$addentry}
-{$back}
 {$contextfilters}
 {$gaincontrols}
 EOF
 	, 'mixers'   => <<< EOF
 {$sliderrange}
-{$addentry}
-{$back}
 {$contextmixers}
 {$gaincontrols}
 {$Fi( 'mute btn' )}{$Fi( 'inverted btn' )} Mute, Invert
@@ -32,7 +26,6 @@ EOF
 	, 'pipeline' => <<< EOF
 {$Fi( 'flowchart btn' )} Step flowchart
 {$Fi( 'plus btn' )} Add entry
-{$back}
 {$contextmixers}
 EOF
 	, 'devices'  => <<< EOF
