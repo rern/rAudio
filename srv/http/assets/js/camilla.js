@@ -32,7 +32,7 @@ var C        = {
 		  Biquad      : [ 'Lowpass', 'Highpass', 'Lowshelf', 'Highshelf', 'LowpassFO', 'HighpassFO', 'LowshelfFO', 'HighshelfFO'
 						, 'Peaking', 'Notch', 'Bandpass', 'Allpass', 'AllpassFO', 'LinkwitzTransform', 'Free' ]
 		, BiquadCombo : [ 'ButterworthLowpass', 'ButterworthHighpass', 'LinkwitzRileyLowpass', 'LinkwitzRileyHighpass' ]
-		, Conv        : [ 'Raw', 'Wave', 'Values' ]
+		, Conv        : [ 'Raw', 'Wav', 'Values' ]
 		, Dither      : [ 'Simple', 'Uniform', 'Lipshitz441', 'Fweighted441', 'Shibata441', 'Shibata48', 'None' ]
 	}
 	, type       : [ 'Biquad', 'BiquadCombo', 'Conv', 'Delay', 'Gain', 'Loudness', 'DiffEq', 'Dither' ] // omit Volume - use raAudio volume
@@ -143,7 +143,7 @@ var F        = {
 		  select : { filename: '' }
 		, number : { skip_bytes_lines: 0, read_bytes_lines: 0 }
 	}
-	, Wave              : {
+	, Wav               : {
 		  select : { filename: '' }
 		, number : { channel: 0 }
 	}
@@ -541,7 +541,7 @@ var render   = {
 	}
 	, status      : () => {
 		if ( ! ws ) util.websocket();
-		V.statusget   = [ 'GetConfigJson', 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
+		V.statusget   = [ 'GetConfigName', 'GetState', 'GetCaptureRate', 'GetBufferLevel' ]; // Clipped samples already got by signals
 		if ( DEV.enable_rate_adjust ) V.statusget.push( 'GetRateAdjust' );
 		V.statuslast = V.statusget[ V.statusget.length - 1 ];
 		render.statusValue();
@@ -842,7 +842,7 @@ var setting  = {
 			var kv      = key_val.select;
 			var k       = Object.keys( kv );
 			selectlabel = [ ...selectlabel, ...k ];
-			if ( [ 'Raw', 'Wave' ].includes( subtype ) ) {
+			if ( [ 'Raw', 'Wav' ].includes( subtype ) ) {
 				var lscoef = jsonClone( S[ subtype === 'Raw' ? 'lscoefraw' : 'lscoefwav' ] );
 				select     = [ ...select, lscoef ];
 			}
@@ -1500,7 +1500,11 @@ var util     = {
 	}
 	, websocket     : () => {
 		ws           = new WebSocket( 'ws://'+ window.location.host +':1234' );
-		ws.onopen    = () => V.intervalstatus = setInterval( () => V.statusget.forEach( k => ws.send( '"'+ k +'"' ) ), 1000 );
+		ws.onopen    = () => {
+			V.intervalstatus = setInterval( () => {
+				if ( ! V.local ) V.statusget.forEach( k => ws.send( '"'+ k +'"' ) )
+			}, 1000 );
+		}
 		ws.onclose   = () => {
 			ws = null;
 			render.vuClear();
@@ -1557,9 +1561,6 @@ var util     = {
 						}, 1000 );
 					}
 					S.status.GetClippedSamples = value;
-					break;
-				case 'GetConfigJson':
-					S.config = value;
 					break;
 				case 'GetConfigName':
 					S.configname = value.split( '/' ).pop();
