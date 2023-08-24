@@ -515,6 +515,8 @@ var render   = {
 			title += ico( 'folder-filter' );
 		} else if ( V.tab === 'pipeline' && PIP.length ) {
 			title += ico( 'flowchart' );
+		} else if ( V.tab === 'config' ) {
+			title += 'uration';
 		}
 		if ( V.tab === 'filters' || V.tab === 'mixers' ) title += ico( 'gear' );
 		title    += ico( V.tab === 'devices' ? 'gear' : 'add' );
